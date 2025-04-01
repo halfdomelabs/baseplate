@@ -6,7 +6,7 @@ import {
   prismaOutputProvider,
   prismaUtilsProvider,
 } from '@halfdomelabs/fastify-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { storageModuleProvider } from '../storage-module/index.js';
@@ -20,8 +20,8 @@ export const prismaFileTransformerGenerator = createGenerator({
   name: 'fastify/prisma-file-transformer',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { name, category }) {
-    taskBuilder.addTask({
+  buildTasks: ({ name, category }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
@@ -132,6 +132,6 @@ export const prismaFileTransformerGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

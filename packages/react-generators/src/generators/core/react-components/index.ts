@@ -9,6 +9,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createProviderType,
   writeFormattedAction,
 } from '@halfdomelabs/sync';
@@ -72,8 +73,8 @@ export const reactComponentsGenerator = createGenerator({
   name: 'core/react-components',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { includeDatePicker }) {
-    taskBuilder.addTask({
+  buildTasks: ({ includeDatePicker }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         react: reactProvider,
@@ -218,6 +219,6 @@ export const reactComponentsGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

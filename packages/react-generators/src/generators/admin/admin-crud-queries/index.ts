@@ -3,6 +3,7 @@ import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createProviderType,
   writeFormattedAction,
 } from '@halfdomelabs/sync';
@@ -67,8 +68,8 @@ export const adminCrudQueriesGenerator = createGenerator({
   name: 'admin/admin-crud-queries',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { modelName }) {
-    taskBuilder.addTask({
+  buildTasks: ({ modelName }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         reactApollo: reactApolloProvider,
@@ -324,6 +325,6 @@ export const adminCrudQueriesGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

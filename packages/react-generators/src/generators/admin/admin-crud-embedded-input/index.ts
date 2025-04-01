@@ -1,5 +1,9 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
@@ -26,11 +30,8 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
   name: 'admin/admin-crud-embedded-input',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(
-    taskBuilder,
-    { label, modelRelation, embeddedFormRef, isRequired },
-  ) {
-    taskBuilder.addTask({
+  buildTasks: ({ label, modelRelation, embeddedFormRef, isRequired }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
@@ -122,6 +123,6 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

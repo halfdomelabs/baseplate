@@ -17,6 +17,7 @@ import {
 import {
   copyFileAction,
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
   writeTemplateAction,
@@ -49,18 +50,18 @@ export const reactGenerator = createGenerator({
   name: 'core/react',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask({
       name: 'setup-node',
       dependencies: {
         nodeSetup: nodeSetupProvider,
       },
-      run: ({ nodeSetup }) => {
-        nodeSetup.isEsm.set(true, taskBuilder.generatorName);
+      run: ({ nodeSetup }, { taskId }) => {
+        nodeSetup.isEsm.set(true, taskId);
         return {};
       },
-    });
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'main',
 
       dependencies: {
@@ -196,6 +197,6 @@ export const reactGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

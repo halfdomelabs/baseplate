@@ -13,6 +13,7 @@ import {
 import {
   copyFileAction,
   createGenerator,
+  createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -61,8 +62,8 @@ export const errorHandlerServiceGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
 
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'setup',
       dependencies: {
         loggerService: loggerServiceProvider,
@@ -145,8 +146,8 @@ export const errorHandlerServiceGenerator = createGenerator({
           },
         };
       },
-    });
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'main',
       exports: {
         errorHandlerService: errorHandlerServiceProvider.export(projectScope),
@@ -182,6 +183,6 @@ export const errorHandlerServiceGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

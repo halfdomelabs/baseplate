@@ -12,6 +12,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -42,8 +43,8 @@ export const reactConfigGenerator = createGenerator({
   name: 'core/react-config',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -150,6 +151,6 @@ export const reactConfigGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

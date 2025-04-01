@@ -8,7 +8,11 @@ import {
   typescriptProvider,
   vitestProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
@@ -31,8 +35,8 @@ export const fastifyRedisGenerator = createGenerator({
   name: 'core/fastify-redis',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { defaultUrl }) {
-    taskBuilder.addTask({
+  buildTasks: ({ defaultUrl }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -111,6 +115,6 @@ export const fastifyRedisGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

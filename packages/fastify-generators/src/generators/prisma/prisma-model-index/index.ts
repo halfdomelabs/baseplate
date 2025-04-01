@@ -1,4 +1,4 @@
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { prismaModelProvider } from '../prisma-model/index.js';
@@ -11,8 +11,8 @@ export const prismaModelIndexGenerator = createGenerator({
   name: 'prisma/prisma-model-index',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { fields }) {
-    taskBuilder.addTask({
+  buildTasks: ({ fields }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         prismaModel: prismaModelProvider,
@@ -24,6 +24,6 @@ export const prismaModelIndexGenerator = createGenerator({
         });
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

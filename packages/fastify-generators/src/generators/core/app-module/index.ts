@@ -5,7 +5,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createNonOverwriteableMap } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createNonOverwriteableMap,
+} from '@halfdomelabs/sync';
 import { camelCase, kebabCase } from 'change-case';
 import { mapValues } from 'es-toolkit';
 import path from 'node:path';
@@ -23,8 +27,8 @@ export const appModuleGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [featureScope],
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         appModule: appModuleProvider.dependency().parentScopeOnly(),
@@ -95,6 +99,6 @@ export const appModuleGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

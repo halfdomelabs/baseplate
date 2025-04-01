@@ -9,6 +9,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createOutputProviderType,
   createProviderType,
@@ -63,19 +64,18 @@ export const fastifyGenerator = createGenerator({
   name: 'core/fastify',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'node-setup',
       dependencies: {
         nodeSetup: nodeSetupProvider,
       },
-      run({ nodeSetup }) {
-        nodeSetup.isEsm.set(false, taskBuilder.generatorName);
+      run({ nodeSetup }, { taskId }) {
+        nodeSetup.isEsm.set(false, taskId);
         return {};
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'typescript',
       dependencies: {
         node: nodeProvider,
@@ -85,9 +85,8 @@ export const fastifyGenerator = createGenerator({
         setupFastifyTypescript(node, typescriptSetup);
         return {};
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -174,6 +173,6 @@ export const fastifyGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

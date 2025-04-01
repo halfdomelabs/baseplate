@@ -2,7 +2,7 @@ import {
   nodeProvider,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
@@ -17,8 +17,8 @@ export const reactAuth0Generator = createGenerator({
   name: 'auth0/react-auth0',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { callbackPath }) {
-    taskBuilder.addTask({
+  buildTasks: ({ callbackPath }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -73,6 +73,6 @@ export const reactAuth0Generator = createGenerator({
           { comesAfter: 'react-apollo' },
         );
       },
-    });
-  },
+    }),
+  ],
 });

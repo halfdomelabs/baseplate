@@ -11,6 +11,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -41,8 +42,8 @@ export const requestContextGenerator = createGenerator({
   name: 'core/request-context',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'logger-request-context',
       dependencies: { loggerServiceSetup: loggerServiceSetupProvider },
       run({ loggerServiceSetup }) {
@@ -58,9 +59,8 @@ export const requestContextGenerator = createGenerator({
 
         return {};
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -107,6 +107,6 @@ export const requestContextGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

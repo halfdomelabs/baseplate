@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
@@ -11,7 +13,6 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
-  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -56,8 +57,8 @@ export const fastifyServerGenerator = createGenerator({
   name: 'core/fastify-server',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
+  buildTasks(taskBuilder, descriptor) {
+    taskBuilder.addTask({
       name: 'root-module-config',
       dependencies: {
         rootModuleConfig: rootModuleConfigProvider,
@@ -72,8 +73,8 @@ export const fastifyServerGenerator = createGenerator({
           taskId,
         );
       },
-    }),
-    createGeneratorTask({
+    });
+    taskBuilder.addTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -236,6 +237,6 @@ export const fastifyServerGenerator = createGenerator({
           },
         };
       },
-    }),
-  ],
+    });
+  },
 });

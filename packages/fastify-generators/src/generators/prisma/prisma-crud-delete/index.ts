@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ServiceOutputMethod } from '@src/types/service-output.js';
@@ -109,8 +109,8 @@ export const prismaCrudDeleteGenerator = createGenerator({
   name: 'prisma/prisma-crud-delete',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -143,6 +143,6 @@ export const prismaCrudDeleteGenerator = createGenerator({
 
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

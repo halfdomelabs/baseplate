@@ -1,5 +1,5 @@
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
@@ -24,21 +24,18 @@ export const adminCrudForeignInputGenerator = createGenerator({
   name: 'admin/admin-crud-foreign-input',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(
-    taskBuilder,
-    {
-      label,
-      localRelationName,
-      isOptional,
-      localField,
-      foreignModelName,
-      labelExpression,
-      valueExpression,
-      defaultLabel,
-      nullLabel,
-    },
-  ) {
-    taskBuilder.addTask({
+  buildTasks: ({
+    label,
+    localRelationName,
+    isOptional,
+    localField,
+    foreignModelName,
+    labelExpression,
+    valueExpression,
+    defaultLabel,
+    nullLabel,
+  }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
@@ -106,6 +103,6 @@ export const adminCrudForeignInputGenerator = createGenerator({
         });
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

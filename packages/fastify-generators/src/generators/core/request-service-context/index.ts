@@ -12,6 +12,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createOutputProviderType,
   createProviderType,
@@ -62,8 +63,8 @@ export const requestServiceContextGenerator = createGenerator({
   name: 'core/request-service-context',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'setup',
       dependencies: {
         typescript: typescriptProvider,
@@ -176,6 +177,6 @@ export const requestServiceContextGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

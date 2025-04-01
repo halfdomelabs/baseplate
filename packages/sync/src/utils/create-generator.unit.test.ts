@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-output.js';
 
+import { createGeneratorTask } from '@src/generators/index.js';
 import { createProviderExportScope } from '@src/providers/index.js';
 
 import { createGenerator } from './create-generator.js';
@@ -14,8 +15,8 @@ describe('createGenerator', () => {
     const generator = createGenerator({
       name: 'test-generator',
       generatorFileUrl: import.meta.url,
-      buildTasks: (taskBuilder) => {
-        taskBuilder.addTask({
+      buildTasks: () => [
+        createGeneratorTask({
           name: 'test-task',
           run: () => ({
             build: (builder: GeneratorTaskOutputBuilder) => {
@@ -26,8 +27,8 @@ describe('createGenerator', () => {
               });
             },
           }),
-        });
-      },
+        }),
+      ],
     });
 
     const bundle = generator({});
@@ -54,9 +55,7 @@ describe('createGenerator', () => {
       name: 'test-generator',
       generatorFileUrl: import.meta.url,
       descriptorSchema,
-      buildTasks: () => {
-        // No tasks
-      },
+      buildTasks: () => [],
     });
 
     // Should pass validation
@@ -72,9 +71,7 @@ describe('createGenerator', () => {
       name: 'test-generator',
       generatorFileUrl: import.meta.url,
       scopes: [testScope],
-      buildTasks: () => {
-        // No tasks
-      },
+      buildTasks: () => [],
     });
 
     const bundle = generator({});
@@ -85,9 +82,7 @@ describe('createGenerator', () => {
     const generator = createGenerator({
       name: 'test-generator',
       generatorFileUrl: import.meta.url,
-      buildTasks: () => {
-        // No tasks
-      },
+      buildTasks: () => [],
     });
 
     const childBundle = {

@@ -4,7 +4,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
@@ -24,8 +28,8 @@ export const adminHomeGenerator = createGenerator({
   name: 'admin/admin-home',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         reactComponents: reactComponentsProvider,
@@ -64,6 +68,6 @@ export const adminHomeGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

@@ -13,6 +13,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
@@ -76,11 +77,8 @@ export const reactApolloGenerator = createGenerator({
   name: 'apollo/react-apollo',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(
-    taskBuilder,
-    { devApiEndpoint, schemaLocation, enableSubscriptions },
-  ) {
-    taskBuilder.addTask({
+  buildTasks: ({ devApiEndpoint, schemaLocation, enableSubscriptions }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -466,9 +464,8 @@ export const reactApolloGenerator = createGenerator({
           },
         };
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'graphql-error-context',
       dependencies: {
         reactErrorProvider,
@@ -548,6 +545,6 @@ export const reactApolloGenerator = createGenerator({
         );
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

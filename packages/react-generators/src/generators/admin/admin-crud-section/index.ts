@@ -1,5 +1,6 @@
 import {
   createGenerator,
+  createGeneratorTask,
   createProviderExportScope,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -22,8 +23,8 @@ export const adminCrudSectionGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [adminCrudSectionScope],
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {},
       exports: {
@@ -38,6 +39,6 @@ export const adminCrudSectionGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

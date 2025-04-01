@@ -1,5 +1,9 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
@@ -26,17 +30,14 @@ export const adminCrudForeignDisplayGenerator = createGenerator({
   name: 'admin/admin-crud-foreign-display',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(
-    taskBuilder,
-    {
-      localField,
-      isOptional,
-      foreignModelName,
-      labelExpression,
-      valueExpression,
-    },
-  ) {
-    taskBuilder.addTask({
+  buildTasks: ({
+    localField,
+    isOptional,
+    foreignModelName,
+    labelExpression,
+    valueExpression,
+  }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         adminCrudDisplayContainer: adminCrudDisplayContainerProvider,
@@ -76,6 +77,6 @@ export const adminCrudForeignDisplayGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

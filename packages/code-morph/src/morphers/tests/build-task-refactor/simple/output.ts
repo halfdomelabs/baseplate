@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
@@ -11,9 +13,9 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
-  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
+  createGeneratorTask,
 } from '@halfdomelabs/sync';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';

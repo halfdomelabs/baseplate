@@ -1,4 +1,4 @@
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { doubleQuot } from '@src/utils/string.js';
@@ -31,8 +31,8 @@ export const prismaRelationFieldGenerator = createGenerator({
   name: 'prisma/prisma-relation-field',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         prismaModel: prismaModelProvider
@@ -91,6 +91,6 @@ export const prismaRelationFieldGenerator = createGenerator({
 
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

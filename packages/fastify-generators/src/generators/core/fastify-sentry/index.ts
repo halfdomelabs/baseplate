@@ -12,7 +12,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
@@ -45,8 +49,8 @@ export const fastifySentryGenerator = createGenerator({
   name: 'core/fastify-sentry',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'fastify-instrument',
       dependencies: {
         node: nodeProvider,
@@ -69,8 +73,8 @@ export const fastifySentryGenerator = createGenerator({
         }
         return {};
       },
-    });
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'server',
       dependencies: {
         node: nodeProvider,
@@ -107,8 +111,8 @@ export const fastifySentryGenerator = createGenerator({
           },
         };
       },
-    });
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -246,9 +250,8 @@ export const fastifySentryGenerator = createGenerator({
           },
         };
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'prisma',
       dependencies: {
         prismaSchemaProvider: prismaSchemaProvider.dependency().optional(),
@@ -265,9 +268,8 @@ export const fastifySentryGenerator = createGenerator({
         }
         return {};
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'auth',
       dependencies: {
         fastifySentry: fastifySentryProvider,
@@ -290,6 +292,6 @@ export const fastifySentryGenerator = createGenerator({
         }
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

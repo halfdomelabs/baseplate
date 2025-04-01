@@ -1,4 +1,4 @@
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { prismaSchemaProvider } from '../prisma/index.js';
@@ -12,8 +12,8 @@ export const prismaEnumGenerator = createGenerator({
   name: 'prisma/prisma-enum',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { name, values }) {
-    taskBuilder.addTask({
+  buildTasks: ({ name, values }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         prisma: prismaSchemaProvider,
@@ -26,6 +26,6 @@ export const prismaEnumGenerator = createGenerator({
 
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

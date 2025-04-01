@@ -7,6 +7,7 @@ import {
 import {
   copyFileAction,
   createGenerator,
+  createGeneratorTask,
   createProviderType,
   writeTemplateAction,
 } from '@halfdomelabs/sync';
@@ -33,8 +34,8 @@ export const reactTailwindGenerator = createGenerator({
   name: 'core/react-tailwind',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { globalBodyClasses }) {
-    taskBuilder.addTask({
+  buildTasks: ({ globalBodyClasses }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         react: reactProvider,
@@ -116,6 +117,6 @@ export const reactTailwindGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

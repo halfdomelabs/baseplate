@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type {
@@ -185,17 +185,14 @@ export const embeddedRelationTransformerGenerator = createGenerator({
   name: 'prisma/embedded-relation-transformer',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(
-    taskBuilder,
-    {
-      name: localRelationName,
-      embeddedFieldNames = [],
-      embeddedTransformerNames,
-      inputName: inputNameDescriptor,
-      foreignModelName,
-    },
-  ) {
-    taskBuilder.addTask({
+  buildTasks: ({
+    name: localRelationName,
+    embeddedFieldNames = [],
+    embeddedTransformerNames,
+    inputName: inputNameDescriptor,
+    foreignModelName,
+  }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -630,6 +627,6 @@ export const embeddedRelationTransformerGenerator = createGenerator({
 
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

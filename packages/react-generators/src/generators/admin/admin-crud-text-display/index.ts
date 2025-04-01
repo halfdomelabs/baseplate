@@ -1,5 +1,5 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { adminCrudDisplayContainerProvider } from '../_providers/admin-crud-display-container.js';
@@ -12,8 +12,8 @@ export const adminCrudTextDisplayGenerator = createGenerator({
   name: 'admin/admin-crud-text-display',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { modelField }) {
-    taskBuilder.addTask({
+  buildTasks: ({ modelField }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         adminCrudDisplayContainer: adminCrudDisplayContainerProvider,
@@ -26,6 +26,6 @@ export const adminCrudTextDisplayGenerator = createGenerator({
         });
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

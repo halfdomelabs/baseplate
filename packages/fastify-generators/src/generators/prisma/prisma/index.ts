@@ -13,6 +13,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createOutputProviderType,
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
@@ -77,8 +78,8 @@ export const prismaGenerator = createGenerator({
   name: 'prisma/prisma',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask({
       name: 'schema',
       dependencies: {
         node: nodeProvider,
@@ -269,6 +270,6 @@ export const prismaGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

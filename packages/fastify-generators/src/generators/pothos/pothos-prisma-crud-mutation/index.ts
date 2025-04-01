@@ -5,7 +5,11 @@ import {
   tsUtilsProvider,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createNonOverwriteableMap } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createNonOverwriteableMap,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { serviceFileOutputProvider } from '@src/generators/core/service-file/index.js';
@@ -33,8 +37,8 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks(taskBuilder, { modelName, type, crudServiceRef }) {
-    taskBuilder.addTask({
+  buildTasks: ({ modelName, type, crudServiceRef }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         pothosSchema: pothosSchemaProvider,
@@ -203,6 +207,6 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

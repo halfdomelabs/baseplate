@@ -11,6 +11,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createOrderedList,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -36,8 +37,8 @@ export const reactAppGenerator = createGenerator({
   name: 'core/react-app',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         react: reactProvider,
@@ -108,6 +109,6 @@ export const reactAppGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

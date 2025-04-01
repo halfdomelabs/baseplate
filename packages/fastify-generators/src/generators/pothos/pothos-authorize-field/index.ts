@@ -1,4 +1,4 @@
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 
 import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 
@@ -13,8 +13,8 @@ export const pothosAuthorizeFieldGenerator = createGenerator({
   name: 'pothos/pothos-authorize-field',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         pothosAuth: pothosAuthProvider,
@@ -27,6 +27,6 @@ export const pothosAuthorizeFieldGenerator = createGenerator({
         });
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

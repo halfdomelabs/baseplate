@@ -7,6 +7,7 @@ import type { CompilerOptions, ts } from 'ts-morph';
 
 import {
   createGenerator,
+  createGeneratorTask,
   createProviderType,
   createSetupTask,
   writeJsonAction,
@@ -176,10 +177,9 @@ export const typescriptGenerator = createGenerator({
   name: 'node/typescript',
   generatorFileUrl: import.meta.url,
   descriptorSchema: typescriptGeneratorDescriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask(setupTask);
-
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask(setupTask),
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -286,9 +286,8 @@ export const typescriptGenerator = createGenerator({
           },
         };
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'file',
       exports: {
         typescriptFile: typescriptFileProvider.export(projectScope),
@@ -350,6 +349,6 @@ export const typescriptGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

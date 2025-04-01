@@ -3,7 +3,7 @@ import {
   nodeProvider,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ScalarFieldType } from '@src/types/field-types.js';
@@ -79,8 +79,8 @@ export const pothosScalarGenerator = createGenerator({
   name: 'pothos/pothos-scalar',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { type }) {
-    taskBuilder.addTask({
+  buildTasks: ({ type }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         appModule: appModuleProvider,
@@ -124,6 +124,6 @@ export const pothosScalarGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

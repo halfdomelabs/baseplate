@@ -1,5 +1,5 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactErrorProvider } from '../../core/react-error/index.js';
@@ -14,8 +14,8 @@ export const apolloErrorLinkGenerator = createGenerator({
   name: 'apollo/apollo-error-link',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         reactApolloSetup: reactApolloSetupProvider,
@@ -91,6 +91,6 @@ export const apolloErrorLinkGenerator = createGenerator({
         });
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

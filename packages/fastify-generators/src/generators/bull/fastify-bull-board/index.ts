@@ -5,7 +5,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
@@ -28,8 +32,8 @@ export const fastifyBullBoardGenerator = createGenerator({
   name: 'bull/fastify-bull-board',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -117,9 +121,8 @@ export const fastifyBullBoardGenerator = createGenerator({
           },
         };
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'formBody',
       dependencies: {
         node: nodeProvider,
@@ -140,6 +143,6 @@ export const fastifyBullBoardGenerator = createGenerator({
 
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

@@ -1,4 +1,4 @@
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { AdminCrudDisplay } from '../_utils/data-display.js';
@@ -14,8 +14,8 @@ export const adminCrudColumnGenerator = createGenerator({
   name: 'admin/admin-crud-column',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { label }) {
-    taskBuilder.addTask({
+  buildTasks: ({ label }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         adminCrudColumnContainer: adminCrudColumnContainerProvider,
@@ -52,6 +52,6 @@ export const adminCrudColumnGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

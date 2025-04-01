@@ -6,6 +6,7 @@ import {
 import {
   copyFileAction,
   createGenerator,
+  createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -25,8 +26,8 @@ export const fastifyScriptsGenerator = createGenerator({
   name: 'core/fastify-scripts',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -65,6 +66,6 @@ export const fastifyScriptsGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

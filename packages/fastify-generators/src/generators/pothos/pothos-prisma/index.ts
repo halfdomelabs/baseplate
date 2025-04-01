@@ -3,7 +3,11 @@ import {
   projectScope,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
@@ -26,8 +30,8 @@ export const pothosPrismaGenerator = createGenerator({
   name: 'pothos/pothos-prisma',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -79,9 +83,8 @@ export const pothosPrismaGenerator = createGenerator({
           },
         };
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'prisma-generator',
       dependencies: {
         prismaSchema: prismaSchemaProvider,
@@ -95,6 +98,6 @@ export const pothosPrismaGenerator = createGenerator({
         );
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

@@ -5,7 +5,11 @@ import {
   tsUtilsProvider,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
@@ -59,8 +63,8 @@ export const prismaUtilsGenerator = createGenerator({
   name: 'prisma/prisma-utils',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         typescript: typescriptProvider,
@@ -109,6 +113,6 @@ export const prismaUtilsGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

@@ -4,7 +4,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { authProvider } from '@src/generators/auth/auth/index.js';
@@ -37,8 +41,8 @@ export const pothosAuthGenerator = createGenerator({
   name: 'pothos/pothos-auth',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { requireOnRootFields }) {
-    taskBuilder.addTask({
+  buildTasks: ({ requireOnRootFields }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         pothosSetup: pothosSetupProvider,
@@ -90,9 +94,8 @@ export const pothosAuthGenerator = createGenerator({
           },
         };
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'auth-formatter',
       exports: {
         pothosAuth: pothosAuthProvider.export(projectScope),
@@ -110,6 +113,6 @@ export const pothosAuthGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

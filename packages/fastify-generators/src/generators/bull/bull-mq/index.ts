@@ -4,7 +4,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
@@ -22,8 +26,8 @@ export const bullMqGenerator = createGenerator({
   name: 'bull/bull-mq',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         errorHandlerService: errorHandlerServiceProvider,
@@ -117,6 +121,6 @@ export const bullMqGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

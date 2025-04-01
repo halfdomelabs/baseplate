@@ -1,7 +1,11 @@
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator, createNonOverwriteableMap } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createNonOverwriteableMap,
+} from '@halfdomelabs/sync';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
 
@@ -21,8 +25,8 @@ export const pothosPrismaListQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks(taskBuilder, { modelName }) {
-    taskBuilder.addTask({
+  buildTasks: ({ modelName }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -87,6 +91,6 @@ export const pothosPrismaListQueryGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });
