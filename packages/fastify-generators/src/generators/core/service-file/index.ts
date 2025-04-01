@@ -1,5 +1,4 @@
 import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
   makeImportAndFilePath,
@@ -10,6 +9,7 @@ import {
 import {
   createGenerator,
   createNonOverwriteableMap,
+  createOutputProviderType,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { kebabCase } from 'change-case';
@@ -48,20 +48,25 @@ export interface ServiceFileOutputProvider {
 }
 
 export const serviceFileOutputProvider =
-  createProviderType<ServiceFileOutputProvider>('service-file-output');
+  createOutputProviderType<ServiceFileOutputProvider>('service-file-output');
 
 export const serviceFileGenerator = createGenerator({
   name: 'core/service-file',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder, descriptor) {
-    const mainTask = taskBuilder.addTask({
+    taskBuilder.addTask({
       name: 'main',
       dependencies: {
         appModule: appModuleProvider,
         typescript: typescriptProvider,
       },
       exports: { serviceFile: serviceFileProvider.export() },
+      outputs: {
+        serviceFileOutput: descriptor.id
+          ? serviceFileOutputProvider.export(projectScope, descriptor.id)
+          : serviceFileOutputProvider.export(),
+      },
       run({ appModule, typescript }) {
         const methodMap = createNonOverwriteableMap<
           Record<string, TypescriptCodeBlock>
@@ -93,14 +98,7 @@ export const serviceFileGenerator = createGenerator({
               },
             },
           },
-          build: async (
-            builder,
-            addTaskOutput: (output: {
-              outputMap: NonOverwriteableMap<
-                Record<string, ServiceOutputMethod>
-              >;
-            }) => void,
-          ) => {
+          build: async (builder) => {
             const methods = methodMap.value();
             const methodOrder = descriptor.methodOrder ?? [];
             const orderedMethods = [
@@ -119,25 +117,7 @@ export const serviceFileGenerator = createGenerator({
                 servicesFile.renderToActionFromText('METHODS;', servicesPath),
               );
             }
-            addTaskOutput({ outputMap });
-          },
-        };
-      },
-    });
-
-    if (descriptor.id) {
-      taskBuilder.addTask({
-        name: 'output',
-        exports: {
-          serviceFileOutput: serviceFileOutputProvider.export(
-            projectScope,
-            descriptor.id,
-          ),
-        },
-        taskDependencies: { mainTask },
-        run(deps, { mainTask: { outputMap } }) {
-          return {
-            providers: {
+            return {
               serviceFileOutput: {
                 getServiceMethod(key) {
                   const output = outputMap.get(key);
@@ -147,10 +127,10 @@ export const serviceFileGenerator = createGenerator({
                   return output;
                 },
               },
-            },
-          };
-        },
-      });
-    }
+            };
+          },
+        };
+      },
+    });
   },
 });

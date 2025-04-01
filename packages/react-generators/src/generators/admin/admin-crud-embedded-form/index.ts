@@ -6,7 +6,11 @@ import {
   typescriptProvider,
   TypescriptStringReplacement,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createOutputProviderType,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { GraphQLField } from '@src/writers/graphql/index.js';
@@ -124,17 +128,25 @@ function getComponentProps({
   });
 }
 
+const adminCrudEmbeddedFormSetupProvider = createOutputProviderType<{
+  inputFields: AdminCrudInput[];
+  tableColumns: AdminCrudColumn[];
+}>('admin-crud-embedded-form-setup');
+
 export const adminCrudEmbeddedFormGenerator = createGenerator({
   name: 'admin/admin-crud-embedded-form',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder, { id, name, modelName, isList, idField }) {
-    const setupTask = taskBuilder.addTask({
+    taskBuilder.addTask({
       name: 'setupForm',
       dependencies: {},
       exports: {
         adminCrudInputContainer: adminCrudInputContainerProvider.export(),
         adminCrudColumnContainer: adminCrudColumnContainerProvider.export(),
+      },
+      outputs: {
+        adminCrudEmbeddedFormSetup: adminCrudEmbeddedFormSetupProvider.export(),
       },
       run() {
         const inputFields: AdminCrudInput[] = [];
@@ -159,15 +171,9 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
               getModelName: () => modelName,
             },
           },
-          build: (
-            builder,
-            addTaskOutput: (output: {
-              inputFields: AdminCrudInput[];
-              tableColumns: AdminCrudColumn[];
-            }) => void,
-          ) => {
-            addTaskOutput({ inputFields, tableColumns });
-          },
+          build: () => ({
+            adminCrudEmbeddedFormSetup: { inputFields, tableColumns },
+          }),
         };
       },
     });
@@ -179,6 +185,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
         reactComponents: reactComponentsProvider,
         reactError: reactErrorProvider,
         typescript: typescriptProvider,
+        adminCrudEmbeddedFormSetup: adminCrudEmbeddedFormSetupProvider,
       },
       exports: {
         adminCrudEmbeddedForm: adminCrudEmbeddedFormProvider.export(
@@ -186,17 +193,14 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
           id,
         ),
       },
-      taskDependencies: { setupTask },
-      run(
-        {
-          adminCrudEdit,
-          reactComponents,
-          reactError,
-          typescript,
-          adminComponents,
-        },
-        { setupTask: { inputFields, tableColumns } },
-      ) {
+      run({
+        adminCrudEdit,
+        reactComponents,
+        reactError,
+        typescript,
+        adminComponents,
+        adminCrudEmbeddedFormSetup: { inputFields, tableColumns },
+      }) {
         const capitalizedName = upperCaseFirst(name);
         const formName = `Embedded${capitalizedName}Form`;
         const formDataType = `Embedded${capitalizedName}FormData`;
