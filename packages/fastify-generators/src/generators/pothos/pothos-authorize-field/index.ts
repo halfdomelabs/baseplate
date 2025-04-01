@@ -11,8 +11,6 @@ import {
 
 const descriptorSchema = pothosAuthorizeConfigSchema;
 
-type Descriptor = z.infer<typeof descriptorSchema>;
-
 export const pothosAuthorizeFieldGenerator = createGenerator({
   name: 'pothos/pothos-authorize-field',
   generatorFileUrl: import.meta.url,
