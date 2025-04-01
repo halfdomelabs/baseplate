@@ -13,6 +13,7 @@ import {
 import {
   createGenerator,
   createNonOverwriteableMap,
+  createOutputProviderType,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { mapValues } from 'es-toolkit';
@@ -53,16 +54,16 @@ export interface RequestServiceContextProvider extends ImportMapper {
 }
 
 export const requestServiceContextProvider =
-  createProviderType<RequestServiceContextProvider>('request-service-context', {
-    isReadOnly: true,
-  });
+  createOutputProviderType<RequestServiceContextProvider>(
+    'request-service-context',
+  );
 
 export const requestServiceContextGenerator = createGenerator({
   name: 'core/request-service-context',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder) {
-    const setupTask = taskBuilder.addTask({
+    taskBuilder.addTask({
       name: 'setup',
       dependencies: {
         typescript: typescriptProvider,
@@ -72,6 +73,10 @@ export const requestServiceContextGenerator = createGenerator({
       exports: {
         requestServiceContextSetup:
           requestServiceContextSetupProvider.export(projectScope),
+      },
+      outputs: {
+        requestServiceContext:
+          requestServiceContextProvider.export(projectScope),
       },
       run({ typescript, requestContext, serviceContextSetup }) {
         const contextPassthroughMap = createNonOverwriteableMap<
@@ -115,16 +120,7 @@ export const requestServiceContextGenerator = createGenerator({
               getContextPath: () => contextPath,
             },
           },
-          build: async (
-            builder,
-            addTaskOutput: (output: {
-              importMap: Record<
-                string,
-                { path: string; allowedImports: string[] }
-              >;
-              contextPath: string;
-            }) => void,
-          ) => {
+          build: async (builder) => {
             const contextFields = contextFieldsMap.value();
             const contextPassthroughs = contextPassthroughMap.value();
             const contextFile = typescript.createTemplate(
@@ -171,29 +167,12 @@ export const requestServiceContextGenerator = createGenerator({
               ),
             );
 
-            addTaskOutput({ importMap, contextPath });
-          },
-        };
-      },
-    });
-
-    taskBuilder.addTask({
-      name: 'output',
-      exports: {
-        requestServiceContext:
-          requestServiceContextProvider.export(projectScope),
-      },
-      taskDependencies: { setupTask },
-      run(deps, { setupTask: { importMap, contextPath } }) {
-        return {
-          providers: {
-            requestServiceContext: {
-              getImportMap: () => importMap,
-              getContextPath: () => contextPath,
-            },
-          },
-          build: async () => {
-            // do nothing
+            return {
+              requestServiceContext: {
+                getImportMap: () => importMap,
+                getContextPath: () => contextPath,
+              },
+            };
           },
         };
       },

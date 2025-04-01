@@ -21,7 +21,10 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { configServiceProvider } from '../config-service/index.js';
 import { loggerServiceProvider } from '../logger-service/index.js';
-import { rootModuleProvider } from '../root-module/index.js';
+import {
+  rootModuleConfigProvider,
+  rootModuleImportProvider,
+} from '../root-module/index.js';
 
 const descriptorSchema = z.object({
   defaultPort: z.number().default(7001),
@@ -54,12 +57,28 @@ export const fastifyServerGenerator = createGenerator({
   descriptorSchema,
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
+      name: 'root-module-config',
+      dependencies: {
+        rootModuleConfig: rootModuleConfigProvider,
+      },
+      run({ rootModuleConfig }) {
+        rootModuleConfig.moduleFields.set(
+          'plugins',
+          TypescriptCodeUtils.createExpression(
+            '(FastifyPluginCallback | FastifyPluginAsync)',
+            "import { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';",
+          ),
+          taskBuilder.generatorName,
+        );
+      },
+    });
+    taskBuilder.addTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
         loggerService: loggerServiceProvider,
         configService: configServiceProvider,
-        rootModule: rootModuleProvider,
+        rootModule: rootModuleImportProvider,
         typescript: typescriptProvider,
       },
       exports: {
@@ -114,14 +133,6 @@ export const fastifyServerGenerator = createGenerator({
             ),
           },
         });
-
-        rootModule.addModuleField(
-          'plugins',
-          TypescriptCodeUtils.createExpression(
-            '(FastifyPluginCallback | FastifyPluginAsync)',
-            "import { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';",
-          ),
-        );
 
         return {
           providers: {

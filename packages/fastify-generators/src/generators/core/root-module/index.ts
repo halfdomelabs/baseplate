@@ -2,7 +2,6 @@ import type {
   ImportMapper,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
   projectScope,
@@ -11,8 +10,8 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
-  createNonOverwriteableMap,
   createProviderType,
+  createSetupTask,
 } from '@halfdomelabs/sync';
 import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
 import { mapValues } from 'es-toolkit';
@@ -29,6 +28,19 @@ export interface RootModuleProvider {
 
 export const rootModuleProvider =
   createProviderType<RootModuleProvider>('root-module');
+
+const [setupTask, rootModuleConfigProvider, rootModuleSetupProvider] =
+  createSetupTask(
+    (t) => ({
+      moduleFields: t.map<string, TypescriptCodeExpression>(),
+    }),
+    {
+      prefix: 'root-module',
+      configScope: projectScope,
+    },
+  );
+
+export { rootModuleConfigProvider };
 
 export interface RootModuleImport extends ImportMapper {
   getRootModule: () => TypescriptCodeExpression;
@@ -57,42 +69,7 @@ export const rootModuleGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder) {
-    const rootModuleTask = taskBuilder.addTask({
-      name: 'rootModule',
-      exports: {
-        rootModule: rootModuleProvider.export(projectScope),
-      },
-      run() {
-        const moduleFieldMap = createNonOverwriteableMap<
-          Record<string, TypescriptCodeExpression>
-        >({}, { name: 'root-module-fields' });
-
-        return {
-          providers: {
-            rootModule: {
-              addModuleField: (name, type) => {
-                moduleFieldMap.set(name, type);
-              },
-              getRootModule: () =>
-                TypescriptCodeUtils.createExpression(
-                  'RootModule',
-                  "import { RootModule } from '@/src/modules/index.js'",
-                ),
-            },
-          },
-          build: (
-            builder,
-            addTaskOutput: (output: {
-              moduleFieldMap: NonOverwriteableMap<
-                Record<string, TypescriptCodeExpression>
-              >;
-            }) => void,
-          ) => {
-            addTaskOutput({ moduleFieldMap });
-          },
-        };
-      },
-    });
+    taskBuilder.addTask(setupTask);
 
     taskBuilder.addTask({
       name: 'rootModuleImport',
@@ -123,31 +100,29 @@ export const rootModuleGenerator = createGenerator({
 
     taskBuilder.addTask({
       name: 'appModule',
-      dependencies: { typescript: typescriptProvider },
+      dependencies: {
+        typescript: typescriptProvider,
+        rootModuleSetup: rootModuleSetupProvider,
+      },
       exports: { appModule: appModuleProvider.export(projectScope) },
-      taskDependencies: { rootModuleTask },
-      run({ typescript }, { rootModuleTask: { moduleFieldMap } }) {
-        const rootModuleEntries = createNonOverwriteableMap<
-          Record<string, TypescriptCodeExpression[]>
-        >({}, { name: 'root-module-entries' });
+      run({ typescript, rootModuleSetup: { moduleFields: moduleFieldsMap } }) {
+        const rootModuleEntries = new Map<string, TypescriptCodeExpression[]>();
         const moduleImports: string[] = [];
 
         return {
           providers: {
             appModule: {
               getModuleFolder: () => 'src/modules',
-              getValidFields: () => [
-                'children',
-                ...Object.keys(moduleFieldMap.value()),
-              ],
+              getValidFields: () => ['children', ...moduleFieldsMap.keys()],
               addModuleImport(name) {
                 moduleImports.push(name);
               },
               registerFieldEntry: (name, type) => {
-                if (name !== 'children' && !moduleFieldMap.get(name)) {
+                if (name !== 'children' && !moduleFieldsMap.get(name)) {
                   throw new Error(`Unknown field entry: ${name}`);
                 }
-                rootModuleEntries.appendUnique(name, [type]);
+                const existing = rootModuleEntries.get(name) ?? [];
+                rootModuleEntries.set(name, [...existing, type]);
               },
             },
           },
@@ -159,7 +134,7 @@ export const rootModuleGenerator = createGenerator({
             rootModule.addCodeExpression(
               'ROOT_MODULE_CONTENTS',
               TypescriptCodeUtils.mergeExpressionsAsObject(
-                mapValues(rootModuleEntries.value(), (types) =>
+                mapValues(Object.fromEntries(rootModuleEntries), (types) =>
                   TypescriptCodeUtils.mergeExpressionsAsArray(types),
                 ),
               ),
@@ -174,14 +149,8 @@ export const rootModuleGenerator = createGenerator({
               MODULE_MERGER: { type: 'code-expression' },
             });
 
-            const moduleFields = Object.keys(moduleFieldMap.value()).map(
-              (name) => {
-                const field = moduleFieldMap.get(name);
-                if (!field) {
-                  throw new Error(`Unknown field entry: ${name}`);
-                }
-                return { name, field };
-              },
+            const moduleFields = [...moduleFieldsMap.entries()].map(
+              ([name, field]) => ({ name, field }),
             );
 
             moduleHelper.addCodeAddition({
