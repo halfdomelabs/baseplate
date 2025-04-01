@@ -20,6 +20,7 @@ export type UserSessionTypesProvider = ImportMapper;
 
 export const userSessionTypesProvider =
   createProviderType<UserSessionTypesProvider>('user-session-types');
+
 export const userSessionTypesGenerator = createGenerator({
   name: 'auth/user-session-types',
   generatorFileUrl: import.meta.url,

@@ -104,7 +104,7 @@ export default createTypescriptMorpher({
     }
 
     // Remove the createTaskConfigBuilder variable declarations
-    for (const v of taskBuilderVars) v.remove();
+    for (const v of taskBuilderVars) v.replaceWithText('');
 
     // Clean up empty imports
     if (syncImport.getNamedImports().length === 0) {
