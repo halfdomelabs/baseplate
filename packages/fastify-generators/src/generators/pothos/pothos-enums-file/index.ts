@@ -5,7 +5,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { kebabCase } from 'change-case';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
@@ -36,8 +40,8 @@ export const pothosEnumsFileGenerator = createGenerator({
   name: 'pothos/pothos-enums-file',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { name }) {
-    taskBuilder.addTask({
+  buildTasks: ({ name }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         appModule: appModuleProvider,
@@ -92,6 +96,6 @@ export const pothosEnumsFileGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

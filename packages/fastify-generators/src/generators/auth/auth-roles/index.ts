@@ -6,7 +6,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -38,8 +42,8 @@ export const authRolesGenerator = createGenerator({
   name: 'auth/auth-roles',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { roles }) {
-    taskBuilder.addTask({
+  buildTasks: ({ roles }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         typescript: typescriptProvider,
@@ -108,6 +112,6 @@ export const authRolesGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

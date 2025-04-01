@@ -8,6 +8,7 @@ import {
 import {
   copyFileAction,
   createGenerator,
+  createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -33,8 +34,8 @@ export const authLoginPageGenerator = createGenerator({
   name: 'auth/auth-login-page',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { allowedRoles }) {
-    taskBuilder.addTask({
+  buildTasks: ({ allowedRoles }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         reactApollo: reactApolloProvider,
@@ -111,6 +112,6 @@ export const authLoginPageGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

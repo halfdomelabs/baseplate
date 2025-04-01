@@ -7,7 +7,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
@@ -36,8 +40,8 @@ export const auth0ModuleGenerator = createGenerator({
   name: 'auth0/auth0-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { includeManagement, userModelName }) {
-    taskBuilder.addTask({
+  buildTasks: ({ includeManagement, userModelName }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         typescript: typescriptProvider,
@@ -174,9 +178,8 @@ export const auth0ModuleGenerator = createGenerator({
           },
         };
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'fastifyAuth0Plugin',
       dependencies: {
         node: nodeProvider,
@@ -204,9 +207,8 @@ export const auth0ModuleGenerator = createGenerator({
           ),
         });
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'loggerSetup',
       dependencies: {
         loggerServiceSetup: loggerServiceSetupProvider,
@@ -222,6 +224,6 @@ export const auth0ModuleGenerator = createGenerator({
           ),
         );
       },
-    });
-  },
+    }),
+  ],
 });

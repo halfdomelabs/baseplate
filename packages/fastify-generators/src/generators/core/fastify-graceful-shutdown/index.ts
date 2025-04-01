@@ -3,7 +3,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { errorHandlerServiceProvider } from '../error-handler-service/index.js';
@@ -18,8 +18,8 @@ export const fastifyGracefulShutdownGenerator = createGenerator({
   name: 'core/fastify-graceful-shutdown',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         fastifyServer: fastifyServerProvider,
@@ -51,6 +51,6 @@ export const fastifyGracefulShutdownGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

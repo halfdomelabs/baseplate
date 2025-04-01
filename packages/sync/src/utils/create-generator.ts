@@ -35,7 +35,10 @@ export interface CreateGeneratorConfig<DescriptorSchema extends z.ZodType> {
   /**
    * The function to build the tasks
    */
-  buildTasks: (descriptor: z.infer<DescriptorSchema>) => GeneratorTask[];
+  buildTasks: (
+    descriptor: z.infer<DescriptorSchema>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- needed to prevent the tasks from being provided generic arguments
+  ) => GeneratorTask<any, any, any>[];
 }
 
 export type GeneratorBundleChildren = Record<
@@ -84,7 +87,9 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
     const validatedDescriptor =
       (config.descriptorSchema?.parse(rest) as unknown) ?? {};
 
-    const tasks: GeneratorTask[] = config.buildTasks(validatedDescriptor);
+    const tasks: GeneratorTask[] = config.buildTasks(
+      validatedDescriptor,
+    ) as GeneratorTask[];
 
     return {
       name: config.name,

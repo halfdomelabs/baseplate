@@ -15,6 +15,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -49,8 +50,8 @@ export const configServiceGenerator = createGenerator({
   name: 'core/config-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'fastify',
       dependencies: {
         fastify: fastifyProvider,
@@ -66,9 +67,8 @@ export const configServiceGenerator = createGenerator({
 
         return {};
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -200,6 +200,6 @@ export const configServiceGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

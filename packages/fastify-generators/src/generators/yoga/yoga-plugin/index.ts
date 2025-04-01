@@ -14,6 +14,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createOutputProviderType,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -80,9 +81,8 @@ export const yogaPluginGenerator = createGenerator({
   name: 'yoga/yoga-plugin',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { enableSubscriptions }) {
-    // Setup Task
-    taskBuilder.addTask({
+  buildTasks: ({ enableSubscriptions }) => [
+    createGeneratorTask({
       name: 'setup',
       exports: {
         yogaPluginConfig: yogaPluginConfigProvider.export(projectScope),
@@ -107,10 +107,8 @@ export const yogaPluginGenerator = createGenerator({
           },
         };
       },
-    });
-
-    // Setup Fastify
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'fastify',
       dependencies: {
         fastifyServer: fastifyServerProvider,
@@ -124,9 +122,8 @@ export const yogaPluginGenerator = createGenerator({
           ),
         });
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -238,115 +235,115 @@ export const yogaPluginGenerator = createGenerator({
           },
         };
       },
-    });
-
-    if (enableSubscriptions) {
-      taskBuilder.addTask({
-        name: 'server-websocket',
-        dependencies: {
-          node: nodeProvider,
-          fastifyServer: fastifyServerProvider,
-        },
-        run({ node, fastifyServer }) {
-          node.addPackages({
-            '@fastify/websocket': FASTIFY_PACKAGES['@fastify/websocket'],
-          });
-
-          fastifyServer.registerPlugin({
-            name: 'websocketPlugin',
-            plugin: TypescriptCodeUtils.createExpression(
-              'websocketPlugin',
-              "import websocketPlugin from '@fastify/websocket';",
-            ),
-            orderPriority: 'EARLY',
-          });
-
-          return {};
-        },
-      });
-
-      taskBuilder.addTask({
-        name: 'subscription',
-        dependencies: {
-          node: nodeProvider,
-          typescript: typescriptProvider,
-          fastifyRedis: fastifyRedisProvider,
-          auth: authProvider.dependency().optional(),
-          errorLoggerService: errorHandlerServiceProvider,
-          loggerService: loggerServiceProvider,
-          requestServiceContext: requestServiceContextProvider,
-        },
-        run({
-          node,
-          typescript,
-          fastifyRedis,
-          auth,
-          errorLoggerService,
-          loggerService,
-          requestServiceContext,
-        }) {
-          node.addPackages({
-            '@graphql-yoga/redis-event-target':
-              FASTIFY_PACKAGES['@graphql-yoga/redis-event-target'],
-            'graphql-ws': FASTIFY_PACKAGES['graphql-ws'],
-          });
-
-          const [, pubsubPath] = makeImportAndFilePath(
-            'src/plugins/graphql/pubsub.ts',
-          );
-          const [, websocketPath] = makeImportAndFilePath(
-            'src/plugins/graphql/websocket.ts',
-          );
-
-          return {
-            async build(builder) {
-              await builder.apply(
-                typescript.createCopyAction({
-                  source: 'plugins/graphql/pubsub.ts',
-                  destination: pubsubPath,
-                  importMappers: [fastifyRedis],
-                }),
-              );
-
-              const websocketFile = typescript.createTemplate(
-                {
-                  AUTH_INFO_CREATOR: auth
-                    ? TypescriptCodeUtils.createExpression(
-                        `await userSessionService.getSessionInfoFromToken(
-          ctx.extra.request,
-          typeof authorizationHeader === 'string'
-            ? authorizationHeader
-            : undefined,
-        )`,
-                        "import { userSessionService } from '%auth/user-session-service';",
-                      )
-                    : { type: 'code-expression' },
-                },
-                {
-                  importMappers: [
-                    errorLoggerService,
-                    loggerService,
-                    requestServiceContext,
-                    auth,
-                  ],
-                },
-              );
-
-              await builder.apply(
-                websocketFile.renderToAction(
-                  'plugins/graphql/websocket.ts',
-                  websocketPath,
-                  {
-                    preprocessWithEta: {
-                      data: { authEnabled: !!auth },
-                    },
-                  },
-                ),
-              );
+    }),
+    ...(enableSubscriptions
+      ? [
+          createGeneratorTask({
+            name: 'server-websocket',
+            dependencies: {
+              node: nodeProvider,
+              fastifyServer: fastifyServerProvider,
             },
-          };
-        },
-      });
-    }
-  },
+            run({ node, fastifyServer }) {
+              node.addPackages({
+                '@fastify/websocket': FASTIFY_PACKAGES['@fastify/websocket'],
+              });
+
+              fastifyServer.registerPlugin({
+                name: 'websocketPlugin',
+                plugin: TypescriptCodeUtils.createExpression(
+                  'websocketPlugin',
+                  "import websocketPlugin from '@fastify/websocket';",
+                ),
+                orderPriority: 'EARLY',
+              });
+
+              return {};
+            },
+          }),
+          createGeneratorTask({
+            name: 'subscription',
+            dependencies: {
+              node: nodeProvider,
+              typescript: typescriptProvider,
+              fastifyRedis: fastifyRedisProvider,
+              auth: authProvider.dependency().optional(),
+              errorLoggerService: errorHandlerServiceProvider,
+              loggerService: loggerServiceProvider,
+              requestServiceContext: requestServiceContextProvider,
+            },
+            run({
+              node,
+              typescript,
+              fastifyRedis,
+              auth,
+              errorLoggerService,
+              loggerService,
+              requestServiceContext,
+            }) {
+              node.addPackages({
+                '@graphql-yoga/redis-event-target':
+                  FASTIFY_PACKAGES['@graphql-yoga/redis-event-target'],
+                'graphql-ws': FASTIFY_PACKAGES['graphql-ws'],
+              });
+
+              const [, pubsubPath] = makeImportAndFilePath(
+                'src/plugins/graphql/pubsub.ts',
+              );
+              const [, websocketPath] = makeImportAndFilePath(
+                'src/plugins/graphql/websocket.ts',
+              );
+
+              return {
+                async build(builder) {
+                  await builder.apply(
+                    typescript.createCopyAction({
+                      source: 'plugins/graphql/pubsub.ts',
+                      destination: pubsubPath,
+                      importMappers: [fastifyRedis],
+                    }),
+                  );
+
+                  const websocketFile = typescript.createTemplate(
+                    {
+                      AUTH_INFO_CREATOR: auth
+                        ? TypescriptCodeUtils.createExpression(
+                            `await userSessionService.getSessionInfoFromToken(
+              ctx.extra.request,
+              typeof authorizationHeader === 'string'
+                ? authorizationHeader
+                : undefined,
+            )`,
+                            "import { userSessionService } from '%auth/user-session-service';",
+                          )
+                        : { type: 'code-expression' },
+                    },
+                    {
+                      importMappers: [
+                        errorLoggerService,
+                        loggerService,
+                        requestServiceContext,
+                        auth,
+                      ],
+                    },
+                  );
+
+                  await builder.apply(
+                    websocketFile.renderToAction(
+                      'plugins/graphql/websocket.ts',
+                      websocketPath,
+                      {
+                        preprocessWithEta: {
+                          data: { authEnabled: !!auth },
+                        },
+                      },
+                    ),
+                  );
+                },
+              };
+            },
+          }),
+        ]
+      : []),
+  ],
 });

@@ -4,7 +4,11 @@ import {
   projectScope,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactRouterProvider } from '@src/generators/core/react-router/index.js';
@@ -24,8 +28,8 @@ export const authIdentifyGenerator = createGenerator({
   name: 'auth/auth-identify',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         reactRouter: reactRouterProvider,
@@ -69,6 +73,6 @@ export const authIdentifyGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

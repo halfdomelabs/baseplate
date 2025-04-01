@@ -2,7 +2,11 @@ import {
   projectScope,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactApolloSetupProvider } from '../../apollo/react-apollo/index.js';
@@ -21,8 +25,8 @@ export const authApolloGenerator = createGenerator({
   name: 'auth/auth-apollo',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         reactApolloSetup: reactApolloSetupProvider.dependency(),
@@ -110,6 +114,6 @@ export const authApolloGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

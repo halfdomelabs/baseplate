@@ -4,7 +4,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
@@ -20,8 +20,8 @@ export const authPluginGenerator = createGenerator({
   name: 'auth/auth-plugin',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         typescript: typescriptProvider,
@@ -72,6 +72,6 @@ export const authPluginGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

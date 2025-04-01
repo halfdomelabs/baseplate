@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type {
@@ -129,8 +129,8 @@ export const prismaCrudCreateGenerator = createGenerator({
   name: 'prisma/prisma-crud-create',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -188,6 +188,6 @@ export const prismaCrudCreateGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

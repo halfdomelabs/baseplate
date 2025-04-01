@@ -7,6 +7,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -39,8 +40,8 @@ export const pothosPrismaObjectGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks(taskBuilder, { modelName, exposedFields }) {
-    taskBuilder.addTask({
+  buildTasks: ({ modelName, exposedFields }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -141,6 +142,6 @@ export const pothosPrismaObjectGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

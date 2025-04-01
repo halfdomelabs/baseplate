@@ -5,7 +5,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
@@ -37,8 +41,8 @@ export const pothosTypesFileGenerator = createGenerator({
   name: 'pothos/pothos-types-file',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { fileName, categoryOrder }) {
-    taskBuilder.addTask({
+  buildTasks: ({ fileName, categoryOrder }) => [
+    createGeneratorTask({
       name: 'pothos-types-file',
       dependencies: {
         appModule: appModuleProvider,
@@ -105,6 +109,6 @@ export const pothosTypesFileGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

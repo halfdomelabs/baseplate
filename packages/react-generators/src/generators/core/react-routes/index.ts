@@ -2,7 +2,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
@@ -28,8 +28,8 @@ export const reactRoutesGenerator = createGenerator({
   name: 'core/react-routes',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { name, layoutKey, isPassthrough }) {
-    taskBuilder.addTask({
+  buildTasks: ({ name, layoutKey, isPassthrough }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         reactRoutes: reactRoutesProvider.dependency().parentScopeOnly(),
@@ -127,6 +127,6 @@ export const reactRoutesGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

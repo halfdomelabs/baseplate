@@ -4,23 +4,13 @@ import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-outp
 
 import { createProviderType } from '@src/providers/index.js';
 
-import type {
-  GeneratorTask,
-  InferDependencyProviderMap,
-  InferExportProviderMap,
-  ProviderDependencyMap,
-  ProviderExportMap,
+import {
+  createGeneratorTask,
+  type InferDependencyProviderMap,
+  type InferExportProviderMap,
+  type ProviderDependencyMap,
+  type ProviderExportMap,
 } from './generators.js';
-
-function createTask<
-  ExportMap extends ProviderExportMap | undefined = undefined,
-  DependencyMap extends ProviderDependencyMap = ProviderDependencyMap,
-  OutputMap extends ProviderExportMap | undefined = undefined,
->(
-  taskResult: GeneratorTask<ExportMap, DependencyMap, OutputMap>,
-): GeneratorTask<ExportMap, DependencyMap, OutputMap> {
-  return taskResult;
-}
 
 describe('generators type definitions', () => {
   it('should correctly infer provider maps from export and dependency maps', () => {
@@ -60,7 +50,7 @@ describe('generators type definitions', () => {
   });
 
   it('should correctly type generator task results no exports', () => {
-    const taskOutput = createTask({
+    const taskOutput = createGeneratorTask({
       name: 'test',
       exports: {},
       run: () => ({}),
@@ -72,8 +62,21 @@ describe('generators type definitions', () => {
     expect(taskOutput.name).toBe('test');
   });
 
+  it('should correctly type generator task results no exports nor output providers', () => {
+    const taskOutput = createGeneratorTask({
+      name: 'test',
+      run: () => ({
+        build: () => {
+          // do nothing
+        },
+      }),
+    });
+
+    expect(taskOutput.name).toBe('test');
+  });
+
   it('should correctly type generator task results no exports but output providers', () => {
-    const taskOutput = createTask({
+    const taskOutput = createGeneratorTask({
       name: 'test',
       outputs: {
         test: createProviderType<{ value: string }>('test').export(),
@@ -90,7 +93,7 @@ describe('generators type definitions', () => {
   });
 
   it('should correctly type generator tasks with exports and outputs', () => {
-    const taskOutput = createTask({
+    const taskOutput = createGeneratorTask({
       name: 'test',
       exports: {
         test: createProviderType<{ value: string }>('test').export(),

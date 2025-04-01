@@ -53,7 +53,7 @@ export default createTypescriptMorpher({
     });
 
     if (nonAddTaskStatements.length > 0) {
-      throw new Error(
+      console.warn(
         `buildTasks contains non-addTask statements: ${nonAddTaskStatements
           .map((s) => s.getText())
           .join('\n')}`,

@@ -2,7 +2,11 @@ import {
   projectScope,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactConfigProvider } from '../react-config/index.js';
@@ -23,8 +27,8 @@ export const reactProxyGenerator = createGenerator({
   name: 'core/react-proxy',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { devBackendHost }) {
-    taskBuilder.addTask({
+  buildTasks: ({ devBackendHost }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         reactConfig: reactConfigProvider,
@@ -63,6 +67,6 @@ export const reactProxyGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

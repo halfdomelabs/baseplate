@@ -4,7 +4,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ReactRoute } from '@src/providers/routes.js';
@@ -28,8 +32,8 @@ export const reactNotFoundHandlerGenerator = createGenerator({
   name: 'core/react-not-found-handler',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { layoutKey }) {
-    taskBuilder.addTask({
+  buildTasks: ({ layoutKey }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         reactPages: reactRoutesProvider,
@@ -76,6 +80,6 @@ export const reactNotFoundHandlerGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

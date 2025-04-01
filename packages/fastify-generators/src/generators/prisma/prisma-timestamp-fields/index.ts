@@ -1,4 +1,4 @@
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { prismaModelProvider } from '../prisma-model/index.js';
@@ -12,8 +12,8 @@ export const prismaTimestampFieldsGenerator = createGenerator({
   name: 'prisma/prisma-timestamp-fields',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { createdAt, updatedAt }) {
-    taskBuilder.addTask({
+  buildTasks: ({ createdAt, updatedAt }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         prismaModel: prismaModelProvider,
@@ -48,6 +48,6 @@ export const prismaTimestampFieldsGenerator = createGenerator({
         }
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

@@ -1,5 +1,6 @@
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
   createSetupTask,
@@ -66,10 +67,9 @@ export const nodeGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [projectScope],
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask(setupTask);
-
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask(setupTask),
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         setup: nodeSetupOutputProvider,
@@ -239,6 +239,6 @@ export const nodeGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

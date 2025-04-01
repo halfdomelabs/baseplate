@@ -5,7 +5,11 @@ import {
   typescriptProvider,
   TypescriptStringReplacement,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { dasherize, underscore } from 'inflection';
 import { z } from 'zod';
 
@@ -47,8 +51,8 @@ export const adminCrudEditGenerator = createGenerator({
   name: 'admin/admin-crud-edit',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { modelName, disableCreate }) {
-    taskBuilder.addTask({
+  buildTasks: ({ modelName, disableCreate }) => [
+    createGeneratorTask({
       name: 'main',
 
       dependencies: {
@@ -322,6 +326,6 @@ export const adminCrudEditGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

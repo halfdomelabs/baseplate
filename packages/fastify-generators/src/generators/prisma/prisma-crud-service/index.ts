@@ -1,6 +1,7 @@
 import { projectScope } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createOutputProviderType,
   createProviderType,
@@ -34,8 +35,8 @@ export const prismaCrudServiceGenerator = createGenerator({
   name: 'prisma/prisma-crud-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { modelName }) {
-    taskBuilder.addTask({
+  buildTasks: ({ modelName }) => [
+    createGeneratorTask({
       name: 'main',
       outputs: {
         prismaCrudService: prismaCrudServiceProvider
@@ -75,6 +76,6 @@ export const prismaCrudServiceGenerator = createGenerator({
           }),
         };
       },
-    });
-  },
+    }),
+  ],
 });

@@ -9,6 +9,7 @@ import {
 import {
   copyFileAction,
   createGenerator,
+  createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -30,8 +31,8 @@ export const authServiceGenerator = createGenerator({
   name: 'auth/auth-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         tsUtils: tsUtilsProvider,
@@ -105,6 +106,6 @@ export const authServiceGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

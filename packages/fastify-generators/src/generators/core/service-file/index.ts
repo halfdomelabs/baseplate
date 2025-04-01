@@ -8,6 +8,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createOutputProviderType,
   createProviderType,
@@ -54,8 +55,8 @@ export const serviceFileGenerator = createGenerator({
   name: 'core/service-file',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         appModule: appModuleProvider,
@@ -131,6 +132,6 @@ export const serviceFileGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

@@ -2,6 +2,7 @@ import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
   writeFormattedAction,
@@ -29,8 +30,8 @@ export const eslintProvider = createProviderType<EslintProvider>('eslint');
 export const eslintGenerator = createGenerator({
   name: 'node/eslint',
   generatorFileUrl: import.meta.url,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -115,6 +116,6 @@ export const eslintGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

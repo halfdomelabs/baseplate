@@ -10,6 +10,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createProviderType,
   createSetupTask,
 } from '@halfdomelabs/sync';
@@ -68,10 +69,9 @@ export const rootModuleGenerator = createGenerator({
   name: 'core/root-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask(setupTask);
-
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask(setupTask),
+    createGeneratorTask({
       name: 'rootModuleImport',
       exports: {
         rootModuleImport: rootModuleImportProvider.export(projectScope),
@@ -96,9 +96,8 @@ export const rootModuleGenerator = createGenerator({
           },
         };
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'appModule',
       dependencies: {
         typescript: typescriptProvider,
@@ -195,6 +194,6 @@ export const rootModuleGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

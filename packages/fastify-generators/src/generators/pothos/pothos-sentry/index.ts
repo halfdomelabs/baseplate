@@ -5,7 +5,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
@@ -20,8 +20,8 @@ export const pothosSentryGenerator = createGenerator({
   name: 'pothos/pothos-sentry',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         yogaPluginConfig: yogaPluginConfigProvider,
@@ -57,9 +57,8 @@ export const pothosSentryGenerator = createGenerator({
           },
         };
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'sentry',
       dependencies: {
         fastifyServerSentry: fastifySentryProvider.dependency(),
@@ -80,9 +79,8 @@ export const pothosSentryGenerator = createGenerator({
 
         return {};
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'pothos-plugin',
       dependencies: {
         pothosSetupProvider,
@@ -121,6 +119,6 @@ export const pothosSentryGenerator = createGenerator({
 
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

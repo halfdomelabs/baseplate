@@ -15,6 +15,7 @@ import {
 import {
   copyFileAction,
   createGenerator,
+  createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { capitalize } from 'inflection';
@@ -35,8 +36,8 @@ export const uploadComponentsGenerator = createGenerator({
   name: 'react/upload-components',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { fileModelName }) {
-    taskBuilder.addTask({
+  buildTasks: ({ fileModelName }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -119,6 +120,6 @@ export const uploadComponentsGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

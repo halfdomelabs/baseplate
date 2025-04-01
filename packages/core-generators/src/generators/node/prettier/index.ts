@@ -3,6 +3,7 @@ import type { Plugin } from 'prettier';
 
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
   writeJsonAction,
@@ -117,8 +118,8 @@ export const prettierGenerator = createGenerator({
   name: 'node/prettier',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: { node: nodeProvider },
       exports: {
@@ -281,6 +282,6 @@ export const prettierGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

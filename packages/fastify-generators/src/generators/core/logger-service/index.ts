@@ -13,6 +13,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -55,8 +56,8 @@ export const loggerServiceGenerator = createGenerator({
   name: 'core/logger-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -146,6 +147,6 @@ export const loggerServiceGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

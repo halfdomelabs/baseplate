@@ -8,6 +8,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createOutputProviderType,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -137,8 +138,8 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
   name: 'admin/admin-crud-embedded-form',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { id, name, modelName, isList, idField }) {
-    taskBuilder.addTask({
+  buildTasks: ({ id, name, modelName, isList, idField }) => [
+    createGeneratorTask({
       name: 'setupForm',
       dependencies: {},
       exports: {
@@ -176,8 +177,8 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
           }),
         };
       },
-    });
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         adminCrudEdit: adminCrudEditProvider,
@@ -416,6 +417,6 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

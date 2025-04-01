@@ -1,4 +1,8 @@
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { projectScope } from '@src/providers/scopes.js';
@@ -51,8 +55,8 @@ export const tsUtilsGenerator = createGenerator({
   name: 'node/ts-utils',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         typescript: typescriptProvider,
@@ -112,6 +116,6 @@ export const tsUtilsGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

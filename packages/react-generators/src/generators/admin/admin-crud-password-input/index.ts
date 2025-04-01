@@ -1,5 +1,5 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
@@ -15,8 +15,8 @@ export const adminCrudPasswordInputGenerator = createGenerator({
   name: 'admin/admin-crud-password-input',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { label, modelField }) {
-    taskBuilder.addTask({
+  buildTasks: ({ label, modelField }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
@@ -51,6 +51,6 @@ export const adminCrudPasswordInputGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

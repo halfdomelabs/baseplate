@@ -17,6 +17,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createNonOverwriteableMap,
   createOutputProviderType,
   createProviderType,
@@ -74,8 +75,8 @@ export const pothosGenerator = createGenerator({
   name: 'pothos/pothos',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'setup',
       dependencies: {},
       exports: {
@@ -116,9 +117,8 @@ export const pothosGenerator = createGenerator({
           }),
         };
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'schema',
       dependencies: {
         pothosSetupOutput: pothosSetupOutputProvider,
@@ -150,9 +150,8 @@ export const pothosGenerator = createGenerator({
           }),
         };
       },
-    });
-
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -356,10 +355,8 @@ if (IS_DEVELOPMENT) {
           },
         };
       },
-    });
-
-    // split out schemagen steps to avoid cyclical dependencies
-    taskBuilder.addTask({
+    }),
+    createGeneratorTask({
       name: 'generate-schema',
       dependencies: {
         node: nodeProvider,
@@ -377,6 +374,6 @@ if (IS_DEVELOPMENT) {
         );
         return {};
       },
-    });
-  },
+    }),
+  ],
 });

@@ -6,7 +6,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import {
@@ -30,8 +34,8 @@ export const authContextGenerator = createGenerator({
   name: 'auth/auth-context',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         serviceContextSetup: serviceContextSetupProvider,
@@ -155,6 +159,6 @@ export const authContextGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

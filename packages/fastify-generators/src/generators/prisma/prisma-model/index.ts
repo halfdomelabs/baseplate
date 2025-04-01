@@ -1,5 +1,9 @@
 import { projectScope } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { snakeCase } from 'change-case';
 import { z } from 'zod';
 
@@ -34,8 +38,8 @@ export const prismaModelGenerator = createGenerator({
   name: 'prisma/prisma-model',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask({
+  buildTasks: (descriptor) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         prisma: prismaSchemaProvider.dependency(),
@@ -65,6 +69,6 @@ export const prismaModelGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

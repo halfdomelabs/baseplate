@@ -3,7 +3,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
@@ -25,8 +29,8 @@ export const adminBullBoardGenerator = createGenerator({
   name: 'admin/admin-bull-board',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, { bullBoardUrl }) {
-    taskBuilder.addTask({
+  buildTasks: ({ bullBoardUrl }) => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         typescript: typescriptProvider,
@@ -88,6 +92,6 @@ export const adminBullBoardGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

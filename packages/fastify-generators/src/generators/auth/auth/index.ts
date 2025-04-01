@@ -5,6 +5,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createGeneratorTask,
   createProviderType,
   createSetupTask,
 } from '@halfdomelabs/sync';
@@ -38,10 +39,9 @@ export const authGenerator = createGenerator({
   name: 'auth/auth',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask(setupTask);
-
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask(setupTask),
+    createGeneratorTask({
       name: 'main',
       dependencies: { authSetup: authSetupProvider },
       exports: {
@@ -83,6 +83,6 @@ export const authGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });

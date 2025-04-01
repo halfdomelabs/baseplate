@@ -5,7 +5,11 @@ import {
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
@@ -23,8 +27,8 @@ export const userSessionTypesGenerator = createGenerator({
   name: 'auth/user-session-types',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
+  buildTasks: () => [
+    createGeneratorTask({
       name: 'main',
       dependencies: {
         appModule: appModuleProvider,
@@ -65,6 +69,6 @@ export const userSessionTypesGenerator = createGenerator({
           },
         };
       },
-    });
-  },
+    }),
+  ],
 });
