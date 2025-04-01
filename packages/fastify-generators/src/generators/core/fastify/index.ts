@@ -5,7 +5,7 @@ import {
   nodeProvider,
   nodeSetupProvider,
   projectScope,
-  typescriptConfigProvider,
+  typescriptSetupProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -78,10 +78,10 @@ export const fastifyGenerator = createGenerator({
       name: 'typescript',
       dependencies: {
         node: nodeProvider,
-        typescriptConfig: typescriptConfigProvider,
+        typescriptSetup: typescriptSetupProvider,
       },
-      run({ node, typescriptConfig }) {
-        setupFastifyTypescript(node, typescriptConfig);
+      run({ node, typescriptSetup }) {
+        setupFastifyTypescript(node, typescriptSetup);
         return {};
       },
     });

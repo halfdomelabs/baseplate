@@ -44,6 +44,8 @@ export interface ProviderType<P = Provider> {
   export(scope?: ProviderExportScope, exportName?: string): ProviderExport<P>;
 }
 
+export type InferProviderType<T> = T extends ProviderType<infer P> ? P : never;
+
 export interface ProviderDependencyOptions {
   /**
    * Whether the dependency is optional or not

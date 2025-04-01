@@ -1,19 +1,18 @@
 import type {
   BuilderAction,
-  NonOverwriteableMap,
+  InferProviderType,
   WriteFileOptions,
 } from '@halfdomelabs/sync';
-import type { CompilerOptions } from 'ts-morph';
+import type { CompilerOptions, ts } from 'ts-morph';
 
 import {
   createGenerator,
-  createNonOverwriteableMap,
   createProviderType,
+  createSetupTask,
   writeJsonAction,
 } from '@halfdomelabs/sync';
 import { safeMergeAll } from '@halfdomelabs/utils';
 import path from 'node:path';
-import { ts } from 'ts-morph';
 import { z } from 'zod';
 
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
@@ -77,19 +76,6 @@ export interface TypescriptConfigReference {
   path: string;
 }
 
-export interface TypescriptConfigProvider {
-  setTypescriptVersion(version: string): void;
-  setTypescriptCompilerOptions(json: TypescriptCompilerOptions): void;
-  getCompilerOptions(): CompilerOptions;
-  addInclude(path: string): void;
-  addExclude(path: string): void;
-  addReference(reference: TypescriptConfigReference): void;
-  addExtraSection(section: Record<string, unknown>): void;
-}
-
-export const typescriptConfigProvider =
-  createProviderType<TypescriptConfigProvider>('typescript-config');
-
 export interface TypescriptProvider {
   createTemplate<Config extends TypescriptTemplateConfigOrEntry>(
     config: Config,
@@ -116,7 +102,6 @@ export interface TypescriptProvider {
     options?: WriteFileOptions,
   ): BuilderAction;
   resolveModule(moduleSpecifier: string, from: string): string;
-  getCompilerOptions(): CompilerOptions;
 }
 
 export const typescriptProvider =
@@ -142,124 +127,72 @@ export interface TypescriptFileProvider {
 export const typescriptFileProvider =
   createProviderType<TypescriptFileProvider>('typescript-file');
 
-interface TypescriptConfig {
-  version: string;
-  compilerOptions: TypescriptCompilerOptions;
-  include: string[];
-  exclude: string[];
-  references: TypescriptConfigReference[];
-  extraSections: Record<string, unknown>[];
-}
-
-const DEFAULT_CONFIG: TypescriptConfig = {
-  version: CORE_PACKAGES.typescript,
-  compilerOptions: {
-    outDir: 'dist',
-    declaration: true,
-    baseUrl: './src',
-    target: 'es2022',
-    lib: ['es2023'],
-    esModuleInterop: true,
-    module: 'node16',
-    moduleResolution: 'node16',
-    strict: true,
-    removeComments: true,
-    forceConsistentCasingInFileNames: true,
-    resolveJsonModule: true,
-    sourceMap: true,
-  },
-  include: ['src'],
-  exclude: ['**/node_modules', '**/dist', '**/lib'],
-  references: [],
-  extraSections: [],
+const DEFAULT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
+  outDir: 'dist',
+  declaration: true,
+  baseUrl: './src',
+  target: 'es2022',
+  lib: ['es2023'],
+  esModuleInterop: true,
+  module: 'node16',
+  moduleResolution: 'node16',
+  strict: true,
+  removeComments: true,
+  forceConsistentCasingInFileNames: true,
+  resolveJsonModule: true,
+  sourceMap: true,
 };
+
+const [setupTask, typescriptSetupProvider, typescriptConfigProvider] =
+  createSetupTask(
+    (t) => ({
+      version: t.string(CORE_PACKAGES.typescript),
+      compilerOptions: t.scalar<TypescriptCompilerOptions>(
+        DEFAULT_COMPILER_OPTIONS,
+      ),
+      include: t.array<string>(['src'], { stripDuplicates: true }),
+      exclude: t.array<string>(['**/node_modules', '**/dist', '**/lib']),
+      references: t.array<TypescriptConfigReference>(),
+      extraSections: t.array<Record<string, unknown>>(),
+    }),
+    {
+      prefix: 'typescript',
+      configScope: projectScope,
+      outputScope: projectScope,
+    },
+  );
+
+export { typescriptConfigProvider, typescriptSetupProvider };
+
+export type TypescriptConfigProvider = InferProviderType<
+  typeof typescriptConfigProvider
+>;
+
+export type TypescriptSetupProvider = InferProviderType<
+  typeof typescriptSetupProvider
+>;
 
 export const typescriptGenerator = createGenerator({
   name: 'node/typescript',
   generatorFileUrl: import.meta.url,
   descriptorSchema: typescriptGeneratorDescriptorSchema,
   buildTasks(taskBuilder, descriptor) {
-    const configTask = taskBuilder.addTask({
-      name: 'config',
-      exports: {
-        typescriptConfig: typescriptConfigProvider.export(projectScope),
-      },
-      run() {
-        const config = createNonOverwriteableMap<TypescriptConfig>(
-          DEFAULT_CONFIG,
-          {
-            name: 'typescript',
-            defaultsOverwriteable: true,
-          },
-        );
-
-        function getCompilerOptions(): CompilerOptions {
-          const result = ts.convertCompilerOptionsFromJson(
-            config.get('compilerOptions'),
-            '.',
-          );
-          if (result.errors.length > 0) {
-            throw new Error(
-              `Unable to extract compiler options: ${JSON.stringify(
-                result.errors,
-              )}`,
-            );
-          }
-          return result.options;
-        }
-
-        return {
-          providers: {
-            typescriptConfig: {
-              setTypescriptVersion(version) {
-                config.merge({ version });
-              },
-              setTypescriptCompilerOptions(options) {
-                config.merge({ compilerOptions: options });
-              },
-              getCompilerOptions,
-              addInclude(path) {
-                config.appendUnique('include', [path]);
-              },
-              addExclude(path) {
-                config.appendUnique('exclude', [path]);
-              },
-              addReference(reference) {
-                config.appendUnique('references', [reference]);
-              },
-              addExtraSection(section) {
-                config.appendUnique('extraSections', [section]);
-              },
-            },
-          },
-          build: (
-            builder,
-            addTaskOutput: (output: {
-              config: NonOverwriteableMap<TypescriptConfig>;
-              getCompilerOptions: () => CompilerOptions;
-            }) => void,
-          ) => {
-            addTaskOutput({ config, getCompilerOptions });
-          },
-        };
-      },
-    });
+    taskBuilder.addTask(setupTask);
 
     taskBuilder.addTask({
       name: 'main',
-      dependencies: { node: nodeProvider },
+      dependencies: {
+        node: nodeProvider,
+        typescriptConfig: typescriptConfigProvider,
+      },
       exports: { typescript: typescriptProvider.export(projectScope) },
-      taskDependencies: { configTask },
-      run({ node }, { configTask: { config, getCompilerOptions } }) {
+      run({ node, typescriptConfig }) {
+        const { compilerOptions } = typescriptConfig;
         let cachedPathEntries: PathMapEntry[] | undefined;
 
         function getPathEntries(): PathMapEntry[] {
           if (!cachedPathEntries) {
-            // { "baseUrl": "./src", "paths": { "@src/*": ["./*"] } }
-            // would be { from: "src", to: "@src" }
-            const configMap = config.value();
-
-            const { baseUrl, paths } = configMap.compilerOptions;
+            const { baseUrl, paths } = compilerOptions;
             if (!paths && (baseUrl === './' || baseUrl === '.')) {
               // TODO: Support other source folders
               cachedPathEntries = [{ from: 'src', to: 'src' }];
@@ -288,8 +221,7 @@ export const typescriptGenerator = createGenerator({
           return cachedPathEntries;
         }
 
-        const moduleResolution =
-          config.value().compilerOptions.moduleResolution ?? 'node';
+        const moduleResolution = compilerOptions.moduleResolution ?? 'node';
 
         return {
           providers: {
@@ -332,18 +264,11 @@ export const typescriptGenerator = createGenerator({
                   pathMapEntries: getPathEntries(),
                   moduleResolution,
                 }),
-              getCompilerOptions,
             } as TypescriptProvider,
           },
           async build(builder) {
-            const {
-              compilerOptions,
-              include,
-              exclude,
-              version,
-              references,
-              extraSections,
-            } = config.value();
+            const { include, exclude, version, references, extraSections } =
+              typescriptConfig;
             node.addDevPackage('typescript', version);
 
             await builder.apply(
@@ -368,11 +293,13 @@ export const typescriptGenerator = createGenerator({
       exports: {
         typescriptFile: typescriptFileProvider.export(projectScope),
       },
-      taskDependencies: { configTask },
-      run(_, { configTask: { config } }) {
-        const moduleResolution =
-          config.value().compilerOptions.moduleResolution ?? 'node';
-        const { baseUrl = '.', paths = {} } = config.value().compilerOptions;
+      dependencies: { typescriptConfig: typescriptConfigProvider },
+      run({ typescriptConfig: { compilerOptions } }) {
+        const {
+          baseUrl = '.',
+          paths = {},
+          moduleResolution = 'node',
+        } = compilerOptions;
         const pathMapEntries = generatePathMapEntries(baseUrl, paths);
         const internalPatterns = pathMapEntriesToRegexes(pathMapEntries);
 

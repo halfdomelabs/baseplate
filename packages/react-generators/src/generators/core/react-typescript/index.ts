@@ -1,6 +1,6 @@
 import {
   eslintProvider,
-  typescriptConfigProvider,
+  typescriptSetupProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, writeJsonAction } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -15,42 +15,45 @@ export const reactTypescriptGenerator = createGenerator({
     taskBuilder.addTask({
       name: 'main',
       dependencies: {
-        typescriptConfig: typescriptConfigProvider,
+        typescriptSetup: typescriptSetupProvider,
         eslint: eslintProvider,
       },
-      run({ typescriptConfig, eslint }) {
-        typescriptConfig.setTypescriptVersion('5.5.4');
-        typescriptConfig.setTypescriptCompilerOptions({
-          /* Compilation */
-          lib: ['dom', 'dom.iterable', 'esnext'],
-          module: 'esnext',
-          target: 'esnext',
-          skipLibCheck: true,
-          esModuleInterop: false,
-          allowJs: false,
-          jsx: 'react-jsx',
+      run({ typescriptSetup, eslint }) {
+        typescriptSetup.version.set('5.5.4', 'react');
+        typescriptSetup.compilerOptions.set(
+          {
+            /* Compilation */
+            lib: ['dom', 'dom.iterable', 'esnext'],
+            module: 'esnext',
+            target: 'esnext',
+            skipLibCheck: true,
+            esModuleInterop: false,
+            allowJs: false,
+            jsx: 'react-jsx',
 
-          /* Linting */
-          strict: true,
+            /* Linting */
+            strict: true,
 
-          /* Resolution */
-          allowSyntheticDefaultImports: true,
-          forceConsistentCasingInFileNames: true,
-          resolveJsonModule: true,
-          moduleResolution: 'bundler',
+            /* Resolution */
+            allowSyntheticDefaultImports: true,
+            forceConsistentCasingInFileNames: true,
+            resolveJsonModule: true,
+            moduleResolution: 'bundler',
 
-          /* Output */
-          isolatedModules: true,
-          noEmit: true,
+            /* Output */
+            isolatedModules: true,
+            noEmit: true,
 
-          /* Paths */
-          baseUrl: './',
-          paths: {
-            '@src/*': ['./src/*'],
+            /* Paths */
+            baseUrl: './',
+            paths: {
+              '@src/*': ['./src/*'],
+            },
           },
-        });
-        typescriptConfig.addInclude('src');
-        typescriptConfig.addReference({
+          'react',
+        );
+        typescriptSetup.include.push('src');
+        typescriptSetup.references.push({
           path: './tsconfig.node.json',
         });
         eslint

@@ -58,12 +58,53 @@ export class ArrayContainer<T> extends FieldContainer<T[]> {
   }
 }
 
+export class ObjectContainer<
+  T extends Record<string, unknown>,
+> extends FieldContainer<T> {
+  private readonly map: Map<
+    keyof T,
+    { value: unknown; setBySource: string | undefined }
+  >;
+
+  constructor(defaultValue: T) {
+    super(defaultValue);
+    this.map = new Map(
+      Object.entries(defaultValue).map(([key, value]) => [
+        key,
+        { value, setBySource: undefined },
+      ]),
+    );
+  }
+
+  set(key: keyof T, value: T[keyof T], source: string): void {
+    const existingValue = this.map.get(key);
+    if (existingValue?.setBySource) {
+      throw new Error(
+        `Value for key ${key as string} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${source}`,
+      );
+    }
+    this.map.set(key, { value, setBySource: source });
+  }
+
+  merge(value: Partial<T>, source: string): void {
+    for (const [key, val] of Object.entries(value)) {
+      this.set(key as keyof T, val as T[keyof T], source);
+    }
+  }
+
+  get value(): T {
+    return Object.fromEntries(
+      [...this.map.entries()].map(([key, value]) => [key, value.value]),
+    ) as T;
+  }
+}
+
 // Map field container
 export class MapContainer<
   K extends string | number | symbol,
   V,
 > extends FieldContainer<Map<K, V>> {
-  private readonly map: Map<K, { value: V; setBySource: string }>;
+  private readonly map: Map<K, { value: V; setBySource: string | undefined }>;
 
   constructor(defaultValue?: Map<K, V>) {
     const initialMap = defaultValue ?? new Map<K, V>();
@@ -71,14 +112,14 @@ export class MapContainer<
     this.map = new Map(
       [...initialMap.entries()].map(([key, value]) => [
         key,
-        { value, setBySource: 'default' },
+        { value, setBySource: undefined },
       ]),
     );
   }
 
   set(key: K, value: V, source: string): void {
     const existingValue = this.map.get(key);
-    if (existingValue) {
+    if (existingValue?.setBySource) {
       throw new Error(
         `Value for key ${key as string} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${source}`,
       );
@@ -151,6 +192,12 @@ export class FieldMapSchemaBuilder {
     options?: { stripDuplicates?: boolean },
   ): ArrayContainer<T> {
     return new ArrayContainer(defaultValue ?? [], options);
+  }
+
+  object<T extends Record<string, unknown>>(
+    defaultValue: T,
+  ): ObjectContainer<T> {
+    return new ObjectContainer(defaultValue);
   }
 
   map<K extends string | number | symbol, V>(

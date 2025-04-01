@@ -63,6 +63,25 @@ describe('FieldMap', () => {
     });
   });
 
+  describe('ObjectContainer', () => {
+    it('should handle objects with default values', () => {
+      const fieldMap = createFieldMap((t) => ({
+        settings: t.object({ key1: 'value1' }),
+      }));
+
+      expect(fieldMap.getValues()).toEqual({ settings: { key1: 'value1' } });
+    });
+
+    it('should allow setting object value once', () => {
+      const fieldMap = createFieldMap((t) => ({
+        settings: t.object({ key1: 'value1' }),
+      }));
+
+      fieldMap.settings.set('key1', 'value2', 'source1');
+      expect(fieldMap.getValues()).toEqual({ settings: { key1: 'value2' } });
+    });
+  });
+
   describe('MapContainer', () => {
     it('should handle maps with default values', () => {
       const defaultMap = new Map([['key1', 'value1']]);
@@ -75,12 +94,20 @@ describe('FieldMap', () => {
 
     it('should allow setting individual values', () => {
       const fieldMap = createFieldMap((t) => ({
-        settings: t.map<string, string>(),
+        settings: t.map<string, string>(
+          new Map([
+            ['key1', 'value0'],
+            ['key2', 'value1'],
+          ]),
+        ),
       }));
 
       fieldMap.settings.set('key1', 'value1', 'source1');
       expect(fieldMap.getValues().settings).toEqual(
-        new Map([['key1', 'value1']]),
+        new Map([
+          ['key1', 'value1'],
+          ['key2', 'value1'],
+        ]),
       );
     });
 
