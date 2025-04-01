@@ -27,7 +27,7 @@ describe('ClientVersionProvider', () => {
 
     // Mock location.reload
     Object.defineProperty(globalThis, 'location', {
-      value: { reload: reloadMock },
+      value: { reload: reloadMock, origin: 'http://localhost:3000' },
       writable: true,
     });
   });
