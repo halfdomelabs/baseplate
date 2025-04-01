@@ -115,6 +115,16 @@ export type GeneratorTaskResult<
       : GeneratorTaskResultBuildersWithOutputs<OutputMap>);
 
 /**
+ * The context of the task run
+ */
+export interface TaskRunContext {
+  /**
+   * The id of the task
+   */
+  taskId: string;
+}
+
+/**
  * A generator task that has been initialized by the generator config with
  * the descriptor of the generator.
  */
@@ -148,7 +158,10 @@ export interface GeneratorTask<
    * the initialized export map and function to build the output for the
    * generator task.
    */
-  run: (dependencies: InferDependencyProviderMap<DependencyMap>) => {
+  run: (
+    dependencies: InferDependencyProviderMap<DependencyMap>,
+    context: TaskRunContext,
+  ) => {
     exports: ExportMap;
     outputs: OutputMap;
   } extends {

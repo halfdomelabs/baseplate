@@ -91,7 +91,6 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
 
     const tasks: GeneratorTask[] = [];
     const taskBuilder: GeneratorTaskBuilder = {
-      generatorName: config.name,
       addTask: (task) => {
         tasks.push(task as GeneratorTask);
       },

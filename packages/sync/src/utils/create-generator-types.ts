@@ -23,18 +23,7 @@ export type GeneratorDescriptorChildren = Record<
   | undefined
 >;
 
-export interface ChildGeneratorConfig {
-  provider?: string;
-  isMultiple?: boolean;
-  /**
-   * Whether to default to null if no config is provided.
-   */
-  defaultToNullIfEmpty?: boolean;
-  defaultDescriptor?: BaseGeneratorDescriptor & Record<string, unknown>;
-}
-
 export interface GeneratorTaskBuilder {
-  generatorName: string;
   addTask: <
     ExportMap extends ProviderExportMap | undefined = undefined,
     DependencyMap extends ProviderDependencyMap = Record<never, never>,

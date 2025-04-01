@@ -55,8 +55,8 @@ export const reactGenerator = createGenerator({
       dependencies: {
         nodeSetup: nodeSetupProvider,
       },
-      run: ({ nodeSetup }) => {
-        nodeSetup.isEsm.set(true, taskBuilder.generatorName);
+      run: ({ nodeSetup }, { taskId }) => {
+        nodeSetup.isEsm.set(true, taskId);
         return {};
       },
     });

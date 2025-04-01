@@ -61,14 +61,14 @@ export const fastifyServerGenerator = createGenerator({
       dependencies: {
         rootModuleConfig: rootModuleConfigProvider,
       },
-      run({ rootModuleConfig }) {
+      run({ rootModuleConfig }, { taskId }) {
         rootModuleConfig.moduleFields.set(
           'plugins',
           TypescriptCodeUtils.createExpression(
             '(FastifyPluginCallback | FastifyPluginAsync)',
             "import { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';",
           ),
-          taskBuilder.generatorName,
+          taskId,
         );
       },
     });
