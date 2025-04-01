@@ -12,6 +12,7 @@ import {
 import {
   createGenerator,
   createNonOverwriteableMap,
+  createOutputProviderType,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { mapValues } from 'es-toolkit';
@@ -45,20 +46,23 @@ export interface ServiceContextProvider extends ImportMapper {
 }
 
 export const serviceContextProvider =
-  createProviderType<ServiceContextProvider>('service-context');
+  createOutputProviderType<ServiceContextProvider>('service-context');
 
 export const serviceContextGenerator = createGenerator({
   name: 'core/service-context',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder) {
-    const setupTask = taskBuilder.addTask({
-      name: 'setup',
+    taskBuilder.addTask({
+      name: 'main',
       dependencies: {
         typescript: typescriptProvider,
       },
       exports: {
         serviceContextSetup: serviceContextSetupProvider.export(projectScope),
+      },
+      outputs: {
+        serviceContext: serviceContextProvider.export(projectScope),
       },
       run({ typescript }) {
         const contextFieldsMap = createNonOverwriteableMap<
@@ -172,30 +176,17 @@ export const serviceContextGenerator = createGenerator({
               ),
             );
 
-            return { importMap, contextPath, contextImport };
-          },
-        };
-      },
-    });
-
-    taskBuilder.addTask({
-      name: 'main',
-      taskDependencies: { setupTask },
-      exports: {
-        serviceContext: serviceContextProvider.export(projectScope),
-      },
-      run(deps, { setupTask: { importMap, contextPath, contextImport } }) {
-        return {
-          providers: {
-            serviceContext: {
-              getImportMap: () => importMap,
-              getContextPath: () => contextPath,
-              getServiceContextType: () =>
-                TypescriptCodeUtils.createExpression(
-                  'ServiceContext',
-                  `import {ServiceContext} from '${contextImport}'`,
-                ),
-            },
+            return {
+              serviceContext: {
+                getImportMap: () => importMap,
+                getContextPath: () => contextPath,
+                getServiceContextType: () =>
+                  TypescriptCodeUtils.createExpression(
+                    'ServiceContext',
+                    `import {ServiceContext} from '${contextImport}'`,
+                  ),
+              },
+            };
           },
         };
       },

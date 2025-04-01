@@ -5,10 +5,10 @@ import { KEBAB_CASE_REGEX } from '@src/utils/validation.js';
 import type { ProviderExportScope } from './export-scopes.js';
 
 /**
- * A provider is a dictionary of functions that allow generator tasks
+ * A provider is a dictionary of functions/values that allow generator tasks
  * to communicate with other tasks
  */
-export type Provider = Record<string, (...args: unknown[]) => unknown>;
+export type Provider = Record<string, unknown>;
 
 /**
  * A provider type is a typed tag for a provider so that it can
@@ -31,6 +31,10 @@ export interface ProviderType<P = Provider> {
    */
   readonly isReadOnly?: boolean;
   /**
+   * Whether the provider is used as an output provider (i.e. read-only)
+   */
+  readonly isOutput?: boolean;
+  /**
    * Creates a dependency config for the provider that can be used in dependency maps
    */
   dependency(): ProviderDependency<P>;
@@ -39,6 +43,8 @@ export interface ProviderType<P = Provider> {
    */
   export(scope?: ProviderExportScope, exportName?: string): ProviderExport<P>;
 }
+
+export type InferProviderType<T> = T extends ProviderType<infer P> ? P : never;
 
 export interface ProviderDependencyOptions {
   /**
@@ -49,10 +55,23 @@ export interface ProviderDependencyOptions {
    * The export name of the provider to resolve to (if empty string, forces the dependency to resolve to undefined)
    */
   exportName?: string;
+
+  /**
+   * Whether resolution should skip the current task and look for the provider in the parent task
+   *
+   * This is useful for recursive providers where the same generator might be used as a dependency of itself
+   */
+  useParentScope?: boolean;
+
   /**
    * Whether the provider is read-only or not (i.e. cannot modify any state in the generator task)
    */
   readonly isReadOnly?: boolean;
+  /**
+   * Whether the provider is an output provider (i.e. read-only). Only output providers
+   * can be used in the outputs of a task.
+   */
+  readonly isOutput?: boolean;
 }
 
 /**
@@ -84,6 +103,10 @@ export interface ProviderDependency<P = Provider> {
   optionalReference(
     exportName: string | undefined,
   ): ProviderDependency<P | undefined>;
+  /**
+   * Specifies that the dependency should only be resolved from the parent task
+   */
+  parentScopeOnly(): ProviderDependency<P>;
 }
 
 /**
@@ -92,6 +115,7 @@ export interface ProviderDependency<P = Provider> {
 export interface ProviderExport<P = Provider> {
   readonly type: 'export';
   readonly name: string;
+  readonly isOutput: boolean;
   /**
    * The scope/name pairs that the provider will be available in
    */
@@ -115,6 +139,11 @@ export interface ProviderExport<P = Provider> {
  * Options for a provider type
  */
 interface ProviderTypeOptions {
+  /**
+   * Whether the provider is an output provider (i.e. read-only). Only output providers
+   * can be used in the outputs of a task.
+   */
+  isOutput?: boolean;
   /**
    * Whether the functions in the provider are read-only such that they cannot
    * modify any state in the generator task
@@ -150,7 +179,10 @@ export function createProviderType<T>(
       return {
         ...this,
         type: 'dependency',
-        options: options?.isReadOnly ? { isReadOnly: true } : {},
+        options: {
+          isReadOnly: options?.isReadOnly,
+          isOutput: options?.isOutput,
+        },
         optional() {
           return toMerged(this, { options: { optional: true } });
         },
@@ -171,12 +203,16 @@ export function createProviderType<T>(
             options: { exportName: exportName ?? '', optional: true },
           });
         },
+        parentScopeOnly() {
+          return toMerged(this, { options: { useParentScope: true } });
+        },
       };
     },
     export(scope, exportName) {
       return {
         ...this,
         type: 'export',
+        isOutput: options?.isOutput ?? false,
         exports: [{ scope, exportName }],
         andExport(scope, exportName) {
           return toMerged(this, {
@@ -186,4 +222,18 @@ export function createProviderType<T>(
       };
     },
   };
+}
+
+/**
+ * Creates an output provider type
+ *
+ * @param name The name of the provider type
+ * @param options The options for the provider type
+ * @returns The provider type
+ */
+export function createOutputProviderType<T>(
+  name: string,
+  options?: Omit<ProviderTypeOptions, 'isOutput'>,
+): ProviderType<T> {
+  return createProviderType(name, { ...options, isOutput: true });
 }

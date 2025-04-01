@@ -32,7 +32,7 @@ export const reactRoutesGenerator = createGenerator({
     taskBuilder.addTask({
       name: 'main',
       dependencies: {
-        reactRoutes: reactRoutesProvider.dependency(),
+        reactRoutes: reactRoutesProvider.dependency().parentScopeOnly(),
         typescript: typescriptProvider,
         reactNotFound: reactNotFoundProvider.dependency().optional(),
       },

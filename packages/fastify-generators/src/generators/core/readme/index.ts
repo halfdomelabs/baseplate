@@ -47,7 +47,6 @@ In order to set up the backend, you must do the following steps:
 2. **Run Server**: \`pnpm dev\``;
 
         return {
-          providers: {},
           build: (builder) => {
             builder.writeFile({
               id: 'readme',

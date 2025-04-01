@@ -47,7 +47,10 @@ describe('buildGeneratorEntry', () => {
             test: testProviderType.export(),
           },
           taskDependencies: [],
-          run: () => ({}),
+          run: () => ({
+            providers: { test: {} },
+            build: () => ({}),
+          }),
         },
       ],
     });
@@ -93,7 +96,10 @@ describe('buildGeneratorEntry', () => {
         {
           name: 'child-task',
           taskDependencies: [],
-          run: () => ({}),
+          run: () => ({
+            providers: {},
+            build: () => ({}),
+          }),
         },
       ],
     };
@@ -147,39 +153,6 @@ describe('buildGeneratorEntry', () => {
         },
       ],
     });
-  });
-
-  it('supports task dependencies', async () => {
-    // Set up test package.json
-    const testFs = {
-      '/test/package.json': JSON.stringify({
-        name: 'test-package',
-      }),
-    };
-    vol.fromJSON(testFs, '/');
-
-    const bundle = {
-      name: 'test-generator',
-      directory: '/test',
-      scopes: [],
-      children: {},
-      tasks: [
-        {
-          name: 'task1',
-          taskDependencies: [],
-          run: () => ({}),
-        },
-        {
-          name: 'task2',
-          taskDependencies: ['task1'],
-          run: () => ({}),
-        },
-      ],
-    };
-
-    const entry = await buildGeneratorEntry(bundle, { logger });
-
-    expect(entry.tasks[1].dependentTaskIds).toEqual(['root#task1']);
   });
 
   it('preserves scopes from bundle', async () => {

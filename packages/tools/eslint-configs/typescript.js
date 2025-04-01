@@ -213,6 +213,11 @@ export function generateTypescriptEslintConfig(options = []) {
       files: ['**/*.test.{ts,js,tsx,jsx}', 'tests/**'],
       plugins: { vitest },
       rules: vitest.configs.recommended.rules,
+      settings: {
+        vitest: {
+          typecheck: true,
+        },
+      },
     },
 
     // Global Ignores

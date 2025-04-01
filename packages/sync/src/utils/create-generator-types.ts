@@ -45,13 +45,22 @@ export interface SimpleGeneratorTaskOutput<TaskOutput = void> {
 }
 
 interface SimpleGeneratorTaskInstance<
-  ExportMap extends Record<string, unknown> = Record<string, Provider>,
+  ExportMap extends Record<string, Provider> | undefined = Record<
+    string,
+    Provider
+  >,
+  OutputMap extends Record<string, Provider> | undefined =
+    | Record<string, Provider>
+    | undefined,
   TaskOutput = unknown,
 > {
   providers?: ExportMap;
   build?: (
     builder: GeneratorTaskOutputBuilder,
-  ) => Promise<TaskOutput> | TaskOutput;
+    addTaskOutput: (output: TaskOutput) => void,
+  ) => OutputMap extends undefined
+    ? void | Promise<void>
+    : Promise<OutputMap> | OutputMap;
 }
 
 export type TaskOutputDependencyMap<T = Record<string, unknown>> = {
@@ -62,33 +71,45 @@ export type InferTaskOutputDependencyMap<T> =
   T extends TaskOutputDependencyMap<infer P> ? P : never;
 
 export interface SimpleGeneratorTaskConfig<
-  ExportMap extends ProviderExportMap = Record<string, never>,
-  DependencyMap extends ProviderDependencyMap = Record<string, never>,
-  TaskDependencyMap extends TaskOutputDependencyMap = Record<string, never>,
+  ExportMap extends ProviderExportMap | undefined =
+    | ProviderExportMap
+    | undefined,
+  DependencyMap extends ProviderDependencyMap = ProviderDependencyMap,
+  OutputMap extends ProviderExportMap | undefined =
+    | ProviderExportMap
+    | undefined,
+  TaskDependencyMap extends TaskOutputDependencyMap = TaskOutputDependencyMap,
   TaskOutput = unknown,
 > {
   name: string;
   exports?: ExportMap;
   dependencies?: DependencyMap;
+  outputs?: OutputMap;
   taskDependencies?: TaskDependencyMap;
   run: (
     dependencies: InferDependencyProviderMap<DependencyMap>,
     taskDependencies: InferTaskOutputDependencyMap<TaskDependencyMap>,
-  ) => ExportMap extends Record<string, never>
+  ) => {
+    exports: ExportMap;
+    outputs: OutputMap;
+  } extends { exports: undefined; outputs: undefined }
     ? // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- we want to allow empty returns for tasks that don't need to return anything
       void | SimpleGeneratorTaskInstance<
         InferExportProviderMap<ExportMap>,
+        InferExportProviderMap<OutputMap>,
         TaskOutput
       >
     : SimpleGeneratorTaskInstance<
         InferExportProviderMap<ExportMap>,
+        InferExportProviderMap<OutputMap>,
         TaskOutput
       >;
 }
 
 type TaskConfigBuilder<
-  ExportMap extends ProviderExportMap,
+  ExportMap extends ProviderExportMap | undefined,
   DependencyMap extends ProviderDependencyMap,
+  OutputMap extends ProviderExportMap | undefined,
   TaskDependencyMap extends TaskOutputDependencyMap,
   TaskOutput = unknown,
   Input = never,
@@ -98,6 +119,7 @@ type TaskConfigBuilder<
 ) => SimpleGeneratorTaskConfig<
   ExportMap,
   DependencyMap,
+  OutputMap,
   TaskDependencyMap,
   TaskOutput
 >;
@@ -106,6 +128,7 @@ export type ExtractTaskOutputFromBuilder<T> =
   T extends TaskConfigBuilder<
     ProviderExportMap,
     ProviderDependencyMap,
+    ProviderExportMap,
     TaskOutputDependencyMap,
     infer TaskOutput
   >
@@ -116,6 +139,7 @@ type TaskBuilderMap<T> = {
   [key in keyof T]: TaskConfigBuilder<
     ProviderExportMap,
     ProviderDependencyMap,
+    ProviderExportMap,
     TaskOutputDependencyMap,
     T[key]
   >;
@@ -127,15 +151,17 @@ export type InferTaskBuilderMap<T> =
     : never;
 
 export function createTaskConfigBuilder<
-  ExportMap extends ProviderExportMap,
-  DependencyMap extends ProviderDependencyMap,
-  TaskDependencyMap extends TaskOutputDependencyMap,
+  ExportMap extends ProviderExportMap | undefined = undefined,
+  DependencyMap extends ProviderDependencyMap = Record<never, never>,
+  OutputMap extends ProviderExportMap | undefined = undefined,
+  TaskDependencyMap extends TaskOutputDependencyMap = Record<string, never>,
   TaskOutput = unknown,
   Input = unknown,
 >(
   builder: TaskConfigBuilder<
     ExportMap,
     DependencyMap,
+    OutputMap,
     TaskDependencyMap,
     TaskOutput,
     Input
@@ -146,6 +172,7 @@ export function createTaskConfigBuilder<
 ) => SimpleGeneratorTaskConfig<
   ExportMap,
   DependencyMap,
+  OutputMap,
   TaskDependencyMap,
   TaskOutput
 > {
@@ -153,9 +180,11 @@ export function createTaskConfigBuilder<
 }
 
 export interface GeneratorTaskBuilder<Descriptor = unknown> {
+  generatorName: string;
   addTask: <
-    ExportMap extends ProviderExportMap = Record<string, never>,
-    DependencyMap extends ProviderDependencyMap = Record<string, never>,
+    ExportMap extends ProviderExportMap | undefined = undefined,
+    DependencyMap extends ProviderDependencyMap = Record<never, never>,
+    OutputMap extends ProviderExportMap | undefined = undefined,
     TaskDependencyMap extends TaskOutputDependencyMap = Record<string, never>,
     TaskOutput = unknown,
   >(
@@ -163,6 +192,7 @@ export interface GeneratorTaskBuilder<Descriptor = unknown> {
       | SimpleGeneratorTaskConfig<
           ExportMap,
           DependencyMap,
+          OutputMap,
           TaskDependencyMap,
           TaskOutput
         >
@@ -171,6 +201,7 @@ export interface GeneratorTaskBuilder<Descriptor = unknown> {
         ) => SimpleGeneratorTaskConfig<
           ExportMap,
           DependencyMap,
+          OutputMap,
           TaskDependencyMap,
           TaskOutput
         >),

@@ -1,5 +1,8 @@
 import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+import type {
+  FieldMapValues,
+  InferFieldMapSchemaFromBuilder,
+} from '@halfdomelabs/utils';
 
 import {
   makeImportAndFilePath,
@@ -11,9 +14,13 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
-  createNonOverwriteableMap,
+  createOutputProviderType,
   createProviderType,
 } from '@halfdomelabs/sync';
+import {
+  createFieldMap,
+  createFieldMapSchemaBuilder,
+} from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/index.js';
@@ -36,17 +43,38 @@ export interface YogaPluginConfig {
   customImports: TypescriptCodeBlock[];
 }
 
-export interface YogaPluginSetupProvider {
-  getConfig(): NonOverwriteableMap<YogaPluginConfig>;
+const schemaBuilder = createFieldMapSchemaBuilder((t) => ({
+  envelopPlugins: t.array<TypescriptCodeExpression>([
+    TypescriptCodeUtils.createExpression('useGraphLogger()', [
+      "import { useGraphLogger } from './useGraphLogger.js'",
+    ]),
+    TypescriptCodeUtils.createExpression(
+      'useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT })',
+      "import { useDisableIntrospection } from '@envelop/disable-introspection';",
+    ),
+  ]),
+  postSchemaBlocks: t.array<TypescriptCodeBlock>(),
+  schema: t.scalar<TypescriptCodeExpression>(
+    new TypescriptCodeExpression(
+      `new GraphQLSchema({})`,
+      `import { GraphQLSchema } from 'graphql';`,
+    ),
+  ),
+  customImports: t.array<TypescriptCodeBlock>(),
+}));
+
+export interface YogaPluginConfigProvider
+  extends InferFieldMapSchemaFromBuilder<typeof schemaBuilder> {
   isSubscriptionEnabled(): boolean;
 }
+
+export const yogaPluginConfigProvider =
+  createProviderType<YogaPluginConfigProvider>('yoga-plugin-config');
+
 export const yogaPluginSetupProvider =
-  createProviderType<YogaPluginSetupProvider>('yoga-plugin-setup');
-
-export type YogaPluginProvider = unknown;
-
-export const yogaPluginProvider =
-  createProviderType<YogaPluginProvider>('yoga-plugin');
+  createOutputProviderType<
+    FieldMapValues<InferFieldMapSchemaFromBuilder<typeof schemaBuilder>>
+  >(`yoga-plugin-setup`);
 
 export const yogaPluginGenerator = createGenerator({
   name: 'yoga/yoga-plugin',
@@ -54,50 +82,28 @@ export const yogaPluginGenerator = createGenerator({
   descriptorSchema,
   buildTasks(taskBuilder, { enableSubscriptions }) {
     // Setup Task
-    const setupTask = taskBuilder.addTask({
+    taskBuilder.addTask({
       name: 'setup',
-      dependencies: {},
       exports: {
-        yogaPluginSetup: yogaPluginSetupProvider.export(projectScope),
+        yogaPluginConfig: yogaPluginConfigProvider.export(projectScope),
+      },
+      outputs: {
+        yogaPluginSetup: yogaPluginSetupProvider.export(),
       },
       run() {
-        const configMap = createNonOverwriteableMap<YogaPluginConfig>(
-          {
-            envelopPlugins: [],
-            postSchemaBlocks: [],
-            customImports: [],
-            schema: new TypescriptCodeExpression(
-              `new GraphQLSchema({})`,
-              `import { GraphQLSchema } from 'graphql';`,
-            ),
-          },
-          {
-            defaultsOverwriteable: true,
-          },
-        );
+        const configMap = createFieldMap(schemaBuilder);
 
         return {
           providers: {
-            yogaPluginSetup: {
-              getConfig: () => configMap,
+            yogaPluginConfig: {
+              ...configMap,
               isSubscriptionEnabled: () => !!enableSubscriptions,
             },
           },
           build() {
-            configMap.prepend(
-              'envelopPlugins',
-              new TypescriptCodeExpression(
-                'useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT })',
-                "import { useDisableIntrospection } from '@envelop/disable-introspection';",
-              ),
-            );
-            configMap.prepend(
-              'envelopPlugins',
-              TypescriptCodeUtils.createExpression('useGraphLogger()', [
-                "import { useGraphLogger } from './useGraphLogger.js'",
-              ]),
-            );
-            return { configMap };
+            return {
+              yogaPluginSetup: configMap.getValues(),
+            };
           },
         };
       },
@@ -122,7 +128,6 @@ export const yogaPluginGenerator = createGenerator({
 
     taskBuilder.addTask({
       name: 'main',
-      taskDependencies: { setupTask },
       dependencies: {
         node: nodeProvider,
         typescript: typescriptProvider,
@@ -130,21 +135,17 @@ export const yogaPluginGenerator = createGenerator({
         errorHandlerService: errorHandlerServiceProvider,
         requestServiceContext: requestServiceContextProvider,
         loggerService: loggerServiceProvider,
+        yogaPluginSetup: yogaPluginSetupProvider,
       },
-      exports: {
-        yogaPlugin: yogaPluginProvider.export(projectScope),
-      },
-      run(
-        {
-          node,
-          typescript,
-          configService,
-          requestServiceContext,
-          loggerService,
-          errorHandlerService,
-        },
-        { setupTask: { configMap } },
-      ) {
+      run({
+        node,
+        typescript,
+        configService,
+        requestServiceContext,
+        loggerService,
+        errorHandlerService,
+        yogaPluginSetup: config,
+      }) {
         node.addPackages({
           'altair-fastify-plugin': FASTIFY_PACKAGES['altair-fastify-plugin'],
           graphql: FASTIFY_PACKAGES.graphql,
@@ -161,12 +162,7 @@ export const yogaPluginGenerator = createGenerator({
         });
 
         return {
-          providers: {
-            yogaPlugin: { getConfig: () => configMap },
-          },
           async build(builder) {
-            const config = configMap.value();
-
             const pluginFile = typescript.createTemplate(
               {
                 SCHEMA: { type: 'code-expression' },

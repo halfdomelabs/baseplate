@@ -17,7 +17,7 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { authContextProvider } from '@src/generators/auth/auth-context/index.js';
 import { authRolesProvider } from '@src/generators/auth/auth-roles/index.js';
-import { authSetupProvider } from '@src/generators/auth/auth/index.js';
+import { authConfigProvider } from '@src/generators/auth/auth/index.js';
 import { userSessionServiceProvider } from '@src/generators/auth/index.js';
 import { userSessionTypesProvider } from '@src/generators/auth/user-session-types/index.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
@@ -48,7 +48,7 @@ const createMainTask = createTaskConfigBuilder(
       appModule: appModuleProvider,
       configService: configServiceProvider,
       prismaOutput: prismaOutputProvider,
-      authSetup: authSetupProvider,
+      authConfig: authConfigProvider,
       userSessionTypes: userSessionTypesProvider,
       authContext: authContextProvider,
     },
@@ -63,7 +63,7 @@ const createMainTask = createTaskConfigBuilder(
       prismaOutput,
       configService,
       appModule,
-      authSetup,
+      authConfig,
       userSessionTypes,
       authContext,
     }) {
@@ -96,10 +96,13 @@ const createMainTask = createTaskConfigBuilder(
         `${appModule.getModuleFolder()}/services/management.ts`,
       );
 
-      authSetup.getConfig().set('userSessionServiceImport', {
-        path: userSessionServiceImport,
-        allowedImports: ['userSessionService'],
-      });
+      authConfig.userSessionServiceImport.set(
+        {
+          path: userSessionServiceImport,
+          allowedImports: ['userSessionService'],
+        },
+        'auth0/auth0-module',
+      );
 
       if (includeManagement) {
         configService.getConfigEntries().set('AUTH0_TENANT_DOMAIN', {

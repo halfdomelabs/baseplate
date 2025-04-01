@@ -12,7 +12,7 @@ import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
-import { authSetupProvider } from '../auth/index.js';
+import { authConfigProvider } from '../auth/index.js';
 
 const descriptorSchema = z.object({
   // Note: Public and user roles are automatically added
@@ -44,12 +44,12 @@ export const authRolesGenerator = createGenerator({
       dependencies: {
         typescript: typescriptProvider,
         appModule: appModuleProvider,
-        authSetup: authSetupProvider,
+        authConfig: authConfigProvider,
       },
       exports: {
         authRoles: authRolesProvider.export(projectScope),
       },
-      run({ typescript, appModule, authSetup }) {
+      run({ typescript, appModule, authConfig }) {
         if (
           !['public', 'user', 'system'].every((name) =>
             roles.some((r) => r.name === name),
@@ -75,7 +75,7 @@ export const authRolesGenerator = createGenerator({
           ],
         };
 
-        authSetup.getConfig().set('authRolesImport', authRolesImport);
+        authConfig.authRolesImport.set(authRolesImport, 'auth/auth-roles');
 
         return {
           providers: {

@@ -117,7 +117,9 @@ describe('createGenerator', () => {
         const task1 = taskBuilder.addTask({
           name: 'task1',
           run: () => ({
-            build: () => 'task1-output',
+            build: (_, addTaskOutput: (output: string) => void) => {
+              addTaskOutput('task1-output');
+            },
           }),
         });
 

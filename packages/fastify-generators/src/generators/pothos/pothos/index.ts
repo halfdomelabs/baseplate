@@ -18,6 +18,7 @@ import {
 import {
   createGenerator,
   createNonOverwriteableMap,
+  createOutputProviderType,
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@halfdomelabs/sync';
@@ -27,7 +28,7 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context/index.js';
 import { rootModuleImportProvider } from '@src/generators/core/root-module/index.js';
-import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin/index.js';
+import { yogaPluginConfigProvider } from '@src/generators/yoga/yoga-plugin/index.js';
 import { PothosTypeReferenceContainer } from '@src/writers/pothos/index.js';
 
 const descriptorSchema = z.object({});
@@ -47,6 +48,12 @@ export interface PothosSetupProvider extends ImportMapper {
 export const pothosSetupProvider =
   createProviderType<PothosSetupProvider>('pothos-setup');
 
+const pothosSetupOutputProvider = createOutputProviderType<{
+  config: NonOverwriteableMap<PothosGeneratorConfig>;
+  schemaFiles: string[];
+  pothosTypes: PothosTypeReferenceContainer;
+}>('pothos-setup-output');
+
 export interface PothosSchemaProvider extends ImportMapper {
   registerSchemaFile: (filePath: string) => void;
   getTypeReferences: () => PothosTypeReferenceContainer;
@@ -54,6 +61,10 @@ export interface PothosSchemaProvider extends ImportMapper {
 
 export const pothosSchemaProvider =
   createProviderType<PothosSchemaProvider>('pothos-schema');
+
+const pothosSchemaOutputProvider = createOutputProviderType<{
+  schemaFiles: string[];
+}>('pothos-schema-output');
 
 export type PothosProvider = unknown;
 
@@ -64,12 +75,13 @@ export const pothosGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder) {
-    const setupTask = taskBuilder.addTask({
+    taskBuilder.addTask({
       name: 'setup',
       dependencies: {},
       exports: {
         pothosSetup: pothosSetupProvider.export(projectScope),
       },
+      outputs: { pothosSetupOutput: pothosSetupOutputProvider.export() },
       run() {
         const config = createNonOverwriteableMap<PothosGeneratorConfig>({
           pothosPlugins: [],
@@ -99,19 +111,23 @@ export const pothosGenerator = createGenerator({
               getTypeReferences: () => pothosTypes,
             },
           },
-          build: () => ({ config, schemaFiles, pothosTypes }),
+          build: () => ({
+            pothosSetupOutput: { config, schemaFiles, pothosTypes },
+          }),
         };
       },
     });
 
-    const schemaTask = taskBuilder.addTask({
+    taskBuilder.addTask({
       name: 'schema',
-      dependencies: {},
+      dependencies: {
+        pothosSetupOutput: pothosSetupOutputProvider,
+      },
       exports: {
         pothosSchema: pothosSchemaProvider.export(projectScope),
       },
-      taskDependencies: { setupTask },
-      run(deps, { setupTask: { schemaFiles, pothosTypes } }) {
+      outputs: { pothosSchemaOutput: pothosSchemaOutputProvider.export() },
+      run({ pothosSetupOutput: { schemaFiles, pothosTypes } }) {
         return {
           providers: {
             pothosSchema: {
@@ -129,7 +145,9 @@ export const pothosGenerator = createGenerator({
               },
             },
           },
-          build: () => ({ schemaFiles }),
+          build: () => ({
+            pothosSchemaOutput: { schemaFiles },
+          }),
         };
       },
     });
@@ -143,28 +161,25 @@ export const pothosGenerator = createGenerator({
         requestServiceContext: requestServiceContextProvider,
         prettier: prettierProvider,
         rootModuleImport: rootModuleImportProvider,
-        yogaPluginSetup: yogaPluginSetupProvider,
+        yogaPluginConfig: yogaPluginConfigProvider,
         tsUtils: tsUtilsProvider,
+        pothosSetupOutput: pothosSetupOutputProvider,
+        pothosSchemaOutput: pothosSchemaOutputProvider,
       },
-      taskDependencies: { setupTask, schemaTask },
       exports: {
         pothos: pothosProvider.export(projectScope),
       },
-      run(
-        {
-          node,
-          typescript,
-          requestServiceContext,
-          prettier,
-          rootModuleImport,
-          yogaPluginSetup,
-          tsUtils,
-        },
-        {
-          setupTask: { config: configMap, pothosTypes },
-          schemaTask: { schemaFiles },
-        },
-      ) {
+      run({
+        node,
+        typescript,
+        requestServiceContext,
+        prettier,
+        rootModuleImport,
+        yogaPluginConfig,
+        tsUtils,
+        pothosSetupOutput: { config: configMap, pothosTypes },
+        pothosSchemaOutput: { schemaFiles },
+      }) {
         node.addPackages({
           '@pothos/core': FASTIFY_PACKAGES['@pothos/core'],
           '@pothos/plugin-simple-objects':
@@ -260,7 +275,7 @@ export const pothosGenerator = createGenerator({
               SCHEMA_TYPE_OPTIONS: schemaTypeOptions,
               SCHEMA_BUILDER_OPTIONS: schemaOptions,
               'SUBSCRIPTION_TYPE;': new TypescriptStringReplacement(
-                yogaPluginSetup.isSubscriptionEnabled()
+                yogaPluginConfig.isSubscriptionEnabled()
                   ? `builder.subscriptionType();`
                   : '',
               ),
@@ -278,11 +293,9 @@ export const pothosGenerator = createGenerator({
               { importMappers: [rootModuleImport] },
             );
 
-            const yogaConfig = yogaPluginSetup.getConfig();
+            yogaPluginConfig.schema.set(schemaExpression, 'pothos/pothos');
 
-            yogaConfig.set('schema', schemaExpression);
-
-            yogaConfig.appendUnique('postSchemaBlocks', [
+            yogaPluginConfig.postSchemaBlocks.push(
               TypescriptCodeUtils.createBlock(
                 `
 async function writeSchemaToFile(): Promise<void> {
@@ -308,7 +321,7 @@ if (IS_DEVELOPMENT) {
                   `import fs from 'fs/promises';`,
                 ],
               ),
-            ]);
+            );
 
             await builder.apply(
               typescript.createCopyFilesAction({

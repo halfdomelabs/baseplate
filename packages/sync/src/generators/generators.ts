@@ -43,48 +43,89 @@ export type ProviderDependencyMap<T = Record<string, Provider>> = {
 /**
  * Infer the map of the initialized providers from the provider export map
  */
-export type InferExportProviderMap<T> =
-  T extends ProviderExportMap<infer P> ? P : never;
+export type InferExportProviderMap<T> = T extends undefined
+  ? undefined
+  : T extends ProviderExportMap<infer P>
+    ? P
+    : never;
 
 /**
  * Infer the map of the initialized providers from the provider dependency map
  */
-export type InferDependencyProviderMap<T> =
-  T extends ProviderDependencyMap<infer P> ? P : never;
+export type InferDependencyProviderMap<T> = T extends undefined
+  ? undefined
+  : T extends ProviderDependencyMap<infer P>
+    ? P
+    : never;
 
-/**
- * The result of a generator task without any exported providers
- */
-export interface GeneratorTaskResultWithNoExports {
+interface GeneratorTaskResultProviders<
+  ExportMap extends Record<string, Provider> | undefined =
+    | Record<string, Provider>
+    | undefined,
+> {
+  /**
+   * The providers that are exported by this generator task
+   */
+  providers: ExportMap;
+}
+
+interface GeneratorTaskResultBuildersWithOutputs<
+  OutputMap extends Record<string, Provider> | undefined =
+    | Record<string, Provider>
+    | undefined,
+> {
+  /**
+   * The function to build the output for the generator task
+   */
+  build: (
+    builder: GeneratorTaskOutputBuilder,
+  ) => Promise<OutputMap> | OutputMap;
+}
+
+interface GeneratorTaskResultBuildersWithNoOutputs {
   /**
    * The function to build the output for the generator task
    */
   build?: (builder: GeneratorTaskOutputBuilder) => Promise<void> | void;
 }
+
+type IsEmpty<T> = T extends undefined
+  ? true
+  : keyof T extends never
+    ? true
+    : false;
 
 /**
  * The result of a generator task with exported providers
  */
-export interface GeneratorTaskResult<
-  ExportMap extends Record<string, unknown> = Record<string, Provider>,
-> extends GeneratorTaskResultWithNoExports {
-  /**
-   * The providers that are exported by this generator task
-   */
-  providers?: ExportMap;
-  /**
-   * The function to build the output for the generator task
-   */
-  build?: (builder: GeneratorTaskOutputBuilder) => Promise<void> | void;
-}
+export type GeneratorTaskResult<
+  ExportMap extends Record<string, Provider> | undefined =
+    | Record<string, Provider>
+    | undefined,
+  OutputMap extends Record<string, Provider> | undefined =
+    | Record<string, Provider>
+    | undefined,
+> = (IsEmpty<ExportMap> extends true
+  ? Record<never, never>
+  : GeneratorTaskResultProviders<ExportMap>) &
+  (OutputMap extends true
+    ? GeneratorTaskResultBuildersWithNoOutputs
+    : IsEmpty<OutputMap> extends true
+      ? GeneratorTaskResultBuildersWithNoOutputs
+      : GeneratorTaskResultBuildersWithOutputs<OutputMap>);
 
 /**
  * A generator task that has been initialized by the generator config with
  * the descriptor of the generator.
  */
 export interface GeneratorTask<
-  ExportMap extends ProviderExportMap = ProviderExportMap,
+  ExportMap extends ProviderExportMap | undefined =
+    | ProviderExportMap
+    | undefined,
   DependencyMap extends ProviderDependencyMap = ProviderDependencyMap,
+  OutputMap extends ProviderExportMap | undefined =
+    | ProviderExportMap
+    | undefined,
 > {
   /**
    * The name of the generator task (must be unique within the generator)
@@ -94,6 +135,10 @@ export interface GeneratorTask<
    * The providers that are exported by this generator task
    */
   exports?: ExportMap;
+  /**
+   * The providers that are outputs from this generator task
+   */
+  outputs?: OutputMap;
   /**
    * The providers that are required by this generator task
    */
@@ -109,9 +154,10 @@ export interface GeneratorTask<
    */
   run: (
     dependencies: InferDependencyProviderMap<DependencyMap>,
-  ) => keyof ExportMap extends never
-    ? GeneratorTaskResultWithNoExports
-    : GeneratorTaskResult<InferExportProviderMap<ExportMap>>;
+  ) => GeneratorTaskResult<
+    InferExportProviderMap<ExportMap>,
+    InferExportProviderMap<OutputMap>
+  >;
 }
 
 export type ChildDescriptorOrReference = BaseGeneratorDescriptor | string;

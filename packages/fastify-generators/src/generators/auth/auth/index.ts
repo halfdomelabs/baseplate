@@ -1,5 +1,3 @@
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
-
 import {
   type ImportEntry,
   type ImportMapper,
@@ -7,30 +5,30 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
-  createNonOverwriteableMap,
   createProviderType,
+  createSetupTask,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});
 
-export interface AuthGeneratorConfig {
-  userModelName?: string;
-  authRolesImport?: ImportEntry;
-  userSessionServiceImport?: ImportEntry;
-  contextUtilsImport?: ImportEntry;
-}
+const [setupTask, authConfigProvider, authSetupProvider] = createSetupTask(
+  (t) => ({
+    userModelName: t.scalar<string>(),
+    authRolesImport: t.scalar<ImportEntry>(),
+    userSessionServiceImport: t.scalar<ImportEntry>(),
+    contextUtilsImport: t.scalar<ImportEntry>(),
+  }),
+  {
+    prefix: 'auth',
+    configScope: projectScope,
+    outputScope: projectScope,
+  },
+);
 
-export interface AuthSetupProvider {
-  getConfig(): NonOverwriteableMap<AuthGeneratorConfig>;
-}
+export { authConfigProvider, authSetupProvider };
 
-export const authSetupProvider =
-  createProviderType<AuthSetupProvider>('auth-setup');
-
-export interface AuthProvider extends ImportMapper {
-  getConfig(): AuthGeneratorConfig;
-}
+export type AuthProvider = ImportMapper;
 
 export const authProvider = createProviderType<AuthProvider>('auth', {
   isReadOnly: true,
@@ -41,45 +39,32 @@ export const authGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder) {
-    const setupTask = taskBuilder.addTask({
-      name: 'setup',
-      exports: {
-        authSetup: authSetupProvider.export(projectScope),
-      },
-      run() {
-        const config = createNonOverwriteableMap<AuthGeneratorConfig>(
-          {},
-          { name: 'auth-config' },
-        );
-        return {
-          providers: {
-            authSetup: {
-              getConfig: () => config,
-            },
-          },
-          build: () => ({ config }),
-        };
-      },
-    });
+    taskBuilder.addTask(setupTask);
 
     taskBuilder.addTask({
       name: 'main',
+      dependencies: { authSetup: authSetupProvider },
       exports: {
         auth: authProvider.export(projectScope),
       },
-      taskDependencies: { setupTask },
-      run(deps, { setupTask: { config } }) {
-        if (!config.value().authRolesImport) {
+      run({
+        authSetup: {
+          authRolesImport,
+          userSessionServiceImport,
+          contextUtilsImport,
+        },
+      }) {
+        if (!authRolesImport) {
           throw new Error(
             'authRolesImport is required for auth module to work',
           );
         }
-        if (!config.value().userSessionServiceImport) {
+        if (!userSessionServiceImport) {
           throw new Error(
             'userSessionServiceImport is required for auth module to work',
           );
         }
-        if (!config.value().contextUtilsImport) {
+        if (!contextUtilsImport) {
           throw new Error(
             'contextUtilsImport is required for auth module to work',
           );
@@ -87,14 +72,11 @@ export const authGenerator = createGenerator({
         return {
           providers: {
             auth: {
-              getConfig: () => config.value(),
               getImportMap() {
-                const settings = config.value();
                 return {
-                  '%auth/auth-roles': settings.authRolesImport,
-                  '%auth/user-session-service':
-                    settings.userSessionServiceImport,
-                  '%auth/context-utils': settings.contextUtilsImport,
+                  '%auth/auth-roles': authRolesImport,
+                  '%auth/user-session-service': userSessionServiceImport,
+                  '%auth/context-utils': contextUtilsImport,
                 };
               },
             },

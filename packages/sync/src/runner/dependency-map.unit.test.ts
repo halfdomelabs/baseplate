@@ -7,12 +7,18 @@ import {
   createProviderType,
 } from '../providers/index.js';
 import { resolveTaskDependencies } from './dependency-map.js';
-import { buildTestGeneratorEntry } from './tests/factories.test-helper.js';
+import {
+  buildTestGeneratorEntry,
+  buildTestGeneratorTaskEntry,
+} from './tests/factories.test-helper.js';
 
 const providerOne = createProviderType('provider-one');
 const providerTwo = createProviderType('provider-two');
 const readOnlyProvider = createProviderType('read-only-provider', {
   isReadOnly: true,
+});
+const outputOnlyProvider = createProviderType('output-only-provider', {
+  isOutput: true,
 });
 const testLogger = createEventedLogger({ noConsole: true });
 
@@ -358,6 +364,52 @@ describe('resolveTaskDependencies', () => {
     );
   });
 
+  it('should handle recursive dependencies', () => {
+    // Arrange
+    const rootEntry = buildTestGeneratorEntry(
+      { id: 'root' },
+      {
+        exports: {
+          exportOne: providerOne.export(),
+        },
+      },
+    );
+
+    const middleEntry = buildTestGeneratorEntry(
+      { id: 'middle' },
+      {
+        dependencies: { dep: providerOne.dependency().parentScopeOnly() },
+        exports: {
+          exportOne: providerOne.export(),
+        },
+      },
+    );
+
+    const leafEntry = buildTestGeneratorEntry(
+      { id: 'leaf' },
+      {
+        dependencies: { dep: providerOne.dependency() },
+      },
+    );
+
+    middleEntry.children.push(leafEntry);
+    rootEntry.children.push(middleEntry);
+
+    // Act
+    const dependencyMap = resolveTaskDependencies(rootEntry, testLogger);
+
+    // Assert
+    expect(dependencyMap).toEqual({
+      'root#main': {},
+      'middle#main': {
+        dep: { id: 'root#main', options: {} },
+      },
+      'leaf#main': {
+        dep: { id: 'middle#main', options: {} },
+      },
+    });
+  });
+
   it('should handle nested scope inheritance', () => {
     // Arrange
     const rootEntry = buildTestGeneratorEntry(
@@ -407,5 +459,115 @@ describe('resolveTaskDependencies', () => {
         dep: { id: 'middle#main', options: {} },
       },
     });
+  });
+
+  it('should handle output-only providers correctly', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry(
+      {
+        id: 'root',
+        scopes: [defaultScope],
+      },
+      {
+        outputs: {
+          outputProvider: outputOnlyProvider.export(defaultScope),
+        },
+      },
+    );
+
+    const childEntry = buildTestGeneratorEntry(
+      {
+        id: 'child',
+        scopes: [defaultScope],
+      },
+      {
+        dependencies: { dep: outputOnlyProvider.dependency() },
+      },
+    );
+
+    entry.children.push(childEntry);
+
+    // Act
+    const dependencyMap = resolveTaskDependencies(entry, testLogger);
+
+    // Assert
+    expect(dependencyMap).toEqual({
+      'root#main': {},
+      'child#main': {
+        dep: { id: 'root#main', options: { isOutput: true } },
+      },
+    });
+  });
+
+  it('should resolve dependencies between tasks in the same generator entry', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#producer',
+          outputs: {
+            outputProvider: outputOnlyProvider.export(),
+          },
+        }),
+        buildTestGeneratorTaskEntry({
+          id: 'root#consumer',
+          dependencies: { dep: outputOnlyProvider.dependency() },
+          exports: {},
+          outputs: {},
+        }),
+      ],
+    });
+    // Act
+    const dependencyMap = resolveTaskDependencies(entry, testLogger);
+
+    // Assert
+    expect(dependencyMap).toEqual({
+      'root#producer': {},
+      'root#consumer': {
+        dep: { id: 'root#producer', options: { isOutput: true } },
+      },
+    });
+  });
+
+  it('should throw error when non-output provider is used in task outputs', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry(
+      {
+        id: 'root',
+        scopes: [defaultScope],
+      },
+      {
+        outputs: {
+          // Using a regular provider in outputs should throw
+          invalidOutput: providerOne.export(defaultScope),
+        },
+      },
+    );
+
+    // Act & Assert
+    expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
+      /All providers in task outputs must be output providers/,
+    );
+  });
+
+  it('should throw error when non-output provider is used in task exports', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry(
+      {
+        id: 'root',
+        scopes: [defaultScope],
+      },
+      {
+        exports: {
+          invalidExport: outputOnlyProvider.export(defaultScope),
+        },
+      },
+    );
+
+    // Act & Assert
+    expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
+      /All providers in task exports must be non-output providers/,
+    );
   });
 });

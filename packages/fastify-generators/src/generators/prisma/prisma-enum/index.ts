@@ -24,11 +24,7 @@ export const prismaEnumGenerator = createGenerator({
           values: values.map((v) => ({ name: v.name })),
         });
 
-        return {
-          providers: {
-            prismaEnum: {},
-          },
-        };
+        return {};
       },
     });
   },

@@ -184,7 +184,6 @@ export const prismaCrudUpdateGenerator = createGenerator({
           ) ?? [];
 
         return {
-          providers: {},
           build: () => {
             const model = prismaOutput.getPrismaModel(modelName);
             const primaryKey = getPrimaryKeyExpressions(model);

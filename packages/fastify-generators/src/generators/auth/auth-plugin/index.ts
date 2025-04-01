@@ -57,9 +57,6 @@ export const authPluginGenerator = createGenerator({
         );
 
         return {
-          providers: {
-            authPlugin: {},
-          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({
