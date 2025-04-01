@@ -4,11 +4,7 @@ import {
   projectScope,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createProviderType,
-  createTaskConfigBuilder,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactRouterProvider } from '@src/generators/core/react-router/index.js';
@@ -24,31 +20,36 @@ export interface AuthIdentifyProvider {
 export const authIdentifyProvider =
   createProviderType<AuthIdentifyProvider>('auth-identify');
 
-const createMainTask = createTaskConfigBuilder(() => ({
-  name: 'main',
-  dependencies: {
-    reactRouter: reactRouterProvider,
-    authHooks: authHooksProvider,
-  },
-  exports: {
-    authIdentify: authIdentifyProvider.export(projectScope),
-  },
-  run({ reactRouter, authHooks }) {
-    const blocks: TypescriptCodeBlock[] = [];
-    return {
-      providers: {
-        authIdentify: {
-          addBlock(block) {
-            blocks.push(block);
-          },
-        },
+export const authIdentifyGenerator = createGenerator({
+  name: 'auth/auth-identify',
+  generatorFileUrl: import.meta.url,
+  descriptorSchema,
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        reactRouter: reactRouterProvider,
+        authHooks: authHooksProvider,
       },
-      build: () => {
-        if (blocks.length > 0) {
-          reactRouter.addRouteHeader(
-            TypescriptCodeUtils.mergeBlocks(blocks)
-              .wrap(
-                (contents) => `
+      exports: {
+        authIdentify: authIdentifyProvider.export(projectScope),
+      },
+      run({ reactRouter, authHooks }) {
+        const blocks: TypescriptCodeBlock[] = [];
+        return {
+          providers: {
+            authIdentify: {
+              addBlock(block) {
+                blocks.push(block);
+              },
+            },
+          },
+          build: () => {
+            if (blocks.length > 0) {
+              reactRouter.addRouteHeader(
+                TypescriptCodeUtils.mergeBlocks(blocks)
+                  .wrap(
+                    (contents) => `
               const { userId } = useSession();
 
             useEffect(() => {
@@ -57,24 +58,17 @@ const createMainTask = createTaskConfigBuilder(() => ({
               ${contents}
             }, [userId]);
             `,
-                [
-                  "import {useSession} from '%auth-hooks/useSession'",
-                  "import {useEffect} from 'react'",
-                ],
-              )
-              .withImportMappers(authHooks),
-          );
-        }
+                    [
+                      "import {useSession} from '%auth-hooks/useSession'",
+                      "import {useEffect} from 'react'",
+                    ],
+                  )
+                  .withImportMappers(authHooks),
+              );
+            }
+          },
+        };
       },
-    };
-  },
-}));
-
-export const authIdentifyGenerator = createGenerator({
-  name: 'auth/auth-identify',
-  generatorFileUrl: import.meta.url,
-  descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask(createMainTask(descriptor));
+    });
   },
 });

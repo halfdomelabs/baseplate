@@ -5,7 +5,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createTaskConfigBuilder } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
@@ -16,50 +16,48 @@ import { pothosSetupProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({});
 
-const createMainTask = createTaskConfigBuilder(() => ({
-  name: 'main',
-  dependencies: {
-    yogaPluginConfig: yogaPluginConfigProvider,
-    errorHandlerService: errorHandlerServiceProvider,
-    typescript: typescriptProvider,
-    node: nodeProvider,
-  },
-  run({ yogaPluginConfig, typescript, errorHandlerService, node }) {
-    const [pluginImport, pluginPath] = makeImportAndFilePath(
-      'src/plugins/graphql/useSentry.ts',
-    );
-
-    yogaPluginConfig.envelopPlugins.push(
-      new TypescriptCodeExpression(`useSentry()`, [
-        `import { useSentry } from '${pluginImport}'`,
-      ]),
-    );
-
-    node.addPackages({
-      '@pothos/plugin-tracing': '1.1.0',
-      '@pothos/tracing-sentry': '1.1.1',
-    });
-
-    return {
-      build: async (builder) => {
-        await builder.apply(
-          typescript.createCopyAction({
-            source: 'useSentry.ts',
-            destination: pluginPath,
-            importMappers: [errorHandlerService],
-          }),
-        );
-      },
-    };
-  },
-}));
-
 export const pothosSentryGenerator = createGenerator({
   name: 'pothos/pothos-sentry',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask(createMainTask(descriptor));
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        yogaPluginConfig: yogaPluginConfigProvider,
+        errorHandlerService: errorHandlerServiceProvider,
+        typescript: typescriptProvider,
+        node: nodeProvider,
+      },
+      run({ yogaPluginConfig, typescript, errorHandlerService, node }) {
+        const [pluginImport, pluginPath] = makeImportAndFilePath(
+          'src/plugins/graphql/useSentry.ts',
+        );
+
+        yogaPluginConfig.envelopPlugins.push(
+          new TypescriptCodeExpression(`useSentry()`, [
+            `import { useSentry } from '${pluginImport}'`,
+          ]),
+        );
+
+        node.addPackages({
+          '@pothos/plugin-tracing': '1.1.0',
+          '@pothos/tracing-sentry': '1.1.1',
+        });
+
+        return {
+          build: async (builder) => {
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'useSentry.ts',
+                destination: pluginPath,
+                importMappers: [errorHandlerService],
+              }),
+            );
+          },
+        };
+      },
+    });
 
     taskBuilder.addTask({
       name: 'sentry',

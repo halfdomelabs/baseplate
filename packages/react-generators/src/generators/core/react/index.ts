@@ -19,7 +19,6 @@ import {
   createGenerator,
   createNonOverwriteableMap,
   createProviderType,
-  createTaskConfigBuilder,
   writeTemplateAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -48,143 +47,6 @@ export interface ReactProvider {
 
 export const reactProvider = createProviderType<ReactProvider>('react');
 
-const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
-  name: 'main',
-
-  dependencies: {
-    node: nodeProvider,
-    typescript: typescriptProvider,
-    nodeGitIgnore: nodeGitIgnoreProvider,
-    eslint: eslintProvider.dependency().optional(),
-  },
-
-  exports: {
-    react: reactProvider.export(projectScope),
-  },
-
-  run({ node, typescript, nodeGitIgnore, eslint }) {
-    const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);
-    setupViteNode(node);
-
-    nodeGitIgnore.addExclusions([
-      '# production',
-      '/build',
-      '',
-      '# misc',
-      '.DS_Store',
-      '.env.local',
-      '.env.development.local',
-      '.env.test.local',
-      '.env.production.local',
-    ]);
-
-    eslint?.getConfig().set('react', true).set('disableVitest', true);
-
-    const vitePlugins: TypescriptCodeExpression[] = [
-      TypescriptCodeUtils.createExpression(
-        `react()`,
-        `import react from '@vitejs/plugin-react';`,
-      ),
-      TypescriptCodeUtils.createExpression(
-        `viteTsconfigPaths()`,
-        `import viteTsconfigPaths from 'vite-tsconfig-paths';`,
-      ),
-      TypescriptCodeUtils.createExpression(
-        `svgrPlugin()`,
-        `import svgrPlugin from 'vite-plugin-svgr';`,
-      ),
-    ];
-
-    const viteServerOptions = createNonOverwriteableMap<
-      Record<string, TypescriptCodeExpression>
-    >({
-      port: TypescriptCodeUtils.createExpression(
-        'envVars.PORT ? parseInt(envVars.PORT, 10) : 3000',
-      ),
-      watch: TypescriptCodeUtils.createExpression(
-        JSON.stringify({
-          ignored: ['**/baseplate/**'],
-        }),
-      ),
-    });
-
-    return {
-      providers: {
-        react: {
-          getSrcFolder() {
-            return 'src';
-          },
-          getIndexFile() {
-            return indexFile;
-          },
-          addVitePlugin(plugin) {
-            vitePlugins.push(plugin);
-          },
-          addServerOption(key, value) {
-            viteServerOptions.set(key, value);
-          },
-        },
-      },
-      build: async (builder) => {
-        const initialFiles = ['public/favicon.ico', 'README.md'];
-
-        await Promise.all(
-          initialFiles.map((file) =>
-            copyFileAction({
-              source: file,
-              destination: file,
-              shouldNeverOverwrite: true,
-            }),
-          ),
-        );
-
-        const staticFiles = ['src/vite-env.d.ts'];
-
-        await Promise.all(
-          staticFiles.map((file) =>
-            builder.apply(
-              copyFileAction({
-                source: file,
-                destination: file,
-                shouldFormat: true,
-              }),
-            ),
-          ),
-        );
-
-        await builder.apply(
-          indexFile.renderToAction('src/index.tsx', 'src/index.tsx'),
-        );
-
-        await builder.apply(
-          writeTemplateAction({
-            template: 'index.html.ejs',
-            destination: 'index.html',
-            data: {
-              title: descriptor.title,
-              description: descriptor.description,
-            },
-          }),
-        );
-
-        const viteConfig = typescript.createTemplate({
-          CONFIG: TypescriptCodeUtils.mergeExpressionsAsObject({
-            plugins: TypescriptCodeUtils.mergeExpressionsAsArray(vitePlugins),
-            server: TypescriptCodeUtils.mergeExpressionsAsObject(
-              viteServerOptions.value(),
-            ),
-            build: TypescriptCodeUtils.mergeExpressionsAsObject({
-              outDir: quot('build'),
-            }),
-          }),
-        });
-
-        await builder.apply(viteConfig.renderToAction('vite.config.ts'));
-      },
-    };
-  },
-}));
-
 export const reactGenerator = createGenerator({
   name: 'core/react',
   generatorFileUrl: import.meta.url,
@@ -200,6 +62,142 @@ export const reactGenerator = createGenerator({
         return {};
       },
     });
-    taskBuilder.addTask(createMainTask(descriptor));
+    taskBuilder.addTask({
+      name: 'main',
+
+      dependencies: {
+        node: nodeProvider,
+        typescript: typescriptProvider,
+        nodeGitIgnore: nodeGitIgnoreProvider,
+        eslint: eslintProvider.dependency().optional(),
+      },
+
+      exports: {
+        react: reactProvider.export(projectScope),
+      },
+
+      run({ node, typescript, nodeGitIgnore, eslint }) {
+        const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);
+        setupViteNode(node);
+
+        nodeGitIgnore.addExclusions([
+          '# production',
+          '/build',
+          '',
+          '# misc',
+          '.DS_Store',
+          '.env.local',
+          '.env.development.local',
+          '.env.test.local',
+          '.env.production.local',
+        ]);
+
+        eslint?.getConfig().set('react', true).set('disableVitest', true);
+
+        const vitePlugins: TypescriptCodeExpression[] = [
+          TypescriptCodeUtils.createExpression(
+            `react()`,
+            `import react from '@vitejs/plugin-react';`,
+          ),
+          TypescriptCodeUtils.createExpression(
+            `viteTsconfigPaths()`,
+            `import viteTsconfigPaths from 'vite-tsconfig-paths';`,
+          ),
+          TypescriptCodeUtils.createExpression(
+            `svgrPlugin()`,
+            `import svgrPlugin from 'vite-plugin-svgr';`,
+          ),
+        ];
+
+        const viteServerOptions = createNonOverwriteableMap<
+          Record<string, TypescriptCodeExpression>
+        >({
+          port: TypescriptCodeUtils.createExpression(
+            'envVars.PORT ? parseInt(envVars.PORT, 10) : 3000',
+          ),
+          watch: TypescriptCodeUtils.createExpression(
+            JSON.stringify({
+              ignored: ['**/baseplate/**'],
+            }),
+          ),
+        });
+
+        return {
+          providers: {
+            react: {
+              getSrcFolder() {
+                return 'src';
+              },
+              getIndexFile() {
+                return indexFile;
+              },
+              addVitePlugin(plugin) {
+                vitePlugins.push(plugin);
+              },
+              addServerOption(key, value) {
+                viteServerOptions.set(key, value);
+              },
+            },
+          },
+          build: async (builder) => {
+            const initialFiles = ['public/favicon.ico', 'README.md'];
+
+            await Promise.all(
+              initialFiles.map((file) =>
+                copyFileAction({
+                  source: file,
+                  destination: file,
+                  shouldNeverOverwrite: true,
+                }),
+              ),
+            );
+
+            const staticFiles = ['src/vite-env.d.ts'];
+
+            await Promise.all(
+              staticFiles.map((file) =>
+                builder.apply(
+                  copyFileAction({
+                    source: file,
+                    destination: file,
+                    shouldFormat: true,
+                  }),
+                ),
+              ),
+            );
+
+            await builder.apply(
+              indexFile.renderToAction('src/index.tsx', 'src/index.tsx'),
+            );
+
+            await builder.apply(
+              writeTemplateAction({
+                template: 'index.html.ejs',
+                destination: 'index.html',
+                data: {
+                  title: descriptor.title,
+                  description: descriptor.description,
+                },
+              }),
+            );
+
+            const viteConfig = typescript.createTemplate({
+              CONFIG: TypescriptCodeUtils.mergeExpressionsAsObject({
+                plugins:
+                  TypescriptCodeUtils.mergeExpressionsAsArray(vitePlugins),
+                server: TypescriptCodeUtils.mergeExpressionsAsObject(
+                  viteServerOptions.value(),
+                ),
+                build: TypescriptCodeUtils.mergeExpressionsAsObject({
+                  outDir: quot('build'),
+                }),
+              }),
+            });
+
+            await builder.apply(viteConfig.renderToAction('vite.config.ts'));
+          },
+        };
+      },
+    });
   },
 });

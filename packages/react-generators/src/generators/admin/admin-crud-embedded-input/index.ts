@@ -1,9 +1,5 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createProviderType,
-  createTaskConfigBuilder,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
@@ -19,8 +15,6 @@ const descriptorSchema = z.object({
   isRequired: z.boolean().optional(),
 });
 
-type Descriptor = z.infer<typeof descriptorSchema>;
-
 export type AdminCrudEmbeddedInputProvider = unknown;
 
 export const adminCrudEmbeddedInputProvider =
@@ -28,32 +22,39 @@ export const adminCrudEmbeddedInputProvider =
     'admin-crud-embedded-input',
   );
 
-const createMainTask = createTaskConfigBuilder(
-  ({ label, modelRelation, embeddedFormRef, isRequired }: Descriptor) => ({
-    name: 'main',
-    dependencies: {
-      adminCrudInputContainer: adminCrudInputContainerProvider,
-      adminComponents: adminComponentsProvider,
-      adminCrudEmbeddedForm: adminCrudEmbeddedFormProvider
-        .dependency()
-        .reference(embeddedFormRef),
-    },
-    exports: {
-      adminCrudEmbeddedInput: adminCrudEmbeddedInputProvider.export(),
-    },
-    run({ adminCrudInputContainer, adminComponents, adminCrudEmbeddedForm }) {
-      const formInfo = adminCrudEmbeddedForm.getEmbeddedFormInfo();
-      const {
-        embeddedFormComponent,
-        dataDependencies,
-        graphQLFields,
-        validationExpression,
-      } = formInfo;
+export const adminCrudEmbeddedInputGenerator = createGenerator({
+  name: 'admin/admin-crud-embedded-input',
+  generatorFileUrl: import.meta.url,
+  descriptorSchema,
+  buildTasks(
+    taskBuilder,
+    { label, modelRelation, embeddedFormRef, isRequired },
+  ) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        adminCrudInputContainer: adminCrudInputContainerProvider,
+        adminComponents: adminComponentsProvider,
+        adminCrudEmbeddedForm: adminCrudEmbeddedFormProvider
+          .dependency()
+          .reference(embeddedFormRef),
+      },
+      exports: {
+        adminCrudEmbeddedInput: adminCrudEmbeddedInputProvider.export(),
+      },
+      run({ adminCrudInputContainer, adminComponents, adminCrudEmbeddedForm }) {
+        const formInfo = adminCrudEmbeddedForm.getEmbeddedFormInfo();
+        const {
+          embeddedFormComponent,
+          dataDependencies,
+          graphQLFields,
+          validationExpression,
+        } = formInfo;
 
-      const content =
-        formInfo.type === 'object'
-          ? TypescriptCodeUtils.formatExpression(
-              `<EmbeddedObjectInput.LabelledController
+        const content =
+          formInfo.type === 'object'
+            ? TypescriptCodeUtils.formatExpression(
+                `<EmbeddedObjectInput.LabelledController
           label="${label}"
           control={control}
           name="${modelRelation}"
@@ -61,19 +62,19 @@ const createMainTask = createTaskConfigBuilder(
             <EMBEDDED_FORM_COMPONENT {...formProps} EXTRA_FORM_PROPS />
           )}
         />`,
-              {
-                EMBEDDED_FORM_COMPONENT: embeddedFormComponent.expression,
-                EXTRA_FORM_PROPS: embeddedFormComponent.extraProps,
-              },
-              {
-                importText: [
-                  `import { EmbeddedObjectInput } from "%admin-components"`,
-                ],
-                importMappers: [adminComponents],
-              },
-            )
-          : TypescriptCodeUtils.formatExpression(
-              `<EmbeddedListInput.LabelledController
+                {
+                  EMBEDDED_FORM_COMPONENT: embeddedFormComponent.expression,
+                  EXTRA_FORM_PROPS: embeddedFormComponent.extraProps,
+                },
+                {
+                  importText: [
+                    `import { EmbeddedObjectInput } from "%admin-components"`,
+                  ],
+                  importMappers: [adminComponents],
+                },
+              )
+            : TypescriptCodeUtils.formatExpression(
+                `<EmbeddedListInput.LabelledController
         label="${label}"
         control={control}
         name="${modelRelation}"
@@ -84,51 +85,43 @@ const createMainTask = createTaskConfigBuilder(
           <EMBEDDED_TABLE_COMPONENT {...tableProps} EXTRA_TABLE_PROPS />
         )}
       />`,
-              {
-                EMBEDDED_FORM_COMPONENT: embeddedFormComponent.expression,
-                EXTRA_FORM_PROPS: embeddedFormComponent.extraProps,
-                EMBEDDED_TABLE_COMPONENT:
-                  formInfo.embeddedTableComponent.expression,
-                EXTRA_TABLE_PROPS: formInfo.embeddedTableComponent.extraProps,
-              },
-              {
-                importText: [
-                  `import { EmbeddedListInput } from "%admin-components"`,
-                ],
-                importMappers: [adminComponents],
-              },
-            );
+                {
+                  EMBEDDED_FORM_COMPONENT: embeddedFormComponent.expression,
+                  EXTRA_FORM_PROPS: embeddedFormComponent.extraProps,
+                  EMBEDDED_TABLE_COMPONENT:
+                    formInfo.embeddedTableComponent.expression,
+                  EXTRA_TABLE_PROPS: formInfo.embeddedTableComponent.extraProps,
+                },
+                {
+                  importText: [
+                    `import { EmbeddedListInput } from "%admin-components"`,
+                  ],
+                  importMappers: [adminComponents],
+                },
+              );
 
-      adminCrudInputContainer.addInput({
-        content,
-        graphQLFields: [
-          { name: modelRelation, fields: mergeGraphQLFields(graphQLFields) },
-        ],
-        validation: [
-          {
-            key: modelRelation,
-            expression: validationExpression.append(
-              isRequired ? '' : '.nullish()',
-            ),
+        adminCrudInputContainer.addInput({
+          content,
+          graphQLFields: [
+            { name: modelRelation, fields: mergeGraphQLFields(graphQLFields) },
+          ],
+          validation: [
+            {
+              key: modelRelation,
+              expression: validationExpression.append(
+                isRequired ? '' : '.nullish()',
+              ),
+            },
+          ],
+          dataDependencies,
+        });
+
+        return {
+          providers: {
+            adminCrudEmbeddedInput: {},
           },
-        ],
-        dataDependencies,
-      });
-
-      return {
-        providers: {
-          adminCrudEmbeddedInput: {},
-        },
-      };
-    },
-  }),
-);
-
-export const adminCrudEmbeddedInputGenerator = createGenerator({
-  name: 'admin/admin-crud-embedded-input',
-  generatorFileUrl: import.meta.url,
-  descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask(createMainTask(descriptor));
+        };
+      },
+    });
   },
 });
