@@ -10,6 +10,7 @@ import {
 import {
   createGenerator,
   createNonOverwriteableMap,
+  createOutputProviderType,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -56,7 +57,7 @@ export interface FastifyOutputProvider {
 }
 
 export const fastifyOutputProvider =
-  createProviderType<FastifyOutputProvider>('fastify-output');
+  createOutputProviderType<FastifyOutputProvider>('fastify-output');
 
 export const fastifyGenerator = createGenerator({
   name: 'core/fastify',
@@ -86,7 +87,7 @@ export const fastifyGenerator = createGenerator({
       },
     });
 
-    const mainTask = taskBuilder.addTask({
+    taskBuilder.addTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
@@ -94,6 +95,9 @@ export const fastifyGenerator = createGenerator({
       },
       exports: {
         fastify: fastifyProvider.export(projectScope),
+      },
+      outputs: {
+        fastifyOutput: fastifyOutputProvider.export(projectScope),
       },
       run({ node, nodeGitIgnore }) {
         const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
@@ -114,13 +118,7 @@ export const fastifyGenerator = createGenerator({
               getConfig: () => config,
             },
           },
-          build(
-            builder,
-            addTaskOutput: (output: {
-              nodeFlags: NodeFlag[];
-              devOutputFormatter: string | undefined;
-            }) => void,
-          ) {
+          build() {
             // add scripts
             const { devOutputFormatter, nodeFlags } = config.value();
 
@@ -151,41 +149,28 @@ export const fastifyGenerator = createGenerator({
               dev: devCommand,
             });
 
-            addTaskOutput({ nodeFlags, devOutputFormatter });
-          },
-        };
-      },
-    });
-
-    taskBuilder.addTask({
-      name: 'output',
-      taskDependencies: { mainTask },
-      exports: {
-        fastifyOutput: fastifyOutputProvider.export(projectScope),
-      },
-      run(deps, { mainTask: { nodeFlags, devOutputFormatter } }) {
-        return {
-          providers: {
-            fastifyOutput: {
-              getNodeFlags: () => nodeFlags,
-              getNodeFlagsDev: (useCase) =>
-                nodeFlags
-                  .filter(
-                    (f) =>
-                      f.targetEnvironment === 'dev' &&
-                      (!useCase || f.useCase === useCase),
-                  )
-                  .map((f) => f.flag),
-              getNodeFlagsProd: (useCase) =>
-                nodeFlags
-                  .filter(
-                    (f) =>
-                      f.targetEnvironment === 'prod' &&
-                      (!useCase || f.useCase === useCase),
-                  )
-                  .map((f) => f.flag),
-              getDevOutputFormatter: () => devOutputFormatter,
-            },
+            return {
+              fastifyOutput: {
+                getNodeFlags: () => nodeFlags,
+                getNodeFlagsDev: (useCase) =>
+                  nodeFlags
+                    .filter(
+                      (f) =>
+                        f.targetEnvironment === 'dev' &&
+                        (!useCase || f.useCase === useCase),
+                    )
+                    .map((f) => f.flag),
+                getNodeFlagsProd: (useCase) =>
+                  nodeFlags
+                    .filter(
+                      (f) =>
+                        f.targetEnvironment === 'prod' &&
+                        (!useCase || f.useCase === useCase),
+                    )
+                    .map((f) => f.flag),
+                getDevOutputFormatter: () => devOutputFormatter,
+              },
+            };
           },
         };
       },
