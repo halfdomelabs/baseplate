@@ -13,6 +13,7 @@
     "knip": "knip",
     "lint": "turbo run lint --continue",
     "lint:affected": "turbo run lint --affected --continue",
+    "precheck": "turbo run lint prettier:check typecheck --output-logs=errors-only --affected --continue && pnpm run knip",
     "prettier:check": "turbo run prettier:check --continue",
     "prettier:check:affected": "turbo run prettier:check --affected --continue",
     "prettier:root:check": "prettier --check .",
