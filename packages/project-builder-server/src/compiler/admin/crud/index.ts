@@ -3,7 +3,6 @@ import type {
   AdminCrudEmbeddedFormConfig,
   AdminCrudSectionConfig,
 } from '@halfdomelabs/project-builder-lib';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
 
 import { ModelUtils } from '@halfdomelabs/project-builder-lib';
 import {
@@ -15,6 +14,7 @@ import {
   adminCrudSectionGenerator,
   reactRoutesGenerator,
 } from '@halfdomelabs/react-generators';
+import { type GeneratorBundle, makeIdSafe } from '@halfdomelabs/sync';
 import inflection from 'inflection';
 
 import type { AppEntryBuilder } from '@src/compiler/app-entry-builder.js';
@@ -51,6 +51,8 @@ function compileAdminCrudEmbeddedForm(
       children: {
         columns: form.table.columns.map((c) =>
           adminCrudColumnGenerator({
+            // TODO: We should use an actual ID on the column
+            id: makeIdSafe(c.label),
             label: c.label,
             children: {
               display: compileAdminCrudDisplay(
@@ -118,6 +120,8 @@ export function compileAdminCrudSection(
             children: {
               columns: crudSection.table.columns.map((column) =>
                 adminCrudColumnGenerator({
+                  // TODO: We should use an actual ID on the column
+                  id: makeIdSafe(column.label),
                   label: column.label,
                   children: {
                     display: compileAdminCrudDisplay(

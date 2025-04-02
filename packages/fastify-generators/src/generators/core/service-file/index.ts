@@ -55,6 +55,7 @@ export const serviceFileGenerator = createGenerator({
   name: 'core/service-file',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.name,
   buildTasks: (descriptor) => [
     createGeneratorTask({
       name: 'main',

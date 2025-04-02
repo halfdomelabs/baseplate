@@ -16,6 +16,7 @@ export const adminCrudFileInputGenerator = createGenerator({
   name: 'react/admin-crud-file-input',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.modelRelation,
   buildTasks: ({ label, modelRelation, isOptional, category }) => [
     createGeneratorTask({
       name: 'main',

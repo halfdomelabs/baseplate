@@ -107,7 +107,10 @@ describe('buildGeneratorEntry', () => {
       scopes: [],
       children: {
         child: childBundle,
-        multiChild: [childBundle, childBundle],
+        multiChild: [
+          { ...childBundle, instanceName: 'child-1' },
+          { ...childBundle, instanceName: 'child-2' },
+        ],
       },
       tasks: [],
     };
@@ -129,21 +132,21 @@ describe('buildGeneratorEntry', () => {
           ],
         },
         {
-          id: 'root.multiChild.0',
+          id: 'root.multiChild.child-1',
           generatorBaseDirectory: '/test/child',
           tasks: [
             {
-              id: 'root.multiChild.0#child-task',
+              id: 'root.multiChild.child-1#child-task',
               generatorName: 'child-package#child-generator',
             },
           ],
         },
         {
-          id: 'root.multiChild.1',
+          id: 'root.multiChild.child-2',
           generatorBaseDirectory: '/test/child',
           tasks: [
             {
-              id: 'root.multiChild.1#child-task',
+              id: 'root.multiChild.child-2#child-task',
               generatorName: 'child-package#child-generator',
             },
           ],

@@ -34,6 +34,7 @@ export const adminCrudListGenerator = createGenerator({
   name: 'admin/admin-crud-list',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.modelName,
   buildTasks: ({ modelName, disableCreate }) => [
     createGeneratorTask({
       name: 'main',

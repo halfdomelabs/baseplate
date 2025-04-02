@@ -10,7 +10,6 @@ import type {
   AdminCrudTextInputConfig,
   ModelScalarFieldConfig,
 } from '@halfdomelabs/project-builder-lib';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
 
 import {
   adminCrudInputCompilerSpec,
@@ -25,6 +24,7 @@ import {
   adminCrudPasswordInputGenerator,
   adminCrudTextInputGenerator,
 } from '@halfdomelabs/react-generators';
+import { type GeneratorBundle, makeIdSafe } from '@halfdomelabs/sync';
 
 import type { AppEntryBuilder } from '@src/compiler/app-entry-builder.js';
 
@@ -158,6 +158,8 @@ const adminCrudEmbeddedInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedIn
         definition.modelRelationRef,
       );
       return adminCrudEmbeddedInputGenerator({
+        // TODO: We should use an actual ID on the input
+        id: makeIdSafe(definition.label),
         label: definition.label,
         modelRelation: relationName,
         embeddedFormRef: definition.embeddedFormRef,
@@ -184,6 +186,8 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
       );
 
       return adminCrudEmbeddedInputGenerator({
+        // TODO: We should use an actual ID on the input
+        id: makeIdSafe(definition.label),
         label: definition.label,
         modelRelation: localRelationName,
         isRequired: !ModelFieldUtils.isRelationOptional(model, localRelation),

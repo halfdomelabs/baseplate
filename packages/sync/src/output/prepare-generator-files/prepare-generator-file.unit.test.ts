@@ -351,4 +351,96 @@ describe('prepareGeneratorFile', () => {
       generatedContents: Buffer.from('new content'),
     });
   });
+
+  it('should select formatter by file extension', async () => {
+    const mockFormatter = {
+      name: 'test-formatter',
+      fileExtensions: ['.js'],
+      format: (content: string) => `formatted:${content}`,
+    };
+
+    const result = await prepareGeneratorFile({
+      relativePath: 'file.js',
+      data: createMockFileData({
+        contents: 'content',
+        options: { shouldFormat: true },
+      }),
+      context: createMockContext({
+        formatters: [mockFormatter],
+      }),
+    });
+
+    expect(result.mergedContents?.toString()).toBe('formatted:content');
+  });
+
+  it('should select formatter by file name', async () => {
+    const mockFormatter = {
+      name: 'test-formatter',
+      fileNames: ['.prettierrc'],
+      format: (content: string) => `formatted:${content}`,
+    };
+
+    const result = await prepareGeneratorFile({
+      relativePath: '.prettierrc',
+      data: createMockFileData({
+        contents: 'content',
+        options: { shouldFormat: true },
+      }),
+      context: createMockContext({
+        formatters: [mockFormatter],
+      }),
+    });
+
+    expect(result.mergedContents?.toString()).toBe('formatted:content');
+  });
+
+  it('should throw error when multiple formatters match', async () => {
+    const formatter1 = {
+      name: 'formatter1',
+      fileExtensions: ['.js'],
+      format: (content: string) => content,
+    };
+
+    const formatter2 = {
+      name: 'formatter2',
+      fileExtensions: ['.js'],
+      format: (content: string) => content,
+    };
+
+    await expect(
+      prepareGeneratorFile({
+        relativePath: 'file.js',
+        data: createMockFileData({
+          contents: 'content',
+          options: { shouldFormat: true },
+        }),
+        context: createMockContext({
+          formatters: [formatter1, formatter2],
+        }),
+      }),
+    ).rejects.toThrow(
+      'Multiple formatters found for file file.js: formatter1, formatter2',
+    );
+  });
+
+  it('should skip formatting when no matching formatter is found', async () => {
+    const mockFormatter = {
+      name: 'test-formatter',
+      fileExtensions: ['.js'],
+      format: (content: string) => `formatted:${content}`,
+    };
+
+    const result = await prepareGeneratorFile({
+      relativePath: 'file.txt',
+      data: createMockFileData({
+        contents: 'content',
+        options: { shouldFormat: true },
+      }),
+      context: createMockContext({
+        formatters: [mockFormatter],
+      }),
+    });
+
+    expect(result.mergedContents?.toString()).toBe('content');
+  });
 });

@@ -13,6 +13,7 @@ import { adminComponentsProvider } from '../admin-components/index.js';
 import { adminCrudEmbeddedFormProvider } from '../admin-crud-embedded-form/index.js';
 
 const descriptorSchema = z.object({
+  id: z.string().min(1),
   label: z.string().min(1),
   modelRelation: z.string().min(1),
   embeddedFormRef: z.string().min(1),
@@ -30,6 +31,7 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
   name: 'admin/admin-crud-embedded-input',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.id,
   buildTasks: ({ label, modelRelation, embeddedFormRef, isRequired }) => [
     createGeneratorTask({
       name: 'main',

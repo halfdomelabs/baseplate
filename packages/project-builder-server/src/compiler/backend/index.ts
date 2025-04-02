@@ -51,10 +51,8 @@ export function compileBackend(
     description: `Backend app for ${projectDefinition.name}`,
     version: projectDefinition.version,
     children: {
-      projects: [
-        buildDocker(projectDefinition, app),
-        buildFastify(appBuilder, app),
-      ],
+      docker: buildDocker(projectDefinition, app),
+      fastify: buildFastify(appBuilder, app),
       vitest: vitestGenerator({}),
     },
   });

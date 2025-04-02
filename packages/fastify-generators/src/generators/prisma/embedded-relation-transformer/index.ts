@@ -185,6 +185,7 @@ export const embeddedRelationTransformerGenerator = createGenerator({
   name: 'prisma/embedded-relation-transformer',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.name,
   buildTasks: ({
     name: localRelationName,
     embeddedFieldNames = [],

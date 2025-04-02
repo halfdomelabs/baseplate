@@ -24,8 +24,8 @@ export class BuilderServiceManager {
       .createHash('shake256', { outputLength: 9 })
       .update(directory)
       .digest('base64')
-      .replace('/', '-')
-      .replace('+', '_');
+      .replaceAll('/', '-')
+      .replaceAll('+', '_');
     const service = new ProjectBuilderService({
       directory,
       id,

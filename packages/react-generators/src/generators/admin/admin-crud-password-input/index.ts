@@ -15,6 +15,7 @@ export const adminCrudPasswordInputGenerator = createGenerator({
   name: 'admin/admin-crud-password-input',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.modelField,
   buildTasks: ({ label, modelField }) => [
     createGeneratorTask({
       name: 'main',

@@ -189,8 +189,6 @@ export function createGeneratorTask<
   return task;
 }
 
-export type ChildDescriptorOrReference = BaseGeneratorDescriptor | string;
-
 export interface CreateGeneratorContext {
   id: string;
   generatorName: string;
@@ -211,21 +209,17 @@ export interface GeneratorBundle {
    */
   directory: string;
   /**
+   * The name of the generator instance (must be unique if in a list of children)
+   */
+  instanceName?: string;
+  /**
    * The scopes of the generator
    */
   scopes: ProviderExportScope[];
   /**
    * The children of the generator
    */
-  children: Record<
-    string,
-    | ChildDescriptorOrReference[]
-    | ChildDescriptorOrReference
-    | null
-    | undefined
-    | GeneratorBundle
-    | GeneratorBundle[]
-  >;
+  children: Record<string, undefined | GeneratorBundle | GeneratorBundle[]>;
   /**
    * The tasks of the generator
    */

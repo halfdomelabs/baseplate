@@ -28,6 +28,7 @@ export const reactRoutesGenerator = createGenerator({
   name: 'core/react-routes',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.name,
   buildTasks: ({ name, layoutKey, isPassthrough }) => [
     createGeneratorTask({
       name: 'main',

@@ -12,6 +12,7 @@ export const prismaEnumGenerator = createGenerator({
   name: 'prisma/prisma-enum',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.name,
   buildTasks: ({ name, values }) => [
     createGeneratorTask({
       name: 'main',
