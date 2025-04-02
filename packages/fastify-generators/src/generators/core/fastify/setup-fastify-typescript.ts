@@ -8,8 +8,9 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 export function setupFastifyTypescript(
   node: NodeProvider,
   typescriptConfig: TypescriptSetupProvider,
+  taskId: string,
 ): void {
-  typescriptConfig.version.set('5.5.4', 'fastify');
+  typescriptConfig.version.set('5.5.4', taskId);
   typescriptConfig.compilerOptions.set(
     {
       outDir: 'dist',
@@ -30,7 +31,7 @@ export function setupFastifyTypescript(
       sourceMap: true,
       skipLibCheck: true,
     },
-    'fastify',
+    taskId,
   );
 
   node.addDevPackages({

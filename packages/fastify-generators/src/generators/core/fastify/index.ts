@@ -81,8 +81,8 @@ export const fastifyGenerator = createGenerator({
         node: nodeProvider,
         typescriptSetup: typescriptSetupProvider,
       },
-      run({ node, typescriptSetup }) {
-        setupFastifyTypescript(node, typescriptSetup);
+      run({ node, typescriptSetup }, { taskId }) {
+        setupFastifyTypescript(node, typescriptSetup, taskId);
         return {};
       },
     }),
