@@ -145,7 +145,6 @@ export const fastifySentryGenerator = createGenerator({
         });
 
         node.addDevPackages({
-          '@sentry/types': FASTIFY_PACKAGES['@sentry/types'],
           '@types/lodash': FASTIFY_PACKAGES['@types/lodash'],
         });
 

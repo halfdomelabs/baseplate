@@ -55,5 +55,5 @@ export const REACT_PACKAGES = {
   '@datadog/browser-logs': '4.19.1',
 
   // Sentry
-  '@sentry/react': '8.55.0',
+  '@sentry/react': '9.10.1',
 } as const;
