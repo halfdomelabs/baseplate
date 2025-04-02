@@ -51,6 +51,7 @@ export const adminCrudEditGenerator = createGenerator({
   name: 'admin/admin-crud-edit',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.modelName,
   buildTasks: ({ modelName, disableCreate }) => [
     createGeneratorTask({
       name: 'main',

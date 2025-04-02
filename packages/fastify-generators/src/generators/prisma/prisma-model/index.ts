@@ -38,6 +38,7 @@ export const prismaModelGenerator = createGenerator({
   name: 'prisma/prisma-model',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.name,
   buildTasks: (descriptor) => [
     createGeneratorTask({
       name: 'main',

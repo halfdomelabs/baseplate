@@ -31,6 +31,7 @@ export const prismaRelationFieldGenerator = createGenerator({
   name: 'prisma/prisma-relation-field',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.name,
   buildTasks: (descriptor) => [
     createGeneratorTask({
       name: 'main',

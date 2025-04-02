@@ -30,6 +30,7 @@ export const adminCrudForeignDisplayGenerator = createGenerator({
   name: 'admin/admin-crud-foreign-display',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.localField,
   buildTasks: ({
     localField,
     isOptional,

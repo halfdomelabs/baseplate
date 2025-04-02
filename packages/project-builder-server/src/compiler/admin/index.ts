@@ -30,7 +30,6 @@ import {
 } from '@halfdomelabs/react-generators';
 import { capitalize } from 'inflection';
 
-import { notEmpty } from '@src/utils/array.js';
 import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
 
 import type { AdminAppEntryBuilder } from '../app-entry-builder.js';
@@ -75,20 +74,18 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
         reactRouter: reactRouterGenerator({
           children: {
             reactNotFoundHandler: reactNotFoundHandlerGenerator({}),
+            admin: adminHomeGenerator({}),
+            adminRoutes: backendApp.enableBullQueue
+              ? adminBullBoardGenerator({
+                  bullBoardUrl: `http://localhost:${
+                    projectDefinition.portOffset + 1
+                  }`,
+                })
+              : undefined,
             routes: [
               compileAuthPages(builder, appConfig.allowedRoles),
-              adminHomeGenerator({}),
               ...compileAdminFeatures(builder),
-              ...(backendApp.enableBullQueue
-                ? [
-                    adminBullBoardGenerator({
-                      bullBoardUrl: `http://localhost:${
-                        projectDefinition.portOffset + 1
-                      }`,
-                    }),
-                  ]
-                : []),
-            ].filter(notEmpty),
+            ],
           },
         }),
         reactComponents: reactComponentsGenerator({
@@ -155,7 +152,7 @@ export function compileAdmin(
     description: `Admin web app for ${projectDefinition.name}`,
     version: projectDefinition.version,
     children: {
-      projects: [buildAdmin(appBuilder)],
+      admin: buildAdmin(appBuilder),
     },
   });
 

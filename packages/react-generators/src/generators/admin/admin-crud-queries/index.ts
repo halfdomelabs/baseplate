@@ -68,6 +68,7 @@ export const adminCrudQueriesGenerator = createGenerator({
   name: 'admin/admin-crud-queries',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.modelName,
   buildTasks: ({ modelName }) => [
     createGeneratorTask({
       name: 'main',

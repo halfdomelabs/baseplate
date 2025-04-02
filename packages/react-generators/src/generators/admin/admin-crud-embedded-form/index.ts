@@ -138,6 +138,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
   name: 'admin/admin-crud-embedded-form',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.id,
   buildTasks: ({ id, name, modelName, isList, idField }) => [
     createGeneratorTask({
       name: 'setupForm',

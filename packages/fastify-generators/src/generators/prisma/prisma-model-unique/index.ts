@@ -15,6 +15,8 @@ export const prismaModelUniqueGenerator = createGenerator({
   name: 'prisma/prisma-model-unique',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) =>
+    descriptor.fields.map(({ name }) => name).join('_'),
   buildTasks: ({ fields }) => [
     createGeneratorTask({
       name: 'main',

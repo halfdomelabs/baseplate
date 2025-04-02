@@ -33,6 +33,12 @@ export interface CreateGeneratorConfig<DescriptorSchema extends z.ZodType> {
    */
   scopes?: ProviderExportScope[];
   /**
+   * The function to get the instance name of the generator
+   *
+   * This is required if the generator is in a list of generators
+   */
+  getInstanceName?: (descriptor: z.infer<DescriptorSchema>) => string;
+  /**
    * The function to build the tasks
    */
   buildTasks: (
@@ -93,6 +99,7 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
 
     return {
       name: config.name,
+      instanceName: config.getInstanceName?.(validatedDescriptor),
       directory: generatorDirectory,
       scopes: config.scopes ?? [],
       children: children ?? {},

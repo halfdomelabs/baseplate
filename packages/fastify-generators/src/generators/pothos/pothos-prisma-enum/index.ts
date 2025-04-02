@@ -15,6 +15,7 @@ export const pothosPrismaEnumGenerator = createGenerator({
   name: 'pothos/pothos-prisma-enum',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.enumName,
   buildTasks: ({ enumName }) => [
     createGeneratorTask({
       name: 'main',

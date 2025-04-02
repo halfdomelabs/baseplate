@@ -96,7 +96,7 @@ export function compileWeb(
     description: `Web app for ${projectDefinition.name}`,
     version: projectDefinition.version,
     children: {
-      projects: [buildReact(appBuilder)],
+      react: buildReact(appBuilder),
     },
   });
 

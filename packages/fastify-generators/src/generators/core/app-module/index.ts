@@ -27,6 +27,7 @@ export const appModuleGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [featureScope],
+  getInstanceName: (descriptor) => descriptor.name,
   buildTasks: (descriptor) => [
     createGeneratorTask({
       name: 'main',

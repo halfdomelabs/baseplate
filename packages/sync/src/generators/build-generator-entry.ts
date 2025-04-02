@@ -113,13 +113,14 @@ async function buildGeneratorEntryRecursive(
         children
           .filter((child) => child !== undefined)
           .map(async (child, idx) => {
-            // TODO: Remove this once we get rid of old generator entry format
-            if (typeof child !== 'object' || !child || 'generator' in child) {
+            if (isMultiple && !child.instanceName) {
               throw new Error(
-                `Child descriptor or reference or null not supported`,
+                `Child generator ${id}.${key}.${idx} of type ${child.name} must have an instance name if in a list of children`,
               );
             }
-            const subChildId = isMultiple ? `${id}.${key}.${idx}` : childId;
+            const subChildId = isMultiple
+              ? `${id}.${key}.${child.instanceName}`
+              : childId;
             return buildGeneratorEntryRecursive(
               subChildId,
               child,
@@ -128,6 +129,15 @@ async function buildGeneratorEntryRecursive(
             );
           }),
       );
+
+      // check if any child entries have the same id
+      const entryIds = childEntries.map((entry) => entry.id);
+      const uniqueEntryIds = new Set(entryIds);
+      if (uniqueEntryIds.size !== entryIds.length) {
+        throw new Error(
+          `Duplicate child generator IDs found (likely duplicate generator instance names): ${entryIds.join(', ')}`,
+        );
+      }
 
       return childEntries;
     }),

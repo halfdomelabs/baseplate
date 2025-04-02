@@ -24,6 +24,7 @@ export const adminCrudForeignInputGenerator = createGenerator({
   name: 'admin/admin-crud-foreign-input',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.localRelationName,
   buildTasks: ({
     label,
     localRelationName,

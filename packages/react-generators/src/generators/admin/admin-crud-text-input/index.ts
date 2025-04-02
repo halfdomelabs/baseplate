@@ -26,6 +26,7 @@ export const adminCrudTextInputGenerator = createGenerator({
   name: 'admin/admin-crud-text-input',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.modelField,
   buildTasks: ({ label, modelField, validation, type }) => [
     createGeneratorTask({
       name: 'main',

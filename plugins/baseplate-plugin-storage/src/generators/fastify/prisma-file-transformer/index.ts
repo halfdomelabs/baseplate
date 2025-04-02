@@ -20,6 +20,7 @@ export const prismaFileTransformerGenerator = createGenerator({
   name: 'fastify/prisma-file-transformer',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.name,
   buildTasks: ({ name, category }) => [
     createGeneratorTask({
       name: 'main',

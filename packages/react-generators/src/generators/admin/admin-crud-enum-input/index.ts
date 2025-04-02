@@ -22,6 +22,7 @@ export const adminCrudEnumInputGenerator = createGenerator({
   name: 'admin/admin-crud-enum-input',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  getInstanceName: (descriptor) => descriptor.modelField,
   buildTasks: ({ label, modelField, options, isOptional }) => [
     createGeneratorTask({
       name: 'main',
