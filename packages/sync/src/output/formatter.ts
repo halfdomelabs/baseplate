@@ -30,4 +30,8 @@ export interface GeneratorOutputFormatter {
    * File extensions that this formatter should be applied to
    */
   fileExtensions?: string[];
+  /**
+   * File names that this formatter should be applied to
+   */
+  fileNames?: string[];
 }

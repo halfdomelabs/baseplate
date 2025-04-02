@@ -81,7 +81,10 @@ const PARSEABLE_EXTENSIONS = new Set([
   '.mjs',
   '.cts',
   '.mts',
+  '.md',
 ]);
+
+const PARSEABLE_FILE_NAMES = new Set(['.prettierrc']);
 
 interface PrettierModule {
   format(input: string, config: Record<string, unknown>): Promise<string>;
@@ -168,7 +171,10 @@ export const prettierGenerator = createGenerator({
               fullPath: string,
               logger,
             ) => {
-              if (!PARSEABLE_EXTENSIONS.has(path.extname(fullPath))) {
+              if (
+                !PARSEABLE_EXTENSIONS.has(path.extname(fullPath)) &&
+                !PARSEABLE_FILE_NAMES.has(path.basename(fullPath))
+              ) {
                 return input;
               }
               if (!prettierModulePromise) {
@@ -245,6 +251,7 @@ export const prettierGenerator = createGenerator({
               name: 'prettier',
               format: formatFunction,
               fileExtensions: [...PARSEABLE_EXTENSIONS],
+              fileNames: [...PARSEABLE_FILE_NAMES],
             });
 
             node.addDevPackages({

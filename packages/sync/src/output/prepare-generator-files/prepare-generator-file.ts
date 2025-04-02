@@ -68,8 +68,10 @@ async function formatContents(
     );
   }
 
-  const formattersForFile = formatters.filter((f) =>
-    f.fileExtensions?.some((ext) => path.extname(relativePath) === ext),
+  const formattersForFile = formatters.filter(
+    (f) =>
+      !!f.fileExtensions?.some((ext) => path.extname(relativePath) === ext) ||
+      !!f.fileNames?.some((name) => path.basename(relativePath) === name),
   );
 
   if (formattersForFile.length > 1) {

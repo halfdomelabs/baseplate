@@ -219,6 +219,18 @@ export class GeneratorTaskOutputBuilder {
       );
     }
 
+    if (formatter.fileNames) {
+      const existingFormatter = this.output.globalFormatters.find((f) =>
+        f.fileNames?.some((name) => formatter.fileNames?.includes(name)),
+      );
+
+      if (existingFormatter) {
+        throw new Error(
+          `Formatter ${formatter.name} already exists for file names ${formatter.fileNames.join(', ')}`,
+        );
+      }
+    }
+
     this.output.globalFormatters.push(formatter);
   }
 }
