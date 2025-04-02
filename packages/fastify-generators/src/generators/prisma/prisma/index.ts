@@ -101,8 +101,6 @@ export const prismaGenerator = createGenerator({
       }) {
         node.addDevPackages({
           prisma: FASTIFY_PACKAGES.prisma,
-          '@prisma/instrumentation':
-            FASTIFY_PACKAGES['@prisma/instrumentation'],
         });
 
         node.addPackages({
@@ -126,9 +124,6 @@ export const prismaGenerator = createGenerator({
           createPrismaSchemaGeneratorBlock({
             name: 'client',
             provider: 'prisma-client-js',
-            additionalOptions: {
-              previewFeatures: '["tracing"]',
-            },
           }),
         );
 
@@ -178,8 +173,8 @@ export const prismaGenerator = createGenerator({
             const { formatSchema: format } = internalRequire(
               '@prisma/internals',
             ) as { formatSchema: typeof formatSchema };
-            const formattedSchemaText = await format({
-              schema: schemaText,
+            const [[, formattedSchemaText]] = await format({
+              schemas: [['prisma/schema.prisma', schemaText]],
             });
             builder.writeFile({
               id: 'prisma-schema',
