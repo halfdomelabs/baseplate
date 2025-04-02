@@ -58,17 +58,20 @@ export const auth0ModuleGenerator = createGenerator({
         auth0Module: auth0ModuleProvider.export(projectScope),
         userSessionService: userSessionServiceProvider.export(projectScope),
       },
-      run({
-        node,
-        typescript,
-        authRoles,
-        prismaOutput,
-        configService,
-        appModule,
-        authConfig,
-        userSessionTypes,
-        authContext,
-      }) {
+      run(
+        {
+          node,
+          typescript,
+          authRoles,
+          prismaOutput,
+          configService,
+          appModule,
+          authConfig,
+          userSessionTypes,
+          authContext,
+        },
+        { taskId },
+      ) {
         if (includeManagement) {
           node.addPackages({
             auth0: FASTIFY_PACKAGES.auth0,
@@ -103,7 +106,7 @@ export const auth0ModuleGenerator = createGenerator({
             path: userSessionServiceImport,
             allowedImports: ['userSessionService'],
           },
-          'auth0/auth0-module',
+          taskId,
         );
 
         if (includeManagement) {

@@ -168,17 +168,20 @@ export const pothosGenerator = createGenerator({
       exports: {
         pothos: pothosProvider.export(projectScope),
       },
-      run({
-        node,
-        typescript,
-        requestServiceContext,
-        prettier,
-        rootModuleImport,
-        yogaPluginConfig,
-        tsUtils,
-        pothosSetupOutput: { config: configMap, pothosTypes },
-        pothosSchemaOutput: { schemaFiles },
-      }) {
+      run(
+        {
+          node,
+          typescript,
+          requestServiceContext,
+          prettier,
+          rootModuleImport,
+          yogaPluginConfig,
+          tsUtils,
+          pothosSetupOutput: { config: configMap, pothosTypes },
+          pothosSchemaOutput: { schemaFiles },
+        },
+        { taskId },
+      ) {
         node.addPackages({
           '@pothos/core': FASTIFY_PACKAGES['@pothos/core'],
           '@pothos/plugin-simple-objects':
@@ -292,7 +295,7 @@ export const pothosGenerator = createGenerator({
               { importMappers: [rootModuleImport] },
             );
 
-            yogaPluginConfig.schema.set(schemaExpression, 'pothos/pothos');
+            yogaPluginConfig.schema.set(schemaExpression, taskId);
 
             yogaPluginConfig.postSchemaBlocks.push(
               TypescriptCodeUtils.createBlock(
