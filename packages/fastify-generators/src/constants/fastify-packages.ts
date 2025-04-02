@@ -64,11 +64,9 @@ export const FASTIFY_PACKAGES = {
   'ioredis-mock': '8.7.0',
 
   // Sentry
-  '@sentry/core': '8.55.0',
-  '@sentry/node': '8.55.0',
-  '@sentry/profiling-node': '8.55.0',
-
-  '@sentry/types': '8.55.0',
+  '@sentry/core': '9.10.1',
+  '@sentry/node': '9.10.1',
+  '@sentry/profiling-node': '9.10.1',
 
   // Validation
   zod: '3.24.1',
