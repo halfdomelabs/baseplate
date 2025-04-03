@@ -461,4 +461,239 @@ describe('executeGeneratorEntry', () => {
       /Dependency dep in root#phase2 cannot come from a previous phase since it is not an output/,
     );
   });
+
+  it('handles dynamic tasks correctly', async () => {
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#main',
+          generatorId: 'root',
+          task: {
+            name: 'main',
+            run: () => ({
+              providers: {},
+              build: (builder) => {
+                builder.addDynamicTask({
+                  name: 'dynamic-task',
+                  phase: phase1,
+                  dependencies: {},
+                  run: () => ({
+                    providers: {},
+                    build: (builder: GeneratorTaskOutputBuilder) => {
+                      builder.writeFile({
+                        id: 'dynamic',
+                        filePath: '/dynamic/file.txt',
+                        contents: 'dynamic',
+                      });
+                    },
+                  }),
+                });
+              },
+            }),
+          },
+        }),
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase1',
+          generatorId: 'root',
+          task: {
+            name: 'phase1',
+            phase: phase1,
+            run: () => ({
+              providers: {},
+              build: (builder: GeneratorTaskOutputBuilder) => {
+                builder.writeFile({
+                  id: 'phase1',
+                  filePath: '/phase1/file.txt',
+                  contents: 'phase1',
+                });
+              },
+            }),
+          },
+        }),
+      ],
+    });
+
+    const result = await executeGeneratorEntry(entry, logger);
+    expect(Object.fromEntries(result.files.entries())).toEqual({
+      '/dynamic/file.txt': {
+        id: 'test-generator:dynamic',
+        contents: 'dynamic',
+        options: undefined,
+      },
+      '/phase1/file.txt': {
+        id: 'test-generator:phase1',
+        contents: 'phase1',
+        options: undefined,
+      },
+    });
+  });
+
+  it('throws error when dynamic task has no phase', async () => {
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#main',
+          task: {
+            name: 'main',
+            run: () => ({
+              providers: {},
+              build: (builder: GeneratorTaskOutputBuilder) => {
+                builder.addDynamicTask({
+                  name: 'dynamic-task',
+                  dependencies: {},
+                  run: () => ({
+                    providers: {},
+                    build: () => ({}),
+                  }),
+                });
+              },
+            }),
+          },
+        }),
+      ],
+    });
+
+    await expect(executeGeneratorEntry(entry, logger)).rejects.toThrow(
+      /Dynamic task dynamic-task must have a phase/,
+    );
+  });
+
+  it('throws error when dynamic task has duplicate name', async () => {
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#main',
+          generatorId: 'root',
+          task: {
+            name: 'main',
+            run: () => ({
+              providers: {},
+              build: (builder: GeneratorTaskOutputBuilder) => {
+                builder.addDynamicTask({
+                  name: 'dynamic-task',
+                  phase: phase1,
+                  dependencies: {},
+                  run: () => ({
+                    providers: {},
+                    build: () => ({}),
+                  }),
+                });
+                builder.addDynamicTask({
+                  name: 'dynamic-task',
+                  phase: phase1,
+                  dependencies: {},
+                  run: () => ({
+                    providers: {},
+                    build: () => ({}),
+                  }),
+                });
+              },
+            }),
+          },
+        }),
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase1',
+          generatorId: 'root',
+          task: {
+            name: 'phase1',
+            phase: phase1,
+            run: () => ({
+              providers: {},
+              build: (builder) => {
+                builder.writeFile({
+                  id: 'phase1',
+                  filePath: '/phase1/file.txt',
+                  contents: 'phase1',
+                });
+              },
+            }),
+          },
+        }),
+      ],
+    });
+
+    await expect(executeGeneratorEntry(entry, logger)).rejects.toThrow(
+      /Dynamic task dynamic-task already exists/,
+    );
+  });
+
+  it('handles dynamic tasks with dependencies correctly', async () => {
+    const outputProviderType = createOutputProviderType<{
+      generate: () => void;
+    }>('output-provider');
+    const outputProvider = { generate: vi.fn() };
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#main',
+          generatorId: 'root',
+          task: {
+            name: 'main',
+            outputs: {
+              outputProv: outputProviderType.export(),
+            },
+            run: () => ({
+              providers: {},
+              build: (builder: GeneratorTaskOutputBuilder) => {
+                builder.addDynamicTask({
+                  name: 'dynamic-task',
+                  phase: phase1,
+                  dependencies: { dep: outputProviderType },
+                  run: (deps: Record<string, Provider>) => ({
+                    providers: {},
+                    build: (builder: GeneratorTaskOutputBuilder) => {
+                      (deps.dep as { generate: () => void }).generate();
+                      builder.writeFile({
+                        id: 'dynamic',
+                        filePath: '/dynamic/file.txt',
+                        contents: 'dynamic',
+                      });
+                    },
+                  }),
+                });
+                return { outputProv: outputProvider };
+              },
+            }),
+          },
+        }),
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase1',
+          generatorId: 'root',
+          task: {
+            name: 'phase1',
+            phase: phase1,
+            run: () => ({
+              providers: {},
+              build: (builder: GeneratorTaskOutputBuilder) => {
+                builder.writeFile({
+                  id: 'phase1',
+                  filePath: '/phase1/file.txt',
+                  contents: 'phase1',
+                });
+              },
+            }),
+          },
+        }),
+      ],
+    });
+
+    const result = await executeGeneratorEntry(entry, logger);
+    expect(Object.fromEntries(result.files.entries())).toEqual({
+      '/dynamic/file.txt': {
+        id: 'test-generator:dynamic',
+        contents: 'dynamic',
+        options: undefined,
+      },
+      '/phase1/file.txt': {
+        id: 'test-generator:phase1',
+        contents: 'phase1',
+        options: undefined,
+      },
+    });
+    expect(outputProvider.generate).toHaveBeenCalled();
+  });
 });

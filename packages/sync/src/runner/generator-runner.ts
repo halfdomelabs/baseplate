@@ -1,3 +1,4 @@
+import { mapGroupBy } from '@halfdomelabs/utils';
 import { keyBy, mapValues } from 'es-toolkit';
 
 import type { Logger } from '@src/utils/evented-logger.js';
@@ -51,26 +52,34 @@ export async function executeGeneratorEntry(
   >();
 
   for (const phase of [undefined, ...taskPhases]) {
-    const dynamicTaskEntries = new Map<string, GeneratorTaskEntry[]>();
+    const currentDynamicTaskEntries = dynamicTaskEntriesByPhase.get(
+      phase?.name ?? '',
+    );
 
     const dependencyMap = resolveTaskDependenciesForPhase(
       rootEntry,
       generatorIdToScopesMap,
       phase,
+      currentDynamicTaskEntries,
       logger,
     );
     const filteredTaskEntries = taskEntries.filter(
       (taskEntry) => taskEntry.task.phase === phase,
     );
     const { steps: sortedRunSteps, metadata } = getSortedRunSteps(
-      filteredTaskEntries,
+      [
+        ...filteredTaskEntries,
+        ...(currentDynamicTaskEntries
+          ? [...currentDynamicTaskEntries.values()].flat()
+          : []),
+      ],
       dependencyMap,
     );
     generatorMetadatas.push(metadata);
     for (const runStep of sortedRunSteps) {
       const [action, taskId] = runStep.split('|');
       try {
-        const { task } = taskEntriesById[taskId];
+        const { task, generatorId } = taskEntriesById[taskId];
         const { dependencies = {}, exports = {}, outputs = {} } = task;
         if (action === 'init') {
           // run through init step
@@ -187,8 +196,47 @@ export async function executeGeneratorEntry(
             }
           }
 
+          // validate dynamic tasks fulfill the requirements
+          const { dynamicTasks } = outputBuilder;
+
+          for (const dynamicTask of dynamicTasks) {
+            if (dynamicTask.id in taskEntriesById) {
+              throw new Error(
+                `Cannot add dynamic task with the same name as a static task: ${dynamicTask.id}`,
+              );
+            }
+            if (
+              !dynamicTask.task.phase ||
+              (phase &&
+                !phase.options.addsDynamicTasksTo?.includes(
+                  dynamicTask.task.phase,
+                ))
+            ) {
+              throw new Error(
+                `Dynamic task ${dynamicTask.id} must have an explicit phase and be added to the addsDynamicTasksTo option of the phase ${phase?.name}`,
+              );
+            }
+            // register it in the ID map
+            taskEntriesById[dynamicTask.id] = dynamicTask;
+          }
+
+          // group dynamic tasks by phase and add them to dynamicTaskEntriesByPhase
+          const dynamicTasksByPhase = mapGroupBy(
+            dynamicTasks,
+            (task) => task.task.phase?.name ?? '',
+          );
+          for (const [
+            phaseName,
+            dynamicTasksOfPhase,
+          ] of dynamicTasksByPhase.entries()) {
+            const dynamicTaskEntries =
+              dynamicTaskEntriesByPhase.get(phaseName) ??
+              new Map<string, GeneratorTaskEntry[]>();
+            dynamicTaskEntries.set(generatorId, dynamicTasksOfPhase);
+            dynamicTaskEntriesByPhase.set(phaseName, dynamicTaskEntries);
+          }
+
           generatorOutputs.push(outputBuilder.output);
-          dynamicTaskEntries.set(phase?.name ?? '', outputBuilder.dynamicTasks);
         } else {
           throw new Error(`Unknown action ${action}`);
         }
@@ -200,8 +248,6 @@ export async function executeGeneratorEntry(
         throw error;
       }
     }
-
-    dynamicTaskEntriesByPhase.set(phase?.name ?? '', dynamicTaskEntries);
   }
 
   const buildOutput: GeneratorOutput = {

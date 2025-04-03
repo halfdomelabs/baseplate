@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import type { GeneratorEntry } from '@src/generators/build-generator-entry.js';
+import type {
+  GeneratorEntry,
+  GeneratorTaskEntry,
+} from '@src/generators/build-generator-entry.js';
 import type { TaskPhase } from '@src/phases/types.js';
 import type { Logger } from '@src/utils/index.js';
 
@@ -59,12 +62,14 @@ function resolveTaskDependencies(
   entry: GeneratorEntry,
   logger: Logger,
   phase?: TaskPhase,
+  dynamicTaskEntries?: Map<string, GeneratorTaskEntry[]>,
 ): EntryDependencyMap {
   const generatorIdToScopesMap = buildGeneratorIdToScopesMap(entry);
   return resolveTaskDependenciesForPhase(
     entry,
     generatorIdToScopesMap,
     phase,
+    dynamicTaskEntries,
     logger,
   );
 }
@@ -837,6 +842,186 @@ describe('resolveTaskDependenciesForPhase', () => {
       'leaf#phase2': {
         dep: {
           id: 'middle#phase1',
+          providerName: outputOnlyProvider.name,
+          options: { isOutput: true },
+        },
+      },
+    });
+  });
+
+  it('handles dynamic tasks in dependency resolution', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#main',
+          task: {
+            name: 'main',
+            outputs: {
+              outputProvider: outputOnlyProvider.export(),
+            },
+          },
+        }),
+      ],
+    });
+
+    const dynamicTaskMap = new Map<string, GeneratorTaskEntry[]>();
+    dynamicTaskMap.set('root', [
+      buildTestGeneratorTaskEntry({
+        id: 'root#dynamic-task',
+        task: {
+          name: 'dynamic-task',
+          phase: phase1,
+          dependencies: { dep: outputOnlyProvider },
+        },
+      }),
+    ]);
+
+    // Act
+    const phase1DependencyMap = resolveTaskDependencies(
+      entry,
+      testLogger,
+      phase1,
+      dynamicTaskMap,
+    );
+
+    // Assert
+    expect(phase1DependencyMap).toEqual({
+      'root#dynamic-task': {
+        dep: {
+          id: 'root#main',
+          providerName: outputOnlyProvider.name,
+          options: { isOutput: true },
+        },
+      },
+    });
+  });
+
+  it('handles dynamic tasks with multiple phases correctly', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#main',
+          task: {
+            name: 'main',
+            outputs: {
+              outputProvider: outputOnlyProvider.export(),
+            },
+          },
+        }),
+      ],
+    });
+
+    const dynamicTaskMap = new Map<string, GeneratorTaskEntry[]>();
+    dynamicTaskMap.set('root', [
+      buildTestGeneratorTaskEntry({
+        id: 'root#dynamic-task1',
+        task: {
+          name: 'dynamic-task1',
+          phase: phase1,
+          dependencies: { dep: outputOnlyProvider },
+        },
+      }),
+      buildTestGeneratorTaskEntry({
+        id: 'root#dynamic-task2',
+        task: {
+          name: 'dynamic-task2',
+          phase: phase2,
+          dependencies: { dep: outputOnlyProvider },
+        },
+      }),
+    ]);
+
+    // Act
+    const phase1DependencyMap = resolveTaskDependencies(
+      entry,
+      testLogger,
+      phase1,
+      dynamicTaskMap,
+    );
+    const phase2DependencyMap = resolveTaskDependencies(
+      entry,
+      testLogger,
+      phase2,
+      dynamicTaskMap,
+    );
+
+    // Assert
+    expect(phase1DependencyMap).toEqual({
+      'root#dynamic-task1': {
+        dep: {
+          id: 'root#main',
+          providerName: outputOnlyProvider.name,
+          options: { isOutput: true },
+        },
+      },
+    });
+
+    expect(phase2DependencyMap).toEqual({
+      'root#dynamic-task2': {
+        dep: {
+          id: 'root#main',
+          providerName: outputOnlyProvider.name,
+          options: { isOutput: true },
+        },
+      },
+    });
+  });
+
+  it('handles dynamic tasks with parent scope dependencies correctly', () => {
+    // Arrange
+    const rootEntry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#main',
+          task: {
+            name: 'main',
+            outputs: {
+              outputProvider: outputOnlyProvider.export(),
+            },
+          },
+        }),
+      ],
+    });
+
+    const childEntry = buildTestGeneratorEntry({
+      id: 'child',
+      tasks: [],
+    });
+
+    rootEntry.children.push(childEntry);
+
+    const dynamicTaskMap = new Map<string, GeneratorTaskEntry[]>();
+    dynamicTaskMap.set('child', [
+      buildTestGeneratorTaskEntry({
+        id: 'child#dynamic-task',
+        task: {
+          name: 'dynamic-task',
+          phase: phase1,
+          dependencies: {
+            dep: outputOnlyProvider.dependency().parentScopeOnly(),
+          },
+        },
+      }),
+    ]);
+
+    // Act
+    const phase1DependencyMap = resolveTaskDependencies(
+      rootEntry,
+      testLogger,
+      phase1,
+      dynamicTaskMap,
+    );
+
+    // Assert
+    expect(phase1DependencyMap).toEqual({
+      'child#dynamic-task': {
+        dep: {
+          id: 'root#main',
           providerName: outputOnlyProvider.name,
           options: { isOutput: true },
         },

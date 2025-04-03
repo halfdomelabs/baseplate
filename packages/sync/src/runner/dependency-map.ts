@@ -203,6 +203,7 @@ export type EntryDependencyMap = Record<
  * @param resolveableProvider Provider map of parents
  * @param flattenedTasks Flattened generator tasks
  * @param phase Task phase to resolve dependencies for
+ * @param dynamicTaskEntries Dynamic task entries
  * @param logger Logger to use
  */
 function buildEntryDependencyMapRecursive(
@@ -210,11 +211,13 @@ function buildEntryDependencyMapRecursive(
   parentEntryIds: string[],
   generatorIdToScopesMap: GeneratorIdToScopesMap,
   phase: TaskPhase | undefined,
+  dynamicTaskEntries: Map<string, GeneratorTaskEntry[]> | undefined,
   logger: Logger,
 ): EntryDependencyMap {
   const parentChildIdsWithSelf = [...parentEntryIds, entry.id];
+  const dynamicTasks = dynamicTaskEntries?.get(entry.id) ?? [];
   const entryDependencyMaps = mergeAllWithoutDuplicates(
-    entry.tasks
+    [...dynamicTasks, ...entry.tasks]
       .filter((taskEntry) => taskEntry.task.phase === phase)
       .map((taskEntry) => {
         const taskDependencyMap = buildTaskDependencyMap(
@@ -236,6 +239,7 @@ function buildEntryDependencyMapRecursive(
         parentChildIdsWithSelf,
         generatorIdToScopesMap,
         phase,
+        dynamicTaskEntries,
         logger,
       ),
     ),
@@ -268,12 +272,14 @@ export function buildGeneratorIdToScopesMap(
  * @param entry Root generator entry
  * @param generatorIdToScopesMap Generator ID to scopes map
  * @param phase Task phase to resolve dependencies for
+ * @param dynamicTaskEntries Dynamic task entries
  * @param logger Logger to use
  */
 export function resolveTaskDependenciesForPhase(
   rootEntry: GeneratorEntry,
   generatorIdToScopesMap: GeneratorIdToScopesMap,
   phase: TaskPhase | undefined,
+  dynamicTaskEntries: Map<string, GeneratorTaskEntry[]> | undefined,
   logger: Logger,
 ): EntryDependencyMap {
   return buildEntryDependencyMapRecursive(
@@ -281,6 +287,7 @@ export function resolveTaskDependenciesForPhase(
     [],
     generatorIdToScopesMap,
     phase,
+    dynamicTaskEntries,
     logger,
   );
 }

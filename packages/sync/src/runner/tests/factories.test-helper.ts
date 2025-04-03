@@ -68,6 +68,7 @@ export function buildTestGeneratorEntry(
       ? [
           buildTestGeneratorTaskEntry({
             id: `${id}#${task.name ?? 'main'}`,
+            generatorId: id,
             generatorInfo,
             task,
           }),
