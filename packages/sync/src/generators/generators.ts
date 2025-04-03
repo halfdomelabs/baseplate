@@ -155,8 +155,7 @@ export interface GeneratorTask<
    */
   dependencies?: DependencyMap;
   /**
-   * The phase of the generator task (if undefined, it will default to the
-   * main phase)
+   * The phase of the generator task (otherwise it will be executed before all named phases)
    */
   phase?: TaskPhase | undefined;
   /**

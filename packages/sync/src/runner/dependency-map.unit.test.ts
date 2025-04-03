@@ -767,7 +767,9 @@ describe('resolveTaskDependenciesForPhase', () => {
         buildTestGeneratorTaskEntry({
           id: 'middle#phase1',
           phase: phase1,
-          dependencies: { dep: outputOnlyProvider.dependency() },
+          dependencies: {
+            dep: outputOnlyProvider.dependency().parentScopeOnly(),
+          },
           outputs: {
             outputProvider: outputOnlyProvider.export(),
           },
