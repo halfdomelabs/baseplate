@@ -152,17 +152,7 @@ export async function executeGeneratorEntry(
     globalFormatters: generatorOutputs.flatMap(
       (output) => output.globalFormatters,
     ),
-    metadata: {
-      generatorStepNodes: metadata.fullSteps.map((step) => ({
-        id: step,
-        label: step,
-      })),
-      generatorStepEdges: metadata.fullEdges.map(([source, target]) => ({
-        id: `${source}->${target}`,
-        source,
-        target,
-      })),
-    },
+    metadata,
   };
 
   // verify no file IDs are duplicated
