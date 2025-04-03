@@ -33,7 +33,7 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
     } = options;
 
     const templatePath = path.join(
-      builder.generatorBaseDirectory,
+      builder.generatorInfo.baseDirectory,
       'templates',
       source,
     );

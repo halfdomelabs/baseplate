@@ -27,9 +27,9 @@ export function getSortedRunSteps(
   const metadata: GeneratorOutputMetadata = {
     generatorTaskEntries: entries.map((entry) => ({
       id: entry.id,
-      generatorName: entry.generatorName,
+      generatorName: entry.generatorInfo.name,
       taskName: entry.task.name,
-      instanceName: entry.instanceName,
+      instanceName: entry.generatorInfo.instanceName,
     })),
     generatorProviderRelationships: [],
   };

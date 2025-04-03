@@ -335,6 +335,7 @@ export const typescriptGenerator = createGenerator({
                 },
                 includeMetadata: descriptor.includeMetadata,
               });
+
               builder.writeFile({
                 id: fileId,
                 generatorName,

@@ -73,24 +73,21 @@ function buildGeneratorEntry(
     {
       id,
       children,
+      generatorInfo: {
+        name: options.generatorName ?? 'test-generator',
+        baseDirectory: '/',
+      },
     },
     {
       ...(id && { id: `${id}#main` }),
       dependencies: dependencyMap,
       exports: exportMap,
       outputs: outputMap,
-      generatorName: options.generatorName,
-      task: {
-        name: 'main',
-        dependencies: dependencyMap,
-        exports: exportMap,
-        outputs: outputMap,
-        phase,
-        run: (deps) => ({
-          providers: entryExports,
-          build: (builder) => build(builder, deps) as undefined,
-        }),
-      },
+      phase,
+      run: (deps) => ({
+        providers: entryExports,
+        build: (builder) => build(builder, deps) as undefined,
+      }),
     },
   );
 }
@@ -257,12 +254,12 @@ describe('executeGeneratorEntry', () => {
     const result = await executeGeneratorEntry(entry, logger);
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/output/file.txt': {
-        id: 'simple:output',
+        id: 'test-generator:output',
         contents: 'output',
         options: undefined,
       },
       '/consumer/file.txt': {
-        id: 'simple:consumer',
+        id: 'test-generator:consumer',
         contents: 'consumer',
         options: undefined,
       },
@@ -435,11 +432,11 @@ describe('executeGeneratorEntry', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'root#phase1',
-          phase: phase1,
-          exports: {
-            prov: providerType.export(),
-          },
           task: {
+            phase: phase1,
+            exports: {
+              prov: providerType.export(),
+            },
             run: () => ({
               providers: { prov: {} },
               build: () => ({}),
@@ -448,9 +445,9 @@ describe('executeGeneratorEntry', () => {
         }),
         buildTestGeneratorTaskEntry({
           id: 'root#phase2',
-          phase: phase2,
-          dependencies: { dep: providerType },
           task: {
+            phase: phase2,
+            dependencies: { dep: providerType },
             run: () => ({
               providers: {},
               build: () => ({}),

@@ -65,11 +65,15 @@ describe('getSortedRunSteps', () => {
       const entries = [
         buildTestGeneratorTaskEntry({
           id: 'producer',
-          outputs: { out: outputProvider.export() },
+          task: {
+            outputs: { out: outputProvider.export() },
+          },
         }),
         buildTestGeneratorTaskEntry({
           id: 'consumer',
-          dependencies: { dep: outputProvider.dependency() },
+          task: {
+            dependencies: { dep: outputProvider.dependency() },
+          },
         }),
       ];
 
@@ -97,17 +101,23 @@ describe('getSortedRunSteps', () => {
       const entries = [
         buildTestGeneratorTaskEntry({
           id: 'outputProducer',
-          outputs: { out: outputProvider.export() },
+          task: {
+            outputs: { out: outputProvider.export() },
+          },
         }),
         buildTestGeneratorTaskEntry({
           id: 'normalProducer',
-          exports: { exp: providerOne.export() },
+          task: {
+            exports: { exp: providerOne.export() },
+          },
         }),
         buildTestGeneratorTaskEntry({
           id: 'consumer',
-          dependencies: {
-            outDep: outputProvider.dependency(),
-            normalDep: providerOne.dependency(),
+          task: {
+            dependencies: {
+              outDep: outputProvider.dependency(),
+              normalDep: providerOne.dependency(),
+            },
           },
         }),
       ];
@@ -144,11 +154,15 @@ describe('getSortedRunSteps', () => {
       const entries = [
         buildTestGeneratorTaskEntry({
           id: 'producer',
-          exports: { exp: readOnlyProvider.export() },
+          task: {
+            exports: { exp: readOnlyProvider.export() },
+          },
         }),
         buildTestGeneratorTaskEntry({
           id: 'consumer',
-          dependencies: { dep: readOnlyProvider.dependency() },
+          task: {
+            dependencies: { dep: readOnlyProvider.dependency() },
+          },
         }),
       ];
 
@@ -176,23 +190,31 @@ describe('getSortedRunSteps', () => {
       const entries = [
         buildTestGeneratorTaskEntry({
           id: 'outputProducer',
-          outputs: { out: outputProvider.export() },
+          task: {
+            outputs: { out: outputProvider.export() },
+          },
         }),
         buildTestGeneratorTaskEntry({
           id: 'middleConsumer',
-          dependencies: { outDep: outputProvider.dependency() },
-          exports: { exp: providerTwo.export() },
+          task: {
+            dependencies: { outDep: outputProvider.dependency() },
+            exports: { exp: providerTwo.export() },
+          },
         }),
         buildTestGeneratorTaskEntry({
           id: 'finalConsumer',
-          dependencies: {
-            normalDep: providerTwo.dependency(),
-            readonlyDep: readOnlyProvider.dependency(),
+          task: {
+            dependencies: {
+              normalDep: providerTwo.dependency(),
+              readonlyDep: readOnlyProvider.dependency(),
+            },
           },
         }),
         buildTestGeneratorTaskEntry({
           id: 'readonlyProducer',
-          exports: { exp: readOnlyProvider.export() },
+          task: {
+            exports: { exp: readOnlyProvider.export() },
+          },
         }),
       ];
 

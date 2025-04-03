@@ -31,28 +31,19 @@ export function buildTestGeneratorTaskEntry(
     task?: Partial<GeneratorTask>;
   },
 ): GeneratorTaskEntry {
-  const phase = data?.task?.phase ?? data?.phase;
   lastTaskId += 1;
-  const dependencies = data?.task?.dependencies ?? data?.dependencies ?? {};
-  const exports = data?.task?.exports ?? data?.exports ?? {};
-  const outputs = data?.task?.outputs ?? data?.outputs ?? {};
   const run = data?.task?.run ?? vi.fn();
   return {
     id: lastTaskId.toString(),
-    dependencies,
-    exports,
-    outputs,
-    generatorBaseDirectory: '/',
-    generatorName: 'test-generator',
-    phase,
+    generatorId: lastGeneratorId.toString(),
+    generatorInfo: {
+      name: 'test-generator',
+      baseDirectory: '/',
+    },
     ...data,
     task: {
       name: `task-${lastTaskId.toString()}`,
-      exports,
-      dependencies,
-      outputs,
       run,
-      phase,
       ...data?.task,
     },
   };
@@ -60,25 +51,32 @@ export function buildTestGeneratorTaskEntry(
 
 export function buildTestGeneratorEntry(
   data?: Partial<GeneratorEntry>,
-  task?: Partial<GeneratorTaskEntry>,
+  task?: Pick<
+    Partial<GeneratorTask>,
+    'name' | 'dependencies' | 'exports' | 'outputs' | 'run' | 'phase'
+  >,
 ): GeneratorEntry {
   lastGeneratorId += 1;
   const id = data?.id ?? lastGeneratorId.toString();
+  const generatorInfo = data?.generatorInfo ?? {
+    name: 'test-generator',
+    baseDirectory: '/',
+  };
   const tasks =
     data?.tasks ??
     (task
       ? [
           buildTestGeneratorTaskEntry({
-            id: `${id}#main`,
-            ...task,
-            generatorName: task.generatorName ?? 'simple',
+            id: `${id}#${task.name ?? 'main'}`,
+            generatorInfo,
+            task,
           }),
         ]
       : []);
   return {
     id,
+    generatorInfo,
     scopes: [],
-    generatorBaseDirectory: '/',
     children: [],
     tasks,
     ...data,

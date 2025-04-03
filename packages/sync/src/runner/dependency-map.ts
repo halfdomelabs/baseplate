@@ -39,15 +39,16 @@ function buildGeneratorIdToScopesMapRecursive(
   const newParentTaskIds = [...parentTaskIds, entry.id];
 
   // add scoped exports and outputs of the entry to cache
-  for (const task of entry.tasks) {
-    const taskExports = Object.values(task.exports);
-    const taskOutputs = Object.values(task.outputs);
+  for (const taskEntry of entry.tasks) {
+    const { task } = taskEntry;
+    const taskExports = Object.values(task.exports ?? {});
+    const taskOutputs = Object.values(task.outputs ?? {});
     const invalidTaskExports = taskExports.filter(
       (taskExport) => taskExport.isOutput,
     );
     if (invalidTaskExports.length > 0) {
       throw new Error(
-        `All providers in task exports must be non-output providers in ${task.id}: ${invalidTaskExports
+        `All providers in task exports must be non-output providers in ${taskEntry.id}: ${invalidTaskExports
           .map((taskExport) => taskExport.name)
           .join(', ')}`,
       );
@@ -57,7 +58,7 @@ function buildGeneratorIdToScopesMapRecursive(
     );
     if (invalidTaskOutputs.length > 0) {
       throw new Error(
-        `All providers in task outputs must be output providers in ${task.id}: ${invalidTaskOutputs
+        `All providers in task outputs must be output providers in ${taskEntry.id}: ${invalidTaskOutputs
           .map((output) => output.name)
           .join(', ')}`,
       );
@@ -94,7 +95,7 @@ function buildGeneratorIdToScopesMapRecursive(
               `Please make sure that the provider export names are unique within the scope (and any other scopes at that level).`,
           );
         }
-        providers.set(providerId, task.id);
+        providers.set(providerId, taskEntry.id);
       }
     }
   }
@@ -133,7 +134,7 @@ function buildTaskDependencyMap(
   parentEntryIdsWithSelf: string[],
   generatorIdToScopesMap: GeneratorIdToScopesMap,
 ): Record<string, EntryDependencyRecord | undefined> {
-  return mapValues(entry.dependencies, (dep) => {
+  return mapValues(entry.task.dependencies ?? {}, (dep) => {
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
     const provider = normalizedDep.name;
     const { optional, exportName, isReadOnly, isOutput, useParentScope } =
@@ -160,7 +161,7 @@ function buildTaskDependencyMap(
     if (!resolvedTaskId) {
       if (!optional || exportName) {
         throw new Error(
-          `Could not resolve dependency ${provider}${exportName ? ` (${exportName})` : ''} for ${entry.id} (generator ${entry.generatorName})`,
+          `Could not resolve dependency ${provider}${exportName ? ` (${exportName})` : ''} for ${entry.id} (generator ${entry.generatorInfo.name})`,
         );
       }
       return;
@@ -168,7 +169,7 @@ function buildTaskDependencyMap(
 
     if (resolvedTaskId === entry.id) {
       throw new Error(
-        `Circular dependency detected for ${provider}${exportName ? ` (${exportName})` : ''} for ${entry.id} (generator ${entry.generatorName}).
+        `Circular dependency detected for ${provider}${exportName ? ` (${exportName})` : ''} for ${entry.id} (generator ${entry.generatorInfo.name}).
          You can use the .parentScopeOnly() method to create a dependency that only resolves providers from the parent generator entry.`,
       );
     }
@@ -214,16 +215,16 @@ function buildEntryDependencyMapRecursive(
   const parentChildIdsWithSelf = [...parentEntryIds, entry.id];
   const entryDependencyMaps = mergeAllWithoutDuplicates(
     entry.tasks
-      .filter((task) => task.phase === phase)
-      .map((task) => {
+      .filter((taskEntry) => taskEntry.task.phase === phase)
+      .map((taskEntry) => {
         const taskDependencyMap = buildTaskDependencyMap(
-          task,
+          taskEntry,
           parentChildIdsWithSelf,
           generatorIdToScopesMap,
         );
 
         return {
-          [task.id]: taskDependencyMap,
+          [taskEntry.id]: taskDependencyMap,
         };
       }),
   );

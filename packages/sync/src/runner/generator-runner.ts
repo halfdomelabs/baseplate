@@ -7,6 +7,7 @@ import { safeMergeMap } from '@src/utils/merge.js';
 
 import type {
   GeneratorEntry,
+  GeneratorTaskEntry,
   GeneratorTaskResult,
 } from '../generators/index.js';
 import type {
@@ -43,7 +44,15 @@ export async function executeGeneratorEntry(
   const generatorOutputs: GeneratorTaskOutput[] = [];
   const generatorMetadatas: GeneratorOutputMetadata[] = [];
 
+  // map of phases to generator ID to task entries that are dynamically added
+  const dynamicTaskEntriesByPhase = new Map<
+    string,
+    Map<string, GeneratorTaskEntry[]>
+  >();
+
   for (const phase of [undefined, ...taskPhases]) {
+    const dynamicTaskEntries = new Map<string, GeneratorTaskEntry[]>();
+
     const dependencyMap = resolveTaskDependenciesForPhase(
       rootEntry,
       generatorIdToScopesMap,
@@ -51,7 +60,7 @@ export async function executeGeneratorEntry(
       logger,
     );
     const filteredTaskEntries = taskEntries.filter(
-      (taskEntry) => taskEntry.phase === phase,
+      (taskEntry) => taskEntry.task.phase === phase,
     );
     const { steps: sortedRunSteps, metadata } = getSortedRunSteps(
       filteredTaskEntries,
@@ -61,8 +70,8 @@ export async function executeGeneratorEntry(
     for (const runStep of sortedRunSteps) {
       const [action, taskId] = runStep.split('|');
       try {
-        const { task, dependencies, exports, outputs } =
-          taskEntriesById[taskId];
+        const { task } = taskEntriesById[taskId];
+        const { dependencies = {}, exports = {}, outputs = {} } = task;
         if (action === 'init') {
           // run through init step
 
@@ -83,20 +92,20 @@ export async function executeGeneratorEntry(
               // check dependency comes from a previous phase
               if (phase !== undefined && dependencyId) {
                 const dependencyTask = taskEntriesById[dependencyId];
-                if (dependencyTask.phase !== phase) {
+                if (dependencyTask.task.phase !== phase) {
                   if (!isOutput) {
                     throw new Error(
                       `Dependency ${key} in ${taskId} cannot come from a previous phase since it is not an output`,
                     );
                   }
                   if (
-                    dependencyTask.phase &&
+                    dependencyTask.task.phase &&
                     !phase.options.consumesOutputFrom?.includes(
-                      dependencyTask.phase,
+                      dependencyTask.task.phase,
                     )
                   ) {
                     throw new Error(
-                      `Dependency ${key} in ${taskId} cannot come from phase ${dependencyTask.phase.name} unless it is explicitly defined in consumesOutputFrom`,
+                      `Dependency ${key} in ${taskId} cannot come from phase ${dependencyTask.task.phase.name} unless it is explicitly defined in consumesOutputFrom`,
                     );
                   }
                 }
@@ -146,8 +155,8 @@ export async function executeGeneratorEntry(
           const generator = taskInstanceById[taskId];
 
           const outputBuilder = new GeneratorTaskOutputBuilder({
-            generatorBaseDirectory: entry.generatorBaseDirectory,
-            generatorName: entry.generatorName,
+            generatorInfo: entry.generatorInfo,
+            generatorId: entry.generatorId,
           });
 
           if (generator.build) {
@@ -179,17 +188,20 @@ export async function executeGeneratorEntry(
           }
 
           generatorOutputs.push(outputBuilder.output);
+          dynamicTaskEntries.set(phase?.name ?? '', outputBuilder.dynamicTasks);
         } else {
           throw new Error(`Unknown action ${action}`);
         }
       } catch (error) {
-        const { generatorName } = taskEntriesById[taskId];
+        const { generatorInfo } = taskEntriesById[taskId];
         logger.error(
-          `Error encountered in ${action} step of ${taskId} (${generatorName})`,
+          `Error encountered in ${action} step of ${taskId} (${generatorInfo.name})`,
         );
         throw error;
       }
     }
+
+    dynamicTaskEntriesByPhase.set(phase?.name ?? '', dynamicTaskEntries);
   }
 
   const buildOutput: GeneratorOutput = {

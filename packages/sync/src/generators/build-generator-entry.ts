@@ -1,15 +1,24 @@
-import type { TaskPhase } from '@src/phases/types.js';
 import type { ProviderExportScope } from '@src/providers/index.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
-import type {
-  GeneratorBundle,
-  GeneratorTask,
-  ProviderDependencyMap,
-  ProviderExportMap,
-} from './generators.js';
+import type { GeneratorBundle, GeneratorTask } from './generators.js';
 
 import { findGeneratorPackageName } from './find-generator-package-name.js';
+
+export interface GeneratorInfo {
+  /**
+   * The name of the generator
+   */
+  name: string;
+  /**
+   * The base directory of the generator
+   */
+  baseDirectory: string;
+  /**
+   * The instance name of the generator
+   */
+  instanceName?: string;
+}
 
 /**
  * A generator task entry is a task that has been set up within a generator entry
@@ -20,37 +29,17 @@ export interface GeneratorTaskEntry {
    */
   id: string;
   /**
-   * The dependencies of the task entry
-   */
-  dependencies: ProviderDependencyMap;
-  /**
-   * The exports of the task entry
-   */
-  exports: ProviderExportMap;
-  /**
-   * The outputs of the task entry
-   */
-  outputs: ProviderExportMap;
-  /**
    * The task that the task entry represents
    */
   task: GeneratorTask;
   /**
-   * The base directory of the generator used for loading templates
+   * The ID of the generator that the task entry belongs to
    */
-  generatorBaseDirectory: string;
+  generatorId: string;
   /**
-   * The name of the generator that the task belongs to
+   * The info of the generator that the task entry belongs to
    */
-  generatorName: string;
-  /**
-   * The instance name of the generator entry
-   */
-  instanceName?: string;
-  /**
-   * The phase of the task entry
-   */
-  phase: TaskPhase | undefined;
+  generatorInfo: GeneratorInfo;
 }
 
 /**
@@ -66,10 +55,6 @@ export interface GeneratorEntry {
    */
   scopes: ProviderExportScope[];
   /**
-   * The directory of the generator used for loading templates
-   */
-  generatorBaseDirectory: string;
-  /**
    * The children of the generator entry
    */
   children: GeneratorEntry[];
@@ -77,6 +62,10 @@ export interface GeneratorEntry {
    * The tasks of the generator entry
    */
   tasks: GeneratorTaskEntry[];
+  /**
+   * The info of the generator entry
+   */
+  generatorInfo: GeneratorInfo;
 }
 
 export interface BuildGeneratorEntryContext {
@@ -98,17 +87,18 @@ async function buildGeneratorEntryRecursive(
   );
   const prefixedName = `${packageName}#${name}`;
 
+  const generatorInfo: GeneratorInfo = {
+    name: prefixedName,
+    baseDirectory: directory,
+    instanceName,
+  };
+
   const taskEntries = tasks.map(
     (task): GeneratorTaskEntry => ({
       id: `${id}#${task.name}`,
-      dependencies: task.dependencies ?? {},
-      exports: task.exports ?? {},
-      outputs: task.outputs ?? {},
       task,
-      generatorBaseDirectory: directory,
-      generatorName: prefixedName,
-      instanceName,
-      phase: task.phase,
+      generatorId: id,
+      generatorInfo,
     }),
   );
 
@@ -156,10 +146,10 @@ async function buildGeneratorEntryRecursive(
 
   return {
     id,
-    generatorBaseDirectory: directory,
     scopes,
     children: builtChildEntries.flat(),
     tasks: taskEntries,
+    generatorInfo,
   };
 }
 

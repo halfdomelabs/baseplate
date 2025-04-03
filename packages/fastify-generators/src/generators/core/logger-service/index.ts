@@ -137,7 +137,7 @@ export const loggerServiceGenerator = createGenerator({
               },
               destination: 'src/services/logger.ts',
               fileId: 'logger',
-              generatorName: builder.generatorName,
+              generatorName: builder.generatorInfo.name,
               options: {
                 alternateFullIds: [
                   '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',

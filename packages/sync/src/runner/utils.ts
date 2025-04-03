@@ -41,6 +41,8 @@ export function flattenGeneratorTaskEntries(
 export function extractSortedTaskPhases(
   entries: GeneratorTaskEntry[],
 ): TaskPhase[] {
-  const phases = entries.map((e) => e.phase).filter((x) => x !== undefined);
+  const phases = entries
+    .map((e) => e.task.phase)
+    .filter((x) => x !== undefined);
   return sortTaskPhases(phases);
 }

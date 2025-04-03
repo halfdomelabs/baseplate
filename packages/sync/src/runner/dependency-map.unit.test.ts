@@ -571,15 +571,19 @@ describe('resolveTaskDependenciesForPhase', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'root#producer',
-          outputs: {
-            outputProvider: outputOnlyProvider.export(),
+          task: {
+            outputs: {
+              outputProvider: outputOnlyProvider.export(),
+            },
           },
         }),
         buildTestGeneratorTaskEntry({
           id: 'root#consumer',
-          dependencies: { dep: outputOnlyProvider.dependency() },
-          exports: {},
-          outputs: {},
+          task: {
+            dependencies: { dep: outputOnlyProvider.dependency() },
+            exports: {},
+            outputs: {},
+          },
         }),
       ],
     });
@@ -647,15 +651,19 @@ describe('resolveTaskDependenciesForPhase', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'root#phase1',
-          phase: phase1,
-          outputs: {
-            outputProvider: outputOnlyProvider.export(),
+          task: {
+            phase: phase1,
+            outputs: {
+              outputProvider: outputOnlyProvider.export(),
+            },
           },
         }),
         buildTestGeneratorTaskEntry({
           id: 'root#phase2',
-          phase: phase2,
-          dependencies: { dep: outputOnlyProvider.dependency() },
+          task: {
+            phase: phase2,
+            dependencies: { dep: outputOnlyProvider.dependency() },
+          },
         }),
       ],
     });
@@ -696,18 +704,22 @@ describe('resolveTaskDependenciesForPhase', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'root#phase1',
-          phase: phase1,
-          exports: {
-            provider1: providerOne.export(scope1),
-            provider2: providerTwo.export(scope2),
+          task: {
+            phase: phase1,
+            exports: {
+              provider1: providerOne.export(scope1),
+              provider2: providerTwo.export(scope2),
+            },
           },
         }),
         buildTestGeneratorTaskEntry({
           id: 'root#phase2',
-          phase: phase2,
-          dependencies: {
-            dep1: providerOne.dependency(),
-            dep2: providerTwo.dependency(),
+          task: {
+            phase: phase2,
+            dependencies: {
+              dep1: providerOne.dependency(),
+              dep2: providerTwo.dependency(),
+            },
           },
         }),
       ],
@@ -753,9 +765,11 @@ describe('resolveTaskDependenciesForPhase', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'root#phase1',
-          phase: phase1,
-          outputs: {
-            outputProvider: outputOnlyProvider.export(),
+          task: {
+            phase: phase1,
+            outputs: {
+              outputProvider: outputOnlyProvider.export(),
+            },
           },
         }),
       ],
@@ -766,12 +780,14 @@ describe('resolveTaskDependenciesForPhase', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'middle#phase1',
-          phase: phase1,
-          dependencies: {
-            dep: outputOnlyProvider.dependency().parentScopeOnly(),
-          },
-          outputs: {
-            outputProvider: outputOnlyProvider.export(),
+          task: {
+            phase: phase1,
+            dependencies: {
+              dep: outputOnlyProvider.dependency().parentScopeOnly(),
+            },
+            outputs: {
+              outputProvider: outputOnlyProvider.export(),
+            },
           },
         }),
       ],
@@ -782,8 +798,10 @@ describe('resolveTaskDependenciesForPhase', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'leaf#phase2',
-          phase: phase2,
-          dependencies: { dep: outputOnlyProvider.dependency() },
+          task: {
+            phase: phase2,
+            dependencies: { dep: outputOnlyProvider.dependency() },
+          },
         }),
       ],
     });
