@@ -1,6 +1,9 @@
 import { vi } from 'vitest';
 
-import type { GeneratorBundle } from '@src/generators/generators.js';
+import type {
+  GeneratorBundle,
+  GeneratorTask,
+} from '@src/generators/generators.js';
 
 import type {
   GeneratorEntry,
@@ -24,24 +27,34 @@ export function buildTestGeneratorBundle(
 }
 
 export function buildTestGeneratorTaskEntry(
-  data?: Partial<GeneratorTaskEntry>,
+  data?: Omit<Partial<GeneratorTaskEntry>, 'task'> & {
+    task?: Partial<GeneratorTask>;
+  },
 ): GeneratorTaskEntry {
+  const phase = data?.task?.phase ?? data?.phase;
   lastTaskId += 1;
+  const dependencies = data?.task?.dependencies ?? data?.dependencies ?? {};
+  const exports = data?.task?.exports ?? data?.exports ?? {};
+  const outputs = data?.task?.outputs ?? data?.outputs ?? {};
+  const run = data?.task?.run ?? vi.fn();
   return {
     id: lastTaskId.toString(),
-    dependencies: {},
-    exports: {},
-    outputs: {},
-    task: {
-      name: `task-${lastTaskId.toString()}`,
-      exports: {},
-      dependencies: {},
-      outputs: {},
-      run: vi.fn(),
-    },
+    dependencies,
+    exports,
+    outputs,
     generatorBaseDirectory: '/',
     generatorName: 'test-generator',
+    phase,
     ...data,
+    task: {
+      name: `task-${lastTaskId.toString()}`,
+      exports,
+      dependencies,
+      outputs,
+      run,
+      phase,
+      ...data?.task,
+    },
   };
 }
 

@@ -175,6 +175,7 @@ export function createProviderType<T>(
     type: 'type',
     name,
     isReadOnly: options?.isReadOnly,
+    isOutput: options?.isOutput,
     dependency() {
       return {
         ...this,
