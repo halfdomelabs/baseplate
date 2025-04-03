@@ -70,6 +70,7 @@ describe('resolveTaskDependencies', () => {
       'child#main': {
         dep: {
           id: 'root#main',
+          providerName: readOnlyProvider.name,
           options: { isReadOnly: true },
         },
       },
@@ -150,10 +151,18 @@ describe('resolveTaskDependencies', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'child1#main': {
-        dep: { id: 'root#main', options: {} },
+        dep: {
+          id: 'root#main',
+          providerName: providerOne.name,
+          options: {},
+        },
       },
       'child2#main': {
-        dep: { id: 'root#main', options: {} },
+        dep: {
+          id: 'root#main',
+          providerName: providerTwo.name,
+          options: {},
+        },
       },
     });
   });
@@ -199,10 +208,18 @@ describe('resolveTaskDependencies', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'child1#main': {
-        dep: { id: 'root#main', options: {} },
+        dep: {
+          id: 'root#main',
+          providerName: providerOne.name,
+          options: {},
+        },
       },
       'child2#main': {
-        dep: { id: 'root#main', options: {} },
+        dep: {
+          id: 'root#main',
+          providerName: providerOne.name,
+          options: {},
+        },
       },
     });
   });
@@ -257,7 +274,11 @@ describe('resolveTaskDependencies', () => {
       'root#main': {},
       'middle#main': {},
       'leaf#main': {
-        dep1: { id: 'middle#main', options: {} },
+        dep1: {
+          id: 'middle#main',
+          providerName: providerOne.name,
+          options: {},
+        },
       },
     });
   });
@@ -309,6 +330,7 @@ describe('resolveTaskDependencies', () => {
       'child#main': {
         dep: {
           id: 'peer#main',
+          providerName: providerOne.name,
           options: {},
         },
       },
@@ -402,10 +424,10 @@ describe('resolveTaskDependencies', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'middle#main': {
-        dep: { id: 'root#main', options: {} },
+        dep: { id: 'root#main', providerName: providerOne.name, options: {} },
       },
       'leaf#main': {
-        dep: { id: 'middle#main', options: {} },
+        dep: { id: 'middle#main', providerName: providerOne.name, options: {} },
       },
     });
   });
@@ -456,7 +478,11 @@ describe('resolveTaskDependencies', () => {
       'root#main': {},
       'middle#main': {},
       'leaf#main': {
-        dep: { id: 'middle#main', options: {} },
+        dep: {
+          id: 'middle#main',
+          providerName: providerOne.name,
+          options: {},
+        },
       },
     });
   });
@@ -494,7 +520,11 @@ describe('resolveTaskDependencies', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'child#main': {
-        dep: { id: 'root#main', options: { isOutput: true } },
+        dep: {
+          id: 'root#main',
+          providerName: outputOnlyProvider.name,
+          options: { isOutput: true },
+        },
       },
     });
   });
@@ -525,7 +555,11 @@ describe('resolveTaskDependencies', () => {
     expect(dependencyMap).toEqual({
       'root#producer': {},
       'root#consumer': {
-        dep: { id: 'root#producer', options: { isOutput: true } },
+        dep: {
+          id: 'root#producer',
+          providerName: outputOnlyProvider.name,
+          options: { isOutput: true },
+        },
       },
     });
   });
