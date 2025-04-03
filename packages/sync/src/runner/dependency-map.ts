@@ -183,7 +183,7 @@ function buildTaskDependencyMap(
   });
 }
 
-export interface EntryDependencyRecord {
+interface EntryDependencyRecord {
   id: string;
   providerName: string;
   options?: Pick<ProviderDependencyOptions, 'isReadOnly' | 'isOutput'>;
