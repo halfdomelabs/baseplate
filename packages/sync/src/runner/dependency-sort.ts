@@ -54,6 +54,12 @@ export function getSortedRunSteps(
             isReadOnly: dependent.options?.isReadOnly ?? false,
           });
 
+          // if the dependent task is not in the entries, we don't need to add a dependency
+          // since it was executed in a previous phase
+          if (!entries.some((e) => e.id === dependent.id)) {
+            return [];
+          }
+
           // check if the dependency is to an output provider and if so,
           // we need to wait until the dependent task has been built before
           // we can build the current task

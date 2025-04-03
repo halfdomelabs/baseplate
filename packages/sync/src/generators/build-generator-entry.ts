@@ -1,3 +1,4 @@
+import type { TaskPhase } from '@src/phases/types.js';
 import type { ProviderExportScope } from '@src/providers/index.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
@@ -46,6 +47,10 @@ export interface GeneratorTaskEntry {
    * The instance name of the generator entry
    */
   instanceName?: string;
+  /**
+   * The phase of the task entry
+   */
+  phase: TaskPhase | undefined;
 }
 
 /**
@@ -103,6 +108,7 @@ async function buildGeneratorEntryRecursive(
       generatorBaseDirectory: directory,
       generatorName: prefixedName,
       instanceName,
+      phase: task.phase,
     }),
   );
 

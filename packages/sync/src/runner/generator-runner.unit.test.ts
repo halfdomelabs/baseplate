@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-output.js';
+import type { TaskPhase } from '@src/phases/types.js';
 
 import { POST_WRITE_COMMAND_PRIORITY } from '@src/output/post-write-commands/types.js';
 import { createEventedLogger } from '@src/utils/index.js';
@@ -17,9 +18,24 @@ import {
   createProviderType,
 } from '../providers/index.js';
 import { executeGeneratorEntry } from './generator-runner.js';
-import { buildTestGeneratorEntry } from './tests/factories.test-helper.js';
+import {
+  buildTestGeneratorEntry,
+  buildTestGeneratorTaskEntry,
+} from './tests/factories.test-helper.js';
 
 const logger = createEventedLogger({ noConsole: true });
+
+// Create test phases
+const phase1: TaskPhase = {
+  name: 'phase1',
+  options: {},
+};
+const phase2: TaskPhase = {
+  name: 'phase2',
+  options: {
+    consumesOutputFrom: [phase1],
+  },
+};
 
 function buildGeneratorEntry(
   options: {
@@ -38,6 +54,7 @@ function buildGeneratorEntry(
       // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- allow no returns for build
       | Promise<void | Record<string, unknown>>;
     generatorName?: string;
+    phase?: TaskPhase;
   } = {},
 ): GeneratorEntry {
   const {
@@ -50,6 +67,7 @@ function buildGeneratorEntry(
     dependencyMap = {},
     exportMap = {},
     outputMap = {},
+    phase,
   } = options;
   return buildTestGeneratorEntry(
     {
@@ -67,6 +85,7 @@ function buildGeneratorEntry(
         dependencies: dependencyMap,
         exports: exportMap,
         outputs: outputMap,
+        phase,
         run: (deps) => ({
           providers: entryExports,
           build: (builder) => build(builder, deps) as undefined,
@@ -317,6 +336,132 @@ describe('executeGeneratorEntry', () => {
 
     await expect(executeGeneratorEntry(entry, logger)).rejects.toThrow(
       /Could not resolve dependency/,
+    );
+  });
+
+  it('handles phased task execution correctly', async () => {
+    const mainOutputProviderType = createOutputProviderType<{
+      generate: () => void;
+    }>('main-output-provider');
+    const mainOutputProvider = { generate: vi.fn() };
+    const phase1OutputProviderType = createOutputProviderType<{
+      generate: () => void;
+    }>('phase1-output-provider');
+    const phase1OutputProvider = { generate: vi.fn() };
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#main-phase',
+          task: {
+            name: 'main-phase',
+            outputs: {
+              mainOutputProv: mainOutputProviderType.export(),
+            },
+            run: () => ({
+              providers: {},
+              build: () => ({ mainOutputProv: mainOutputProvider }),
+            }),
+          },
+        }),
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase1',
+          task: {
+            name: 'phase1',
+            phase: phase1,
+            dependencies: {
+              mainOutputDep: mainOutputProviderType,
+            },
+            outputs: {
+              phase1OutputProv: phase1OutputProviderType.export(),
+            },
+            run: (deps) => ({
+              providers: {},
+              build: (builder) => {
+                (deps.mainOutputDep as { generate: () => void }).generate();
+                builder.writeFile({
+                  id: 'phase1',
+                  filePath: '/phase1/file.txt',
+                  contents: 'phase1',
+                });
+                return { phase1OutputProv: phase1OutputProvider };
+              },
+            }),
+          },
+        }),
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase2',
+          task: {
+            name: 'phase2',
+            phase: phase2,
+            dependencies: { phase1OutputDep: phase1OutputProviderType },
+            run: (deps) => ({
+              providers: {},
+              build: (builder) => {
+                (deps.phase1OutputDep as { generate: () => void }).generate();
+                builder.writeFile({
+                  id: 'phase2',
+                  filePath: '/phase2/file.txt',
+                  contents: 'phase2',
+                });
+              },
+            }),
+          },
+        }),
+      ],
+    });
+
+    const result = await executeGeneratorEntry(entry, logger);
+    expect(Object.fromEntries(result.files.entries())).toEqual({
+      '/phase1/file.txt': {
+        id: 'test-generator:phase1',
+        contents: 'phase1',
+        options: undefined,
+      },
+      '/phase2/file.txt': {
+        id: 'test-generator:phase2',
+        contents: 'phase2',
+        options: undefined,
+      },
+    });
+    expect(mainOutputProvider.generate).toHaveBeenCalled();
+    expect(phase1OutputProvider.generate).toHaveBeenCalled();
+  });
+
+  it('throws error when non-output provider is used across phases', async () => {
+    const providerType = createProviderType('regular-provider');
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase1',
+          phase: phase1,
+          exports: {
+            prov: providerType.export(),
+          },
+          task: {
+            run: () => ({
+              providers: { prov: {} },
+              build: () => ({}),
+            }),
+          },
+        }),
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase2',
+          phase: phase2,
+          dependencies: { dep: providerType },
+          task: {
+            run: () => ({
+              providers: {},
+              build: () => ({}),
+            }),
+          },
+        }),
+      ],
+    });
+
+    await expect(executeGeneratorEntry(entry, logger)).rejects.toThrow(
+      /Dependency dep in root#phase2 cannot come from a previous phase since it is not an output/,
     );
   });
 });

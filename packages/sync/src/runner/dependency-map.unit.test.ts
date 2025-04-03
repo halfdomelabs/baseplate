@@ -1,12 +1,21 @@
 import { describe, expect, it } from 'vitest';
 
+import type { GeneratorEntry } from '@src/generators/build-generator-entry.js';
+import type { TaskPhase } from '@src/phases/types.js';
+import type { Logger } from '@src/utils/index.js';
+
 import { createEventedLogger } from '@src/utils/index.js';
+
+import type { EntryDependencyMap } from './dependency-map.js';
 
 import {
   createProviderExportScope,
   createProviderType,
 } from '../providers/index.js';
-import { resolveTaskDependencies } from './dependency-map.js';
+import {
+  buildGeneratorIdToScopesMap,
+  resolveTaskDependenciesForPhase,
+} from './dependency-map.js';
 import {
   buildTestGeneratorEntry,
   buildTestGeneratorTaskEntry,
@@ -34,7 +43,33 @@ const middleScope = createProviderExportScope(
   'Middle level test scope',
 );
 
-describe('resolveTaskDependencies', () => {
+// Create test phases
+const phase1: TaskPhase = {
+  name: 'phase1',
+  options: {},
+};
+const phase2: TaskPhase = {
+  name: 'phase2',
+  options: {
+    consumesOutputFrom: [phase1],
+  },
+};
+
+function resolveTaskDependencies(
+  entry: GeneratorEntry,
+  logger: Logger,
+  phase?: TaskPhase,
+): EntryDependencyMap {
+  const generatorIdToScopesMap = buildGeneratorIdToScopesMap(entry);
+  return resolveTaskDependenciesForPhase(
+    entry,
+    generatorIdToScopesMap,
+    phase,
+    logger,
+  );
+}
+
+describe('resolveTaskDependenciesForPhase', () => {
   it('should resolve basic readonly dependencies in a single scope', () => {
     // Arrange
     const entry = buildTestGeneratorEntry(
@@ -603,5 +638,191 @@ describe('resolveTaskDependencies', () => {
     expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
       /All providers in task exports must be non-output providers/,
     );
+  });
+
+  it('should handle phase-specific dependencies correctly', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase1',
+          phase: phase1,
+          outputs: {
+            outputProvider: outputOnlyProvider.export(),
+          },
+        }),
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase2',
+          phase: phase2,
+          dependencies: { dep: outputOnlyProvider.dependency() },
+        }),
+      ],
+    });
+
+    // Act
+    const phase1DependencyMap = resolveTaskDependencies(
+      entry,
+      testLogger,
+      phase1,
+    );
+    const phase2DependencyMap = resolveTaskDependencies(
+      entry,
+      testLogger,
+      phase2,
+    );
+
+    // Assert
+    expect(phase1DependencyMap).toEqual({
+      'root#phase1': {},
+    });
+
+    expect(phase2DependencyMap).toEqual({
+      'root#phase2': {
+        dep: {
+          id: 'root#phase1',
+          providerName: outputOnlyProvider.name,
+          options: { isOutput: true },
+        },
+      },
+    });
+  });
+
+  it('should handle phase-specific scopes correctly', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      scopes: [scope1, scope2],
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase1',
+          phase: phase1,
+          exports: {
+            provider1: providerOne.export(scope1),
+            provider2: providerTwo.export(scope2),
+          },
+        }),
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase2',
+          phase: phase2,
+          dependencies: {
+            dep1: providerOne.dependency(),
+            dep2: providerTwo.dependency(),
+          },
+        }),
+      ],
+    });
+
+    // Act
+    const phase1DependencyMap = resolveTaskDependencies(
+      entry,
+      testLogger,
+      phase1,
+    );
+    const phase2DependencyMap = resolveTaskDependencies(
+      entry,
+      testLogger,
+      phase2,
+    );
+
+    // Assert
+    expect(phase1DependencyMap).toEqual({
+      'root#phase1': {},
+    });
+
+    expect(phase2DependencyMap).toEqual({
+      'root#phase2': {
+        dep1: {
+          id: 'root#phase1',
+          providerName: providerOne.name,
+          options: {},
+        },
+        dep2: {
+          id: 'root#phase1',
+          providerName: providerTwo.name,
+          options: {},
+        },
+      },
+    });
+  });
+
+  it('should handle nested phase dependencies correctly', () => {
+    // Arrange
+    const rootEntry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#phase1',
+          phase: phase1,
+          outputs: {
+            outputProvider: outputOnlyProvider.export(),
+          },
+        }),
+      ],
+    });
+
+    const middleEntry = buildTestGeneratorEntry({
+      id: 'middle',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'middle#phase1',
+          phase: phase1,
+          dependencies: {
+            dep: outputOnlyProvider.dependency().parentScopeOnly(),
+          },
+          outputs: {
+            outputProvider: outputOnlyProvider.export(),
+          },
+        }),
+      ],
+    });
+
+    const leafEntry = buildTestGeneratorEntry({
+      id: 'leaf',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'leaf#phase2',
+          phase: phase2,
+          dependencies: { dep: outputOnlyProvider.dependency() },
+        }),
+      ],
+    });
+
+    middleEntry.children.push(leafEntry);
+    rootEntry.children.push(middleEntry);
+
+    // Act
+    const phase1DependencyMap = resolveTaskDependencies(
+      rootEntry,
+      testLogger,
+      phase1,
+    );
+    const phase2DependencyMap = resolveTaskDependencies(
+      rootEntry,
+      testLogger,
+      phase2,
+    );
+
+    // Assert
+    expect(phase1DependencyMap).toEqual({
+      'root#phase1': {},
+      'middle#phase1': {
+        dep: {
+          id: 'root#phase1',
+          providerName: outputOnlyProvider.name,
+          options: { isOutput: true },
+        },
+      },
+    });
+
+    expect(phase2DependencyMap).toEqual({
+      'leaf#phase2': {
+        dep: {
+          id: 'middle#phase1',
+          providerName: outputOnlyProvider.name,
+          options: { isOutput: true },
+        },
+      },
+    });
   });
 });

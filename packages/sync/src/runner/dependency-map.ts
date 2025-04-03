@@ -1,5 +1,6 @@
 import { mapValues, mergeWith } from 'es-toolkit';
 
+import type { TaskPhase } from '@src/phases/types.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
 import type {
@@ -200,27 +201,31 @@ export type EntryDependencyMap = Record<
  * @param entry Root generator entry
  * @param resolveableProvider Provider map of parents
  * @param flattenedTasks Flattened generator tasks
+ * @param phase Task phase to resolve dependencies for
  * @param logger Logger to use
  */
 function buildEntryDependencyMapRecursive(
   entry: GeneratorEntry,
   parentEntryIds: string[],
   generatorIdToScopesMap: GeneratorIdToScopesMap,
+  phase: TaskPhase | undefined,
   logger: Logger,
 ): EntryDependencyMap {
   const parentChildIdsWithSelf = [...parentEntryIds, entry.id];
   const entryDependencyMaps = mergeAllWithoutDuplicates(
-    entry.tasks.map((task) => {
-      const taskDependencyMap = buildTaskDependencyMap(
-        task,
-        parentChildIdsWithSelf,
-        generatorIdToScopesMap,
-      );
+    entry.tasks
+      .filter((task) => task.phase === phase)
+      .map((task) => {
+        const taskDependencyMap = buildTaskDependencyMap(
+          task,
+          parentChildIdsWithSelf,
+          generatorIdToScopesMap,
+        );
 
-      return {
-        [task.id]: taskDependencyMap,
-      };
-    }),
+        return {
+          [task.id]: taskDependencyMap,
+        };
+      }),
   );
 
   const childDependencyMaps = mergeAllWithoutDuplicates(
@@ -229,6 +234,7 @@ function buildEntryDependencyMapRecursive(
         childEntry,
         parentChildIdsWithSelf,
         generatorIdToScopesMap,
+        phase,
         logger,
       ),
     ),
@@ -241,22 +247,39 @@ function buildEntryDependencyMapRecursive(
 }
 
 /**
- * Builds a map of task entry ID to resolved providers for that entry recursively from the generator root entry
+ * Builds a map of generator ID to scopes with providers map
  *
- * @param entry Root generator entry
- * @param logger Logger to use
+ * @param rootEntry Root generator entry
+ * @returns Generator ID to scopes map
  */
-export function resolveTaskDependencies(
+export function buildGeneratorIdToScopesMap(
   rootEntry: GeneratorEntry,
-  logger: Logger,
-): EntryDependencyMap {
+): GeneratorIdToScopesMap {
   const generatorIdToScopesMap: GeneratorIdToScopesMap = {};
   buildGeneratorIdToScopesMapRecursive(rootEntry, [], generatorIdToScopesMap);
+  return generatorIdToScopesMap;
+}
 
+/**
+ * Builds a map of task entry ID to resolved providers for that entry recursively from the generator root entry
+ * for a specific task phase
+ *
+ * @param entry Root generator entry
+ * @param generatorIdToScopesMap Generator ID to scopes map
+ * @param phase Task phase to resolve dependencies for
+ * @param logger Logger to use
+ */
+export function resolveTaskDependenciesForPhase(
+  rootEntry: GeneratorEntry,
+  generatorIdToScopesMap: GeneratorIdToScopesMap,
+  phase: TaskPhase | undefined,
+  logger: Logger,
+): EntryDependencyMap {
   return buildEntryDependencyMapRecursive(
     rootEntry,
     [],
     generatorIdToScopesMap,
+    phase,
     logger,
   );
 }

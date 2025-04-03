@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-output.js';
+import type { TaskPhase } from '@src/phases/types.js';
 import type {
   Provider,
   ProviderDependency,
@@ -153,6 +154,10 @@ export interface GeneratorTask<
    * The providers that are required by this generator task
    */
   dependencies?: DependencyMap;
+  /**
+   * The phase of the generator task (otherwise it will be executed before all named phases)
+   */
+  phase?: TaskPhase | undefined;
   /**
    * Given the resolved dependencies, run the generator task and return
    * the initialized export map and function to build the output for the
