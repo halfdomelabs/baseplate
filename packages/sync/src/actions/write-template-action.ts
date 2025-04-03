@@ -17,7 +17,7 @@ export const writeTemplateAction = createBuilderActionCreator<[Options]>(
     const { destination, template, data, noFormat } = options;
 
     const templatePath = path.join(
-      builder.generatorBaseDirectory,
+      builder.generatorInfo.baseDirectory,
       'templates',
       template,
     );

@@ -2,6 +2,7 @@ import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { GeneratorTaskOutputBuilder } from '@src/output/index.js';
+import { buildTestGeneratorTaskEntry } from '@src/runner/tests/factories.test-helper.js';
 
 import { copyDirectoryAction } from './copy-directory-action.js';
 
@@ -12,13 +13,24 @@ beforeEach(() => {
   vol.reset();
 });
 
+const testGeneratorTaskEntry = buildTestGeneratorTaskEntry({
+  id: 'test',
+  generatorInfo: {
+    name: 'test',
+    baseDirectory: '/generator',
+  },
+  task: {
+    name: 'test',
+  },
+});
+
 describe('copyDirectoryAction', () => {
   it('should copy an empty directory', async () => {
     await vol.promises.mkdir('/generator/templates', { recursive: true });
 
     const builder = new GeneratorTaskOutputBuilder({
-      generatorBaseDirectory: '/generator',
-      generatorName: 'test',
+      generatorInfo: testGeneratorTaskEntry.generatorInfo,
+      generatorId: testGeneratorTaskEntry.id,
     });
 
     await copyDirectoryAction({
@@ -37,8 +49,8 @@ describe('copyDirectoryAction', () => {
     });
 
     const builder = new GeneratorTaskOutputBuilder({
-      generatorBaseDirectory: '/generator',
-      generatorName: 'test',
+      generatorInfo: testGeneratorTaskEntry.generatorInfo,
+      generatorId: testGeneratorTaskEntry.id,
     });
 
     await copyDirectoryAction({
@@ -64,8 +76,8 @@ describe('copyDirectoryAction', () => {
     });
 
     const builder = new GeneratorTaskOutputBuilder({
-      generatorBaseDirectory: '/generator',
-      generatorName: 'test',
+      generatorInfo: testGeneratorTaskEntry.generatorInfo,
+      generatorId: testGeneratorTaskEntry.id,
     });
 
     await copyDirectoryAction({

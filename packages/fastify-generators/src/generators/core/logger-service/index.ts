@@ -5,11 +5,11 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import {
+  createTypescriptFileTask,
   nodeProvider,
   projectScope,
   TsCodeUtils,
   TypescriptCodeUtils,
-  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -62,13 +62,12 @@ export const loggerServiceGenerator = createGenerator({
       dependencies: {
         node: nodeProvider,
         fastify: fastifyProvider,
-        typescriptFile: typescriptFileProvider,
       },
       exports: {
         loggerServiceSetup: loggerServiceSetupProvider.export(projectScope),
         loggerService: loggerServiceProvider.export(projectScope),
       },
-      run({ node, fastify, typescriptFile }) {
+      run({ node, fastify }) {
         const mixins = createNonOverwriteableMap<
           Record<string, TsCodeFragment>
         >({}, { name: 'logger-service-mixins' });
@@ -127,23 +126,24 @@ export const loggerServiceGenerator = createGenerator({
                 }`;
             }
 
-            typescriptFile.writeTemplatedFile({
-              template: loggerFileTemplate,
-              variables: {
-                TPL_LOGGER_OPTIONS:
-                  Object.keys(loggerOptions).length > 0
-                    ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
-                    : '',
-              },
-              destination: 'src/services/logger.ts',
-              fileId: 'logger',
-              generatorName: builder.generatorName,
-              options: {
-                alternateFullIds: [
-                  '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',
-                ],
-              },
-            });
+            builder.addDynamicTask(
+              createTypescriptFileTask({
+                template: loggerFileTemplate,
+                variables: {
+                  TPL_LOGGER_OPTIONS:
+                    Object.keys(loggerOptions).length > 0
+                      ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
+                      : '',
+                },
+                destination: 'src/services/logger.ts',
+                fileId: 'logger',
+                options: {
+                  alternateFullIds: [
+                    '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',
+                  ],
+                },
+              }),
+            );
           },
         };
       },

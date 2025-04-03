@@ -1,12 +1,15 @@
+import { mapGroupBy } from '@halfdomelabs/utils';
 import { keyBy, mapValues } from 'es-toolkit';
 
 import type { Logger } from '@src/utils/evented-logger.js';
 
+import { sortTaskPhases } from '@src/phases/sort-task-phases.js';
 import { findDuplicates } from '@src/utils/find-duplicates.js';
 import { safeMergeMap } from '@src/utils/merge.js';
 
 import type {
   GeneratorEntry,
+  GeneratorTaskEntry,
   GeneratorTaskResult,
 } from '../generators/index.js';
 import type {
@@ -22,17 +25,15 @@ import {
   resolveTaskDependenciesForPhase,
 } from './dependency-map.js';
 import { getSortedRunSteps } from './dependency-sort.js';
-import {
-  extractSortedTaskPhases,
-  flattenGeneratorTaskEntries,
-} from './utils.js';
+import { flattenGeneratorTaskEntriesAndPhases } from './utils.js';
 
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry,
   logger: Logger,
 ): Promise<GeneratorOutput> {
-  const taskEntries = flattenGeneratorTaskEntries(rootEntry);
-  const taskPhases = extractSortedTaskPhases(taskEntries);
+  const { taskEntries, phases } =
+    flattenGeneratorTaskEntriesAndPhases(rootEntry);
+  const sortedPhases = sortTaskPhases(phases);
   const taskEntriesById = keyBy(taskEntries, (item) => item.id);
   // build a map of generators to their scoped exports
   const generatorIdToScopesMap = buildGeneratorIdToScopesMap(rootEntry);
@@ -43,26 +44,42 @@ export async function executeGeneratorEntry(
   const generatorOutputs: GeneratorTaskOutput[] = [];
   const generatorMetadatas: GeneratorOutputMetadata[] = [];
 
-  for (const phase of [undefined, ...taskPhases]) {
+  // map of phases to generator ID to task entries that are dynamically added
+  const dynamicTaskEntriesByPhase = new Map<
+    string,
+    Map<string, GeneratorTaskEntry[]>
+  >();
+
+  for (const phase of [undefined, ...sortedPhases]) {
+    const currentDynamicTaskEntries = dynamicTaskEntriesByPhase.get(
+      phase?.name ?? '',
+    );
+
     const dependencyMap = resolveTaskDependenciesForPhase(
       rootEntry,
       generatorIdToScopesMap,
       phase,
+      currentDynamicTaskEntries,
       logger,
     );
     const filteredTaskEntries = taskEntries.filter(
-      (taskEntry) => taskEntry.phase === phase,
+      (taskEntry) => taskEntry.task.phase === phase,
     );
     const { steps: sortedRunSteps, metadata } = getSortedRunSteps(
-      filteredTaskEntries,
+      [
+        ...filteredTaskEntries,
+        ...(currentDynamicTaskEntries
+          ? [...currentDynamicTaskEntries.values()].flat()
+          : []),
+      ],
       dependencyMap,
     );
     generatorMetadatas.push(metadata);
     for (const runStep of sortedRunSteps) {
       const [action, taskId] = runStep.split('|');
       try {
-        const { task, dependencies, exports, outputs } =
-          taskEntriesById[taskId];
+        const { task, generatorId } = taskEntriesById[taskId];
+        const { dependencies = {}, exports = {}, outputs = {} } = task;
         if (action === 'init') {
           // run through init step
 
@@ -83,20 +100,20 @@ export async function executeGeneratorEntry(
               // check dependency comes from a previous phase
               if (phase !== undefined && dependencyId) {
                 const dependencyTask = taskEntriesById[dependencyId];
-                if (dependencyTask.phase !== phase) {
+                if (dependencyTask.task.phase !== phase) {
                   if (!isOutput) {
                     throw new Error(
                       `Dependency ${key} in ${taskId} cannot come from a previous phase since it is not an output`,
                     );
                   }
                   if (
-                    dependencyTask.phase &&
+                    dependencyTask.task.phase &&
                     !phase.options.consumesOutputFrom?.includes(
-                      dependencyTask.phase,
+                      dependencyTask.task.phase,
                     )
                   ) {
                     throw new Error(
-                      `Dependency ${key} in ${taskId} cannot come from phase ${dependencyTask.phase.name} unless it is explicitly defined in consumesOutputFrom`,
+                      `Dependency ${key} in ${taskId} cannot come from phase ${dependencyTask.task.phase.name} unless it is explicitly defined in consumesOutputFrom`,
                     );
                   }
                 }
@@ -146,8 +163,8 @@ export async function executeGeneratorEntry(
           const generator = taskInstanceById[taskId];
 
           const outputBuilder = new GeneratorTaskOutputBuilder({
-            generatorBaseDirectory: entry.generatorBaseDirectory,
-            generatorName: entry.generatorName,
+            generatorInfo: entry.generatorInfo,
+            generatorId: entry.generatorId,
           });
 
           if (generator.build) {
@@ -178,14 +195,59 @@ export async function executeGeneratorEntry(
             }
           }
 
+          // validate dynamic tasks fulfill the requirements
+          const { dynamicTasks } = outputBuilder;
+
+          for (const dynamicTask of dynamicTasks) {
+            if (dynamicTask.id in taskEntriesById) {
+              throw new Error(
+                `Cannot add dynamic task with the same name as a static task: ${dynamicTask.id}`,
+              );
+            }
+            if (
+              !dynamicTask.task.phase ||
+              (phase &&
+                !phase.options.addsDynamicTasksTo?.includes(
+                  dynamicTask.task.phase,
+                ))
+            ) {
+              throw new Error(
+                `Dynamic task ${dynamicTask.id} must have an explicit phase and be added to the addsDynamicTasksTo option of the phase ${phase?.name}`,
+              );
+            }
+            if (!sortedPhases.includes(dynamicTask.task.phase)) {
+              throw new Error(
+                `Could not find phase ${dynamicTask.task.phase.name} in the task phases. Make sure it is registered ahead of time.`,
+              );
+            }
+            // register it in the ID map
+            taskEntriesById[dynamicTask.id] = dynamicTask;
+          }
+
+          // group dynamic tasks by phase and add them to dynamicTaskEntriesByPhase
+          const dynamicTasksByPhase = mapGroupBy(
+            dynamicTasks,
+            (task) => task.task.phase?.name ?? '',
+          );
+          for (const [
+            phaseName,
+            dynamicTasksOfPhase,
+          ] of dynamicTasksByPhase.entries()) {
+            const dynamicTaskEntries =
+              dynamicTaskEntriesByPhase.get(phaseName) ??
+              new Map<string, GeneratorTaskEntry[]>();
+            dynamicTaskEntries.set(generatorId, dynamicTasksOfPhase);
+            dynamicTaskEntriesByPhase.set(phaseName, dynamicTaskEntries);
+          }
+
           generatorOutputs.push(outputBuilder.output);
         } else {
           throw new Error(`Unknown action ${action}`);
         }
       } catch (error) {
-        const { generatorName } = taskEntriesById[taskId];
+        const { generatorInfo } = taskEntriesById[taskId];
         logger.error(
-          `Error encountered in ${action} step of ${taskId} (${generatorName})`,
+          `Error encountered in ${action} step of ${taskId} (${generatorInfo.name})`,
         );
         throw error;
       }

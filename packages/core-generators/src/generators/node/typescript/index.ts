@@ -1,5 +1,6 @@
 import type {
   BuilderAction,
+  GeneratorTask,
   InferProviderType,
   WriteFileOptions,
 } from '@halfdomelabs/sync';
@@ -9,7 +10,8 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  createSetupTask,
+  createSetupTaskWithInfo,
+  createTaskPhase,
   writeJsonAction,
 } from '@halfdomelabs/sync';
 import { safeMergeAll } from '@halfdomelabs/utils';
@@ -115,7 +117,6 @@ interface WriteTemplatedFilePayload<
   destination: string;
   variables: InferTsCodeTemplateVariablesFromMap<TVariables>;
   fileId: string;
-  generatorName: string;
   options?: WriteFileOptions;
 }
 
@@ -145,7 +146,7 @@ const DEFAULT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
 };
 
 const [setupTask, typescriptSetupProvider, typescriptConfigProvider] =
-  createSetupTask(
+  createSetupTaskWithInfo(
     (t) => ({
       version: t.string(CORE_PACKAGES.typescript),
       compilerOptions: t.scalar<TypescriptCompilerOptions>(
@@ -160,6 +161,11 @@ const [setupTask, typescriptSetupProvider, typescriptConfigProvider] =
       prefix: 'typescript',
       configScope: projectScope,
       outputScope: projectScope,
+      infoFromDescriptor: (
+        descriptor: z.infer<typeof typescriptGeneratorDescriptorSchema>,
+      ) => ({
+        includeMetadata: descriptor.includeMetadata,
+      }),
     },
   );
 
@@ -173,12 +179,64 @@ export type TypescriptSetupProvider = InferProviderType<
   typeof typescriptSetupProvider
 >;
 
+export const typescriptFileTaskPhase = createTaskPhase('typescript-file');
+
+export function createTypescriptFileTask<
+  TVariables extends TsCodeTemplateVariableMap,
+>(payload: WriteTemplatedFilePayload<TVariables>): GeneratorTask {
+  const task = createGeneratorTask({
+    name: payload.fileId,
+    phase: typescriptFileTaskPhase,
+    dependencies: { typescriptConfig: typescriptConfigProvider },
+    run({ typescriptConfig: { compilerOptions, includeMetadata } }) {
+      const {
+        baseUrl = '.',
+        paths = {},
+        moduleResolution = 'node',
+      } = compilerOptions;
+      const { fileId, template, destination, variables, options } = payload;
+      const pathMapEntries = generatePathMapEntries(baseUrl, paths);
+      const internalPatterns = pathMapEntriesToRegexes(pathMapEntries);
+
+      return {
+        async build(builder) {
+          const directory = path.dirname(destination);
+          const file = await renderTsCodeFileTemplate(template, variables, {
+            resolveModule(moduleSpecifier) {
+              return resolveModule(moduleSpecifier, directory, {
+                pathMapEntries,
+                moduleResolution,
+              });
+            },
+            importSortOptions: {
+              internalPatterns,
+            },
+            includeMetadata,
+          });
+
+          builder.writeFile({
+            id: fileId,
+            filePath: destination,
+            contents: file,
+            options: {
+              ...options,
+              shouldFormat: true,
+            },
+          });
+        },
+      };
+    },
+  });
+  return task;
+}
+
 export const typescriptGenerator = createGenerator({
   name: 'node/typescript',
   generatorFileUrl: import.meta.url,
   descriptorSchema: typescriptGeneratorDescriptorSchema,
+  preRegisteredPhases: [typescriptFileTaskPhase],
   buildTasks: (descriptor) => [
-    createGeneratorTask(setupTask),
+    createGeneratorTask(setupTask(descriptor)),
     createGeneratorTask({
       name: 'main',
       dependencies: {
@@ -283,69 +341,6 @@ export const typescriptGenerator = createGenerator({
                 },
               }),
             );
-          },
-        };
-      },
-    }),
-    createGeneratorTask({
-      name: 'file',
-      exports: {
-        typescriptFile: typescriptFileProvider.export(projectScope),
-      },
-      dependencies: { typescriptConfig: typescriptConfigProvider },
-      run({ typescriptConfig: { compilerOptions } }) {
-        const {
-          baseUrl = '.',
-          paths = {},
-          moduleResolution = 'node',
-        } = compilerOptions;
-        const pathMapEntries = generatePathMapEntries(baseUrl, paths);
-        const internalPatterns = pathMapEntriesToRegexes(pathMapEntries);
-
-        const typescriptFiles: WriteTemplatedFilePayload<TsCodeTemplateVariableMap>[] =
-          [];
-
-        return {
-          providers: {
-            typescriptFile: {
-              writeTemplatedFile: (payload) => {
-                typescriptFiles.push(payload);
-              },
-            },
-          },
-          async build(builder) {
-            for (const {
-              fileId,
-              generatorName,
-              template,
-              destination,
-              variables,
-              options,
-            } of typescriptFiles) {
-              const directory = path.dirname(destination);
-              const file = await renderTsCodeFileTemplate(template, variables, {
-                resolveModule(moduleSpecifier) {
-                  return resolveModule(moduleSpecifier, directory, {
-                    pathMapEntries,
-                    moduleResolution,
-                  });
-                },
-                importSortOptions: {
-                  internalPatterns,
-                },
-                includeMetadata: descriptor.includeMetadata,
-              });
-              builder.writeFile({
-                id: fileId,
-                generatorName,
-                filePath: destination,
-                contents: file,
-                options: {
-                  ...options,
-                  shouldFormat: true,
-                },
-              });
-            }
           },
         };
       },

@@ -16,7 +16,7 @@ export const copyDirectoryAction = createBuilderActionCreator<[Options]>(
     const { destination, source, shouldFormat } = options;
 
     const templatePath = path.join(
-      builder.generatorBaseDirectory,
+      builder.generatorInfo.baseDirectory,
       'templates',
       source,
     );

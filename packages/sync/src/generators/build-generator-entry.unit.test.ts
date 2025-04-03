@@ -58,16 +58,23 @@ describe('buildGeneratorEntry', () => {
 
     expect(entry).toMatchObject({
       id: 'root',
-      generatorBaseDirectory: '/test',
       scopes: [],
       children: [],
+      generatorInfo: {
+        name: 'test-package#test-generator',
+        baseDirectory: '/test',
+      },
       tasks: [
         {
           id: 'root#test-task',
-          dependencies: { test: testProviderType },
-          exports: { test: expect.any(Object) as ProviderExportMap },
-          generatorBaseDirectory: '/test',
-          generatorName: 'test-package#test-generator',
+          task: {
+            dependencies: { test: testProviderType },
+            exports: { test: expect.any(Object) as ProviderExportMap },
+          },
+          generatorInfo: {
+            name: 'test-package#test-generator',
+            baseDirectory: '/test',
+          },
         },
       ],
     });
@@ -119,35 +126,48 @@ describe('buildGeneratorEntry', () => {
 
     expect(entry).toMatchObject({
       id: 'root',
-      generatorBaseDirectory: '/test/parent',
+      generatorInfo: {
+        name: 'parent-package#parent-generator',
+        baseDirectory: '/test/parent',
+      },
       children: [
         {
           id: 'root.child',
-          generatorBaseDirectory: '/test/child',
+          generatorInfo: {
+            name: 'child-package#child-generator',
+            baseDirectory: '/test/child',
+          },
           tasks: [
             {
               id: 'root.child#child-task',
-              generatorName: 'child-package#child-generator',
+              generatorInfo: {
+                name: 'child-package#child-generator',
+                baseDirectory: '/test/child',
+              },
             },
           ],
         },
         {
           id: 'root.multiChild.child-1',
-          generatorBaseDirectory: '/test/child',
           tasks: [
             {
               id: 'root.multiChild.child-1#child-task',
-              generatorName: 'child-package#child-generator',
+              generatorInfo: {
+                name: 'child-package#child-generator',
+                baseDirectory: '/test/child',
+              },
             },
           ],
         },
         {
           id: 'root.multiChild.child-2',
-          generatorBaseDirectory: '/test/child',
           tasks: [
             {
               id: 'root.multiChild.child-2#child-task',
-              generatorName: 'child-package#child-generator',
+              generatorInfo: {
+                name: 'child-package#child-generator',
+                baseDirectory: '/test/child',
+              },
             },
           ],
         },

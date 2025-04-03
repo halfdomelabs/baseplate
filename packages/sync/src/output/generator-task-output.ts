@@ -1,6 +1,12 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
+import type {
+  GeneratorInfo,
+  GeneratorTask,
+  GeneratorTaskEntry,
+} from '@src/generators/index.js';
+
 import type { BuilderAction } from './builder-action.js';
 import type { GeneratorOutputFormatter } from './formatter.js';
 import type {
@@ -93,13 +99,13 @@ export interface GeneratorOutput extends GeneratorTaskOutput {
 
 interface GeneratorTaskOutputBuilderContext {
   /**
-   * The base directory of the generator code (useful for reading templates)
+   * The info of the current generator
    */
-  generatorBaseDirectory: string;
+  generatorInfo: GeneratorInfo;
   /**
-   * The name of the generator
+   * The id of the current generator
    */
-  generatorName: string;
+  generatorId: string;
 }
 
 /**
@@ -113,14 +119,19 @@ export class GeneratorTaskOutputBuilder {
   output: GeneratorTaskOutput;
 
   /**
-   * The base directory of the generator code (useful for reading templates)
+   * The info of the current generator
    */
-  generatorBaseDirectory: string;
+  generatorInfo: GeneratorInfo;
 
   /**
-   * The name of the generator
+   * The id of the current generator
    */
-  generatorName: string;
+  generatorId: string;
+
+  /**
+   * The dynamic tasks that have been added to the output
+   */
+  dynamicTasks: GeneratorTaskEntry[] = [];
 
   constructor(context: GeneratorTaskOutputBuilderContext) {
     this.output = {
@@ -128,8 +139,8 @@ export class GeneratorTaskOutputBuilder {
       postWriteCommands: [],
       globalFormatters: [],
     };
-    this.generatorBaseDirectory = context.generatorBaseDirectory;
-    this.generatorName = context.generatorName;
+    this.generatorInfo = context.generatorInfo;
+    this.generatorId = context.generatorId;
   }
 
   /**
@@ -140,7 +151,7 @@ export class GeneratorTaskOutputBuilder {
    */
   readTemplate(templatePath: string): Promise<string> {
     const fullPath = path.join(
-      this.generatorBaseDirectory,
+      this.generatorInfo.baseDirectory,
       'templates',
       templatePath,
     );
@@ -177,7 +188,7 @@ export class GeneratorTaskOutputBuilder {
     }
 
     this.output.files.set(fullPath, {
-      id: `${generatorName ?? this.generatorName}:${id}`,
+      id: `${generatorName ?? this.generatorInfo.name}:${id}`,
       contents,
       options,
     });
@@ -236,5 +247,25 @@ export class GeneratorTaskOutputBuilder {
     }
 
     this.output.globalFormatters.push(formatter);
+  }
+
+  /**
+   * Adds a dynamic task to the output
+   *
+   * @param task The task to add
+   */
+  addDynamicTask(task: Omit<GeneratorTask, 'exports' | 'outputs'>): void {
+    if (this.dynamicTasks.some((t) => t.task.name === task.name)) {
+      throw new Error(`Dynamic task ${task.name} already exists`);
+    }
+    if (!task.phase) {
+      throw new Error(`Dynamic task ${task.name} must have a phase`);
+    }
+    this.dynamicTasks.push({
+      id: `${this.generatorId}#${task.name}`,
+      task,
+      generatorId: this.generatorId,
+      generatorInfo: this.generatorInfo,
+    });
   }
 }

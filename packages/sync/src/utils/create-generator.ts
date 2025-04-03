@@ -8,6 +8,7 @@ import type {
   GeneratorBundle,
   GeneratorTask,
 } from '@src/generators/generators.js';
+import type { TaskPhase } from '@src/phases/types.js';
 import type { ProviderExportScope } from '@src/providers/index.js';
 
 /**
@@ -29,9 +30,14 @@ export interface CreateGeneratorConfig<DescriptorSchema extends z.ZodType> {
    */
   descriptorSchema?: DescriptorSchema;
   /**
-   * The scopes to export
+   * The scopes that the generator encompasses
    */
   scopes?: ProviderExportScope[];
+  /**
+   * The phases that should be pre-registered since they
+   * only contain dynamic tasks
+   */
+  preRegisteredPhases?: TaskPhase[];
   /**
    * The function to get the instance name of the generator
    *
@@ -104,6 +110,7 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
       scopes: config.scopes ?? [],
       children: children ?? {},
       tasks,
+      preRegisteredPhases: config.preRegisteredPhases ?? [],
     };
   };
 }
