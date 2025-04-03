@@ -131,10 +131,7 @@ function buildTaskDependencyMap(
   entry: GeneratorTaskEntry,
   parentEntryIdsWithSelf: string[],
   generatorIdToScopesMap: GeneratorIdToScopesMap,
-): Record<
-  string,
-  { id: string; options: ProviderDependencyOptions } | undefined
-> {
+): Record<string, EntryDependencyRecord | undefined> {
   return mapValues(entry.dependencies, (dep) => {
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
     const provider = normalizedDep.name;
@@ -177,6 +174,7 @@ function buildTaskDependencyMap(
 
     return {
       id: resolvedTaskId,
+      providerName: provider,
       options: {
         isReadOnly: isReadOnly ? true : undefined,
         isOutput: isOutput ? true : undefined,
@@ -185,17 +183,15 @@ function buildTaskDependencyMap(
   });
 }
 
+interface EntryDependencyRecord {
+  id: string;
+  providerName: string;
+  options?: Pick<ProviderDependencyOptions, 'isReadOnly' | 'isOutput'>;
+}
+
 export type EntryDependencyMap = Record<
   string,
-  Record<
-    string,
-    | {
-        id: string;
-        options?: Pick<ProviderDependencyOptions, 'isReadOnly' | 'isOutput'>;
-      }
-    | null
-    | undefined
-  >
+  Record<string, EntryDependencyRecord | null | undefined>
 >;
 
 /**

@@ -18,7 +18,7 @@ import { z } from 'zod';
 
 import { environmentFlags } from '@src/service/environment-flags.js';
 
-import { writeGeneratorStepsHtml } from './generator-steps-html-writer.js';
+import { writeGeneratorSteps } from './generator-steps-writer.js';
 
 const buildResultFileSchema = z.object({
   failedCommands: z.array(z.string()).optional(),
@@ -207,7 +207,7 @@ export async function generateForDirectory({
       environmentFlags.BASEPLATE_WRITE_GENERATOR_STEPS_HTML &&
       output.metadata
     ) {
-      await writeGeneratorStepsHtml(output.metadata, projectDirectory);
+      await writeGeneratorSteps(output.metadata, projectDirectory);
     }
 
     if (failedCommands.length > 0) {

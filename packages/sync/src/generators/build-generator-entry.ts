@@ -42,6 +42,10 @@ export interface GeneratorTaskEntry {
    * The name of the generator that the task belongs to
    */
   generatorName: string;
+  /**
+   * The instance name of the generator entry
+   */
+  instanceName?: string;
 }
 
 /**
@@ -80,7 +84,7 @@ async function buildGeneratorEntryRecursive(
   context: BuildGeneratorEntryContext,
   packageNameCache: Map<string, string>,
 ): Promise<GeneratorEntry> {
-  const { children, scopes, tasks, directory, name } = bundle;
+  const { children, scopes, tasks, directory, name, instanceName } = bundle;
 
   // Get the package name for this generator
   const packageName = await findGeneratorPackageName(
@@ -98,6 +102,7 @@ async function buildGeneratorEntryRecursive(
       task,
       generatorBaseDirectory: directory,
       generatorName: prefixedName,
+      instanceName,
     }),
   );
 

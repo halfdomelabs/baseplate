@@ -21,13 +21,13 @@ describe('getSortedRunSteps', () => {
     ];
     const dependencyGraphOne = {
       entryOne: {},
-      entryTwo: { dep: { id: 'entryOne', options: {} } },
-      entryThree: { dep: { id: 'entryTwo', options: {} } },
+      entryTwo: { dep: { id: 'entryOne', providerName: 'dep', options: {} } },
+      entryThree: { dep: { id: 'entryTwo', providerName: 'dep', options: {} } },
     };
 
     const dependencyGraphTwo = {
-      entryOne: { dep: { id: 'entryTwo' } },
-      entryTwo: { dep: { id: 'entryThree' } },
+      entryOne: { dep: { id: 'entryTwo', providerName: 'dep', options: {} } },
+      entryTwo: { dep: { id: 'entryThree', providerName: 'dep', options: {} } },
       entryThree: {},
     };
 
@@ -75,7 +75,13 @@ describe('getSortedRunSteps', () => {
 
       const dependencyMap = {
         producer: {},
-        consumer: { dep: { id: 'producer', options: { isOutput: true } } },
+        consumer: {
+          dep: {
+            id: 'producer',
+            providerName: 'dep',
+            options: { isOutput: true },
+          },
+        },
       };
 
       const result = getSortedRunSteps(entries, dependencyMap);
@@ -110,8 +116,16 @@ describe('getSortedRunSteps', () => {
         outputProducer: {},
         normalProducer: {},
         consumer: {
-          outDep: { id: 'outputProducer', options: { isOutput: true } },
-          normalDep: { id: 'normalProducer', options: {} },
+          outDep: {
+            id: 'outputProducer',
+            providerName: 'outDep',
+            options: { isOutput: true },
+          },
+          normalDep: {
+            id: 'normalProducer',
+            providerName: 'normalDep',
+            options: {},
+          },
         },
       };
 
@@ -140,7 +154,13 @@ describe('getSortedRunSteps', () => {
 
       const dependencyMap = {
         producer: {},
-        consumer: { dep: { id: 'producer', options: { isReadOnly: true } } },
+        consumer: {
+          dep: {
+            id: 'producer',
+            providerName: 'dep',
+            options: { isReadOnly: true },
+          },
+        },
       };
 
       const result = getSortedRunSteps(entries, dependencyMap);
@@ -179,12 +199,21 @@ describe('getSortedRunSteps', () => {
       const dependencyMap = {
         outputProducer: {},
         middleConsumer: {
-          outDep: { id: 'outputProducer', options: { isOutput: true } },
+          outDep: {
+            id: 'outputProducer',
+            providerName: 'outDep',
+            options: { isOutput: true },
+          },
         },
         finalConsumer: {
-          normalDep: { id: 'middleConsumer', options: {} },
+          normalDep: {
+            id: 'middleConsumer',
+            providerName: 'normalDep',
+            options: {},
+          },
           readonlyDep: {
             id: 'readonlyProducer',
+            providerName: 'readonlyDep',
             options: { isReadOnly: true },
           },
         },

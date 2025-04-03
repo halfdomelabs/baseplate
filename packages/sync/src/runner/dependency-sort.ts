@@ -1,5 +1,7 @@
 import toposort from 'toposort';
 
+import type { GeneratorOutputMetadata } from '@src/output/generator-task-output.js';
+
 import { notEmpty } from '@src/utils/arrays.js';
 
 import type { GeneratorTaskEntry } from '../generators/index.js';
@@ -20,8 +22,18 @@ export function getSortedRunSteps(
   dependencyMap: EntryDependencyMap,
 ): {
   steps: string[];
-  metadata: { fullSteps: string[]; fullEdges: [string, string][] };
+  metadata: GeneratorOutputMetadata;
 } {
+  const metadata: GeneratorOutputMetadata = {
+    generatorTaskEntries: entries.map((entry) => ({
+      id: entry.id,
+      generatorName: entry.generatorName,
+      taskName: entry.task.name,
+      instanceName: entry.instanceName,
+    })),
+    generatorProviderRelationships: [],
+  };
+
   const dependencyGraph = entries.flatMap((entry): [string, string][] => {
     const entryInit = `init|${entry.id}`;
     const entryBuild = `build|${entry.id}`;
@@ -33,6 +45,14 @@ export function getSortedRunSteps(
         .flatMap((dependent): [string, string][] => {
           const dependentInit = `init|${dependent.id}`;
           const dependentBuild = `build|${dependent.id}`;
+
+          metadata.generatorProviderRelationships.push({
+            providerTaskId: dependent.id,
+            consumerTaskId: entry.id,
+            providerName: dependent.providerName,
+            isOutput: dependent.options?.isOutput ?? false,
+            isReadOnly: dependent.options?.isReadOnly ?? false,
+          });
 
           // check if the dependency is to an output provider and if so,
           // we need to wait until the dependent task has been built before
@@ -59,6 +79,6 @@ export function getSortedRunSteps(
 
   return {
     steps: result,
-    metadata: { fullSteps, fullEdges },
+    metadata,
   };
 }

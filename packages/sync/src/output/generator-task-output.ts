@@ -69,14 +69,18 @@ export interface GeneratorTaskOutput {
 }
 
 export interface GeneratorOutputMetadata {
-  generatorStepNodes: {
+  generatorTaskEntries: {
     id: string;
-    label?: string;
+    generatorName: string;
+    taskName: string;
+    instanceName?: string;
   }[];
-  generatorStepEdges: {
-    id: string;
-    source: string;
-    target: string;
+  generatorProviderRelationships: {
+    providerTaskId: string;
+    consumerTaskId: string;
+    providerName: string;
+    isOutput: boolean;
+    isReadOnly: boolean;
   }[];
 }
 
