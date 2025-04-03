@@ -80,6 +80,7 @@ export function buildTestGeneratorEntry(
     scopes: [],
     children: [],
     tasks,
+    preRegisteredPhases: [],
     ...data,
   };
 }

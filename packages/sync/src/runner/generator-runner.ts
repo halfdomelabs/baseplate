@@ -3,6 +3,7 @@ import { keyBy, mapValues } from 'es-toolkit';
 
 import type { Logger } from '@src/utils/evented-logger.js';
 
+import { sortTaskPhases } from '@src/phases/sort-task-phases.js';
 import { findDuplicates } from '@src/utils/find-duplicates.js';
 import { safeMergeMap } from '@src/utils/merge.js';
 
@@ -24,17 +25,15 @@ import {
   resolveTaskDependenciesForPhase,
 } from './dependency-map.js';
 import { getSortedRunSteps } from './dependency-sort.js';
-import {
-  extractSortedTaskPhases,
-  flattenGeneratorTaskEntries,
-} from './utils.js';
+import { flattenGeneratorTaskEntriesAndPhases } from './utils.js';
 
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry,
   logger: Logger,
 ): Promise<GeneratorOutput> {
-  const taskEntries = flattenGeneratorTaskEntries(rootEntry);
-  const taskPhases = extractSortedTaskPhases(taskEntries);
+  const { taskEntries, phases } =
+    flattenGeneratorTaskEntriesAndPhases(rootEntry);
+  const sortedPhases = sortTaskPhases(phases);
   const taskEntriesById = keyBy(taskEntries, (item) => item.id);
   // build a map of generators to their scoped exports
   const generatorIdToScopesMap = buildGeneratorIdToScopesMap(rootEntry);
@@ -51,7 +50,7 @@ export async function executeGeneratorEntry(
     Map<string, GeneratorTaskEntry[]>
   >();
 
-  for (const phase of [undefined, ...taskPhases]) {
+  for (const phase of [undefined, ...sortedPhases]) {
     const currentDynamicTaskEntries = dynamicTaskEntriesByPhase.get(
       phase?.name ?? '',
     );
@@ -214,6 +213,11 @@ export async function executeGeneratorEntry(
             ) {
               throw new Error(
                 `Dynamic task ${dynamicTask.id} must have an explicit phase and be added to the addsDynamicTasksTo option of the phase ${phase?.name}`,
+              );
+            }
+            if (!sortedPhases.includes(dynamicTask.task.phase)) {
+              throw new Error(
+                `Could not find phase ${dynamicTask.task.phase.name} in the task phases. Make sure it is registered ahead of time.`,
               );
             }
             // register it in the ID map

@@ -1,3 +1,4 @@
+import type { TaskPhase } from '@src/phases/types.js';
 import type { ProviderExportScope } from '@src/providers/index.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
@@ -66,6 +67,11 @@ export interface GeneratorEntry {
    * The info of the generator entry
    */
   generatorInfo: GeneratorInfo;
+  /**
+   * The phases of the generator entry that may only contain
+   * dynamic tasks and thus need to be pre-registered
+   */
+  preRegisteredPhases: TaskPhase[];
 }
 
 export interface BuildGeneratorEntryContext {
@@ -78,7 +84,15 @@ async function buildGeneratorEntryRecursive(
   context: BuildGeneratorEntryContext,
   packageNameCache: Map<string, string>,
 ): Promise<GeneratorEntry> {
-  const { children, scopes, tasks, directory, name, instanceName } = bundle;
+  const {
+    children,
+    scopes,
+    tasks,
+    directory,
+    name,
+    instanceName,
+    preRegisteredPhases,
+  } = bundle;
 
   // Get the package name for this generator
   const packageName = await findGeneratorPackageName(
@@ -150,6 +164,7 @@ async function buildGeneratorEntryRecursive(
     children: builtChildEntries.flat(),
     tasks: taskEntries,
     generatorInfo,
+    preRegisteredPhases: preRegisteredPhases ?? [],
   };
 }
 

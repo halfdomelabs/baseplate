@@ -229,6 +229,11 @@ export interface GeneratorBundle {
    * The tasks of the generator
    */
   tasks: GeneratorTask[];
+  /**
+   * The phases of the generator that may only contain
+   * dynamic tasks and thus need to be pre-registered
+   */
+  preRegisteredPhases?: TaskPhase[];
 }
 
 /**
