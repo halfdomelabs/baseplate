@@ -38,8 +38,8 @@ describe('createGenerator', () => {
       scopes: [],
       children: {},
       tasks: {
-        'test-task': {
-          name: 'test-task',
+        testTask: {
+          run: expect.any(Function) as unknown,
         },
       },
     });
