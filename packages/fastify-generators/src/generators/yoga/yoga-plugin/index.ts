@@ -85,7 +85,6 @@ export const yogaPluginGenerator = createGenerator({
   descriptorSchema,
   buildTasks: ({ enableSubscriptions }) => ({
     setup: createGeneratorTask({
-      name: 'setup',
       exports: {
         yogaPluginConfig: yogaPluginConfigProvider.export(projectScope),
       },
@@ -111,7 +110,6 @@ export const yogaPluginGenerator = createGenerator({
       },
     }),
     fastify: createGeneratorTask({
-      name: 'fastify',
       dependencies: {
         fastifyServer: fastifyServerProvider,
       },
@@ -237,7 +235,6 @@ export const yogaPluginGenerator = createGenerator({
     ...(enableSubscriptions
       ? {
           serverWebsocket: createGeneratorTask({
-            name: 'server-websocket',
             dependencies: {
               node: nodeProvider,
               fastifyServer: fastifyServerProvider,
@@ -262,7 +259,6 @@ export const yogaPluginGenerator = createGenerator({
             },
           }),
           subscription: createGeneratorTask({
-            name: 'subscription',
             dependencies: {
               node: nodeProvider,
               typescript: typescriptProvider,

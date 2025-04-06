@@ -88,18 +88,15 @@ export const reactComponentsGenerator = createGenerator({
       ]),
     }),
     datePickerPackages: includeDatePicker
-      ? createNodePackagesTask(
-          {
-            prod: extractPackageVersions(REACT_PACKAGES, [
-              'react-datepicker',
-              'date-fns',
-            ]),
-            dev: extractPackageVersions(REACT_PACKAGES, [
-              '@types/react-datepicker',
-            ]),
-          },
-          'date-picker-packages',
-        )
+      ? createNodePackagesTask({
+          prod: extractPackageVersions(REACT_PACKAGES, [
+            'react-datepicker',
+            'date-fns',
+          ]),
+          dev: extractPackageVersions(REACT_PACKAGES, [
+            '@types/react-datepicker',
+          ]),
+        })
       : undefined,
     main: createGeneratorTask({
       dependencies: {

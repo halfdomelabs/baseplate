@@ -53,7 +53,7 @@ export function buildTestGeneratorEntry(
   data?: Partial<GeneratorEntry>,
   task?: Pick<
     Partial<GeneratorTask>,
-    'name' | 'dependencies' | 'exports' | 'outputs' | 'run' | 'phase'
+    'dependencies' | 'exports' | 'outputs' | 'run' | 'phase'
   >,
 ): GeneratorEntry {
   lastGeneratorId += 1;
@@ -67,7 +67,8 @@ export function buildTestGeneratorEntry(
     (task
       ? [
           buildTestGeneratorTaskEntry({
-            id: `${id}#${task.name ?? 'main'}`,
+            id: `${id}#main`,
+            name: 'main',
             generatorId: id,
             generatorInfo,
             task,

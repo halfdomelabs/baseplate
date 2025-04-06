@@ -856,8 +856,8 @@ describe('resolveTaskDependenciesForPhase', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'root#main',
+          name: 'main',
           task: {
-            name: 'main',
             outputs: {
               outputProvider: outputOnlyProvider.export(),
             },
@@ -870,8 +870,8 @@ describe('resolveTaskDependenciesForPhase', () => {
     dynamicTaskMap.set('root', [
       buildTestGeneratorTaskEntry({
         id: 'root#dynamic-task',
+        name: 'dynamic-task',
         task: {
-          name: 'dynamic-task',
           phase: phase1,
           dependencies: { dep: outputOnlyProvider },
         },
@@ -905,8 +905,8 @@ describe('resolveTaskDependenciesForPhase', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'root#main',
+          name: 'main',
           task: {
-            name: 'main',
             outputs: {
               outputProvider: outputOnlyProvider.export(),
             },
@@ -919,16 +919,16 @@ describe('resolveTaskDependenciesForPhase', () => {
     dynamicTaskMap.set('root', [
       buildTestGeneratorTaskEntry({
         id: 'root#dynamic-task1',
+        name: 'dynamic-task1',
         task: {
-          name: 'dynamic-task1',
           phase: phase1,
           dependencies: { dep: outputOnlyProvider },
         },
       }),
       buildTestGeneratorTaskEntry({
         id: 'root#dynamic-task2',
+        name: 'dynamic-task2',
         task: {
-          name: 'dynamic-task2',
           phase: phase2,
           dependencies: { dep: outputOnlyProvider },
         },
@@ -978,8 +978,8 @@ describe('resolveTaskDependenciesForPhase', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'root#main',
+          name: 'main',
           task: {
-            name: 'main',
             outputs: {
               outputProvider: outputOnlyProvider.export(),
             },
@@ -999,8 +999,8 @@ describe('resolveTaskDependenciesForPhase', () => {
     dynamicTaskMap.set('child', [
       buildTestGeneratorTaskEntry({
         id: 'child#dynamic-task',
+        name: 'dynamic-task',
         task: {
-          name: 'dynamic-task',
           phase: phase1,
           dependencies: {
             dep: outputOnlyProvider.dependency().parentScopeOnly(),

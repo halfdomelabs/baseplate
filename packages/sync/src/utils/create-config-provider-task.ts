@@ -103,7 +103,6 @@ export function createConfigProviderTask<TSchema extends FieldMapSchema>(
 
   return [
     createGeneratorTask({
-      name: taskName,
       exports: { config: configProvider.export(configScope) },
       outputs: { configValues: configValuesProvider.export(configValuesScope) },
       run() {

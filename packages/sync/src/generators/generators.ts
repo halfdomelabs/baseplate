@@ -139,10 +139,6 @@ export interface GeneratorTask<
     | undefined,
 > {
   /**
-   * The name of the generator task (must be unique within the generator)
-   */
-  name?: string;
-  /**
    * The providers that are exported by this generator task
    */
   exports?: ExportMap;

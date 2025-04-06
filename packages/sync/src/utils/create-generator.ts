@@ -16,10 +16,7 @@ import type { ProviderExportScope } from '@src/providers/index.js';
  */
 export interface CreateGeneratorConfig<
   DescriptorSchema extends z.ZodType,
-  TaskConfigs extends Record<string, AnyGeneratorTask | undefined> = Record<
-    string,
-    AnyGeneratorTask | undefined
-  >,
+  TaskConfigs extends Record<string, AnyGeneratorTask | undefined>,
 > {
   /**
    * The name of the generator
@@ -53,9 +50,7 @@ export interface CreateGeneratorConfig<
   /**
    * The function to build the tasks
    */
-  buildTasks: (
-    descriptor: z.infer<DescriptorSchema>,
-  ) => AnyGeneratorTask[] | TaskConfigs;
+  buildTasks: (descriptor: z.infer<DescriptorSchema>) => TaskConfigs;
 }
 
 export type GeneratorBundleChildren = Record<
@@ -122,30 +117,13 @@ export function createGenerator<
 
     const tasks = config.buildTasks(validatedDescriptor);
 
-    // if tasks is an array and there are duplicate names, throw an error
-    if (Array.isArray(tasks)) {
-      const duplicateNames = tasks.filter(
-        (task, index, self) =>
-          self.findIndex((t) => t.name === task.name) !== index,
-      );
-      if (duplicateNames.length > 0) {
-        throw new Error(
-          `Duplicate task names found: ${duplicateNames.map((t) => t.name).join(', ')} in generator ${config.name}`,
-        );
-      }
-    }
-
-    const taskConfigs = Array.isArray(tasks)
-      ? (Object.fromEntries(tasks.map((t) => [t.name, t])) as TaskConfigs)
-      : tasks;
-
     return {
       name: config.name,
       instanceName: config.getInstanceName?.(validatedDescriptor),
       directory: generatorDirectory,
       scopes: config.scopes ?? [],
       children: children ?? {},
-      tasks: taskConfigs,
+      tasks,
       preRegisteredPhases: config.preRegisteredPhases ?? [],
     };
   };

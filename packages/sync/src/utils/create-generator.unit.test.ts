@@ -15,9 +15,8 @@ describe('createGenerator', () => {
     const generator = createGenerator({
       name: 'test-generator',
       generatorFileUrl: import.meta.url,
-      buildTasks: () => [
-        createGeneratorTask({
-          name: 'test-task',
+      buildTasks: () => ({
+        testTask: createGeneratorTask({
           run: () => ({
             build: (builder: GeneratorTaskOutputBuilder) => {
               builder.writeFile({
@@ -28,7 +27,7 @@ describe('createGenerator', () => {
             },
           }),
         }),
-      ],
+      }),
     });
 
     const bundle = generator({});
@@ -55,7 +54,7 @@ describe('createGenerator', () => {
       name: 'test-generator',
       generatorFileUrl: import.meta.url,
       descriptorSchema,
-      buildTasks: () => [],
+      buildTasks: () => ({}),
     });
 
     // Should pass validation
@@ -71,7 +70,7 @@ describe('createGenerator', () => {
       name: 'test-generator',
       generatorFileUrl: import.meta.url,
       scopes: [testScope],
-      buildTasks: () => [],
+      buildTasks: () => ({}),
     });
 
     const bundle = generator({});
@@ -82,7 +81,7 @@ describe('createGenerator', () => {
     const generator = createGenerator({
       name: 'test-generator',
       generatorFileUrl: import.meta.url,
-      buildTasks: () => [],
+      buildTasks: () => ({}),
     });
 
     const childBundle = {

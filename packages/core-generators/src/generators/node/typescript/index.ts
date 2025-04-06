@@ -163,7 +163,6 @@ export function createTypescriptFileTask<
   TVariables extends TsCodeTemplateVariableMap,
 >(payload: WriteTemplatedFilePayload<TVariables>): GeneratorTask {
   const task = createGeneratorTask({
-    name: payload.fileId,
     phase: typescriptFileTaskPhase,
     dependencies: { typescriptConfig: typescriptConfigProvider },
     run({ typescriptConfig: { compilerOptions, includeMetadata } }) {
@@ -219,7 +218,6 @@ export const typescriptGenerator = createGenerator({
       dev: extractPackageVersions(CORE_PACKAGES, ['typescript']),
     }),
     main: createGeneratorTask({
-      name: 'main',
       dependencies: {
         typescriptConfig: typescriptConfigProvider,
       },

@@ -69,7 +69,6 @@ export const fastifyGenerator = createGenerator({
   descriptorSchema,
   buildTasks: () => ({
     nodeSetup: createGeneratorTask({
-      name: 'node-setup',
       dependencies: {
         nodeConfig: nodeConfigProvider,
       },

@@ -115,7 +115,6 @@ export function createConfigProviderTaskWithInfo<
   return [
     (descriptor) =>
       createGeneratorTask({
-        name: taskName,
         exports: { config: configProvider.export(configScope) },
         outputs: {
           configValues: configValuesProvider.export(configValuesScope),

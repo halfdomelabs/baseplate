@@ -43,12 +43,9 @@ export const auth0ModuleGenerator = createGenerator({
   descriptorSchema,
   buildTasks: ({ includeManagement, userModelName }) => ({
     nodeManagementPackage: includeManagement
-      ? createNodePackagesTask(
-          {
-            prod: extractPackageVersions(FASTIFY_PACKAGES, ['auth0']),
-          },
-          'auth0-management',
-        )
+      ? createNodePackagesTask({
+          prod: extractPackageVersions(FASTIFY_PACKAGES, ['auth0']),
+        })
       : undefined,
     main: createGeneratorTask({
       dependencies: {

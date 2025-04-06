@@ -51,7 +51,6 @@ describe('generators type definitions', () => {
 
   it('should correctly type generator task results no exports', () => {
     const taskOutput = createGeneratorTask({
-      name: 'test',
       exports: {},
       run: () => ({}),
     });
@@ -59,12 +58,11 @@ describe('generators type definitions', () => {
     expectTypeOf<ReturnType<(typeof taskOutput)['run']>>().toMatchTypeOf<{
       build?: (builder: GeneratorTaskOutputBuilder) => Promise<void> | void;
     }>();
-    expect(taskOutput.name).toBe('test');
+    expect(taskOutput).toBeDefined();
   });
 
   it('should correctly type generator task results no exports nor output providers', () => {
     const taskOutput = createGeneratorTask({
-      name: 'test',
       run: () => ({
         build: () => {
           // do nothing
@@ -72,12 +70,11 @@ describe('generators type definitions', () => {
       }),
     });
 
-    expect(taskOutput.name).toBe('test');
+    expect(taskOutput).toBeDefined();
   });
 
   it('should correctly type generator task results no exports but output providers', () => {
     const taskOutput = createGeneratorTask({
-      name: 'test',
       outputs: {
         test: createProviderType<{ value: string }>('test').export(),
       },
@@ -89,12 +86,11 @@ describe('generators type definitions', () => {
     expectTypeOf<ReturnType<(typeof taskOutput)['run']>>().toHaveProperty(
       'build',
     );
-    expect(taskOutput.name).toBe('test');
+    expect(taskOutput).toBeDefined();
   });
 
   it('should correctly type generator tasks with exports and outputs', () => {
     const taskOutput = createGeneratorTask({
-      name: 'test',
       exports: {
         test: createProviderType<{ value: string }>('test').export(),
       },
@@ -109,6 +105,6 @@ describe('generators type definitions', () => {
       }),
     });
 
-    expect(taskOutput.name).toBe('test');
+    expect(taskOutput).toBeDefined();
   });
 });

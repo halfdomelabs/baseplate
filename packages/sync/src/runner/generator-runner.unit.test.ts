@@ -350,8 +350,8 @@ describe('executeGeneratorEntry', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'root#main-phase',
+          name: 'main-phase',
           task: {
-            name: 'main-phase',
             outputs: {
               mainOutputProv: mainOutputProviderType.export(),
             },
@@ -363,8 +363,8 @@ describe('executeGeneratorEntry', () => {
         }),
         buildTestGeneratorTaskEntry({
           id: 'root#phase1',
+          name: 'phase1',
           task: {
-            name: 'phase1',
             phase: phase1,
             dependencies: {
               mainOutputDep: mainOutputProviderType,
@@ -388,8 +388,8 @@ describe('executeGeneratorEntry', () => {
         }),
         buildTestGeneratorTaskEntry({
           id: 'root#phase2',
+          name: 'phase2',
           task: {
-            name: 'phase2',
             phase: phase2,
             dependencies: { phase1OutputDep: phase1OutputProviderType },
             run: (deps) => ({
@@ -469,8 +469,8 @@ describe('executeGeneratorEntry', () => {
         buildTestGeneratorTaskEntry({
           id: 'root#main',
           generatorId: 'root',
+          name: 'main',
           task: {
-            name: 'main',
             run: () => ({
               providers: {},
               build: (builder) => {
@@ -495,8 +495,8 @@ describe('executeGeneratorEntry', () => {
         buildTestGeneratorTaskEntry({
           id: 'root#phase1',
           generatorId: 'root',
+          name: 'phase1',
           task: {
-            name: 'phase1',
             phase: phase1,
             run: () => ({
               providers: {},
@@ -534,8 +534,8 @@ describe('executeGeneratorEntry', () => {
       tasks: [
         buildTestGeneratorTaskEntry({
           id: 'root#main',
+          name: 'main',
           task: {
-            name: 'main',
             run: () => ({
               providers: {},
               build: (builder: GeneratorTaskOutputBuilder) => {
@@ -565,8 +565,8 @@ describe('executeGeneratorEntry', () => {
         buildTestGeneratorTaskEntry({
           id: 'root#main',
           generatorId: 'root',
+          name: 'main',
           task: {
-            name: 'main',
             run: () => ({
               providers: {},
               build: (builder: GeneratorTaskOutputBuilder) => {
@@ -593,8 +593,8 @@ describe('executeGeneratorEntry', () => {
         buildTestGeneratorTaskEntry({
           id: 'root#phase1',
           generatorId: 'root',
+          name: 'phase1',
           task: {
-            name: 'phase1',
             phase: phase1,
             run: () => ({
               providers: {},
@@ -627,8 +627,8 @@ describe('executeGeneratorEntry', () => {
         buildTestGeneratorTaskEntry({
           id: 'root#main',
           generatorId: 'root',
+          name: 'main',
           task: {
-            name: 'main',
             outputs: {
               outputProv: outputProviderType.export(),
             },
@@ -658,8 +658,8 @@ describe('executeGeneratorEntry', () => {
         buildTestGeneratorTaskEntry({
           id: 'root#phase1',
           generatorId: 'root',
+          name: 'phase1',
           task: {
-            name: 'phase1',
             phase: phase1,
             run: () => ({
               providers: {},

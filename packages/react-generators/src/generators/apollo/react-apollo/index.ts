@@ -103,12 +103,9 @@ export const reactApolloGenerator = createGenerator({
       );
     }),
     websocketPackages: enableSubscriptions
-      ? createNodePackagesTask(
-          {
-            prod: extractPackageVersions(REACT_PACKAGES, ['graphql-ws']),
-          },
-          'graphql-packages',
-        )
+      ? createNodePackagesTask({
+          prod: extractPackageVersions(REACT_PACKAGES, ['graphql-ws']),
+        })
       : undefined,
     main: createGeneratorTask({
       dependencies: {

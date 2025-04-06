@@ -259,14 +259,14 @@ export class GeneratorTaskOutputBuilder {
     name: string,
     task: Omit<GeneratorTask, 'exports' | 'outputs'>,
   ): void {
-    if (this.dynamicTasks.some((t) => t.task.name === task.name)) {
-      throw new Error(`Dynamic task ${task.name} already exists`);
+    if (this.dynamicTasks.some((t) => t.name === name)) {
+      throw new Error(`Dynamic task ${name} already exists`);
     }
     if (!task.phase) {
-      throw new Error(`Dynamic task ${task.name} must have a phase`);
+      throw new Error(`Dynamic task ${name} must have a phase`);
     }
     this.dynamicTasks.push({
-      id: `${this.generatorId}#${task.name}`,
+      id: `${this.generatorId}#${name}`,
       name,
       task,
       generatorId: this.generatorId,

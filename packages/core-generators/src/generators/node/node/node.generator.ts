@@ -77,7 +77,6 @@ export function createNodeTask(
   runner: (provider: NodeProvider, context: TaskRunContext) => void,
 ): AnyGeneratorTask {
   return createGeneratorTask({
-    name: 'node',
     dependencies: { node: nodeProvider },
     run: ({ node }, context) => {
       runner(node, context);
@@ -92,10 +91,8 @@ export function createNodeTask(
  */
 export function createNodePackagesTask(
   nodePackages: Partial<NodePackageDependencies>,
-  taskName?: string,
 ): AnyGeneratorTask {
   return createGeneratorTask({
-    name: taskName ?? 'node-packages',
     dependencies: { node: nodeProvider },
     run: ({ node }) => {
       node.packages.addPackages(nodePackages);
@@ -119,14 +116,12 @@ export const nodeGenerator = createGenerator({
   buildTasks: (descriptor) => ({
     config: createGeneratorTask(configTask),
     project: createGeneratorTask({
-      name: 'project',
       outputs: { project: projectProvider.export(projectScope) },
       run: () => ({
         build: () => ({ project: { getProjectName: () => descriptor.name } }),
       }),
     }),
     main: createGeneratorTask({
-      name: 'main',
       dependencies: {
         nodeConfigValues: nodeConfigValuesProvider,
       },

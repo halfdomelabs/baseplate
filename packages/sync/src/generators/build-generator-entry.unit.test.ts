@@ -39,7 +39,6 @@ describe('buildGeneratorEntry', () => {
       directory: '/test',
       tasks: {
         'test-task': {
-          name: 'test-task',
           dependencies: {
             test: testProviderType,
           },
@@ -101,7 +100,6 @@ describe('buildGeneratorEntry', () => {
       children: {},
       tasks: {
         'child-task': {
-          name: 'child-task',
           run: () => ({
             providers: {},
             build: () => {

@@ -2,7 +2,6 @@ import { typescriptSetupProvider } from '@halfdomelabs/core-generators';
 import { createGeneratorTask } from '@halfdomelabs/sync';
 
 export const fastifyTypescriptTask = createGeneratorTask({
-  name: 'typescript',
   dependencies: {
     typescriptSetup: typescriptSetupProvider,
   },
