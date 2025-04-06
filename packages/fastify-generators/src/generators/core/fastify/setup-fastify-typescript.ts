@@ -1,5 +1,3 @@
-import type { AnyGeneratorTask } from '@halfdomelabs/sync';
-
 import { typescriptSetupProvider } from '@halfdomelabs/core-generators';
 import { createGeneratorTask } from '@halfdomelabs/sync';
 
@@ -32,5 +30,4 @@ export const fastifyTypescriptTask = createGeneratorTask({
       taskId,
     );
   },
-  // workaround for exporting inferred types
-}) as AnyGeneratorTask;
+});

@@ -4,7 +4,6 @@ import type {
   InferProviderType,
   WriteFileOptions,
 } from '@halfdomelabs/sync';
-import type { CompilerOptions, ts } from 'ts-morph';
 
 import {
   createConfigProviderTaskWithInfo,
@@ -40,6 +39,7 @@ import type {
   TypescriptSourceFileOptions,
   TypescriptTemplateConfigOrEntry,
 } from '../../../writers/typescript/source-file.js';
+import type { TypescriptCompilerOptions } from './compiler-types.js';
 
 import { copyTypescriptFileAction } from '../../../actions/index.js';
 import {
@@ -49,30 +49,6 @@ import {
 import { resolveModule } from '../../../writers/typescript/imports.js';
 import { TypescriptSourceFile } from '../../../writers/typescript/source-file.js';
 import { createNodePackagesTask } from '../node/node.generator.js';
-
-type ChangePropertyTypes<
-  T,
-  Substitutions extends {
-    [K in keyof T]?: unknown;
-  },
-> = {
-  [K in keyof T]: K extends keyof Substitutions ? Substitutions[K] : T[K];
-};
-
-type ModuleResolutionKind = ts.server.protocol.ModuleResolutionKind;
-type ModuleKind = ts.server.protocol.ModuleKind;
-type ScriptTarget = ts.server.protocol.ScriptTarget;
-type JsxEmit = ts.server.protocol.JsxEmit;
-
-type TypescriptCompilerOptions = ChangePropertyTypes<
-  CompilerOptions,
-  {
-    moduleResolution?: `${ModuleResolutionKind}`;
-    module?: `${ModuleKind}`;
-    target?: `${ScriptTarget}`;
-    jsx?: `${JsxEmit}`;
-  }
->;
 
 const typescriptGeneratorDescriptorSchema = z.object({
   includeMetadata: z.boolean().optional(),
