@@ -107,10 +107,10 @@ async function buildGeneratorEntryRecursive(
     instanceName,
   };
 
-  const taskEntries = tasks.map(
+  const taskEntries = Object.values(tasks).map(
     (task): GeneratorTaskEntry => ({
       id: `${id}#${task.name}`,
-      task,
+      task: task as GeneratorTask,
       generatorId: id,
       generatorInfo,
     }),

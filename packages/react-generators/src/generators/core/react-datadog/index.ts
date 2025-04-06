@@ -1,6 +1,7 @@
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectProvider,
   projectScope,
   quot,
@@ -31,26 +32,24 @@ export const reactDatadogGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, ['@datadog/browser-logs']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
         typescript: typescriptProvider,
         reactConfig: reactConfigProvider,
-        node: nodeProvider,
         authIdentify: authIdentifyProvider,
         project: projectProvider,
       },
       exports: {
         reactDatadog: reactDatadogProvider.export(projectScope),
       },
-      run({ typescript, node, reactConfig, authIdentify, project }) {
+      run({ typescript, reactConfig, authIdentify, project }) {
         const [datadogImport, datadogPath] = makeImportAndFilePath(
           'src/services/datadog.ts',
         );
-
-        node.addPackages({
-          '@datadog/browser-logs': REACT_PACKAGES['@datadog/browser-logs'],
-        });
 
         reactConfig.getConfigMap().set('VITE_DATADOG_CLIENT_TOKEN', {
           comment: 'Client token for Datadog logging (optional)',

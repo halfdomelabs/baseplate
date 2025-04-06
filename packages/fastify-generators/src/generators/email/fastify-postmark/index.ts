@@ -1,5 +1,6 @@
 import {
-  nodeProvider,
+  createNodePackagesTask,
+  extractPackageVersions,
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -25,20 +26,19 @@ export const fastifyPostmarkGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['postmark']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         typescript: typescriptProvider,
         configService: configServiceProvider,
       },
       exports: {
         fastifyPostmark: fastifyPostmarkProvider.export(projectScope),
       },
-      run({ node, typescript, configService }) {
-        node.addPackages({
-          postmark: FASTIFY_PACKAGES.postmark,
-        });
+      run({ typescript, configService }) {
         configService.getConfigEntries().set('POSTMARK_API_TOKEN', {
           comment: 'Postmark API token',
           value: 'z.string().min(1)',

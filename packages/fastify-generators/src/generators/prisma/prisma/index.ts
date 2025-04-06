@@ -5,6 +5,7 @@ import type {
 import type { formatSchema } from '@prisma/internals';
 
 import {
+  extractPackageVersions,
   nodeProvider,
   projectProvider,
   projectScope,
@@ -80,44 +81,44 @@ export const prismaGenerator = createGenerator({
   descriptorSchema,
   buildTasks: (descriptor) => [
     createGeneratorTask({
-      name: 'schema',
+      name: 'node',
       dependencies: {
         node: nodeProvider,
+        fastifyOutput: fastifyOutputProvider,
+      },
+      run({ node, fastifyOutput }, { taskId }) {
+        node.packages.addPackages({
+          prod: extractPackageVersions(FASTIFY_PACKAGES, ['@prisma/client']),
+          dev: extractPackageVersions(FASTIFY_PACKAGES, ['prisma']),
+        });
+        // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)
+        node.scripts.mergeObj(
+          {
+            postinstall: 'prisma generate',
+          },
+          taskId,
+        );
+        node.extraProperties.merge(
+          {
+            prisma: {
+              seed: `tsx ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} src/prisma/seed.ts`,
+            },
+          },
+          taskId,
+        );
+      },
+    }),
+    createGeneratorTask({
+      name: 'schema',
+      dependencies: {
         configService: configServiceProvider,
         project: projectProvider,
         fastifyHealthCheck: fastifyHealthCheckProvider,
-        fastifyOutput: fastifyOutputProvider,
         typescript: typescriptProvider,
       },
       exports: { prismaSchema: prismaSchemaProvider.export(projectScope) },
       outputs: { prismaOutput: prismaOutputProvider.export(projectScope) },
-      run({
-        node,
-        configService,
-        project,
-        fastifyHealthCheck,
-        fastifyOutput,
-        typescript,
-      }) {
-        node.addDevPackages({
-          prisma: FASTIFY_PACKAGES.prisma,
-        });
-
-        node.addPackages({
-          '@prisma/client': FASTIFY_PACKAGES['@prisma/client'],
-        });
-
-        // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)
-        node.addScripts({
-          postinstall: 'prisma generate',
-        });
-
-        node.mergeExtraProperties({
-          prisma: {
-            seed: `tsx ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} src/prisma/seed.ts`,
-          },
-        });
-
+      run({ configService, project, fastifyHealthCheck, typescript }) {
         const schemaFile = new PrismaSchemaFile();
 
         schemaFile.addGeneratorBlock(

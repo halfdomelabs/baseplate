@@ -5,6 +5,8 @@ import type {
 } from '@halfdomelabs/utils';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
   nodeProvider,
   projectScope,
@@ -123,10 +125,23 @@ export const yogaPluginGenerator = createGenerator({
         });
       },
     }),
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, [
+        'altair-fastify-plugin',
+        'graphql',
+        '@envelop/core',
+        '@envelop/disable-introspection',
+        'graphql-yoga',
+      ]),
+      dev: extractPackageVersions(FASTIFY_PACKAGES, [
+        '@envelop/types',
+        // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
+        '@types/ws',
+      ]),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         typescript: typescriptProvider,
         configService: configServiceProvider,
         errorHandlerService: errorHandlerServiceProvider,
@@ -135,7 +150,6 @@ export const yogaPluginGenerator = createGenerator({
         yogaPluginSetup: yogaPluginSetupProvider,
       },
       run({
-        node,
         typescript,
         configService,
         requestServiceContext,
@@ -143,21 +157,6 @@ export const yogaPluginGenerator = createGenerator({
         errorHandlerService,
         yogaPluginSetup: config,
       }) {
-        node.addPackages({
-          'altair-fastify-plugin': FASTIFY_PACKAGES['altair-fastify-plugin'],
-          graphql: FASTIFY_PACKAGES.graphql,
-          '@envelop/core': FASTIFY_PACKAGES['@envelop/core'],
-          '@envelop/disable-introspection':
-            FASTIFY_PACKAGES['@envelop/disable-introspection'],
-          'graphql-yoga': FASTIFY_PACKAGES['graphql-yoga'],
-        });
-
-        node.addDevPackages({
-          '@envelop/types': FASTIFY_PACKAGES['@envelop/types'],
-          // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
-          '@types/ws': FASTIFY_PACKAGES['@types/ws'],
-        });
-
         return {
           async build(builder) {
             const pluginFile = typescript.createTemplate(
@@ -245,8 +244,10 @@ export const yogaPluginGenerator = createGenerator({
               fastifyServer: fastifyServerProvider,
             },
             run({ node, fastifyServer }) {
-              node.addPackages({
-                '@fastify/websocket': FASTIFY_PACKAGES['@fastify/websocket'],
+              node.packages.addPackages({
+                prod: extractPackageVersions(FASTIFY_PACKAGES, [
+                  '@fastify/websocket',
+                ]),
               });
 
               fastifyServer.registerPlugin({
@@ -281,10 +282,11 @@ export const yogaPluginGenerator = createGenerator({
               loggerService,
               requestServiceContext,
             }) {
-              node.addPackages({
-                '@graphql-yoga/redis-event-target':
-                  FASTIFY_PACKAGES['@graphql-yoga/redis-event-target'],
-                'graphql-ws': FASTIFY_PACKAGES['graphql-ws'],
+              node.packages.addPackages({
+                prod: extractPackageVersions(FASTIFY_PACKAGES, [
+                  '@graphql-yoga/redis-event-target',
+                  'graphql-ws',
+                ]),
               });
 
               const [, pubsubPath] = makeImportAndFilePath(

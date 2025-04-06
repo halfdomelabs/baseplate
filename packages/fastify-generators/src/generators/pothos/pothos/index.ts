@@ -5,7 +5,9 @@ import type {
 import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
+  createNodePackagesTask,
   eslintProvider,
+  extractPackageVersions,
   makeImportAndFilePath,
   nodeProvider,
   prettierProvider,
@@ -151,10 +153,16 @@ export const pothosGenerator = createGenerator({
         };
       },
     }),
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, [
+        '@pothos/core',
+        '@pothos/plugin-simple-objects',
+        '@pothos/plugin-relay',
+      ]),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         typescript: typescriptProvider,
         eslint: eslintProvider,
         requestServiceContext: requestServiceContextProvider,
@@ -170,7 +178,6 @@ export const pothosGenerator = createGenerator({
       },
       run(
         {
-          node,
           typescript,
           requestServiceContext,
           prettier,
@@ -182,13 +189,6 @@ export const pothosGenerator = createGenerator({
         },
         { taskId },
       ) {
-        node.addPackages({
-          '@pothos/core': FASTIFY_PACKAGES['@pothos/core'],
-          '@pothos/plugin-simple-objects':
-            FASTIFY_PACKAGES['@pothos/plugin-simple-objects'],
-          '@pothos/plugin-relay': FASTIFY_PACKAGES['@pothos/plugin-relay'],
-        });
-
         // ignore prettier for schema.graphql
         prettier.addPrettierIgnore('/schema.graphql');
 
@@ -360,22 +360,22 @@ if (IS_DEVELOPMENT) {
       },
     }),
     createGeneratorTask({
-      name: 'generate-schema',
+      name: 'generate-schema-script',
       dependencies: {
         node: nodeProvider,
         fastifyOutput: fastifyOutputProvider,
       },
-      run({ node, fastifyOutput }) {
+      run({ node, fastifyOutput }, { taskId }) {
         // add script to generate types
-        node.addScript(
+        node.scripts.set(
           'generate:schema',
           [
             'tsx',
             ...fastifyOutput.getNodeFlagsDev('dev-env'),
             'src/index.ts --exit-after-generate-schema',
           ].join(' '),
+          taskId,
         );
-        return {};
       },
     }),
   ],

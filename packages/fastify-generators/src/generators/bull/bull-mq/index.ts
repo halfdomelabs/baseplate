@@ -1,4 +1,6 @@
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   nodeProvider,
   projectScope,
   TypescriptCodeUtils,
@@ -11,6 +13,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/index.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
@@ -27,6 +30,9 @@ export const bullMqGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['bullmq']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
@@ -40,18 +46,17 @@ export const bullMqGenerator = createGenerator({
       exports: {
         bullMq: bullMqProvider.export(projectScope),
       },
-      run({
-        errorHandlerService,
-        loggerService,
-        fastifyRedis,
-        node,
-        typescript,
-        fastifyOutput,
-      }) {
-        node.addPackages({
-          bullmq: '5.1.1',
-        });
-
+      run(
+        {
+          errorHandlerService,
+          loggerService,
+          fastifyRedis,
+          node,
+          typescript,
+          fastifyOutput,
+        },
+        { taskId },
+      ) {
         const devOutputFormatter = fastifyOutput.getDevOutputFormatter();
         const devWorkersCommand = [
           'tsx watch --clear-screen=false',
@@ -62,10 +67,13 @@ export const bullMqGenerator = createGenerator({
           .filter(Boolean)
           .join(' ');
 
-        node.addScripts({
-          'dev:workers': devWorkersCommand,
-          'run:workers': 'pnpm run:script ./scripts/run-workers.ts',
-        });
+        node.scripts.mergeObj(
+          {
+            'dev:workers': devWorkersCommand,
+            'run:workers': 'pnpm run:script ./scripts/run-workers.ts',
+          },
+          taskId,
+        );
 
         return {
           providers: {

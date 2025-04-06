@@ -4,8 +4,9 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectScope,
   TypescriptCodeUtils,
   TypescriptCodeWrapper,
@@ -49,10 +50,12 @@ export const reactRouterGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, ['react-router-dom']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         react: reactProvider,
         reactApp: reactAppProvider,
         typescript: typescriptProvider,
@@ -62,11 +65,7 @@ export const reactRouterGenerator = createGenerator({
         reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(projectScope),
         reactRouter: reactRouterProvider.export(projectScope),
       },
-      run({ node, react, reactApp, typescript }) {
-        node.addPackages({
-          'react-router-dom': REACT_PACKAGES['react-router-dom'],
-        });
-
+      run({ react, reactApp, typescript }) {
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];
         const headerBlocks: TypescriptCodeBlock[] = [];

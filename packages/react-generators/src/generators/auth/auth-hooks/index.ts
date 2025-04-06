@@ -1,8 +1,9 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -38,6 +39,10 @@ export const authHooksGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ userQueryName }) => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, ['use-subscription']),
+      dev: extractPackageVersions(REACT_PACKAGES, ['@types/use-subscription']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
@@ -47,7 +52,6 @@ export const authHooksGenerator = createGenerator({
         authService: authServiceProvider,
         reactLogger: reactLoggerProvider,
         reactError: reactErrorProvider,
-        node: nodeProvider,
       },
       exports: {
         authHooks: authHooksProvider.export(projectScope),
@@ -59,7 +63,6 @@ export const authHooksGenerator = createGenerator({
         authService,
         reactLogger,
         reactError,
-        node,
       }) {
         const currentUserFields: string[] = [];
 
@@ -74,13 +77,6 @@ export const authHooksGenerator = createGenerator({
         );
         const [useRequiredUserIdImport, useRequiredUserIdPath] =
           makeImportAndFilePath(`${hookFolder}/useRequiredUserId.ts`);
-
-        node.addPackages({
-          'use-subscription': REACT_PACKAGES['use-subscription'],
-        });
-        node.addDevPackages({
-          '@types/use-subscription': REACT_PACKAGES['@types/use-subscription'],
-        });
 
         return {
           providers: {

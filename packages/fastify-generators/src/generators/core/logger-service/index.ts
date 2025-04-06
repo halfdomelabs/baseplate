@@ -5,8 +5,9 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
   createTypescriptFileTask,
-  nodeProvider,
+  extractPackageVersions,
   projectScope,
   TsCodeUtils,
   TypescriptCodeUtils,
@@ -57,30 +58,25 @@ export const loggerServiceGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['pino']),
+      dev: extractPackageVersions(FASTIFY_PACKAGES, ['pino-pretty']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         fastify: fastifyProvider,
       },
       exports: {
         loggerServiceSetup: loggerServiceSetupProvider.export(projectScope),
         loggerService: loggerServiceProvider.export(projectScope),
       },
-      run({ node, fastify }) {
+      run({ fastify }) {
         const mixins = createNonOverwriteableMap<
           Record<string, TsCodeFragment>
         >({}, { name: 'logger-service-mixins' });
 
         fastify.getConfig().set('devOutputFormatter', 'pino-pretty -t');
-
-        node.addPackages({
-          pino: FASTIFY_PACKAGES.pino,
-        });
-
-        node.addDevPackages({
-          'pino-pretty': FASTIFY_PACKAGES['pino-pretty'],
-        });
 
         const importMap = {
           '%logger-service': {

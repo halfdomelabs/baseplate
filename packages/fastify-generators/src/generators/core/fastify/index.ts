@@ -1,11 +1,12 @@
 import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
+  createNodeTask,
+  extractPackageVersions,
+  nodeConfigProvider,
   nodeGitIgnoreProvider,
   nodeProvider,
-  nodeSetupProvider,
   projectScope,
-  typescriptSetupProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -16,7 +17,9 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { setupFastifyTypescript } from './setup-fastify-typescript.js';
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+
+import { fastifyTypescriptTask } from './setup-fastify-typescript.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -68,23 +71,29 @@ export const fastifyGenerator = createGenerator({
     createGeneratorTask({
       name: 'node-setup',
       dependencies: {
-        nodeSetup: nodeSetupProvider,
+        nodeConfig: nodeConfigProvider,
       },
-      run({ nodeSetup }, { taskId }) {
-        nodeSetup.isEsm.set(false, taskId);
+      run({ nodeConfig }, { taskId }) {
+        nodeConfig.isEsm.set(false, taskId);
         return {};
       },
     }),
-    createGeneratorTask({
-      name: 'typescript',
-      dependencies: {
-        node: nodeProvider,
-        typescriptSetup: typescriptSetupProvider,
-      },
-      run({ node, typescriptSetup }, { taskId }) {
-        setupFastifyTypescript(node, typescriptSetup, taskId);
-        return {};
-      },
+    fastifyTypescriptTask,
+    createNodeTask((node, { taskId }) => {
+      node.packages.addDevPackages(
+        extractPackageVersions(FASTIFY_PACKAGES, [
+          'tsc-alias',
+          'tsx',
+          '@types/node',
+        ]),
+      );
+      node.extraProperties.merge(
+        {
+          main: 'dist/index.js',
+          files: ['dist/**/*', 'package.json', 'README.md'],
+        },
+        taskId,
+      );
     }),
     createGeneratorTask({
       name: 'main',
@@ -98,16 +107,11 @@ export const fastifyGenerator = createGenerator({
       outputs: {
         fastifyOutput: fastifyOutputProvider.export(projectScope),
       },
-      run({ node, nodeGitIgnore }) {
+      run({ node, nodeGitIgnore }, { taskId }) {
         const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
           { nodeFlags: [] },
           { name: 'fastify-config', mergeArraysUniquely: true },
         );
-
-        node.mergeExtraProperties({
-          main: 'dist/index.js',
-          files: ['dist/**/*', 'package.json', 'README.md'],
-        });
 
         nodeGitIgnore.addExclusions(['/dist']);
 
@@ -142,11 +146,14 @@ export const fastifyGenerator = createGenerator({
               'dist/index.js',
             ].join(' ');
 
-            node.addScripts({
-              build: 'tsc && tsc-alias',
-              start: startCommand,
-              dev: devCommand,
-            });
+            node.scripts.mergeObj(
+              {
+                build: 'tsc && tsc-alias',
+                start: startCommand,
+                dev: devCommand,
+              },
+              taskId,
+            );
 
             return {
               fastifyOutput: {

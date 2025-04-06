@@ -6,6 +6,8 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
   nodeProvider,
   projectScope,
@@ -57,7 +59,7 @@ export const fastifySentryGenerator = createGenerator({
         fastify: fastifyProvider,
       },
       run({ fastify, node }) {
-        if (node.isEsm()) {
+        if (node.isEsm) {
           fastify.getConfig().appendUnique('nodeFlags', [
             {
               flag: '--import ./src/instrument.ts',
@@ -82,7 +84,7 @@ export const fastifySentryGenerator = createGenerator({
         errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
       },
       run({ node, errorHandlerServiceSetup, fastifyServer }) {
-        if (!node.isEsm()) {
+        if (!node.isEsm) {
           fastifyServer.addInitializerBlock("import './instrument.js';\n");
         }
 
@@ -112,10 +114,18 @@ export const fastifySentryGenerator = createGenerator({
         };
       },
     }),
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, [
+        '@sentry/core',
+        '@sentry/node',
+        '@sentry/profiling-node',
+        'lodash',
+      ]),
+      dev: extractPackageVersions(FASTIFY_PACKAGES, ['@types/lodash']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         requestContext: requestContextProvider,
         configService: configServiceProvider,
         typescript: typescriptProvider,
@@ -124,7 +134,7 @@ export const fastifySentryGenerator = createGenerator({
       exports: {
         fastifySentry: fastifySentryProvider.export(projectScope),
       },
-      run({ node, configService, typescript, errorHandler }) {
+      run({ configService, typescript, errorHandler }) {
         const sentryServiceFile = typescript.createTemplate(
           {
             SHOULD_LOG_TO_SENTRY_BLOCKS: { type: 'code-block' },
@@ -136,17 +146,6 @@ export const fastifySentryGenerator = createGenerator({
         );
 
         const shouldLogToSentryBlocks: TypescriptCodeBlock[] = [];
-
-        node.addPackages({
-          '@sentry/core': FASTIFY_PACKAGES['@sentry/core'],
-          '@sentry/node': FASTIFY_PACKAGES['@sentry/node'],
-          '@sentry/profiling-node': FASTIFY_PACKAGES['@sentry/profiling-node'],
-          lodash: FASTIFY_PACKAGES.lodash,
-        });
-
-        node.addDevPackages({
-          '@types/lodash': FASTIFY_PACKAGES['@types/lodash'],
-        });
 
         configService.getConfigEntries().merge({
           SENTRY_DSN: {

@@ -1,14 +1,24 @@
-// Base field container class
-export abstract class FieldContainer<T> {
+/**
+ * Base field container interface
+ */
+export interface FieldContainer<T> {
+  getValue(): T;
+}
+
+/**
+ * Field container for a single value that cannot be overridden once set
+ */
+export class ScalarContainer<T> implements FieldContainer<T> {
   private _value: T | undefined;
   protected readonly defaultValue: T;
   protected isSet = false;
+  protected setBySource: string | undefined;
 
   constructor(defaultValue: T) {
     this.defaultValue = defaultValue;
   }
 
-  get value(): T {
+  getValue(): T {
     return this._value === undefined ? this.defaultValue : this._value;
   }
 
@@ -16,11 +26,6 @@ export abstract class FieldContainer<T> {
     this._value = value;
     this.isSet = true;
   }
-}
-
-// Scalar field container
-export class ScalarContainer<T> extends FieldContainer<T> {
-  protected setBySource: string | undefined;
 
   set(value: T, source: string): void {
     if (this.isSet) {
@@ -28,24 +33,26 @@ export class ScalarContainer<T> extends FieldContainer<T> {
         `Value has already been set by ${this.setBySource} and cannot be overwritten by ${source}`,
       );
     }
-    this.setValue(value);
+    this._value = value;
+    this.isSet = true;
     this.setBySource = source;
   }
 }
 
 // Array field container
-export class ArrayContainer<T> extends FieldContainer<T[]> {
-  private readonly stripDuplicates: boolean;
+export class ArrayContainer<T> implements FieldContainer<T[]> {
+  private readonly _stripDuplicates: boolean;
+  private _value: T[];
 
-  constructor(defaultValue?: T[], options?: { stripDuplicates?: boolean }) {
-    super(defaultValue ?? []);
-    this.stripDuplicates = options?.stripDuplicates ?? false;
+  constructor(initialValue?: T[], options?: { stripDuplicates?: boolean }) {
+    this._stripDuplicates = options?.stripDuplicates ?? false;
+    this._value = initialValue ?? [];
   }
 
   push(...items: T[]): void {
-    let currentValue = this.value;
+    let currentValue = this._value;
 
-    if (this.stripDuplicates) {
+    if (this._stripDuplicates) {
       // Add items without duplicates
       const set = new Set([...currentValue, ...items]);
       currentValue = [...set];
@@ -54,22 +61,25 @@ export class ArrayContainer<T> extends FieldContainer<T[]> {
       currentValue = [...currentValue, ...items];
     }
 
-    this.setValue(currentValue);
+    this._value = currentValue;
+  }
+
+  getValue(): T[] {
+    return this._value;
   }
 }
 
-export class ObjectContainer<
-  T extends Record<string, unknown>,
-> extends FieldContainer<T> {
+export class ObjectContainer<T extends Record<string, unknown>>
+  implements FieldContainer<T>
+{
   private readonly map: Map<
     keyof T,
     { value: unknown; setBySource: string | undefined }
   >;
 
-  constructor(defaultValue: T) {
-    super(defaultValue);
+  constructor(initialValue: T) {
     this.map = new Map(
-      Object.entries(defaultValue).map(([key, value]) => [
+      Object.entries(initialValue).map(([key, value]) => [
         key,
         { value, setBySource: undefined },
       ]),
@@ -92,7 +102,7 @@ export class ObjectContainer<
     }
   }
 
-  get value(): T {
+  getValue(): T {
     return Object.fromEntries(
       [...this.map.entries()].map(([key, value]) => [key, value.value]),
     ) as T;
@@ -100,16 +110,17 @@ export class ObjectContainer<
 }
 
 // Map field container
-export class MapContainer<
-  K extends string | number | symbol,
-  V,
-> extends FieldContainer<Map<K, V>> {
-  private readonly map: Map<K, { value: V; setBySource: string | undefined }>;
+export class MapContainer<K extends string | number | symbol, V>
+  implements FieldContainer<Map<K, V>>
+{
+  private readonly _value: Map<
+    K,
+    { value: V; setBySource: string | undefined }
+  >;
 
-  constructor(defaultValue?: Map<K, V>) {
-    const initialMap = defaultValue ?? new Map<K, V>();
-    super(initialMap);
-    this.map = new Map(
+  constructor(initialValue?: Map<K, V>) {
+    const initialMap = initialValue ?? new Map<K, V>();
+    this._value = new Map(
       [...initialMap.entries()].map(([key, value]) => [
         key,
         { value, setBySource: undefined },
@@ -118,13 +129,13 @@ export class MapContainer<
   }
 
   set(key: K, value: V, source: string): void {
-    const existingValue = this.map.get(key);
+    const existingValue = this._value.get(key);
     if (existingValue?.setBySource) {
       throw new Error(
         `Value for key ${key as string} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${source}`,
       );
     }
-    this.map.set(key, { value, setBySource: source });
+    this._value.set(key, { value, setBySource: source });
   }
 
   merge(value: Map<K, V>, source: string): void {
@@ -139,9 +150,9 @@ export class MapContainer<
     }
   }
 
-  get value(): Map<K, V> {
+  getValue(): Map<K, V> {
     return new Map(
-      [...this.map.entries()].map(([key, value]) => [key, value.value]),
+      [...this._value.entries()].map(([key, value]) => [key, value.value]),
     );
   }
 }
@@ -188,10 +199,10 @@ export class FieldMapSchemaBuilder {
   }
 
   array<T>(
-    defaultValue?: T[],
+    initialValue?: T[],
     options?: { stripDuplicates?: boolean },
   ): ArrayContainer<T> {
-    return new ArrayContainer(defaultValue ?? [], options);
+    return new ArrayContainer(initialValue, options);
   }
 
   object<T extends Record<string, unknown>>(
@@ -201,13 +212,13 @@ export class FieldMapSchemaBuilder {
   }
 
   map<K extends string | number | symbol, V>(
-    defaultValue?: Map<K, V>,
+    initialValue?: Map<K, V>,
   ): MapContainer<K, V> {
-    return new MapContainer(defaultValue ?? new Map<K, V>());
+    return new MapContainer(initialValue ?? new Map<K, V>());
   }
 
-  mapFromObj<V>(defaultValue?: Record<string, V>): MapContainer<string, V> {
-    return new MapContainer(new Map(Object.entries(defaultValue ?? {})));
+  mapFromObj<V>(initialValue?: Record<string, V>): MapContainer<string, V> {
+    return new MapContainer(new Map(Object.entries(initialValue ?? {})));
   }
 }
 
@@ -237,7 +248,7 @@ export function createFieldMap<S extends FieldMapSchema>(
 
       for (const key of Object.keys(schema)) {
         const container = schema[key];
-        (values as Record<string, unknown>)[key] = container.value;
+        (values as Record<string, unknown>)[key] = container.getValue();
       }
 
       return values;

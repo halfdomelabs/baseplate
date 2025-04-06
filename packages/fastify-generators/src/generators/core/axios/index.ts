@@ -1,7 +1,8 @@
 import {
   CORE_PACKAGES,
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -17,21 +18,19 @@ export const axiosGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(CORE_PACKAGES, ['axios']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
         typescript: typescriptProvider,
       },
-      run({ node, errorHandlerServiceSetup, typescript }) {
+      run({ errorHandlerServiceSetup, typescript }) {
         const [axiosImport, axiosFile] = makeImportAndFilePath(
           `src/services/axios.ts`,
         );
-
-        node.addPackages({
-          axios: CORE_PACKAGES.axios,
-        });
 
         return {
           build: async (builder) => {

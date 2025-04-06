@@ -1,8 +1,9 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectProvider,
   projectScope,
   TypescriptCodeUtils,
@@ -35,10 +36,15 @@ export const prismaVitestGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      dev: extractPackageVersions(FASTIFY_PACKAGES, [
+        'vitest-mock-extended',
+        'pg-connection-string',
+      ]),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         vitest: vitestProvider,
         typescript: typescriptProvider,
         prismaOutput: prismaOutputProvider,
@@ -48,12 +54,7 @@ export const prismaVitestGenerator = createGenerator({
       exports: {
         prismaVitest: prismaVitestProvider.export(projectScope),
       },
-      run({ node, vitest, project, typescript, prismaOutput }) {
-        node.addDevPackages({
-          'vitest-mock-extended': FASTIFY_PACKAGES['vitest-mock-extended'],
-          'pg-connection-string': FASTIFY_PACKAGES['pg-connection-string'],
-        });
-
+      run({ vitest, project, typescript, prismaOutput }) {
         const [dbHelperImport, dbHelperPath] = makeImportAndFilePath(
           'src/tests/helpers/db.test-helper.ts',
         );

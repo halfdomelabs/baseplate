@@ -38,6 +38,7 @@ export async function runPostWriteCommands(
       await executeCommand(commandString, {
         cwd: path.join(outputDirectory, workingDirectory),
         timeout: command.options?.timeout ?? COMMAND_TIMEOUT_MILLIS,
+        env: command.options?.env,
       });
     } catch (error) {
       logger.error(chalk.red(`Unable to run ${commandString}`));

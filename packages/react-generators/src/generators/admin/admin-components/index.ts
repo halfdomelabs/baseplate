@@ -1,8 +1,9 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -28,21 +29,19 @@ export const adminComponentsGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, ['nanoid']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
         reactComponents: reactComponentsProvider,
         typescript: typescriptProvider,
-        node: nodeProvider,
       },
       exports: {
         adminComponents: adminComponentsProvider.export(projectScope),
       },
-      run({ reactComponents, typescript, node }) {
-        node.addPackages({
-          nanoid: REACT_PACKAGES.nanoid,
-        });
-
+      run({ reactComponents, typescript }) {
         const [embeddedListImport, embeddedListPath] = makeImportAndFilePath(
           `${reactComponents.getComponentsFolder()}/EmbeddedListInput/index.tsx`,
         );

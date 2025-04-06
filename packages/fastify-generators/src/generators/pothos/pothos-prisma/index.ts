@@ -1,5 +1,6 @@
 import {
-  nodeProvider,
+  createNodePackagesTask,
+  extractPackageVersions,
   projectScope,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
@@ -31,27 +32,24 @@ export const pothosPrismaGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['@pothos/plugin-prisma']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         pothosSetup: pothosSetupProvider,
         prismaOutput: prismaOutputProvider,
       },
       exports: {
         pothosPrisma: pothosPrismaProvider.export(projectScope),
       },
-      run({ node, pothosSetup, prismaOutput }) {
+      run({ pothosSetup, prismaOutput }) {
         return {
           providers: {
             pothosPrisma: {},
           },
           build: () => {
-            node.addPackages({
-              '@pothos/plugin-prisma':
-                FASTIFY_PACKAGES['@pothos/plugin-prisma'],
-            });
-
             pothosSetup
               .getConfig()
               .append(

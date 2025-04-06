@@ -1,8 +1,9 @@
 import type { ImportMap, ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -36,10 +37,13 @@ export const fastifyRedisGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ defaultUrl }) => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['ioredis']),
+      dev: extractPackageVersions(FASTIFY_PACKAGES, ['ioredis-mock']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         configService: configServiceProvider,
         fastifyHealthCheck: fastifyHealthCheckProvider,
         typescript: typescriptProvider,
@@ -48,12 +52,7 @@ export const fastifyRedisGenerator = createGenerator({
       exports: {
         fastifyRedis: fastifyRedisProvider.export(projectScope),
       },
-      run({ node, configService, fastifyHealthCheck, typescript, vitest }) {
-        node.addPackages({ ioredis: FASTIFY_PACKAGES.ioredis });
-        node.addDevPackages({
-          'ioredis-mock': FASTIFY_PACKAGES['ioredis-mock'],
-        });
-
+      run({ configService, fastifyHealthCheck, typescript, vitest }) {
         const [redisImport, redisPath] = makeImportAndFilePath(
           `src/services/redis.ts`,
         );

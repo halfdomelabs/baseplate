@@ -1,8 +1,9 @@
 import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -35,19 +36,21 @@ export const reactSentryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, ['@sentry/react']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
         typescript: typescriptProvider,
         reactError: reactErrorProvider,
         reactConfig: reactConfigProvider,
-        node: nodeProvider,
         authIdentify: authIdentifyProvider.dependency().optional(),
       },
       exports: {
         reactSentry: reactSentryProvider.export(projectScope),
       },
-      run({ typescript, reactError, reactConfig, node, authIdentify }) {
+      run({ typescript, reactError, reactConfig, authIdentify }) {
         const sentryFile = typescript.createTemplate(
           {
             SENTRY_SCOPE_ACTIONS: {
@@ -59,10 +62,6 @@ export const reactSentryGenerator = createGenerator({
         const [sentryImport, sentryPath] = makeImportAndFilePath(
           'src/services/sentry.ts',
         );
-
-        node.addPackages({
-          '@sentry/react': REACT_PACKAGES['@sentry/react'],
-        });
 
         reactError.addErrorReporter(
           TypescriptCodeUtils.createBlock(

@@ -1,8 +1,9 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectScope,
   quot,
   TypescriptCodeExpression,
@@ -63,6 +64,15 @@ export const storageModuleGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ fileModel, s3Adapters, categories = [] }) => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(STORAGE_PACKAGES, [
+        '@aws-sdk/client-s3',
+        '@aws-sdk/s3-presigned-post',
+        '@aws-sdk/s3-request-presigner',
+        'mime-types',
+      ]),
+      dev: extractPackageVersions(STORAGE_PACKAGES, ['@types/mime-types']),
+    }),
     createGeneratorTask({
       name: 'setup-file-input-schema',
       dependencies: {
@@ -124,7 +134,6 @@ export const storageModuleGenerator = createGenerator({
     createGeneratorTask({
       name: 'build',
       dependencies: {
-        node: nodeProvider,
         typescript: typescriptProvider,
         pothosSchema: pothosSchemaProvider,
         appModule: appModuleProvider,
@@ -138,7 +147,6 @@ export const storageModuleGenerator = createGenerator({
           .reference(`prisma-object-type:${fileModel}`),
       },
       run({
-        node,
         typescript,
         appModule,
         pothosSchema,
@@ -153,19 +161,6 @@ export const storageModuleGenerator = createGenerator({
         const [, validatorPath] = makeImportAndFilePath(
           `${moduleFolder}/services/validate-upload-input.ts`,
         );
-
-        node.addPackages({
-          '@aws-sdk/client-s3': STORAGE_PACKAGES['@aws-sdk/client-s3'],
-          '@aws-sdk/s3-presigned-post':
-            STORAGE_PACKAGES['@aws-sdk/s3-presigned-post'],
-          '@aws-sdk/s3-request-presigner':
-            STORAGE_PACKAGES['@aws-sdk/s3-request-presigner'],
-          'mime-types': STORAGE_PACKAGES['mime-types'],
-        });
-
-        node.addDevPackages({
-          '@types/mime-types': STORAGE_PACKAGES['@types/mime-types'],
-        });
 
         configService
           .getConfigEntries()

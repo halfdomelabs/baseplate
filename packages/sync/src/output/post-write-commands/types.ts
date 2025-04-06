@@ -40,6 +40,10 @@ export interface PostWriteCommandOptions {
    * The timeout for the command in milliseconds. Defaults to 5 minutes.
    */
   timeout?: number;
+  /**
+   * The environment variables to set for the command
+   */
+  env?: Record<string, string>;
 }
 
 /**

@@ -1,4 +1,6 @@
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   nodeProvider,
   projectScope,
   TypescriptCodeExpression,
@@ -33,10 +35,20 @@ export const fastifyBullBoardGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, [
+        '@bull-board/api',
+        '@bull-board/fastify',
+        'ms',
+      ]),
+      dev: extractPackageVersions(FASTIFY_PACKAGES, [
+        '@types/redis-info',
+        '@types/ms',
+      ]),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         typescript: typescriptProvider,
         errorHandlerService: errorHandlerServiceProvider,
         redis: fastifyRedisProvider,
@@ -46,14 +58,7 @@ export const fastifyBullBoardGenerator = createGenerator({
       exports: {
         fastifyBullBoard: fastifyBullBoardProvider.export(projectScope),
       },
-      run({
-        node,
-        typescript,
-        errorHandlerService,
-        redis,
-        pothosSchema,
-        appModule,
-      }) {
+      run({ typescript, errorHandlerService, redis, pothosSchema, appModule }) {
         const queuesToTrack: TypescriptCodeExpression[] = [];
 
         const moduleFolder = `${appModule.getModuleFolder()}/bull-board`;
@@ -61,18 +66,6 @@ export const fastifyBullBoardGenerator = createGenerator({
         pothosSchema.registerSchemaFile(
           `${moduleFolder}/schema/authenticate.mutations.ts`,
         );
-
-        node.addPackages({
-          '@bull-board/api': FASTIFY_PACKAGES['@bull-board/api'],
-          '@bull-board/fastify': FASTIFY_PACKAGES['@bull-board/fastify'],
-          ms: FASTIFY_PACKAGES.ms,
-        });
-
-        // required for bull-board to compile
-        node.addDevPackages({
-          '@types/redis-info': FASTIFY_PACKAGES['@types/redis-info'],
-          '@types/ms': FASTIFY_PACKAGES['@types/ms'],
-        });
 
         return {
           providers: {
@@ -129,9 +122,9 @@ export const fastifyBullBoardGenerator = createGenerator({
         fastifyServer: fastifyServerProvider,
       },
       run({ node, fastifyServer }) {
-        node.addPackages({
-          '@fastify/formbody': FASTIFY_PACKAGES['@fastify/formbody'],
-        });
+        node.packages.addProdPackages(
+          extractPackageVersions(FASTIFY_PACKAGES, ['@fastify/formbody']),
+        );
 
         fastifyServer.registerPlugin({
           name: 'formBodyPlugin',

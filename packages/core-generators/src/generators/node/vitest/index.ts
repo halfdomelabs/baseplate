@@ -12,10 +12,14 @@ import type { TypescriptCodeBlock } from '@src/writers/index.js';
 
 import { CORE_PACKAGES } from '@src/constants/index.js';
 import { projectScope } from '@src/providers/scopes.js';
+import { extractPackageVersions } from '@src/utils/extract-packages.js';
 import { TypescriptCodeUtils } from '@src/writers/index.js';
 
 import { eslintProvider } from '../eslint/index.js';
-import { nodeProvider } from '../node/index.js';
+import {
+  createNodePackagesTask,
+  nodeProvider,
+} from '../node/node.generator.js';
 import { typescriptProvider } from '../typescript/index.js';
 
 const descriptorSchema = z.object({});
@@ -36,6 +40,12 @@ export const vitestGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      dev: extractPackageVersions(CORE_PACKAGES, [
+        'vitest',
+        'vite-tsconfig-paths',
+      ]),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
@@ -55,14 +65,9 @@ export const vitestGenerator = createGenerator({
           { name: 'vitest-config', mergeArraysUniquely: true },
         );
 
-        const vitestConfigFilename = node.isEsm()
+        const vitestConfigFilename = node.isEsm
           ? 'vitest.config.ts'
           : 'vitest.config.mts';
-
-        node.addDevPackages({
-          vitest: CORE_PACKAGES.vitest,
-          'vite-tsconfig-paths': CORE_PACKAGES['vite-tsconfig-paths'],
-        });
 
         eslint.getConfig().appendUnique('eslintIgnore', [vitestConfigFilename]);
 

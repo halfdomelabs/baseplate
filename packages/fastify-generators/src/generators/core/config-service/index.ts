@@ -5,9 +5,10 @@ import type {
 import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   mergeCodeEntryOptions,
   nodeGitIgnoreProvider,
-  nodeProvider,
   projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -68,28 +69,22 @@ export const configServiceGenerator = createGenerator({
         return {};
       },
     }),
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['zod', 'cross-env']),
+      dev: extractPackageVersions(FASTIFY_PACKAGES, ['dotenv']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         nodeGitIgnore: nodeGitIgnoreProvider,
         typescript: typescriptProvider,
       },
       exports: { configService: configServiceProvider.export(projectScope) },
-      run({ node, nodeGitIgnore, typescript }) {
+      run({ nodeGitIgnore, typescript }) {
         const configEntries = createNonOverwriteableMap<
           Record<string, ConfigEntry>
         >({}, { name: 'config-service-config-entries' });
         const additionalVerifications: TypescriptCodeBlock[] = [];
-
-        node.addPackages({
-          zod: FASTIFY_PACKAGES.zod,
-          'cross-env': FASTIFY_PACKAGES['cross-env'],
-        });
-
-        node.addDevPackages({
-          dotenv: FASTIFY_PACKAGES.dotenv,
-        });
 
         nodeGitIgnore.addExclusions(['/.env', '/.*.env']);
 

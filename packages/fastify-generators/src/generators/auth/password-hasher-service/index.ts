@@ -1,8 +1,9 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -31,10 +32,12 @@ export const passwordHasherServiceGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['@node-rs/argon2']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         appModule: appModuleProvider,
         typescript: typescriptProvider,
       },
@@ -42,16 +45,12 @@ export const passwordHasherServiceGenerator = createGenerator({
         passwordHasherService:
           passwordHasherServiceProvider.export(projectScope),
       },
-      run({ node, appModule, typescript }) {
+      run({ appModule, typescript }) {
         const moduleFolder = appModule.getModuleFolder();
 
         const [fileImport, filePath] = makeImportAndFilePath(
           path.join(moduleFolder, 'services/password-hasher.service.ts'),
         );
-
-        node.addPackages({
-          '@node-rs/argon2': FASTIFY_PACKAGES['@node-rs/argon2'],
-        });
 
         return {
           providers: {

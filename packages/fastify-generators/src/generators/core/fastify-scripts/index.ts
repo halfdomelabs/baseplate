@@ -37,17 +37,20 @@ export const fastifyScriptsGenerator = createGenerator({
       exports: {
         fastifyScripts: fastifyScriptsProvider.export(projectScope),
       },
-      run({ node, fastifyOutput, eslint }) {
+      run({ node, fastifyOutput, eslint }, { taskId }) {
         eslint
           .getConfig()
           .appendUnique('extraTsconfigProjects', ['./scripts/tsconfig.json']);
-        node.addScripts({
-          'run:script': ['tsx', ...fastifyOutput.getNodeFlagsDev()].join(' '),
-          'dev:script': [
-            `tsx watch --respawn`,
-            ...fastifyOutput.getNodeFlagsDev(),
-          ].join(' '),
-        });
+        node.scripts.mergeObj(
+          {
+            'run:script': ['tsx', ...fastifyOutput.getNodeFlagsDev()].join(' '),
+            'dev:script': [
+              `tsx watch --respawn`,
+              ...fastifyOutput.getNodeFlagsDev(),
+            ].join(' '),
+          },
+          taskId,
+        );
         return {
           providers: {
             fastifyScripts: {

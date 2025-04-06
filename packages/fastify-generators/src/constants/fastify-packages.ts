@@ -66,6 +66,8 @@ export const FASTIFY_PACKAGES = {
   '@sentry/core': '9.10.1',
   '@sentry/node': '9.10.1',
   '@sentry/profiling-node': '9.10.1',
+  '@pothos/plugin-tracing': '1.1.0',
+  '@pothos/tracing-sentry': '1.1.1',
 
   // Validation
   zod: '3.24.1',
@@ -77,6 +79,7 @@ export const FASTIFY_PACKAGES = {
   // Auth
   '@node-rs/argon2': '2.0.2',
   auth0: '4.0.2',
+  'fastify-auth0-verify': '3.0.0',
 
   // Postmark
   postmark: '4.0.2',
@@ -86,4 +89,7 @@ export const FASTIFY_PACKAGES = {
 
   // Stripe
   stripe: '14.5.0',
+
+  // BullMQ
+  bullmq: '5.1.1',
 } as const;

@@ -3,6 +3,7 @@ import { execa, parseCommandString } from 'execa';
 interface ExecOptions {
   cwd?: string;
   timeout?: number;
+  env?: Record<string, string>;
 }
 
 export async function executeCommand(
@@ -13,12 +14,15 @@ export async function executeCommand(
   const result = await execa(file, commandArguments, {
     all: true,
     cwd: options.cwd,
-    // strip out npm_* env vars
-    env: Object.fromEntries(
-      Object.keys(process.env)
-        .filter((k) => !k.startsWith('npm_'))
-        .map((key) => [key, process.env[key]]),
-    ),
+    env: {
+      // strip out npm_* env vars
+      ...Object.fromEntries(
+        Object.keys(process.env)
+          .filter((k) => !k.startsWith('npm_'))
+          .map((key) => [key, process.env[key]]),
+      ),
+      ...options.env,
+    },
     extendEnv: false,
     timeout: options.timeout,
   });

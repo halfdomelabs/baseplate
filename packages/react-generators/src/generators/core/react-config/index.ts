@@ -5,7 +5,8 @@ import type {
 import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
-  nodeProvider,
+  createNodePackagesTask,
+  extractPackageVersions,
   projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -44,16 +45,18 @@ export const reactConfigGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, ['zod']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         typescript: typescriptProvider,
       },
       exports: {
         reactConfig: reactConfigProvider.export(projectScope),
       },
-      run({ node, typescript }) {
+      run({ typescript }) {
         const configEntryMap = createNonOverwriteableMap<
           Record<string, ConfigEntry>
         >(
@@ -71,9 +74,6 @@ export const reactConfigGenerator = createGenerator({
         );
         const customEnvVars: { name: string; value: string }[] = [];
 
-        node.addPackages({
-          zod: REACT_PACKAGES.zod,
-        });
         return {
           providers: {
             reactConfig: {

@@ -6,7 +6,6 @@ import {
   createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
-  writeJsonAction,
 } from '@halfdomelabs/sync';
 import {
   findNearestPackageJson,
@@ -23,8 +22,9 @@ import { z } from 'zod';
 import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
 import { notEmpty } from '@src/utils/array.js';
+import { writeJsonToBuilder } from '@src/writers/json.js';
 
-import { nodeProvider } from '../node/index.js';
+import { nodeProvider } from '../node/node.generator.js';
 
 const descriptorSchema = z.object({
   tabWidth: z.number().default(2),
@@ -128,7 +128,7 @@ export const prettierGenerator = createGenerator({
       exports: {
         prettier: prettierProvider.export(projectScope),
       },
-      run({ node }) {
+      run({ node }, { taskId }) {
         const prettierConfig = createNonOverwriteableMap<PrettierConfig>({
           tabWidth: descriptor.tabWidth,
           singleQuote: descriptor.singleQuote,
@@ -157,7 +157,7 @@ export const prettierGenerator = createGenerator({
               },
             },
           },
-          build: async (builder) => {
+          build: (builder) => {
             let prettierModulePromise: Promise<PrettierModule> | undefined;
             let prettierConfigPromise:
               | Promise<
@@ -254,27 +254,29 @@ export const prettierGenerator = createGenerator({
               fileNames: [...PARSEABLE_FILE_NAMES],
             });
 
-            node.addDevPackages({
+            node.packages.addDevPackages({
               prettier: CORE_PACKAGES.prettier,
               ...Object.fromEntries(
                 DEFAULT_PLUGINS.map((plugin) => [plugin.name, plugin.version]),
               ),
             });
 
-            node.addScripts({
-              'prettier:check': 'prettier --check .',
-              'prettier:write': 'prettier -w .',
-            });
-
-            await builder.apply(
-              writeJsonAction({
-                destination: '.prettierrc',
-                contents: {
-                  ...prettierConfig.value(),
-                  plugins: plugins.map((plugin) => plugin.name),
-                },
-              }),
+            node.scripts.mergeObj(
+              {
+                'prettier:check': 'prettier --check .',
+                'prettier:write': 'prettier -w .',
+              },
+              taskId,
             );
+
+            writeJsonToBuilder(builder, {
+              id: 'prettier-config',
+              destination: '.prettierrc',
+              contents: {
+                ...prettierConfig.value(),
+                plugins: plugins.map((plugin) => plugin.name),
+              },
+            });
 
             const prettierIgnoreSorted = uniq(prettierIgnore.toSorted());
 
