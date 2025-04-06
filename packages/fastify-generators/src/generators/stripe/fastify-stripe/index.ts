@@ -1,5 +1,6 @@
 import {
-  nodeProvider,
+  createNodePackagesTask,
+  extractPackageVersions,
   projectScope,
   TypescriptCodeExpression,
   typescriptProvider,
@@ -31,10 +32,15 @@ export const fastifyStripeGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, [
+        'stripe',
+        'fastify-raw-body',
+      ]),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         typescript: typescriptProvider,
         configService: configServiceProvider,
         errorHandlerService: errorHandlerServiceProvider,
@@ -45,17 +51,12 @@ export const fastifyStripeGenerator = createGenerator({
         fastifyStripe: fastifyStripeProvider.export(projectScope),
       },
       run({
-        node,
         typescript,
         configService,
         errorHandlerService,
         loggerService,
         fastifyServer,
       }) {
-        node.addPackages({
-          stripe: FASTIFY_PACKAGES.stripe,
-          'fastify-raw-body': FASTIFY_PACKAGES['fastify-raw-body'],
-        });
         configService.getConfigEntries().set('STRIPE_SECRET_KEY', {
           comment: 'Stripe secret API key',
           value: 'z.string().min(1)',

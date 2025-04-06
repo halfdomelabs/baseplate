@@ -1,6 +1,7 @@
 import {
+  createNodePackagesTask,
   eslintProvider,
-  nodeProvider,
+  extractPackageVersions,
   prettierProvider,
   projectScope,
 } from '@halfdomelabs/core-generators';
@@ -35,27 +36,26 @@ export const reactTailwindGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ globalBodyClasses }) => [
+    createNodePackagesTask({
+      dev: extractPackageVersions(REACT_PACKAGES, [
+        'autoprefixer',
+        'tailwindcss',
+        'prettier-plugin-tailwindcss',
+        '@tailwindcss/forms',
+      ]),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
         react: reactProvider,
-        node: nodeProvider,
         eslint: eslintProvider,
         prettier: prettierProvider,
       },
       exports: {
         reactTailwind: reactTailwindProvider.export(projectScope),
       },
-      run({ node, react, eslint, prettier }) {
+      run({ react, eslint, prettier }) {
         const srcFolder = react.getSrcFolder();
-
-        node.addDevPackages({
-          autoprefixer: REACT_PACKAGES.autoprefixer,
-          tailwindcss: REACT_PACKAGES.tailwindcss,
-          'prettier-plugin-tailwindcss':
-            REACT_PACKAGES['prettier-plugin-tailwindcss'],
-          '@tailwindcss/forms': REACT_PACKAGES['@tailwindcss/forms'],
-        });
 
         eslint
           .getConfig()

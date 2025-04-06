@@ -30,6 +30,11 @@ export const REACT_PACKAGES = {
   zustand: '5.0.3',
   'react-error-boundary': '4.0.13',
 
+  // Date Picker
+  'react-datepicker': '4.25.0',
+  'date-fns': '3.2.0',
+  '@types/react-datepicker': '4.19.5',
+
   // GraphQL
   '@apollo/client': '3.10.8',
   graphql: '16.9.0',

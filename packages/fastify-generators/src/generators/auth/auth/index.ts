@@ -4,28 +4,29 @@ import {
   projectScope,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  createSetupTask,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});
 
-const [setupTask, authConfigProvider, authSetupProvider] = createSetupTask(
-  (t) => ({
-    userModelName: t.scalar<string>(),
-    authRolesImport: t.scalar<ImportEntry>(),
-    userSessionServiceImport: t.scalar<ImportEntry>(),
-    contextUtilsImport: t.scalar<ImportEntry>(),
-  }),
-  {
-    prefix: 'auth',
-    configScope: projectScope,
-    outputScope: projectScope,
-  },
-);
+const [setupTask, authConfigProvider, authSetupProvider] =
+  createConfigProviderTask(
+    (t) => ({
+      userModelName: t.scalar<string>(),
+      authRolesImport: t.scalar<ImportEntry>(),
+      userSessionServiceImport: t.scalar<ImportEntry>(),
+      contextUtilsImport: t.scalar<ImportEntry>(),
+    }),
+    {
+      prefix: 'auth',
+      configScope: projectScope,
+      configValuesScope: projectScope,
+    },
+  );
 
 export { authConfigProvider, authSetupProvider };
 

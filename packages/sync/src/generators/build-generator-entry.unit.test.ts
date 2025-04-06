@@ -8,7 +8,7 @@ import {
 import { buildTestGeneratorBundle } from '@src/runner/tests/factories.test-helper.js';
 import { createEventedLogger } from '@src/utils/evented-logger.js';
 
-import type { ProviderExportMap } from './generators.js';
+import type { GeneratorBundle, ProviderExportMap } from './generators.js';
 
 import { buildGeneratorEntry } from './build-generator-entry.js';
 
@@ -37,8 +37,8 @@ describe('buildGeneratorEntry', () => {
     const bundle = buildTestGeneratorBundle({
       name: 'test-generator',
       directory: '/test',
-      tasks: [
-        {
+      tasks: {
+        'test-task': {
           name: 'test-task',
           dependencies: {
             test: testProviderType,
@@ -48,10 +48,12 @@ describe('buildGeneratorEntry', () => {
           },
           run: () => ({
             providers: { test: {} },
-            build: () => ({}),
+            build: () => {
+              /* no-op */
+            },
           }),
         },
-      ],
+      },
     });
 
     const entry = await buildGeneratorEntry(bundle, { logger });
@@ -97,16 +99,18 @@ describe('buildGeneratorEntry', () => {
       directory: '/test/child',
       scopes: [],
       children: {},
-      tasks: [
-        {
+      tasks: {
+        'child-task': {
           name: 'child-task',
           run: () => ({
             providers: {},
-            build: () => ({}),
+            build: () => {
+              /* no-op */
+            },
           }),
         },
-      ],
-    };
+      },
+    } satisfies GeneratorBundle;
 
     const bundle = {
       name: 'parent-generator',
@@ -119,8 +123,8 @@ describe('buildGeneratorEntry', () => {
           { ...childBundle, instanceName: 'child-2' },
         ],
       },
-      tasks: [],
-    };
+      tasks: {},
+    } satisfies GeneratorBundle;
 
     const entry = await buildGeneratorEntry(bundle, { logger });
 
@@ -190,8 +194,8 @@ describe('buildGeneratorEntry', () => {
       directory: '/test',
       scopes: [scope],
       children: {},
-      tasks: [],
-    };
+      tasks: {},
+    } satisfies GeneratorBundle;
 
     const entry = await buildGeneratorEntry(bundle, { logger });
 

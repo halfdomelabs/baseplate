@@ -105,13 +105,10 @@ export const pothosScalarGenerator = createGenerator({
 
         pothosSetup.registerSchemaFile(scalarPath);
 
-        if (Object.keys(scalarConfig.dependencies).length > 0) {
-          node.addPackages(scalarConfig.dependencies);
-        }
-
-        if (Object.keys(scalarConfig.devDependencies).length > 0) {
-          node.addDevPackages(scalarConfig.devDependencies);
-        }
+        node.packages.addPackages({
+          prod: scalarConfig.dependencies,
+          dev: scalarConfig.devDependencies,
+        });
 
         return {
           build: async (builder) => {

@@ -1,6 +1,7 @@
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -8,6 +9,7 @@ import {
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifySentryProvider } from '@src/generators/core/fastify-sentry/index.js';
 import { yogaPluginConfigProvider } from '@src/generators/yoga/yoga-plugin/index.js';
@@ -21,15 +23,20 @@ export const pothosSentryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, [
+        '@pothos/plugin-tracing',
+        '@pothos/tracing-sentry',
+      ]),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
         yogaPluginConfig: yogaPluginConfigProvider,
         errorHandlerService: errorHandlerServiceProvider,
         typescript: typescriptProvider,
-        node: nodeProvider,
       },
-      run({ yogaPluginConfig, typescript, errorHandlerService, node }) {
+      run({ yogaPluginConfig, typescript, errorHandlerService }) {
         const [pluginImport, pluginPath] = makeImportAndFilePath(
           'src/plugins/graphql/useSentry.ts',
         );
@@ -39,11 +46,6 @@ export const pothosSentryGenerator = createGenerator({
             `import { useSentry } from '${pluginImport}'`,
           ]),
         );
-
-        node.addPackages({
-          '@pothos/plugin-tracing': '1.1.0',
-          '@pothos/tracing-sentry': '1.1.1',
-        });
 
         return {
           build: async (builder) => {

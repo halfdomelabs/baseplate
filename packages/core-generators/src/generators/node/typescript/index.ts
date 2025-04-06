@@ -7,12 +7,11 @@ import type {
 import type { CompilerOptions, ts } from 'ts-morph';
 
 import {
+  createConfigProviderTaskWithInfo,
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  createSetupTaskWithInfo,
   createTaskPhase,
-  writeJsonAction,
 } from '@halfdomelabs/sync';
 import { safeMergeAll } from '@halfdomelabs/utils';
 import path from 'node:path';
@@ -33,9 +32,9 @@ import {
   pathMapEntriesToRegexes,
   renderTsCodeFileTemplate,
 } from '@src/renderers/typescript/index.js';
+import { extractPackageVersions } from '@src/utils/extract-packages.js';
 
 import type { CopyTypescriptFileOptions } from '../../../actions/index.js';
-import type { TypescriptCodeBlock } from '../../../writers/index.js';
 import type { PathMapEntry } from '../../../writers/typescript/imports.js';
 import type {
   TypescriptSourceFileOptions,
@@ -43,9 +42,13 @@ import type {
 } from '../../../writers/typescript/source-file.js';
 
 import { copyTypescriptFileAction } from '../../../actions/index.js';
+import {
+  type TypescriptCodeBlock,
+  writeJsonToBuilder,
+} from '../../../writers/index.js';
 import { resolveModule } from '../../../writers/typescript/imports.js';
 import { TypescriptSourceFile } from '../../../writers/typescript/source-file.js';
-import { nodeProvider } from '../node/index.js';
+import { createNodePackagesTask } from '../node/node.generator.js';
 
 type ChangePropertyTypes<
   T,
@@ -146,9 +149,8 @@ const DEFAULT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
 };
 
 const [setupTask, typescriptSetupProvider, typescriptConfigProvider] =
-  createSetupTaskWithInfo(
+  createConfigProviderTaskWithInfo(
     (t) => ({
-      version: t.string(CORE_PACKAGES.typescript),
       compilerOptions: t.scalar<TypescriptCompilerOptions>(
         DEFAULT_COMPILER_OPTIONS,
       ),
@@ -160,7 +162,7 @@ const [setupTask, typescriptSetupProvider, typescriptConfigProvider] =
     {
       prefix: 'typescript',
       configScope: projectScope,
-      outputScope: projectScope,
+      configValuesScope: projectScope,
       infoFromDescriptor: (
         descriptor: z.infer<typeof typescriptGeneratorDescriptorSchema>,
       ) => ({
@@ -237,14 +239,16 @@ export const typescriptGenerator = createGenerator({
   preRegisteredPhases: [typescriptFileTaskPhase],
   buildTasks: (descriptor) => [
     createGeneratorTask(setupTask(descriptor)),
+    createNodePackagesTask({
+      dev: extractPackageVersions(CORE_PACKAGES, ['typescript']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         typescriptConfig: typescriptConfigProvider,
       },
       exports: { typescript: typescriptProvider.export(projectScope) },
-      run({ node, typescriptConfig }) {
+      run({ typescriptConfig }) {
         const { compilerOptions } = typescriptConfig;
         let cachedPathEntries: PathMapEntry[] | undefined;
 
@@ -324,23 +328,21 @@ export const typescriptGenerator = createGenerator({
                 }),
             } as TypescriptProvider,
           },
-          async build(builder) {
-            const { include, exclude, version, references, extraSections } =
+          build(builder) {
+            const { include, exclude, references, extraSections } =
               typescriptConfig;
-            node.addDevPackage('typescript', version);
 
-            await builder.apply(
-              writeJsonAction({
-                destination: 'tsconfig.json',
-                contents: {
-                  compilerOptions,
-                  include,
-                  exclude,
-                  references: references.length > 0 ? references : undefined,
-                  ...safeMergeAll(...extraSections),
-                },
-              }),
-            );
+            writeJsonToBuilder(builder, {
+              id: 'tsconfig',
+              destination: 'tsconfig.json',
+              contents: {
+                compilerOptions,
+                include,
+                exclude,
+                references: references.length > 0 ? references : undefined,
+                ...safeMergeAll(...extraSections),
+              },
+            });
           },
         };
       },

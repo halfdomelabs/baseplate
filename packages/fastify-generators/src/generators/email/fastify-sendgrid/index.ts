@@ -1,5 +1,6 @@
 import {
-  nodeProvider,
+  createNodePackagesTask,
+  extractPackageVersions,
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -26,10 +27,12 @@ export const fastifySendgridGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['@sendgrid/mail']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         typescript: typescriptProvider,
         configService: configServiceProvider,
         loggerService: loggerServiceProvider,
@@ -37,10 +40,7 @@ export const fastifySendgridGenerator = createGenerator({
       exports: {
         fastifySendgrid: fastifySendgridProvider.export(projectScope),
       },
-      run({ node, typescript, configService, loggerService }) {
-        node.addPackages({
-          '@sendgrid/mail': FASTIFY_PACKAGES['@sendgrid/mail'],
-        });
+      run({ typescript, configService, loggerService }) {
         configService.getConfigEntries().set('SENDGRID_API_KEY', {
           comment: 'Sendgrid API token',
           value: 'z.string().min(1)',

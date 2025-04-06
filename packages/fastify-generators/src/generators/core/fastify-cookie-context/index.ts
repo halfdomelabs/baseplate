@@ -1,5 +1,6 @@
 import {
-  nodeProvider,
+  createNodePackagesTask,
+  extractPackageVersions,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -21,18 +22,16 @@ export const fastifyCookieContextGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['@fastify/cookie']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         fastifyServer: fastifyServerProvider,
         requestServiceContextSetup: requestServiceContextSetupProvider,
       },
-      run({ node, fastifyServer, requestServiceContextSetup }) {
-        node.addPackages({
-          '@fastify/cookie': FASTIFY_PACKAGES['@fastify/cookie'],
-        });
-
+      run({ fastifyServer, requestServiceContextSetup }) {
         fastifyServer.registerPlugin({
           name: 'cookies',
           plugin: new TypescriptCodeExpression(

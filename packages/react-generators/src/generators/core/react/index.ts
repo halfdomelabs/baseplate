@@ -6,9 +6,8 @@ import type {
 import {
   createTypescriptTemplateConfig,
   eslintProvider,
+  nodeConfigProvider,
   nodeGitIgnoreProvider,
-  nodeProvider,
-  nodeSetupProvider,
   projectScope,
   quot,
   TypescriptCodeUtils,
@@ -24,7 +23,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { setupViteNode } from './node.js';
+import { viteNodeTask } from './node.js';
 
 const descriptorSchema = z.object({
   title: z.string().default('React App'),
@@ -54,30 +53,26 @@ export const reactGenerator = createGenerator({
     createGeneratorTask({
       name: 'setup-node',
       dependencies: {
-        nodeSetup: nodeSetupProvider,
+        nodeConfig: nodeConfigProvider,
       },
-      run: ({ nodeSetup }, { taskId }) => {
-        nodeSetup.isEsm.set(true, taskId);
+      run: ({ nodeConfig }, { taskId }) => {
+        nodeConfig.isEsm.set(true, taskId);
         return {};
       },
     }),
+    viteNodeTask,
     createGeneratorTask({
       name: 'main',
-
       dependencies: {
-        node: nodeProvider,
         typescript: typescriptProvider,
         nodeGitIgnore: nodeGitIgnoreProvider,
         eslint: eslintProvider.dependency().optional(),
       },
-
       exports: {
         react: reactProvider.export(projectScope),
       },
-
-      run({ node, typescript, nodeGitIgnore, eslint }) {
+      run({ typescript, nodeGitIgnore, eslint }) {
         const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);
-        setupViteNode(node);
 
         nodeGitIgnore.addExclusions([
           '# production',

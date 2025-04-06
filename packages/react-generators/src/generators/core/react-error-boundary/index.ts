@@ -1,6 +1,7 @@
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -30,10 +31,12 @@ export const reactErrorBoundaryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, ['react-error-boundary']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         reactApp: reactAppProvider,
         reactError: reactErrorProvider,
         reactComponents: reactComponentsProvider,
@@ -42,10 +45,7 @@ export const reactErrorBoundaryGenerator = createGenerator({
       exports: {
         reactErrorBoundary: reactErrorBoundaryProvider.export(projectScope),
       },
-      run({ reactApp, reactError, reactComponents, typescript, node }) {
-        node.addPackages({
-          'react-error-boundary': REACT_PACKAGES['react-error-boundary'],
-        });
+      run({ reactApp, reactError, reactComponents, typescript }) {
         const [errorBoundaryImport, errorBoundaryPath] = makeImportAndFilePath(
           'src/components/ErrorBoundary/index.tsx',
         );

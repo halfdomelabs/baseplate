@@ -1,8 +1,9 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -74,29 +75,46 @@ export const reactComponentsGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ includeDatePicker }) => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, [
+        '@headlessui/react',
+        '@hookform/resolvers',
+        'clsx',
+        'react-hook-form',
+        'react-hot-toast',
+        'react-icons',
+        'react-select',
+        'zustand',
+      ]),
+    }),
+    ...(includeDatePicker
+      ? [
+          createNodePackagesTask(
+            {
+              prod: extractPackageVersions(REACT_PACKAGES, [
+                'react-datepicker',
+                'date-fns',
+              ]),
+              dev: extractPackageVersions(REACT_PACKAGES, [
+                '@types/react-datepicker',
+              ]),
+            },
+            'date-picker-packages',
+          ),
+        ]
+      : []),
     createGeneratorTask({
       name: 'main',
       dependencies: {
         react: reactProvider,
-        node: nodeProvider,
         typescript: typescriptProvider,
         reactApp: reactAppProvider,
       },
       exports: {
         reactComponents: reactComponentsProvider.export(projectScope),
       },
-      run({ react, node, typescript, reactApp }) {
+      run({ react, typescript, reactApp }) {
         const srcFolder = react.getSrcFolder();
-        node.addPackages({
-          '@headlessui/react': REACT_PACKAGES['@headlessui/react'],
-          '@hookform/resolvers': REACT_PACKAGES['@hookform/resolvers'],
-          clsx: REACT_PACKAGES.clsx,
-          'react-hook-form': REACT_PACKAGES['react-hook-form'],
-          'react-hot-toast': REACT_PACKAGES['react-hot-toast'],
-          'react-icons': REACT_PACKAGES['react-icons'],
-          'react-select': REACT_PACKAGES['react-select'],
-          zustand: REACT_PACKAGES.zustand,
-        });
         const [useStatusImport, useStatusPath] = makeImportAndFilePath(
           `${srcFolder}/hooks/useStatus.ts`,
         );
@@ -110,13 +128,6 @@ export const reactComponentsGenerator = createGenerator({
 
         if (includeDatePicker) {
           coreReactComponents.push({ name: 'ReactDatePickerInput' });
-          node.addPackages({
-            'react-datepicker': '4.25.0',
-            'date-fns': '3.2.0',
-          });
-          node.addDevPackages({
-            '@types/react-datepicker': '4.19.5',
-          });
         }
 
         const allReactComponents = [...coreReactComponents];

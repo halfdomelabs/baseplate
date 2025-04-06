@@ -38,11 +38,11 @@ describe('createGenerator', () => {
       directory: path.dirname(fileURLToPath(import.meta.url)),
       scopes: [],
       children: {},
-      tasks: [
-        {
+      tasks: {
+        'test-task': {
           name: 'test-task',
         },
-      ],
+      },
     });
   });
 
@@ -90,7 +90,7 @@ describe('createGenerator', () => {
       directory: '/test/child',
       scopes: [],
       children: {},
-      tasks: [],
+      tasks: {},
     };
 
     const bundle = generator({

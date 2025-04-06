@@ -1,5 +1,6 @@
 import {
-  nodeProvider,
+  createNodePackagesTask,
+  extractPackageVersions,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
@@ -18,18 +19,16 @@ export const reactAuth0Generator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ callbackPath }) => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, ['@auth0/auth0-react']),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         reactConfig: reactConfigProvider,
         reactApp: reactAppProvider,
       },
-      run({ node, reactConfig, reactApp }) {
-        node.addPackages({
-          '@auth0/auth0-react': REACT_PACKAGES['@auth0/auth0-react'],
-        });
-
+      run({ reactConfig, reactApp }) {
         reactConfig.getConfigMap().set('VITE_AUTH0_DOMAIN', {
           comment: 'Auth0 Domain',
           validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),

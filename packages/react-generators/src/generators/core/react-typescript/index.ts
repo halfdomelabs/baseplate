@@ -1,12 +1,9 @@
 import {
   eslintProvider,
   typescriptSetupProvider,
+  writeJsonToBuilder,
 } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  writeJsonAction,
-} from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});
@@ -23,7 +20,6 @@ export const reactTypescriptGenerator = createGenerator({
         eslint: eslintProvider,
       },
       run({ typescriptSetup, eslint }) {
-        typescriptSetup.version.set('5.5.4', 'react');
         typescriptSetup.compilerOptions.set(
           {
             /* Compilation */
@@ -64,19 +60,18 @@ export const reactTypescriptGenerator = createGenerator({
           .getConfig()
           .appendUnique('extraTsconfigProjects', './tsconfig.node.json');
         return {
-          build: async (builder) => {
-            await builder.apply(
-              writeJsonAction({
-                destination: 'tsconfig.node.json',
-                contents: {
-                  compilerOptions: {
-                    composite: true,
-                    moduleResolution: 'Node',
-                  },
-                  include: ['vite.config.ts'],
+          build: (builder) => {
+            writeJsonToBuilder(builder, {
+              id: 'tsconfig-node',
+              destination: 'tsconfig.node.json',
+              contents: {
+                compilerOptions: {
+                  composite: true,
+                  moduleResolution: 'Node',
                 },
-              }),
-            );
+                include: ['vite.config.ts'],
+              },
+            });
           },
         };
       },

@@ -1,9 +1,11 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
+  createNodePackagesTask,
+  createNodeTask,
   eslintProvider,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   prettierProvider,
   projectScope,
   TypescriptCodeBlock,
@@ -78,10 +80,41 @@ export const reactApolloGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ devApiEndpoint, schemaLocation, enableSubscriptions }) => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, [
+        '@apollo/client',
+        'graphql',
+      ]),
+      dev: extractPackageVersions(REACT_PACKAGES, [
+        '@graphql-codegen/cli',
+        '@graphql-codegen/typescript',
+        '@graphql-codegen/typescript-operations',
+        '@graphql-codegen/typescript-react-apollo',
+        '@parcel/watcher',
+      ]),
+    }),
+    createNodeTask((node) => {
+      node.scripts.mergeObj(
+        {
+          generate: 'graphql-codegen',
+          'watch:gql': 'graphql-codegen --watch',
+        },
+        'graphql-codegen',
+      );
+    }),
+    ...(enableSubscriptions
+      ? [
+          createNodePackagesTask(
+            {
+              prod: extractPackageVersions(REACT_PACKAGES, ['graphql-ws']),
+            },
+            'graphql-packages',
+          ),
+        ]
+      : []),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         reactConfig: reactConfigProvider,
         typescript: typescriptProvider,
         reactApp: reactAppProvider,
@@ -93,45 +126,10 @@ export const reactApolloGenerator = createGenerator({
         reactApolloSetup: reactApolloSetupProvider.export(projectScope),
         reactApollo: reactApolloProvider.export(projectScope),
       },
-      run({
-        node,
-        reactConfig,
-        typescript,
-        reactApp,
-        eslint,
-        prettier,
-        reactProxy,
-      }) {
+      run({ reactConfig, typescript, reactApp, eslint, prettier, reactProxy }) {
         const apolloCreateArgs: ApolloCreateArg[] = [];
         const links: ApolloLink[] = [];
         const gqlFiles: string[] = [];
-
-        node.addPackages({
-          '@apollo/client': REACT_PACKAGES['@apollo/client'],
-          graphql: REACT_PACKAGES.graphql,
-        });
-
-        if (enableSubscriptions) {
-          node.addPackages({
-            'graphql-ws': REACT_PACKAGES['graphql-ws'],
-          });
-        }
-
-        node.addDevPackages({
-          '@graphql-codegen/cli': REACT_PACKAGES['@graphql-codegen/cli'],
-          '@graphql-codegen/typescript':
-            REACT_PACKAGES['@graphql-codegen/typescript'],
-          '@graphql-codegen/typescript-operations':
-            REACT_PACKAGES['@graphql-codegen/typescript-operations'],
-          '@graphql-codegen/typescript-react-apollo':
-            REACT_PACKAGES['@graphql-codegen/typescript-react-apollo'],
-          '@parcel/watcher': REACT_PACKAGES['@parcel/watcher'],
-        });
-
-        node.addScripts({
-          generate: 'graphql-codegen',
-          'watch:gql': 'graphql-codegen --watch',
-        });
 
         reactConfig.getConfigMap().set('VITE_GRAPH_API_ENDPOINT', {
           comment: 'URL for the GraphQL API endpoint',

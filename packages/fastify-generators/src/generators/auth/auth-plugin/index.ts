@@ -1,6 +1,7 @@
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -21,6 +22,11 @@ export const authPluginGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, [
+        '@fastify/request-context',
+      ]),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
@@ -29,7 +35,6 @@ export const authPluginGenerator = createGenerator({
         authContext: authContextProvider,
         userSessionService: userSessionServiceProvider,
         userSessionTypes: userSessionTypesProvider,
-        node: nodeProvider,
       },
       run({
         typescript,
@@ -37,17 +42,11 @@ export const authPluginGenerator = createGenerator({
         authContext,
         userSessionService,
         userSessionTypes,
-        node,
       }) {
         const [authPluginImport, authPluginPath] = makeImportAndFilePath(
           appModule.getModuleFolder(),
           'plugins/auth.plugin.ts',
         );
-        node.addPackages({
-          '@fastify/request-context':
-            FASTIFY_PACKAGES['@fastify/request-context'],
-        });
-
         appModule.registerFieldEntry(
           'plugins',
           TypescriptCodeUtils.createExpression(

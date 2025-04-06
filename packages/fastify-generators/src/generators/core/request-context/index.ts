@@ -2,7 +2,8 @@ import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
-  nodeProvider,
+  createNodePackagesTask,
+  extractPackageVersions,
   projectScope,
   tsCodeFragment,
   tsImportBuilder,
@@ -60,25 +61,25 @@ export const requestContextGenerator = createGenerator({
         return {};
       },
     }),
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, [
+        '@fastify/request-context',
+      ]),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         fastifyServer: fastifyServerProvider,
         typescript: typescriptProvider,
       },
       exports: {
         requestContext: requestContextProvider.export(projectScope),
       },
-      run({ node, fastifyServer, typescript }) {
+      run({ fastifyServer, typescript }) {
         const config = createNonOverwriteableMap(
           {},
           { name: 'request-context-config' },
         );
-        node.addPackages({
-          '@fastify/request-context':
-            FASTIFY_PACKAGES['@fastify/request-context'],
-        });
         fastifyServer.registerPlugin({
           name: 'requestContextPlugin',
           plugin: TypescriptCodeUtils.createExpression(

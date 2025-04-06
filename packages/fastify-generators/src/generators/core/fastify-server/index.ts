@@ -2,8 +2,9 @@ import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   mergeCodeEntryOptions,
-  nodeProvider,
   projectScope,
   TypescriptCodeBlock,
   TypescriptCodeUtils,
@@ -73,10 +74,17 @@ export const fastifyServerGenerator = createGenerator({
         );
       },
     }),
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, [
+        'fastify',
+        '@fastify/helmet',
+        'fastify-plugin',
+        'nanoid',
+      ]),
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         loggerService: loggerServiceProvider,
         configService: configServiceProvider,
         rootModule: rootModuleImportProvider,
@@ -85,7 +93,7 @@ export const fastifyServerGenerator = createGenerator({
       exports: {
         fastifyServer: fastifyServerProvider.export(projectScope),
       },
-      run({ loggerService, configService, node, rootModule, typescript }) {
+      run({ loggerService, configService, rootModule, typescript }) {
         const configMap = createNonOverwriteableMap<FastifyServerConfig>(
           {
             errorHandlerFunction:
@@ -96,13 +104,6 @@ export const fastifyServerGenerator = createGenerator({
         const plugins: FastifyServerPlugin[] = [];
         const initializerBlocks: string[] = [];
         const prePluginBlocks: TypescriptCodeBlock[] = [];
-
-        node.addPackages({
-          fastify: FASTIFY_PACKAGES.fastify,
-          '@fastify/helmet': FASTIFY_PACKAGES['@fastify/helmet'],
-          'fastify-plugin': FASTIFY_PACKAGES['fastify-plugin'],
-          nanoid: FASTIFY_PACKAGES.nanoid,
-        });
 
         plugins.push({
           name: 'helmet',

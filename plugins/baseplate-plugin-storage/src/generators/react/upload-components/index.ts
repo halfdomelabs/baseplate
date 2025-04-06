@@ -2,8 +2,8 @@ import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
   CORE_PACKAGES,
+  createNodePackagesTask,
   makeImportAndFilePath,
-  nodeProvider,
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -37,10 +37,17 @@ export const uploadComponentsGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ fileModelName }) => [
+    createNodePackagesTask({
+      prod: {
+        axios: CORE_PACKAGES.axios,
+        'react-dropzone': STORAGE_PACKAGES['react-dropzone'],
+        'react-circular-progressbar':
+          STORAGE_PACKAGES['react-circular-progressbar'],
+      },
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
-        node: nodeProvider,
         reactError: reactErrorProvider,
         typescript: typescriptProvider,
         reactComponents: reactComponentsProvider,
@@ -49,14 +56,7 @@ export const uploadComponentsGenerator = createGenerator({
       exports: {
         uploadComponents: uploadComponentsProvider.export(projectScope),
       },
-      run({ node, reactError, typescript, reactComponents, reactApollo }) {
-        node.addPackages({
-          axios: CORE_PACKAGES.axios,
-          'react-dropzone': STORAGE_PACKAGES['react-dropzone'],
-          'react-circular-progressbar':
-            STORAGE_PACKAGES['react-circular-progressbar'],
-        });
-
+      run({ reactError, typescript, reactComponents, reactApollo }) {
         reactComponents.registerComponent({
           name: 'FileInput',
         });

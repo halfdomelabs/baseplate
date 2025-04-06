@@ -5,7 +5,7 @@ import type {
 
 import { eslintGenerator } from '../eslint/index.js';
 import { nodeGitIgnoreGenerator } from '../node-git-ignore/index.js';
-import { nodeGenerator } from '../node/index.js';
+import { nodeGenerator } from '../node/node.generator.js';
 import { prettierGenerator } from '../prettier/index.js';
 import { tsUtilsGenerator } from '../ts-utils/index.js';
 import { typescriptGenerator } from '../typescript/index.js';

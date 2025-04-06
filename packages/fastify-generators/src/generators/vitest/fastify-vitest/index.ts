@@ -1,5 +1,5 @@
 import {
-  nodeProvider,
+  createNodeTask,
   projectScope,
   TypescriptCodeUtils,
   vitestProvider,
@@ -25,16 +25,24 @@ export const fastifyVitestGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => [
+    createNodeTask((node, { taskId }) => {
+      node.scripts.mergeObj(
+        {
+          test: 'vitest run',
+          'test:unit': 'cross-env TEST_MODE=unit vitest run .unit.',
+        },
+        taskId,
+      );
+    }),
     createGeneratorTask({
       name: 'main',
       dependencies: {
         vitest: vitestProvider,
-        node: nodeProvider,
       },
       exports: {
         fastifyVitest: fastifyVitestProvider.export(projectScope),
       },
-      run({ node, vitest }) {
+      run({ vitest }) {
         // add config to vitest setup
 
         vitest
@@ -45,12 +53,6 @@ export const fastifyVitestGenerator = createGenerator({
               "import { config } from 'dotenv'",
             ),
           ]);
-
-        node.addScript('test', 'vitest run');
-        node.addScript(
-          'test:unit',
-          'cross-env TEST_MODE=unit vitest run .unit.',
-        );
 
         return {
           providers: {

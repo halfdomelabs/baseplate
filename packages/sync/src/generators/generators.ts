@@ -184,6 +184,12 @@ export interface GeneratorTask<
       >;
 }
 
+/**
+ * A type that can be used to create a generator task with any export, dependency, and output maps
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- needed to prevent the tasks from being provided generic arguments
+export type AnyGeneratorTask = GeneratorTask<any, any, any>;
+
 export function createGeneratorTask<
   ExportMap extends ProviderExportMap | undefined = undefined,
   DependencyMap extends ProviderDependencyMap = ProviderDependencyMap,
@@ -204,7 +210,12 @@ export interface CreateGeneratorContext {
 /**
  * A generator bundle contains the built generator and its children
  */
-export interface GeneratorBundle {
+export interface GeneratorBundle<
+  TaskConfigs extends Record<string, AnyGeneratorTask> = Record<
+    string,
+    AnyGeneratorTask
+  >,
+> {
   /**
    * The name of the generator
    */
@@ -228,7 +239,7 @@ export interface GeneratorBundle {
   /**
    * The tasks of the generator
    */
-  tasks: GeneratorTask[];
+  tasks: TaskConfigs;
   /**
    * The phases of the generator that may only contain
    * dynamic tasks and thus need to be pre-registered

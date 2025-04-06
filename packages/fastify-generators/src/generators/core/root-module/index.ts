@@ -9,10 +9,10 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  createSetupTask,
 } from '@halfdomelabs/sync';
 import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
 import { mapValues } from 'es-toolkit';
@@ -31,7 +31,7 @@ export const rootModuleProvider =
   createProviderType<RootModuleProvider>('root-module');
 
 const [setupTask, rootModuleConfigProvider, rootModuleSetupProvider] =
-  createSetupTask(
+  createConfigProviderTask(
     (t) => ({
       moduleFields: t.map<string, TypescriptCodeExpression>(),
     }),

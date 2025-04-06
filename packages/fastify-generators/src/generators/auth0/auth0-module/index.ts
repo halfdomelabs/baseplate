@@ -1,6 +1,7 @@
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
-  nodeProvider,
   projectScope,
   tsCodeFragment,
   tsImportBuilder,
@@ -41,12 +42,21 @@ export const auth0ModuleGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ includeManagement, userModelName }) => [
+    ...(includeManagement
+      ? [
+          createNodePackagesTask(
+            {
+              prod: extractPackageVersions(FASTIFY_PACKAGES, ['auth0']),
+            },
+            'auth0-management',
+          ),
+        ]
+      : []),
     createGeneratorTask({
       name: 'main',
       dependencies: {
         typescript: typescriptProvider,
         authRoles: authRolesProvider,
-        node: nodeProvider,
         appModule: appModuleProvider,
         configService: configServiceProvider,
         prismaOutput: prismaOutputProvider,
@@ -60,7 +70,6 @@ export const auth0ModuleGenerator = createGenerator({
       },
       run(
         {
-          node,
           typescript,
           authRoles,
           prismaOutput,
@@ -72,12 +81,6 @@ export const auth0ModuleGenerator = createGenerator({
         },
         { taskId },
       ) {
-        if (includeManagement) {
-          node.addPackages({
-            auth0: FASTIFY_PACKAGES.auth0,
-          });
-        }
-
         const [userSessionServiceImport, userSessionServicePath] =
           makeImportAndFilePath(
             `${appModule.getModuleFolder()}/services/user-session.service.ts`,
@@ -182,18 +185,16 @@ export const auth0ModuleGenerator = createGenerator({
         };
       },
     }),
+    createNodePackagesTask({
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['fastify-auth0-verify']),
+    }),
     createGeneratorTask({
       name: 'fastifyAuth0Plugin',
       dependencies: {
-        node: nodeProvider,
         fastifyServer: fastifyServerProvider,
         configService: configServiceProvider,
       },
-      run({ node, fastifyServer, configService }) {
-        node.addPackages({
-          'fastify-auth0-verify': '3.0.0',
-        });
-
+      run({ fastifyServer, configService }) {
         fastifyServer.registerPlugin({
           name: 'fastifyAuth0Verify',
           plugin: TypescriptCodeUtils.createExpression(

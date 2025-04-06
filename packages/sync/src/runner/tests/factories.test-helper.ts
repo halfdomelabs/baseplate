@@ -19,7 +19,7 @@ export function buildTestGeneratorBundle(
   return {
     scopes: [],
     children: {},
-    tasks: [],
+    tasks: {},
     name: 'test-generator',
     directory: '/',
     ...bundle,

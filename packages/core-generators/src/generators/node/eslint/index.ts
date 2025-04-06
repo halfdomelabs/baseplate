@@ -11,7 +11,7 @@ import {
 import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
 
-import { nodeProvider } from '../node/index.js';
+import { nodeProvider } from '../node/node.generator.js';
 import { generateConfig } from './generate-config.js';
 
 interface EslintConfig {
@@ -39,7 +39,7 @@ export const eslintGenerator = createGenerator({
       exports: {
         eslint: eslintProvider.export(projectScope),
       },
-      run({ node }) {
+      run({ node }, { taskId }) {
         const configMap = createNonOverwriteableMap<EslintConfig>(
           {
             eslintIgnore: ['/coverage', '/dist', '/lib', '/node_modules'],
@@ -72,7 +72,7 @@ export const eslintGenerator = createGenerator({
                 }
               : {};
 
-            node.addDevPackages({
+            node.packages.addDevPackages({
               '@typescript-eslint/eslint-plugin':
                 CORE_PACKAGES['@typescript-eslint/eslint-plugin'],
               '@typescript-eslint/parser':
@@ -90,9 +90,13 @@ export const eslintGenerator = createGenerator({
                       CORE_PACKAGES['eslint-plugin-vitest'],
                   }),
             });
-            node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');
+            node.scripts.set(
+              'lint',
+              'eslint --ext .ts,.tsx,.js.,.jsx .',
+              taskId,
+            );
 
-            const eslintDestination = node.isEsm()
+            const eslintDestination = node.isEsm
               ? '.eslintrc.cjs'
               : '.eslintrc.js';
 

@@ -5,8 +5,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import type {
+  AnyGeneratorTask,
   GeneratorBundle,
-  GeneratorTask,
 } from '@src/generators/generators.js';
 import type { TaskPhase } from '@src/phases/types.js';
 import type { ProviderExportScope } from '@src/providers/index.js';
@@ -14,7 +14,13 @@ import type { ProviderExportScope } from '@src/providers/index.js';
 /**
  * Configuration for creating a generator
  */
-export interface CreateGeneratorConfig<DescriptorSchema extends z.ZodType> {
+export interface CreateGeneratorConfig<
+  DescriptorSchema extends z.ZodType,
+  TaskConfigs extends Record<string, AnyGeneratorTask> = Record<
+    string,
+    AnyGeneratorTask
+  >,
+> {
   /**
    * The name of the generator
    */
@@ -49,8 +55,7 @@ export interface CreateGeneratorConfig<DescriptorSchema extends z.ZodType> {
    */
   buildTasks: (
     descriptor: z.infer<DescriptorSchema>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- needed to prevent the tasks from being provided generic arguments
-  ) => GeneratorTask<any, any, any>[];
+  ) => AnyGeneratorTask[] | TaskConfigs;
 }
 
 export type GeneratorBundleChildren = Record<
@@ -65,11 +70,17 @@ export type GeneratorBundleChildren = Record<
  * @param options - Optional options to pass to the generator such as children
  * @returns The generator bundle
  */
-export type GeneratorBundleCreator<Descriptor> = (
+export type GeneratorBundleCreator<
+  Descriptor,
+  TaskConfigs extends Record<string, AnyGeneratorTask> = Record<
+    string,
+    AnyGeneratorTask
+  >,
+> = (
   descriptorWithChildren: Omit<Descriptor, 'children'> & {
     children?: GeneratorBundleChildren;
   },
-) => GeneratorBundle;
+) => GeneratorBundle<TaskConfigs>;
 
 /**
  * Infer the descriptor from a generator bundle creator
@@ -82,14 +93,24 @@ export type InferDescriptorFromGenerator<Creator> =
     : never;
 
 /**
+ * Infer the task configs from a generator bundle creator
+ */
+export type InferTaskConfigsFromGenerator<Creator> =
+  Creator extends GeneratorBundleCreator<never, infer TaskConfigs>
+    ? TaskConfigs
+    : never;
+/**
  * Helper utility to create a generator with a standard format for customizable children
  *
  * @param config Configuration of the generator
  * @returns A function that given a descriptor returns the generator bundle
  */
-export function createGenerator<DescriptorSchema extends z.ZodType>(
-  config: CreateGeneratorConfig<DescriptorSchema>,
-): GeneratorBundleCreator<z.input<DescriptorSchema>> {
+export function createGenerator<
+  DescriptorSchema extends z.ZodType,
+  TaskConfigs extends Record<string, AnyGeneratorTask>,
+>(
+  config: CreateGeneratorConfig<DescriptorSchema, TaskConfigs>,
+): GeneratorBundleCreator<z.input<DescriptorSchema>, TaskConfigs> {
   const generatorFilePath = fileURLToPath(config.generatorFileUrl);
   const generatorDirectory = statSync(generatorFilePath).isFile()
     ? path.dirname(generatorFilePath)
@@ -99,9 +120,24 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
     const validatedDescriptor =
       (config.descriptorSchema?.parse(rest) as unknown) ?? {};
 
-    const tasks: GeneratorTask[] = config.buildTasks(
-      validatedDescriptor,
-    ) as GeneratorTask[];
+    const tasks = config.buildTasks(validatedDescriptor);
+
+    // if tasks is an array and there are duplicate names, throw an error
+    if (Array.isArray(tasks)) {
+      const duplicateNames = tasks.filter(
+        (task, index, self) =>
+          self.findIndex((t) => t.name === task.name) !== index,
+      );
+      if (duplicateNames.length > 0) {
+        throw new Error(
+          `Duplicate task names found: ${duplicateNames.map((t) => t.name).join(', ')} in generator ${config.name}`,
+        );
+      }
+    }
+
+    const taskConfigs = Array.isArray(tasks)
+      ? (Object.fromEntries(tasks.map((t) => [t.name, t])) as TaskConfigs)
+      : tasks;
 
     return {
       name: config.name,
@@ -109,7 +145,7 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
       directory: generatorDirectory,
       scopes: config.scopes ?? [],
       children: children ?? {},
-      tasks,
+      tasks: taskConfigs,
       preRegisteredPhases: config.preRegisteredPhases ?? [],
     };
   };
