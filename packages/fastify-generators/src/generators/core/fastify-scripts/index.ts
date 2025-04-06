@@ -26,9 +26,8 @@ export const fastifyScriptsGenerator = createGenerator({
   name: 'core/fastify-scripts',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
         fastifyOutput: fastifyOutputProvider,
@@ -70,5 +69,5 @@ export const fastifyScriptsGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

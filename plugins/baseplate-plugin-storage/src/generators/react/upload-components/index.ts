@@ -36,8 +36,8 @@ export const uploadComponentsGenerator = createGenerator({
   name: 'react/upload-components',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ fileModelName }) => [
-    createNodePackagesTask({
+  buildTasks: ({ fileModelName }) => ({
+    nodePackages: createNodePackagesTask({
       prod: {
         axios: CORE_PACKAGES.axios,
         'react-dropzone': STORAGE_PACKAGES['react-dropzone'],
@@ -45,8 +45,7 @@ export const uploadComponentsGenerator = createGenerator({
           STORAGE_PACKAGES['react-circular-progressbar'],
       },
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         reactError: reactErrorProvider,
         typescript: typescriptProvider,
@@ -121,5 +120,5 @@ export const uploadComponentsGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

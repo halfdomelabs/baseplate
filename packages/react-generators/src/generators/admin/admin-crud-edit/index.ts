@@ -52,10 +52,8 @@ export const adminCrudEditGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelName,
-  buildTasks: ({ modelName, disableCreate }) => [
-    createGeneratorTask({
-      name: 'main',
-
+  buildTasks: ({ modelName, disableCreate }) => ({
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         reactRoutes: reactRoutesProvider,
@@ -328,5 +326,5 @@ export const adminCrudEditGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

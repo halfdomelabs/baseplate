@@ -74,8 +74,8 @@ export const reactComponentsGenerator = createGenerator({
   name: 'core/react-components',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ includeDatePicker }) => [
-    createNodePackagesTask({
+  buildTasks: ({ includeDatePicker }) => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
         '@headlessui/react',
         '@hookform/resolvers',
@@ -87,24 +87,21 @@ export const reactComponentsGenerator = createGenerator({
         'zustand',
       ]),
     }),
-    ...(includeDatePicker
-      ? [
-          createNodePackagesTask(
-            {
-              prod: extractPackageVersions(REACT_PACKAGES, [
-                'react-datepicker',
-                'date-fns',
-              ]),
-              dev: extractPackageVersions(REACT_PACKAGES, [
-                '@types/react-datepicker',
-              ]),
-            },
-            'date-picker-packages',
-          ),
-        ]
-      : []),
-    createGeneratorTask({
-      name: 'main',
+    datePickerPackages: includeDatePicker
+      ? createNodePackagesTask(
+          {
+            prod: extractPackageVersions(REACT_PACKAGES, [
+              'react-datepicker',
+              'date-fns',
+            ]),
+            dev: extractPackageVersions(REACT_PACKAGES, [
+              '@types/react-datepicker',
+            ]),
+          },
+          'date-picker-packages',
+        )
+      : undefined,
+    main: createGeneratorTask({
       dependencies: {
         react: reactProvider,
         typescript: typescriptProvider,
@@ -231,5 +228,5 @@ export const reactComponentsGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

@@ -21,12 +21,11 @@ export const fastifyCookieContextGenerator = createGenerator({
   name: 'core/fastify-cookie-context',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['@fastify/cookie']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         fastifyServer: fastifyServerProvider,
         requestServiceContextSetup: requestServiceContextSetupProvider,
@@ -82,5 +81,5 @@ interface CookieStore {
         return {};
       },
     }),
-  ],
+  }),
 });

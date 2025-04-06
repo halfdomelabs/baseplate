@@ -16,9 +16,9 @@ import type { ProviderExportScope } from '@src/providers/index.js';
  */
 export interface CreateGeneratorConfig<
   DescriptorSchema extends z.ZodType,
-  TaskConfigs extends Record<string, AnyGeneratorTask> = Record<
+  TaskConfigs extends Record<string, AnyGeneratorTask | undefined> = Record<
     string,
-    AnyGeneratorTask
+    AnyGeneratorTask | undefined
   >,
 > {
   /**
@@ -72,9 +72,9 @@ export type GeneratorBundleChildren = Record<
  */
 export type GeneratorBundleCreator<
   Descriptor,
-  TaskConfigs extends Record<string, AnyGeneratorTask> = Record<
+  TaskConfigs extends Record<string, AnyGeneratorTask | undefined> = Record<
     string,
-    AnyGeneratorTask
+    AnyGeneratorTask | undefined
   >,
 > = (
   descriptorWithChildren: Omit<Descriptor, 'children'> & {
@@ -107,7 +107,7 @@ export type InferTaskConfigsFromGenerator<Creator> =
  */
 export function createGenerator<
   DescriptorSchema extends z.ZodType,
-  TaskConfigs extends Record<string, AnyGeneratorTask>,
+  TaskConfigs extends Record<string, AnyGeneratorTask | undefined>,
 >(
   config: CreateGeneratorConfig<DescriptorSchema, TaskConfigs>,
 ): GeneratorBundleCreator<z.input<DescriptorSchema>, TaskConfigs> {

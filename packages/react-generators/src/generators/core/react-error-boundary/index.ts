@@ -30,12 +30,11 @@ export const reactErrorBoundaryGenerator = createGenerator({
   name: 'core/react-error-boundary',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['react-error-boundary']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         reactApp: reactAppProvider,
         reactError: reactErrorProvider,
@@ -80,5 +79,5 @@ export const reactErrorBoundaryGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

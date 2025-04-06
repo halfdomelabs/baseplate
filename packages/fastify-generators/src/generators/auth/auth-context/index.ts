@@ -34,9 +34,8 @@ export const authContextGenerator = createGenerator({
   name: 'auth/auth-context',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         serviceContextSetup: serviceContextSetupProvider,
         requestServiceContextSetup: requestServiceContextSetupProvider,
@@ -163,5 +162,5 @@ export const authContextGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

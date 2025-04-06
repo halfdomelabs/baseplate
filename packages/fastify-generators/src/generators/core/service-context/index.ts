@@ -53,9 +53,8 @@ export const serviceContextGenerator = createGenerator({
   name: 'core/service-context',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
       },
@@ -192,5 +191,5 @@ export const serviceContextGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

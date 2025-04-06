@@ -15,9 +15,8 @@ export const auth0ComponentsGenerator = createGenerator({
   name: 'auth0/auth0-components',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         reactComponents: reactComponentsProvider,
         typescript: typescriptProvider,
@@ -53,5 +52,5 @@ export const auth0ComponentsGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

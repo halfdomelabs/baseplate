@@ -22,15 +22,14 @@ export const pothosSentryGenerator = createGenerator({
   name: 'pothos/pothos-sentry',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         '@pothos/plugin-tracing',
         '@pothos/tracing-sentry',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         yogaPluginConfig: yogaPluginConfigProvider,
         errorHandlerService: errorHandlerServiceProvider,
@@ -60,8 +59,7 @@ export const pothosSentryGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'sentry',
+    sentry: createGeneratorTask({
       dependencies: {
         fastifyServerSentry: fastifySentryProvider.dependency(),
       },
@@ -82,8 +80,7 @@ export const pothosSentryGenerator = createGenerator({
         return {};
       },
     }),
-    createGeneratorTask({
-      name: 'pothos-plugin',
+    pothosPlugin: createGeneratorTask({
       dependencies: {
         pothosSetupProvider,
       },
@@ -122,5 +119,5 @@ export const pothosSentryGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

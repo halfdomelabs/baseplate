@@ -62,9 +62,8 @@ export const errorHandlerServiceGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
 
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'setup',
+  buildTasks: () => ({
+    setup: createGeneratorTask({
       dependencies: {
         loggerService: loggerServiceProvider,
         fastifyServer: fastifyServerProvider,
@@ -147,8 +146,7 @@ export const errorHandlerServiceGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       exports: {
         errorHandlerService: errorHandlerServiceProvider.export(projectScope),
       },
@@ -184,5 +182,5 @@ export const errorHandlerServiceGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

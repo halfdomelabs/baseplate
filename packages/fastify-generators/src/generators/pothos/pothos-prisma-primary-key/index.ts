@@ -21,9 +21,8 @@ export const pothosPrismaPrimaryKeyGenerator = createGenerator({
   name: 'pothos/pothos-prisma-primary-key',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ modelName }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ modelName }) => ({
+    main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         pothosTypeFile: pothosTypesFileProvider,
@@ -86,5 +85,5 @@ export const pothosPrismaPrimaryKeyGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

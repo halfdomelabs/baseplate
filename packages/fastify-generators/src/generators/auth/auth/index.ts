@@ -40,10 +40,9 @@ export const authGenerator = createGenerator({
   name: 'auth/auth',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask(setupTask),
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    setup: createGeneratorTask(setupTask),
+    main: createGeneratorTask({
       dependencies: { authSetup: authSetupProvider },
       exports: {
         auth: authProvider.export(projectScope),
@@ -85,5 +84,5 @@ export const authGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

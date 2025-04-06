@@ -13,9 +13,8 @@ export const prismaEnumGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: ({ name, values }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ name, values }) => ({
+    main: createGeneratorTask({
       dependencies: {
         prisma: prismaSchemaProvider,
       },
@@ -28,5 +27,5 @@ export const prismaEnumGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

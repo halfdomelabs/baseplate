@@ -27,9 +27,8 @@ export const userSessionTypesGenerator = createGenerator({
   name: 'auth/user-session-types',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
         typescript: typescriptProvider,
@@ -70,5 +69,5 @@ export const userSessionTypesGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

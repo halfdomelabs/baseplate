@@ -26,12 +26,11 @@ export const fastifySendgridGenerator = createGenerator({
   name: 'email/fastify-sendgrid',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['@sendgrid/mail']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         configService: configServiceProvider,
@@ -64,5 +63,5 @@ export const fastifySendgridGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

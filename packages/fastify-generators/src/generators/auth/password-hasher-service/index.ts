@@ -31,12 +31,11 @@ export const passwordHasherServiceGenerator = createGenerator({
   name: 'auth/password-hasher-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['@node-rs/argon2']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
         typescript: typescriptProvider,
@@ -74,5 +73,5 @@ export const passwordHasherServiceGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

@@ -83,8 +83,8 @@ export const yogaPluginGenerator = createGenerator({
   name: 'yoga/yoga-plugin',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ enableSubscriptions }) => [
-    createGeneratorTask({
+  buildTasks: ({ enableSubscriptions }) => ({
+    setup: createGeneratorTask({
       name: 'setup',
       exports: {
         yogaPluginConfig: yogaPluginConfigProvider.export(projectScope),
@@ -110,7 +110,7 @@ export const yogaPluginGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
+    fastify: createGeneratorTask({
       name: 'fastify',
       dependencies: {
         fastifyServer: fastifyServerProvider,
@@ -125,7 +125,7 @@ export const yogaPluginGenerator = createGenerator({
         });
       },
     }),
-    createNodePackagesTask({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         'altair-fastify-plugin',
         'graphql',
@@ -139,8 +139,7 @@ export const yogaPluginGenerator = createGenerator({
         '@types/ws',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         configService: configServiceProvider,
@@ -236,8 +235,8 @@ export const yogaPluginGenerator = createGenerator({
       },
     }),
     ...(enableSubscriptions
-      ? [
-          createGeneratorTask({
+      ? {
+          serverWebsocket: createGeneratorTask({
             name: 'server-websocket',
             dependencies: {
               node: nodeProvider,
@@ -262,7 +261,7 @@ export const yogaPluginGenerator = createGenerator({
               return {};
             },
           }),
-          createGeneratorTask({
+          subscription: createGeneratorTask({
             name: 'subscription',
             dependencies: {
               node: nodeProvider,
@@ -345,7 +344,7 @@ export const yogaPluginGenerator = createGenerator({
               };
             },
           }),
-        ]
-      : []),
-  ],
+        }
+      : {}),
+  }),
 });

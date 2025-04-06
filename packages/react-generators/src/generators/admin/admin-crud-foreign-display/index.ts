@@ -37,9 +37,8 @@ export const adminCrudForeignDisplayGenerator = createGenerator({
     foreignModelName,
     labelExpression,
     valueExpression,
-  }) => [
-    createGeneratorTask({
-      name: 'main',
+  }) => ({
+    main: createGeneratorTask({
       dependencies: {
         adminCrudDisplayContainer: adminCrudDisplayContainerProvider,
         reactApollo: reactApolloProvider,
@@ -79,5 +78,5 @@ export const adminCrudForeignDisplayGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

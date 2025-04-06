@@ -31,15 +31,14 @@ export const fastifyStripeGenerator = createGenerator({
   name: 'stripe/fastify-stripe',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         'stripe',
         'fastify-raw-body',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         configService: configServiceProvider,
@@ -107,5 +106,5 @@ export const fastifyStripeGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

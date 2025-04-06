@@ -50,9 +50,8 @@ export const adminLayoutGenerator = createGenerator({
   name: 'admin/admin-layout',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ links = [] }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ links = [] }) => ({
+    main: createGeneratorTask({
       dependencies: {
         reactComponents: reactComponentsProvider,
         reactRoutes: reactRoutesProvider,
@@ -132,5 +131,5 @@ export const adminLayoutGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

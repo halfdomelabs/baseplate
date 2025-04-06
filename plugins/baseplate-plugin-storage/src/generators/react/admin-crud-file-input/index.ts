@@ -17,9 +17,8 @@ export const adminCrudFileInputGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelRelation,
-  buildTasks: ({ label, modelRelation, isOptional, category }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ label, modelRelation, isOptional, category }) => ({
+    main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
         uploadComponents: uploadComponentsProvider,
@@ -59,5 +58,5 @@ export const adminCrudFileInputGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

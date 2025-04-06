@@ -28,9 +28,8 @@ export const appModuleGenerator = createGenerator({
   descriptorSchema,
   scopes: [featureScope],
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: (descriptor) => ({
+    main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider.dependency().parentScopeOnly(),
         typescript: typescriptProvider,
@@ -101,5 +100,5 @@ export const appModuleGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

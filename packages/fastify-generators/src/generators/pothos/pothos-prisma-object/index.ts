@@ -40,9 +40,8 @@ export const pothosPrismaObjectGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName, exposedFields }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ modelName, exposedFields }) => ({
+    main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         pothosTypeFile: pothosTypesFileProvider,
@@ -143,5 +142,5 @@ export const pothosPrismaObjectGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

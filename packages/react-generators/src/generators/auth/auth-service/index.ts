@@ -31,9 +31,8 @@ export const authServiceGenerator = createGenerator({
   name: 'auth/auth-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         tsUtils: tsUtilsProvider,
         reactApolloSetup: reactApolloSetupProvider,
@@ -107,5 +106,5 @@ export const authServiceGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

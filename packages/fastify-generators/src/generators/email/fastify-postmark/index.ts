@@ -25,12 +25,11 @@ export const fastifyPostmarkGenerator = createGenerator({
   name: 'email/fastify-postmark',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['postmark']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         configService: configServiceProvider,
@@ -62,5 +61,5 @@ export const fastifyPostmarkGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

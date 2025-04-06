@@ -13,9 +13,8 @@ export const adminCrudTextDisplayGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelField,
-  buildTasks: ({ modelField }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ modelField }) => ({
+    main: createGeneratorTask({
       dependencies: {
         adminCrudDisplayContainer: adminCrudDisplayContainerProvider,
       },
@@ -28,5 +27,5 @@ export const adminCrudTextDisplayGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

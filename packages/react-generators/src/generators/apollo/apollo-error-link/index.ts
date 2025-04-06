@@ -14,9 +14,8 @@ export const apolloErrorLinkGenerator = createGenerator({
   name: 'apollo/apollo-error-link',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         reactApolloSetup: reactApolloSetupProvider,
         reactError: reactErrorProvider,
@@ -92,5 +91,5 @@ export const apolloErrorLinkGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

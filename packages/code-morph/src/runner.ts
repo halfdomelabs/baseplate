@@ -97,7 +97,6 @@ export async function runMorpher(
         }
       }
     } catch (err) {
-      console.error(`Error transforming file ${sourceFile.getFilePath()}`);
       erroredFiles.push({ filePath: sourceFile.getFilePath(), error: err });
     }
   }

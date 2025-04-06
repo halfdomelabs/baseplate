@@ -44,12 +44,11 @@ export const reactConfigGenerator = createGenerator({
   name: 'core/react-config',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['zod']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
       },
@@ -152,5 +151,5 @@ export const reactConfigGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

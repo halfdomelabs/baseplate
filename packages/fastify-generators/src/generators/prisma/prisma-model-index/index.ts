@@ -11,9 +11,8 @@ export const prismaModelIndexGenerator = createGenerator({
   name: 'prisma/prisma-model-index',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ fields }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ fields }) => ({
+    main: createGeneratorTask({
       dependencies: {
         prismaModel: prismaModelProvider,
       },
@@ -25,5 +24,5 @@ export const prismaModelIndexGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

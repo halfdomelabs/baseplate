@@ -111,13 +111,15 @@ async function buildGeneratorEntryRecursive(
     instanceName,
   };
 
-  const taskEntries = Object.entries(tasks).map(([taskName, task]) => ({
-    id: `${id}#${taskName}`,
-    name: taskName,
-    task: task as GeneratorTask,
-    generatorId: id,
-    generatorInfo,
-  }));
+  const taskEntries = Object.entries(tasks)
+    .filter(([, task]) => task !== undefined)
+    .map(([taskName, task]) => ({
+      id: `${id}#${taskName}`,
+      name: taskName,
+      task: task as GeneratorTask,
+      generatorId: id,
+      generatorInfo,
+    }));
 
   // recursively build children generator entries
   const builtChildEntries = await Promise.all(

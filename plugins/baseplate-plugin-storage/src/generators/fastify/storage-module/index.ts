@@ -63,8 +63,8 @@ export const storageModuleGenerator = createGenerator({
   name: 'fastify/storage-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ fileModel, s3Adapters, categories = [] }) => [
-    createNodePackagesTask({
+  buildTasks: ({ fileModel, s3Adapters, categories = [] }) => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(STORAGE_PACKAGES, [
         '@aws-sdk/client-s3',
         '@aws-sdk/s3-presigned-post',
@@ -73,8 +73,7 @@ export const storageModuleGenerator = createGenerator({
       ]),
       dev: extractPackageVersions(STORAGE_PACKAGES, ['@types/mime-types']),
     }),
-    createGeneratorTask({
-      name: 'setup-file-input-schema',
+    setupFileInputSchema: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
         pothosSetup: pothosSetupProvider,
@@ -93,8 +92,7 @@ export const storageModuleGenerator = createGenerator({
         return {};
       },
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
       },
@@ -131,8 +129,7 @@ export const storageModuleGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'build',
+    build: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         pothosSchema: pothosSchemaProvider,
@@ -395,5 +392,5 @@ export const storageModuleGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

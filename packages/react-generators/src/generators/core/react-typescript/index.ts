@@ -12,9 +12,8 @@ export const reactTypescriptGenerator = createGenerator({
   name: 'core/react-typescript',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         typescriptSetup: typescriptSetupProvider,
         eslint: eslintProvider,
@@ -76,5 +75,5 @@ export const reactTypescriptGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

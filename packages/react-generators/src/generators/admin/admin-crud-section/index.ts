@@ -23,9 +23,8 @@ export const adminCrudSectionGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [adminCrudSectionScope],
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {},
       exports: {
         adminCrudSection: adminCrudSectionProvider.export(
@@ -40,5 +39,5 @@ export const adminCrudSectionGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

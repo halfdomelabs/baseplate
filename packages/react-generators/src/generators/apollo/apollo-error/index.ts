@@ -25,9 +25,8 @@ export const apolloErrorGenerator = createGenerator({
   name: 'apollo/apollo-error',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
       },
@@ -61,5 +60,5 @@ export const apolloErrorGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

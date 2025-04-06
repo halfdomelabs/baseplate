@@ -51,9 +51,8 @@ export const configServiceGenerator = createGenerator({
   name: 'core/config-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'fastify',
+  buildTasks: () => ({
+    fastify: createGeneratorTask({
       dependencies: {
         fastify: fastifyProvider,
       },
@@ -69,12 +68,11 @@ export const configServiceGenerator = createGenerator({
         return {};
       },
     }),
-    createNodePackagesTask({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['zod', 'cross-env']),
       dev: extractPackageVersions(FASTIFY_PACKAGES, ['dotenv']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         nodeGitIgnore: nodeGitIgnoreProvider,
         typescript: typescriptProvider,
@@ -196,5 +194,5 @@ export const configServiceGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

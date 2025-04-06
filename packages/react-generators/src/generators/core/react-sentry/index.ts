@@ -35,12 +35,11 @@ export const reactSentryGenerator = createGenerator({
   name: 'core/react-sentry',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['@sentry/react']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         reactError: reactErrorProvider,
@@ -105,8 +104,7 @@ export const reactSentryGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'add-router-dom-integration',
+    addRouterDomIntegration: createGeneratorTask({
       dependencies: {
         reactRouter: reactRouterProvider,
       },
@@ -127,5 +125,5 @@ export const reactSentryGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

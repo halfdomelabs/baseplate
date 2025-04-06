@@ -18,9 +18,8 @@ export const fastifyGracefulShutdownGenerator = createGenerator({
   name: 'core/fastify-graceful-shutdown',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         fastifyServer: fastifyServerProvider,
         errorHandlerService: errorHandlerServiceProvider,
@@ -52,5 +51,5 @@ export const fastifyGracefulShutdownGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

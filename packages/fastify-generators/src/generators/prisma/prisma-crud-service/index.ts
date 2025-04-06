@@ -35,9 +35,8 @@ export const prismaCrudServiceGenerator = createGenerator({
   name: 'prisma/prisma-crud-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ modelName }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ modelName }) => ({
+    main: createGeneratorTask({
       outputs: {
         prismaCrudService: prismaCrudServiceProvider
           // export to children and project under model name
@@ -77,5 +76,5 @@ export const prismaCrudServiceGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

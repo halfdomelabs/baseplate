@@ -57,9 +57,8 @@ export const fastifyServerGenerator = createGenerator({
   name: 'core/fastify-server',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'root-module-config',
+  buildTasks: (descriptor) => ({
+    rootModuleConfig: createGeneratorTask({
       dependencies: {
         rootModuleConfig: rootModuleConfigProvider,
       },
@@ -74,7 +73,7 @@ export const fastifyServerGenerator = createGenerator({
         );
       },
     }),
-    createNodePackagesTask({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         'fastify',
         '@fastify/helmet',
@@ -82,8 +81,7 @@ export const fastifyServerGenerator = createGenerator({
         'nanoid',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         loggerService: loggerServiceProvider,
         configService: configServiceProvider,
@@ -238,5 +236,5 @@ export const fastifyServerGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

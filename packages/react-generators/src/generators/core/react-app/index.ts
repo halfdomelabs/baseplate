@@ -37,9 +37,8 @@ export const reactAppGenerator = createGenerator({
   name: 'core/react-app',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         react: reactProvider,
         typescript: typescriptProvider,
@@ -110,5 +109,5 @@ export const reactAppGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

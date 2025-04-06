@@ -56,9 +56,8 @@ export const serviceFileGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: (descriptor) => ({
+    main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
         typescript: typescriptProvider,
@@ -134,5 +133,5 @@ export const serviceFileGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

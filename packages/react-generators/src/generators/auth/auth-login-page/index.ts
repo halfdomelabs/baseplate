@@ -34,9 +34,8 @@ export const authLoginPageGenerator = createGenerator({
   name: 'auth/auth-login-page',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ allowedRoles }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ allowedRoles }) => ({
+    main: createGeneratorTask({
       dependencies: {
         reactApollo: reactApolloProvider,
         reactRoutes: reactRoutesProvider,
@@ -113,5 +112,5 @@ export const authLoginPageGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

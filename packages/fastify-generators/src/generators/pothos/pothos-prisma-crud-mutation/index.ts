@@ -37,9 +37,8 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName, type, crudServiceRef }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ modelName, type, crudServiceRef }) => ({
+    main: createGeneratorTask({
       dependencies: {
         pothosSchema: pothosSchemaProvider,
         pothosTypesFile: pothosTypesFileProvider,
@@ -208,5 +207,5 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

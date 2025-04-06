@@ -10,9 +10,8 @@ export const readmeGenerator = createGenerator({
   name: 'core/readme',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: (descriptor) => ({
+    main: createGeneratorTask({
       dependencies: {
         project: projectProvider,
       },
@@ -60,5 +59,5 @@ In order to set up the backend, you must do the following steps:
         };
       },
     }),
-  ],
+  }),
 });

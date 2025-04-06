@@ -211,9 +211,9 @@ export interface CreateGeneratorContext {
  * A generator bundle contains the built generator and its children
  */
 export interface GeneratorBundle<
-  TaskConfigs extends Record<string, AnyGeneratorTask> = Record<
+  TaskConfigs extends Record<string, AnyGeneratorTask | undefined> = Record<
     string,
-    AnyGeneratorTask
+    AnyGeneratorTask | undefined
   >,
 > {
   /**

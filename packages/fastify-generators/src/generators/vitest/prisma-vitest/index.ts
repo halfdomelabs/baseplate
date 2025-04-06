@@ -35,15 +35,14 @@ export const prismaVitestGenerator = createGenerator({
   name: 'vitest/prisma-vitest',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(FASTIFY_PACKAGES, [
         'vitest-mock-extended',
         'pg-connection-string',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         vitest: vitestProvider,
         typescript: typescriptProvider,
@@ -136,5 +135,5 @@ if (TEST_MODE !== 'unit') {
         };
       },
     }),
-  ],
+  }),
 });

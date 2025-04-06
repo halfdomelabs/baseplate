@@ -35,9 +35,8 @@ export const adminCrudForeignInputGenerator = createGenerator({
     valueExpression,
     defaultLabel,
     nullLabel,
-  }) => [
-    createGeneratorTask({
-      name: 'main',
+  }) => ({
+    main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
         reactComponents: reactComponentsProvider,
@@ -105,5 +104,5 @@ export const adminCrudForeignInputGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

@@ -23,9 +23,8 @@ export const adminCrudEnumInputGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelField,
-  buildTasks: ({ label, modelField, options, isOptional }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ label, modelField, options, isOptional }) => ({
+    main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
         reactComponents: reactComponentsProvider,
@@ -74,5 +73,5 @@ export const adminCrudEnumInputGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

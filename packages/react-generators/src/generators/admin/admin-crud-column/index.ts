@@ -16,9 +16,8 @@ export const adminCrudColumnGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.id,
-  buildTasks: ({ label }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ label }) => ({
+    main: createGeneratorTask({
       dependencies: {
         adminCrudColumnContainer: adminCrudColumnContainerProvider,
       },
@@ -55,5 +54,5 @@ export const adminCrudColumnGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

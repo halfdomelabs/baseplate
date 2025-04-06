@@ -49,12 +49,11 @@ export const reactRouterGenerator = createGenerator({
   name: 'core/react-router',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['react-router-dom']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         react: reactProvider,
         reactApp: reactAppProvider,
@@ -156,5 +155,5 @@ export const reactRouterGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

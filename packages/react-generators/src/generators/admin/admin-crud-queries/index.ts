@@ -69,9 +69,8 @@ export const adminCrudQueriesGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelName,
-  buildTasks: ({ modelName }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ modelName }) => ({
+    main: createGeneratorTask({
       dependencies: {
         reactApollo: reactApolloProvider,
         reactRoutes: reactRoutesProvider,
@@ -327,5 +326,5 @@ export const adminCrudQueriesGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

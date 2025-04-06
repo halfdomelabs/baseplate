@@ -17,9 +17,8 @@ export const auth0CallbackGenerator = createGenerator({
   name: 'auth0/auth0-callback',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         reactComponents: reactComponentsProvider,
@@ -71,5 +70,5 @@ export const auth0CallbackGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

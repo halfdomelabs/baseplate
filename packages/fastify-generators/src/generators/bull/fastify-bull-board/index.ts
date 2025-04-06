@@ -34,8 +34,8 @@ export const fastifyBullBoardGenerator = createGenerator({
   name: 'bull/fastify-bull-board',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         '@bull-board/api',
         '@bull-board/fastify',
@@ -46,8 +46,7 @@ export const fastifyBullBoardGenerator = createGenerator({
         '@types/ms',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         errorHandlerService: errorHandlerServiceProvider,
@@ -115,8 +114,7 @@ export const fastifyBullBoardGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'formBody',
+    formBody: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
         fastifyServer: fastifyServerProvider,
@@ -137,5 +135,5 @@ export const fastifyBullBoardGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

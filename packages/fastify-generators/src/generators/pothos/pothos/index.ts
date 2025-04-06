@@ -77,9 +77,8 @@ export const pothosGenerator = createGenerator({
   name: 'pothos/pothos',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'setup',
+  buildTasks: () => ({
+    setup: createGeneratorTask({
       dependencies: {},
       exports: {
         pothosSetup: pothosSetupProvider.export(projectScope),
@@ -120,8 +119,7 @@ export const pothosGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'schema',
+    schema: createGeneratorTask({
       dependencies: {
         pothosSetupOutput: pothosSetupOutputProvider,
       },
@@ -153,15 +151,14 @@ export const pothosGenerator = createGenerator({
         };
       },
     }),
-    createNodePackagesTask({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         '@pothos/core',
         '@pothos/plugin-simple-objects',
         '@pothos/plugin-relay',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         eslint: eslintProvider,
@@ -359,8 +356,7 @@ if (IS_DEVELOPMENT) {
         };
       },
     }),
-    createGeneratorTask({
-      name: 'generate-schema-script',
+    generateSchemaScript: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
         fastifyOutput: fastifyOutputProvider,
@@ -378,5 +374,5 @@ if (IS_DEVELOPMENT) {
         );
       },
     }),
-  ],
+  }),
 });

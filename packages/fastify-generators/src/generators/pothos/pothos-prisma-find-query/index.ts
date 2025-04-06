@@ -32,9 +32,8 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ modelName }) => ({
+    main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         pothosTypesFile: pothosTypesFileProvider,
@@ -129,5 +128,5 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

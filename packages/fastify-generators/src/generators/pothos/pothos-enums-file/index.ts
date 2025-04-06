@@ -41,9 +41,8 @@ export const pothosEnumsFileGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: ({ name }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ name }) => ({
+    main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
         typescript: typescriptProvider,
@@ -98,5 +97,5 @@ export const pothosEnumsFileGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

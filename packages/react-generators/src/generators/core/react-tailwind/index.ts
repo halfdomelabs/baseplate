@@ -35,8 +35,8 @@ export const reactTailwindGenerator = createGenerator({
   name: 'core/react-tailwind',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ globalBodyClasses }) => [
-    createNodePackagesTask({
+  buildTasks: ({ globalBodyClasses }) => ({
+    nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(REACT_PACKAGES, [
         'autoprefixer',
         'tailwindcss',
@@ -44,8 +44,7 @@ export const reactTailwindGenerator = createGenerator({
         '@tailwindcss/forms',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         react: reactProvider,
         eslint: eslintProvider,
@@ -118,5 +117,5 @@ export const reactTailwindGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

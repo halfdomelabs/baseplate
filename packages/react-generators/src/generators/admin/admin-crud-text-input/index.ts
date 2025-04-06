@@ -27,9 +27,8 @@ export const adminCrudTextInputGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelField,
-  buildTasks: ({ label, modelField, validation, type }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ label, modelField, validation, type }) => ({
+    main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
         reactComponents: reactComponentsProvider,
@@ -58,5 +57,5 @@ export const adminCrudTextInputGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

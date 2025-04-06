@@ -79,8 +79,8 @@ export const reactApolloGenerator = createGenerator({
   name: 'apollo/react-apollo',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ devApiEndpoint, schemaLocation, enableSubscriptions }) => [
-    createNodePackagesTask({
+  buildTasks: ({ devApiEndpoint, schemaLocation, enableSubscriptions }) => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
         '@apollo/client',
         'graphql',
@@ -93,7 +93,7 @@ export const reactApolloGenerator = createGenerator({
         '@parcel/watcher',
       ]),
     }),
-    createNodeTask((node) => {
+    codegen: createNodeTask((node) => {
       node.scripts.mergeObj(
         {
           generate: 'graphql-codegen',
@@ -102,18 +102,15 @@ export const reactApolloGenerator = createGenerator({
         'graphql-codegen',
       );
     }),
-    ...(enableSubscriptions
-      ? [
-          createNodePackagesTask(
-            {
-              prod: extractPackageVersions(REACT_PACKAGES, ['graphql-ws']),
-            },
-            'graphql-packages',
-          ),
-        ]
-      : []),
-    createGeneratorTask({
-      name: 'main',
+    websocketPackages: enableSubscriptions
+      ? createNodePackagesTask(
+          {
+            prod: extractPackageVersions(REACT_PACKAGES, ['graphql-ws']),
+          },
+          'graphql-packages',
+        )
+      : undefined,
+    main: createGeneratorTask({
       dependencies: {
         reactConfig: reactConfigProvider,
         typescript: typescriptProvider,
@@ -463,8 +460,7 @@ export const reactApolloGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'graphql-error-context',
+    graphqlErrorContext: createGeneratorTask({
       dependencies: {
         reactErrorProvider,
       },
@@ -544,5 +540,5 @@ export const reactApolloGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

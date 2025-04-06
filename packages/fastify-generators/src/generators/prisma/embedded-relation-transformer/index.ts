@@ -192,9 +192,8 @@ export const embeddedRelationTransformerGenerator = createGenerator({
     embeddedTransformerNames,
     inputName: inputNameDescriptor,
     foreignModelName,
-  }) => [
-    createGeneratorTask({
-      name: 'main',
+  }) => ({
+    main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
@@ -629,5 +628,5 @@ export const embeddedRelationTransformerGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

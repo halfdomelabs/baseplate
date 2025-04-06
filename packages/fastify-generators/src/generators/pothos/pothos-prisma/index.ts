@@ -31,12 +31,11 @@ export const pothosPrismaGenerator = createGenerator({
   name: 'pothos/pothos-prisma',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['@pothos/plugin-prisma']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         pothosSetup: pothosSetupProvider,
         prismaOutput: prismaOutputProvider,
@@ -82,8 +81,7 @@ export const pothosPrismaGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'prisma-generator',
+    prismaGenerator: createGeneratorTask({
       dependencies: {
         prismaSchema: prismaSchemaProvider,
       },
@@ -97,5 +95,5 @@ export const pothosPrismaGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });
