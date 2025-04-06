@@ -70,6 +70,7 @@ export async function runMorpher(
   const spinner = ora('Transforming files...').start();
   let processedFiles = 0;
   let changedFiles = 0;
+  const erroredFiles: { filePath: string; error: unknown }[] = [];
   for (const sourceFile of sourceFiles) {
     try {
       spinner.text = `Transformed ${processedFiles}/${sourceFilesLength} files (${changedFiles} changed)`;
@@ -97,11 +98,20 @@ export async function runMorpher(
       }
     } catch (err) {
       console.error(`Error transforming file ${sourceFile.getFilePath()}`);
-      throw err;
+      erroredFiles.push({ filePath: sourceFile.getFilePath(), error: err });
     }
   }
 
-  spinner.succeed(
-    `Transformed ${processedFiles}/${sourceFilesLength} files (${changedFiles} changed)`,
-  );
+  if (erroredFiles.length > 0) {
+    spinner.fail(
+      `Transformed ${processedFiles}/${sourceFilesLength} files (${changedFiles} changed) but with errors in ${erroredFiles.length} files`,
+    );
+    for (const { filePath, error } of erroredFiles) {
+      console.error(`Error in file ${filePath}: ${String(error)}`);
+    }
+  } else {
+    spinner.succeed(
+      `Transformed ${processedFiles}/${sourceFilesLength} files (${changedFiles} changed)`,
+    );
+  }
 }
