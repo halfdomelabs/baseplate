@@ -1,6 +1,6 @@
 import type {
   BuilderAction,
-  GeneratorTask,
+  GeneratorTaskOutputBuilder,
   InferProviderType,
   WriteFileOptions,
 } from '@halfdomelabs/sync';
@@ -10,7 +10,6 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  createTaskPhase,
 } from '@halfdomelabs/sync';
 import { safeMergeAll } from '@halfdomelabs/utils';
 import path from 'node:path';
@@ -92,17 +91,18 @@ export const typescriptProvider =
 interface WriteTemplatedFilePayload<
   TVariables extends TsCodeTemplateVariableMap,
 > {
+  id: string;
   template: TsCodeFileTemplate<TVariables>;
   destination: string;
   variables: InferTsCodeTemplateVariablesFromMap<TVariables>;
-  fileId: string;
   options?: WriteFileOptions;
 }
 
 export interface TypescriptFileProvider {
   writeTemplatedFile<TVariables extends TsCodeTemplateVariableMap>(
+    builder: GeneratorTaskOutputBuilder,
     payload: WriteTemplatedFilePayload<TVariables>,
-  ): void;
+  ): Promise<{ destination: string }>;
 }
 
 export const typescriptFileProvider =
@@ -157,61 +157,10 @@ export type TypescriptSetupProvider = InferProviderType<
   typeof typescriptSetupProvider
 >;
 
-export const typescriptFileTaskPhase = createTaskPhase('typescript-file');
-
-export function createTypescriptFileTask<
-  TVariables extends TsCodeTemplateVariableMap,
->(payload: WriteTemplatedFilePayload<TVariables>): GeneratorTask {
-  const task = createGeneratorTask({
-    phase: typescriptFileTaskPhase,
-    dependencies: { typescriptConfig: typescriptConfigProvider },
-    run({ typescriptConfig: { compilerOptions, includeMetadata } }) {
-      const {
-        baseUrl = '.',
-        paths = {},
-        moduleResolution = 'node',
-      } = compilerOptions;
-      const { fileId, template, destination, variables, options } = payload;
-      const pathMapEntries = generatePathMapEntries(baseUrl, paths);
-      const internalPatterns = pathMapEntriesToRegexes(pathMapEntries);
-
-      return {
-        async build(builder) {
-          const directory = path.dirname(destination);
-          const file = await renderTsCodeFileTemplate(template, variables, {
-            resolveModule(moduleSpecifier) {
-              return resolveModule(moduleSpecifier, directory, {
-                pathMapEntries,
-                moduleResolution,
-              });
-            },
-            importSortOptions: {
-              internalPatterns,
-            },
-            includeMetadata,
-          });
-
-          builder.writeFile({
-            id: fileId,
-            filePath: destination,
-            contents: file,
-            options: {
-              ...options,
-              shouldFormat: true,
-            },
-          });
-        },
-      };
-    },
-  });
-  return task;
-}
-
 export const typescriptGenerator = createGenerator({
   name: 'node/typescript',
   generatorFileUrl: import.meta.url,
   descriptorSchema: typescriptGeneratorDescriptorSchema,
-  preRegisteredPhases: [typescriptFileTaskPhase],
   buildTasks: (descriptor) => ({
     setup: createGeneratorTask(setupTask(descriptor)),
     nodePackages: createNodePackagesTask({
@@ -317,6 +266,59 @@ export const typescriptGenerator = createGenerator({
                 ...safeMergeAll(...extraSections),
               },
             });
+          },
+        };
+      },
+    }),
+    file: createGeneratorTask({
+      dependencies: { typescriptConfig: typescriptConfigProvider },
+      exports: { typescriptFile: typescriptFileProvider.export(projectScope) },
+      run({ typescriptConfig: { compilerOptions, includeMetadata } }) {
+        const {
+          baseUrl = '.',
+          paths = {},
+          moduleResolution = 'node',
+        } = compilerOptions;
+        const pathMapEntries = generatePathMapEntries(baseUrl, paths);
+        const internalPatterns = pathMapEntriesToRegexes(pathMapEntries);
+
+        return {
+          providers: {
+            typescriptFile: {
+              writeTemplatedFile: async (builder, payload) => {
+                const { id, template, destination, variables, options } =
+                  payload;
+                const directory = path.dirname(destination);
+                const file = await renderTsCodeFileTemplate(
+                  template,
+                  variables,
+                  {
+                    resolveModule(moduleSpecifier) {
+                      return resolveModule(moduleSpecifier, directory, {
+                        pathMapEntries,
+                        moduleResolution,
+                      });
+                    },
+                    importSortOptions: {
+                      internalPatterns,
+                    },
+                    includeMetadata,
+                  },
+                );
+
+                builder.writeFile({
+                  id,
+                  filePath: destination,
+                  contents: file,
+                  options: {
+                    ...options,
+                    shouldFormat: true,
+                  },
+                });
+
+                return { destination };
+              },
+            },
           },
         };
       },

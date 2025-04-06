@@ -5,12 +5,14 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import {
+  createImportMap,
+  createImportMapProvider,
   createNodePackagesTask,
-  createTypescriptFileTask,
   extractPackageVersions,
   projectScope,
   TsCodeUtils,
   TypescriptCodeUtils,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -18,16 +20,11 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
-import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { fastifyProvider } from '../fastify/index.js';
 import { loggerFileTemplate } from './generated/templates.js';
-
-const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
-});
 
 export interface LoggerServiceSetupProvider extends ImportMapper {
   addMixin(key: string, expression: TsCodeFragment): void;
@@ -48,6 +45,11 @@ export interface LoggerServiceProvider extends ImportMapper {
   getLogger(): TypescriptCodeExpression;
 }
 
+const [importMapSchema, loggerServiceImportsProvider] = createImportMapProvider(
+  'logger-service-imports',
+  { logger: {} },
+);
+
 export const loggerServiceProvider = createProviderType<LoggerServiceProvider>(
   'logger-service',
   { isReadOnly: true },
@@ -56,7 +58,6 @@ export const loggerServiceProvider = createProviderType<LoggerServiceProvider>(
 export const loggerServiceGenerator = createGenerator({
   name: 'core/logger-service',
   generatorFileUrl: import.meta.url,
-  descriptorSchema,
   buildTasks: () => ({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['pino']),
@@ -65,12 +66,16 @@ export const loggerServiceGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         fastify: fastifyProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         loggerServiceSetup: loggerServiceSetupProvider.export(projectScope),
         loggerService: loggerServiceProvider.export(projectScope),
       },
-      run({ fastify }) {
+      outputs: {
+        loggerServiceImports: loggerServiceImportsProvider.export(projectScope),
+      },
+      run({ fastify, typescriptFile }) {
         const mixins = createNonOverwriteableMap<
           Record<string, TsCodeFragment>
         >({}, { name: 'logger-service-mixins' });
@@ -104,7 +109,7 @@ export const loggerServiceGenerator = createGenerator({
               },
             },
           },
-          build: (builder) => {
+          build: async (builder) => {
             const loggerOptions: Record<string, TsCodeFragment | string> = {};
 
             // log level vs. number for better log parsing
@@ -121,10 +126,10 @@ export const loggerServiceGenerator = createGenerator({
                 }`;
             }
 
-            builder.addDynamicTask(
-              'logger-service-file',
-              createTypescriptFileTask({
+            const { destination: loggerFile } =
+              await typescriptFile.writeTemplatedFile(builder, {
                 template: loggerFileTemplate,
+                id: 'logger',
                 variables: {
                   TPL_LOGGER_OPTIONS:
                     Object.keys(loggerOptions).length > 0
@@ -132,14 +137,18 @@ export const loggerServiceGenerator = createGenerator({
                       : '',
                 },
                 destination: 'src/services/logger.ts',
-                fileId: 'logger',
                 options: {
                   alternateFullIds: [
                     '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',
                   ],
                 },
+              });
+
+            return {
+              loggerServiceImports: createImportMap(importMapSchema, {
+                logger: loggerFile,
               }),
-            );
+            };
           },
         };
       },
