@@ -6,6 +6,7 @@ import type {
   SourceFile,
 } from 'ts-morph';
 
+import { camelCase } from 'change-case';
 import { SyntaxKind } from 'ts-morph';
 
 import { createTypescriptMorpher } from '@src/types.js';
@@ -108,7 +109,7 @@ export default createTypescriptMorpher({
               .map((prop) => prop.getText());
 
             objectProperties.push(
-              `${name}: createGeneratorTask({${properties.join(',')}})`,
+              `${camelCase(name)}: createGeneratorTask({${properties.join(',')}})`,
             );
 
             break;

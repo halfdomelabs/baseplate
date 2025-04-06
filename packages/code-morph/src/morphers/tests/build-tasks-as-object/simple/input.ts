@@ -33,7 +33,7 @@ export const nodeGitIgnoreGenerator = createGenerator({
       ]),
     }),
     createGeneratorTask({
-      name: 'main',
+      name: 'main-task',
       dependencies: {},
       exports: {
         nodeGitIgnore: nodeGitIgnoreProvider.export(projectScope),

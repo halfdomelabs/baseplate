@@ -32,7 +32,7 @@ export const nodeGitIgnoreGenerator = createGenerator({
         'vite-tsconfig-paths',
       ]),
     }),
-    main: createGeneratorTask({
+    mainTask: createGeneratorTask({
       dependencies: {},
       exports: {
         nodeGitIgnore: nodeGitIgnoreProvider.export(projectScope),
