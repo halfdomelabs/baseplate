@@ -2,9 +2,9 @@ import type { FieldContainer } from '@halfdomelabs/utils';
 
 import semver from 'semver';
 
-export type NodePackageDependencyType = 'dev' | 'prod';
+type NodePackageDependencyType = 'dev' | 'prod';
 
-export interface NodePackageDependencyInfo {
+interface NodePackageDependencyInfo {
   name: string;
   version: string;
   type: NodePackageDependencyType;

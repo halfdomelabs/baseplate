@@ -178,9 +178,6 @@ importers:
       semver:
         specifier: ^7.5.4
         version: 7.7.1
-      sort-keys:
-        specifier: ^5.1.0
-        version: 5.1.0
       sort-package-json:
         specifier: 2.10.1
         version: 2.10.1
