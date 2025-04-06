@@ -35,6 +35,7 @@ export function buildTestGeneratorTaskEntry(
   const run = data?.task?.run ?? vi.fn();
   return {
     id: lastTaskId.toString(),
+    name: `task-${lastTaskId.toString()}`,
     generatorId: lastGeneratorId.toString(),
     generatorInfo: {
       name: 'test-generator',
@@ -42,7 +43,6 @@ export function buildTestGeneratorTaskEntry(
     },
     ...data,
     task: {
-      name: `task-${lastTaskId.toString()}`,
       run,
       ...data?.task,
     },

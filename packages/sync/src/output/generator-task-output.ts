@@ -252,9 +252,13 @@ export class GeneratorTaskOutputBuilder {
   /**
    * Adds a dynamic task to the output
    *
+   * @param name The name of the task
    * @param task The task to add
    */
-  addDynamicTask(task: Omit<GeneratorTask, 'exports' | 'outputs'>): void {
+  addDynamicTask(
+    name: string,
+    task: Omit<GeneratorTask, 'exports' | 'outputs'>,
+  ): void {
     if (this.dynamicTasks.some((t) => t.task.name === task.name)) {
       throw new Error(`Dynamic task ${task.name} already exists`);
     }
@@ -263,6 +267,7 @@ export class GeneratorTaskOutputBuilder {
     }
     this.dynamicTasks.push({
       id: `${this.generatorId}#${task.name}`,
+      name,
       task,
       generatorId: this.generatorId,
       generatorInfo: this.generatorInfo,

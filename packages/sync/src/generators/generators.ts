@@ -141,7 +141,7 @@ export interface GeneratorTask<
   /**
    * The name of the generator task (must be unique within the generator)
    */
-  name: string;
+  name?: string;
   /**
    * The providers that are exported by this generator task
    */

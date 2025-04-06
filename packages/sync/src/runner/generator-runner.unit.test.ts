@@ -474,8 +474,7 @@ describe('executeGeneratorEntry', () => {
             run: () => ({
               providers: {},
               build: (builder) => {
-                builder.addDynamicTask({
-                  name: 'dynamic-task',
+                builder.addDynamicTask('dynamic-task', {
                   phase: phase1,
                   dependencies: {},
                   run: () => ({
@@ -540,8 +539,7 @@ describe('executeGeneratorEntry', () => {
             run: () => ({
               providers: {},
               build: (builder: GeneratorTaskOutputBuilder) => {
-                builder.addDynamicTask({
-                  name: 'dynamic-task',
+                builder.addDynamicTask('dynamic-task', {
                   dependencies: {},
                   run: () => ({
                     providers: {},
@@ -572,8 +570,7 @@ describe('executeGeneratorEntry', () => {
             run: () => ({
               providers: {},
               build: (builder: GeneratorTaskOutputBuilder) => {
-                builder.addDynamicTask({
-                  name: 'dynamic-task',
+                builder.addDynamicTask('dynamic-task', {
                   phase: phase1,
                   dependencies: {},
                   run: () => ({
@@ -581,8 +578,7 @@ describe('executeGeneratorEntry', () => {
                     build: () => ({}),
                   }),
                 });
-                builder.addDynamicTask({
-                  name: 'dynamic-task',
+                builder.addDynamicTask('dynamic-task', {
                   phase: phase1,
                   dependencies: {},
                   run: () => ({
@@ -639,8 +635,7 @@ describe('executeGeneratorEntry', () => {
             run: () => ({
               providers: {},
               build: (builder: GeneratorTaskOutputBuilder) => {
-                builder.addDynamicTask({
-                  name: 'dynamic-task',
+                builder.addDynamicTask('dynamic-task', {
                   phase: phase1,
                   dependencies: { dep: outputProviderType },
                   run: (deps: Record<string, Provider>) => ({

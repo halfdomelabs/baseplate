@@ -28,7 +28,7 @@ export function getSortedRunSteps(
     generatorTaskEntries: entries.map((entry) => ({
       id: entry.id,
       generatorName: entry.generatorInfo.name,
-      taskName: entry.task.name,
+      taskName: entry.name,
       instanceName: entry.generatorInfo.instanceName,
     })),
     generatorProviderRelationships: [],
