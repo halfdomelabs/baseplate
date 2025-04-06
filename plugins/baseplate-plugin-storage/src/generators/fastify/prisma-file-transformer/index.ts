@@ -21,9 +21,8 @@ export const prismaFileTransformerGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: ({ name, category }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ name, category }) => ({
+    main: createGeneratorTask({
       dependencies: {
         prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
         storageModule: storageModuleProvider,
@@ -134,5 +133,5 @@ export const prismaFileTransformerGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

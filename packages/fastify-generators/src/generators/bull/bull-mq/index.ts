@@ -29,12 +29,11 @@ export const bullMqGenerator = createGenerator({
   name: 'bull/bull-mq',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['bullmq']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         errorHandlerService: errorHandlerServiceProvider,
         loggerService: loggerServiceProvider,
@@ -130,5 +129,5 @@ export const bullMqGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

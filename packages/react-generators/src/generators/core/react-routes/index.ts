@@ -29,9 +29,8 @@ export const reactRoutesGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: ({ name, layoutKey, isPassthrough }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ name, layoutKey, isPassthrough }) => ({
+    main: createGeneratorTask({
       dependencies: {
         reactRoutes: reactRoutesProvider.dependency().parentScopeOnly(),
         typescript: typescriptProvider,
@@ -129,5 +128,5 @@ export const reactRoutesGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

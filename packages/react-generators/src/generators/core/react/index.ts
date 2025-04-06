@@ -49,9 +49,8 @@ export const reactGenerator = createGenerator({
   name: 'core/react',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'setup-node',
+  buildTasks: (descriptor) => ({
+    setupNode: createGeneratorTask({
       dependencies: {
         nodeConfig: nodeConfigProvider,
       },
@@ -60,9 +59,8 @@ export const reactGenerator = createGenerator({
         return {};
       },
     }),
-    viteNodeTask,
-    createGeneratorTask({
-      name: 'main',
+    viteNode: viteNodeTask,
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         nodeGitIgnore: nodeGitIgnoreProvider,
@@ -193,5 +191,5 @@ export const reactGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

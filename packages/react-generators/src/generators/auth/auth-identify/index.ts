@@ -28,9 +28,8 @@ export const authIdentifyGenerator = createGenerator({
   name: 'auth/auth-identify',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         reactRouter: reactRouterProvider,
         authHooks: authHooksProvider,
@@ -74,5 +73,5 @@ export const authIdentifyGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

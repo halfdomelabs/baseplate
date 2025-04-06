@@ -69,10 +69,9 @@ export const rootModuleGenerator = createGenerator({
   name: 'core/root-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask(setupTask),
-    createGeneratorTask({
-      name: 'rootModuleImport',
+  buildTasks: () => ({
+    setup: createGeneratorTask(setupTask),
+    rootModuleImport: createGeneratorTask({
       exports: {
         rootModuleImport: rootModuleImportProvider.export(projectScope),
       },
@@ -97,8 +96,7 @@ export const rootModuleGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'appModule',
+    appModule: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         rootModuleSetup: rootModuleSetupProvider,
@@ -195,5 +193,5 @@ export const rootModuleGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

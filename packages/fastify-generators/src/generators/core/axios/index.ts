@@ -17,12 +17,11 @@ export const axiosGenerator = createGenerator({
   name: 'core/axios',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(CORE_PACKAGES, ['axios']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
         typescript: typescriptProvider,
@@ -54,5 +53,5 @@ export const axiosGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

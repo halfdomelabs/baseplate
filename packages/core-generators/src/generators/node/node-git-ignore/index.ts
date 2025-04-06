@@ -23,9 +23,8 @@ export const nodeGitIgnoreGenerator = createGenerator({
   name: 'node/node-git-ignore',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: (descriptor) => ({
+    main: createGeneratorTask({
       dependencies: {},
       exports: {
         nodeGitIgnore: nodeGitIgnoreProvider.export(projectScope),
@@ -83,5 +82,5 @@ export const nodeGitIgnoreGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

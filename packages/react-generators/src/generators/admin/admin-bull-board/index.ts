@@ -29,9 +29,8 @@ export const adminBullBoardGenerator = createGenerator({
   name: 'admin/admin-bull-board',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ bullBoardUrl }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ bullBoardUrl }) => ({
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         reactComponents: reactComponentsProvider,
@@ -93,5 +92,5 @@ export const adminBullBoardGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

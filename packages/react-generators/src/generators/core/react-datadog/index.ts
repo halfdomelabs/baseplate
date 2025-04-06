@@ -31,12 +31,11 @@ export const reactDatadogGenerator = createGenerator({
   name: 'core/react-datadog',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['@datadog/browser-logs']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         reactConfig: reactConfigProvider,
@@ -96,5 +95,5 @@ export const reactDatadogGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

@@ -18,12 +18,11 @@ export const reactAuth0Generator = createGenerator({
   name: 'auth0/react-auth0',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ callbackPath }) => [
-    createNodePackagesTask({
+  buildTasks: ({ callbackPath }) => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['@auth0/auth0-react']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         reactConfig: reactConfigProvider,
         reactApp: reactAppProvider,
@@ -73,5 +72,5 @@ export const reactAuth0Generator = createGenerator({
         );
       },
     }),
-  ],
+  }),
 });

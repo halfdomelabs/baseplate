@@ -39,15 +39,14 @@ export const vitestGenerator = createGenerator({
   name: 'node/vitest',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(CORE_PACKAGES, [
         'vitest',
         'vite-tsconfig-paths',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
         typescript: typescriptProvider,
@@ -150,5 +149,5 @@ export const vitestGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

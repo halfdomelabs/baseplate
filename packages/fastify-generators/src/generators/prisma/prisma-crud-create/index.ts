@@ -129,9 +129,8 @@ export const prismaCrudCreateGenerator = createGenerator({
   name: 'prisma/prisma-crud-create',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: (descriptor) => ({
+    main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         serviceFile: serviceFileProvider.dependency(),
@@ -189,5 +188,5 @@ export const prismaCrudCreateGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

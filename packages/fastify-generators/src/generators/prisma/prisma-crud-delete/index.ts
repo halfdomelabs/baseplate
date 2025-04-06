@@ -109,9 +109,8 @@ export const prismaCrudDeleteGenerator = createGenerator({
   name: 'prisma/prisma-crud-delete',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: (descriptor) => ({
+    main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         serviceFile: serviceFileProvider,
@@ -144,5 +143,5 @@ export const prismaCrudDeleteGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

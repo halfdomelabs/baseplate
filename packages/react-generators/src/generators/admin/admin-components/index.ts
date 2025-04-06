@@ -28,12 +28,11 @@ export const adminComponentsGenerator = createGenerator({
   name: 'admin/admin-components',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['nanoid']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         reactComponents: reactComponentsProvider,
         typescript: typescriptProvider,
@@ -103,5 +102,5 @@ export const adminComponentsGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

@@ -32,9 +32,8 @@ export const reactNotFoundHandlerGenerator = createGenerator({
   name: 'core/react-not-found-handler',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ layoutKey }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ layoutKey }) => ({
+    main: createGeneratorTask({
       dependencies: {
         reactPages: reactRoutesProvider,
         reactComponents: reactComponentsProvider,
@@ -81,5 +80,5 @@ export const reactNotFoundHandlerGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

@@ -36,9 +36,8 @@ export const reactUtilsGenerator = createGenerator({
   name: 'core/react-utils',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
       },
@@ -98,5 +97,5 @@ export const reactUtilsGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

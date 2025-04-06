@@ -51,9 +51,8 @@ export const fastifySentryGenerator = createGenerator({
   name: 'core/fastify-sentry',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'fastify-instrument',
+  buildTasks: () => ({
+    fastifyInstrument: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
         fastify: fastifyProvider,
@@ -76,8 +75,7 @@ export const fastifySentryGenerator = createGenerator({
         return {};
       },
     }),
-    createGeneratorTask({
-      name: 'server',
+    server: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
         fastifyServer: fastifyServerProvider,
@@ -114,7 +112,7 @@ export const fastifySentryGenerator = createGenerator({
         };
       },
     }),
-    createNodePackagesTask({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         '@sentry/core',
         '@sentry/node',
@@ -123,8 +121,7 @@ export const fastifySentryGenerator = createGenerator({
       ]),
       dev: extractPackageVersions(FASTIFY_PACKAGES, ['@types/lodash']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         requestContext: requestContextProvider,
         configService: configServiceProvider,
@@ -249,8 +246,7 @@ export const fastifySentryGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'prisma',
+    prisma: createGeneratorTask({
       dependencies: {
         prismaSchemaProvider: prismaSchemaProvider.dependency().optional(),
         fastifySentryProvider,
@@ -267,8 +263,7 @@ export const fastifySentryGenerator = createGenerator({
         return {};
       },
     }),
-    createGeneratorTask({
-      name: 'auth',
+    auth: createGeneratorTask({
       dependencies: {
         fastifySentry: fastifySentryProvider,
         auth: authProvider.dependency().optional(),
@@ -291,5 +286,5 @@ export const fastifySentryGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

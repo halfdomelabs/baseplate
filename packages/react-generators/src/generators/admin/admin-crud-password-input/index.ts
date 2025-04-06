@@ -16,9 +16,8 @@ export const adminCrudPasswordInputGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelField,
-  buildTasks: ({ label, modelField }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ label, modelField }) => ({
+    main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
         reactComponents: reactComponentsProvider,
@@ -53,5 +52,5 @@ export const adminCrudPasswordInputGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

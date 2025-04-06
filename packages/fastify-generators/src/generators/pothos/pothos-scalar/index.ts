@@ -80,9 +80,8 @@ export const pothosScalarGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.type,
-  buildTasks: ({ type }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ type }) => ({
+    main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
         pothosSetup: pothosSetupProvider,
@@ -123,5 +122,5 @@ export const pothosScalarGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

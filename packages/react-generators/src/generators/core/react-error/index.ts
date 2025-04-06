@@ -34,9 +34,8 @@ export const reactErrorGenerator = createGenerator({
   name: 'core/react-error',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         reactLogger: reactLoggerProvider,
@@ -106,5 +105,5 @@ export const reactErrorGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

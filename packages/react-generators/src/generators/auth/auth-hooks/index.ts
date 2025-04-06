@@ -38,13 +38,12 @@ export const authHooksGenerator = createGenerator({
   name: 'auth/auth-hooks',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ userQueryName }) => [
-    createNodePackagesTask({
+  buildTasks: ({ userQueryName }) => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['use-subscription']),
       dev: extractPackageVersions(REACT_PACKAGES, ['@types/use-subscription']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         reactComponents: reactComponentsProvider,
@@ -170,5 +169,5 @@ export const authHooksGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

@@ -28,9 +28,8 @@ export const authLayoutGenerator = createGenerator({
   name: 'auth/auth-layout',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ name }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ name }) => ({
+    main: createGeneratorTask({
       dependencies: {
         reactComponents: reactComponentsProvider,
         reactRoutes: reactRoutesProvider,
@@ -73,5 +72,5 @@ export const authLayoutGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

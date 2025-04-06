@@ -13,9 +13,8 @@ export const pothosAuthorizeFieldGenerator = createGenerator({
   name: 'pothos/pothos-authorize-field',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: (descriptor) => ({
+    main: createGeneratorTask({
       dependencies: {
         pothosAuth: pothosAuthProvider,
         pothosType: pothosFieldProvider,
@@ -28,5 +27,5 @@ export const pothosAuthorizeFieldGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

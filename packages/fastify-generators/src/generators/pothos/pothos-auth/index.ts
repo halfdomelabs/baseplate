@@ -41,9 +41,8 @@ export const pothosAuthGenerator = createGenerator({
   name: 'pothos/pothos-auth',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ requireOnRootFields }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ requireOnRootFields }) => ({
+    main: createGeneratorTask({
       dependencies: {
         pothosSetup: pothosSetupProvider,
         auth: authProvider,
@@ -95,8 +94,7 @@ export const pothosAuthGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'auth-formatter',
+    authFormatter: createGeneratorTask({
       exports: {
         pothosAuth: pothosAuthProvider.export(projectScope),
       },
@@ -114,5 +112,5 @@ export const pothosAuthGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

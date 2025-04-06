@@ -32,9 +32,8 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.id,
-  buildTasks: ({ label, modelRelation, embeddedFormRef, isRequired }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ label, modelRelation, embeddedFormRef, isRequired }) => ({
+    main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
         adminComponents: adminComponentsProvider,
@@ -126,5 +125,5 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

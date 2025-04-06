@@ -63,9 +63,8 @@ export const prismaUtilsGenerator = createGenerator({
   name: 'prisma/prisma-utils',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         serviceContext: serviceContextProvider,
@@ -114,5 +113,5 @@ export const prismaUtilsGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

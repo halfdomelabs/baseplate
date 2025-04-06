@@ -14,9 +14,8 @@ export const prismaPasswordTransformerGenerator = createGenerator({
   name: 'auth/prisma-password-transformer',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         passwordHasherService: passwordHasherServiceProvider,
         prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
@@ -52,5 +51,5 @@ export const prismaPasswordTransformerGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

@@ -83,9 +83,8 @@ export const yogaPluginGenerator = createGenerator({
   name: 'yoga/yoga-plugin',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ enableSubscriptions }) => [
-    createGeneratorTask({
-      name: 'setup',
+  buildTasks: ({ enableSubscriptions }) => ({
+    setup: createGeneratorTask({
       exports: {
         yogaPluginConfig: yogaPluginConfigProvider.export(projectScope),
       },
@@ -110,8 +109,7 @@ export const yogaPluginGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'fastify',
+    fastify: createGeneratorTask({
       dependencies: {
         fastifyServer: fastifyServerProvider,
       },
@@ -125,7 +123,7 @@ export const yogaPluginGenerator = createGenerator({
         });
       },
     }),
-    createNodePackagesTask({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         'altair-fastify-plugin',
         'graphql',
@@ -139,8 +137,7 @@ export const yogaPluginGenerator = createGenerator({
         '@types/ws',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         configService: configServiceProvider,
@@ -236,9 +233,8 @@ export const yogaPluginGenerator = createGenerator({
       },
     }),
     ...(enableSubscriptions
-      ? [
-          createGeneratorTask({
-            name: 'server-websocket',
+      ? {
+          serverWebsocket: createGeneratorTask({
             dependencies: {
               node: nodeProvider,
               fastifyServer: fastifyServerProvider,
@@ -262,8 +258,7 @@ export const yogaPluginGenerator = createGenerator({
               return {};
             },
           }),
-          createGeneratorTask({
-            name: 'subscription',
+          subscription: createGeneratorTask({
             dependencies: {
               node: nodeProvider,
               typescript: typescriptProvider,
@@ -345,7 +340,7 @@ export const yogaPluginGenerator = createGenerator({
               };
             },
           }),
-        ]
-      : []),
-  ],
+        }
+      : {}),
+  }),
 });

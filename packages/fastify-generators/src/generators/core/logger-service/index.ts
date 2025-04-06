@@ -57,13 +57,12 @@ export const loggerServiceGenerator = createGenerator({
   name: 'core/logger-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['pino']),
       dev: extractPackageVersions(FASTIFY_PACKAGES, ['pino-pretty']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         fastify: fastifyProvider,
       },
@@ -123,6 +122,7 @@ export const loggerServiceGenerator = createGenerator({
             }
 
             builder.addDynamicTask(
+              'logger-service-file',
               createTypescriptFileTask({
                 template: loggerFileTemplate,
                 variables: {
@@ -144,5 +144,5 @@ export const loggerServiceGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

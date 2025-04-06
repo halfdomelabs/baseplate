@@ -17,9 +17,8 @@ export const apolloSentryGenerator = createGenerator({
   name: 'apollo/apollo-sentry',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         reactSentry: reactSentryProvider,
       },
@@ -70,8 +69,7 @@ export const apolloSentryGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'apolloSentryLink',
+    apolloSentryLink: createGeneratorTask({
       dependencies: {
         reactApolloSetup: reactApolloSetupProvider,
         typescript: typescriptProvider,
@@ -100,5 +98,5 @@ export const apolloSentryGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

@@ -139,10 +139,6 @@ export interface GeneratorTask<
     | undefined,
 > {
   /**
-   * The name of the generator task (must be unique within the generator)
-   */
-  name: string;
-  /**
    * The providers that are exported by this generator task
    */
   exports?: ExportMap;
@@ -211,9 +207,9 @@ export interface CreateGeneratorContext {
  * A generator bundle contains the built generator and its children
  */
 export interface GeneratorBundle<
-  TaskConfigs extends Record<string, AnyGeneratorTask> = Record<
+  TaskConfigs extends Record<string, AnyGeneratorTask | undefined> = Record<
     string,
-    AnyGeneratorTask
+    AnyGeneratorTask | undefined
   >,
 > {
   /**

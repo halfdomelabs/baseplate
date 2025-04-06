@@ -36,13 +36,12 @@ export const fastifyRedisGenerator = createGenerator({
   name: 'core/fastify-redis',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ defaultUrl }) => [
-    createNodePackagesTask({
+  buildTasks: ({ defaultUrl }) => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['ioredis']),
       dev: extractPackageVersions(FASTIFY_PACKAGES, ['ioredis-mock']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         configService: configServiceProvider,
         fastifyHealthCheck: fastifyHealthCheckProvider,
@@ -115,5 +114,5 @@ export const fastifyRedisGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

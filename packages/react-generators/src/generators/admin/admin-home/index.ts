@@ -28,9 +28,8 @@ export const adminHomeGenerator = createGenerator({
   name: 'admin/admin-home',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         reactComponents: reactComponentsProvider,
         authHooks: authHooksProvider,
@@ -69,5 +68,5 @@ export const adminHomeGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

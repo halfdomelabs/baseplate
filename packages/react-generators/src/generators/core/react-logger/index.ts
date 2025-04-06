@@ -38,12 +38,11 @@ export const reactLoggerGenerator = createGenerator({
   name: 'core/react-logger',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['loglevel']),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         react: reactProvider,
         typescript: typescriptProvider,
@@ -83,5 +82,5 @@ export const reactLoggerGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

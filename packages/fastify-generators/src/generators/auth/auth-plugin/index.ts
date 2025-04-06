@@ -21,14 +21,13 @@ export const authPluginGenerator = createGenerator({
   name: 'auth/auth-plugin',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodePackagesTask({
+  buildTasks: () => ({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         '@fastify/request-context',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         appModule: appModuleProvider,
@@ -72,5 +71,5 @@ export const authPluginGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

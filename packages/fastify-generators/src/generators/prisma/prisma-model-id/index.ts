@@ -11,9 +11,8 @@ export const prismaModelIdGenerator = createGenerator({
   name: 'prisma/prisma-model-id',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ fields }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ fields }) => ({
+    main: createGeneratorTask({
       dependencies: {
         prismaModel: prismaModelProvider,
       },
@@ -25,5 +24,5 @@ export const prismaModelIdGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

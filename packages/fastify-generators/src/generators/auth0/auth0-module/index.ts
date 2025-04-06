@@ -41,19 +41,13 @@ export const auth0ModuleGenerator = createGenerator({
   name: 'auth0/auth0-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ includeManagement, userModelName }) => [
-    ...(includeManagement
-      ? [
-          createNodePackagesTask(
-            {
-              prod: extractPackageVersions(FASTIFY_PACKAGES, ['auth0']),
-            },
-            'auth0-management',
-          ),
-        ]
-      : []),
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ includeManagement, userModelName }) => ({
+    nodeManagementPackage: includeManagement
+      ? createNodePackagesTask({
+          prod: extractPackageVersions(FASTIFY_PACKAGES, ['auth0']),
+        })
+      : undefined,
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         authRoles: authRolesProvider,
@@ -185,11 +179,10 @@ export const auth0ModuleGenerator = createGenerator({
         };
       },
     }),
-    createNodePackagesTask({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['fastify-auth0-verify']),
     }),
-    createGeneratorTask({
-      name: 'fastifyAuth0Plugin',
+    fastifyAuth0Plugin: createGeneratorTask({
       dependencies: {
         fastifyServer: fastifyServerProvider,
         configService: configServiceProvider,
@@ -212,8 +205,7 @@ export const auth0ModuleGenerator = createGenerator({
         });
       },
     }),
-    createGeneratorTask({
-      name: 'loggerSetup',
+    loggerSetup: createGeneratorTask({
       dependencies: {
         loggerServiceSetup: loggerServiceSetupProvider,
       },
@@ -229,5 +221,5 @@ export const auth0ModuleGenerator = createGenerator({
         );
       },
     }),
-  ],
+  }),
 });

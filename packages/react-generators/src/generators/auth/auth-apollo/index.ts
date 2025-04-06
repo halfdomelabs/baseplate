@@ -25,9 +25,8 @@ export const authApolloGenerator = createGenerator({
   name: 'auth/auth-apollo',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         reactApolloSetup: reactApolloSetupProvider.dependency(),
         authService: authServiceProvider,
@@ -115,5 +114,5 @@ export const authApolloGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

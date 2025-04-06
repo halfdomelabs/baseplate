@@ -19,9 +19,8 @@ export const authPagesGenerator = createGenerator({
   name: 'auth/auth-pages',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {},
       exports: {
         authPages: authPagesProvider.export(projectScope),
@@ -34,5 +33,5 @@ export const authPagesGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

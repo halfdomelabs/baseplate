@@ -30,6 +30,10 @@ export interface GeneratorTaskEntry {
    */
   id: string;
   /**
+   * The name of the task entry
+   */
+  name: string;
+  /**
    * The task that the task entry represents
    */
   task: GeneratorTask;
@@ -107,14 +111,15 @@ async function buildGeneratorEntryRecursive(
     instanceName,
   };
 
-  const taskEntries = Object.values(tasks).map(
-    (task): GeneratorTaskEntry => ({
-      id: `${id}#${task.name}`,
+  const taskEntries = Object.entries(tasks)
+    .filter(([, task]) => task !== undefined)
+    .map(([taskName, task]) => ({
+      id: `${id}#${taskName}`,
+      name: taskName,
       task: task as GeneratorTask,
       generatorId: id,
       generatorInfo,
-    }),
-  );
+    }));
 
   // recursively build children generator entries
   const builtChildEntries = await Promise.all(

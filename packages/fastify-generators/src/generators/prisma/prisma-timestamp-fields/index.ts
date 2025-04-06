@@ -12,9 +12,8 @@ export const prismaTimestampFieldsGenerator = createGenerator({
   name: 'prisma/prisma-timestamp-fields',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ createdAt, updatedAt }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ createdAt, updatedAt }) => ({
+    main: createGeneratorTask({
       dependencies: {
         prismaModel: prismaModelProvider,
       },
@@ -49,5 +48,5 @@ export const prismaTimestampFieldsGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

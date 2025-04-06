@@ -27,9 +27,8 @@ export const reactProxyGenerator = createGenerator({
   name: 'core/react-proxy',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ devBackendHost }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ devBackendHost }) => ({
+    main: createGeneratorTask({
       dependencies: {
         reactConfig: reactConfigProvider,
         react: reactProvider,
@@ -68,5 +67,5 @@ export const reactProxyGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

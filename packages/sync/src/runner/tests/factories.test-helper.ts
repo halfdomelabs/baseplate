@@ -35,6 +35,7 @@ export function buildTestGeneratorTaskEntry(
   const run = data?.task?.run ?? vi.fn();
   return {
     id: lastTaskId.toString(),
+    name: `task-${lastTaskId.toString()}`,
     generatorId: lastGeneratorId.toString(),
     generatorInfo: {
       name: 'test-generator',
@@ -42,7 +43,6 @@ export function buildTestGeneratorTaskEntry(
     },
     ...data,
     task: {
-      name: `task-${lastTaskId.toString()}`,
       run,
       ...data?.task,
     },
@@ -53,7 +53,7 @@ export function buildTestGeneratorEntry(
   data?: Partial<GeneratorEntry>,
   task?: Pick<
     Partial<GeneratorTask>,
-    'name' | 'dependencies' | 'exports' | 'outputs' | 'run' | 'phase'
+    'dependencies' | 'exports' | 'outputs' | 'run' | 'phase'
   >,
 ): GeneratorEntry {
   lastGeneratorId += 1;
@@ -67,7 +67,8 @@ export function buildTestGeneratorEntry(
     (task
       ? [
           buildTestGeneratorTaskEntry({
-            id: `${id}#${task.name ?? 'main'}`,
+            id: `${id}#main`,
+            name: 'main',
             generatorId: id,
             generatorInfo,
             task,

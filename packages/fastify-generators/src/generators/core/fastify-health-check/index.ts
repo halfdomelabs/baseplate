@@ -30,9 +30,8 @@ export const fastifyHealthCheckGenerator = createGenerator({
   name: 'core/fastify-health-check',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         fastifyServer: fastifyServerProvider,
         typescript: typescriptProvider,
@@ -97,5 +96,5 @@ export const fastifyHealthCheckGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

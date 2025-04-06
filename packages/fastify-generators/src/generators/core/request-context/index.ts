@@ -43,9 +43,8 @@ export const requestContextGenerator = createGenerator({
   name: 'core/request-context',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'logger-request-context',
+  buildTasks: () => ({
+    loggerRequestContext: createGeneratorTask({
       dependencies: { loggerServiceSetup: loggerServiceSetupProvider },
       run({ loggerServiceSetup }) {
         loggerServiceSetup.addMixin(
@@ -61,13 +60,12 @@ export const requestContextGenerator = createGenerator({
         return {};
       },
     }),
-    createNodePackagesTask({
+    nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         '@fastify/request-context',
       ]),
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         fastifyServer: fastifyServerProvider,
         typescript: typescriptProvider,
@@ -109,5 +107,5 @@ export const requestContextGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

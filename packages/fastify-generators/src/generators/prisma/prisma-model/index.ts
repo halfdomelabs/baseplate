@@ -39,9 +39,8 @@ export const prismaModelGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: (descriptor) => ({
+    main: createGeneratorTask({
       dependencies: {
         prisma: prismaSchemaProvider.dependency(),
       },
@@ -71,5 +70,5 @@ export const prismaModelGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

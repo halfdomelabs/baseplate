@@ -42,9 +42,8 @@ export const authRolesGenerator = createGenerator({
   name: 'auth/auth-roles',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ roles }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ roles }) => ({
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         appModule: appModuleProvider,
@@ -113,5 +112,5 @@ export const authRolesGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

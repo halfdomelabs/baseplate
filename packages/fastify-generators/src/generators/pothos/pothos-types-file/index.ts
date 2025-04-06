@@ -42,9 +42,8 @@ export const pothosTypesFileGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.fileName,
-  buildTasks: ({ fileName, categoryOrder }) => [
-    createGeneratorTask({
-      name: 'pothos-types-file',
+  buildTasks: ({ fileName, categoryOrder }) => ({
+    pothosTypesFile: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
         typescript: typescriptProvider,
@@ -111,5 +110,5 @@ export const pothosTypesFileGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

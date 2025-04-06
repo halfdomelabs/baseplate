@@ -30,9 +30,8 @@ export const eslintProvider = createProviderType<EslintProvider>('eslint');
 export const eslintGenerator = createGenerator({
   name: 'node/eslint',
   generatorFileUrl: import.meta.url,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
       },
@@ -121,5 +120,5 @@ export const eslintGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

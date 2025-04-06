@@ -17,9 +17,8 @@ export const prismaModelUniqueGenerator = createGenerator({
   descriptorSchema,
   getInstanceName: (descriptor) =>
     descriptor.fields.map(({ name }) => name).join('_'),
-  buildTasks: ({ fields }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ fields }) => ({
+    main: createGeneratorTask({
       dependencies: {
         prismaModel: prismaModelProvider,
       },
@@ -31,5 +30,5 @@ export const prismaModelUniqueGenerator = createGenerator({
         return {};
       },
     }),
-  ],
+  }),
 });

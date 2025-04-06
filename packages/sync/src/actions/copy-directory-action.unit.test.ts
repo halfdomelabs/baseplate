@@ -15,12 +15,10 @@ beforeEach(() => {
 
 const testGeneratorTaskEntry = buildTestGeneratorTaskEntry({
   id: 'test',
+  name: 'test',
   generatorInfo: {
     name: 'test',
     baseDirectory: '/generator',
-  },
-  task: {
-    name: 'test',
   },
 });
 

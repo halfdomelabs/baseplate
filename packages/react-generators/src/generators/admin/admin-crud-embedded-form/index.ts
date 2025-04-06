@@ -139,9 +139,8 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.id,
-  buildTasks: ({ id, name, modelName, isList, idField }) => [
-    createGeneratorTask({
-      name: 'setupForm',
+  buildTasks: ({ id, name, modelName, isList, idField }) => ({
+    setupForm: createGeneratorTask({
       dependencies: {},
       exports: {
         adminCrudInputContainer: adminCrudInputContainerProvider.export(),
@@ -179,8 +178,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
         };
       },
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         adminCrudEdit: adminCrudEditProvider,
         adminComponents: adminComponentsProvider,
@@ -419,5 +417,5 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

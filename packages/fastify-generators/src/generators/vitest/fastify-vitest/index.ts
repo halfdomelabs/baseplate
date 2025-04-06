@@ -24,8 +24,8 @@ export const fastifyVitestGenerator = createGenerator({
   name: 'vitest/fastify-vitest',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createNodeTask((node, { taskId }) => {
+  buildTasks: () => ({
+    node: createNodeTask((node, { taskId }) => {
       node.scripts.mergeObj(
         {
           test: 'vitest run',
@@ -34,8 +34,7 @@ export const fastifyVitestGenerator = createGenerator({
         taskId,
       );
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         vitest: vitestProvider,
       },
@@ -61,5 +60,5 @@ export const fastifyVitestGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

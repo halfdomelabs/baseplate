@@ -23,9 +23,8 @@ export const auth0HooksGenerator = createGenerator({
   name: 'auth0/auth0-hooks',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ userQueryName }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ userQueryName }) => ({
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         reactApollo: reactApolloProvider,
@@ -125,5 +124,5 @@ export const auth0HooksGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

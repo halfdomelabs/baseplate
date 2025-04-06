@@ -67,9 +67,8 @@ export const fastifyGenerator = createGenerator({
   name: 'core/fastify',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'node-setup',
+  buildTasks: () => ({
+    nodeSetup: createGeneratorTask({
       dependencies: {
         nodeConfig: nodeConfigProvider,
       },
@@ -78,8 +77,8 @@ export const fastifyGenerator = createGenerator({
         return {};
       },
     }),
-    fastifyTypescriptTask,
-    createNodeTask((node, { taskId }) => {
+    fastifyTypescript: fastifyTypescriptTask,
+    node: createNodeTask((node, { taskId }) => {
       node.packages.addDevPackages(
         extractPackageVersions(FASTIFY_PACKAGES, [
           'tsc-alias',
@@ -95,8 +94,7 @@ export const fastifyGenerator = createGenerator({
         taskId,
       );
     }),
-    createGeneratorTask({
-      name: 'main',
+    main: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
         nodeGitIgnore: nodeGitIgnoreProvider,
@@ -181,5 +179,5 @@ export const fastifyGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

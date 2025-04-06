@@ -29,9 +29,8 @@ export const authComponentsGenerator = createGenerator({
   name: 'auth/auth-components',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ loginPath }) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: ({ loginPath }) => ({
+    main: createGeneratorTask({
       dependencies: {
         authHooks: authHooksProvider,
         reactComponents: reactComponentsProvider,
@@ -72,5 +71,5 @@ export const authComponentsGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });
