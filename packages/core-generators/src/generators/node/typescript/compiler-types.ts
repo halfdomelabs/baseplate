@@ -16,7 +16,7 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 
-export enum JsxEmit {
+enum JsxEmit {
   None = 'none',
   Preserve = 'preserve',
   ReactNative = 'react-native',
@@ -25,7 +25,7 @@ export enum JsxEmit {
   ReactJSXDev = 'react-jsxdev',
 }
 
-export enum ModuleKind {
+enum ModuleKind {
   None = 'none',
   CommonJS = 'commonjs',
   AMD = 'amd',
@@ -41,7 +41,7 @@ export enum ModuleKind {
   Preserve = 'preserve',
 }
 
-export enum ModuleResolutionKind {
+enum ModuleResolutionKind {
   Classic = 'classic',
   Node10 = 'node10',
   Node16 = 'node16',
@@ -49,7 +49,7 @@ export enum ModuleResolutionKind {
   Bundler = 'bundler',
 }
 
-export enum ScriptTarget {
+enum ScriptTarget {
   /** @deprecated */
   ES3 = 'es3',
   ES5 = 'es5',
