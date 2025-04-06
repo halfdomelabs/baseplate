@@ -26,6 +26,10 @@ export default createTypescriptMorpher({
         node.getName() === 'buildTasks',
     );
 
+    if (buildTasksNodes.length === 0) {
+      return;
+    }
+
     for (const buildTasksNode of buildTasksNodes) {
       // Get the arrow function or method body
       let arrowFunction: ArrowFunction | Node | undefined;
@@ -49,7 +53,7 @@ export default createTypescriptMorpher({
 
       // Get the array literal expression
       const arrayLiteral = arrowFunction
-        .getDescendantsOfKind(SyntaxKind.ArrayLiteralExpression)
+        .getChildrenOfKind(SyntaxKind.ArrayLiteralExpression)
         .at(0);
 
       if (!arrayLiteral) continue;
@@ -72,7 +76,11 @@ export default createTypescriptMorpher({
           case 'createGeneratorTask': {
             // Extract name from object argument and use it as key
             const objLiteral = args.asKind(SyntaxKind.ObjectLiteralExpression);
-            if (!objLiteral) continue;
+            if (!objLiteral) {
+              throw new Error(
+                'createGeneratorTask must have an object argument',
+              );
+            }
 
             const nameProperty = objLiteral.getProperty('name');
             if (!nameProperty?.isKind(SyntaxKind.PropertyAssignment)) {
@@ -80,10 +88,14 @@ export default createTypescriptMorpher({
             }
 
             const nameInitializer = nameProperty.getInitializer();
-            if (!nameInitializer) continue;
+            if (!nameInitializer) {
+              throw new Error('createGeneratorTask must have a name property');
+            }
 
             const name = nameInitializer.getText().replaceAll(/['"]/g, '');
-            if (!name) continue;
+            if (!name) {
+              throw new Error('createGeneratorTask must have a name property');
+            }
 
             // Remove name property and keep rest of object
             const properties = objLiteral
