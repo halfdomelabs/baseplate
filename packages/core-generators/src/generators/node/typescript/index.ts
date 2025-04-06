@@ -237,12 +237,12 @@ export const typescriptGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema: typescriptGeneratorDescriptorSchema,
   preRegisteredPhases: [typescriptFileTaskPhase],
-  buildTasks: (descriptor) => [
-    createGeneratorTask(setupTask(descriptor)),
-    createNodePackagesTask({
+  buildTasks: (descriptor) => ({
+    setup: createGeneratorTask(setupTask(descriptor)),
+    nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(CORE_PACKAGES, ['typescript']),
     }),
-    createGeneratorTask({
+    main: createGeneratorTask({
       name: 'main',
       dependencies: {
         typescriptConfig: typescriptConfigProvider,
@@ -347,5 +347,5 @@ export const typescriptGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

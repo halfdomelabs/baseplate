@@ -29,9 +29,8 @@ export const dockerComposeGenerator = createGenerator({
   name: 'docker/docker-compose',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: (descriptor) => ({
+    main: createGeneratorTask({
       dependencies: {
         project: projectProvider,
       },
@@ -107,5 +106,5 @@ ${entries.join('\n')}`.trim()}\n`,
         };
       },
     }),
-  ],
+  }),
 });

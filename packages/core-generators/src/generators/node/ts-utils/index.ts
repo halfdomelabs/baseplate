@@ -55,9 +55,8 @@ export const tsUtilsGenerator = createGenerator({
   name: 'node/ts-utils',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: () => ({
+    main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
       },
@@ -117,5 +116,5 @@ export const tsUtilsGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });

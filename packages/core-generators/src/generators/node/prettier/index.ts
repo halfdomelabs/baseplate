@@ -121,9 +121,8 @@ export const prettierGenerator = createGenerator({
   name: 'node/prettier',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: (descriptor) => [
-    createGeneratorTask({
-      name: 'main',
+  buildTasks: (descriptor) => ({
+    main: createGeneratorTask({
       dependencies: { node: nodeProvider },
       exports: {
         prettier: prettierProvider.export(projectScope),
@@ -292,5 +291,5 @@ export const prettierGenerator = createGenerator({
         };
       },
     }),
-  ],
+  }),
 });
