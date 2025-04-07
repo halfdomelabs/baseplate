@@ -1,4 +1,4 @@
-import toposort from 'toposort';
+import { toposort } from '@halfdomelabs/utils';
 
 import { notEmpty } from './arrays.js';
 
@@ -38,11 +38,10 @@ export function createOrderedList<T>(): OrderedList<T> {
           (rule): [string, string] => [item.key, rule],
         ),
       );
-      return toposort
-        .array(
-          items.map((item) => item.key),
-          [...comesBeforeRules, ...comesAfterRules],
-        )
+      return toposort(
+        items.map((item) => item.key),
+        [...comesBeforeRules, ...comesAfterRules],
+      )
         .map((key) => items.find((item) => item.key === key)?.item)
         .filter(notEmpty);
     },
