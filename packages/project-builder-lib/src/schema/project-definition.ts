@@ -13,6 +13,7 @@ import { themeSchema } from './features/theme.js';
 import { enumSchema } from './models/enums.js';
 import { modelSchema } from './models/index.js';
 import { pluginsSchema } from './plugins/index.js';
+import { templateExtractorSchema } from './template-extractor/index.js';
 
 export const appSchema = zRefBuilder(
   z.discriminatedUnion('type', [
@@ -54,6 +55,7 @@ export const projectDefinitionSchema = z.object({
   schemaVersion: z.number(),
   theme: themeSchema.optional(),
   plugins: pluginsSchema.optional(),
+  templateExtractor: templateExtractorSchema.optional(),
 });
 
 export type ProjectDefinitionInput = z.input<typeof projectDefinitionSchema>;
