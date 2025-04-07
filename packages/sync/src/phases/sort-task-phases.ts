@@ -1,4 +1,4 @@
-import toposort from 'toposort';
+import { toposort } from '@halfdomelabs/utils';
 
 import type { TaskPhase } from './types.js';
 
@@ -50,7 +50,7 @@ export function sortTaskPhases(phases: TaskPhase[]): TaskPhase[] {
   }
 
   // Perform topological sort
-  const sortedNames = toposort.array(nodes, edges);
+  const sortedNames = toposort(nodes, edges);
 
   // Convert sorted names back to phases
   return sortedNames.map((name) => {

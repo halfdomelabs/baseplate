@@ -49,7 +49,6 @@
     "react": "catalog:",
     "react-hook-form": "7.53.0",
     "sort-keys": "^5.1.0",
-    "toposort": "^2.0.2",
     "zod": "catalog:",
     "zustand": "5.0.3"
   },
@@ -58,7 +57,6 @@
     "@types/culori": "^2.1.1",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
-    "@types/toposort": "^2.0.3",
     "concurrently": "9.0.1",
     "eslint": "catalog:",
     "prettier": "catalog:",

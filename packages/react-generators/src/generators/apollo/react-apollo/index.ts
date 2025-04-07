@@ -21,7 +21,7 @@ import {
   POST_WRITE_COMMAND_PRIORITY,
   writeTemplateAction,
 } from '@halfdomelabs/sync';
-import toposort from 'toposort';
+import { toposort } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
@@ -222,11 +222,10 @@ export const reactApolloGenerator = createGenerator({
             },
           },
           build: async (builder) => {
-            const sortedLinks = toposort
-              .array(
-                links.map((link) => link.key ?? link.name),
-                links.flatMap((link) => link.dependencies ?? []),
-              )
+            const sortedLinks = toposort(
+              links.map((link) => link.key ?? link.name),
+              links.flatMap((link) => link.dependencies ?? []),
+            )
               .map((name) => links.find((link) => link.name === name))
               .filter(notEmpty);
             // always push http link at the last one

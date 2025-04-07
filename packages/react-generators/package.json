@@ -36,16 +36,15 @@
   "dependencies": {
     "@halfdomelabs/core-generators": "workspace:*",
     "@halfdomelabs/sync": "workspace:*",
+    "@halfdomelabs/utils": "workspace:*",
     "es-toolkit": "1.31.0",
     "inflection": "3.0.0",
     "prettier-plugin-tailwindcss": "0.6.9",
-    "toposort": "^2.0.2",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "catalog:",
-    "@types/toposort": "^2.0.3",
     "concurrently": "9.0.1",
     "cpx2": "7.0.1",
     "eslint": "catalog:",
