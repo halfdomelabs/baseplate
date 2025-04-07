@@ -22,13 +22,13 @@ describe('transformImportsWithMap', () => {
   it('should throw error when import map is not found', () => {
     const imports: TsImportDeclaration[] = [
       {
-        source: '$unknown',
+        source: '%unknown',
         namedImports: [{ name: 'test' }],
       },
     ];
 
     expect(() => transformTsImportsWithMap(imports, new Map())).toThrow(
-      'Import map not found for $unknown',
+      'Import map not found for %unknown',
     );
   });
 
@@ -47,33 +47,33 @@ describe('transformImportsWithMap', () => {
     it('should throw error for namespace imports', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '$test',
+          source: '%test',
           namespaceImport: 'test',
         },
       ];
 
       expect(() => transformTsImportsWithMap(imports, testImportMaps)).toThrow(
-        'Import map does not support namespace or default imports: $test',
+        'Import map does not support namespace or default imports: %test',
       );
     });
 
     it('should throw error for default imports', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '$test',
+          source: '%test',
           defaultImport: 'test',
         },
       ];
 
       expect(() => transformTsImportsWithMap(imports, testImportMaps)).toThrow(
-        'Import map does not support namespace or default imports: $test',
+        'Import map does not support namespace or default imports: %test',
       );
     });
 
     it('should throw error when import map entry is not found', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '$test',
+          source: '%test',
           namedImports: [{ name: 'unknown' }],
         },
       ];
@@ -86,7 +86,7 @@ describe('transformImportsWithMap', () => {
     it('should transform named imports using import map', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '$test',
+          source: '%test',
           namedImports: [{ name: 'test' }],
         },
       ];
@@ -103,7 +103,7 @@ describe('transformImportsWithMap', () => {
     it('should handle type-only imports correctly', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '$test',
+          source: '%test',
           namedImports: [{ name: 'test' }],
           isTypeOnly: true,
         },
@@ -123,7 +123,7 @@ describe('transformImportsWithMap', () => {
   it('should handle multiple named imports', () => {
     const imports: TsImportDeclaration[] = [
       {
-        source: '$test',
+        source: '%test',
         namedImports: [{ name: 'test1' }, { name: 'test2' }],
       },
     ];

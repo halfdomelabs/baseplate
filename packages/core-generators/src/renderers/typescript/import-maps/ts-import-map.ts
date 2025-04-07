@@ -36,7 +36,7 @@ export function createTsImportMap<
         alias?: string,
         isTypeOnly?: boolean,
       ): TsImportDeclaration => ({
-        source: `@/${source}`,
+        source,
         ...(name === 'default'
           ? { defaultImport: alias ?? key }
           : {

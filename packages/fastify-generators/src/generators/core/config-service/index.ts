@@ -122,7 +122,7 @@ export const configServiceGenerator = createGenerator({
               }),
             },
             configServiceImports: createConfigServiceImportMap({
-              service: 'src/services/config.js',
+              service: '@/src/services/config.js',
             }),
           },
           build: async (builder) => {
