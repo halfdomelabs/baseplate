@@ -5,8 +5,6 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import {
-  createImportMap,
-  createImportMapProvider,
   createNodePackagesTask,
   extractPackageVersions,
   projectScope,
@@ -24,6 +22,10 @@ import {
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { fastifyProvider } from '../fastify/index.js';
+import {
+  createLoggerServiceImportMap,
+  loggerServiceImportsProvider,
+} from './generated/import-maps.js';
 import { loggerFileTemplate } from './generated/templates.js';
 
 export interface LoggerServiceSetupProvider extends ImportMapper {
@@ -44,11 +46,6 @@ export interface LoggerServiceProvider extends ImportMapper {
    */
   getLogger(): TypescriptCodeExpression;
 }
-
-const [importMapSchema, loggerServiceImportsProvider] = createImportMapProvider(
-  'logger-service-imports',
-  { logger: {} },
-);
 
 export const loggerServiceProvider = createProviderType<LoggerServiceProvider>(
   'logger-service',
@@ -126,28 +123,30 @@ export const loggerServiceGenerator = createGenerator({
                 }`;
             }
 
-            const { destination: loggerFile } =
-              await typescriptFile.writeTemplatedFile(builder, {
-                template: loggerFileTemplate,
-                id: 'logger',
-                variables: {
-                  TPL_LOGGER_OPTIONS:
-                    Object.keys(loggerOptions).length > 0
-                      ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
-                      : '',
-                },
-                destination: 'src/services/logger.ts',
-                options: {
-                  alternateFullIds: [
-                    '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',
-                  ],
-                },
-              });
+            const fileMap = {
+              logger: 'src/services/logger.ts',
+            };
+
+            await typescriptFile.writeTemplatedFile(builder, {
+              template: loggerFileTemplate,
+              id: 'logger',
+              variables: {
+                TPL_LOGGER_OPTIONS:
+                  Object.keys(loggerOptions).length > 0
+                    ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
+                    : '',
+              },
+              destination: fileMap.logger,
+              importMapProviders: {},
+              options: {
+                alternateFullIds: [
+                  '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',
+                ],
+              },
+            });
 
             return {
-              loggerServiceImports: createImportMap(importMapSchema, {
-                logger: loggerFile,
-              }),
+              loggerServiceImports: createLoggerServiceImportMap(fileMap),
             };
           },
         };
@@ -155,3 +154,5 @@ export const loggerServiceGenerator = createGenerator({
     }),
   }),
 });
+
+export { loggerServiceImportsProvider } from './generated/import-maps.js';

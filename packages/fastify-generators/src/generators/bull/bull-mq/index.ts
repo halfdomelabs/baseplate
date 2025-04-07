@@ -17,7 +17,7 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/index.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
-import { loggerServiceProvider } from '@src/generators/core/logger-service/index.js';
+import { loggerServiceProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 
 const descriptorSchema = z.object({});
 

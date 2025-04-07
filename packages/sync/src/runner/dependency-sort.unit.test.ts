@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
 } from '../providers/index.js';
 import { getSortedRunSteps } from './dependency-sort.js';
+import {
+  createDependencyEntry,
+  createOutputDependencyEntry,
+  createReadOnlyDependencyEntry,
+} from './tests/dependency-entry.test-helper.js';
 import { buildTestGeneratorTaskEntry } from './tests/factories.test-helper.js';
 
 describe('getSortedRunSteps', () => {
@@ -21,13 +26,20 @@ describe('getSortedRunSteps', () => {
     ];
     const dependencyGraphOne = {
       entryOne: {},
-      entryTwo: { dep: { id: 'entryOne', providerName: 'dep', options: {} } },
-      entryThree: { dep: { id: 'entryTwo', providerName: 'dep', options: {} } },
+      entryTwo: {
+        dep: createDependencyEntry({ id: 'entryOne', providerName: 'dep' }),
+      },
+      entryThree: {
+        dep: createDependencyEntry({ id: 'entryTwo', providerName: 'dep' }),
+      },
     };
-
     const dependencyGraphTwo = {
-      entryOne: { dep: { id: 'entryTwo', providerName: 'dep', options: {} } },
-      entryTwo: { dep: { id: 'entryThree', providerName: 'dep', options: {} } },
+      entryOne: {
+        dep: createDependencyEntry({ id: 'entryTwo', providerName: 'dep' }),
+      },
+      entryTwo: {
+        dep: createDependencyEntry({ id: 'entryThree', providerName: 'dep' }),
+      },
       entryThree: {},
     };
 
@@ -56,7 +68,7 @@ describe('getSortedRunSteps', () => {
   describe('with provider dependencies', () => {
     const providerOne = createProviderType('provider-one');
     const providerTwo = createProviderType('provider-two');
-    const outputProvider = createOutputProviderType('output-provider');
+    const outputProvider = createReadOnlyProviderType('output-provider');
     const readOnlyProvider = createProviderType('readonly-provider', {
       isReadOnly: true,
     });
@@ -80,11 +92,10 @@ describe('getSortedRunSteps', () => {
       const dependencyMap = {
         producer: {},
         consumer: {
-          dep: {
+          dep: createOutputDependencyEntry({
             id: 'producer',
             providerName: 'dep',
-            options: { isOutput: true },
-          },
+          }),
         },
       };
 
@@ -126,16 +137,14 @@ describe('getSortedRunSteps', () => {
         outputProducer: {},
         normalProducer: {},
         consumer: {
-          outDep: {
+          outDep: createOutputDependencyEntry({
             id: 'outputProducer',
             providerName: 'outDep',
-            options: { isOutput: true },
-          },
-          normalDep: {
+          }),
+          normalDep: createDependencyEntry({
             id: 'normalProducer',
             providerName: 'normalDep',
-            options: {},
-          },
+          }),
         },
       };
 
@@ -169,11 +178,10 @@ describe('getSortedRunSteps', () => {
       const dependencyMap = {
         producer: {},
         consumer: {
-          dep: {
+          dep: createReadOnlyDependencyEntry({
             id: 'producer',
             providerName: 'dep',
-            options: { isReadOnly: true },
-          },
+          }),
         },
       };
 
@@ -221,23 +229,20 @@ describe('getSortedRunSteps', () => {
       const dependencyMap = {
         outputProducer: {},
         middleConsumer: {
-          outDep: {
+          outDep: createOutputDependencyEntry({
             id: 'outputProducer',
             providerName: 'outDep',
-            options: { isOutput: true },
-          },
+          }),
         },
         finalConsumer: {
-          normalDep: {
+          normalDep: createDependencyEntry({
             id: 'middleConsumer',
             providerName: 'normalDep',
-            options: {},
-          },
-          readonlyDep: {
+          }),
+          readonlyDep: createReadOnlyDependencyEntry({
             id: 'readonlyProducer',
             providerName: 'readonlyDep',
-            options: { isReadOnly: true },
-          },
+          }),
         },
         readonlyProducer: {},
       };

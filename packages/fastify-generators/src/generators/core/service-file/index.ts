@@ -10,8 +10,8 @@ import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
 import { kebabCase } from 'change-case';
 import path from 'node:path';
@@ -49,7 +49,7 @@ export interface ServiceFileOutputProvider {
 }
 
 export const serviceFileOutputProvider =
-  createOutputProviderType<ServiceFileOutputProvider>('service-file-output');
+  createReadOnlyProviderType<ServiceFileOutputProvider>('service-file-output');
 
 export const serviceFileGenerator = createGenerator({
   name: 'core/service-file',

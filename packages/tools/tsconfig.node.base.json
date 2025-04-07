@@ -1,5 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@tsconfig/node22/tsconfig.json",
-  "display": "Node.JS Base Config"
+  "display": "Node.JS Base Config",
+  "watchOptions": {
+    "watchFile": "usefseventsonparentdirectory"
+  }
 }

@@ -13,7 +13,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
-import { loggerServiceProvider } from '@src/generators/core/logger-service/index.js';
+import { loggerServiceProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 
 const descriptorSchema = z.object({});
 

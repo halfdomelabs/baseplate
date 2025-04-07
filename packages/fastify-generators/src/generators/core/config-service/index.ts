@@ -26,6 +26,10 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { fastifyProvider } from '../fastify/index.js';
+import {
+  configServiceImportsProvider,
+  createConfigServiceImportMap,
+} from './generated/import-maps.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -77,7 +81,10 @@ export const configServiceGenerator = createGenerator({
         nodeGitIgnore: nodeGitIgnoreProvider,
         typescript: typescriptProvider,
       },
-      exports: { configService: configServiceProvider.export(projectScope) },
+      exports: {
+        configService: configServiceProvider.export(projectScope),
+        configServiceImports: configServiceImportsProvider.export(projectScope),
+      },
       run({ nodeGitIgnore, typescript }) {
         const configEntries = createNonOverwriteableMap<
           Record<string, ConfigEntry>
@@ -114,6 +121,9 @@ export const configServiceGenerator = createGenerator({
                 },
               }),
             },
+            configServiceImports: createConfigServiceImportMap({
+              service: 'src/services/config.js',
+            }),
           },
           build: async (builder) => {
             const configFile = typescript.createTemplate({
@@ -196,3 +206,5 @@ export const configServiceGenerator = createGenerator({
     }),
   }),
 });
+
+export { configServiceImportsProvider } from './generated/import-maps.js';

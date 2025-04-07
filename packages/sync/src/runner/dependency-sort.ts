@@ -1,4 +1,4 @@
-import toposort from 'toposort';
+import { toposort } from '@halfdomelabs/utils';
 
 import type { GeneratorOutputMetadata } from '@src/output/generator-task-output.js';
 
@@ -50,8 +50,8 @@ export function getSortedRunSteps(
             providerTaskId: dependent.id,
             consumerTaskId: entry.id,
             providerName: dependent.providerName,
-            isOutput: dependent.options?.isOutput ?? false,
-            isReadOnly: dependent.options?.isReadOnly ?? false,
+            isOutput: dependent.isOutput,
+            isReadOnly: dependent.isReadOnly,
           });
 
           // if the dependent task is not in the entries, we don't need to add a dependency
@@ -63,14 +63,14 @@ export function getSortedRunSteps(
           // check if the dependency is to an output provider and if so,
           // we need to wait until the dependent task has been built before
           // we can build the current task
-          if (dependent.options?.isOutput) {
+          if (dependent.isOutput) {
             return [[dependentBuild, entryInit] as [string, string]];
           }
 
           return [
             [dependentInit, entryInit],
             // we don't attach a build step dependency if the provider is a read-only provider
-            ...(dependent.options?.isReadOnly
+            ...(dependent.isReadOnly
               ? []
               : [[entryBuild, dependentBuild] as [string, string]]),
           ];
@@ -81,7 +81,7 @@ export function getSortedRunSteps(
   const fullSteps = entries.flatMap(({ id }) => [`init|${id}`, `build|${id}`]);
   const fullEdges = dependencyGraph;
 
-  const result = toposort.array(fullSteps, fullEdges);
+  const result = toposort(fullSteps, fullEdges);
 
   return {
     steps: result,

@@ -1,8 +1,8 @@
-import { createOutputProviderType } from '@halfdomelabs/sync';
+import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 
 export interface ProjectProvider {
   getProjectName(): string;
 }
 
 export const projectProvider =
-  createOutputProviderType<ProjectProvider>('project');
+  createReadOnlyProviderType<ProjectProvider>('project');

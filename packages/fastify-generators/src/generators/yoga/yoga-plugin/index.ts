@@ -17,8 +17,8 @@ import {
 import {
   createGenerator,
   createGeneratorTask,
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
 import {
   createFieldMap,
@@ -32,7 +32,7 @@ import { configServiceProvider } from '@src/generators/core/config-service/index
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/index.js';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server/index.js';
-import { loggerServiceProvider } from '@src/generators/core/logger-service/index.js';
+import { loggerServiceProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context/index.js';
 
 const descriptorSchema = z.object({
@@ -75,7 +75,7 @@ export const yogaPluginConfigProvider =
   createProviderType<YogaPluginConfigProvider>('yoga-plugin-config');
 
 export const yogaPluginSetupProvider =
-  createOutputProviderType<
+  createReadOnlyProviderType<
     FieldMapValues<InferFieldMapSchemaFromBuilder<typeof schemaBuilder>>
   >(`yoga-plugin-setup`);
 

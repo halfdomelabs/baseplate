@@ -8,6 +8,7 @@ import {
   createTypescriptTemplateConfig,
   projectScope,
   TypescriptCodeUtils,
+  typescriptFileProvider,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -18,9 +19,10 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { configServiceProvider } from '../config-service/index.js';
+import { configServiceImportsProvider } from '../config-service/index.js';
 import { fastifyServerProvider } from '../fastify-server/index.js';
-import { loggerServiceProvider } from '../logger-service/index.js';
+import { loggerServiceProvider } from '../logger-service/logger-service.generator.js';
+import { errorHandlerPluginFileTemplate } from './generated/templates.js';
 
 const descriptorSchema = z.object({});
 
@@ -65,16 +67,23 @@ export const errorHandlerServiceGenerator = createGenerator({
   buildTasks: () => ({
     setup: createGeneratorTask({
       dependencies: {
+        configServiceImports: configServiceImportsProvider,
         loggerService: loggerServiceProvider,
         fastifyServer: fastifyServerProvider,
         typescript: typescriptProvider,
-        configService: configServiceProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         errorHandlerServiceSetup:
           errorHandlerServiceSetupProvider.export(projectScope),
       },
-      run({ loggerService, fastifyServer, typescript, configService }) {
+      run({
+        loggerService,
+        fastifyServer,
+        typescript,
+        configServiceImports,
+        typescriptFile,
+      }) {
         const errorLoggerFile = typescript.createTemplate(
           errorHandlerFileConfig,
         );
@@ -112,13 +121,15 @@ export const errorHandlerServiceGenerator = createGenerator({
               ),
             );
 
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'plugins/error-handler.ts',
-                destination: 'src/plugins/error-handler.ts',
-                importMappers: [configService],
-              }),
-            );
+            await typescriptFile.writeTemplatedFile(builder, {
+              template: errorHandlerPluginFileTemplate,
+              id: 'error-handler-plugin',
+              destination: 'src/plugins/error-handler.ts',
+              variables: {},
+              importMapProviders: {
+                configService: configServiceImports,
+              },
+            });
 
             await builder.apply(
               errorLoggerFile.renderToAction(

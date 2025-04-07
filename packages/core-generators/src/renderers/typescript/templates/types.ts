@@ -1,4 +1,6 @@
+import { ProviderType } from '@halfdomelabs/sync';
 import { TsCodeFragment } from '../fragments/types.js';
+import { TsImportMapProvider } from '../import-maps/types.js';
 
 export interface TsCodeTemplateVariable {
   description?: string;
@@ -16,6 +18,10 @@ export type TsCodeFileTemplateSource =
 
 export interface TsCodeFileTemplate<
   TVariables extends TsCodeTemplateVariableMap,
+  TImportMapProviders extends Record<string, ProviderType> = Record<
+    never,
+    ProviderType
+  >,
 > {
   name: string;
   variables: TVariables;
@@ -25,6 +31,10 @@ export interface TsCodeFileTemplate<
    * @default 'TPL_'
    */
   prefix?: string;
+  /**
+   * Import map providers that will be used to resolve imports for the template.
+   */
+  importMapProviders?: TImportMapProviders;
 }
 
 export type InferTsCodeTemplateVariablesFromMap<

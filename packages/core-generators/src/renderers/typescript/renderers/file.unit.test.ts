@@ -18,7 +18,9 @@ describe('renderTsCodeFileTemplate', () => {
       TPL_CONTENT: tsCodeFragment('42'),
     };
 
-    const result = await renderTsCodeFileTemplate(template, variables, {});
+    const result = await renderTsCodeFileTemplate(template, variables, {
+      importMapProviders: {},
+    });
     expect(result).toBe('const value = 42;');
   });
 
@@ -42,7 +44,9 @@ describe('renderTsCodeFileTemplate', () => {
       ),
     };
 
-    const result = await renderTsCodeFileTemplate(template, variables, {});
+    const result = await renderTsCodeFileTemplate(template, variables, {
+      importMapProviders: {},
+    });
 
     expect(result).toMatchInlineSnapshot(`
       "import type { type MyType } from "./types";
@@ -73,6 +77,7 @@ describe('renderTsCodeFileTemplate', () => {
 
     const result = await renderTsCodeFileTemplate(template, variables, {
       resolveModule: (moduleSpecifier) => `@project/${moduleSpecifier}`,
+      importMapProviders: {},
     });
 
     expect(result).toMatchInlineSnapshot(`
@@ -112,7 +117,9 @@ describe('renderTsCodeFileTemplate', () => {
       ),
     };
 
-    const result = await renderTsCodeFileTemplate(template, variables, {});
+    const result = await renderTsCodeFileTemplate(template, variables, {
+      importMapProviders: {},
+    });
 
     expect(result).toMatchInlineSnapshot(
       `

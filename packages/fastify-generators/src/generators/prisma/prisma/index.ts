@@ -15,8 +15,8 @@ import {
 import {
   createGenerator,
   createGeneratorTask,
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@halfdomelabs/sync';
 import { createRequire } from 'node:module';
@@ -64,7 +64,7 @@ export interface PrismaOutputProvider extends ImportMapper {
 }
 
 export const prismaOutputProvider =
-  createOutputProviderType<PrismaOutputProvider>('prisma-output');
+  createReadOnlyProviderType<PrismaOutputProvider>('prisma-output');
 
 export type PrismaCrudServiceTypesProvider = ImportMapper;
 

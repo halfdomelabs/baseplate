@@ -92,18 +92,19 @@ export async function executeGeneratorEntry(
                 dependencyId === undefined
                   ? undefined
                   : providerMapById[dependencyId][dependency.name];
-              const { optional, isOutput } =
+              const { isReadOnly } = dependency;
+              const { optional } =
                 dependency.type === 'dependency'
                   ? dependency.options
-                  : { optional: false, isOutput: dependency.isOutput };
+                  : { optional: false };
 
               // check dependency comes from a previous phase
               if (phase !== undefined && dependencyId) {
                 const dependencyTask = taskEntriesById[dependencyId];
                 if (dependencyTask.task.phase !== phase) {
-                  if (!isOutput) {
+                  if (!isReadOnly) {
                     throw new Error(
-                      `Dependency ${key} in ${taskId} cannot come from a previous phase since it is not an output`,
+                      `Dependency ${key} in ${taskId} cannot come from a previous phase since it is not read-only`,
                     );
                   }
                   if (

@@ -7,7 +7,7 @@ import type {
   GeneratorEntry,
   GeneratorTaskEntry,
 } from '../generators/index.js';
-import type { ProviderDependencyOptions } from '../providers/index.js';
+import type { ProviderExport } from '../providers/index.js';
 
 type GeneratorIdToScopesMap = Partial<
   Record<
@@ -17,7 +17,7 @@ type GeneratorIdToScopesMap = Partial<
       scopes: string[];
       // providers within the scopes
       // key is JSON.encode([providerName(, exportName)])
-      providers: Map<string, string>;
+      providers: Map<string, { taskId: string; isOutput: boolean }>;
     }
   >
 >;
@@ -25,6 +25,18 @@ type GeneratorIdToScopesMap = Partial<
 function makeProviderId(providerName: string, exportName?: string): string {
   return JSON.stringify([providerName, exportName]);
 }
+
+export interface EntryDependencyRecord {
+  id: string;
+  providerName: string;
+  isReadOnly: boolean;
+  isOutput: boolean;
+}
+
+export type EntryDependencyMap = Record<
+  string,
+  Record<string, EntryDependencyRecord | null | undefined>
+>;
 
 function buildGeneratorIdToScopesMapRecursive(
   entry: GeneratorEntry,
@@ -43,27 +55,20 @@ function buildGeneratorIdToScopesMapRecursive(
     const { task } = taskEntry;
     const taskExports = Object.values(task.exports ?? {});
     const taskOutputs = Object.values(task.outputs ?? {});
-    const invalidTaskExports = taskExports.filter(
-      (taskExport) => taskExport.isOutput,
-    );
-    if (invalidTaskExports.length > 0) {
-      throw new Error(
-        `All providers in task exports must be non-output providers in ${taskEntry.id}: ${invalidTaskExports
-          .map((taskExport) => taskExport.name)
-          .join(', ')}`,
-      );
-    }
     const invalidTaskOutputs = taskOutputs.filter(
-      (taskOutput) => !taskOutput.isOutput,
+      (taskOutput) => !taskOutput.isReadOnly,
     );
     if (invalidTaskOutputs.length > 0) {
       throw new Error(
-        `All providers in task outputs must be output providers in ${taskEntry.id}: ${invalidTaskOutputs
+        `All providers in task outputs must be read-only providers in ${taskEntry.id}: ${invalidTaskOutputs
           .map((output) => output.name)
           .join(', ')}`,
       );
     }
-    for (const taskExport of [...taskExports, ...taskOutputs]) {
+    function addTaskExport(
+      taskExport: ProviderExport,
+      isOutput: boolean,
+    ): void {
       const { exports } = taskExport;
 
       for (const { scope, exportName } of exports) {
@@ -86,17 +91,26 @@ function buildGeneratorIdToScopesMapRecursive(
         const { providers } = generatorEntry;
         const providerId = makeProviderId(taskExport.name, exportName);
 
-        const existingProviderId = providers.get(providerId);
+        const existingProvider = providers.get(providerId);
 
-        if (existingProviderId) {
+        if (existingProvider) {
           throw new Error(
-            `Duplicate scoped provider export detected between ${entry.id} and ${existingProviderId} ` +
+            `Duplicate scoped provider export detected between ${entry.id} and ${existingProvider.taskId} ` +
               `in scope (${scope?.name ?? 'default'}) at ${parentTaskId} for provider ${taskExport.name}. ` +
               `Please make sure that the provider export names are unique within the scope (and any other scopes at that level).`,
           );
         }
-        providers.set(providerId, taskEntry.id);
+        providers.set(providerId, {
+          taskId: taskEntry.id,
+          isOutput,
+        });
       }
+    }
+    for (const taskExport of taskExports) {
+      addTaskExport(taskExport, false);
+    }
+    for (const taskOutput of taskOutputs) {
+      addTaskExport(taskOutput, true);
     }
   }
 
@@ -136,9 +150,8 @@ function buildTaskDependencyMap(
 ): Record<string, EntryDependencyRecord | undefined> {
   return mapValues(entry.task.dependencies ?? {}, (dep) => {
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
-    const provider = normalizedDep.name;
-    const { optional, exportName, isReadOnly, isOutput, useParentScope } =
-      normalizedDep.options;
+    const { name: provider, isReadOnly } = normalizedDep;
+    const { optional, exportName, useParentScope } = normalizedDep.options;
 
     // if the export name is empty and the dependency is optional, we can skip it
     if (exportName === '' && optional) {
@@ -154,11 +167,11 @@ function buildTaskDependencyMap(
       generatorIdToScopesMap[id]?.providers.has(providerId),
     );
 
-    const resolvedTaskId =
+    const resolvedTask =
       parentEntryId &&
       generatorIdToScopesMap[parentEntryId]?.providers.get(providerId);
 
-    if (!resolvedTaskId) {
+    if (!resolvedTask) {
       if (!optional || exportName) {
         throw new Error(
           `Could not resolve dependency ${provider}${exportName ? ` (${exportName})` : ''} for ${entry.id} (generator ${entry.generatorInfo.name})`,
@@ -166,6 +179,8 @@ function buildTaskDependencyMap(
       }
       return;
     }
+
+    const resolvedTaskId = resolvedTask.taskId;
 
     if (resolvedTaskId === entry.id) {
       throw new Error(
@@ -177,24 +192,11 @@ function buildTaskDependencyMap(
     return {
       id: resolvedTaskId,
       providerName: provider,
-      options: {
-        isReadOnly: isReadOnly ? true : undefined,
-        isOutput: isOutput ? true : undefined,
-      },
+      isOutput: resolvedTask.isOutput,
+      isReadOnly,
     };
   });
 }
-
-interface EntryDependencyRecord {
-  id: string;
-  providerName: string;
-  options?: Pick<ProviderDependencyOptions, 'isReadOnly' | 'isOutput'>;
-}
-
-export type EntryDependencyMap = Record<
-  string,
-  Record<string, EntryDependencyRecord | null | undefined>
->;
 
 /**
  * Builds a map of task entry ID to resolved providers for that entry recursively from the generator root entry

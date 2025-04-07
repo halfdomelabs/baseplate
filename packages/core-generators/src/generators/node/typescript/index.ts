@@ -2,6 +2,7 @@ import type {
   BuilderAction,
   GeneratorTaskOutputBuilder,
   InferProviderType,
+  ProviderType,
   WriteFileOptions,
 } from '@halfdomelabs/sync';
 
@@ -17,6 +18,7 @@ import { z } from 'zod';
 
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
 import type {
+  InferImportMapProvidersFromProviderTypeMap,
   InferTsCodeTemplateVariablesFromMap,
   TsCodeFileTemplate,
   TsCodeTemplateVariableMap,
@@ -90,18 +92,29 @@ export const typescriptProvider =
 
 interface WriteTemplatedFilePayload<
   TVariables extends TsCodeTemplateVariableMap,
+  TImportMapProviders extends Record<string, ProviderType> = Record<
+    never,
+    ProviderType
+  >,
 > {
   id: string;
-  template: TsCodeFileTemplate<TVariables>;
+  template: TsCodeFileTemplate<TVariables, TImportMapProviders>;
   destination: string;
   variables: InferTsCodeTemplateVariablesFromMap<TVariables>;
+  importMapProviders: InferImportMapProvidersFromProviderTypeMap<TImportMapProviders>;
   options?: WriteFileOptions;
 }
 
 export interface TypescriptFileProvider {
-  writeTemplatedFile<TVariables extends TsCodeTemplateVariableMap>(
+  writeTemplatedFile<
+    TVariables extends TsCodeTemplateVariableMap,
+    TImportMapProviders extends Record<string, ProviderType> = Record<
+      never,
+      ProviderType
+    >,
+  >(
     builder: GeneratorTaskOutputBuilder,
-    payload: WriteTemplatedFilePayload<TVariables>,
+    payload: WriteTemplatedFilePayload<TVariables, TImportMapProviders>,
   ): Promise<{ destination: string }>;
 }
 
@@ -286,8 +299,14 @@ export const typescriptGenerator = createGenerator({
           providers: {
             typescriptFile: {
               writeTemplatedFile: async (builder, payload) => {
-                const { id, template, destination, variables, options } =
-                  payload;
+                const {
+                  id,
+                  template,
+                  destination,
+                  variables,
+                  options,
+                  importMapProviders,
+                } = payload;
                 const directory = path.dirname(destination);
                 const file = await renderTsCodeFileTemplate(
                   template,
@@ -303,6 +322,7 @@ export const typescriptGenerator = createGenerator({
                       internalPatterns,
                     },
                     includeMetadata,
+                    importMapProviders,
                   },
                 );
 
