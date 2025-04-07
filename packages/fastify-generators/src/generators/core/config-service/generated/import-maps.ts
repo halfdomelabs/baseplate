@@ -6,7 +6,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 
-export const configServiceImportMapSchema = createTsImportMapSchema({
+const configServiceImportMapSchema = createTsImportMapSchema({
   config: {},
 });
 
@@ -19,7 +19,7 @@ export const configServiceImportsProvider =
     'config-service-imports',
   );
 
-export interface ConfigServiceFileMap {
+interface ConfigServiceFileMap {
   service: string;
 }
 

@@ -6,7 +6,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 
-export const loggerServiceImportMapSchema = createTsImportMapSchema({
+const loggerServiceImportMapSchema = createTsImportMapSchema({
   logger: {},
 });
 
@@ -19,7 +19,7 @@ export const loggerServiceImportsProvider =
     'logger-service-imports',
   );
 
-export interface LoggerServiceFileMap {
+interface LoggerServiceFileMap {
   logger: string;
 }
 
