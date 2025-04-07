@@ -1,5 +1,5 @@
+import { toposort } from '@halfdomelabs/utils';
 import { keyBy, mapValues } from 'es-toolkit';
-import toposort from 'toposort';
 
 import { stripUndefinedValues } from '@src/utils/strip.js';
 
@@ -85,7 +85,7 @@ export function getOrderedPluginModuleInitializationSteps(
 
   const nodes = pluginModules.map((p) => p.id);
 
-  return toposort.array(nodes, edges);
+  return toposort(nodes, edges);
 }
 
 export function initializeOrderedPluginModules(

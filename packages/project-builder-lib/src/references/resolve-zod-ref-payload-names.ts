@@ -1,5 +1,5 @@
+import { toposort } from '@halfdomelabs/utils';
 import { keyBy, mapValues } from 'es-toolkit';
-import toposort from 'toposort';
 
 import type { ZodRefPayload } from './ref-builder.js';
 import type { DefinitionEntity, ResolvedZodRefPayload } from './types.js';
@@ -38,7 +38,7 @@ export function resolveZodRefPayloadNames<T>(
   const entitiesById = keyBy(entitiesWithNameResolver, (entity) => entity.id);
   const resolvedEntitiesById = new Map<string, DefinitionEntity>();
   // sort entities by dependency order
-  const orderedEntities = toposort.array(
+  const orderedEntities = toposort(
     entitiesWithNameResolver.map((entity) => entity.id),
     entitiesWithNameResolver.flatMap((entity) => {
       const entityIds = entity.nameResolver.idsToResolve ?? {};

@@ -447,9 +447,6 @@ importers:
       sort-keys:
         specifier: ^5.1.0
         version: 5.1.0
-      toposort:
-        specifier: ^2.0.2
-        version: 2.0.2
       zod:
         specifier: 'catalog:'
         version: 3.24.1
@@ -469,9 +466,6 @@ importers:
       '@types/react':
         specifier: 'catalog:'
         version: 18.3.8
-      '@types/toposort':
-        specifier: ^2.0.3
-        version: 2.0.7
       concurrently:
         specifier: 9.0.1
         version: 9.0.1
@@ -832,6 +826,9 @@ importers:
       '@halfdomelabs/sync':
         specifier: workspace:*
         version: link:../sync
+      '@halfdomelabs/utils':
+        specifier: workspace:*
+        version: link:../utils
       es-toolkit:
         specifier: 1.31.0
         version: 1.31.0
@@ -841,9 +838,6 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: 0.6.9
         version: 0.6.9(prettier@3.4.2)
-      toposort:
-        specifier: ^2.0.2
-        version: 2.0.2
       zod:
         specifier: 'catalog:'
         version: 3.24.1
@@ -854,9 +848,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.10.9
-      '@types/toposort':
-        specifier: ^2.0.3
-        version: 2.0.7
       concurrently:
         specifier: 9.0.1
         version: 9.0.1
@@ -908,9 +899,6 @@ importers:
       p-limit:
         specifier: 6.1.0
         version: 6.1.0
-      toposort:
-        specifier: ^2.0.2
-        version: 2.0.2
       zod:
         specifier: 'catalog:'
         version: 3.24.1
@@ -927,9 +915,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.10.9
-      '@types/toposort':
-        specifier: ^2.0.3
-        version: 2.0.7
       concurrently:
         specifier: 9.0.1
         version: 9.0.1
@@ -3062,9 +3047,6 @@ packages:
 
   '@types/ssh2@1.15.4':
     resolution: {integrity: sha512-9JTQgVBWSgq6mAen6PVnrAmty1lqgCMvpfN+1Ck5WRUsyMYPa6qd50/vMJ0y1zkGpOEgLzm8m8Dx/Y5vRouLaA==}
-
-  '@types/toposort@2.0.7':
-    resolution: {integrity: sha512-sQNk65vbC36+UixCkcky+dCr7MlflHcVILg1FVGqlUntsLFv9xd9ToWIVko/gTuin+cVe16t+2YubEFkhnSuPQ==}
 
   '@types/uuid@9.0.8':
     resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
@@ -6205,9 +6187,6 @@ packages:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
 
-  toposort@2.0.2:
-    resolution: {integrity: sha512-0a5EOkAUp8D4moMi2W8ZF8jcga7BgZd91O/yabJCFY8az+XSzeGyTKs0Aoo897iV1Nj6guFq8orWDS96z91oGg==}
-
   tough-cookie@5.1.0:
     resolution: {integrity: sha512-rvZUv+7MoBYTiDmFPBrhL7Ujx9Sk+q9wwm22x8c8T5IJaR+Wsyc7TNxbVxo84kZoRJZZMazowFLqpankBEQrGg==}
     engines: {node: '>=16'}
@@ -8571,8 +8550,6 @@ snapshots:
   '@types/ssh2@1.15.4':
     dependencies:
       '@types/node': 18.19.85
-
-  '@types/toposort@2.0.7': {}
 
   '@types/uuid@9.0.8': {}
 
@@ -11985,8 +11962,6 @@ snapshots:
   toad-cache@3.7.0: {}
 
   toidentifier@1.0.1: {}
-
-  toposort@2.0.2: {}
 
   tough-cookie@5.1.0:
     dependencies:

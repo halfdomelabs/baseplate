@@ -1,8 +1,8 @@
 import type { TypeOf, z } from 'zod';
 
+import { toposort } from '@halfdomelabs/utils';
 import { groupBy, keyBy, uniq } from 'es-toolkit';
 import { get, set } from 'es-toolkit/compat';
-import toposort from 'toposort';
 
 import type { DefinitionEntity, ResolvedZodRefPayload } from './types.js';
 
@@ -52,7 +52,7 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
     );
   }
 
-  const entityTypeOrder = toposort.array(
+  const entityTypeOrder = toposort(
     entityTypeNames,
     entityTypes
       .filter((entityType) => !!entityType.parentType)

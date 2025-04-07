@@ -42,7 +42,6 @@
     "ms": "2.1.3",
     "node-diff3": "3.1.2",
     "p-limit": "6.1.0",
-    "toposort": "^2.0.2",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -50,7 +49,6 @@
     "@types/ejs": "^3.1.2",
     "@types/ms": "0.7.34",
     "@types/node": "catalog:",
-    "@types/toposort": "^2.0.3",
     "concurrently": "9.0.1",
     "eslint": "catalog:",
     "memfs": "4.15.1",
