@@ -24,16 +24,11 @@ export interface ProviderType<P = Provider> {
    */
   readonly name: string;
   /**
-   * Whether the provider is read-only or not such that it cannot modify any state in the generator task
+   * Whether the provider is read-only or not such that it cannot modify any state in the generator task.
    *
-   * This allows the sync engine to optimize the dependency graph by not including dependencies
-   * between the build step of dependent task and the build step of the export task.
+   * Only read-only providers can be used as build outputs.
    */
   readonly isReadOnly?: boolean;
-  /**
-   * Whether the provider is used as an output provider (i.e. read-only)
-   */
-  readonly isOutput?: boolean;
   /**
    * Creates a dependency config for the provider that can be used in dependency maps
    */
@@ -62,16 +57,6 @@ export interface ProviderDependencyOptions {
    * This is useful for recursive providers where the same generator might be used as a dependency of itself
    */
   useParentScope?: boolean;
-
-  /**
-   * Whether the provider is read-only or not (i.e. cannot modify any state in the generator task)
-   */
-  readonly isReadOnly?: boolean;
-  /**
-   * Whether the provider is an output provider (i.e. read-only). Only output providers
-   * can be used in the outputs of a task.
-   */
-  readonly isOutput?: boolean;
 }
 
 /**
@@ -80,6 +65,7 @@ export interface ProviderDependencyOptions {
 export interface ProviderDependency<P = Provider> {
   readonly type: 'dependency';
   readonly name: string;
+  readonly isReadOnly: boolean;
   readonly options: ProviderDependencyOptions;
   /**
    * Creates an optional dependency
@@ -115,7 +101,7 @@ export interface ProviderDependency<P = Provider> {
 export interface ProviderExport<P = Provider> {
   readonly type: 'export';
   readonly name: string;
-  readonly isOutput: boolean;
+  readonly isReadOnly: boolean;
   /**
    * The scope/name pairs that the provider will be available in
    */
@@ -140,16 +126,10 @@ export interface ProviderExport<P = Provider> {
  */
 interface ProviderTypeOptions {
   /**
-   * Whether the provider is an output provider (i.e. read-only). Only output providers
-   * can be used in the outputs of a task.
-   */
-  isOutput?: boolean;
-  /**
    * Whether the functions in the provider are read-only such that they cannot
    * modify any state in the generator task
    *
-   * This allows the sync engine to optimize the dependency graph by not including dependencies
-   * between the build step of dependent task and the build step of the export task.
+   * Only read-only providers can be used as build outputs.
    */
   isReadOnly?: boolean;
 }
@@ -174,16 +154,13 @@ export function createProviderType<T>(
   return {
     type: 'type',
     name,
-    isReadOnly: options?.isReadOnly,
-    isOutput: options?.isOutput,
+    isReadOnly: options?.isReadOnly ?? false,
     dependency() {
       return {
         ...this,
         type: 'dependency',
-        options: {
-          isReadOnly: options?.isReadOnly,
-          isOutput: options?.isOutput,
-        },
+        isReadOnly: options?.isReadOnly ?? false,
+        options: {},
         optional() {
           return toMerged(this, { options: { optional: true } });
         },
@@ -213,7 +190,7 @@ export function createProviderType<T>(
       return {
         ...this,
         type: 'export',
-        isOutput: options?.isOutput ?? false,
+        isReadOnly: options?.isReadOnly ?? false,
         exports: [{ scope, exportName }],
         andExport(scope, exportName) {
           return toMerged(this, {
@@ -226,15 +203,15 @@ export function createProviderType<T>(
 }
 
 /**
- * Creates an output provider type
+ * Creates a read-only provider type
  *
  * @param name The name of the provider type
  * @param options The options for the provider type
  * @returns The provider type
  */
-export function createOutputProviderType<T>(
+export function createReadOnlyProviderType<T>(
   name: string,
-  options?: Omit<ProviderTypeOptions, 'isOutput'>,
+  options?: Omit<ProviderTypeOptions, 'isReadOnly'>,
 ): ProviderType<T> {
-  return createProviderType(name, { ...options, isOutput: true });
+  return createProviderType(name, { ...options, isReadOnly: true });
 }

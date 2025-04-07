@@ -14,8 +14,8 @@ import type {
 import type { Provider } from '../providers/index.js';
 
 import {
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
 } from '../providers/index.js';
 import { executeGeneratorEntry } from './generator-runner.js';
 import {
@@ -218,7 +218,7 @@ describe('executeGeneratorEntry', () => {
   });
 
   it('handles output providers correctly', async () => {
-    const outputProviderType = createOutputProviderType<{
+    const outputProviderType = createReadOnlyProviderType<{
       generate: () => void;
     }>('output-provider');
     const outputProvider = { generate: vi.fn() };
@@ -337,11 +337,11 @@ describe('executeGeneratorEntry', () => {
   });
 
   it('handles phased task execution correctly', async () => {
-    const mainOutputProviderType = createOutputProviderType<{
+    const mainOutputProviderType = createReadOnlyProviderType<{
       generate: () => void;
     }>('main-output-provider');
     const mainOutputProvider = { generate: vi.fn() };
-    const phase1OutputProviderType = createOutputProviderType<{
+    const phase1OutputProviderType = createReadOnlyProviderType<{
       generate: () => void;
     }>('phase1-output-provider');
     const phase1OutputProvider = { generate: vi.fn() };
@@ -458,7 +458,7 @@ describe('executeGeneratorEntry', () => {
     });
 
     await expect(executeGeneratorEntry(entry, logger)).rejects.toThrow(
-      /Dependency dep in root#phase2 cannot come from a previous phase since it is not an output/,
+      /Dependency dep in root#phase2 cannot come from a previous phase since it is not read-only/,
     );
   });
 
@@ -617,7 +617,7 @@ describe('executeGeneratorEntry', () => {
   });
 
   it('handles dynamic tasks with dependencies correctly', async () => {
-    const outputProviderType = createOutputProviderType<{
+    const outputProviderType = createReadOnlyProviderType<{
       generate: () => void;
     }>('output-provider');
     const outputProvider = { generate: vi.fn() };

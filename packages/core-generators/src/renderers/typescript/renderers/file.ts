@@ -1,9 +1,11 @@
+import type { InferProviderType, ProviderType } from '@halfdomelabs/sync';
 import type { SourceFile } from 'ts-morph';
 
 import { readFile } from 'node:fs/promises';
 import { Project } from 'ts-morph';
 
 import type { TsHoistedFragment } from '../fragments/types.js';
+import type { TsImportMap, TsImportMapProvider } from '../import-maps/types.js';
 import type { SortImportDeclarationsOptions } from '../imports/index.js';
 import type { TsImportDeclaration } from '../imports/types.js';
 import type {
@@ -13,6 +15,7 @@ import type {
 } from '../templates/types.js';
 import type { RenderTsTemplateOptions } from './template.js';
 
+import { transformTsImportsWithMap } from '../import-maps/transform-ts-imports-with-map.js';
 import { sortImportDeclarations } from '../imports/index.js';
 import { mergeTsImportDeclarations } from '../imports/merge-ts-import-declarations.js';
 import {
@@ -22,17 +25,29 @@ import {
 } from '../imports/ts-morph-operations.js';
 import { renderTsTemplateToTsCodeFragment } from './template.js';
 
-export interface RenderTsCodeFileTemplateOptions
-  extends RenderTsTemplateOptions {
+interface RenderTsCodeFileTemplateOptionsBase extends RenderTsTemplateOptions {
   importSortOptions?: Partial<SortImportDeclarationsOptions>;
   resolveModule?: (moduleSpecifier: string) => string;
+}
+
+export type InferImportMapProvidersFromProviderTypeMap<
+  T extends Record<string, ProviderType>,
+> = {
+  [K in keyof T]: InferProviderType<T[K]>;
+};
+
+export interface RenderTsCodeFileTemplateOptions<
+  T extends Record<string, ProviderType> = Record<never, ProviderType>,
+> extends RenderTsCodeFileTemplateOptionsBase {
+  importMapProviders: InferImportMapProvidersFromProviderTypeMap<T>;
 }
 
 function mergeImportsAndHoistedFragments(
   file: SourceFile,
   imports: TsImportDeclaration[],
   hoistedFragments: TsHoistedFragment[],
-  { resolveModule, importSortOptions }: RenderTsCodeFileTemplateOptions,
+  importMaps: Map<string, TsImportMap>,
+  { resolveModule, importSortOptions }: RenderTsCodeFileTemplateOptionsBase,
 ): void {
   // Get the import declarations from the source file
   const importDeclarationsFromFile =
@@ -40,8 +55,11 @@ function mergeImportsAndHoistedFragments(
 
   // Convert the import declarations to TsImportDeclaration
   const tsImportDeclarations = [
-    ...importDeclarationsFromFile.map(
-      convertTsMorphImportDeclarationToTsImportDeclaration,
+    ...transformTsImportsWithMap(
+      importDeclarationsFromFile.map(
+        convertTsMorphImportDeclarationToTsImportDeclaration,
+      ),
+      importMaps,
     ),
     ...imports,
   ];
@@ -98,10 +116,14 @@ function mergeImportsAndHoistedFragments(
 
 export async function renderTsCodeFileTemplate<
   TVariables extends TsCodeTemplateVariableMap,
+  TImportMapProviders extends Record<string, ProviderType> = Record<
+    never,
+    ProviderType
+  >,
 >(
-  template: TsCodeFileTemplate<TVariables>,
+  template: TsCodeFileTemplate<TVariables, TImportMapProviders>,
   variables: InferTsCodeTemplateVariablesFromMap<TVariables>,
-  options: RenderTsCodeFileTemplateOptions,
+  options: RenderTsCodeFileTemplateOptions<TImportMapProviders>,
 ): Promise<string> {
   const rawTemplate =
     'path' in template.source
@@ -115,7 +137,11 @@ export async function renderTsCodeFileTemplate<
       ...options,
     });
 
-  if (!imports?.length && !hoistedFragments?.length) {
+  if (
+    !imports?.length &&
+    !hoistedFragments?.length &&
+    Object.keys(options.importMapProviders).length === 0
+  ) {
     return contents;
   }
 
@@ -125,12 +151,26 @@ export async function renderTsCodeFileTemplate<
   });
   const file = project.createSourceFile('./file.ts', contents);
 
+  const { importMapProviders, ...restOptions } = options;
+
+  const importMapProvidersMap = new Map(
+    Object.entries(importMapProviders).map(([key, value]) => {
+      const provider = value as TsImportMapProvider<TsImportMap>;
+      if (!('importMap' in provider)) {
+        throw new Error('Import map provider must have an importMap property');
+      }
+
+      return [key, provider.importMap];
+    }),
+  );
+
   // Merge in imports and hoisted fragments
   mergeImportsAndHoistedFragments(
     file,
     imports ?? [],
     hoistedFragments ?? [],
-    options,
+    importMapProvidersMap,
+    restOptions,
   );
 
   return file.getText();

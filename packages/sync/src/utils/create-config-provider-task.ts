@@ -14,8 +14,8 @@ import {
   type GeneratorTask,
 } from '@src/generators/generators.js';
 import {
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
   type ProviderType,
 } from '@src/providers/providers.js';
 
@@ -97,7 +97,7 @@ export function createConfigProviderTask<TSchema extends FieldMapSchema>(
   const configProvider = createProviderType<TSchema>(
     `${prefix}-${taskName}-config`,
   );
-  const configValuesProvider = createOutputProviderType<
+  const configValuesProvider = createReadOnlyProviderType<
     FieldMapValues<TSchema>
   >(`${prefix}-${taskName}-config-values`);
 

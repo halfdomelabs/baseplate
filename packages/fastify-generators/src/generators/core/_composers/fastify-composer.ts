@@ -13,7 +13,7 @@ import { fastifyHealthCheckGenerator } from '../fastify-health-check/index.js';
 import { fastifyScriptsGenerator } from '../fastify-scripts/index.js';
 import { fastifyServerGenerator } from '../fastify-server/index.js';
 import { fastifyGenerator } from '../fastify/index.js';
-import { loggerServiceGenerator } from '../logger-service/index.js';
+import { loggerServiceGenerator } from '../logger-service/logger-service.generator.js';
 import { requestContextGenerator } from '../request-context/index.js';
 import { requestServiceContextGenerator } from '../request-service-context/index.js';
 import { rootModuleGenerator } from '../root-module/index.js';

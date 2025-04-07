@@ -16,7 +16,7 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server/index.js';
-import { loggerServiceProvider } from '@src/generators/core/logger-service/index.js';
+import { loggerServiceProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

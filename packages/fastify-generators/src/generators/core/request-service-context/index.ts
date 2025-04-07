@@ -14,8 +14,8 @@ import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
 import { mapValues } from 'es-toolkit';
 import { z } from 'zod';
@@ -55,7 +55,7 @@ export interface RequestServiceContextProvider extends ImportMapper {
 }
 
 export const requestServiceContextProvider =
-  createOutputProviderType<RequestServiceContextProvider>(
+  createReadOnlyProviderType<RequestServiceContextProvider>(
     'request-service-context',
   );
 

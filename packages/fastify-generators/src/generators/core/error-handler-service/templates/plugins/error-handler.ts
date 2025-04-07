@@ -3,7 +3,7 @@
 import fp from 'fastify-plugin';
 import { logError } from '../services/error-logger.js';
 import { HttpError, NotFoundError } from '../utils/http-errors.js';
-import { config } from '%config';
+import { config } from '%configService';
 
 const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
 

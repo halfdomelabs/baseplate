@@ -1,7 +1,8 @@
 import type {
   BuilderAction,
-  GeneratorTask,
+  GeneratorTaskOutputBuilder,
   InferProviderType,
+  ProviderType,
   WriteFileOptions,
 } from '@halfdomelabs/sync';
 
@@ -10,7 +11,6 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  createTaskPhase,
 } from '@halfdomelabs/sync';
 import { safeMergeAll } from '@halfdomelabs/utils';
 import path from 'node:path';
@@ -18,6 +18,7 @@ import { z } from 'zod';
 
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
 import type {
+  InferImportMapProvidersFromProviderTypeMap,
   InferTsCodeTemplateVariablesFromMap,
   TsCodeFileTemplate,
   TsCodeTemplateVariableMap,
@@ -91,18 +92,30 @@ export const typescriptProvider =
 
 interface WriteTemplatedFilePayload<
   TVariables extends TsCodeTemplateVariableMap,
+  TImportMapProviders extends Record<string, ProviderType> = Record<
+    never,
+    ProviderType
+  >,
 > {
-  template: TsCodeFileTemplate<TVariables>;
+  id: string;
+  template: TsCodeFileTemplate<TVariables, TImportMapProviders>;
   destination: string;
   variables: InferTsCodeTemplateVariablesFromMap<TVariables>;
-  fileId: string;
+  importMapProviders: InferImportMapProvidersFromProviderTypeMap<TImportMapProviders>;
   options?: WriteFileOptions;
 }
 
 export interface TypescriptFileProvider {
-  writeTemplatedFile<TVariables extends TsCodeTemplateVariableMap>(
-    payload: WriteTemplatedFilePayload<TVariables>,
-  ): void;
+  writeTemplatedFile<
+    TVariables extends TsCodeTemplateVariableMap,
+    TImportMapProviders extends Record<string, ProviderType> = Record<
+      never,
+      ProviderType
+    >,
+  >(
+    builder: GeneratorTaskOutputBuilder,
+    payload: WriteTemplatedFilePayload<TVariables, TImportMapProviders>,
+  ): Promise<{ destination: string }>;
 }
 
 export const typescriptFileProvider =
@@ -157,61 +170,10 @@ export type TypescriptSetupProvider = InferProviderType<
   typeof typescriptSetupProvider
 >;
 
-export const typescriptFileTaskPhase = createTaskPhase('typescript-file');
-
-export function createTypescriptFileTask<
-  TVariables extends TsCodeTemplateVariableMap,
->(payload: WriteTemplatedFilePayload<TVariables>): GeneratorTask {
-  const task = createGeneratorTask({
-    phase: typescriptFileTaskPhase,
-    dependencies: { typescriptConfig: typescriptConfigProvider },
-    run({ typescriptConfig: { compilerOptions, includeMetadata } }) {
-      const {
-        baseUrl = '.',
-        paths = {},
-        moduleResolution = 'node',
-      } = compilerOptions;
-      const { fileId, template, destination, variables, options } = payload;
-      const pathMapEntries = generatePathMapEntries(baseUrl, paths);
-      const internalPatterns = pathMapEntriesToRegexes(pathMapEntries);
-
-      return {
-        async build(builder) {
-          const directory = path.dirname(destination);
-          const file = await renderTsCodeFileTemplate(template, variables, {
-            resolveModule(moduleSpecifier) {
-              return resolveModule(moduleSpecifier, directory, {
-                pathMapEntries,
-                moduleResolution,
-              });
-            },
-            importSortOptions: {
-              internalPatterns,
-            },
-            includeMetadata,
-          });
-
-          builder.writeFile({
-            id: fileId,
-            filePath: destination,
-            contents: file,
-            options: {
-              ...options,
-              shouldFormat: true,
-            },
-          });
-        },
-      };
-    },
-  });
-  return task;
-}
-
 export const typescriptGenerator = createGenerator({
   name: 'node/typescript',
   generatorFileUrl: import.meta.url,
   descriptorSchema: typescriptGeneratorDescriptorSchema,
-  preRegisteredPhases: [typescriptFileTaskPhase],
   buildTasks: (descriptor) => ({
     setup: createGeneratorTask(setupTask(descriptor)),
     nodePackages: createNodePackagesTask({
@@ -317,6 +279,66 @@ export const typescriptGenerator = createGenerator({
                 ...safeMergeAll(...extraSections),
               },
             });
+          },
+        };
+      },
+    }),
+    file: createGeneratorTask({
+      dependencies: { typescriptConfig: typescriptConfigProvider },
+      exports: { typescriptFile: typescriptFileProvider.export(projectScope) },
+      run({ typescriptConfig: { compilerOptions, includeMetadata } }) {
+        const {
+          baseUrl = '.',
+          paths = {},
+          moduleResolution = 'node',
+        } = compilerOptions;
+        const pathMapEntries = generatePathMapEntries(baseUrl, paths);
+        const internalPatterns = pathMapEntriesToRegexes(pathMapEntries);
+
+        return {
+          providers: {
+            typescriptFile: {
+              writeTemplatedFile: async (builder, payload) => {
+                const {
+                  id,
+                  template,
+                  destination,
+                  variables,
+                  options,
+                  importMapProviders,
+                } = payload;
+                const directory = path.dirname(destination);
+                const file = await renderTsCodeFileTemplate(
+                  template,
+                  variables,
+                  {
+                    resolveModule(moduleSpecifier) {
+                      return resolveModule(moduleSpecifier, directory, {
+                        pathMapEntries,
+                        moduleResolution,
+                      });
+                    },
+                    importSortOptions: {
+                      internalPatterns,
+                    },
+                    includeMetadata,
+                    importMapProviders,
+                  },
+                );
+
+                builder.writeFile({
+                  id,
+                  filePath: destination,
+                  contents: file,
+                  options: {
+                    ...options,
+                    shouldFormat: true,
+                  },
+                });
+
+                return { destination };
+              },
+            },
           },
         };
       },

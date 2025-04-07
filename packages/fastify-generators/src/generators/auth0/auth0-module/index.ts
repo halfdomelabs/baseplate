@@ -23,7 +23,7 @@ import { userSessionServiceProvider } from '@src/generators/auth/index.js';
 import { userSessionTypesProvider } from '@src/generators/auth/user-session-types/index.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { fastifyServerProvider } from '@src/generators/core/index.js';
-import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/index.js';
+import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 

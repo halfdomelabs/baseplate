@@ -14,11 +14,17 @@ import type { EntryDependencyMap } from './dependency-map.js';
 import {
   createProviderExportScope,
   createProviderType,
+  createReadOnlyProviderType,
 } from '../providers/index.js';
 import {
   buildGeneratorIdToScopesMap,
   resolveTaskDependenciesForPhase,
 } from './dependency-map.js';
+import {
+  createDependencyEntry,
+  createOutputDependencyEntry,
+  createReadOnlyDependencyEntry,
+} from './tests/dependency-entry.test-helper.js';
 import {
   buildTestGeneratorEntry,
   buildTestGeneratorTaskEntry,
@@ -26,12 +32,7 @@ import {
 
 const providerOne = createProviderType('provider-one');
 const providerTwo = createProviderType('provider-two');
-const readOnlyProvider = createProviderType('read-only-provider', {
-  isReadOnly: true,
-});
-const outputOnlyProvider = createProviderType('output-only-provider', {
-  isOutput: true,
-});
+const readOnlyProvider = createReadOnlyProviderType('read-only-provider');
 const testLogger = createEventedLogger({ noConsole: true });
 
 // Create test scopes
@@ -108,11 +109,10 @@ describe('resolveTaskDependenciesForPhase', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'child#main': {
-        dep: {
+        dep: createReadOnlyDependencyEntry({
           id: 'root#main',
           providerName: readOnlyProvider.name,
-          options: { isReadOnly: true },
-        },
+        }),
       },
     });
   });
@@ -191,18 +191,16 @@ describe('resolveTaskDependenciesForPhase', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'child1#main': {
-        dep: {
+        dep: createDependencyEntry({
           id: 'root#main',
           providerName: providerOne.name,
-          options: {},
-        },
+        }),
       },
       'child2#main': {
-        dep: {
+        dep: createDependencyEntry({
           id: 'root#main',
           providerName: providerTwo.name,
-          options: {},
-        },
+        }),
       },
     });
   });
@@ -248,18 +246,16 @@ describe('resolveTaskDependenciesForPhase', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'child1#main': {
-        dep: {
+        dep: createDependencyEntry({
           id: 'root#main',
           providerName: providerOne.name,
-          options: {},
-        },
+        }),
       },
       'child2#main': {
-        dep: {
+        dep: createDependencyEntry({
           id: 'root#main',
           providerName: providerOne.name,
-          options: {},
-        },
+        }),
       },
     });
   });
@@ -314,11 +310,10 @@ describe('resolveTaskDependenciesForPhase', () => {
       'root#main': {},
       'middle#main': {},
       'leaf#main': {
-        dep1: {
+        dep1: createDependencyEntry({
           id: 'middle#main',
           providerName: providerOne.name,
-          options: {},
-        },
+        }),
       },
     });
   });
@@ -368,11 +363,10 @@ describe('resolveTaskDependenciesForPhase', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'child#main': {
-        dep: {
+        dep: createDependencyEntry({
           id: 'peer#main',
           providerName: providerOne.name,
-          options: {},
-        },
+        }),
       },
       'peer#main': {},
     });
@@ -464,10 +458,16 @@ describe('resolveTaskDependenciesForPhase', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'middle#main': {
-        dep: { id: 'root#main', providerName: providerOne.name, options: {} },
+        dep: createDependencyEntry({
+          id: 'root#main',
+          providerName: providerOne.name,
+        }),
       },
       'leaf#main': {
-        dep: { id: 'middle#main', providerName: providerOne.name, options: {} },
+        dep: createDependencyEntry({
+          id: 'middle#main',
+          providerName: providerOne.name,
+        }),
       },
     });
   });
@@ -518,11 +518,10 @@ describe('resolveTaskDependenciesForPhase', () => {
       'root#main': {},
       'middle#main': {},
       'leaf#main': {
-        dep: {
+        dep: createDependencyEntry({
           id: 'middle#main',
           providerName: providerOne.name,
-          options: {},
-        },
+        }),
       },
     });
   });
@@ -536,7 +535,7 @@ describe('resolveTaskDependenciesForPhase', () => {
       },
       {
         outputs: {
-          outputProvider: outputOnlyProvider.export(defaultScope),
+          outputProvider: readOnlyProvider.export(defaultScope),
         },
       },
     );
@@ -547,7 +546,7 @@ describe('resolveTaskDependenciesForPhase', () => {
         scopes: [defaultScope],
       },
       {
-        dependencies: { dep: outputOnlyProvider.dependency() },
+        dependencies: { dep: readOnlyProvider.dependency() },
       },
     );
 
@@ -560,11 +559,10 @@ describe('resolveTaskDependenciesForPhase', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'child#main': {
-        dep: {
+        dep: createOutputDependencyEntry({
           id: 'root#main',
-          providerName: outputOnlyProvider.name,
-          options: { isOutput: true },
-        },
+          providerName: readOnlyProvider.name,
+        }),
       },
     });
   });
@@ -578,14 +576,14 @@ describe('resolveTaskDependenciesForPhase', () => {
           id: 'root#producer',
           task: {
             outputs: {
-              outputProvider: outputOnlyProvider.export(),
+              outputProvider: readOnlyProvider.export(),
             },
           },
         }),
         buildTestGeneratorTaskEntry({
           id: 'root#consumer',
           task: {
-            dependencies: { dep: outputOnlyProvider.dependency() },
+            dependencies: { dep: readOnlyProvider.dependency() },
             exports: {},
             outputs: {},
           },
@@ -599,16 +597,15 @@ describe('resolveTaskDependenciesForPhase', () => {
     expect(dependencyMap).toEqual({
       'root#producer': {},
       'root#consumer': {
-        dep: {
+        dep: createOutputDependencyEntry({
           id: 'root#producer',
-          providerName: outputOnlyProvider.name,
-          options: { isOutput: true },
-        },
+          providerName: readOnlyProvider.name,
+        }),
       },
     });
   });
 
-  it('should throw error when non-output provider is used in task outputs', () => {
+  it('should throw error when a mutable provider is used in task outputs', () => {
     // Arrange
     const entry = buildTestGeneratorEntry(
       {
@@ -625,27 +622,7 @@ describe('resolveTaskDependenciesForPhase', () => {
 
     // Act & Assert
     expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
-      /All providers in task outputs must be output providers/,
-    );
-  });
-
-  it('should throw error when non-output provider is used in task exports', () => {
-    // Arrange
-    const entry = buildTestGeneratorEntry(
-      {
-        id: 'root',
-        scopes: [defaultScope],
-      },
-      {
-        exports: {
-          invalidExport: outputOnlyProvider.export(defaultScope),
-        },
-      },
-    );
-
-    // Act & Assert
-    expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
-      /All providers in task exports must be non-output providers/,
+      /All providers in task outputs must be read-only providers/,
     );
   });
 
@@ -659,7 +636,7 @@ describe('resolveTaskDependenciesForPhase', () => {
           task: {
             phase: phase1,
             outputs: {
-              outputProvider: outputOnlyProvider.export(),
+              outputProvider: readOnlyProvider.export(),
             },
           },
         }),
@@ -667,7 +644,7 @@ describe('resolveTaskDependenciesForPhase', () => {
           id: 'root#phase2',
           task: {
             phase: phase2,
-            dependencies: { dep: outputOnlyProvider.dependency() },
+            dependencies: { dep: readOnlyProvider.dependency() },
           },
         }),
       ],
@@ -692,11 +669,10 @@ describe('resolveTaskDependenciesForPhase', () => {
 
     expect(phase2DependencyMap).toEqual({
       'root#phase2': {
-        dep: {
+        dep: createOutputDependencyEntry({
           id: 'root#phase1',
-          providerName: outputOnlyProvider.name,
-          options: { isOutput: true },
-        },
+          providerName: readOnlyProvider.name,
+        }),
       },
     });
   });
@@ -749,16 +725,14 @@ describe('resolveTaskDependenciesForPhase', () => {
 
     expect(phase2DependencyMap).toEqual({
       'root#phase2': {
-        dep1: {
+        dep1: createDependencyEntry({
           id: 'root#phase1',
           providerName: providerOne.name,
-          options: {},
-        },
-        dep2: {
+        }),
+        dep2: createDependencyEntry({
           id: 'root#phase1',
           providerName: providerTwo.name,
-          options: {},
-        },
+        }),
       },
     });
   });
@@ -773,7 +747,7 @@ describe('resolveTaskDependenciesForPhase', () => {
           task: {
             phase: phase1,
             outputs: {
-              outputProvider: outputOnlyProvider.export(),
+              outputProvider: readOnlyProvider.export(),
             },
           },
         }),
@@ -788,10 +762,10 @@ describe('resolveTaskDependenciesForPhase', () => {
           task: {
             phase: phase1,
             dependencies: {
-              dep: outputOnlyProvider.dependency().parentScopeOnly(),
+              dep: readOnlyProvider.dependency().parentScopeOnly(),
             },
             outputs: {
-              outputProvider: outputOnlyProvider.export(),
+              outputProvider: readOnlyProvider.export(),
             },
           },
         }),
@@ -805,7 +779,7 @@ describe('resolveTaskDependenciesForPhase', () => {
           id: 'leaf#phase2',
           task: {
             phase: phase2,
-            dependencies: { dep: outputOnlyProvider.dependency() },
+            dependencies: { dep: readOnlyProvider.dependency() },
           },
         }),
       ],
@@ -830,21 +804,19 @@ describe('resolveTaskDependenciesForPhase', () => {
     expect(phase1DependencyMap).toEqual({
       'root#phase1': {},
       'middle#phase1': {
-        dep: {
+        dep: createOutputDependencyEntry({
           id: 'root#phase1',
-          providerName: outputOnlyProvider.name,
-          options: { isOutput: true },
-        },
+          providerName: readOnlyProvider.name,
+        }),
       },
     });
 
     expect(phase2DependencyMap).toEqual({
       'leaf#phase2': {
-        dep: {
+        dep: createOutputDependencyEntry({
           id: 'middle#phase1',
-          providerName: outputOnlyProvider.name,
-          options: { isOutput: true },
-        },
+          providerName: readOnlyProvider.name,
+        }),
       },
     });
   });
@@ -859,7 +831,7 @@ describe('resolveTaskDependenciesForPhase', () => {
           name: 'main',
           task: {
             outputs: {
-              outputProvider: outputOnlyProvider.export(),
+              outputProvider: readOnlyProvider.export(),
             },
           },
         }),
@@ -873,7 +845,7 @@ describe('resolveTaskDependenciesForPhase', () => {
         name: 'dynamic-task',
         task: {
           phase: phase1,
-          dependencies: { dep: outputOnlyProvider },
+          dependencies: { dep: readOnlyProvider },
         },
       }),
     ]);
@@ -889,11 +861,10 @@ describe('resolveTaskDependenciesForPhase', () => {
     // Assert
     expect(phase1DependencyMap).toEqual({
       'root#dynamic-task': {
-        dep: {
+        dep: createOutputDependencyEntry({
           id: 'root#main',
-          providerName: outputOnlyProvider.name,
-          options: { isOutput: true },
-        },
+          providerName: readOnlyProvider.name,
+        }),
       },
     });
   });
@@ -908,7 +879,7 @@ describe('resolveTaskDependenciesForPhase', () => {
           name: 'main',
           task: {
             outputs: {
-              outputProvider: outputOnlyProvider.export(),
+              outputProvider: readOnlyProvider.export(),
             },
           },
         }),
@@ -922,7 +893,7 @@ describe('resolveTaskDependenciesForPhase', () => {
         name: 'dynamic-task1',
         task: {
           phase: phase1,
-          dependencies: { dep: outputOnlyProvider },
+          dependencies: { dep: readOnlyProvider },
         },
       }),
       buildTestGeneratorTaskEntry({
@@ -930,7 +901,7 @@ describe('resolveTaskDependenciesForPhase', () => {
         name: 'dynamic-task2',
         task: {
           phase: phase2,
-          dependencies: { dep: outputOnlyProvider },
+          dependencies: { dep: readOnlyProvider },
         },
       }),
     ]);
@@ -952,21 +923,19 @@ describe('resolveTaskDependenciesForPhase', () => {
     // Assert
     expect(phase1DependencyMap).toEqual({
       'root#dynamic-task1': {
-        dep: {
+        dep: createOutputDependencyEntry({
           id: 'root#main',
-          providerName: outputOnlyProvider.name,
-          options: { isOutput: true },
-        },
+          providerName: readOnlyProvider.name,
+        }),
       },
     });
 
     expect(phase2DependencyMap).toEqual({
       'root#dynamic-task2': {
-        dep: {
+        dep: createOutputDependencyEntry({
           id: 'root#main',
-          providerName: outputOnlyProvider.name,
-          options: { isOutput: true },
-        },
+          providerName: readOnlyProvider.name,
+        }),
       },
     });
   });
@@ -981,7 +950,7 @@ describe('resolveTaskDependenciesForPhase', () => {
           name: 'main',
           task: {
             outputs: {
-              outputProvider: outputOnlyProvider.export(),
+              outputProvider: readOnlyProvider.export(),
             },
           },
         }),
@@ -1003,7 +972,7 @@ describe('resolveTaskDependenciesForPhase', () => {
         task: {
           phase: phase1,
           dependencies: {
-            dep: outputOnlyProvider.dependency().parentScopeOnly(),
+            dep: readOnlyProvider.dependency().parentScopeOnly(),
           },
         },
       }),
@@ -1020,11 +989,10 @@ describe('resolveTaskDependenciesForPhase', () => {
     // Assert
     expect(phase1DependencyMap).toEqual({
       'child#dynamic-task': {
-        dep: {
+        dep: createOutputDependencyEntry({
           id: 'root#main',
-          providerName: outputOnlyProvider.name,
-          options: { isOutput: true },
-        },
+          providerName: readOnlyProvider.name,
+        }),
       },
     });
   });

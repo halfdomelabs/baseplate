@@ -21,8 +21,8 @@ import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -51,7 +51,7 @@ export interface PothosSetupProvider extends ImportMapper {
 export const pothosSetupProvider =
   createProviderType<PothosSetupProvider>('pothos-setup');
 
-const pothosSetupOutputProvider = createOutputProviderType<{
+const pothosSetupOutputProvider = createReadOnlyProviderType<{
   config: NonOverwriteableMap<PothosGeneratorConfig>;
   schemaFiles: string[];
   pothosTypes: PothosTypeReferenceContainer;
@@ -65,7 +65,7 @@ export interface PothosSchemaProvider extends ImportMapper {
 export const pothosSchemaProvider =
   createProviderType<PothosSchemaProvider>('pothos-schema');
 
-const pothosSchemaOutputProvider = createOutputProviderType<{
+const pothosSchemaOutputProvider = createReadOnlyProviderType<{
   schemaFiles: string[];
 }>('pothos-schema-output');
 

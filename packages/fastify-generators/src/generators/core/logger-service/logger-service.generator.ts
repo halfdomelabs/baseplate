@@ -6,11 +6,11 @@ import type {
 
 import {
   createNodePackagesTask,
-  createTypescriptFileTask,
   extractPackageVersions,
   projectScope,
   TsCodeUtils,
   TypescriptCodeUtils,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -18,16 +18,15 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
-import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { fastifyProvider } from '../fastify/index.js';
+import {
+  createLoggerServiceImportMap,
+  loggerServiceImportsProvider,
+} from './generated/import-maps.js';
 import { loggerFileTemplate } from './generated/templates.js';
-
-const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
-});
 
 export interface LoggerServiceSetupProvider extends ImportMapper {
   addMixin(key: string, expression: TsCodeFragment): void;
@@ -56,7 +55,6 @@ export const loggerServiceProvider = createProviderType<LoggerServiceProvider>(
 export const loggerServiceGenerator = createGenerator({
   name: 'core/logger-service',
   generatorFileUrl: import.meta.url,
-  descriptorSchema,
   buildTasks: () => ({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['pino']),
@@ -65,12 +63,16 @@ export const loggerServiceGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         fastify: fastifyProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         loggerServiceSetup: loggerServiceSetupProvider.export(projectScope),
         loggerService: loggerServiceProvider.export(projectScope),
       },
-      run({ fastify }) {
+      outputs: {
+        loggerServiceImports: loggerServiceImportsProvider.export(projectScope),
+      },
+      run({ fastify, typescriptFile }) {
         const mixins = createNonOverwriteableMap<
           Record<string, TsCodeFragment>
         >({}, { name: 'logger-service-mixins' });
@@ -104,7 +106,7 @@ export const loggerServiceGenerator = createGenerator({
               },
             },
           },
-          build: (builder) => {
+          build: async (builder) => {
             const loggerOptions: Record<string, TsCodeFragment | string> = {};
 
             // log level vs. number for better log parsing
@@ -121,28 +123,36 @@ export const loggerServiceGenerator = createGenerator({
                 }`;
             }
 
-            builder.addDynamicTask(
-              'logger-service-file',
-              createTypescriptFileTask({
-                template: loggerFileTemplate,
-                variables: {
-                  TPL_LOGGER_OPTIONS:
-                    Object.keys(loggerOptions).length > 0
-                      ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
-                      : '',
-                },
-                destination: 'src/services/logger.ts',
-                fileId: 'logger',
-                options: {
-                  alternateFullIds: [
-                    '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',
-                  ],
-                },
-              }),
-            );
+            const fileMap = {
+              logger: 'src/services/logger.ts',
+            };
+
+            await typescriptFile.writeTemplatedFile(builder, {
+              template: loggerFileTemplate,
+              id: 'logger',
+              variables: {
+                TPL_LOGGER_OPTIONS:
+                  Object.keys(loggerOptions).length > 0
+                    ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
+                    : '',
+              },
+              destination: fileMap.logger,
+              importMapProviders: {},
+              options: {
+                alternateFullIds: [
+                  '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',
+                ],
+              },
+            });
+
+            return {
+              loggerServiceImports: createLoggerServiceImportMap(fileMap),
+            };
           },
         };
       },
     }),
   }),
 });
+
+export { loggerServiceImportsProvider } from './generated/import-maps.js';

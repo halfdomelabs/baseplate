@@ -12,8 +12,8 @@ import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -61,7 +61,7 @@ export interface FastifyOutputProvider {
 }
 
 export const fastifyOutputProvider =
-  createOutputProviderType<FastifyOutputProvider>('fastify-output');
+  createReadOnlyProviderType<FastifyOutputProvider>('fastify-output');
 
 export const fastifyGenerator = createGenerator({
   name: 'core/fastify',

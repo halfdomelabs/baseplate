@@ -22,7 +22,7 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { configServiceProvider } from '../config-service/index.js';
-import { loggerServiceProvider } from '../logger-service/index.js';
+import { loggerServiceProvider } from '../logger-service/logger-service.generator.js';
 import {
   rootModuleConfigProvider,
   rootModuleImportProvider,

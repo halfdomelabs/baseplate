@@ -9,8 +9,8 @@ import {
 import {
   createGenerator,
   createGeneratorTask,
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -129,7 +129,7 @@ function getComponentProps({
   });
 }
 
-const adminCrudEmbeddedFormSetupProvider = createOutputProviderType<{
+const adminCrudEmbeddedFormSetupProvider = createReadOnlyProviderType<{
   inputFields: AdminCrudInput[];
   tableColumns: AdminCrudColumn[];
 }>('admin-crud-embedded-form-setup');

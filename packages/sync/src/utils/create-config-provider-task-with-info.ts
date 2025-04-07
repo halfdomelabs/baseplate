@@ -10,8 +10,8 @@ import type { ProviderExportScope } from '@src/providers/export-scopes.js';
 
 import { createGeneratorTask } from '@src/generators/generators.js';
 import {
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
   type ProviderType,
 } from '@src/providers/providers.js';
 
@@ -108,7 +108,7 @@ export function createConfigProviderTaskWithInfo<
   const configProvider = createProviderType<TSchema & InfoFromDescriptor>(
     `${prefix}-${taskName}-config`,
   );
-  const configValuesProvider = createOutputProviderType<
+  const configValuesProvider = createReadOnlyProviderType<
     FieldMapValues<TSchema> & InfoFromDescriptor
   >(`${prefix}-${taskName}-config-values`);
 

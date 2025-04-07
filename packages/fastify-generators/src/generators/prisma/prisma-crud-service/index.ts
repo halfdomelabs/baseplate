@@ -3,8 +3,8 @@ import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
-  createOutputProviderType,
   createProviderType,
+  createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -29,7 +29,7 @@ export interface PrismaCrudServiceProvider {
 }
 
 export const prismaCrudServiceProvider =
-  createOutputProviderType<PrismaCrudServiceProvider>('prisma-crud-service');
+  createReadOnlyProviderType<PrismaCrudServiceProvider>('prisma-crud-service');
 
 export const prismaCrudServiceGenerator = createGenerator({
   name: 'prisma/prisma-crud-service',

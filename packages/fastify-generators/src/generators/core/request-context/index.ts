@@ -21,7 +21,7 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { fastifyServerProvider } from '../fastify-server/index.js';
-import { loggerServiceSetupProvider } from '../logger-service/index.js';
+import { loggerServiceSetupProvider } from '../logger-service/logger-service.generator.js';
 
 const descriptorSchema = z.object({});
 

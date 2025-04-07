@@ -11,7 +11,7 @@ export * from './fastify-scripts/index.js';
 export * from './fastify-sentry/index.js';
 export * from './fastify-server/index.js';
 export * from './fastify/index.js';
-export * from './logger-service/index.js';
+export * from './logger-service/logger-service.generator.js';
 export * from './readme/index.js';
 export * from './request-context/index.js';
 export * from './request-service-context/index.js';
