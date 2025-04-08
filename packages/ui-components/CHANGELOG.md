@@ -1,5 +1,17 @@
 # @halfdomelabs/ui-components
 
+## 0.5.5
+
+### Patch Changes
+
+- [#463](https://github.com/halfdomelabs/baseplate/pull/463) [`c4213ff`](https://github.com/halfdomelabs/baseplate/commit/c4213ff40e5b0d1d50af1b87837d79700d84b854) Thanks [@kingston](https://github.com/kingston)! - Upgrade react-icon and radix dependencies
+
+- [#462](https://github.com/halfdomelabs/baseplate/pull/462) [`2e9b8dd`](https://github.com/halfdomelabs/baseplate/commit/2e9b8ddd2ae7067f8c43dcb4a65f016dd22a46b5) Thanks [@kingston](https://github.com/kingston)! - Upgrade zustand to 5.0.3
+
+  See migration guide: https://github.com/pmndrs/zustand/blob/main/docs/migrations/migrating-to-v5.md
+
+- [#467](https://github.com/halfdomelabs/baseplate/pull/467) [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node version to v22.14.0
+
 ## 0.5.4
 
 ### Patch Changes
