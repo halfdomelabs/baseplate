@@ -3,6 +3,7 @@ packages:
 onlyBuiltDependencies:
   - '@prisma/client'
   - '@prisma/engines'
+  - '@sentry-internal/node-cpu-profiler'
   - '@sentry/profiling-node'
   - esbuild
   - prisma
