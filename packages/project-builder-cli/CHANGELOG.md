@@ -1,5 +1,20 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.9.9
+
+### Patch Changes
+
+- [#459](https://github.com/halfdomelabs/baseplate/pull/459) [`7cede9b`](https://github.com/halfdomelabs/baseplate/commit/7cede9bbfb1a92fc41131b82ffc8addfa715d38c) Thanks [@kingston](https://github.com/kingston)! - Introduce E2E testing for project-builder-cli
+
+- [#467](https://github.com/halfdomelabs/baseplate/pull/467) [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node version to v22.14.0
+
+- Updated dependencies [[`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730), [`c4213ff`](https://github.com/halfdomelabs/baseplate/commit/c4213ff40e5b0d1d50af1b87837d79700d84b854), [`e1517d0`](https://github.com/halfdomelabs/baseplate/commit/e1517d099001d7215c61f5f98493dfd0acb99a03), [`f684e64`](https://github.com/halfdomelabs/baseplate/commit/f684e64646e026c1d60223433ffb8ba2432d1033), [`249fe46`](https://github.com/halfdomelabs/baseplate/commit/249fe4688c7fd39ff3f8af9da4166219e98626b9), [`2e9b8dd`](https://github.com/halfdomelabs/baseplate/commit/2e9b8ddd2ae7067f8c43dcb4a65f016dd22a46b5), [`97eae87`](https://github.com/halfdomelabs/baseplate/commit/97eae87fed48c7102123e729de17e00f575c108c), [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b), [`c5aa78e`](https://github.com/halfdomelabs/baseplate/commit/c5aa78e83119835a88ac4743b3dfa5f4b3eb6c53), [`c6caf6b`](https://github.com/halfdomelabs/baseplate/commit/c6caf6bb118b51643e67196b0a2c94973a1c8fb2), [`7cede9b`](https://github.com/halfdomelabs/baseplate/commit/7cede9bbfb1a92fc41131b82ffc8addfa715d38c), [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1)]:
+  - @halfdomelabs/utils@0.1.4
+  - @halfdomelabs/project-builder-web@0.15.8
+  - @halfdomelabs/project-builder-server@0.5.9
+  - @halfdomelabs/project-builder-lib@0.9.8
+  - @halfdomelabs/project-builder-common@0.1.18
+
 ## 0.9.8
 
 ### Patch Changes

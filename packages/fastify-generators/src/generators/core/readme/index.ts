@@ -53,6 +53,7 @@ In order to set up the backend, you must do the following steps:
               contents: readmeContent,
               options: {
                 shouldFormat: true,
+                shouldNeverOverwrite: true,
               },
             });
           },
