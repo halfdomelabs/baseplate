@@ -1,5 +1,36 @@
 # @halfdomelabs/sync
 
+## 0.10.0
+
+### Minor Changes
+
+- [#484](https://github.com/halfdomelabs/baseplate/pull/484) [`014b140`](https://github.com/halfdomelabs/baseplate/commit/014b140bcdb959bd4dc34af4af1e57b9b529a9b1) Thanks [@kingston](https://github.com/kingston)! - Add dynamic task support for generators and adapt Typescript file writer to a dynamic task
+
+### Patch Changes
+
+- [#473](https://github.com/halfdomelabs/baseplate/pull/473) [`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730) Thanks [@kingston](https://github.com/kingston)! - Introduce new generator concept of output providers that replace task dependencies
+
+- [#472](https://github.com/halfdomelabs/baseplate/pull/472) [`e1517d0`](https://github.com/halfdomelabs/baseplate/commit/e1517d099001d7215c61f5f98493dfd0acb99a03) Thanks [@kingston](https://github.com/kingston)! - Lay foundations for new typescript writer system
+
+- [#481](https://github.com/halfdomelabs/baseplate/pull/481) [`f684e64`](https://github.com/halfdomelabs/baseplate/commit/f684e64646e026c1d60223433ffb8ba2432d1033) Thanks [@kingston](https://github.com/kingston)! - Use instance name instead of index for generator task IDs to make it easier to identify
+
+- [#483](https://github.com/halfdomelabs/baseplate/pull/483) [`80b9a21`](https://github.com/halfdomelabs/baseplate/commit/80b9a21bf031de47988997497aea99c7e34ba5ed) Thanks [@kingston](https://github.com/kingston)! - Introduce task phases system
+
+- [#485](https://github.com/halfdomelabs/baseplate/pull/485) [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b) Thanks [@kingston](https://github.com/kingston)! - Refactor generation methods to enable better unit testing of generator tasks
+
+- [#474](https://github.com/halfdomelabs/baseplate/pull/474) [`3f9b186`](https://github.com/halfdomelabs/baseplate/commit/3f9b186b992a345fbbbd4c3ec56acc69314e07fe) Thanks [@kingston](https://github.com/kingston)! - Remove task dependency support from generator engine
+
+- [#488](https://github.com/halfdomelabs/baseplate/pull/488) [`c6caf6b`](https://github.com/halfdomelabs/baseplate/commit/c6caf6bb118b51643e67196b0a2c94973a1c8fb2) Thanks [@kingston](https://github.com/kingston)! - Switch to local implementation of toposort
+
+- [#486](https://github.com/halfdomelabs/baseplate/pull/486) [`2f67423`](https://github.com/halfdomelabs/baseplate/commit/2f67423a1087e7779f4c7a6423d86f1f8465d1a3) Thanks [@kingston](https://github.com/kingston)! - Switch to object pattern for buildTasks
+
+- [#476](https://github.com/halfdomelabs/baseplate/pull/476) [`635fb23`](https://github.com/halfdomelabs/baseplate/commit/635fb234fe6f567b1c70aa1cdb139521a14e36c1) Thanks [@kingston](https://github.com/kingston)! - Refactor buildTasks to return an array of tasks instead of using a task builder
+
+- [#467](https://github.com/halfdomelabs/baseplate/pull/467) [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node version to v22.14.0
+
+- Updated dependencies [[`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730), [`e1517d0`](https://github.com/halfdomelabs/baseplate/commit/e1517d099001d7215c61f5f98493dfd0acb99a03), [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b), [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1)]:
+  - @halfdomelabs/utils@0.1.4
+
 ## 0.9.2
 
 ### Patch Changes

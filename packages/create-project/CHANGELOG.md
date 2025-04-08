@@ -1,5 +1,24 @@
 # @halfdomelabs/create-project
 
+## 0.2.12
+
+### Patch Changes
+
+- [#468](https://github.com/halfdomelabs/baseplate/pull/468) [`3c79212`](https://github.com/halfdomelabs/baseplate/commit/3c79212caf68341e61f5e6a9a9d0f3a840ea964b) Thanks [@kingston](https://github.com/kingston)! - Upgrade PNPM to 10.6.5
+
+  Breaking Change: See https://github.com/pnpm/pnpm/releases/tag/v10.0.0 for
+  breaking changes to PNPM
+
+  This breaks certain things such as lifecycle scripts and hoisting of
+  ESLint/Prettier plugins and so should be observed carefully.
+
+- [#459](https://github.com/halfdomelabs/baseplate/pull/459) [`7cede9b`](https://github.com/halfdomelabs/baseplate/commit/7cede9bbfb1a92fc41131b82ffc8addfa715d38c) Thanks [@kingston](https://github.com/kingston)! - Introduce E2E testing for project-builder-cli
+
+- [#467](https://github.com/halfdomelabs/baseplate/pull/467) [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node version to v22.14.0
+
+- Updated dependencies [[`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730), [`e1517d0`](https://github.com/halfdomelabs/baseplate/commit/e1517d099001d7215c61f5f98493dfd0acb99a03), [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b), [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1)]:
+  - @halfdomelabs/utils@0.1.4
+
 ## 0.2.11
 
 ### Patch Changes

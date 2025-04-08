@@ -1,5 +1,49 @@
 # @halfdomelabs/react-generators
 
+## 0.10.0
+
+### Minor Changes
+
+- [#467](https://github.com/halfdomelabs/baseplate/pull/467) [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node version to v22.14.0
+
+### Patch Changes
+
+- [#473](https://github.com/halfdomelabs/baseplate/pull/473) [`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730) Thanks [@kingston](https://github.com/kingston)! - Introduce new generator concept of output providers that replace task dependencies
+
+- [#479](https://github.com/halfdomelabs/baseplate/pull/479) [`8ee4673`](https://github.com/halfdomelabs/baseplate/commit/8ee4673c4af9786de257a444cabaa22cb8f74be4) Thanks [@kingston](https://github.com/kingston)! - Upgrade Sentry to 9.10.1
+
+  See https://docs.sentry.io/platforms/javascript/migration/v8-to-v9/ for
+  migration instructions
+
+- [#463](https://github.com/halfdomelabs/baseplate/pull/463) [`c4213ff`](https://github.com/halfdomelabs/baseplate/commit/c4213ff40e5b0d1d50af1b87837d79700d84b854) Thanks [@kingston](https://github.com/kingston)! - Upgrade react-icon and radix dependencies
+
+- [#485](https://github.com/halfdomelabs/baseplate/pull/485) [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b) Thanks [@kingston](https://github.com/kingston)! - Refactor node generator to allow for more ergonomic usage
+
+- [#470](https://github.com/halfdomelabs/baseplate/pull/470) [`e2d503d`](https://github.com/halfdomelabs/baseplate/commit/e2d503dcbc109ee022a29cffe0e3030da796fa29) Thanks [@kingston](https://github.com/kingston)! - Upgrade vite to 6.2.3
+
+- [#481](https://github.com/halfdomelabs/baseplate/pull/481) [`f684e64`](https://github.com/halfdomelabs/baseplate/commit/f684e64646e026c1d60223433ffb8ba2432d1033) Thanks [@kingston](https://github.com/kingston)! - Use instance name instead of index for generator task IDs to make it easier to identify
+
+- [#462](https://github.com/halfdomelabs/baseplate/pull/462) [`2e9b8dd`](https://github.com/halfdomelabs/baseplate/commit/2e9b8ddd2ae7067f8c43dcb4a65f016dd22a46b5) Thanks [@kingston](https://github.com/kingston)! - Upgrade zustand to 5.0.3
+
+  See migration guide: https://github.com/pmndrs/zustand/blob/main/docs/migrations/migrating-to-v5.md
+
+- [#474](https://github.com/halfdomelabs/baseplate/pull/474) [`3f9b186`](https://github.com/halfdomelabs/baseplate/commit/3f9b186b992a345fbbbd4c3ec56acc69314e07fe) Thanks [@kingston](https://github.com/kingston)! - Remove task dependency support from generator engine
+
+- [#474](https://github.com/halfdomelabs/baseplate/pull/474) [`3f9b186`](https://github.com/halfdomelabs/baseplate/commit/3f9b186b992a345fbbbd4c3ec56acc69314e07fe) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite to 6.2.4
+
+- [#488](https://github.com/halfdomelabs/baseplate/pull/488) [`c6caf6b`](https://github.com/halfdomelabs/baseplate/commit/c6caf6bb118b51643e67196b0a2c94973a1c8fb2) Thanks [@kingston](https://github.com/kingston)! - Switch to local implementation of toposort
+
+- [#486](https://github.com/halfdomelabs/baseplate/pull/486) [`2f67423`](https://github.com/halfdomelabs/baseplate/commit/2f67423a1087e7779f4c7a6423d86f1f8465d1a3) Thanks [@kingston](https://github.com/kingston)! - Switch to object pattern for buildTasks
+
+- [#476](https://github.com/halfdomelabs/baseplate/pull/476) [`635fb23`](https://github.com/halfdomelabs/baseplate/commit/635fb234fe6f567b1c70aa1cdb139521a14e36c1) Thanks [@kingston](https://github.com/kingston)! - Refactor buildTasks to return an array of tasks instead of using a task builder
+
+- [#489](https://github.com/halfdomelabs/baseplate/pull/489) [`f14e643`](https://github.com/halfdomelabs/baseplate/commit/f14e643d13e8fd995f6f0849be40d007bddb3e76) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite to 6.2.5
+
+- Updated dependencies [[`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730), [`e1517d0`](https://github.com/halfdomelabs/baseplate/commit/e1517d099001d7215c61f5f98493dfd0acb99a03), [`014b140`](https://github.com/halfdomelabs/baseplate/commit/014b140bcdb959bd4dc34af4af1e57b9b529a9b1), [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b), [`3c79212`](https://github.com/halfdomelabs/baseplate/commit/3c79212caf68341e61f5e6a9a9d0f3a840ea964b), [`f684e64`](https://github.com/halfdomelabs/baseplate/commit/f684e64646e026c1d60223433ffb8ba2432d1033), [`80b9a21`](https://github.com/halfdomelabs/baseplate/commit/80b9a21bf031de47988997497aea99c7e34ba5ed), [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b), [`3f9b186`](https://github.com/halfdomelabs/baseplate/commit/3f9b186b992a345fbbbd4c3ec56acc69314e07fe), [`c6caf6b`](https://github.com/halfdomelabs/baseplate/commit/c6caf6bb118b51643e67196b0a2c94973a1c8fb2), [`2f67423`](https://github.com/halfdomelabs/baseplate/commit/2f67423a1087e7779f4c7a6423d86f1f8465d1a3), [`635fb23`](https://github.com/halfdomelabs/baseplate/commit/635fb234fe6f567b1c70aa1cdb139521a14e36c1), [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1)]:
+  - @halfdomelabs/core-generators@0.11.0
+  - @halfdomelabs/utils@0.1.4
+  - @halfdomelabs/sync@0.10.0
+
 ## 0.9.6
 
 ### Patch Changes

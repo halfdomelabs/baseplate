@@ -1,5 +1,24 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.9.8
+
+### Patch Changes
+
+- [#462](https://github.com/halfdomelabs/baseplate/pull/462) [`2e9b8dd`](https://github.com/halfdomelabs/baseplate/commit/2e9b8ddd2ae7067f8c43dcb4a65f016dd22a46b5) Thanks [@kingston](https://github.com/kingston)! - Upgrade zustand to 5.0.3
+
+  See migration guide: https://github.com/pmndrs/zustand/blob/main/docs/migrations/migrating-to-v5.md
+
+- [#488](https://github.com/halfdomelabs/baseplate/pull/488) [`c6caf6b`](https://github.com/halfdomelabs/baseplate/commit/c6caf6bb118b51643e67196b0a2c94973a1c8fb2) Thanks [@kingston](https://github.com/kingston)! - Switch to local implementation of toposort
+
+- [#459](https://github.com/halfdomelabs/baseplate/pull/459) [`7cede9b`](https://github.com/halfdomelabs/baseplate/commit/7cede9bbfb1a92fc41131b82ffc8addfa715d38c) Thanks [@kingston](https://github.com/kingston)! - Introduce E2E testing for project-builder-cli
+
+- [#467](https://github.com/halfdomelabs/baseplate/pull/467) [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node version to v22.14.0
+
+- Updated dependencies [[`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730), [`c4213ff`](https://github.com/halfdomelabs/baseplate/commit/c4213ff40e5b0d1d50af1b87837d79700d84b854), [`e1517d0`](https://github.com/halfdomelabs/baseplate/commit/e1517d099001d7215c61f5f98493dfd0acb99a03), [`014b140`](https://github.com/halfdomelabs/baseplate/commit/014b140bcdb959bd4dc34af4af1e57b9b529a9b1), [`f684e64`](https://github.com/halfdomelabs/baseplate/commit/f684e64646e026c1d60223433ffb8ba2432d1033), [`2e9b8dd`](https://github.com/halfdomelabs/baseplate/commit/2e9b8ddd2ae7067f8c43dcb4a65f016dd22a46b5), [`80b9a21`](https://github.com/halfdomelabs/baseplate/commit/80b9a21bf031de47988997497aea99c7e34ba5ed), [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b), [`3f9b186`](https://github.com/halfdomelabs/baseplate/commit/3f9b186b992a345fbbbd4c3ec56acc69314e07fe), [`c6caf6b`](https://github.com/halfdomelabs/baseplate/commit/c6caf6bb118b51643e67196b0a2c94973a1c8fb2), [`2f67423`](https://github.com/halfdomelabs/baseplate/commit/2f67423a1087e7779f4c7a6423d86f1f8465d1a3), [`635fb23`](https://github.com/halfdomelabs/baseplate/commit/635fb234fe6f567b1c70aa1cdb139521a14e36c1), [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1)]:
+  - @halfdomelabs/utils@0.1.4
+  - @halfdomelabs/sync@0.10.0
+  - @halfdomelabs/ui-components@0.5.5
+
 ## 0.9.7
 
 ### Patch Changes

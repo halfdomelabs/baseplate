@@ -1,5 +1,19 @@
 # @halfdomelabs/tools
 
+## 0.5.12
+
+### Patch Changes
+
+- [#468](https://github.com/halfdomelabs/baseplate/pull/468) [`3c79212`](https://github.com/halfdomelabs/baseplate/commit/3c79212caf68341e61f5e6a9a9d0f3a840ea964b) Thanks [@kingston](https://github.com/kingston)! - Upgrade PNPM to 10.6.5
+
+  Breaking Change: See https://github.com/pnpm/pnpm/releases/tag/v10.0.0 for
+  breaking changes to PNPM
+
+  This breaks certain things such as lifecycle scripts and hoisting of
+  ESLint/Prettier plugins and so should be observed carefully.
+
+- [#467](https://github.com/halfdomelabs/baseplate/pull/467) [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node version to v22.14.0
+
 ## 0.5.11
 
 ### Patch Changes

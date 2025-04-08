@@ -1,5 +1,47 @@
 # @halfdomelabs/fastify-generators
 
+## 0.12.0
+
+### Minor Changes
+
+- [#484](https://github.com/halfdomelabs/baseplate/pull/484) [`014b140`](https://github.com/halfdomelabs/baseplate/commit/014b140bcdb959bd4dc34af4af1e57b9b529a9b1) Thanks [@kingston](https://github.com/kingston)! - Add dynamic task support for generators and adapt Typescript file writer to a dynamic task
+
+- [#467](https://github.com/halfdomelabs/baseplate/pull/467) [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node version to v22.14.0
+
+### Patch Changes
+
+- [#473](https://github.com/halfdomelabs/baseplate/pull/473) [`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730) Thanks [@kingston](https://github.com/kingston)! - Introduce new generator concept of output providers that replace task dependencies
+
+- [#479](https://github.com/halfdomelabs/baseplate/pull/479) [`8ee4673`](https://github.com/halfdomelabs/baseplate/commit/8ee4673c4af9786de257a444cabaa22cb8f74be4) Thanks [@kingston](https://github.com/kingston)! - Upgrade Sentry to 9.10.1
+
+  See https://docs.sentry.io/platforms/javascript/migration/v8-to-v9/ for
+  migration instructions
+
+- [#490](https://github.com/halfdomelabs/baseplate/pull/490) [`92f3bdf`](https://github.com/halfdomelabs/baseplate/commit/92f3bdf49acae87533768be79843fc6957545acd) Thanks [@kingston](https://github.com/kingston)! - Don't overwrite README files when readme changes
+
+- [#472](https://github.com/halfdomelabs/baseplate/pull/472) [`e1517d0`](https://github.com/halfdomelabs/baseplate/commit/e1517d099001d7215c61f5f98493dfd0acb99a03) Thanks [@kingston](https://github.com/kingston)! - Lay foundations for new typescript writer system
+
+- [#485](https://github.com/halfdomelabs/baseplate/pull/485) [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b) Thanks [@kingston](https://github.com/kingston)! - Refactor node generator to allow for more ergonomic usage
+
+- [#481](https://github.com/halfdomelabs/baseplate/pull/481) [`f684e64`](https://github.com/halfdomelabs/baseplate/commit/f684e64646e026c1d60223433ffb8ba2432d1033) Thanks [@kingston](https://github.com/kingston)! - Use instance name instead of index for generator task IDs to make it easier to identify
+
+- [#474](https://github.com/halfdomelabs/baseplate/pull/474) [`3f9b186`](https://github.com/halfdomelabs/baseplate/commit/3f9b186b992a345fbbbd4c3ec56acc69314e07fe) Thanks [@kingston](https://github.com/kingston)! - Remove task dependency support from generator engine
+
+- [#486](https://github.com/halfdomelabs/baseplate/pull/486) [`2f67423`](https://github.com/halfdomelabs/baseplate/commit/2f67423a1087e7779f4c7a6423d86f1f8465d1a3) Thanks [@kingston](https://github.com/kingston)! - Switch to object pattern for buildTasks
+
+- [#476](https://github.com/halfdomelabs/baseplate/pull/476) [`635fb23`](https://github.com/halfdomelabs/baseplate/commit/635fb234fe6f567b1c70aa1cdb139521a14e36c1) Thanks [@kingston](https://github.com/kingston)! - Refactor buildTasks to return an array of tasks instead of using a task builder
+
+- [#480](https://github.com/halfdomelabs/baseplate/pull/480) [`54b331d`](https://github.com/halfdomelabs/baseplate/commit/54b331de9bdf96751628cf51646304488b2e412f) Thanks [@kingston](https://github.com/kingston)! - Upgrade Prisma to 6.5.0
+
+  See
+  https://www.prisma.io/docs/orm/more/upgrade-guides/upgrading-versions/upgrading-to-prisma-6
+  for migration instructions
+
+- Updated dependencies [[`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730), [`e1517d0`](https://github.com/halfdomelabs/baseplate/commit/e1517d099001d7215c61f5f98493dfd0acb99a03), [`014b140`](https://github.com/halfdomelabs/baseplate/commit/014b140bcdb959bd4dc34af4af1e57b9b529a9b1), [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b), [`3c79212`](https://github.com/halfdomelabs/baseplate/commit/3c79212caf68341e61f5e6a9a9d0f3a840ea964b), [`f684e64`](https://github.com/halfdomelabs/baseplate/commit/f684e64646e026c1d60223433ffb8ba2432d1033), [`80b9a21`](https://github.com/halfdomelabs/baseplate/commit/80b9a21bf031de47988997497aea99c7e34ba5ed), [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b), [`3f9b186`](https://github.com/halfdomelabs/baseplate/commit/3f9b186b992a345fbbbd4c3ec56acc69314e07fe), [`c6caf6b`](https://github.com/halfdomelabs/baseplate/commit/c6caf6bb118b51643e67196b0a2c94973a1c8fb2), [`2f67423`](https://github.com/halfdomelabs/baseplate/commit/2f67423a1087e7779f4c7a6423d86f1f8465d1a3), [`635fb23`](https://github.com/halfdomelabs/baseplate/commit/635fb234fe6f567b1c70aa1cdb139521a14e36c1), [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1)]:
+  - @halfdomelabs/core-generators@0.11.0
+  - @halfdomelabs/utils@0.1.4
+  - @halfdomelabs/sync@0.10.0
+
 ## 0.11.7
 
 ### Patch Changes
