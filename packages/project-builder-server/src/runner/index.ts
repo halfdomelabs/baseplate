@@ -1,14 +1,11 @@
 import type {
-  AppEntry,
   ProjectDefinition,
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
 import type { Logger } from '@halfdomelabs/sync';
 
-import {
-  prettyStableStringify,
-  runSchemaMigrations,
-} from '@halfdomelabs/project-builder-lib';
+import { runSchemaMigrations } from '@halfdomelabs/project-builder-lib';
+import { stringifyPrettyStable } from '@halfdomelabs/utils';
 import { fileExists, readJsonWithSchema } from '@halfdomelabs/utils/node';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -18,7 +15,7 @@ import { compileApplications } from '@src/compiler/index.js';
 
 import { generateForDirectory } from '../sync/index.js';
 
-async function loadProjectJson(directory: string): Promise<unknown> {
+async function loadProjectJson(directory: string): Promise<ProjectDefinition> {
   const projectJsonPath = path.join(
     directory,
     'baseplate/project-definition.json',
@@ -39,22 +36,10 @@ async function loadProjectJson(directory: string): Promise<unknown> {
     projectJson as ProjectDefinition,
   );
   if (appliedMigrations.length > 0) {
-    await writeFile(projectJsonPath, prettyStableStringify(migratedDefinition));
+    await writeFile(projectJsonPath, stringifyPrettyStable(migratedDefinition));
   }
 
   return migratedDefinition;
-}
-
-async function compileApplicationsFromDirectory({
-  directory,
-  context,
-}: {
-  directory: string;
-  context: SchemaParserContext;
-}): Promise<AppEntry[]> {
-  const projectJson = await loadProjectJson(directory);
-
-  return compileApplications(projectJson, context);
 }
 
 export interface BuildProjectForDirectoryOptions {
@@ -68,16 +53,21 @@ export async function buildProjectForDirectory({
   logger,
   context,
 }: BuildProjectForDirectoryOptions): Promise<void> {
-  const apps = await compileApplicationsFromDirectory({
-    directory,
-    context,
-  });
+  const projectJson = await loadProjectJson(directory);
+
+  const apps = compileApplications(projectJson, context);
+
+  const shouldWriteTemplateMetadata =
+    projectJson.templateExtractor?.writeMetadata ?? false;
 
   for (const app of apps) {
     await generateForDirectory({
       baseDirectory: directory,
       appEntry: app,
       logger,
+      templateMetadataWriter: {
+        enabled: shouldWriteTemplateMetadata,
+      },
     });
   }
 

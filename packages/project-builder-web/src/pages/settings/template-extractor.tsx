@@ -7,14 +7,8 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import {
-  Alert,
-  CheckboxField,
-  InputField,
-  SectionList,
-} from '@halfdomelabs/ui-components';
+import { Alert, CheckboxField, SectionList } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useWatch } from 'react-hook-form';
 
 import { FormActionBar } from '@src/components';
 import { ENABLE_TEMPLATE_EXTRACTOR } from '@src/services/config';
@@ -38,8 +32,6 @@ export function TemplateExtractorSettingsPage(): React.JSX.Element {
   );
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
-
-  const isEnabled = useWatch({ control, name: 'writeMetadata' });
 
   if (!ENABLE_TEMPLATE_EXTRACTOR) {
     return (
@@ -73,14 +65,6 @@ export function TemplateExtractorSettingsPage(): React.JSX.Element {
                 label="Write Metadata"
                 description="Write metadata to the project to enable template extraction"
                 control={control}
-              />
-              <InputField.Controller
-                name="generatorPatterns"
-                label="Generator Patterns"
-                description="A comma-delimited list of generator name patterns to filter which generators will write template extractor metadata. Use `*` to match any characters."
-                control={control}
-                placeholder="e.g. @halfdomelabs/core:node/*"
-                disabled={!isEnabled}
               />
             </SectionList.SectionContent>
           </SectionList.Section>

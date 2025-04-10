@@ -4,16 +4,16 @@ import type { FastifyInstance } from 'fastify';
 
 import {
   getLatestMigrationVersion,
-  prettyStableStringify,
   type ProjectDefinition,
 } from '@halfdomelabs/project-builder-lib';
+import { stringifyPrettyStable } from '@halfdomelabs/utils';
 import { test as base } from '@playwright/test';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { pino } from 'pino';
 
-import { serveWebServer } from '@src/server.js';
+import { serveWebServer } from '@src/commands/server.js';
 import { DEFAULT_LOGGER_OPTIONS } from '@src/services/logger.js';
 
 /**
@@ -178,7 +178,7 @@ export const test = base.extend<
         ): Promise<void> {
           await fs.writeFile(
             path.join(tempDir, 'baseplate/project-definition.json'),
-            prettyStableStringify(projectDefinition),
+            stringifyPrettyStable(projectDefinition),
           );
         }
 

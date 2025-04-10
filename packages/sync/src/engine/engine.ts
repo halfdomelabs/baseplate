@@ -11,6 +11,7 @@ import type {
   WriteGeneratorOutputOptions,
   WriteGeneratorOutputResult,
 } from '../output/write-generator-output.js';
+import type { ExecuteGeneratorEntryOptions } from '../runner/index.js';
 
 import { writeGeneratorOutput } from '../output/write-generator-output.js';
 import { executeGeneratorEntry } from '../runner/index.js';
@@ -42,9 +43,9 @@ export class GeneratorEngine {
    */
   async build(
     rootEntry: GeneratorEntry,
-    logger: Logger = console,
+    options: ExecuteGeneratorEntryOptions,
   ): Promise<GeneratorOutput> {
-    return executeGeneratorEntry(rootEntry, logger);
+    return executeGeneratorEntry(rootEntry, options);
   }
 
   async writeOutput(

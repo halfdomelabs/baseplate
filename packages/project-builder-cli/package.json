@@ -24,12 +24,12 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "dev": "tsx watch --exclude /**/node_modules/** -r dotenv/config ./src",
+    "dev": "tsx watch --tsconfig ./tsconfig.app.json --exclude /**/node_modules/** -r dotenv/config ./src",
     "dev:serve": "pnpm dev serve",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "start": "tsx -r dotenv/config ./src",
+    "start": "tsx --tsconfig ./tsconfig.app.json -r dotenv/config ./src",
     "test:e2e": "pnpm playwright test",
     "typecheck": "tsc --build tsconfig.json"
   },

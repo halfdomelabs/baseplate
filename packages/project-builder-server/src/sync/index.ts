@@ -1,9 +1,12 @@
 import type { AppEntry } from '@halfdomelabs/project-builder-lib';
 import type { Logger, PreviousGeneratedPayload } from '@halfdomelabs/sync';
+import type { TemplateMetadataWriterOptions } from '@halfdomelabs/sync/dist/runner/generator-runner.js';
 
 import {
   createCodebaseFileReaderFromDirectory,
   GeneratorEngine,
+  writeGeneratorsMetadata,
+  writeTemplateMetadata,
 } from '@halfdomelabs/sync';
 import {
   dirExists,
@@ -30,6 +33,10 @@ interface GenerateForDirectoryOptions {
   baseDirectory: string;
   appEntry: AppEntry;
   logger: Logger;
+  /**
+   * Whether to write template metadata to the generated directory
+   */
+  templateMetadataWriter?: TemplateMetadataWriterOptions;
 }
 
 // /**
@@ -62,12 +69,14 @@ async function getPreviousGeneratedFileIdMap(
     const fileIdMap = await readJsonWithSchema(
       generatedFileIdMapPath,
       z.record(z.string(), z.string()),
-    );
-    return new Map(Object.entries(fileIdMap));
-  } catch (err) {
-    if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
+    ).catch(handleFileNotFoundError);
+
+    if (!fileIdMap) {
       return new Map();
     }
+
+    return new Map(Object.entries(fileIdMap));
+  } catch (err) {
     throw new Error(
       `Failed to get previous generated file id map (${generatedFileIdMapPath}): ${String(err)}`,
       { cause: err },
@@ -98,6 +107,7 @@ export async function generateForDirectory({
   baseDirectory,
   appEntry,
   logger,
+  templateMetadataWriter,
 }: GenerateForDirectoryOptions): Promise<void> {
   const { appDirectory, name, generatorBundle } = appEntry;
   const engine = new GeneratorEngine();
@@ -107,7 +117,10 @@ export async function generateForDirectory({
   logger.info(`Generating project ${name} in ${projectDirectory}...`);
 
   const project = await engine.loadProject(generatorBundle, logger);
-  const output = await engine.build(project, logger);
+  const output = await engine.build(project, {
+    logger,
+    templateMetadataWriter,
+  });
   logger.info('Project built! Writing output....');
 
   // look for previous build result
@@ -146,6 +159,12 @@ export async function generateForDirectory({
       rerunCommands: oldBuildResult?.failedCommands,
       logger,
     });
+
+    // write metadata to the generated directory
+    if (templateMetadataWriter?.enabled) {
+      await writeGeneratorsMetadata(project, output.files, projectDirectory);
+      await writeTemplateMetadata(output.files, projectDirectory);
+    }
 
     if (oldBuildResult) {
       await rm(buildResultPath);
@@ -204,7 +223,7 @@ export async function generateForDirectory({
     }
 
     if (
-      environmentFlags.BASEPLATE_WRITE_GENERATOR_STEPS_HTML &&
+      environmentFlags.BASEPLATE_WRITE_GENERATOR_STEPS_JSON &&
       output.metadata
     ) {
       await writeGeneratorSteps(output.metadata, projectDirectory);

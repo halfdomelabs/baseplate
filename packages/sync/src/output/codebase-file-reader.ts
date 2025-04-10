@@ -1,3 +1,4 @@
+import { handleFileNotFoundError } from '@halfdomelabs/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -38,16 +39,7 @@ export function createCodebaseFileReaderFromDirectory(
     readFile: (relativePath: string) =>
       fs
         .readFile(path.join(directory, relativePath))
-        .catch((error: unknown): undefined => {
-          if (
-            error instanceof Error &&
-            'code' in error &&
-            error.code === 'ENOENT'
-          ) {
-            return;
-          }
-          throw error;
-        }),
+        .catch(handleFileNotFoundError),
   };
 }
 

@@ -10,11 +10,11 @@ import {
 import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
 
-import { getEnabledFeatureFlags } from './services/feature-flags.js';
-import { logger } from './services/logger.js';
-import { expandPathWithTilde } from './utils/path.js';
-import { resolveModule } from './utils/resolve.js';
-import { getPackageVersion } from './utils/version.js';
+import { getEnabledFeatureFlags } from '../services/feature-flags.js';
+import { logger } from '../services/logger.js';
+import { expandPathWithTilde } from '../utils/path.js';
+import { resolveModule } from '../utils/resolve.js';
+import { getPackageVersion } from '../utils/version.js';
 
 interface ServeCommandOptions {
   browser: boolean;

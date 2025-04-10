@@ -1,3 +1,4 @@
+export * from './builder-action-test-helpers.js';
 export * from './builder-action.js';
 export * from './codebase-file-reader.js';
 export type * from './formatter.js';

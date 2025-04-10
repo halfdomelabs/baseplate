@@ -27,9 +27,31 @@ import {
 import { getSortedRunSteps } from './dependency-sort.js';
 import { flattenGeneratorTaskEntriesAndPhases } from './utils.js';
 
+/**
+ * Options for writing template metadata
+ */
+export interface TemplateMetadataWriterOptions {
+  /**
+   * Whether to write template metadata
+   */
+  enabled: boolean;
+  /**
+   * Generator names to exclude from writing template metadata
+   */
+  excludeGeneratorNames?: string[];
+}
+
+/**
+ * Options for executing a generator entry
+ */
+export interface ExecuteGeneratorEntryOptions {
+  logger: Logger;
+  templateMetadataWriter?: TemplateMetadataWriterOptions;
+}
+
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry,
-  logger: Logger,
+  { logger, templateMetadataWriter }: ExecuteGeneratorEntryOptions,
 ): Promise<GeneratorOutput> {
   const { taskEntries, phases } =
     flattenGeneratorTaskEntriesAndPhases(rootEntry);
@@ -42,7 +64,7 @@ export async function executeGeneratorEntry(
   const providerMapById: Record<string, Record<string, Provider>> = {}; // map of entry ID to map of provider name to Provider
 
   const generatorOutputs: GeneratorTaskOutput[] = [];
-  const generatorMetadatas: GeneratorOutputMetadata[] = [];
+  const generatorTaskMetadatas: GeneratorOutputMetadata[] = [];
 
   // map of phases to generator ID to task entries that are dynamically added
   const dynamicTaskEntriesByPhase = new Map<
@@ -74,7 +96,7 @@ export async function executeGeneratorEntry(
       ],
       dependencyMap,
     );
-    generatorMetadatas.push(metadata);
+    generatorTaskMetadatas.push(metadata);
     for (const runStep of sortedRunSteps) {
       const [action, taskId] = runStep.split('|');
       try {
@@ -166,6 +188,11 @@ export async function executeGeneratorEntry(
           const outputBuilder = new GeneratorTaskOutputBuilder({
             generatorInfo: entry.generatorInfo,
             generatorId: entry.generatorId,
+            includeTemplateMetadata:
+              templateMetadataWriter?.enabled &&
+              !templateMetadataWriter.excludeGeneratorNames?.includes(
+                entry.generatorInfo.name,
+              ),
           });
 
           if (generator.build) {
@@ -264,10 +291,10 @@ export async function executeGeneratorEntry(
       (output) => output.globalFormatters,
     ),
     metadata: {
-      generatorProviderRelationships: generatorMetadatas.flatMap(
+      generatorProviderRelationships: generatorTaskMetadatas.flatMap(
         (metadata) => metadata.generatorProviderRelationships,
       ),
-      generatorTaskEntries: generatorMetadatas.flatMap(
+      generatorTaskEntries: generatorTaskMetadatas.flatMap(
         (metadata) => metadata.generatorTaskEntries,
       ),
     },
