@@ -19,7 +19,7 @@ export class RawTemplateFileExtractor extends TemplateFileExtractor<
   protected async extractTemplateFile(
     file: TemplateFileExtractorFile<RawTemplateFileMetadata>,
   ): Promise<{ typescriptCodeBlock: string; typescriptExports: string[] }> {
-    const sourceFileContents = await this.readSourceFile(file.path);
+    const sourceFileContents = await this.readSourceFileBuffer(file.path);
     await this.writeTemplateFileIfModified(file, sourceFileContents);
 
     const templateName = pascalCase(file.metadata.name);

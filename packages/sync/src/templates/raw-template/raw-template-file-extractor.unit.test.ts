@@ -58,16 +58,16 @@ describe('RawTemplateFileExtractor', () => {
     expect(
       result[TemplateFileExtractorTestUtils.generatedPath('raw-templates.ts')],
     ).toMatchInlineSnapshot(`
-      "import { createRawTemplateFile } from "@halfdomelabs/sync";
+      "import { createRawTemplateFile } from '@halfdomelabs/sync';
 
       const TestRawTemplate = createRawTemplateFile({
-        name: "test",
-        source: { path: "test.txt" },
+        name: 'test',
+        source: { path: 'test.txt' },
       });
 
       const Test2RawTemplate = createRawTemplateFile({
-        name: "test2",
-        source: { path: "test2.txt" },
+        name: 'test2',
+        source: { path: 'test2.txt' },
       });
 
       export const TEST_GENERATOR_RAW_TEMPLATES = {

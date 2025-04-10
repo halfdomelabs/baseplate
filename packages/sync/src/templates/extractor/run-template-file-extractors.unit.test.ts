@@ -1,4 +1,7 @@
+import type { PathLike, Stats } from 'node:fs';
+
 import { vol } from 'memfs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -22,7 +25,8 @@ vi.mock('node:fs');
 vi.mock('node:fs/promises');
 
 describe('runTemplateFileExtractors', () => {
-  const outputDirectory = '/test/output';
+  const outputDirectory1 = '/test/output1';
+  const outputDirectory2 = '/test/output2';
   const generatorPackageMap = new Map([['test-pkg', '/test/pkg']]);
   const mockLogger = createTestLogger();
 
@@ -56,11 +60,11 @@ describe('runTemplateFileExtractors', () => {
   it('should process template files with matching extractors', async () => {
     // mock file system
     vol.fromJSON({
-      [path.join(outputDirectory, GENERATOR_INFO_FILENAME)]: JSON.stringify({
+      [path.join(outputDirectory1, GENERATOR_INFO_FILENAME)]: JSON.stringify({
         'test-pkg#test-generator': 'src/generators/test-generator',
         'test-pkg#test-generator-2': 'src/generators/test-generator-2',
       }),
-      [path.join(outputDirectory, 'src', TEMPLATE_METADATA_FILENAME)]:
+      [path.join(outputDirectory1, 'src', TEMPLATE_METADATA_FILENAME)]:
         JSON.stringify({
           'test-file.ts': {
             name: 'test-file',
@@ -75,15 +79,20 @@ describe('runTemplateFileExtractors', () => {
             template: 'test-template-2.ts',
           },
         }),
-      [path.join(outputDirectory, 'src/folder', TEMPLATE_METADATA_FILENAME)]:
+      [path.join(outputDirectory1, 'src', 'test-file.ts')]: 'test-file-content',
+      [path.join(outputDirectory1, 'src', 'test-file-2.ts')]:
+        'test-file-2-content',
+      [path.join(outputDirectory1, 'src/folder', TEMPLATE_METADATA_FILENAME)]:
         JSON.stringify({
           'index.ts': {
             name: 'index-file',
             type: 'test-type',
             generator: 'test-generator',
-            template: 'test-template.ts',
+            template: 'index-template.ts',
           },
         }),
+      [path.join(outputDirectory1, 'src/folder', 'index.ts')]:
+        'index-file-content',
     });
 
     // Mock extractors
@@ -94,14 +103,13 @@ describe('runTemplateFileExtractors', () => {
 
     await runTemplateFileExtractors(
       extractorCreators,
-      outputDirectory,
+      [outputDirectory1],
       generatorPackageMap,
       mockLogger,
     );
 
     // check context is correct
     const context = mockConstructor.mock.calls[0][0];
-    expect(context.outputDirectory).toBe(outputDirectory);
     expect(context.generatorInfoMap.get('test-pkg#test-generator')).toEqual({
       name: 'test-pkg#test-generator',
       baseDirectory: '/test/pkg/src/generators/test-generator',
@@ -110,7 +118,7 @@ describe('runTemplateFileExtractors', () => {
     expect(mockExtract).toHaveBeenCalledTimes(2);
     expect(mockExtract).toHaveBeenCalledWith('test-type', [
       {
-        path: path.join(outputDirectory, 'src/test-file.ts'),
+        path: path.join(outputDirectory1, 'src/test-file.ts'),
         metadata: {
           name: 'test-file',
           type: 'test-type',
@@ -119,9 +127,79 @@ describe('runTemplateFileExtractors', () => {
         },
       },
       {
-        path: path.join(outputDirectory, 'src/folder/index.ts'),
+        path: path.join(outputDirectory1, 'src/folder/index.ts'),
         metadata: {
           name: 'index-file',
+          type: 'test-type',
+          generator: 'test-generator',
+          template: 'index-template.ts',
+        },
+      },
+    ]);
+    expect(mockExtract).toHaveBeenCalledWith('test-type-2', [
+      {
+        path: path.join(outputDirectory1, 'src/test-file-2.ts'),
+        metadata: {
+          name: 'test-file-2',
+          type: 'test-type-2',
+          generator: 'test-generator-2',
+          template: 'test-template-2.ts',
+        },
+      },
+    ]);
+  });
+
+  it('should process template files from multiple output directories', async () => {
+    // mock file system
+    vol.fromJSON({
+      [path.join(outputDirectory1, GENERATOR_INFO_FILENAME)]: JSON.stringify({
+        'test-pkg#test-generator': 'src/generators/test-generator',
+      }),
+      [path.join(outputDirectory1, 'src', TEMPLATE_METADATA_FILENAME)]:
+        JSON.stringify({
+          'test-file.ts': {
+            name: 'test-file',
+            type: 'test-type',
+            generator: 'test-generator',
+            template: 'test-template.ts',
+          },
+        }),
+      [path.join(outputDirectory1, 'src', 'test-file.ts')]: 'test-file-content',
+      [path.join(outputDirectory2, GENERATOR_INFO_FILENAME)]: JSON.stringify({
+        'test-pkg#test-generator-2': 'src/generators/test-generator-2',
+      }),
+      [path.join(outputDirectory2, 'src', TEMPLATE_METADATA_FILENAME)]:
+        JSON.stringify({
+          'test-file-2.ts': {
+            name: 'test-file-2',
+            type: 'test-type-2',
+            generator: 'test-generator-2',
+            template: 'test-template-2.ts',
+          },
+        }),
+      [path.join(outputDirectory2, 'src', 'test-file-2.ts')]:
+        'test-file-2-content',
+    });
+
+    // Mock extractors
+    const extractorCreators: TemplateFileExtractorCreator[] = [
+      (context) => new MockExtractor(context, 'test-type'),
+      (context) => new MockExtractor(context, 'test-type-2'),
+    ];
+
+    await runTemplateFileExtractors(
+      extractorCreators,
+      [outputDirectory1, outputDirectory2],
+      generatorPackageMap,
+      mockLogger,
+    );
+
+    expect(mockExtract).toHaveBeenCalledTimes(2);
+    expect(mockExtract).toHaveBeenCalledWith('test-type', [
+      {
+        path: path.join(outputDirectory1, 'src/test-file.ts'),
+        metadata: {
+          name: 'test-file',
           type: 'test-type',
           generator: 'test-generator',
           template: 'test-template.ts',
@@ -130,12 +208,86 @@ describe('runTemplateFileExtractors', () => {
     ]);
     expect(mockExtract).toHaveBeenCalledWith('test-type-2', [
       {
-        path: path.join(outputDirectory, 'src/test-file-2.ts'),
+        path: path.join(outputDirectory2, 'src/test-file-2.ts'),
         metadata: {
           name: 'test-file-2',
           type: 'test-type-2',
           generator: 'test-generator-2',
           template: 'test-template-2.ts',
+        },
+      },
+    ]);
+  });
+
+  it('should use the latest modified template when duplicates exist', async () => {
+    const now = new Date();
+    const olderTime = new Date(now.getTime() - 1000);
+    const newerTime = new Date(now.getTime() + 1000);
+
+    // mock file system with duplicate templates in different directories
+    vol.fromJSON({
+      [path.join(outputDirectory1, GENERATOR_INFO_FILENAME)]: JSON.stringify({
+        'test-pkg#test-generator': 'src/generators/test-generator',
+      }),
+      [path.join(outputDirectory1, 'src', TEMPLATE_METADATA_FILENAME)]:
+        JSON.stringify({
+          'test-file.ts': {
+            name: 'test-file',
+            type: 'test-type',
+            generator: 'test-generator',
+            template: 'test-template.ts',
+          },
+        }),
+      [path.join(outputDirectory1, 'src', 'test-file.ts')]: 'test-file-content',
+      [path.join(outputDirectory2, GENERATOR_INFO_FILENAME)]: JSON.stringify({
+        'test-pkg#test-generator': 'src/generators/test-generator',
+      }),
+      [path.join(outputDirectory2, 'src', TEMPLATE_METADATA_FILENAME)]:
+        JSON.stringify({
+          'test-file.ts': {
+            name: 'test-file',
+            type: 'test-type',
+            generator: 'test-generator',
+            template: 'test-template.ts',
+          },
+        }),
+      [path.join(outputDirectory2, 'src', 'test-file.ts')]:
+        'test-file-content-2',
+    });
+
+    // Mock file stats to simulate different modification times
+    vol.utimesSync(
+      path.join(outputDirectory1, 'src/test-file.ts'),
+      olderTime,
+      olderTime,
+    );
+    vol.utimesSync(
+      path.join(outputDirectory2, 'src/test-file.ts'),
+      newerTime,
+      newerTime,
+    );
+
+    // Mock extractors
+    const extractorCreators: TemplateFileExtractorCreator[] = [
+      (context) => new MockExtractor(context, 'test-type'),
+    ];
+
+    await runTemplateFileExtractors(
+      extractorCreators,
+      [outputDirectory1, outputDirectory2],
+      generatorPackageMap,
+      mockLogger,
+    );
+
+    expect(mockExtract).toHaveBeenCalledTimes(1);
+    expect(mockExtract).toHaveBeenCalledWith('test-type', [
+      {
+        path: path.join(outputDirectory2, 'src/test-file.ts'),
+        metadata: {
+          name: 'test-file',
+          type: 'test-type',
+          generator: 'test-generator',
+          template: 'test-template.ts',
         },
       },
     ]);
@@ -148,10 +300,10 @@ describe('runTemplateFileExtractors', () => {
 
     // Setup test files
     vol.fromJSON({
-      [path.join(outputDirectory, GENERATOR_INFO_FILENAME)]: JSON.stringify({
+      [path.join(outputDirectory1, GENERATOR_INFO_FILENAME)]: JSON.stringify({
         'test-pkg#test-generator': 'src/generators/test-generator',
       }),
-      [path.join(outputDirectory, 'src', TEMPLATE_METADATA_FILENAME)]:
+      [path.join(outputDirectory1, 'src', TEMPLATE_METADATA_FILENAME)]:
         JSON.stringify({
           'test-file-2.ts': {
             name: 'test-file-2',
@@ -160,12 +312,14 @@ describe('runTemplateFileExtractors', () => {
             template: 'test-template-2.ts',
           },
         }),
+      [path.join(outputDirectory1, 'src', 'test-file-2.ts')]:
+        'test-file-2-content',
     });
 
     await expect(
       runTemplateFileExtractors(
         extractorCreators,
-        outputDirectory,
+        [outputDirectory1],
         generatorPackageMap,
         mockLogger,
       ),

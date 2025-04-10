@@ -40,10 +40,6 @@ export interface TemplateFileExtractorGeneratorInfo {
 
 export interface TemplateFileExtractorContext {
   /**
-   * The output directory of the project.
-   */
-  outputDirectory: string;
-  /**
    * A map of generator name to its info.
    */
   generatorInfoMap: Map<string, TemplateFileExtractorGeneratorInfo>;

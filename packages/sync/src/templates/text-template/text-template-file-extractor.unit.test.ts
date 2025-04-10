@@ -49,12 +49,12 @@ describe('TextTemplateFileExtractor', () => {
     expect(
       result[TemplateFileExtractorTestUtils.generatedPath('text-templates.ts')],
     ).toMatchInlineSnapshot(`
-      "import { createTextTemplateFile } from "@halfdomelabs/sync";
+      "import { createTextTemplateFile } from '@halfdomelabs/sync';
 
       const TestTextTemplate = createTextTemplateFile({
-        name: "test",
-        source: { path: "test.txt" },
-        variables: { TPL_LOCATION: { description: "The location of the test" } },
+        name: 'test',
+        source: { path: 'test.txt' },
+        variables: { TPL_LOCATION: { description: 'The location of the test' } },
       });
 
       export const TEST_GENERATOR_TEXT_TEMPLATES = {

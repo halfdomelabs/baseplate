@@ -11,7 +11,6 @@ function createTestTemplateFileExtractorContext(
   context?: Partial<TemplateFileExtractorContext>,
 ): TemplateFileExtractorContext {
   return {
-    outputDirectory: DEFAULT_OUTPUT_DIRECTORY,
     generatorInfoMap: new Map([
       [
         TEST_GENERATOR_NAME,

@@ -1,4 +1,4 @@
-# Getting Started with Vite
+# {{TPL_PROJECT_NAME}}
 
 This project was bootstrapped with Baseplate.
 

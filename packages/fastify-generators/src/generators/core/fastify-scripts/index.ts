@@ -4,14 +4,15 @@ import {
   projectScope,
 } from '@halfdomelabs/core-generators';
 import {
-  copyFileAction,
   createGenerator,
   createGeneratorTask,
   createProviderType,
+  renderRawTemplateFileAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { fastifyOutputProvider } from '../fastify/index.js';
+import { CORE_FASTIFY_SCRIPTS_RAW_TEMPLATES } from './generated/raw-templates.js';
 
 const descriptorSchema = z.object({});
 
@@ -60,8 +61,10 @@ export const fastifyScriptsGenerator = createGenerator({
           },
           build: async (builder) => {
             await builder.apply(
-              copyFileAction({
-                source: 'tsconfig.tpl.json',
+              renderRawTemplateFileAction({
+                template:
+                  CORE_FASTIFY_SCRIPTS_RAW_TEMPLATES.TsconfigRawTemplate,
+                id: 'tsconfig',
                 destination: 'scripts/tsconfig.json',
               }),
             );
