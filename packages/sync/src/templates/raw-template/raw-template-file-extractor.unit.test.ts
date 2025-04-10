@@ -61,12 +61,12 @@ describe('RawTemplateFileExtractor', () => {
       "import { createRawTemplateFile } from "@halfdomelabs/sync";
 
       const TestRawTemplate = createRawTemplateFile({
-        name: "Test",
+        name: "test",
         source: { path: "test.txt" },
       });
 
       const Test2RawTemplate = createRawTemplateFile({
-        name: "Test2",
+        name: "test2",
         source: { path: "test2.txt" },
       });
 

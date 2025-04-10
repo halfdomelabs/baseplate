@@ -29,7 +29,7 @@ export class RawTemplateFileExtractor extends TemplateFileExtractor<
     return {
       typescriptCodeBlock: `const ${rawTemplateFileVariableName} = createRawTemplateFile(${JSON.stringify(
         {
-          name: templateName,
+          name: file.metadata.name,
           source: {
             path: file.metadata.template,
           },

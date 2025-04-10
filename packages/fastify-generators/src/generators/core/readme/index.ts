@@ -2,10 +2,11 @@ import { projectProvider } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
-  createTextTemplateFile,
   renderTextTemplateFileAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import { CORE_README_TEXT_TEMPLATES } from './generated/text-templates.js';
 
 const descriptorSchema = z.object({
   projectName: z.string().optional(),
@@ -27,15 +28,7 @@ export const readmeGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               renderTextTemplateFileAction({
-                template: createTextTemplateFile({
-                  name: 'readme',
-                  variables: {
-                    TPL_PROJECT: { description: 'Name of the project' },
-                  },
-                  source: {
-                    path: 'README.md',
-                  },
-                }),
+                template: CORE_README_TEXT_TEMPLATES.ReadmeTextTemplate,
                 id: 'readme',
                 destination: 'README.md',
                 variables: {
