@@ -9,6 +9,7 @@
     "build:affected": "turbo run build --affected",
     "clean": "turbo run clean",
     "dev:serve": "pnpm --filter @halfdomelabs/project-builder-cli dev:serve",
+    "extract:templates": "pnpm --filter @halfdomelabs/project-builder-cli extract:templates",
     "preinstall": "npx only-allow pnpm",
     "knip": "knip",
     "lint": "turbo run lint --continue",

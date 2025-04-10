@@ -6,6 +6,7 @@ import NotFoundPage from '../NotFound.page';
 import SettingsLayout from './_layout';
 import HierarchyPage from './hierarchy';
 import ProjectSettingsPage from './project-settings';
+import { TemplateExtractorSettingsPage } from './template-extractor';
 import { ThemeBuilderPage } from './theme-builder';
 
 export const SettingsRoutes: RouteObject = {
@@ -30,6 +31,11 @@ export const SettingsRoutes: RouteObject = {
       path: 'theme-builder',
       element: <ThemeBuilderPage />,
       handle: { crumb: 'Theme builder' },
+    },
+    {
+      path: 'template-extractor',
+      element: <TemplateExtractorSettingsPage />,
+      handle: { crumb: 'Template extractor' },
     },
     { path: '*', element: <NotFoundPage /> },
   ],

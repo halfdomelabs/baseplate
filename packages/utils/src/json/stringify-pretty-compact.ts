@@ -63,8 +63,10 @@ function get<Type extends object, Key extends keyof Type>(
 // working on the output of `JSON.stringify` we know that only valid strings
 // are present (unless the user supplied a weird `options.indent` but in
 // that case we don’t care since the output would be invalid anyway).
+// This regex has been adjusted to allow replacement of { } and [ ] with {} and []
+// to better mirror prettier formatting.
 const stringOrChar =
-  /("(?:[^\\"]|\\.)*")|(?<![{])[}{](?![}])|(?<![[])[\][](?![\]])|[:,]/g;
+  /("(?:[^\\"]|\\.)*")|[:,]|\{(?!})|(?<!\{)}|\[(?!])|(?<!\[)]/g;
 
 function prettify(
   str: string,
@@ -93,12 +95,12 @@ function prettify(
     tokens[']'] = ' ]';
   }
 
-  return str.replace(stringOrChar, (match, string) =>
+  return str.replaceAll(stringOrChar, (match, string) =>
     string ? match : tokens[match],
   );
 }
 
-export function stringify(
+export function stringifyPrettyCompact(
   rootObj: unknown,
   options: StringifyOptions = {},
 ): string {
@@ -108,7 +110,7 @@ export function stringify(
   );
   const addMargin = get(options, 'margins', false);
   const addArrayMargin = get(options, 'arrayMargins', false);
-  const addObjectMargin = get(options, 'objectMargins', false);
+  const addObjectMargin = get(options, 'objectMargins', true);
   const maxLength = indent === '' ? Infinity : get(options, 'maxLength', 80);
   const maxNesting = get(options, 'maxNesting', Infinity);
 

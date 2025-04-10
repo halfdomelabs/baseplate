@@ -1,45 +1,25 @@
-import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
+#!/usr/bin/env node
 
-import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
-import {
-  buildProjectForDirectory,
-  createNodeSchemaParserContext,
-} from '@halfdomelabs/project-builder-server';
 import { program } from 'commander';
 
-import { addServeCommand } from './server.js';
+import { addBuildCommand } from './commands/build.js';
+import { addExtractTemplatesCommand } from './commands/extract-templates.js';
+import { addServeCommand } from './commands/server.js';
+import { getEnabledFeatureFlags } from './services/feature-flags.js';
 import { logger } from './services/logger.js';
-import { expandPathWithTilde } from './utils/path.js';
 import { getPackageVersion } from './utils/version.js';
-
-async function createSchemaParserContext(
-  directory: string,
-): Promise<SchemaParserContext> {
-  const builtInPlugins = await getDefaultPlugins(logger);
-  return createNodeSchemaParserContext(directory, logger, builtInPlugins);
-}
 
 async function runMain(): Promise<void> {
   const version = await getPackageVersion();
+  const enabledFlags = getEnabledFeatureFlags();
 
   program.version(version, '-v, --version');
 
-  program
-    .command('generate [directory]')
-    .description(
-      'Builds project from project-definition.json in baseplate/ directory',
-    )
-    .action(async (directory: string | undefined) => {
-      const resolvedDirectory = directory
-        ? expandPathWithTilde(directory)
-        : '.';
-      const context = await createSchemaParserContext(resolvedDirectory);
-      return buildProjectForDirectory({
-        directory: resolvedDirectory,
-        logger,
-        context,
-      });
-    });
+  if (enabledFlags.includes('TEMPLATE_EXTRACTOR')) {
+    addExtractTemplatesCommand(program);
+  }
+
+  addBuildCommand(program);
 
   addServeCommand(program);
 

@@ -444,9 +444,6 @@ importers:
       react-hook-form:
         specifier: 7.53.0
         version: 7.53.0(react@18.3.1)
-      sort-keys:
-        specifier: ^5.1.0
-        version: 5.1.0
       zod:
         specifier: 'catalog:'
         version: 3.24.1
@@ -541,6 +538,9 @@ importers:
       fastify-type-provider-zod:
         specifier: 4.0.1
         version: 4.0.1(fastify@5.1.0)(zod@3.24.1)
+      globby:
+        specifier: ^14.0.2
+        version: 14.0.2
       inflection:
         specifier: 3.0.0
         version: 3.0.0
@@ -1217,6 +1217,9 @@ importers:
       es-toolkit:
         specifier: 1.31.0
         version: 1.31.0
+      sort-keys:
+        specifier: ^5.1.0
+        version: 5.1.0
       zod:
         specifier: 'catalog:'
         version: 3.24.1

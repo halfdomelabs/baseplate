@@ -95,7 +95,7 @@ function buildGeneratorEntry(
 describe('executeGeneratorEntry', () => {
   it('generates an empty generator entry', async () => {
     const entry = buildGeneratorEntry();
-    const result = await executeGeneratorEntry(entry, logger);
+    const result = await executeGeneratorEntry(entry, { logger });
     expect(result.files.size).toEqual(0);
     expect(result.postWriteCommands.length).toEqual(0);
   });
@@ -114,7 +114,7 @@ describe('executeGeneratorEntry', () => {
         });
       },
     });
-    const result = await executeGeneratorEntry(entry, logger);
+    const result = await executeGeneratorEntry(entry, { logger });
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/simple/file.txt': {
         id: 'test-generator:simple',
@@ -179,7 +179,7 @@ describe('executeGeneratorEntry', () => {
         }),
       ],
     });
-    const result = await executeGeneratorEntry(entry, logger);
+    const result = await executeGeneratorEntry(entry, { logger });
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/simple/file.txt': {
         id: 'test-generator:simple',
@@ -251,7 +251,7 @@ describe('executeGeneratorEntry', () => {
       ],
     });
 
-    const result = await executeGeneratorEntry(entry, logger);
+    const result = await executeGeneratorEntry(entry, { logger });
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/output/file.txt': {
         id: 'test-generator:output',
@@ -304,7 +304,7 @@ describe('executeGeneratorEntry', () => {
       ],
     });
 
-    const result = await executeGeneratorEntry(entry, logger);
+    const result = await executeGeneratorEntry(entry, { logger });
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/consumer/file.txt': {
         id: 'test-generator:consumer',
@@ -331,7 +331,7 @@ describe('executeGeneratorEntry', () => {
       ],
     });
 
-    await expect(executeGeneratorEntry(entry, logger)).rejects.toThrow(
+    await expect(executeGeneratorEntry(entry, { logger })).rejects.toThrow(
       /Could not resolve dependency/,
     );
   });
@@ -408,7 +408,7 @@ describe('executeGeneratorEntry', () => {
       ],
     });
 
-    const result = await executeGeneratorEntry(entry, logger);
+    const result = await executeGeneratorEntry(entry, { logger });
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/phase1/file.txt': {
         id: 'test-generator:phase1',
@@ -457,7 +457,7 @@ describe('executeGeneratorEntry', () => {
       ],
     });
 
-    await expect(executeGeneratorEntry(entry, logger)).rejects.toThrow(
+    await expect(executeGeneratorEntry(entry, { logger })).rejects.toThrow(
       /Dependency dep in root#phase2 cannot come from a previous phase since it is not read-only/,
     );
   });
@@ -513,7 +513,7 @@ describe('executeGeneratorEntry', () => {
       ],
     });
 
-    const result = await executeGeneratorEntry(entry, logger);
+    const result = await executeGeneratorEntry(entry, { logger });
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/dynamic/file.txt': {
         id: 'test-generator:dynamic',
@@ -553,7 +553,7 @@ describe('executeGeneratorEntry', () => {
       ],
     });
 
-    await expect(executeGeneratorEntry(entry, logger)).rejects.toThrow(
+    await expect(executeGeneratorEntry(entry, { logger })).rejects.toThrow(
       /Dynamic task dynamic-task must have a phase/,
     );
   });
@@ -611,7 +611,7 @@ describe('executeGeneratorEntry', () => {
       ],
     });
 
-    await expect(executeGeneratorEntry(entry, logger)).rejects.toThrow(
+    await expect(executeGeneratorEntry(entry, { logger })).rejects.toThrow(
       /Dynamic task dynamic-task already exists/,
     );
   });
@@ -676,7 +676,7 @@ describe('executeGeneratorEntry', () => {
       ],
     });
 
-    const result = await executeGeneratorEntry(entry, logger);
+    const result = await executeGeneratorEntry(entry, { logger });
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/dynamic/file.txt': {
         id: 'test-generator:dynamic',

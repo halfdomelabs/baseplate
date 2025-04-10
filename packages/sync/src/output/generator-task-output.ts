@@ -6,6 +6,7 @@ import type {
   GeneratorTask,
   GeneratorTaskEntry,
 } from '@src/generators/index.js';
+import type { TemplateFileMetadataBase } from '@src/templates/metadata/index.js';
 
 import type { BuilderAction } from './builder-action.js';
 import type { GeneratorOutputFormatter } from './formatter.js';
@@ -36,6 +37,10 @@ export interface WriteFileOptions {
    * Merge algorithms to use for the file
    */
   mergeAlgorithms?: StringMergeAlgorithm[];
+  /**
+   * Metadata about the template that was used to generate the file
+   */
+  templateMetadata?: TemplateFileMetadataBase;
 }
 
 /**
@@ -97,7 +102,7 @@ export interface GeneratorOutput extends GeneratorTaskOutput {
   metadata?: GeneratorOutputMetadata;
 }
 
-interface GeneratorTaskOutputBuilderContext {
+export interface GeneratorTaskOutputBuilderContext {
   /**
    * The info of the current generator
    */
@@ -106,6 +111,10 @@ interface GeneratorTaskOutputBuilderContext {
    * The id of the current generator
    */
   generatorId: string;
+  /**
+   * Whether to include template metadata in the output
+   */
+  includeTemplateMetadata?: boolean;
 }
 
 /**
@@ -133,6 +142,11 @@ export class GeneratorTaskOutputBuilder {
    */
   dynamicTasks: GeneratorTaskEntry[] = [];
 
+  /**
+   * Whether to include metadata in the output
+   */
+  includeMetadata: boolean;
+
   constructor(context: GeneratorTaskOutputBuilderContext) {
     this.output = {
       files: new Map(),
@@ -141,6 +155,7 @@ export class GeneratorTaskOutputBuilder {
     };
     this.generatorInfo = context.generatorInfo;
     this.generatorId = context.generatorId;
+    this.includeMetadata = context.includeTemplateMetadata ?? false;
   }
 
   /**
@@ -169,12 +184,14 @@ export class GeneratorTaskOutputBuilder {
     contents,
     options,
     generatorName,
+    templateMetadata,
   }: {
     id: string;
     generatorName?: string;
     filePath: string;
     contents: string | Buffer;
-    options?: WriteFileOptions;
+    options?: Omit<WriteFileOptions, 'templateMetadata'>;
+    templateMetadata?: TemplateFileMetadataBase;
   }): void {
     // normalize all paths to POSIX style / paths
     const fullPath = filePath.replaceAll(path.sep, path.posix.sep);
@@ -190,7 +207,12 @@ export class GeneratorTaskOutputBuilder {
     this.output.files.set(fullPath, {
       id: `${generatorName ?? this.generatorInfo.name}:${id}`,
       contents,
-      options,
+      options: this.includeMetadata
+        ? {
+            ...options,
+            templateMetadata,
+          }
+        : options,
     });
   }
 

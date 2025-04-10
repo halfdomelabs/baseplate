@@ -1,6 +1,9 @@
 // Environment flags that can change behavior of the project builder server
 
 export const environmentFlags = {
-  BASEPLATE_WRITE_GENERATOR_STEPS_HTML:
-    !!process.env.BASEPLATE_WRITE_GENERATOR_STEPS_HTML,
+  /**
+   * Whether to write the generator steps JSON file
+   */
+  BASEPLATE_WRITE_GENERATOR_STEPS_JSON:
+    !!process.env.BASEPLATE_WRITE_GENERATOR_STEPS_JSON,
 };

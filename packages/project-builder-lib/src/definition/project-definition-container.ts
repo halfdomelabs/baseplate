@@ -1,3 +1,4 @@
+import { stringifyPrettyStable } from '@halfdomelabs/utils';
 import { produce } from 'immer';
 
 import type { SchemaParserContext } from '@src/parser/types.js';
@@ -22,7 +23,6 @@ import {
   fixRefDeletions,
   serializeSchemaFromRefPayload,
 } from '@src/references/index.js';
-import { prettyStableStringify } from '@src/utils/index.js';
 
 /**
  * Container for a project definition that includes references and entities.
@@ -104,7 +104,7 @@ export class ProjectDefinitionContainer {
    * @returns The serialized contents of the project definition
    */
   toSerializedContents(): string {
-    return prettyStableStringify(
+    return stringifyPrettyStable(
       serializeSchemaFromRefPayload(this.refPayload),
     );
   }
