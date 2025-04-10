@@ -1,3 +1,4 @@
+import { stringifyPrettyStable } from '@halfdomelabs/utils';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
@@ -68,7 +69,7 @@ export async function writeTemplateMetadata(
         .then(() =>
           fs.writeFile(
             metadataPath,
-            JSON.stringify(sortedMetadata, null, 2),
+            stringifyPrettyStable(sortedMetadata),
             'utf8',
           ),
         ),

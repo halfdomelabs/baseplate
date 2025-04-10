@@ -20,7 +20,10 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
     // replace variable values with template string
     let templateContents = sourceFileContents;
     for (const [key, variable] of Object.entries(metadata.variables)) {
-      templateContents = templateContents.replace(variable.value, `{{${key}}}`);
+      templateContents = templateContents.replaceAll(
+        variable.value,
+        `{{${key}}}`,
+      );
     }
 
     await this.writeTemplateFileIfModified(file, templateContents);

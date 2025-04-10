@@ -39,7 +39,7 @@ export class GeneratorEngine {
    * Builds the root generator entry.
    *
    * @param rootEntry - The root generator entry.
-   * @param logger - The logger to use.
+   * @param options - The options for the execution.
    */
   async build(
     rootEntry: GeneratorEntry,

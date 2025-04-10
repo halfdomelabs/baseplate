@@ -1,10 +1,11 @@
+import { handleFileNotFoundError } from '@halfdomelabs/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import type { TemplateFileSource } from './types.js';
 
 /**
- * Reads a template file source
+ * Reads a template file source as a string
  *
  * @param source The source of the template file
  * @returns The contents of the template file
@@ -13,14 +14,9 @@ export async function readTemplateFileSource(
   generatorBaseDirectory: string,
   source: TemplateFileSource,
 ): Promise<string> {
-  if ('path' in source) {
-    return fs.readFile(
-      path.join(generatorBaseDirectory, 'templates', source.path),
-      'utf8',
-    );
-  }
-
-  return source.contents.toString();
+  return readTemplateFileSourceBuffer(generatorBaseDirectory, source).then(
+    (buffer) => buffer.toString(),
+  );
 }
 
 /**
@@ -34,9 +30,15 @@ export async function readTemplateFileSourceBuffer(
   source: TemplateFileSource,
 ): Promise<Buffer> {
   if ('path' in source) {
-    return fs.readFile(
-      path.join(generatorBaseDirectory, 'templates', source.path),
-    );
+    const fileContents = await fs
+      .readFile(path.join(generatorBaseDirectory, 'templates', source.path))
+      .catch(handleFileNotFoundError);
+    if (!fileContents) {
+      throw new Error(
+        `Could not find template file in project: ${source.path}`,
+      );
+    }
+    return fileContents;
   }
 
   return typeof source.contents === 'string'

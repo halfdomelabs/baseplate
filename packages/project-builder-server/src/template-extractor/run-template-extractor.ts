@@ -70,6 +70,14 @@ export async function runTemplateExtractorsForProject(
       appDirectory,
       generatorPackageMap,
       logger,
-    );
+    ).catch((error: unknown) => {
+      logger.error(
+        `Error running template extractors for ${path.relative(
+          directory,
+          generatorInfoPath,
+        )}`,
+      );
+      logger.error(error);
+    });
   }
 }
