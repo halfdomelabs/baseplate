@@ -26,6 +26,7 @@
     "clean": "rm -rf ./dist",
     "dev": "tsx watch --tsconfig ./tsconfig.app.json --exclude /**/node_modules/** -r dotenv/config ./src",
     "dev:serve": "pnpm dev serve",
+    "extract:templates": "pnpm start extract-templates",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",

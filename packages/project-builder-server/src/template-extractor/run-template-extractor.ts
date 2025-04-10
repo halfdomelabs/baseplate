@@ -6,6 +6,10 @@ import {
   runTemplateFileExtractors,
   TextTemplateFileExtractor,
 } from '@halfdomelabs/sync';
+import { findNearestPackageJson } from '@halfdomelabs/utils/node';
+import { globby } from 'globby';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const GENERATOR_PACKAGES = [
   '@halfdomelabs/core-generators',
@@ -18,9 +22,9 @@ const TEMPLATE_FILE_EXTRACTOR_CREATORS: TemplateFileExtractorCreator[] = [
   (context) => new RawTemplateFileExtractor(context),
 ];
 
-function buildGeneratorPackageMap(
+async function buildGeneratorPackageMap(
   context: SchemaParserContext,
-): Map<string, string> {
+): Promise<Map<string, string>> {
   const generatorPackageMap = new Map<string, string>();
   for (const plugin of context.pluginStore.availablePlugins) {
     generatorPackageMap.set(
@@ -30,21 +34,42 @@ function buildGeneratorPackageMap(
   }
   // attach generator packages
   for (const packageName of GENERATOR_PACKAGES) {
-    generatorPackageMap.set(packageName, import.meta.resolve(packageName));
+    const nearestPackageJsonPath = await findNearestPackageJson({
+      cwd: path.dirname(fileURLToPath(import.meta.resolve(packageName))),
+      stopAtNodeModules: true,
+    });
+    if (!nearestPackageJsonPath) {
+      throw new Error(`Could not find package.json for ${packageName}`);
+    }
+    generatorPackageMap.set(packageName, path.dirname(nearestPackageJsonPath));
   }
   return generatorPackageMap;
 }
 
-export async function runTemplateExtractorsForDirectory(
+export async function runTemplateExtractorsForProject(
   directory: string,
   context: SchemaParserContext,
   logger: Logger,
 ): Promise<void> {
-  const generatorPackageMap = buildGeneratorPackageMap(context);
-  await runTemplateFileExtractors(
-    TEMPLATE_FILE_EXTRACTOR_CREATORS,
-    directory,
-    generatorPackageMap,
-    logger,
+  // find all .generator-info.json files in the project
+  const generatorInfoFiles = await globby(
+    path.join(directory, '**', '.generator-info.json'),
+    { onlyFiles: true, absolute: true },
   );
+  const generatorPackageMap = await buildGeneratorPackageMap(context);
+  for (const generatorInfoPath of generatorInfoFiles) {
+    logger.info(
+      `Running template extractors for ${path.relative(
+        directory,
+        generatorInfoPath,
+      )}...`,
+    );
+    const appDirectory = path.dirname(generatorInfoPath);
+    await runTemplateFileExtractors(
+      TEMPLATE_FILE_EXTRACTOR_CREATORS,
+      appDirectory,
+      generatorPackageMap,
+      logger,
+    );
+  }
 }

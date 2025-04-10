@@ -14,7 +14,16 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
     file: TemplateFileExtractorFile<TextTemplateFileMetadata>,
   ): Promise<void> {
     const sourceFileContents = await this.readSourceFile(file.path);
-    await this.writeTemplateFileIfModified(file, sourceFileContents);
+    // get variable values from the rendered template
+    const { metadata } = file;
+
+    // replace variable values with template string
+    let templateContents = sourceFileContents;
+    for (const [key, variable] of Object.entries(metadata.variables)) {
+      templateContents = templateContents.replace(variable.value, `{{${key}}}`);
+    }
+
+    await this.writeTemplateFileIfModified(file, templateContents);
   }
 
   async extractTemplateFiles(

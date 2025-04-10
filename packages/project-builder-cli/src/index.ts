@@ -1,7 +1,9 @@
+#!/usr/bin/env node
+
 import { program } from 'commander';
 
 import { addBuildCommand } from './commands/build.js';
-import { addExtractCommand } from './commands/extract.js';
+import { addExtractTemplatesCommand } from './commands/extract-templates.js';
 import { addServeCommand } from './commands/server.js';
 import { getEnabledFeatureFlags } from './services/feature-flags.js';
 import { logger } from './services/logger.js';
@@ -13,8 +15,8 @@ async function runMain(): Promise<void> {
 
   program.version(version, '-v, --version');
 
-  if (enabledFlags.includes('BASEPLATE_TEMPLATE_EXTRACTOR')) {
-    addExtractCommand(program);
+  if (enabledFlags.includes('TEMPLATE_EXTRACTOR')) {
+    addExtractTemplatesCommand(program);
   }
 
   addBuildCommand(program);
