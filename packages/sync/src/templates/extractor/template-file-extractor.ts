@@ -54,7 +54,14 @@ export interface TemplateFileExtractorContext {
 }
 
 async function formatTypescript(contents: string): Promise<string> {
-  return format(contents, { parser: 'typescript' });
+  return format(contents, {
+    parser: 'typescript',
+    // TODO: Dynamically source prettier config
+    tabWidth: 2,
+    singleQuote: true,
+    trailingComma: 'all',
+    semi: true,
+  });
 }
 
 export abstract class TemplateFileExtractor<
