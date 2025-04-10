@@ -1,6 +1,9 @@
 import type { AppEntry } from '@halfdomelabs/project-builder-lib';
-import type { Logger, PreviousGeneratedPayload } from '@halfdomelabs/sync';
-import type { TemplateMetadataWriterOptions } from '@halfdomelabs/sync/dist/runner/generator-runner.js';
+import type {
+  Logger,
+  PreviousGeneratedPayload,
+  TemplateMetadataWriterOptions,
+} from '@halfdomelabs/sync';
 
 import {
   createCodebaseFileReaderFromDirectory,

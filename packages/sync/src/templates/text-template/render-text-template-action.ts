@@ -66,7 +66,10 @@ export function renderTextTemplateFileAction<
           );
         }
 
-        // throw an error if variables are found in the template since this would glitch the build
+        // This validation ensures that the template extractor can correctly identify variable placeholders.
+        // If a variable value already exists in the template, it could lead to incorrect extraction because
+        // the system wouldn't be able to distinguish between the original text and the replaced variables.
+
         const invalidVariableValue = Object.values(variablesObj).find(
           (val) => val !== undefined && renderedTemplate.includes(val),
         );

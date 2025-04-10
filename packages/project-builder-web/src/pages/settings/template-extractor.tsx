@@ -15,6 +15,11 @@ import { ENABLE_TEMPLATE_EXTRACTOR } from '@src/services/config';
 
 type FormData = z.infer<typeof templateExtractorSchema>;
 
+/**
+ * Settings page for template extractor configuration
+ *
+ * Allows users to control template metadata generation during the extraction process.
+ */
 export function TemplateExtractorSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
   const defaultValues = definition.templateExtractor;

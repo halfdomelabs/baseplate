@@ -158,7 +158,7 @@ describe('renderTextTemplateFileAction', () => {
     ).rejects.toThrow('Template variable not found: TPL_VAR');
   });
 
-  it('should throw error when a variable is missing from teh template', async () => {
+  it('should throw error when a variable is missing from the template', async () => {
     vol.fromJSON({
       '/root/pkg/test-generator/templates/test.txt': 'Hello {{TPL_VAR}}!',
     });
