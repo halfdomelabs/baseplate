@@ -31,6 +31,7 @@ describe('RawTemplateFileExtractor', () => {
           type: RAW_TEMPLATE_TYPE,
           generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
           template: 'test.txt',
+          name: 'test',
         },
       },
       {
@@ -39,6 +40,7 @@ describe('RawTemplateFileExtractor', () => {
           type: RAW_TEMPLATE_TYPE,
           generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
           template: 'test2.txt',
+          name: 'test2',
         },
       },
     ]);
@@ -52,5 +54,27 @@ describe('RawTemplateFileExtractor', () => {
     expect(
       result[TemplateFileExtractorTestUtils.templatePath('test2.txt')],
     ).toBe('Another test!');
+
+    expect(
+      result[TemplateFileExtractorTestUtils.generatedPath('raw-templates.ts')],
+    ).toMatchInlineSnapshot(`
+      "import { createRawTemplateFile } from "@halfdomelabs/sync";
+
+      const TestRawTemplate = createRawTemplateFile({
+        name: "Test",
+        source: { path: "test.txt" },
+      });
+
+      const Test2RawTemplate = createRawTemplateFile({
+        name: "Test2",
+        source: { path: "test2.txt" },
+      });
+
+      export const TEST_GENERATOR_RAW_TEMPLATES = {
+        TestRawTemplate,
+        Test2RawTemplate,
+      };
+      "
+    `);
   });
 });

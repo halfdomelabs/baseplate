@@ -28,6 +28,7 @@ export const readmeGenerator = createGenerator({
             await builder.apply(
               renderTextTemplateFileAction({
                 template: createTextTemplateFile({
+                  name: 'readme',
                   variables: {
                     TPL_PROJECT: { description: 'Name of the project' },
                   },
@@ -42,6 +43,7 @@ export const readmeGenerator = createGenerator({
                 },
                 options: {
                   shouldFormat: true,
+                  shouldNeverOverwrite: true,
                 },
               }),
             );

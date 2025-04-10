@@ -20,6 +20,11 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
     // replace variable values with template string
     let templateContents = sourceFileContents;
     for (const [key, variable] of Object.entries(metadata.variables)) {
+      if (!templateContents.includes(variable.value)) {
+        throw new Error(
+          `Variable value not found in template: ${variable.value} (template: ${file.path})`,
+        );
+      }
       templateContents = templateContents.replaceAll(
         variable.value,
         `{{${key}}}`,

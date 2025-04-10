@@ -103,6 +103,7 @@ export function renderTextTemplateFileAction<
       const templateMetadata: TextTemplateFileMetadata | undefined =
         'path' in template.source
           ? {
+              name: template.name,
               template: template.source.path,
               generator: builder.generatorInfo.name,
               type: TEXT_TEMPLATE_TYPE,

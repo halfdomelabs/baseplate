@@ -22,6 +22,7 @@ describe('renderTextTemplateFileAction', () => {
 
     const action = renderTextTemplateFileAction({
       template: createTextTemplateFile({
+        name: 'test',
         source: {
           path: 'test.txt',
         },
@@ -51,6 +52,7 @@ describe('renderTextTemplateFileAction', () => {
     expect(file?.id).toBe('test-generator:test-id');
     expect(file?.contents).toEqual('Hello John, welcome to Baseplate!');
     expect(file?.options?.templateMetadata).toEqual({
+      name: 'test',
       template: 'test.txt',
       generator: 'test-generator',
       type: TEXT_TEMPLATE_TYPE,
@@ -69,14 +71,15 @@ describe('renderTextTemplateFileAction', () => {
 
   it('should write file from template contents with variables', async () => {
     const action = renderTextTemplateFileAction({
-      template: {
+      template: createTextTemplateFile({
+        name: 'test',
         source: {
           contents: 'Hello {{TPL_NAME}}!',
         },
         variables: {
           TPL_NAME: { description: 'The name to greet' },
         },
-      },
+      }),
       id: 'test-id',
       destination: 'output/test.txt',
       variables: {
@@ -100,6 +103,7 @@ describe('renderTextTemplateFileAction', () => {
 
     const action = renderTextTemplateFileAction({
       template: createTextTemplateFile({
+        name: 'test',
         source: {
           path: 'test.txt',
         },
@@ -134,6 +138,7 @@ describe('renderTextTemplateFileAction', () => {
 
     const action = renderTextTemplateFileAction({
       template: createTextTemplateFile({
+        name: 'test',
         source: {
           path: 'test.txt',
         },
@@ -165,6 +170,7 @@ describe('renderTextTemplateFileAction', () => {
 
     const action = renderTextTemplateFileAction({
       template: createTextTemplateFile({
+        name: 'test',
         source: {
           path: 'test.txt',
         },

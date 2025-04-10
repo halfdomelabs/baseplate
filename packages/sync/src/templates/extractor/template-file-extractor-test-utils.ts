@@ -3,7 +3,7 @@ import path from 'node:path';
 import type { TemplateFileExtractorContext } from './template-file-extractor.js';
 
 const DEFAULT_OUTPUT_DIRECTORY = '/root/output';
-const TEST_GENERATOR_NAME = 'test-generator';
+const TEST_GENERATOR_NAME = 'test-package#test-generator';
 const TEST_GENERATOR_BASE_DIRECTORY = '/root/test-generator';
 const TEST_GENERATOR_TEMPLATE_DIRECTORY = '/root/test-generator/templates';
 
@@ -32,6 +32,13 @@ export const TemplateFileExtractorTestUtils = {
   TEST_GENERATOR_NAME,
   TEST_GENERATOR_BASE_DIRECTORY,
   TEST_GENERATOR_TEMPLATE_DIRECTORY,
+  generatedPath(template: string) {
+    return path.join(
+      TemplateFileExtractorTestUtils.TEST_GENERATOR_BASE_DIRECTORY,
+      'generated',
+      template,
+    );
+  },
   templatePath(template: string) {
     return path.join(
       TemplateFileExtractorTestUtils.TEST_GENERATOR_TEMPLATE_DIRECTORY,

@@ -63,11 +63,13 @@ describe('runTemplateFileExtractors', () => {
       [path.join(outputDirectory, 'src', TEMPLATE_METADATA_FILENAME)]:
         JSON.stringify({
           'test-file.ts': {
+            name: 'test-file',
             type: 'test-type',
             generator: 'test-generator',
             template: 'test-template.ts',
           },
           'test-file-2.ts': {
+            name: 'test-file-2',
             type: 'test-type-2',
             generator: 'test-generator-2',
             template: 'test-template-2.ts',
@@ -76,6 +78,7 @@ describe('runTemplateFileExtractors', () => {
       [path.join(outputDirectory, 'src/folder', TEMPLATE_METADATA_FILENAME)]:
         JSON.stringify({
           'index.ts': {
+            name: 'index-file',
             type: 'test-type',
             generator: 'test-generator',
             template: 'test-template.ts',
@@ -109,6 +112,7 @@ describe('runTemplateFileExtractors', () => {
       {
         path: path.join(outputDirectory, 'src/test-file.ts'),
         metadata: {
+          name: 'test-file',
           type: 'test-type',
           generator: 'test-generator',
           template: 'test-template.ts',
@@ -117,6 +121,7 @@ describe('runTemplateFileExtractors', () => {
       {
         path: path.join(outputDirectory, 'src/folder/index.ts'),
         metadata: {
+          name: 'index-file',
           type: 'test-type',
           generator: 'test-generator',
           template: 'test-template.ts',
@@ -127,6 +132,7 @@ describe('runTemplateFileExtractors', () => {
       {
         path: path.join(outputDirectory, 'src/test-file-2.ts'),
         metadata: {
+          name: 'test-file-2',
           type: 'test-type-2',
           generator: 'test-generator-2',
           template: 'test-template-2.ts',
@@ -148,6 +154,7 @@ describe('runTemplateFileExtractors', () => {
       [path.join(outputDirectory, 'src', TEMPLATE_METADATA_FILENAME)]:
         JSON.stringify({
           'test-file-2.ts': {
+            name: 'test-file-2',
             type: 'test-type-2',
             generator: 'test-generator-2',
             template: 'test-template-2.ts',

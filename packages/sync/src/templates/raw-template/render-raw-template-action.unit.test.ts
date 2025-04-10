@@ -21,6 +21,7 @@ describe('renderRawTemplateFileAction', () => {
 
     const action = renderRawTemplateFileAction({
       template: createRawTemplateFile({
+        name: 'test',
         source: {
           path: 'test.txt',
         },
@@ -42,6 +43,7 @@ describe('renderRawTemplateFileAction', () => {
     expect(file?.id).toBe('test-generator:test-id');
     expect(file?.contents).toEqual(Buffer.from('test content'));
     expect(file?.options?.templateMetadata).toEqual({
+      name: 'test',
       template: 'test.txt',
       generator: 'test-generator',
       type: RAW_TEMPLATE_TYPE,
@@ -50,11 +52,12 @@ describe('renderRawTemplateFileAction', () => {
 
   it('should write file from template contents', async () => {
     const action = renderRawTemplateFileAction({
-      template: {
+      template: createRawTemplateFile({
+        name: 'test',
         source: {
           contents: Buffer.from('test content'),
         },
-      },
+      }),
       id: 'test-id',
       destination: 'output/test.txt',
     });

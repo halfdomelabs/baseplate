@@ -43,6 +43,7 @@ describe('writeTemplateMetadata', () => {
           contents: 'test content',
           options: {
             templateMetadata: {
+              name: 'user-controller',
               type: 'typescript',
               generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
               template: 'controllers/user-controller.ts',
@@ -58,6 +59,7 @@ describe('writeTemplateMetadata', () => {
           contents: 'test content',
           options: {
             templateMetadata: {
+              name: 'product-controller',
               type: 'typescript',
               generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
               template: 'controllers/product-controller.ts',
@@ -73,6 +75,7 @@ describe('writeTemplateMetadata', () => {
           contents: 'test content',
           options: {
             templateMetadata: {
+              name: 'user-model',
               type: 'typescript',
               generator: '@halfdomelabs/fastify-generators/prisma/model',
               template: 'models/user-model.ts',
@@ -88,6 +91,7 @@ describe('writeTemplateMetadata', () => {
           contents: 'test content',
           options: {
             templateMetadata: {
+              name: 'readme',
               type: 'text',
               generator: '@halfdomelabs/fastify-generators/core/readme',
               template: 'README.md',
@@ -126,12 +130,14 @@ describe('writeTemplateMetadata', () => {
     // Verify controllers metadata
     expect(controllersMetadata).toEqual({
       'user-controller.ts': {
+        name: 'user-controller',
         type: 'typescript',
         generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
         template: 'controllers/user-controller.ts',
         variables: ['TPL_METHODS', 'TPL_MODEL'],
       },
       'product-controller.ts': {
+        name: 'product-controller',
         type: 'typescript',
         generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
         template: 'controllers/product-controller.ts',
@@ -142,6 +148,7 @@ describe('writeTemplateMetadata', () => {
     // Verify models metadata
     expect(modelsMetadata).toEqual({
       'user-model.ts': {
+        name: 'user-model',
         type: 'typescript',
         generator: '@halfdomelabs/fastify-generators/prisma/model',
         template: 'models/user-model.ts',
@@ -152,6 +159,7 @@ describe('writeTemplateMetadata', () => {
     // Verify root metadata
     expect(rootMetadata).toEqual({
       'README.md': {
+        name: 'readme',
         type: 'text',
         generator: '@halfdomelabs/fastify-generators/core/readme',
         template: 'README.md',
@@ -169,6 +177,7 @@ describe('writeTemplateMetadata', () => {
           contents: 'test content',
           options: {
             templateMetadata: {
+              name: 'user-controller',
               type: 'typescript',
               generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
               template: 'controllers/user-controller.ts',
@@ -202,6 +211,7 @@ describe('writeTemplateMetadata', () => {
 
     expect(controllersMetadata).toEqual({
       'user-controller.ts': {
+        name: 'user-controller',
         type: 'typescript',
         generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
         template: 'controllers/user-controller.ts',
