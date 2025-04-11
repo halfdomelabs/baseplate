@@ -40,9 +40,12 @@ export function renderRawTemplateFileAction({
 
       builder.writeFile({
         id: id ?? template.name,
-        filePath: destination,
+        destination,
         contents: source,
-        options,
+        options: {
+          skipFormatting: true,
+          ...options,
+        },
         templateMetadata,
       });
     },

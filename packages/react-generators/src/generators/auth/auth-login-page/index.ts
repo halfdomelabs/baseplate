@@ -105,7 +105,6 @@ export const authLoginPageGenerator = createGenerator({
               copyFileAction({
                 source: 'login.gql',
                 destination: loginGqlPath,
-                shouldFormat: true,
               }),
             );
           },

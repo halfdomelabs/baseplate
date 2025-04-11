@@ -142,7 +142,6 @@ export const errorHandlerServiceGenerator = createGenerator({
               copyFileAction({
                 source: 'utils/http-errors.ts',
                 destination: 'src/utils/http-errors.ts',
-                shouldFormat: true,
               }),
             );
 
@@ -150,7 +149,6 @@ export const errorHandlerServiceGenerator = createGenerator({
               copyFileAction({
                 source: 'utils/zod.ts',
                 destination: 'src/utils/zod.ts',
-                shouldFormat: true,
               }),
             );
           },

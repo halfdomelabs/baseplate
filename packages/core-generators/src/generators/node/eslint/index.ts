@@ -5,7 +5,6 @@ import {
   createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
-  writeFormattedAction,
 } from '@halfdomelabs/sync';
 
 import { CORE_PACKAGES } from '@src/constants/core-packages.js';
@@ -52,7 +51,7 @@ export const eslintGenerator = createGenerator({
               getConfig: () => configMap,
             },
           },
-          build: async (builder) => {
+          build: (builder) => {
             // build eslint configuration
             const config = configMap.value();
             const eslintConfig = generateConfig({
@@ -99,21 +98,20 @@ export const eslintGenerator = createGenerator({
               ? '.eslintrc.cjs'
               : '.eslintrc.js';
 
-            await builder.apply(
-              writeFormattedAction({
-                destination: eslintDestination,
-                contents: `module.exports = ${JSON.stringify(
-                  eslintConfig,
-                  null,
-                  2,
-                )}`,
-              }),
-            );
+            builder.writeFile({
+              id: 'eslint-config',
+              destination: eslintDestination,
+              contents: `module.exports = ${JSON.stringify(
+                eslintConfig,
+                null,
+                2,
+              )}`,
+            });
 
             // generate ignore file
             builder.writeFile({
               id: 'eslint-ignore',
-              filePath: '.eslintignore',
+              destination: '.eslintignore',
               contents: `${config.eslintIgnore.join('\n')}\n`,
             });
           },

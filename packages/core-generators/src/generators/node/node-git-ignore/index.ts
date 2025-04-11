@@ -2,7 +2,6 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  writeFormattedAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -68,16 +67,15 @@ export const nodeGitIgnoreGenerator = createGenerator({
               },
             },
           },
-          build: async (builder) => {
+          build: (builder) => {
             if (descriptor.additionalExclusions) {
               exclusionLines.push(...descriptor.additionalExclusions);
             }
-            await builder.apply(
-              writeFormattedAction({
-                destination: '.gitignore',
-                contents: `${exclusionLines.join('\n')}\n`,
-              }),
-            );
+            builder.writeFile({
+              id: 'gitignore',
+              destination: '.gitignore',
+              contents: `${exclusionLines.join('\n')}\n`,
+            });
           },
         };
       },

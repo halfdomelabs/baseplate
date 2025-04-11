@@ -81,6 +81,16 @@ export function renderTextTemplateFileAction<
           );
         }
 
+        // make sure all variables have values
+        const missingVariableValue = Object.keys(variablesObj).find(
+          (key) => variablesObj[key] === '',
+        );
+        if (missingVariableValue && builder.includeMetadata) {
+          throw new Error(
+            `Template variable is empty: ${missingVariableValue}. All template variables must have a value when metadata is included.`,
+          );
+        }
+
         renderedTemplate = renderedTemplate.replaceAll(
           new RegExp(/{{TPL_[A-Z0-9_]+}}/g),
           (match) => {
@@ -120,7 +130,7 @@ export function renderTextTemplateFileAction<
 
       builder.writeFile({
         id: id ?? template.name,
-        filePath: destination,
+        destination,
         contents: renderedTemplate,
         options,
         templateMetadata,

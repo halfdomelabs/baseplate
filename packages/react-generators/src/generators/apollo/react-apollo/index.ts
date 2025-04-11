@@ -19,7 +19,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
-  writeTemplateAction,
+  renderTextTemplateFileAction,
 } from '@halfdomelabs/sync';
 import { toposort } from '@halfdomelabs/utils';
 import { z } from 'zod';
@@ -31,6 +31,7 @@ import { reactProxyProvider } from '@src/generators/core/react-proxy/index.js';
 import { notEmpty } from '../../../utils/array.js';
 import { reactAppProvider } from '../../core/react-app/index.js';
 import { reactConfigProvider } from '../../core/react-config/index.js';
+import { APOLLO_REACT_APOLLO_TEXT_TEMPLATES } from './generated/text-templates.js';
 
 const descriptorSchema = z.object({
   devApiEndpoint: z.string().min(1),
@@ -401,11 +402,11 @@ export const reactApolloGenerator = createGenerator({
             );
 
             await builder.apply(
-              writeTemplateAction({
-                template: 'codegen.yml',
+              renderTextTemplateFileAction({
+                template: APOLLO_REACT_APOLLO_TEXT_TEMPLATES.codegenYml,
                 destination: 'codegen.yml',
-                data: {
-                  SCHEMA_LOCATION: schemaLocation,
+                variables: {
+                  TPL_SCHEMA_LOCATION: schemaLocation,
                 },
               }),
             );

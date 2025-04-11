@@ -106,7 +106,7 @@ describe('executeGeneratorEntry', () => {
       build: (builder) => {
         builder.writeFile({
           id: 'simple',
-          filePath: '/simple/file.txt',
+          destination: '/simple/file.txt',
           contents: 'simple',
         });
         builder.addPostWriteCommand('simple command', {
@@ -145,7 +145,7 @@ describe('executeGeneratorEntry', () => {
       build: (builder) => {
         builder.writeFile({
           id: 'simple',
-          filePath: '/simple/file.txt',
+          destination: '/simple/file.txt',
           contents: 'simple',
         });
         builder.addPostWriteCommand('simple command', {
@@ -161,11 +161,8 @@ describe('executeGeneratorEntry', () => {
             (deps.simpleDep as { hello: () => void }).hello();
             builder.writeFile({
               id: 'nested',
-              filePath: '/nested/file.txt',
+              destination: '/nested/file.txt',
               contents: 'nested',
-              options: {
-                shouldFormat: true,
-              },
             });
             builder.addPostWriteCommand('nested command', {
               priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
@@ -189,7 +186,6 @@ describe('executeGeneratorEntry', () => {
       '/nested/file.txt': {
         id: 'nested-generator:nested',
         contents: 'nested',
-        options: { shouldFormat: true },
       },
     });
     expect(result.postWriteCommands).toEqual([
@@ -230,7 +226,7 @@ describe('executeGeneratorEntry', () => {
       build: (builder) => {
         builder.writeFile({
           id: 'output',
-          filePath: '/output/file.txt',
+          destination: '/output/file.txt',
           contents: 'output',
         });
         return { outputProv: outputProvider };
@@ -243,7 +239,7 @@ describe('executeGeneratorEntry', () => {
             (deps.outputDep as { generate: () => void }).generate();
             builder.writeFile({
               id: 'consumer',
-              filePath: '/consumer/file.txt',
+              destination: '/consumer/file.txt',
               contents: 'consumer',
             });
           },
@@ -296,7 +292,7 @@ describe('executeGeneratorEntry', () => {
             (deps.depB as { methodB: () => void }).methodB();
             builder.writeFile({
               id: 'consumer',
-              filePath: '/consumer/file.txt',
+              destination: '/consumer/file.txt',
               contents: 'consumer',
             });
           },
@@ -378,7 +374,7 @@ describe('executeGeneratorEntry', () => {
                 (deps.mainOutputDep as { generate: () => void }).generate();
                 builder.writeFile({
                   id: 'phase1',
-                  filePath: '/phase1/file.txt',
+                  destination: '/phase1/file.txt',
                   contents: 'phase1',
                 });
                 return { phase1OutputProv: phase1OutputProvider };
@@ -398,7 +394,7 @@ describe('executeGeneratorEntry', () => {
                 (deps.phase1OutputDep as { generate: () => void }).generate();
                 builder.writeFile({
                   id: 'phase2',
-                  filePath: '/phase2/file.txt',
+                  destination: '/phase2/file.txt',
                   contents: 'phase2',
                 });
               },
@@ -482,7 +478,7 @@ describe('executeGeneratorEntry', () => {
                     build: (builder: GeneratorTaskOutputBuilder) => {
                       builder.writeFile({
                         id: 'dynamic',
-                        filePath: '/dynamic/file.txt',
+                        destination: '/dynamic/file.txt',
                         contents: 'dynamic',
                       });
                     },
@@ -503,7 +499,7 @@ describe('executeGeneratorEntry', () => {
               build: (builder: GeneratorTaskOutputBuilder) => {
                 builder.writeFile({
                   id: 'phase1',
-                  filePath: '/phase1/file.txt',
+                  destination: '/phase1/file.txt',
                   contents: 'phase1',
                 });
               },
@@ -601,7 +597,7 @@ describe('executeGeneratorEntry', () => {
               build: (builder) => {
                 builder.writeFile({
                   id: 'phase1',
-                  filePath: '/phase1/file.txt',
+                  destination: '/phase1/file.txt',
                   contents: 'phase1',
                 });
               },
@@ -644,7 +640,7 @@ describe('executeGeneratorEntry', () => {
                       (deps.dep as { generate: () => void }).generate();
                       builder.writeFile({
                         id: 'dynamic',
-                        filePath: '/dynamic/file.txt',
+                        destination: '/dynamic/file.txt',
                         contents: 'dynamic',
                       });
                     },
@@ -666,7 +662,7 @@ describe('executeGeneratorEntry', () => {
               build: (builder: GeneratorTaskOutputBuilder) => {
                 builder.writeFile({
                   id: 'phase1',
-                  filePath: '/phase1/file.txt',
+                  destination: '/phase1/file.txt',
                   contents: 'phase1',
                 });
               },

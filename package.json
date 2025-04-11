@@ -27,6 +27,7 @@
     "test:e2e": "turbo run test:e2e --continue",
     "test:e2e:affected": "turbo run test:e2e --affected --continue",
     "test:generate": "pnpm run --filter @halfdomelabs/project-builder-test start generate",
+    "test:only": "pnpm run -r test",
     "typecheck": "turbo run typecheck --affected",
     "versions:check": "check-dependency-version-consistency .",
     "versions:fix": "check-dependency-version-consistency . --fix",

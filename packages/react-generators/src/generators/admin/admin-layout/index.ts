@@ -115,8 +115,8 @@ export const adminLayoutGenerator = createGenerator({
 
         reactTailwind.addGlobalStyle(
           `body {
-        overscroll-behavior-y: none;
-      }`,
+  overscroll-behavior-y: none;
+}`,
         );
 
         return {

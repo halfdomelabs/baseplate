@@ -26,9 +26,9 @@ export interface WriteFileOptions {
    */
   alternateFullIds?: string[];
   /**
-   * Whether to format the file using the default formatter
+   * Whether to skip formatting the file
    */
-  shouldFormat?: boolean;
+  skipFormatting?: boolean;
   /**
    * Never overwrite the file (e.g. for placeholder images)
    */
@@ -180,7 +180,7 @@ export class GeneratorTaskOutputBuilder {
    */
   writeFile({
     id,
-    filePath,
+    destination: filePath,
     contents,
     options,
     generatorName,
@@ -188,7 +188,7 @@ export class GeneratorTaskOutputBuilder {
   }: {
     id: string;
     generatorName?: string;
-    filePath: string;
+    destination: string;
     contents: string | Buffer;
     options?: Omit<WriteFileOptions, 'templateMetadata'>;
     templateMetadata?: TemplateFileMetadataBase;
@@ -200,7 +200,7 @@ export class GeneratorTaskOutputBuilder {
       throw new Error(`Cannot overwrite file ${fullPath}`);
     }
 
-    if (contents instanceof Buffer && options?.shouldFormat) {
+    if (contents instanceof Buffer && !options?.skipFormatting) {
       throw new Error(`Cannot format Buffer contents for ${fullPath}`);
     }
 

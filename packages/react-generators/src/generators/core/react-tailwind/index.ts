@@ -6,19 +6,18 @@ import {
   projectScope,
 } from '@halfdomelabs/core-generators';
 import {
-  copyFileAction,
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  writeTemplateAction,
+  renderTextTemplateGroupAction,
 } from '@halfdomelabs/sync';
-import path from 'node:path';
 import * as prettierPluginTailwindcss from 'prettier-plugin-tailwindcss';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
 import { reactProvider } from '../react/index.js';
+import { CORE_REACT_TAILWIND_TEXT_TEMPLATES } from './generated/text-templates.js';
 
 const descriptorSchema = z.object({
   globalBodyClasses: z.string().optional(),
@@ -54,8 +53,6 @@ export const reactTailwindGenerator = createGenerator({
         reactTailwind: reactTailwindProvider.export(projectScope),
       },
       run({ react, eslint, prettier }) {
-        const srcFolder = react.getSrcFolder();
-
         eslint
           .getConfig()
           .appendUnique('eslintIgnore', [
@@ -90,27 +87,17 @@ export const reactTailwindGenerator = createGenerator({
           },
           build: async (builder) => {
             await builder.apply(
-              writeTemplateAction({
-                template: 'src/index.css',
-                destination: path.join(srcFolder, 'index.css'),
-                data: {
-                  globalStyles: globalStyles.join('\n\n'),
+              renderTextTemplateGroupAction({
+                group: CORE_REACT_TAILWIND_TEXT_TEMPLATES.mainGroup,
+                baseDirectory: '',
+                variables: {
+                  indexCss: {
+                    TPL_GLOBAL_STYLES:
+                      globalStyles.length > 0 || !builder.includeMetadata
+                        ? globalStyles.join('\n\n')
+                        : '/* TPL_GLOBAL_STYLES */',
+                  },
                 },
-              }),
-            );
-            // TODO: Dark mode not supported currently
-            await builder.apply(
-              copyFileAction({
-                source: 'tpl.tailwind.config.js',
-                destination: 'tailwind.config.js',
-                shouldFormat: true,
-              }),
-            );
-            await builder.apply(
-              copyFileAction({
-                source: 'postcss.config.js',
-                destination: 'postcss.config.js',
-                shouldFormat: true,
               }),
             );
           },

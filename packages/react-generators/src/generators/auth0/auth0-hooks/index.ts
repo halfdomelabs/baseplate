@@ -90,7 +90,6 @@ export const auth0HooksGenerator = createGenerator({
               copyFileAction({
                 source: 'hooks/useCurrentUser.gql',
                 destination: `${hookFolder}/useCurrentUser.gql`,
-                shouldFormat: true,
                 replacements: {
                   CURRENT_USER_FIELDS: currentUserFields.join('\n'),
                   USER_QUERY: userQueryName,

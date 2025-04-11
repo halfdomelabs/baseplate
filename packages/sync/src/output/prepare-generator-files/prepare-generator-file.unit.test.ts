@@ -114,9 +114,7 @@ describe('prepareGeneratorFile', () => {
     await expect(
       prepareGeneratorFile({
         relativePath: 'file.txt',
-        data: createMockFileData({
-          options: { shouldFormat: true },
-        }),
+        data: createMockFileData({}),
         context: createMockContext({
           formatters: [mockFormatter],
         }),
@@ -132,6 +130,9 @@ describe('prepareGeneratorFile', () => {
       relativePath: 'image.png',
       data: createMockFileData({
         contents: Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d]),
+        options: {
+          skipFormatting: true,
+        },
       }),
       context: createMockContext({
         previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
@@ -363,7 +364,6 @@ describe('prepareGeneratorFile', () => {
       relativePath: 'file.js',
       data: createMockFileData({
         contents: 'content',
-        options: { shouldFormat: true },
       }),
       context: createMockContext({
         formatters: [mockFormatter],
@@ -384,7 +384,6 @@ describe('prepareGeneratorFile', () => {
       relativePath: '.prettierrc',
       data: createMockFileData({
         contents: 'content',
-        options: { shouldFormat: true },
       }),
       context: createMockContext({
         formatters: [mockFormatter],
@@ -412,7 +411,6 @@ describe('prepareGeneratorFile', () => {
         relativePath: 'file.js',
         data: createMockFileData({
           contents: 'content',
-          options: { shouldFormat: true },
         }),
         context: createMockContext({
           formatters: [formatter1, formatter2],
@@ -434,7 +432,6 @@ describe('prepareGeneratorFile', () => {
       relativePath: 'file.txt',
       data: createMockFileData({
         contents: 'content',
-        options: { shouldFormat: true },
       }),
       context: createMockContext({
         formatters: [mockFormatter],

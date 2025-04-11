@@ -3,8 +3,7 @@ import type {
   WriteFileOptions,
 } from '@halfdomelabs/sync';
 
-interface WriteJsonToBuilderOptions
-  extends Omit<WriteFileOptions, 'shouldFormat'> {
+interface WriteJsonToBuilderOptions extends WriteFileOptions {
   /**
    * The ID of the file to write
    */
@@ -32,11 +31,8 @@ export function writeJsonToBuilder(
 
   builder.writeFile({
     id,
-    filePath: destination,
+    destination,
     contents: jsonString,
-    options: {
-      shouldFormat: true,
-      ...rest,
-    },
+    options: rest,
   });
 }

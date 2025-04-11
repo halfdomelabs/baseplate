@@ -186,15 +186,12 @@ export const configServiceGenerator = createGenerator({
 
             builder.writeFile({
               id: 'env-example',
-              filePath: '.env.example',
+              destination: '.env.example',
               contents: envExampleFile,
-              options: {
-                shouldFormat: true,
-              },
             });
             builder.writeFile({
               id: 'env',
-              filePath: '.env',
+              destination: '.env',
               contents: envFile,
               options: {
                 shouldNeverOverwrite: true,
