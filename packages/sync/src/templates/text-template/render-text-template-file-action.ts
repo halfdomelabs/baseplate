@@ -83,11 +83,11 @@ export function renderTextTemplateFileAction<
 
         // make sure all variables have values
         const missingVariableValue = Object.keys(variablesObj).find(
-          (key) => !variablesObj[key],
+          (key) => variablesObj[key] === '',
         );
-        if (missingVariableValue) {
+        if (missingVariableValue && builder.includeMetadata) {
           throw new Error(
-            `Template variable not found: ${missingVariableValue}`,
+            `Template variable is empty: ${missingVariableValue}. All template variables must have a value when metadata is included.`,
           );
         }
 
