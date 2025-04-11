@@ -1,7 +1,4 @@
-import type { PathLike, Stats } from 'node:fs';
-
 import { vol } from 'memfs';
-import fs from 'node:fs/promises';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
