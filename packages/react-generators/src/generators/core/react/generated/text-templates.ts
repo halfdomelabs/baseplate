@@ -1,18 +1,18 @@
 import { createTextTemplateFile } from '@halfdomelabs/sync';
 
-const ReadmeTextTemplate = createTextTemplateFile({
+const readme = createTextTemplateFile({
   name: 'readme',
   source: { path: 'README.md' },
   variables: { TPL_PROJECT_NAME: { description: 'Name of the project' } },
 });
 
-const ViteEnvTextTemplate = createTextTemplateFile({
+const viteEnv = createTextTemplateFile({
   name: 'vite-env',
   source: { path: 'src/vite-env.d.ts' },
   variables: {},
 });
 
-const IndexHtmlTextTemplate = createTextTemplateFile({
+const indexHtml = createTextTemplateFile({
   name: 'index-html',
   source: { path: 'index.html' },
   variables: {
@@ -22,7 +22,7 @@ const IndexHtmlTextTemplate = createTextTemplateFile({
 });
 
 export const CORE_REACT_TEXT_TEMPLATES = {
-  ReadmeTextTemplate,
-  ViteEnvTextTemplate,
-  IndexHtmlTextTemplate,
+  readme,
+  viteEnv,
+  indexHtml,
 };

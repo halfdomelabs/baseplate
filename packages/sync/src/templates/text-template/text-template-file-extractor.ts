@@ -1,5 +1,5 @@
 import { mapGroupBy } from '@halfdomelabs/utils';
-import { pascalCase } from 'change-case';
+import { camelCase } from 'change-case';
 import { constantCase, mapValues } from 'es-toolkit';
 import pLimit from 'p-limit';
 
@@ -40,12 +40,10 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
 
     await this.writeTemplateFileIfModified(file, templateContents);
 
-    const templateName = pascalCase(file.metadata.name);
-
-    const textTemplateFileVariableName = `${templateName}TextTemplate`;
+    const templateName = camelCase(file.metadata.name);
 
     return {
-      typescriptCodeBlock: `const ${textTemplateFileVariableName} = createTextTemplateFile(${JSON.stringify(
+      typescriptCodeBlock: `const ${templateName} = createTextTemplateFile(${JSON.stringify(
         {
           name: file.metadata.name,
           source: {
@@ -56,7 +54,7 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
           })),
         } satisfies TextTemplateFile,
       )});`,
-      typescriptExports: [textTemplateFileVariableName],
+      typescriptExports: [templateName],
     };
   }
 

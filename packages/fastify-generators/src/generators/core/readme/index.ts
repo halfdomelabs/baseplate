@@ -28,7 +28,7 @@ export const readmeGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               renderTextTemplateFileAction({
-                template: CORE_README_TEXT_TEMPLATES.ReadmeTextTemplate,
+                template: CORE_README_TEXT_TEMPLATES.readme,
                 id: 'readme',
                 destination: 'README.md',
                 variables: {

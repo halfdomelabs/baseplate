@@ -138,7 +138,7 @@ export const reactGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               renderRawTemplateFileAction({
-                template: CORE_REACT_RAW_TEMPLATES.FaviconRawTemplate,
+                template: CORE_REACT_RAW_TEMPLATES.favicon,
                 id: 'favicon',
                 destination: 'public/favicon.ico',
               }),
@@ -146,7 +146,7 @@ export const reactGenerator = createGenerator({
 
             await builder.apply(
               renderTextTemplateFileAction({
-                template: CORE_REACT_TEXT_TEMPLATES.ReadmeTextTemplate,
+                template: CORE_REACT_TEXT_TEMPLATES.readme,
                 id: 'readme',
                 destination: 'README.md',
                 variables: {
@@ -157,7 +157,7 @@ export const reactGenerator = createGenerator({
 
             await builder.apply(
               renderTextTemplateFileAction({
-                template: CORE_REACT_TEXT_TEMPLATES.ViteEnvTextTemplate,
+                template: CORE_REACT_TEXT_TEMPLATES.viteEnv,
                 id: 'vite-env',
                 destination: 'src/vite-env.d.ts',
               }),
@@ -165,7 +165,7 @@ export const reactGenerator = createGenerator({
 
             await builder.apply(
               renderTextTemplateFileAction({
-                template: CORE_REACT_TEXT_TEMPLATES.IndexHtmlTextTemplate,
+                template: CORE_REACT_TEXT_TEMPLATES.indexHtml,
                 id: 'index-html',
                 destination: 'index.html',
                 variables: {

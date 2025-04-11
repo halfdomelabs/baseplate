@@ -51,14 +51,14 @@ describe('TextTemplateFileExtractor', () => {
     ).toMatchInlineSnapshot(`
       "import { createTextTemplateFile } from '@halfdomelabs/sync';
 
-      const TestTextTemplate = createTextTemplateFile({
+      const test = createTextTemplateFile({
         name: 'test',
         source: { path: 'test.txt' },
         variables: { TPL_LOCATION: { description: 'The location of the test' } },
       });
 
       export const TEST_GENERATOR_TEXT_TEMPLATES = {
-        TestTextTemplate,
+        test,
       };
       "
     `);
