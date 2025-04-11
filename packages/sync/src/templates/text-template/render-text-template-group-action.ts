@@ -59,7 +59,10 @@ export function renderTextTemplateGroupAction<
               destination,
               variables:
                 variables && typeof variables === 'object'
-                  ? variables[key as keyof typeof variables]
+                  ? (variables[key as keyof typeof variables] as Record<
+                      never,
+                      string
+                    >)
                   : undefined,
               options: options?.[key],
             }),
