@@ -52,14 +52,23 @@ export function renderTextTemplateGroupAction<
     execute: async (builder) => {
       for (const [key, template] of Object.entries(group.templates)) {
         const destination = path.join(baseDirectory, template.destination);
-        await builder.apply(
-          renderTextTemplateFileAction({
-            template: template.template,
-            destination,
-            variables: (variables as Record<string, never>)[key],
-            options: options?.[key],
-          }),
-        );
+        try {
+          await builder.apply(
+            renderTextTemplateFileAction({
+              template: template.template,
+              destination,
+              variables:
+                variables && typeof variables === 'object'
+                  ? variables[key as keyof typeof variables]
+                  : undefined,
+              options: options?.[key],
+            }),
+          );
+        } catch (error) {
+          throw new Error(
+            `Failed to render template "${key}": ${String(error)}`,
+          );
+        }
       }
     },
   };

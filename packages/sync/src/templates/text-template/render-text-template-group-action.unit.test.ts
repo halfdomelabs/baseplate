@@ -13,7 +13,7 @@ beforeEach(() => {
   vol.reset();
 });
 
-describe('renderTextTemplateGroupGroupAction', () => {
+describe('renderTextTemplateGroupAction', () => {
   it('should render multiple templates in a group with variables', async () => {
     vol.fromJSON({
       '/root/pkg/test-generator/templates/greeting.txt': 'Hello {{TPL_NAME}}!',
