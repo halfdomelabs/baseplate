@@ -9,6 +9,13 @@ export const TEXT_TEMPLATE_TYPE = 'text';
 export const textTemplateFileMetadataSchema =
   templateFileMetadataBaseSchema.extend({
     type: z.literal(TEXT_TEMPLATE_TYPE),
+    /**
+     * The group of templates that this template belongs to.
+     */
+    group: z.string().optional(),
+    /**
+     * The variables for the template.
+     */
     variables: z
       .record(
         z.string(),
@@ -59,3 +66,29 @@ export type InferTextTemplateVariablesFromTemplate<T extends TextTemplateFile> =
   {
     [K in keyof T['variables']]: string;
   };
+
+interface TextTemplateGroupEntry {
+  destination: string;
+  template: TextTemplateFile;
+}
+
+/**
+ * A group of text template files.
+ */
+export interface TextTemplateGroup<
+  T extends Record<string, TextTemplateGroupEntry> = Record<
+    string,
+    TextTemplateGroupEntry
+  >,
+> {
+  /**
+   * The templates in the group.
+   */
+  templates: T;
+}
+
+export function createTextTemplateGroup<
+  T extends Record<string, TextTemplateGroupEntry>,
+>(group: TextTemplateGroup<T>): TextTemplateGroup<T> {
+  return group;
+}

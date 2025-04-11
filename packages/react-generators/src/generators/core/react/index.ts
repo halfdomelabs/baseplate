@@ -20,7 +20,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
   renderRawTemplateFileAction,
-  renderTextTemplateFileAction,
+  renderTextTemplateGroupAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -144,29 +144,17 @@ export const reactGenerator = createGenerator({
             );
 
             await builder.apply(
-              renderTextTemplateFileAction({
-                template: CORE_REACT_TEXT_TEMPLATES.readme,
-                destination: 'README.md',
+              renderTextTemplateGroupAction({
+                group: CORE_REACT_TEXT_TEMPLATES.staticGroup,
+                baseDirectory: '',
                 variables: {
-                  TPL_PROJECT_NAME: project.getProjectName(),
-                },
-              }),
-            );
-
-            await builder.apply(
-              renderTextTemplateFileAction({
-                template: CORE_REACT_TEXT_TEMPLATES.viteEnv,
-                destination: 'src/vite-env.d.ts',
-              }),
-            );
-
-            await builder.apply(
-              renderTextTemplateFileAction({
-                template: CORE_REACT_TEXT_TEMPLATES.indexHtml,
-                destination: 'index.html',
-                variables: {
-                  TPL_TITLE: descriptor.title,
-                  TPL_DESCRIPTION: descriptor.description,
+                  readme: {
+                    TPL_PROJECT_NAME: project.getProjectName(),
+                  },
+                  indexHtml: {
+                    TPL_TITLE: descriptor.title,
+                    TPL_DESCRIPTION: descriptor.description,
+                  },
                 },
               }),
             );

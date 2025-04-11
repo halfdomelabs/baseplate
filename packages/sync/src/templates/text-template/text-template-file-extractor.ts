@@ -1,6 +1,8 @@
 import { mapGroupBy } from '@halfdomelabs/utils';
+import { getCommonPathPrefix } from '@halfdomelabs/utils/node';
 import { camelCase } from 'change-case';
-import { constantCase, mapValues } from 'es-toolkit';
+import { constantCase, mapValues, uniq } from 'es-toolkit';
+import path from 'node:path/posix';
 import pLimit from 'p-limit';
 
 import { getGenerationConcurrencyLimit } from '@src/utils/concurrency.js';
@@ -11,6 +13,12 @@ import type { TextTemplateFile, TextTemplateFileMetadata } from './types.js';
 import { TemplateFileExtractor } from '../extractor/template-file-extractor.js';
 import { TEXT_TEMPLATE_TYPE, textTemplateFileMetadataSchema } from './types.js';
 
+interface TypescriptCodeEntry {
+  codeBlock: string;
+  exports: string[];
+  imports: string[];
+}
+
 export class TextTemplateFileExtractor extends TemplateFileExtractor<
   typeof textTemplateFileMetadataSchema
 > {
@@ -19,7 +27,7 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
 
   protected async extractTemplateFile(
     file: TemplateFileExtractorFile<TextTemplateFileMetadata>,
-  ): Promise<{ typescriptCodeBlock: string; typescriptExports: string[] }> {
+  ): Promise<TypescriptCodeEntry & { originalPath: string }> {
     const sourceFileContents = await this.readSourceFile(file.path);
     // get variable values from the rendered template
     const { metadata } = file;
@@ -43,9 +51,10 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
     const templateName = camelCase(file.metadata.name);
 
     return {
-      typescriptCodeBlock: `const ${templateName} = createTextTemplateFile(${JSON.stringify(
+      codeBlock: `const ${templateName} = createTextTemplateFile(${JSON.stringify(
         {
           name: file.metadata.name,
+          group: file.metadata.group,
           source: {
             path: file.metadata.template,
           },
@@ -54,7 +63,49 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
           })),
         } satisfies TextTemplateFile,
       )});`,
-      typescriptExports: [templateName],
+      exports: [templateName],
+      imports: ['createTextTemplateFile'],
+      originalPath: file.path,
+    };
+  }
+
+  protected async extractTemplateFilesForGroup(
+    groupName: string,
+    files: TemplateFileExtractorFile<TextTemplateFileMetadata>[],
+  ): Promise<TypescriptCodeEntry> {
+    const results = await Promise.all(
+      files.map((file) => this.extractTemplateFile(file)),
+    );
+
+    const originalPaths = results.map((result) => result.originalPath);
+    // identify greatest common prefix
+    const commonPathPrefix = getCommonPathPrefix(originalPaths);
+
+    const groupNameVariable = `${camelCase(groupName)}Group`;
+
+    const groupBlock = `const ${groupNameVariable} = createTextTemplateGroup({
+      templates: {
+        ${results
+          .map(
+            (result) => `${result.exports[0]}: {
+          destination: '${path.relative(commonPathPrefix, result.originalPath)}',
+          template: ${result.exports[0]}
+        }`,
+          )
+          .join(',\n')}
+      }
+    });`;
+
+    return {
+      codeBlock: [
+        ...results.map((result) => result.codeBlock),
+        groupBlock,
+      ].join('\n\n'),
+      exports: [groupNameVariable],
+      imports: [
+        'createTextTemplateGroup',
+        ...results.flatMap((result) => result.imports),
+      ],
     };
   }
 
@@ -64,11 +115,20 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
   ): Promise<void> {
     const extractLimit = pLimit(getGenerationConcurrencyLimit());
 
-    const results = await Promise.all(
-      files.map((file) =>
-        extractLimit(async () => this.extractTemplateFile(file)),
-      ),
+    const filesByGroups = mapGroupBy(
+      files.filter((file) => file.metadata.group),
+      (file) => file.metadata.group ?? '',
     );
+    const filesWithoutGroups = files.filter((file) => !file.metadata.group);
+
+    const results = await Promise.all([
+      ...[...filesByGroups].map(([groupName, files]) =>
+        extractLimit(() => this.extractTemplateFilesForGroup(groupName, files)),
+      ),
+      ...filesWithoutGroups.map((file) =>
+        extractLimit(() => this.extractTemplateFile(file)),
+      ),
+    ]);
 
     if (!generatorName.includes('#')) {
       throw new Error(
@@ -83,10 +143,12 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
       generatorName,
       'text-templates.ts',
       [
-        'import { createTextTemplateFile } from "@halfdomelabs/sync";',
-        ...results.map((result) => result.typescriptCodeBlock),
+        `import { ${uniq(results.flatMap((result) => result.imports))
+          .toSorted()
+          .join(',')} } from "@halfdomelabs/sync";`,
+        ...results.map((result) => result.codeBlock),
         `export const ${templatesVariableName} = {
-          ${results.map((result) => result.typescriptExports).join(',')}
+          ${results.map((result) => result.exports).join(',')}
         }`,
       ].join('\n\n'),
     );

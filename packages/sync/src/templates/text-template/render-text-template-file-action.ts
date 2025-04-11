@@ -106,6 +106,7 @@ export function renderTextTemplateFileAction<
               name: template.name,
               template: template.source.path,
               generator: builder.generatorInfo.name,
+              group: template.group,
               type: TEXT_TEMPLATE_TYPE,
               variables:
                 Object.keys(templateVariables).length > 0
