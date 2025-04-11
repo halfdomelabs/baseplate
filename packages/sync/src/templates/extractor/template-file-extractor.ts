@@ -3,6 +3,7 @@ import type { z } from 'zod';
 import { handleFileNotFoundError } from '@halfdomelabs/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { format } from 'prettier';
 
 import type { Logger } from '@src/utils/evented-logger.js';
 
@@ -39,10 +40,6 @@ export interface TemplateFileExtractorGeneratorInfo {
 
 export interface TemplateFileExtractorContext {
   /**
-   * The output directory of the project.
-   */
-  outputDirectory: string;
-  /**
    * A map of generator name to its info.
    */
   generatorInfoMap: Map<string, TemplateFileExtractorGeneratorInfo>;
@@ -50,6 +47,17 @@ export interface TemplateFileExtractorContext {
    * The logger to use.
    */
   logger: Logger;
+}
+
+async function formatTypescript(contents: string): Promise<string> {
+  return format(contents, {
+    parser: 'typescript',
+    // TODO: Dynamically source prettier config
+    tabWidth: 2,
+    singleQuote: true,
+    trailingComma: 'all',
+    semi: true,
+  });
 }
 
 export abstract class TemplateFileExtractor<
@@ -87,11 +95,15 @@ export abstract class TemplateFileExtractor<
     );
   }
 
+  /**
+   * Writes a generator file if it has been modified.
+   * @returns `true` if the file was written, `false` if it was not modified.
+   */
   protected async writeGeneratorFileIfModified(
     generatorName: string,
     generatorRelativePath: string,
     contents: string | Buffer,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const generatorFilePath = path.join(
       this.getGeneratorBaseDirectory(generatorName),
       generatorRelativePath,
@@ -102,20 +114,38 @@ export abstract class TemplateFileExtractor<
       .readFile(generatorFilePath)
       .catch(handleFileNotFoundError);
     if (existingContents?.equals(bufferContents)) {
-      return;
+      return false;
     }
     await fs.mkdir(path.dirname(generatorFilePath), { recursive: true });
     await fs.writeFile(generatorFilePath, bufferContents);
+    return true;
   }
 
+  /**
+   * Writes a template file if it has been modified.
+   * @returns `true` if the file was written, `false` if it was not modified.
+   */
   protected async writeTemplateFileIfModified(
     file: TemplateFileExtractorFile,
     contents: string | Buffer,
-  ): Promise<void> {
-    await this.writeGeneratorFileIfModified(
+  ): Promise<boolean> {
+    return this.writeGeneratorFileIfModified(
       file.metadata.generator,
       path.join('templates', file.metadata.template),
       contents,
+    );
+  }
+
+  protected async writeGeneratedTypescriptFileIfModified(
+    generatorName: string,
+    destination: string,
+    contents: string,
+  ): Promise<boolean> {
+    const formattedContents = await formatTypescript(contents);
+    return this.writeGeneratorFileIfModified(
+      generatorName,
+      path.join('generated', destination),
+      formattedContents,
     );
   }
 

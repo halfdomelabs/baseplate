@@ -6,6 +6,10 @@ export const templateFileMetadataBaseSchema = z.object({
    */
   type: z.string(),
   /**
+   * The name of the template (must be unique within a generator).
+   */
+  name: z.string().regex(/^[a-z\-0-9]+$/, 'must be kebab case'),
+  /**
    * The name of the generator that created the file.
    */
   generator: z.string(),

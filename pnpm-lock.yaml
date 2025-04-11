@@ -875,6 +875,9 @@ importers:
       chalk:
         specifier: 5.3.0
         version: 5.3.0
+      change-case:
+        specifier: 5.4.4
+        version: 5.4.4
       ejs:
         specifier: ^3.1.9
         version: 3.1.10
@@ -899,6 +902,9 @@ importers:
       p-limit:
         specifier: 6.1.0
         version: 6.1.0
+      prettier:
+        specifier: 'catalog:'
+        version: 3.4.2
       zod:
         specifier: 'catalog:'
         version: 3.24.1
@@ -924,9 +930,6 @@ importers:
       memfs:
         specifier: 4.15.1
         version: 4.15.1
-      prettier:
-        specifier: 'catalog:'
-        version: 3.4.2
       tsc-alias:
         specifier: 'catalog:'
         version: 1.8.10

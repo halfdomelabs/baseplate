@@ -27,11 +27,13 @@ describe('TextTemplateFileExtractor', () => {
       {
         path: '/root/test-generator/test.txt',
         metadata: {
+          name: 'test',
           type: TEXT_TEMPLATE_TYPE,
           generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
           template: 'test.txt',
           variables: {
             TPL_LOCATION: {
+              description: 'The location of the test',
               value: 'my couch',
             },
           },
@@ -44,5 +46,21 @@ describe('TextTemplateFileExtractor', () => {
     expect(
       result[TemplateFileExtractorTestUtils.templatePath('test.txt')],
     ).toBe('Hello world from {{TPL_LOCATION}}!');
+    expect(
+      result[TemplateFileExtractorTestUtils.generatedPath('text-templates.ts')],
+    ).toMatchInlineSnapshot(`
+      "import { createTextTemplateFile } from '@halfdomelabs/sync';
+
+      const TestTextTemplate = createTextTemplateFile({
+        name: 'test',
+        source: { path: 'test.txt' },
+        variables: { TPL_LOCATION: { description: 'The location of the test' } },
+      });
+
+      export const TEST_GENERATOR_TEXT_TEMPLATES = {
+        TestTextTemplate,
+      };
+      "
+    `);
   });
 });

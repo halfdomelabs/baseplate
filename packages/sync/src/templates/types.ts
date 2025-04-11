@@ -20,6 +20,10 @@ export type TemplateFileSource =
  */
 export interface TemplateFileBase {
   /**
+   * The name of the template (must be unique within a generator).
+   */
+  name: string;
+  /**
    * The source for the template file.
    */
   source: TemplateFileSource;

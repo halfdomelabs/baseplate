@@ -8,21 +8,24 @@ import {
   eslintProvider,
   nodeConfigProvider,
   nodeGitIgnoreProvider,
+  projectProvider,
   projectScope,
   quot,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  copyFileAction,
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
-  writeTemplateAction,
+  renderRawTemplateFileAction,
+  renderTextTemplateFileAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { CORE_REACT_RAW_TEMPLATES } from './generated/raw-templates.js';
+import { CORE_REACT_TEXT_TEMPLATES } from './generated/text-templates.js';
 import { viteNodeTask } from './node.js';
 
 const descriptorSchema = z.object({
@@ -64,12 +67,13 @@ export const reactGenerator = createGenerator({
       dependencies: {
         typescript: typescriptProvider,
         nodeGitIgnore: nodeGitIgnoreProvider,
+        project: projectProvider,
         eslint: eslintProvider.dependency().optional(),
       },
       exports: {
         react: reactProvider.export(projectScope),
       },
-      run({ typescript, nodeGitIgnore, eslint }) {
+      run({ typescript, nodeGitIgnore, project, eslint }) {
         const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);
 
         nodeGitIgnore.addExclusions([
@@ -132,45 +136,47 @@ export const reactGenerator = createGenerator({
             },
           },
           build: async (builder) => {
-            const initialFiles = ['public/favicon.ico', 'README.md'];
-
-            await Promise.all(
-              initialFiles.map((file) =>
-                copyFileAction({
-                  source: file,
-                  destination: file,
-                  shouldNeverOverwrite: true,
-                }),
-              ),
+            await builder.apply(
+              renderRawTemplateFileAction({
+                template: CORE_REACT_RAW_TEMPLATES.FaviconRawTemplate,
+                id: 'favicon',
+                destination: 'public/favicon.ico',
+              }),
             );
 
-            const staticFiles = ['src/vite-env.d.ts'];
+            await builder.apply(
+              renderTextTemplateFileAction({
+                template: CORE_REACT_TEXT_TEMPLATES.ReadmeTextTemplate,
+                id: 'readme',
+                destination: 'README.md',
+                variables: {
+                  TPL_PROJECT_NAME: project.getProjectName(),
+                },
+              }),
+            );
 
-            await Promise.all(
-              staticFiles.map((file) =>
-                builder.apply(
-                  copyFileAction({
-                    source: file,
-                    destination: file,
-                    shouldFormat: true,
-                  }),
-                ),
-              ),
+            await builder.apply(
+              renderTextTemplateFileAction({
+                template: CORE_REACT_TEXT_TEMPLATES.ViteEnvTextTemplate,
+                id: 'vite-env',
+                destination: 'src/vite-env.d.ts',
+              }),
+            );
+
+            await builder.apply(
+              renderTextTemplateFileAction({
+                template: CORE_REACT_TEXT_TEMPLATES.IndexHtmlTextTemplate,
+                id: 'index-html',
+                destination: 'index.html',
+                variables: {
+                  TPL_TITLE: descriptor.title,
+                  TPL_DESCRIPTION: descriptor.description,
+                },
+              }),
             );
 
             await builder.apply(
               indexFile.renderToAction('src/index.tsx', 'src/index.tsx'),
-            );
-
-            await builder.apply(
-              writeTemplateAction({
-                template: 'index.html.ejs',
-                destination: 'index.html',
-                data: {
-                  title: descriptor.title,
-                  description: descriptor.description,
-                },
-              }),
             );
 
             const viteConfig = typescript.createTemplate({
