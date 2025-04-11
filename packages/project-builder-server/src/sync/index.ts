@@ -7,6 +7,7 @@ import type {
 
 import {
   createCodebaseFileReaderFromDirectory,
+  deleteMetadataFiles,
   GeneratorEngine,
   writeGeneratorsMetadata,
   writeTemplateMetadata,
@@ -165,6 +166,7 @@ export async function generateForDirectory({
 
     // write metadata to the generated directory
     if (templateMetadataWriter?.enabled) {
+      await deleteMetadataFiles(projectDirectory);
       await writeGeneratorsMetadata(project, output.files, projectDirectory);
       await writeTemplateMetadata(output.files, projectDirectory);
     }
