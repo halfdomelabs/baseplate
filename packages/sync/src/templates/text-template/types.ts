@@ -9,13 +9,15 @@ export const TEXT_TEMPLATE_TYPE = 'text';
 export const textTemplateFileMetadataSchema =
   templateFileMetadataBaseSchema.extend({
     type: z.literal(TEXT_TEMPLATE_TYPE),
-    variables: z.record(
-      z.string(),
-      z.object({
-        description: z.string().optional(),
-        value: z.string(),
-      }),
-    ),
+    variables: z
+      .record(
+        z.string(),
+        z.object({
+          description: z.string().optional(),
+          value: z.string(),
+        }),
+      )
+      .optional(),
   });
 
 export type TextTemplateFileMetadata = z.infer<

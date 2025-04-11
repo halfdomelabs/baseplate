@@ -26,7 +26,7 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
 
     // replace variable values with template string
     let templateContents = sourceFileContents;
-    for (const [key, variable] of Object.entries(metadata.variables)) {
+    for (const [key, variable] of Object.entries(metadata.variables ?? {})) {
       if (!templateContents.includes(variable.value)) {
         throw new Error(
           `Variable ${key} with value ${variable.value} not found in template ${file.path}`,
@@ -49,7 +49,7 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
           source: {
             path: file.metadata.template,
           },
-          variables: mapValues(metadata.variables, (variable) => ({
+          variables: mapValues(metadata.variables ?? {}, (variable) => ({
             description: variable.description,
           })),
         } satisfies TextTemplateFile,

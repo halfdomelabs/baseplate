@@ -10,7 +10,7 @@ import {
 
 interface RenderRawTemplateFileActionInput {
   template: RawTemplateFile;
-  id: string;
+  id?: string;
   destination: string;
   options?: Omit<WriteFileOptions, 'templateMetadata'>;
 }
@@ -39,7 +39,7 @@ export function renderRawTemplateFileAction({
           : undefined;
 
       builder.writeFile({
-        id,
+        id: id ?? template.name,
         filePath: destination,
         contents: source,
         options,
