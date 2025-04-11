@@ -5,7 +5,6 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  writeFormattedAction,
 } from '@halfdomelabs/sync';
 import { pluralize } from 'inflection';
 import path from 'node:path';
@@ -219,7 +218,7 @@ export const adminCrudQueriesGenerator = createGenerator({
               },
             },
           },
-          build: async (builder) => {
+          build: (builder) => {
             // merge fragments together
             for (const fragment of mergeGraphQLFragments(fragments)) {
               queries.push(renderGraphQLFragment(fragment));
@@ -315,12 +314,11 @@ export const adminCrudQueriesGenerator = createGenerator({
                 'queries.gql',
               );
               reactApollo.registerGqlFile(filePath);
-              await builder.apply(
-                writeFormattedAction({
-                  destination: filePath,
-                  contents: queries.join('\n\n'),
-                }),
-              );
+              builder.writeFile({
+                id: `admin-crud-queries>${modelName}`,
+                destination: filePath,
+                contents: queries.join('\n\n'),
+              });
             }
           },
         };

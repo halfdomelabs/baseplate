@@ -1,5 +1,5 @@
 overwrite: true
-schema: <%= SCHEMA_LOCATION %>
+schema: {{TPL_SCHEMA_LOCATION}}
 documents: 'src/**/*.gql'
 config:
   scalars:

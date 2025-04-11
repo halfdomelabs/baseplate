@@ -35,7 +35,6 @@
     "@halfdomelabs/utils": "workspace:*",
     "chalk": "5.3.0",
     "change-case": "5.4.4",
-    "ejs": "^3.1.9",
     "es-toolkit": "1.31.0",
     "execa": "9.3.0",
     "fast-json-patch": "^3.1.1",

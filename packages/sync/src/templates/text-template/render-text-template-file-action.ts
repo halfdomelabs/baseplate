@@ -81,6 +81,16 @@ export function renderTextTemplateFileAction<
           );
         }
 
+        // make sure all variables have values
+        const missingVariableValue = Object.keys(variablesObj).find(
+          (key) => !variablesObj[key],
+        );
+        if (missingVariableValue) {
+          throw new Error(
+            `Template variable not found: ${missingVariableValue}`,
+          );
+        }
+
         renderedTemplate = renderedTemplate.replaceAll(
           new RegExp(/{{TPL_[A-Z0-9_]+}}/g),
           (match) => {

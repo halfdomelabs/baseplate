@@ -12,7 +12,6 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  writeFormattedAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -215,12 +214,11 @@ export const reactComponentsGenerator = createGenerator({
             const componentIndex = componentNames
               .map((name) => `export { default as ${name} } from './${name}';`)
               .join('\n');
-            await builder.apply(
-              writeFormattedAction({
-                contents: componentIndex,
-                destination: `${srcFolder}/components/index.ts`,
-              }),
-            );
+            builder.writeFile({
+              id: `react-components-index`,
+              contents: componentIndex,
+              destination: `${srcFolder}/components/index.ts`,
+            });
           },
         };
       },

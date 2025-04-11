@@ -24,4 +24,4 @@ body,
   height: 100%;
 }
 
-<%= globalStyles %>;
+{{TPL_GLOBAL_STYLES}}
