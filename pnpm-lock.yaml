@@ -909,9 +909,6 @@ importers:
       '@halfdomelabs/tools':
         specifier: workspace:*
         version: link:../tools
-      '@types/ejs':
-        specifier: ^3.1.2
-        version: 3.1.5
       '@types/ms':
         specifier: 0.7.34
         version: 0.7.34
@@ -2978,9 +2975,6 @@ packages:
 
   '@types/doctrine@0.0.9':
     resolution: {integrity: sha512-eOIHzCUSH7SMfonMG1LsC2f8vxBFtho6NGBznK41R84YzPuvSBzrhEps33IsQiOW9+VL6NQ9DbjQJznk/S4uRA==}
-
-  '@types/ejs@3.1.5':
-    resolution: {integrity: sha512-nv+GSx77ZtXiJzwKdsASqi+YQ5Z7vwHsTP0JY2SiQgjGckkBRKZnk8nIM+7oUZ1VCtuTz0+By4qVR7fqzp/Dfg==}
 
   '@types/eslint-config-prettier@6.11.3':
     resolution: {integrity: sha512-3wXCiM8croUnhg9LdtZUJQwNcQYGWxxdOWDjPe1ykCqJFPVpzAKfs/2dgSoCtAvdPeaponcWPI7mPcGGp9dkKQ==}
@@ -8469,8 +8463,6 @@ snapshots:
       '@types/ssh2': 1.15.4
 
   '@types/doctrine@0.0.9': {}
-
-  '@types/ejs@3.1.5': {}
 
   '@types/eslint-config-prettier@6.11.3': {}
 
