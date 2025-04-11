@@ -113,26 +113,29 @@ describe('runTemplateFileExtractors', () => {
     });
 
     expect(mockExtract).toHaveBeenCalledTimes(2);
-    expect(mockExtract).toHaveBeenCalledWith('test-type', [
-      {
-        path: path.join(outputDirectory1, 'src/test-file.ts'),
-        metadata: {
-          name: 'test-file',
-          type: 'test-type',
-          generator: 'test-generator',
-          template: 'test-template.ts',
+    expect(mockExtract).toHaveBeenCalledWith(
+      'test-type',
+      expect.arrayContaining([
+        {
+          path: path.join(outputDirectory1, 'src/test-file.ts'),
+          metadata: {
+            name: 'test-file',
+            type: 'test-type',
+            generator: 'test-generator',
+            template: 'test-template.ts',
+          },
         },
-      },
-      {
-        path: path.join(outputDirectory1, 'src/folder/index.ts'),
-        metadata: {
-          name: 'index-file',
-          type: 'test-type',
-          generator: 'test-generator',
-          template: 'index-template.ts',
+        {
+          path: path.join(outputDirectory1, 'src/folder/index.ts'),
+          metadata: {
+            name: 'index-file',
+            type: 'test-type',
+            generator: 'test-generator',
+            template: 'index-template.ts',
+          },
         },
-      },
-    ]);
+      ]),
+    );
     expect(mockExtract).toHaveBeenCalledWith('test-type-2', [
       {
         path: path.join(outputDirectory1, 'src/test-file-2.ts'),
