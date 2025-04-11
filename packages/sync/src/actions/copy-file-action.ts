@@ -45,7 +45,7 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
     );
     builder.writeFile({
       id: destination,
-      filePath: destination,
+      destination: destination,
       contents: replacedFileContents,
       options: {
         shouldFormat,

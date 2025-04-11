@@ -281,7 +281,7 @@ export const prettierGenerator = createGenerator({
 
             builder.writeFile({
               id: 'prettier-ignore',
-              filePath: '.prettierignore',
+              destination: '.prettierignore',
               contents: `${prettierIgnoreSorted.join('\n')}\n`,
               options: {
                 shouldFormat: true,

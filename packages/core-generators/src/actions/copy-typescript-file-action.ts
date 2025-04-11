@@ -70,7 +70,7 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
 
   builder.writeFile({
     id: options.id ?? destinationPath,
-    filePath: destinationPath,
+    destination: destinationPath,
     contents: formattedContents,
     options: {
       shouldFormat: true,

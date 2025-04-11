@@ -21,7 +21,7 @@ describe('createGenerator', () => {
             build: (builder: GeneratorTaskOutputBuilder) => {
               builder.writeFile({
                 id: 'test',
-                filePath: 'test.txt',
+                destination: 'test.txt',
                 contents: 'content',
               });
             },

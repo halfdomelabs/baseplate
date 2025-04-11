@@ -32,7 +32,7 @@ export function writeJsonToBuilder(
 
   builder.writeFile({
     id,
-    filePath: destination,
+    destination,
     contents: jsonString,
     options: {
       shouldFormat: true,

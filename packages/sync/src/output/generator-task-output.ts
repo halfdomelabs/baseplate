@@ -180,7 +180,7 @@ export class GeneratorTaskOutputBuilder {
    */
   writeFile({
     id,
-    filePath,
+    destination: filePath,
     contents,
     options,
     generatorName,
@@ -188,7 +188,7 @@ export class GeneratorTaskOutputBuilder {
   }: {
     id: string;
     generatorName?: string;
-    filePath: string;
+    destination: string;
     contents: string | Buffer;
     options?: Omit<WriteFileOptions, 'templateMetadata'>;
     templateMetadata?: TemplateFileMetadataBase;

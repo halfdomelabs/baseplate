@@ -328,7 +328,7 @@ export const typescriptGenerator = createGenerator({
 
                 builder.writeFile({
                   id,
-                  filePath: destination,
+                  destination,
                   contents: file,
                   options: {
                     ...options,

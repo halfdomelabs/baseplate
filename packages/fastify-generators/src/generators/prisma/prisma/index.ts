@@ -177,7 +177,7 @@ export const prismaGenerator = createGenerator({
             });
             builder.writeFile({
               id: 'prisma-schema',
-              filePath: 'prisma/schema.prisma',
+              destination: 'prisma/schema.prisma',
               contents: `${formattedSchemaText.trimEnd()}\n`,
             });
 

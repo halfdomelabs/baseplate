@@ -89,7 +89,7 @@ ${volumeEntries.join('\n')}`.trim();
           build: (builder) => {
             builder.writeFile({
               id: 'docker-compose',
-              filePath: dockerComposePath,
+              destination: dockerComposePath,
               contents: `${`
 ${entries.join('\n')}`.trim()}\n`,
               options: {
@@ -99,7 +99,7 @@ ${entries.join('\n')}`.trim()}\n`,
 
             builder.writeFile({
               id: 'docker-env',
-              filePath: dockerEnvPath,
+              destination: dockerEnvPath,
               contents: `COMPOSE_PROJECT_NAME=${projectName}-dev\n`,
             });
           },

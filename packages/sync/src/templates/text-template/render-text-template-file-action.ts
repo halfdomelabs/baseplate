@@ -120,7 +120,7 @@ export function renderTextTemplateFileAction<
 
       builder.writeFile({
         id: id ?? template.name,
-        filePath: destination,
+        destination,
         contents: renderedTemplate,
         options,
         templateMetadata,

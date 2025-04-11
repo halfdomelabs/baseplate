@@ -143,7 +143,7 @@ export const reactConfigGenerator = createGenerator({
 
               builder.writeFile({
                 id: 'react-config/development-env',
-                filePath: '.env.development',
+                destination: '.env.development',
                 contents: developmentEnvFile,
               });
             }

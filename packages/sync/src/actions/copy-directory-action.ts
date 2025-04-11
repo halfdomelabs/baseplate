@@ -37,7 +37,7 @@ export const copyDirectoryAction = createBuilderActionCreator<[Options]>(
           const fileContents = await fs.readFile(file, 'utf8');
           builder.writeFile({
             id: destinationPath,
-            filePath: destinationPath,
+            destination: destinationPath,
             contents: fileContents,
             options: {
               shouldFormat: true,
@@ -47,7 +47,7 @@ export const copyDirectoryAction = createBuilderActionCreator<[Options]>(
           const fileContents = await fs.readFile(file);
           builder.writeFile({
             id: destinationPath,
-            filePath: destinationPath,
+            destination: destinationPath,
             contents: fileContents,
           });
         }

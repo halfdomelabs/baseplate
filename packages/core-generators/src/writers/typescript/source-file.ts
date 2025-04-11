@@ -734,7 +734,7 @@ export class TypescriptSourceFile<
         const contents = this.renderToText(template, destination);
         builder.writeFile({
           id: id ?? destination,
-          filePath: destination,
+          destination,
           contents,
           options: {
             shouldFormat: true,
@@ -762,7 +762,7 @@ export class TypescriptSourceFile<
         const contents = this.renderToText(template, fullPath);
         builder.writeFile({
           id: id ?? fullPath,
-          filePath: fullPath,
+          destination: fullPath,
           contents,
           options: {
             shouldFormat: true,

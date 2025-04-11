@@ -113,7 +113,7 @@ export const eslintGenerator = createGenerator({
             // generate ignore file
             builder.writeFile({
               id: 'eslint-ignore',
-              filePath: '.eslintignore',
+              destination: '.eslintignore',
               contents: `${config.eslintIgnore.join('\n')}\n`,
             });
           },

@@ -28,7 +28,7 @@ export const writeTemplateAction = createBuilderActionCreator<[Options]>(
 
     builder.writeFile({
       id: options.id ?? destination,
-      filePath: destination,
+      destination: destination,
       contents,
       options: {
         shouldFormat: !noFormat,
