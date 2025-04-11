@@ -14,10 +14,9 @@ export const writeFormattedAction = createBuilderActionCreator<
 
   builder.writeFile({
     id: id ?? destination,
-    destination: destination,
+    destination,
     contents,
     options: {
-      shouldFormat: true,
       shouldNeverOverwrite,
     },
   });

@@ -737,7 +737,6 @@ export class TypescriptSourceFile<
           destination,
           contents,
           options: {
-            shouldFormat: true,
             shouldNeverOverwrite: options?.shouldNeverOverwrite,
             ...rest,
           },
@@ -765,7 +764,6 @@ export class TypescriptSourceFile<
           destination: fullPath,
           contents,
           options: {
-            shouldFormat: true,
             shouldNeverOverwrite: options?.shouldNeverOverwrite,
             ...rest,
           },

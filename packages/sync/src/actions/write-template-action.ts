@@ -9,12 +9,12 @@ interface Options {
   destination: string;
   template: string;
   data: Record<string, unknown>;
-  noFormat?: boolean;
+  skipFormatting?: boolean;
 }
 
 export const writeTemplateAction = createBuilderActionCreator<[Options]>(
   (options: Options) => async (builder) => {
-    const { destination, template, data, noFormat } = options;
+    const { destination, template, data, skipFormatting } = options;
 
     const templatePath = path.join(
       builder.generatorInfo.baseDirectory,
@@ -28,10 +28,10 @@ export const writeTemplateAction = createBuilderActionCreator<[Options]>(
 
     builder.writeFile({
       id: options.id ?? destination,
-      destination: destination,
+      destination,
       contents,
       options: {
-        shouldFormat: !noFormat,
+        skipFormatting,
       },
     });
   },

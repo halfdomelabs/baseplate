@@ -73,7 +73,6 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
     destination: destinationPath,
     contents: formattedContents,
     options: {
-      shouldFormat: true,
       shouldNeverOverwrite,
     },
   });

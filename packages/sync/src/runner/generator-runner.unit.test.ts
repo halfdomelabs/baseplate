@@ -163,9 +163,6 @@ describe('executeGeneratorEntry', () => {
               id: 'nested',
               destination: '/nested/file.txt',
               contents: 'nested',
-              options: {
-                shouldFormat: true,
-              },
             });
             builder.addPostWriteCommand('nested command', {
               priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
@@ -189,7 +186,6 @@ describe('executeGeneratorEntry', () => {
       '/nested/file.txt': {
         id: 'nested-generator:nested',
         contents: 'nested',
-        options: { shouldFormat: true },
       },
     });
     expect(result.postWriteCommands).toEqual([

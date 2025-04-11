@@ -99,7 +99,6 @@ export const authServiceGenerator = createGenerator({
               copyFileAction({
                 source: 'tokens.gql',
                 destination: `${authFolder}/tokens.gql`,
-                shouldFormat: true,
               }),
             );
           },

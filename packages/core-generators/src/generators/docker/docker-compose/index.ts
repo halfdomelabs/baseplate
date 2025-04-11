@@ -92,9 +92,6 @@ ${volumeEntries.join('\n')}`.trim();
               destination: dockerComposePath,
               contents: `${`
 ${entries.join('\n')}`.trim()}\n`,
-              options: {
-                shouldFormat: true,
-              },
             });
 
             builder.writeFile({

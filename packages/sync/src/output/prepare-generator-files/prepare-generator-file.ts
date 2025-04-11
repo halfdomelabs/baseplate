@@ -60,7 +60,7 @@ async function formatContents(
   const { formatters } = context;
   const { options, contents } = data;
 
-  if (!options?.shouldFormat) return contents;
+  if (options?.skipFormatting) return contents;
 
   if (Buffer.isBuffer(contents)) {
     throw new TypeError(

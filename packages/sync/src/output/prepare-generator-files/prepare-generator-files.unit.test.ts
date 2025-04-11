@@ -69,7 +69,6 @@ describe('prepareGeneratorFiles', () => {
         'invalid-file.txt',
         createMockFileData({
           contents: Buffer.from([0]),
-          options: { shouldFormat: true },
         }),
       ],
     ]);

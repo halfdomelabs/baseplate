@@ -330,10 +330,7 @@ export const typescriptGenerator = createGenerator({
                   id,
                   destination,
                   contents: file,
-                  options: {
-                    ...options,
-                    shouldFormat: true,
-                  },
+                  options,
                 });
 
                 return { destination };

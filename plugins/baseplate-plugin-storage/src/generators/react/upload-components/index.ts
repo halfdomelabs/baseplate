@@ -103,7 +103,6 @@ export const uploadComponentsGenerator = createGenerator({
               copyFileAction({
                 source: 'components/FileInput/upload.gql',
                 destination: gqlFilePath,
-                shouldFormat: true,
                 replacements: {
                   FILE_SCHEMA: capitalize(fileModelName),
                 },

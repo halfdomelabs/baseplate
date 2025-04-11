@@ -103,14 +103,12 @@ export const reactTailwindGenerator = createGenerator({
               copyFileAction({
                 source: 'tpl.tailwind.config.js',
                 destination: 'tailwind.config.js',
-                shouldFormat: true,
               }),
             );
             await builder.apply(
               copyFileAction({
                 source: 'postcss.config.js',
                 destination: 'postcss.config.js',
-                shouldFormat: true,
               }),
             );
           },

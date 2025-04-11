@@ -145,9 +145,6 @@ describe('writeGeneratorOutput', () => {
           {
             id: 'test-1',
             contents: 'invalid content',
-            options: {
-              shouldFormat: true,
-            },
           },
         ],
       ]),
@@ -166,5 +163,38 @@ describe('writeGeneratorOutput', () => {
     await expect(
       writeGeneratorOutput(output, outputDirectory, { logger }),
     ).rejects.toThrow(PrepareGeneratorFilesError);
+  });
+
+  it('should skip formatting if skipFormatting is true', async () => {
+    const output: GeneratorOutput = {
+      files: new Map([
+        [
+          'test.txt',
+          {
+            id: 'test-1',
+            contents: 'no formatting content',
+            options: {
+              skipFormatting: true,
+            },
+          },
+        ],
+      ]),
+      globalFormatters: [
+        {
+          name: 'test-formatter',
+          fileExtensions: ['.txt'],
+          format: () => {
+            throw new Error('Formatting failed');
+          },
+        },
+      ],
+      postWriteCommands: [],
+    };
+
+    await writeGeneratorOutput(output, outputDirectory, { logger });
+
+    expect(vol.readFileSync(`${outputDirectory}/test.txt`, 'utf8')).toBe(
+      'no formatting content',
+    );
   });
 });

@@ -6,7 +6,7 @@ import { createBuilderActionCreator } from '@src/output/builder-action.js';
 interface Options {
   destination: string;
   source: string;
-  shouldFormat?: boolean;
+  skipFormatting?: boolean;
   shouldNeverOverwrite?: boolean;
   replacements?: Record<string, string>;
 }
@@ -27,7 +27,7 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
     const {
       destination,
       source,
-      shouldFormat,
+      skipFormatting,
       shouldNeverOverwrite,
       replacements,
     } = options;
@@ -45,10 +45,10 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
     );
     builder.writeFile({
       id: destination,
-      destination: destination,
+      destination,
       contents: replacedFileContents,
       options: {
-        shouldFormat,
+        skipFormatting,
         shouldNeverOverwrite,
       },
     });

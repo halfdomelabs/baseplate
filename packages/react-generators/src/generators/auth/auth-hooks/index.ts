@@ -119,7 +119,6 @@ export const authHooksGenerator = createGenerator({
               copyFileAction({
                 source: 'hooks/useCurrentUser.gql',
                 destination: `${hookFolder}/useCurrentUser.gql`,
-                shouldFormat: true,
                 replacements: {
                   CURRENT_USER_FIELDS: currentUserFields.join('\n'),
                   USER_QUERY: userQueryName,
@@ -146,7 +145,6 @@ export const authHooksGenerator = createGenerator({
               copyFileAction({
                 source: 'hooks/useLogOut.gql',
                 destination: `${hookFolder}/useLogOut.gql`,
-                shouldFormat: true,
               }),
             );
             reactApollo.registerGqlFile(`${hookFolder}/useLogOut.gql`);

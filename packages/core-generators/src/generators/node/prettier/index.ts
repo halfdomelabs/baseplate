@@ -283,9 +283,6 @@ export const prettierGenerator = createGenerator({
               id: 'prettier-ignore',
               destination: '.prettierignore',
               contents: `${prettierIgnoreSorted.join('\n')}\n`,
-              options: {
-                shouldFormat: true,
-              },
             });
           },
         };
