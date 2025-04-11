@@ -13,13 +13,18 @@ import { expandPathWithTilde } from '@src/utils/path.js';
  */
 export function addExtractTemplatesCommand(program: Command): void {
   program
-    .command('extract-templates directory')
+    .command('extract-templates directory [app]')
     .description(
       'Extracts templates from the specified directory and saves them to the templates directory',
     )
-    .action(async (directory: string) => {
+    .action(async (directory: string, app: string | undefined) => {
       const resolvedDirectory = expandPathWithTilde(directory);
       const context = await createSchemaParserContext(resolvedDirectory);
-      await runTemplateExtractorsForProject(resolvedDirectory, context, logger);
+      await runTemplateExtractorsForProject(
+        resolvedDirectory,
+        app,
+        context,
+        logger,
+      );
     });
 }

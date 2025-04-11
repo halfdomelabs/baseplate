@@ -48,6 +48,7 @@ async function buildGeneratorPackageMap(
 
 export async function runTemplateExtractorsForProject(
   directory: string,
+  app: string | undefined,
   context: SchemaParserContext,
   logger: Logger,
 ): Promise<void> {
@@ -57,10 +58,19 @@ export async function runTemplateExtractorsForProject(
     { onlyFiles: true, absolute: true },
   );
   const generatorPackageMap = await buildGeneratorPackageMap(context);
-  logger.info(`Running template extractors for ${directory}...`);
-  const appDirectories = generatorInfoFiles.map((generatorInfoPath) =>
-    path.dirname(generatorInfoPath),
+  logger.info(
+    `Running template extractors for ${directory}${
+      app ? ` for app ${app}` : ''
+    }...`,
   );
+  const appDirectories = generatorInfoFiles
+    .map((generatorInfoPath) => path.dirname(generatorInfoPath))
+    .filter((appDirectory) => {
+      if (app) {
+        return path.basename(appDirectory).includes(app);
+      }
+      return true;
+    });
   await runTemplateFileExtractors(
     TEMPLATE_FILE_EXTRACTOR_CREATORS,
     appDirectories,

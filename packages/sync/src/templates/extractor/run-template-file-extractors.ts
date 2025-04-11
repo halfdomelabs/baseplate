@@ -3,7 +3,7 @@ import {
   handleFileNotFoundError,
   readJsonWithSchema,
 } from '@halfdomelabs/utils/node';
-import { omit, orderBy, uniq, uniqBy } from 'es-toolkit';
+import { omit, orderBy, uniqBy } from 'es-toolkit';
 import { globby } from 'globby';
 import fsAdapter from 'node:fs';
 import fs from 'node:fs/promises';
