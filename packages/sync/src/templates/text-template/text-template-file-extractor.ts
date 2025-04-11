@@ -29,7 +29,7 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
     for (const [key, variable] of Object.entries(metadata.variables)) {
       if (!templateContents.includes(variable.value)) {
         throw new Error(
-          `Variable value not found in template: ${variable.value} (template: ${file.path})`,
+          `Variable ${key} with value ${variable.value} not found in template ${file.path}`,
         );
       }
       templateContents = templateContents.replaceAll(
@@ -72,6 +72,12 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
       ),
     );
 
+    if (!generatorName.includes('#')) {
+      throw new Error(
+        `Generator name ${generatorName} is not in the correct format.
+         Please use the format <package-name>#<generator-name>.`,
+      );
+    }
     const templatesVariableName = `${constantCase(generatorName.split('#')[1])}_TEXT_TEMPLATES`;
 
     // write a Typescript templates file that exports the appropriate file templates

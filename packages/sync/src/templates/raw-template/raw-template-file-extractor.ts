@@ -51,6 +51,12 @@ export class RawTemplateFileExtractor extends TemplateFileExtractor<
       ),
     );
 
+    if (!generatorName.includes('#')) {
+      throw new Error(
+        `Generator name ${generatorName} is not in the correct format.
+         Please use the format <package-name>#<generator-name>.`,
+      );
+    }
     const templatesVariableName = `${constantCase(generatorName.split('#')[1])}_RAW_TEMPLATES`;
 
     // write a Typescript templates file that exports the appropriate file templates

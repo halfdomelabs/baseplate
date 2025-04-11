@@ -25,7 +25,7 @@ import { createGeneratorInfoMap } from './create-generator-info-map.js';
  * Run the template file extractors on a target output directory
  *
  * @param extractors - The template file extractors to run
- * @param outputDirectory - The output directory
+ * @param outputDirectories - The output directories to run the extractors on
  * @param generatorPackageMap - The map of package names with generators to package paths
  */
 export async function runTemplateFileExtractors(
