@@ -72,7 +72,7 @@ export const nodeGitIgnoreGenerator = createGenerator({
               exclusionLines.push(...descriptor.additionalExclusions);
             }
             builder.writeFile({
-              id: 'node-git-ignore',
+              id: 'gitignore',
               destination: '.gitignore',
               contents: `${exclusionLines.join('\n')}\n`,
             });
