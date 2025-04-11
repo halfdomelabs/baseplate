@@ -27,4 +27,8 @@ export interface TemplateFileBase {
    * The source for the template file.
    */
   source: TemplateFileSource;
+  /**
+   * The group of the template file.
+   */
+  group?: string;
 }

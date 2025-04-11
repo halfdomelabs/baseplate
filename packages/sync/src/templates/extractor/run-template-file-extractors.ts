@@ -94,7 +94,7 @@ export async function runTemplateFileExtractors(
               );
             }
             return {
-              path: filePath,
+              path: filePath.replaceAll(path.sep, path.posix.sep),
               metadata,
               modifiedTime,
             };

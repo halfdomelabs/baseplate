@@ -28,14 +28,12 @@ export const readmeGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               renderTextTemplateFileAction({
-                template: CORE_README_TEXT_TEMPLATES.ReadmeTextTemplate,
-                id: 'readme',
+                template: CORE_README_TEXT_TEMPLATES.readme,
                 destination: 'README.md',
                 variables: {
                   TPL_PROJECT: projectName,
                 },
                 options: {
-                  shouldFormat: true,
                   shouldNeverOverwrite: true,
                 },
               }),

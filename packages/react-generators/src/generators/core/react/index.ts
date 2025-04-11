@@ -20,7 +20,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
   renderRawTemplateFileAction,
-  renderTextTemplateFileAction,
+  renderTextTemplateGroupAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -138,39 +138,23 @@ export const reactGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               renderRawTemplateFileAction({
-                template: CORE_REACT_RAW_TEMPLATES.FaviconRawTemplate,
-                id: 'favicon',
+                template: CORE_REACT_RAW_TEMPLATES.favicon,
                 destination: 'public/favicon.ico',
               }),
             );
 
             await builder.apply(
-              renderTextTemplateFileAction({
-                template: CORE_REACT_TEXT_TEMPLATES.ReadmeTextTemplate,
-                id: 'readme',
-                destination: 'README.md',
+              renderTextTemplateGroupAction({
+                group: CORE_REACT_TEXT_TEMPLATES.staticGroup,
+                baseDirectory: '',
                 variables: {
-                  TPL_PROJECT_NAME: project.getProjectName(),
-                },
-              }),
-            );
-
-            await builder.apply(
-              renderTextTemplateFileAction({
-                template: CORE_REACT_TEXT_TEMPLATES.ViteEnvTextTemplate,
-                id: 'vite-env',
-                destination: 'src/vite-env.d.ts',
-              }),
-            );
-
-            await builder.apply(
-              renderTextTemplateFileAction({
-                template: CORE_REACT_TEXT_TEMPLATES.IndexHtmlTextTemplate,
-                id: 'index-html',
-                destination: 'index.html',
-                variables: {
-                  TPL_TITLE: descriptor.title,
-                  TPL_DESCRIPTION: descriptor.description,
+                  readme: {
+                    TPL_PROJECT_NAME: project.getProjectName(),
+                  },
+                  indexHtml: {
+                    TPL_TITLE: descriptor.title,
+                    TPL_DESCRIPTION: descriptor.description,
+                  },
                 },
               }),
             );

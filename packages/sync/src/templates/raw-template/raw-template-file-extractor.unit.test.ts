@@ -60,19 +60,19 @@ describe('RawTemplateFileExtractor', () => {
     ).toMatchInlineSnapshot(`
       "import { createRawTemplateFile } from '@halfdomelabs/sync';
 
-      const TestRawTemplate = createRawTemplateFile({
+      const test = createRawTemplateFile({
         name: 'test',
         source: { path: 'test.txt' },
       });
 
-      const Test2RawTemplate = createRawTemplateFile({
+      const test2 = createRawTemplateFile({
         name: 'test2',
         source: { path: 'test2.txt' },
       });
 
       export const TEST_GENERATOR_RAW_TEMPLATES = {
-        TestRawTemplate,
-        Test2RawTemplate,
+        test,
+        test2,
       };
       "
     `);

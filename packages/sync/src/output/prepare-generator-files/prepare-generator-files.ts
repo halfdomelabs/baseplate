@@ -79,13 +79,25 @@ export async function prepareGeneratorFiles({
     throw new PrepareGeneratorFilesError(fileErrors);
   }
 
+  const fileIdToRelativePathMap = new Map<string, string>();
+  for (const [relativePath, file] of files.entries()) {
+    if (fileIdToRelativePathMap.has(file.id)) {
+      throw new PrepareGeneratorFilesError([
+        {
+          relativePath,
+          error: new Error(
+            `File ID ${file.id} is already in use by file ${fileIdToRelativePathMap.get(
+              file.id,
+            )}`,
+          ),
+        },
+      ]);
+    }
+    fileIdToRelativePathMap.set(file.id, relativePath);
+  }
+
   return {
     files: operationResults,
-    fileIdToRelativePathMap: new Map(
-      Array.from(files.entries(), ([relativePath, file]) => [
-        file.id,
-        relativePath,
-      ]),
-    ),
+    fileIdToRelativePathMap,
   };
 }

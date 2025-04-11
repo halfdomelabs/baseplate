@@ -22,12 +22,13 @@ function createMockContext(
   };
 }
 
-const DEFAULT_FILE_ID = 'test-id';
 const DEFAULT_FILE_CONTENTS = 'test contents';
+
+let fileId = 0;
 
 function createMockFileData(overrides: Partial<FileData> = {}): FileData {
   return {
-    id: DEFAULT_FILE_ID,
+    id: `test-id-${fileId++}`,
     contents: DEFAULT_FILE_CONTENTS,
     ...overrides,
   };
@@ -36,7 +37,12 @@ function createMockFileData(overrides: Partial<FileData> = {}): FileData {
 describe('prepareGeneratorFiles', () => {
   it('should prepare all files successfully', async () => {
     const files = new Map([
-      ['file1.txt', createMockFileData()],
+      [
+        'file1.txt',
+        createMockFileData({
+          id: 'test-id',
+        }),
+      ],
       [
         'file2.txt',
         createMockFileData({

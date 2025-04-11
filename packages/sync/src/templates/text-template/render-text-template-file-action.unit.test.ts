@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { testAction } from '@src/output/builder-action-test-helpers.js';
 
-import { renderTextTemplateFileAction } from './render-text-template-action.js';
+import { renderTextTemplateFileAction } from './render-text-template-file-action.js';
 import { createTextTemplateFile, TEXT_TEMPLATE_TYPE } from './types.js';
 
 vi.mock('fs');

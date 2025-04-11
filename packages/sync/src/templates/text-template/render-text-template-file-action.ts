@@ -15,7 +15,7 @@ import { TEXT_TEMPLATE_TYPE } from './types.js';
 
 interface RenderTextTemplateFileActionInputBase<T extends TextTemplateFile> {
   template: T;
-  id: string;
+  id?: string;
   destination: string;
   options?: Omit<WriteFileOptions, 'templateMetadata'>;
 }
@@ -106,16 +106,20 @@ export function renderTextTemplateFileAction<
               name: template.name,
               template: template.source.path,
               generator: builder.generatorInfo.name,
+              group: template.group,
               type: TEXT_TEMPLATE_TYPE,
-              variables: mapValues(templateVariables, (val, key) => ({
-                description: val.description,
-                value: (variables as Record<string, string>)[key],
-              })),
+              variables:
+                Object.keys(templateVariables).length > 0
+                  ? mapValues(templateVariables, (val, key) => ({
+                      description: val.description,
+                      value: (variables as Record<string, string>)[key],
+                    }))
+                  : undefined,
             }
           : undefined;
 
       builder.writeFile({
-        id,
+        id: id ?? template.name,
         filePath: destination,
         contents: renderedTemplate,
         options,

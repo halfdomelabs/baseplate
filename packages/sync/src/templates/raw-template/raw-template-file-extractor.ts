@@ -1,5 +1,5 @@
 import { mapGroupBy } from '@halfdomelabs/utils';
-import { constantCase, pascalCase } from 'change-case';
+import { camelCase, constantCase } from 'change-case';
 import pLimit from 'p-limit';
 
 import { getGenerationConcurrencyLimit } from '@src/utils/concurrency.js';
@@ -22,12 +22,10 @@ export class RawTemplateFileExtractor extends TemplateFileExtractor<
     const sourceFileContents = await this.readSourceFileBuffer(file.path);
     await this.writeTemplateFileIfModified(file, sourceFileContents);
 
-    const templateName = pascalCase(file.metadata.name);
-
-    const rawTemplateFileVariableName = `${templateName}RawTemplate`;
+    const templateName = camelCase(file.metadata.name);
 
     return {
-      typescriptCodeBlock: `const ${rawTemplateFileVariableName} = createRawTemplateFile(${JSON.stringify(
+      typescriptCodeBlock: `const ${templateName} = createRawTemplateFile(${JSON.stringify(
         {
           name: file.metadata.name,
           source: {
@@ -35,7 +33,7 @@ export class RawTemplateFileExtractor extends TemplateFileExtractor<
           },
         } satisfies RawTemplateFile,
       )});`,
-      typescriptExports: [rawTemplateFileVariableName],
+      typescriptExports: [templateName],
     };
   }
 
