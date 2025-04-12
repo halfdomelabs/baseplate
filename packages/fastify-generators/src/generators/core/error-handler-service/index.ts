@@ -22,7 +22,7 @@ import { z } from 'zod';
 import { configServiceImportsProvider } from '../config-service/index.js';
 import { fastifyServerProvider } from '../fastify-server/index.js';
 import { loggerServiceProvider } from '../logger-service/logger-service.generator.js';
-import { errorHandlerPluginFileTemplate } from './generated/templates.js';
+import { CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
@@ -122,7 +122,8 @@ export const errorHandlerServiceGenerator = createGenerator({
             );
 
             await typescriptFile.writeTemplatedFile(builder, {
-              template: errorHandlerPluginFileTemplate,
+              template:
+                CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.errorHandlerPlugin,
               id: 'error-handler-plugin',
               destination: 'src/plugins/error-handler.ts',
               variables: {},

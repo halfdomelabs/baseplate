@@ -26,7 +26,7 @@ import {
   createLoggerServiceImportMap,
   loggerServiceImportsProvider,
 } from './generated/import-maps.js';
-import { loggerFileTemplate } from './generated/templates.js';
+import { CORE_LOGGER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 export interface LoggerServiceSetupProvider extends ImportMapper {
   addMixin(key: string, expression: TsCodeFragment): void;
@@ -128,7 +128,7 @@ export const loggerServiceGenerator = createGenerator({
             };
 
             await typescriptFile.writeTemplatedFile(builder, {
-              template: loggerFileTemplate,
+              template: CORE_LOGGER_SERVICE_TS_TEMPLATES.logger,
               id: 'logger',
               variables: {
                 TPL_LOGGER_OPTIONS:
