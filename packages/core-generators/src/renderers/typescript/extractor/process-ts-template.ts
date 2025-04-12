@@ -12,7 +12,7 @@ const HOISTED_REGEX =
  * - Replaces TPL variable blocks with placeholders `TPL_VAR`.
  * - Removes HOISTED blocks.
  * - Uses ts-morph to remove unused imports/identifiers.
- * - Prettifies the output.
+ * - Adds a `// @ts-nocheck` comment to the top of the file.
  *
  * @param content - The raw file content.
  * @returns The processed content.
@@ -57,5 +57,7 @@ export function processTsTemplateContent(
   const sourceFile = project.createSourceFile('temp.ts', processedContent);
   sourceFile.organizeImports();
 
-  return sourceFile.getFullText();
+  processedContent = sourceFile.getFullText();
+
+  return `// @ts-nocheck\n\n${processedContent}`;
 }
