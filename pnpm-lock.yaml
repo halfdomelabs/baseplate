@@ -166,6 +166,12 @@ importers:
       is-core-module:
         specifier: 2.15.1
         version: 2.15.1
+      memfs:
+        specifier: 4.15.1
+        version: 4.15.1
+      p-limit:
+        specifier: 6.1.0
+        version: 6.1.0
       prettier:
         specifier: 'catalog:'
         version: 3.4.2

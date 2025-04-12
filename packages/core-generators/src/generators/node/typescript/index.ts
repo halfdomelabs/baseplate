@@ -7,7 +7,7 @@ import type {
 } from '@halfdomelabs/sync';
 
 import {
-  createConfigProviderTaskWithInfo,
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderType,
@@ -19,18 +19,18 @@ import { z } from 'zod';
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
 import type {
   InferImportMapProvidersFromProviderTypeMap,
-  InferTsCodeTemplateVariablesFromMap,
-  TsCodeFileTemplate,
-  TsCodeTemplateVariableMap,
+  InferTsTemplateVariablesFromMap,
+  TsTemplateFile,
+  TsTemplateVariableMap,
 } from '@src/renderers/typescript/index.js';
 
 import { copyTypescriptFilesAction } from '@src/actions/copy-typescript-files-action.js';
 import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
+import { renderTsTemplateFileAction } from '@src/renderers/typescript/actions/render-ts-template-file-action.js';
 import {
   generatePathMapEntries,
   pathMapEntriesToRegexes,
-  renderTsCodeFileTemplate,
 } from '@src/renderers/typescript/index.js';
 import { extractPackageVersions } from '@src/utils/extract-packages.js';
 
@@ -51,9 +51,7 @@ import { resolveModule } from '../../../writers/typescript/imports.js';
 import { TypescriptSourceFile } from '../../../writers/typescript/source-file.js';
 import { createNodePackagesTask } from '../node/node.generator.js';
 
-const typescriptGeneratorDescriptorSchema = z.object({
-  includeMetadata: z.boolean().optional(),
-});
+const typescriptGeneratorDescriptorSchema = z.object({});
 
 export interface TypescriptConfigReference {
   path: string;
@@ -91,23 +89,23 @@ export const typescriptProvider =
   createProviderType<TypescriptProvider>('typescript');
 
 interface WriteTemplatedFilePayload<
-  TVariables extends TsCodeTemplateVariableMap,
+  TVariables extends TsTemplateVariableMap,
   TImportMapProviders extends Record<string, ProviderType> = Record<
     never,
     ProviderType
   >,
 > {
   id: string;
-  template: TsCodeFileTemplate<TVariables, TImportMapProviders>;
+  template: TsTemplateFile<TVariables, TImportMapProviders>;
   destination: string;
-  variables: InferTsCodeTemplateVariablesFromMap<TVariables>;
+  variables: InferTsTemplateVariablesFromMap<TVariables>;
   importMapProviders: InferImportMapProvidersFromProviderTypeMap<TImportMapProviders>;
   options?: WriteFileOptions;
 }
 
 export interface TypescriptFileProvider {
   writeTemplatedFile<
-    TVariables extends TsCodeTemplateVariableMap,
+    TVariables extends TsTemplateVariableMap,
     TImportMapProviders extends Record<string, ProviderType> = Record<
       never,
       ProviderType
@@ -138,7 +136,7 @@ const DEFAULT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
 };
 
 const [setupTask, typescriptSetupProvider, typescriptConfigProvider] =
-  createConfigProviderTaskWithInfo(
+  createConfigProviderTask(
     (t) => ({
       compilerOptions: t.scalar<TypescriptCompilerOptions>(
         DEFAULT_COMPILER_OPTIONS,
@@ -152,11 +150,6 @@ const [setupTask, typescriptSetupProvider, typescriptConfigProvider] =
       prefix: 'typescript',
       configScope: projectScope,
       configValuesScope: projectScope,
-      infoFromDescriptor: (
-        descriptor: z.infer<typeof typescriptGeneratorDescriptorSchema>,
-      ) => ({
-        includeMetadata: descriptor.includeMetadata,
-      }),
     },
   );
 
@@ -174,8 +167,8 @@ export const typescriptGenerator = createGenerator({
   name: 'node/typescript',
   generatorFileUrl: import.meta.url,
   descriptorSchema: typescriptGeneratorDescriptorSchema,
-  buildTasks: (descriptor) => ({
-    setup: createGeneratorTask(setupTask(descriptor)),
+  buildTasks: () => ({
+    setup: createGeneratorTask(setupTask),
     nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(CORE_PACKAGES, ['typescript']),
     }),
@@ -286,7 +279,7 @@ export const typescriptGenerator = createGenerator({
     file: createGeneratorTask({
       dependencies: { typescriptConfig: typescriptConfigProvider },
       exports: { typescriptFile: typescriptFileProvider.export(projectScope) },
-      run({ typescriptConfig: { compilerOptions, includeMetadata } }) {
+      run({ typescriptConfig: { compilerOptions } }) {
         const {
           baseUrl = '.',
           paths = {},
@@ -308,30 +301,28 @@ export const typescriptGenerator = createGenerator({
                   importMapProviders,
                 } = payload;
                 const directory = path.dirname(destination);
-                const file = await renderTsCodeFileTemplate(
-                  template,
-                  variables,
-                  {
-                    resolveModule(moduleSpecifier) {
-                      return resolveModule(moduleSpecifier, directory, {
-                        pathMapEntries,
-                        moduleResolution,
-                      });
+                await builder.apply(
+                  renderTsTemplateFileAction({
+                    id,
+                    template,
+                    variables,
+                    options,
+                    destination,
+                    renderOptions: {
+                      resolveModule(moduleSpecifier) {
+                        return resolveModule(moduleSpecifier, directory, {
+                          pathMapEntries,
+                          moduleResolution,
+                        });
+                      },
+                      importSortOptions: {
+                        internalPatterns,
+                      },
+                      importMapProviders,
+                      includeMetadata: builder.includeMetadata,
                     },
-                    importSortOptions: {
-                      internalPatterns,
-                    },
-                    includeMetadata,
-                    importMapProviders,
-                  },
+                  }),
                 );
-
-                builder.writeFile({
-                  id,
-                  destination,
-                  contents: file,
-                  options,
-                });
 
                 return { destination };
               },

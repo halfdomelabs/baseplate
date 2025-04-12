@@ -4,4 +4,4 @@ export * from './metadata/index.js';
 export * from './raw-template/index.js';
 export * from './text-template/index.js';
 export type * from './types.js';
-export * from './utils.js';
+export * from './utils/index.js';

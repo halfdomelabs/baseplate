@@ -1,7 +1,7 @@
 import { ProviderType } from '@halfdomelabs/sync';
-import { TsCodeTemplateVariableMap } from './types.js';
+import { TsTemplateVariableMap } from './types.js';
 
-import { TsCodeFileTemplate } from './types.js';
+import { TsTemplateFile } from './types.js';
 
 /**
  * Create a code file template.
@@ -9,13 +9,13 @@ import { TsCodeFileTemplate } from './types.js';
  * @returns The created code file template.
  */
 export function tsCodeFileTemplate<
-  TVariables extends TsCodeTemplateVariableMap,
+  TVariables extends TsTemplateVariableMap,
   TImportProviders extends Record<string, ProviderType> = Record<
     never,
     ProviderType
   >,
 >(
-  template: TsCodeFileTemplate<TVariables, TImportProviders>,
-): TsCodeFileTemplate<TVariables, TImportProviders> {
+  template: TsTemplateFile<TVariables, TImportProviders>,
+): TsTemplateFile<TVariables, TImportProviders> {
   return template;
 }

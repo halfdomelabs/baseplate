@@ -1,6 +1,7 @@
 import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
 import type { Logger, TemplateFileExtractorCreator } from '@halfdomelabs/sync';
 
+import { TsTemplateFileExtractor } from '@halfdomelabs/core-generators';
 import {
   RawTemplateFileExtractor,
   runTemplateFileExtractors,
@@ -20,6 +21,7 @@ const GENERATOR_PACKAGES = [
 const TEMPLATE_FILE_EXTRACTOR_CREATORS: TemplateFileExtractorCreator[] = [
   (context) => new TextTemplateFileExtractor(context),
   (context) => new RawTemplateFileExtractor(context),
+  (context) => new TsTemplateFileExtractor(context),
 ];
 
 async function buildGeneratorPackageMap(

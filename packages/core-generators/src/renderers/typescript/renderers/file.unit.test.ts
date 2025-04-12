@@ -5,7 +5,7 @@ import { tsImportBuilder } from '../imports/builder.js';
 import { renderTsCodeFileTemplate } from './file.js';
 
 describe('renderTsCodeFileTemplate', () => {
-  it('should render a simple template without imports', async () => {
+  it('should render a simple template without imports', () => {
     const template = {
       name: 'test',
       source: { contents: 'const value = TPL_CONTENT;' },
@@ -18,13 +18,17 @@ describe('renderTsCodeFileTemplate', () => {
       TPL_CONTENT: tsCodeFragment('42'),
     };
 
-    const result = await renderTsCodeFileTemplate(template, variables, {
-      importMapProviders: {},
-    });
+    const result = renderTsCodeFileTemplate(
+      template.source.contents,
+      variables,
+      {
+        importMapProviders: {},
+      },
+    );
     expect(result).toBe('const value = 42;');
   });
 
-  it('should properly merge and sort imports', async () => {
+  it('should properly merge and sort imports', () => {
     const template = {
       name: 'test',
       source: { contents: 'TPL_IMPORTS' },
@@ -44,9 +48,13 @@ describe('renderTsCodeFileTemplate', () => {
       ),
     };
 
-    const result = await renderTsCodeFileTemplate(template, variables, {
-      importMapProviders: {},
-    });
+    const result = renderTsCodeFileTemplate(
+      template.source.contents,
+      variables,
+      {
+        importMapProviders: {},
+      },
+    );
 
     expect(result).toMatchInlineSnapshot(`
       "import type { type MyType } from "./types";
@@ -59,7 +67,7 @@ describe('renderTsCodeFileTemplate', () => {
     `);
   });
 
-  it('should handle module resolution when provided', async () => {
+  it('should handle module resolution when provided', () => {
     const template = {
       name: 'test',
       source: { contents: 'TPL_CONTENT' },
@@ -75,10 +83,14 @@ describe('renderTsCodeFileTemplate', () => {
       ),
     };
 
-    const result = await renderTsCodeFileTemplate(template, variables, {
-      resolveModule: (moduleSpecifier) => `@project/${moduleSpecifier}`,
-      importMapProviders: {},
-    });
+    const result = renderTsCodeFileTemplate(
+      template.source.contents,
+      variables,
+      {
+        resolveModule: (moduleSpecifier) => `@project/${moduleSpecifier}`,
+        importMapProviders: {},
+      },
+    );
 
     expect(result).toMatchInlineSnapshot(`
       "import { Test } from "@project/./test";
@@ -87,7 +99,7 @@ describe('renderTsCodeFileTemplate', () => {
     `);
   });
 
-  it('should handle hoisted fragments in correct order', async () => {
+  it('should handle hoisted fragments in correct order', () => {
     const template = {
       name: 'test',
       source: { contents: 'TPL_CONTENT' },
@@ -117,9 +129,13 @@ describe('renderTsCodeFileTemplate', () => {
       ),
     };
 
-    const result = await renderTsCodeFileTemplate(template, variables, {
-      importMapProviders: {},
-    });
+    const result = renderTsCodeFileTemplate(
+      template.source.contents,
+      variables,
+      {
+        importMapProviders: {},
+      },
+    );
 
     expect(result).toMatchInlineSnapshot(
       `

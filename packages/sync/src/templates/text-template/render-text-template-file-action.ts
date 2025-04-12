@@ -10,7 +10,7 @@ import type {
   TextTemplateFileVariable,
 } from './types.js';
 
-import { readTemplateFileSource } from '../utils.js';
+import { readTemplateFileSource } from '../utils/index.js';
 import { TEXT_TEMPLATE_TYPE } from './types.js';
 
 interface RenderTextTemplateFileActionInputBase<T extends TextTemplateFile> {

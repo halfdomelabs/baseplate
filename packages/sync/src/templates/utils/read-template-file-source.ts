@@ -2,7 +2,7 @@ import { handleFileNotFoundError } from '@halfdomelabs/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import type { TemplateFileSource } from './types.js';
+import type { TemplateFileSource } from '../types.js';
 
 /**
  * Reads a template file source as a string

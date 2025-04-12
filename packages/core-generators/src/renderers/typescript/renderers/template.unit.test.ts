@@ -44,7 +44,9 @@ describe('renderTsTemplateToTsCodeFragment', () => {
       includeMetadata: true,
     });
 
-    expect(result.contents).toEqual('const name = /* TPL_VARIABLE */ "test";');
+    expect(result.contents).toEqual(
+      'const name = /* TPL_VARIABLE:START */ "test" /* TPL_VARIABLE:END */;',
+    );
   });
 
   it('should collect imports and hoisted fragments from variables', () => {
