@@ -2,7 +2,6 @@ import type {
   BuilderAction,
   GeneratorTaskOutputBuilder,
   InferProviderType,
-  ProviderType,
   WriteFileOptions,
 } from '@halfdomelabs/sync';
 
@@ -19,9 +18,8 @@ import { z } from 'zod';
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
 import type {
   InferImportMapProvidersFromProviderTypeMap,
-  InferTsTemplateVariablesFromMap,
+  RenderTsTemplateFileActionInput,
   TsTemplateFile,
-  TsTemplateVariableMap,
 } from '@src/renderers/typescript/index.js';
 
 import { copyTypescriptFilesAction } from '@src/actions/copy-typescript-files-action.js';
@@ -88,32 +86,27 @@ export interface TypescriptProvider {
 export const typescriptProvider =
   createProviderType<TypescriptProvider>('typescript');
 
-interface WriteTemplatedFilePayload<
-  TVariables extends TsTemplateVariableMap,
-  TImportMapProviders extends Record<string, ProviderType> = Record<
-    never,
-    ProviderType
-  >,
-> {
-  id: string;
-  template: TsTemplateFile<TVariables, TImportMapProviders>;
-  destination: string;
-  variables: InferTsTemplateVariablesFromMap<TVariables>;
-  importMapProviders: InferImportMapProvidersFromProviderTypeMap<TImportMapProviders>;
-  options?: WriteFileOptions;
-}
+type WriteTemplateFilePayload<T extends TsTemplateFile = TsTemplateFile> = Omit<
+  RenderTsTemplateFileActionInput<T>,
+  'renderOptions'
+> &
+  (keyof T['importMapProviders'] extends never
+    ? Partial<{
+        importMapProviders: InferImportMapProvidersFromProviderTypeMap<
+          T['importMapProviders']
+        >;
+      }>
+    : {
+        importMapProviders: InferImportMapProvidersFromProviderTypeMap<
+          T['importMapProviders']
+        >;
+      });
 
 export interface TypescriptFileProvider {
-  writeTemplatedFile<
-    TVariables extends TsTemplateVariableMap,
-    TImportMapProviders extends Record<string, ProviderType> = Record<
-      never,
-      ProviderType
-    >,
-  >(
+  writeTemplateFile<T extends TsTemplateFile = TsTemplateFile>(
     builder: GeneratorTaskOutputBuilder,
-    payload: WriteTemplatedFilePayload<TVariables, TImportMapProviders>,
-  ): Promise<{ destination: string }>;
+    payload: WriteTemplateFilePayload<T>,
+  ): Promise<void>;
 }
 
 export const typescriptFileProvider =
@@ -291,23 +284,11 @@ export const typescriptGenerator = createGenerator({
         return {
           providers: {
             typescriptFile: {
-              writeTemplatedFile: async (builder, payload) => {
-                const {
-                  id,
-                  template,
-                  destination,
-                  variables,
-                  options,
-                  importMapProviders,
-                } = payload;
-                const directory = path.dirname(destination);
+              writeTemplateFile: async (builder, payload) => {
+                const directory = path.dirname(payload.destination);
                 await builder.apply(
                   renderTsTemplateFileAction({
-                    id,
-                    template,
-                    variables,
-                    options,
-                    destination,
+                    ...payload,
                     renderOptions: {
                       resolveModule(moduleSpecifier) {
                         return resolveModule(moduleSpecifier, directory, {
@@ -318,13 +299,11 @@ export const typescriptGenerator = createGenerator({
                       importSortOptions: {
                         internalPatterns,
                       },
-                      importMapProviders,
                       includeMetadata: builder.includeMetadata,
+                      importMapProviders: payload.importMapProviders ?? {},
                     },
-                  }),
+                  } as RenderTsTemplateFileActionInput),
                 );
-
-                return { destination };
               },
             },
           },

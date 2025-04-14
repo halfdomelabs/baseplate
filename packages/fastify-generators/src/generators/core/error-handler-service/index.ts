@@ -19,7 +19,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { configServiceImportsProvider } from '../config-service/index.js';
+import { configServiceImportsProvider } from '../config-service/config-service.generator.js';
 import { fastifyServerProvider } from '../fastify-server/index.js';
 import { loggerServiceProvider } from '../logger-service/logger-service.generator.js';
 import { CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
@@ -121,7 +121,7 @@ export const errorHandlerServiceGenerator = createGenerator({
               ),
             );
 
-            await typescriptFile.writeTemplatedFile(builder, {
+            await typescriptFile.writeTemplateFile(builder, {
               template:
                 CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.errorHandlerPlugin,
               id: 'error-handler-plugin',

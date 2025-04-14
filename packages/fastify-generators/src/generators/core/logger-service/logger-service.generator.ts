@@ -127,7 +127,7 @@ export const loggerServiceGenerator = createGenerator({
               logger: 'src/services/logger.ts',
             };
 
-            await typescriptFile.writeTemplatedFile(builder, {
+            await typescriptFile.writeTemplateFile(builder, {
               template: CORE_LOGGER_SERVICE_TS_TEMPLATES.logger,
               id: 'logger',
               variables: {

@@ -1,4 +1,5 @@
 export * from './concurrency.js';
+export * from './create-config-field-map.js';
 export * from './create-config-provider-task-with-info.js';
 export * from './create-config-provider-task.js';
 export type * from './create-generator-types.js';

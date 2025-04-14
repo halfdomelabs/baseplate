@@ -1,4 +1,7 @@
-import type { ImportMapper } from '@halfdomelabs/core-generators';
+import type {
+  ImportMapper,
+  TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
@@ -6,7 +9,7 @@ import {
   makeImportAndFilePath,
   projectScope,
   quot,
-  TypescriptCodeExpression,
+  tsCodeFragment,
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptStringReplacement,
@@ -159,23 +162,23 @@ export const storageModuleGenerator = createGenerator({
           `${moduleFolder}/services/validate-upload-input.ts`,
         );
 
-        configService
-          .getConfigEntries()
-          .set('AWS_ACCESS_KEY_ID', {
+        configService.configFields.mergeObj({
+          AWS_ACCESS_KEY_ID: {
             comment: 'AWS access key ID',
-            value: new TypescriptCodeExpression('z.string().min(1)'),
+            validator: tsCodeFragment('z.string().min(1)'),
             seedValue: 'AWS_ACCESS_KEY',
-          })
-          .set('AWS_SECRET_ACCESS_KEY', {
+          },
+          AWS_SECRET_ACCESS_KEY: {
             comment: 'AWS secret access key',
-            value: new TypescriptCodeExpression('z.string().min(1)'),
+            validator: tsCodeFragment('z.string().min(1)'),
             seedValue: 'AWS_SECRET_ACCSS_KEY',
-          })
-          .set('AWS_DEFAULT_REGION', {
+          },
+          AWS_DEFAULT_REGION: {
             comment: 'AWS default region',
-            value: new TypescriptCodeExpression('z.string().min(1)'),
+            validator: tsCodeFragment('z.string().min(1)'),
             seedValue: 'AWS_DEFAULT_REGION',
-          });
+          },
+        });
 
         return {
           build: async (builder) => {
@@ -299,20 +302,18 @@ export const storageModuleGenerator = createGenerator({
             const adapters: Record<string, TypescriptCodeExpression> = {};
 
             for (const adapter of s3Adapters) {
-              configService.getConfigEntries().set(adapter.bucketConfigVar, {
+              configService.configFields.set(adapter.bucketConfigVar, {
                 comment: `S3 bucket for ${adapter.name}`,
-                value: new TypescriptCodeExpression('z.string().min(1)'),
+                validator: tsCodeFragment('z.string().min(1)'),
                 seedValue: adapter.bucketConfigVar,
               });
 
               if (adapter.hostedUrlConfigVar) {
-                configService
-                  .getConfigEntries()
-                  .set(adapter.hostedUrlConfigVar, {
-                    comment: `Hosted URL prefix for ${adapter.name}, e.g. https://uploads.example.com`,
-                    value: new TypescriptCodeExpression('z.string().min(1)'),
-                    seedValue: adapter.hostedUrlConfigVar,
-                  });
+                configService.configFields.set(adapter.hostedUrlConfigVar, {
+                  comment: `Hosted URL prefix for ${adapter.name}, e.g. https://uploads.example.com`,
+                  validator: tsCodeFragment('z.string().min(1)'),
+                  seedValue: adapter.hostedUrlConfigVar,
+                });
               }
 
               adapters[adapter.name] =

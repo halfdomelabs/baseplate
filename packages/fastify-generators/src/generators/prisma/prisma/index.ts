@@ -9,6 +9,7 @@ import {
   nodeProvider,
   projectProvider,
   projectScope,
+  tsCodeFragment,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -31,7 +32,7 @@ import type { PrismaModelBlockWriter } from '@src/writers/prisma-schema/index.js
 import type { PrismaGeneratorBlock } from '@src/writers/prisma-schema/types.js';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { configServiceProvider } from '@src/generators/core/config-service/index.js';
+import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
 import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check/index.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import {
@@ -140,9 +141,9 @@ export const prismaGenerator = createGenerator({
             descriptor.defaultPort
           }/postgres?schema=public`;
 
-        configService.getConfigEntries().set('DATABASE_URL', {
+        configService.configFields.set('DATABASE_URL', {
           comment: 'Connection URL of the database',
-          value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+          validator: tsCodeFragment('z.string().min(1)'),
           exampleValue: defaultDatabaseUrl,
         });
 

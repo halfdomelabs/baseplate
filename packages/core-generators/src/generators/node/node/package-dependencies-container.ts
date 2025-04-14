@@ -1,4 +1,8 @@
-import type { FieldContainer } from '@halfdomelabs/utils';
+import type {
+  FieldContainer,
+  FieldContainerDynamicSourceGetter,
+  FieldContainerOptions,
+} from '@halfdomelabs/utils';
 
 import semver from 'semver';
 
@@ -8,6 +12,7 @@ interface NodePackageDependencyInfo {
   name: string;
   version: string;
   type: NodePackageDependencyType;
+  source: string | undefined;
 }
 
 export interface NodePackageDependencies {
@@ -22,9 +27,11 @@ export class NodePackageDependenciesContainer
   implements FieldContainer<NodePackageDependencies>
 {
   private readonly _value: Map<string, NodePackageDependencyInfo>;
+  protected getDynamicSource: FieldContainerDynamicSourceGetter | undefined;
 
-  constructor() {
+  constructor(options?: FieldContainerOptions) {
     this._value = new Map<string, NodePackageDependencyInfo>();
+    this.getDynamicSource = options?.getDynamicSource;
   }
 
   /**
@@ -64,6 +71,7 @@ export class NodePackageDependenciesContainer
         name,
         version: newVersion,
         type: finalType,
+        source: this.getDynamicSource?.(),
       });
     } else {
       // Dependency doesn't exist, add it
@@ -71,6 +79,7 @@ export class NodePackageDependenciesContainer
         name,
         version,
         type,
+        source: this.getDynamicSource?.(),
       });
     }
   }
@@ -128,6 +137,8 @@ export class NodePackageDependenciesContainer
 }
 
 // Helper function to create the container easily in the schema builder
-export function createNodePackageDependenciesContainer(): NodePackageDependenciesContainer {
-  return new NodePackageDependenciesContainer();
+export function createNodePackageDependenciesContainer(
+  options?: FieldContainerOptions,
+): NodePackageDependenciesContainer {
+  return new NodePackageDependenciesContainer(options);
 }

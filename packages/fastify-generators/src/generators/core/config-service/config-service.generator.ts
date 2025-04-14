@@ -1,26 +1,29 @@
 import type {
   ImportMapper,
-  TypescriptCodeBlock,
+  TsCodeFragment,
+  TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
 
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  mergeCodeEntryOptions,
   nodeGitIgnoreProvider,
   projectScope,
-  TypescriptCodeExpression,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
   TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigFieldMap,
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
   createProviderTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
@@ -31,21 +34,42 @@ import {
   configServiceImportsProvider,
   createConfigServiceImportMap,
 } from './generated/import-maps.js';
+import { CORE_CONFIG_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-interface ConfigEntry {
+/**
+ * A field in the config service that will be added to the config schema
+ */
+interface ConfigField {
+  /**
+   * The comment to attach to the config field
+   */
   comment: string;
-  value: TypescriptCodeExpression | string;
+  /**
+   * The Zod validator for the config field
+   */
+  validator: TsCodeFragment | string;
+  /**
+   * The seed value that will be used in the initial .env file (if not provided, the example value will be used)
+   */
   seedValue?: string;
+  /**
+   * The example value for the config field (used in the .env.example file)
+   */
   exampleValue?: string;
 }
 
-export interface ConfigServiceProvider extends ImportMapper {
-  getConfigEntries(): NonOverwriteableMap<Record<string, ConfigEntry>>;
-  addAdditionalVerification(codeBlock: TypescriptCodeBlock): void;
+const configServiceConfigSchema = createFieldMapSchemaBuilder((t) => ({
+  configFields: t.map(new Map<string, ConfigField>()),
+  additionalVerifications: t.array<TsCodeFragment>(),
+}));
+
+export interface ConfigServiceProvider
+  extends ImportMapper,
+    InferFieldMapSchemaFromBuilder<typeof configServiceConfigSchema> {
   getConfigExpression(): TypescriptCodeExpression;
 }
 
@@ -82,34 +106,34 @@ export const configServiceGenerator = createGenerator({
     // create the config service
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         configService: configServiceProvider.export(projectScope),
         configServiceImports: configServiceImportsProvider.export(projectScope),
       },
-      run({ typescript }) {
-        const configEntries = createNonOverwriteableMap<
-          Record<string, ConfigEntry>
-        >({}, { name: 'config-service-config-entries' });
-        const additionalVerifications: TypescriptCodeBlock[] = [];
+      run({ typescriptFile }) {
+        const configServiceConfig = createConfigFieldMap(
+          configServiceConfigSchema,
+        );
 
-        configEntries.set('APP_ENVIRONMENT', {
-          comment: 'Environment the app is running in',
-          value: TypescriptCodeUtils.createExpression(
-            `z.enum(['development', 'test', 'staging', 'production'])`,
-            "import { z } from 'zod'",
-          ),
-          exampleValue: 'development',
-        });
+        configServiceConfig.configFields.set(
+          'APP_ENVIRONMENT',
+          {
+            comment: 'Environment the app is running in',
+            validator: tsCodeFragment(
+              `z.enum(['development', 'test', 'staging', 'production'])`,
+              tsImportBuilder().named('z').from('zod'),
+            ),
+            exampleValue: 'development',
+          },
+          'configService',
+        );
 
         return {
           providers: {
             configService: {
-              getConfigEntries: () => configEntries,
-              addAdditionalVerification: (codeBlock) => {
-                additionalVerifications.push(codeBlock);
-              },
+              ...configServiceConfig,
               getConfigExpression: () =>
                 TypescriptCodeUtils.createExpression(
                   'config',
@@ -127,53 +151,46 @@ export const configServiceGenerator = createGenerator({
             }),
           },
           build: async (builder) => {
-            const configFile = typescript.createTemplate({
-              CONFIG_OBJECT: { type: 'code-expression' },
-              ADDITIONAL_VERIFICATIONS: { type: 'code-block' },
-            });
+            // write config service file
+            const config = configServiceConfig.getValues();
 
-            const configEntriesObj = configEntries.value();
             const sortedConfigEntries = sortBy(
-              Object.entries(configEntriesObj),
+              [...config.configFields],
               [(entry) => entry[0]],
             );
-            const configEntryKeys = Object.keys(configEntriesObj).sort();
-            const mergedExpression = configEntryKeys
-              .map((key) => {
-                const { comment, value } = configEntriesObj[key];
-                return `${
-                  comment
-                    ? `${TypescriptCodeUtils.formatAsComment(comment)}\n`
-                    : ''
-                }${key}: ${typeof value === 'string' ? value : value.content},`;
-              })
-              .join('\n');
+            const configFields = sortedConfigEntries.map(
+              ([key, { comment, validator }]) =>
+                TsCodeUtils.template`${
+                  comment ? `${TsCodeUtils.formatAsComment(comment)}\n` : ''
+                }${key}: ${validator},`,
+            );
 
-            configFile.addCodeExpression(
-              'CONFIG_OBJECT',
-              new TypescriptCodeExpression(
-                `{\n${mergedExpression}\n}`,
-                null,
-                mergeCodeEntryOptions(
-                  Object.values(configEntriesObj).map((e) => e.value),
+            await typescriptFile.writeTemplateFile(builder, {
+              template: CORE_CONFIG_SERVICE_TS_TEMPLATES.config,
+              destination: 'src/services/config.ts',
+              variables: {
+                TPL_CONFIG_SCHEMA: TsCodeUtils.template`z.object({
+                  ${TsCodeUtils.mergeFragments(configFields, '\n')}
+              })`,
+                TPL_ADDITIONAL_VERIFICATIONS: TsCodeUtils.mergeFragments(
+                  config.additionalVerifications,
                 ),
-              ),
-            );
+              },
+            });
 
-            configFile.addCodeBlock(
-              'ADDITIONAL_VERIFICATIONS',
-              TypescriptCodeUtils.mergeBlocks(additionalVerifications),
-            );
-
-            await builder.apply(
-              configFile.renderToAction('config.ts', 'src/services/config.ts'),
-            );
-
+            // write env example file
             const envExampleFile = `${sortedConfigEntries
               .filter(([, { exampleValue }]) => exampleValue != null)
               .map(([key, { exampleValue }]) => `${key}=${exampleValue}`)
               .join('\n')}\n`;
 
+            builder.writeFile({
+              id: 'env-example',
+              destination: '.env.example',
+              contents: envExampleFile,
+            });
+
+            // write env file
             const envFile = `${sortedConfigEntries
               .filter(
                 ([, { seedValue, exampleValue }]) =>
@@ -185,11 +202,6 @@ export const configServiceGenerator = createGenerator({
               )
               .join('\n')}\n`;
 
-            builder.writeFile({
-              id: 'env-example',
-              destination: '.env.example',
-              contents: envExampleFile,
-            });
             builder.writeFile({
               id: 'env',
               destination: '.env',

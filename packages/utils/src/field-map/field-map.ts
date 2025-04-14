@@ -1,3 +1,14 @@
+export type FieldContainerDynamicSourceGetter = () => string | undefined;
+
+export interface FieldContainerOptions {
+  /**
+   * A function that returns the source of the value.
+   *
+   * @returns The source of the value, or undefined if the value is not set.
+   */
+  getDynamicSource?: FieldContainerDynamicSourceGetter;
+}
+
 /**
  * Base field container interface
  */
@@ -13,21 +24,18 @@ export class ScalarContainer<T> implements FieldContainer<T> {
   protected readonly defaultValue: T;
   protected isSet = false;
   protected setBySource: string | undefined;
+  protected getDynamicSource: FieldContainerDynamicSourceGetter | undefined;
 
-  constructor(defaultValue: T) {
+  constructor(defaultValue: T, options?: FieldContainerOptions) {
     this.defaultValue = defaultValue;
+    this.getDynamicSource = options?.getDynamicSource;
   }
 
   getValue(): T {
     return this._value === undefined ? this.defaultValue : this._value;
   }
 
-  protected setValue(value: T): void {
-    this._value = value;
-    this.isSet = true;
-  }
-
-  set(value: T, source: string): void {
+  set(value: T, source?: string): void {
     if (this.isSet) {
       throw new Error(
         `Value has already been set by ${this.setBySource} and cannot be overwritten by ${source}`,
@@ -35,7 +43,7 @@ export class ScalarContainer<T> implements FieldContainer<T> {
     }
     this._value = value;
     this.isSet = true;
-    this.setBySource = source;
+    this.setBySource = source ?? this.getDynamicSource?.() ?? 'unknown';
   }
 }
 
@@ -76,29 +84,35 @@ export class ObjectContainer<T extends Record<string, unknown>>
     keyof T,
     { value: unknown; setBySource: string | undefined }
   >;
+  protected getDynamicSource: FieldContainerDynamicSourceGetter | undefined;
 
-  constructor(initialValue: T) {
+  constructor(initialValue: T, options?: FieldContainerOptions) {
+    this.getDynamicSource = options?.getDynamicSource;
     this.map = new Map(
       Object.entries(initialValue).map(([key, value]) => [
         key,
-        { value, setBySource: undefined },
+        { value, setBySource: this.getDynamicSource?.() },
       ]),
     );
   }
 
-  set(key: keyof T, value: T[keyof T], source: string): void {
+  set(key: keyof T, value: T[keyof T], source?: string): void {
     const existingValue = this.map.get(key);
     if (existingValue?.setBySource) {
       throw new Error(
         `Value for key ${key as string} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${source}`,
       );
     }
-    this.map.set(key, { value, setBySource: source });
+    this.map.set(key, {
+      value,
+      setBySource: source ?? this.getDynamicSource?.(),
+    });
   }
 
-  merge(value: Partial<T>, source: string): void {
+  merge(value: Partial<T>, source?: string): void {
+    const mergeSource = source ?? this.getDynamicSource?.();
     for (const [key, val] of Object.entries(value)) {
-      this.set(key as keyof T, val as T[keyof T], source);
+      this.set(key as keyof T, val as T[keyof T], mergeSource);
     }
   }
 
@@ -117,36 +131,43 @@ export class MapContainer<K extends string | number | symbol, V>
     K,
     { value: V; setBySource: string | undefined }
   >;
+  protected getDynamicSource: FieldContainerDynamicSourceGetter | undefined;
 
-  constructor(initialValue?: Map<K, V>) {
+  constructor(initialValue?: Map<K, V>, options?: FieldContainerOptions) {
+    this.getDynamicSource = options?.getDynamicSource;
     const initialMap = initialValue ?? new Map<K, V>();
     this._value = new Map(
       [...initialMap.entries()].map(([key, value]) => [
         key,
-        { value, setBySource: undefined },
+        { value, setBySource: this.getDynamicSource?.() },
       ]),
     );
   }
 
-  set(key: K, value: V, source: string): void {
+  set(key: K, value: V, source?: string): void {
     const existingValue = this._value.get(key);
     if (existingValue?.setBySource) {
       throw new Error(
         `Value for key ${key as string} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${source}`,
       );
     }
-    this._value.set(key, { value, setBySource: source });
+    this._value.set(key, {
+      value,
+      setBySource: source ?? this.getDynamicSource?.(),
+    });
   }
 
-  merge(value: Map<K, V>, source: string): void {
+  merge(value: Map<K, V>, source?: string): void {
+    const mergeSource = source ?? this.getDynamicSource?.();
     for (const [key, val] of value.entries()) {
-      this.set(key, val, source);
+      this.set(key, val, mergeSource);
     }
   }
 
-  mergeObj(value: Record<K, V>, source: string): void {
+  mergeObj(value: Record<K, V>, source?: string): void {
+    const mergeSource = source ?? this.getDynamicSource?.();
     for (const [key, val] of Object.entries(value)) {
-      this.set(key as K, val as V, source);
+      this.set(key as K, val as V, mergeSource);
     }
   }
 
@@ -174,28 +195,30 @@ export type FieldMap<S extends FieldMapSchema> = S & {
 
 // Schema builder class
 export class FieldMapSchemaBuilder {
+  constructor(public options?: FieldContainerOptions) {}
+
   scalar<T>(): ScalarContainer<T | undefined>;
   scalar<T>(defaultValue: T): ScalarContainer<T>;
   scalar<T>(defaultValue?: T): ScalarContainer<T | undefined> {
-    return new ScalarContainer(defaultValue);
+    return new ScalarContainer(defaultValue, this.options);
   }
 
   string(): ScalarContainer<string | undefined>;
   string(defaultValue: string): ScalarContainer<string>;
   string(defaultValue?: string): ScalarContainer<string | undefined> {
-    return new ScalarContainer(defaultValue);
+    return new ScalarContainer(defaultValue, this.options);
   }
 
   number(): ScalarContainer<number | undefined>;
   number(defaultValue: number): ScalarContainer<number>;
   number(defaultValue?: number): ScalarContainer<number | undefined> {
-    return new ScalarContainer(defaultValue);
+    return new ScalarContainer(defaultValue, this.options);
   }
 
   boolean(): ScalarContainer<boolean | undefined>;
   boolean(defaultValue: boolean): ScalarContainer<boolean>;
   boolean(defaultValue?: boolean): ScalarContainer<boolean | undefined> {
-    return new ScalarContainer(defaultValue);
+    return new ScalarContainer(defaultValue, this.options);
   }
 
   array<T>(
@@ -208,17 +231,20 @@ export class FieldMapSchemaBuilder {
   object<T extends Record<string, unknown>>(
     defaultValue: T,
   ): ObjectContainer<T> {
-    return new ObjectContainer(defaultValue);
+    return new ObjectContainer(defaultValue, this.options);
   }
 
   map<K extends string | number | symbol, V>(
     initialValue?: Map<K, V>,
   ): MapContainer<K, V> {
-    return new MapContainer(initialValue ?? new Map<K, V>());
+    return new MapContainer(initialValue ?? new Map<K, V>(), this.options);
   }
 
   mapFromObj<V>(initialValue?: Record<string, V>): MapContainer<string, V> {
-    return new MapContainer(new Map(Object.entries(initialValue ?? {})));
+    return new MapContainer(
+      new Map(Object.entries(initialValue ?? {})),
+      this.options,
+    );
   }
 }
 
@@ -237,8 +263,9 @@ export type InferFieldMapSchemaFromBuilder<
  */
 export function createFieldMap<S extends FieldMapSchema>(
   schemaBuilder: (t: FieldMapSchemaBuilder) => S,
+  options?: FieldContainerOptions,
 ): FieldMap<S> {
-  const schema = schemaBuilder(new FieldMapSchemaBuilder());
+  const schema = schemaBuilder(new FieldMapSchemaBuilder(options));
 
   // Add getValues method
   return {

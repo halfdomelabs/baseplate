@@ -24,7 +24,7 @@ interface RenderTsTemplateFileActionInputBase<T extends TsTemplateFile> {
   renderOptions: RenderTsCodeFileTemplateOptions<T['importMapProviders']>;
 }
 
-type RenderTsTemplateFileActionInput<
+export type RenderTsTemplateFileActionInput<
   T extends TsTemplateFile = TsTemplateFile,
 > = RenderTsTemplateFileActionInputBase<T> &
   (keyof InferTsTemplateVariablesFromMap<T['variables']> extends never

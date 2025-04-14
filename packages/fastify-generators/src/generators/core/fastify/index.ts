@@ -72,8 +72,8 @@ export const fastifyGenerator = createGenerator({
       dependencies: {
         nodeConfig: nodeConfigProvider,
       },
-      run({ nodeConfig }, { taskId }) {
-        nodeConfig.isEsm.set(false, taskId);
+      run({ nodeConfig }) {
+        nodeConfig.isEsm.set(false);
         return {};
       },
     }),

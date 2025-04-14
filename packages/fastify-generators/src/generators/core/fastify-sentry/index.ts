@@ -11,6 +11,7 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   projectScope,
+  tsCodeFragment,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -25,7 +26,7 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { authProvider } from '@src/generators/auth/index.js';
 import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
 
-import { configServiceProvider } from '../config-service/index.js';
+import { configServiceProvider } from '../config-service/config-service.generator.js';
 import {
   errorHandlerServiceProvider,
   errorHandlerServiceSetupProvider,
@@ -144,15 +145,11 @@ export const fastifySentryGenerator = createGenerator({
 
         const shouldLogToSentryBlocks: TypescriptCodeBlock[] = [];
 
-        configService.getConfigEntries().merge({
-          SENTRY_DSN: {
-            comment: 'Sentry DSN',
-            value: TypescriptCodeUtils.createExpression(
-              'z.string().optional()',
-            ),
-            seedValue: '',
-            exampleValue: '',
-          },
+        configService.configFields.set('SENTRY_DSN', {
+          comment: 'Sentry DSN',
+          validator: tsCodeFragment('z.string().optional()'),
+          seedValue: '',
+          exampleValue: '',
         });
 
         const [serviceImport, servicePath] =

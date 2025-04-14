@@ -2,6 +2,7 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   projectScope,
+  tsCodeFragment,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -12,7 +13,7 @@ import {
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { configServiceProvider } from '@src/generators/core/config-service/index.js';
+import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
 
 const descriptorSchema = z.object({});
 
@@ -38,9 +39,9 @@ export const fastifyPostmarkGenerator = createGenerator({
         fastifyPostmark: fastifyPostmarkProvider.export(projectScope),
       },
       run({ typescript, configService }) {
-        configService.getConfigEntries().set('POSTMARK_API_TOKEN', {
+        configService.configFields.set('POSTMARK_API_TOKEN', {
           comment: 'Postmark API token',
-          value: 'z.string().min(1)',
+          validator: tsCodeFragment('z.string().min(1)'),
           seedValue: 'POSTMARK_API_TOKEN',
           exampleValue: 'POSTMARK_API_TOKEN',
         });

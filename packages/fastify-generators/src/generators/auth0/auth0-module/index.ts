@@ -21,7 +21,7 @@ import { authRolesProvider } from '@src/generators/auth/auth-roles/index.js';
 import { authConfigProvider } from '@src/generators/auth/auth/index.js';
 import { userSessionServiceProvider } from '@src/generators/auth/index.js';
 import { userSessionTypesProvider } from '@src/generators/auth/user-session-types/index.js';
-import { configServiceProvider } from '@src/generators/core/config-service/index.js';
+import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
 import { fastifyServerProvider } from '@src/generators/core/index.js';
 import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
@@ -80,15 +80,15 @@ export const auth0ModuleGenerator = createGenerator({
             `${appModule.getModuleFolder()}/services/user-session.service.ts`,
           );
 
-        configService.getConfigEntries().set('AUTH0_DOMAIN', {
-          value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+        configService.configFields.set('AUTH0_DOMAIN', {
+          validator: tsCodeFragment('z.string().min(1)'),
           comment: 'Auth0 domain (can be custom domain)',
           seedValue: 'subdomain.auth0.com',
           exampleValue: '<AUTH0_DOMAIN>',
         });
 
-        configService.getConfigEntries().set('AUTH0_AUDIENCE', {
-          value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+        configService.configFields.set('AUTH0_AUDIENCE', {
+          validator: tsCodeFragment('z.string().min(1)'),
           comment: 'Auth0 audience',
           seedValue: 'https://api.example.com',
           exampleValue: '<AUTH0_AUDIENCE>',
@@ -107,24 +107,24 @@ export const auth0ModuleGenerator = createGenerator({
         );
 
         if (includeManagement) {
-          configService.getConfigEntries().set('AUTH0_TENANT_DOMAIN', {
-            value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+          configService.configFields.set('AUTH0_TENANT_DOMAIN', {
+            validator: tsCodeFragment('z.string().min(1)'),
             comment:
               'Auth0 tenant domain (ends with auth0.com), e.g. domain.auth0.com',
             seedValue: 'domain.auth0.com',
             exampleValue: '<AUTH0_TENANT_DOMAIN>',
           });
 
-          configService.getConfigEntries().set('AUTH0_CLIENT_ID', {
-            value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+          configService.configFields.set('AUTH0_CLIENT_ID', {
+            validator: tsCodeFragment('z.string().min(1)'),
             comment:
               'Auth0 management client ID (https://auth0.com/docs/get-started/auth0-overview/create-applications/machine-to-machine-apps)',
             seedValue: 'CLIENT_ID',
             exampleValue: '<AUTH0_CLIENT_ID>',
           });
 
-          configService.getConfigEntries().set('AUTH0_CLIENT_SECRET', {
-            value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+          configService.configFields.set('AUTH0_CLIENT_SECRET', {
+            validator: tsCodeFragment('z.string().min(1)'),
             comment: 'Auth0 management client secret',
             seedValue: 'CLIENT_SECRET',
             exampleValue: '<AUTH0_CLIENT_SECRET>',

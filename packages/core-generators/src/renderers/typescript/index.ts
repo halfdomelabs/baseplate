@@ -1,3 +1,4 @@
+export * from './actions/index.js';
 export * from './extractor/index.js';
 export * from './fragments/index.js';
 export * from './import-maps/index.js';

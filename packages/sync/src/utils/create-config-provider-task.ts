@@ -5,8 +5,6 @@ import type {
   FieldMapValues,
 } from '@halfdomelabs/utils';
 
-import { createFieldMap } from '@halfdomelabs/utils';
-
 import type { ProviderExportScope } from '@src/providers/export-scopes.js';
 
 import {
@@ -18,6 +16,8 @@ import {
   createReadOnlyProviderType,
   type ProviderType,
 } from '@src/providers/providers.js';
+
+import { createConfigFieldMap } from './create-config-field-map.js';
 
 /**
  * Options for creating a configuration provider task
@@ -106,7 +106,7 @@ export function createConfigProviderTask<TSchema extends FieldMapSchema>(
       exports: { config: configProvider.export(configScope) },
       outputs: { configValues: configValuesProvider.export(configValuesScope) },
       run() {
-        const config = createFieldMap(schemaBuilder);
+        const config = createConfigFieldMap(schemaBuilder);
         return {
           providers: { config },
           build() {
