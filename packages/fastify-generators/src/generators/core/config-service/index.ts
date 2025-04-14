@@ -18,6 +18,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
+  createProviderTask,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { sortBy } from 'es-toolkit';
@@ -56,42 +57,42 @@ export const configServiceGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    fastify: createGeneratorTask({
-      dependencies: {
-        fastify: fastifyProvider,
-      },
-      run({ fastify }) {
-        fastify.getConfig().appendUnique('nodeFlags', [
-          {
-            flag: '-r dotenv/config',
-            useCase: 'dev-env',
-            targetEnvironment: 'dev',
-          },
-        ]);
-
-        return {};
-      },
+    // add the dotenv config to the fastify config
+    fastify: createProviderTask(fastifyProvider, (fastify) => {
+      fastify.getConfig().appendUnique('nodeFlags', [
+        {
+          flag: '-r dotenv/config',
+          useCase: 'dev-env',
+          targetEnvironment: 'dev',
+        },
+      ]);
     }),
+    // add the node packages
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['zod', 'cross-env']),
       dev: extractPackageVersions(FASTIFY_PACKAGES, ['dotenv']),
     }),
+    // add exclusions to the gitignore
+    nodeGitIgnore: createProviderTask(
+      nodeGitIgnoreProvider,
+      (nodeGitIgnore) => {
+        nodeGitIgnore.addExclusions(['/.env', '/.*.env']);
+      },
+    ),
+    // create the config service
     main: createGeneratorTask({
       dependencies: {
-        nodeGitIgnore: nodeGitIgnoreProvider,
         typescript: typescriptProvider,
       },
       exports: {
         configService: configServiceProvider.export(projectScope),
         configServiceImports: configServiceImportsProvider.export(projectScope),
       },
-      run({ nodeGitIgnore, typescript }) {
+      run({ typescript }) {
         const configEntries = createNonOverwriteableMap<
           Record<string, ConfigEntry>
         >({}, { name: 'config-service-config-entries' });
         const additionalVerifications: TypescriptCodeBlock[] = [];
-
-        nodeGitIgnore.addExclusions(['/.env', '/.*.env']);
 
         configEntries.set('APP_ENVIRONMENT', {
           comment: 'Environment the app is running in',
