@@ -169,7 +169,9 @@ export const configServiceGenerator = createGenerator({
               template: CORE_CONFIG_SERVICE_TS_TEMPLATES.config,
               destination: 'src/services/config.ts',
               variables: {
-                TPL_CONFIG_SCHEMA: TsCodeUtils.template`z.object({
+                TPL_CONFIG_SCHEMA: TsCodeUtils.templateWithImports(
+                  tsImportBuilder(['z']).from('zod'),
+                )`z.object({
                   ${TsCodeUtils.mergeFragments(configFields, '\n')}
               })`,
                 TPL_ADDITIONAL_VERIFICATIONS: TsCodeUtils.mergeFragments(

@@ -66,6 +66,12 @@ function tsImportDeclarationBuilder(
   };
 }
 
-export function tsImportBuilder(): TsImportDeclarationBuilder {
-  return tsImportDeclarationBuilder({});
+export function tsImportBuilder(
+  namedImports?: string[],
+): TsImportDeclarationBuilder {
+  return tsImportDeclarationBuilder({
+    namedImports: namedImports?.map((namedImport) => ({
+      name: namedImport,
+    })),
+  });
 }

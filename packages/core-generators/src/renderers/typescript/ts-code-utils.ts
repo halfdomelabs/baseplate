@@ -180,4 +180,17 @@ export const TsCodeUtils = {
       ...mergeFragmentImportsAndHoistedFragments(fragments),
     };
   },
+
+  templateWithImports(
+    imports?: TsImportDeclaration[] | TsImportDeclaration,
+  ): (
+    strings: TemplateStringsArray,
+    ...expressions: (TsCodeFragment | string)[]
+  ) => TsCodeFragment {
+    return (strings, ...expressions) =>
+      this.template(strings, ...expressions, {
+        contents: '',
+        imports: Array.isArray(imports) ? imports : imports ? [imports] : [],
+      });
+  },
 };
