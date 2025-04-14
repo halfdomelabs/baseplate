@@ -12,10 +12,7 @@ import { z } from 'zod';
 
 import type { Logger } from '@src/utils/evented-logger.js';
 
-import type {
-  TemplateFileExtractorCreator,
-  TemplateFileExtractorGeneratorInfo,
-} from './template-file-extractor.js';
+import type { TemplateFileExtractorCreator } from './template-file-extractor.js';
 
 import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
 import { templateFileMetadataBaseSchema } from '../metadata/metadata.js';
@@ -30,42 +27,26 @@ import { createGeneratorInfoMap } from './create-generator-info-map.js';
  */
 export async function runTemplateFileExtractors(
   extractorCreators: TemplateFileExtractorCreator[],
-  outputDirectories: string[],
+  outputDirectory: string,
   generatorPackageMap: Map<string, string>,
   logger: Logger,
 ): Promise<void> {
   // read generator template metadata
-  const generatorInfoMaps = await Promise.all(
-    outputDirectories.map((outputDirectory) =>
-      createGeneratorInfoMap(outputDirectory, generatorPackageMap),
-    ),
+  const generatorInfoMap = await createGeneratorInfoMap(
+    outputDirectory,
+    generatorPackageMap,
   );
-  const generatorInfoMap = new Map<
-    string,
-    TemplateFileExtractorGeneratorInfo
-  >();
-  for (const map of generatorInfoMaps) {
-    for (const [key, value] of map.entries()) {
-      if (map.has(key) && map.get(key)?.baseDirectory !== value.baseDirectory) {
-        throw new Error(
-          `Mismatched generator info found during merge: ${key}. Found both ${generatorInfoMap.get(key)?.baseDirectory} and ${value.baseDirectory}`,
-        );
-      }
-      generatorInfoMap.set(key, value);
-    }
-  }
   const extractors = extractorCreators.map((creator) =>
     creator({
       generatorInfoMap,
       logger,
+      baseDirectory: outputDirectory,
     }),
   );
 
   // Find all template metadata files
   const templateMetadataFiles = await globby(
-    outputDirectories.map((outputDirectory) =>
-      path.join(outputDirectory, '**', TEMPLATE_METADATA_FILENAME),
-    ),
+    path.join(outputDirectory, '**', TEMPLATE_METADATA_FILENAME),
     {
       absolute: true,
       onlyFiles: true,

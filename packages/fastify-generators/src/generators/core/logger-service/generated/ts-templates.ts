@@ -4,6 +4,7 @@ const logger = createTsTemplateFile({
   name: 'logger',
   source: { path: 'logger.ts' },
   variables: { TPL_LOGGER_OPTIONS: {} },
+  projectExports: {},
 });
 
 export const CORE_LOGGER_SERVICE_TS_TEMPLATES = {

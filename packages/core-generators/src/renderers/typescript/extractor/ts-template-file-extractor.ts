@@ -20,6 +20,7 @@ import {
   tsTemplateFileMetadataSchema,
 } from '../templates/types.js';
 import { processTsTemplateContent } from './process-ts-template.js';
+import { writeTsProjectExports } from './write-ts-project-exports.js';
 
 interface TypescriptCodeEntry {
   codeBlock: string;
@@ -56,6 +57,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
         path: file.metadata.template,
       },
       variables: file.metadata.variables ?? {},
+      projectExports: file.metadata.projectExports ?? {},
     };
 
     return {
@@ -110,6 +112,20 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
     files: TemplateFileExtractorFile<TsTemplateFileMetadata>[],
   ): Promise<void> {
     const extractLimit = pLimit(getGenerationConcurrencyLimit());
+
+    const { importsFileContents } = writeTsProjectExports(
+      files,
+      this.getProjectBaseDirectory(),
+      generatorName,
+    );
+
+    if (importsFileContents) {
+      await this.writeGeneratedTypescriptFileIfModified(
+        generatorName,
+        'ts-import-maps.ts',
+        importsFileContents,
+      );
+    }
 
     const filesByGroups = mapGroupBy(
       files.filter((file) => file.metadata.group),

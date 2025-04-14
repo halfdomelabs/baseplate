@@ -31,7 +31,9 @@ describe('processTsTemplateContent', () => {
 
     const result = processTsTemplateContent(metadata, content);
     expect(result).toMatchInlineSnapshot(`
-      "
+      "// @ts-nocheck
+
+
             TPL_NAME
             
             TPL_AGE
@@ -58,7 +60,9 @@ describe('processTsTemplateContent', () => {
 
     const result = processTsTemplateContent(metadata, content);
     expect(result).toMatchInlineSnapshot(`
-      "
+      "// @ts-nocheck
+
+
                   
             const test = 123;
           "
@@ -89,7 +93,9 @@ describe('processTsTemplateContent', () => {
 
     const result = processTsTemplateContent(metadata, content);
     expect(result).toMatchInlineSnapshot(`
-      "
+      "// @ts-nocheck
+
+
             import { used } from 'used-package';
 
             TPL_NAME

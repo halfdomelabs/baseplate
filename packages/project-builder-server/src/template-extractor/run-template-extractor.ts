@@ -50,7 +50,7 @@ async function buildGeneratorPackageMap(
 
 export async function runTemplateExtractorsForProject(
   directory: string,
-  app: string | undefined,
+  app: string,
   context: SchemaParserContext,
   logger: Logger,
 ): Promise<void> {
@@ -73,9 +73,14 @@ export async function runTemplateExtractorsForProject(
       }
       return true;
     });
+  if (appDirectories.length > 1) {
+    throw new Error(
+      `Found multiple app directories for ${app}: ${appDirectories.join(', ')}`,
+    );
+  }
   await runTemplateFileExtractors(
     TEMPLATE_FILE_EXTRACTOR_CREATORS,
-    appDirectories,
+    appDirectories[0],
     generatorPackageMap,
     logger,
   );

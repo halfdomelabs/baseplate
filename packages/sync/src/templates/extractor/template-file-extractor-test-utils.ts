@@ -21,6 +21,7 @@ function createTestTemplateFileExtractorContext(
       ],
     ]),
     logger: console,
+    baseDirectory: DEFAULT_OUTPUT_DIRECTORY,
     ...context,
   };
 }
@@ -41,6 +42,12 @@ export const TemplateFileExtractorTestUtils = {
   templatePath(template: string) {
     return path.join(
       TemplateFileExtractorTestUtils.TEST_GENERATOR_TEMPLATE_DIRECTORY,
+      template,
+    );
+  },
+  outputPath(template: string) {
+    return path.join(
+      TemplateFileExtractorTestUtils.DEFAULT_OUTPUT_DIRECTORY,
       template,
     );
   },

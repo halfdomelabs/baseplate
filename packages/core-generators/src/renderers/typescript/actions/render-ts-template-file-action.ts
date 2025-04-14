@@ -79,6 +79,10 @@ export function renderTsTemplateFileAction<
                       description: val.description,
                     }))
                   : undefined,
+              projectExports:
+                Object.keys(template.projectExports ?? {}).length > 0
+                  ? template.projectExports
+                  : undefined,
             }
           : undefined;
 

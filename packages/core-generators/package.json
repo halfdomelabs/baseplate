@@ -38,6 +38,7 @@
   "dependencies": {
     "@halfdomelabs/sync": "workspace:*",
     "@halfdomelabs/utils": "workspace:*",
+    "change-case": "5.4.4",
     "es-toolkit": "1.31.0",
     "eta": "^3.5.0",
     "is-core-module": "2.15.1",

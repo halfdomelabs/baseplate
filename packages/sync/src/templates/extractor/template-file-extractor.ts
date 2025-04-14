@@ -47,6 +47,10 @@ export interface TemplateFileExtractorContext {
    * The logger to use.
    */
   logger: Logger;
+  /**
+   * The base directory of the project.
+   */
+  baseDirectory: string;
 }
 
 export abstract class TemplateFileExtractor<
@@ -63,6 +67,10 @@ export abstract class TemplateFileExtractor<
       throw new Error(`Could not find template file in project: ${path}`);
     }
     return fileBuffer;
+  }
+
+  protected getProjectBaseDirectory(): string {
+    return this.context.baseDirectory;
   }
 
   protected getGeneratorBaseDirectory(generatorName: string): string {

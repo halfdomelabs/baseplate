@@ -83,7 +83,9 @@ const removedVar = 1;
 
     // Snapshot the template file for detailed verification
     expect(result[generatedTemplatePath]).toMatchInlineSnapshot(`
-      "import { A, B } from './stuff'; // C and D are unused after processing
+      "// @ts-nocheck
+
+      import { A, B } from './stuff'; // C and D are unused after processing
 
       export function TPL_COMPONENT_NAME() {
         const msg = TPL_MESSAGE;
@@ -105,11 +107,115 @@ const removedVar = 1;
         name: 'myComponentTemplate',
         source: { path: 'my-component.ts' },
         variables: { TPL_COMPONENT_NAME: {}, TPL_MESSAGE: {}, TPL_PROP_VALUE: {} },
+        projectExports: {},
       });
 
       export const TEST_GENERATOR_TS_TEMPLATES = {
         myComponentTemplate,
       };
+      "
+    `);
+  });
+
+  it('should generate import maps file for project exports', async () => {
+    const context =
+      TemplateFileExtractorTestUtils.createTestTemplateFileExtractorContext();
+    const extractor = new TsTemplateFileExtractor(context);
+    const inputFilePath = TemplateFileExtractorTestUtils.outputPath(
+      'components/test-component.ts',
+    );
+
+    vol.fromJSON({
+      [inputFilePath]: `
+      export const TestComponent = () => {};
+      export type TestComponentProps = {};
+      `,
+    });
+
+    await extractor.extractTemplateFiles([
+      {
+        path: inputFilePath,
+        metadata: {
+          type: TS_TEMPLATE_TYPE,
+          name: 'testComponent',
+          generator: 'test-package#test-generator',
+          template: 'test-component.ts',
+          variables: {},
+          projectExports: {
+            TestComponent: { isTypeOnly: false },
+            TestComponentProps: { isTypeOnly: true },
+          },
+        },
+      },
+    ]);
+
+    const result = vol.toJSON();
+    const generatedImportsPath =
+      TemplateFileExtractorTestUtils.generatedPath('ts-import-maps.ts');
+
+    // Check that the import maps file was generated
+    expect(result[generatedImportsPath]).toBeDefined();
+    expect(result[generatedImportsPath]).toContain(
+      'testGeneratorImportsSchema',
+    );
+    expect(result[generatedImportsPath]).toContain(
+      'TestGeneratorImportsProvider',
+    );
+    expect(result[generatedImportsPath]).toContain(
+      'testGeneratorImportsProvider',
+    );
+    expect(result[generatedImportsPath]).toContain(
+      'createTestGeneratorImports',
+    );
+
+    // Check that the exports are included
+    expect(result[generatedImportsPath]).toContain('TestComponent: {}');
+    expect(result[generatedImportsPath]).toContain(
+      'TestComponentProps: { isTypeOnly: true }',
+    );
+
+    // Check the path mapping
+    expect(result[generatedImportsPath]).toContain(
+      "TestComponent: path.join(baseDirectory, 'test-component.ts')",
+    );
+    expect(result[generatedImportsPath]).toContain(
+      "TestComponentProps: path.join(baseDirectory, 'test-component.ts')",
+    );
+
+    // Snapshot the imports file for detailed verification
+    expect(result[generatedImportsPath]).toMatchInlineSnapshot(`
+      "import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
+
+      import {
+        createTsImportMapProvider,
+        createTsImportMapSchema,
+      } from '@halfdomelabs/core-generators';
+
+      import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+      import path from 'node:path/posix';
+
+      export const testGeneratorImportsSchema = createTsImportMapSchema({
+        TestComponent: {},
+        TestComponentProps: { isTypeOnly: true },
+      });
+
+      export type TestGeneratorImportsProvider = TsImportMapProviderFromSchema<
+        typeof testGeneratorImportsSchema
+      >;
+
+      export const testGeneratorImportsProvider =
+        createReadOnlyProviderType<TestGeneratorImportsProvider>(
+          'test-generator-imports',
+        );
+
+      export function createTestGeneratorImports(
+        baseDirectory: string,
+      ): TestGeneratorImportsProvider {
+        return createTsImportMapProvider(testGeneratorImportsSchema, {
+          TestComponent: path.join(baseDirectory, 'test-component.ts'),
+          TestComponentProps: path.join(baseDirectory, 'test-component.ts'),
+        });
+      }
       "
     `);
   });

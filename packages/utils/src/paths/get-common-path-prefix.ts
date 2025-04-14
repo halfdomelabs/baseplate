@@ -14,7 +14,7 @@ export function getCommonPathPrefix(paths: string[]): string {
 
   const [first, ...rest] = paths;
 
-  const firstParts = first.split(path.sep);
+  const firstParts = path.dirname(first).split(path.sep);
   let commonParts = [...firstParts];
 
   for (const current of rest) {

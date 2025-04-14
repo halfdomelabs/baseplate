@@ -32,8 +32,8 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { fastifyProvider } from '../fastify/index.js';
 import {
   configServiceImportsProvider,
-  createConfigServiceImportMap,
-} from './generated/import-maps.js';
+  createConfigServiceImports,
+} from './generated/ts-import-maps.js';
 import { CORE_CONFIG_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
@@ -76,6 +76,10 @@ export interface ConfigServiceProvider
 export const configServiceProvider =
   createProviderType<ConfigServiceProvider>('config-service');
 
+/**
+ * The generator for the Fastify config service that provides a typed
+ * configuration object from the .env file or environment variables.
+ */
 export const configServiceGenerator = createGenerator({
   name: 'core/config-service',
   generatorFileUrl: import.meta.url,
@@ -146,9 +150,7 @@ export const configServiceGenerator = createGenerator({
                 },
               }),
             },
-            configServiceImports: createConfigServiceImportMap({
-              service: '@/src/services/config.js',
-            }),
+            configServiceImports: createConfigServiceImports('@src/services'),
           },
           build: async (builder) => {
             // write config service file
@@ -196,11 +198,11 @@ export const configServiceGenerator = createGenerator({
             const envFile = `${sortedConfigEntries
               .filter(
                 ([, { seedValue, exampleValue }]) =>
-                  (seedValue ?? exampleValue) != null,
+                  (seedValue ?? exampleValue) !== undefined,
               )
               .map(
                 ([key, { seedValue, exampleValue }]) =>
-                  `${key}=${seedValue ?? exampleValue ?? ''}`,
+                  `${key}=${seedValue ?? exampleValue}`,
               )
               .join('\n')}\n`;
 
@@ -219,4 +221,4 @@ export const configServiceGenerator = createGenerator({
   }),
 });
 
-export { configServiceImportsProvider } from './generated/import-maps.js';
+export { configServiceImportsProvider } from './generated/ts-import-maps.js';

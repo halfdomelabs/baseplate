@@ -157,6 +157,9 @@ importers:
       '@halfdomelabs/utils':
         specifier: workspace:*
         version: link:../utils
+      change-case:
+        specifier: 5.4.4
+        version: 5.4.4
       es-toolkit:
         specifier: 1.31.0
         version: 1.31.0

@@ -26,6 +26,12 @@ export const tsTemplateFileMetadataSchema =
         }),
       )
       .optional(),
+    /**
+     * The exports of the file that are unique across the project.
+     */
+    projectExports: z
+      .record(z.string(), z.object({ isTypeOnly: z.boolean().optional() }))
+      .optional(),
   });
 
 export type TsTemplateFileMetadata = z.infer<
@@ -58,6 +64,10 @@ export interface TsTemplateFile<
    * Import map providers that will be used to resolve imports for the template.
    */
   importMapProviders?: TImportMapProviders;
+  /**
+   * The exports of the file that are unique across the project.
+   */
+  projectExports?: Record<string, { isTypeOnly?: boolean }>;
 }
 
 export type TsTemplateFileVariableValue = TsCodeFragment | string;
@@ -74,26 +84,10 @@ export function createTsTemplateFile<
     never,
     ProviderType
   >,
->({
-  name,
-  source,
-  variables = {} as TVariables,
-  prefix,
-  importMapProviders,
-}: {
-  name: string;
-  source: { path: string } | { contents: string };
-  variables?: TVariables;
-  prefix?: string;
-  importMapProviders?: TImportMapProviders;
-}): TsTemplateFile<TVariables, TImportMapProviders> {
-  return {
-    name,
-    source,
-    variables,
-    prefix,
-    importMapProviders,
-  };
+>(
+  file: TsTemplateFile<TVariables, TImportMapProviders>,
+): TsTemplateFile<TVariables, TImportMapProviders> {
+  return file;
 }
 
 interface TsTemplateGroupEntry {
