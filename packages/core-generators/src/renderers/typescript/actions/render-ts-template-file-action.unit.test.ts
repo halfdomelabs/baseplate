@@ -53,7 +53,9 @@ describe('renderTsTemplateFileAction', () => {
     expect(output.files.size).toBe(1);
     const file = output.files.get('output/test.ts');
     expect(file?.id).toBe('test-generator:test-id');
-    expect(file?.contents).toEqual('const greeting = "Hello World";');
+    expect(file?.contents).toEqual(
+      'const greeting = /* TPL_GREETING:START */ "Hello World" /* TPL_GREETING:END */;',
+    );
     expect(file?.options?.templateMetadata).toEqual({
       name: 'test',
       template: 'test.ts',

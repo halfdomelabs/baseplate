@@ -1,6 +1,5 @@
 import type {
   BuilderAction,
-  GeneratorTaskOutputBuilder,
   InferProviderType,
   WriteFileOptions,
 } from '@halfdomelabs/sync';
@@ -17,9 +16,10 @@ import { z } from 'zod';
 
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
 import type {
-  InferImportMapProvidersFromProviderTypeMap,
   RenderTsTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
   TsTemplateFile,
+  TsTemplateGroup,
 } from '@src/renderers/typescript/index.js';
 
 import { copyTypescriptFilesAction } from '@src/actions/copy-typescript-files-action.js';
@@ -29,6 +29,7 @@ import { renderTsTemplateFileAction } from '@src/renderers/typescript/actions/re
 import {
   generatePathMapEntries,
   pathMapEntriesToRegexes,
+  renderTsTemplateGroupAction,
 } from '@src/renderers/typescript/index.js';
 import { extractPackageVersions } from '@src/utils/extract-packages.js';
 
@@ -86,27 +87,13 @@ export interface TypescriptProvider {
 export const typescriptProvider =
   createProviderType<TypescriptProvider>('typescript');
 
-type WriteTemplateFilePayload<T extends TsTemplateFile = TsTemplateFile> = Omit<
-  RenderTsTemplateFileActionInput<T>,
-  'renderOptions'
-> &
-  (keyof T['importMapProviders'] extends never
-    ? Partial<{
-        importMapProviders: InferImportMapProvidersFromProviderTypeMap<
-          T['importMapProviders']
-        >;
-      }>
-    : {
-        importMapProviders: InferImportMapProvidersFromProviderTypeMap<
-          T['importMapProviders']
-        >;
-      });
-
 export interface TypescriptFileProvider {
-  writeTemplateFile<T extends TsTemplateFile = TsTemplateFile>(
-    builder: GeneratorTaskOutputBuilder,
-    payload: WriteTemplateFilePayload<T>,
-  ): Promise<void>;
+  renderTemplateFile<T extends TsTemplateFile = TsTemplateFile>(
+    payload: RenderTsTemplateFileActionInput<T>,
+  ): BuilderAction;
+  renderTemplateGroup<T extends TsTemplateGroup = TsTemplateGroup>(
+    payload: RenderTsTemplateGroupActionInput<T>,
+  ): BuilderAction;
 }
 
 export const typescriptFileProvider =
@@ -284,26 +271,38 @@ export const typescriptGenerator = createGenerator({
         return {
           providers: {
             typescriptFile: {
-              writeTemplateFile: async (builder, payload) => {
+              renderTemplateFile: (payload) => {
                 const directory = path.dirname(payload.destination);
-                await builder.apply(
-                  renderTsTemplateFileAction({
-                    ...payload,
-                    renderOptions: {
-                      resolveModule(moduleSpecifier) {
-                        return resolveModule(moduleSpecifier, directory, {
-                          pathMapEntries,
-                          moduleResolution,
-                        });
-                      },
-                      importSortOptions: {
-                        internalPatterns,
-                      },
-                      includeMetadata: builder.includeMetadata,
+                return renderTsTemplateFileAction({
+                  ...payload,
+                  renderOptions: {
+                    resolveModule(moduleSpecifier) {
+                      return resolveModule(moduleSpecifier, directory, {
+                        pathMapEntries,
+                        moduleResolution,
+                      });
                     },
-                  } as RenderTsTemplateFileActionInput),
-                );
+                    importSortOptions: {
+                      internalPatterns,
+                    },
+                  },
+                });
               },
+              renderTemplateGroup: (payload) =>
+                renderTsTemplateGroupAction({
+                  ...payload,
+                  renderOptions: {
+                    resolveModule(sourceDirectory, moduleSpecifier) {
+                      return resolveModule(moduleSpecifier, sourceDirectory, {
+                        pathMapEntries,
+                        moduleResolution,
+                      });
+                    },
+                    importSortOptions: {
+                      internalPatterns,
+                    },
+                  },
+                }),
             },
           },
         };

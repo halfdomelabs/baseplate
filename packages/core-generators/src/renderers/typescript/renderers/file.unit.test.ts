@@ -77,7 +77,7 @@ describe('renderTsCodeFileTemplate', () => {
     const variables = {
       TPL_CONTENT: tsCodeFragment(
         'const test = new Test();',
-        tsImportBuilder().named('Test').from('./test'),
+        tsImportBuilder().named('Test').from('test'),
       ),
     };
 
@@ -91,7 +91,7 @@ describe('renderTsCodeFileTemplate', () => {
     );
 
     expect(result).toMatchInlineSnapshot(`
-      "import { Test } from "@project/./test";
+      "import { Test } from "@project/test";
 
       const test = new Test();"
     `);

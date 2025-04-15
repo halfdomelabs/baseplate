@@ -90,7 +90,7 @@ describe('renderTsTemplateGroupAction', () => {
     );
   });
 
-  it('should handle templates with imports', async () => {
+  it('should handle templates with imports with custom resolveModule', async () => {
     const group = createTsTemplateGroup({
       templates: {
         greeting: {
@@ -114,9 +114,13 @@ describe('renderTsTemplateGroupAction', () => {
       variables: {
         greeting: {
           TPL_GREETING: tsCodeFragment('new Greeting("Hello")', [
-            tsImportBuilder().named('Greeting').from('./greeting'),
+            tsImportBuilder().named('Greeting').from('greeting'),
           ]),
         },
+      },
+      renderOptions: {
+        resolveModule: (sourceDirectory, moduleSpecifier) =>
+          `@project/${sourceDirectory}/${moduleSpecifier}`,
       },
     });
 
@@ -125,7 +129,7 @@ describe('renderTsTemplateGroupAction', () => {
     expect(output.files.size).toBe(1);
     const file = output.files.get('src/output/greeting.ts');
     expect(file?.contents).toEqual(
-      'import { Greeting } from "./greeting";\n\nconst greeting = new Greeting("Hello");',
+      'import { Greeting } from "@project/src/output/greeting";\n\nconst greeting = new Greeting("Hello");',
     );
   });
 

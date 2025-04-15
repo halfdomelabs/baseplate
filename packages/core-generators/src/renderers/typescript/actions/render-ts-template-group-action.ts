@@ -50,10 +50,15 @@ interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
   writeOptions?: {
     [K in keyof T['templates']]?: Omit<WriteFileOptions, 'templateMetadata'>;
   };
-  renderOptions?: RenderTsCodeFileTemplateOptions;
+  renderOptions?: Omit<RenderTsCodeFileTemplateOptions, 'resolveModule'> & {
+    resolveModule?: (
+      sourceDirectory: string,
+      moduleSpecifier: string,
+    ) => string;
+  };
 }
 
-type RenderTsTemplateGroupActionInput<
+export type RenderTsTemplateGroupActionInput<
   T extends TsTemplateGroup = TsTemplateGroup,
 > = RenderTsTemplateGroupActionInputBase<T> &
   (keyof InferTsTemplateVariablesFromTemplateGroup<T> extends never
@@ -80,6 +85,7 @@ export function renderTsTemplateGroupAction<
       for (const [key, template] of Object.entries(group.templates)) {
         const destination = path.join(baseDirectory, template.destination);
         try {
+          const destinationDirectory = path.dirname(destination);
           await builder.apply(
             renderTsTemplateFileAction({
               template: template.template,
@@ -98,7 +104,13 @@ export function renderTsTemplateGroupAction<
                       key as keyof typeof importMapProviders
                     ] as Record<never, string>)
                   : undefined,
-              renderOptions,
+              renderOptions: {
+                ...renderOptions,
+                resolveModule: renderOptions?.resolveModule?.bind(
+                  null,
+                  destinationDirectory,
+                ),
+              },
             }),
           );
         } catch (error) {

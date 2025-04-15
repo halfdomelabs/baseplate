@@ -20,7 +20,10 @@ interface RenderTsTemplateFileActionInputBase<T extends TsTemplateFile> {
   id?: string;
   destination: string;
   writeOptions?: Omit<WriteFileOptions, 'templateMetadata'>;
-  renderOptions?: Omit<RenderTsCodeFileTemplateOptions, 'prefix'>;
+  renderOptions?: Omit<
+    RenderTsCodeFileTemplateOptions,
+    'prefix' | 'includeMetadata'
+  >;
 }
 
 type RenderTsTemplateFileActionVariablesInput<T extends TsTemplateFile> =
@@ -110,6 +113,7 @@ export function renderTsTemplateFileAction<
         importMapProviders,
         {
           ...renderOptions,
+          includeMetadata: builder.includeMetadata,
           prefix,
         },
       );
