@@ -30,8 +30,8 @@ export const errorHandlerServiceImportsProvider =
 export function createErrorHandlerServiceImports(
   importBase: string,
 ): ErrorHandlerServiceImportsProvider {
-  if (!importBase.startsWith('@')) {
-    throw new Error('importBase must start with @');
+  if (!importBase.startsWith('@/')) {
+    throw new Error('importBase must start with @/');
   }
 
   return createTsImportMapProvider(errorHandlerServiceImportsSchema, {

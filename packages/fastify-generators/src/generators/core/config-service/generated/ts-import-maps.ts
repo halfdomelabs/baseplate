@@ -23,8 +23,8 @@ export const configServiceImportsProvider =
 export function createConfigServiceImports(
   importBase: string,
 ): ConfigServiceImportsProvider {
-  if (!importBase.startsWith('@')) {
-    throw new Error('importBase must start with @');
+  if (!importBase.startsWith('@/')) {
+    throw new Error('importBase must start with @/');
   }
 
   return createTsImportMapProvider(configServiceImportsSchema, {

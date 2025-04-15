@@ -23,9 +23,9 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { fastifyProvider } from '../fastify/index.js';
 import {
-  createLoggerServiceImportMap,
+  createLoggerServiceImports,
   loggerServiceImportsProvider,
-} from './generated/import-maps.js';
+} from './generated/ts-import-maps.js';
 import { CORE_LOGGER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 export interface LoggerServiceSetupProvider extends ImportMapper {
@@ -123,10 +123,6 @@ export const loggerServiceGenerator = createGenerator({
                 }`;
             }
 
-            const fileMap = {
-              logger: 'src/services/logger.ts',
-            };
-
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template: CORE_LOGGER_SERVICE_TS_TEMPLATES.logger,
@@ -137,7 +133,7 @@ export const loggerServiceGenerator = createGenerator({
                       ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
                       : '',
                 },
-                destination: fileMap.logger,
+                destination: 'src/services/logger.ts',
                 importMapProviders: {},
                 writeOptions: {
                   alternateFullIds: [
@@ -148,7 +144,8 @@ export const loggerServiceGenerator = createGenerator({
             );
 
             return {
-              loggerServiceImports: createLoggerServiceImportMap(fileMap),
+              loggerServiceImports:
+                createLoggerServiceImports('@/src/services'),
             };
           },
         };
@@ -157,4 +154,4 @@ export const loggerServiceGenerator = createGenerator({
   }),
 });
 
-export { loggerServiceImportsProvider } from './generated/import-maps.js';
+export { loggerServiceImportsProvider } from './generated/ts-import-maps.js';

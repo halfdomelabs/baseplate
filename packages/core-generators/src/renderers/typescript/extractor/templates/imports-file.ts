@@ -23,8 +23,8 @@ export const TPL_IMPORTS_PROVIDER_VAR =
 export function TPL_CREATE_IMPORT_MAP_FUNCTION(
   importBase: string,
 ): TPL_IMPORTS_PROVIDER_TYPE_VAR {
-  if (!importBase.startsWith('@')) {
-    throw new Error('importBase must start with @');
+  if (!importBase.startsWith('@/')) {
+    throw new Error('importBase must start with @/');
   }
 
   return createTsImportMapProvider(

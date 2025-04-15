@@ -150,7 +150,7 @@ export const configServiceGenerator = createGenerator({
                 },
               }),
             },
-            configServiceImports: createConfigServiceImports('@src/services'),
+            configServiceImports: createConfigServiceImports('@/src/services'),
           },
           build: async (builder) => {
             // write config service file
