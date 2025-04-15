@@ -7,7 +7,7 @@ import {
 import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 
-export const errorHandlerServiceImportsSchema = createTsImportMapSchema({
+const errorHandlerServiceImportsSchema = createTsImportMapSchema({
   BadRequestError: {},
   ForbiddenError: {},
   HttpError: {},
@@ -18,7 +18,7 @@ export const errorHandlerServiceImportsSchema = createTsImportMapSchema({
   logError: {},
 });
 
-export type ErrorHandlerServiceImportsProvider = TsImportMapProviderFromSchema<
+type ErrorHandlerServiceImportsProvider = TsImportMapProviderFromSchema<
   typeof errorHandlerServiceImportsSchema
 >;
 

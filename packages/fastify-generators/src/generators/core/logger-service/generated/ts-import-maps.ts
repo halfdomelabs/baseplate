@@ -7,11 +7,9 @@ import {
 import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 
-export const loggerServiceImportsSchema = createTsImportMapSchema({
-  logger: {},
-});
+const loggerServiceImportsSchema = createTsImportMapSchema({ logger: {} });
 
-export type LoggerServiceImportsProvider = TsImportMapProviderFromSchema<
+type LoggerServiceImportsProvider = TsImportMapProviderFromSchema<
   typeof loggerServiceImportsSchema
 >;
 

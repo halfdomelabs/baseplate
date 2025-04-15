@@ -8,10 +8,10 @@ import {
   createTsImportMapSchema,
 } from 'TPL_TS_IMPORTS';
 
-export const TPL_IMPORTS_SCHEMA_VAR =
+const TPL_IMPORTS_SCHEMA_VAR =
   createTsImportMapSchema(TPL_IMPORTS_SCHEMA);
 
-export type TPL_IMPORTS_PROVIDER_TYPE_VAR = TsImportMapProviderFromSchema<
+type TPL_IMPORTS_PROVIDER_TYPE_VAR = TsImportMapProviderFromSchema<
   typeof TPL_IMPORTS_SCHEMA_VAR
 >;
 

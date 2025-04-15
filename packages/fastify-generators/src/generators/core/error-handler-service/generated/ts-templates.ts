@@ -19,12 +19,12 @@ const httpErrors = createTsTemplateFile({
   source: { path: 'utils/http-errors.ts' },
   variables: {},
   projectExports: {
-    HttpError: {},
     BadRequestError: {},
-    UnauthorizedError: {},
     ForbiddenError: {},
-    NotFoundError: {},
+    HttpError: {},
     InternalServerError: {},
+    NotFoundError: {},
+    UnauthorizedError: {},
   },
 });
 
