@@ -5,6 +5,14 @@ import {
 
 import { configServiceImportsProvider } from '../../config-service/generated/ts-import-maps.js';
 
+const zod = createTsTemplateFile({
+  name: 'zod',
+  group: 'utils',
+  source: { path: 'utils/zod.ts' },
+  variables: {},
+  projectExports: { handleZodRequestValidationError: {} },
+});
+
 const httpErrors = createTsTemplateFile({
   name: 'http-errors',
   group: 'utils',
@@ -20,18 +28,10 @@ const httpErrors = createTsTemplateFile({
   },
 });
 
-const zod = createTsTemplateFile({
-  name: 'zod',
-  group: 'utils',
-  source: { path: 'utils/zod.ts' },
-  variables: {},
-  projectExports: { handleZodRequestValidationError: {} },
-});
-
 const utilsGroup = createTsTemplateGroup({
   templates: {
-    httpErrors: { destination: 'http-errors.ts', template: httpErrors },
     zod: { destination: 'zod.ts', template: zod },
+    httpErrors: { destination: 'http-errors.ts', template: httpErrors },
   },
 });
 

@@ -44,9 +44,9 @@ export function renderTsTemplateToTsCodeFragment(
   const variableKeys = new Set(Object.keys(variables));
 
   renderedTemplate = renderedTemplate.replaceAll(
-    new RegExp(`${prefix}[A-Z0-9_]+(?=[^A-Z0-9_]|$)`, 'g'),
+    new RegExp(`${prefix}[A-Z0-9_]+;?(?=[^A-Z0-9_]|$)`, 'g'),
     (match) => {
-      const key = match;
+      const key = match.replace(/;?$/, '');
       if (!(key in variables)) {
         throw new Error(`Template variable not found: ${key}`);
       }
@@ -56,8 +56,11 @@ export function renderTsTemplateToTsCodeFragment(
 
       variableKeys.delete(key);
 
+      const blockMatch = match.endsWith(';');
       return options.includeMetadata
-        ? `/* ${key}:START */ ${contents} /* ${key}:END */`
+        ? `/* ${key}:START */${blockMatch ? '\n' : ' '}${contents}${
+            blockMatch ? '\n' : ' '
+          }/* ${key}:END */`
         : contents;
     },
   );

@@ -8,14 +8,14 @@ import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 
 export const errorHandlerServiceImportsSchema = createTsImportMapSchema({
-  logError: {},
-  HttpError: {},
   BadRequestError: {},
-  UnauthorizedError: {},
   ForbiddenError: {},
-  NotFoundError: {},
+  HttpError: {},
   InternalServerError: {},
+  NotFoundError: {},
+  UnauthorizedError: {},
   handleZodRequestValidationError: {},
+  logError: {},
 });
 
 export type ErrorHandlerServiceImportsProvider = TsImportMapProviderFromSchema<
@@ -28,16 +28,20 @@ export const errorHandlerServiceImportsProvider =
   );
 
 export function createErrorHandlerServiceImports(
-  baseDirectory: string,
+  importBase: string,
 ): ErrorHandlerServiceImportsProvider {
+  if (!importBase.startsWith('@')) {
+    throw new Error('importBase must start with @');
+  }
+
   return createTsImportMapProvider(errorHandlerServiceImportsSchema, {
-    logError: path.join(baseDirectory, 'services/error-logger.js'),
-    HttpError: path.join(baseDirectory, 'utils/http-errors.js'),
-    BadRequestError: path.join(baseDirectory, 'utils/http-errors.js'),
-    UnauthorizedError: path.join(baseDirectory, 'utils/http-errors.js'),
-    ForbiddenError: path.join(baseDirectory, 'utils/http-errors.js'),
-    NotFoundError: path.join(baseDirectory, 'utils/http-errors.js'),
-    InternalServerError: path.join(baseDirectory, 'utils/http-errors.js'),
-    handleZodRequestValidationError: path.join(baseDirectory, 'utils/zod.js'),
+    BadRequestError: path.join(importBase, 'utils/http-errors.js'),
+    ForbiddenError: path.join(importBase, 'utils/http-errors.js'),
+    HttpError: path.join(importBase, 'utils/http-errors.js'),
+    InternalServerError: path.join(importBase, 'utils/http-errors.js'),
+    NotFoundError: path.join(importBase, 'utils/http-errors.js'),
+    UnauthorizedError: path.join(importBase, 'utils/http-errors.js'),
+    handleZodRequestValidationError: path.join(importBase, 'utils/zod.js'),
+    logError: path.join(importBase, 'services/error-logger.js'),
   });
 }

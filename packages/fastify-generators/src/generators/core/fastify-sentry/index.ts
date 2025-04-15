@@ -101,7 +101,7 @@ export const fastifySentryGenerator = createGenerator({
 
         return {
           build: () => {
-            errorHandlerServiceConfig.contextActions.push(
+            errorHandlerServiceConfig.loggerActions.push(
               tsCodeFragment(
                 `context.errorId = logErrorToSentry(error, context);`,
                 tsImportBuilder(['logErrorToSentry']).from(

@@ -3,6 +3,7 @@ import {
   type TemplateFileExtractorFile,
 } from '@halfdomelabs/sync';
 import { camelCase, pascalCase } from 'change-case';
+import { sortBy } from 'es-toolkit';
 import { getCommonPathPrefix } from 'node_modules/@halfdomelabs/utils/dist/paths/get-common-path-prefix.js';
 
 import type { TsTemplateFileMetadata } from '../templates/types.js';
@@ -74,18 +75,21 @@ export function writeTsProjectExports(
   const providerNameVar = `${providerNameCamelCase}Provider`;
 
   // Extract project exports
-  const projectExports: TsProjectExport[] = files.flatMap((file) =>
-    Object.entries(file.metadata.projectExports ?? {}).map(
-      ([exportName, { isTypeOnly }]) => ({
-        name: exportName,
-        isTypeOnly,
-        filePath: file.path,
-        importSource: `%${providerNameCamelCase}`,
-        providerImportName: providerNameVar,
-        providerPath: importMapFilePath,
-        providerPackage: packageName,
-      }),
+  const projectExports: TsProjectExport[] = sortBy(
+    files.flatMap((file) =>
+      Object.entries(file.metadata.projectExports ?? {}).map(
+        ([exportName, { isTypeOnly }]) => ({
+          name: exportName,
+          isTypeOnly,
+          filePath: file.path,
+          importSource: `%${providerNameCamelCase}`,
+          providerImportName: providerNameVar,
+          providerPath: importMapFilePath,
+          providerPackage: packageName,
+        }),
+      ),
     ),
+    [(t) => t.name],
   );
 
   const duplicateExports = projectExports.filter(
@@ -146,7 +150,7 @@ export function writeTsProjectExports(
           projectExports.map((projectExport) => [
             projectExport.name,
             tsCodeFragment(
-              `path.join(baseDirectory, '${projectExport.filePath
+              `path.join(importBase, '${projectExport.filePath
                 .slice(
                   commonPathPrefix === '.' ? 0 : commonPathPrefix.length + 1,
                 )

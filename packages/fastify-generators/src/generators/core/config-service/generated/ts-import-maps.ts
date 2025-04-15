@@ -21,9 +21,13 @@ export const configServiceImportsProvider =
   );
 
 export function createConfigServiceImports(
-  baseDirectory: string,
+  importBase: string,
 ): ConfigServiceImportsProvider {
+  if (!importBase.startsWith('@')) {
+    throw new Error('importBase must start with @');
+  }
+
   return createTsImportMapProvider(configServiceImportsSchema, {
-    config: path.join(baseDirectory, 'config.js'),
+    config: path.join(importBase, 'config.js'),
   });
 }
