@@ -7,6 +7,4 @@ const config = createTsTemplateFile({
   projectExports: { config: {} },
 });
 
-export const CORE_CONFIG_SERVICE_TS_TEMPLATES = {
-  config,
-};
+export const CORE_CONFIG_SERVICE_TS_TEMPLATES = { config };

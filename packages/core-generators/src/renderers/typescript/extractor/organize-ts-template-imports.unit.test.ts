@@ -48,13 +48,13 @@ export function test() {
 
     const projectExportA = {
       name: 'A',
-      projectRelativePath: 'module1.ts',
+      filePath: '/project-root/module1.ts',
       isTypeOnly: false,
       ...sharedExportData,
     };
     const projectExportB = {
       name: 'B',
-      projectRelativePath: 'module1.ts',
+      filePath: '/project-root/module1.ts',
       isTypeOnly: false,
       ...sharedExportData,
     };

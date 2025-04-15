@@ -1,6 +1,7 @@
 import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
 
-import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { quot } from '@halfdomelabs/utils';
 
 import type { PrismaOutputModel } from '@src/types/prisma-output.js';
 import type { ServiceOutputDtoField } from '@src/types/service-output.js';

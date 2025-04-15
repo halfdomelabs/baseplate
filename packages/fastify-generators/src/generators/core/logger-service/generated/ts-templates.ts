@@ -7,6 +7,4 @@ const logger = createTsTemplateFile({
   projectExports: {},
 });
 
-export const CORE_LOGGER_SERVICE_TS_TEMPLATES = {
-  logger,
-};
+export const CORE_LOGGER_SERVICE_TS_TEMPLATES = { logger };
