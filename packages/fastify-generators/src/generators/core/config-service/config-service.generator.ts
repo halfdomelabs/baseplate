@@ -167,20 +167,22 @@ export const configServiceGenerator = createGenerator({
                 }${key}: ${validator},`,
             );
 
-            await typescriptFile.writeTemplateFile(builder, {
-              template: CORE_CONFIG_SERVICE_TS_TEMPLATES.config,
-              destination: 'src/services/config.ts',
-              variables: {
-                TPL_CONFIG_SCHEMA: TsCodeUtils.templateWithImports(
-                  tsImportBuilder(['z']).from('zod'),
-                )`z.object({
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: CORE_CONFIG_SERVICE_TS_TEMPLATES.config,
+                destination: 'src/services/config.ts',
+                variables: {
+                  TPL_CONFIG_SCHEMA: TsCodeUtils.templateWithImports(
+                    tsImportBuilder(['z']).from('zod'),
+                  )`z.object({
                   ${TsCodeUtils.mergeFragments(configFields, '\n')}
               })`,
-                TPL_ADDITIONAL_VERIFICATIONS: TsCodeUtils.mergeFragments(
-                  config.additionalVerifications,
-                ),
-              },
-            });
+                  TPL_ADDITIONAL_VERIFICATIONS: TsCodeUtils.mergeFragments(
+                    config.additionalVerifications,
+                  ),
+                },
+              }),
+            );
 
             // write env example file
             const envExampleFile = `${sortedConfigEntries

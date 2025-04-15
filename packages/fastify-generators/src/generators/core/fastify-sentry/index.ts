@@ -31,7 +31,7 @@ import { configServiceProvider } from '../config-service/config-service.generato
 import {
   errorHandlerServiceConfigProvider,
   errorHandlerServiceProvider,
-} from '../error-handler-service/index.js';
+} from '../error-handler-service/error-handler-service.generator.js';
 import { fastifyServerProvider } from '../fastify-server/index.js';
 import { fastifyProvider } from '../fastify/index.js';
 import { requestContextProvider } from '../request-context/index.js';

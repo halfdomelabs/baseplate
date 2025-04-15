@@ -10,7 +10,7 @@ import {
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { errorHandlerServiceConfigProvider } from '../error-handler-service/index.js';
+import { errorHandlerServiceConfigProvider } from '../error-handler-service/error-handler-service.generator.js';
 
 const descriptorSchema = z.object({});
 

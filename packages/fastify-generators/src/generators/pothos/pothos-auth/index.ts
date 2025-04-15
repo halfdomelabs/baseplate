@@ -12,7 +12,7 @@ import {
 import { z } from 'zod';
 
 import { authProvider } from '@src/generators/auth/auth/index.js';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 
 import { pothosSetupProvider } from '../pothos/index.js';
 

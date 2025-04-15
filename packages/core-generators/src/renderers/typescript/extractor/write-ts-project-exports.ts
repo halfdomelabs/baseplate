@@ -146,9 +146,11 @@ export function writeTsProjectExports(
           projectExports.map((projectExport) => [
             projectExport.name,
             tsCodeFragment(
-              `path.join(baseDirectory, '${projectExport.filePath.slice(
-                commonPathPrefix === '.' ? 0 : commonPathPrefix.length + 1,
-              )}')`,
+              `path.join(baseDirectory, '${projectExport.filePath
+                .slice(
+                  commonPathPrefix === '.' ? 0 : commonPathPrefix.length + 1,
+                )
+                .replace(/\.tsx?$/, '.js')}')`,
               [tsImportBuilder().default('path').from('node:path/posix')],
             ),
           ]),

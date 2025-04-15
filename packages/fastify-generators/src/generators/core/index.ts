@@ -2,7 +2,7 @@ export * from './_composers/index.js';
 export * from './app-module/index.js';
 export * from './axios/index.js';
 export * from './config-service/config-service.generator.js';
-export * from './error-handler-service/index.js';
+export * from './error-handler-service/error-handler-service.generator.js';
 export * from './fastify-cookie-context/index.js';
 export * from './fastify-graceful-shutdown/index.js';
 export * from './fastify-health-check/index.js';

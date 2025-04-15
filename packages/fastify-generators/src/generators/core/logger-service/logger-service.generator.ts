@@ -127,23 +127,25 @@ export const loggerServiceGenerator = createGenerator({
               logger: 'src/services/logger.ts',
             };
 
-            await typescriptFile.writeTemplateFile(builder, {
-              template: CORE_LOGGER_SERVICE_TS_TEMPLATES.logger,
-              id: 'logger',
-              variables: {
-                TPL_LOGGER_OPTIONS:
-                  Object.keys(loggerOptions).length > 0
-                    ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
-                    : '',
-              },
-              destination: fileMap.logger,
-              importMapProviders: {},
-              options: {
-                alternateFullIds: [
-                  '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',
-                ],
-              },
-            });
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: CORE_LOGGER_SERVICE_TS_TEMPLATES.logger,
+                id: 'logger',
+                variables: {
+                  TPL_LOGGER_OPTIONS:
+                    Object.keys(loggerOptions).length > 0
+                      ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
+                      : '',
+                },
+                destination: fileMap.logger,
+                importMapProviders: {},
+                writeOptions: {
+                  alternateFullIds: [
+                    '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',
+                  ],
+                },
+              }),
+            );
 
             return {
               loggerServiceImports: createLoggerServiceImportMap(fileMap),

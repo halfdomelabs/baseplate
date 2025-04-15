@@ -6,7 +6,7 @@ import type {
 import { fastifyVitestGenerator } from '@src/generators/vitest/index.js';
 
 import { configServiceGenerator } from '../config-service/config-service.generator.js';
-import { errorHandlerServiceGenerator } from '../error-handler-service/index.js';
+import { errorHandlerServiceGenerator } from '../error-handler-service/error-handler-service.generator.js';
 import { fastifyCookieContextGenerator } from '../fastify-cookie-context/index.js';
 import { fastifyGracefulShutdownGenerator } from '../fastify-graceful-shutdown/index.js';
 import { fastifyHealthCheckGenerator } from '../fastify-health-check/index.js';

@@ -12,7 +12,6 @@ import {
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  copyFileAction,
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
@@ -156,36 +155,27 @@ export const errorHandlerServiceGenerator = createGenerator({
                 },
               }),
             );
-
+          },
+        };
+      },
+    }),
+    utils: createGeneratorTask({
+      dependencies: {
+        typescriptFile: typescriptFileProvider,
+      },
+      run({ typescriptFile }) {
+        return {
+          build: async (builder) => {
             await builder.apply(
-              copyFileAction({
-                source: 'utils/http-errors.ts',
-                destination: 'src/utils/http-errors.ts',
-              }),
-            );
-
-            await builder.apply(
-              copyFileAction({
-                source: 'utils/zod.ts',
-                destination: 'src/utils/zod.ts',
+              typescriptFile.renderTemplateGroup({
+                group: CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.utilsGroup,
+                baseDirectory: 'src/utils',
               }),
             );
           },
         };
       },
     }),
-    // utils: createGeneratorTask({
-    //   dependencies: {
-    //     typescriptFile: typescriptFileProvider,
-    //   },
-    //   run({ typescriptFile }) {
-    //     return {
-    //       build: async (builder) => {
-    //         await typescriptFile.writeTemplateFile
-    //       },
-    //     };
-    //   },
-    // }),
     main: createGeneratorTask({
       exports: {
         errorHandlerService: errorHandlerServiceProvider.export(projectScope),

@@ -24,6 +24,6 @@ export function createConfigServiceImports(
   baseDirectory: string,
 ): ConfigServiceImportsProvider {
   return createTsImportMapProvider(configServiceImportsSchema, {
-    config: path.join(baseDirectory, 'config.ts'),
+    config: path.join(baseDirectory, 'config.js'),
   });
 }
