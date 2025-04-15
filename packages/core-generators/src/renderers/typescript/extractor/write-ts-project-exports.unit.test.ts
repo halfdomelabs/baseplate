@@ -221,7 +221,7 @@ describe('writeTsProjectExports', () => {
     );
 
     expect(result.importsFileContents).toContain(
-      "TestExport: path.join(baseDirectory, 'file1.ts')",
+      "TestExport: path.join(importBase, 'file1.jpath.join(baseDirectorys')",
     );
   });
 });

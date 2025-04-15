@@ -198,10 +198,10 @@ const removedVar = 1;
 
     // Check the path mapping
     expect(result[generatedImportsPath]).toContain(
-      "TestComponent: path.join(baseDirectory, 'test-component.ts')",
+      "TestComponent: path.join(importBase, 'test-component.js')",
     );
     expect(result[generatedImportsPath]).toContain(
-      "TestComponentProps: path.join(baseDirectory, 'test-component.ts')",
+      "TestComponentProps: path.join(importBase, 'test-component.js')",
     );
 
     // Snapshot the imports file for detailed verification
@@ -230,11 +230,15 @@ const removedVar = 1;
         );
 
       export function createTestGeneratorImports(
-        baseDirectory: string,
+        importBase: string,
       ): TestGeneratorImportsProvider {
+        if (!importBase.startsWith('@/')) {
+          throw new Error('importBase must start with @/');
+        }
+
         return createTsImportMapProvider(testGeneratorImportsSchema, {
-          TestComponent: path.join(baseDirectory, 'test-component.ts'),
-          TestComponentProps: path.join(baseDirectory, 'test-component.ts'),
+          TestComponent: path.join(importBase, 'test-component.js'),
+          TestComponentProps: path.join(importBase, 'test-component.js'),
         });
       }
       "
@@ -405,11 +409,15 @@ export function SecondUtil() {
         );
 
       export function createTestGeneratorImports(
-        baseDirectory: string,
+        importBase: string,
       ): TestGeneratorImportsProvider {
+        if (!importBase.startsWith('@/')) {
+          throw new Error('importBase must start with @/');
+        }
+
         return createTsImportMapProvider(testGeneratorImportsSchema, {
-          FirstComponent: path.join(baseDirectory, 'first-component.ts'),
-          FirstUtil: path.join(baseDirectory, 'first-util.ts'),
+          FirstComponent: path.join(importBase, 'first-component.js'),
+          FirstUtil: path.join(importBase, 'first-util.js'),
         });
       }
       "

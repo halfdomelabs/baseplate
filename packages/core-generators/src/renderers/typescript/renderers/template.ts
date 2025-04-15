@@ -43,10 +43,27 @@ export function renderTsTemplateToTsCodeFragment(
 
   const variableKeys = new Set(Object.keys(variables));
 
+  // find all block templates first
+  if (options.includeMetadata) {
+    renderedTemplate = renderedTemplate.replaceAll(
+      new RegExp(`^(\\s*)(${prefix}[A-Z0-9_]+);$`, 'g'),
+      (match, leading: string, key: string) => {
+        if (!(key in variables)) {
+          throw new Error(`Template variable not found: ${key}`);
+        }
+
+        const value = variables[key];
+        const contents = typeof value === 'string' ? value : value.contents;
+
+        variableKeys.delete(key);
+
+        return `${leading}/* ${key}:START */\n${contents}\n/* ${key}:END */`;
+      },
+    );
+  }
   renderedTemplate = renderedTemplate.replaceAll(
-    new RegExp(`${prefix}[A-Z0-9_]+;?(?=[^A-Z0-9_]|$)`, 'g'),
-    (match) => {
-      const key = match.replace(/;?$/, '');
+    new RegExp(`(${prefix}[A-Z0-9_]+)(?=[^A-Z0-9_]|$)`, 'g'),
+    (match, key: string) => {
       if (!(key in variables)) {
         throw new Error(`Template variable not found: ${key}`);
       }
@@ -56,11 +73,8 @@ export function renderTsTemplateToTsCodeFragment(
 
       variableKeys.delete(key);
 
-      const blockMatch = match.endsWith(';');
       return options.includeMetadata
-        ? `/* ${key}:START */${blockMatch ? '\n' : ' '}${contents}${
-            blockMatch ? '\n' : ' '
-          }/* ${key}:END */`
+        ? `/* ${key}:START */ ${contents} /* ${key}:END */`
         : contents;
     },
   );
