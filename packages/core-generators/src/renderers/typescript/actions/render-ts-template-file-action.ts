@@ -76,13 +76,16 @@ export function renderTsTemplateFileAction<
         string,
         TsTemplateVariable
       >;
-      const templateVariableKeys = Object.keys(templateVariables);
-      const variableKeys = Object.keys(variableValues);
-      if (templateVariableKeys.length !== variableKeys.length) {
+      const templateKeySet = new Set(Object.keys(templateVariables));
+      const providedKeySet = new Set(Object.keys(variableValues));
+      if (
+        templateKeySet.size !== providedKeySet.size ||
+        [...templateKeySet].some((k) => !providedKeySet.has(k))
+      ) {
         throw new Error(
-          `Template variables and provided variables do not match: ${templateVariableKeys.join(
-            ', ',
-          )} !== ${variableKeys.join(', ')}`,
+          `Template variables and provided variables do not match: ${[
+            ...templateKeySet,
+          ].join(', ')} !== ${[...providedKeySet].join(', ')}`,
         );
       }
 

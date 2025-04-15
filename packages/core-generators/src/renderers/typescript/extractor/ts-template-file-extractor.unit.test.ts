@@ -215,12 +215,12 @@ const removedVar = 1;
       import { createReadOnlyProviderType } from '@halfdomelabs/sync';
       import path from 'node:path/posix';
 
-      export const testGeneratorImportsSchema = createTsImportMapSchema({
+      const testGeneratorImportsSchema = createTsImportMapSchema({
         TestComponent: {},
         TestComponentProps: { isTypeOnly: true },
       });
 
-      export type TestGeneratorImportsProvider = TsImportMapProviderFromSchema<
+      type TestGeneratorImportsProvider = TsImportMapProviderFromSchema<
         typeof testGeneratorImportsSchema
       >;
 
@@ -394,12 +394,12 @@ export function SecondUtil() {
       import { createReadOnlyProviderType } from '@halfdomelabs/sync';
       import path from 'node:path/posix';
 
-      export const testGeneratorImportsSchema = createTsImportMapSchema({
+      const testGeneratorImportsSchema = createTsImportMapSchema({
         FirstComponent: {},
         FirstUtil: {},
       });
 
-      export type TestGeneratorImportsProvider = TsImportMapProviderFromSchema<
+      type TestGeneratorImportsProvider = TsImportMapProviderFromSchema<
         typeof testGeneratorImportsSchema
       >;
 

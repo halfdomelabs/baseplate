@@ -27,6 +27,10 @@ describe('stripTsTemplateVariables', () => {
       /* TPL_AGE:START */
       const age = 30;
       /* TPL_AGE:END */
+
+      /* TPL_NAME:START */
+      const name = "John";
+      /* TPL_NAME:END */
     `;
 
     const result = stripTsTemplateVariables(metadata, content);
@@ -35,6 +39,8 @@ describe('stripTsTemplateVariables', () => {
             TPL_NAME
             
             TPL_AGE
+
+            TPL_NAME
           "
     `);
   });
