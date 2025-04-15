@@ -143,15 +143,20 @@ export const errorHandlerServiceGenerator = createGenerator({
                 template: CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.errorLogger,
                 destination: 'src/services/error-logger.ts',
                 variables: {
-                  TPL_CONTEXT_ACTIONS:
-                    TsCodeUtils.mergeFragments(contextActions),
-                  TPL_LOGGER_ACTIONS: TsCodeUtils.mergeFragments([
-                    ...loggerActions,
-                    tsCodeFragment(
-                      `logger.error({ err: error, ...context });`,
-                      loggerServiceImports.importMap.logger.declaration(),
-                    ),
-                  ]),
+                  TPL_CONTEXT_ACTIONS: TsCodeUtils.mergeFragments(
+                    contextActions,
+                    '\n\n',
+                  ),
+                  TPL_LOGGER_ACTIONS: TsCodeUtils.mergeFragments(
+                    [
+                      ...loggerActions,
+                      tsCodeFragment(
+                        `logger.error({ err: error, ...context });`,
+                        loggerServiceImports.importMap.logger.declaration(),
+                      ),
+                    ],
+                    '\n\n',
+                  ),
                 },
               }),
             );

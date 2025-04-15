@@ -2,9 +2,9 @@ import {
   parseGeneratorName,
   type TemplateFileExtractorFile,
 } from '@halfdomelabs/sync';
+import { getCommonPathPrefix } from '@halfdomelabs/utils/node';
 import { camelCase, pascalCase } from 'change-case';
 import { sortBy } from 'es-toolkit';
-import { getCommonPathPrefix } from 'node_modules/@halfdomelabs/utils/dist/paths/get-common-path-prefix.js';
 
 import type { TsTemplateFileMetadata } from '../templates/types.js';
 
