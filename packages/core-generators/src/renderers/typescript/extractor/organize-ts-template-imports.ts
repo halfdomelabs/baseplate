@@ -1,5 +1,6 @@
 import type { ResolverFactory } from 'oxc-resolver';
 
+import path from 'node:path';
 import { Project } from 'ts-morph';
 
 import type { TsProjectExport } from './write-ts-project-exports.js';
@@ -65,7 +66,10 @@ export async function organizeTsTemplateImports(
   const updatedImportDeclarations = await Promise.all(
     tsImportDeclarations.map(async (importDeclaration) => {
       const { source } = importDeclaration;
-      const resolutionResult = await resolver.async(filePath, source);
+      const resolutionResult = await resolver.async(
+        path.dirname(filePath),
+        source,
+      );
       if (!resolutionResult.path) {
         throw new Error(
           `Could not resolve import ${source} in ${filePath}: ${String(resolutionResult.error)}`,

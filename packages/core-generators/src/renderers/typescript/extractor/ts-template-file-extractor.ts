@@ -62,6 +62,13 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
     {
       pathResolver = new ResolverFactory({
         conditionNames: ['node', 'require'],
+        extensions: ['.ts', '.tsx', '.d.ts', '.js', '.jsx', '.json', '.node'],
+        extensionAlias: {
+          '.js': ['.ts', '.tsx', '.d.ts', '.js'],
+          '.jsx': ['.tsx', '.d.ts', '.jsx'],
+          '.cjs': ['.cts', '.d.cts', '.cjs'],
+          '.mjs': ['.mts', '.d.mts', '.mjs'],
+        },
       }),
     }: {
       pathResolver?: ResolverFactory;

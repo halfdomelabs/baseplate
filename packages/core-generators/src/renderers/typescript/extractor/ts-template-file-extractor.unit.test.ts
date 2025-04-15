@@ -18,10 +18,10 @@ beforeEach(() => {
 
 function createMockResolver(): ResolverFactory {
   return {
-    async: vi.fn().mockImplementation((filePath: string, source: string) =>
+    async: vi.fn().mockImplementation((folder: string, source: string) =>
       Promise.resolve({
         path: source.startsWith('./')
-          ? path.join(path.dirname(filePath), source.slice(2))
+          ? path.join(folder, source.slice(2))
           : source,
         error: null,
       }),
