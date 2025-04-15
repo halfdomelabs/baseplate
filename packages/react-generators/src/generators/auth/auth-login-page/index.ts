@@ -1,7 +1,6 @@
 import {
   makeImportAndFilePath,
   projectScope,
-  quot,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -11,6 +10,7 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { apolloErrorProvider } from '@src/generators/apollo/apollo-error/index.js';
