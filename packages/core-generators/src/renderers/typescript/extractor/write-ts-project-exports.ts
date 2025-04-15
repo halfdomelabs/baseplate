@@ -4,7 +4,6 @@ import {
 } from '@halfdomelabs/sync';
 import { camelCase, pascalCase } from 'change-case';
 import { getCommonPathPrefix } from 'node_modules/@halfdomelabs/utils/dist/paths/get-common-path-prefix.js';
-import path from 'node:path';
 
 import type { TsTemplateFileMetadata } from '../templates/types.js';
 
@@ -23,9 +22,9 @@ export interface TsProjectExport {
    */
   name: string;
   /**
-   * The relative path to the file that contains the export.
+   * The path to the file that contains the export.
    */
-  projectRelativePath: string;
+  filePath: string;
   /**
    * Whether the export is a type only export.
    */
@@ -80,8 +79,8 @@ export function writeTsProjectExports(
       ([exportName, { isTypeOnly }]) => ({
         name: exportName,
         isTypeOnly,
-        projectRelativePath: path.relative(outputDirectory, file.path),
-        importSource: `%${providerName}`,
+        filePath: file.path,
+        importSource: `%${providerNameCamelCase}`,
         providerImportName: providerNameVar,
         providerPath: importMapFilePath,
         providerPackage: packageName,
@@ -115,7 +114,7 @@ export function writeTsProjectExports(
     : '@halfdomelabs/core-generators';
 
   const commonPathPrefix = getCommonPathPrefix(
-    projectExports.map((projectExport) => projectExport.projectRelativePath),
+    projectExports.map((projectExport) => projectExport.filePath),
   );
 
   const importsFileContents = renderTsCodeFileTemplate(
@@ -147,7 +146,7 @@ export function writeTsProjectExports(
           projectExports.map((projectExport) => [
             projectExport.name,
             tsCodeFragment(
-              `path.join(baseDirectory, '${projectExport.projectRelativePath.slice(
+              `path.join(baseDirectory, '${projectExport.filePath.slice(
                 commonPathPrefix === '.' ? 0 : commonPathPrefix.length + 1,
               )}')`,
               [tsImportBuilder().default('path').from('node:path/posix')],

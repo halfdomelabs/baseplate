@@ -2,6 +2,7 @@ import type { ResolverFactory } from 'oxc-resolver';
 
 import { TemplateFileExtractorTestUtils } from '@halfdomelabs/sync';
 import { vol } from 'memfs';
+import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TS_TEMPLATE_TYPE } from '../templates/types.js';
@@ -19,7 +20,9 @@ function createMockResolver(): ResolverFactory {
   return {
     async: vi.fn().mockImplementation((filePath: string, source: string) =>
       Promise.resolve({
-        path: source.startsWith('./') ? `/root/src/${source.slice(2)}` : source,
+        path: source.startsWith('./')
+          ? path.join(path.dirname(filePath), source.slice(2))
+          : source,
         error: null,
       }),
     ),
@@ -36,13 +39,14 @@ describe('TsTemplateFileExtractor', () => {
       pathResolver: mockResolver,
     });
 
-    const inputFilePath = '/root/src/my-component.ts';
+    const inputFilePath =
+      TemplateFileExtractorTestUtils.outputPath('my-component.ts');
     const templatePath = 'my-component.ts'; // Relative path for metadata/output
 
     vol.fromJSON({
       [inputFilePath]: `
-import { A, B, C, D } from './stuff';
-import { Z } from './unused-import';
+import { A, B, C, D } from 'external-package';
+import { Z } from './unused-import.ts';
 
 /* HOISTED:HELPER_FN:START */
 function helper() {
@@ -102,7 +106,7 @@ const removedVar = 1;
     expect(result[generatedTemplatePath]).toMatchInlineSnapshot(`
       "// @ts-nocheck
 
-      import { A, B } from './stuff';
+      import { A, B } from 'external-package';
 
       export function TPL_COMPONENT_NAME() {
         const msg = TPL_MESSAGE;
@@ -235,5 +239,232 @@ const removedVar = 1;
       }
       "
     `);
+  });
+
+  it('should handle import provider resolution across multiple generators', async () => {
+    const context =
+      TemplateFileExtractorTestUtils.createTestTemplateFileExtractorContext();
+    const mockResolver = createMockResolver();
+    const extractor = new TsTemplateFileExtractor(context, {
+      pathResolver: mockResolver,
+    });
+
+    // Set up first generator files
+    const firstGeneratorName =
+      TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME;
+    const firstComponentPath = TemplateFileExtractorTestUtils.outputPath(
+      'components/first-component.ts',
+    );
+    const firstUtilPath = TemplateFileExtractorTestUtils.outputPath(
+      'components/first-util.ts',
+    );
+
+    vol.fromJSON({
+      [firstComponentPath]: `
+import { FirstUtil } from './first-util.ts';
+
+export function FirstComponent() {
+  return FirstUtil();
+}
+`,
+      [firstUtilPath]: `
+export function FirstUtil() {
+  return 'first';
+}
+`,
+    });
+
+    // Set up second generator files
+    const secondGeneratorName =
+      TemplateFileExtractorTestUtils.TEST_GENERATOR_2_NAME;
+    const secondComponentPath = TemplateFileExtractorTestUtils.outputPath(
+      'components/second-component.ts',
+    );
+    const secondUtilPath = TemplateFileExtractorTestUtils.outputPath(
+      'components/second-util.ts',
+    );
+
+    vol.fromJSON({
+      [secondComponentPath]: `
+import { SecondUtil } from './second-util.ts';
+import { FirstComponent } from './first-component.ts';
+
+export function SecondComponent() {
+  return FirstComponent() + SecondUtil();
+}
+`,
+      [secondUtilPath]: `
+export function SecondUtil() {
+  return 'second';
+}
+`,
+    });
+
+    // Extract files from both generators
+    await extractor.extractTemplateFiles([
+      {
+        path: firstComponentPath,
+        metadata: {
+          type: TS_TEMPLATE_TYPE,
+          name: 'firstComponent',
+          generator: firstGeneratorName,
+          template: 'first-component.ts',
+          variables: {},
+          projectExports: {
+            FirstComponent: { isTypeOnly: false },
+          },
+        },
+      },
+      {
+        path: firstUtilPath,
+        metadata: {
+          type: TS_TEMPLATE_TYPE,
+          name: 'firstUtil',
+          generator: firstGeneratorName,
+          template: 'first-util.ts',
+          variables: {},
+          projectExports: {
+            FirstUtil: { isTypeOnly: false },
+          },
+        },
+      },
+      {
+        path: secondComponentPath,
+        metadata: {
+          type: TS_TEMPLATE_TYPE,
+          name: 'secondComponent',
+          generator: secondGeneratorName,
+          template: 'second-component.ts',
+          variables: {},
+          projectExports: {
+            SecondComponent: { isTypeOnly: false },
+          },
+        },
+      },
+      {
+        path: secondUtilPath,
+        metadata: {
+          type: TS_TEMPLATE_TYPE,
+          name: 'secondUtil',
+          generator: secondGeneratorName,
+          template: 'second-util.ts',
+          variables: {},
+          projectExports: {
+            SecondUtil: { isTypeOnly: false },
+          },
+        },
+      },
+    ]);
+
+    const result = vol.toJSON();
+    const firstGeneratorImportsPath =
+      TemplateFileExtractorTestUtils.generatedPath(
+        'ts-import-maps.ts',
+        firstGeneratorName,
+      );
+    const secondGeneratorImportsPath =
+      TemplateFileExtractorTestUtils.generatedPath(
+        'ts-import-maps.ts',
+        secondGeneratorName,
+      );
+
+    // Check that import maps were generated for both generators
+    expect(result[firstGeneratorImportsPath]).toBeDefined();
+    expect(result[secondGeneratorImportsPath]).toBeDefined();
+
+    // Check first generator imports
+    expect(result[firstGeneratorImportsPath]).toContain('FirstComponent');
+    expect(result[firstGeneratorImportsPath]).toContain('FirstUtil');
+
+    // Check second generator imports
+    expect(result[secondGeneratorImportsPath]).toContain('SecondComponent');
+    expect(result[secondGeneratorImportsPath]).toContain('SecondUtil');
+
+    expect(result[firstGeneratorImportsPath]).toMatchInlineSnapshot(`
+      "import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
+
+      import {
+        createTsImportMapProvider,
+        createTsImportMapSchema,
+      } from '@halfdomelabs/core-generators';
+      import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+      import path from 'node:path/posix';
+
+      export const testGeneratorImportsSchema = createTsImportMapSchema({
+        FirstComponent: {},
+        FirstUtil: {},
+      });
+
+      export type TestGeneratorImportsProvider = TsImportMapProviderFromSchema<
+        typeof testGeneratorImportsSchema
+      >;
+
+      export const testGeneratorImportsProvider =
+        createReadOnlyProviderType<TestGeneratorImportsProvider>(
+          'test-generator-imports',
+        );
+
+      export function createTestGeneratorImports(
+        baseDirectory: string,
+      ): TestGeneratorImportsProvider {
+        return createTsImportMapProvider(testGeneratorImportsSchema, {
+          FirstComponent: path.join(baseDirectory, 'first-component.ts'),
+          FirstUtil: path.join(baseDirectory, 'first-util.ts'),
+        });
+      }
+      "
+    `);
+
+    // Check that the generated template files have the correct imports
+    const firstComponentTemplatePath =
+      TemplateFileExtractorTestUtils.templatePath(
+        'first-component.ts',
+        firstGeneratorName,
+      );
+    const secondComponentTemplatePath =
+      TemplateFileExtractorTestUtils.templatePath(
+        'second-component.ts',
+        secondGeneratorName,
+      );
+
+    expect(result[firstComponentTemplatePath]).toContain(
+      "import { FirstUtil } from './first-util.ts'",
+    );
+    expect(result[secondComponentTemplatePath]).toContain(
+      "import { SecondUtil } from './second-util.ts'",
+    );
+    expect(result[secondComponentTemplatePath]).toContain(
+      "import { FirstComponent } from '%testGeneratorImports'",
+    );
+
+    expect(result[secondComponentTemplatePath]).toMatchInlineSnapshot(`
+      "// @ts-nocheck
+
+      import { FirstComponent } from '%testGeneratorImports';
+
+      import { SecondUtil } from './second-util.ts';
+
+      export function SecondComponent() {
+        return FirstComponent() + SecondUtil();
+      }
+      "
+    `);
+
+    // Check that the template definitions are correct
+    const firstGeneratorTemplatesPath =
+      TemplateFileExtractorTestUtils.generatedPath(
+        'ts-templates.ts',
+        firstGeneratorName,
+      );
+    const secondGeneratorTemplatesPath =
+      TemplateFileExtractorTestUtils.generatedPath(
+        'ts-templates.ts',
+        secondGeneratorName,
+      );
+
+    expect(result[firstGeneratorTemplatesPath]).toContain('firstComponent');
+    expect(result[firstGeneratorTemplatesPath]).toContain('firstUtil');
+    expect(result[secondGeneratorTemplatesPath]).toContain('secondComponent');
+    expect(result[secondGeneratorTemplatesPath]).toContain('secondUtil');
   });
 });

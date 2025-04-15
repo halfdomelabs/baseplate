@@ -13,7 +13,7 @@ const EXPORT_METADATA_COMMON = {
   providerImportName: 'testGeneratorImportsProvider',
   providerPath: TEST_IMPORT_MAP_PATH,
   providerPackage: 'package',
-  importSource: '%test-generator-imports',
+  importSource: '%testGeneratorImports',
 };
 
 describe('writeTsProjectExports', () => {
@@ -71,13 +71,13 @@ describe('writeTsProjectExports', () => {
       {
         name: 'TestExport',
         isTypeOnly: false,
-        projectRelativePath: 'path/file1.ts',
+        filePath: '/test/path/file1.ts',
         ...EXPORT_METADATA_COMMON,
       },
       {
         name: 'TypeOnlyExport',
         isTypeOnly: true,
-        projectRelativePath: 'path/file1.ts',
+        filePath: '/test/path/file1.ts',
         ...EXPORT_METADATA_COMMON,
       },
     ]);

@@ -343,17 +343,17 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
     // organize project exports by project relative path
     const projectExportMap = new Map<string, Map<string, TsProjectExport>>();
     for (const projectExport of projectExports) {
-      const { projectRelativePath } = projectExport;
+      const { filePath } = projectExport;
       const exportName = projectExport.name;
-      if (!projectExportMap.has(projectRelativePath)) {
-        projectExportMap.set(projectRelativePath, new Map());
+      if (!projectExportMap.has(filePath)) {
+        projectExportMap.set(filePath, new Map());
       }
-      if (projectExportMap.get(projectRelativePath)?.has(exportName)) {
+      if (projectExportMap.get(filePath)?.has(exportName)) {
         throw new Error(
-          `Duplicate project export: ${exportName} in ${projectRelativePath}`,
+          `Duplicate project export: ${exportName} in ${filePath}`,
         );
       }
-      projectExportMap.get(projectRelativePath)?.set(exportName, projectExport);
+      projectExportMap.get(filePath)?.set(exportName, projectExport);
     }
 
     for (const [generator, filesInGenerator] of filesByGenerator) {
