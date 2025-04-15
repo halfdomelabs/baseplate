@@ -151,8 +151,8 @@ describe('renderTsCodeFileTemplate', () => {
       name: 'test',
       source: {
         contents: `
-        import { Test1 } from "%test-import1";
-        import { Test2 } from "%test-import2";
+        import { Test1 } from "%testImport1";
+        import { Test2 } from "%testImport2";
 
         const test1 = new Test1();
         const test2 = new Test2();
@@ -180,8 +180,8 @@ describe('renderTsCodeFileTemplate', () => {
       template.source.contents,
       {},
       {
-        'test-import1': { importMap: importMap1 },
-        'test-import2': { importMap: importMap2 },
+        testImport1: { importMap: importMap1 },
+        testImport2: { importMap: importMap2 },
       },
     );
 

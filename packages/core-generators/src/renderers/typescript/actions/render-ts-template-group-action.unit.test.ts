@@ -146,7 +146,7 @@ describe('renderTsTemplateGroupAction', () => {
             name: 'test1',
             source: {
               contents: `
-                import { Test } from "%test-import";
+                import { Test } from "%testImport";
 
                 const test = new Test();
               `,
@@ -160,7 +160,7 @@ describe('renderTsTemplateGroupAction', () => {
             name: 'test2',
             source: {
               contents: `
-                import { Test } from "%test-import";
+                import { Test } from "%testImport";
 
                 const test = new Test();
               `,
@@ -176,10 +176,10 @@ describe('renderTsTemplateGroupAction', () => {
       baseDirectory: 'output',
       importMapProviders: {
         test1: {
-          'test-import': { importMap },
+          testImport: { importMap },
         },
         test2: {
-          'test-import': { importMap },
+          testImport: { importMap },
         },
       },
     });

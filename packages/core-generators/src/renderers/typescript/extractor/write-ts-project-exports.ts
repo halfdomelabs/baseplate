@@ -80,7 +80,7 @@ export function writeTsProjectExports(
         name: exportName,
         isTypeOnly,
         filePath: file.path,
-        importSource: `%${generatorBasename}`,
+        importSource: `%${providerNameCamelCase}`,
         providerImportName: providerNameVar,
         providerPath: importMapFilePath,
         providerPackage: packageName,

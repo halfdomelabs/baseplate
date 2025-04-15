@@ -13,7 +13,7 @@ const EXPORT_METADATA_COMMON = {
   providerImportName: 'testGeneratorImportsProvider',
   providerPath: TEST_IMPORT_MAP_PATH,
   providerPackage: 'package',
-  importSource: '%test-generator',
+  importSource: '%testGeneratorImports',
 };
 
 describe('writeTsProjectExports', () => {

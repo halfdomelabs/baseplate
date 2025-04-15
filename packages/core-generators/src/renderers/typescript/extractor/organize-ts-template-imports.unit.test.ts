@@ -40,7 +40,7 @@ export function test() {
 `;
 
     const sharedExportData = {
-      importSource: '%test-imports',
+      importSource: '%testImports',
       providerImportName: 'testImportsProvider',
       providerPath: '/generator-root/generated/imports.ts',
       providerPackage: 'test-package',
@@ -79,7 +79,7 @@ export function test() {
     const result = await organizeTsTemplateImports(filePath, contents, context);
 
     // Check that the output contains the organized imports
-    expect(result.contents).toContain('import { A, B } from "%test-imports"');
+    expect(result.contents).toContain('import { A, B } from "%testImports"');
     expect(result.contents).toContain('import { C } from "./module2.ts"');
     expect(result.contents).toContain('import { D } from "external-package"');
 
