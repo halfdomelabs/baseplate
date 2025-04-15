@@ -9,3 +9,4 @@ export * from './evented-logger.js';
 export * from './make-id-safe.js';
 export * from './non-overwriteable-map.js';
 export * from './ordered-list.js';
+export * from './parse-generator-name.js';

@@ -1,12 +1,13 @@
 import type { PrismaOutputRelationField } from '@halfdomelabs/fastify-generators';
 
-import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   prismaCrudServiceSetupProvider,
   prismaOutputProvider,
   prismaUtilsProvider,
 } from '@halfdomelabs/fastify-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { storageModuleProvider } from '../storage-module/index.js';

@@ -1,36 +1,90 @@
-import type { TemplateFileExtractorFile } from '@halfdomelabs/sync';
-
+import {
+  parseGeneratorName,
+  type TemplateFileExtractorFile,
+} from '@halfdomelabs/sync';
 import { camelCase, pascalCase } from 'change-case';
 import { getCommonPathPrefix } from 'node_modules/@halfdomelabs/utils/dist/paths/get-common-path-prefix.js';
 import path from 'node:path';
 
 import type { TsTemplateFileMetadata } from '../templates/types.js';
 
+import { tsCodeFragment } from '../fragments/creators.js';
+import { tsImportBuilder } from '../imports/builder.js';
+import { renderTsCodeFileTemplate } from '../renderers/file.js';
+import { TsCodeUtils } from '../ts-code-utils.js';
+import { IMPORTS_FILE_TEMPLATE } from './templates/imports-file.js';
+
+/**
+ * A project export that represents a single export from a generator.
+ */
 export interface TsProjectExport {
-  generatorName: string;
+  /**
+   * The name of the export.
+   */
   name: string;
+  /**
+   * The relative path to the file that contains the export.
+   */
   projectRelativePath: string;
+  /**
+   * Whether the export is a type only export.
+   */
   isTypeOnly?: boolean;
+  /**
+   * The source of the import to import into the file, e.g. %configServiceImports
+   */
+  importSource: string;
+  /**
+   * The name of the import to import into the file, e.g. configServiceImportsProvider
+   */
+  providerImportName: string;
+  /**
+   * The path to the import map file, e.g. src/imports/config-service-imports.ts
+   */
+  providerPath: string;
+  /**
+   * The package name of the import, e.g. @halfdomelabs/core-generators
+   */
+  providerPackage: string;
 }
 
-const generatorSubnameRegex = /#(?:[^/]+\/)?([^#]+)$/;
-
+/**
+ * Writes the project exports to the import map file.
+ * @param files - The files to write the project exports to.
+ * @param outputDirectory - The output directory to write the project exports to.
+ * @param generatorName - The name of the generator.
+ * @param importMapFilePath - The path to the import map file.
+ * @returns The import map file contents and the project exports.
+ */
 export function writeTsProjectExports(
   files: TemplateFileExtractorFile<TsTemplateFileMetadata>[],
   outputDirectory: string,
   generatorName: string,
+  importMapFilePath: string,
 ): {
   importsFileContents: string | undefined;
   projectExports: TsProjectExport[];
 } {
+  // get imports name based off generator name
+  const parsedGeneratorName = parseGeneratorName(generatorName);
+  const { packageName, generatorBasename } = parsedGeneratorName;
+  const providerNamePascalCase = `${pascalCase(generatorBasename)}Imports`;
+  const providerNameCamelCase = `${camelCase(generatorBasename)}Imports`;
+  const providerName = `${generatorBasename}-imports`;
+
+  const providerNameVar = `${providerNameCamelCase}Provider`;
+
   // Extract project exports
   const projectExports: TsProjectExport[] = files.flatMap((file) =>
     Object.entries(file.metadata.projectExports ?? {}).map(
       ([exportName, { isTypeOnly }]) => ({
         name: exportName,
-        generatorName: file.metadata.generator,
         isTypeOnly,
         projectRelativePath: path.relative(outputDirectory, file.path),
+        importSource: `%${providerName}`,
+        providerImportName: providerNameVar,
+        providerPath: importMapFilePath,
+        providerPackage: packageName,
       }),
     ),
   );
@@ -53,17 +107,6 @@ export function writeTsProjectExports(
     };
   }
 
-  // get imports name based off generator name
-  const generatorSubname = generatorSubnameRegex.exec(generatorName)?.[1];
-  if (!generatorSubname) {
-    throw new Error(
-      `Could not get imports name for generator ${generatorName}`,
-    );
-  }
-  const providerNamePascalCase = `${pascalCase(generatorSubname)}Imports`;
-  const providerNameCamelCase = `${camelCase(generatorSubname)}Imports`;
-  const providerName = `${generatorSubname}-imports`;
-
   const isLocalImport = generatorName.startsWith(
     '@halfdomelabs/core-generators#',
   );
@@ -75,49 +118,48 @@ export function writeTsProjectExports(
     projectExports.map((projectExport) => projectExport.projectRelativePath),
   );
 
-  const importMapSchema = `{
-    ${projectExports
-      .map(
-        (projectExport) =>
-          `${projectExport.name}: {${projectExport.isTypeOnly ? ' isTypeOnly: true ' : ''}}`,
-      )
-      .join(',\n')}
-  }`;
+  const importsFileContents = renderTsCodeFileTemplate(
+    IMPORTS_FILE_TEMPLATE,
+    {
+      TPL_TS_IMPORTS: tsImports,
 
-  const providerImportsSchema = `${providerNameCamelCase}Schema`;
-  const providerImportsProviderType = `${providerNamePascalCase}Provider`;
-  const providerImportsProvider = `${providerNameCamelCase}Provider`;
-  const createImportMapFunction = `create${providerNamePascalCase}`;
+      TPL_IMPORTS_SCHEMA_VAR: `${providerNameCamelCase}Schema`,
+      TPL_IMPORTS_SCHEMA: TsCodeUtils.mergeFragmentsAsObject(
+        Object.fromEntries(
+          projectExports.map((projectExport) => [
+            projectExport.name,
+            JSON.stringify({
+              isTypeOnly: projectExport.isTypeOnly ? true : undefined,
+            }),
+          ]),
+        ),
+      ),
 
-  const externalImports = `
-  import type { TsImportMapProviderFromSchema } from '${tsImports}';
+      TPL_IMPORTS_PROVIDER_TYPE_VAR: `${providerNamePascalCase}Provider`,
 
-  import {
-    createTsImportMapProvider,
-    createTsImportMapSchema,
-  } from '${tsImports}';
-  `.trim();
+      TPL_IMPORTS_PROVIDER_VAR: providerNameVar,
+      TPL_PROVIDER_NAME: providerName,
 
-  // Write imports file
-  const importsFileContents = `
-  ${isLocalImport ? '' : externalImports}
-  import { createReadOnlyProviderType } from '@halfdomelabs/sync';
-  import path from 'node:path/posix';
-  
-  ${isLocalImport ? externalImports : ''}
+      TPL_CREATE_IMPORT_MAP_FUNCTION: `create${providerNamePascalCase}`,
 
-  export const ${providerImportsSchema} = createTsImportMapSchema(${importMapSchema});
-
-  export type ${providerImportsProviderType} = TsImportMapProviderFromSchema<typeof ${providerImportsSchema}>;
-
-  export const ${providerImportsProvider} = createReadOnlyProviderType<${providerImportsProviderType}>('${providerName}');
-
-  export function ${createImportMapFunction}(baseDirectory: string): ${providerImportsProviderType} {
-    return createTsImportMapProvider(${providerImportsSchema}, {
-      ${projectExports.map((projectExport) => `${projectExport.name}: path.join(baseDirectory, '${projectExport.projectRelativePath.slice(commonPathPrefix === '.' ? 0 : commonPathPrefix.length + 1)}')`).join(',\n')}
-    });
-  }
-  `;
+      TPL_IMPORT_MAP_CREATOR: TsCodeUtils.mergeFragmentsAsObject(
+        Object.fromEntries(
+          projectExports.map((projectExport) => [
+            projectExport.name,
+            tsCodeFragment(
+              `path.join(baseDirectory, '${projectExport.projectRelativePath.slice(
+                commonPathPrefix === '.' ? 0 : commonPathPrefix.length + 1,
+              )}')`,
+              [tsImportBuilder().default('path').from('node:path/posix')],
+            ),
+          ]),
+        ),
+      ),
+    },
+    {
+      importMapProviders: {},
+    },
+  );
 
   return {
     importsFileContents,

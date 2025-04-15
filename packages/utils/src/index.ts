@@ -4,4 +4,5 @@ export * from './field-map/index.js';
 export * from './json/index.js';
 export * from './maps/index.js';
 export * from './objects/index.js';
+export * from './string/index.js';
 export * from './toposort/index.js';

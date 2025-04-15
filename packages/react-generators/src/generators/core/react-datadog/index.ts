@@ -4,7 +4,6 @@ import {
   makeImportAndFilePath,
   projectProvider,
   projectScope,
-  quot,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -13,6 +12,7 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';

@@ -124,7 +124,6 @@ export const errorHandlerServiceGenerator = createGenerator({
             await typescriptFile.writeTemplateFile(builder, {
               template:
                 CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.errorHandlerPlugin,
-              id: 'error-handler-plugin',
               destination: 'src/plugins/error-handler.ts',
               variables: {},
               importMapProviders: {

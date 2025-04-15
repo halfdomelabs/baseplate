@@ -8,7 +8,6 @@ import {
   extractPackageVersions,
   makeImportAndFilePath,
   projectScope,
-  quot,
   tsCodeFragment,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -30,6 +29,7 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { quot } from '@halfdomelabs/utils';
 import path from 'node:path';
 import { z } from 'zod';
 

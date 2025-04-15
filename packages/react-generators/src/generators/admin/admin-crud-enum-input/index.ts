@@ -1,5 +1,6 @@
-import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';

@@ -1,11 +1,12 @@
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 
-import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
+import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import type { PothosWriterOptions } from '@src/writers/pothos/index.js';

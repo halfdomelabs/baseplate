@@ -43,6 +43,7 @@
     "eta": "^3.5.0",
     "is-core-module": "2.15.1",
     "memfs": "4.15.1",
+    "oxc-resolver": "5.2.0",
     "p-limit": "6.1.0",
     "prettier": "catalog:",
     "prettier-plugin-packagejson": "2.5.6",

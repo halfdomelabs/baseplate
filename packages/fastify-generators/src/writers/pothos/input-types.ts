@@ -1,4 +1,5 @@
-import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { quot } from '@halfdomelabs/utils';
 
 import type {
   ServiceOutputDtoField,

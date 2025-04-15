@@ -1,3 +1,5 @@
+import type { ResolverFactory } from 'oxc-resolver';
+
 import { TemplateFileExtractorTestUtils } from '@halfdomelabs/sync';
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -13,18 +15,33 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
+function createMockResolver(): ResolverFactory {
+  return {
+    async: vi.fn().mockImplementation((filePath: string, source: string) =>
+      Promise.resolve({
+        path: source.startsWith('./') ? `/root/src/${source.slice(2)}` : source,
+        error: null,
+      }),
+    ),
+    sync: vi.fn(),
+  } as unknown as ResolverFactory;
+}
+
 describe('TsTemplateFileExtractor', () => {
   it('should extract TS template file, replace variables, remove hoisted, and clean imports', async () => {
     const context =
       TemplateFileExtractorTestUtils.createTestTemplateFileExtractorContext();
-    const extractor = new TsTemplateFileExtractor(context);
+    const mockResolver = createMockResolver();
+    const extractor = new TsTemplateFileExtractor(context, {
+      pathResolver: mockResolver,
+    });
 
     const inputFilePath = '/root/src/my-component.ts';
     const templatePath = 'my-component.ts'; // Relative path for metadata/output
 
     vol.fromJSON({
       [inputFilePath]: `
-import { A, B, C, D } from './stuff'; // C and D are unused after processing
+import { A, B, C, D } from './stuff';
 import { Z } from './unused-import';
 
 /* HOISTED:HELPER_FN:START */
@@ -85,7 +102,7 @@ const removedVar = 1;
     expect(result[generatedTemplatePath]).toMatchInlineSnapshot(`
       "// @ts-nocheck
 
-      import { A, B } from './stuff'; // C and D are unused after processing
+      import { A, B } from './stuff';
 
       export function TPL_COMPONENT_NAME() {
         const msg = TPL_MESSAGE;
@@ -110,9 +127,7 @@ const removedVar = 1;
         projectExports: {},
       });
 
-      export const TEST_GENERATOR_TS_TEMPLATES = {
-        myComponentTemplate,
-      };
+      export const TEST_GENERATOR_TS_TEMPLATES = { myComponentTemplate };
       "
     `);
   });
@@ -120,7 +135,10 @@ const removedVar = 1;
   it('should generate import maps file for project exports', async () => {
     const context =
       TemplateFileExtractorTestUtils.createTestTemplateFileExtractorContext();
-    const extractor = new TsTemplateFileExtractor(context);
+    const mockResolver = createMockResolver();
+    const extractor = new TsTemplateFileExtractor(context, {
+      pathResolver: mockResolver,
+    });
     const inputFilePath = TemplateFileExtractorTestUtils.outputPath(
       'components/test-component.ts',
     );
@@ -190,7 +208,6 @@ const removedVar = 1;
         createTsImportMapProvider,
         createTsImportMapSchema,
       } from '@halfdomelabs/core-generators';
-
       import { createReadOnlyProviderType } from '@halfdomelabs/sync';
       import path from 'node:path/posix';
 

@@ -4,10 +4,10 @@ import {
   TS_TEMPLATE_TYPE,
   type TsTemplateFileMetadata,
 } from '../templates/types.js';
-import { processTsTemplateContent } from './process-ts-template.js';
+import { stripTsTemplateVariables } from './strip-ts-template-variables.js';
 
-describe('processTsTemplateContent', () => {
-  it('should process template variables correctly', () => {
+describe('stripTsTemplateVariables', () => {
+  it('should strip template variables correctly', () => {
     const metadata: TsTemplateFileMetadata = {
       type: TS_TEMPLATE_TYPE,
       name: 'test-template',
@@ -29,11 +29,9 @@ describe('processTsTemplateContent', () => {
       /* TPL_AGE:END */
     `;
 
-    const result = processTsTemplateContent(metadata, content);
+    const result = stripTsTemplateVariables(metadata, content);
     expect(result).toMatchInlineSnapshot(`
-      "// @ts-nocheck
-
-
+      "
             TPL_NAME
             
             TPL_AGE
@@ -58,11 +56,9 @@ describe('processTsTemplateContent', () => {
       const test = 123;
     `;
 
-    const result = processTsTemplateContent(metadata, content);
+    const result = stripTsTemplateVariables(metadata, content);
     expect(result).toMatchInlineSnapshot(`
-      "// @ts-nocheck
-
-
+      "
                   
             const test = 123;
           "
@@ -91,11 +87,10 @@ describe('processTsTemplateContent', () => {
       const test = used();
     `;
 
-    const result = processTsTemplateContent(metadata, content);
+    const result = stripTsTemplateVariables(metadata, content);
     expect(result).toMatchInlineSnapshot(`
-      "// @ts-nocheck
-
-
+      "
+            import { unused } from 'unused-package';
             import { used } from 'used-package';
 
             TPL_NAME
@@ -122,7 +117,7 @@ describe('processTsTemplateContent', () => {
       /* TPL_UNKNOWN:END */
     `;
 
-    expect(() => processTsTemplateContent(metadata, content)).toThrow(
+    expect(() => stripTsTemplateVariables(metadata, content)).toThrow(
       'Found unknown template variable: TPL_UNKNOWN',
     );
   });
@@ -145,7 +140,7 @@ describe('processTsTemplateContent', () => {
       /* TPL_NAME:END */
     `;
 
-    expect(() => processTsTemplateContent(metadata, content)).toThrow(
+    expect(() => stripTsTemplateVariables(metadata, content)).toThrow(
       'The template is missing variables: TPL_AGE',
     );
   });

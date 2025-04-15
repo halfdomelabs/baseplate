@@ -48,10 +48,7 @@ function convertToNamedImportEntries(
         source: i.source,
         name: namedImport.name,
         alias: namedImport.alias ?? namedImport.name,
-        isTypeOnly:
-          (namedImport.isTypeOnly === undefined
-            ? i.isTypeOnly
-            : namedImport.isTypeOnly) ?? false,
+        isTypeOnly: i.isTypeOnly ? true : (namedImport.isTypeOnly ?? false),
       })),
     ].filter((x) => x !== undefined),
   );

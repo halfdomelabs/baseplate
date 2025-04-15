@@ -7,6 +7,14 @@ import type { TsTemplateFileMetadata } from '../templates/types.js';
 import { writeTsProjectExports } from './write-ts-project-exports.js';
 
 const TEST_GENERATOR_NAME = 'package#test/test-generator';
+const TEST_IMPORT_MAP_PATH = '/root/import-map.ts';
+
+const EXPORT_METADATA_COMMON = {
+  providerImportName: 'testGeneratorImportsProvider',
+  providerPath: TEST_IMPORT_MAP_PATH,
+  providerPackage: 'package',
+  importSource: '%test-generator-imports',
+};
 
 describe('writeTsProjectExports', () => {
   it('should handle empty project exports', () => {
@@ -23,7 +31,12 @@ describe('writeTsProjectExports', () => {
       },
     ];
 
-    const result = writeTsProjectExports(files, '/test', TEST_GENERATOR_NAME);
+    const result = writeTsProjectExports(
+      files,
+      '/test',
+      TEST_GENERATOR_NAME,
+      TEST_IMPORT_MAP_PATH,
+    );
 
     expect(result.importsFileContents).toBeUndefined();
     expect(result.projectExports).toEqual([]);
@@ -47,26 +60,31 @@ describe('writeTsProjectExports', () => {
       },
     ];
 
-    const result = writeTsProjectExports(files, '/test', TEST_GENERATOR_NAME);
+    const result = writeTsProjectExports(
+      files,
+      '/test',
+      TEST_GENERATOR_NAME,
+      TEST_IMPORT_MAP_PATH,
+    );
 
     expect(result.projectExports).toEqual([
       {
         name: 'TestExport',
-        generatorName: TEST_GENERATOR_NAME,
         isTypeOnly: false,
         projectRelativePath: 'path/file1.ts',
+        ...EXPORT_METADATA_COMMON,
       },
       {
         name: 'TypeOnlyExport',
-        generatorName: TEST_GENERATOR_NAME,
         isTypeOnly: true,
         projectRelativePath: 'path/file1.ts',
+        ...EXPORT_METADATA_COMMON,
       },
     ]);
 
     expect(result.importsFileContents).toContain('TestExport: {}');
     expect(result.importsFileContents).toContain(
-      'TypeOnlyExport: { isTypeOnly: true }',
+      'TypeOnlyExport: {"isTypeOnly":true}',
     );
     expect(result.importsFileContents).toContain('test-generator-imports');
     expect(result.importsFileContents).toContain('createTestGeneratorImports');
@@ -93,6 +111,7 @@ describe('writeTsProjectExports', () => {
       files,
       '/test',
       '@halfdomelabs/core-generators#test',
+      TEST_IMPORT_MAP_PATH,
     );
 
     expect(result.importsFileContents).toContain(
@@ -124,6 +143,7 @@ describe('writeTsProjectExports', () => {
       files,
       '/test',
       'external-generator#test',
+      TEST_IMPORT_MAP_PATH,
     );
 
     expect(result.importsFileContents).toContain(
@@ -141,7 +161,7 @@ describe('writeTsProjectExports', () => {
         metadata: {
           type: 'ts',
           name: 'test1',
-          generator: 'test-generator',
+          generator: TEST_GENERATOR_NAME,
           template: 'test1.ts',
           variables: {},
           projectExports: {
@@ -154,7 +174,7 @@ describe('writeTsProjectExports', () => {
         metadata: {
           type: 'ts',
           name: 'test2',
-          generator: 'test-generator',
+          generator: TEST_GENERATOR_NAME,
           template: 'test2.ts',
           variables: {},
           projectExports: {
@@ -165,9 +185,14 @@ describe('writeTsProjectExports', () => {
     ];
 
     expect(() =>
-      writeTsProjectExports(files, '/test', 'test-generator'),
+      writeTsProjectExports(
+        files,
+        '/test',
+        TEST_GENERATOR_NAME,
+        TEST_IMPORT_MAP_PATH,
+      ),
     ).toThrow(
-      'Duplicate project exports found in template files for generator test-generator: TestExport',
+      `Duplicate project exports found in template files for generator ${TEST_GENERATOR_NAME}: TestExport`,
     );
   });
 
@@ -188,7 +213,12 @@ describe('writeTsProjectExports', () => {
       },
     ];
 
-    const result = writeTsProjectExports(files, '/test', TEST_GENERATOR_NAME);
+    const result = writeTsProjectExports(
+      files,
+      '/test',
+      TEST_GENERATOR_NAME,
+      TEST_IMPORT_MAP_PATH,
+    );
 
     expect(result.importsFileContents).toContain(
       "TestExport: path.join(baseDirectory, 'file1.ts')",

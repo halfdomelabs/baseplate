@@ -1,5 +1,3 @@
-import { Project } from 'ts-morph';
-
 import type { TsTemplateFileMetadata } from '../templates/types.js';
 
 const VARIABLE_REGEX =
@@ -8,16 +6,14 @@ const HOISTED_REGEX =
   /\/\* HOISTED:([A-Za-z0-9_]+):START \*\/([\s\S]*?)\/\* HOISTED:\1:END \*\/\n?/g;
 
 /**
- * Processes the raw content of a potential Typescript template file.
+ * Strips the variables from a Typescript template file.
  * - Replaces TPL variable blocks with placeholders `TPL_VAR`.
  * - Removes HOISTED blocks.
- * - Uses ts-morph to remove unused imports/identifiers.
- * - Adds a `// @ts-nocheck` comment to the top of the file.
  *
  * @param content - The raw file content.
- * @returns The processed content.
+ * @returns The content with variables stripped.
  */
-export function processTsTemplateContent(
+export function stripTsTemplateVariables(
   { variables }: TsTemplateFileMetadata,
   content: string,
 ): string {
@@ -52,12 +48,5 @@ export function processTsTemplateContent(
   // Remove HOISTED blocks
   processedContent = processedContent.replaceAll(HOISTED_REGEX, '');
 
-  // Use ts-morph to clean up unused imports
-  const project = new Project({ useInMemoryFileSystem: true });
-  const sourceFile = project.createSourceFile('temp.ts', processedContent);
-  sourceFile.organizeImports();
-
-  processedContent = sourceFile.getFullText();
-
-  return `// @ts-nocheck\n\n${processedContent}`;
+  return processedContent;
 }

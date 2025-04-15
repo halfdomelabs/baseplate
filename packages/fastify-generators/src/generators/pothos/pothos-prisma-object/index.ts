@@ -2,7 +2,6 @@ import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 
 import {
   projectScope,
-  quot,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import {
@@ -11,6 +10,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
