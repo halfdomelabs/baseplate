@@ -12,6 +12,7 @@ import {
   nodeProvider,
   projectScope,
   tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -28,8 +29,8 @@ import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
 
 import { configServiceProvider } from '../config-service/config-service.generator.js';
 import {
+  errorHandlerServiceConfigProvider,
   errorHandlerServiceProvider,
-  errorHandlerServiceSetupProvider,
 } from '../error-handler-service/index.js';
 import { fastifyServerProvider } from '../fastify-server/index.js';
 import { fastifyProvider } from '../fastify/index.js';
@@ -80,9 +81,9 @@ export const fastifySentryGenerator = createGenerator({
       dependencies: {
         node: nodeProvider,
         fastifyServer: fastifyServerProvider,
-        errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
+        errorHandlerServiceConfig: errorHandlerServiceConfigProvider,
       },
-      run({ node, errorHandlerServiceSetup, fastifyServer }) {
+      run({ node, errorHandlerServiceConfig, fastifyServer }) {
         if (!node.isEsm) {
           fastifyServer.addInitializerBlock("import './instrument.js';\n");
         }
@@ -100,15 +101,14 @@ export const fastifySentryGenerator = createGenerator({
 
         return {
           build: () => {
-            errorHandlerServiceSetup
-              .getHandlerFile()
-              .addCodeBlock(
-                'LOGGER_ACTIONS',
-                TypescriptCodeUtils.createBlock(
-                  `context.errorId = logErrorToSentry(error, context);`,
-                  "import { logErrorToSentry } from '@/src/services/sentry.js",
+            errorHandlerServiceConfig.contextActions.push(
+              tsCodeFragment(
+                `context.errorId = logErrorToSentry(error, context);`,
+                tsImportBuilder(['logErrorToSentry']).from(
+                  '@/src/services/sentry.js',
                 ),
-              );
+              ),
+            );
           },
         };
       },

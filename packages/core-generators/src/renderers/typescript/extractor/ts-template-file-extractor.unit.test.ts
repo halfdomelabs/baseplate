@@ -434,13 +434,13 @@ export function SecondUtil() {
       "import { SecondUtil } from './second-util.ts'",
     );
     expect(result[secondComponentTemplatePath]).toContain(
-      "import { FirstComponent } from '%testGeneratorImports'",
+      "import { FirstComponent } from '%test-generator'",
     );
 
     expect(result[secondComponentTemplatePath]).toMatchInlineSnapshot(`
       "// @ts-nocheck
 
-      import { FirstComponent } from '%testGeneratorImports';
+      import { FirstComponent } from '%test-generator';
 
       import { SecondUtil } from './second-util.ts';
 

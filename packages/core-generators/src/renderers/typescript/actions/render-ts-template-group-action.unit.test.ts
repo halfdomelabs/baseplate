@@ -3,6 +3,10 @@ import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { tsCodeFragment } from '../fragments/creators.js';
+import {
+  createTsImportMap,
+  createTsImportMapSchema,
+} from '../import-maps/ts-import-map.js';
 import { tsImportBuilder } from '../imports/builder.js';
 import {
   createTsTemplateFile,
@@ -66,14 +70,6 @@ describe('renderTsTemplateGroupAction', () => {
           TPL_WELCOME: tsCodeFragment('"Welcome to Baseplate"'),
         },
       },
-      renderOptions: {
-        greeting: {
-          importMapProviders: {},
-        },
-        welcome: {
-          importMapProviders: {},
-        },
-      },
     });
 
     const output = await testAction(action, {
@@ -122,11 +118,6 @@ describe('renderTsTemplateGroupAction', () => {
           ]),
         },
       },
-      renderOptions: {
-        greeting: {
-          importMapProviders: {},
-        },
-      },
     });
 
     const output = await testAction(action);
@@ -136,5 +127,83 @@ describe('renderTsTemplateGroupAction', () => {
     expect(file?.contents).toEqual(
       'import { Greeting } from "./greeting";\n\nconst greeting = new Greeting("Hello");',
     );
+  });
+
+  it('should handle import maps in template group action', async () => {
+    const importMapSchema = createTsImportMapSchema({
+      Test: { name: 'Test' },
+    });
+
+    const importMap = createTsImportMap(importMapSchema, {
+      Test: 'test-package',
+    });
+
+    const group = createTsTemplateGroup({
+      templates: {
+        test1: {
+          destination: 'test1.ts',
+          template: createTsTemplateFile({
+            name: 'test1',
+            source: {
+              contents: `
+                import { Test } from "%test-import";
+
+                const test = new Test();
+              `,
+            },
+            variables: {},
+          }),
+        },
+        test2: {
+          destination: 'test2.ts',
+          template: createTsTemplateFile({
+            name: 'test2',
+            source: {
+              contents: `
+                import { Test } from "%test-import";
+
+                const test = new Test();
+              `,
+            },
+            variables: {},
+          }),
+        },
+      },
+    });
+
+    const action = renderTsTemplateGroupAction({
+      group,
+      baseDirectory: 'output',
+      importMapProviders: {
+        test1: {
+          'test-import': { importMap },
+        },
+        test2: {
+          'test-import': { importMap },
+        },
+      },
+    });
+
+    const output = await testAction(action);
+
+    expect(output.files.size).toBe(2);
+
+    const file1 = output.files.get('output/test1.ts');
+    expect(file1?.contents).toMatchInlineSnapshot(`
+      "import { Test } from "test-package";
+
+
+                                      const test = new Test();
+                    "
+    `);
+
+    const file2 = output.files.get('output/test2.ts');
+    expect(file2?.contents).toMatchInlineSnapshot(`
+      "import { Test } from "test-package";
+
+
+                                      const test = new Test();
+                    "
+    `);
   });
 });

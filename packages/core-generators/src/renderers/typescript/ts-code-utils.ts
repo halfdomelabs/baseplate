@@ -117,7 +117,10 @@ export const TsCodeUtils = {
         if (trimmedContent.startsWith(`async function ${key}`)) {
           return `${trimmedContent.replace(/^async function /, 'async ')},`;
         }
-        return `${key}: ${content},`;
+        const escapedKey = /^[A-Z0-9_a-z]+$/.test(key)
+          ? key
+          : `"${key.replaceAll('"', String.raw`\"`)}"`;
+        return `${escapedKey}: ${content},`;
       })
       .join('\n');
 

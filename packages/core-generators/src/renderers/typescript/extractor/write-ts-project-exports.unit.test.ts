@@ -13,7 +13,7 @@ const EXPORT_METADATA_COMMON = {
   providerImportName: 'testGeneratorImportsProvider',
   providerPath: TEST_IMPORT_MAP_PATH,
   providerPackage: 'package',
-  importSource: '%testGeneratorImports',
+  importSource: '%test-generator',
 };
 
 describe('writeTsProjectExports', () => {
@@ -86,7 +86,7 @@ describe('writeTsProjectExports', () => {
     expect(result.importsFileContents).toContain(
       'TypeOnlyExport: {"isTypeOnly":true}',
     );
-    expect(result.importsFileContents).toContain('test-generator-imports');
+    expect(result.importsFileContents).toContain('test-generator');
     expect(result.importsFileContents).toContain('createTestGeneratorImports');
   });
 

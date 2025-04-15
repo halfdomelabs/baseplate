@@ -3,33 +3,50 @@ import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
 import { readTemplateFileSource } from '@halfdomelabs/sync';
 import { mapValues } from 'es-toolkit';
 
+import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
 import type {
+  InferImportMapProvidersFromProviderTypeMap,
   InferTsTemplateVariablesFromMap,
   TsTemplateFile,
   TsTemplateFileMetadata,
   TsTemplateVariable,
 } from '../templates/types.js';
 
-import {
-  renderTsCodeFileTemplate,
-  type RenderTsCodeFileTemplateOptions,
-} from '../renderers/file.js';
+import { renderTsCodeFileTemplate } from '../renderers/file.js';
 import { TS_TEMPLATE_TYPE } from '../templates/types.js';
 
 interface RenderTsTemplateFileActionInputBase<T extends TsTemplateFile> {
   template: T;
   id?: string;
   destination: string;
-  options?: Omit<WriteFileOptions, 'templateMetadata'>;
-  renderOptions: RenderTsCodeFileTemplateOptions<T['importMapProviders']>;
+  writeOptions?: Omit<WriteFileOptions, 'templateMetadata'>;
+  renderOptions?: Omit<RenderTsCodeFileTemplateOptions, 'prefix'>;
 }
+
+type RenderTsTemplateFileActionVariablesInput<T extends TsTemplateFile> =
+  keyof InferTsTemplateVariablesFromMap<T['variables']> extends never
+    ? Partial<{ variables: InferTsTemplateVariablesFromMap<T['variables']> }>
+    : { variables: InferTsTemplateVariablesFromMap<T['variables']> };
+
+type RenderTsTemplateFileActionImportMapProvidersInput<
+  T extends TsTemplateFile,
+> = keyof T['importMapProviders'] extends never
+  ? Partial<{
+      importMapProviders: InferImportMapProvidersFromProviderTypeMap<
+        T['importMapProviders']
+      >;
+    }>
+  : {
+      importMapProviders: InferImportMapProvidersFromProviderTypeMap<
+        T['importMapProviders']
+      >;
+    };
 
 export type RenderTsTemplateFileActionInput<
   T extends TsTemplateFile = TsTemplateFile,
 > = RenderTsTemplateFileActionInputBase<T> &
-  (keyof InferTsTemplateVariablesFromMap<T['variables']> extends never
-    ? Partial<{ variables: InferTsTemplateVariablesFromMap<T['variables']> }>
-    : { variables: InferTsTemplateVariablesFromMap<T['variables']> });
+  RenderTsTemplateFileActionVariablesInput<T> &
+  RenderTsTemplateFileActionImportMapProvidersInput<T>;
 
 export function renderTsTemplateFileAction<
   T extends TsTemplateFile = TsTemplateFile,
@@ -37,8 +54,9 @@ export function renderTsTemplateFileAction<
   template,
   id,
   destination,
-  options,
+  writeOptions,
   variables,
+  importMapProviders,
   renderOptions,
 }: RenderTsTemplateFileActionInput<T>): BuilderAction {
   return {
@@ -89,17 +107,18 @@ export function renderTsTemplateFileAction<
       const renderedTemplate = renderTsCodeFileTemplate(
         templateContents,
         variableValues,
+        importMapProviders,
         {
           ...renderOptions,
           prefix,
-        } as RenderTsCodeFileTemplateOptions<never>,
+        },
       );
 
       builder.writeFile({
         id: id ?? template.name,
         destination,
         contents: renderedTemplate,
-        options,
+        options: writeOptions,
         templateMetadata,
       });
     },

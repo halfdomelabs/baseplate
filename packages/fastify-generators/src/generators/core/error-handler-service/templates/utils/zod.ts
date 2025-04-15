@@ -1,4 +1,7 @@
+// @ts-nocheck
+
 import { ZodError } from 'zod';
+
 import { BadRequestError } from './http-errors';
 
 /**

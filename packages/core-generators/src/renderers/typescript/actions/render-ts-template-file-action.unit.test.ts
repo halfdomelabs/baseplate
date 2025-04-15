@@ -3,6 +3,10 @@ import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { tsCodeFragment } from '../fragments/creators.js';
+import {
+  createTsImportMap,
+  createTsImportMapSchema,
+} from '../import-maps/ts-import-map.js';
 import { tsImportBuilder } from '../imports/builder.js';
 import { createTsTemplateFile, TS_TEMPLATE_TYPE } from '../templates/types.js';
 import { renderTsTemplateFileAction } from './render-ts-template-file-action.js';
@@ -35,9 +39,6 @@ describe('renderTsTemplateFileAction', () => {
       destination: 'output/test.ts',
       variables: {
         TPL_GREETING: tsCodeFragment('"Hello World"'),
-      },
-      renderOptions: {
-        importMapProviders: {},
       },
     });
 
@@ -84,9 +85,6 @@ describe('renderTsTemplateFileAction', () => {
           tsImportBuilder().named('Greeting').from('./greeting'),
         ]),
       },
-      renderOptions: {
-        importMapProviders: {},
-      },
     });
 
     const output = await testAction(action);
@@ -117,9 +115,6 @@ describe('renderTsTemplateFileAction', () => {
       variables: {
         TPL_GREETING: tsCodeFragment('"Hello"'),
       } as never,
-      renderOptions: {
-        importMapProviders: {},
-      },
     });
 
     await expect(
@@ -130,5 +125,67 @@ describe('renderTsTemplateFileAction', () => {
         },
       }),
     ).rejects.toThrow('Template variables and provided variables do not match');
+  });
+
+  it('should handle multiple import maps in template file action', async () => {
+    const importMapSchema1 = createTsImportMapSchema({
+      Test1: { name: 'Test1' },
+    });
+
+    const importMapSchema2 = createTsImportMapSchema({
+      Test2: { name: 'Test2' },
+    });
+
+    const importMap1 = createTsImportMap(importMapSchema1, {
+      Test1: 'test-package1',
+    });
+
+    const importMap2 = createTsImportMap(importMapSchema2, {
+      Test2: 'test-package2',
+    });
+
+    const action = renderTsTemplateFileAction({
+      template: createTsTemplateFile({
+        name: 'test',
+        source: {
+          contents: `
+            import { Test1 } from "%test-import1";
+            import { Test2 } from "%test-import2";
+
+            const greeting = TPL_GREETING;
+            const test1 = new Test1();
+            const test2 = new Test2();
+          `,
+        },
+        variables: {
+          TPL_GREETING: { description: 'The greeting to use' },
+        },
+      }),
+      id: 'test-id',
+      destination: 'output/test.ts',
+      variables: {
+        TPL_GREETING: tsCodeFragment('"world"'),
+      },
+      importMapProviders: {
+        'test-import1': { importMap: importMap1 },
+        'test-import2': { importMap: importMap2 },
+      },
+    });
+
+    const output = await testAction(action);
+
+    expect(output.files.size).toBe(1);
+    const file = output.files.get('output/test.ts');
+    expect(file?.id).toBe('test-generator:test-id');
+    expect(file?.contents).toMatchInlineSnapshot(`
+      "import { Test1 } from "test-package1";
+      import { Test2 } from "test-package2";
+
+
+                                          const greeting = "world";
+                  const test1 = new Test1();
+                  const test2 = new Test2();
+                "
+    `);
   });
 });

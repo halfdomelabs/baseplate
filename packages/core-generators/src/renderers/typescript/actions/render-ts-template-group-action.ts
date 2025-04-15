@@ -2,7 +2,9 @@ import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
 
 import path from 'node:path';
 
+import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
 import type {
+  InferImportMapProvidersFromProviderTypeMap,
   InferTsTemplateVariablesFromMap,
   TsTemplateFile,
   TsTemplateGroup,
@@ -25,17 +27,30 @@ type InferTsTemplateVariablesFromTemplateGroup<T extends TsTemplateGroup> = {
   >;
 };
 
+type HasImportMapProviders<T extends TsTemplateFile> =
+  keyof InferImportMapProvidersFromProviderTypeMap<
+    T['importMapProviders']
+  > extends never
+    ? false
+    : true;
+
+type InferImportMapProvidersFromTemplateGroup<T extends TsTemplateGroup> = {
+  [K in keyof T['templates'] as HasImportMapProviders<
+    T['templates'][K]['template']
+  > extends true
+    ? K
+    : never]: InferImportMapProvidersFromProviderTypeMap<
+    T['templates'][K]['template']['importMapProviders']
+  >;
+};
+
 interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
   group: T;
   baseDirectory: string;
-  options?: {
+  writeOptions?: {
     [K in keyof T['templates']]?: Omit<WriteFileOptions, 'templateMetadata'>;
   };
-  renderOptions: {
-    [K in keyof T['templates']]?: Parameters<
-      typeof renderTsTemplateFileAction
-    >[0]['renderOptions'];
-  };
+  renderOptions?: RenderTsCodeFileTemplateOptions;
 }
 
 type RenderTsTemplateGroupActionInput<
@@ -43,7 +58,12 @@ type RenderTsTemplateGroupActionInput<
 > = RenderTsTemplateGroupActionInputBase<T> &
   (keyof InferTsTemplateVariablesFromTemplateGroup<T> extends never
     ? Partial<{ variables: InferTsTemplateVariablesFromTemplateGroup<T> }>
-    : { variables: InferTsTemplateVariablesFromTemplateGroup<T> });
+    : { variables: InferTsTemplateVariablesFromTemplateGroup<T> }) &
+  (keyof InferImportMapProvidersFromTemplateGroup<T> extends never
+    ? Partial<{
+        importMapProviders: InferImportMapProvidersFromTemplateGroup<T>;
+      }>
+    : { importMapProviders: InferImportMapProvidersFromTemplateGroup<T> });
 
 export function renderTsTemplateGroupAction<
   T extends TsTemplateGroup = TsTemplateGroup,
@@ -51,7 +71,8 @@ export function renderTsTemplateGroupAction<
   group,
   baseDirectory,
   variables,
-  options,
+  importMapProviders,
+  writeOptions,
   renderOptions,
 }: RenderTsTemplateGroupActionInput<T>): BuilderAction {
   return {
@@ -70,8 +91,14 @@ export function renderTsTemplateGroupAction<
                       string
                     >)
                   : undefined,
-              options: options?.[key],
-              renderOptions: renderOptions[key] ?? { importMapProviders: {} },
+              writeOptions: writeOptions?.[key],
+              importMapProviders:
+                importMapProviders && typeof importMapProviders === 'object'
+                  ? (importMapProviders[
+                      key as keyof typeof importMapProviders
+                    ] as Record<never, string>)
+                  : undefined,
+              renderOptions,
             }),
           );
         } catch (error) {

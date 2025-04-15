@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import { tsCodeFragment } from '../fragments/creators.js';
+import {
+  createTsImportMap,
+  createTsImportMapSchema,
+} from '../import-maps/ts-import-map.js';
 import { tsImportBuilder } from '../imports/builder.js';
 import { renderTsCodeFileTemplate } from './file.js';
 
@@ -21,9 +25,6 @@ describe('renderTsCodeFileTemplate', () => {
     const result = renderTsCodeFileTemplate(
       template.source.contents,
       variables,
-      {
-        importMapProviders: {},
-      },
     );
     expect(result).toBe('const value = 42;');
   });
@@ -51,9 +52,6 @@ describe('renderTsCodeFileTemplate', () => {
     const result = renderTsCodeFileTemplate(
       template.source.contents,
       variables,
-      {
-        importMapProviders: {},
-      },
     );
 
     expect(result).toMatchInlineSnapshot(`
@@ -86,9 +84,9 @@ describe('renderTsCodeFileTemplate', () => {
     const result = renderTsCodeFileTemplate(
       template.source.contents,
       variables,
+      {},
       {
         resolveModule: (moduleSpecifier) => `@project/${moduleSpecifier}`,
-        importMapProviders: {},
       },
     );
 
@@ -132,9 +130,6 @@ describe('renderTsCodeFileTemplate', () => {
     const result = renderTsCodeFileTemplate(
       template.source.contents,
       variables,
-      {
-        importMapProviders: {},
-      },
     );
 
     expect(result).toMatchInlineSnapshot(
@@ -149,5 +144,55 @@ describe('renderTsCodeFileTemplate', () => {
       const x = helper1() + helper2();"
     `,
     );
+  });
+
+  it('should handle multiple import maps correctly', () => {
+    const template = {
+      name: 'test',
+      source: {
+        contents: `
+        import { Test1 } from "%test-import1";
+        import { Test2 } from "%test-import2";
+
+        const test1 = new Test1();
+        const test2 = new Test2();
+      `,
+      },
+    };
+
+    const importMapSchema1 = createTsImportMapSchema({
+      Test1: { name: 'Test1' },
+    });
+
+    const importMapSchema2 = createTsImportMapSchema({
+      Test2: { name: 'Test2' },
+    });
+
+    const importMap1 = createTsImportMap(importMapSchema1, {
+      Test1: 'test-package1',
+    });
+
+    const importMap2 = createTsImportMap(importMapSchema2, {
+      Test2: 'test-package2',
+    });
+
+    const result = renderTsCodeFileTemplate(
+      template.source.contents,
+      {},
+      {
+        'test-import1': { importMap: importMap1 },
+        'test-import2': { importMap: importMap2 },
+      },
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      "import { Test1 } from "test-package1";
+      import { Test2 } from "test-package2";
+
+
+                              const test1 = new Test1();
+              const test2 = new Test2();
+            "
+    `);
   });
 });

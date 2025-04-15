@@ -1,18 +1,19 @@
 import type {
   ImportMapper,
+  TsCodeFragment,
   TypescriptCodeExpression,
-  TypescriptSourceFile,
 } from '@halfdomelabs/core-generators';
 
 import {
-  createTypescriptTemplateConfig,
   projectScope,
+  tsCodeFragment,
+  TsCodeUtils,
   TypescriptCodeUtils,
   typescriptFileProvider,
-  typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderType,
@@ -21,16 +22,14 @@ import { z } from 'zod';
 
 import { configServiceImportsProvider } from '../config-service/config-service.generator.js';
 import { fastifyServerProvider } from '../fastify-server/index.js';
-import { loggerServiceProvider } from '../logger-service/logger-service.generator.js';
+import { loggerServiceImportsProvider } from '../logger-service/logger-service.generator.js';
+import {
+  createErrorHandlerServiceImports,
+  errorHandlerServiceImportsProvider,
+} from './generated/ts-import-maps.js';
 import { CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
-
-const errorHandlerFileConfig = createTypescriptTemplateConfig({
-  HEADER: { type: 'code-block' },
-  CONTEXT_ACTIONS: { type: 'code-block' },
-  LOGGER_ACTIONS: { type: 'code-block' },
-});
 
 const ERROR_MAP = {
   http: 'HttpError',
@@ -40,14 +39,20 @@ const ERROR_MAP = {
   notFound: 'NotFoundError',
 };
 
-export interface ErrorHandlerServiceSetupProvider {
-  getHandlerFile(): TypescriptSourceFile<typeof errorHandlerFileConfig>;
-}
-
-export const errorHandlerServiceSetupProvider =
-  createProviderType<ErrorHandlerServiceSetupProvider>(
-    'error-handler-service-setup',
-  );
+export const [
+  configTask,
+  errorHandlerServiceConfigProvider,
+  errorHandlerServiceConfigValuesProvider,
+] = createConfigProviderTask(
+  (t) => ({
+    contextActions: t.array<TsCodeFragment>(),
+    loggerActions: t.array<TsCodeFragment>(),
+  }),
+  {
+    prefix: 'error-handler-service',
+    configScope: projectScope,
+  },
+);
 
 export interface ErrorHandlerServiceProvider extends ImportMapper {
   getHttpErrorsImport(): string;
@@ -65,29 +70,27 @@ export const errorHandlerServiceGenerator = createGenerator({
   descriptorSchema,
 
   buildTasks: () => ({
-    setup: createGeneratorTask({
-      dependencies: {
-        configServiceImports: configServiceImportsProvider,
-        loggerService: loggerServiceProvider,
-        fastifyServer: fastifyServerProvider,
-        typescript: typescriptProvider,
-        typescriptFile: typescriptFileProvider,
-      },
+    imports: createGeneratorTask({
       exports: {
-        errorHandlerServiceSetup:
-          errorHandlerServiceSetupProvider.export(projectScope),
+        errorHandlerServiceImports:
+          errorHandlerServiceImportsProvider.export(projectScope),
       },
-      run({
-        loggerService,
-        fastifyServer,
-        typescript,
-        configServiceImports,
-        typescriptFile,
-      }) {
-        const errorLoggerFile = typescript.createTemplate(
-          errorHandlerFileConfig,
-        );
-
+      run() {
+        return {
+          providers: {
+            errorHandlerServiceImports:
+              createErrorHandlerServiceImports('@/src'),
+          },
+        };
+      },
+    }),
+    fastifyPlugin: createGeneratorTask({
+      dependencies: {
+        fastifyServer: fastifyServerProvider,
+        typescriptFile: typescriptFileProvider,
+        configServiceImports: configServiceImportsProvider,
+      },
+      run({ fastifyServer, typescriptFile, configServiceImports }) {
         fastifyServer.registerPlugin({
           name: 'errorHandlerPlugin',
           plugin: TypescriptCodeUtils.createExpression(
@@ -105,38 +108,49 @@ export const errorHandlerServiceGenerator = createGenerator({
         fastifyServer.getConfig().set('errorHandlerFunction', errorFunction);
 
         return {
-          providers: {
-            errorHandlerServiceSetup: {
-              getHandlerFile: () => errorLoggerFile,
-            },
-          },
           build: async (builder) => {
-            errorLoggerFile.addCodeBlock(
-              'LOGGER_ACTIONS',
-              TypescriptCodeUtils.toBlock(
-                TypescriptCodeUtils.wrapExpression(
-                  loggerService.getLogger(),
-                  (code) => `${code}.error({ err: error, ...context });`,
-                ),
-              ),
-            );
-
             await typescriptFile.writeTemplateFile(builder, {
               template:
                 CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.errorHandlerPlugin,
               destination: 'src/plugins/error-handler.ts',
               variables: {},
               importMapProviders: {
-                configService: configServiceImports,
+                configServiceImports,
               },
             });
-
-            await builder.apply(
-              errorLoggerFile.renderToAction(
-                'services/error-logger.ts',
-                'src/services/error-logger.ts',
-              ),
-            );
+          },
+        };
+      },
+    }),
+    configTask,
+    errorLogger: createGeneratorTask({
+      dependencies: {
+        loggerServiceImports: loggerServiceImportsProvider,
+        typescriptFile: typescriptFileProvider,
+        errorHandlerServiceConfigValues:
+          errorHandlerServiceConfigValuesProvider,
+      },
+      run({
+        loggerServiceImports,
+        typescriptFile,
+        errorHandlerServiceConfigValues: { contextActions, loggerActions },
+      }) {
+        return {
+          build: async (builder) => {
+            await typescriptFile.writeTemplateFile(builder, {
+              template: CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.errorLogger,
+              destination: 'src/services/error-logger.ts',
+              variables: {
+                TPL_CONTEXT_ACTIONS: TsCodeUtils.mergeFragments(contextActions),
+                TPL_LOGGER_ACTIONS: TsCodeUtils.mergeFragments([
+                  ...loggerActions,
+                  tsCodeFragment(
+                    `logger.error({ err: error, ...context });`,
+                    loggerServiceImports.importMap.logger.declaration(),
+                  ),
+                ]),
+              },
+            });
 
             await builder.apply(
               copyFileAction({
@@ -155,6 +169,18 @@ export const errorHandlerServiceGenerator = createGenerator({
         };
       },
     }),
+    // utils: createGeneratorTask({
+    //   dependencies: {
+    //     typescriptFile: typescriptFileProvider,
+    //   },
+    //   run({ typescriptFile }) {
+    //     return {
+    //       build: async (builder) => {
+    //         await typescriptFile.writeTemplateFile
+    //       },
+    //     };
+    //   },
+    // }),
     main: createGeneratorTask({
       exports: {
         errorHandlerService: errorHandlerServiceProvider.export(projectScope),

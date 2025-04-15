@@ -123,7 +123,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
                   this.getGeneratorBaseDirectory(generatorName),
                   'generated',
                 ),
-                projectExport.providerPath,
+                projectExport.providerPath.replace(/\.ts$/, '.js'),
               ),
               projectExport.providerPackage,
             ),
@@ -146,7 +146,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
       }),
       variables: JSON.stringify(file.metadata.variables ?? {}),
       projectExports: JSON.stringify(file.metadata.projectExports ?? {}),
-      importProviders:
+      importMapProviders:
         usedImportProviders.length > 0
           ? TsCodeUtils.mergeFragmentsAsObject(
               Object.fromEntries(
@@ -191,14 +191,16 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
         this.getTypescriptRendererImport(generatorName),
       ),
     )`const ${groupNameVariable} = createTsTemplateGroup({
-      templates: ${JSON.stringify(
+      templates: ${TsCodeUtils.mergeFragmentsAsObject(
         Object.fromEntries(
           results.map((result) => [
             result.exportName,
-            {
-              destination: path.relative(commonPathPrefix, result.originalPath),
+            TsCodeUtils.mergeFragmentsAsObject({
+              destination: quot(
+                path.relative(commonPathPrefix, result.originalPath),
+              ),
               template: result.exportName,
-            },
+            }),
           ]),
         ),
       )}
@@ -272,7 +274,6 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
           ),
         ),
       },
-      { importMapProviders: {} },
     );
 
     await this.writeGeneratedTypescriptFileIfModified(

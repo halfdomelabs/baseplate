@@ -1,4 +1,3 @@
-import type { InferProviderType, ProviderType } from '@halfdomelabs/sync';
 import type { SourceFile } from 'ts-morph';
 
 import { Project } from 'ts-morph';
@@ -20,24 +19,10 @@ import {
 } from '../imports/ts-morph-operations.js';
 import { renderTsTemplateToTsCodeFragment } from './template.js';
 
-interface RenderTsCodeFileTemplateOptionsBase extends RenderTsTemplateOptions {
+export interface RenderTsCodeFileTemplateOptions
+  extends RenderTsTemplateOptions {
   importSortOptions?: Partial<SortImportDeclarationsOptions>;
   resolveModule?: (moduleSpecifier: string) => string;
-}
-
-export type InferImportMapProvidersFromProviderTypeMap<
-  T extends Record<string, ProviderType> | undefined,
-> = {
-  [K in keyof T]: InferProviderType<T[K]>;
-};
-
-export interface RenderTsCodeFileTemplateOptions<
-  T extends Record<string, ProviderType> | undefined = Record<
-    never,
-    ProviderType
-  >,
-> extends RenderTsCodeFileTemplateOptionsBase {
-  importMapProviders: InferImportMapProvidersFromProviderTypeMap<T>;
 }
 
 function mergeImportsAndHoistedFragments(
@@ -49,7 +34,7 @@ function mergeImportsAndHoistedFragments(
     resolveModule,
     importSortOptions,
     includeMetadata,
-  }: RenderTsCodeFileTemplateOptionsBase,
+  }: RenderTsCodeFileTemplateOptions,
 ): void {
   // Get the import declarations from the source file
   const importDeclarationsFromFile =
@@ -121,15 +106,11 @@ function mergeImportsAndHoistedFragments(
   writeHoistedFragments(beforeImportsHoistedFragments);
 }
 
-export function renderTsCodeFileTemplate<
-  TImportMapProviders extends Record<string, ProviderType> = Record<
-    never,
-    ProviderType
-  >,
->(
+export function renderTsCodeFileTemplate(
   templateContents: string,
   variables: Record<string, TsTemplateFileVariableValue>,
-  options: RenderTsCodeFileTemplateOptions<TImportMapProviders>,
+  importMapProviders: Record<string, unknown> = {},
+  options: RenderTsCodeFileTemplateOptions = {},
 ): string {
   // Render the template into a code fragment
   const { contents, imports, hoistedFragments } =
@@ -141,7 +122,7 @@ export function renderTsCodeFileTemplate<
   if (
     !imports?.length &&
     !hoistedFragments?.length &&
-    Object.keys(options.importMapProviders).length === 0
+    Object.keys(importMapProviders).length === 0
   ) {
     return contents;
   }
@@ -151,8 +132,6 @@ export function renderTsCodeFileTemplate<
     useInMemoryFileSystem: true,
   });
   const file = project.createSourceFile('./file.ts', contents);
-
-  const { importMapProviders, ...restOptions } = options;
 
   const importMapProvidersMap = new Map(
     Object.entries(importMapProviders).map(([key, value]) => {
@@ -171,7 +150,7 @@ export function renderTsCodeFileTemplate<
     imports ?? [],
     hoistedFragments ?? [],
     importMapProvidersMap,
-    restOptions,
+    options,
   );
 
   return file.getText();

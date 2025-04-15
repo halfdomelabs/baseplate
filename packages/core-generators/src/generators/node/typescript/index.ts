@@ -300,7 +300,6 @@ export const typescriptGenerator = createGenerator({
                         internalPatterns,
                       },
                       includeMetadata: builder.includeMetadata,
-                      importMapProviders: payload.importMapProviders ?? {},
                     },
                   } as RenderTsTemplateFileActionInput),
                 );

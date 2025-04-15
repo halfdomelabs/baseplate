@@ -1,7 +1,5 @@
 // @ts-nocheck
 
-HEADER;
-
 interface ErrorContext extends Record<string, unknown> {
   errorId?: string;
 }
@@ -18,9 +16,9 @@ export function logError(
 ): string | undefined {
   const context: ErrorContext = { ...additionalContext };
 
-  CONTEXT_ACTIONS;
+  TPL_CONTEXT_ACTIONS;
 
-  LOGGER_ACTIONS;
+  TPL_LOGGER_ACTIONS;
 
   return context.errorId;
 }

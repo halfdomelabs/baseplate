@@ -1,4 +1,5 @@
 import {
+  InferProviderType,
   ProviderType,
   TemplateFileBase,
   templateFileMetadataBaseSchema,
@@ -76,6 +77,12 @@ export type InferTsTemplateVariablesFromMap<
   TMap extends TsTemplateVariableMap,
 > = {
   [T in keyof TMap]: TsTemplateFileVariableValue;
+};
+
+export type InferImportMapProvidersFromProviderTypeMap<
+  T extends Record<string, ProviderType> | undefined,
+> = {
+  [K in keyof T]: InferProviderType<T[K]>;
 };
 
 export function createTsTemplateFile<
