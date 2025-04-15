@@ -11,6 +11,8 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   projectScope,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -25,11 +27,11 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { authProvider } from '@src/generators/auth/index.js';
 import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
 
-import { configServiceProvider } from '../config-service/index.js';
+import { configServiceProvider } from '../config-service/config-service.generator.js';
 import {
+  errorHandlerServiceConfigProvider,
   errorHandlerServiceProvider,
-  errorHandlerServiceSetupProvider,
-} from '../error-handler-service/index.js';
+} from '../error-handler-service/error-handler-service.generator.js';
 import { fastifyServerProvider } from '../fastify-server/index.js';
 import { fastifyProvider } from '../fastify/index.js';
 import { requestContextProvider } from '../request-context/index.js';
@@ -79,9 +81,9 @@ export const fastifySentryGenerator = createGenerator({
       dependencies: {
         node: nodeProvider,
         fastifyServer: fastifyServerProvider,
-        errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
+        errorHandlerServiceConfig: errorHandlerServiceConfigProvider,
       },
-      run({ node, errorHandlerServiceSetup, fastifyServer }) {
+      run({ node, errorHandlerServiceConfig, fastifyServer }) {
         if (!node.isEsm) {
           fastifyServer.addInitializerBlock("import './instrument.js';\n");
         }
@@ -99,15 +101,14 @@ export const fastifySentryGenerator = createGenerator({
 
         return {
           build: () => {
-            errorHandlerServiceSetup
-              .getHandlerFile()
-              .addCodeBlock(
-                'LOGGER_ACTIONS',
-                TypescriptCodeUtils.createBlock(
-                  `context.errorId = logErrorToSentry(error, context);`,
-                  "import { logErrorToSentry } from '@/src/services/sentry.js",
+            errorHandlerServiceConfig.loggerActions.push(
+              tsCodeFragment(
+                `context.errorId = logErrorToSentry(error, context);`,
+                tsImportBuilder(['logErrorToSentry']).from(
+                  '@/src/services/sentry.js',
                 ),
-              );
+              ),
+            );
           },
         };
       },
@@ -144,15 +145,11 @@ export const fastifySentryGenerator = createGenerator({
 
         const shouldLogToSentryBlocks: TypescriptCodeBlock[] = [];
 
-        configService.getConfigEntries().merge({
-          SENTRY_DSN: {
-            comment: 'Sentry DSN',
-            value: TypescriptCodeUtils.createExpression(
-              'z.string().optional()',
-            ),
-            seedValue: '',
-            exampleValue: '',
-          },
+        configService.configFields.set('SENTRY_DSN', {
+          comment: 'Sentry DSN',
+          validator: tsCodeFragment('z.string().optional()'),
+          seedValue: '',
+          exampleValue: '',
         });
 
         const [serviceImport, servicePath] =

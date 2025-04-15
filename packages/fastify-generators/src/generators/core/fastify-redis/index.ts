@@ -5,6 +5,7 @@ import {
   extractPackageVersions,
   makeImportAndFilePath,
   projectScope,
+  tsCodeFragment,
   TypescriptCodeUtils,
   typescriptProvider,
   vitestProvider,
@@ -18,7 +19,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
-import { configServiceProvider } from '../config-service/index.js';
+import { configServiceProvider } from '../config-service/config-service.generator.js';
 import { fastifyHealthCheckProvider } from '../fastify-health-check/index.js';
 
 const descriptorSchema = z.object({
@@ -63,9 +64,9 @@ export const fastifyRedisGenerator = createGenerator({
           },
         };
 
-        configService.getConfigEntries().set('REDIS_URL', {
+        configService.configFields.set('REDIS_URL', {
+          validator: tsCodeFragment('z.string().min(1)'),
           comment: 'Connection URL of Redis',
-          value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
           exampleValue: defaultUrl,
         });
         fastifyHealthCheck.addCheck(

@@ -1,13 +1,11 @@
 import type {
   BuilderAction,
-  GeneratorTaskOutputBuilder,
   InferProviderType,
-  ProviderType,
   WriteFileOptions,
 } from '@halfdomelabs/sync';
 
 import {
-  createConfigProviderTaskWithInfo,
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderType,
@@ -18,19 +16,20 @@ import { z } from 'zod';
 
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
 import type {
-  InferImportMapProvidersFromProviderTypeMap,
-  InferTsCodeTemplateVariablesFromMap,
-  TsCodeFileTemplate,
-  TsCodeTemplateVariableMap,
+  RenderTsTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+  TsTemplateFile,
+  TsTemplateGroup,
 } from '@src/renderers/typescript/index.js';
 
 import { copyTypescriptFilesAction } from '@src/actions/copy-typescript-files-action.js';
 import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
+import { renderTsTemplateFileAction } from '@src/renderers/typescript/actions/render-ts-template-file-action.js';
 import {
   generatePathMapEntries,
   pathMapEntriesToRegexes,
-  renderTsCodeFileTemplate,
+  renderTsTemplateGroupAction,
 } from '@src/renderers/typescript/index.js';
 import { extractPackageVersions } from '@src/utils/extract-packages.js';
 
@@ -51,9 +50,7 @@ import { resolveModule } from '../../../writers/typescript/imports.js';
 import { TypescriptSourceFile } from '../../../writers/typescript/source-file.js';
 import { createNodePackagesTask } from '../node/node.generator.js';
 
-const typescriptGeneratorDescriptorSchema = z.object({
-  includeMetadata: z.boolean().optional(),
-});
+const typescriptGeneratorDescriptorSchema = z.object({});
 
 export interface TypescriptConfigReference {
   path: string;
@@ -90,32 +87,13 @@ export interface TypescriptProvider {
 export const typescriptProvider =
   createProviderType<TypescriptProvider>('typescript');
 
-interface WriteTemplatedFilePayload<
-  TVariables extends TsCodeTemplateVariableMap,
-  TImportMapProviders extends Record<string, ProviderType> = Record<
-    never,
-    ProviderType
-  >,
-> {
-  id: string;
-  template: TsCodeFileTemplate<TVariables, TImportMapProviders>;
-  destination: string;
-  variables: InferTsCodeTemplateVariablesFromMap<TVariables>;
-  importMapProviders: InferImportMapProvidersFromProviderTypeMap<TImportMapProviders>;
-  options?: WriteFileOptions;
-}
-
 export interface TypescriptFileProvider {
-  writeTemplatedFile<
-    TVariables extends TsCodeTemplateVariableMap,
-    TImportMapProviders extends Record<string, ProviderType> = Record<
-      never,
-      ProviderType
-    >,
-  >(
-    builder: GeneratorTaskOutputBuilder,
-    payload: WriteTemplatedFilePayload<TVariables, TImportMapProviders>,
-  ): Promise<{ destination: string }>;
+  renderTemplateFile<T extends TsTemplateFile = TsTemplateFile>(
+    payload: RenderTsTemplateFileActionInput<T>,
+  ): BuilderAction;
+  renderTemplateGroup<T extends TsTemplateGroup = TsTemplateGroup>(
+    payload: RenderTsTemplateGroupActionInput<T>,
+  ): BuilderAction;
 }
 
 export const typescriptFileProvider =
@@ -138,7 +116,7 @@ const DEFAULT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
 };
 
 const [setupTask, typescriptSetupProvider, typescriptConfigProvider] =
-  createConfigProviderTaskWithInfo(
+  createConfigProviderTask(
     (t) => ({
       compilerOptions: t.scalar<TypescriptCompilerOptions>(
         DEFAULT_COMPILER_OPTIONS,
@@ -152,11 +130,6 @@ const [setupTask, typescriptSetupProvider, typescriptConfigProvider] =
       prefix: 'typescript',
       configScope: projectScope,
       configValuesScope: projectScope,
-      infoFromDescriptor: (
-        descriptor: z.infer<typeof typescriptGeneratorDescriptorSchema>,
-      ) => ({
-        includeMetadata: descriptor.includeMetadata,
-      }),
     },
   );
 
@@ -174,8 +147,8 @@ export const typescriptGenerator = createGenerator({
   name: 'node/typescript',
   generatorFileUrl: import.meta.url,
   descriptorSchema: typescriptGeneratorDescriptorSchema,
-  buildTasks: (descriptor) => ({
-    setup: createGeneratorTask(setupTask(descriptor)),
+  buildTasks: () => ({
+    setup: createGeneratorTask(setupTask),
     nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(CORE_PACKAGES, ['typescript']),
     }),
@@ -286,7 +259,7 @@ export const typescriptGenerator = createGenerator({
     file: createGeneratorTask({
       dependencies: { typescriptConfig: typescriptConfigProvider },
       exports: { typescriptFile: typescriptFileProvider.export(projectScope) },
-      run({ typescriptConfig: { compilerOptions, includeMetadata } }) {
+      run({ typescriptConfig: { compilerOptions } }) {
         const {
           baseUrl = '.',
           paths = {},
@@ -298,20 +271,11 @@ export const typescriptGenerator = createGenerator({
         return {
           providers: {
             typescriptFile: {
-              writeTemplatedFile: async (builder, payload) => {
-                const {
-                  id,
-                  template,
-                  destination,
-                  variables,
-                  options,
-                  importMapProviders,
-                } = payload;
-                const directory = path.dirname(destination);
-                const file = await renderTsCodeFileTemplate(
-                  template,
-                  variables,
-                  {
+              renderTemplateFile: (payload) => {
+                const directory = path.dirname(payload.destination);
+                return renderTsTemplateFileAction({
+                  ...payload,
+                  renderOptions: {
                     resolveModule(moduleSpecifier) {
                       return resolveModule(moduleSpecifier, directory, {
                         pathMapEntries,
@@ -321,20 +285,24 @@ export const typescriptGenerator = createGenerator({
                     importSortOptions: {
                       internalPatterns,
                     },
-                    includeMetadata,
-                    importMapProviders,
                   },
-                );
-
-                builder.writeFile({
-                  id,
-                  destination,
-                  contents: file,
-                  options,
                 });
-
-                return { destination };
               },
+              renderTemplateGroup: (payload) =>
+                renderTsTemplateGroupAction({
+                  ...payload,
+                  renderOptions: {
+                    resolveModule(sourceDirectory, moduleSpecifier) {
+                      return resolveModule(moduleSpecifier, sourceDirectory, {
+                        pathMapEntries,
+                        moduleResolution,
+                      });
+                    },
+                    importSortOptions: {
+                      internalPatterns,
+                    },
+                  },
+                }),
             },
           },
         };

@@ -3,7 +3,6 @@ import type { z } from 'zod';
 import { handleFileNotFoundError } from '@halfdomelabs/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { format } from 'prettier';
 
 import type { Logger } from '@src/utils/evented-logger.js';
 
@@ -13,6 +12,7 @@ import type {
 } from '../metadata/index.js';
 
 import { GENERATOR_INFO_FILENAME } from '../constants.js';
+import { formatGeneratedTemplateContents } from '../utils/formatter.js';
 
 export interface TemplateFileExtractorFile<
   TMetadata extends TemplateFileMetadataBase = TemplateFileMetadataBase,
@@ -47,17 +47,10 @@ export interface TemplateFileExtractorContext {
    * The logger to use.
    */
   logger: Logger;
-}
-
-async function formatTypescript(contents: string): Promise<string> {
-  return format(contents, {
-    parser: 'typescript',
-    // TODO: Dynamically source prettier config
-    tabWidth: 2,
-    singleQuote: true,
-    trailingComma: 'all',
-    semi: true,
-  });
+  /**
+   * The base directory of the project.
+   */
+  baseDirectory: string;
 }
 
 export abstract class TemplateFileExtractor<
@@ -74,6 +67,10 @@ export abstract class TemplateFileExtractor<
       throw new Error(`Could not find template file in project: ${path}`);
     }
     return fileBuffer;
+  }
+
+  protected getProjectBaseDirectory(): string {
+    return this.context.baseDirectory;
   }
 
   protected getGeneratorBaseDirectory(generatorName: string): string {
@@ -108,8 +105,14 @@ export abstract class TemplateFileExtractor<
       this.getGeneratorBaseDirectory(generatorName),
       generatorRelativePath,
     );
+    const formattedContents =
+      typeof contents === 'string'
+        ? await formatGeneratedTemplateContents(contents, generatorFilePath)
+        : contents;
     const bufferContents =
-      typeof contents === 'string' ? Buffer.from(contents) : contents;
+      typeof formattedContents === 'string'
+        ? Buffer.from(formattedContents)
+        : formattedContents;
     const existingContents = await fs
       .readFile(generatorFilePath)
       .catch(handleFileNotFoundError);
@@ -141,7 +144,10 @@ export abstract class TemplateFileExtractor<
     destination: string,
     contents: string,
   ): Promise<boolean> {
-    const formattedContents = await formatTypescript(contents);
+    const formattedContents = await formatGeneratedTemplateContents(
+      contents,
+      destination,
+    );
     return this.writeGeneratorFileIfModified(
       generatorName,
       path.join('generated', destination),

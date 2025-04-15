@@ -117,7 +117,10 @@ export const TsCodeUtils = {
         if (trimmedContent.startsWith(`async function ${key}`)) {
           return `${trimmedContent.replace(/^async function /, 'async ')},`;
         }
-        return `${key}: ${content},`;
+        const escapedKey = /^[A-Z0-9_a-z]+$/.test(key)
+          ? key
+          : `"${key.replaceAll('"', String.raw`\"`)}"`;
+        return `${escapedKey}: ${content},`;
       })
       .join('\n');
 
@@ -179,5 +182,18 @@ export const TsCodeUtils = {
       contents: result.join(''),
       ...mergeFragmentImportsAndHoistedFragments(fragments),
     };
+  },
+
+  templateWithImports(
+    imports?: TsImportDeclaration[] | TsImportDeclaration,
+  ): (
+    strings: TemplateStringsArray,
+    ...expressions: (TsCodeFragment | string)[]
+  ) => TsCodeFragment {
+    return (strings, ...expressions) =>
+      this.template(strings, ...expressions, {
+        contents: '',
+        imports: Array.isArray(imports) ? imports : imports ? [imports] : [],
+      });
   },
 };

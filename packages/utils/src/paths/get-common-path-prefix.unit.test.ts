@@ -13,6 +13,15 @@ describe('getCommonPathPrefix', () => {
     );
   });
 
+  it('should return directory of same paths', () => {
+    expect(
+      getCommonPathPrefix([
+        '/home/user/project/file.txt',
+        '/home/user/project/file.txt',
+      ]),
+    ).toBe('/home/user/project');
+  });
+
   it('should find common prefix for multiple paths', () => {
     const paths = [
       '/home/user/project/src/file1.ts',

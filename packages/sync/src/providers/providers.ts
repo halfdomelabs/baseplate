@@ -95,6 +95,13 @@ export interface ProviderDependency<P = Provider> {
   parentScopeOnly(): ProviderDependency<P>;
 }
 
+export type InferProviderDependency<T> =
+  T extends ProviderDependency<infer P>
+    ? P
+    : T extends ProviderType<infer P>
+      ? P
+      : never;
+
 /**
  * A provider type that can be configured for use in an export map
  */

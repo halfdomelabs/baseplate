@@ -1,7 +1,7 @@
 import type { BuilderAction } from '@src/output/builder-action.js';
 import type { WriteFileOptions } from '@src/output/generator-task-output.js';
 
-import { readTemplateFileSourceBuffer } from '../utils.js';
+import { readTemplateFileSourceBuffer } from '../utils/index.js';
 import {
   RAW_TEMPLATE_TYPE,
   type RawTemplateFile,

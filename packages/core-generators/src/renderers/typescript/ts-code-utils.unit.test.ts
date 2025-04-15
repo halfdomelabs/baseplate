@@ -109,6 +109,16 @@ describe('TsCodeUtils', () => {
       });
     });
 
+    it('should escape keys that are not valid identifiers', () => {
+      const obj = {
+        'invalid-key': tsCodeFragment('42'),
+      };
+
+      const result = TsCodeUtils.mergeFragmentsAsObject(obj);
+
+      expect(result.contents).toBe('{"invalid-key": 42,}');
+    });
+
     it('should wrap with parenthesis when option is set', () => {
       const obj = {
         prop: tsCodeFragment('42'),

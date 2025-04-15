@@ -10,7 +10,7 @@ import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 import { fastifySentryProvider } from '@src/generators/core/fastify-sentry/index.js';
 import { yogaPluginConfigProvider } from '@src/generators/yoga/yoga-plugin/index.js';
 

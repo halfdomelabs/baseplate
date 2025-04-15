@@ -25,6 +25,7 @@ import {
   resolveTaskDependenciesForPhase,
 } from './dependency-map.js';
 import { getSortedRunSteps } from './dependency-sort.js';
+import { runInRunnerContext } from './runner-context.js';
 import { flattenGeneratorTaskEntriesAndPhases } from './utils.js';
 
 /**
@@ -152,9 +153,13 @@ export async function executeGeneratorEntry(
             },
           );
 
-          const taskInstance = (task.run(resolvedDependencies, {
-            taskId,
-          }) as GeneratorTaskResult | undefined) ?? { providers: {} };
+          const taskInstance = runInRunnerContext<
+            GeneratorTaskResult | undefined
+          >({ taskId }, () =>
+            task.run(resolvedDependencies, {
+              taskId,
+            }),
+          ) ?? { providers: {} };
           taskInstanceById[taskId] = taskInstance;
 
           const { providers } = taskInstance;
@@ -197,9 +202,11 @@ export async function executeGeneratorEntry(
 
           if (generator.build) {
             const outputResult =
-              ((await Promise.resolve(generator.build(outputBuilder))) as
-                | Record<string, Provider>
-                | undefined) ?? {};
+              ((await Promise.resolve(
+                runInRunnerContext({ taskId }, () =>
+                  generator.build?.(outputBuilder),
+                ),
+              )) as Record<string, Provider> | undefined) ?? {};
 
             const outputKeys = Object.keys(outputs);
             if (outputKeys.length > 0) {

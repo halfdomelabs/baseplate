@@ -2,6 +2,7 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   projectScope,
+  tsCodeFragment,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -12,7 +13,7 @@ import {
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { configServiceProvider } from '@src/generators/core/config-service/index.js';
+import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
 import { loggerServiceProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 
 const descriptorSchema = z.object({});
@@ -40,9 +41,9 @@ export const fastifySendgridGenerator = createGenerator({
         fastifySendgrid: fastifySendgridProvider.export(projectScope),
       },
       run({ typescript, configService, loggerService }) {
-        configService.getConfigEntries().set('SENDGRID_API_KEY', {
+        configService.configFields.set('SENDGRID_API_KEY', {
           comment: 'Sendgrid API token',
-          value: 'z.string().min(1)',
+          validator: tsCodeFragment('z.string().min(1)'),
           seedValue: 'SENDGRID_API_KEY',
           exampleValue: 'SENDGRID_API_KEY',
         });

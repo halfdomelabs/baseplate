@@ -107,11 +107,11 @@ describe('mergeTsImportDeclarations', () => {
       {
         source: 'lib',
         isTypeOnly: true,
-        namedImports: [{ name: 'Foo' }],
+        namedImports: [{ name: 'Foo', isTypeOnly: false }],
       },
       {
         source: 'lib',
-        namedImports: [{ name: 'Soo' }],
+        namedImports: [{ name: 'Soo', isTypeOnly: false }],
       },
     ];
 

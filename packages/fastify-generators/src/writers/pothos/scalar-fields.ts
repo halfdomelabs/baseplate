@@ -1,6 +1,7 @@
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 
-import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { quot } from '@halfdomelabs/utils';
 
 import type { ServiceOutputDtoScalarField } from '@src/types/service-output.js';
 

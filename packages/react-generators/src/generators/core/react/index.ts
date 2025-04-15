@@ -10,7 +10,6 @@ import {
   nodeGitIgnoreProvider,
   projectProvider,
   projectScope,
-  quot,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -22,6 +21,7 @@ import {
   renderRawTemplateFileAction,
   renderTextTemplateGroupAction,
 } from '@halfdomelabs/sync';
+import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { CORE_REACT_RAW_TEMPLATES } from './generated/raw-templates.js';

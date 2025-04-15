@@ -1,18 +1,12 @@
-import type { InferProviderType, ProviderType } from '@halfdomelabs/sync';
 import type { SourceFile } from 'ts-morph';
 
-import { readFile } from 'node:fs/promises';
 import { Project } from 'ts-morph';
 
 import type { TsHoistedFragment } from '../fragments/types.js';
 import type { TsImportMap, TsImportMapProvider } from '../import-maps/types.js';
 import type { SortImportDeclarationsOptions } from '../imports/index.js';
 import type { TsImportDeclaration } from '../imports/types.js';
-import type {
-  InferTsCodeTemplateVariablesFromMap,
-  TsCodeFileTemplate,
-  TsCodeTemplateVariableMap,
-} from '../templates/types.js';
+import type { TsTemplateFileVariableValue } from '../templates/types.js';
 import type { RenderTsTemplateOptions } from './template.js';
 
 import { transformTsImportsWithMap } from '../import-maps/transform-ts-imports-with-map.js';
@@ -25,21 +19,10 @@ import {
 } from '../imports/ts-morph-operations.js';
 import { renderTsTemplateToTsCodeFragment } from './template.js';
 
-interface RenderTsCodeFileTemplateOptionsBase extends RenderTsTemplateOptions {
+export interface RenderTsCodeFileTemplateOptions
+  extends RenderTsTemplateOptions {
   importSortOptions?: Partial<SortImportDeclarationsOptions>;
   resolveModule?: (moduleSpecifier: string) => string;
-}
-
-export type InferImportMapProvidersFromProviderTypeMap<
-  T extends Record<string, ProviderType>,
-> = {
-  [K in keyof T]: InferProviderType<T[K]>;
-};
-
-export interface RenderTsCodeFileTemplateOptions<
-  T extends Record<string, ProviderType> = Record<never, ProviderType>,
-> extends RenderTsCodeFileTemplateOptionsBase {
-  importMapProviders: InferImportMapProvidersFromProviderTypeMap<T>;
 }
 
 function mergeImportsAndHoistedFragments(
@@ -47,7 +30,11 @@ function mergeImportsAndHoistedFragments(
   imports: TsImportDeclaration[],
   hoistedFragments: TsHoistedFragment[],
   importMaps: Map<string, TsImportMap>,
-  { resolveModule, importSortOptions }: RenderTsCodeFileTemplateOptionsBase,
+  {
+    resolveModule,
+    importSortOptions,
+    includeMetadata,
+  }: RenderTsCodeFileTemplateOptions,
 ): void {
   // Get the import declarations from the source file
   const importDeclarationsFromFile =
@@ -89,13 +76,23 @@ function mergeImportsAndHoistedFragments(
     (h) => h.position === 'beforeImports',
   );
 
+  function writeHoistedFragments(fragments: TsHoistedFragment[]): void {
+    file.insertText(0, (writer) => {
+      for (const h of fragments) {
+        if (includeMetadata) {
+          writer.writeLine(`/* HOISTED:${h.key}:START */`);
+        }
+        writer.writeLine(h.fragment.contents);
+        if (includeMetadata) {
+          writer.writeLine(`/* HOISTED:${h.key}:END */`);
+        }
+        writer.writeLine('');
+      }
+    });
+  }
+
   // Write the afterImports hoisted fragments to the source file
-  file.insertText(0, (writer) => {
-    for (const h of afterImportsHoistedFragments) {
-      writer.writeLine(h.fragment.contents);
-      writer.writeLine('');
-    }
-  });
+  writeHoistedFragments(afterImportsHoistedFragments);
 
   // Write the grouped import declarations to the source file
   file.insertText(0, (writer) => {
@@ -106,41 +103,26 @@ function mergeImportsAndHoistedFragments(
   });
 
   // Write the beforeImports hoisted fragments to the source file
-  file.insertText(0, (writer) => {
-    for (const h of beforeImportsHoistedFragments) {
-      writer.writeLine(h.fragment.contents);
-      writer.writeLine('');
-    }
-  });
+  writeHoistedFragments(beforeImportsHoistedFragments);
 }
 
-export async function renderTsCodeFileTemplate<
-  TVariables extends TsCodeTemplateVariableMap,
-  TImportMapProviders extends Record<string, ProviderType> = Record<
-    never,
-    ProviderType
-  >,
->(
-  template: TsCodeFileTemplate<TVariables, TImportMapProviders>,
-  variables: InferTsCodeTemplateVariablesFromMap<TVariables>,
-  options: RenderTsCodeFileTemplateOptions<TImportMapProviders>,
-): Promise<string> {
-  const rawTemplate =
-    'path' in template.source
-      ? await readFile(template.source.path, 'utf8')
-      : template.source.contents;
-
+export function renderTsCodeFileTemplate(
+  templateContents: string,
+  variables: Record<string, TsTemplateFileVariableValue>,
+  importMapProviders: Record<string, unknown> = {},
+  options: RenderTsCodeFileTemplateOptions = {},
+): string {
   // Render the template into a code fragment
   const { contents, imports, hoistedFragments } =
-    renderTsTemplateToTsCodeFragment(rawTemplate, variables, {
-      prefix: template.prefix,
+    renderTsTemplateToTsCodeFragment(templateContents, variables, {
+      prefix: options.prefix,
       ...options,
     });
 
   if (
     !imports?.length &&
     !hoistedFragments?.length &&
-    Object.keys(options.importMapProviders).length === 0
+    Object.keys(importMapProviders).length === 0
   ) {
     return contents;
   }
@@ -150,8 +132,6 @@ export async function renderTsCodeFileTemplate<
     useInMemoryFileSystem: true,
   });
   const file = project.createSourceFile('./file.ts', contents);
-
-  const { importMapProviders, ...restOptions } = options;
 
   const importMapProvidersMap = new Map(
     Object.entries(importMapProviders).map(([key, value]) => {
@@ -170,7 +150,7 @@ export async function renderTsCodeFileTemplate<
     imports ?? [],
     hoistedFragments ?? [],
     importMapProvidersMap,
-    restOptions,
+    options,
   );
 
   return file.getText();

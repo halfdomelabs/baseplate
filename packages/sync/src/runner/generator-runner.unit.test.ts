@@ -18,6 +18,7 @@ import {
   createReadOnlyProviderType,
 } from '../providers/index.js';
 import { executeGeneratorEntry } from './generator-runner.js';
+import { getRunnerContext } from './runner-context.js';
 import {
   buildTestGeneratorEntry,
   buildTestGeneratorTaskEntry,
@@ -55,6 +56,7 @@ function buildGeneratorEntry(
       | Promise<void | Record<string, unknown>>;
     generatorName?: string;
     phase?: TaskPhase;
+    run?: (deps: Record<string, Provider>) => void;
   } = {},
 ): GeneratorEntry {
   const {
@@ -68,6 +70,7 @@ function buildGeneratorEntry(
     exportMap = {},
     outputMap = {},
     phase,
+    run,
   } = options;
   return buildTestGeneratorEntry(
     {
@@ -84,10 +87,13 @@ function buildGeneratorEntry(
       exports: exportMap,
       outputs: outputMap,
       phase,
-      run: (deps) => ({
-        providers: entryExports,
-        build: (builder) => build(builder, deps) as undefined,
-      }),
+      run: (deps) => {
+        run?.(deps);
+        return {
+          providers: entryExports,
+          build: (builder) => build(builder, deps) as undefined,
+        };
+      },
     },
   );
 }
@@ -130,6 +136,24 @@ describe('executeGeneratorEntry', () => {
         },
       },
     ]);
+  });
+
+  it('adds the task ID to the context', async () => {
+    let runTaskId: string | undefined;
+    let buildTaskId: string | undefined;
+    const entry = buildGeneratorEntry({
+      id: 'test-generator',
+      generatorName: 'test-generator',
+      build: () => {
+        buildTaskId = getRunnerContext()?.taskId;
+      },
+      run: () => {
+        runTaskId = getRunnerContext()?.taskId;
+      },
+    });
+    await executeGeneratorEntry(entry, { logger });
+    expect(runTaskId).toEqual('test-generator#main');
+    expect(buildTaskId).toEqual('test-generator#main');
   });
 
   it('generates a nested entry', async () => {

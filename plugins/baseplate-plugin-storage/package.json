@@ -35,6 +35,7 @@
     "@halfdomelabs/fastify-generators": "workspace:*",
     "@halfdomelabs/react-generators": "workspace:*",
     "@halfdomelabs/ui-components": "workspace:*",
+    "@halfdomelabs/utils": "workspace:*",
     "@hookform/resolvers": "3.9.0",
     "inflection": "3.0.0",
     "react": "catalog:",

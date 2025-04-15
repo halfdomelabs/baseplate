@@ -167,7 +167,7 @@ export async function generateForDirectory({
     // write metadata to the generated directory
     if (templateMetadataWriter?.enabled) {
       await deleteMetadataFiles(projectDirectory);
-      await writeGeneratorsMetadata(project, output.files, projectDirectory);
+      await writeGeneratorsMetadata(project, projectDirectory);
       await writeTemplateMetadata(output.files, projectDirectory);
     }
 

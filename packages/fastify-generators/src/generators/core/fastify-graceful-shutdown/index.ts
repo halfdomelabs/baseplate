@@ -6,7 +6,7 @@ import {
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { errorHandlerServiceProvider } from '../error-handler-service/index.js';
+import { errorHandlerServiceProvider } from '../error-handler-service/error-handler-service.generator.js';
 import { fastifyServerProvider } from '../fastify-server/index.js';
 import { loggerServiceProvider } from '../logger-service/logger-service.generator.js';
 

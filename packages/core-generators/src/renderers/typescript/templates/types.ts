@@ -1,31 +1,61 @@
-import { ProviderType } from '@halfdomelabs/sync';
+import {
+  InferProviderType,
+  ProviderType,
+  TemplateFileBase,
+  templateFileMetadataBaseSchema,
+} from '@halfdomelabs/sync';
 import { TsCodeFragment } from '../fragments/types.js';
-import { TsImportMapProvider } from '../import-maps/types.js';
+import { z } from 'zod';
 
-export interface TsCodeTemplateVariable {
+export const TS_TEMPLATE_TYPE = 'ts';
+
+export const tsTemplateFileMetadataSchema =
+  templateFileMetadataBaseSchema.extend({
+    type: z.literal(TS_TEMPLATE_TYPE),
+    /**
+     * The group of templates that this template belongs to.
+     */
+    group: z.string().optional(),
+    /**
+     * The variables for the template.
+     */
+    variables: z
+      .record(
+        z.string(),
+        z.object({
+          description: z.string().optional(),
+        }),
+      )
+      .optional(),
+    /**
+     * The exports of the file that are unique across the project.
+     */
+    projectExports: z
+      .record(z.string(), z.object({ isTypeOnly: z.boolean().optional() }))
+      .optional(),
+  });
+
+export type TsTemplateFileMetadata = z.infer<
+  typeof tsTemplateFileMetadataSchema
+>;
+
+export interface TsTemplateVariable {
   description?: string;
 }
 
-export type TsCodeTemplateVariableMap = Record<string, TsCodeTemplateVariable>;
+export type TsTemplateVariableMap = Record<string, TsTemplateVariable>;
 
-export type TsCodeFileTemplateSource =
-  | {
-      path: string;
-    }
-  | {
-      contents: string;
-    };
-
-export interface TsCodeFileTemplate<
-  TVariables extends TsCodeTemplateVariableMap,
+export interface TsTemplateFile<
+  TVariables extends TsTemplateVariableMap = Record<never, TsTemplateVariable>,
   TImportMapProviders extends Record<string, ProviderType> = Record<
     never,
     ProviderType
   >,
-> {
-  name: string;
+> extends TemplateFileBase {
+  /**
+   * The variables for the template.
+   */
   variables: TVariables;
-  source: TsCodeFileTemplateSource;
   /**
    * The prefix to use for the template variables.
    * @default 'TPL_'
@@ -35,10 +65,60 @@ export interface TsCodeFileTemplate<
    * Import map providers that will be used to resolve imports for the template.
    */
   importMapProviders?: TImportMapProviders;
+  /**
+   * The exports of the file that are unique across the project.
+   */
+  projectExports?: Record<string, { isTypeOnly?: boolean }>;
 }
 
-export type InferTsCodeTemplateVariablesFromMap<
-  TMap extends TsCodeTemplateVariableMap,
+export type TsTemplateFileVariableValue = TsCodeFragment | string;
+
+export type InferTsTemplateVariablesFromMap<
+  TMap extends TsTemplateVariableMap,
 > = {
-  [T in keyof TMap]: TsCodeFragment | string;
+  [T in keyof TMap]: TsTemplateFileVariableValue;
 };
+
+export type InferImportMapProvidersFromProviderTypeMap<
+  T extends Record<string, ProviderType> | undefined,
+> = {
+  [K in keyof T]: InferProviderType<T[K]>;
+};
+
+export function createTsTemplateFile<
+  TVariables extends TsTemplateVariableMap = Record<never, TsTemplateVariable>,
+  TImportMapProviders extends Record<string, ProviderType> = Record<
+    never,
+    ProviderType
+  >,
+>(
+  file: TsTemplateFile<TVariables, TImportMapProviders>,
+): TsTemplateFile<TVariables, TImportMapProviders> {
+  return file;
+}
+
+interface TsTemplateGroupEntry {
+  destination: string;
+  template: TsTemplateFile;
+}
+
+/**
+ * A group of text template files.
+ */
+export interface TsTemplateGroup<
+  T extends Record<string, TsTemplateGroupEntry> = Record<
+    string,
+    TsTemplateGroupEntry
+  >,
+> {
+  /**
+   * The templates in the group.
+   */
+  templates: T;
+}
+
+export function createTsTemplateGroup<
+  T extends Record<string, TsTemplateGroupEntry>,
+>(group: TsTemplateGroup<T>): TsTemplateGroup<T> {
+  return group;
+}

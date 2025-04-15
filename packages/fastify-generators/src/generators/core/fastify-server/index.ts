@@ -6,6 +6,7 @@ import {
   extractPackageVersions,
   mergeCodeEntryOptions,
   projectScope,
+  tsCodeFragment,
   TypescriptCodeBlock,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -21,7 +22,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
-import { configServiceProvider } from '../config-service/index.js';
+import { configServiceProvider } from '../config-service/config-service.generator.js';
 import { loggerServiceProvider } from '../logger-service/logger-service.generator.js';
 import {
   rootModuleConfigProvider,
@@ -119,16 +120,14 @@ export const fastifyServerGenerator = createGenerator({
           orderPriority: 'EARLY',
         });
 
-        configService.getConfigEntries().merge({
+        configService.configFields.mergeObj({
           SERVER_HOST: {
             comment: 'Hostname to bind the server to',
-            value: TypescriptCodeUtils.createExpression(
-              "z.string().default('localhost')",
-            ),
+            validator: tsCodeFragment('z.string().default("localhost")'),
           },
           SERVER_PORT: {
             comment: 'Port to bind the server to',
-            value: TypescriptCodeUtils.createExpression(
+            validator: tsCodeFragment(
               `z.coerce.number().min(1).max(65535).default(${descriptor.defaultPort})`,
             ),
           },

@@ -1,6 +1,7 @@
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 
-import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { quot } from '@halfdomelabs/utils';
 import { groupBy } from 'es-toolkit';
 
 import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';

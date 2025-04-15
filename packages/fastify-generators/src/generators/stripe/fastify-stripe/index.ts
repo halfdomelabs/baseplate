@@ -2,6 +2,7 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   projectScope,
+  tsCodeFragment,
   TypescriptCodeExpression,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -13,8 +14,8 @@ import {
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { configServiceProvider } from '@src/generators/core/config-service/index.js';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server/index.js';
 import { loggerServiceProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 
@@ -56,14 +57,14 @@ export const fastifyStripeGenerator = createGenerator({
         loggerService,
         fastifyServer,
       }) {
-        configService.getConfigEntries().set('STRIPE_SECRET_KEY', {
+        configService.configFields.set('STRIPE_SECRET_KEY', {
           comment: 'Stripe secret API key',
-          value: 'z.string().min(1)',
+          validator: tsCodeFragment('z.string().min(1)'),
           seedValue: 'STRIPE_SECRET_KEY',
         });
-        configService.getConfigEntries().set('STRIPE_ENDPOINT_SECRET', {
+        configService.configFields.set('STRIPE_ENDPOINT_SECRET', {
           comment: 'Stripe webhook endpoint secret',
-          value: 'z.string().min(1)',
+          validator: tsCodeFragment('z.string().min(1)'),
           seedValue: 'STRIPE_ENDPOINT_SECRET',
         });
         fastifyServer.registerPlugin({

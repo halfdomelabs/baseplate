@@ -2,16 +2,14 @@ import type { AnyGeneratorTask, TaskRunContext } from '@halfdomelabs/sync';
 import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
 
 import {
+  createConfigFieldMap,
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@halfdomelabs/sync';
-import {
-  createFieldMap,
-  createFieldMapSchemaBuilder,
-} from '@halfdomelabs/utils';
+import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
 import semver from 'semver';
 import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';
@@ -41,7 +39,7 @@ const nodePackageJsonFieldsSchema = createFieldMapSchemaBuilder((t) => ({
   /**
    * The dependencies for the project
    */
-  packages: createNodePackageDependenciesContainer(),
+  packages: createNodePackageDependenciesContainer(t.options),
   /**
    * The scripts for the project
    */
@@ -129,7 +127,9 @@ export const nodeGenerator = createGenerator({
         node: nodeProvider.export(projectScope),
       },
       run({ nodeConfigValues: { isEsm } }) {
-        const packageJsonFields = createFieldMap(nodePackageJsonFieldsSchema);
+        const packageJsonFields = createConfigFieldMap(
+          nodePackageJsonFieldsSchema,
+        );
 
         return {
           providers: {

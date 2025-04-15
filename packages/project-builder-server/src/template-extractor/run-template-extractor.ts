@@ -1,6 +1,7 @@
 import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
 import type { Logger, TemplateFileExtractorCreator } from '@halfdomelabs/sync';
 
+import { TsTemplateFileExtractor } from '@halfdomelabs/core-generators';
 import {
   RawTemplateFileExtractor,
   runTemplateFileExtractors,
@@ -20,6 +21,7 @@ const GENERATOR_PACKAGES = [
 const TEMPLATE_FILE_EXTRACTOR_CREATORS: TemplateFileExtractorCreator[] = [
   (context) => new TextTemplateFileExtractor(context),
   (context) => new RawTemplateFileExtractor(context),
+  (context) => new TsTemplateFileExtractor(context),
 ];
 
 async function buildGeneratorPackageMap(
@@ -48,7 +50,7 @@ async function buildGeneratorPackageMap(
 
 export async function runTemplateExtractorsForProject(
   directory: string,
-  app: string | undefined,
+  app: string,
   context: SchemaParserContext,
   logger: Logger,
 ): Promise<void> {
@@ -71,9 +73,14 @@ export async function runTemplateExtractorsForProject(
       }
       return true;
     });
+  if (appDirectories.length > 1) {
+    throw new Error(
+      `Found multiple app directories for ${app}: ${appDirectories.join(', ')}`,
+    );
+  }
   await runTemplateFileExtractors(
     TEMPLATE_FILE_EXTRACTOR_CREATORS,
-    appDirectories,
+    appDirectories[0],
     generatorPackageMap,
     logger,
   );

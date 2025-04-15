@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
 import { tsCodeFragment } from '../fragments/creators.js';
+import {
+  createTsImportMap,
+  createTsImportMapSchema,
+} from '../import-maps/ts-import-map.js';
 import { tsImportBuilder } from '../imports/builder.js';
 import { renderTsCodeFileTemplate } from './file.js';
 
 describe('renderTsCodeFileTemplate', () => {
-  it('should render a simple template without imports', async () => {
+  it('should render a simple template without imports', () => {
     const template = {
       name: 'test',
       source: { contents: 'const value = TPL_CONTENT;' },
@@ -18,13 +22,14 @@ describe('renderTsCodeFileTemplate', () => {
       TPL_CONTENT: tsCodeFragment('42'),
     };
 
-    const result = await renderTsCodeFileTemplate(template, variables, {
-      importMapProviders: {},
-    });
+    const result = renderTsCodeFileTemplate(
+      template.source.contents,
+      variables,
+    );
     expect(result).toBe('const value = 42;');
   });
 
-  it('should properly merge and sort imports', async () => {
+  it('should properly merge and sort imports', () => {
     const template = {
       name: 'test',
       source: { contents: 'TPL_IMPORTS' },
@@ -44,9 +49,10 @@ describe('renderTsCodeFileTemplate', () => {
       ),
     };
 
-    const result = await renderTsCodeFileTemplate(template, variables, {
-      importMapProviders: {},
-    });
+    const result = renderTsCodeFileTemplate(
+      template.source.contents,
+      variables,
+    );
 
     expect(result).toMatchInlineSnapshot(`
       "import type { type MyType } from "./types";
@@ -59,7 +65,7 @@ describe('renderTsCodeFileTemplate', () => {
     `);
   });
 
-  it('should handle module resolution when provided', async () => {
+  it('should handle module resolution when provided', () => {
     const template = {
       name: 'test',
       source: { contents: 'TPL_CONTENT' },
@@ -71,23 +77,27 @@ describe('renderTsCodeFileTemplate', () => {
     const variables = {
       TPL_CONTENT: tsCodeFragment(
         'const test = new Test();',
-        tsImportBuilder().named('Test').from('./test'),
+        tsImportBuilder().named('Test').from('test'),
       ),
     };
 
-    const result = await renderTsCodeFileTemplate(template, variables, {
-      resolveModule: (moduleSpecifier) => `@project/${moduleSpecifier}`,
-      importMapProviders: {},
-    });
+    const result = renderTsCodeFileTemplate(
+      template.source.contents,
+      variables,
+      {},
+      {
+        resolveModule: (moduleSpecifier) => `@project/${moduleSpecifier}`,
+      },
+    );
 
     expect(result).toMatchInlineSnapshot(`
-      "import { Test } from "@project/./test";
+      "import { Test } from "@project/test";
 
       const test = new Test();"
     `);
   });
 
-  it('should handle hoisted fragments in correct order', async () => {
+  it('should handle hoisted fragments in correct order', () => {
     const template = {
       name: 'test',
       source: { contents: 'TPL_CONTENT' },
@@ -117,9 +127,10 @@ describe('renderTsCodeFileTemplate', () => {
       ),
     };
 
-    const result = await renderTsCodeFileTemplate(template, variables, {
-      importMapProviders: {},
-    });
+    const result = renderTsCodeFileTemplate(
+      template.source.contents,
+      variables,
+    );
 
     expect(result).toMatchInlineSnapshot(
       `
@@ -133,5 +144,55 @@ describe('renderTsCodeFileTemplate', () => {
       const x = helper1() + helper2();"
     `,
     );
+  });
+
+  it('should handle multiple import maps correctly', () => {
+    const template = {
+      name: 'test',
+      source: {
+        contents: `
+        import { Test1 } from "%testImport1";
+        import { Test2 } from "%testImport2";
+
+        const test1 = new Test1();
+        const test2 = new Test2();
+      `,
+      },
+    };
+
+    const importMapSchema1 = createTsImportMapSchema({
+      Test1: { name: 'Test1' },
+    });
+
+    const importMapSchema2 = createTsImportMapSchema({
+      Test2: { name: 'Test2' },
+    });
+
+    const importMap1 = createTsImportMap(importMapSchema1, {
+      Test1: 'test-package1',
+    });
+
+    const importMap2 = createTsImportMap(importMapSchema2, {
+      Test2: 'test-package2',
+    });
+
+    const result = renderTsCodeFileTemplate(
+      template.source.contents,
+      {},
+      {
+        testImport1: { importMap: importMap1 },
+        testImport2: { importMap: importMap2 },
+      },
+    );
+
+    expect(result).toMatchInlineSnapshot(`
+      "import { Test1 } from "test-package1";
+      import { Test2 } from "test-package2";
+
+
+                              const test1 = new Test1();
+              const test2 = new Test2();
+            "
+    `);
   });
 });
