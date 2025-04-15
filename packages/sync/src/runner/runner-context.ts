@@ -3,7 +3,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 /**
  * Structure representing the context of a generator runner
  */
-export interface RunnerContext {
+interface RunnerContext {
   /** The ID of the task being executed */
   taskId: string;
 }
