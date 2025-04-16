@@ -1,3 +1,4 @@
+import type { TsCodeFragment } from '../fragments/types.js';
 import type { TsImportDeclaration } from '../imports/types.js';
 
 export interface TsImportMapSchemaEntry<
@@ -25,6 +26,8 @@ export interface TsImportMapEntry<
     alias?: string,
   ): IsTypeOnly extends true ? never : TsImportDeclaration;
   typeDeclaration(alias?: string): TsImportDeclaration;
+  frag(): TsCodeFragment;
+  typeFrag(): TsCodeFragment;
 }
 
 export type TsImportMap = Record<string, TsImportMapEntry>;
@@ -33,9 +36,5 @@ export type InferTsImportMapFromSchema<T extends TsImportMapSchema> = {
   [K in keyof T]: TsImportMapEntry<T[K]['isTypeOnly']>;
 };
 
-export interface TsImportMapProvider<T extends TsImportMap> {
-  importMap: T;
-}
-
 export type TsImportMapProviderFromSchema<T extends TsImportMapSchema> =
-  TsImportMapProvider<InferTsImportMapFromSchema<T>>;
+  InferTsImportMapFromSchema<T>;

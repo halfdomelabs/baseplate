@@ -4,7 +4,7 @@ import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import type { TsImportMapProviderFromSchema } from 'TPL_TS_IMPORTS';
 
 import {
-  createTsImportMapProvider,
+  createTsImportMap,
   createTsImportMapSchema,
 } from 'TPL_TS_IMPORTS';
 
@@ -27,7 +27,7 @@ export function TPL_CREATE_IMPORT_MAP_FUNCTION(
     throw new Error('importBase must start with @/');
   }
 
-  return createTsImportMapProvider(
+  return createTsImportMap(
     TPL_IMPORTS_SCHEMA_VAR,
     TPL_IMPORT_MAP_CREATOR,
   );

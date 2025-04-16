@@ -6,7 +6,6 @@ import type {
 
 import {
   projectScope,
-  tsCodeFragment,
   TsCodeUtils,
   TypescriptCodeUtils,
   typescriptFileProvider,
@@ -150,10 +149,7 @@ export const errorHandlerServiceGenerator = createGenerator({
                   TPL_LOGGER_ACTIONS: TsCodeUtils.mergeFragments(
                     [
                       ...loggerActions,
-                      tsCodeFragment(
-                        `logger.error({ err: error, ...context });`,
-                        loggerServiceImports.importMap.logger.declaration(),
-                      ),
+                      TsCodeUtils.template`${loggerServiceImports.logger.frag()}.error({ err: error, ...context });`,
                     ],
                     '\n\n',
                   ),

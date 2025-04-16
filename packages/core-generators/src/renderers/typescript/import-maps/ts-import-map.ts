@@ -1,10 +1,11 @@
 import type { TsImportDeclaration } from '../imports/types.js';
 import type {
   InferTsImportMapFromSchema,
-  TsImportMapProviderFromSchema,
   TsImportMapSchema,
   TsImportMapSchemaEntry,
 } from './types.js';
+
+import { tsCodeFragment } from '../fragments/creators.js';
 
 export function createTsImportMapSchema<
   T extends Record<string, TsImportMapSchemaEntry>,
@@ -60,15 +61,11 @@ export function createTsImportMap<
             return makeDeclaration(alias);
           },
           typeDeclaration: (alias) => makeDeclaration(alias, true),
+          frag: () => tsCodeFragment(name, makeDeclaration()),
+          typeFrag: () =>
+            tsCodeFragment(name, makeDeclaration(undefined, true)),
         },
       ];
     }),
   ) as InferTsImportMapFromSchema<T>;
-}
-
-export function createTsImportMapProvider<T extends TsImportMapSchema>(
-  importSchema: T,
-  importMap: ImportMapInputFromSchema<T>,
-): TsImportMapProviderFromSchema<T> {
-  return { importMap: createTsImportMap(importSchema, importMap) };
 }

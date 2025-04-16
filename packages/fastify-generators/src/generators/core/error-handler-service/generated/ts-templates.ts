@@ -6,18 +6,16 @@ import {
 import { configServiceImportsProvider } from '../../config-service/generated/ts-import-maps.js';
 
 const zod = createTsTemplateFile({
-  name: 'zod',
   group: 'utils',
+  name: 'zod',
+  projectExports: { handleZodRequestValidationError: {} },
   source: { path: 'utils/zod.ts' },
   variables: {},
-  projectExports: { handleZodRequestValidationError: {} },
 });
 
 const httpErrors = createTsTemplateFile({
-  name: 'http-errors',
   group: 'utils',
-  source: { path: 'utils/http-errors.ts' },
-  variables: {},
+  name: 'http-errors',
   projectExports: {
     BadRequestError: {},
     ForbiddenError: {},
@@ -26,32 +24,34 @@ const httpErrors = createTsTemplateFile({
     NotFoundError: {},
     UnauthorizedError: {},
   },
+  source: { path: 'utils/http-errors.ts' },
+  variables: {},
 });
 
 const utilsGroup = createTsTemplateGroup({
   templates: {
-    zod: { destination: 'zod.ts', template: zod },
     httpErrors: { destination: 'http-errors.ts', template: httpErrors },
+    zod: { destination: 'zod.ts', template: zod },
   },
 });
 
 const errorLogger = createTsTemplateFile({
   name: 'error-logger',
+  projectExports: { logError: {} },
   source: { path: 'services/error-logger.ts' },
   variables: { TPL_CONTEXT_ACTIONS: {}, TPL_LOGGER_ACTIONS: {} },
-  projectExports: { logError: {} },
 });
 
 const errorHandlerPlugin = createTsTemplateFile({
+  importMapProviders: { configServiceImports: configServiceImportsProvider },
   name: 'error-handler-plugin',
+  projectExports: {},
   source: { path: 'plugins/error-handler.ts' },
   variables: {},
-  projectExports: {},
-  importMapProviders: { configServiceImports: configServiceImportsProvider },
 });
 
 export const CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES = {
-  utilsGroup,
-  errorLogger,
   errorHandlerPlugin,
+  errorLogger,
+  utilsGroup,
 };

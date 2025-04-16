@@ -1,7 +1,7 @@
 import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
 
 import {
-  createTsImportMapProvider,
+  createTsImportMap,
   createTsImportMapSchema,
 } from '@halfdomelabs/core-generators';
 import { createReadOnlyProviderType } from '@halfdomelabs/sync';
@@ -34,7 +34,7 @@ export function createErrorHandlerServiceImports(
     throw new Error('importBase must start with @/');
   }
 
-  return createTsImportMapProvider(errorHandlerServiceImportsSchema, {
+  return createTsImportMap(errorHandlerServiceImportsSchema, {
     BadRequestError: path.join(importBase, 'utils/http-errors.js'),
     ForbiddenError: path.join(importBase, 'utils/http-errors.js'),
     HttpError: path.join(importBase, 'utils/http-errors.js'),

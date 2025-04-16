@@ -209,7 +209,7 @@ const removedVar = 1;
       "import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
 
       import {
-        createTsImportMapProvider,
+        createTsImportMap,
         createTsImportMapSchema,
       } from '@halfdomelabs/core-generators';
       import { createReadOnlyProviderType } from '@halfdomelabs/sync';
@@ -236,7 +236,7 @@ const removedVar = 1;
           throw new Error('importBase must start with @/');
         }
 
-        return createTsImportMapProvider(testGeneratorImportsSchema, {
+        return createTsImportMap(testGeneratorImportsSchema, {
           TestComponent: path.join(importBase, 'test-component.js'),
           TestComponentProps: path.join(importBase, 'test-component.js'),
         });
@@ -388,7 +388,7 @@ export function SecondUtil() {
       "import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
 
       import {
-        createTsImportMapProvider,
+        createTsImportMap,
         createTsImportMapSchema,
       } from '@halfdomelabs/core-generators';
       import { createReadOnlyProviderType } from '@halfdomelabs/sync';
@@ -415,7 +415,7 @@ export function SecondUtil() {
           throw new Error('importBase must start with @/');
         }
 
-        return createTsImportMapProvider(testGeneratorImportsSchema, {
+        return createTsImportMap(testGeneratorImportsSchema, {
           FirstComponent: path.join(importBase, 'first-component.js'),
           FirstUtil: path.join(importBase, 'first-util.js'),
         });

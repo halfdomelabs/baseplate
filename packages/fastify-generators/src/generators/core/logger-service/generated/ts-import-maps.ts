@@ -1,7 +1,7 @@
 import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
 
 import {
-  createTsImportMapProvider,
+  createTsImportMap,
   createTsImportMapSchema,
 } from '@halfdomelabs/core-generators';
 import { createReadOnlyProviderType } from '@halfdomelabs/sync';
@@ -25,7 +25,7 @@ export function createLoggerServiceImports(
     throw new Error('importBase must start with @/');
   }
 
-  return createTsImportMapProvider(loggerServiceImportsSchema, {
+  return createTsImportMap(loggerServiceImportsSchema, {
     logger: path.join(importBase, 'logger.js'),
   });
 }
