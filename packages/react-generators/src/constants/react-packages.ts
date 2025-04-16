@@ -7,7 +7,7 @@ export const REACT_PACKAGES = {
   '@types/react': '18.3.8',
   '@types/react-dom': '18.3.0',
   '@vitejs/plugin-react': '4.3.4',
-  vite: '6.2.5',
+  vite: '6.3.0',
   'vite-plugin-svgr': '4.3.0',
   'vite-tsconfig-paths': '5.1.4',
 
