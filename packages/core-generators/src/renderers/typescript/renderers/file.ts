@@ -3,7 +3,7 @@ import type { SourceFile } from 'ts-morph';
 import { Project } from 'ts-morph';
 
 import type { TsHoistedFragment } from '../fragments/types.js';
-import type { TsImportMap, TsImportMapProvider } from '../import-maps/types.js';
+import type { TsImportMap } from '../import-maps/types.js';
 import type { SortImportDeclarationsOptions } from '../imports/index.js';
 import type { TsImportDeclaration } from '../imports/types.js';
 import type { TsTemplateFileVariableValue } from '../templates/types.js';
@@ -133,23 +133,12 @@ export function renderTsCodeFileTemplate(
   });
   const file = project.createSourceFile('./file.ts', contents);
 
-  const importMapProvidersMap = new Map(
-    Object.entries(importMapProviders).map(([key, value]) => {
-      const provider = value as TsImportMapProvider<TsImportMap>;
-      if (!('importMap' in provider)) {
-        throw new Error('Import map provider must have an importMap property');
-      }
-
-      return [key, provider.importMap];
-    }),
-  );
-
   // Merge in imports and hoisted fragments
   mergeImportsAndHoistedFragments(
     file,
     imports ?? [],
     hoistedFragments ?? [],
-    importMapProvidersMap,
+    new Map(Object.entries(importMapProviders) as [string, TsImportMap][]),
     options,
   );
 

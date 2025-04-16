@@ -1,3 +1,5 @@
+import { sortBy } from 'es-toolkit';
+
 import type { TsCodeFragment, TsHoistedFragment } from './fragments/types.js';
 import type { TsImportDeclaration } from './imports/types.js';
 
@@ -37,12 +39,43 @@ function mergeFragmentImportsAndHoistedFragments(fragments: TsCodeFragment[]): {
  */
 export const TsCodeUtils = {
   /**
-   * Merge an array of code fragments into a single code fragment.
+   * Merge a map of code fragments into a single code fragment. We by default use
+   * maps to ensure that the order of the fragments is deterministic since the
+   * code fragments are merged by the order of the keys.
+   *
    * @param fragments - The code fragments to merge.
    * @param separator - The separator to use between the fragments.
    * @returns The merged code fragment.
    */
   mergeFragments(
+    fragments: Map<string, TsCodeFragment>,
+    separator = '\n',
+  ): TsCodeFragment {
+    const sortedFragmentEntries = sortBy(
+      [...fragments.entries()],
+      [([key]) => key],
+    );
+    return {
+      contents: sortedFragmentEntries
+        .map(([, fragment]) => fragment.contents)
+        .join(separator),
+      ...mergeFragmentImportsAndHoistedFragments(
+        sortedFragmentEntries.map(([, fragment]) => fragment),
+      ),
+    };
+  },
+
+  /**
+   * Merge an array of code fragments into a single code fragment.
+   *
+   * NOTE: Be careful about using this function since the order of the fragments may not
+   * be deterministic so fragments should be presorted before using.
+   *
+   * @param fragments - The code fragments to merge.
+   * @param separator - The separator to use between the fragments.
+   * @returns The merged code fragment.
+   */
+  mergeFragmentsPresorted(
     fragments: TsCodeFragment[],
     separator = '\n',
   ): TsCodeFragment {
@@ -84,6 +117,9 @@ export const TsCodeUtils = {
 
   /**
    * Merge an object of code fragments into a single code fragment.
+   *
+   * Keys are sorted by default for persistence.
+   *
    * @param obj - The object to merge.
    * @param options - The options for the merge.
    * @returns The merged code fragment.
@@ -92,13 +128,20 @@ export const TsCodeUtils = {
     obj: Record<string, TsCodeFragment | string | undefined>,
     options: {
       wrapWithParenthesis?: boolean;
+      disableSort?: boolean;
     } = {},
   ): TsCodeFragment {
-    const { wrapWithParenthesis = false } = options;
+    const { wrapWithParenthesis = false, disableSort = false } = options;
     const keys = Object.keys(obj);
     const fragments = Object.values(obj).filter(isTsCodeFragment);
 
-    const mergedContent = keys
+    const sortedKeys = disableSort ? keys : keys.toSorted();
+
+    if (!disableSort && keys.some((k) => k.startsWith('...'))) {
+      throw new Error('Cannot have spread keys when sorting is enabled');
+    }
+
+    const mergedContent = sortedKeys
       .filter((key) => obj[key] != null)
       .map((key) => {
         const value = obj[key] ?? '';

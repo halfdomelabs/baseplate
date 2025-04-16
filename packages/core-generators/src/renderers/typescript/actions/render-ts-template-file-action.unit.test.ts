@@ -169,8 +169,8 @@ describe('renderTsTemplateFileAction', () => {
         TPL_GREETING: tsCodeFragment('"world"'),
       },
       importMapProviders: {
-        testImport1: { importMap: importMap1 },
-        testImport2: { importMap: importMap2 },
+        testImport1: importMap1,
+        testImport2: importMap2,
       },
     });
 

@@ -44,9 +44,10 @@ export function renderTsTemplateToTsCodeFragment(
   const variableKeys = new Set(Object.keys(variables));
 
   // find all block templates first
+  const processedKeys = new Set<string>();
   if (options.includeMetadata) {
     renderedTemplate = renderedTemplate.replaceAll(
-      new RegExp(`^(\\s*)(${prefix}[A-Z0-9_]+);$`, 'g'),
+      new RegExp(`^(\\s*)(${prefix}[A-Z0-9_]+);$`, 'gm'),
       (match, leading: string, key: string) => {
         if (!(key in variables)) {
           throw new Error(`Template variable not found: ${key}`);
@@ -56,7 +57,7 @@ export function renderTsTemplateToTsCodeFragment(
         const contents = typeof value === 'string' ? value : value.contents;
 
         variableKeys.delete(key);
-
+        processedKeys.add(key);
         return `${leading}/* ${key}:START */\n${contents}\n/* ${key}:END */`;
       },
     );
@@ -64,6 +65,10 @@ export function renderTsTemplateToTsCodeFragment(
   renderedTemplate = renderedTemplate.replaceAll(
     new RegExp(`(${prefix}[A-Z0-9_]+)(?=[^A-Z0-9_]|$)`, 'g'),
     (match, key: string) => {
+      if (processedKeys.has(key)) {
+        return match;
+      }
+
       if (!(key in variables)) {
         throw new Error(`Template variable not found: ${key}`);
       }

@@ -10,7 +10,7 @@ import {
 } from '@halfdomelabs/sync';
 import { mapGroupBy, mapKeyBy, quot } from '@halfdomelabs/utils';
 import { getCommonPathPrefix } from '@halfdomelabs/utils/node';
-import { camelCase, constantCase, uniq } from 'es-toolkit';
+import { camelCase, constantCase, sortBy, uniq } from 'es-toolkit';
 import path from 'node:path';
 import { ResolverFactory } from 'oxc-resolver';
 import pLimit from 'p-limit';
@@ -207,8 +207,13 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
     });`;
 
     return {
-      codeBlock: TsCodeUtils.mergeFragments(
-        [...results.map((result) => result.codeBlock), groupBlock],
+      codeBlock: TsCodeUtils.mergeFragmentsPresorted(
+        [
+          ...sortBy(results, [(r) => r.exportName]).map(
+            (result) => result.codeBlock,
+          ),
+          groupBlock,
+        ],
         '\n\n',
       ),
       exportName: groupNameVariable,
@@ -263,8 +268,10 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
       
       export const TPL_TEMPLATE_VARIABLE_NAME = TPL_RESULT;`,
       {
-        TPL_CODE_BLOCKS: TsCodeUtils.mergeFragments(
-          results.map((result) => result.codeBlock),
+        TPL_CODE_BLOCKS: TsCodeUtils.mergeFragmentsPresorted(
+          sortBy(results, [(r) => r.exportName]).map(
+            (result) => result.codeBlock,
+          ),
           '\n\n',
         ),
         TPL_TEMPLATE_VARIABLE_NAME: templatesVariableName,

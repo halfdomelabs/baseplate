@@ -64,7 +64,6 @@ interface ConfigField {
 
 const configServiceConfigSchema = createFieldMapSchemaBuilder((t) => ({
   configFields: t.map(new Map<string, ConfigField>()),
-  additionalVerifications: t.array<TsCodeFragment>(),
 }));
 
 export interface ConfigServiceProvider
@@ -160,7 +159,7 @@ export const configServiceGenerator = createGenerator({
               [...config.configFields],
               [(entry) => entry[0]],
             );
-            const configFields = sortedConfigEntries.map(
+            const sortedConfigFields = sortedConfigEntries.map(
               ([key, { comment, validator }]) =>
                 TsCodeUtils.template`${
                   comment ? `${TsCodeUtils.formatAsComment(comment)}\n` : ''
@@ -175,11 +174,8 @@ export const configServiceGenerator = createGenerator({
                   TPL_CONFIG_SCHEMA: TsCodeUtils.templateWithImports(
                     tsImportBuilder(['z']).from('zod'),
                   )`z.object({
-                  ${TsCodeUtils.mergeFragments(configFields, '\n')}
+                  ${TsCodeUtils.mergeFragmentsPresorted(sortedConfigFields, '\n')}
               })`,
-                  TPL_ADDITIONAL_VERIFICATIONS: TsCodeUtils.mergeFragments(
-                    config.additionalVerifications,
-                  ),
                 },
               }),
             );

@@ -6,7 +6,6 @@ import type {
 
 import {
   projectScope,
-  tsCodeFragment,
   TsCodeUtils,
   TypescriptCodeUtils,
   typescriptFileProvider,
@@ -44,8 +43,8 @@ export const [
   errorHandlerServiceConfigValuesProvider,
 ] = createConfigProviderTask(
   (t) => ({
-    contextActions: t.array<TsCodeFragment>(),
-    loggerActions: t.array<TsCodeFragment>(),
+    contextActions: t.map<string, TsCodeFragment>(),
+    loggerActions: t.map<string, TsCodeFragment>(),
   }),
   {
     prefix: 'error-handler-service',
@@ -142,19 +141,14 @@ export const errorHandlerServiceGenerator = createGenerator({
               typescriptFile.renderTemplateFile({
                 template: CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.errorLogger,
                 destination: 'src/services/error-logger.ts',
+                importMapProviders: { loggerServiceImports },
                 variables: {
                   TPL_CONTEXT_ACTIONS: TsCodeUtils.mergeFragments(
                     contextActions,
                     '\n\n',
                   ),
                   TPL_LOGGER_ACTIONS: TsCodeUtils.mergeFragments(
-                    [
-                      ...loggerActions,
-                      tsCodeFragment(
-                        `logger.error({ err: error, ...context });`,
-                        loggerServiceImports.importMap.logger.declaration(),
-                      ),
-                    ],
+                    loggerActions,
                     '\n\n',
                   ),
                 },

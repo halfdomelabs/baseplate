@@ -33,10 +33,13 @@ describe('renderTsTemplateToTsCodeFragment', () => {
   });
 
   it('should include metadata when option is enabled', () => {
-    const template = 'const name = TPL_VARIABLE;';
+    const template = 'const name = TPL_VARIABLE;\nTPL_BLOCK;';
     const variables = {
       TPL_VARIABLE: {
         contents: '"test"',
+      },
+      TPL_BLOCK: {
+        contents: 'console.log(name);',
       },
     };
 
@@ -44,9 +47,12 @@ describe('renderTsTemplateToTsCodeFragment', () => {
       includeMetadata: true,
     });
 
-    expect(result.contents).toEqual(
-      'const name = /* TPL_VARIABLE:START */ "test" /* TPL_VARIABLE:END */;',
-    );
+    expect(result.contents).toMatchInlineSnapshot(`
+      "const name = /* TPL_VARIABLE:START */ "test" /* TPL_VARIABLE:END */;
+      /* TPL_BLOCK:START */
+      console.log(name);
+      /* TPL_BLOCK:END */"
+    `);
   });
 
   it('should collect imports and hoisted fragments from variables', () => {

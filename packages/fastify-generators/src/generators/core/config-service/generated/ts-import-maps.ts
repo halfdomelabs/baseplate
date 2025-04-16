@@ -1,7 +1,7 @@
 import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
 
 import {
-  createTsImportMapProvider,
+  createTsImportMap,
   createTsImportMapSchema,
 } from '@halfdomelabs/core-generators';
 import { createReadOnlyProviderType } from '@halfdomelabs/sync';
@@ -25,7 +25,7 @@ export function createConfigServiceImports(
     throw new Error('importBase must start with @/');
   }
 
-  return createTsImportMapProvider(configServiceImportsSchema, {
+  return createTsImportMap(configServiceImportsSchema, {
     config: path.join(importBase, 'config.js'),
   });
 }
