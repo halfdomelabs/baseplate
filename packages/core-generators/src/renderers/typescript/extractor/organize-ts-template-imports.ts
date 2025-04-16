@@ -1,17 +1,15 @@
 import type { ResolverFactory } from 'oxc-resolver';
+import type { Identifier } from 'ts-morph';
 
 import path from 'node:path';
-import { Project } from 'ts-morph';
+import { Project, StringLiteral } from 'ts-morph';
 
 import type { TsProjectExport } from './write-ts-project-exports.js';
 
 import { writeGroupedImportDeclarationsWithCodeBlockWriter } from '../imports/index.js';
 import { mergeTsImportDeclarations } from '../imports/merge-ts-import-declarations.js';
 import { sortImportDeclarations } from '../imports/sort-imports/sort-import-declarations.js';
-import {
-  convertTsMorphImportDeclarationToTsImportDeclaration,
-  getTsMorphImportDeclarationsFromSourceFile,
-} from '../imports/ts-morph-operations.js';
+import { getTsMorphImportDeclarationsFromSourceFile } from '../imports/ts-morph-operations.js';
 
 // Map of project relative path to a map of import name to project export
 export type ProjectExportLookupMap = Map<string, Map<string, TsProjectExport>>;
@@ -21,6 +19,15 @@ export interface TsTemplateImportLookupContext {
   projectRoot: string;
   generatorFiles: string[];
   resolver: ResolverFactory;
+}
+
+function isIdentifierUsed(
+  node: Identifier | undefined | StringLiteral,
+): node is Identifier {
+  if (node instanceof StringLiteral) {
+    return false;
+  }
+  return node !== undefined && node.findReferencesAsNodes().length > 1;
 }
 
 /**
@@ -51,15 +58,44 @@ export async function organizeTsTemplateImports(
   const project = new Project({ useInMemoryFileSystem: true });
   const sourceFile = project.createSourceFile(filePath, contents);
 
-  // Remove unused imports
-  sourceFile.organizeImports();
-
   // Replace import declarations with new import declarations
   const importDeclarations =
     getTsMorphImportDeclarationsFromSourceFile(sourceFile);
-  const tsImportDeclarations = importDeclarations.map(
-    convertTsMorphImportDeclarationToTsImportDeclaration,
-  );
+
+  // Filter out import declarations that are not used
+  const tsImportDeclarations = importDeclarations
+    .map((declaration) => {
+      const namespaceImport = declaration.getNamespaceImport();
+      const defaultImport = declaration.getDefaultImport();
+      return {
+        source: declaration.getModuleSpecifier().getLiteralValue(),
+        isTypeOnly: declaration.isTypeOnly(),
+        namespaceImport: isIdentifierUsed(namespaceImport)
+          ? namespaceImport.getText()
+          : undefined,
+        defaultImport: isIdentifierUsed(defaultImport)
+          ? defaultImport.getText()
+          : undefined,
+        namedImports: declaration
+          .getNamedImports()
+          .filter((namedImport) =>
+            isIdentifierUsed(
+              namedImport.getAliasNode() ?? namedImport.getNameNode(),
+            ),
+          )
+          .map((namedImport) => ({
+            name: namedImport.getName(),
+            alias: namedImport.getAliasNode()?.getText(),
+            isTypeOnly: namedImport.isTypeOnly(),
+          })),
+      };
+    })
+    .filter(
+      (importDeclaration) =>
+        importDeclaration.defaultImport ??
+        importDeclaration.namespaceImport ??
+        importDeclaration.namedImports.length > 0,
+    );
 
   const usedProjectExports: TsProjectExport[] = [];
 
@@ -87,7 +123,7 @@ export async function organizeTsTemplateImports(
       if (
         importDeclaration.namespaceImport ||
         importDeclaration.defaultImport ||
-        !importDeclaration.namedImports?.length
+        importDeclaration.namedImports.length === 0
       ) {
         throw new Error(
           `Import ${source} in ${filePath} cannot be a namespace or default import since they are not supported currently
