@@ -17,14 +17,20 @@ describe('TsCodeUtils', () => {
         tsCodeFragment('type B = number;'),
         'h2',
       );
-      const fragments = [
-        tsCodeFragment('const a = 1;', fooImport, {
-          hoistedFragments: [h1Fragment],
-        }),
-        tsCodeFragment('const b = 2;', barImport, {
-          hoistedFragments: [h2Fragment],
-        }),
-      ];
+      const fragments = new Map([
+        [
+          'b',
+          tsCodeFragment('const b = 2;', barImport, {
+            hoistedFragments: [h2Fragment],
+          }),
+        ],
+        [
+          'a',
+          tsCodeFragment('const a = 1;', fooImport, {
+            hoistedFragments: [h1Fragment],
+          }),
+        ],
+      ]);
 
       const result = TsCodeUtils.mergeFragments(fragments);
 
@@ -35,12 +41,36 @@ describe('TsCodeUtils', () => {
       });
     });
 
-    it('should handle empty fragments array', () => {
-      const result = TsCodeUtils.mergeFragments([]);
+    it('should handle empty fragments map', () => {
+      const result = TsCodeUtils.mergeFragments(new Map());
       expect(result).toEqual({
         contents: '',
         imports: [],
         hoistedFragments: [],
+      });
+    });
+  });
+
+  describe('mergeFragmentsPresorted', () => {
+    it('should merge multiple fragments with their contents, imports and hoisted fragments', () => {
+      const fooImport = tsImportBuilder().named('foo').from('./foo.js');
+      const barImport = tsImportBuilder().named('bar').from('./bar.js');
+      const h1Fragment = tsHoistedFragment(
+        tsCodeFragment('type A = string;'),
+        'h1',
+      );
+      const fragments = [
+        tsCodeFragment('const a = 1;', fooImport, {
+          hoistedFragments: [h1Fragment],
+        }),
+        tsCodeFragment('const b = 2;', barImport),
+      ];
+      const result = TsCodeUtils.mergeFragmentsPresorted(fragments);
+
+      expect(result).toEqual({
+        contents: 'const a = 1;\nconst b = 2;',
+        imports: [fooImport, barImport],
+        hoistedFragments: [h1Fragment],
       });
     });
   });

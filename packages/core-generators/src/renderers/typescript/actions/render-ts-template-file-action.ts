@@ -33,7 +33,7 @@ type RenderTsTemplateFileActionVariablesInput<T extends TsTemplateFile> =
 
 type RenderTsTemplateFileActionImportMapProvidersInput<
   T extends TsTemplateFile,
-> = keyof T['importMapProviders'] extends never
+> = keyof Exclude<T['importMapProviders'], undefined> extends never
   ? Partial<{
       importMapProviders: InferImportMapProvidersFromProviderTypeMap<
         T['importMapProviders']

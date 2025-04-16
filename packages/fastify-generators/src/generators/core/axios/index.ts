@@ -41,7 +41,8 @@ export const axiosGenerator = createGenerator({
               }),
             );
 
-            errorHandlerServiceConfig.contextActions.push(
+            errorHandlerServiceConfig.contextActions.set(
+              'getAxiosErrorInfo',
               tsCodeFragment(
                 `Object.assign(context, getAxiosErrorInfo(error));`,
                 tsImportBuilder(['getAxiosErrorInfo']).from(axiosImport),

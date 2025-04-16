@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import { logger } from '%loggerServiceImports';
+
 interface ErrorContext extends Record<string, unknown> {
   errorId?: string;
 }
@@ -19,6 +21,8 @@ export function logError(
   TPL_CONTEXT_ACTIONS;
 
   TPL_LOGGER_ACTIONS;
+
+  logger.error({ err: error, ...context });
 
   return context.errorId;
 }
