@@ -12,6 +12,18 @@
       "args": ["run", "${relativeFile}"],
       "smartStep": true,
       "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run prisma-crud Generation",
+      "autoAttachChildProcesses": true,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "cwd": "${workspaceRoot}/packages/project-builder-cli",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["run", "start", "generate", "../../../prisma-crud"],
+      "smartStep": true,
+      "console": "integratedTerminal"
     }
   ]
 }
