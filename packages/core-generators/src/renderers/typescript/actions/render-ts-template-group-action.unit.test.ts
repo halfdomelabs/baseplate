@@ -180,10 +180,10 @@ describe('renderTsTemplateGroupAction', () => {
       baseDirectory: 'output',
       importMapProviders: {
         test1: {
-          testImport: { importMap },
+          testImport: importMap,
         },
         test2: {
-          testImport: { importMap },
+          testImport: importMap,
         },
       },
     });

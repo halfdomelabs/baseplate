@@ -105,6 +105,10 @@ export const TsCodeUtils = {
 
     const sortedKeys = disableSort ? keys : keys.toSorted();
 
+    if (!disableSort && keys.some((k) => k.startsWith('...'))) {
+      throw new Error('Cannot have spread keys when sorting is enabled');
+    }
+
     const mergedContent = sortedKeys
       .filter((key) => obj[key] != null)
       .map((key) => {

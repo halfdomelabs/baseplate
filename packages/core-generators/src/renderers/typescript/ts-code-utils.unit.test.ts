@@ -84,7 +84,22 @@ describe('TsCodeUtils', () => {
   });
 
   describe('mergeFragmentsAsObject', () => {
-    it('should merge fragments into an object literal', () => {
+    it('should merge fragments into a sorted object literal', () => {
+      const obj = {
+        prop2: tsCodeFragment('string value'),
+        prop1: tsCodeFragment('42'),
+      };
+
+      const result = TsCodeUtils.mergeFragmentsAsObject(obj);
+
+      expect(result).toEqual({
+        contents: '{prop1: 42,\nprop2: string value,}',
+        imports: [],
+        hoistedFragments: [],
+      });
+    });
+
+    it('should merge fragments into an object literal with no sorting and spread operators', () => {
       const obj = {
         prop1: tsCodeFragment(
           '42',
@@ -97,7 +112,9 @@ describe('TsCodeUtils', () => {
         ),
       };
 
-      const result = TsCodeUtils.mergeFragmentsAsObject(obj);
+      const result = TsCodeUtils.mergeFragmentsAsObject(obj, {
+        disableSort: true,
+      });
 
       expect(result).toEqual({
         contents: '{prop1: 42,\nprop2: string value,\n...restProps,}',

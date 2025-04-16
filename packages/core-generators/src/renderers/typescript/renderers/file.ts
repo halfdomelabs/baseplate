@@ -133,23 +133,12 @@ export function renderTsCodeFileTemplate(
   });
   const file = project.createSourceFile('./file.ts', contents);
 
-  const importMapProvidersMap = new Map(
-    Object.entries(importMapProviders).map(([key, value]) => {
-      const provider = value as TsImportMap;
-      if (!('importMap' in provider)) {
-        throw new Error('Import map provider must have an importMap property');
-      }
-
-      return [key, provider];
-    }),
-  );
-
   // Merge in imports and hoisted fragments
   mergeImportsAndHoistedFragments(
     file,
     imports ?? [],
     hoistedFragments ?? [],
-    importMapProvidersMap,
+    new Map(Object.entries(importMapProviders) as [string, TsImportMap][]),
     options,
   );
 

@@ -180,8 +180,8 @@ describe('renderTsCodeFileTemplate', () => {
       template.source.contents,
       {},
       {
-        testImport1: { importMap: importMap1 },
-        testImport2: { importMap: importMap2 },
+        testImport1: importMap1,
+        testImport2: importMap2,
       },
     );
 

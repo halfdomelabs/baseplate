@@ -126,9 +126,9 @@ const removedVar = 1;
 
       const myComponentTemplate = createTsTemplateFile({
         name: 'myComponentTemplate',
+        projectExports: {},
         source: { path: 'my-component.ts' },
         variables: { TPL_COMPONENT_NAME: {}, TPL_MESSAGE: {}, TPL_PROP_VALUE: {} },
-        projectExports: {},
       });
 
       export const TEST_GENERATOR_TS_TEMPLATES = { myComponentTemplate };
