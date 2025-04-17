@@ -1,4 +1,5 @@
-export const GITIGNORE_CONTENTS = `# Logs
+export const GITIGNORE_CONTENTS = `
+# Logs
 logs
 *.log
 npm-debug.log*
@@ -96,4 +97,4 @@ playground
 
 .DS_Store
 .vercel
-`;
+`.trimStart();

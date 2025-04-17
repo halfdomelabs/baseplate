@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import { generatePackageJson } from './package-json.mjs';
 import { GITIGNORE_CONTENTS } from './gitignore.mjs';
 import { createEslintConfig } from './eslint.mjs';
+import { LICENSE_CONTENTS } from './LICENSE.mjs';
 
 const rawFormat = createFormat({
   async read({ resolvedPath }) {
@@ -35,6 +36,13 @@ export default () => {
         { dir },
       ) => {
         return contents ?? createEslintConfig(dir);
+      },
+      'LICENSE [#raw]': async (contents, { dir }) => {
+        // create-project is MIT licensed
+        if (path.basename(dir) === 'create-project') {
+          return contents;
+        }
+        return LICENSE_CONTENTS;
       },
     },
     formats: {
