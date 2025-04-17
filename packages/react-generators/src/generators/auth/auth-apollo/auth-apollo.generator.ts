@@ -10,6 +10,7 @@ import {
 import { z } from 'zod';
 
 import { reactApolloSetupProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
+
 import { authServiceProvider } from '../auth-service/auth-service.generator.js';
 
 const descriptorSchema = z.object({

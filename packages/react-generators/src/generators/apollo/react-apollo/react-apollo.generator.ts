@@ -25,12 +25,12 @@ import { toposort } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+import { reactAppProvider } from '@src/generators/core/react-app/react-app.generator.js';
+import { reactConfigProvider } from '@src/generators/core/react-config/react-config.generator.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactProxyProvider } from '@src/generators/core/react-proxy/react-proxy.generator.js';
 
 import { notEmpty } from '../../../utils/array.js';
-import { reactAppProvider } from '@src/generators/core/react-app/react-app.generator.js';
-import { reactConfigProvider } from '@src/generators/core/react-config/react-config.generator.js';
 import { APOLLO_REACT_APOLLO_TEXT_TEMPLATES } from './generated/text-templates.js';
 
 const descriptorSchema = z.object({

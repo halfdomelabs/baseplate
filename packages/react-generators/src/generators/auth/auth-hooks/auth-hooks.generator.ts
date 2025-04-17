@@ -16,11 +16,11 @@ import {
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
-
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactLoggerProvider } from '@src/generators/core/react-logger/react-logger.generator.js';
+
 import { authServiceProvider } from '../auth-service/auth-service.generator.js';
 
 const descriptorSchema = z.object({

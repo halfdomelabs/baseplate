@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactLoggerProvider } from '@src/generators/core/react-logger/react-logger.generator.js';
+
 import { reactApolloSetupProvider } from '../react-apollo/react-apollo.generator.js';
 
 const descriptorSchema = z.object({

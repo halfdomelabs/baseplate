@@ -10,10 +10,9 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { reactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
 import { authHooksProvider } from '@src/generators/auth/auth-hooks/auth-hooks.generator.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
-
-import { reactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
 
 const descriptorSchema = z.object({
   userQueryName: z.string().default('user'),

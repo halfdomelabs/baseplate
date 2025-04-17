@@ -14,9 +14,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactUtilsProvider } from '@src/generators/core/react-utils/index.js';
-
 import { reactApolloSetupProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
+import { reactUtilsProvider } from '@src/generators/core/react-utils/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
