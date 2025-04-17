@@ -90,23 +90,23 @@ export async function runMorpher(
       if (isModified) {
         changedFiles += 1;
 
-        if (!dryRun && !morpher.saveUsingTsMorph) {
-          const formatted = await prettier.format(sourceFile.getFullText(), {
-            ...prettierConfig,
-            parser: 'typescript',
-          });
-          writeFileSync(sourceFile.getFilePath(), formatted, {
-            encoding: 'utf8',
-          });
+        if (!dryRun) {
+          if (morpher.saveUsingTsMorph) {
+            await project.save();
+          } else {
+            const formatted = await prettier.format(sourceFile.getFullText(), {
+              ...prettierConfig,
+              parser: 'typescript',
+            });
+            writeFileSync(sourceFile.getFilePath(), formatted, {
+              encoding: 'utf8',
+            });
+          }
         }
       }
     } catch (err) {
       erroredFiles.push({ filePath: sourceFile.getFilePath(), error: err });
     }
-  }
-
-  if (morpher.saveUsingTsMorph) {
-    await project.save();
   }
 
   if (erroredFiles.length > 0) {
