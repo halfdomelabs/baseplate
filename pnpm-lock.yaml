@@ -117,6 +117,9 @@ importers:
       commander:
         specifier: ^12.1.0
         version: 12.1.0
+      es-toolkit:
+        specifier: 1.31.0
+        version: 1.31.0
       globby:
         specifier: ^14.0.2
         version: 14.0.2

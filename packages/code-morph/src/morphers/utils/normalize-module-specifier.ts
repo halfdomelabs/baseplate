@@ -3,7 +3,12 @@ import type { ts } from 'ts-morph';
 import { minBy } from 'es-toolkit';
 import pathPosix from 'node:path/posix';
 
-import type { TsPathMapEntry } from './types.js';
+export interface TsPathMapEntry {
+  /** The alias to map from (e.g. "@src/*") */
+  from: string;
+  /** The project relative path to map to (e.g. "./src/app/*") */
+  to: string;
+}
 
 /**
  * Strips the relative prefix from a project relative path
@@ -86,7 +91,7 @@ type ModuleResolutionKind = `${ts.server.protocol.ModuleResolutionKind}`;
 /**
  * Options for resolving module paths
  */
-interface ResolveModuleOptions {
+export interface ResolveModuleOptions {
   /**
    * The path map entries
    */

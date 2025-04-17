@@ -1,12 +1,17 @@
 import type { SourceFile } from 'ts-morph';
 import type z from 'zod';
 
+export interface MorpherContext {
+  packageDirectory: string;
+}
+
 /**
  * The transform function for a morpher.
  */
 type TransformFunction<Options extends Record<string, string | undefined>> = (
   file: SourceFile,
   options: Options,
+  context: MorpherContext,
 ) => void;
 
 /**

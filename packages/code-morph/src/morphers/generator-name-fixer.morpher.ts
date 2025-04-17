@@ -5,6 +5,8 @@ import { SyntaxKind } from 'ts-morph';
 
 import { createTypescriptMorpher } from '@src/types.js';
 
+import { moveFile } from './utils/move-file.js';
+
 /**
  * Note: There is a known bug: https://github.com/dsherret/ts-morph/issues/1612
  *
@@ -18,9 +20,13 @@ export default createTypescriptMorpher({
   options: {},
   pathGlobs: ['src/generators/**/*.ts'],
   saveUsingTsMorph: true,
-  transform: (sourceFile: SourceFile) => {
+  transform: (sourceFile: SourceFile, options, context) => {
     // Skip if not a generator file
     if (!sourceFile.getFilePath().includes('/generators/')) {
+      return;
+    }
+
+    if (!sourceFile.getFilePath().includes('/request-service-context/')) {
       return;
     }
 
@@ -81,7 +87,7 @@ export default createTypescriptMorpher({
     const expectedFileName = `${folderName}.generator.ts`;
 
     if (currentFileName !== expectedFileName) {
-      sourceFile.move(expectedFileName);
+      moveFile(sourceFile, expectedFileName, context);
     }
   },
 });
