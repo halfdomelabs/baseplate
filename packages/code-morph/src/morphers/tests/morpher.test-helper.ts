@@ -93,7 +93,9 @@ export function runMorpherTests(morpher: TypescriptMorpher<any>): void {
       const sourceFile = project.addSourceFileAtPath(
         path.join(casePath, inputFilename),
       );
-      morpher.transform(sourceFile, options);
+      morpher.transform(sourceFile, options, {
+        packageDirectory: fullTestFolderPath,
+      });
 
       const transformedText = sourceFile.getFullText();
 
