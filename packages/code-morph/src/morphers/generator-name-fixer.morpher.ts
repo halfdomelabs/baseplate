@@ -87,7 +87,7 @@ export default createTypescriptMorpher({
     const expectedFileName = `${folderName}.generator.ts`;
 
     if (currentFileName !== expectedFileName) {
-      moveFile(sourceFile, expectedFileName, context);
+      moveFile(sourceFile, path.join(dirPath, expectedFileName), context);
     }
   },
 });

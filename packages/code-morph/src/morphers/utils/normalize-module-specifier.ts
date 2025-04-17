@@ -173,7 +173,13 @@ export function normalizeModuleSpecifier(
       .filter((x) => x !== undefined) ?? [];
 
   return normalizePathForResolutionKind(
-    minBy([relativePathImport, ...typescriptPathImports], (x) => x.length),
+    minBy([relativePathImport, ...typescriptPathImports], (x) => {
+      // favor paths if more than two directories away
+      if (x.startsWith('../..')) {
+        return x.length + 15;
+      }
+      return x.length;
+    }),
     options,
   );
 }

@@ -30,26 +30,38 @@ export function moveFile(
       ModuleResolutionKind.NodeNext;
   const resolveModuleOptions: ResolveModuleOptions = {
     moduleResolution: isNode16 ? 'node16' : 'node',
-    pathMapEntries:
-      project.getCompilerOptions().paths?.[0]?.map((entry) => ({
-        from: entry[0],
-        to: entry[1],
-      })) ?? [],
+    pathMapEntries: Object.entries(
+      project.getCompilerOptions().paths ?? {},
+    ).map(([from, to]) => ({
+      from,
+      to: to[0],
+    })),
   };
 
   const referencingFiles = sourceFile.getReferencingSourceFiles();
   for (const referencingFile of referencingFiles) {
+    const targetModuleSpecifier = normalizeModuleSpecifier(
+      `@/${path.relative(packageDirectory, targetFilePath.replace(/\.tsx?$/, isNode16 ? '.js' : ''))}`,
+      path.dirname(
+        path.relative(packageDirectory, referencingFile.getFilePath()),
+      ),
+      resolveModuleOptions,
+    );
+    console.log(
+      'args',
+      `@/${path.relative(packageDirectory, targetFilePath.replace(/\.tsx?$/, isNode16 ? '.js' : ''))}`,
+      path.dirname(
+        path.relative(packageDirectory, referencingFile.getFilePath()),
+      ),
+      resolveModuleOptions,
+    );
+    console.log(`result -> ${targetModuleSpecifier}`);
     // fix import statements
     const importStatements = referencingFile.getImportDeclarations();
     for (const importStatement of importStatements) {
       const importSpecifier = importStatement.getModuleSpecifierSourceFile();
       if (importSpecifier?.getFilePath() === currentFilePath) {
-        const resolvedImportSpecifier = normalizeModuleSpecifier(
-          `@/${path.relative(packageDirectory, targetFilePath.replace(/\.tsx?$/, isNode16 ? '.js' : ''))}`,
-          packageDirectory,
-          resolveModuleOptions,
-        );
-        importStatement.setModuleSpecifier(resolvedImportSpecifier);
+        importStatement.setModuleSpecifier(targetModuleSpecifier);
       }
     }
 
@@ -58,12 +70,14 @@ export function moveFile(
     for (const exportStatement of exportStatements) {
       const exportSpecifier = exportStatement.getModuleSpecifierSourceFile();
       if (exportSpecifier?.getFilePath() === currentFilePath) {
-        exportStatement.setModuleSpecifier(targetFilePath);
+        exportStatement.setModuleSpecifier(targetModuleSpecifier);
       }
     }
+
+    referencingFile.saveSync();
   }
 
-  project.getFileSystem().moveSync(currentFilePath, targetFilePath);
-  project.removeSourceFile(sourceFile);
+  sourceFile.delete();
+  project.getFileSystem().copySync(currentFilePath, targetFilePath);
   project.addSourceFileAtPath(targetFilePath);
 }
