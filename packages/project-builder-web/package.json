@@ -2,6 +2,7 @@
   "name": "@halfdomelabs/project-builder-web",
   "version": "0.15.8",
   "description": "Web interface for constructing project builder JSON",
+  "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
   "type": "module",

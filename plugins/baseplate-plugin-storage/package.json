@@ -11,8 +11,7 @@
     "LICENSE",
     "dist/**/*",
     "CHANGELOG",
-    "manifest.json",
-    "generator.json"
+    "manifest.json"
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",

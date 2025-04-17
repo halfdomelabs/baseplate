@@ -14,6 +14,8 @@
     "knip": "knip",
     "lint": "turbo run lint --continue",
     "lint:affected": "turbo run lint --affected --continue",
+    "meta:test": "meta-updater --test",
+    "meta:update": "meta-updater",
     "precheck": "turbo run lint prettier:check typecheck --output-logs=errors-only --affected --continue && pnpm run knip",
     "prettier:check": "turbo run prettier:check --continue",
     "prettier:check:affected": "turbo run prettier:check --affected --continue",
@@ -39,6 +41,8 @@
   },
   "devDependencies": {
     "@changesets/changelog-github": "0.5.1",
+    "@pnpm/meta-updater": "2.0.5",
+    "@types/node": "catalog:",
     "check-dependency-version-consistency": "5.0.0",
     "knip": "5.46.0",
     "prettier": "catalog:",

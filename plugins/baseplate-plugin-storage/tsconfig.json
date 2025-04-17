@@ -5,8 +5,7 @@
     "baseUrl": ".",
     "noEmit": true,
     "paths": {
-      "@src/*": ["src/*"],
-      "@generators/*": ["src/generators/*"]
+      "@src/*": ["src/*"]
     }
   },
   "include": ["src/**/*"],
