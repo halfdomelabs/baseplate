@@ -2,6 +2,7 @@
   "name": "@halfdomelabs/ui-components",
   "version": "0.5.5",
   "description": "Shared UI component library",
+  "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
   "sideEffects": false,
