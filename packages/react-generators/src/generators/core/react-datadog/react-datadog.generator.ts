@@ -18,7 +18,7 @@ import { z } from 'zod';
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 import { authIdentifyProvider } from '@src/generators/auth/auth-identify/index.js';
 
-import { reactConfigProvider } from '../react-config/index.js';
+import { reactConfigProvider } from '../react-config/react-config.generator.js';
 
 const descriptorSchema = z.object({});
 

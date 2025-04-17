@@ -26,7 +26,7 @@ import {
   renderGraphQLRoot,
 } from '@src/writers/graphql/index.js';
 
-import { adminCrudSectionScope } from '../admin-crud-section/index.js';
+import { adminCrudSectionScope } from '../admin-crud-section/admin-crud-section.generator.js';
 
 const descriptorSchema = z.object({
   modelName: z.string(),

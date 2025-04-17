@@ -30,8 +30,8 @@ import {
 import { notEmpty } from '@src/utils/array.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
-import { reactAppProvider } from '../react-app/index.js';
-import { reactProvider } from '../react/index.js';
+import { reactAppProvider } from '../react-app/react-app.generator.js';
+import { reactProvider } from '../react/react.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

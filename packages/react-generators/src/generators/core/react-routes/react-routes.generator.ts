@@ -15,7 +15,7 @@ import { notEmpty } from '@src/utils/array.js';
 import { dasherizeCamel, upperCaseFirst } from '@src/utils/case.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
-import { reactNotFoundProvider } from '../react-not-found-handler/index.js';
+import { reactNotFoundProvider } from '../react-not-found-handler/react-not-found-handler.generator.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

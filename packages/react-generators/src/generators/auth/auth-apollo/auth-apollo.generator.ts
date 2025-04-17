@@ -9,8 +9,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactApolloSetupProvider } from '../../apollo/react-apollo/index.js';
-import { authServiceProvider } from '../auth-service/index.js';
+import { reactApolloSetupProvider } from '../../apollo/react-apollo/react-apollo.generator.js';
+import { authServiceProvider } from '../auth-service/auth-service.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

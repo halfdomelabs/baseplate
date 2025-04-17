@@ -9,7 +9,7 @@ import { z } from 'zod';
 
 import { reactSentryProvider } from '@src/generators/core/react-sentry/index.js';
 
-import { reactApolloSetupProvider } from '../react-apollo/index.js';
+import { reactApolloSetupProvider } from '../react-apollo/react-apollo.generator.js';
 
 const descriptorSchema = z.object({});
 

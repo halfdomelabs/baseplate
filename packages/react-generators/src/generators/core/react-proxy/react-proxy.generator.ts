@@ -9,8 +9,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactConfigProvider } from '../react-config/index.js';
-import { reactProvider } from '../react/index.js';
+import { reactConfigProvider } from '../react-config/react-config.generator.js';
+import { reactProvider } from '../react/react.generator.js';
 
 const descriptorSchema = z.object({
   devBackendHost: z.string().min(1),

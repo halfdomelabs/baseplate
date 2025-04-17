@@ -21,7 +21,7 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-import { reactProvider } from '../react/index.js';
+import { reactProvider } from '../react/react.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

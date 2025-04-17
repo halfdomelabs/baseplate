@@ -15,7 +15,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactLoggerProvider } from '../react-logger/index.js';
+import { reactLoggerProvider } from '../react-logger/react-logger.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

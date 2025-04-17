@@ -17,8 +17,8 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-import { reactAppProvider } from '../react-app/index.js';
-import { reactProvider } from '../react/index.js';
+import { reactAppProvider } from '../react-app/react-app.generator.js';
+import { reactProvider } from '../react/react.generator.js';
 
 const descriptorSchema = z.object({
   includeDatePicker: z.boolean().optional(),

@@ -15,9 +15,9 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-import { reactAppProvider } from '../react-app/index.js';
-import { reactComponentsProvider } from '../react-components/index.js';
-import { reactErrorProvider } from '../react-error/index.js';
+import { reactAppProvider } from '../react-app/react-app.generator.js';
+import { reactComponentsProvider } from '../react-components/react-components.generator.js';
+import { reactErrorProvider } from '../react-error/react-error.generator.js';
 
 const descriptorSchema = z.object({});
 

@@ -1,4 +1,8 @@
+import type { ImportMapper } from '@halfdomelabs/core-generators';
+
 import {
+  createNodePackagesTask,
+  extractPackageVersions,
   makeImportAndFilePath,
   projectScope,
   typescriptProvider,
@@ -7,33 +11,58 @@ import {
   copyFileAction,
   createGenerator,
   createGeneratorTask,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
-import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-import { reactApolloProvider } from '../../apollo/react-apollo/index.js';
+import { reactApolloProvider } from '../../apollo/react-apollo/react-apollo.generator.js';
+import { reactComponentsProvider } from '../../core/react-components/react-components.generator.js';
+import { reactErrorProvider } from '../../core/react-error/react-error.generator.js';
+import { reactLoggerProvider } from '../../core/react-logger/react-logger.generator.js';
+import { authServiceProvider } from '../auth-service/auth-service.generator.js';
 
 const descriptorSchema = z.object({
   userQueryName: z.string().default('user'),
 });
 
-export const auth0HooksGenerator = createGenerator({
-  name: 'auth0/auth0-hooks',
+export interface AuthHooksProvider extends ImportMapper {
+  addCurrentUserField: (field: string) => void;
+}
+
+export const authHooksProvider =
+  createProviderType<AuthHooksProvider>('auth-hooks');
+
+export const authHooksGenerator = createGenerator({
+  name: 'auth/auth-hooks',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ userQueryName }) => ({
+    nodePackages: createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, ['use-subscription']),
+      dev: extractPackageVersions(REACT_PACKAGES, ['@types/use-subscription']),
+    }),
     main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
+        reactComponents: reactComponentsProvider,
         reactApollo: reactApolloProvider,
+        authService: authServiceProvider,
+        reactLogger: reactLoggerProvider,
         reactError: reactErrorProvider,
       },
       exports: {
         authHooks: authHooksProvider.export(projectScope),
       },
-      run({ typescript, reactApollo, reactError }) {
+      run({
+        typescript,
+        reactComponents,
+        reactApollo,
+        authService,
+        reactLogger,
+        reactError,
+      }) {
         const currentUserFields: string[] = [];
 
         const hookFolder = 'src/hooks';
@@ -102,14 +131,29 @@ export const auth0HooksGenerator = createGenerator({
               typescript.createCopyAction({
                 source: 'hooks/useLogOut.ts',
                 destination: useLogOutPath,
-                importMappers: [reactError],
+                importMappers: [
+                  reactApollo,
+                  reactComponents,
+                  authService,
+                  reactLogger,
+                  reactError,
+                ],
               }),
             );
+
+            await builder.apply(
+              copyFileAction({
+                source: 'hooks/useLogOut.gql',
+                destination: `${hookFolder}/useLogOut.gql`,
+              }),
+            );
+            reactApollo.registerGqlFile(`${hookFolder}/useLogOut.gql`);
 
             await builder.apply(
               typescript.createCopyAction({
                 source: 'hooks/useSession.ts',
                 destination: useSessionPath,
+                importMappers: [authService],
               }),
             );
 

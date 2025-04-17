@@ -9,8 +9,8 @@ import { z } from 'zod';
 import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
-import { adminComponentsProvider } from '../admin-components/index.js';
-import { adminCrudEmbeddedFormProvider } from '../admin-crud-embedded-form/index.js';
+import { adminComponentsProvider } from '../admin-components/admin-components.generator.js';
+import { adminCrudEmbeddedFormProvider } from '../admin-crud-embedded-form/admin-crud-embedded-form.generator.js';
 
 const descriptorSchema = z.object({
   id: z.string().min(1),

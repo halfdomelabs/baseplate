@@ -19,7 +19,7 @@ import { reactComponentsProvider } from '@src/generators/core/react-components/i
 import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
 
-import { authServiceProvider } from '../auth-service/index.js';
+import { authServiceProvider } from '../auth-service/auth-service.generator.js';
 
 const descriptorSchema = z.object({
   allowedRoles: z.array(z.string().min(1)),

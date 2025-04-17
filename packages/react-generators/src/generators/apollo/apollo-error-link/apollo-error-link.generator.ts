@@ -2,9 +2,9 @@ import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactErrorProvider } from '../../core/react-error/index.js';
-import { reactLoggerProvider } from '../../core/react-logger/index.js';
-import { reactApolloSetupProvider } from '../react-apollo/index.js';
+import { reactErrorProvider } from '../../core/react-error/react-error.generator.js';
+import { reactLoggerProvider } from '../../core/react-logger/react-logger.generator.js';
+import { reactApolloSetupProvider } from '../react-apollo/react-apollo.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

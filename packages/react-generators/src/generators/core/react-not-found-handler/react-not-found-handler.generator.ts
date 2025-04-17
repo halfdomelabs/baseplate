@@ -15,7 +15,7 @@ import type { ReactRoute } from '@src/providers/routes.js';
 
 import { reactRoutesProvider } from '@src/providers/routes.js';
 
-import { reactComponentsProvider } from '../react-components/index.js';
+import { reactComponentsProvider } from '../react-components/react-components.generator.js';
 
 const descriptorSchema = z.object({
   layoutKey: z.string().optional(),

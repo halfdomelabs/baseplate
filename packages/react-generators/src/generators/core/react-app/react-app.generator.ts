@@ -17,7 +17,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactProvider } from '../react/index.js';
+import { reactProvider } from '../react/react.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

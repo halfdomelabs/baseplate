@@ -27,7 +27,7 @@ import type { DataLoader } from '../_providers/admin-loader.js';
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 import { printDataLoaders } from '../_providers/admin-loader.js';
 import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
-import { adminCrudQueriesProvider } from '../admin-crud-queries/index.js';
+import { adminCrudQueriesProvider } from '../admin-crud-queries/admin-crud-queries.generator.js';
 
 const descriptorSchema = z.object({
   modelName: z.string(),

@@ -14,7 +14,7 @@ import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 
-import { authHooksProvider } from '../auth-hooks/index.js';
+import { authHooksProvider } from '../auth-hooks/auth-hooks.generator.js';
 
 const descriptorSchema = z.object({
   loginPath: z.string().min(1),

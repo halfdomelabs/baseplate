@@ -29,8 +29,8 @@ import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
 import { reactProxyProvider } from '@src/generators/core/react-proxy/index.js';
 
 import { notEmpty } from '../../../utils/array.js';
-import { reactAppProvider } from '../../core/react-app/index.js';
-import { reactConfigProvider } from '../../core/react-config/index.js';
+import { reactAppProvider } from '../../core/react-app/react-app.generator.js';
+import { reactConfigProvider } from '../../core/react-config/react-config.generator.js';
 import { APOLLO_REACT_APOLLO_TEXT_TEMPLATES } from './generated/text-templates.js';
 
 const descriptorSchema = z.object({
