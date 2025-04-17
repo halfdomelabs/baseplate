@@ -1,3 +1,6 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
 /**
  * Reads the package.json file from a directory
  * @param {string} dir - Directory path

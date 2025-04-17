@@ -18,6 +18,6 @@ export default [...eslintReactConfig, { ignores: ['**/templates/**'] }];
   const hasReact = hasDependency(packageJson, 'react');
 
   return `
-export { default } from '@halfdomelabs/tools/eslint-${hasReact ? 'react' : 'node'};
+export { default } from '@halfdomelabs/tools/eslint-${hasReact ? 'react' : 'node'}';
 `.trimStart();
 }

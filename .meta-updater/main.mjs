@@ -5,7 +5,8 @@ import * as path from 'node:path';
 import { generatePackageJson } from './package-json.mjs';
 import { GITIGNORE_CONTENTS } from './gitignore.mjs';
 import { createEslintConfig } from './eslint.mjs';
-import { LICENSE_CONTENTS } from './LICENSE.mjs';
+import { LICENSE_CONTENTS } from './license.mjs';
+import { createPrettierConfig } from './prettier.mjs';
 
 const rawFormat = createFormat({
   async read({ resolvedPath }) {
@@ -43,6 +44,9 @@ export default () => {
           return contents;
         }
         return LICENSE_CONTENTS;
+      },
+      'prettier.config.js [#raw]': async (contents, { dir }) => {
+        return contents ?? createPrettierConfig(dir);
       },
     },
     formats: {

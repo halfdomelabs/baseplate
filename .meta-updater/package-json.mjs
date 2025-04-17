@@ -107,6 +107,7 @@ export function generatePackageJson(manifest, dir) {
     ...commonManifest,
     ...(parentDirectory === 'plugins' ? PLUGIN_MANIFEST : {}),
   };
-  assignIfMissing(manifest ?? {}, defaults);
-  return manifest;
+  const target = manifest ?? {};
+  assignIfMissing(target, defaults);
+  return target;
 }

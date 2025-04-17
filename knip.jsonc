@@ -1,5 +1,8 @@
 {
   "workspaces": {
+    ".": {
+      "entry": [".meta-updater/main.mjs"]
+    },
     "packages/*": {
       "entry": ["src/index.{ts,tsx}", "src/web/index.{ts,tsx}"],
       "project": "src/**/*.{ts,tsx}",
