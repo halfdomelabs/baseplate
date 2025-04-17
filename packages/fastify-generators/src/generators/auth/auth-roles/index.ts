@@ -16,7 +16,7 @@ import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
-import { authConfigProvider } from '../auth/index.js';
+import { authConfigProvider } from '../auth/auth.generator.js';
 
 const descriptorSchema = z.object({
   // Note: Public and user roles are automatically added

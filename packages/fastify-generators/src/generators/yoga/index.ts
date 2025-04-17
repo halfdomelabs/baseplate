@@ -1,1 +1,1 @@
-export * from './yoga-plugin/index.js';
+export * from './yoga-plugin/yoga-plugin.generator.js';

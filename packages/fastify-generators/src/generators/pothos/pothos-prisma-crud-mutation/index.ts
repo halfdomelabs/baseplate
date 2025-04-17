@@ -12,7 +12,7 @@ import {
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { serviceFileOutputProvider } from '@src/generators/core/service-file/index.js';
+import { serviceFileOutputProvider } from '@src/generators/core/service-file/service-file.generator.js';
 import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
@@ -23,7 +23,7 @@ import {
 import { writeValueFromPothosArg } from '@src/writers/pothos/resolvers.js';
 
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
-import { pothosSchemaProvider } from '../pothos/index.js';
+import { pothosSchemaProvider } from '../pothos/pothos.generator.js';
 import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({

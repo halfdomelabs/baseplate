@@ -13,8 +13,8 @@ import type {
 } from '@src/providers/prisma/prisma-data-transformable.js';
 import type { ServiceOutputMethod } from '@src/types/service-output.js';
 
-import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
-import { serviceFileProvider } from '@src/generators/core/service-file/index.js';
+import { serviceContextProvider } from '@src/generators/core/service-context/service-context.generator.js';
+import { serviceFileProvider } from '@src/generators/core/service-file/service-file.generator.js';
 import { prismaToServiceOutputDto } from '@src/types/service-output.js';
 
 import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method.js';
@@ -28,7 +28,7 @@ import {
 } from '../_shared/crud-method/data-method.js';
 import { prismaCrudServiceProvider } from '../prisma-crud-service/index.js';
 import { prismaUtilsProvider } from '../prisma-utils/index.js';
-import { prismaOutputProvider } from '../prisma/index.js';
+import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

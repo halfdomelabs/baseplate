@@ -11,7 +11,7 @@ import { lowerCaseFirst } from '@src/utils/case.js';
 import { writePothosInputDefinitionFromDtoFields } from '@src/writers/pothos/index.js';
 
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
-import { pothosSchemaProvider } from '../pothos/index.js';
+import { pothosSchemaProvider } from '../pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import { prismaCrudServiceSetupProvider } from '@src/generators/prisma/prisma-crud-service/index.js';
 
-import { passwordHasherServiceProvider } from '../password-hasher-service/index.js';
+import { passwordHasherServiceProvider } from '../password-hasher-service/password-hasher-service.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

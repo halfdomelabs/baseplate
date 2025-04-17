@@ -33,7 +33,7 @@ import {
   errorHandlerServiceProvider,
 } from '../error-handler-service/error-handler-service.generator.js';
 import { fastifyServerProvider } from '../fastify-server/index.js';
-import { fastifyProvider } from '../fastify/index.js';
+import { fastifyProvider } from '../fastify/fastify.generator.js';
 import { requestContextProvider } from '../request-context/index.js';
 
 const descriptorSchema = z.object({});

@@ -12,7 +12,7 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
 import { userSessionServiceProvider } from '../_providers/index.js';
-import { authContextProvider } from '../auth-context/index.js';
+import { authContextProvider } from '../auth-context/auth-context.generator.js';
 import { userSessionTypesProvider } from '../user-session-types/index.js';
 
 const descriptorSchema = z.object({});

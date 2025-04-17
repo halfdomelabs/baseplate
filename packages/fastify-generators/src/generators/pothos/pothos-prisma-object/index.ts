@@ -20,7 +20,7 @@ import { lowerCaseFirst } from '@src/utils/case.js';
 import { writePothosExposeFieldFromDtoScalarField } from '@src/writers/pothos/index.js';
 
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
-import { pothosSchemaProvider } from '../pothos/index.js';
+import { pothosSchemaProvider } from '../pothos/pothos.generator.js';
 import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({

@@ -28,9 +28,9 @@ import {
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
-import { requestServiceContextProvider } from '@src/generators/core/request-service-context/index.js';
-import { rootModuleImportProvider } from '@src/generators/core/root-module/index.js';
+import { fastifyOutputProvider } from '@src/generators/core/fastify/fastify.generator.js';
+import { requestServiceContextProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
+import { rootModuleImportProvider } from '@src/generators/core/root-module/root-module.generator.js';
 import { yogaPluginConfigProvider } from '@src/generators/yoga/yoga-plugin/index.js';
 import { PothosTypeReferenceContainer } from '@src/writers/pothos/index.js';
 

@@ -7,12 +7,6 @@ import { createTypescriptMorpher } from '@src/types.js';
 
 import { moveFile } from './utils/move-file.js';
 
-/**
- * Note: There is a known bug: https://github.com/dsherret/ts-morph/issues/1612
- *
- * So migrate-esm-imports is required to fix imports
- */
-
 export default createTypescriptMorpher({
   name: 'generator-name-fixer',
   description:

@@ -22,7 +22,7 @@ import { z } from 'zod';
 
 import { notEmpty } from '@src/utils/array.js';
 
-import { requestContextProvider } from '../request-context/index.js';
+import { requestContextProvider } from '../request-context/request-context.generator.js';
 import { serviceContextSetupProvider } from '../service-context/index.js';
 
 const descriptorSchema = z.object({});

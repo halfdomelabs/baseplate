@@ -21,7 +21,7 @@ import { requestServiceContextSetupProvider } from '@src/generators/core/request
 import { serviceContextSetupProvider } from '@src/generators/core/service-context/index.js';
 
 import { authRolesProvider } from '../auth-roles/index.js';
-import { authConfigProvider } from '../auth/index.js';
+import { authConfigProvider } from '../auth/auth.generator.js';
 
 const descriptorSchema = z.object({});
 

@@ -16,11 +16,11 @@ import {
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { authContextProvider } from '@src/generators/auth/auth-context/index.js';
-import { authRolesProvider } from '@src/generators/auth/auth-roles/index.js';
-import { authConfigProvider } from '@src/generators/auth/auth/index.js';
+import { authContextProvider } from '@src/generators/auth/auth-context/auth-context.generator.js';
+import { authRolesProvider } from '@src/generators/auth/auth-roles/auth-roles.generator.js';
+import { authConfigProvider } from '@src/generators/auth/auth/auth.generator.js';
 import { userSessionServiceProvider } from '@src/generators/auth/index.js';
-import { userSessionTypesProvider } from '@src/generators/auth/user-session-types/index.js';
+import { userSessionTypesProvider } from '@src/generators/auth/user-session-types/user-session-types.generator.js';
 import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
 import { fastifyServerProvider } from '@src/generators/core/index.js';
 import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/logger-service.generator.js';

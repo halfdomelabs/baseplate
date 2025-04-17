@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 
-import { pothosEnumsFileProvider } from '../pothos-enums-file/index.js';
+import { pothosEnumsFileProvider } from '../pothos-enums-file/pothos-enums-file.generator.js';
 
 const descriptorSchema = z.object({
   enumName: z.string().min(1),

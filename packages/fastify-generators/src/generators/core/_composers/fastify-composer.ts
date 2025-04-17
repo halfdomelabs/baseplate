@@ -7,17 +7,17 @@ import { fastifyVitestGenerator } from '@src/generators/vitest/index.js';
 
 import { configServiceGenerator } from '../config-service/config-service.generator.js';
 import { errorHandlerServiceGenerator } from '../error-handler-service/error-handler-service.generator.js';
-import { fastifyCookieContextGenerator } from '../fastify-cookie-context/index.js';
-import { fastifyGracefulShutdownGenerator } from '../fastify-graceful-shutdown/index.js';
-import { fastifyHealthCheckGenerator } from '../fastify-health-check/index.js';
-import { fastifyScriptsGenerator } from '../fastify-scripts/index.js';
-import { fastifyServerGenerator } from '../fastify-server/index.js';
-import { fastifyGenerator } from '../fastify/index.js';
+import { fastifyCookieContextGenerator } from '../fastify-cookie-context/fastify-cookie-context.generator.js';
+import { fastifyGracefulShutdownGenerator } from '../fastify-graceful-shutdown/fastify-graceful-shutdown.generator.js';
+import { fastifyHealthCheckGenerator } from '../fastify-health-check/fastify-health-check.generator.js';
+import { fastifyScriptsGenerator } from '../fastify-scripts/fastify-scripts.generator.js';
+import { fastifyServerGenerator } from '../fastify-server/fastify-server.generator.js';
+import { fastifyGenerator } from '../fastify/fastify.generator.js';
 import { loggerServiceGenerator } from '../logger-service/logger-service.generator.js';
-import { requestContextGenerator } from '../request-context/index.js';
-import { requestServiceContextGenerator } from '../request-service-context/index.js';
-import { rootModuleGenerator } from '../root-module/index.js';
-import { serviceContextGenerator } from '../service-context/index.js';
+import { requestContextGenerator } from '../request-context/request-context.generator.js';
+import { requestServiceContextGenerator } from '../request-service-context/request-service-context.generator.js';
+import { rootModuleGenerator } from '../root-module/root-module.generator.js';
+import { serviceContextGenerator } from '../service-context/service-context.generator.js';
 
 export function composeFastifyApplication(
   root: InferDescriptorFromGenerator<typeof fastifyGenerator>,
