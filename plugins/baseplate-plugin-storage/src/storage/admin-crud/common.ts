@@ -3,7 +3,7 @@ import {
   createPlatformPluginExport,
 } from '@halfdomelabs/project-builder-lib';
 
-import { adminCrudFileInputSchema } from './types.js';
+import { adminCrudFileInputSchema } from './types';
 
 export default createPlatformPluginExport({
   dependencies: {

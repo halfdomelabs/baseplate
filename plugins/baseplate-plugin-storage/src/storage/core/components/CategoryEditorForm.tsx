@@ -10,9 +10,9 @@ import {
 } from '@halfdomelabs/ui-components';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
-import { notEmpty } from '@src/utils/array.js';
+import { notEmpty } from '@src/utils/array';
 
-import type { StoragePluginDefinition } from '../schema/plugin-definition.js';
+import type { StoragePluginDefinition } from '../schema/plugin-definition';
 
 interface Props {
   className?: string;

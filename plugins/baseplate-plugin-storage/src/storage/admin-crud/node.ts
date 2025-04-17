@@ -7,11 +7,11 @@ import {
   PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
 
-import { adminCrudFileInputGenerator } from '@src/generators/react/admin-crud-file-input/admin-crud-file-input.generator.js';
+import { adminCrudFileInputGenerator } from '@src/generators/react/admin-crud-file-input';
 
-import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
-import type { FileTransformerConfig } from '../transformers/types.js';
-import type { AdminCrudFileInputConfig } from './types.js';
+import type { StoragePluginDefinition } from '../core/schema/plugin-definition';
+import type { FileTransformerConfig } from '../transformers/types';
+import type { AdminCrudFileInputConfig } from './types';
 
 function buildFileTransformerCompiler(
   pluginId: string,

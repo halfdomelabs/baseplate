@@ -5,9 +5,9 @@ import { PluginUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { SelectField } from '@halfdomelabs/ui-components';
 
-import type { StoragePluginDefinition } from '@src/storage/core/schema/plugin-definition.js';
+import type { StoragePluginDefinition } from '@src/storage/core/schema/plugin-definition';
 
-import type { FileTransformerConfig } from '../types.js';
+import type { FileTransformerConfig } from '../types';
 
 export function FileTransformerForm({
   name,

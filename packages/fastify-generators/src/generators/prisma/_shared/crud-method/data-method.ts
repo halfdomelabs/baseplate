@@ -17,8 +17,8 @@ import type { ServiceOutputDto } from '@src/types/service-output.js';
 import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
 
-import type { PrismaUtilsProvider } from '../../prisma-utils/prisma-utils.generator.js';
-import type { PrismaOutputProvider } from '../../prisma/prisma.generator.js';
+import type { PrismaUtilsProvider } from '../../prisma-utils/index.js';
+import type { PrismaOutputProvider } from '../../prisma/index.js';
 
 export interface PrismaDataMethodOptions {
   name: string;

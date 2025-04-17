@@ -12,10 +12,10 @@ import { modelTransformerWebSpec } from '@halfdomelabs/project-builder-lib/web';
 
 import '../../index.css';
 
-import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
-import type { FileTransformerConfig } from './types.js';
+import type { StoragePluginDefinition } from '../core/schema/plugin-definition';
+import type { FileTransformerConfig } from './types';
 
-import { FileTransformerForm } from './components/FileTransformerForm.js';
+import { FileTransformerForm } from './components/FileTransformerForm';
 
 function findNonTransformedFileRelations(
   definition: ProjectDefinition,

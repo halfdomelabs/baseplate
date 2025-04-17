@@ -3,7 +3,7 @@ import {
   modelTransformerSpec,
 } from '@halfdomelabs/project-builder-lib';
 
-import { fileTransformerSchema } from './types.js';
+import { fileTransformerSchema } from './types';
 
 export default createPlatformPluginExport({
   dependencies: {

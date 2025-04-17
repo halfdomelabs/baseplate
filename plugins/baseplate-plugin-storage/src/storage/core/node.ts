@@ -7,10 +7,10 @@ import {
   webAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
 
-import { storageModuleGenerator } from '@src/generators/fastify/index.js';
-import { uploadComponentsGenerator } from '@src/generators/react/upload-components/upload-components.generator.js';
+import { storageModuleGenerator } from '@src/generators/fastify';
+import { uploadComponentsGenerator } from '@src/generators/react/upload-components';
 
-import type { StoragePluginDefinition } from './schema/plugin-definition.js';
+import type { StoragePluginDefinition } from './schema/plugin-definition';
 
 export default createPlatformPluginExport({
   dependencies: {

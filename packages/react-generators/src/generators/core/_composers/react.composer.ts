@@ -3,16 +3,16 @@ import type {
   InferDescriptorFromGenerator,
 } from '@halfdomelabs/sync';
 
-import { reactAppGenerator } from '../react-app/react-app.generator.js';
-import { reactComponentsGenerator } from '../react-components/react-components.generator.js';
-import { reactConfigGenerator } from '../react-config/react-config.generator.js';
-import { reactErrorBoundaryGenerator } from '../react-error-boundary/react-error-boundary.generator.js';
-import { reactErrorGenerator } from '../react-error/react-error.generator.js';
-import { reactLoggerGenerator } from '../react-logger/react-logger.generator.js';
-import { reactProxyGenerator } from '../react-proxy/react-proxy.generator.js';
-import { reactTypescriptGenerator } from '../react-typescript/react-typescript.generator.js';
-import { reactUtilsGenerator } from '../react-utils/react-utils.generator.js';
-import { reactGenerator } from '../react/react.generator.js';
+import { reactAppGenerator } from '../react-app/index.js';
+import { reactComponentsGenerator } from '../react-components/index.js';
+import { reactConfigGenerator } from '../react-config/index.js';
+import { reactErrorBoundaryGenerator } from '../react-error-boundary/index.js';
+import { reactErrorGenerator } from '../react-error/index.js';
+import { reactLoggerGenerator } from '../react-logger/index.js';
+import { reactProxyGenerator } from '../react-proxy/index.js';
+import { reactTypescriptGenerator } from '../react-typescript/index.js';
+import { reactUtilsGenerator } from '../react-utils/index.js';
+import { reactGenerator } from '../react/index.js';
 
 export function composeReactGenerators(
   descriptor: InferDescriptorFromGenerator<typeof reactGenerator>,

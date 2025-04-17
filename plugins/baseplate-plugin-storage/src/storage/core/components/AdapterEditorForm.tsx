@@ -3,11 +3,11 @@ import type { Control } from 'react-hook-form';
 import { Button, InputField } from '@halfdomelabs/ui-components';
 import { useFieldArray } from 'react-hook-form';
 
-import { cn } from '@src/utils/cn.js';
+import { cn } from '@src/utils/cn';
 
-import type { StoragePluginDefinition } from '../schema/plugin-definition.js';
+import type { StoragePluginDefinition } from '../schema/plugin-definition';
 
-import { storageAdapterEntityType } from '../schema/plugin-definition.js';
+import { storageAdapterEntityType } from '../schema/plugin-definition';
 
 interface Props {
   className?: string;

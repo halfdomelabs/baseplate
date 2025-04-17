@@ -29,7 +29,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
-import { fastifyProvider } from '../fastify/fastify.generator.js';
+import { fastifyProvider } from '../fastify/index.js';
 import {
   configServiceImportsProvider,
   createConfigServiceImports,
