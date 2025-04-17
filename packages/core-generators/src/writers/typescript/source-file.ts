@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
 import type {
   CallExpression,
   ExportDeclaration,
@@ -8,6 +7,11 @@ import type {
   SourceFile,
 } from 'ts-morph';
 
+import {
+  type BuilderAction,
+  normalizePathToProjectPath,
+  type WriteFileOptions,
+} from '@halfdomelabs/sync';
 import { mapValues, uniqWith } from 'es-toolkit';
 import { Eta } from 'eta';
 import path from 'node:path';
@@ -667,11 +671,16 @@ export class TypescriptSourceFile<
     }
 
     file.insertText(0, (writer) => {
-      writeImportDeclarations(writer, allImports, path.dirname(destination), {
-        pathMapEntries: this.sourceFileOptions.pathMappings,
-        importMappers: importMappers.filter(notEmpty),
-        moduleResolution: this.sourceFileOptions.moduleResolution,
-      });
+      writeImportDeclarations(
+        writer,
+        allImports,
+        path.dirname(normalizePathToProjectPath(destination)),
+        {
+          pathMapEntries: this.sourceFileOptions.pathMappings,
+          importMappers: importMappers.filter(notEmpty),
+          moduleResolution: this.sourceFileOptions.moduleResolution,
+        },
+      );
       writer.writeLine('');
     });
 

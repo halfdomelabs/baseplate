@@ -14,6 +14,7 @@ import { sortImportDeclarations } from '../imports/index.js';
 import { mergeTsImportDeclarations } from '../imports/merge-ts-import-declarations.js';
 import {
   convertTsMorphImportDeclarationToTsImportDeclaration,
+  getSideEffectImportsFromSourceFile,
   getTsMorphImportDeclarationsFromSourceFile,
   writeGroupedImportDeclarationsWithCodeBlockWriter,
 } from '../imports/ts-morph-operations.js';
@@ -104,6 +105,18 @@ function mergeImportsAndHoistedFragments(
 
   // Write the beforeImports hoisted fragments to the source file
   writeHoistedFragments(beforeImportsHoistedFragments);
+
+  // Resolve any side effect imports if necessary
+  if (resolveModule) {
+    const sideEffectImports = getSideEffectImportsFromSourceFile(file);
+    for (const importDeclaration of sideEffectImports) {
+      const moduleSpecifier = importDeclaration
+        .getModuleSpecifier()
+        .getLiteralValue();
+      const resolvedModuleSpecifier = resolveModule(moduleSpecifier);
+      importDeclaration.setModuleSpecifier(resolvedModuleSpecifier);
+    }
+  }
 }
 
 export function renderTsCodeFileTemplate(

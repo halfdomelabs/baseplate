@@ -1,5 +1,8 @@
-import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
-
+import {
+  type BuilderAction,
+  normalizePathToProjectPath,
+  type WriteFileOptions,
+} from '@halfdomelabs/sync';
 import path from 'node:path';
 
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
@@ -83,7 +86,11 @@ export function renderTsTemplateGroupAction<
   return {
     execute: async (builder) => {
       for (const [key, template] of Object.entries(group.templates)) {
-        const destination = path.join(baseDirectory, template.destination);
+        const destination = path.join(
+          normalizePathToProjectPath(baseDirectory),
+          template.destination,
+        );
+
         try {
           const destinationDirectory = path.dirname(destination);
           await builder.apply(

@@ -9,6 +9,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
+  normalizePathToProjectPath,
 } from '@halfdomelabs/sync';
 import { safeMergeAll } from '@halfdomelabs/utils';
 import path from 'node:path';
@@ -28,6 +29,7 @@ import { projectScope } from '@src/providers/scopes.js';
 import { renderTsTemplateFileAction } from '@src/renderers/typescript/actions/render-ts-template-file-action.js';
 import {
   generatePathMapEntries,
+  normalizeModuleSpecifier,
   pathMapEntriesToRegexes,
   renderTsTemplateGroupAction,
 } from '@src/renderers/typescript/index.js';
@@ -272,15 +274,21 @@ export const typescriptGenerator = createGenerator({
           providers: {
             typescriptFile: {
               renderTemplateFile: (payload) => {
-                const directory = path.dirname(payload.destination);
+                const directory = path.dirname(
+                  normalizePathToProjectPath(payload.destination),
+                );
                 return renderTsTemplateFileAction({
                   ...payload,
                   renderOptions: {
                     resolveModule(moduleSpecifier) {
-                      return resolveModule(moduleSpecifier, directory, {
-                        pathMapEntries,
-                        moduleResolution,
-                      });
+                      return normalizeModuleSpecifier(
+                        moduleSpecifier,
+                        directory,
+                        {
+                          pathMapEntries,
+                          moduleResolution,
+                        },
+                      );
                     },
                     importSortOptions: {
                       internalPatterns,
@@ -293,10 +301,14 @@ export const typescriptGenerator = createGenerator({
                   ...payload,
                   renderOptions: {
                     resolveModule(sourceDirectory, moduleSpecifier) {
-                      return resolveModule(moduleSpecifier, sourceDirectory, {
-                        pathMapEntries,
-                        moduleResolution,
-                      });
+                      return normalizeModuleSpecifier(
+                        moduleSpecifier,
+                        sourceDirectory,
+                        {
+                          pathMapEntries,
+                          moduleResolution,
+                        },
+                      );
                     },
                     importSortOptions: {
                       internalPatterns,

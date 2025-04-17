@@ -226,7 +226,7 @@ export const rootModuleGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template: CORE_ROOT_MODULE_TS_TEMPLATES.appModules,
-                destination: 'src/modules/app-modules.ts',
+                destination: 'src/utils/app-modules.ts',
                 variables: {
                   TPL_MODULE_FIELDS: moduleFieldsInterface,
                   TPL_MODULE_MERGER: moduleMerger,
