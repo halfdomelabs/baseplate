@@ -41,7 +41,7 @@ export async function runMorpher(
 
   const project = new Project({
     tsConfigFilePath: tsConfig,
-    skipAddingFilesFromTsConfig: true,
+    skipAddingFilesFromTsConfig: !morpher.saveUsingTsMorph,
     manipulationSettings: TS_MORPH_MANIPULATION_SETTINGS,
   });
 
@@ -90,7 +90,7 @@ export async function runMorpher(
       if (isModified) {
         changedFiles += 1;
 
-        if (!dryRun) {
+        if (!dryRun && !morpher.saveUsingTsMorph) {
           const formatted = await prettier.format(sourceFile.getFullText(), {
             ...prettierConfig,
             parser: 'typescript',
@@ -103,6 +103,10 @@ export async function runMorpher(
     } catch (err) {
       erroredFiles.push({ filePath: sourceFile.getFilePath(), error: err });
     }
+  }
+
+  if (morpher.saveUsingTsMorph) {
+    await project.save();
   }
 
   if (erroredFiles.length > 0) {

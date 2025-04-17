@@ -60,6 +60,13 @@ export interface TypescriptMorpher<
    * The path globs to run the morpher on.
    */
   pathGlobs?: string[];
+  /**
+   * Use ts-morph project save method.
+   *
+   * This enables the morpher to rename files/refactor other files. However,
+   * prettier will not be used to format the files.
+   */
+  saveUsingTsMorph?: boolean;
 }
 
 /**

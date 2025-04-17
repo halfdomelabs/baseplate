@@ -5,12 +5,19 @@ import { SyntaxKind } from 'ts-morph';
 
 import { createTypescriptMorpher } from '@src/types.js';
 
+/**
+ * Note: There is a known bug: https://github.com/dsherret/ts-morph/issues/1612
+ *
+ * So migrate-esm-imports is required to fix imports
+ */
+
 export default createTypescriptMorpher({
   name: 'generator-name-fixer',
   description:
     'Ensures generator names match their folder names and renames files to <name>.generator.ts',
   options: {},
-  pathGlobs: ['src/**/*.ts'],
+  pathGlobs: ['src/generators/**/*.ts'],
+  saveUsingTsMorph: true,
   transform: (sourceFile: SourceFile) => {
     // Skip if not a generator file
     if (!sourceFile.getFilePath().includes('/generators/')) {
