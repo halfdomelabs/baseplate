@@ -3,6 +3,7 @@ import { createFormat, createUpdateOptions } from '@pnpm/meta-updater';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { generatePackageJson } from './package-json.mjs';
+import { GITIGNORE_CONTENTS } from './gitignore.mjs';
 
 const rawFormat = createFormat({
   async read({ resolvedPath }) {
@@ -53,6 +54,9 @@ export default () => {
     files: {
       'package.json': async (/** @type {any} */ manifest, { dir }) => {
         return generatePackageJson(manifest, dir);
+      },
+      '.gitignore [#raw]': async (/** @type {any} */ contents) => {
+        return contents ?? GITIGNORE_CONTENTS;
       },
     },
     formats: {

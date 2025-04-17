@@ -51,6 +51,32 @@ function assignIfMissing(targetObj, sourceObj) {
   }
 }
 
+const INITIAL_PACKAGE_JSON = {
+  scripts: {
+    build: 'concurrently pnpm:build:*',
+    'build:tsc': 'tsc -p tsconfig.build.json && tsc-alias',
+    clean: 'rm -rf ./dist',
+    lint: 'eslint .',
+    'prettier:check': 'prettier --check .',
+    'prettier:write': 'prettier -w .',
+    test: 'vitest',
+    'test:coverage': 'vitest run --coverage',
+    typecheck: 'tsc --noEmit',
+    watch: 'concurrently pnpm:watch:*',
+    'watch:tsc': 'tsc -p tsconfig.build.json --preserveWatchOutput -w',
+    'watch:tsc-alias': 'tsc-alias -w',
+  },
+  devDependencies: {
+    '@halfdomelabs/tools': 'workspace:*',
+    '@types/node': 'catalog:',
+    concurrently: '9.0.1',
+    eslint: 'catalog:',
+    'tsc-alias': 'catalog:',
+    typescript: 'catalog:',
+    vitest: 'catalog:',
+  },
+};
+
 /**
  * Generate a package.json for a particular directory
  *
@@ -83,9 +109,10 @@ export function generatePackageJson(manifest, dir) {
     return manifest;
   }
   const defaults = {
+    ...(!manifest ? INITIAL_PACKAGE_JSON : {}),
     ...commonManifest,
     ...(parentDirectory === 'plugins' ? PLUGIN_MANIFEST : {}),
   };
-  assignIfMissing(manifest, defaults);
+  assignIfMissing(manifest ?? {}, defaults);
   return manifest;
 }
