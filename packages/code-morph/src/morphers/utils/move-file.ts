@@ -68,7 +68,7 @@ export function moveFile(
     referencingFile.saveSync();
   }
 
-  sourceFile.delete();
-  project.getFileSystem().copySync(currentFilePath, targetFilePath);
+  project.getFileSystem().moveSync(currentFilePath, targetFilePath);
+  project.removeSourceFile(sourceFile);
   project.addSourceFileAtPath(targetFilePath);
 }
