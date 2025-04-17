@@ -10,7 +10,7 @@ export default createTypescriptMorpher({
   description:
     'Ensures generator names match their folder names and renames files to <name>.generator.ts',
   options: {},
-  pathGlobs: ['src/generators/**/*.ts'],
+  pathGlobs: ['src/**/*.ts'],
   transform: (sourceFile: SourceFile) => {
     // Skip if not a generator file
     if (!sourceFile.getFilePath().includes('/generators/')) {
@@ -74,7 +74,7 @@ export default createTypescriptMorpher({
     const expectedFileName = `${folderName}.generator.ts`;
 
     if (currentFileName !== expectedFileName) {
-      void sourceFile.moveImmediately(expectedFileName);
+      sourceFile.move(expectedFileName);
     }
   },
 });
