@@ -97,6 +97,8 @@ interface ResolveModuleOptions {
   moduleResolution: ModuleResolutionKind;
 }
 
+const TS_FILE_EXTENSION_REGEX = /\.[tj]sx?$/;
+
 /**
  * Normalizes the path for the given module resolution kind
  *
@@ -117,14 +119,17 @@ function normalizePathForResolutionKind(
   if (
     isNode16 &&
     isInternalImport(path, pathMapEntries ?? []) &&
-    !path.endsWith('.js')
+    !TS_FILE_EXTENSION_REGEX.test(path)
   ) {
     throw new Error(
       `Invalid Node 16 import discovered ${path}. Make sure to use .js extension for Node16 imports.`,
     );
   }
 
-  return isNode16 ? path : path.replace(/(\/index)?\.js$/, '');
+  return isNode16
+    ? // normalize the extension to .js
+      path.replace(TS_FILE_EXTENSION_REGEX, '.js')
+    : path.replace(/(\/index)?\.js$/, '');
 }
 
 /**

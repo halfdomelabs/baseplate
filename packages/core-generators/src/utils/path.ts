@@ -5,7 +5,7 @@ import path from 'node:path';
  * @param path Path to the file with file extension
  */
 export function makeImportAndFilePath(...filePath: string[]): [string, string] {
-  const mergedFilePath = filePath.join('/');
+  const mergedFilePath = filePath.join('/').replace(/@\//, '');
   const importPath = `@/${mergedFilePath
     .replace(/\.(ts|tsx)$/, '.js')
     // normalize path separators for Windows to POSIX for imports

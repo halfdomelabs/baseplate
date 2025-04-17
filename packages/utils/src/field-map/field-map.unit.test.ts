@@ -152,6 +152,137 @@ describe('FieldMap', () => {
     });
   });
 
+  describe('MapOfMapsContainer', () => {
+    it('should handle maps of maps with default values', () => {
+      const defaultMap = new Map([
+        ['outer1', new Map([['inner1', 'value1']])],
+        ['outer2', new Map([['inner2', 'value2']])],
+      ]);
+      const fieldMap = createFieldMap((t) => ({
+        settings: t.mapOfMaps(defaultMap),
+      }));
+
+      expect(fieldMap.getValues().settings).toEqual(defaultMap);
+    });
+
+    it('should allow setting individual values', () => {
+      const fieldMap = createFieldMap((t) => ({
+        settings: t.mapOfMaps<string, string, string>(),
+      }));
+
+      fieldMap.settings.set('outer1', 'inner1', 'value1', 'source1');
+      fieldMap.settings.set('outer1', 'inner2', 'value2', 'source1');
+      fieldMap.settings.set('outer2', 'inner1', 'value3', 'source1');
+
+      const expected = new Map([
+        [
+          'outer1',
+          new Map([
+            ['inner1', 'value1'],
+            ['inner2', 'value2'],
+          ]),
+        ],
+        ['outer2', new Map([['inner1', 'value3']])],
+      ]);
+
+      expect(fieldMap.getValues().settings).toEqual(expected);
+    });
+
+    it('should allow different sources to set values for the same root key', () => {
+      const fieldMap = createFieldMap((t) => ({
+        settings: t.mapOfMaps<string, string, string>(),
+      }));
+
+      fieldMap.settings.set('outer1', 'inner1', 'value1', 'source1');
+      fieldMap.settings.set('outer1', 'inner2', 'value2', 'source2');
+
+      const expected = new Map([
+        [
+          'outer1',
+          new Map([
+            ['inner1', 'value1'],
+            ['inner2', 'value2'],
+          ]),
+        ],
+      ]);
+
+      expect(fieldMap.getValues().settings).toEqual(expected);
+    });
+
+    it('should throw error when setting the same root and nested key combination', () => {
+      const fieldMap = createFieldMap((t) => ({
+        settings: t.mapOfMaps<string, string, string>(),
+      }));
+
+      fieldMap.settings.set('outer1', 'inner1', 'value1', 'source1');
+      expect(() => {
+        fieldMap.settings.set('outer1', 'inner1', 'value2', 'source2');
+      }).toThrow(
+        'Value for keys outer1+inner1 has already been set by source1 and cannot be overwritten by source2',
+      );
+    });
+
+    it('should handle merging maps', () => {
+      const fieldMap = createFieldMap((t) => ({
+        settings: t.mapOfMaps<string, string, string>(),
+      }));
+
+      const newMap = new Map([
+        ['inner1', 'value1'],
+        ['inner2', 'value2'],
+      ]);
+      fieldMap.settings.merge('outer1', newMap, 'source1');
+      expect(fieldMap.getValues().settings).toEqual(
+        new Map([['outer1', newMap]]),
+      );
+    });
+
+    it('should handle merging objects', () => {
+      const fieldMap = createFieldMap((t) => ({
+        settings: t.mapOfMapsFromObj<string, string>(),
+      }));
+
+      fieldMap.settings.mergeObj(
+        'outer1',
+        { inner1: 'value1', inner2: 'value2' },
+        'source1',
+      );
+      expect(fieldMap.getValues().settings).toEqual(
+        new Map([
+          [
+            'outer1',
+            new Map([
+              ['inner1', 'value1'],
+              ['inner2', 'value2'],
+            ]),
+          ],
+        ]),
+      );
+    });
+
+    it('should handle initialization from object', () => {
+      const fieldMap = createFieldMap((t) => ({
+        settings: t.mapOfMapsFromObj<string, string>({
+          outer1: { inner1: 'value1', inner2: 'value2' },
+          outer2: { inner3: 'value3' },
+        }),
+      }));
+
+      expect(fieldMap.getValues().settings).toEqual(
+        new Map([
+          [
+            'outer1',
+            new Map([
+              ['inner1', 'value1'],
+              ['inner2', 'value2'],
+            ]),
+          ],
+          ['outer2', new Map([['inner3', 'value3']])],
+        ]),
+      );
+    });
+  });
+
   describe('Mixed field types', () => {
     it('should handle multiple field types together', () => {
       const fieldMap = createFieldMap((t) => ({

@@ -219,4 +219,65 @@ describe('TsCodeUtils', () => {
       expect(result.contents).toBe('{async value() { return 42; },}');
     });
   });
+
+  describe('mergeFragmentsAsArray', () => {
+    it('should merge multiple fragments into an array literal with their contents, imports and hoisted fragments', () => {
+      const fooImport = tsImportBuilder().named('foo').from('./foo.js');
+      const barImport = tsImportBuilder().named('bar').from('./bar.js');
+      const h1Fragment = tsHoistedFragment(
+        tsCodeFragment('type A = string;'),
+        'h1',
+      );
+      const h2Fragment = tsHoistedFragment(
+        tsCodeFragment('type B = number;'),
+        'h2',
+      );
+      const fragments = new Map([
+        [
+          'b',
+          tsCodeFragment('2', barImport, {
+            hoistedFragments: [h2Fragment],
+          }),
+        ],
+        [
+          'a',
+          tsCodeFragment('1', fooImport, {
+            hoistedFragments: [h1Fragment],
+          }),
+        ],
+      ]);
+
+      const result = TsCodeUtils.mergeFragmentsAsArray(fragments);
+
+      expect(result).toEqual({
+        contents: '[1,\n2]',
+        imports: [fooImport, barImport],
+        hoistedFragments: [h1Fragment, h2Fragment],
+      });
+    });
+
+    it('should handle empty fragments map', () => {
+      const result = TsCodeUtils.mergeFragmentsAsArray(new Map());
+      expect(result).toEqual({
+        contents: '[]',
+        imports: [],
+        hoistedFragments: [],
+      });
+    });
+
+    it('should handle string fragments', () => {
+      const fragments = new Map([
+        ['a', '1'],
+        ['b', '2'],
+      ]);
+
+      const result = TsCodeUtils.mergeFragmentsAsArray(fragments);
+
+      expect(result).toEqual({
+        contents: '[1,\n2]',
+        imports: [],
+        hoistedFragments: [],
+      });
+    });
+  });
 });

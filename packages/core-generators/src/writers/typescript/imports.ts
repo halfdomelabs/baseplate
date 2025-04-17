@@ -46,6 +46,8 @@ export interface ResolveModuleOptions {
   moduleResolution: ModuleResolutionKind;
 }
 
+const TS_FILE_EXTENSION_REGEX = /\.[tj]sx?$/;
+
 /**
  * Shortens the path for resolution method namely for CJS, it will remove the .js extension
  */
@@ -58,14 +60,17 @@ function shortenPathForResolutionMethod(
   if (
     isNode16 &&
     (path.startsWith('.') || path.startsWith('@src/')) &&
-    !path.endsWith('.js')
+    !TS_FILE_EXTENSION_REGEX.test(path)
   ) {
     throw new Error(
       `Invalid Node 16 import discovered ${path}. Make sure to use .js extension for Node16 imports.`,
     );
   }
 
-  return isNode16 ? path : path.replace(/(\/index)?\.js$/, '');
+  return isNode16
+    ? // normalize the extension to .js
+      path.replace(TS_FILE_EXTENSION_REGEX, '.js')
+    : path.replace(/(\/index)?\.js$/, '');
 }
 
 export function resolveModule(

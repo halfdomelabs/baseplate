@@ -1,7 +1,8 @@
 // @ts-nocheck
+
 export interface AppModule {
   children?: AppModule[];
-  MODULE_FIELDS;
+  TPL_MODULE_FIELDS;
 }
 
 type FlattenedAppModule = Omit<AppModule, 'children'>;
@@ -15,7 +16,7 @@ export function flattenAppModule(module: AppModule): FlattenedAppModule {
   const flattenedChildren = children.map((child) => flattenAppModule(child));
 
   return [module, ...flattenedChildren].reduce(
-    (prev, current) => MODULE_MERGER,
+    (prev, current) => TPL_MODULE_MERGER,
     {},
   );
 }

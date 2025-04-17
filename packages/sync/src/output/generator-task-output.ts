@@ -193,8 +193,10 @@ export class GeneratorTaskOutputBuilder {
     options?: Omit<WriteFileOptions, 'templateMetadata'>;
     templateMetadata?: TemplateFileMetadataBase;
   }): void {
-    // normalize all paths to POSIX style / paths
-    const fullPath = filePath.replaceAll(path.sep, path.posix.sep);
+    // normalize all paths to POSIX style / paths and remove any preceding @/
+    const fullPath = filePath
+      .replaceAll(path.sep, path.posix.sep)
+      .replace(/^(@\/)?/, '');
 
     if (this.output.files.has(fullPath)) {
       throw new Error(`Cannot overwrite file ${fullPath}`);

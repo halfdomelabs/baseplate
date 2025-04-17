@@ -149,6 +149,9 @@ function buildTaskDependencyMap(
   generatorIdToScopesMap: GeneratorIdToScopesMap,
 ): Record<string, EntryDependencyRecord | undefined> {
   return mapValues(entry.task.dependencies ?? {}, (dep) => {
+    if (!dep) {
+      return;
+    }
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
     const { name: provider, isReadOnly } = normalizedDep;
     const { optional, exportName, useParentScope } = normalizedDep.options;

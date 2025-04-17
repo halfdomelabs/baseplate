@@ -1,47 +1,58 @@
 import type {
   ImportMapper,
+  TsCodeFragment,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
+import type { AnyGeneratorTask } from '@halfdomelabs/sync';
+import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
 
 import {
+  featureScope,
   projectScope,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
   TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigFieldMap,
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
-import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
-import { mapValues } from 'es-toolkit';
+import {
+  createFieldMapSchemaBuilder,
+  mapValuesOfMap,
+  quot,
+} from '@halfdomelabs/utils';
+import { camelCase, kebabCase } from 'change-case';
 import { z } from 'zod';
+
+import {
+  createRootModuleImports,
+  rootModuleImportsProvider,
+} from './generated/ts-import-maps.js';
+import { CORE_ROOT_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-export interface RootModuleProvider {
-  addModuleField: (name: string, type: TypescriptCodeExpression) => void;
-  getRootModule: () => TypescriptCodeExpression;
-}
-
-export const rootModuleProvider =
-  createProviderType<RootModuleProvider>('root-module');
-
-const [setupTask, rootModuleConfigProvider, rootModuleSetupProvider] =
+const [setupTask, rootModuleConfigProvider, rootModuleConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
-      moduleFields: t.map<string, TypescriptCodeExpression>(),
+      moduleFields: t.map<string, TsCodeFragment>(),
     }),
     {
       prefix: 'root-module',
       configScope: projectScope,
+      configValuesScope: projectScope,
     },
   );
 
-export { rootModuleConfigProvider };
+export { rootModuleConfigProvider, rootModuleConfigValuesProvider };
 
 export interface RootModuleImport extends ImportMapper {
   getRootModule: () => TypescriptCodeExpression;
@@ -55,25 +66,115 @@ export const rootModuleImportProvider = createProviderType<RootModuleImport>(
   },
 );
 
-export interface AppModuleProvider {
+const appModuleConfigSchema = createFieldMapSchemaBuilder((t) => ({
+  moduleFields: t.mapOfMaps<string, string, TsCodeFragment>(),
+  moduleImports: t.array<string>(),
+}));
+
+export interface AppModuleProvider
+  extends InferFieldMapSchemaFromBuilder<typeof appModuleConfigSchema> {
   getModuleFolder(): string;
-  addModuleImport: (name: string) => void;
-  registerFieldEntry: (name: string, type: TypescriptCodeExpression) => void;
-  getValidFields(): string[];
 }
 
 export const appModuleProvider =
   createProviderType<AppModuleProvider>('app-module');
 
+export function createAppModuleTask(
+  name: string,
+  isRoot?: boolean,
+): AnyGeneratorTask {
+  return createGeneratorTask({
+    dependencies: {
+      typescriptFile: typescriptFileProvider,
+      rootModuleSetup: rootModuleConfigValuesProvider,
+      appModule: isRoot
+        ? undefined
+        : appModuleProvider.dependency().parentScopeOnly(),
+    },
+    exports: {
+      appModule: appModuleProvider.export(isRoot ? projectScope : featureScope),
+    },
+    run({ typescriptFile, appModule, rootModuleSetup }) {
+      const appModuleConfig = createConfigFieldMap(appModuleConfigSchema);
+      const parentFolder = appModule?.getModuleFolder();
+
+      if (!isRoot && !appModule) {
+        throw new Error('Parent folder is required for non-root modules');
+      }
+
+      const moduleName = `${camelCase(name)}Module`;
+      const moduleFolder = isRoot
+        ? '@/src/modules'
+        : `${parentFolder}/${kebabCase(name)}`;
+      const modulePath = `${moduleFolder}/index.ts`;
+
+      if (appModule) {
+        appModule.moduleFields.set(
+          'children',
+          moduleName,
+          tsCodeFragment(
+            moduleName,
+            tsImportBuilder([moduleName]).from(modulePath),
+          ),
+        );
+      }
+
+      return {
+        providers: {
+          appModule: {
+            getModuleFolder: () => moduleFolder,
+            ...appModuleConfig,
+          },
+        },
+        build: async (builder) => {
+          const appModuleFields = appModuleConfig.getValues();
+
+          const invalidKeys = Object.keys(appModuleFields.moduleFields).filter(
+            (key) => !rootModuleSetup.moduleFields.has(key),
+          );
+
+          if (invalidKeys.length > 0) {
+            throw new Error(`Invalid module fields: ${invalidKeys.join(', ')}`);
+          }
+
+          await builder.apply(
+            typescriptFile.renderTemplateFile({
+              id: `module-${kebabCase(name)}`,
+              template: CORE_ROOT_MODULE_TS_TEMPLATES.moduleIndex,
+              destination: `${moduleFolder}/index.ts`,
+              variables: {
+                TPL_IMPORTS: TsCodeUtils.mergeFragmentsPresorted(
+                  appModuleFields.moduleImports
+                    .map((value) => `import ${quot(value)};`)
+                    .toSorted(),
+                  '\n',
+                ),
+                TPL_MODULE_NAME: `${camelCase(name)}Module`,
+                TPL_MODULE_CONTENTS: TsCodeUtils.mergeFragmentsAsObject(
+                  mapValuesOfMap(appModuleFields.moduleFields, (value) =>
+                    TsCodeUtils.mergeFragmentsAsArray(value),
+                  ),
+                ),
+              },
+            }),
+          );
+        },
+      };
+    },
+  });
+}
+
 export const rootModuleGenerator = createGenerator({
   name: 'core/root-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
+  scopes: [featureScope],
   buildTasks: () => ({
     setup: createGeneratorTask(setupTask),
     rootModuleImport: createGeneratorTask({
       exports: {
         rootModuleImport: rootModuleImportProvider.export(projectScope),
+        rootModuleImports: rootModuleImportsProvider.export(projectScope),
       },
       run() {
         return {
@@ -81,113 +182,56 @@ export const rootModuleGenerator = createGenerator({
             rootModuleImport: {
               getRootModule: () =>
                 TypescriptCodeUtils.createExpression(
-                  'RootModule',
-                  "import { RootModule } from '@/src/modules/index.js'",
+                  'rootModule',
+                  "import { rootModule } from '@/src/modules/index.js'",
                 ),
               getRootModuleImport: () => `@/src/modules/index.js`,
               getImportMap: () => ({
                 '%root-module': {
                   path: '@/src/modules/index.js',
-                  allowedImports: ['RootModule'],
+                  allowedImports: ['rootModule'],
                 },
               }),
             },
+            rootModuleImports: createRootModuleImports('@/src'),
           },
         };
       },
     }),
-    appModule: createGeneratorTask({
+    appModule: createAppModuleTask('root', true),
+    appModuleUtil: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
-        rootModuleSetup: rootModuleSetupProvider,
+        typescriptFile: typescriptFileProvider,
+        rootModuleSetup: rootModuleConfigValuesProvider,
       },
-      exports: { appModule: appModuleProvider.export(projectScope) },
-      run({ typescript, rootModuleSetup: { moduleFields: moduleFieldsMap } }) {
-        const rootModuleEntries = new Map<string, TypescriptCodeExpression[]>();
-        const moduleImports: string[] = [];
-
+      run({ typescriptFile, rootModuleSetup: { moduleFields } }) {
         return {
-          providers: {
-            appModule: {
-              getModuleFolder: () => 'src/modules',
-              getValidFields: () => ['children', ...moduleFieldsMap.keys()],
-              addModuleImport(name) {
-                moduleImports.push(name);
-              },
-              registerFieldEntry: (name, type) => {
-                if (name !== 'children' && !moduleFieldsMap.get(name)) {
-                  throw new Error(`Unknown field entry: ${name}`);
-                }
-                const existing = rootModuleEntries.get(name) ?? [];
-                rootModuleEntries.set(name, [...existing, type]);
-              },
-            },
-          },
           build: async (builder) => {
-            const rootModule = typescript.createTemplate({
-              ROOT_MODULE_CONTENTS: { type: 'code-expression' },
-            });
+            const moduleFieldsInterface = TsCodeUtils.mergeFragments(
+              mapValuesOfMap(
+                moduleFields,
+                (field, key) => TsCodeUtils.template`${key}?: ${field}[];`,
+              ),
+            );
 
-            rootModule.addCodeExpression(
-              'ROOT_MODULE_CONTENTS',
-              TypescriptCodeUtils.mergeExpressionsAsObject(
-                mapValues(Object.fromEntries(rootModuleEntries), (types) =>
-                  TypescriptCodeUtils.mergeExpressionsAsArray(types),
+            const moduleMerger = TsCodeUtils.mergeFragmentsAsObject(
+              mapValuesOfMap(moduleFields, (field, key) =>
+                tsCodeFragment(
+                  `[...(prev.${key} ?? []), ...(current.${key} ?? [])]`,
                 ),
               ),
+              { wrapWithParenthesis: true },
             );
 
             await builder.apply(
-              rootModule.renderToAction('index.ts', 'src/modules/index.ts'),
-            );
-
-            const moduleHelper = typescript.createTemplate({
-              MODULE_FIELDS: { type: 'code-block' },
-              MODULE_MERGER: { type: 'code-expression' },
-            });
-
-            const moduleFields = [...moduleFieldsMap.entries()].map(
-              ([name, field]) => ({ name, field }),
-            );
-
-            moduleHelper.addCodeAddition({
-              importText: moduleImports.map((name) => `import '${name}'`),
-            });
-
-            moduleHelper.addCodeBlock(
-              'MODULE_FIELDS',
-              TypescriptCodeUtils.mergeBlocks(
-                moduleFields.map(({ name, field }) => {
-                  const wrapper = TypescriptCodeUtils.createWrapper(
-                    (contents) => `${name}?: ${contents}[]`,
-                  );
-                  return TypescriptCodeUtils.toBlock(
-                    TypescriptCodeUtils.wrapExpression(field, wrapper),
-                  );
-                }),
-              ),
-            );
-
-            const mergers = safeMergeAllWithOptions(
-              moduleFields.map(({ name }) => ({
-                [name]: TypescriptCodeUtils.createExpression(
-                  `[...(prev.${name} ?? []), ...(current.${name} ?? [])]`,
-                ),
-              })),
-            );
-
-            moduleHelper.addCodeExpression(
-              'MODULE_MERGER',
-              TypescriptCodeUtils.mergeExpressionsAsObject(mergers, {
-                wrapWithParenthesis: true,
+              typescriptFile.renderTemplateFile({
+                template: CORE_ROOT_MODULE_TS_TEMPLATES.appModules,
+                destination: 'src/modules/app-modules.ts',
+                variables: {
+                  TPL_MODULE_FIELDS: moduleFieldsInterface,
+                  TPL_MODULE_MERGER: moduleMerger,
+                },
               }),
-            );
-
-            await builder.apply(
-              moduleHelper.renderToAction(
-                'app-modules.ts',
-                'src/utils/app-modules.ts',
-              ),
             );
           },
         };
@@ -195,3 +239,5 @@ export const rootModuleGenerator = createGenerator({
     }),
   }),
 });
+
+export { rootModuleImportsProvider } from './generated/ts-import-maps.js';

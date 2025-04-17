@@ -196,7 +196,7 @@ export const storageModuleGenerator = createGenerator({
             );
             // Copy schema
             async function registerSchemaFile(file: string): Promise<void> {
-              appModule.addModuleImport(`@/${moduleFolder}/${file}.js`);
+              appModule.moduleImports.push(`${moduleFolder}/${file}.js`);
               pothosSchema.registerSchemaFile(
                 path.join(moduleFolder, `${file}.ts`),
               );

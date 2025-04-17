@@ -3,6 +3,7 @@ import { z } from 'zod';
 import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-output.js';
 import type { TaskPhase } from '@src/phases/types.js';
 import type {
+  InferProviderDependency,
   Provider,
   ProviderDependency,
   ProviderExport,
@@ -38,7 +39,10 @@ export type ProviderExportMap<T = Record<string, Provider>> = {
  * A map of dependency names to the provider dependency type
  */
 export type ProviderDependencyMap<T = Record<string, Provider>> = {
-  [key in keyof T]: ProviderType<T[key]> | ProviderDependency<T[key]>;
+  [key in keyof T]:
+    | ProviderType<T[key]>
+    | ProviderDependency<T[key]>
+    | undefined;
 };
 
 /**
@@ -50,14 +54,18 @@ export type InferExportProviderMap<T> = T extends undefined
     ? P
     : never;
 
+type IsUndefined<T> = undefined extends T ? true : false;
+
 /**
  * Infer the map of the initialized providers from the provider dependency map
  */
 export type InferDependencyProviderMap<T> = T extends undefined
   ? undefined
-  : T extends ProviderDependencyMap<infer P>
-    ? P
-    : never;
+  : {
+      [key in keyof T]: IsUndefined<T[key]> extends true
+        ? InferProviderDependency<T[key]> | undefined
+        : InferProviderDependency<T[key]>;
+    };
 
 interface GeneratorTaskResultProviders<
   ExportMap extends Record<string, Provider> | undefined =

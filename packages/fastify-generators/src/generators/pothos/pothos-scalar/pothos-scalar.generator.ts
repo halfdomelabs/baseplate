@@ -94,7 +94,7 @@ export const pothosScalarGenerator = createGenerator({
         const [scalarImport, scalarPath] = makeImportAndFilePath(
           `${appModule.getModuleFolder()}/scalars/${scalarConfig.templatePath}`,
         );
-        appModule.addModuleImport(scalarImport);
+        appModule.moduleImports.push(scalarImport);
 
         const { name, scalar, inputType, outputType } = scalarConfig;
 

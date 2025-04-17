@@ -7,6 +7,7 @@ import {
   mergeCodeEntryOptions,
   projectScope,
   tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeBlock,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -66,9 +67,12 @@ export const fastifyServerGenerator = createGenerator({
       run({ rootModuleConfig }, { taskId }) {
         rootModuleConfig.moduleFields.set(
           'plugins',
-          TypescriptCodeUtils.createExpression(
+          tsCodeFragment(
             '(FastifyPluginCallback | FastifyPluginAsync)',
-            "import { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';",
+            tsImportBuilder([
+              'FastifyPluginAsync',
+              'FastifyPluginCallback',
+            ]).from('fastify'),
           ),
           taskId,
         );

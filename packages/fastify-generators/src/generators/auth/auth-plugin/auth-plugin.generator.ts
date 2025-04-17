@@ -2,7 +2,8 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   makeImportAndFilePath,
-  TypescriptCodeUtils,
+  tsCodeFragment,
+  tsImportBuilder,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
@@ -46,11 +47,12 @@ export const authPluginGenerator = createGenerator({
           appModule.getModuleFolder(),
           'plugins/auth.plugin.ts',
         );
-        appModule.registerFieldEntry(
+        appModule.moduleFields.set(
           'plugins',
-          TypescriptCodeUtils.createExpression(
+          'authPlugin',
+          tsCodeFragment(
             'authPlugin',
-            `import { authPlugin } from '${authPluginImport}'`,
+            tsImportBuilder(['authPlugin']).from(authPluginImport),
           ),
         );
 

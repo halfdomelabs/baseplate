@@ -56,7 +56,7 @@ export const pothosEnumsFileGenerator = createGenerator({
           `${appModule.getModuleFolder()}/schema/${kebabCase(name)}.ts`,
         );
 
-        appModule.addModuleImport(typesImport);
+        appModule.moduleImports.push(typesImport);
         pothosSetup.registerSchemaFile(typesPath);
 
         const enums: PothosEnum[] = [];

@@ -3,6 +3,8 @@ import {
   extractPackageVersions,
   nodeProvider,
   projectScope,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -84,11 +86,14 @@ export const fastifyBullBoardGenerator = createGenerator({
               { importMappers },
             );
 
-            appModule.registerFieldEntry(
+            appModule.moduleFields.set(
               'children',
-              TypescriptCodeUtils.createExpression(
+              'bullBoardModule',
+              tsCodeFragment(
                 'bullBoardModule',
-                `import { bullBoardModule } from '@/${moduleFolder}/index.js'`,
+                tsImportBuilder(['bullBoardModule']).from(
+                  `${moduleFolder}/index.js`,
+                ),
               ),
             );
 

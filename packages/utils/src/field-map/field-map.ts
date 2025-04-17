@@ -178,6 +178,106 @@ export class MapContainer<K extends string | number | symbol, V>
   }
 }
 
+// Map of maps field container
+export class MapOfMapsContainer<
+  K1 extends string | number | symbol,
+  K2 extends string | number | symbol,
+  V,
+> implements FieldContainer<Map<K1, Map<K2, V>>>
+{
+  private readonly _value: Map<
+    K1,
+    {
+      value: Map<K2, { value: V; setBySource: string | undefined }>;
+      setBySource: string | undefined;
+    }
+  >;
+  protected getDynamicSource: FieldContainerDynamicSourceGetter | undefined;
+
+  constructor(
+    initialValue?: Map<K1, Map<K2, V>>,
+    options?: FieldContainerOptions,
+  ) {
+    this.getDynamicSource = options?.getDynamicSource;
+    const initialMap = initialValue ?? new Map<K1, Map<K2, V>>();
+    this._value = new Map(
+      [...initialMap.entries()].map(([key1, innerMap]) => [
+        key1,
+        {
+          value: new Map<K2, { value: V; setBySource: string | undefined }>(
+            [...innerMap.entries()].map(([key2, value]) => [
+              key2,
+              { value, setBySource: this.getDynamicSource?.() },
+            ]),
+          ),
+          setBySource: this.getDynamicSource?.(),
+        },
+      ]),
+    );
+  }
+
+  set(key1: K1, key2: K2, value: V, source?: string): void {
+    const existingOuterValue = this._value.get(key1);
+    const sourceToUse = source ?? this.getDynamicSource?.() ?? 'unknown';
+
+    // If the outer key doesn't exist yet, create a new map for it
+    if (!existingOuterValue) {
+      const newInnerMap = new Map<
+        K2,
+        { value: V; setBySource: string | undefined }
+      >();
+      newInnerMap.set(key2, { value, setBySource: sourceToUse });
+      this._value.set(key1, {
+        value: newInnerMap,
+        setBySource: sourceToUse,
+      });
+      return;
+    }
+
+    // Check if this specific key1+key2 combination has already been set
+    const existingInnerValue = existingOuterValue.value.get(key2);
+    if (existingInnerValue?.setBySource) {
+      throw new Error(
+        `Value for keys ${key1 as string}+${key2 as string} has already been set by ${existingInnerValue.setBySource} and cannot be overwritten by ${sourceToUse}`,
+      );
+    }
+
+    // Add the new value to the existing inner map
+    existingOuterValue.value.set(key2, {
+      value,
+      setBySource: sourceToUse,
+    });
+  }
+
+  merge(key1: K1, value: Map<K2, V>, source?: string): void {
+    const mergeSource = source ?? this.getDynamicSource?.() ?? 'unknown';
+    for (const [key2, val] of value.entries()) {
+      this.set(key1, key2, val, mergeSource);
+    }
+  }
+
+  mergeObj(key1: K1, value: Record<K2, V>, source?: string): void {
+    const mergeSource = source ?? this.getDynamicSource?.() ?? 'unknown';
+    for (const [key2, val] of Object.entries(value)) {
+      this.set(key1, key2 as K2, val as V, mergeSource);
+    }
+  }
+
+  getValue(): Map<K1, Map<K2, V>> {
+    return new Map(
+      [...this._value.entries()].map(([key1, outerValue]) => [
+        key1,
+        new Map(
+          [...outerValue.value.entries()].map(([key2, innerValue]) => [
+            key2,
+            innerValue.value,
+          ]),
+        ),
+      ]),
+    );
+  }
+}
+
 type InferFieldContainer<T> = T extends FieldContainer<infer U> ? U : never;
 
 // Schema type
@@ -245,6 +345,29 @@ export class FieldMapSchemaBuilder {
       new Map(Object.entries(initialValue ?? {})),
       this.options,
     );
+  }
+
+  mapOfMaps<
+    K1 extends string | number | symbol,
+    K2 extends string | number | symbol,
+    V,
+  >(initialValue?: Map<K1, Map<K2, V>>): MapOfMapsContainer<K1, K2, V> {
+    return new MapOfMapsContainer(
+      initialValue ?? new Map<K1, Map<K2, V>>(),
+      this.options,
+    );
+  }
+
+  mapOfMapsFromObj<K2 extends string | number | symbol, V>(
+    initialValue?: Record<string, Record<K2, V>>,
+  ): MapOfMapsContainer<string, K2, V> {
+    const map = new Map<string, Map<K2, V>>();
+    if (initialValue) {
+      for (const [key1, innerObj] of Object.entries(initialValue)) {
+        map.set(key1, new Map(Object.entries(innerObj) as [K2, V][]));
+      }
+    }
+    return new MapOfMapsContainer(map, this.options);
   }
 }
 

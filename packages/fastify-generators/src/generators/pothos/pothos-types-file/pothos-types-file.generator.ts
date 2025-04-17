@@ -57,7 +57,7 @@ export const pothosTypesFileGenerator = createGenerator({
           `${appModule.getModuleFolder()}/schema/${fileName}.ts`,
         );
 
-        appModule.addModuleImport(typesImport);
+        appModule.moduleImports.push(typesImport);
         pothosSchema.registerSchemaFile(typesPath);
 
         const registeredKeys: string[] = [];

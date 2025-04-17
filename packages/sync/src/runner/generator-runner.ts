@@ -109,6 +109,9 @@ export async function executeGeneratorEntry(
           const resolvedDependencies = mapValues(
             dependencies,
             (dependency, key) => {
+              if (!dependency) {
+                return;
+              }
               const dependencyId = dependencyMap[taskId][key]?.id;
 
               const provider =
