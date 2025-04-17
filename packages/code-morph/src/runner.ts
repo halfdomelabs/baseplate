@@ -55,7 +55,11 @@ export async function runMorpher(
 
   // load files from path
   if (lstatSync(path).isDirectory()) {
-    project.addSourceFilesAtPaths(sourceGlobs.map((glob) => `${path}/${glob}`));
+    project.addSourceFilesAtPaths([
+      ...sourceGlobs.map((glob) => `${path}/${glob}`),
+      '!**/node_modules/**',
+      '!**/dist/**',
+    ]);
   } else {
     project.addSourceFileAtPath(path);
   }
