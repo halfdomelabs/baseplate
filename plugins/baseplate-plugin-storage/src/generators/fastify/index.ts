@@ -1,2 +1,2 @@
-export * from './prisma-file-transformer/index.js';
-export * from './storage-module/index.js';
+export * from './prisma-file-transformer/prisma-file-transformer.generator.js';
+export * from './storage-module/storage-module.generator.js';

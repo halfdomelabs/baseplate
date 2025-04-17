@@ -19,7 +19,7 @@ import {
 import { z } from 'zod';
 
 import { configServiceImportsProvider } from '../config-service/config-service.generator.js';
-import { fastifyServerProvider } from '../fastify-server/index.js';
+import { fastifyServerProvider } from '../fastify-server/fastify-server.generator.js';
 import { loggerServiceImportsProvider } from '../logger-service/logger-service.generator.js';
 import {
   createErrorHandlerServiceImports,

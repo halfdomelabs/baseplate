@@ -3,7 +3,7 @@ import {
   pluginConfigSpec,
 } from '@halfdomelabs/project-builder-lib';
 
-import { storagePluginDefinitionSchema } from './schema/plugin-definition';
+import { storagePluginDefinitionSchema } from './schema/plugin-definition.js';
 
 export default createPlatformPluginExport({
   dependencies: {

@@ -1,1 +1,1 @@
-export * from './fastify-stripe/index.js';
+export * from './fastify-stripe/fastify-stripe.generator.js';

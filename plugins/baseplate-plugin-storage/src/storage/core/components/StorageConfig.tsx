@@ -16,14 +16,14 @@ import { Alert, Button, ComboboxField } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
-import { cn } from '@src/utils/cn';
+import { cn } from '@src/utils/cn.js';
 
-import type { StoragePluginDefinition } from '../schema/plugin-definition';
+import type { StoragePluginDefinition } from '../schema/plugin-definition.js';
 
-import { createStorageModels } from '../schema/models';
-import { storagePluginDefinitionSchema } from '../schema/plugin-definition';
-import AdapterEditorForm from './AdapterEditorForm';
-import CategoryEditorForm from './CategoryEditorForm';
+import { createStorageModels } from '../schema/models.js';
+import { storagePluginDefinitionSchema } from '../schema/plugin-definition.js';
+import AdapterEditorForm from './AdapterEditorForm.js';
+import CategoryEditorForm from './CategoryEditorForm.js';
 
 export function StorageConfig({
   definition: pluginMetadata,
