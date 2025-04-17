@@ -3,7 +3,7 @@ import type { ts } from 'ts-morph';
 import { minBy } from 'es-toolkit';
 import pathPosix from 'node:path/posix';
 
-export interface TsPathMapEntry {
+interface TsPathMapEntry {
   /** The alias to map from (e.g. "@src/*") */
   from: string;
   /** The project relative path to map to (e.g. "./src/app/*") */

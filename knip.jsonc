@@ -86,6 +86,13 @@
       // mdx files - https://github.com/webpro-nl/knip/issues/494
       "ignoreDependencies": ["@storybook/blocks"]
     },
+    "packages/code-morph": {
+      "entry": ["src/index.{ts,tsx}", "src/morphers/**/*.morpher.{ts,tsx}"],
+      "project": ["src/**/*.{ts,tsx}", "tests/**/*.{ts,tsx}"],
+      "paths": {
+        "@src/*": ["./src/*"]
+      }
+    },
     "packages/utils": {
       "entry": ["src/index.{ts,tsx}", "src/node.{ts,tsx}"],
       "project": "src/**/*.{ts,tsx}"
