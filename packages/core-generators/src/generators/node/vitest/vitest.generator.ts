@@ -15,12 +15,12 @@ import { projectScope } from '@src/providers/scopes.js';
 import { extractPackageVersions } from '@src/utils/extract-packages.js';
 import { TypescriptCodeUtils } from '@src/writers/index.js';
 
-import { eslintProvider } from '../eslint/index.js';
+import { eslintProvider } from '../eslint/eslint.generator.js';
 import {
   createNodePackagesTask,
   nodeProvider,
 } from '../node/node.generator.js';
-import { typescriptProvider } from '../typescript/index.js';
+import { typescriptProvider } from '../typescript/typescript.generator.js';
 
 const descriptorSchema = z.object({});
 
