@@ -13,7 +13,7 @@ import { z } from 'zod';
 
 import { reactRouterProvider } from '@src/generators/core/react-router/index.js';
 
-import { authHooksProvider } from '../auth-hooks/index.js';
+import { authHooksProvider } from '../auth-hooks/auth-hooks.generator.js';
 
 const descriptorSchema = z.object({});
 

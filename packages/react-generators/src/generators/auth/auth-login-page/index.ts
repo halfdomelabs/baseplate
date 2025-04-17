@@ -13,8 +13,8 @@ import {
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { apolloErrorProvider } from '@src/generators/apollo/apollo-error/index.js';
-import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
+import { apolloErrorProvider } from '@src/generators/apollo/apollo-error/apollo-error.generator.js';
+import { reactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';

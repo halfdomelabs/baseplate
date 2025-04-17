@@ -17,7 +17,7 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-import { reactApolloProvider } from '../../apollo/react-apollo/index.js';
+import { reactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
 import { reactComponentsProvider } from '../../core/react-components/index.js';
 import { reactErrorProvider } from '../../core/react-error/index.js';
 import { reactLoggerProvider } from '../../core/react-logger/index.js';

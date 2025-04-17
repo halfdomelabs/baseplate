@@ -27,7 +27,7 @@ import type {
   AdminCrudInputValidation,
 } from '../_providers/admin-crud-input-container.js';
 import type { AdminCrudDataDependency } from '../_utils/data-loaders.js';
-import type { AdminComponentsProvider } from '../admin-components/index.js';
+import type { AdminComponentsProvider } from '../admin-components/admin-components.generator.js';
 
 import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-column-container.js';
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
@@ -35,8 +35,8 @@ import {
   getPassthroughExtraProps,
   mergeAdminCrudDataDependencies,
 } from '../_utils/data-loaders.js';
-import { adminComponentsProvider } from '../admin-components/index.js';
-import { adminCrudEditProvider } from '../admin-crud-edit/index.js';
+import { adminComponentsProvider } from '../admin-components/admin-components.generator.js';
+import { adminCrudEditProvider } from '../admin-crud-edit/admin-crud-edit.generator.js';
 import { adminCrudSectionScope } from '../admin-crud-section/index.js';
 
 const descriptorSchema = z.object({

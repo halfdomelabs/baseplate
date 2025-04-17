@@ -1,7 +1,7 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { pluralize } from 'inflection';
 
-import type { ReactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
+import type { ReactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
 
 import { lowerCaseFirst } from '@src/utils/case.js';
 import { mergeGraphQLFields } from '@src/writers/graphql/index.js';

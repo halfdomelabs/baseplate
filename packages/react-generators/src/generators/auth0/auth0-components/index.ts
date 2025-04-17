@@ -6,7 +6,7 @@ import {
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authComponentsProvider } from '@src/generators/auth/auth-components/index.js';
+import { authComponentsProvider } from '@src/generators/auth/auth-components/auth-components.generator.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 
 const descriptorSchema = z.object({});

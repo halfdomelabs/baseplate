@@ -8,7 +8,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 
 import { storageModuleGenerator } from '@src/generators/fastify';
-import { uploadComponentsGenerator } from '@src/generators/react/upload-components';
+import { uploadComponentsGenerator } from '@src/generators/react/upload-components/upload-components.generator';
 
 import type { StoragePluginDefinition } from './schema/plugin-definition';
 
