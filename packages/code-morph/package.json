@@ -30,6 +30,7 @@
     "@inquirer/prompts": "7.2.1",
     "change-case": "5.4.4",
     "commander": "^12.1.0",
+    "es-toolkit": "1.31.0",
     "globby": "^14.0.2",
     "ora": "^8.0.1",
     "prettier": "catalog:",

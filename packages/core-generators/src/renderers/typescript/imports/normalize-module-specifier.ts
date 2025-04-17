@@ -128,7 +128,7 @@ function normalizePathForResolutionKind(
 }
 
 /**
- * Normalizes the module specifier to pick the best import path based on the follwoing rules:
+ * Normalizes the module specifier to pick the best import path based on the following rules:
  *
  * 1) If the import is an external module (e.g. axios), keep the module specifier as-is.
  * 2) Otherwise if the module is a relative module (./) or absolute internal path (@/),

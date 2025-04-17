@@ -1,12 +1,17 @@
 import type { SourceFile } from 'ts-morph';
 import type z from 'zod';
 
+export interface MorpherContext {
+  packageDirectory: string;
+}
+
 /**
  * The transform function for a morpher.
  */
 type TransformFunction<Options extends Record<string, string | undefined>> = (
   file: SourceFile,
   options: Options,
+  context: MorpherContext,
 ) => void;
 
 /**
@@ -60,6 +65,13 @@ export interface TypescriptMorpher<
    * The path globs to run the morpher on.
    */
   pathGlobs?: string[];
+  /**
+   * Use ts-morph project save method.
+   *
+   * This enables the morpher to rename files/refactor other files. However,
+   * prettier will not be used to format the files.
+   */
+  saveUsingTsMorph?: boolean;
 }
 
 /**

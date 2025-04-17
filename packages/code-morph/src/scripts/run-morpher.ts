@@ -77,10 +77,13 @@ async function getPackages(
         return false;
       if (!morpher.pathGlobs?.length) return true;
 
-      const matchingFiles = await globby(morpher.pathGlobs, {
-        cwd: pkg.directory,
-        gitignore: true,
-      });
+      const matchingFiles = await globby(
+        [...morpher.pathGlobs, '!**/node_modules/**', '!**/dist/**'],
+        {
+          cwd: pkg.directory,
+          gitignore: true,
+        },
+      );
       return matchingFiles.length > 0;
     },
   );

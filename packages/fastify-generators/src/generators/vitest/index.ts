@@ -1,2 +1,2 @@
-export * from './fastify-vitest/index.js';
-export * from './prisma-vitest/index.js';
+export * from './fastify-vitest/fastify-vitest.generator.js';
+export * from './prisma-vitest/prisma-vitest.generator.js';

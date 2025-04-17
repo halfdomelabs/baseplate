@@ -1,4 +1,5 @@
 import { existsSync, lstatSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 import ora from 'ora';
 import prettier from 'prettier';
 import { Project } from 'ts-morph';
@@ -21,43 +22,47 @@ export interface MorphContext {
 /**
  * Runs a morpher on a given path.
  *
- * @param path - The path to run the morpher on.
+ * @param targetPath - The path to run the morpher on.
  * @param morpher - The morpher to run.
  * @param options - The options to pass to the morpher.
  * @param context - The context to pass to the morpher.
  */
 export async function runMorpher(
-  path: string,
+  targetPath: string,
   morpher: TypescriptMorpher,
   options: Record<string, string>,
   { dryRun }: MorphContext,
 ): Promise<void> {
   // load path
-  const tsConfig = findNearestAncestorFile(path, 'tsconfig.json');
+  const tsConfig = findNearestAncestorFile(targetPath, 'tsconfig.json');
 
   if (!tsConfig) {
-    throw new Error(`Could not find a tsconfig.json file for ${path}`);
+    throw new Error(`Could not find a tsconfig.json file for ${targetPath}`);
   }
 
   const project = new Project({
     tsConfigFilePath: tsConfig,
-    skipAddingFilesFromTsConfig: true,
+    skipAddingFilesFromTsConfig: !morpher.saveUsingTsMorph,
     manipulationSettings: TS_MORPH_MANIPULATION_SETTINGS,
   });
 
-  const prettierConfig = await prettier.resolveConfig(path);
+  const prettierConfig = await prettier.resolveConfig(targetPath);
 
-  if (!existsSync(path)) {
-    throw new Error(`Path ${path} does not exist`);
+  if (!existsSync(targetPath)) {
+    throw new Error(`Path ${targetPath} does not exist`);
   }
 
   const sourceGlobs = morpher.pathGlobs ?? ['**/*.ts', '**/*.tsx'];
 
   // load files from path
-  if (lstatSync(path).isDirectory()) {
-    project.addSourceFilesAtPaths(sourceGlobs.map((glob) => `${path}/${glob}`));
+  if (lstatSync(targetPath).isDirectory()) {
+    project.addSourceFilesAtPaths([
+      ...sourceGlobs.map((glob) => `${targetPath}/${glob}`),
+      '!**/node_modules/**',
+      '!**/dist/**',
+    ]);
   } else {
-    project.addSourceFileAtPath(path);
+    project.addSourceFileAtPath(targetPath);
   }
 
   const sourceFiles = project.getSourceFiles();
@@ -79,7 +84,9 @@ export async function runMorpher(
         isModified = true;
       };
       sourceFile.onModified(onModified);
-      morpher.transform(sourceFile, options);
+      morpher.transform(sourceFile, options, {
+        packageDirectory: path.dirname(tsConfig),
+      });
       sourceFile.onModified(onModified, false);
 
       processedFiles += 1;
@@ -87,13 +94,17 @@ export async function runMorpher(
         changedFiles += 1;
 
         if (!dryRun) {
-          const formatted = await prettier.format(sourceFile.getFullText(), {
-            ...prettierConfig,
-            parser: 'typescript',
-          });
-          writeFileSync(sourceFile.getFilePath(), formatted, {
-            encoding: 'utf8',
-          });
+          if (morpher.saveUsingTsMorph) {
+            await project.save();
+          } else {
+            const formatted = await prettier.format(sourceFile.getFullText(), {
+              ...prettierConfig,
+              parser: 'typescript',
+            });
+            writeFileSync(sourceFile.getFilePath(), formatted, {
+              encoding: 'utf8',
+            });
+          }
         }
       }
     } catch (err) {

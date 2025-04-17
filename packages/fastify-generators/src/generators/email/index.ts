@@ -1,2 +1,2 @@
-export * from './fastify-postmark/index.js';
-export * from './fastify-sendgrid/index.js';
+export * from './fastify-postmark/fastify-postmark.generator.js';
+export * from './fastify-sendgrid/fastify-sendgrid.generator.js';

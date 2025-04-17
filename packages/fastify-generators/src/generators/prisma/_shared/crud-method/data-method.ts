@@ -6,7 +6,7 @@ import type {
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
 
-import type { ServiceContextProvider } from '@src/generators/core/service-context/index.js';
+import type { ServiceContextProvider } from '@src/generators/core/service-context/service-context.generator.js';
 import type {
   PrismaDataTransformer,
   PrismaDataTransformOutputField,
@@ -17,8 +17,8 @@ import type { ServiceOutputDto } from '@src/types/service-output.js';
 import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
 
-import type { PrismaUtilsProvider } from '../../prisma-utils/index.js';
-import type { PrismaOutputProvider } from '../../prisma/index.js';
+import type { PrismaUtilsProvider } from '../../prisma-utils/prisma-utils.generator.js';
+import type { PrismaOutputProvider } from '../../prisma/prisma.generator.js';
 
 export interface PrismaDataMethodOptions {
   name: string;
