@@ -3,13 +3,7 @@ import path from 'node:path';
 
 const PLUGIN_MANIFEST = {
   description: 'Description for plugin goes here',
-  files: [
-    'LICENSE',
-    'dist/**/*',
-    'CHANGELOG',
-    'manifest.json',
-    'generator.json',
-  ],
+  files: ['LICENSE', 'dist/**/*', 'CHANGELOG', 'manifest.json'],
   scripts: {
     build: 'concurrently pnpm:build:*',
     'build:static':
