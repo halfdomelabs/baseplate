@@ -26,10 +26,6 @@ export default createTypescriptMorpher({
       return;
     }
 
-    if (!sourceFile.getFilePath().includes('/request-service-context/')) {
-      return;
-    }
-
     // Get the folder name and parent directory from the path
     const filePath = sourceFile.getFilePath();
     const dirPath = path.dirname(filePath);

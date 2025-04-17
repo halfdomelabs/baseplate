@@ -47,15 +47,6 @@ export function moveFile(
       ),
       resolveModuleOptions,
     );
-    console.log(
-      'args',
-      `@/${path.relative(packageDirectory, targetFilePath.replace(/\.tsx?$/, isNode16 ? '.js' : ''))}`,
-      path.dirname(
-        path.relative(packageDirectory, referencingFile.getFilePath()),
-      ),
-      resolveModuleOptions,
-    );
-    console.log(`result -> ${targetModuleSpecifier}`);
     // fix import statements
     const importStatements = referencingFile.getImportDeclarations();
     for (const importStatement of importStatements) {
