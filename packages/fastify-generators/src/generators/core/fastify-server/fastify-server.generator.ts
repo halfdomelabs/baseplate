@@ -26,7 +26,6 @@ import {
   configServiceImportsProvider,
   configServiceProvider,
 } from '../config-service/config-service.generator.js';
-import { errorHandlerServiceImportsProvider } from '../error-handler-service/generated/ts-import-maps.js';
 import { loggerServiceImportsProvider } from '../logger-service/logger-service.generator.js';
 import { CORE_FASTIFY_SERVER_TS_TEMPLATES } from './generated/ts-templates.js';
 
@@ -111,7 +110,6 @@ export const fastifyServerGenerator = createGenerator({
         appModuleImports: appModuleImportsProvider,
         typescriptFile: typescriptFileProvider,
         fastifyServerConfigValues: fastifyServerConfigValuesProvider,
-        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
       },
       run({
         loggerServiceImports,
@@ -119,7 +117,6 @@ export const fastifyServerGenerator = createGenerator({
         appModuleImports,
         typescriptFile,
         fastifyServerConfigValues,
-        errorHandlerServiceImports,
       }) {
         const {
           plugins,
@@ -145,9 +142,9 @@ export const fastifyServerGenerator = createGenerator({
                 variables: {
                   TPL_INITIALIZERS:
                     TsCodeUtils.mergeFragments(initializerFragments),
+                  TPL_LOG_ERROR: TsCodeUtils.template`${errorHandlerFunction}(err)`,
                 },
                 importMapProviders: {
-                  errorHandlerServiceImports,
                   loggerServiceImports,
                   configServiceImports,
                 },

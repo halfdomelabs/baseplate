@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 import { config } from '%configServiceImports';
-import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 
 import { buildServer } from './server.js';
@@ -15,8 +14,8 @@ async function startServer(): Promise<void> {
   fastify
     .listen({ port: config.SERVER_PORT, host: config.SERVER_HOST })
     .catch((err) => {
-      logError(err);
+      TPL_LOG_ERROR;
     });
 }
 
-startServer().catch((err) => logError(err));
+startServer().catch((err) => TPL_LOG_ERROR);
