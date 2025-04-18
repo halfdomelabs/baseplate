@@ -3,7 +3,7 @@ import type { TsTemplateFileMetadata } from '../templates/types.js';
 const VARIABLE_REGEX =
   /\/\* TPL_([A-Z0-9_]+):START \*\/([\s\S]*?)\/\* TPL_\1:END \*\//g;
 const HOISTED_REGEX =
-  /\/\* HOISTED:([A-Za-z0-9_]+):START \*\/([\s\S]*?)\/\* HOISTED:\1:END \*\/\n?/g;
+  /\/\* HOISTED:([A-Za-z0-9_-]+):START \*\/([\s\S]*?)\/\* HOISTED:\1:END \*\/\n?/g;
 
 /**
  * Strips the variables from a Typescript template file.
