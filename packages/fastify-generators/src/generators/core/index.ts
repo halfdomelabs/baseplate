@@ -1,4 +1,5 @@
 export * from './_composers/index.js';
+export * from './app-module-setup/app-module-setup.generator.js';
 export * from './app-module/app-module.generator.js';
 export * from './axios/axios.generator.js';
 export * from './config-service/config-service.generator.js';
@@ -15,6 +16,5 @@ export * from './logger-service/logger-service.generator.js';
 export * from './readme/readme.generator.js';
 export * from './request-context/request-context.generator.js';
 export * from './request-service-context/request-service-context.generator.js';
-export * from './root-module/root-module.generator.js';
 export * from './service-context/service-context.generator.js';
 export * from './service-file/service-file.generator.js';

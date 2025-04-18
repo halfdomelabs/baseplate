@@ -17,10 +17,10 @@ import {
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/fastify-redis.generator.js';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server/fastify-server.generator.js';
-import { appModuleProvider } from '@src/generators/core/root-module/root-module.generator.js';
 import { pothosSchemaProvider } from '@src/generators/pothos/pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({});

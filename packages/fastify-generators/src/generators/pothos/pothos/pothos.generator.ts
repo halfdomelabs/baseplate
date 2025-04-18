@@ -28,9 +28,9 @@ import {
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+import { appModuleImportsProvider } from '@src/generators/core/app-module/app-module.generator.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/fastify.generator.js';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
-import { rootModuleImportProvider } from '@src/generators/core/root-module/root-module.generator.js';
 import { yogaPluginConfigProvider } from '@src/generators/yoga/yoga-plugin/yoga-plugin.generator.js';
 import { PothosTypeReferenceContainer } from '@src/writers/pothos/index.js';
 
@@ -164,7 +164,7 @@ export const pothosGenerator = createGenerator({
         eslint: eslintProvider,
         requestServiceContext: requestServiceContextProvider,
         prettier: prettierProvider,
-        rootModuleImport: rootModuleImportProvider,
+        appModuleImports: appModuleImportsProvider,
         yogaPluginConfig: yogaPluginConfigProvider,
         tsUtils: tsUtilsProvider,
         pothosSetupOutput: pothosSetupOutputProvider,
@@ -178,7 +178,7 @@ export const pothosGenerator = createGenerator({
           typescript,
           requestServiceContext,
           prettier,
-          rootModuleImport,
+          appModuleImports,
           yogaPluginConfig,
           tsUtils,
           pothosSetupOutput: { config: configMap, pothosTypes },
@@ -287,9 +287,8 @@ export const pothosGenerator = createGenerator({
               `builder.toSchema()`,
               [
                 `import { builder } from '${builderImport}';`,
-                `import '%root-module';`,
+                `import '${appModuleImports.getModulePath()}';`,
               ],
-              { importMappers: [rootModuleImport] },
             );
 
             yogaPluginConfig.schema.set(schemaExpression, taskId);

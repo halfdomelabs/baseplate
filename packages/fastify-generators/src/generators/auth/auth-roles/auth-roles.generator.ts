@@ -14,7 +14,7 @@ import {
 import path from 'node:path';
 import { z } from 'zod';
 
-import { appModuleProvider } from '@src/generators/core/root-module/root-module.generator.js';
+import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
 import { authConfigProvider } from '../auth/auth.generator.js';
 

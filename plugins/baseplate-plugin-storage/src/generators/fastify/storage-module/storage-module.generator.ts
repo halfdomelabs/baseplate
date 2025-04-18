@@ -86,10 +86,10 @@ export const storageModuleGenerator = createGenerator({
         pothosSetup.getTypeReferences().addInputType({
           typeName: 'FileUploadInput',
           exportName: 'fileUploadInputInputType',
-          moduleName: `@/${path.posix.join(
+          moduleName: path.posix.join(
             moduleFolder,
             'schema/file-upload.input-type.js',
-          )}`,
+          ),
         });
 
         return {};

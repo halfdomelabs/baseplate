@@ -23,12 +23,10 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
+import { appModuleConfigProvider } from '../app-module-setup/app-module-setup.generator.js';
+import { appModuleImportsProvider } from '../app-module/app-module.generator.js';
 import { configServiceProvider } from '../config-service/config-service.generator.js';
 import { loggerServiceProvider } from '../logger-service/logger-service.generator.js';
-import {
-  rootModuleConfigProvider,
-  rootModuleImportProvider,
-} from '../root-module/root-module.generator.js';
 
 const descriptorSchema = z.object({
   defaultPort: z.number().default(7001),
@@ -60,12 +58,12 @@ export const fastifyServerGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: (descriptor) => ({
-    rootModuleConfig: createGeneratorTask({
+    appModuleConfig: createGeneratorTask({
       dependencies: {
-        rootModuleConfig: rootModuleConfigProvider,
+        appModuleConfig: appModuleConfigProvider,
       },
-      run({ rootModuleConfig }, { taskId }) {
-        rootModuleConfig.moduleFields.set(
+      run({ appModuleConfig }, { taskId }) {
+        appModuleConfig.moduleFields.set(
           'plugins',
           tsCodeFragment(
             '(FastifyPluginCallback | FastifyPluginAsync)',
@@ -90,13 +88,13 @@ export const fastifyServerGenerator = createGenerator({
       dependencies: {
         loggerService: loggerServiceProvider,
         configService: configServiceProvider,
-        rootModule: rootModuleImportProvider,
+        appModuleImports: appModuleImportsProvider,
         typescript: typescriptProvider,
       },
       exports: {
         fastifyServer: fastifyServerProvider.export(projectScope),
       },
-      run({ loggerService, configService, rootModule, typescript }) {
+      run({ loggerService, configService, appModuleImports, typescript }) {
         const configMap = createNonOverwriteableMap<FastifyServerConfig>(
           {
             errorHandlerFunction:
@@ -229,7 +227,7 @@ export const fastifyServerGenerator = createGenerator({
             );
             serverFile.addCodeExpression(
               'ROOT_MODULE',
-              rootModule.getRootModule(),
+              appModuleImports.getModule(),
             );
 
             await builder.apply(

@@ -42,6 +42,7 @@ export function buildFastify(
 
   // add graphql scalars
   const graphqlBundle = appModuleGenerator({
+    id: 'graphql',
     name: 'graphql',
     children: {
       schemaTypes: [

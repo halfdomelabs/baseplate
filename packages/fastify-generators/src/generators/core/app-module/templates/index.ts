@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { flattenAppModule } from '@/src/utils/app-modules.js';
+import { flattenAppModule } from '%appModuleSetupImports';
 
 TPL_IMPORTS;
 

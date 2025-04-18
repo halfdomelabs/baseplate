@@ -21,10 +21,10 @@ import { authRolesProvider } from '@src/generators/auth/auth-roles/auth-roles.ge
 import { authConfigProvider } from '@src/generators/auth/auth/auth.generator.js';
 import { userSessionServiceProvider } from '@src/generators/auth/index.js';
 import { userSessionTypesProvider } from '@src/generators/auth/user-session-types/user-session-types.generator.js';
+import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
 import { fastifyServerProvider } from '@src/generators/core/index.js';
 import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
-import { appModuleProvider } from '@src/generators/core/root-module/root-module.generator.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
 
 const descriptorSchema = z.object({

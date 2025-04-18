@@ -742,7 +742,7 @@ export class TypescriptSourceFile<
         }
         const contents = this.renderToText(template, destination);
         builder.writeFile({
-          id: id ?? destination,
+          id: id ?? normalizePathToProjectPath(destination),
           destination,
           contents,
           options: {

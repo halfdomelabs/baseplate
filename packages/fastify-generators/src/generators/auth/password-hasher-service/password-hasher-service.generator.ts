@@ -16,7 +16,7 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { appModuleProvider } from '@src/generators/core/root-module/root-module.generator.js';
+import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

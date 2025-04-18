@@ -13,7 +13,7 @@ import {
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import { appModuleProvider } from '@src/generators/core/root-module/root-module.generator.js';
+import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
 import { pothosSchemaProvider } from '../pothos/pothos.generator.js';
 
