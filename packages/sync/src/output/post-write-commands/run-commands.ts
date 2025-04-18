@@ -43,7 +43,7 @@ export async function runPostWriteCommands(
     } catch (error) {
       logger.error(chalk.red(`Unable to run ${commandString}`));
       if (error instanceof ExecaError) {
-        logger.error(error.stderr);
+        logger.error(error.all);
       } else {
         logger.error(String(error));
       }
