@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { createBuilderActionCreator } from '@src/output/builder-action.js';
+import { normalizePathToProjectPath } from '@src/utils/canonical-path.js';
 
 interface Options {
   destination: string;
@@ -44,7 +45,7 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
       replacements ?? {},
     );
     builder.writeFile({
-      id: destination,
+      id: normalizePathToProjectPath(destination),
       destination,
       contents: replacedFileContents,
       options: {

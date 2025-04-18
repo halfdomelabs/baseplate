@@ -769,7 +769,7 @@ export class TypescriptSourceFile<
         }
         const contents = this.renderToText(template, fullPath);
         builder.writeFile({
-          id: id ?? fullPath,
+          id: id ?? normalizePathToProjectPath(fullPath),
           destination: fullPath,
           contents,
           options: {
