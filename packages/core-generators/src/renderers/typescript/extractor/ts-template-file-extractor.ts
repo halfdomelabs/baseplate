@@ -60,7 +60,21 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
   constructor(
     context: TemplateFileExtractorContext,
     {
-      pathResolver = new ResolverFactory({
+      pathResolver,
+    }: {
+      pathResolver?: ResolverFactory;
+    } = {},
+  ) {
+    super(context);
+    this.pathResolver =
+      pathResolver ??
+      new ResolverFactory({
+        tsconfig: {
+          configFile: path.join(
+            this.getProjectBaseDirectory(),
+            'tsconfig.json',
+          ),
+        },
         conditionNames: ['node', 'require'],
         extensions: ['.ts', '.tsx', '.d.ts', '.js', '.jsx', '.json', '.node'],
         extensionAlias: {
@@ -69,13 +83,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
           '.cjs': ['.cts', '.d.cts', '.cjs'],
           '.mjs': ['.mts', '.d.mts', '.mjs'],
         },
-      }),
-    }: {
-      pathResolver?: ResolverFactory;
-    } = {},
-  ) {
-    super(context);
-    this.pathResolver = pathResolver;
+      });
   }
 
   protected getTypescriptRendererImport(generatorName: string): string {
