@@ -6,7 +6,9 @@ import type {
 
 import {
   projectScope,
+  tsCodeFragment,
   TsCodeUtils,
+  tsImportBuilder,
   TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
@@ -19,7 +21,7 @@ import {
 import { z } from 'zod';
 
 import { configServiceImportsProvider } from '../config-service/config-service.generator.js';
-import { fastifyServerProvider } from '../fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { loggerServiceImportsProvider } from '../logger-service/logger-service.generator.js';
 import {
   createErrorHandlerServiceImports,
@@ -84,26 +86,29 @@ export const errorHandlerServiceGenerator = createGenerator({
     }),
     fastifyPlugin: createGeneratorTask({
       dependencies: {
-        fastifyServer: fastifyServerProvider,
+        fastifyServerConfig: fastifyServerConfigProvider,
         typescriptFile: typescriptFileProvider,
         configServiceImports: configServiceImportsProvider,
+        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
       },
-      run({ fastifyServer, typescriptFile, configServiceImports }) {
-        fastifyServer.registerPlugin({
-          name: 'errorHandlerPlugin',
-          plugin: TypescriptCodeUtils.createExpression(
+      run({
+        fastifyServerConfig,
+        typescriptFile,
+        configServiceImports,
+        errorHandlerServiceImports,
+      }) {
+        const errorPluginPath = '@/src/plugins/error-handler.ts';
+        fastifyServerConfig.plugins.set('errorHandlerPlugin', {
+          plugin: tsCodeFragment(
             'errorHandlerPlugin',
-            "import { errorHandlerPlugin } from '@/src/plugins/error-handler.js'",
+            tsImportBuilder(['errorHandlerPlugin']).from(errorPluginPath),
           ),
           orderPriority: 'EARLY',
         });
 
-        const errorFunction = TypescriptCodeUtils.createExpression(
-          'logError',
-          "import { logError } from '@/src/services/error-logger.js'",
+        fastifyServerConfig.errorHandlerFunction.set(
+          errorHandlerServiceImports.logError.fragment(),
         );
-
-        fastifyServer.getConfig().set('errorHandlerFunction', errorFunction);
 
         return {
           build: async (builder) => {
@@ -111,7 +116,7 @@ export const errorHandlerServiceGenerator = createGenerator({
               typescriptFile.renderTemplateFile({
                 template:
                   CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.errorHandlerPlugin,
-                destination: 'src/plugins/error-handler.ts',
+                destination: errorPluginPath,
                 variables: {},
                 importMapProviders: {
                   configServiceImports,

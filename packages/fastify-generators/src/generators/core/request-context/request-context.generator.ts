@@ -20,7 +20,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
-import { fastifyServerProvider } from '../fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { loggerServiceSetupProvider } from '../logger-service/logger-service.generator.js';
 
 const descriptorSchema = z.object({});
@@ -67,22 +67,24 @@ export const requestContextGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        fastifyServer: fastifyServerProvider,
+        fastifyServerConfig: fastifyServerConfigProvider,
         typescript: typescriptProvider,
       },
       exports: {
         requestContext: requestContextProvider.export(projectScope),
       },
-      run({ fastifyServer, typescript }) {
+      run({ fastifyServerConfig, typescript }) {
         const config = createNonOverwriteableMap(
           {},
           { name: 'request-context-config' },
         );
-        fastifyServer.registerPlugin({
-          name: 'requestContextPlugin',
-          plugin: TypescriptCodeUtils.createExpression(
+        const requestContextPluginPath = '@/src/plugins/request-context.ts';
+        fastifyServerConfig.plugins.set('requestContextPlugin', {
+          plugin: tsCodeFragment(
             'requestContextPlugin',
-            "import {requestContextPlugin} from '@/src/plugins/request-context.js'",
+            tsImportBuilder(['requestContextPlugin']).from(
+              requestContextPluginPath,
+            ),
           ),
         });
         return {

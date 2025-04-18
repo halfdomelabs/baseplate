@@ -45,6 +45,7 @@ export const appModuleProvider =
   createProviderType<AppModuleProvider>('app-module');
 
 export interface AppModuleImportsProvider {
+  getModuleFragment(): TsCodeFragment;
   getModule(): TypescriptCodeExpression;
   getModulePath(): string;
 }
@@ -128,6 +129,11 @@ export const appModuleGenerator = createGenerator({
               ...appModuleConfig,
             },
             appModuleImports: {
+              getModuleFragment: () =>
+                TsCodeUtils.importFragment(
+                  moduleName,
+                  `${moduleFolder}/index.js`,
+                ),
               getModule: () =>
                 TypescriptCodeUtils.createExpression(
                   moduleName,

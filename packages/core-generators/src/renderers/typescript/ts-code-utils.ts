@@ -1,7 +1,12 @@
 import { sortBy } from 'es-toolkit';
 
+import type { TsCodeFragmentOptions } from './fragments/creators.js';
 import type { TsCodeFragment, TsHoistedFragment } from './fragments/types.js';
+import type { TsImportDeclarationBuilder } from './imports/builder.js';
 import type { TsImportDeclaration } from './imports/types.js';
+
+import { tsCodeFragment } from './fragments/creators.js';
+import { tsImportBuilder } from './imports/builder.js';
 
 function formatStringWithContent(
   str: string,
@@ -38,6 +43,35 @@ function mergeFragmentImportsAndHoistedFragments(fragments: TsCodeFragment[]): {
  * Utility functions for working with TypeScript code fragments.
  */
 export const TsCodeUtils = {
+  /**
+   * Create a code fragment from a string.
+   * @param contents - The contents of the code fragment.
+   * @returns The code fragment.
+   */
+  frag(
+    contents: string,
+    imports?: TsImportDeclaration[] | TsImportDeclaration,
+    options?: TsCodeFragmentOptions,
+  ): TsCodeFragment {
+    return tsCodeFragment(contents, imports, options);
+  },
+  /**
+   * Create an import builder.
+   * @param namedImports - The named imports to add to the import builder.
+   * @returns The import builder.
+   */
+  importBuilder(namedImports?: string[]): TsImportDeclarationBuilder {
+    return tsImportBuilder(namedImports);
+  },
+  /**
+   * Shortcut function for creating a fragment that imports a named import from a module.
+   * @param name - The name of the import.
+   * @param importFrom - The module to import from.
+   * @returns The import fragment.
+   */
+  importFragment(name: string, importFrom: string): TsCodeFragment {
+    return tsCodeFragment(name, tsImportBuilder([name]).from(importFrom));
+  },
   /**
    * Merge a map of code fragments into a single code fragment. We by default use
    * maps to ensure that the order of the fragments is deterministic since the

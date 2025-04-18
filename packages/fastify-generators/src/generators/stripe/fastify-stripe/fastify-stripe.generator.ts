@@ -3,7 +3,7 @@ import {
   extractPackageVersions,
   projectScope,
   tsCodeFragment,
-  TypescriptCodeExpression,
+  tsImportBuilder,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
-import { fastifyServerProvider } from '@src/generators/core/fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '@src/generators/core/fastify-server/fastify-server.generator.js';
 import { loggerServiceProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 
 const descriptorSchema = z.object({
@@ -45,7 +45,7 @@ export const fastifyStripeGenerator = createGenerator({
         configService: configServiceProvider,
         errorHandlerService: errorHandlerServiceProvider,
         loggerService: loggerServiceProvider,
-        fastifyServer: fastifyServerProvider,
+        fastifyServerConfig: fastifyServerConfigProvider,
       },
       exports: {
         fastifyStripe: fastifyStripeProvider.export(projectScope),
@@ -55,7 +55,7 @@ export const fastifyStripeGenerator = createGenerator({
         configService,
         errorHandlerService,
         loggerService,
-        fastifyServer,
+        fastifyServerConfig,
       }) {
         configService.configFields.set('STRIPE_SECRET_KEY', {
           comment: 'Stripe secret API key',
@@ -67,18 +67,18 @@ export const fastifyStripeGenerator = createGenerator({
           validator: tsCodeFragment('z.string().min(1)'),
           seedValue: 'STRIPE_ENDPOINT_SECRET',
         });
-        fastifyServer.registerPlugin({
-          name: 'rawBodyPlugin',
-          plugin: new TypescriptCodeExpression(
+        fastifyServerConfig.plugins.set('rawBodyPlugin', {
+          plugin: tsCodeFragment(
             'rawBodyPlugin',
-            "import rawBodyPlugin from 'fastify-raw-body'",
+            tsImportBuilder().default('rawBodyPlugin').from('fastify-raw-body'),
           ),
         });
-        fastifyServer.registerPlugin({
-          name: 'stripeWebhookPlugin',
-          plugin: new TypescriptCodeExpression(
+        fastifyServerConfig.plugins.set('stripeWebhookPlugin', {
+          plugin: tsCodeFragment(
             'stripeWebhookPlugin',
-            "import { stripeWebhookPlugin } from '@/src/plugins/stripe-webhook.js'",
+            tsImportBuilder(['stripeWebhookPlugin']).from(
+              '@/src/plugins/stripe-webhook.js',
+            ),
           ),
         });
 

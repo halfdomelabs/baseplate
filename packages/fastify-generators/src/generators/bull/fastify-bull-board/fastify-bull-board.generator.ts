@@ -1,3 +1,5 @@
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+
 import {
   createNodePackagesTask,
   extractPackageVersions,
@@ -5,7 +7,6 @@ import {
   projectScope,
   tsCodeFragment,
   tsImportBuilder,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -20,7 +21,7 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/fastify-redis.generator.js';
-import { fastifyServerProvider } from '@src/generators/core/fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '@src/generators/core/fastify-server/fastify-server.generator.js';
 import { pothosSchemaProvider } from '@src/generators/pothos/pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({});
@@ -122,18 +123,19 @@ export const fastifyBullBoardGenerator = createGenerator({
     formBody: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
-        fastifyServer: fastifyServerProvider,
+        fastifyServerConfig: fastifyServerConfigProvider,
       },
-      run({ node, fastifyServer }) {
+      run({ node, fastifyServerConfig }) {
         node.packages.addProdPackages(
           extractPackageVersions(FASTIFY_PACKAGES, ['@fastify/formbody']),
         );
 
-        fastifyServer.registerPlugin({
-          name: 'formBodyPlugin',
-          plugin: new TypescriptCodeExpression(
+        fastifyServerConfig.plugins.set('formBodyPlugin', {
+          plugin: tsCodeFragment(
             'formBodyPlugin',
-            "import formBodyPlugin from '@fastify/formbody'",
+            tsImportBuilder()
+              .default('formBodyPlugin')
+              .from('@fastify/formbody'),
           ),
         });
 

@@ -5,7 +5,6 @@ import {
   projectScope,
   tsCodeFragment,
   tsImportBuilder,
-  TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -22,8 +21,11 @@ import { authConfigProvider } from '@src/generators/auth/auth/auth.generator.js'
 import { userSessionServiceProvider } from '@src/generators/auth/index.js';
 import { userSessionTypesProvider } from '@src/generators/auth/user-session-types/user-session-types.generator.js';
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
-import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
-import { fastifyServerProvider } from '@src/generators/core/index.js';
+import {
+  configServiceImportsProvider,
+  configServiceProvider,
+} from '@src/generators/core/config-service/config-service.generator.js';
+import { fastifyServerConfigProvider } from '@src/generators/core/index.js';
 import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
 
@@ -184,23 +186,23 @@ export const auth0ModuleGenerator = createGenerator({
     }),
     fastifyAuth0Plugin: createGeneratorTask({
       dependencies: {
-        fastifyServer: fastifyServerProvider,
-        configService: configServiceProvider,
+        fastifyServerConfig: fastifyServerConfigProvider,
+        configServiceImports: configServiceImportsProvider,
       },
-      run({ fastifyServer, configService }) {
-        fastifyServer.registerPlugin({
-          name: 'fastifyAuth0Verify',
-          plugin: TypescriptCodeUtils.createExpression(
+      run({ fastifyServerConfig, configServiceImports }) {
+        fastifyServerConfig.plugins.set('fastifyAuth0Verify', {
+          plugin: tsCodeFragment(
             'fastifyAuth0Verify',
-            "import fastifyAuth0Verify from 'fastify-auth0-verify'",
+            tsImportBuilder()
+              .default('fastifyAuth0Verify')
+              .from('fastify-auth0-verify'),
           ),
-          options: TypescriptCodeUtils.createExpression(
+          options: tsCodeFragment(
             `{
     domain: config.AUTH0_DOMAIN,
     audience: config.AUTH0_AUDIENCE,
   }`,
-            "import {config} from  '%config';",
-            { importMappers: [configService] },
+            configServiceImports.config.declaration(),
           ),
         });
       },

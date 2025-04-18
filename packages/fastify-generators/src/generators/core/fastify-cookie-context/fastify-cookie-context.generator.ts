@@ -1,6 +1,8 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -10,7 +12,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
-import { fastifyServerProvider } from '../fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { requestServiceContextSetupProvider } from '../request-service-context/request-service-context.generator.js';
 
 const descriptorSchema = z.object({
@@ -27,15 +29,14 @@ export const fastifyCookieContextGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        fastifyServer: fastifyServerProvider,
+        fastifyServerConfig: fastifyServerConfigProvider,
         requestServiceContextSetup: requestServiceContextSetupProvider,
       },
-      run({ fastifyServer, requestServiceContextSetup }) {
-        fastifyServer.registerPlugin({
-          name: 'cookies',
-          plugin: new TypescriptCodeExpression(
+      run({ fastifyServerConfig, requestServiceContextSetup }) {
+        fastifyServerConfig.plugins.set('cookies', {
+          plugin: tsCodeFragment(
             'fastifyCookie',
-            "import fastifyCookie from '@fastify/cookie'",
+            tsImportBuilder().default('fastifyCookie').from('@fastify/cookie'),
           ),
         });
 

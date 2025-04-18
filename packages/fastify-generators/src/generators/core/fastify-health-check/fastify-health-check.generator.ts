@@ -2,6 +2,8 @@ import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
 
 import {
   projectScope,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -13,7 +15,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { fastifyServerProvider } from '../fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 
 const descriptorSchema = z.object({});
 
@@ -33,18 +35,19 @@ export const fastifyHealthCheckGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        fastifyServer: fastifyServerProvider,
+        fastifyServerConfig: fastifyServerConfigProvider,
         typescript: typescriptProvider,
       },
       exports: {
         fastifyHealthCheck: fastifyHealthCheckProvider.export(projectScope),
       },
-      run({ fastifyServer, typescript }) {
-        fastifyServer.registerPlugin({
-          name: 'healthCheckPlugin',
-          plugin: new TypescriptCodeExpression(
+      run({ fastifyServerConfig, typescript }) {
+        fastifyServerConfig.plugins.set('healthCheckPlugin', {
+          plugin: tsCodeFragment(
             'healthCheckPlugin',
-            "import { healthCheckPlugin } from '@/src/plugins/health-check.js'",
+            tsImportBuilder(['healthCheckPlugin']).from(
+              '@/src/plugins/health-check.js',
+            ),
           ),
         });
 

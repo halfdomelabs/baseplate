@@ -1,13 +1,14 @@
 import {
   makeImportAndFilePath,
-  TypescriptCodeUtils,
+  tsCodeFragment,
+  tsImportBuilder,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { errorHandlerServiceProvider } from '../error-handler-service/error-handler-service.generator.js';
-import { fastifyServerProvider } from '../fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { loggerServiceProvider } from '../logger-service/logger-service.generator.js';
 
 const descriptorSchema = z.object({
@@ -21,20 +22,26 @@ export const fastifyGracefulShutdownGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        fastifyServer: fastifyServerProvider,
+        fastifyServerConfig: fastifyServerConfigProvider,
         errorHandlerService: errorHandlerServiceProvider,
         loggerService: loggerServiceProvider,
         typescript: typescriptProvider,
       },
-      run({ fastifyServer, errorHandlerService, loggerService, typescript }) {
+      run({
+        fastifyServerConfig,
+        errorHandlerService,
+        loggerService,
+        typescript,
+      }) {
         const [gracefulShutdownImport, gracefulShutdownPath] =
           makeImportAndFilePath('src/plugins/graceful-shutdown.ts');
 
-        fastifyServer.registerPlugin({
-          name: 'graceful-shutdown',
-          plugin: TypescriptCodeUtils.createExpression(
+        fastifyServerConfig.plugins.set('gracefulShutdownPlugin', {
+          plugin: tsCodeFragment(
             'gracefulShutdownPlugin',
-            `import { gracefulShutdownPlugin } from '${gracefulShutdownImport}'`,
+            tsImportBuilder(['gracefulShutdownPlugin']).from(
+              gracefulShutdownImport,
+            ),
           ),
         });
 

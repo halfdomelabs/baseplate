@@ -61,8 +61,8 @@ export function createTsImportMap<
             return makeDeclaration(alias);
           },
           typeDeclaration: (alias) => makeDeclaration(alias, true),
-          frag: () => tsCodeFragment(name, makeDeclaration()),
-          typeFrag: () =>
+          fragment: () => tsCodeFragment(name, makeDeclaration()),
+          typeFragment: () =>
             tsCodeFragment(name, makeDeclaration(undefined, true)),
         },
       ];
