@@ -1,15 +1,14 @@
 import {
-  makeImportAndFilePath,
-  tsCodeFragment,
-  tsImportBuilder,
-  typescriptProvider,
+  TsCodeUtils,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { errorHandlerServiceProvider } from '../error-handler-service/error-handler-service.generator.js';
+import { errorHandlerServiceImportsProvider } from '../error-handler-service/generated/ts-import-maps.js';
 import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
-import { loggerServiceProvider } from '../logger-service/logger-service.generator.js';
+import { loggerServiceImportsProvider } from '../logger-service/logger-service.generator.js';
+import { CORE_FASTIFY_GRACEFUL_SHUTDOWN_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -23,35 +22,36 @@ export const fastifyGracefulShutdownGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         fastifyServerConfig: fastifyServerConfigProvider,
-        errorHandlerService: errorHandlerServiceProvider,
-        loggerService: loggerServiceProvider,
-        typescript: typescriptProvider,
+        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+        loggerServiceImports: loggerServiceImportsProvider,
+        typescriptFile: typescriptFileProvider,
       },
       run({
         fastifyServerConfig,
-        errorHandlerService,
-        loggerService,
-        typescript,
+        errorHandlerServiceImports,
+        loggerServiceImports,
+        typescriptFile,
       }) {
-        const [gracefulShutdownImport, gracefulShutdownPath] =
-          makeImportAndFilePath('src/plugins/graceful-shutdown.ts');
+        const pluginPath = '@/src/plugins/graceful-shutdown.ts';
 
         fastifyServerConfig.plugins.set('gracefulShutdownPlugin', {
-          plugin: tsCodeFragment(
+          plugin: TsCodeUtils.importFragment(
             'gracefulShutdownPlugin',
-            tsImportBuilder(['gracefulShutdownPlugin']).from(
-              gracefulShutdownImport,
-            ),
+            pluginPath,
           ),
         });
 
         return {
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'graceful-shutdown.ts',
-                destination: gracefulShutdownPath,
-                importMappers: [loggerService, errorHandlerService],
+              typescriptFile.renderTemplateFile({
+                template:
+                  CORE_FASTIFY_GRACEFUL_SHUTDOWN_TS_TEMPLATES.gracefulShutdown,
+                destination: pluginPath,
+                importMapProviders: {
+                  loggerServiceImports,
+                  errorHandlerServiceImports,
+                },
               }),
             );
           },
