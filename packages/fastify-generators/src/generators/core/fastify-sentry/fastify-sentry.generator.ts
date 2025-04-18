@@ -35,7 +35,6 @@ import {
 } from '../error-handler-service/error-handler-service.generator.js';
 import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { fastifyProvider } from '../fastify/fastify.generator.js';
-import { requestContextProvider } from '../request-context/request-context.generator.js';
 
 const descriptorSchema = z.object({});
 
@@ -140,7 +139,6 @@ export const fastifySentryGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        requestContext: requestContextProvider,
         configService: configServiceProvider,
         typescript: typescriptProvider,
         errorHandler: errorHandlerServiceProvider,

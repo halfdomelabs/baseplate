@@ -22,7 +22,7 @@ import { z } from 'zod';
 
 import { notEmpty } from '@src/utils/array.js';
 
-import { requestContextProvider } from '../request-context/request-context.generator.js';
+import { requestContextImportsProvider } from '../request-context/request-context.generator.js';
 import { serviceContextSetupProvider } from '../service-context/service-context.generator.js';
 
 const descriptorSchema = z.object({});
@@ -67,7 +67,7 @@ export const requestServiceContextGenerator = createGenerator({
     setup: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
-        requestContext: requestContextProvider,
+        requestContextImports: requestContextImportsProvider,
         serviceContextSetup: serviceContextSetupProvider,
       },
       exports: {
@@ -78,7 +78,7 @@ export const requestServiceContextGenerator = createGenerator({
         requestServiceContext:
           requestServiceContextProvider.export(projectScope),
       },
-      run({ typescript, requestContext, serviceContextSetup }) {
+      run({ typescript, requestContextImports, serviceContextSetup }) {
         const contextPassthroughMap = createNonOverwriteableMap<
           Record<string, ServiceContextPassthrough>
         >({}, { name: 'service-context-passthrough' });
@@ -89,7 +89,10 @@ export const requestServiceContextGenerator = createGenerator({
 
         contextFieldsMap.set('reqInfo', {
           name: 'reqInfo',
-          type: requestContext.getRequestInfoType(),
+          type: new TypescriptCodeExpression(
+            requestContextImports.RequestInfo.name,
+            `import type {${requestContextImports.RequestInfo.name}} from  '${requestContextImports.RequestInfo.source}'`,
+          ),
           creator: (req) => new TypescriptCodeExpression(`${req}.reqInfo`),
         });
 

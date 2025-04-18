@@ -1,20 +1,15 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
-
 import {
   createNodePackagesTask,
   extractPackageVersions,
   projectScope,
   tsCodeFragment,
   tsImportBuilder,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
-  createProviderType,
+  createProviderTask,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -22,22 +17,15 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { loggerServiceSetupProvider } from '../logger-service/logger-service.generator.js';
+import {
+  createRequestContextImports,
+  requestContextImportsProvider,
+} from './generated/ts-import-maps.js';
+import { CORE_REQUEST_CONTEXT_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
-export interface RequestContextGeneratorConfig {
-  setting?: string;
-}
-
-export interface RequestContextProvider {
-  getConfig(): NonOverwriteableMap<RequestContextGeneratorConfig>;
-  getRequestInfoType(): TypescriptCodeExpression;
-}
-
-export const requestContextProvider =
-  createProviderType<RequestContextProvider>('request-context', {
-    isReadOnly: true,
-  });
+const requestContextPluginPath = '@/src/plugins/request-context.ts';
 
 export const requestContextGenerator = createGenerator({
   name: 'core/request-context',
@@ -65,20 +53,9 @@ export const requestContextGenerator = createGenerator({
         '@fastify/request-context',
       ]),
     }),
-    main: createGeneratorTask({
-      dependencies: {
-        fastifyServerConfig: fastifyServerConfigProvider,
-        typescript: typescriptProvider,
-      },
-      exports: {
-        requestContext: requestContextProvider.export(projectScope),
-      },
-      run({ fastifyServerConfig, typescript }) {
-        const config = createNonOverwriteableMap(
-          {},
-          { name: 'request-context-config' },
-        );
-        const requestContextPluginPath = '@/src/plugins/request-context.ts';
+    fastifyServerConfig: createProviderTask(
+      fastifyServerConfigProvider,
+      (fastifyServerConfig) => {
         fastifyServerConfig.plugins.set('requestContextPlugin', {
           plugin: tsCodeFragment(
             'requestContextPlugin',
@@ -87,22 +64,26 @@ export const requestContextGenerator = createGenerator({
             ),
           ),
         });
+      },
+    ),
+    main: createGeneratorTask({
+      dependencies: {
+        typescriptFile: typescriptFileProvider,
+      },
+      exports: {
+        requestContextImports:
+          requestContextImportsProvider.export(projectScope),
+      },
+      run({ typescriptFile }) {
         return {
           providers: {
-            requestContext: {
-              getConfig: () => config,
-              getRequestInfoType: () =>
-                TypescriptCodeUtils.createExpression(
-                  'RequestInfo',
-                  "import type {RequestInfo} from '@/src/plugins/request-context.js",
-                ),
-            },
+            requestContextImports: createRequestContextImports('@/src/plugins'),
           },
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'request-context.ts',
-                destination: 'src/plugins/request-context.ts',
+              typescriptFile.renderTemplateFile({
+                template: CORE_REQUEST_CONTEXT_TS_TEMPLATES.requestContext,
+                destination: requestContextPluginPath,
               }),
             );
           },
@@ -111,3 +92,5 @@ export const requestContextGenerator = createGenerator({
     }),
   }),
 });
+
+export { requestContextImportsProvider } from './generated/ts-import-maps.js';
