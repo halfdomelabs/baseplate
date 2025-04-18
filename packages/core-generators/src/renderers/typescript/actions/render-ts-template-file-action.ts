@@ -1,6 +1,9 @@
 import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
 
-import { readTemplateFileSource } from '@halfdomelabs/sync';
+import {
+  normalizePathToProjectPath,
+  readTemplateFileSource,
+} from '@halfdomelabs/sync';
 import { mapValues } from 'es-toolkit';
 
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
@@ -24,6 +27,14 @@ interface RenderTsTemplateFileActionInputBase<T extends TsTemplateFile> {
     RenderTsCodeFileTemplateOptions,
     'prefix' | 'includeMetadata'
   >;
+  /**
+   * Whether to include the metadata only if there's template metadata
+   * already present.
+   *
+   * This is useful when the same template is used for many files and you
+   * want to avoid having to generate metadata for every file.
+   */
+  includeMetadataOnDemand?: boolean;
 }
 
 type RenderTsTemplateFileActionVariablesInput<T extends TsTemplateFile> =
@@ -61,6 +72,7 @@ export function renderTsTemplateFileAction<
   variables,
   importMapProviders,
   renderOptions,
+  includeMetadataOnDemand,
 }: RenderTsTemplateFileActionInput<T>): BuilderAction {
   return {
     execute: async (builder) => {
@@ -110,13 +122,20 @@ export function renderTsTemplateFileAction<
             }
           : undefined;
 
+      const shouldIncludeMetadata =
+        builder.metadataOptions.includeTemplateMetadata &&
+        (!includeMetadataOnDemand ||
+          builder.metadataOptions.hasTemplateMetadata?.(
+            normalizePathToProjectPath(destination),
+          ));
+
       const renderedTemplate = renderTsCodeFileTemplate(
         templateContents,
         variableValues,
         importMapProviders,
         {
           ...renderOptions,
-          includeMetadata: builder.includeMetadata,
+          includeMetadata: shouldIncludeMetadata,
           prefix,
         },
       );
@@ -126,7 +145,7 @@ export function renderTsTemplateFileAction<
         destination,
         contents: renderedTemplate,
         options: writeOptions,
-        templateMetadata,
+        templateMetadata: shouldIncludeMetadata ? templateMetadata : undefined,
       });
     },
   };

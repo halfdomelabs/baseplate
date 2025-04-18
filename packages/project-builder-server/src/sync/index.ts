@@ -1,14 +1,11 @@
 import type { AppEntry } from '@halfdomelabs/project-builder-lib';
-import type {
-  Logger,
-  PreviousGeneratedPayload,
-  TemplateMetadataWriterOptions,
-} from '@halfdomelabs/sync';
+import type { Logger, PreviousGeneratedPayload } from '@halfdomelabs/sync';
 
 import {
   createCodebaseFileReaderFromDirectory,
   deleteMetadataFiles,
   GeneratorEngine,
+  readTemplateMetadataPaths,
   writeGeneratorsMetadata,
   writeTemplateMetadata,
 } from '@halfdomelabs/sync';
@@ -37,10 +34,7 @@ interface GenerateForDirectoryOptions {
   baseDirectory: string;
   appEntry: AppEntry;
   logger: Logger;
-  /**
-   * Whether to write template metadata to the generated directory
-   */
-  templateMetadataWriter?: TemplateMetadataWriterOptions;
+  shouldWriteTemplateMetadata?: boolean;
 }
 
 // /**
@@ -111,7 +105,7 @@ export async function generateForDirectory({
   baseDirectory,
   appEntry,
   logger,
-  templateMetadataWriter,
+  shouldWriteTemplateMetadata,
 }: GenerateForDirectoryOptions): Promise<void> {
   const { appDirectory, name, generatorBundle } = appEntry;
   const engine = new GeneratorEngine();
@@ -120,10 +114,18 @@ export async function generateForDirectory({
 
   logger.info(`Generating project ${name} in ${projectDirectory}...`);
 
+  const metadataPaths = shouldWriteTemplateMetadata
+    ? new Set(await readTemplateMetadataPaths(projectDirectory))
+    : new Set();
+
   const project = await engine.loadProject(generatorBundle, logger);
   const output = await engine.build(project, {
     logger,
-    templateMetadataWriter,
+    templateMetadataOptions: {
+      includeTemplateMetadata: shouldWriteTemplateMetadata ?? false,
+      hasTemplateMetadata: (projectRelativePath) =>
+        metadataPaths.has(projectRelativePath),
+    },
   });
   logger.info('Project built! Writing output....');
 
@@ -165,7 +167,7 @@ export async function generateForDirectory({
     });
 
     // write metadata to the generated directory
-    if (templateMetadataWriter?.enabled) {
+    if (shouldWriteTemplateMetadata) {
       await deleteMetadataFiles(projectDirectory);
       await writeGeneratorsMetadata(project, projectDirectory);
       await writeTemplateMetadata(output.files, projectDirectory);

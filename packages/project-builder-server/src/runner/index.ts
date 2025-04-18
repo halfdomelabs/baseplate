@@ -2,9 +2,9 @@ import type {
   ProjectDefinition,
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
-import type { Logger } from '@halfdomelabs/sync';
 
 import { runSchemaMigrations } from '@halfdomelabs/project-builder-lib';
+import { type Logger } from '@halfdomelabs/sync';
 import { stringifyPrettyStable } from '@halfdomelabs/utils';
 import { fileExists, readJsonWithSchema } from '@halfdomelabs/utils/node';
 import { writeFile } from 'node:fs/promises';
@@ -57,17 +57,12 @@ export async function buildProjectForDirectory({
 
   const apps = compileApplications(projectJson, context);
 
-  const shouldWriteTemplateMetadata =
-    projectJson.templateExtractor?.writeMetadata ?? false;
-
   for (const app of apps) {
     await generateForDirectory({
       baseDirectory: directory,
       appEntry: app,
       logger,
-      templateMetadataWriter: {
-        enabled: shouldWriteTemplateMetadata,
-      },
+      shouldWriteTemplateMetadata: projectJson.templateExtractor?.writeMetadata,
     });
   }
 

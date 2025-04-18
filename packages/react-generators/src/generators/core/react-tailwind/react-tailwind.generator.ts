@@ -93,7 +93,8 @@ export const reactTailwindGenerator = createGenerator({
                 variables: {
                   indexCss: {
                     TPL_GLOBAL_STYLES:
-                      globalStyles.length > 0 || !builder.includeMetadata
+                      globalStyles.length > 0 ||
+                      !builder.metadataOptions.includeTemplateMetadata
                         ? globalStyles.join('\n\n')
                         : '/* TPL_GLOBAL_STYLES */',
                   },

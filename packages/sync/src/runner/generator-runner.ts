@@ -16,6 +16,7 @@ import type {
   GeneratorOutput,
   GeneratorOutputMetadata,
   GeneratorTaskOutput,
+  TemplateMetadataOptions,
 } from '../output/index.js';
 import type { Provider } from '../providers/index.js';
 
@@ -29,30 +30,16 @@ import { runInRunnerContext } from './runner-context.js';
 import { flattenGeneratorTaskEntriesAndPhases } from './utils.js';
 
 /**
- * Options for writing template metadata
- */
-export interface TemplateMetadataWriterOptions {
-  /**
-   * Whether to write template metadata
-   */
-  enabled: boolean;
-  /**
-   * Generator names to exclude from writing template metadata
-   */
-  excludeGeneratorNames?: string[];
-}
-
-/**
  * Options for executing a generator entry
  */
 export interface ExecuteGeneratorEntryOptions {
   logger: Logger;
-  templateMetadataWriter?: TemplateMetadataWriterOptions;
+  templateMetadataOptions?: TemplateMetadataOptions;
 }
 
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry,
-  { logger, templateMetadataWriter }: ExecuteGeneratorEntryOptions,
+  { logger, templateMetadataOptions }: ExecuteGeneratorEntryOptions,
 ): Promise<GeneratorOutput> {
   const { taskEntries, phases } =
     flattenGeneratorTaskEntriesAndPhases(rootEntry);
@@ -196,11 +183,7 @@ export async function executeGeneratorEntry(
           const outputBuilder = new GeneratorTaskOutputBuilder({
             generatorInfo: entry.generatorInfo,
             generatorId: entry.generatorId,
-            includeTemplateMetadata:
-              templateMetadataWriter?.enabled &&
-              !templateMetadataWriter.excludeGeneratorNames?.includes(
-                entry.generatorInfo.name,
-              ),
+            templateMetadataOptions,
           });
 
           if (generator.build) {

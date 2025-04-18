@@ -44,7 +44,9 @@ describe('renderTextTemplateFileAction', () => {
         name: 'test-generator',
         baseDirectory: '/root/pkg/test-generator',
       },
-      includeTemplateMetadata: true,
+      templateMetadataOptions: {
+        includeTemplateMetadata: true,
+      },
     });
 
     expect(output.files.size).toBe(1);
