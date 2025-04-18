@@ -62,7 +62,7 @@ export const fastifyServerGenerator = createGenerator({
       dependencies: {
         appModuleConfig: appModuleConfigProvider,
       },
-      run({ appModuleConfig }, { taskId }) {
+      run({ appModuleConfig }) {
         appModuleConfig.moduleFields.set(
           'plugins',
           tsCodeFragment(
@@ -72,7 +72,6 @@ export const fastifyServerGenerator = createGenerator({
               'FastifyPluginCallback',
             ]).from('fastify'),
           ),
-          taskId,
         );
       },
     }),
