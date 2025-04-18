@@ -62,18 +62,18 @@ export const fastifySentryGenerator = createGenerator({
       },
       run({ fastify, node }) {
         if (node.isEsm) {
-          fastify.getConfig().appendUnique('nodeFlags', [
-            {
+          fastify.nodeFlags.mergeObj({
+            ['instrument-dev']: {
               flag: '--import ./src/instrument.ts',
               useCase: 'instrument',
               targetEnvironment: 'dev',
             },
-            {
+            ['instrument-prod']: {
               flag: '--import ./dist/instrument.ts',
               useCase: 'instrument',
               targetEnvironment: 'prod',
             },
-          ]);
+          });
         }
         return {};
       },
