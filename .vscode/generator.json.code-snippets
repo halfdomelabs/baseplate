@@ -99,5 +99,12 @@
       "});"
     ],
     "description": "Create Baseplate generator with no provider"
+  },
+  "Wrap with TPL markers": {
+    "prefix": "tplwrap",
+    "body": [
+      "/* TPL_${1:VAR}:START */ ${TM_SELECTED_TEXT} /* TPL_${1:VAR}:END */"
+    ],
+    "description": "Wrap selected text with TPL markers"
   }
 }
