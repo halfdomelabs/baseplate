@@ -79,7 +79,7 @@ describe('typescriptGenerator', () => {
       expect(result.builderOutputs.files.size).toEqual(0);
     });
 
-    it.only('handles lazy template files and package dependencies', async () => {
+    it('handles lazy template files and package dependencies', async () => {
       const runner = createTaskTestRunner(typescriptBundle.tasks.file, {
         templateMetadataOptions: { includeTemplateMetadata: true },
       });
