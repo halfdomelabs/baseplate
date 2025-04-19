@@ -17,6 +17,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
+  createProviderTask,
   createProviderType,
   renderRawTemplateFileAction,
   renderTextTemplateGroupAction,
@@ -40,7 +41,6 @@ const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
 });
 
 export interface ReactProvider {
-  getSrcFolder(): string;
   getIndexFile(): TypescriptSourceFile<typeof INDEX_FILE_CONFIG>;
   addVitePlugin(plugin: TypescriptCodeExpression): void;
   addServerOption(key: string, value: TypescriptCodeExpression): void;
@@ -63,32 +63,32 @@ export const reactGenerator = createGenerator({
       },
     }),
     viteNode: viteNodeTask,
+    gitIgnore: createProviderTask(nodeGitIgnoreProvider, (nodeGitIgnore) => {
+      nodeGitIgnore.addExclusions([
+        '# production',
+        '/build',
+        '',
+        '# misc',
+        '.DS_Store',
+        '.env.local',
+        '.env.development.local',
+        '.env.test.local',
+        '.env.production.local',
+      ]);
+    }),
+    eslint: createProviderTask(eslintProvider, (eslint) => {
+      eslint.getConfig().set('react', true).set('disableVitest', true);
+    }),
     main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
-        nodeGitIgnore: nodeGitIgnoreProvider,
         project: projectProvider,
-        eslint: eslintProvider.dependency().optional(),
       },
       exports: {
         react: reactProvider.export(projectScope),
       },
-      run({ typescript, nodeGitIgnore, project, eslint }) {
+      run({ typescript, project }) {
         const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);
-
-        nodeGitIgnore.addExclusions([
-          '# production',
-          '/build',
-          '',
-          '# misc',
-          '.DS_Store',
-          '.env.local',
-          '.env.development.local',
-          '.env.test.local',
-          '.env.production.local',
-        ]);
-
-        eslint?.getConfig().set('react', true).set('disableVitest', true);
 
         const vitePlugins: TypescriptCodeExpression[] = [
           TypescriptCodeUtils.createExpression(
@@ -121,9 +121,6 @@ export const reactGenerator = createGenerator({
         return {
           providers: {
             react: {
-              getSrcFolder() {
-                return 'src';
-              },
               getIndexFile() {
                 return indexFile;
               },

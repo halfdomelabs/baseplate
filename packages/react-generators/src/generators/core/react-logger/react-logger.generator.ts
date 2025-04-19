@@ -16,12 +16,9 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
-import path from 'node:path';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
-
-import { reactProvider } from '../react/react.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -44,15 +41,14 @@ export const reactLoggerGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        react: reactProvider,
         typescript: typescriptProvider,
       },
       exports: {
         reactLogger: reactLoggerProvider.export(projectScope),
       },
-      run({ react, typescript }) {
+      run({ typescript }) {
         const [fileImport, filePath] = makeImportAndFilePath(
-          path.join(react.getSrcFolder(), 'services/logger.ts'),
+          'src/services/logger.ts',
         );
 
         return {
@@ -61,7 +57,7 @@ export const reactLoggerGenerator = createGenerator({
               getLoggerExpression: () =>
                 TypescriptCodeUtils.createExpression(
                   'logger',
-                  `import { logger  } from "@/${react.getSrcFolder()}/services/logger";`,
+                  `import { logger } from "@/src/services/logger";`,
                 ),
               getImportMap: () => ({
                 '%react-logger': {
