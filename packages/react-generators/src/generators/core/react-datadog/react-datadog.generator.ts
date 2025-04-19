@@ -50,21 +50,17 @@ export const reactDatadogGenerator = createGenerator({
           'src/services/datadog.ts',
         );
 
-        reactConfig.getConfigMap().set('VITE_DATADOG_CLIENT_TOKEN', {
+        reactConfig.configEntries.set('VITE_DATADOG_CLIENT_TOKEN', {
           comment: 'Client token for Datadog logging (optional)',
-          validator: TypescriptCodeUtils.createExpression(
-            'z.string().optional()',
-          ),
-          devValue: '',
+          validator: 'z.string().optional()',
+          devDefaultValue: '',
         });
 
-        reactConfig.getConfigMap().set('VITE_DATADOG_SITE', {
+        reactConfig.configEntries.set('VITE_DATADOG_SITE', {
           comment:
             'Site for Datadog logging (optional, defaults to datadoghq.com)',
-          validator: TypescriptCodeUtils.createExpression(
-            'z.string().optional()',
-          ),
-          devValue: '',
+          validator: 'z.string().optional()',
+          devDefaultValue: '',
         });
 
         authIdentify.addBlock(

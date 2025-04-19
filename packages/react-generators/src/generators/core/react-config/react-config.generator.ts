@@ -1,148 +1,152 @@
-import type {
-  ImportMapper,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
   extractPackageVersions,
   projectScope,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTaskWithInfo,
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
-  createProviderType,
+  createProviderTask,
 } from '@halfdomelabs/sync';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
-});
+import {
+  createReactConfigImports,
+  reactConfigImportsProvider,
+} from './generated/ts-import-maps.js';
+import { CORE_REACT_CONFIG_TS_TEMPLATES } from './generated/ts-templates.js';
 
-interface ConfigEntry {
+const descriptorSchema = z.object({});
+
+/**
+ * A single entry in the environment variables for the react app.
+ */
+export interface ReactConfigEntry {
+  /**
+   * A comment to describe the config entry.
+   */
   comment: string;
-  validator: TypescriptCodeExpression;
-  devValue: string;
+  /**
+   * The Zod validator for the config entry.
+   */
+  validator: TsCodeFragment | string;
+  /**
+   * The default value for the config entry in the .env.development file.
+   */
+  devDefaultValue: string;
 }
 
-export interface ReactConfigProvider extends ImportMapper {
-  getConfigMap(): NonOverwriteableMap<Record<string, ConfigEntry>>;
-  addEnvVar(name: string, value: string): void;
-}
+const [setupTask, reactConfigProvider, reactConfigValuesProvider] =
+  createConfigProviderTaskWithInfo(
+    (t) => ({
+      // The config entries for the react app.
+      configEntries: t.map<string, ReactConfigEntry>(),
+      // Extra environment variables for the react app in the .env.development file.
+      additionalDevEnvVars: t.map<string, string>(),
+    }),
+    {
+      prefix: 'react-config',
+      configScope: projectScope,
+      // TODO: Temporary until we remove the need for the old typescript import map
+      infoFromDescriptor: () => ({
+        getImportMap: () => ({
+          '%react-config': {
+            path: '@/src/services/config',
+            allowedImports: ['config'],
+          },
+        }),
+      }),
+    },
+  );
 
-export const reactConfigProvider =
-  createProviderType<ReactConfigProvider>('react-config');
+export { reactConfigProvider };
 
 export const reactConfigGenerator = createGenerator({
   name: 'core/react-config',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    setup: setupTask({}),
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['zod']),
     }),
+    setupDefaultConfigEntries: createProviderTask(
+      reactConfigProvider,
+      (reactConfig) => {
+        reactConfig.configEntries.set('VITE_ENVIRONMENT', {
+          comment: 'Environment the app is running in',
+          validator: tsCodeFragment(
+            `z.enum(['development', 'test', 'staging', 'production'])`,
+            tsImportBuilder(['z']).from('zod'),
+          ),
+          devDefaultValue: 'development',
+        });
+      },
+    ),
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
+        reactConfigValues: reactConfigValuesProvider,
       },
       exports: {
-        reactConfig: reactConfigProvider.export(projectScope),
+        reactConfigImports: reactConfigImportsProvider.export(projectScope),
       },
-      run({ typescript }) {
-        const configEntryMap = createNonOverwriteableMap<
-          Record<string, ConfigEntry>
-        >(
-          {
-            VITE_ENVIRONMENT: {
-              comment: 'Environment the app is running in',
-              validator: TypescriptCodeUtils.createExpression(
-                `z.enum(['development', 'test', 'staging', 'production'])`,
-                "import { z } from 'zod'",
-              ),
-              devValue: 'development',
-            },
-          },
-          { name: 'react-config-entries' },
-        );
-        const customEnvVars: { name: string; value: string }[] = [];
-
+      run({
+        typescriptFile,
+        reactConfigValues: { configEntries, additionalDevEnvVars },
+      }) {
         return {
           providers: {
-            reactConfig: {
-              addEnvVar(name, value) {
-                customEnvVars.push({ name, value });
-              },
-              getConfigMap: () => configEntryMap,
-              getImportMap: () => ({
-                '%react-config': {
-                  path: '@/src/services/config',
-                  allowedImports: ['config'],
-                },
-              }),
-            },
+            reactConfigImports: createReactConfigImports('@/src/services'),
           },
           build: async (builder) => {
-            const configFile = typescript.createTemplate({
-              CONFIG_SCHEMA: { type: 'code-expression' },
-            });
-
-            const configEntries = configEntryMap.value();
-            const sortedConfigEntries = sortBy(Object.entries(configEntries), [
-              (entry) => entry[0],
-            ]);
-            const configEntryKeys = Object.keys(configEntries).sort();
-            const mergedExpression = TypescriptCodeUtils.mergeExpressions(
-              configEntryKeys.map((key) => {
-                const { comment, validator } = configEntries[key];
-                return TypescriptCodeUtils.formatExpression(
-                  `${
-                    comment
-                      ? `${TypescriptCodeUtils.formatAsComment(comment)}\n`
-                      : ''
-                  }${key}: VALIDATOR,`,
-                  {
-                    VALIDATOR: validator,
-                  },
-                );
-              }),
-              '\n',
+            const sortedConfigEntries = sortBy(
+              [...configEntries],
+              [(entry) => entry[0]],
             );
-
-            configFile.addCodeExpression(
-              'CONFIG_SCHEMA',
-              mergedExpression.wrap((contents) => `{${contents}}`),
+            const sortedConfigFields = sortedConfigEntries.map(
+              ([key, { comment, validator }]) =>
+                TsCodeUtils.template`${
+                  comment ? `${TsCodeUtils.formatAsComment(comment)}\n` : ''
+                }${key}: ${validator},`,
             );
-
             await builder.apply(
-              configFile.renderToAction(
-                'services/config.ts',
-                'src/services/config.ts',
-              ),
-            );
-
-            const configVars = sortedConfigEntries.map(
-              ([key, { devValue }]) => ({
-                name: key,
-                value: devValue,
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_CONFIG_TS_TEMPLATES.config,
+                destination: 'src/services/config.ts',
+                variables: {
+                  TPL_CONFIG_SCHEMA: TsCodeUtils.template`{
+                  ${TsCodeUtils.mergeFragmentsPresorted(sortedConfigFields, '\n')}
+              }`,
+                },
               }),
             );
 
-            const devEnvVars = [...configVars, ...customEnvVars];
+            const devEnvVars = [
+              ...sortedConfigEntries.map(([key, { devDefaultValue }]) => [
+                key,
+                devDefaultValue,
+              ]),
+              ...sortBy([...additionalDevEnvVars], [([key]) => key]),
+            ];
 
             if (devEnvVars.length > 0) {
               const developmentEnvFile = `${devEnvVars
-                .map(({ name, value }) => `${name}=${value}`)
+                .map(([name, value]) => `${name}=${value}`)
                 .join('\n')}\n`;
 
               builder.writeFile({
-                id: 'react-config/development-env',
+                id: 'development-env',
                 destination: '.env.development',
                 contents: developmentEnvFile,
               });
@@ -153,3 +157,5 @@ export const reactConfigGenerator = createGenerator({
     }),
   }),
 });
+
+export { reactConfigImportsProvider } from './generated/ts-import-maps.js';

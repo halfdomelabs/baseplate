@@ -69,12 +69,10 @@ export const reactSentryGenerator = createGenerator({
           ),
         );
 
-        reactConfig.getConfigMap().set('VITE_SENTRY_DSN', {
+        reactConfig.configEntries.set('VITE_SENTRY_DSN', {
           comment: 'DSN for Sentry (optional)',
-          validator: TypescriptCodeUtils.createExpression(
-            'z.string().optional()',
-          ),
-          devValue: '',
+          validator: 'z.string().optional()',
+          devDefaultValue: '',
         });
 
         if (authIdentify) {

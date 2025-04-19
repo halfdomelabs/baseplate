@@ -34,7 +34,10 @@ export const reactProxyGenerator = createGenerator({
         reactProxy: reactProxyProvider.export(projectScope),
       },
       run({ reactBaseConfig, reactConfig }) {
-        reactConfig.addEnvVar('DEV_BACKEND_HOST', devBackendHost);
+        reactConfig.additionalDevEnvVars.set(
+          'DEV_BACKEND_HOST',
+          devBackendHost,
+        );
         let enableWebsocket = false;
         return {
           providers: {

@@ -74,11 +74,10 @@ export const adminBullBoardGenerator = createGenerator({
               ),
             });
 
-            reactConfig.getConfigMap().set('VITE_BULL_BOARD_BASE', {
+            reactConfig.configEntries.set('VITE_BULL_BOARD_BASE', {
               comment: 'Base path for bull-board site',
-              validator:
-                TypescriptCodeUtils.createExpression('z.string().min(1)'),
-              devValue: bullBoardUrl,
+              validator: 'z.string().min(1)',
+              devDefaultValue: bullBoardUrl,
             });
 
             await builder.apply(
