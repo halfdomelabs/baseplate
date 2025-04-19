@@ -9,8 +9,8 @@ import { z } from 'zod';
 import type { ScalarFieldType } from '@src/types/field-types.js';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 
 import { pothosSetupProvider } from '../pothos/pothos.generator.js';
 
