@@ -6,8 +6,8 @@ const requestServiceContext = createTsTemplateFile({
   importMapProviders: { serviceContextImports: serviceContextImportsProvider },
   name: 'request-service-context',
   projectExports: {
-    createContextFromRequest: {},
     RequestServiceContext: { isTypeOnly: true },
+    createContextFromRequest: {},
   },
   source: { path: 'request-service-context.ts' },
   variables: {

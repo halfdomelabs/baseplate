@@ -195,7 +195,7 @@ export const serviceContextGenerator = createGenerator({
                 template: CORE_SERVICE_CONTEXT_TS_TEMPLATES.testHelper,
                 destination: testHelperPath,
                 variables: {
-                  TPL_CREATE_TEST_ARGS: createContextArgs(true),
+                  TPL_CREATE_TEST_ARGS: TsCodeUtils.template`${createContextArgs(true)} = {}`,
                   TPL_CREATE_TEST_OBJECT: testObject,
                 },
               }),
