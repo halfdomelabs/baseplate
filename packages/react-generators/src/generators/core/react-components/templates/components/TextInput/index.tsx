@@ -1,22 +1,24 @@
 // @ts-nocheck
+
 import clsx from 'clsx';
 import {
-  MouseEventHandler,
-  KeyboardEventHandler,
   FocusEventHandler,
   HTMLInputTypeAttribute,
   InputHTMLAttributes,
+  KeyboardEventHandler,
+  MouseEventHandler,
 } from 'react';
 import {
   Control,
   FieldError,
   FieldPath,
+  FieldValues,
   get,
+  RegisterOptions,
   UseFormRegisterReturn,
   useFormState,
-  RegisterOptions,
-  FieldValues,
 } from 'react-hook-form';
+
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 

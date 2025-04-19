@@ -7,7 +7,7 @@ import {
   projectScope,
   tsCodeFragment,
   tsImportBuilder,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -19,6 +19,11 @@ import { z } from 'zod';
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
 import { reactAppConfigProvider } from '../react-app/react-app.generator.js';
+import {
+  createReactComponentsImports,
+  reactComponentsImportsProvider,
+} from './generated/ts-import-maps.js';
+import { CORE_REACT_COMPONENTS_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   includeDatePicker: z.boolean().optional(),
@@ -99,21 +104,24 @@ export const reactComponentsGenerator = createGenerator({
       : undefined,
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
         reactAppConfig: reactAppConfigProvider,
       },
       exports: {
         reactComponents: reactComponentsProvider.export(projectScope),
+        reactComponentsImports:
+          reactComponentsImportsProvider.export(projectScope),
       },
-      run({ typescript, reactAppConfig }) {
-        const [useStatusImport, useStatusPath] = makeImportAndFilePath(
+      run({ typescriptFile, reactAppConfig }) {
+        const [useStatusImport] = makeImportAndFilePath(
           `src/hooks/useStatus.ts`,
         );
-        const [useToastImport, useToastPath] = makeImportAndFilePath(
+        const [useToastImport] = makeImportAndFilePath(
           `src/hooks/useToast.tsx`,
         );
-        const [useConfirmDialogImport, useConfirmDialogPath] =
-          makeImportAndFilePath(`src/hooks/useConfirmDialog.ts`);
+        const [useConfirmDialogImport] = makeImportAndFilePath(
+          `src/hooks/useConfirmDialog.ts`,
+        );
 
         const coreReactComponents = [...REACT_COMPONENTS];
 
@@ -137,7 +145,9 @@ export const reactComponentsGenerator = createGenerator({
           'react-components',
           tsCodeFragment(
             '<ConfirmDialog />',
-            tsImportBuilder(['ConfirmDialog']).from('@/src/components'),
+            tsImportBuilder(['ConfirmDialog']).from(
+              '@/src/components/index.js',
+            ),
           ),
         );
 
@@ -168,42 +178,19 @@ export const reactComponentsGenerator = createGenerator({
                 },
               }),
             },
+            reactComponentsImports: createReactComponentsImports('@/src'),
           },
           build: async (builder) => {
-            await Promise.all(
-              coreReactComponents.map(async ({ name }) =>
-                builder.apply(
-                  typescript.createCopyAction({
-                    source: `components/${name}/index.tsx`,
-                    destination: `src/components/${name}/index.tsx`,
-                  }),
-                ),
-              ),
-            );
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'hooks/useStatus.ts',
-                destination: useStatusPath,
+              typescriptFile.renderTemplateGroup({
+                group: CORE_REACT_COMPONENTS_TS_TEMPLATES.componentsGroup,
+                baseDirectory: '@/src/components',
               }),
             );
-
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'hooks/useToast.tsx',
-                destination: useToastPath,
-                replacements: {
-                  COMPONENT_FOLDER: `@/src/components`,
-                },
-              }),
-            );
-
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'hooks/useConfirmDialog.ts',
-                destination: useConfirmDialogPath,
-                replacements: {
-                  COMPONENT_FOLDER: `@/src/components`,
-                },
+              typescriptFile.renderTemplateGroup({
+                group: CORE_REACT_COMPONENTS_TS_TEMPLATES.hooksGroup,
+                baseDirectory: '@/src/hooks',
               }),
             );
 
@@ -225,3 +212,5 @@ export const reactComponentsGenerator = createGenerator({
     }),
   }),
 });
+
+export { reactComponentsImportsProvider } from './generated/ts-import-maps.js';

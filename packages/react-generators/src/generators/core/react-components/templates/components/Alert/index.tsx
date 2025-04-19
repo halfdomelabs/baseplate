@@ -1,5 +1,7 @@
 // @ts-nocheck
+
 import clsx from 'clsx';
+
 import { Status, StatusType } from '../../hooks/useStatus';
 import AlertIcon from '../AlertIcon';
 

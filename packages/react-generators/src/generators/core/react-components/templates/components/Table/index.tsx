@@ -1,4 +1,5 @@
 // @ts-nocheck
+
 import clsx from 'clsx';
 
 interface Props {
@@ -63,7 +64,7 @@ Table.HeadCell = function TableHeadCell({
     <th
       scope="col"
       className={clsx(
-        'py-3 px-6 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400',
+        'px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400',
         className,
       )}
     >
@@ -117,7 +118,7 @@ Table.Cell = function TableCell({
   return (
     <td
       className={clsx(
-        'whitespace-nowrap py-4 px-6 text-sm text-gray-500 dark:text-gray-400',
+        'whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400',
         className,
       )}
     >
