@@ -108,7 +108,7 @@ export function renderTsTemplateToTsCodeFragment(
   for (const [marker, { key, value }] of inlineMarkers.entries()) {
     const contents = typeof value === 'string' ? value : value.contents;
     const replacement = includeMetadata
-      ? `/* ${key}:START */ ${contents} /* ${key}:END */`
+      ? `/* ${key}:START */ ${contents.trim()} /* ${key}:END */`
       : contents;
 
     // Use replace instead of replaceAll as markers are unique

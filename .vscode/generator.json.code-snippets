@@ -106,5 +106,25 @@
       "/* TPL_${1:VAR}:START */ ${TM_SELECTED_TEXT} /* TPL_${1:VAR}:END */"
     ],
     "description": "Wrap selected text with TPL markers"
+  },
+  "Create Config Provider Task": {
+    "prefix": "configProviderTask",
+    "body": [
+      "import { createConfigProviderTask } from '@halfdomelabs/sync';",
+      "",
+      "const [setupTask, ${1:name}ConfigProvider, ${1:name}ConfigValuesProvider] =",
+      "  createConfigProviderTask(",
+      "    (t) => ({",
+      "      ${2:value: t.scalar<string>()}",
+      "    }),",
+      "    {",
+      "      prefix: '${1/(^[A-Z][a-z]*|[a-z])([A-Z])?/${1:/downcase}${2:+-}${2:/downcase}/g}',",
+      "      configScope: ${3:projectScope},",
+      "    },",
+      "  );",
+      "",
+      "export { ${1:name}ConfigProvider };"
+    ],
+    "description": "Creates a config provider task with customizable configuration"
   }
 }

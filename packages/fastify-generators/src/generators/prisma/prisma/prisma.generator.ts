@@ -10,6 +10,7 @@ import {
   projectProvider,
   projectScope,
   tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -33,7 +34,7 @@ import type { PrismaGeneratorBlock } from '@src/writers/prisma-schema/types.js';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
-import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check/fastify-health-check.generator.js';
+import { fastifyHealthCheckConfigProvider } from '@src/generators/core/fastify-health-check/fastify-health-check.generator.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/fastify.generator.js';
 import {
   createPrismaSchemaDatasourceBlock,
@@ -112,12 +113,12 @@ export const prismaGenerator = createGenerator({
       dependencies: {
         configService: configServiceProvider,
         project: projectProvider,
-        fastifyHealthCheck: fastifyHealthCheckProvider,
+        fastifyHealthCheckConfig: fastifyHealthCheckConfigProvider,
         typescript: typescriptProvider,
       },
       exports: { prismaSchema: prismaSchemaProvider.export(projectScope) },
       outputs: { prismaOutput: prismaOutputProvider.export(projectScope) },
-      run({ configService, project, fastifyHealthCheck, typescript }) {
+      run({ configService, project, fastifyHealthCheckConfig, typescript }) {
         const schemaFile = new PrismaSchemaFile();
 
         schemaFile.addGeneratorBlock(
@@ -147,10 +148,11 @@ export const prismaGenerator = createGenerator({
           exampleValue: defaultDatabaseUrl,
         });
 
-        fastifyHealthCheck.addCheck(
-          TypescriptCodeUtils.createBlock(
+        fastifyHealthCheckConfig.healthChecks.set(
+          'prisma',
+          tsCodeFragment(
             '// check Prisma is operating\nawait prisma.$queryRaw`SELECT 1;`;',
-            "import { prisma } from '@/src/services/prisma.js'",
+            tsImportBuilder(['prisma']).from('@/src/services/prisma.js'),
           ),
         );
 
