@@ -1,5 +1,7 @@
 import type { TsTemplateFileMetadata } from '../templates/types.js';
 
+import { preprocessCodeForExtractionHack } from './preprocess-code-for-extraction-hack.js';
+
 const VARIABLE_REGEX =
   /\/\* TPL_([A-Z0-9_]+):START \*\/([\s\S]*?)\/\* TPL_\1:END \*\//g;
 const HOISTED_REGEX =
@@ -18,6 +20,9 @@ export function stripTsTemplateVariables(
   content: string,
 ): string {
   let processedContent = content;
+
+  // Preprocess the content to handle the extraction hack
+  processedContent = preprocessCodeForExtractionHack(processedContent);
 
   const templateVariables = new Set<string>(Object.keys(variables ?? {}));
   const processedVariables = new Set<string>();

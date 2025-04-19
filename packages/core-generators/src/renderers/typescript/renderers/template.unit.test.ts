@@ -49,11 +49,11 @@ describe('renderTsTemplateToTsCodeFragment', () => {
     });
 
     expect(result.contents).toMatchInlineSnapshot(`
-      "const name =  /* TPL_VARIABLE:START */ "test" /* TPL_VARIABLE:END */ ;
+      "const name = /* TPL_VARIABLE:START */ "test" /* TPL_VARIABLE:END */;
       /* TPL_BLOCK:START */
       console.log(name)
       /* TPL_BLOCK:END */
-      const inlineBlock =  /* TPL_BLOCK:START */ console.log(name) /* TPL_BLOCK:END */ ;"
+      const inlineBlock = /* TPL_BLOCK:START */ console.log(name) /* TPL_BLOCK:END */;"
     `);
   });
 
