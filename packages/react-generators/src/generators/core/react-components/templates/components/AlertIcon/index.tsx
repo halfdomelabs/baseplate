@@ -9,7 +9,7 @@ import {
   MdOutlineWarningAmber,
 } from 'react-icons/md';
 
-import { StatusType } from '../../hooks/useStatus';
+import { StatusType } from '../../hooks/useStatus.js';
 
 interface Props {
   className?: string;

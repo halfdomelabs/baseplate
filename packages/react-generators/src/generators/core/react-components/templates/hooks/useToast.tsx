@@ -3,7 +3,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 
-import { AlertIcon, Toast } from '../components';
+import { AlertIcon, Toast } from '../components/index.js';
 
 interface UseToastResult {
   error: (message: string) => void;

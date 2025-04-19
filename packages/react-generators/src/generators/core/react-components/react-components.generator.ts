@@ -201,11 +201,15 @@ export const reactComponentsGenerator = createGenerator({
             const componentIndex = componentNames
               .map((name) => `export { default as ${name} } from './${name}';`)
               .join('\n');
-            builder.writeFile({
-              id: `react-components-index`,
-              contents: componentIndex,
-              destination: `src/components/index.ts`,
-            });
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_COMPONENTS_TS_TEMPLATES.index,
+                destination: `src/components/index.ts`,
+                variables: {
+                  TPL_EXPORTS: componentIndex,
+                },
+              }),
+            );
           },
         };
       },

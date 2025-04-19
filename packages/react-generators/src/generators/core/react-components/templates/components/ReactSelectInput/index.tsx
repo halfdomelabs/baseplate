@@ -11,8 +11,8 @@ import {
 } from 'react-hook-form';
 import Select, { components, GroupBase, InputProps } from 'react-select';
 
-import FormError from '../FormError';
-import FormLabel from '../FormLabel';
+import FormError from '../FormError/index.js';
+import FormLabel from '../FormLabel/index.js';
 
 interface Props<ValueType = string> {
   className?: string;

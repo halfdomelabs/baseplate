@@ -12,8 +12,8 @@ import {
   useFormState,
 } from 'react-hook-form';
 
-import FormError from '../FormError';
-import FormLabel from '../FormLabel';
+import FormError from '../FormError/index.js';
+import FormLabel from '../FormLabel/index.js';
 
 interface Props {
   className?: string;

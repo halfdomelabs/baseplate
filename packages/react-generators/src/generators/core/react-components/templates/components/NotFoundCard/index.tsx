@@ -2,8 +2,8 @@
 
 import { useNavigate } from 'react-router-dom';
 
-import Button from '../Button';
-import Card from '../Card';
+import Button from '../Button/index.js';
+import Card from '../Card/index.js';
 
 function NotFoundCard(): JSX.Element {
   const navigate = useNavigate();

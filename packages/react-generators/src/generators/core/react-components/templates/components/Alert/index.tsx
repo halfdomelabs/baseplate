@@ -2,8 +2,8 @@
 
 import clsx from 'clsx';
 
-import { Status, StatusType } from '../../hooks/useStatus';
-import AlertIcon from '../AlertIcon';
+import { Status, StatusType } from '../../hooks/useStatus.js';
+import AlertIcon from '../AlertIcon/index.js';
 
 interface Props {
   type: StatusType;

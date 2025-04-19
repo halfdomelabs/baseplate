@@ -4,6 +4,7 @@ import type { Identifier } from 'ts-morph';
 import path from 'node:path';
 import { Project, StringLiteral } from 'ts-morph';
 
+import type { TsImportDeclaration } from '../imports/index.js';
 import type { TsProjectExport } from './write-ts-project-exports.js';
 
 import { writeGroupedImportDeclarationsWithCodeBlockWriter } from '../imports/index.js';
@@ -118,7 +119,17 @@ export async function organizeTsTemplateImports(
       }
       // Don't modify imports for files in the generator
       if (generatorFiles.includes(resolvedPath)) {
-        return [importDeclaration];
+        const relativeImportPath = path
+          .relative(path.dirname(filePath), resolvedPath)
+          .replace(/\.(t|j)sx?$/, '.js');
+        const fixedImportDeclaration: TsImportDeclaration = {
+          ...importDeclaration,
+          // convert to relative path
+          source: relativeImportPath.startsWith('.')
+            ? relativeImportPath
+            : `./${relativeImportPath}`,
+        };
+        return [fixedImportDeclaration];
       }
       if (
         importDeclaration.namespaceImport ||
