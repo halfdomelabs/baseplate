@@ -104,7 +104,7 @@ export const fastifyRedisGenerator = createGenerator({
                   destination: mockRedisPath,
                 }),
               );
-              vitestConfig.setupFiles.push(mockRedisPath);
+              vitestConfig.setupFiles.push('tests/scripts/mock-redis.ts');
             }
           },
         };
