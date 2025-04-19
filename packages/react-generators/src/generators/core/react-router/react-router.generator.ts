@@ -8,8 +8,10 @@ import {
   extractPackageVersions,
   makeImportAndFilePath,
   projectScope,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
   TypescriptCodeUtils,
-  TypescriptCodeWrapper,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -29,7 +31,7 @@ import {
 import { notEmpty } from '@src/utils/array.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
-import { reactAppProvider } from '../react-app/react-app.generator.js';
+import { reactAppConfigProvider } from '../react-app/react-app.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -53,7 +55,7 @@ export const reactRouterGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        reactApp: reactAppProvider,
+        reactAppConfig: reactAppConfigProvider,
         typescript: typescriptProvider,
       },
       exports: {
@@ -61,7 +63,7 @@ export const reactRouterGenerator = createGenerator({
         reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(projectScope),
         reactRouter: reactRouterProvider.export(projectScope),
       },
-      run({ reactApp, typescript }) {
+      run({ reactAppConfig, typescript }) {
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];
         const headerBlocks: TypescriptCodeBlock[] = [];
@@ -108,20 +110,18 @@ export const reactRouterGenerator = createGenerator({
               'src/pages/index.tsx',
             );
 
-            reactApp
-              .getRenderWrappers()
-              .addItem(
-                'react-router',
-                new TypescriptCodeWrapper(
-                  (contents) => `<BrowserRouter>${contents}</BrowserRouter>`,
-                  "import {BrowserRouter} from 'react-router-dom'",
-                ),
-              );
+            reactAppConfig.renderWrappers.set('react-router', {
+              wrap: (contents) =>
+                TsCodeUtils.templateWithImports(
+                  tsImportBuilder(['BrowserRouter']).from('react-router-dom'),
+                )`<BrowserRouter>${contents}</BrowserRouter>`,
+              type: 'router',
+            });
 
-            reactApp.setRenderRoot(
-              TypescriptCodeUtils.createExpression(
+            reactAppConfig.renderRoot.set(
+              tsCodeFragment(
                 '<PagesRoot />',
-                `import PagesRoot from "${pagesImport}"`,
+                tsImportBuilder().default('PagesRoot').from(pagesImport),
               ),
             );
 

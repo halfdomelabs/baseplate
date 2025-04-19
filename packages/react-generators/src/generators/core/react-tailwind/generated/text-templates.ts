@@ -3,13 +3,6 @@ import {
   createTextTemplateGroup,
 } from '@halfdomelabs/sync';
 
-const tailwindConfig = createTextTemplateFile({
-  name: 'tailwind-config',
-  group: 'main',
-  source: { path: 'tpl.tailwind.config.js' },
-  variables: {},
-});
-
 const indexCss = createTextTemplateFile({
   name: 'index-css',
   group: 'main',
@@ -17,6 +10,13 @@ const indexCss = createTextTemplateFile({
   variables: {
     TPL_GLOBAL_STYLES: { description: 'Global styles to apply to the app' },
   },
+});
+
+const tailwindConfig = createTextTemplateFile({
+  name: 'tailwind-config',
+  group: 'main',
+  source: { path: 'tpl.tailwind.config.js' },
+  variables: {},
 });
 
 const postcssConfig = createTextTemplateFile({
@@ -28,13 +28,13 @@ const postcssConfig = createTextTemplateFile({
 
 const mainGroup = createTextTemplateGroup({
   templates: {
-    tailwindConfig: {
-      destination: 'tailwind.config.js',
-      template: tailwindConfig,
-    },
     indexCss: {
       destination: 'src/index.css',
       template: indexCss,
+    },
+    tailwindConfig: {
+      destination: 'tailwind.config.js',
+      template: tailwindConfig,
     },
     postcssConfig: {
       destination: 'postcss.config.js',

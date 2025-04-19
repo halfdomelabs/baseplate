@@ -8,6 +8,8 @@ import {
   makeImportAndFilePath,
   prettierProvider,
   projectScope,
+  TsCodeUtils,
+  tsImportBuilder,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -25,7 +27,7 @@ import { toposort } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
-import { reactAppProvider } from '@src/generators/core/react-app/react-app.generator.js';
+import { reactAppConfigProvider } from '@src/generators/core/react-app/react-app.generator.js';
 import { reactConfigProvider } from '@src/generators/core/react-config/react-config.generator.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactProxyProvider } from '@src/generators/core/react-proxy/react-proxy.generator.js';
@@ -112,7 +114,7 @@ export const reactApolloGenerator = createGenerator({
       dependencies: {
         reactConfig: reactConfigProvider,
         typescript: typescriptProvider,
-        reactApp: reactAppProvider,
+        reactAppConfig: reactAppConfigProvider,
         eslint: eslintProvider,
         prettier: prettierProvider,
         reactProxy: reactProxyProvider,
@@ -121,7 +123,14 @@ export const reactApolloGenerator = createGenerator({
         reactApolloSetup: reactApolloSetupProvider.export(projectScope),
         reactApollo: reactApolloProvider.export(projectScope),
       },
-      run({ reactConfig, typescript, reactApp, eslint, prettier, reactProxy }) {
+      run({
+        reactConfig,
+        typescript,
+        reactAppConfig,
+        eslint,
+        prettier,
+        reactProxy,
+      }) {
         const apolloCreateArgs: ApolloCreateArg[] = [];
         const links: ApolloLink[] = [];
         const gqlFiles: string[] = [];
@@ -151,13 +160,15 @@ export const reactApolloGenerator = createGenerator({
           'src/app/AppApolloProvider.tsx',
         );
 
-        reactApp.getRenderWrappers().addItem(
-          'react-apollo',
-          TypescriptCodeUtils.createWrapper(
-            (contents) => `<AppApolloProvider>${contents}</AppApolloProvider>`,
-            [`import AppApolloProvider from '${providerImport}';`],
-          ),
-        );
+        reactAppConfig.renderWrappers.set('react-apollo', {
+          wrap: (contents) =>
+            TsCodeUtils.templateWithImports(
+              tsImportBuilder()
+                .default('AppApolloProvider')
+                .from(providerImport),
+            )`<AppApolloProvider>${contents}</AppApolloProvider>`,
+          type: 'data',
+        });
 
         const importMap = {
           '%react-apollo/client': {

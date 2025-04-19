@@ -5,7 +5,8 @@ import {
   extractPackageVersions,
   makeImportAndFilePath,
   projectScope,
-  TypescriptCodeUtils,
+  tsCodeFragment,
+  tsImportBuilder,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -17,7 +18,7 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-import { reactAppProvider } from '../react-app/react-app.generator.js';
+import { reactAppConfigProvider } from '../react-app/react-app.generator.js';
 
 const descriptorSchema = z.object({
   includeDatePicker: z.boolean().optional(),
@@ -99,12 +100,12 @@ export const reactComponentsGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
-        reactApp: reactAppProvider,
+        reactAppConfig: reactAppConfigProvider,
       },
       exports: {
         reactComponents: reactComponentsProvider.export(projectScope),
       },
-      run({ typescript, reactApp }) {
+      run({ typescript, reactAppConfig }) {
         const [useStatusImport, useStatusPath] = makeImportAndFilePath(
           `src/hooks/useStatus.ts`,
         );
@@ -123,18 +124,20 @@ export const reactComponentsGenerator = createGenerator({
         const allReactComponents = [...coreReactComponents];
 
         // add toaster root sibling component
-        reactApp.addRenderSibling(
-          TypescriptCodeUtils.createExpression(
+        reactAppConfig.renderSiblings.set(
+          'react-hot-toast',
+          tsCodeFragment(
             '<Toaster />',
-            "import { Toaster } from 'react-hot-toast';",
+            tsImportBuilder(['Toaster']).from('react-hot-toast'),
           ),
         );
 
         // add confirm dialog root sibling component
-        reactApp.addRenderSibling(
-          TypescriptCodeUtils.createExpression(
+        reactAppConfig.renderSiblings.set(
+          'react-components',
+          tsCodeFragment(
             '<ConfirmDialog />',
-            `import { ConfirmDialog } from "@/src/components";`,
+            tsImportBuilder(['ConfirmDialog']).from('@/src/components'),
           ),
         );
 

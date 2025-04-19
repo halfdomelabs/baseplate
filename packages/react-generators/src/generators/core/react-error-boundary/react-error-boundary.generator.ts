@@ -3,7 +3,8 @@ import {
   extractPackageVersions,
   makeImportAndFilePath,
   projectScope,
-  TypescriptCodeUtils,
+  TsCodeUtils,
+  tsImportBuilder,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -15,7 +16,7 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-import { reactAppProvider } from '../react-app/react-app.generator.js';
+import { reactAppConfigProvider } from '../react-app/react-app.generator.js';
 import { reactComponentsProvider } from '../react-components/react-components.generator.js';
 import { reactErrorProvider } from '../react-error/react-error.generator.js';
 
@@ -36,7 +37,7 @@ export const reactErrorBoundaryGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        reactApp: reactAppProvider,
+        reactAppConfig: reactAppConfigProvider,
         reactError: reactErrorProvider,
         reactComponents: reactComponentsProvider,
         typescript: typescriptProvider,
@@ -44,7 +45,7 @@ export const reactErrorBoundaryGenerator = createGenerator({
       exports: {
         reactErrorBoundary: reactErrorBoundaryProvider.export(projectScope),
       },
-      run({ reactApp, reactError, reactComponents, typescript }) {
+      run({ reactAppConfig, reactError, reactComponents, typescript }) {
         const [errorBoundaryImport, errorBoundaryPath] = makeImportAndFilePath(
           'src/components/ErrorBoundary/index.tsx',
         );
@@ -62,11 +63,11 @@ export const reactErrorBoundaryGenerator = createGenerator({
               },
             );
 
-            reactApp.setErrorBoundary(
-              TypescriptCodeUtils.createWrapper(
-                (contents) => `<ErrorBoundary>${contents}</ErrorBoundary>`,
-                `import {ErrorBoundary} from '${errorBoundaryImport}';`,
-              ),
+            reactAppConfig.errorBoundary.set(
+              (contents) =>
+                TsCodeUtils.templateWithImports(
+                  tsImportBuilder(['ErrorBoundary']).from(errorBoundaryImport),
+                )`<ErrorBoundary>${contents}</ErrorBoundary>`,
             );
 
             await builder.apply(

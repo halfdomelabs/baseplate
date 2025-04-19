@@ -1,13 +1,15 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
+  TsCodeUtils,
+  tsImportBuilder,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
-import { reactAppProvider } from '@src/generators/core/react-app/react-app.generator.js';
+import { reactAppConfigProvider } from '@src/generators/core/react-app/react-app.generator.js';
 import { reactConfigProvider } from '@src/generators/core/react-config/react-config.generator.js';
 
 const descriptorSchema = z.object({
@@ -25,9 +27,9 @@ export const reactAuth0Generator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactConfig: reactConfigProvider,
-        reactApp: reactAppProvider,
+        reactAppConfig: reactAppConfigProvider,
       },
-      run({ reactConfig, reactApp }) {
+      run({ reactConfig, reactAppConfig }) {
         reactConfig.getConfigMap().set('VITE_AUTH0_DOMAIN', {
           comment: 'Auth0 Domain',
           validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
@@ -50,10 +52,13 @@ export const reactAuth0Generator = createGenerator({
           ? `\`\${window.location.origin}/${callbackPath}\``
           : 'window.location.origin';
 
-        reactApp.getRenderWrappers().addItem(
-          'react-auth0',
-          TypescriptCodeUtils.createWrapper(
-            (contents) => `<Auth0Provider
+        reactAppConfig.renderWrappers.set('react-auth0', {
+          wrap: (contents) => TsCodeUtils.templateWithImports([
+            tsImportBuilder(['Auth0Provider']).from('@auth0/auth0-react'),
+            tsImportBuilder(['config']).from(
+              reactConfig.getImportMap()['%react-config']?.path ?? '',
+            ),
+          ])`<Auth0Provider
         domain={config.VITE_AUTH0_DOMAIN}
         clientId={config.VITE_AUTH0_CLIENT_ID}
         authorizationParams={{
@@ -62,14 +67,8 @@ export const reactAuth0Generator = createGenerator({
         }}
         skipRedirectCallback
       >${contents}</Auth0Provider>`,
-            [
-              `import {Auth0Provider} from '@auth0/auth0-react';`,
-              `import {config} from '%react-config'`,
-            ],
-            { importMappers: [reactConfig] },
-          ),
-          { comesAfter: 'react-apollo' },
-        );
+          type: 'auth',
+        });
       },
     }),
   }),
