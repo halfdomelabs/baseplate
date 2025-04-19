@@ -1,39 +1,47 @@
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
-
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
-  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-
-import type { TypescriptCodeBlock } from '@src/writers/index.js';
 
 import { CORE_PACKAGES } from '@src/constants/index.js';
 import { projectScope } from '@src/providers/scopes.js';
 import { extractPackageVersions } from '@src/utils/extract-packages.js';
-import { TypescriptCodeUtils } from '@src/writers/index.js';
 
 import { eslintProvider } from '../eslint/eslint.generator.js';
 import {
   createNodePackagesTask,
   nodeProvider,
 } from '../node/node.generator.js';
-import { typescriptProvider } from '../typescript/typescript.generator.js';
+import { typescriptFileProvider } from '../typescript/typescript.generator.js';
 
 const descriptorSchema = z.object({});
 
-export interface VitestGeneratorConfig {
-  customSetupBlocks: TypescriptCodeBlock[];
-  setupFiles: string[];
-}
+import { stringifyPrettyStable } from '@halfdomelabs/utils';
 
-export interface VitestProvider {
-  getConfig(): NonOverwriteableMap<VitestGeneratorConfig>;
-}
+import {
+  tsCodeFragment,
+  type TsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
+} from '@src/renderers/index.js';
 
-export const vitestProvider = createProviderType<VitestProvider>('vitest');
+import { NODE_VITEST_TS_TEMPLATES } from './generated/ts-templates.js';
+
+const [setupTask, vitestConfigProvider, vitestConfigValuesProvider] =
+  createConfigProviderTask(
+    (t) => ({
+      globalSetupOperations: t.map<string, TsCodeFragment>(),
+      setupFiles: t.array<string>(),
+    }),
+    {
+      prefix: 'vitest',
+      configScope: projectScope,
+    },
+  );
+
+export { vitestConfigProvider };
 
 export const vitestGenerator = createGenerator({
   name: 'node/vitest',
@@ -46,104 +54,78 @@ export const vitestGenerator = createGenerator({
         'vite-tsconfig-paths',
       ]),
     }),
+    setup: setupTask,
     main: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
         eslint: eslintProvider,
+        vitestConfigValues: vitestConfigValuesProvider,
       },
-      exports: {
-        vitest: vitestProvider.export(projectScope),
-      },
-      run({ node, typescript, eslint }) {
-        const configMap = createNonOverwriteableMap<VitestGeneratorConfig>(
-          {
-            customSetupBlocks: [],
-            setupFiles: [],
-          },
-          { name: 'vitest-config', mergeArraysUniquely: true },
-        );
-
+      run({
+        node,
+        typescriptFile,
+        eslint,
+        vitestConfigValues: { globalSetupOperations, setupFiles },
+      }) {
         const vitestConfigFilename = node.isEsm
           ? 'vitest.config.ts'
           : 'vitest.config.mts';
 
         eslint.getConfig().appendUnique('eslintIgnore', [vitestConfigFilename]);
 
-        return {
-          providers: {
-            vitest: {
-              getConfig: () => configMap,
-            },
-          },
-          build: async (builder) => {
-            const config = configMap.value();
+        const globalSetupPath = 'src/tests/scripts/global-setup.ts';
 
-            const customSetupPath = 'src/tests/scripts/globalSetup.ts';
-            if (config.customSetupBlocks.length > 0) {
-              const customSetupFile = typescript.createTemplate({
-                CUSTOM_SETUP: { type: 'code-block' },
-              });
-              customSetupFile.addCodeEntries({
-                CUSTOM_SETUP: config.customSetupBlocks,
-              });
+        return {
+          build: async (builder) => {
+            const hasGlobalSetup = globalSetupOperations.size > 0;
+            if (hasGlobalSetup) {
               await builder.apply(
-                customSetupFile.renderToAction(
-                  'globalSetup.ts',
-                  customSetupPath,
-                ),
+                typescriptFile.renderTemplateFile({
+                  template: NODE_VITEST_TS_TEMPLATES.globalSetup,
+                  destination: globalSetupPath,
+                  variables: {
+                    TPL_OPERATIONS: TsCodeUtils.mergeFragments(
+                      globalSetupOperations,
+                    ),
+                  },
+                  writeOptions: {
+                    alternateFullIds: [
+                      '@halfdomelabs/core-generators#node/vitest:src/tests/scripts/globalSetup.ts',
+                    ],
+                  },
+                }),
               );
             }
 
-            const plugins = [
-              TypescriptCodeUtils.createExpression('tsconfigPaths()', [
-                "import tsconfigPaths from 'vite-tsconfig-paths'",
-              ]),
-            ];
-
-            const testMap = {
+            const configValues = {
               clearMocks: true,
               passWithNoTests: true,
               root: './src',
-              ...(config.customSetupBlocks.length > 0
-                ? {
-                    globalSetup: `./${customSetupPath}`,
-                  }
-                : {}),
-              ...(config.setupFiles.length > 0
-                ? {
-                    setupFiles: config.setupFiles,
-                  }
-                : {}),
+              globalSetup: hasGlobalSetup ? `./${globalSetupPath}` : undefined,
+              setupFiles:
+                setupFiles.length > 0 ? setupFiles.toSorted() : undefined,
             };
 
-            const vitestConfig = {
-              plugins: TypescriptCodeUtils.mergeExpressionsAsArray(plugins),
-              test: TypescriptCodeUtils.createExpression(
-                JSON.stringify(testMap),
-              ),
-            };
-
-            const vitestConfigFile = typescript.createTemplate({
-              VITEST_CONFIG: { type: 'code-expression' },
-            });
-
-            vitestConfigFile.addCodeEntries({
-              VITEST_CONFIG:
-                TypescriptCodeUtils.mergeExpressionsAsObject(vitestConfig),
+            const plugins = TsCodeUtils.mergeFragmentsAsArray({
+              tsconfigPaths: tsCodeFragment('tsconfigPaths()', [
+                tsImportBuilder()
+                  .default('tsconfigPaths')
+                  .from('vite-tsconfig-paths'),
+              ]),
             });
 
             await builder.apply(
-              vitestConfigFile.renderToAction(
-                'vitest.config.ts',
-                vitestConfigFilename,
-                {
-                  id: 'vitest-config',
-                  alternateFullIds: [
-                    '@halfdomelabs/core-generators#node/vitest:vitest.config.ts',
-                  ],
+              typescriptFile.renderTemplateFile({
+                template: NODE_VITEST_TS_TEMPLATES.vitestConfig,
+                destination: vitestConfigFilename,
+                variables: {
+                  TPL_CONFIG: TsCodeUtils.mergeFragmentsAsObject({
+                    plugins,
+                    test: stringifyPrettyStable(configValues),
+                  }),
                 },
-              ),
+              }),
             );
           },
         };

@@ -8,7 +8,7 @@ import {
   tsCodeFragment,
   tsImportBuilder,
   typescriptProvider,
-  vitestProvider,
+  vitestConfigProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -47,12 +47,17 @@ export const fastifyRedisGenerator = createGenerator({
         configService: configServiceProvider,
         fastifyHealthCheckConfig: fastifyHealthCheckConfigProvider,
         typescript: typescriptProvider,
-        vitest: vitestProvider.dependency().optional(),
+        vitestConfig: vitestConfigProvider.dependency().optional(),
       },
       exports: {
         fastifyRedis: fastifyRedisProvider.export(projectScope),
       },
-      run({ configService, fastifyHealthCheckConfig, typescript, vitest }) {
+      run({
+        configService,
+        fastifyHealthCheckConfig,
+        typescript,
+        vitestConfig,
+      }) {
         const [redisImport, redisPath] = makeImportAndFilePath(
           `src/services/redis.ts`,
         );
@@ -91,18 +96,15 @@ export const fastifyRedisGenerator = createGenerator({
               redisFile.renderToAction('redis.ts', redisPath),
             );
 
-            if (vitest) {
+            if (vitestConfig) {
+              const mockRedisPath = 'src/tests/scripts/mock-redis.ts';
               await builder.apply(
                 typescript.createCopyAction({
                   source: 'mock-redis.ts',
-                  destination: 'src/tests/scripts/mock-redis.ts',
+                  destination: mockRedisPath,
                 }),
               );
-              vitest
-                .getConfig()
-                .appendUnique('setupFiles', [
-                  './src/tests/scripts/mock-redis.ts',
-                ]);
+              vitestConfig.setupFiles.push(mockRedisPath);
             }
           },
         };

@@ -6,9 +6,10 @@ import {
   makeImportAndFilePath,
   projectProvider,
   projectScope,
-  TypescriptCodeUtils,
+  tsCodeFragment,
+  tsImportBuilder,
   typescriptProvider,
-  vitestProvider,
+  vitestConfigProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -19,8 +20,6 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
-
-import { fastifyVitestProvider } from '../fastify-vitest/fastify-vitest.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -44,16 +43,15 @@ export const prismaVitestGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        vitest: vitestProvider,
+        vitestConfig: vitestConfigProvider,
         typescript: typescriptProvider,
         prismaOutput: prismaOutputProvider,
         project: projectProvider,
-        fastifyVitest: fastifyVitestProvider,
       },
       exports: {
         prismaVitest: prismaVitestProvider.export(projectScope),
       },
-      run({ vitest, project, typescript, prismaOutput }) {
+      run({ vitestConfig, project, typescript, prismaOutput }) {
         const [dbHelperImport, dbHelperPath] = makeImportAndFilePath(
           'src/tests/helpers/db.test-helper.ts',
         );
@@ -73,8 +71,9 @@ export const prismaVitestGenerator = createGenerator({
           },
         };
 
-        vitest.getConfig().appendUnique('customSetupBlocks', [
-          TypescriptCodeUtils.createBlock(
+        vitestConfig.globalSetupOperations.set(
+          'prisma',
+          tsCodeFragment(
             `
 const { TEST_MODE } = process.env;
 
@@ -91,13 +90,13 @@ if (TEST_MODE !== 'unit') {
   process.env.ORIGINAL_DATABASE_URL = process.env.DATABASE_URL;
   process.env.DATABASE_URL = testDatabaseUrl;
 
-  console.log('\\nDatabase migrations ran!');
+  // eslint-disable-next-line no-console
+  console.info('\\nDatabase migrations ran!');
 }
 `,
-            [`import { createTestDatabase } from '%prisma-vitest/db'`],
-            { importMappers: [{ getImportMap: () => importMap }] },
+            tsImportBuilder(['createTestDatabase']).from(dbHelperImport),
           ),
-        ]);
+        );
 
         return {
           providers: {
