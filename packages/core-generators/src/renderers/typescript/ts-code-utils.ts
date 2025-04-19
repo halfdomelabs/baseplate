@@ -1,3 +1,4 @@
+import { quot } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 
 import type { TsCodeFragmentOptions } from './fragments/creators.js';
@@ -82,7 +83,7 @@ export const TsCodeUtils = {
    * @returns The merged code fragment.
    */
   mergeFragments(
-    fragments: Map<string, TsCodeFragment | string>,
+    fragments: Map<string, TsCodeFragment | string | undefined>,
     separator = '\n',
   ): TsCodeFragment {
     const sortedFragmentEntries = sortBy(
@@ -91,7 +92,9 @@ export const TsCodeUtils = {
     );
     return {
       contents: sortedFragmentEntries
-        .map(([, fragment]) =>
+        .map(([, fragment]) => fragment)
+        .filter((f) => f !== undefined)
+        .map((fragment) =>
           typeof fragment === 'string' ? fragment : fragment.contents,
         )
         .join(separator),
@@ -206,9 +209,7 @@ export const TsCodeUtils = {
         if (trimmedContent.startsWith(`async function ${key}`)) {
           return `${trimmedContent.replace(/^async function /, 'async ')},`;
         }
-        const escapedKey = /^[A-Z0-9_a-z]+$/.test(key)
-          ? key
-          : `"${key.replaceAll('"', String.raw`\"`)}"`;
+        const escapedKey = /^[A-Z0-9_a-z]+$/.test(key) ? key : quot(key);
         return `${escapedKey}: ${content},`;
       })
       .join('\n');
@@ -217,6 +218,46 @@ export const TsCodeUtils = {
       contents: wrapWithParenthesis
         ? `({${mergedContent}})`
         : `{${mergedContent}}`,
+      ...mergeFragmentImportsAndHoistedFragments(fragments),
+    };
+  },
+
+  /**
+   * Merge a map of code fragments into interface content. The fragments are sorted by key
+   * to ensure deterministic output.
+   *
+   * @param fragments - The code fragments to merge.
+   * @param options - The options for the merge.
+   * @returns The merged code fragment as interface content.
+   */
+  mergeFragmentsAsInterfaceContent(
+    objOrMap:
+      | Record<string, TsCodeFragment | string | undefined>
+      | Map<string, TsCodeFragment | string | undefined>,
+    options: {
+      disableSort?: boolean;
+    } = {},
+  ): TsCodeFragment {
+    const { disableSort = false } = options;
+    const map =
+      objOrMap instanceof Map ? objOrMap : new Map(Object.entries(objOrMap));
+    const keys = [...map.keys()];
+    const fragments = [...map.values()].filter(isTsCodeFragment);
+
+    const sortedKeys = disableSort ? keys : keys.toSorted();
+
+    const mergedContent = sortedKeys
+      .filter((key) => map.get(key))
+      .map((key) => {
+        const value = map.get(key) ?? '';
+        const content = typeof value === 'string' ? value : value.contents;
+        const escapedKey = /^[A-Z0-9_a-z]+$/.test(key) ? key : `[${quot(key)}]`;
+        return `${escapedKey}: ${content};`;
+      })
+      .join('\n');
+
+    return {
+      contents: mergedContent,
       ...mergeFragmentImportsAndHoistedFragments(fragments),
     };
   },

@@ -1,184 +1,152 @@
-import type {
-  ImportMapper,
-  TypescriptCodeBlock,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
-  makeImportAndFilePath,
   projectScope,
-  TypescriptCodeExpression,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  TsCodeUtils,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
-  createProviderType,
-  createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
-import { mapValues } from 'es-toolkit';
+import { mapValuesOfMap } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { notEmpty } from '@src/utils/array.js';
-
 import { requestContextImportsProvider } from '../request-context/request-context.generator.js';
-import { serviceContextSetupProvider } from '../service-context/service-context.generator.js';
+import { serviceContextImportsProvider } from '../service-context/service-context.generator.js';
+import {
+  createRequestServiceContextImports,
+  requestServiceContextImportsProvider,
+} from './generated/ts-import-maps.js';
+import { CORE_REQUEST_SERVICE_CONTEXT_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
-interface RequestContextField {
+export interface RequestServiceContextField {
+  type: TsCodeFragment;
+  body?: (reqVarName: string, replyVarName: string) => TsCodeFragment;
+  creator: (
+    reqVarName: string,
+    replyVarName: string,
+  ) => TsCodeFragment | string;
+}
+
+export interface RequestServiceContextPassthrough {
   name: string;
-  type: TypescriptCodeExpression;
-  body?: (req: string, reply: string) => TypescriptCodeBlock;
-  creator: (req: string, reply: string) => TypescriptCodeExpression;
+  creator: (reqVarName: string, replyVarName: string) => TsCodeFragment;
 }
 
-interface ServiceContextPassthrough {
-  name: string;
-  creator: (req: string, reply: string) => TypescriptCodeExpression;
-}
+const [
+  setupTask,
+  requestServiceContextConfigProvider,
+  requestServiceContextConfigValuesProvider,
+] = createConfigProviderTask(
+  (t) => ({
+    contextFields: t.map<string, RequestServiceContextField>(),
+    contextPassthroughs: t.map<string, RequestServiceContextPassthrough>(),
+  }),
+  {
+    prefix: 'request-service-context',
+    configScope: projectScope,
+  },
+);
 
-export interface RequestServiceContextSetupProvider extends ImportMapper {
-  addContextField(field: RequestContextField): void;
-  addContextPassthrough(passthrough: ServiceContextPassthrough): void;
-  getContextPath(): string;
-}
-
-export const requestServiceContextSetupProvider =
-  createProviderType<RequestServiceContextSetupProvider>(
-    'request-service-context-setup',
-  );
-
-export interface RequestServiceContextProvider extends ImportMapper {
-  getContextPath(): string;
-}
-
-export const requestServiceContextProvider =
-  createReadOnlyProviderType<RequestServiceContextProvider>(
-    'request-service-context',
-  );
+export { requestServiceContextConfigProvider };
 
 export const requestServiceContextGenerator = createGenerator({
   name: 'core/request-service-context',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    setup: createGeneratorTask({
+    setup: setupTask,
+    main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
         requestContextImports: requestContextImportsProvider,
-        serviceContextSetup: serviceContextSetupProvider,
+        serviceContextImports: serviceContextImportsProvider,
+        requestServiceContextSetupValues:
+          requestServiceContextConfigValuesProvider,
       },
       exports: {
-        requestServiceContextSetup:
-          requestServiceContextSetupProvider.export(projectScope),
+        requestServiceContextImports:
+          requestServiceContextImportsProvider.export(projectScope),
       },
-      outputs: {
-        requestServiceContext:
-          requestServiceContextProvider.export(projectScope),
-      },
-      run({ typescript, requestContextImports, serviceContextSetup }) {
-        const contextPassthroughMap = createNonOverwriteableMap<
-          Record<string, ServiceContextPassthrough>
-        >({}, { name: 'service-context-passthrough' });
-
-        const contextFieldsMap = createNonOverwriteableMap<
-          Record<string, RequestContextField>
-        >({}, { name: 'request-service-context-fields' });
-
-        contextFieldsMap.set('reqInfo', {
-          name: 'reqInfo',
-          type: new TypescriptCodeExpression(
-            requestContextImports.RequestInfo.name,
-            `import type {${requestContextImports.RequestInfo.name}} from  '${requestContextImports.RequestInfo.source}'`,
-          ),
-          creator: (req) => new TypescriptCodeExpression(`${req}.reqInfo`),
+      run({
+        typescriptFile,
+        requestContextImports,
+        serviceContextImports,
+        requestServiceContextSetupValues: {
+          contextFields,
+          contextPassthroughs,
+        },
+      }) {
+        contextFields.set('reqInfo', {
+          type: requestContextImports.RequestInfo.typeFragment(),
+          creator: (req) => `${req}.reqInfo`,
         });
 
-        const [contextImport, contextPath] = makeImportAndFilePath(
-          'src/utils/request-service-context.ts',
-        );
-
-        const importMap = {
-          '%request-service-context': {
-            path: contextImport,
-            allowedImports: [
-              'RequestServiceContext',
-              'createContextFromRequest',
-            ],
-          },
-        };
+        const requestServiceContextPath =
+          '@/src/utils/request-service-context.ts';
 
         return {
           providers: {
-            requestServiceContextSetup: {
-              addContextField: (field) => {
-                contextFieldsMap.set(field.name, field);
-              },
-              addContextPassthrough: (passthrough) => {
-                contextPassthroughMap.set(passthrough.name, passthrough);
-              },
-              getImportMap: () => importMap,
-              getContextPath: () => contextPath,
-            },
+            requestServiceContextImports:
+              createRequestServiceContextImports('@/src/utils'),
           },
           build: async (builder) => {
-            const contextFields = contextFieldsMap.value();
-            const contextPassthroughs = contextPassthroughMap.value();
-            const contextFile = typescript.createTemplate(
+            const contextCreator = TsCodeUtils.mergeFragmentsAsObject(
               {
-                CONTEXT_FIELDS:
-                  TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                    mapValues(contextFields, (field) => field.type),
+                '...': TsCodeUtils.templateWithImports(
+                  serviceContextImports.createServiceContext.declaration(),
+                )`
+              createServiceContext(${
+                contextPassthroughs.size === 0
+                  ? ''
+                  : TsCodeUtils.mergeFragmentsAsObject(
+                      mapValuesOfMap(contextPassthroughs, (field) =>
+                        field.creator('request', 'reply'),
+                      ),
+                    )
+              })`,
+                ...Object.fromEntries(
+                  mapValuesOfMap(contextFields, (field) =>
+                    field.creator('request', 'reply'),
                   ),
-                CONTEXT_BODY: TypescriptCodeUtils.mergeBlocks(
-                  Object.values(contextFields)
-                    .map((f) => f.body?.('request', 'reply'))
-                    .filter(notEmpty),
                 ),
-                CONTEXT_CREATOR: TypescriptCodeUtils.mergeExpressions(
-                  [
-                    (Object.keys(contextPassthroughs).length === 0
-                      ? TypescriptCodeUtils.createExpression('')
-                      : TypescriptCodeUtils.mergeExpressionsAsObject(
-                          mapValues(contextPassthroughs, (field) =>
-                            field.creator('request', 'reply'),
-                          ),
-                        )
-                    ).wrap(
-                      (contents) => `...createServiceContext(${contents})`,
-                    ),
-                    ...Object.values(contextFields).map((field) =>
-                      field
-                        .creator('request', 'reply')
-                        .wrap((contents) => `${field.name}: ${contents}`),
-                    ),
-                  ],
-                  ',\n',
-                ).wrap((contents) => `{${contents}}`),
               },
               {
-                importMappers: [serviceContextSetup],
+                disableSort: true,
               },
             );
 
             await builder.apply(
-              contextFile.renderToAction(
-                'request-service-context.ts',
-                contextPath,
-              ),
+              typescriptFile.renderTemplateFile({
+                template:
+                  CORE_REQUEST_SERVICE_CONTEXT_TS_TEMPLATES.requestServiceContext,
+                destination: requestServiceContextPath,
+                variables: {
+                  TPL_CONTEXT_FIELDS:
+                    TsCodeUtils.mergeFragmentsAsInterfaceContent(
+                      mapValuesOfMap(contextFields, (field) => field.type),
+                    ),
+                  TPL_CONTEXT_BODY: TsCodeUtils.mergeFragments(
+                    mapValuesOfMap(contextFields, (field) =>
+                      field.body?.('request', 'reply'),
+                    ),
+                  ),
+                  TPL_CONTEXT_CREATOR: contextCreator,
+                },
+                importMapProviders: {
+                  serviceContextImports,
+                },
+              }),
             );
-
-            return {
-              requestServiceContext: {
-                getImportMap: () => importMap,
-                getContextPath: () => contextPath,
-              },
-            };
           },
         };
       },
     }),
   }),
 });
+
+export { requestServiceContextImportsProvider } from './generated/ts-import-maps.js';

@@ -30,7 +30,7 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { appModuleImportsProvider } from '@src/generators/core/app-module/app-module.generator.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/fastify.generator.js';
-import { requestServiceContextProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
+import { requestServiceContextImportsProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
 import { yogaPluginConfigProvider } from '@src/generators/yoga/yoga-plugin/yoga-plugin.generator.js';
 import { PothosTypeReferenceContainer } from '@src/writers/pothos/index.js';
 
@@ -162,7 +162,7 @@ export const pothosGenerator = createGenerator({
       dependencies: {
         typescript: typescriptProvider,
         eslint: eslintProvider,
-        requestServiceContext: requestServiceContextProvider,
+        requestServiceContextImports: requestServiceContextImportsProvider,
         prettier: prettierProvider,
         appModuleImports: appModuleImportsProvider,
         yogaPluginConfig: yogaPluginConfigProvider,
@@ -176,7 +176,7 @@ export const pothosGenerator = createGenerator({
       run(
         {
           typescript,
-          requestServiceContext,
+          requestServiceContextImports,
           prettier,
           appModuleImports,
           yogaPluginConfig,
@@ -202,8 +202,7 @@ export const pothosGenerator = createGenerator({
               TypescriptCodeUtils.mergeBlocksAsInterfaceContent({
                 Context: TypescriptCodeUtils.createExpression(
                   `RequestServiceContext`,
-                  `import { RequestServiceContext } from '%request-service-context'`,
-                  { importMappers: [requestServiceContext] },
+                  `import { ${requestServiceContextImports.RequestServiceContext.name} } from '${requestServiceContextImports.RequestServiceContext.source}'`,
                 ),
                 Scalars:
                   customScalars.length > 0
