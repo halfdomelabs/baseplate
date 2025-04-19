@@ -133,6 +133,28 @@ function normalizePathForResolutionKind(
 }
 
 /**
+ * Gets the project relative path from a module specifier
+ *
+ * @param moduleSpecifier The module specifier to get the project relative path from
+ * @param directory The directory we need to resolve the module specifier from
+ * @returns The project relative path if the module specifier is internal, otherwise undefined
+ */
+export function getProjectRelativePathFromModuleSpecifier(
+  moduleSpecifier: string,
+  directory: string,
+): string | undefined {
+  // if not an internal import, just return undefined
+  if (!moduleSpecifier.startsWith('@/') && !moduleSpecifier.startsWith('.')) {
+    return undefined;
+  }
+  const projectRelativePath = moduleSpecifier.startsWith('@/')
+    ? moduleSpecifier.slice(2)
+    : pathPosix.join(directory, moduleSpecifier);
+
+  return projectRelativePath;
+}
+
+/**
  * Normalizes the module specifier to pick the best import path based on the following rules:
  *
  * 1) If the import is an external module (e.g. axios), keep the module specifier as-is.

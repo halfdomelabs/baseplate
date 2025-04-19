@@ -8,8 +8,8 @@
       "name": "Debug Current Test File",
       "autoAttachChildProcesses": true,
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
-      "program": "${workspaceRoot}/packages/tools/node_modules/vitest/vitest.mjs",
-      "args": ["run", "${relativeFile}"],
+      "program": "${workspaceRoot}/scripts/run-vitest.js",
+      "args": ["${relativeFile}"],
       "smartStep": true,
       "console": "integratedTerminal"
     },

@@ -1,5 +1,6 @@
 import type {
   BuilderAction,
+  GeneratorInfo,
   InferProviderType,
   WriteFileOptions,
 } from '@halfdomelabs/sync';
@@ -29,6 +30,7 @@ import { projectScope } from '@src/providers/scopes.js';
 import { renderTsTemplateFileAction } from '@src/renderers/typescript/actions/render-ts-template-file-action.js';
 import {
   generatePathMapEntries,
+  getProjectRelativePathFromModuleSpecifier,
   normalizeModuleSpecifier,
   pathMapEntriesToRegexes,
   renderTsTemplateGroupAction,
@@ -50,7 +52,10 @@ import {
 } from '../../../writers/index.js';
 import { resolveModule } from '../../../writers/typescript/imports.js';
 import { TypescriptSourceFile } from '../../../writers/typescript/source-file.js';
-import { createNodePackagesTask } from '../node/node.generator.js';
+import {
+  createNodePackagesTask,
+  nodeProvider,
+} from '../node/node.generator.js';
 
 const typescriptGeneratorDescriptorSchema = z.object({});
 
@@ -89,10 +94,50 @@ export interface TypescriptProvider {
 export const typescriptProvider =
   createProviderType<TypescriptProvider>('typescript');
 
+interface LazyTemplateFileEntry {
+  payload: RenderTsTemplateFileActionInput & {
+    generatorInfo: GeneratorInfo;
+  };
+  /**
+   * The dev packages to add if the template is written
+   */
+  devPackages?: Record<string, string>;
+  /**
+   * The prod packages to add if the template is written
+   */
+  prodPackages?: Record<string, string>;
+}
+
 export interface TypescriptFileProvider {
+  /**
+   * Adds a lazy template file that will be written only if
+   * another template depends on it.
+   *
+   * @param payload - The payload for the template file
+   * @param generatorInfo - The generator info for the generator that is writing the template file
+   * @returns The action for the template file
+   */
+  addLazyTemplateFile<T extends TsTemplateFile = TsTemplateFile>(
+    payload: RenderTsTemplateFileActionInput<T> & {
+      generatorInfo: GeneratorInfo;
+    },
+    options?: Omit<LazyTemplateFileEntry, 'payload'>,
+  ): void;
+  /**
+   * Renders a template file to an action
+   *
+   * @param payload - The payload for the template file
+   * @returns The action for the template file
+   */
   renderTemplateFile<T extends TsTemplateFile = TsTemplateFile>(
     payload: RenderTsTemplateFileActionInput<T>,
   ): BuilderAction;
+  /**
+   * Renders a template group to an action
+   *
+   * @param payload - The payload for the template group
+   * @returns The action for the template group
+   */
   renderTemplateGroup<T extends TsTemplateGroup = TsTemplateGroup>(
     payload: RenderTsTemplateGroupActionInput<T>,
   ): BuilderAction;
@@ -259,9 +304,12 @@ export const typescriptGenerator = createGenerator({
       },
     }),
     file: createGeneratorTask({
-      dependencies: { typescriptConfig: typescriptConfigProvider },
+      dependencies: {
+        typescriptConfig: typescriptConfigProvider,
+        node: nodeProvider,
+      },
       exports: { typescriptFile: typescriptFileProvider.export(projectScope) },
-      run({ typescriptConfig: { compilerOptions } }) {
+      run({ typescriptConfig: { compilerOptions }, node }) {
         const {
           baseUrl = '.',
           paths = {},
@@ -270,44 +318,63 @@ export const typescriptGenerator = createGenerator({
         const pathMapEntries = generatePathMapEntries(baseUrl, paths);
         const internalPatterns = pathMapEntriesToRegexes(pathMapEntries);
 
+        const lazyTemplates = new Set<LazyTemplateFileEntry>();
+        const usedProjectRelativePaths = new Set<string>();
+
+        function resolveModuleSpecifier(
+          moduleSpecifier: string,
+          directory: string,
+        ): string {
+          const projectRelativePath = getProjectRelativePathFromModuleSpecifier(
+            moduleSpecifier,
+            directory,
+          );
+          if (projectRelativePath) {
+            usedProjectRelativePaths.add(projectRelativePath);
+          }
+          return normalizeModuleSpecifier(moduleSpecifier, directory, {
+            pathMapEntries,
+            moduleResolution,
+          });
+        }
+
+        function renderTemplateFile(
+          payload: RenderTsTemplateFileActionInput,
+        ): BuilderAction {
+          const directory = path.dirname(
+            normalizePathToProjectPath(payload.destination),
+          );
+          return renderTsTemplateFileAction({
+            ...payload,
+            renderOptions: {
+              resolveModule(moduleSpecifier) {
+                return resolveModuleSpecifier(moduleSpecifier, directory);
+              },
+              importSortOptions: {
+                internalPatterns,
+              },
+            },
+          });
+        }
+
         return {
           providers: {
             typescriptFile: {
-              renderTemplateFile: (payload) => {
-                const directory = path.dirname(
-                  normalizePathToProjectPath(payload.destination),
-                );
-                return renderTsTemplateFileAction({
-                  ...payload,
-                  renderOptions: {
-                    resolveModule(moduleSpecifier) {
-                      return normalizeModuleSpecifier(
-                        moduleSpecifier,
-                        directory,
-                        {
-                          pathMapEntries,
-                          moduleResolution,
-                        },
-                      );
-                    },
-                    importSortOptions: {
-                      internalPatterns,
-                    },
-                  },
+              addLazyTemplateFile: (payload, options) => {
+                lazyTemplates.add({
+                  payload,
+                  ...options,
                 });
               },
+              renderTemplateFile,
               renderTemplateGroup: (payload) =>
                 renderTsTemplateGroupAction({
                   ...payload,
                   renderOptions: {
-                    resolveModule(sourceDirectory, moduleSpecifier) {
-                      return normalizeModuleSpecifier(
+                    resolveModule(moduleSpecifier, sourceDirectory) {
+                      return resolveModuleSpecifier(
                         moduleSpecifier,
                         sourceDirectory,
-                        {
-                          pathMapEntries,
-                          moduleResolution,
-                        },
                       );
                     },
                     importSortOptions: {
@@ -316,6 +383,26 @@ export const typescriptGenerator = createGenerator({
                   },
                 }),
             },
+          },
+          async build(builder) {
+            while (lazyTemplates.size > 0) {
+              const templatesToRender = [...lazyTemplates].filter((template) =>
+                usedProjectRelativePaths.has(template.payload.destination),
+              );
+              if (templatesToRender.length === 0) {
+                break;
+              }
+              for (const template of templatesToRender) {
+                await builder.apply(renderTemplateFile(template.payload));
+                if (template.devPackages || template.prodPackages) {
+                  node.packages.addPackages({
+                    dev: template.devPackages,
+                    prod: template.prodPackages,
+                  });
+                }
+                lazyTemplates.delete(template);
+              }
+            }
           },
         };
       },

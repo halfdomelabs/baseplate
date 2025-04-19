@@ -135,7 +135,8 @@ export function renderTsCodeFileTemplate(
   if (
     !imports?.length &&
     !hoistedFragments?.length &&
-    Object.keys(importMapProviders).length === 0
+    Object.keys(importMapProviders).length === 0 &&
+    !/^import\s+/gm.test(contents)
   ) {
     return contents;
   }

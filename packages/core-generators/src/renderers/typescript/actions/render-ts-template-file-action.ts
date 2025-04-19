@@ -1,4 +1,8 @@
-import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
+import type {
+  BuilderAction,
+  GeneratorInfo,
+  WriteFileOptions,
+} from '@halfdomelabs/sync';
 
 import {
   normalizePathToProjectPath,
@@ -35,6 +39,12 @@ interface RenderTsTemplateFileActionInputBase<T extends TsTemplateFile> {
    * want to avoid having to generate metadata for every file.
    */
   includeMetadataOnDemand?: boolean;
+  /**
+   * The generator info for the generator that is writing the template file
+   *
+   * If not provided, it will be inferred from the builder.
+   */
+  generatorInfo?: GeneratorInfo;
 }
 
 type RenderTsTemplateFileActionVariablesInput<T extends TsTemplateFile> =
@@ -73,11 +83,13 @@ export function renderTsTemplateFileAction<
   importMapProviders,
   renderOptions,
   includeMetadataOnDemand,
+  generatorInfo: providedGeneratorInfo,
 }: RenderTsTemplateFileActionInput<T>): BuilderAction {
   return {
     execute: async (builder) => {
+      const generatorInfo = providedGeneratorInfo ?? builder.generatorInfo;
       const templateContents = await readTemplateFileSource(
-        builder.generatorInfo.baseDirectory,
+        generatorInfo.baseDirectory,
         template.source,
       );
       const prefix = template.prefix ?? 'TPL_';
@@ -101,26 +113,26 @@ export function renderTsTemplateFileAction<
         );
       }
 
-      const templateMetadata: TsTemplateFileMetadata | undefined =
-        'path' in template.source
-          ? {
-              name: template.name,
-              template: template.source.path,
-              generator: builder.generatorInfo.name,
-              group: template.group,
-              type: TS_TEMPLATE_TYPE,
-              variables:
-                Object.keys(templateVariables).length > 0
-                  ? mapValues(templateVariables, (val) => ({
-                      description: val.description,
-                    }))
-                  : undefined,
-              projectExports:
-                Object.keys(template.projectExports ?? {}).length > 0
-                  ? template.projectExports
-                  : undefined,
-            }
-          : undefined;
+      const templateMetadata: TsTemplateFileMetadata | undefined = {
+        name: template.name,
+        template:
+          'path' in template.source
+            ? template.source.path
+            : 'content-only-template',
+        generator: generatorInfo.name,
+        group: template.group,
+        type: TS_TEMPLATE_TYPE,
+        variables:
+          Object.keys(templateVariables).length > 0
+            ? mapValues(templateVariables, (val) => ({
+                description: val.description,
+              }))
+            : undefined,
+        projectExports:
+          Object.keys(template.projectExports ?? {}).length > 0
+            ? template.projectExports
+            : undefined,
+      };
 
       const shouldIncludeMetadata =
         builder.metadataOptions.includeTemplateMetadata &&
@@ -146,6 +158,7 @@ export function renderTsTemplateFileAction<
         contents: renderedTemplate,
         options: writeOptions,
         templateMetadata: shouldIncludeMetadata ? templateMetadata : undefined,
+        generatorName: generatorInfo.name,
       });
     },
   };

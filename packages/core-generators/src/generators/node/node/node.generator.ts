@@ -1,5 +1,8 @@
 import type { AnyGeneratorTask, TaskRunContext } from '@halfdomelabs/sync';
-import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
+import type {
+  FieldMap,
+  InferFieldMapSchemaFromBuilder,
+} from '@halfdomelabs/utils';
 
 import {
   createConfigFieldMap,
@@ -62,6 +65,23 @@ export interface NodeProvider
    * Whether the project is using ESM
    */
   isEsm: boolean;
+}
+
+export function createTestNodeProvider(): {
+  nodeProvider: NodeProvider;
+  nodeFieldMap: FieldMap<
+    InferFieldMapSchemaFromBuilder<typeof nodePackageJsonFieldsSchema>
+  >;
+} {
+  const configProvider = createConfigFieldMap(nodePackageJsonFieldsSchema);
+  return {
+    nodeProvider: {
+      nodeVersion: NODE_VERSION,
+      isEsm: false,
+      ...configProvider,
+    },
+    nodeFieldMap: configProvider,
+  };
 }
 
 export const nodeProvider = createProviderType<NodeProvider>('node');

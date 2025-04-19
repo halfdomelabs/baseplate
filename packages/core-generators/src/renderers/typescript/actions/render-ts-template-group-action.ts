@@ -55,8 +55,8 @@ interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
   };
   renderOptions?: Omit<RenderTsCodeFileTemplateOptions, 'resolveModule'> & {
     resolveModule?: (
-      sourceDirectory: string,
       moduleSpecifier: string,
+      sourceDirectory: string,
     ) => string;
   };
 }
@@ -113,10 +113,13 @@ export function renderTsTemplateGroupAction<
                   : undefined,
               renderOptions: {
                 ...renderOptions,
-                resolveModule: renderOptions?.resolveModule?.bind(
-                  null,
-                  destinationDirectory,
-                ),
+                resolveModule: (specifier) => {
+                  if (!renderOptions?.resolveModule) return specifier;
+                  return renderOptions.resolveModule(
+                    specifier,
+                    destinationDirectory,
+                  );
+                },
               },
             }),
           );

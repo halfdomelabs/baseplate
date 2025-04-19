@@ -47,7 +47,8 @@
     "knip": "5.46.0",
     "prettier": "catalog:",
     "turbo": "2.4.4",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "packageManager": "pnpm@10.6.5",
   "engines": {
