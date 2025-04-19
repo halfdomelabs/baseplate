@@ -115,7 +115,7 @@ describe('writeTsProjectExports', () => {
     );
 
     expect(result.importsFileContents).toContain(
-      '@src/renderers/typescript/index.ts',
+      '@src/renderers/typescript/index.js',
     );
     expect(result.importsFileContents).not.toContain(
       '@halfdomelabs/core-generators',

@@ -1,4 +1,6 @@
-import { NormalizeTypes } from './normalizeTypes.js';
+// @ts-nocheck
+
+import { NormalizeTypes } from './normalize-types.js';
 
 /**
  * Restricts an object from having null in certain fields. This

@@ -156,5 +156,5 @@ export function renderTsCodeFileTemplate(
     options,
   );
 
-  return file.getText();
+  return file.getFullText();
 }

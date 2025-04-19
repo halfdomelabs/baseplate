@@ -330,7 +330,10 @@ export const typescriptGenerator = createGenerator({
             directory,
           );
           if (projectRelativePath) {
-            usedProjectRelativePaths.add(projectRelativePath);
+            // use path without extension for improved matching
+            usedProjectRelativePaths.add(
+              projectRelativePath.replace(/\.(j|t)sx?$/, ''),
+            );
           }
           return normalizeModuleSpecifier(moduleSpecifier, directory, {
             pathMapEntries,
@@ -387,7 +390,11 @@ export const typescriptGenerator = createGenerator({
           async build(builder) {
             while (lazyTemplates.size > 0) {
               const templatesToRender = [...lazyTemplates].filter((template) =>
-                usedProjectRelativePaths.has(template.payload.destination),
+                usedProjectRelativePaths.has(
+                  normalizePathToProjectPath(
+                    template.payload.destination,
+                  ).replace(/\.(j|t)sx?$/, ''),
+                ),
               );
               if (templatesToRender.length === 0) {
                 break;
