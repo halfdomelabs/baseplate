@@ -12,6 +12,7 @@ import {
   nodeProvider,
   projectScope,
   tsCodeFragment,
+  tsHoistedFragment,
   tsImportBuilder,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -32,9 +33,8 @@ import {
   errorHandlerServiceConfigProvider,
   errorHandlerServiceProvider,
 } from '../error-handler-service/error-handler-service.generator.js';
-import { fastifyServerProvider } from '../fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { fastifyProvider } from '../fastify/fastify.generator.js';
-import { requestContextProvider } from '../request-context/request-context.generator.js';
 
 const descriptorSchema = z.object({});
 
@@ -61,18 +61,18 @@ export const fastifySentryGenerator = createGenerator({
       },
       run({ fastify, node }) {
         if (node.isEsm) {
-          fastify.getConfig().appendUnique('nodeFlags', [
-            {
+          fastify.nodeFlags.mergeObj({
+            ['instrument-dev']: {
               flag: '--import ./src/instrument.ts',
               useCase: 'instrument',
               targetEnvironment: 'dev',
             },
-            {
+            ['instrument-prod']: {
               flag: '--import ./dist/instrument.ts',
               useCase: 'instrument',
               targetEnvironment: 'prod',
             },
-          ]);
+          });
         }
         return {};
       },
@@ -80,21 +80,35 @@ export const fastifySentryGenerator = createGenerator({
     server: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
-        fastifyServer: fastifyServerProvider,
+        fastifyServerConfig: fastifyServerConfigProvider,
         errorHandlerServiceConfig: errorHandlerServiceConfigProvider,
       },
-      run({ node, errorHandlerServiceConfig, fastifyServer }) {
+      run({ node, errorHandlerServiceConfig, fastifyServerConfig }) {
         if (!node.isEsm) {
-          fastifyServer.addInitializerBlock("import './instrument.js';\n");
+          fastifyServerConfig.initializerFragments.set(
+            'sentry-instrument',
+            tsCodeFragment('', [], {
+              hoistedFragments: [
+                tsHoistedFragment(
+                  "import './instrument.js';",
+                  'sentry-instrument',
+                  'beforeImports',
+                ),
+              ],
+            }),
+          );
         }
 
-        fastifyServer.addPrePluginBlock(
-          TypescriptCodeUtils.createBlock(
+        fastifyServerConfig.prePluginFragments.set(
+          'sentry-setup',
+          tsCodeFragment(
             `Sentry.setupFastifyErrorHandler(fastify);
           registerSentryEventProcessor();`,
             [
-              `import { registerSentryEventProcessor } from '@/src/services/sentry.js';`,
-              `import * as Sentry from '@sentry/node';`,
+              tsImportBuilder(['registerSentryEventProcessor']).from(
+                '@/src/services/sentry.js',
+              ),
+              tsImportBuilder().namespace('Sentry').from('@sentry/node'),
             ],
           ),
         );
@@ -125,7 +139,6 @@ export const fastifySentryGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        requestContext: requestContextProvider,
         configService: configServiceProvider,
         typescript: typescriptProvider,
         errorHandler: errorHandlerServiceProvider,

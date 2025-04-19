@@ -58,7 +58,6 @@ export const reactAppGenerator = createGenerator({
           RENDER_WRAPPERS: { type: 'code-wrapper' },
           RENDER_ROOT: { type: 'code-expression', default: '<div />' },
         });
-        const srcFolder = react.getSrcFolder();
 
         react
           .getIndexFile()
@@ -66,7 +65,7 @@ export const reactAppGenerator = createGenerator({
             'APP',
             TypescriptCodeUtils.createExpression(
               '<App />',
-              `import App from '@/${srcFolder}/app/App';`,
+              `import App from '@/src/app/App';`,
             ),
           );
         return {
@@ -103,7 +102,7 @@ export const reactAppGenerator = createGenerator({
               RENDER_ROOT: rootWithSiblings,
             });
 
-            const destination = `${srcFolder}/app/App.tsx`;
+            const destination = `src/app/App.tsx`;
             await builder.apply(appFile.renderToAction('App.tsx', destination));
           },
         };

@@ -13,11 +13,20 @@ import type {
  * @returns The hoisted fragment.
  */
 export function tsHoistedFragment(
-  fragment: TsCodeFragment,
+  fragment: TsCodeFragment | string,
   key: string,
   position?: TsHoistedFragmentPosition,
 ): TsHoistedFragment {
-  return { key, position, fragment };
+  return {
+    key,
+    position,
+    fragment:
+      typeof fragment === 'string' ? tsCodeFragment(fragment) : fragment,
+  };
+}
+
+export interface TsCodeFragmentOptions {
+  hoistedFragments?: TsHoistedFragment[];
 }
 
 /**
@@ -30,11 +39,7 @@ export function tsHoistedFragment(
 export function tsCodeFragment(
   contents: string,
   imports?: TsImportDeclaration[] | TsImportDeclaration,
-  {
-    hoistedFragments,
-  }: {
-    hoistedFragments?: TsHoistedFragment[];
-  } = {},
+  { hoistedFragments }: TsCodeFragmentOptions = {},
 ): TsCodeFragment {
   return {
     contents,

@@ -12,6 +12,16 @@
   "author": "Half Dome Labs LLC",
   "sideEffects": false,
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./renderers": {
+      "types": "./dist/renderers/types.d.ts",
+      "default": "./dist/renderers/index.js"
+    }
+  },
   "main": "dist/index.js",
   "files": [
     "LICENSE",

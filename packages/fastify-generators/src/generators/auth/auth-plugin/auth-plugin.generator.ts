@@ -2,14 +2,15 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   makeImportAndFilePath,
-  TypescriptCodeUtils,
+  tsCodeFragment,
+  tsImportBuilder,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { appModuleProvider } from '@src/generators/core/root-module/root-module.generator.js';
+import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
 import { userSessionServiceProvider } from '../_providers/index.js';
 import { authContextProvider } from '../auth-context/auth-context.generator.js';
@@ -46,11 +47,12 @@ export const authPluginGenerator = createGenerator({
           appModule.getModuleFolder(),
           'plugins/auth.plugin.ts',
         );
-        appModule.registerFieldEntry(
+        appModule.moduleFields.set(
           'plugins',
-          TypescriptCodeUtils.createExpression(
+          'authPlugin',
+          tsCodeFragment(
             'authPlugin',
-            `import { authPlugin } from '${authPluginImport}'`,
+            tsImportBuilder(['authPlugin']).from(authPluginImport),
           ),
         );
 

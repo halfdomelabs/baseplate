@@ -106,16 +106,15 @@ export const reactComponentsGenerator = createGenerator({
       exports: {
         reactComponents: reactComponentsProvider.export(projectScope),
       },
-      run({ react, typescript, reactApp }) {
-        const srcFolder = react.getSrcFolder();
+      run({ typescript, reactApp }) {
         const [useStatusImport, useStatusPath] = makeImportAndFilePath(
-          `${srcFolder}/hooks/useStatus.ts`,
+          `src/hooks/useStatus.ts`,
         );
         const [useToastImport, useToastPath] = makeImportAndFilePath(
-          `${srcFolder}/hooks/useToast.tsx`,
+          `src/hooks/useToast.tsx`,
         );
         const [useConfirmDialogImport, useConfirmDialogPath] =
-          makeImportAndFilePath(`${srcFolder}/hooks/useConfirmDialog.ts`);
+          makeImportAndFilePath(`src/hooks/useConfirmDialog.ts`);
 
         const coreReactComponents = [...REACT_COMPONENTS];
 
@@ -137,7 +136,7 @@ export const reactComponentsGenerator = createGenerator({
         reactApp.addRenderSibling(
           TypescriptCodeUtils.createExpression(
             '<ConfirmDialog />',
-            `import { ConfirmDialog } from "@/${srcFolder}/components";`,
+            `import { ConfirmDialog } from "@/src/components";`,
           ),
         );
 
@@ -145,11 +144,11 @@ export const reactComponentsGenerator = createGenerator({
           providers: {
             reactComponents: {
               registerComponent: (entry) => allReactComponents.push(entry),
-              getComponentsFolder: () => `${srcFolder}/components`,
-              getComponentsImport: () => `@/${srcFolder}/components`,
+              getComponentsFolder: () => `src/components`,
+              getComponentsImport: () => `@/src/components`,
               getImportMap: () => ({
                 '%react-components': {
-                  path: `@/${srcFolder}/components`,
+                  path: `@/src/components`,
                   allowedImports: coreReactComponents.map(
                     (entry) => entry.name,
                   ),
@@ -175,7 +174,7 @@ export const reactComponentsGenerator = createGenerator({
                 builder.apply(
                   typescript.createCopyAction({
                     source: `components/${name}/index.tsx`,
-                    destination: `${srcFolder}/components/${name}/index.tsx`,
+                    destination: `src/components/${name}/index.tsx`,
                   }),
                 ),
               ),
@@ -192,7 +191,7 @@ export const reactComponentsGenerator = createGenerator({
                 source: 'hooks/useToast.tsx',
                 destination: useToastPath,
                 replacements: {
-                  COMPONENT_FOLDER: `@/${srcFolder}/components`,
+                  COMPONENT_FOLDER: `@/src/components`,
                 },
               }),
             );
@@ -202,7 +201,7 @@ export const reactComponentsGenerator = createGenerator({
                 source: 'hooks/useConfirmDialog.ts',
                 destination: useConfirmDialogPath,
                 replacements: {
-                  COMPONENT_FOLDER: `@/${srcFolder}/components`,
+                  COMPONENT_FOLDER: `@/src/components`,
                 },
               }),
             );
@@ -217,7 +216,7 @@ export const reactComponentsGenerator = createGenerator({
             builder.writeFile({
               id: `react-components-index`,
               contents: componentIndex,
-              destination: `${srcFolder}/components/index.ts`,
+              destination: `src/components/index.ts`,
             });
           },
         };

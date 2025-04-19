@@ -48,7 +48,7 @@ function buildGeneratorEntry(
     outputMap?: ProviderExportMap;
     build?: (
       builder: GeneratorTaskOutputBuilder,
-      deps: Record<string, Provider>,
+      deps: Record<string, Provider | undefined>,
     ) => // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- allow no returns for build
     | void
       | Record<string, unknown>
@@ -56,7 +56,7 @@ function buildGeneratorEntry(
       | Promise<void | Record<string, unknown>>;
     generatorName?: string;
     phase?: TaskPhase;
-    run?: (deps: Record<string, Provider>) => void;
+    run?: (deps: Record<string, Provider | undefined>) => void;
   } = {},
 ): GeneratorEntry {
   const {
@@ -658,7 +658,7 @@ describe('executeGeneratorEntry', () => {
                 builder.addDynamicTask('dynamic-task', {
                   phase: phase1,
                   dependencies: { dep: outputProviderType },
-                  run: (deps: Record<string, Provider>) => ({
+                  run: (deps: Record<string, Provider | undefined>) => ({
                     providers: {},
                     build: (builder: GeneratorTaskOutputBuilder) => {
                       (deps.dep as { generate: () => void }).generate();

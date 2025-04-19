@@ -1,5 +1,8 @@
-import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
-
+import {
+  type BuilderAction,
+  normalizePathToProjectPath,
+  type WriteFileOptions,
+} from '@halfdomelabs/sync';
 import path from 'node:path';
 
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
@@ -52,8 +55,8 @@ interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
   };
   renderOptions?: Omit<RenderTsCodeFileTemplateOptions, 'resolveModule'> & {
     resolveModule?: (
-      sourceDirectory: string,
       moduleSpecifier: string,
+      sourceDirectory: string,
     ) => string;
   };
 }
@@ -83,7 +86,11 @@ export function renderTsTemplateGroupAction<
   return {
     execute: async (builder) => {
       for (const [key, template] of Object.entries(group.templates)) {
-        const destination = path.join(baseDirectory, template.destination);
+        const destination = path.join(
+          normalizePathToProjectPath(baseDirectory),
+          template.destination,
+        );
+
         try {
           const destinationDirectory = path.dirname(destination);
           await builder.apply(
@@ -106,10 +113,13 @@ export function renderTsTemplateGroupAction<
                   : undefined,
               renderOptions: {
                 ...renderOptions,
-                resolveModule: renderOptions?.resolveModule?.bind(
-                  null,
-                  destinationDirectory,
-                ),
+                resolveModule: (specifier) => {
+                  if (!renderOptions?.resolveModule) return specifier;
+                  return renderOptions.resolveModule(
+                    specifier,
+                    destinationDirectory,
+                  );
+                },
               },
             }),
           );

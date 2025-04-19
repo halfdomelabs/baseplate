@@ -1,4 +1,7 @@
-import { createBuilderActionCreator } from '@halfdomelabs/sync';
+import {
+  createBuilderActionCreator,
+  normalizePathToProjectPath,
+} from '@halfdomelabs/sync';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -69,7 +72,7 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
     : replacedContents;
 
   builder.writeFile({
-    id: options.id ?? destinationPath,
+    id: options.id ?? normalizePathToProjectPath(destinationPath),
     destination: destinationPath,
     contents: formattedContents,
     options: {

@@ -12,6 +12,17 @@ function isSideEffectImport(declaration: ImportDeclaration): boolean {
 }
 
 /**
+ * Get all side effect imports from a source file
+ * @param file - The source file to get side effect imports from
+ * @returns All side effect imports from the source file
+ */
+export function getSideEffectImportsFromSourceFile(
+  file: SourceFile,
+): ImportDeclaration[] {
+  return file.getImportDeclarations().filter(isSideEffectImport);
+}
+
+/**
  * Get all ts-morph import declarations from a source file that are not side effect imports
  * @param file - The source file to get import declarations from
  * @returns All ts-morph import declarations from the source file that are not side effect imports

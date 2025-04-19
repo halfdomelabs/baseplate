@@ -1,11 +1,21 @@
 // @ts-nocheck
+
+import { config } from '%configServiceImports';
+import { logger } from '%loggerServiceImports';
+
 import { buildServer } from './server.js';
 
+TPL_INITIALIZERS;
+
 async function startServer(): Promise<void> {
-  const fastify = await buildServer(SERVER_OPTIONS);
-  fastify.listen({ port: SERVER_PORT, host: SERVER_HOST }).catch((err) => {
-    LOG_ERROR(err);
+  const fastify = await buildServer({
+    loggerInstance: logger,
   });
+  fastify
+    .listen({ port: config.SERVER_PORT, host: config.SERVER_HOST })
+    .catch((err) => {
+      TPL_LOG_ERROR;
+    });
 }
 
-startServer().catch((err) => LOG_ERROR(err));
+startServer().catch((err) => TPL_LOG_ERROR);

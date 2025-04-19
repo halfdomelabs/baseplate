@@ -47,7 +47,7 @@ export type ConfigProviderTaskResult<TSchema extends FieldMapSchema> = [
   // Config task
   GeneratorTask,
   // Field map provider with modifiable containers
-  ProviderType<FieldMap<TSchema>>,
+  ProviderType<Omit<FieldMap<TSchema>, 'getValues'>>,
   // Resolved values provider
   ProviderType<FieldMapValues<TSchema>>,
 ];

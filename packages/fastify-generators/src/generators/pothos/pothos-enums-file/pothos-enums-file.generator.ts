@@ -14,7 +14,7 @@ import { kebabCase } from 'change-case';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import { appModuleProvider } from '@src/generators/core/root-module/root-module.generator.js';
+import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
 import { pothosSetupProvider } from '../pothos/pothos.generator.js';
 
@@ -56,7 +56,7 @@ export const pothosEnumsFileGenerator = createGenerator({
           `${appModule.getModuleFolder()}/schema/${kebabCase(name)}.ts`,
         );
 
-        appModule.addModuleImport(typesImport);
+        appModule.moduleImports.push(typesImport);
         pothosSetup.registerSchemaFile(typesPath);
 
         const enums: PothosEnum[] = [];

@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import type { TsPathMapEntry } from './types.js';
 
-import { normalizeModuleSpecifier } from './normalize-module-specifier.js';
+import {
+  getProjectRelativePathFromModuleSpecifier,
+  normalizeModuleSpecifier,
+} from './normalize-module-specifier.js';
 
 describe('normalizeModuleSpecifier', () => {
   const directory = 'src';
@@ -64,5 +67,25 @@ describe('normalizeModuleSpecifier', () => {
       moduleResolution: 'node16',
     });
     expect(result).toBe('axios');
+  });
+});
+
+describe('getProjectRelativePathFromModuleSpecifier', () => {
+  const directory = 'src';
+
+  it('should return undefined for external module specifier', () => {
+    const result = getProjectRelativePathFromModuleSpecifier(
+      'axios',
+      directory,
+    );
+    expect(result).toBeUndefined();
+  });
+
+  it('should return project relative path for internal module specifier', () => {
+    const result = getProjectRelativePathFromModuleSpecifier(
+      '@/components/Button',
+      directory,
+    );
+    expect(result).toBe('components/Button');
   });
 });

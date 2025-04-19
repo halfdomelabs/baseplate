@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /**
  * Typescript hack to force IDEs to show raw object
  * type without additional typing that we have added

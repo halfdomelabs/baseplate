@@ -86,13 +86,11 @@ export const configServiceGenerator = createGenerator({
   buildTasks: () => ({
     // add the dotenv config to the fastify config
     fastify: createProviderTask(fastifyProvider, (fastify) => {
-      fastify.getConfig().appendUnique('nodeFlags', [
-        {
-          flag: '-r dotenv/config',
-          useCase: 'dev-env',
-          targetEnvironment: 'dev',
-        },
-      ]);
+      fastify.nodeFlags.set('dotenv', {
+        flag: '-r dotenv/config',
+        useCase: 'dev-env',
+        targetEnvironment: 'dev',
+      });
     }),
     // add the node packages
     nodePackages: createNodePackagesTask({

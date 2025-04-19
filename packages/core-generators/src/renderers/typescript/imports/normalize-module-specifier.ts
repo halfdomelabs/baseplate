@@ -97,6 +97,8 @@ interface ResolveModuleOptions {
   moduleResolution: ModuleResolutionKind;
 }
 
+const TS_FILE_EXTENSION_REGEX = /\.[tj]sx?$/;
+
 /**
  * Normalizes the path for the given module resolution kind
  *
@@ -117,14 +119,39 @@ function normalizePathForResolutionKind(
   if (
     isNode16 &&
     isInternalImport(path, pathMapEntries ?? []) &&
-    !path.endsWith('.js')
+    !TS_FILE_EXTENSION_REGEX.test(path)
   ) {
     throw new Error(
       `Invalid Node 16 import discovered ${path}. Make sure to use .js extension for Node16 imports.`,
     );
   }
 
-  return isNode16 ? path : path.replace(/(\/index)?\.js$/, '');
+  return isNode16
+    ? // normalize the extension to .js
+      path.replace(TS_FILE_EXTENSION_REGEX, '.js')
+    : path.replace(/(\/index)?\.js$/, '');
+}
+
+/**
+ * Gets the project relative path from a module specifier
+ *
+ * @param moduleSpecifier The module specifier to get the project relative path from
+ * @param directory The directory we need to resolve the module specifier from
+ * @returns The project relative path if the module specifier is internal, otherwise undefined
+ */
+export function getProjectRelativePathFromModuleSpecifier(
+  moduleSpecifier: string,
+  directory: string,
+): string | undefined {
+  // if not an internal import, just return undefined
+  if (!moduleSpecifier.startsWith('@/') && !moduleSpecifier.startsWith('.')) {
+    return undefined;
+  }
+  const projectRelativePath = moduleSpecifier.startsWith('@/')
+    ? moduleSpecifier.slice(2)
+    : pathPosix.join(directory, moduleSpecifier);
+
+  return projectRelativePath;
 }
 
 /**

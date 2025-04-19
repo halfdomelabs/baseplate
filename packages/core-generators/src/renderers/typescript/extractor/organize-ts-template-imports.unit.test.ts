@@ -21,6 +21,34 @@ beforeEach(() => {
 });
 
 describe('organizeTsTemplateImports', () => {
+  it('should organize imports for files without any imports', async () => {
+    const mockResolver = createMockResolver();
+    const filePath = '/project-root/test.ts';
+    const contents = `
+/*
+ * Capitalizes the first letter of a string.
+ *
+ * @param str - The string to capitalize.
+ * @returns The capitalized string.
+ */
+export function capitalizeString(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+`;
+
+    const context = {
+      projectExportMap: new Map(),
+      projectRoot: '/project-root',
+      generatorFiles: ['/project-root/test.ts'],
+      resolver: mockResolver,
+    };
+
+    const result = await organizeTsTemplateImports(filePath, contents, context);
+
+    // Check that the output contains the organized imports
+    expect(result.contents).toEqual(contents);
+  });
+
   it('should organize imports and return used project exports', async () => {
     const mockResolver = createMockResolver();
     const filePath = '/project-root/test.ts';

@@ -1,17 +1,17 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
-  TypescriptCodeUtils,
+  tsCodeFragment,
+  tsHoistedFragment,
+  tsImportBuilder,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { createGenerator, createProviderTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
-import { fastifyServerProvider } from '../fastify-server/fastify-server.generator.js';
-import { requestServiceContextSetupProvider } from '../request-service-context/request-service-context.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
+import { requestServiceContextConfigProvider } from '../request-service-context/request-service-context.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -25,38 +25,41 @@ export const fastifyCookieContextGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['@fastify/cookie']),
     }),
-    main: createGeneratorTask({
-      dependencies: {
-        fastifyServer: fastifyServerProvider,
-        requestServiceContextSetup: requestServiceContextSetupProvider,
-      },
-      run({ fastifyServer, requestServiceContextSetup }) {
-        fastifyServer.registerPlugin({
-          name: 'cookies',
-          plugin: new TypescriptCodeExpression(
+    fastifyServer: createProviderTask(
+      fastifyServerConfigProvider,
+      (fastifyServerConfig) => {
+        fastifyServerConfig.plugins.set('cookies', {
+          plugin: tsCodeFragment(
             'fastifyCookie',
-            "import fastifyCookie from '@fastify/cookie'",
+            tsImportBuilder().default('fastifyCookie').from('@fastify/cookie'),
           ),
         });
-
-        requestServiceContextSetup.addContextField({
-          name: 'cookieStore',
-          type: TypescriptCodeUtils.createExpression('CookieStore', undefined, {
-            headerBlocks: [
-              TypescriptCodeUtils.createBlock(
-                `
+      },
+    ),
+    requestServiceContext: createProviderTask(
+      requestServiceContextConfigProvider,
+      (requestServiceContextConfig) => {
+        requestServiceContextConfig.contextFields.set('cookieStore', {
+          type: tsCodeFragment('CookieStore', undefined, {
+            hoistedFragments: [
+              tsHoistedFragment(
+                tsCodeFragment(
+                  `
 interface CookieStore {
   get(name: string): string | undefined;
   set(name: string, value: string, options?: CookieSerializeOptions): void;
   clear(name: string): void;
-}
-`,
-                "import { CookieSerializeOptions } from '@fastify/cookie';",
+                }`,
+                  tsImportBuilder(['CookieSerializeOptions']).from(
+                    '@fastify/cookie',
+                  ),
+                ),
+                'cookie-store-interface',
               ),
             ],
           }),
           body: (req, reply) =>
-            new TypescriptCodeBlock(
+            tsCodeFragment(
               `function getReply(): FastifyReply {
           if (!${reply}) {
             throw new Error(
@@ -68,7 +71,7 @@ interface CookieStore {
       `,
             ),
           creator: (req) =>
-            new TypescriptCodeExpression(
+            tsCodeFragment(
               `
 {
   get: (name) => ${req}.cookies[name],
@@ -80,6 +83,6 @@ interface CookieStore {
         });
         return {};
       },
-    }),
+    ),
   }),
 });

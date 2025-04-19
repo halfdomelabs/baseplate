@@ -8,7 +8,6 @@ import {
   createGeneratorTask,
   type InferDependencyProviderMap,
   type InferExportProviderMap,
-  type ProviderDependencyMap,
   type ProviderExportMap,
 } from './generators.js';
 
@@ -29,10 +28,10 @@ describe('generators type definitions', () => {
     }>;
 
     // Test ProviderDependencyMap
-    type TestDependencyMap = ProviderDependencyMap<{
+    interface TestDependencyMap {
       test: TestProvider;
       config: ConfigProvider;
-    }>;
+    }
 
     // Test InferExportProviderMap
     type InferredExportMap = InferExportProviderMap<TestExportMap>;

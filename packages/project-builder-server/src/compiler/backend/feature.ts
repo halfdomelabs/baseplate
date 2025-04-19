@@ -35,6 +35,7 @@ export function buildFeature(
   );
 
   return appModuleGenerator({
+    id: featureId,
     name: featureName,
     children: safeMergeAll(
       {

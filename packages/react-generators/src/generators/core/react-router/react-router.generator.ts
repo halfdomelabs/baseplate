@@ -17,7 +17,6 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
-import path from 'node:path';
 import { z } from 'zod';
 
 import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
@@ -31,7 +30,6 @@ import { notEmpty } from '@src/utils/array.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
 import { reactAppProvider } from '../react-app/react-app.generator.js';
-import { reactProvider } from '../react/react.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -55,7 +53,6 @@ export const reactRouterGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        react: reactProvider,
         reactApp: reactAppProvider,
         typescript: typescriptProvider,
       },
@@ -64,7 +61,7 @@ export const reactRouterGenerator = createGenerator({
         reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(projectScope),
         reactRouter: reactRouterProvider.export(projectScope),
       },
-      run({ react, reactApp, typescript }) {
+      run({ reactApp, typescript }) {
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];
         const headerBlocks: TypescriptCodeBlock[] = [];
@@ -80,11 +77,11 @@ export const reactRouterGenerator = createGenerator({
               registerLayout(layout) {
                 layouts.push(layout);
               },
-              getDirectoryBase: () => `${react.getSrcFolder()}/pages`,
+              getDirectoryBase: () => `src/pages`,
               getRoutePrefix: () => ``,
             },
             reactRoutesReadOnly: {
-              getDirectoryBase: () => `${react.getSrcFolder()}/pages`,
+              getDirectoryBase: () => `src/pages`,
               getRoutePrefix: () => ``,
             },
             reactRouter: {
@@ -108,7 +105,7 @@ export const reactRouterGenerator = createGenerator({
               );
 
             const [pagesImport, pagesPath] = makeImportAndFilePath(
-              path.join(react.getSrcFolder(), 'pages/index.tsx'),
+              'src/pages/index.tsx',
             );
 
             reactApp

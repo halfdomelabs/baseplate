@@ -1,9 +1,9 @@
 // @ts-nocheck
 
 export interface ServiceContext {
-  CONTEXT_FIELDS;
+  TPL_CONTEXT_INTERFACE;
 }
 
-export function createServiceContext(CREATE_CONTEXT_ARGS): ServiceContext {
-  return CONTEXT_OBJECT;
+export function createServiceContext(TPL_CREATE_CONTEXT_ARGS): ServiceContext {
+  return TPL_CONTEXT_OBJECT;
 }

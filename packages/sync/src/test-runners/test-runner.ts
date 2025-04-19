@@ -7,7 +7,10 @@ import type {
   ProviderDependencyMap,
   ProviderExportMap,
 } from '@src/generators/generators.js';
-import type { PostWriteCommand } from '@src/output/index.js';
+import type {
+  PostWriteCommand,
+  TemplateMetadataOptions,
+} from '@src/output/index.js';
 
 import {
   type GeneratorTaskOutput,
@@ -42,6 +45,10 @@ interface CreateTaskTestRunnerOptions {
   taskId?: string;
   generatorId?: string;
   generatorInfo?: GeneratorInfo;
+  /**
+   * Options for template metadata
+   */
+  templateMetadataOptions?: TemplateMetadataOptions;
 }
 
 export function createTaskTestRunner<
@@ -57,6 +64,7 @@ export function createTaskTestRunner<
       name: 'test-generator',
       baseDirectory: '/',
     },
+    templateMetadataOptions,
   }: CreateTaskTestRunnerOptions = {},
 ): TaskTestRunner<ExportMap, DependencyMap, OutputMap> {
   return {
@@ -81,6 +89,7 @@ export function createTaskTestRunner<
       const builder = new GeneratorTaskOutputBuilder({
         generatorInfo,
         generatorId,
+        templateMetadataOptions,
       });
 
       const buildResult = await Promise.resolve(initResult?.build?.(builder));

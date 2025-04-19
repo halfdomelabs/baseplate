@@ -26,8 +26,8 @@ export interface TsImportMapEntry<
     alias?: string,
   ): IsTypeOnly extends true ? never : TsImportDeclaration;
   typeDeclaration(alias?: string): TsImportDeclaration;
-  frag(): TsCodeFragment;
-  typeFrag(): TsCodeFragment;
+  fragment(): TsCodeFragment;
+  typeFragment(): TsCodeFragment;
 }
 
 export type TsImportMap = Record<string, TsImportMapEntry>;

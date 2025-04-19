@@ -21,7 +21,7 @@ import type { ServiceOutputMethod } from '@src/types/service-output.js';
 
 import { notEmpty } from '@src/utils/array.js';
 
-import { appModuleProvider } from '../root-module/root-module.generator.js';
+import { appModuleProvider } from '../app-module/app-module.generator.js';
 
 const descriptorSchema = z.object({
   // unique identifier for the service file to allow it to be referenced by other generators

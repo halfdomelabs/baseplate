@@ -68,7 +68,7 @@ describe('renderTsCodeFileTemplate', () => {
   it('should handle module resolution when provided', () => {
     const template = {
       name: 'test',
-      source: { contents: 'TPL_CONTENT' },
+      source: { contents: 'import "side-effect";\nTPL_CONTENT' },
       variables: {
         TPL_CONTENT: {},
       },
@@ -93,6 +93,7 @@ describe('renderTsCodeFileTemplate', () => {
     expect(result).toMatchInlineSnapshot(`
       "import { Test } from "@project/test";
 
+      import "@project/side-effect";
       const test = new Test();"
     `);
   });

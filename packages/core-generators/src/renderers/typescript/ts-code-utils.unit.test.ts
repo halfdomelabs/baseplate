@@ -163,7 +163,7 @@ describe('TsCodeUtils', () => {
 
       const result = TsCodeUtils.mergeFragmentsAsObject(obj);
 
-      expect(result.contents).toBe('{"invalid-key": 42,}');
+      expect(result.contents).toBe("{'invalid-key': 42,}");
     });
 
     it('should wrap with parenthesis when option is set', () => {
@@ -217,6 +217,119 @@ describe('TsCodeUtils', () => {
       const result = TsCodeUtils.mergeFragmentsAsObject(obj);
 
       expect(result.contents).toBe('{async value() { return 42; },}');
+    });
+  });
+
+  describe('mergeFragmentsAsInterfaceContent', () => {
+    it('should merge fragments into a sorted interface content', () => {
+      const obj = {
+        prop2: tsCodeFragment('string'),
+        prop1: tsCodeFragment('number'),
+      };
+
+      const result = TsCodeUtils.mergeFragmentsAsInterfaceContent(obj);
+
+      expect(result).toEqual({
+        contents: 'prop1: number;\nprop2: string;',
+        imports: [],
+        hoistedFragments: [],
+      });
+    });
+
+    it('should handle imports and hoisted fragments', () => {
+      const fooImport = tsImportBuilder().named('foo').from('./foo.js');
+      const h1Fragment = tsHoistedFragment(
+        tsCodeFragment('type A = string;'),
+        'h1',
+      );
+      const obj = {
+        prop: tsCodeFragment('foo', fooImport, {
+          hoistedFragments: [h1Fragment],
+        }),
+      };
+
+      const result = TsCodeUtils.mergeFragmentsAsInterfaceContent(obj);
+
+      expect(result).toEqual({
+        contents: 'prop: foo;',
+        imports: [fooImport],
+        hoistedFragments: [h1Fragment],
+      });
+    });
+
+    it('should escape non-simple keys', () => {
+      const obj = {
+        'simple-key': tsCodeFragment('string'),
+        "key with ' and spaces": tsCodeFragment('number'),
+        'key-with-hyphens': tsCodeFragment('boolean'),
+      };
+
+      const result = TsCodeUtils.mergeFragmentsAsInterfaceContent(obj);
+
+      expect(result.contents).toBe(
+        "['key with \\' and spaces']: number;\n['key-with-hyphens']: boolean;\n['simple-key']: string;",
+      );
+    });
+  });
+
+  describe('mergeFragmentsAsArray', () => {
+    it('should merge multiple fragments into an array literal with their contents, imports and hoisted fragments', () => {
+      const fooImport = tsImportBuilder().named('foo').from('./foo.js');
+      const barImport = tsImportBuilder().named('bar').from('./bar.js');
+      const h1Fragment = tsHoistedFragment(
+        tsCodeFragment('type A = string;'),
+        'h1',
+      );
+      const h2Fragment = tsHoistedFragment(
+        tsCodeFragment('type B = number;'),
+        'h2',
+      );
+      const fragments = new Map([
+        [
+          'b',
+          tsCodeFragment('2', barImport, {
+            hoistedFragments: [h2Fragment],
+          }),
+        ],
+        [
+          'a',
+          tsCodeFragment('1', fooImport, {
+            hoistedFragments: [h1Fragment],
+          }),
+        ],
+      ]);
+
+      const result = TsCodeUtils.mergeFragmentsAsArray(fragments);
+
+      expect(result).toEqual({
+        contents: '[1,\n2]',
+        imports: [fooImport, barImport],
+        hoistedFragments: [h1Fragment, h2Fragment],
+      });
+    });
+
+    it('should handle empty fragments map', () => {
+      const result = TsCodeUtils.mergeFragmentsAsArray(new Map());
+      expect(result).toEqual({
+        contents: '[]',
+        imports: [],
+        hoistedFragments: [],
+      });
+    });
+
+    it('should handle string fragments', () => {
+      const fragments = new Map([
+        ['a', '1'],
+        ['b', '2'],
+      ]);
+
+      const result = TsCodeUtils.mergeFragmentsAsArray(fragments);
+
+      expect(result).toEqual({
+        contents: '[1,\n2]',
+        imports: [],
+        hoistedFragments: [],
+      });
     });
   });
 });

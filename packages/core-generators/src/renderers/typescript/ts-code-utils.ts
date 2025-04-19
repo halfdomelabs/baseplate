@@ -1,7 +1,13 @@
+import { quot } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 
+import type { TsCodeFragmentOptions } from './fragments/creators.js';
 import type { TsCodeFragment, TsHoistedFragment } from './fragments/types.js';
+import type { TsImportDeclarationBuilder } from './imports/builder.js';
 import type { TsImportDeclaration } from './imports/types.js';
+
+import { tsCodeFragment } from './fragments/creators.js';
+import { tsImportBuilder } from './imports/builder.js';
 
 function formatStringWithContent(
   str: string,
@@ -39,6 +45,35 @@ function mergeFragmentImportsAndHoistedFragments(fragments: TsCodeFragment[]): {
  */
 export const TsCodeUtils = {
   /**
+   * Create a code fragment from a string.
+   * @param contents - The contents of the code fragment.
+   * @returns The code fragment.
+   */
+  frag(
+    contents: string,
+    imports?: TsImportDeclaration[] | TsImportDeclaration,
+    options?: TsCodeFragmentOptions,
+  ): TsCodeFragment {
+    return tsCodeFragment(contents, imports, options);
+  },
+  /**
+   * Create an import builder.
+   * @param namedImports - The named imports to add to the import builder.
+   * @returns The import builder.
+   */
+  importBuilder(namedImports?: string[]): TsImportDeclarationBuilder {
+    return tsImportBuilder(namedImports);
+  },
+  /**
+   * Shortcut function for creating a fragment that imports a named import from a module.
+   * @param name - The name of the import.
+   * @param importFrom - The module to import from.
+   * @returns The import fragment.
+   */
+  importFragment(name: string, importFrom: string): TsCodeFragment {
+    return tsCodeFragment(name, tsImportBuilder([name]).from(importFrom));
+  },
+  /**
    * Merge a map of code fragments into a single code fragment. We by default use
    * maps to ensure that the order of the fragments is deterministic since the
    * code fragments are merged by the order of the keys.
@@ -48,7 +83,7 @@ export const TsCodeUtils = {
    * @returns The merged code fragment.
    */
   mergeFragments(
-    fragments: Map<string, TsCodeFragment>,
+    fragments: Map<string, TsCodeFragment | string | undefined>,
     separator = '\n',
   ): TsCodeFragment {
     const sortedFragmentEntries = sortBy(
@@ -57,10 +92,16 @@ export const TsCodeUtils = {
     );
     return {
       contents: sortedFragmentEntries
-        .map(([, fragment]) => fragment.contents)
+        .map(([, fragment]) => fragment)
+        .filter((f) => f !== undefined)
+        .map((fragment) =>
+          typeof fragment === 'string' ? fragment : fragment.contents,
+        )
         .join(separator),
       ...mergeFragmentImportsAndHoistedFragments(
-        sortedFragmentEntries.map(([, fragment]) => fragment),
+        sortedFragmentEntries
+          .map(([, fragment]) => fragment)
+          .filter(isTsCodeFragment),
       ),
     };
   },
@@ -76,12 +117,16 @@ export const TsCodeUtils = {
    * @returns The merged code fragment.
    */
   mergeFragmentsPresorted(
-    fragments: TsCodeFragment[],
+    fragments: (TsCodeFragment | string)[],
     separator = '\n',
   ): TsCodeFragment {
     return {
-      contents: fragments.map((f) => f.contents).join(separator),
-      ...mergeFragmentImportsAndHoistedFragments(fragments),
+      contents: fragments
+        .map((f) => (typeof f === 'string' ? f : f.contents))
+        .join(separator),
+      ...mergeFragmentImportsAndHoistedFragments(
+        fragments.filter(isTsCodeFragment),
+      ),
     };
   },
 
@@ -125,15 +170,19 @@ export const TsCodeUtils = {
    * @returns The merged code fragment.
    */
   mergeFragmentsAsObject(
-    obj: Record<string, TsCodeFragment | string | undefined>,
+    objOrMap:
+      | Record<string, TsCodeFragment | string | undefined>
+      | Map<string, TsCodeFragment | string | undefined>,
     options: {
       wrapWithParenthesis?: boolean;
       disableSort?: boolean;
     } = {},
   ): TsCodeFragment {
     const { wrapWithParenthesis = false, disableSort = false } = options;
-    const keys = Object.keys(obj);
-    const fragments = Object.values(obj).filter(isTsCodeFragment);
+    const map =
+      objOrMap instanceof Map ? objOrMap : new Map(Object.entries(objOrMap));
+    const keys = [...map.keys()];
+    const fragments = [...map.values()].filter(isTsCodeFragment);
 
     const sortedKeys = disableSort ? keys : keys.toSorted();
 
@@ -142,9 +191,9 @@ export const TsCodeUtils = {
     }
 
     const mergedContent = sortedKeys
-      .filter((key) => obj[key] != null)
+      .filter((key) => map.get(key))
       .map((key) => {
-        const value = obj[key] ?? '';
+        const value = map.get(key) ?? '';
         const content = typeof value === 'string' ? value : value.contents;
         const trimmedContent = content.trim();
 
@@ -160,9 +209,7 @@ export const TsCodeUtils = {
         if (trimmedContent.startsWith(`async function ${key}`)) {
           return `${trimmedContent.replace(/^async function /, 'async ')},`;
         }
-        const escapedKey = /^[A-Z0-9_a-z]+$/.test(key)
-          ? key
-          : `"${key.replaceAll('"', String.raw`\"`)}"`;
+        const escapedKey = /^[A-Z0-9_a-z]+$/.test(key) ? key : quot(key);
         return `${escapedKey}: ${content},`;
       })
       .join('\n');
@@ -172,6 +219,75 @@ export const TsCodeUtils = {
         ? `({${mergedContent}})`
         : `{${mergedContent}}`,
       ...mergeFragmentImportsAndHoistedFragments(fragments),
+    };
+  },
+
+  /**
+   * Merge a map of code fragments into interface content. The fragments are sorted by key
+   * to ensure deterministic output.
+   *
+   * @param fragments - The code fragments to merge.
+   * @param options - The options for the merge.
+   * @returns The merged code fragment as interface content.
+   */
+  mergeFragmentsAsInterfaceContent(
+    objOrMap:
+      | Record<string, TsCodeFragment | string | undefined>
+      | Map<string, TsCodeFragment | string | undefined>,
+    options: {
+      disableSort?: boolean;
+    } = {},
+  ): TsCodeFragment {
+    const { disableSort = false } = options;
+    const map =
+      objOrMap instanceof Map ? objOrMap : new Map(Object.entries(objOrMap));
+    const keys = [...map.keys()];
+    const fragments = [...map.values()].filter(isTsCodeFragment);
+
+    const sortedKeys = disableSort ? keys : keys.toSorted();
+
+    const mergedContent = sortedKeys
+      .filter((key) => map.get(key))
+      .map((key) => {
+        const value = map.get(key) ?? '';
+        const content = typeof value === 'string' ? value : value.contents;
+        const escapedKey = /^[A-Z0-9_a-z]+$/.test(key) ? key : `[${quot(key)}]`;
+        return `${escapedKey}: ${content};`;
+      })
+      .join('\n');
+
+    return {
+      contents: mergedContent,
+      ...mergeFragmentImportsAndHoistedFragments(fragments),
+    };
+  },
+
+  /**
+   * Merge a map of code fragments into an array literal. The fragments are sorted by key
+   * to ensure deterministic output.
+   *
+   * @param fragments - The code fragments to merge.
+   * @returns The merged code fragment as an array literal.
+   */
+  mergeFragmentsAsArray(
+    objOrMap:
+      | Record<string, TsCodeFragment | string>
+      | Map<string, TsCodeFragment | string>,
+  ): TsCodeFragment {
+    const map =
+      objOrMap instanceof Map ? objOrMap : new Map(Object.entries(objOrMap));
+    const sortedFragmentEntries = sortBy([...map.entries()], [([key]) => key]);
+    return {
+      contents: `[${sortedFragmentEntries
+        .map(([, fragment]) =>
+          typeof fragment === 'string' ? fragment : fragment.contents,
+        )
+        .join(',\n')}]`,
+      ...mergeFragmentImportsAndHoistedFragments(
+        sortedFragmentEntries
+          .map(([, fragment]) => fragment)
+          .filter(isTsCodeFragment),
+      ),
     };
   },
 

@@ -1,25 +1,71 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type {
+  TsCodeFragment,
+  TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
+import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
 
 import {
   featureScope,
+  projectScope,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
   TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigFieldMap,
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
+  createProviderType,
 } from '@halfdomelabs/sync';
+import {
+  createFieldMapSchemaBuilder,
+  mapValuesOfMap,
+  quot,
+} from '@halfdomelabs/utils';
 import { camelCase, kebabCase } from 'change-case';
-import { mapValues } from 'es-toolkit';
-import path from 'node:path';
 import { z } from 'zod';
 
-import { appModuleProvider } from '../root-module/root-module.generator.js';
+import { appModuleConfigValuesProvider } from '../app-module-setup/app-module-setup.generator.js';
+import { appModuleSetupImportsProvider } from '../app-module-setup/generated/ts-import-maps.js';
+import { CORE_APP_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';
+
+const appModuleConfigSchema = createFieldMapSchemaBuilder((t) => ({
+  moduleFields: t.mapOfMaps<string, string, TsCodeFragment>(),
+  moduleImports: t.array<string>(),
+}));
+
+export interface AppModuleProvider
+  extends InferFieldMapSchemaFromBuilder<typeof appModuleConfigSchema> {
+  getModuleFolder(): string;
+}
+
+export const appModuleProvider =
+  createProviderType<AppModuleProvider>('app-module');
+
+export interface AppModuleImportsProvider {
+  getModuleFragment(): TsCodeFragment;
+  getModule(): TypescriptCodeExpression;
+  getModulePath(): string;
+}
+
+export const appModuleImportsProvider =
+  createProviderType<AppModuleImportsProvider>('app-module-imports');
 
 const descriptorSchema = z.object({
+  /**
+   * The unique identifier for the module.
+   */
+  id: z.string().min(1),
+  /**
+   * The name of the module.
+   */
   name: z.string().min(1),
-  folderName: z.string().optional(),
+  /**
+   * Whether the module is the root module.
+   */
+  isRoot: z.boolean().optional(),
 });
 
 export const appModuleGenerator = createGenerator({
@@ -28,73 +74,111 @@ export const appModuleGenerator = createGenerator({
   descriptorSchema,
   scopes: [featureScope],
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: (descriptor) => ({
+  buildTasks: ({ id, name, isRoot }) => ({
     main: createGeneratorTask({
       dependencies: {
-        appModule: appModuleProvider.dependency().parentScopeOnly(),
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
+        appModuleConfigValues: appModuleConfigValuesProvider,
+        appModuleSetupImports: appModuleSetupImportsProvider,
+        appModule: isRoot
+          ? undefined
+          : appModuleProvider.dependency().parentScopeOnly(),
       },
       exports: {
-        appModule: appModuleProvider.export(featureScope),
+        appModule: appModuleProvider.export(
+          isRoot ? projectScope : featureScope,
+        ),
+        appModuleImports: appModuleImportsProvider.export(
+          isRoot ? projectScope : featureScope,
+        ),
       },
-      run({ appModule, typescript }) {
-        const folderName = descriptor.folderName ?? kebabCase(descriptor.name);
-        const moduleName = `${camelCase(descriptor.name)}Module`;
-        const moduleFolder = `${appModule.getModuleFolder()}/${folderName}`;
-        const moduleEntries = createNonOverwriteableMap<
-          Record<string, TypescriptCodeExpression[]>
-        >({}, { name: 'app-module-entries' });
-        const validFields = appModule.getValidFields();
-        const moduleImports: string[] = [];
+      run({
+        typescriptFile,
+        appModule,
+        appModuleConfigValues,
+        appModuleSetupImports,
+      }) {
+        const appModuleConfig = createConfigFieldMap(appModuleConfigSchema);
+        const parentFolder = appModule?.getModuleFolder();
 
-        appModule.registerFieldEntry(
-          'children',
-          TypescriptCodeUtils.createExpression(
+        if (!isRoot && !appModule) {
+          throw new Error('Parent folder is required for non-root modules');
+        }
+
+        const moduleName = `${camelCase(name)}Module`;
+        const moduleFolder = isRoot
+          ? '@/src/modules'
+          : `${parentFolder}/${kebabCase(name)}`;
+        const modulePath = `${moduleFolder}/index.ts`;
+
+        if (appModule) {
+          appModule.moduleFields.set(
+            'children',
             moduleName,
-            `import {${moduleName}} from '@/${moduleFolder}/index.js'`,
-          ),
-        );
+            tsCodeFragment(
+              moduleName,
+              tsImportBuilder([moduleName]).from(modulePath),
+            ),
+          );
+        }
 
         return {
           providers: {
             appModule: {
               getModuleFolder: () => moduleFolder,
-              getValidFields: () => validFields,
-              addModuleImport(name) {
-                moduleImports.push(name);
-              },
-              registerFieldEntry: (name, type) => {
-                if (!validFields.includes(name)) {
-                  throw new Error(`Unknown field entry: ${name}`);
-                }
-                moduleEntries.appendUnique(name, [type]);
-              },
+              ...appModuleConfig,
+            },
+            appModuleImports: {
+              getModuleFragment: () =>
+                TsCodeUtils.importFragment(
+                  moduleName,
+                  `${moduleFolder}/index.js`,
+                ),
+              getModule: () =>
+                TypescriptCodeUtils.createExpression(
+                  moduleName,
+                  `import { ${moduleName} } from '${moduleFolder}/index.js'`,
+                ),
+              getModulePath: () => `${moduleFolder}/index.js`,
             },
           },
           build: async (builder) => {
-            const indexFile = typescript.createTemplate({
-              MODULE_CONTENTS: { type: 'code-expression' },
-            });
+            const appModuleFields = appModuleConfig.getValues();
 
-            indexFile.addCodeExpression(
-              'MODULE_CONTENTS',
-              TypescriptCodeUtils.mergeExpressionsAsObject(
-                mapValues(moduleEntries.value(), (types) =>
-                  TypescriptCodeUtils.mergeExpressionsAsArray(types),
-                ),
-              ),
-            );
+            const invalidKeys = Object.keys(
+              appModuleFields.moduleFields,
+            ).filter((key) => !appModuleConfigValues.moduleFields.has(key));
 
-            indexFile.addCodeAddition({
-              importText: moduleImports.map((name) => `import '${name}'`),
-            });
+            if (invalidKeys.length > 0) {
+              throw new Error(
+                `Invalid module fields: ${invalidKeys.join(', ')}`,
+              );
+            }
 
-            const moduleFolderIndex = path.join(moduleFolder, 'index.ts');
             await builder.apply(
-              indexFile.renderToActionFromText(
-                `export const ${moduleName} = MODULE_CONTENTS`,
-                moduleFolderIndex,
-              ),
+              typescriptFile.renderTemplateFile({
+                id: `module-${id}`,
+                template: CORE_APP_MODULE_TS_TEMPLATES.index,
+                destination: `${moduleFolder}/index.ts`,
+                importMapProviders: {
+                  appModuleSetupImports,
+                },
+                variables: {
+                  TPL_IMPORTS: TsCodeUtils.mergeFragmentsPresorted(
+                    appModuleFields.moduleImports
+                      .map((value) => `import ${quot(value)};`)
+                      .toSorted(),
+                    '\n',
+                  ),
+                  TPL_MODULE_NAME: `${camelCase(name)}Module`,
+                  TPL_MODULE_CONTENTS: TsCodeUtils.mergeFragmentsAsObject(
+                    mapValuesOfMap(appModuleFields.moduleFields, (value) =>
+                      TsCodeUtils.mergeFragmentsAsArray(value),
+                    ),
+                  ),
+                },
+                includeMetadataOnDemand: true,
+              }),
             );
           },
         };

@@ -1,17 +1,18 @@
-//@ts-nocheck
+// @ts-nocheck
+
+import type { ServiceContext } from '%serviceContextImports';
 
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ServiceContext, createServiceContext } from '%service-context';
 
 export interface RequestServiceContext extends ServiceContext {
-  CONTEXT_FIELDS;
+  TPL_CONTEXT_FIELDS;
 }
 
 export function createContextFromRequest(
   request: FastifyRequest,
   reply?: FastifyReply,
 ): RequestServiceContext {
-  CONTEXT_BODY;
+  TPL_CONTEXT_BODY;
 
-  return CONTEXT_CREATOR;
+  return TPL_CONTEXT_CREATOR;
 }

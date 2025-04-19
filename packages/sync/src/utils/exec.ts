@@ -1,3 +1,4 @@
+import { pick } from 'es-toolkit';
 import { execa, parseCommandString } from 'execa';
 
 interface ExecOptions {
@@ -5,6 +6,33 @@ interface ExecOptions {
   timeout?: number;
   env?: Record<string, string>;
 }
+
+const PASSTHROUGH_ENV_VARS = [
+  // Essential for package management
+  'HOME',
+  'PATH',
+  'NODE_OPTIONS',
+  'COREPACK_HOME',
+  'TMP',
+  'TEMP',
+  'APPDATA',
+
+  // System libraries for native modules
+  'LD_LIBRARY_PATH',
+  'DYLD_FALLBACK_LIBRARY_PATH',
+  'LIBPATH',
+
+  // Windows-specific paths
+  'SYSTEMROOT',
+  'SYSTEMDRIVE',
+
+  // User context
+  'USER',
+
+  // Localization
+  'TZ',
+  'LANG',
+];
 
 export async function executeCommand(
   command: string,
@@ -15,12 +43,7 @@ export async function executeCommand(
     all: true,
     cwd: options.cwd,
     env: {
-      // strip out npm_* env vars
-      ...Object.fromEntries(
-        Object.keys(process.env)
-          .filter((k) => !k.startsWith('npm_'))
-          .map((key) => [key, process.env[key]]),
-      ),
+      ...pick(process.env, PASSTHROUGH_ENV_VARS),
       ...options.env,
     },
     extendEnv: false,

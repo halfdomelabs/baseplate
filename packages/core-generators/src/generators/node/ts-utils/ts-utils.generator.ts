@@ -1,55 +1,38 @@
+import type { TemplateFileSource } from '@halfdomelabs/sync';
+
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import path from 'node:path';
 import { z } from 'zod';
 
 import { projectScope } from '@src/providers/scopes.js';
 
 import type { ImportMapper } from '../../../providers/index.js';
 
-import { typescriptProvider } from '../typescript/typescript.generator.js';
+import { typescriptFileProvider } from '../typescript/typescript.generator.js';
+import {
+  createTsUtilsImports,
+  tsUtilsImportsProvider,
+} from './generated/ts-import-maps.js';
+import { NODE_TS_UTILS_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
-
-interface UtilConfig {
-  file: string;
-  exports: string[];
-  dependencies?: string[];
-}
-
-const UTIL_CONFIG_MAP: Record<string, UtilConfig> = {
-  arrays: {
-    file: 'arrays.ts',
-    exports: ['notEmpty'],
-    dependencies: [],
-  },
-  normalizeTypes: {
-    file: 'normalizeTypes.ts',
-    exports: ['NormalizeTypes'],
-    dependencies: [],
-  },
-  nulls: {
-    file: 'nulls.ts',
-    exports: ['restrictObjectNulls'],
-    dependencies: ['normalizeTypes'],
-  },
-  string: {
-    file: 'string.ts',
-    exports: ['capitalizeString'],
-    dependencies: [],
-  },
-  typedEventEmitter: {
-    file: 'typedEventEmitter.ts',
-    exports: ['TypedEventEmitter', 'createTypedEventEmitter'],
-    dependencies: [],
-  },
-};
 
 export type TsUtilsProvider = ImportMapper;
 
 export const tsUtilsProvider = createProviderType<TsUtilsProvider>('ts-utils');
+
+function getUtilsPath(source: TemplateFileSource): string {
+  if (!('path' in source)) {
+    throw new Error('Template path is required');
+  }
+  return path.join('@/src/utils', source.path);
+}
+
+type TsUtilKey = keyof typeof NODE_TS_UTILS_TS_TEMPLATES;
 
 export const tsUtilsGenerator = createGenerator({
   name: 'node/ts-utils',
@@ -58,63 +41,75 @@ export const tsUtilsGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         tsUtils: tsUtilsProvider.export(projectScope),
+        tsUtilsImports: tsUtilsImportsProvider.export(projectScope),
       },
-      run({ typescript }) {
-        const usedTemplates: Record<string, boolean> = {};
+      run({ typescriptFile }) {
+        const usedTemplates = new Set<TsUtilKey>();
+
+        const files = Object.entries(NODE_TS_UTILS_TS_TEMPLATES).map(
+          ([key, template]) => ({
+            key,
+            template,
+          }),
+        );
 
         return {
           providers: {
             tsUtils: {
               getImportMap: () =>
                 Object.fromEntries(
-                  Object.entries(UTIL_CONFIG_MAP).map(([key, config]) => [
+                  files.map(({ key, template }) => [
                     `%ts-utils/${key}`,
                     {
-                      path: `@/src/utils/${config.file.replace(/\.ts$/, '.js')}`,
-                      allowedImports: config.exports,
+                      path: getUtilsPath(template.source),
+                      allowedImports: Object.keys(
+                        template.projectExports ?? {},
+                      ),
                       onImportUsed: () => {
-                        usedTemplates[key] = true;
+                        usedTemplates.add(key as TsUtilKey);
                       },
                     },
                   ]),
                 ),
             },
+            tsUtilsImports: createTsUtilsImports('@/src/utils'),
           },
           build: async (builder) => {
-            // recursively resolve dependencies
-            const markDependenciesAsUsed = (key: string): void => {
-              const config = UTIL_CONFIG_MAP[key];
-              if (config.dependencies)
-                for (const dep of config.dependencies) {
-                  usedTemplates[dep] = true;
-                  markDependenciesAsUsed(dep);
-                }
-            };
-            for (const key of Object.keys(usedTemplates)) {
-              markDependenciesAsUsed(key);
-            }
-            // Copy all the util files that were used
-            const templateFiles = Object.keys(usedTemplates).map(
-              (key) => UTIL_CONFIG_MAP[key].file,
+            // render all ts-utils files that were used
+            await Promise.all(
+              [...usedTemplates].map((key) => {
+                const template = NODE_TS_UTILS_TS_TEMPLATES[key];
+                return builder.apply(
+                  typescriptFile.renderTemplateFile({
+                    template,
+                    destination: getUtilsPath(template.source),
+                  }),
+                );
+              }),
             );
 
-            await Promise.all(
-              templateFiles.map((file) =>
-                builder.apply(
-                  typescript.createCopyAction({
-                    source: file,
-                    destination: `src/utils/${file}`,
-                  }),
-                ),
-              ),
-            );
+            // add all remaining files as lazy files
+            const unusedTemplates = Object.keys(
+              NODE_TS_UTILS_TS_TEMPLATES,
+            ).filter((key) => !usedTemplates.has(key as TsUtilKey));
+
+            for (const key of unusedTemplates) {
+              const template = NODE_TS_UTILS_TS_TEMPLATES[key as TsUtilKey];
+              typescriptFile.addLazyTemplateFile({
+                template,
+                destination: getUtilsPath(template.source),
+                generatorInfo: builder.generatorInfo,
+              });
+            }
           },
         };
       },
     }),
   }),
 });
+
+export { tsUtilsImportsProvider } from './generated/ts-import-maps.js';

@@ -102,6 +102,19 @@ export interface GeneratorOutput extends GeneratorTaskOutput {
   metadata?: GeneratorOutputMetadata;
 }
 
+export interface TemplateMetadataOptions {
+  /**
+   * Whether to include template metadata in the output
+   */
+  includeTemplateMetadata: boolean;
+  /**
+   * Whether the path has metadata associated with it
+   *
+   * Useful for on-demand metadata generation.
+   */
+  hasTemplateMetadata?: (projectRelativePath: string) => boolean;
+}
+
 export interface GeneratorTaskOutputBuilderContext {
   /**
    * The info of the current generator
@@ -112,9 +125,9 @@ export interface GeneratorTaskOutputBuilderContext {
    */
   generatorId: string;
   /**
-   * Whether to include template metadata in the output
+   * Options for template metadata
    */
-  includeTemplateMetadata?: boolean;
+  templateMetadataOptions?: TemplateMetadataOptions;
 }
 
 /**
@@ -143,9 +156,9 @@ export class GeneratorTaskOutputBuilder {
   dynamicTasks: GeneratorTaskEntry[] = [];
 
   /**
-   * Whether to include metadata in the output
+   * Options for template metadata
    */
-  includeMetadata: boolean;
+  metadataOptions: TemplateMetadataOptions;
 
   constructor(context: GeneratorTaskOutputBuilderContext) {
     this.output = {
@@ -155,7 +168,9 @@ export class GeneratorTaskOutputBuilder {
     };
     this.generatorInfo = context.generatorInfo;
     this.generatorId = context.generatorId;
-    this.includeMetadata = context.includeTemplateMetadata ?? false;
+    this.metadataOptions = context.templateMetadataOptions ?? {
+      includeTemplateMetadata: false,
+    };
   }
 
   /**
@@ -193,8 +208,10 @@ export class GeneratorTaskOutputBuilder {
     options?: Omit<WriteFileOptions, 'templateMetadata'>;
     templateMetadata?: TemplateFileMetadataBase;
   }): void {
-    // normalize all paths to POSIX style / paths
-    const fullPath = filePath.replaceAll(path.sep, path.posix.sep);
+    // normalize all paths to POSIX style / paths and remove any preceding @/
+    const fullPath = filePath
+      .replaceAll(path.sep, path.posix.sep)
+      .replace(/^(@\/)?/, '');
 
     if (this.output.files.has(fullPath)) {
       throw new Error(`Cannot overwrite file ${fullPath}`);
@@ -207,7 +224,7 @@ export class GeneratorTaskOutputBuilder {
     this.output.files.set(fullPath, {
       id: `${generatorName ?? this.generatorInfo.name}:${id}`,
       contents,
-      options: this.includeMetadata
+      options: this.metadataOptions.includeTemplateMetadata
         ? {
             ...options,
             templateMetadata,

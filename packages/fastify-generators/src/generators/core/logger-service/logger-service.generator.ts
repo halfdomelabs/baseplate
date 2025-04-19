@@ -77,7 +77,7 @@ export const loggerServiceGenerator = createGenerator({
           Record<string, TsCodeFragment>
         >({}, { name: 'logger-service-mixins' });
 
-        fastify.getConfig().set('devOutputFormatter', 'pino-pretty -t');
+        fastify.devOutputFormatter.set('pino-pretty -t');
 
         const importMap = {
           '%logger-service': {

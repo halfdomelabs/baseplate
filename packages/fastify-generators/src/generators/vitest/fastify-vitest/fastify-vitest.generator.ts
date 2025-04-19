@@ -1,24 +1,13 @@
 import {
   createNodeTask,
-  projectScope,
-  TypescriptCodeUtils,
-  vitestProvider,
+  tsCodeFragment,
+  tsImportBuilder,
+  vitestConfigProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
-});
-
-export type FastifyVitestProvider = unknown;
-
-export const fastifyVitestProvider =
-  createProviderType<FastifyVitestProvider>('fastify-vitest');
+const descriptorSchema = z.object({});
 
 export const fastifyVitestGenerator = createGenerator({
   name: 'vitest/fastify-vitest',
@@ -36,28 +25,18 @@ export const fastifyVitestGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        vitest: vitestProvider,
+        vitestConfig: vitestConfigProvider,
       },
-      exports: {
-        fastifyVitest: fastifyVitestProvider.export(projectScope),
-      },
-      run({ vitest }) {
+      run({ vitestConfig }) {
         // add config to vitest setup
 
-        vitest
-          .getConfig()
-          .appendUnique('customSetupBlocks', [
-            TypescriptCodeUtils.createBlock(
-              'config()',
-              "import { config } from 'dotenv'",
-            ),
-          ]);
-
-        return {
-          providers: {
-            fastifyVitest: {},
-          },
-        };
+        vitestConfig.globalSetupOperations.set(
+          'dotenv',
+          tsCodeFragment(
+            'config()',
+            tsImportBuilder(['config']).from('dotenv'),
+          ),
+        );
       },
     }),
   }),

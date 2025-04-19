@@ -1,7 +1,8 @@
 // @ts-nocheck
+
+import { logError } from '%errorHandlerServiceImports';
+import { logger } from '%loggerServiceImports';
 import fp from 'fastify-plugin';
-import { logError } from '%error-logger';
-import { logger } from '%logger-service';
 
 const TIMEOUT = 10000; // time out if shutdown takes longer than 10 seconds
 

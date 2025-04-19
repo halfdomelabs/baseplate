@@ -3,7 +3,8 @@ import helmet from '@fastify/helmet';
 import * as Sentry from '@sentry/node';
 import Fastify, { FastifyInstance, FastifyServerOptions } from 'fastify';
 import { nanoid } from 'nanoid';
-import { RootModule } from './modules/index.js';
+
+import { rootModule } from './modules/index.js';
 import { errorHandlerPlugin } from './plugins/error-handler.js';
 import { gracefulShutdownPlugin } from './plugins/graceful-shutdown.js';
 import { graphqlPlugin } from './plugins/graphql/index.js';
@@ -26,20 +27,16 @@ export async function buildServer(
   Sentry.setupFastifyErrorHandler(fastify);
   registerSentryEventProcessor();
 
-  await fastify.register(helmet, {
-    // disable to enable Altair to function (alright since we're a backend service)
-    contentSecurityPolicy: false,
-    crossOriginEmbedderPolicy: false,
-  });
   await fastify.register(errorHandlerPlugin);
+  await fastify.register(helmet);
+  await fastify.register(fastifyCookie);
+  await fastify.register(gracefulShutdownPlugin);
+  await fastify.register(graphqlPlugin);
   await fastify.register(healthCheckPlugin);
   await fastify.register(requestContextPlugin);
-  await fastify.register(gracefulShutdownPlugin);
-  await fastify.register(fastifyCookie);
-  await fastify.register(graphqlPlugin);
 
   // register app plugins
-  const plugins = RootModule.plugins ?? [];
+  const plugins = rootModule.plugins ?? [];
   await plugins.reduce(
     (promise, plugin) => promise.then(() => fastify.register(plugin)),
     Promise.resolve(),

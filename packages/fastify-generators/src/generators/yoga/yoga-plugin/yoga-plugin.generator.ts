@@ -10,6 +10,8 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   projectScope,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -29,9 +31,9 @@ import { authProvider } from '@src/generators/auth/index.js';
 import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/fastify-redis.generator.js';
-import { fastifyServerProvider } from '@src/generators/core/fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '@src/generators/core/fastify-server/fastify-server.generator.js';
 import { loggerServiceProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
-import { requestServiceContextProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
+import { requestServiceContextImportsProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
 
 const descriptorSchema = z.object({
   enableSubscriptions: z.boolean().optional(),
@@ -109,14 +111,15 @@ export const yogaPluginGenerator = createGenerator({
     }),
     fastify: createGeneratorTask({
       dependencies: {
-        fastifyServer: fastifyServerProvider,
+        fastifyServerConfig: fastifyServerConfigProvider,
       },
-      run({ fastifyServer }) {
-        fastifyServer.registerPlugin({
-          name: 'graphqlPlugin',
-          plugin: new TypescriptCodeExpression(
+      run({ fastifyServerConfig }) {
+        fastifyServerConfig.plugins.set('graphqlPlugin', {
+          plugin: tsCodeFragment(
             'graphqlPlugin',
-            "import { graphqlPlugin } from '@/src/plugins/graphql/index.js",
+            tsImportBuilder(['graphqlPlugin']).from(
+              '@/src/plugins/graphql/index.js',
+            ),
           ),
         });
       },
@@ -140,14 +143,14 @@ export const yogaPluginGenerator = createGenerator({
         typescript: typescriptProvider,
         configService: configServiceProvider,
         errorHandlerService: errorHandlerServiceProvider,
-        requestServiceContext: requestServiceContextProvider,
+        requestServiceContextImports: requestServiceContextImportsProvider,
         loggerService: loggerServiceProvider,
         yogaPluginSetup: yogaPluginSetupProvider,
       },
       run({
         typescript,
         configService,
-        requestServiceContext,
+        requestServiceContextImports,
         loggerService,
         errorHandlerService,
         yogaPluginSetup: config,
@@ -172,7 +175,18 @@ export const yogaPluginGenerator = createGenerator({
                 importMappers: [
                   errorHandlerService,
                   configService,
-                  requestServiceContext,
+                  {
+                    getImportMap: () => ({
+                      '%request-service-context': {
+                        path: requestServiceContextImports
+                          .createContextFromRequest.source,
+                        allowedImports: [
+                          requestServiceContextImports.createContextFromRequest
+                            .name,
+                        ],
+                      },
+                    }),
+                  },
                   loggerService,
                 ],
               },
@@ -235,20 +249,21 @@ export const yogaPluginGenerator = createGenerator({
           serverWebsocket: createGeneratorTask({
             dependencies: {
               node: nodeProvider,
-              fastifyServer: fastifyServerProvider,
+              fastifyServerConfig: fastifyServerConfigProvider,
             },
-            run({ node, fastifyServer }) {
+            run({ node, fastifyServerConfig }) {
               node.packages.addPackages({
                 prod: extractPackageVersions(FASTIFY_PACKAGES, [
                   '@fastify/websocket',
                 ]),
               });
 
-              fastifyServer.registerPlugin({
-                name: 'websocketPlugin',
-                plugin: TypescriptCodeUtils.createExpression(
+              fastifyServerConfig.plugins.set('websocketPlugin', {
+                plugin: tsCodeFragment(
                   'websocketPlugin',
-                  "import websocketPlugin from '@fastify/websocket';",
+                  tsImportBuilder()
+                    .default('websocketPlugin')
+                    .from('@fastify/websocket'),
                 ),
                 orderPriority: 'EARLY',
               });
@@ -264,7 +279,8 @@ export const yogaPluginGenerator = createGenerator({
               auth: authProvider.dependency().optional(),
               errorLoggerService: errorHandlerServiceProvider,
               loggerService: loggerServiceProvider,
-              requestServiceContext: requestServiceContextProvider,
+              requestServiceContextImports:
+                requestServiceContextImportsProvider,
             },
             run({
               node,
@@ -273,7 +289,7 @@ export const yogaPluginGenerator = createGenerator({
               auth,
               errorLoggerService,
               loggerService,
-              requestServiceContext,
+              requestServiceContextImports,
             }) {
               node.packages.addPackages({
                 prod: extractPackageVersions(FASTIFY_PACKAGES, [
@@ -317,8 +333,19 @@ export const yogaPluginGenerator = createGenerator({
                       importMappers: [
                         errorLoggerService,
                         loggerService,
-                        requestServiceContext,
                         auth,
+                        {
+                          getImportMap: () => ({
+                            '%request-service-context': {
+                              path: requestServiceContextImports
+                                .createContextFromRequest.source,
+                              allowedImports: [
+                                requestServiceContextImports
+                                  .createContextFromRequest.name,
+                              ],
+                            },
+                          }),
+                        },
                       ],
                     },
                   );

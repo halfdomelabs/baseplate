@@ -86,10 +86,10 @@ export const storageModuleGenerator = createGenerator({
         pothosSetup.getTypeReferences().addInputType({
           typeName: 'FileUploadInput',
           exportName: 'fileUploadInputInputType',
-          moduleName: `@/${path.posix.join(
+          moduleName: path.posix.join(
             moduleFolder,
             'schema/file-upload.input-type.js',
-          )}`,
+          ),
         });
 
         return {};
@@ -196,7 +196,7 @@ export const storageModuleGenerator = createGenerator({
             );
             // Copy schema
             async function registerSchemaFile(file: string): Promise<void> {
-              appModule.addModuleImport(`@/${moduleFolder}/${file}.js`);
+              appModule.moduleImports.push(`${moduleFolder}/${file}.js`);
               pothosSchema.registerSchemaFile(
                 path.join(moduleFolder, `${file}.ts`),
               );

@@ -3,7 +3,9 @@ import type { ImportMap, ImportMapper } from '@halfdomelabs/core-generators';
 import {
   makeImportAndFilePath,
   projectScope,
-  TypescriptCodeUtils,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -17,8 +19,8 @@ import {
   appModuleProvider,
   errorHandlerServiceProvider,
 } from '@src/generators/core/index.js';
-import { requestServiceContextSetupProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
-import { serviceContextSetupProvider } from '@src/generators/core/service-context/service-context.generator.js';
+import { requestServiceContextConfigProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
+import { serviceContextConfigProvider } from '@src/generators/core/service-context/service-context.generator.js';
 
 import { authRolesProvider } from '../auth-roles/auth-roles.generator.js';
 import { authConfigProvider } from '../auth/auth.generator.js';
@@ -37,8 +39,8 @@ export const authContextGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        serviceContextSetup: serviceContextSetupProvider,
-        requestServiceContextSetup: requestServiceContextSetupProvider,
+        serviceContextConfig: serviceContextConfigProvider,
+        requestServiceContextConfig: requestServiceContextConfigProvider,
         authRoles: authRolesProvider,
         appModule: appModuleProvider,
         typescript: typescriptProvider,
@@ -50,8 +52,8 @@ export const authContextGenerator = createGenerator({
       },
       run(
         {
-          serviceContextSetup,
-          requestServiceContextSetup,
+          serviceContextConfig,
+          requestServiceContextConfig,
           appModule,
           typescript,
           errorHandlerService,
@@ -128,35 +130,32 @@ export const authContextGenerator = createGenerator({
               }),
             );
 
-            const authContextType = TypescriptCodeUtils.createExpression(
-              'AuthContext',
-              'import { AuthContext } from "%auth-context/types";',
-              {
-                importMappers: [{ getImportMap: () => importMap }],
-              },
-            );
-
-            serviceContextSetup.addContextField('auth', {
-              type: authContextType,
-              value: TypescriptCodeUtils.createExpression('auth'),
-              contextArg: [
+            serviceContextConfig.contextFields.set('auth', {
+              type: TsCodeUtils.importFragment(
+                'AuthContext',
+                authContextTypesImport,
+              ),
+              setter: 'auth',
+              creatorArguments: [
                 {
                   name: 'auth',
-                  type: authContextType,
-                  testDefault: TypescriptCodeUtils.createExpression(
+                  type: TsCodeUtils.importFragment(
+                    'AuthContext',
+                    authContextTypesImport,
+                  ),
+                  testDefault: tsCodeFragment(
                     'createAuthContextFromSessionInfo(undefined)',
-                    'import { createAuthContextFromSessionInfo } from "%auth-context/utils";',
-                    { importMappers: [{ getImportMap: () => importMap }] },
+                    tsImportBuilder(['createAuthContextFromSessionInfo']).from(
+                      authContextUtilsImport,
+                    ),
                   ),
                 },
               ],
             });
 
-            requestServiceContextSetup.addContextPassthrough({
+            requestServiceContextConfig.contextPassthroughs.set('auth', {
               name: 'auth',
-              creator(req) {
-                return TypescriptCodeUtils.createExpression(`${req}.auth`);
-              },
+              creator: (req) => tsCodeFragment(`${req}.auth`),
             });
           },
         };

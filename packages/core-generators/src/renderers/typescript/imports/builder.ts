@@ -3,7 +3,7 @@ import type { TsImportDeclaration } from './types.js';
 /**
  * A builder for creating import declarations.
  */
-interface TsImportDeclarationBuilder {
+export interface TsImportDeclarationBuilder {
   /**
    * Add a default import.
    * @param defaultImport - The default import to add.

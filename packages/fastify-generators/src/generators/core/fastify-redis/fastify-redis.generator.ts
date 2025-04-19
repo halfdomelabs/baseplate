@@ -1,4 +1,4 @@
-import type { ImportMap, ImportMapper } from '@halfdomelabs/core-generators';
+import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
@@ -6,9 +6,9 @@ import {
   makeImportAndFilePath,
   projectScope,
   tsCodeFragment,
-  TypescriptCodeUtils,
+  tsImportBuilder,
   typescriptProvider,
-  vitestProvider,
+  vitestConfigProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -20,7 +20,7 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { configServiceProvider } from '../config-service/config-service.generator.js';
-import { fastifyHealthCheckProvider } from '../fastify-health-check/fastify-health-check.generator.js';
+import { fastifyHealthCheckConfigProvider } from '../fastify-health-check/fastify-health-check.generator.js';
 
 const descriptorSchema = z.object({
   defaultUrl: z.string().min(1),
@@ -45,37 +45,35 @@ export const fastifyRedisGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         configService: configServiceProvider,
-        fastifyHealthCheck: fastifyHealthCheckProvider,
+        fastifyHealthCheckConfig: fastifyHealthCheckConfigProvider,
         typescript: typescriptProvider,
-        vitest: vitestProvider.dependency().optional(),
+        vitestConfig: vitestConfigProvider.dependency().optional(),
       },
       exports: {
         fastifyRedis: fastifyRedisProvider.export(projectScope),
       },
-      run({ configService, fastifyHealthCheck, typescript, vitest }) {
+      run({
+        configService,
+        fastifyHealthCheckConfig,
+        typescript,
+        vitestConfig,
+      }) {
         const [redisImport, redisPath] = makeImportAndFilePath(
           `src/services/redis.ts`,
         );
-
-        const importMap: ImportMap = {
-          '%fastify-redis': {
-            path: redisImport,
-            allowedImports: ['getRedisClient', 'createRedisClient'],
-          },
-        };
 
         configService.configFields.set('REDIS_URL', {
           validator: tsCodeFragment('z.string().min(1)'),
           comment: 'Connection URL of Redis',
           exampleValue: defaultUrl,
         });
-        fastifyHealthCheck.addCheck(
-          TypescriptCodeUtils.createBlock(
+        fastifyHealthCheckConfig.healthChecks.set(
+          'redis',
+          tsCodeFragment(
             `// check Redis is operating
           const redisClient = getRedisClient();
           await redisClient.ping();`,
-            "import { getRedisClient } from '%fastify-redis'",
-            { importMappers: [{ getImportMap: () => importMap }] },
+            tsImportBuilder(['getRedisClient']).from(redisImport),
           ),
         );
 
@@ -98,18 +96,15 @@ export const fastifyRedisGenerator = createGenerator({
               redisFile.renderToAction('redis.ts', redisPath),
             );
 
-            if (vitest) {
+            if (vitestConfig) {
+              const mockRedisPath = 'src/tests/scripts/mock-redis.ts';
               await builder.apply(
                 typescript.createCopyAction({
                   source: 'mock-redis.ts',
-                  destination: 'src/tests/scripts/mock-redis.ts',
+                  destination: mockRedisPath,
                 }),
               );
-              vitest
-                .getConfig()
-                .appendUnique('setupFiles', [
-                  './src/tests/scripts/mock-redis.ts',
-                ]);
+              vitestConfig.setupFiles.push('tests/scripts/mock-redis.ts');
             }
           },
         };

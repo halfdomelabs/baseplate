@@ -178,7 +178,7 @@ export async function organizeTsTemplateImports(
   });
 
   return {
-    contents: sourceFile.getText(),
+    contents: sourceFile.getFullText(),
     usedProjectExports,
   };
 }

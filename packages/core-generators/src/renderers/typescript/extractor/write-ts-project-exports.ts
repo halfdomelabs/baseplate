@@ -114,7 +114,7 @@ export function writeTsProjectExports(
     '@halfdomelabs/core-generators#',
   );
   const tsImports = isLocalImport
-    ? '@src/renderers/typescript/index.ts'
+    ? '@src/renderers/typescript/index.js'
     : '@halfdomelabs/core-generators';
 
   const commonPathPrefix = getCommonPathPrefix(
@@ -162,6 +162,11 @@ export function writeTsProjectExports(
       ),
     },
     {},
+    {
+      importSortOptions: {
+        internalPatterns: [/^@src\//],
+      },
+    },
   );
 
   return {

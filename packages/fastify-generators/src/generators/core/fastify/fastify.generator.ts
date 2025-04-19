@@ -1,4 +1,4 @@
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
 
 import {
   createNodeTask,
@@ -9,12 +9,15 @@ import {
   projectScope,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigFieldMap,
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
+  createProviderTask,
   createProviderType,
   createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
+import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
+import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
@@ -25,9 +28,9 @@ const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-type NodeFlagUseCase = 'dev-env' | 'instrument';
+export type FastifyNodeFlagUseCase = 'dev-env' | 'instrument';
 
-interface NodeFlag {
+export interface FastifyNodeFlag {
   flag: string;
   /**
    * The type of flag that is used
@@ -35,7 +38,7 @@ interface NodeFlag {
    * 'dev-env': For setting up environment variables in dev
    * 'instrument': For instrumenting the code
    */
-  useCase: NodeFlagUseCase;
+  useCase: FastifyNodeFlagUseCase;
   targetEnvironment: 'dev' | 'prod';
 }
 
@@ -44,19 +47,30 @@ export interface FastifyGeneratorConfig {
    * Command to pipe the dev output into, e.g. pino-pretty
    */
   devOutputFormatter?: string;
-  nodeFlags: NodeFlag[];
+  nodeFlags: FastifyNodeFlag[];
 }
 
-export interface FastifyProvider {
-  getConfig: () => NonOverwriteableMap<FastifyGeneratorConfig>;
-}
+const fastifyConfigSchema = createFieldMapSchemaBuilder((t) => ({
+  /**
+   * Command to pipe the dev output into, e.g. pino-pretty
+   */
+  devOutputFormatter: t.scalar<string>(),
+  /**
+   * Flags to pass to the node command when running
+   */
+  nodeFlags: t.map<string, FastifyNodeFlag>(),
+}));
+
+export type FastifyProvider = InferFieldMapSchemaFromBuilder<
+  typeof fastifyConfigSchema
+>;
 
 export const fastifyProvider = createProviderType<FastifyProvider>('fastify');
 
 export interface FastifyOutputProvider {
-  getNodeFlags(): NodeFlag[];
-  getNodeFlagsDev(useCase?: NodeFlagUseCase): string[];
-  getNodeFlagsProd(useCase?: NodeFlagUseCase): string[];
+  getNodeFlags(): FastifyNodeFlag[];
+  getNodeFlagsDev(useCase?: FastifyNodeFlagUseCase): string[];
+  getNodeFlagsProd(useCase?: FastifyNodeFlagUseCase): string[];
   getDevOutputFormatter(): string | undefined;
 }
 
@@ -94,10 +108,12 @@ export const fastifyGenerator = createGenerator({
         taskId,
       );
     }),
+    gitIgnore: createProviderTask(nodeGitIgnoreProvider, (nodeGitIgnore) => {
+      nodeGitIgnore.addExclusions(['/dist']);
+    }),
     main: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
-        nodeGitIgnore: nodeGitIgnoreProvider,
       },
       exports: {
         fastify: fastifyProvider.export(projectScope),
@@ -105,30 +121,34 @@ export const fastifyGenerator = createGenerator({
       outputs: {
         fastifyOutput: fastifyOutputProvider.export(projectScope),
       },
-      run({ node, nodeGitIgnore }, { taskId }) {
-        const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
-          { nodeFlags: [] },
-          { name: 'fastify-config', mergeArraysUniquely: true },
-        );
-
-        nodeGitIgnore.addExclusions(['/dist']);
+      run({ node }, { taskId }) {
+        const fastifyConfig = createConfigFieldMap(fastifyConfigSchema);
 
         return {
           providers: {
-            fastify: {
-              getConfig: () => config,
-            },
+            fastify: fastifyConfig,
           },
           build() {
             // add scripts
-            const { devOutputFormatter, nodeFlags } = config.value();
+            const { devOutputFormatter, nodeFlags } = fastifyConfig.getValues();
+
+            const USE_CASE_ORDER: Record<FastifyNodeFlagUseCase, number> = {
+              'dev-env': 0,
+              instrument: 1,
+            };
+
+            const sortedNodeFlags = sortBy(
+              [...nodeFlags.entries()],
+              // Sort by use case, then by name
+              [([, flag]) => USE_CASE_ORDER[flag.useCase], ([name]) => name],
+            ).map(([, flag]) => flag);
 
             const outputFormatter = devOutputFormatter
               ? `| ${devOutputFormatter}`
               : '';
             const devCommand = [
               'tsx watch --clear-screen=false',
-              ...nodeFlags
+              ...sortedNodeFlags
                 .filter((f) => f.targetEnvironment === 'dev')
                 .map((f) => f.flag),
               'src/index.ts',
@@ -138,7 +158,7 @@ export const fastifyGenerator = createGenerator({
               .join(' ');
             const startCommand = [
               'node',
-              ...nodeFlags
+              ...sortedNodeFlags
                 .filter((f) => f.targetEnvironment === 'prod')
                 .map((f) => f.flag),
               'dist/index.js',
@@ -155,9 +175,9 @@ export const fastifyGenerator = createGenerator({
 
             return {
               fastifyOutput: {
-                getNodeFlags: () => nodeFlags,
+                getNodeFlags: () => sortedNodeFlags,
                 getNodeFlagsDev: (useCase) =>
-                  nodeFlags
+                  sortedNodeFlags
                     .filter(
                       (f) =>
                         f.targetEnvironment === 'dev' &&
@@ -165,7 +185,7 @@ export const fastifyGenerator = createGenerator({
                     )
                     .map((f) => f.flag),
                 getNodeFlagsProd: (useCase) =>
-                  nodeFlags
+                  sortedNodeFlags
                     .filter(
                       (f) =>
                         f.targetEnvironment === 'prod' &&
