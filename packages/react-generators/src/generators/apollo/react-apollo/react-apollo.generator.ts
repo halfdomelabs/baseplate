@@ -8,6 +8,7 @@ import {
   makeImportAndFilePath,
   prettierProvider,
   projectScope,
+  tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
   TypescriptCodeBlock,
@@ -29,7 +30,7 @@ import { z } from 'zod';
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 import { reactAppConfigProvider } from '@src/generators/core/react-app/react-app.generator.js';
 import { reactConfigProvider } from '@src/generators/core/react-config/react-config.generator.js';
-import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
+import { reactErrorConfigProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactProxyProvider } from '@src/generators/core/react-proxy/react-proxy.generator.js';
 
 import { notEmpty } from '../../../utils/array.js';
@@ -470,10 +471,10 @@ export const reactApolloGenerator = createGenerator({
     }),
     graphqlErrorContext: createGeneratorTask({
       dependencies: {
-        reactErrorProvider,
+        reactErrorConfig: reactErrorConfigProvider,
       },
-      run({ reactErrorProvider }) {
-        const headerBlock = TypescriptCodeUtils.createBlock(
+      run({ reactErrorConfig }) {
+        const headerBlock = tsCodeFragment(
           `
           function annotateGraphQLError(
             error: GraphQLError,
@@ -496,11 +497,12 @@ export const reactApolloGenerator = createGenerator({
             }
           }
   `,
-          `import { GraphQLError } from 'graphql'`,
+          tsImportBuilder(['GraphQLError']).from('graphql'),
         );
 
-        reactErrorProvider.addContextAction(
-          TypescriptCodeUtils.createBlock(
+        reactErrorConfig.contextActions.set(
+          'apollo',
+          tsCodeFragment(
             `
             if (error instanceof GraphQLError) {
               annotateGraphQLError(error, context);
@@ -537,11 +539,13 @@ export const reactApolloGenerator = createGenerator({
             }
           `,
             [
-              `import { GraphQLError } from 'graphql'`,
-              `import { ApolloError } from '@apollo/client'`,
+              tsImportBuilder(['GraphQLError']).from('graphql'),
+              tsImportBuilder(['ApolloError']).from('@apollo/client'),
             ],
             {
-              headerBlocks: [headerBlock],
+              hoistedFragments: [
+                { key: 'annotate-graphql-error', fragment: headerBlock },
+              ],
             },
           ),
         );

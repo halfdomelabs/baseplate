@@ -5,12 +5,15 @@ import {
   extractPackageVersions,
   makeImportAndFilePath,
   projectScope,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
+  createProviderTask,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -19,7 +22,7 @@ import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 import { authIdentifyProvider } from '@src/generators/auth/auth-identify/auth-identify.generator.js';
 
 import { reactConfigProvider } from '../react-config/react-config.generator.js';
-import { reactErrorProvider } from '../react-error/react-error.generator.js';
+import { reactErrorConfigProvider } from '../react-error/react-error.generator.js';
 import { reactRouterProvider } from '../react-router/react-router.generator.js';
 
 const descriptorSchema = z.object({});
@@ -39,17 +42,30 @@ export const reactSentryGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['@sentry/react']),
     }),
+    reactError: createProviderTask(
+      reactErrorConfigProvider,
+      (reactErrorConfig) => {
+        reactErrorConfig.errorReporters.set(
+          'sentry',
+          tsCodeFragment(
+            `context.errorId = logErrorToSentry(error, context);`,
+            tsImportBuilder(['logErrorToSentry']).from(
+              '@/src/services/sentry.ts',
+            ),
+          ),
+        );
+      },
+    ),
     main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
-        reactError: reactErrorProvider,
         reactConfig: reactConfigProvider,
         authIdentify: authIdentifyProvider.dependency().optional(),
       },
       exports: {
         reactSentry: reactSentryProvider.export(projectScope),
       },
-      run({ typescript, reactError, reactConfig, authIdentify }) {
+      run({ typescript, reactConfig, authIdentify }) {
         const sentryFile = typescript.createTemplate(
           {
             SENTRY_SCOPE_ACTIONS: {
@@ -60,13 +76,6 @@ export const reactSentryGenerator = createGenerator({
         );
         const [sentryImport, sentryPath] = makeImportAndFilePath(
           'src/services/sentry.ts',
-        );
-
-        reactError.addErrorReporter(
-          TypescriptCodeUtils.createBlock(
-            `context.errorId = logErrorToSentry(error, context);`,
-            [`import { logErrorToSentry } from '${sentryImport}';`],
-          ),
         );
 
         reactConfig.configEntries.set('VITE_SENTRY_DSN', {

@@ -129,7 +129,7 @@ function normalizePathForResolutionKind(
   return isNode16
     ? // normalize the extension to .js
       path.replace(TS_FILE_EXTENSION_REGEX, '.js')
-    : path.replace(/(\/index)?\.js$/, '');
+    : path.replace(/(\/index)?\.(j|t)sx?$/, '');
 }
 
 /**
