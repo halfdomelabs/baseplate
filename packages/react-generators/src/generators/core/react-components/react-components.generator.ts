@@ -18,7 +18,6 @@ import { z } from 'zod';
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
 import { reactAppProvider } from '../react-app/react-app.generator.js';
-import { reactProvider } from '../react/react.generator.js';
 
 const descriptorSchema = z.object({
   includeDatePicker: z.boolean().optional(),
@@ -99,7 +98,6 @@ export const reactComponentsGenerator = createGenerator({
       : undefined,
     main: createGeneratorTask({
       dependencies: {
-        react: reactProvider,
         typescript: typescriptProvider,
         reactApp: reactAppProvider,
       },

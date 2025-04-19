@@ -1,10 +1,9 @@
 // @ts-nocheck
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-IMPORTS;
-
-HEADER;
+TPL_HEADER;
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -14,6 +13,6 @@ const root = ReactDOM.createRoot(rootElement);
 
 root.render(
   <React.StrictMode>
-    <APP />
+    <TPL_APP />
   </React.StrictMode>,
 );

@@ -6,6 +6,8 @@ import type { OrderedList } from '@halfdomelabs/sync';
 
 import {
   projectScope,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -17,7 +19,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactProvider } from '../react/react.generator.js';
+import { reactBaseConfigProvider } from '../react/react.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -40,13 +42,13 @@ export const reactAppGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        react: reactProvider,
+        reactBaseConfig: reactBaseConfigProvider,
         typescript: typescriptProvider,
       },
       exports: {
         reactApp: reactAppProvider.export(projectScope),
       },
-      run({ react, typescript }) {
+      run({ reactBaseConfig, typescript }) {
         const renderWrappers = createOrderedList<TypescriptCodeWrapper>();
         let errorBoundary: TypescriptCodeWrapper | undefined;
         let renderRoot: TypescriptCodeExpression =
@@ -59,15 +61,13 @@ export const reactAppGenerator = createGenerator({
           RENDER_ROOT: { type: 'code-expression', default: '<div />' },
         });
 
-        react
-          .getIndexFile()
-          .addCodeExpression(
-            'APP',
-            TypescriptCodeUtils.createExpression(
-              '<App />',
-              `import App from '@/src/app/App';`,
-            ),
-          );
+        reactBaseConfig.appFragment.set(
+          tsCodeFragment(
+            '<App />',
+            tsImportBuilder().default('App').from('@/src/app/App'),
+          ),
+        );
+
         return {
           providers: {
             reactApp: {

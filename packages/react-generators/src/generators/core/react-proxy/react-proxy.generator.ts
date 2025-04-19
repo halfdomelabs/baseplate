@@ -1,7 +1,4 @@
-import {
-  projectScope,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import { projectScope, tsCodeFragment } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -10,7 +7,7 @@ import {
 import { z } from 'zod';
 
 import { reactConfigProvider } from '../react-config/react-config.generator.js';
-import { reactProvider } from '../react/react.generator.js';
+import { reactBaseConfigProvider } from '../react/react.generator.js';
 
 const descriptorSchema = z.object({
   devBackendHost: z.string().min(1),
@@ -31,12 +28,12 @@ export const reactProxyGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactConfig: reactConfigProvider,
-        react: reactProvider,
+        reactBaseConfig: reactBaseConfigProvider,
       },
       exports: {
         reactProxy: reactProxyProvider.export(projectScope),
       },
-      run({ react, reactConfig }) {
+      run({ reactBaseConfig, reactConfig }) {
         reactConfig.addEnvVar('DEV_BACKEND_HOST', devBackendHost);
         let enableWebsocket = false;
         return {
@@ -48,9 +45,9 @@ export const reactProxyGenerator = createGenerator({
             },
           },
           build: () => {
-            react.addServerOption(
+            reactBaseConfig.viteServerOptions.set(
               'proxy',
-              TypescriptCodeUtils.createExpression(
+              tsCodeFragment(
                 `envVars.DEV_BACKEND_HOST
           ? {
               '/api': {

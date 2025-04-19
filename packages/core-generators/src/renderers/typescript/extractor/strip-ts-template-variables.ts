@@ -4,6 +4,8 @@ import { preprocessCodeForExtractionHack } from './preprocess-code-for-extractio
 
 const VARIABLE_REGEX =
   /\/\* TPL_([A-Z0-9_]+):START \*\/([\s\S]*?)\/\* TPL_\1:END \*\//g;
+const TSX_VARIABLE_REGEX =
+  /\{\/\* TPL_([A-Z0-9_]+):START \*\/\}([\s\S]*?)\{\/\* TPL_\1:END \*\/\}/g;
 const HOISTED_REGEX =
   /\/\* HOISTED:([A-Za-z0-9_-]+):START \*\/([\s\S]*?)\/\* HOISTED:\1:END \*\/\n?/g;
 
@@ -26,18 +28,24 @@ export function stripTsTemplateVariables(
 
   const templateVariables = new Set<string>(Object.keys(variables ?? {}));
   const processedVariables = new Set<string>();
+
   // Replace TPL variable blocks and extract variable names
+  const processVariableBlock = (varName: string, isTsx = false): string => {
+    const fullName = `TPL_${varName}`;
+    if (!templateVariables.has(fullName)) {
+      throw new Error(`Found unknown template variable: ${fullName}`);
+    }
+    processedVariables.add(fullName);
+    return isTsx ? `<${fullName} />` : fullName;
+  };
 
   processedContent = processedContent.replaceAll(
+    TSX_VARIABLE_REGEX,
+    (match: string, varName: string) => processVariableBlock(varName, true),
+  );
+  processedContent = processedContent.replaceAll(
     VARIABLE_REGEX,
-    (match, varName: string) => {
-      const fullName = `TPL_${varName}`;
-      if (!templateVariables.has(fullName)) {
-        throw new Error(`Found unknown template variable: ${fullName}`);
-      }
-      processedVariables.add(fullName);
-      return fullName;
-    },
+    (match: string, varName: string) => processVariableBlock(varName, false),
   );
 
   // Make sure all template variables are processed

@@ -110,4 +110,122 @@ describe('renderTsTemplateToTsCodeFragment', () => {
     expect(result.contents).not.toContain('// @ts-nocheck');
     expect(result.contents).toContain('const value = "test"');
   });
+
+  it('should handle TSX-style template variables without metadata', () => {
+    const template = `
+      import React from 'react';
+      
+      export const Page = () => {
+        const title = TPL_TITLE;
+        return (
+          <div>
+            <TPL_HEADER />
+            <main>
+              <TPL_CONTENT />
+            </main>
+            <TPL_FOOTER />
+          </div>
+        );
+      };
+    `;
+
+    const variables = {
+      TPL_TITLE: {
+        contents: '"Welcome"',
+      },
+      TPL_HEADER: {
+        contents: '<Header title="Welcome" />',
+      },
+      TPL_CONTENT: {
+        contents: '<Content>Hello World</Content>',
+      },
+      TPL_FOOTER: {
+        contents: '<Footer copyright="2024" />',
+      },
+    };
+
+    const result = renderTsTemplateToTsCodeFragment(template, variables);
+
+    expect(result.contents).toMatchInlineSnapshot(`
+      "
+            import React from 'react';
+            
+            export const Page = () => {
+              const title = "Welcome";
+              return (
+                <div>
+                  <Header title="Welcome" />
+                  <main>
+                    <Content>Hello World</Content>
+                  </main>
+                  <Footer copyright="2024" />
+                </div>
+              );
+            };
+          "
+    `);
+  });
+
+  it('should handle TSX-style template variables with metadata', () => {
+    const template = `
+      import React from 'react';
+      
+      export const Page = () => {
+        const title = TPL_TITLE;
+        return (
+          <div>
+            <TPL_HEADER />
+            <main>
+              <TPL_CONTENT />
+            </main>
+            <TPL_FOOTER />
+          </div>
+        );
+      };
+    `;
+
+    const variables = {
+      TPL_TITLE: {
+        contents: '"Welcome"',
+      },
+      TPL_HEADER: {
+        contents: '<Header />',
+      },
+      TPL_CONTENT: {
+        contents: '<Content>Hello World</Content>',
+      },
+      TPL_FOOTER: {
+        contents: '<Footer copyright="2024" />',
+      },
+    };
+
+    const result = renderTsTemplateToTsCodeFragment(template, variables, {
+      includeMetadata: true,
+    });
+
+    expect(result.contents).toMatchInlineSnapshot(`
+      "
+            import React from 'react';
+            
+            export const Page = () => {
+              const title = /* TPL_TITLE:START */ "Welcome" /* TPL_TITLE:END */;
+              return (
+                <div>
+                  {/* TPL_HEADER:START */}
+      <Header />
+      {/* TPL_HEADER:END */}
+                  <main>
+                    {/* TPL_CONTENT:START */}
+      <Content>Hello World</Content>
+      {/* TPL_CONTENT:END */}
+                  </main>
+                  {/* TPL_FOOTER:START */}
+      <Footer copyright="2024" />
+      {/* TPL_FOOTER:END */}
+                </div>
+              );
+            };
+          "
+    `);
+  });
 });

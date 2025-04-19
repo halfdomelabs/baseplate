@@ -1,32 +1,29 @@
-import type {
-  TypescriptCodeExpression,
-  TypescriptSourceFile,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
-  createTypescriptTemplateConfig,
   eslintProvider,
   nodeConfigProvider,
   nodeGitIgnoreProvider,
   projectProvider,
   projectScope,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
   createProviderTask,
-  createProviderType,
   renderRawTemplateFileAction,
   renderTextTemplateGroupAction,
 } from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { CORE_REACT_RAW_TEMPLATES } from './generated/raw-templates.js';
 import { CORE_REACT_TEXT_TEMPLATES } from './generated/text-templates.js';
+import { CORE_REACT_TS_TEMPLATES } from './generated/ts-templates.js';
 import { viteNodeTask } from './node.js';
 
 const descriptorSchema = z.object({
@@ -34,33 +31,30 @@ const descriptorSchema = z.object({
   description: z.string().default('A React app'),
 });
 
-const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
-  APP: { type: 'code-expression', default: '<div />' },
-  IMPORTS: { type: 'code-block' },
-  HEADER: { type: 'code-block' },
-});
+const [setupTask, reactBaseConfigProvider, reactConfigValuesProvider] =
+  createConfigProviderTask(
+    (t) => ({
+      appFragment: t.scalar<TsCodeFragment>(),
+      headerFragments: t.map<string, TsCodeFragment>(),
+      vitePlugins: t.map<string, TsCodeFragment>(),
+      viteServerOptions: t.map<string, TsCodeFragment>(),
+    }),
+    {
+      prefix: 'react',
+      configScope: projectScope,
+    },
+  );
 
-export interface ReactProvider {
-  getIndexFile(): TypescriptSourceFile<typeof INDEX_FILE_CONFIG>;
-  addVitePlugin(plugin: TypescriptCodeExpression): void;
-  addServerOption(key: string, value: TypescriptCodeExpression): void;
-}
-
-export const reactProvider = createProviderType<ReactProvider>('react');
+export { reactBaseConfigProvider };
 
 export const reactGenerator = createGenerator({
   name: 'core/react',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: (descriptor) => ({
-    setupNode: createGeneratorTask({
-      dependencies: {
-        nodeConfig: nodeConfigProvider,
-      },
-      run: ({ nodeConfig }, { taskId }) => {
-        nodeConfig.isEsm.set(true, taskId);
-        return {};
-      },
+    setup: setupTask,
+    setupNode: createProviderTask(nodeConfigProvider, (nodeConfig) => {
+      nodeConfig.isEsm.set(true);
     }),
     viteNode: viteNodeTask,
     gitIgnore: createProviderTask(nodeGitIgnoreProvider, (nodeGitIgnore) => {
@@ -79,59 +73,57 @@ export const reactGenerator = createGenerator({
     eslint: createProviderTask(eslintProvider, (eslint) => {
       eslint.getConfig().set('react', true).set('disableVitest', true);
     }),
-    main: createGeneratorTask({
-      dependencies: {
-        typescript: typescriptProvider,
-        project: projectProvider,
-      },
-      exports: {
-        react: reactProvider.export(projectScope),
-      },
-      run({ typescript, project }) {
-        const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);
-
-        const vitePlugins: TypescriptCodeExpression[] = [
-          TypescriptCodeUtils.createExpression(
+    defaultConfig: createProviderTask(
+      reactBaseConfigProvider,
+      (reactConfig) => {
+        // Add default plugins
+        reactConfig.vitePlugins.mergeObj({
+          react: tsCodeFragment(
             `react()`,
-            `import react from '@vitejs/plugin-react';`,
+            tsImportBuilder().default('react').from('@vitejs/plugin-react'),
           ),
-          TypescriptCodeUtils.createExpression(
+          'tsconfig-paths': tsCodeFragment(
             `viteTsconfigPaths()`,
-            `import viteTsconfigPaths from 'vite-tsconfig-paths';`,
+            tsImportBuilder()
+              .default('viteTsconfigPaths')
+              .from('vite-tsconfig-paths'),
           ),
-          TypescriptCodeUtils.createExpression(
+          svgr: tsCodeFragment(
             `svgrPlugin()`,
-            `import svgrPlugin from 'vite-plugin-svgr';`,
+            tsImportBuilder().default('svgrPlugin').from('vite-plugin-svgr'),
           ),
-        ];
+        });
 
-        const viteServerOptions = createNonOverwriteableMap<
-          Record<string, TypescriptCodeExpression>
-        >({
-          port: TypescriptCodeUtils.createExpression(
+        // Add default server options
+        reactConfig.viteServerOptions.mergeObj({
+          port: tsCodeFragment(
             'envVars.PORT ? parseInt(envVars.PORT, 10) : 3000',
           ),
-          watch: TypescriptCodeUtils.createExpression(
+          watch: tsCodeFragment(
             JSON.stringify({
               ignored: ['**/baseplate/**'],
             }),
           ),
         });
-
+      },
+    ),
+    main: createGeneratorTask({
+      dependencies: {
+        typescriptFile: typescriptFileProvider,
+        project: projectProvider,
+        reactConfigValues: reactConfigValuesProvider,
+      },
+      run({
+        typescriptFile,
+        project,
+        reactConfigValues: {
+          appFragment,
+          headerFragments,
+          vitePlugins,
+          viteServerOptions,
+        },
+      }) {
         return {
-          providers: {
-            react: {
-              getIndexFile() {
-                return indexFile;
-              },
-              addVitePlugin(plugin) {
-                vitePlugins.push(plugin);
-              },
-              addServerOption(key, value) {
-                viteServerOptions.set(key, value);
-              },
-            },
-          },
           build: async (builder) => {
             await builder.apply(
               renderRawTemplateFileAction({
@@ -140,6 +132,7 @@ export const reactGenerator = createGenerator({
               }),
             );
 
+            // render README and index.html
             await builder.apply(
               renderTextTemplateGroupAction({
                 group: CORE_REACT_TEXT_TEMPLATES.staticGroup,
@@ -157,23 +150,35 @@ export const reactGenerator = createGenerator({
             );
 
             await builder.apply(
-              indexFile.renderToAction('src/index.tsx', 'src/index.tsx'),
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_TS_TEMPLATES.index,
+                destination: 'src/index.tsx',
+                variables: {
+                  TPL_APP: appFragment ?? '<div />',
+                  TPL_HEADER: TsCodeUtils.mergeFragments(
+                    headerFragments,
+                    '\n\n',
+                  ),
+                },
+              }),
             );
 
-            const viteConfig = typescript.createTemplate({
-              CONFIG: TypescriptCodeUtils.mergeExpressionsAsObject({
-                plugins:
-                  TypescriptCodeUtils.mergeExpressionsAsArray(vitePlugins),
-                server: TypescriptCodeUtils.mergeExpressionsAsObject(
-                  viteServerOptions.value(),
-                ),
-                build: TypescriptCodeUtils.mergeExpressionsAsObject({
-                  outDir: quot('build'),
-                }),
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_TS_TEMPLATES.viteConfig,
+                destination: 'vite.config.ts',
+                variables: {
+                  TPL_CONFIG: TsCodeUtils.mergeFragmentsAsObject({
+                    plugins: TsCodeUtils.mergeFragmentsAsArray(vitePlugins),
+                    server:
+                      TsCodeUtils.mergeFragmentsAsObject(viteServerOptions),
+                    build: JSON.stringify({
+                      outDir: 'build',
+                    }),
+                  }),
+                },
               }),
-            });
-
-            await builder.apply(viteConfig.renderToAction('vite.config.ts'));
+            );
           },
         };
       },
