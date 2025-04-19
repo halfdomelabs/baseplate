@@ -1,7 +1,10 @@
 import { CookieSerializeOptions } from '@fastify/cookie';
 import { FastifyReply, FastifyRequest } from 'fastify';
+
 import type { RequestInfo } from '../plugins/request-context.js';
-import { ServiceContext, createServiceContext } from './service-context.js';
+import type { ServiceContext } from './service-context.js';
+
+import { createServiceContext } from './service-context.js';
 
 interface CookieStore {
   get(name: string): string | undefined;
@@ -10,8 +13,8 @@ interface CookieStore {
 }
 
 export interface RequestServiceContext extends ServiceContext {
-  reqInfo: RequestInfo;
   cookieStore: CookieStore;
+  reqInfo: RequestInfo;
 }
 
 export function createContextFromRequest(
@@ -29,12 +32,12 @@ export function createContextFromRequest(
 
   return {
     ...createServiceContext(),
-    reqInfo: request.reqInfo,
     cookieStore: {
       get: (name) => request.cookies[name],
       set: (name, value, options) =>
         void getReply().setCookie(name, value, options),
       clear: (name) => void getReply().clearCookie(name),
     },
+    reqInfo: request.reqInfo,
   };
 }

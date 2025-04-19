@@ -1,4 +1,5 @@
 import fp from 'fastify-plugin';
+
 import { logError } from '../services/error-logger.js';
 import { logger } from '../services/logger.js';
 
