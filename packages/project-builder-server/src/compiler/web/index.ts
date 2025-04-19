@@ -13,7 +13,6 @@ import {
   apolloSentryGenerator,
   composeReactGenerators,
   reactApolloGenerator,
-  reactDatadogGenerator,
   reactNotFoundHandlerGenerator,
   reactRouterGenerator,
   reactSentryGenerator,
@@ -59,9 +58,6 @@ function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
             },
           }),
           apolloError: apolloErrorGenerator({}),
-          reactDatadog: appConfig.enableDatadog
-            ? reactDatadogGenerator({})
-            : undefined,
         },
         compileAuthFeatures(builder) ?? {},
         appCompiler.getRootChildren(),

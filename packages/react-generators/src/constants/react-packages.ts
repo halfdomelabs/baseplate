@@ -56,9 +56,6 @@ export const REACT_PACKAGES = {
   // Validation
   zod: '3.24.1',
 
-  // Datadog
-  '@datadog/browser-logs': '4.19.1',
-
   // Sentry
   '@sentry/react': '9.10.1',
 } as const;

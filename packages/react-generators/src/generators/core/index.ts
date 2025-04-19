@@ -3,7 +3,6 @@ export * from './_utils/index.js';
 export * from './react-app/react-app.generator.js';
 export * from './react-components/react-components.generator.js';
 export * from './react-config/react-config.generator.js';
-export * from './react-datadog/react-datadog.generator.js';
 export * from './react-error-boundary/react-error-boundary.generator.js';
 export * from './react-error/react-error.generator.js';
 export * from './react-logger/react-logger.generator.js';

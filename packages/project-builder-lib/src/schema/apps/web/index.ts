@@ -22,7 +22,6 @@ export const webAppSchema = z.object({
     .optional(),
   includeUploadComponents: z.boolean().optional(),
   enableSubscriptions: z.boolean().optional(),
-  enableDatadog: z.boolean().optional(),
 });
 
 export type WebAppConfig = z.infer<typeof webAppSchema>;
