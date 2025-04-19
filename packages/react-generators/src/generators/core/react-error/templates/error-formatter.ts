@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { logError } from './error-logger';
+import { logError } from './error-logger.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getFormattedErrorSuffix(error: unknown): string {
