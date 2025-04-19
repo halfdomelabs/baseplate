@@ -2,6 +2,7 @@ import {
   CORE_PACKAGES,
   createNodePackagesTask,
   extractPackageVersions,
+  projectScope,
   tsCodeFragment,
   tsImportBuilder,
   typescriptFileProvider,
@@ -10,6 +11,10 @@ import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { errorHandlerServiceConfigProvider } from '../error-handler-service/error-handler-service.generator.js';
+import {
+  axiosImportsProvider,
+  createAxiosImports,
+} from './generated/ts-import-maps.js';
 import { CORE_AXIOS_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
@@ -27,10 +32,16 @@ export const axiosGenerator = createGenerator({
         errorHandlerServiceConfig: errorHandlerServiceConfigProvider,
         typescriptFile: typescriptFileProvider,
       },
+      exports: {
+        axiosImports: axiosImportsProvider.export(projectScope),
+      },
       run({ errorHandlerServiceConfig, typescriptFile }) {
         const axiosFilePath = '@/src/services/axios.ts';
 
         return {
+          providers: {
+            axiosImports: createAxiosImports('@/src/services'),
+          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
@@ -52,3 +63,5 @@ export const axiosGenerator = createGenerator({
     }),
   }),
 });
+
+export { axiosImportsProvider } from './generated/ts-import-maps.js';

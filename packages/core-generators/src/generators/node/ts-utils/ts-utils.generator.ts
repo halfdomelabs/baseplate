@@ -13,6 +13,10 @@ import { projectScope } from '@src/providers/scopes.js';
 import type { ImportMapper } from '../../../providers/index.js';
 
 import { typescriptFileProvider } from '../typescript/typescript.generator.js';
+import {
+  createTsUtilsImports,
+  tsUtilsImportsProvider,
+} from './generated/ts-import-maps.js';
 import { NODE_TS_UTILS_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
@@ -41,6 +45,7 @@ export const tsUtilsGenerator = createGenerator({
       },
       exports: {
         tsUtils: tsUtilsProvider.export(projectScope),
+        tsUtilsImports: tsUtilsImportsProvider.export(projectScope),
       },
       run({ typescriptFile }) {
         const usedTemplates = new Set<TsUtilKey>();
@@ -71,6 +76,7 @@ export const tsUtilsGenerator = createGenerator({
                   ]),
                 ),
             },
+            tsUtilsImports: createTsUtilsImports('@/src/utils'),
           },
           build: async (builder) => {
             // render all ts-utils files that were used
@@ -105,3 +111,5 @@ export const tsUtilsGenerator = createGenerator({
     }),
   }),
 });
+
+export { tsUtilsImportsProvider } from './generated/ts-import-maps.js';
