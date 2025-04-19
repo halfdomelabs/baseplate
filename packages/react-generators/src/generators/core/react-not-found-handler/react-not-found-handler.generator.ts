@@ -2,7 +2,7 @@ import {
   makeImportAndFilePath,
   projectScope,
   TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -15,7 +15,8 @@ import type { ReactRoute } from '@src/providers/routes.js';
 
 import { reactRoutesProvider } from '@src/providers/routes.js';
 
-import { reactComponentsProvider } from '../react-components/react-components.generator.js';
+import { reactComponentsImportsProvider } from '../react-components/react-components.generator.js';
+import { CORE_REACT_NOT_FOUND_HANDLER_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   layoutKey: z.string().optional(),
@@ -36,13 +37,13 @@ export const reactNotFoundHandlerGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactPages: reactRoutesProvider,
-        reactComponents: reactComponentsProvider,
-        typescript: typescriptProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         reactNotFound: reactNotFoundProvider.export(projectScope),
       },
-      run({ reactPages, reactComponents, typescript }) {
+      run({ reactPages, reactComponentsImports, typescriptFile }) {
         const [notFoundPageImport, notFoundPagePath] = makeImportAndFilePath(
           `${reactPages.getDirectoryBase()}/NotFound.page.tsx`,
         );
@@ -52,9 +53,6 @@ export const reactNotFoundHandlerGenerator = createGenerator({
           element: TypescriptCodeUtils.createExpression(
             `<NotFoundPage />`,
             `import NotFoundPage from '${notFoundPageImport}';`,
-            {
-              importMappers: [reactComponents],
-            },
           ),
         };
 
@@ -70,10 +68,13 @@ export const reactNotFoundHandlerGenerator = createGenerator({
           },
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'NotFound.page.tsx',
+              typescriptFile.renderTemplateFile({
+                template:
+                  CORE_REACT_NOT_FOUND_HANDLER_TS_TEMPLATES.notFoundPage,
                 destination: notFoundPagePath,
-                importMappers: [reactComponents],
+                importMapProviders: {
+                  reactComponentsImports,
+                },
               }),
             );
           },
