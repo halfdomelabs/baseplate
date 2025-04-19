@@ -2,7 +2,7 @@
 
 import { ZodError } from 'zod';
 
-import { BadRequestError } from './http-errors';
+import { BadRequestError } from './http-errors.js';
 
 /**
  * Handles errors that occur during Zod request validation.

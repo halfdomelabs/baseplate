@@ -119,7 +119,7 @@ describe('renderTsTemplateGroupAction', () => {
         },
       },
       renderOptions: {
-        resolveModule: (sourceDirectory, moduleSpecifier) =>
+        resolveModule: (moduleSpecifier, sourceDirectory) =>
           `@project/${sourceDirectory}/${moduleSpecifier}`,
       },
     });
