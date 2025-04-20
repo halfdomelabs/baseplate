@@ -1,5 +1,7 @@
 import clsx from 'clsx';
-import { Status, StatusType } from '../../hooks/useStatus';
+
+import { Status, StatusType } from '@src/hooks/useStatus';
+
 import AlertIcon from '../AlertIcon';
 
 interface Props {

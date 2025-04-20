@@ -8,10 +8,10 @@ export default defineConfig(({ mode }) => {
   const envVars = { ...process.env, ...loadEnv(mode, process.cwd(), '') };
 
   return {
-    plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
+    build: { outDir: 'build' },
+    plugins: [react(), svgrPlugin(), viteTsconfigPaths()],
     server: {
       port: envVars.PORT ? parseInt(envVars.PORT, 10) : 3000,
-      watch: { ignored: ['**/baseplate/**'] },
       proxy: envVars.DEV_BACKEND_HOST
         ? {
             '/api': {
@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
             },
           }
         : undefined,
+      watch: { ignored: ['**/baseplate/**'] },
     },
-    build: { outDir: 'build' },
   };
 });

@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/react';
 import { Route, Routes } from 'react-router-dom';
+
 import NotFoundPage from './NotFound.page';
 
 const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);

@@ -8,6 +8,7 @@ import {
   useLocation,
   useNavigationType,
 } from 'react-router-dom';
+
 import { config } from './config';
 
 function configureSentryScopeForGraphqlError(

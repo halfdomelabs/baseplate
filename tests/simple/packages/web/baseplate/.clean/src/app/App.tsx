@@ -1,5 +1,6 @@
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
+
 import { ConfirmDialog } from '../components';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import PagesRoot from '../pages';
@@ -8,13 +9,13 @@ import AppApolloProvider from './AppApolloProvider';
 function App(): JSX.Element {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
-        <AppApolloProvider>
+      <AppApolloProvider>
+        <BrowserRouter>
           <PagesRoot />
-          <Toaster />
           <ConfirmDialog />
-        </AppApolloProvider>
-      </BrowserRouter>
+          <Toaster />
+        </BrowserRouter>
+      </AppApolloProvider>
     </ErrorBoundary>
   );
 }

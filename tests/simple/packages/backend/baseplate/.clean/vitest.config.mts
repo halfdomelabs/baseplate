@@ -5,8 +5,8 @@ export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     clearMocks: true,
+    globalSetup: './src/tests/scripts/global-setup.ts',
     passWithNoTests: true,
     root: './src',
-    globalSetup: './src/tests/scripts/globalSetup.ts',
   },
 });
