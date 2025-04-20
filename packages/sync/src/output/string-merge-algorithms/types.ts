@@ -31,6 +31,11 @@ export interface StringMergeAlgorithmInput {
    * The previous generated text of the file
    */
   previousGeneratedText: string;
+
+  /**
+   * Path to the file being merged
+   */
+  filePath: string;
 }
 
 /**

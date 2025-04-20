@@ -2,6 +2,7 @@ import type { Logger } from '@src/utils/evented-logger.js';
 
 import type { CodebaseFileReader } from '../codebase-file-reader.js';
 import type { GeneratorOutputFormatter } from '../formatter.js';
+import type { GitMergeDriverConfig } from '../string-merge-algorithms/git-merge-driver.js';
 
 /**
  * Payload for the previously generated codebase
@@ -41,6 +42,12 @@ export interface GeneratorOutputFileWriterContext {
    * Previous working codebase file reader (if any)
    */
   readonly previousWorkingCodebase: CodebaseFileReader | undefined;
+  /**
+   * A custom merge driver to use instead of the default 3-way merge driver.
+   *
+   * See https://git-scm.com/docs/gitattributes#_defining_a_custom_merge_driver
+   */
+  readonly mergeDriver?: GitMergeDriverConfig;
 }
 
 /**

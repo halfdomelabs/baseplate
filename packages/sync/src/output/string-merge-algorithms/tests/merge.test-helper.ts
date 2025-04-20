@@ -53,6 +53,7 @@ const runMergeTests = (
 
   describe(`Test merge algorithm ${testFolder}`, () => {
     test.each(testCases)('case $caseName', async ({ casePath }) => {
+      const currentGeneratedPath = getFileWithAnyExtension(casePath, 'new');
       // Load files with arbitrary extensions
       const previousWorkingText = readFileWithAnyExtension(casePath, 'user');
       const currentGeneratedText = readFileWithAnyExtension(casePath, 'new');
@@ -62,7 +63,8 @@ const runMergeTests = (
       if (
         !previousWorkingText ||
         !currentGeneratedText ||
-        !previousGeneratedText
+        !previousGeneratedText ||
+        !currentGeneratedPath
       ) {
         throw new Error(`Missing required user or new files in ${casePath}`);
       }
@@ -72,6 +74,7 @@ const runMergeTests = (
         previousWorkingText,
         currentGeneratedText,
         previousGeneratedText,
+        filePath: currentGeneratedPath,
       });
 
       // Compare results
