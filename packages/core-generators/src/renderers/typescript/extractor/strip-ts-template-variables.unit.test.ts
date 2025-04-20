@@ -150,4 +150,71 @@ describe('stripTsTemplateVariables', () => {
       'The template is missing variables: TPL_AGE',
     );
   });
+
+  it('should handle TSX-style template variables in a React component', () => {
+    const metadata: TsTemplateFileMetadata = {
+      type: TS_TEMPLATE_TYPE,
+      name: 'test-template',
+      generator: 'test-generator',
+      template: 'test-template.tsx',
+      variables: {
+        TPL_TITLE: { description: 'Title variable' },
+        TPL_HEADER: { description: 'Header component' },
+        TPL_CONTENT: { description: 'Content component' },
+        TPL_FOOTER: { description: 'Footer component' },
+      },
+    };
+
+    const content = `
+      import React from 'react';
+      import { Layout } from '@components/Layout';
+      
+      export const PageTemplate = () => {
+        const title = /* TPL_TITLE:START */ "Welcome" /* TPL_TITLE:END */;
+        return (
+          <Layout>
+            {/* TPL_HEADER:START */}
+            <Header title={title} />
+            {/* TPL_HEADER:END */}
+            
+            <main>
+              {/* TPL_CONTENT:START */}
+              <Content>
+                <h1>Hello World</h1>
+                <p>This is some content</p>
+              </Content>
+              {/* TPL_CONTENT:END */}
+            </main>
+
+            {/* TPL_FOOTER:START */}
+            <Footer copyright="2024" />
+            {/* TPL_FOOTER:END */}
+          </Layout>
+        );
+      };
+    `;
+
+    const result = stripTsTemplateVariables(metadata, content);
+    expect(result).toMatchInlineSnapshot(`
+      "
+            import React from 'react';
+            import { Layout } from '@components/Layout';
+            
+            export const PageTemplate = () => {
+              const title = TPL_TITLE;
+              return (
+                <Layout>
+                  <TPL_HEADER />
+                  
+                  <main>
+                    <TPL_CONTENT />
+                  </main>
+
+                  <TPL_FOOTER />
+                </Layout>
+              );
+            };
+          "
+    `);
+  });
 });

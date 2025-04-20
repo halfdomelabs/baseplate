@@ -179,7 +179,6 @@
     {
       "allowedRoles": ["user"],
       "description": "An app for cool todoers",
-      "enableDatadog": false,
       "enableSubscriptions": true,
       "id": "app:yYeMVhgQG01I",
       "includeAuth": true,

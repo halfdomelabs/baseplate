@@ -1,6 +1,7 @@
 // @ts-nocheck
-import Alert from '../Alert';
-import Spinner from '../Spinner';
+
+import Alert from '../Alert/index.js';
+import Spinner from '../Spinner/index.js';
 
 interface Props {
   className?: string;

@@ -1,12 +1,13 @@
 // @ts-nocheck
+
 import * as React from 'react';
 
 import {
   UseConfirmDialogRequestOptions,
   useConfirmDialogState,
-} from '../../hooks/useConfirmDialog';
-import Button from '../Button';
-import Modal from '../Modal';
+} from '../../hooks/useConfirmDialog.js';
+import Button from '../Button/index.js';
+import Modal from '../Modal/index.js';
 
 /**
  * A confirm dialog that is placed at the top level of the page

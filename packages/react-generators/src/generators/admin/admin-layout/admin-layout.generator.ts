@@ -1,6 +1,8 @@
 import {
   makeImportAndFilePath,
   projectScope,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -101,15 +103,14 @@ export const adminLayoutGenerator = createGenerator({
 
         reactRoutes.registerLayout({
           key: 'admin',
-          element: TypescriptCodeUtils.createExpression(
+          element: tsCodeFragment(
             `<RequireAuth><AdminLayout /></RequireAuth>`,
             [
-              `import AdminLayout from '${layoutImport}';`,
-              `import {RequireAuth} from '%auth-components'`,
+              tsImportBuilder().default('AdminLayout').from(layoutImport),
+              tsImportBuilder(['RequireAuth']).from(
+                authComponents.getImportMap()['%auth-components']?.path ?? '',
+              ),
             ],
-            {
-              importMappers: [authComponents],
-            },
           ),
         });
 

@@ -1,8 +1,9 @@
 import {
   makeImportAndFilePath,
   projectScope,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  tsCodeFragment,
+  tsImportBuilder,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -15,7 +16,8 @@ import type { ReactRoute } from '@src/providers/routes.js';
 
 import { reactRoutesProvider } from '@src/providers/routes.js';
 
-import { reactComponentsProvider } from '../react-components/react-components.generator.js';
+import { reactComponentsImportsProvider } from '../react-components/react-components.generator.js';
+import { CORE_REACT_NOT_FOUND_HANDLER_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   layoutKey: z.string().optional(),
@@ -35,30 +37,27 @@ export const reactNotFoundHandlerGenerator = createGenerator({
   buildTasks: ({ layoutKey }) => ({
     main: createGeneratorTask({
       dependencies: {
-        reactPages: reactRoutesProvider,
-        reactComponents: reactComponentsProvider,
-        typescript: typescriptProvider,
+        reactRoutes: reactRoutesProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         reactNotFound: reactNotFoundProvider.export(projectScope),
       },
-      run({ reactPages, reactComponents, typescript }) {
+      run({ reactRoutes, reactComponentsImports, typescriptFile }) {
         const [notFoundPageImport, notFoundPagePath] = makeImportAndFilePath(
-          `${reactPages.getDirectoryBase()}/NotFound.page.tsx`,
+          `${reactRoutes.getDirectoryBase()}/NotFound.page.tsx`,
         );
 
         const notFoundRoute = {
           path: '*',
-          element: TypescriptCodeUtils.createExpression(
+          element: tsCodeFragment(
             `<NotFoundPage />`,
-            `import NotFoundPage from '${notFoundPageImport}';`,
-            {
-              importMappers: [reactComponents],
-            },
+            tsImportBuilder().default('NotFoundPage').from(notFoundPageImport),
           ),
         };
 
-        reactPages.registerRoute({
+        reactRoutes.registerRoute({
           ...notFoundRoute,
           layoutKey,
         });
@@ -70,10 +69,13 @@ export const reactNotFoundHandlerGenerator = createGenerator({
           },
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'NotFound.page.tsx',
+              typescriptFile.renderTemplateFile({
+                template:
+                  CORE_REACT_NOT_FOUND_HANDLER_TS_TEMPLATES.notFoundPage,
                 destination: notFoundPagePath,
-                importMappers: [reactComponents],
+                importMapProviders: {
+                  reactComponentsImports,
+                },
               }),
             );
           },

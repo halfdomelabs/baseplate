@@ -1,14 +1,22 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  TypescriptCodeUtils,
+  TsCodeUtils,
+  tsImportBuilder,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderTask,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
-import { reactAppProvider } from '@src/generators/core/react-app/react-app.generator.js';
-import { reactConfigProvider } from '@src/generators/core/react-config/react-config.generator.js';
+import { reactAppConfigProvider } from '@src/generators/core/react-app/react-app.generator.js';
+import {
+  reactConfigImportsProvider,
+  reactConfigProvider,
+} from '@src/generators/core/react-config/react-config.generator.js';
 
 const descriptorSchema = z.object({
   callbackPath: z.string().optional(),
@@ -22,38 +30,40 @@ export const reactAuth0Generator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['@auth0/auth0-react']),
     }),
-    main: createGeneratorTask({
-      dependencies: {
-        reactConfig: reactConfigProvider,
-        reactApp: reactAppProvider,
-      },
-      run({ reactConfig, reactApp }) {
-        reactConfig.getConfigMap().set('VITE_AUTH0_DOMAIN', {
+    reactConfig: createProviderTask(reactConfigProvider, (reactConfig) => {
+      reactConfig.configEntries.mergeObj({
+        VITE_AUTH0_DOMAIN: {
           comment: 'Auth0 Domain',
-          validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-          devValue: 'domain.auth0.com',
-        });
-
-        reactConfig.getConfigMap().set('VITE_AUTH0_CLIENT_ID', {
+          validator: 'z.string().min(1)',
+          devDefaultValue: 'domain.auth0.com',
+        },
+        VITE_AUTH0_CLIENT_ID: {
           comment: 'Auth0 Client ID',
-          validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-          devValue: 'AUTH0_CLIENT_ID',
-        });
-
-        reactConfig.getConfigMap().set('VITE_AUTH0_AUDIENCE', {
+          validator: 'z.string().min(1)',
+          devDefaultValue: 'AUTH0_CLIENT_ID',
+        },
+        VITE_AUTH0_AUDIENCE: {
           comment: 'Auth0 Audience',
-          validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-          devValue: 'AUTH0_AUDIENCE',
-        });
-
+          validator: 'z.string().min(1)',
+          devDefaultValue: 'AUTH0_AUDIENCE',
+        },
+      });
+    }),
+    reactAppConfig: createGeneratorTask({
+      dependencies: {
+        reactConfigImports: reactConfigImportsProvider,
+        reactAppConfig: reactAppConfigProvider,
+      },
+      run({ reactConfigImports, reactAppConfig }) {
         const redirectUri = callbackPath
           ? `\`\${window.location.origin}/${callbackPath}\``
           : 'window.location.origin';
 
-        reactApp.getRenderWrappers().addItem(
-          'react-auth0',
-          TypescriptCodeUtils.createWrapper(
-            (contents) => `<Auth0Provider
+        reactAppConfig.renderWrappers.set('react-auth0', {
+          wrap: (contents) => TsCodeUtils.templateWithImports([
+            tsImportBuilder(['Auth0Provider']).from('@auth0/auth0-react'),
+            reactConfigImports.config.declaration(),
+          ])`<Auth0Provider
         domain={config.VITE_AUTH0_DOMAIN}
         clientId={config.VITE_AUTH0_CLIENT_ID}
         authorizationParams={{
@@ -62,14 +72,8 @@ export const reactAuth0Generator = createGenerator({
         }}
         skipRedirectCallback
       >${contents}</Auth0Provider>`,
-            [
-              `import {Auth0Provider} from '@auth0/auth0-react';`,
-              `import {config} from '%react-config'`,
-            ],
-            { importMappers: [reactConfig] },
-          ),
-          { comesAfter: 'react-apollo' },
-        );
+          type: 'auth',
+        });
       },
     }),
   }),

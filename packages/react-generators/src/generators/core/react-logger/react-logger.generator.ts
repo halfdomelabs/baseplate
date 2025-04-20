@@ -1,15 +1,10 @@
-import type {
-  ImportMapper,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
   projectScope,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -20,13 +15,15 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
-});
+import {
+  createReactLoggerImports,
+  reactLoggerImportsProvider,
+} from './generated/ts-import-maps.js';
+import { CORE_REACT_LOGGER_TS_TEMPLATES } from './generated/ts-templates.js';
 
-export interface ReactLoggerProvider extends ImportMapper {
-  getLoggerExpression(): TypescriptCodeExpression;
-}
+const descriptorSchema = z.object({});
+
+export type ReactLoggerProvider = ImportMapper;
 
 export const reactLoggerProvider =
   createProviderType<ReactLoggerProvider>('react-logger');
@@ -41,37 +38,30 @@ export const reactLoggerGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         reactLogger: reactLoggerProvider.export(projectScope),
+        reactLoggerImports: reactLoggerImportsProvider.export(projectScope),
       },
-      run({ typescript }) {
-        const [fileImport, filePath] = makeImportAndFilePath(
-          'src/services/logger.ts',
-        );
-
+      run({ typescriptFile }) {
         return {
           providers: {
             reactLogger: {
-              getLoggerExpression: () =>
-                TypescriptCodeUtils.createExpression(
-                  'logger',
-                  `import { logger } from "@/src/services/logger";`,
-                ),
               getImportMap: () => ({
                 '%react-logger': {
-                  path: fileImport,
+                  path: '@/src/services/logger',
                   allowedImports: ['logger'],
                 },
               }),
             },
+            reactLoggerImports: createReactLoggerImports('@/src/services'),
           },
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'logger.ts',
-                destination: filePath,
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_LOGGER_TS_TEMPLATES.logger,
+                destination: '@/src/services/logger.ts',
               }),
             );
           },
@@ -80,3 +70,5 @@ export const reactLoggerGenerator = createGenerator({
     }),
   }),
 });
+
+export { reactLoggerImportsProvider } from './generated/ts-import-maps.js';

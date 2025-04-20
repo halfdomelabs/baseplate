@@ -1,5 +1,6 @@
 import { ApolloError } from '@apollo/client';
 import { GraphQLError } from 'graphql';
+
 import { logger } from './logger';
 import { logErrorToSentry } from './sentry';
 

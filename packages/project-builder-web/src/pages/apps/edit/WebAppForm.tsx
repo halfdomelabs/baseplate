@@ -82,11 +82,6 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
           control={control}
           name="enableSubscriptions"
         />
-        <CheckboxField.Controller
-          label="Enable Datadog Logging?"
-          control={control}
-          name="enableDatadog"
-        />
         {roleOptions && (
           <MultiComboboxField.Controller
             label="Allowed Roles?"

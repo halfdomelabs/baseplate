@@ -1,21 +1,19 @@
-import type {
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
   projectScope,
-  TypescriptCodeUtils,
-  TypescriptCodeWrapper,
-  typescriptProvider,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createProviderType,
+  createProviderTask,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -26,47 +24,78 @@ import {
   reactRoutesProvider,
   reactRoutesReadOnlyProvider,
 } from '@src/providers/routes.js';
-import { notEmpty } from '@src/utils/array.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
-import { reactAppProvider } from '../react-app/react-app.generator.js';
+import { reactAppConfigProvider } from '../react-app/react-app.generator.js';
+import { CORE_REACT_ROUTER_TS_TEMPLATES } from './generated/ts-templates.js';
 
-const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
-});
+const descriptorSchema = z.object({});
 
-export interface ReactRouterProvider {
-  addRouteHeader(block: TypescriptCodeBlock): void;
-  setRoutesComponent(component: TypescriptCodeExpression): void;
-}
+const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
+  createConfigProviderTask(
+    (t) => ({
+      renderHeaders: t.map<string, TsCodeFragment>(),
+      routesComponent: t.scalar<TsCodeFragment>(),
+    }),
+    {
+      prefix: 'react-router',
+      configScope: projectScope,
+    },
+  );
 
-export const reactRouterProvider =
-  createProviderType<ReactRouterProvider>('react-router');
+export { reactRouterConfigProvider };
+
+const pagesPath = '@/src/pages/index.tsx';
 
 export const reactRouterGenerator = createGenerator({
   name: 'core/react-router',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['react-router-dom']),
     }),
+    reactAppConfig: createProviderTask(
+      reactAppConfigProvider,
+      (reactAppConfig) => {
+        reactAppConfig.renderWrappers.set('react-router', {
+          wrap: (contents) =>
+            TsCodeUtils.templateWithImports(
+              tsImportBuilder(['BrowserRouter']).from('react-router-dom'),
+            )`<BrowserRouter>${contents}</BrowserRouter>`,
+          type: 'router',
+        });
+
+        reactAppConfig.renderRoot.set(
+          tsCodeFragment(
+            '<PagesRoot />',
+            tsImportBuilder().default('PagesRoot').from(pagesPath),
+          ),
+        );
+      },
+    ),
     main: createGeneratorTask({
       dependencies: {
-        reactApp: reactAppProvider,
-        typescript: typescriptProvider,
+        reactRouterConfigValues: reactRouterConfigValuesProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         reactRoutes: reactRoutesProvider.export(projectScope),
         reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(projectScope),
-        reactRouter: reactRouterProvider.export(projectScope),
       },
-      run({ reactApp, typescript }) {
+      run({
+        reactRouterConfigValues: {
+          routesComponent = tsCodeFragment(
+            'Routes',
+            tsImportBuilder(['Routes']).from('react-router-dom'),
+          ),
+          renderHeaders,
+        },
+        typescriptFile,
+      }) {
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];
-        const headerBlocks: TypescriptCodeBlock[] = [];
-
-        let routesComponent: TypescriptCodeExpression | undefined;
 
         return {
           providers: {
@@ -84,69 +113,22 @@ export const reactRouterGenerator = createGenerator({
               getDirectoryBase: () => `src/pages`,
               getRoutePrefix: () => ``,
             },
-            reactRouter: {
-              addRouteHeader(block) {
-                headerBlocks.push(block);
-              },
-              setRoutesComponent(component) {
-                if (routesComponent) {
-                  throw new Error('Routes component already set');
-                }
-                routesComponent = component;
-              },
-            },
           },
           build: async (builder) => {
-            routesComponent =
-              routesComponent ??
-              TypescriptCodeUtils.createExpression(
-                'Routes',
-                `import { Routes } from 'react-router-dom'`,
-              );
-
-            const [pagesImport, pagesPath] = makeImportAndFilePath(
-              'src/pages/index.tsx',
-            );
-
-            reactApp
-              .getRenderWrappers()
-              .addItem(
-                'react-router',
-                new TypescriptCodeWrapper(
-                  (contents) => `<BrowserRouter>${contents}</BrowserRouter>`,
-                  "import {BrowserRouter} from 'react-router-dom'",
-                ),
-              );
-
-            reactApp.setRenderRoot(
-              TypescriptCodeUtils.createExpression(
-                '<PagesRoot />',
-                `import PagesRoot from "${pagesImport}"`,
-              ),
-            );
-
-            const pagesRootFile = typescript.createTemplate({
-              ROUTE_HEADER: { type: 'code-block' },
-              ROUTES: { type: 'code-expression' },
-              ROUTES_COMPONENT: { type: 'code-expression' },
-            });
-
             // TODO: Make sure we don't have more than one layout key
 
             // group routes by layout key
             const renderedRoutes = renderRoutes(routes, layouts);
 
-            pagesRootFile.addCodeEntries({
-              ROUTE_HEADER: [
-                ...headerBlocks,
-                ...layouts.map((layout) => layout.header).filter(notEmpty),
-              ],
-              ROUTES: renderedRoutes,
-              ROUTES_COMPONENT: routesComponent,
-            });
-
             await builder.apply(
-              pagesRootFile.renderToAction('pages/index.tsx', pagesPath),
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_ROUTER_TS_TEMPLATES.index,
+                destination: 'src/pages/index.tsx',
+                variables: {
+                  TPL_RENDER_HEADER: TsCodeUtils.mergeFragments(renderHeaders),
+                  TPL_ROUTES: TsCodeUtils.template`<${routesComponent}>${renderedRoutes}</${routesComponent}>`,
+                },
+              }),
             );
           },
         };

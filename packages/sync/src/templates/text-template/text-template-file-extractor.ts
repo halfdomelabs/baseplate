@@ -12,6 +12,7 @@ import type { TextTemplateFile, TextTemplateFileMetadata } from './types.js';
 
 import { TemplateFileExtractor } from '../extractor/template-file-extractor.js';
 import { TEXT_TEMPLATE_TYPE, textTemplateFileMetadataSchema } from './types.js';
+import { getTextTemplateDelimiters } from './utils.js';
 
 interface TypescriptCodeEntry {
   codeBlock: string;
@@ -31,6 +32,7 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
     const sourceFileContents = await this.readSourceFile(file.path);
     // get variable values from the rendered template
     const { metadata } = file;
+    const { start, end } = getTextTemplateDelimiters(file.path);
 
     // replace variable values with template string
     let templateContents = sourceFileContents;
@@ -42,7 +44,7 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
       }
       templateContents = templateContents.replaceAll(
         variable.value,
-        `{{${key}}}`,
+        `${start}${key}${end}`,
       );
     }
 

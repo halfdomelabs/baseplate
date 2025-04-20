@@ -1,4 +1,5 @@
 // @ts-nocheck
+
 import { useState } from 'react';
 
 export type StatusType = 'error' | 'warning' | 'success' | 'info';

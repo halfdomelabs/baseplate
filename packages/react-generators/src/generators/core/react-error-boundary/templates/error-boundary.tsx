@@ -1,13 +1,12 @@
 // @ts-nocheck
 
-import { ErrorDisplay, Button } from '%react-components';
-
+import { Button, ErrorDisplay } from '%reactComponentsImports';
+import { logError } from '%reactErrorImports';
 import { useContext } from 'react';
 import {
   ErrorBoundary as ReactErrorBoundary,
   ErrorBoundaryContext,
 } from 'react-error-boundary';
-import { logError } from 'src/services/error-logger';
 
 interface ErrorBoundaryProps {
   children?: React.ReactNode;

@@ -12,6 +12,7 @@ import type {
 
 import { readTemplateFileSource } from '../utils/index.js';
 import { TEXT_TEMPLATE_TYPE } from './types.js';
+import { getTextTemplateDelimiters } from './utils.js';
 
 interface RenderTextTemplateFileActionInputBase<T extends TextTemplateFile> {
   template: T;
@@ -26,6 +27,10 @@ type RenderTextTemplateFileActionInput<
   (keyof InferTextTemplateVariablesFromTemplate<T> extends never
     ? Partial<{ variables: InferTextTemplateVariablesFromTemplate<T> }>
     : { variables: InferTextTemplateVariablesFromTemplate<T> });
+
+function escapeRegExp(str: string): string {
+  return str.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}
 
 export function renderTextTemplateFileAction<
   T extends TextTemplateFile = TextTemplateFile,
@@ -47,6 +52,9 @@ export function renderTextTemplateFileAction<
         | Record<string, string | undefined>
         | undefined;
 
+      const { start: startDelimiter, end: endDelimiter } =
+        getTextTemplateDelimiters(destination);
+
       if (variablesObj && Object.keys(variablesObj).length > 0) {
         // make sure all variables begin with TPL_
         const invalidVariableKey = Object.keys(variablesObj).find(
@@ -58,7 +66,10 @@ export function renderTextTemplateFileAction<
           );
         }
         const missingTemplateVariableKey = Object.keys(template.variables).find(
-          (key) => !renderedTemplate.includes(`{{${key}}}`),
+          (key) =>
+            !renderedTemplate.includes(
+              `${startDelimiter}${key}${endDelimiter}`,
+            ),
         );
         if (missingTemplateVariableKey) {
           throw new Error(
@@ -95,9 +106,17 @@ export function renderTextTemplateFileAction<
         }
 
         renderedTemplate = renderedTemplate.replaceAll(
-          new RegExp(/{{TPL_[A-Z0-9_]+}}/g),
+          new RegExp(
+            `${escapeRegExp(startDelimiter)}TPL_[A-Z0-9_]+${escapeRegExp(
+              endDelimiter,
+            )}`,
+            'g',
+          ),
           (match) => {
-            const key = match.slice(2, -2);
+            const key = match.slice(
+              startDelimiter.length,
+              -endDelimiter.length,
+            );
             const value = variablesObj[key];
             if (value === undefined) {
               throw new Error(`Template variable not found: ${key}`);

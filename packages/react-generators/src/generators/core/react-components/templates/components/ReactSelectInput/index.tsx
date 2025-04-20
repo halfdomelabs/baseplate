@@ -9,9 +9,10 @@ import {
   PathValue,
   useController,
 } from 'react-hook-form';
-import Select, { InputProps, GroupBase, components } from 'react-select';
-import FormError from '../FormError';
-import FormLabel from '../FormLabel';
+import Select, { components, GroupBase, InputProps } from 'react-select';
+
+import FormError from '../FormError/index.js';
+import FormLabel from '../FormLabel/index.js';
 
 interface Props<ValueType = string> {
   className?: string;

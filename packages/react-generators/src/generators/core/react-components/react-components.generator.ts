@@ -5,8 +5,9 @@ import {
   extractPackageVersions,
   makeImportAndFilePath,
   projectScope,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  tsCodeFragment,
+  tsImportBuilder,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -17,8 +18,12 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-import { reactAppProvider } from '../react-app/react-app.generator.js';
-import { reactProvider } from '../react/react.generator.js';
+import { reactAppConfigProvider } from '../react-app/react-app.generator.js';
+import {
+  createReactComponentsImports,
+  reactComponentsImportsProvider,
+} from './generated/ts-import-maps.js';
+import { CORE_REACT_COMPONENTS_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   includeDatePicker: z.boolean().optional(),
@@ -99,22 +104,24 @@ export const reactComponentsGenerator = createGenerator({
       : undefined,
     main: createGeneratorTask({
       dependencies: {
-        react: reactProvider,
-        typescript: typescriptProvider,
-        reactApp: reactAppProvider,
+        typescriptFile: typescriptFileProvider,
+        reactAppConfig: reactAppConfigProvider,
       },
       exports: {
         reactComponents: reactComponentsProvider.export(projectScope),
+        reactComponentsImports:
+          reactComponentsImportsProvider.export(projectScope),
       },
-      run({ typescript, reactApp }) {
-        const [useStatusImport, useStatusPath] = makeImportAndFilePath(
+      run({ typescriptFile, reactAppConfig }) {
+        const [useStatusImport] = makeImportAndFilePath(
           `src/hooks/useStatus.ts`,
         );
-        const [useToastImport, useToastPath] = makeImportAndFilePath(
+        const [useToastImport] = makeImportAndFilePath(
           `src/hooks/useToast.tsx`,
         );
-        const [useConfirmDialogImport, useConfirmDialogPath] =
-          makeImportAndFilePath(`src/hooks/useConfirmDialog.ts`);
+        const [useConfirmDialogImport] = makeImportAndFilePath(
+          `src/hooks/useConfirmDialog.ts`,
+        );
 
         const coreReactComponents = [...REACT_COMPONENTS];
 
@@ -125,18 +132,22 @@ export const reactComponentsGenerator = createGenerator({
         const allReactComponents = [...coreReactComponents];
 
         // add toaster root sibling component
-        reactApp.addRenderSibling(
-          TypescriptCodeUtils.createExpression(
+        reactAppConfig.renderSiblings.set(
+          'react-hot-toast',
+          tsCodeFragment(
             '<Toaster />',
-            "import { Toaster } from 'react-hot-toast';",
+            tsImportBuilder(['Toaster']).from('react-hot-toast'),
           ),
         );
 
         // add confirm dialog root sibling component
-        reactApp.addRenderSibling(
-          TypescriptCodeUtils.createExpression(
+        reactAppConfig.renderSiblings.set(
+          'react-components',
+          tsCodeFragment(
             '<ConfirmDialog />',
-            `import { ConfirmDialog } from "@/src/components";`,
+            tsImportBuilder(['ConfirmDialog']).from(
+              '@/src/components/index.js',
+            ),
           ),
         );
 
@@ -167,44 +178,31 @@ export const reactComponentsGenerator = createGenerator({
                 },
               }),
             },
+            reactComponentsImports: createReactComponentsImports('@/src'),
           },
           build: async (builder) => {
-            await Promise.all(
-              coreReactComponents.map(async ({ name }) =>
-                builder.apply(
-                  typescript.createCopyAction({
-                    source: `components/${name}/index.tsx`,
-                    destination: `src/components/${name}/index.tsx`,
-                  }),
-                ),
-              ),
+            await builder.apply(
+              typescriptFile.renderTemplateGroup({
+                group: CORE_REACT_COMPONENTS_TS_TEMPLATES.componentsGroup,
+                baseDirectory: '@/src/components',
+              }),
             );
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'hooks/useStatus.ts',
-                destination: useStatusPath,
+              typescriptFile.renderTemplateGroup({
+                group: CORE_REACT_COMPONENTS_TS_TEMPLATES.hooksGroup,
+                baseDirectory: '@/src/hooks',
               }),
             );
 
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'hooks/useToast.tsx',
-                destination: useToastPath,
-                replacements: {
-                  COMPONENT_FOLDER: `@/src/components`,
-                },
-              }),
-            );
-
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'hooks/useConfirmDialog.ts',
-                destination: useConfirmDialogPath,
-                replacements: {
-                  COMPONENT_FOLDER: `@/src/components`,
-                },
-              }),
-            );
+            if (includeDatePicker) {
+              await builder.apply(
+                typescriptFile.renderTemplateFile({
+                  template:
+                    CORE_REACT_COMPONENTS_TS_TEMPLATES.reactDatePickerInput,
+                  destination: `src/components/ReactDatePickerInput/index.tsx`,
+                }),
+              );
+            }
 
             // build component index
             const componentNames = allReactComponents.map(
@@ -213,14 +211,20 @@ export const reactComponentsGenerator = createGenerator({
             const componentIndex = componentNames
               .map((name) => `export { default as ${name} } from './${name}';`)
               .join('\n');
-            builder.writeFile({
-              id: `react-components-index`,
-              contents: componentIndex,
-              destination: `src/components/index.ts`,
-            });
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_COMPONENTS_TS_TEMPLATES.index,
+                destination: `src/components/index.ts`,
+                variables: {
+                  TPL_EXPORTS: componentIndex,
+                },
+              }),
+            );
           },
         };
       },
     }),
   }),
 });
+
+export { reactComponentsImportsProvider } from './generated/ts-import-maps.js';

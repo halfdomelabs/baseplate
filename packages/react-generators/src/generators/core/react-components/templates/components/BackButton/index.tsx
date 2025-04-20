@@ -1,7 +1,9 @@
 // @ts-nocheck
+
 import { MdArrowBack } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
-import LinkButton from '../LinkButton';
+
+import LinkButton from '../LinkButton/index.js';
 
 interface Props {
   className?: string;

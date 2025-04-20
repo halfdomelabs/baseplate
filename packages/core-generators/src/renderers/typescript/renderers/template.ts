@@ -50,6 +50,10 @@ export function renderTsTemplateToTsCodeFragment(
     string,
     { key: string; value: TsTemplateFileVariableValue }
   >();
+  const tsxMarkers = new Map<
+    string,
+    { key: string; value: TsTemplateFileVariableValue }
+  >();
 
   // --- Pass 1: Replace block placeholders with unique markers ---
   const blockRegex = new RegExp(`^([ \\t]*)(${prefix}[A-Z0-9_]+);$`, 'gm');
@@ -68,7 +72,24 @@ export function renderTsTemplateToTsCodeFragment(
     },
   );
 
-  // --- Pass 2: Replace inline placeholders with unique markers ---
+  // --- Pass 2: Replace TSX placeholders with unique markers ---
+  const tsxRegex = new RegExp(`<(${prefix}[A-Z0-9_]+) />`, 'g');
+  renderedTemplate = renderedTemplate.replace(
+    tsxRegex,
+    (match, key: string) => {
+      if (!(key in variables)) {
+        throw new Error(`Template variable not found: ${key}`);
+      }
+
+      const marker = `__TSX_MARKER_${tsxMarkers.size}__`; // Unique marker
+      tsxMarkers.set(marker, { key, value: variables[key] });
+      variableKeys.delete(key); // Mark as used
+
+      return marker; // Replace with marker, preserving leading whitespace
+    },
+  );
+
+  // --- Pass 3: Replace inline placeholders with unique markers ---
   // This regex ensures the TPL_ variable is not immediately followed by another valid variable character
   const inlineRegex = new RegExp(`(${prefix}[A-Z0-9_]+)(?![A-Z0-9_])`, 'g');
   renderedTemplate = renderedTemplate.replace(
@@ -92,13 +113,24 @@ export function renderTsTemplateToTsCodeFragment(
     );
   }
 
-  // --- Pass 3: Resolve markers ---
+  // --- Pass 4: Resolve markers ---
   // Resolve block markers
   for (const [marker, { key, leading, value }] of blockMarkers.entries()) {
     const contents = typeof value === 'string' ? value : value.contents;
     const replacement = includeMetadata
       ? `${leading}/* ${key}:START */\n${contents}\n${leading}/* ${key}:END */` // Preserve indentation for end comment too
       : contents; // Note: leading whitespace is handled by the marker's position
+
+    // Use replace instead of replaceAll as markers are unique
+    renderedTemplate = renderedTemplate.replace(marker, replacement);
+  }
+
+  // Resolve TSX markers
+  for (const [marker, { key, value }] of tsxMarkers.entries()) {
+    const contents = typeof value === 'string' ? value : value.contents;
+    const replacement = includeMetadata
+      ? `{/* ${key}:START */}\n${contents}\n{/* ${key}:END */}`
+      : contents;
 
     // Use replace instead of replaceAll as markers are unique
     renderedTemplate = renderedTemplate.replace(marker, replacement);

@@ -8,6 +8,9 @@ import {
   makeImportAndFilePath,
   prettierProvider,
   projectScope,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -25,9 +28,9 @@ import { toposort } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
-import { reactAppProvider } from '@src/generators/core/react-app/react-app.generator.js';
+import { reactAppConfigProvider } from '@src/generators/core/react-app/react-app.generator.js';
 import { reactConfigProvider } from '@src/generators/core/react-config/react-config.generator.js';
-import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
+import { reactErrorConfigProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactProxyProvider } from '@src/generators/core/react-proxy/react-proxy.generator.js';
 
 import { notEmpty } from '../../../utils/array.js';
@@ -112,7 +115,7 @@ export const reactApolloGenerator = createGenerator({
       dependencies: {
         reactConfig: reactConfigProvider,
         typescript: typescriptProvider,
-        reactApp: reactAppProvider,
+        reactAppConfig: reactAppConfigProvider,
         eslint: eslintProvider,
         prettier: prettierProvider,
         reactProxy: reactProxyProvider,
@@ -121,22 +124,29 @@ export const reactApolloGenerator = createGenerator({
         reactApolloSetup: reactApolloSetupProvider.export(projectScope),
         reactApollo: reactApolloProvider.export(projectScope),
       },
-      run({ reactConfig, typescript, reactApp, eslint, prettier, reactProxy }) {
+      run({
+        reactConfig,
+        typescript,
+        reactAppConfig,
+        eslint,
+        prettier,
+        reactProxy,
+      }) {
         const apolloCreateArgs: ApolloCreateArg[] = [];
         const links: ApolloLink[] = [];
         const gqlFiles: string[] = [];
 
-        reactConfig.getConfigMap().set('VITE_GRAPH_API_ENDPOINT', {
+        reactConfig.configEntries.set('VITE_GRAPH_API_ENDPOINT', {
           comment: 'URL for the GraphQL API endpoint',
-          validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-          devValue: devApiEndpoint,
+          validator: 'z.string().min(1)',
+          devDefaultValue: devApiEndpoint,
         });
 
         if (enableSubscriptions) {
-          reactConfig.getConfigMap().set('VITE_GRAPH_WS_API_ENDPOINT', {
+          reactConfig.configEntries.set('VITE_GRAPH_WS_API_ENDPOINT', {
             comment: 'URL for the GraphQL web socket API endpoint (optional)',
-            validator: TypescriptCodeUtils.createExpression('z.string()'),
-            devValue: '',
+            validator: 'z.string()',
+            devDefaultValue: '',
           });
         }
 
@@ -151,13 +161,15 @@ export const reactApolloGenerator = createGenerator({
           'src/app/AppApolloProvider.tsx',
         );
 
-        reactApp.getRenderWrappers().addItem(
-          'react-apollo',
-          TypescriptCodeUtils.createWrapper(
-            (contents) => `<AppApolloProvider>${contents}</AppApolloProvider>`,
-            [`import AppApolloProvider from '${providerImport}';`],
-          ),
-        );
+        reactAppConfig.renderWrappers.set('react-apollo', {
+          wrap: (contents) =>
+            TsCodeUtils.templateWithImports(
+              tsImportBuilder()
+                .default('AppApolloProvider')
+                .from(providerImport),
+            )`<AppApolloProvider>${contents}</AppApolloProvider>`,
+          type: 'data',
+        });
 
         const importMap = {
           '%react-apollo/client': {
@@ -459,10 +471,10 @@ export const reactApolloGenerator = createGenerator({
     }),
     graphqlErrorContext: createGeneratorTask({
       dependencies: {
-        reactErrorProvider,
+        reactErrorConfig: reactErrorConfigProvider,
       },
-      run({ reactErrorProvider }) {
-        const headerBlock = TypescriptCodeUtils.createBlock(
+      run({ reactErrorConfig }) {
+        const headerBlock = tsCodeFragment(
           `
           function annotateGraphQLError(
             error: GraphQLError,
@@ -485,11 +497,12 @@ export const reactApolloGenerator = createGenerator({
             }
           }
   `,
-          `import { GraphQLError } from 'graphql'`,
+          tsImportBuilder(['GraphQLError']).from('graphql'),
         );
 
-        reactErrorProvider.addContextAction(
-          TypescriptCodeUtils.createBlock(
+        reactErrorConfig.contextActions.set(
+          'apollo',
+          tsCodeFragment(
             `
             if (error instanceof GraphQLError) {
               annotateGraphQLError(error, context);
@@ -526,11 +539,13 @@ export const reactApolloGenerator = createGenerator({
             }
           `,
             [
-              `import { GraphQLError } from 'graphql'`,
-              `import { ApolloError } from '@apollo/client'`,
+              tsImportBuilder(['GraphQLError']).from('graphql'),
+              tsImportBuilder(['ApolloError']).from('@apollo/client'),
             ],
             {
-              headerBlocks: [headerBlock],
+              hoistedFragments: [
+                { key: 'annotate-graphql-error', fragment: headerBlock },
+              ],
             },
           ),
         );

@@ -1,30 +1,27 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
-  projectScope,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  TsCodeUtils,
+  tsImportBuilder,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
-  createProviderType,
+  createProviderTask,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-import { reactAppProvider } from '../react-app/react-app.generator.js';
-import { reactComponentsProvider } from '../react-components/react-components.generator.js';
-import { reactErrorProvider } from '../react-error/react-error.generator.js';
+import { reactAppConfigProvider } from '../react-app/react-app.generator.js';
+import { reactComponentsImportsProvider } from '../react-components/react-components.generator.js';
+import { reactErrorImportsProvider } from '../react-error/react-error.generator.js';
+import { CORE_REACT_ERROR_BOUNDARY_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
-export type ReactErrorBoundaryProvider = unknown;
-
-export const reactErrorBoundaryProvider =
-  createProviderType<ReactErrorBoundaryProvider>('react-error-boundary');
+const errorBoundaryPath = '@/src/components/ErrorBoundary/index.tsx';
 
 export const reactErrorBoundaryGenerator = createGenerator({
   name: 'core/react-error-boundary',
@@ -34,46 +31,36 @@ export const reactErrorBoundaryGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['react-error-boundary']),
     }),
+    reactAppConfig: createProviderTask(
+      reactAppConfigProvider,
+      (reactAppConfig) => {
+        reactAppConfig.errorBoundary.set(
+          (contents) =>
+            TsCodeUtils.templateWithImports(
+              tsImportBuilder(['ErrorBoundary']).from(errorBoundaryPath),
+            )`<ErrorBoundary>${contents}</ErrorBoundary>`,
+        );
+      },
+    ),
     main: createGeneratorTask({
       dependencies: {
-        reactApp: reactAppProvider,
-        reactError: reactErrorProvider,
-        reactComponents: reactComponentsProvider,
-        typescript: typescriptProvider,
+        reactErrorImports: reactErrorImportsProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
+        typescriptFile: typescriptFileProvider,
       },
-      exports: {
-        reactErrorBoundary: reactErrorBoundaryProvider.export(projectScope),
-      },
-      run({ reactApp, reactError, reactComponents, typescript }) {
-        const [errorBoundaryImport, errorBoundaryPath] = makeImportAndFilePath(
-          'src/components/ErrorBoundary/index.tsx',
-        );
-
+      run({ reactErrorImports, reactComponentsImports, typescriptFile }) {
         return {
-          providers: {
-            reactErrorBoundary: {},
-          },
           build: async (builder) => {
-            const importMappers = [reactComponents, reactError];
-            const errorBoundaryFile = typescript.createTemplate(
-              {},
-              {
-                importMappers,
-              },
-            );
-
-            reactApp.setErrorBoundary(
-              TypescriptCodeUtils.createWrapper(
-                (contents) => `<ErrorBoundary>${contents}</ErrorBoundary>`,
-                `import {ErrorBoundary} from '${errorBoundaryImport}';`,
-              ),
-            );
-
             await builder.apply(
-              errorBoundaryFile.renderToAction(
-                'error-boundary.tsx',
-                errorBoundaryPath,
-              ),
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_ERROR_BOUNDARY_TS_TEMPLATES.component,
+                destination: errorBoundaryPath,
+                importMapProviders: {
+                  reactComponentsImports,
+                  reactErrorImports,
+                },
+                variables: {},
+              }),
             );
           },
         };

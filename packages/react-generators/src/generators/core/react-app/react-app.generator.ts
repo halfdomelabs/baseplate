@@ -1,109 +1,132 @@
-import type {
-  TypescriptCodeExpression,
-  TypescriptCodeWrapper,
-} from '@halfdomelabs/core-generators';
-import type { OrderedList } from '@halfdomelabs/sync';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   projectScope,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsImportBuilder,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createOrderedList,
-  createProviderType,
+  createProviderTask,
 } from '@halfdomelabs/sync';
+import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import { reactProvider } from '../react/react.generator.js';
+import { reactBaseConfigProvider } from '../react/react.generator.js';
+import { CORE_REACT_APP_TS_TEMPLATES } from './generated/ts-templates.js';
 
-const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
-});
+const descriptorSchema = z.object({});
 
-export interface ReactAppProvider {
-  setErrorBoundary(errorBoundary: TypescriptCodeWrapper): void;
-  getRenderWrappers(): OrderedList<TypescriptCodeWrapper>;
-  setRenderRoot(root: TypescriptCodeExpression): void;
-  addRenderSibling(sibling: TypescriptCodeExpression): void;
+type CodeFragmentWrapper = (contents: TsCodeFragment) => TsCodeFragment;
+
+/**
+ * Type of render wrapper which determines the order of where it comes
+ *
+ * - `auth`: Wrapper for authentication
+ * - `data`: Wrapper for data fetching
+ */
+type RenderWrapperType = 'auth' | 'data' | 'router';
+
+const WRAPPER_PRIORITY: Record<RenderWrapperType, number> = {
+  auth: 0,
+  data: 1,
+  router: 2,
+};
+
+export interface RenderWrapper {
+  wrap: CodeFragmentWrapper;
+  type: RenderWrapperType;
 }
 
-export const reactAppProvider =
-  createProviderType<ReactAppProvider>('react-app');
+const [setupTask, reactAppConfigProvider, reactAppConfigValuesProvider] =
+  createConfigProviderTask(
+    (t) => ({
+      errorBoundary: t.scalar<CodeFragmentWrapper>(),
+      renderWrappers: t.map<string, RenderWrapper>(),
+      renderSiblings: t.map<string, TsCodeFragment>(),
+      renderRoot: t.scalar<TsCodeFragment>(),
+    }),
+    {
+      prefix: 'react-app',
+      configScope: projectScope,
+    },
+  );
+
+export { reactAppConfigProvider };
+
+const appPath = '@/src/app/App.tsx';
 
 export const reactAppGenerator = createGenerator({
   name: 'core/react-app',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    setup: setupTask,
+    reactBaseConfig: createProviderTask(
+      reactBaseConfigProvider,
+      (reactBaseConfig) => {
+        reactBaseConfig.appFragment.set(
+          tsCodeFragment(
+            '<App />',
+            tsImportBuilder().default('App').from('@/src/app/App'),
+          ),
+        );
+      },
+    ),
     main: createGeneratorTask({
       dependencies: {
-        react: reactProvider,
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
+        reactAppConfigValues: reactAppConfigValuesProvider,
       },
-      exports: {
-        reactApp: reactAppProvider.export(projectScope),
-      },
-      run({ react, typescript }) {
-        const renderWrappers = createOrderedList<TypescriptCodeWrapper>();
-        let errorBoundary: TypescriptCodeWrapper | undefined;
-        let renderRoot: TypescriptCodeExpression =
-          TypescriptCodeUtils.createExpression('<div />');
-        const renderSiblings: TypescriptCodeExpression[] = [];
-
-        const appFile = typescript.createTemplate({
-          COMPONENT_CODE: { type: 'code-block' },
-          RENDER_WRAPPERS: { type: 'code-wrapper' },
-          RENDER_ROOT: { type: 'code-expression', default: '<div />' },
-        });
-
-        react
-          .getIndexFile()
-          .addCodeExpression(
-            'APP',
-            TypescriptCodeUtils.createExpression(
-              '<App />',
-              `import App from '@/src/app/App';`,
-            ),
-          );
+      run({
+        typescriptFile,
+        reactAppConfigValues: {
+          errorBoundary,
+          renderWrappers,
+          renderSiblings,
+          renderRoot,
+        },
+      }) {
         return {
-          providers: {
-            reactApp: {
-              getRenderWrappers() {
-                return renderWrappers;
-              },
-              setRenderRoot(root) {
-                renderRoot = root;
-              },
-              setErrorBoundary(wrapper: TypescriptCodeWrapper) {
-                if (errorBoundary) {
-                  throw new Error('Error boundary already set');
-                }
-                errorBoundary = wrapper;
-              },
-              addRenderSibling(sibling) {
-                renderSiblings.push(sibling);
-              },
-            },
-          },
           build: async (builder) => {
-            const rootWithSiblings = TypescriptCodeUtils.mergeExpressions(
-              [renderRoot, ...renderSiblings],
+            const rootWithSiblings = TsCodeUtils.mergeFragmentsPresorted([
+              renderRoot ?? '<div />',
+              ...sortBy([...renderSiblings.entries()], [([key]) => key]).map(
+                ([, sibling]) => sibling,
+              ),
               '\n',
+            ]);
+
+            const sortedWrappers = [
+              errorBoundary,
+              ...sortBy(
+                [...renderWrappers.entries()],
+                [
+                  ([, wrapper]) => WRAPPER_PRIORITY[wrapper.type],
+                  ([key]) => key,
+                ],
+              ).map(([, wrapper]) => wrapper.wrap),
+            ].filter((x) => x !== undefined);
+
+            let rootWithWrappers = rootWithSiblings;
+
+            for (const wrapper of sortedWrappers.toReversed()) {
+              rootWithWrappers = wrapper(rootWithWrappers);
+            }
+
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_APP_TS_TEMPLATES.app,
+                destination: appPath,
+                variables: {
+                  TPL_RENDER_ROOT: rootWithWrappers,
+                },
+              }),
             );
-
-            appFile.addCodeEntries({
-              RENDER_WRAPPERS: TypescriptCodeUtils.mergeWrappers([
-                ...(errorBoundary ? [errorBoundary] : []),
-                ...renderWrappers.getItems(),
-              ]),
-              RENDER_ROOT: rootWithSiblings,
-            });
-
-            const destination = `src/app/App.tsx`;
-            await builder.apply(appFile.renderToAction('App.tsx', destination));
           },
         };
       },

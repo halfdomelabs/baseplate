@@ -18,6 +18,7 @@ import { reactApolloProvider } from '@src/generators/apollo/react-apollo/react-a
 import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
+import { createRouteElement } from '@src/utils/routes.js';
 
 import { authServiceProvider } from '../auth-service/auth-service.generator.js';
 
@@ -84,10 +85,7 @@ export const authLoginPageGenerator = createGenerator({
         reactRoutes.registerRoute({
           path: 'login',
           layoutKey: 'auth',
-          element: TypescriptCodeUtils.createExpression(
-            `<LoginPage />`,
-            `import LoginPage from '${loginPageImport}';`,
-          ),
+          element: createRouteElement('LoginPage', loginPageImport),
         });
 
         return {

@@ -1,105 +1,120 @@
 import type {
   ImportMapper,
-  TypescriptCodeBlock,
+  TsCodeFragment,
 } from '@halfdomelabs/core-generators';
 
 import {
-  makeImportAndFilePath,
   projectScope,
-  typescriptProvider,
+  TsCodeUtils,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactLoggerProvider } from '../react-logger/react-logger.generator.js';
+import { reactLoggerImportsProvider } from '../react-logger/react-logger.generator.js';
+import {
+  createReactErrorImports,
+  reactErrorImportsProvider,
+} from './generated/ts-import-maps.js';
+import { CORE_REACT_ERROR_TS_TEMPLATES } from './generated/ts-templates.js';
 
-const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
-});
+const descriptorSchema = z.object({});
 
-export interface ReactErrorProvider extends ImportMapper {
-  addContextAction(action: TypescriptCodeBlock): void;
-  addErrorReporter(reporter: TypescriptCodeBlock): void;
-  addErrorFormatter(formatter: TypescriptCodeBlock): void;
-}
+const [setupTask, reactErrorConfigProvider, reactErrorConfigValuesProvider] =
+  createConfigProviderTask(
+    (t) => ({
+      contextActions: t.map<string, TsCodeFragment>(),
+      errorReporters: t.map<string, TsCodeFragment>(),
+      errorFormatters: t.map<string, TsCodeFragment>(),
+    }),
+    {
+      prefix: 'react-error',
+      configScope: projectScope,
+    },
+  );
 
-export const reactErrorProvider =
-  createProviderType<ReactErrorProvider>('react-error');
+export { reactErrorConfigProvider };
+
+export type ReactErrorProvider = ImportMapper;
+
+export const reactErrorProvider = createProviderType<ReactErrorProvider>(
+  'react-error',
+  {
+    isReadOnly: true,
+  },
+);
 
 export const reactErrorGenerator = createGenerator({
   name: 'core/react-error',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    setup: setupTask,
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
-        reactLogger: reactLoggerProvider,
+        typescriptFile: typescriptFileProvider,
+        reactLoggerImports: reactLoggerImportsProvider,
+        reactErrorConfigValues: reactErrorConfigValuesProvider,
       },
       exports: {
         reactError: reactErrorProvider.export(projectScope),
+        reactErrorImports: reactErrorImportsProvider.export(projectScope),
       },
-      run({ typescript, reactLogger }) {
-        const loggerFile = typescript.createTemplate(
-          {
-            CONTEXT_ACTIONS: {
-              type: 'code-block',
-            },
-            LOGGER_ACTIONS: {
-              type: 'code-block',
-              default: '// no error reporters registered',
-            },
-          },
-          { importMappers: [reactLogger] },
-        );
-        const [loggerImport, loggerPath] = makeImportAndFilePath(
-          'src/services/error-logger.ts',
-        );
-
-        const formatterFile = typescript.createTemplate({
-          ERROR_FORMATTERS: { type: 'code-block' },
-        });
-        const [formatterImport, formatterPath] = makeImportAndFilePath(
-          'src/services/error-formatter.ts',
-        );
-
+      run({
+        typescriptFile,
+        reactLoggerImports,
+        reactErrorConfigValues: {
+          errorFormatters,
+          errorReporters,
+          contextActions,
+        },
+      }) {
         return {
           providers: {
             reactError: {
-              addContextAction(action) {
-                loggerFile.addCodeBlock('CONTEXT_ACTIONS', action);
-              },
-              addErrorReporter(reporter) {
-                loggerFile.addCodeBlock('LOGGER_ACTIONS', reporter);
-              },
-              addErrorFormatter(formatter) {
-                formatterFile.addCodeBlock('ERROR_FORMATTERS', formatter);
-              },
               getImportMap: () => ({
                 '%react-error/formatter': {
-                  path: formatterImport,
+                  path: '@/src/services/error-formatter',
                   allowedImports: ['formatError', 'logAndFormatError'],
                 },
                 '%react-error/logger': {
-                  path: loggerImport,
+                  path: '@/src/services/error-logger',
                   allowedImports: ['logError'],
                 },
               }),
             },
+            reactErrorImports: createReactErrorImports('@/src/services'),
           },
           build: async (builder) => {
             await builder.apply(
-              loggerFile.renderToAction('services/error-logger.ts', loggerPath),
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_ERROR_TS_TEMPLATES.errorLogger,
+                destination: '@/src/services/error-logger.ts',
+                importMapProviders: {
+                  reactLoggerImports,
+                },
+                variables: {
+                  TPL_CONTEXT_ACTIONS:
+                    TsCodeUtils.mergeFragments(contextActions),
+                  TPL_LOGGER_ACTIONS:
+                    TsCodeUtils.mergeFragments(errorReporters),
+                },
+              }),
             );
             await builder.apply(
-              formatterFile.renderToAction(
-                'services/error-formatter.ts',
-                formatterPath,
-              ),
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_ERROR_TS_TEMPLATES.errorFormatter,
+                destination: '@/src/services/error-formatter.ts',
+                variables: {
+                  TPL_ERROR_FORMATTERS:
+                    TsCodeUtils.mergeFragments(errorFormatters),
+                },
+              }),
             );
           },
         };
@@ -107,3 +122,5 @@ export const reactErrorGenerator = createGenerator({
     }),
   }),
 });
+
+export { reactErrorImportsProvider } from './generated/ts-import-maps.js';

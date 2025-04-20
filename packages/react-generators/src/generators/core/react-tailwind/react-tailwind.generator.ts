@@ -4,6 +4,7 @@ import {
   extractPackageVersions,
   prettierProvider,
   projectScope,
+  tsCodeFragment,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -16,7 +17,7 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 
-import { reactProvider } from '../react/react.generator.js';
+import { reactBaseConfigProvider } from '../react/react.generator.js';
 import { CORE_REACT_TAILWIND_TEXT_TEMPLATES } from './generated/text-templates.js';
 
 const descriptorSchema = z.object({
@@ -45,14 +46,14 @@ export const reactTailwindGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        react: reactProvider,
+        reactBaseConfig: reactBaseConfigProvider,
         eslint: eslintProvider,
         prettier: prettierProvider,
       },
       exports: {
         reactTailwind: reactTailwindProvider.export(projectScope),
       },
-      run({ react, eslint, prettier }) {
+      run({ reactBaseConfig, eslint, prettier }) {
         eslint
           .getConfig()
           .appendUnique('eslintIgnore', [
@@ -67,7 +68,10 @@ export const reactTailwindGenerator = createGenerator({
           default: prettierPluginTailwindcss,
         });
 
-        react.getIndexFile().addCodeBlock('IMPORTS', "import './index.css'");
+        reactBaseConfig.headerFragments.set(
+          'INDEX_CSS_IMPORTS',
+          tsCodeFragment("import './index.css'"),
+        );
 
         const globalStyles: string[] = [];
 
@@ -96,7 +100,7 @@ export const reactTailwindGenerator = createGenerator({
                       globalStyles.length > 0 ||
                       !builder.metadataOptions.includeTemplateMetadata
                         ? globalStyles.join('\n\n')
-                        : '/* TPL_GLOBAL_STYLES */',
+                        : '/* GLOBAL_STYLES */',
                   },
                 },
               }),

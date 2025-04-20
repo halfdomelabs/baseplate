@@ -1,7 +1,6 @@
 import {
   makeImportAndFilePath,
   projectScope,
-  TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -14,6 +13,7 @@ import { z } from 'zod';
 import { authHooksProvider } from '@src/generators/auth/auth-hooks/auth-hooks.generator.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
+import { createRouteElement } from '@src/utils/routes.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -45,10 +45,7 @@ export const adminHomeGenerator = createGenerator({
         );
         reactRoutes.registerRoute({
           index: true,
-          element: TypescriptCodeUtils.createExpression(
-            `<Home />`,
-            `import Home from '${pageImport}';`,
-          ),
+          element: createRouteElement('Home', pageImport),
           layoutKey: 'admin',
         });
 

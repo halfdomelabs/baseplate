@@ -1,5 +1,6 @@
 // @ts-nocheck
-import { NotFoundCard } from '%react-components';
+
+import { NotFoundCard } from '%reactComponentsImports';
 
 function NotFoundPage(): JSX.Element {
   return <NotFoundCard />;

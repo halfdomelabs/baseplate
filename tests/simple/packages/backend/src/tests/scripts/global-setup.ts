@@ -1,7 +1,6 @@
 import { config } from 'dotenv';
-import { createTestDatabase } from '../helpers/db.test-helper.js';
 
-/* eslint-disable no-console */
+import { createTestDatabase } from '../helpers/db.test-helper.js';
 
 export default async function setup(): Promise<void> {
   config();
@@ -21,6 +20,7 @@ export default async function setup(): Promise<void> {
     process.env.ORIGINAL_DATABASE_URL = process.env.DATABASE_URL;
     process.env.DATABASE_URL = testDatabaseUrl;
 
-    console.log('\nDatabase migrations ran!');
+    // eslint-disable-next-line no-console
+    console.info('\nDatabase migrations ran!');
   }
 }

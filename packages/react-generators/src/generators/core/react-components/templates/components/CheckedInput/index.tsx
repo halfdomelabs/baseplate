@@ -1,5 +1,5 @@
 // @ts-nocheck
-/* eslint-disable jsx-a11y/label-has-associated-control */
+
 import clsx from 'clsx';
 import {
   Control,
@@ -10,8 +10,11 @@ import {
   UseFormRegisterReturn,
   useFormState,
 } from 'react-hook-form';
-import FormError from '../FormError';
-import FormLabel from '../FormLabel';
+
+import FormError from '../FormError/index.js';
+import FormLabel from '../FormLabel/index.js';
+
+/* eslint-disable jsx-a11y/label-has-associated-control */
 
 interface Props {
   className?: string;

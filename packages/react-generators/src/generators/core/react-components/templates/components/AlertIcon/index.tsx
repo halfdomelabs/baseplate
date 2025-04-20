@@ -1,13 +1,15 @@
 // @ts-nocheck
+
 import clsx from 'clsx';
 import { IconType } from 'react-icons';
 import {
+  MdCheckCircleOutline,
   MdErrorOutline,
   MdOutlineInfo,
-  MdCheckCircleOutline,
   MdOutlineWarningAmber,
 } from 'react-icons/md';
-import { StatusType } from '../../hooks/useStatus';
+
+import { StatusType } from '../../hooks/useStatus.js';
 
 interface Props {
   className?: string;

@@ -98,6 +98,35 @@ describe('renderTextTemplateFileAction', () => {
     expect(file?.options?.templateMetadata).toBeUndefined();
   });
 
+  it('should write a css file from template contents with variables', async () => {
+    const action = renderTextTemplateFileAction({
+      template: createTextTemplateFile({
+        name: 'test',
+        source: {
+          contents: 'h1 {\n  color: red;\n}\n/* TPL_GLOBAL_STYLES */',
+        },
+        variables: {
+          TPL_GLOBAL_STYLES: {
+            description: 'Global styles to apply to the app',
+          },
+        },
+      }),
+      id: 'test-id',
+      destination: 'output/test.css',
+      variables: {
+        TPL_GLOBAL_STYLES: 'body {\n  background-color: red;\n}',
+      },
+    });
+
+    const output = await testAction(action);
+
+    expect(output.files.size).toBe(1);
+    const file = output.files.get('output/test.css');
+    expect(file?.contents).toEqual(
+      'h1 {\n  color: red;\n}\nbody {\n  background-color: red;\n}',
+    );
+  });
+
   it('should throw error when template contains variable value', async () => {
     vol.fromJSON({
       '/root/pkg/test-generator/templates/test.txt': 'Hello John {{TPL_NAME}}!',
