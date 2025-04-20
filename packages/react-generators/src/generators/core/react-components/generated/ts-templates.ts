@@ -326,8 +326,16 @@ const index = createTsTemplateFile({
   variables: { TPL_EXPORTS: {} },
 });
 
+const reactDatePickerInput = createTsTemplateFile({
+  name: 'react-date-picker-input',
+  projectExports: {},
+  source: { path: 'components/ReactDatePickerInput/index.tsx' },
+  variables: {},
+});
+
 export const CORE_REACT_COMPONENTS_TS_TEMPLATES = {
   componentsGroup,
   hooksGroup,
   index,
+  reactDatePickerInput,
 };

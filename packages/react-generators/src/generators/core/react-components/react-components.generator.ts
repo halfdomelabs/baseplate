@@ -194,6 +194,16 @@ export const reactComponentsGenerator = createGenerator({
               }),
             );
 
+            if (includeDatePicker) {
+              await builder.apply(
+                typescriptFile.renderTemplateFile({
+                  template:
+                    CORE_REACT_COMPONENTS_TS_TEMPLATES.reactDatePickerInput,
+                  destination: `src/components/ReactDatePickerInput/index.tsx`,
+                }),
+              );
+            }
+
             // build component index
             const componentNames = allReactComponents.map(
               (entry) => entry.name,

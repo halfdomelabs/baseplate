@@ -18,9 +18,10 @@ import {
   useController,
   UseFormRegisterReturn,
 } from 'react-hook-form';
-import FormError from '../FormError';
-import FormLabel from '../FormLabel';
-import TextInput from '../TextInput';
+
+import FormError from '../FormError/index.js';
+import FormLabel from '../FormLabel/index.js';
+import TextInput from '../TextInput/index.js';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
