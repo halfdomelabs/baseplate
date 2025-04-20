@@ -368,7 +368,7 @@ describe('TsCodeUtils', () => {
       });
 
       expect(result).toEqual({
-        contents: '<input required type="text" />',
+        contents: '<input type="text" required />',
         imports: [],
         hoistedFragments: [],
       });
