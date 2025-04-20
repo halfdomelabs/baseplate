@@ -1,13 +1,15 @@
 import {
   makeImportAndFilePath,
-  TypescriptCodeBlock,
+  tsCodeFragment,
+  tsHoistedFragment,
+  tsImportBuilder,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactSentryProvider } from '@src/generators/core/react-sentry/react-sentry.generator.js';
+import { reactSentryConfigProvider } from '@src/generators/core/react-sentry/react-sentry.generator.js';
 
 import { reactApolloSetupProvider } from '../react-apollo/react-apollo.generator.js';
 
@@ -20,10 +22,10 @@ export const apolloSentryGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        reactSentry: reactSentryProvider,
+        reactSentryConfig: reactSentryConfigProvider,
       },
-      run({ reactSentry }) {
-        const headerBlock = TypescriptCodeUtils.createBlock(
+      run({ reactSentryConfig }) {
+        const headerFragment = tsCodeFragment(
           `
           function configureSentryScopeForGraphqlError(
             scope: Sentry.Scope,
@@ -42,12 +44,13 @@ export const apolloSentryGenerator = createGenerator({
             }
           }
           `,
-          "import { GraphQLError } from 'graphql'",
+          tsImportBuilder(['GraphQLError']).from('graphql'),
         );
         return {
           build: () => {
-            reactSentry.addSentryScopeAction(
-              new TypescriptCodeBlock(
+            reactSentryConfig.sentryScopeActions.set(
+              'apollo',
+              tsCodeFragment(
                 `
                 if (error instanceof ApolloError && error.graphQLErrors.length === 1) {
                   const graphqlError = error.graphQLErrors[0];
@@ -59,10 +62,17 @@ export const apolloSentryGenerator = createGenerator({
                 }
             `,
                 [
-                  "import { GraphQLError } from 'graphql'",
-                  "import { ApolloError } from '@apollo/client';",
+                  tsImportBuilder(['GraphQLError']).from('graphql'),
+                  tsImportBuilder(['ApolloError']).from('@apollo/client'),
                 ],
-                { headerBlocks: [headerBlock] },
+                {
+                  hoistedFragments: [
+                    tsHoistedFragment(
+                      headerFragment,
+                      'apollo-sentry-scope-action',
+                    ),
+                  ],
+                },
               ),
             );
           },

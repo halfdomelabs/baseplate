@@ -1,44 +1,57 @@
-import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
   projectScope,
   tsCodeFragment,
+  TsCodeUtils,
   tsHoistedFragment,
   tsImportBuilder,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 import { authIdentifyProvider } from '@src/generators/auth/auth-identify/auth-identify.generator.js';
 
-import { reactConfigProvider } from '../react-config/react-config.generator.js';
+import {
+  reactConfigImportsProvider,
+  reactConfigProvider,
+} from '../react-config/react-config.generator.js';
 import { reactErrorConfigProvider } from '../react-error/react-error.generator.js';
 import { reactRouterConfigProvider } from '../react-router/react-router.generator.js';
+import { CORE_REACT_SENTRY_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
-export interface ReactSentryProvider {
-  addSentryScopeAction(block: TypescriptCodeBlock): void;
-}
+const [setupTask, reactSentryConfigProvider, reactSentryConfigValuesProvider] =
+  createConfigProviderTask(
+    (t) => ({
+      sentryScopeActions: t.map<string, TsCodeFragment>(),
+    }),
+    {
+      prefix: 'react-sentry',
+      configScope: projectScope,
+    },
+  );
 
-export const reactSentryProvider =
-  createProviderType<ReactSentryProvider>('react-sentry');
+export { reactSentryConfigProvider };
+
+const sentryPath = '@/src/services/sentry.ts';
 
 export const reactSentryGenerator = createGenerator({
   name: 'core/react-sentry',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['@sentry/react']),
     }),
@@ -56,57 +69,54 @@ export const reactSentryGenerator = createGenerator({
         );
       },
     ),
-    main: createGeneratorTask({
-      dependencies: {
-        typescript: typescriptProvider,
-        reactConfig: reactConfigProvider,
-        authIdentify: authIdentifyProvider.dependency().optional(),
-      },
-      exports: {
-        reactSentry: reactSentryProvider.export(projectScope),
-      },
-      run({ typescript, reactConfig, authIdentify }) {
-        const sentryFile = typescript.createTemplate(
-          {
-            SENTRY_SCOPE_ACTIONS: {
-              type: 'code-block',
-            },
-          },
-          { importMappers: [reactConfig] },
-        );
-        const [sentryImport, sentryPath] = makeImportAndFilePath(
-          'src/services/sentry.ts',
-        );
-
-        reactConfig.configEntries.set('VITE_SENTRY_DSN', {
-          comment: 'DSN for Sentry (optional)',
-          validator: 'z.string().optional()',
-          devDefaultValue: '',
-        });
-
+    reactConfig: createProviderTask(reactConfigProvider, (reactConfig) => {
+      reactConfig.configEntries.set('VITE_SENTRY_DSN', {
+        comment: 'DSN for Sentry (optional)',
+        validator: 'z.string().optional()',
+        devDefaultValue: '',
+      });
+    }),
+    authIdentify: createProviderTask(
+      authIdentifyProvider.dependency().optional(),
+      (authIdentify) => {
         if (authIdentify) {
           authIdentify.identifyFragments.set(
             'identify-sentry-user',
             tsCodeFragment(
               `identifySentryUser({
-        id: userId,
-      });`,
-              tsImportBuilder(['identifySentryUser']).from(sentryImport),
+      id: userId,
+    });`,
+              tsImportBuilder(['identifySentryUser']).from(sentryPath),
             ),
           );
         }
-
+      },
+    ),
+    main: createGeneratorTask({
+      dependencies: {
+        typescriptFile: typescriptFileProvider,
+        reactConfigImports: reactConfigImportsProvider,
+        reactSentryConfigValues: reactSentryConfigValuesProvider,
+      },
+      run({
+        typescriptFile,
+        reactConfigImports,
+        reactSentryConfigValues: { sentryScopeActions },
+      }) {
         return {
-          providers: {
-            reactSentry: {
-              addSentryScopeAction(block) {
-                sentryFile.addCodeBlock('SENTRY_SCOPE_ACTIONS', block);
-              },
-            },
-          },
           build: async (builder) => {
             await builder.apply(
-              sentryFile.renderToAction('sentry.ts', sentryPath),
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_SENTRY_TS_TEMPLATES.sentry,
+                destination: sentryPath,
+                importMapProviders: {
+                  reactConfigImports,
+                },
+                variables: {
+                  TPL_SENTRY_SCOPE_ACTIONS:
+                    TsCodeUtils.mergeFragments(sentryScopeActions),
+                },
+              }),
             );
           },
         };

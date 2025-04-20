@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { config } from '%reactConfigImports';
 import * as Sentry from '@sentry/react';
 import React from 'react';
 import {
@@ -8,7 +9,6 @@ import {
   useLocation,
   useNavigationType,
 } from 'react-router-dom';
-import { config } from '%react-config';
 
 const SENTRY_ENABLED = !!config.VITE_SENTRY_DSN;
 const TRACE_SAMPLE_RATE = 1.0;
@@ -51,8 +51,7 @@ export function logErrorToSentry(
   let sentryId: string | undefined;
 
   Sentry.withScope((scope) => {
-    SENTRY_SCOPE_ACTIONS;
-
+    TPL_SENTRY_SCOPE_ACTIONS;
     if (additionalContext) {
       scope.setExtras(additionalContext);
     }
