@@ -98,7 +98,7 @@ describe('renderTextTemplateFileAction', () => {
     expect(file?.options?.templateMetadata).toBeUndefined();
   });
 
-  it.only('should write a css file from template contents with variables', async () => {
+  it('should write a css file from template contents with variables', async () => {
     const action = renderTextTemplateFileAction({
       template: createTextTemplateFile({
         name: 'test',
