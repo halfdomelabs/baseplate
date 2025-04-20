@@ -1,6 +1,7 @@
 import {
   makeImportAndFilePath,
-  TypescriptCodeExpression,
+  tsCodeFragment,
+  tsImportBuilder,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
@@ -10,6 +11,7 @@ import { authHooksProvider } from '@src/generators/auth/auth-hooks/auth-hooks.ge
 import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
+import { createRouteElement } from '@src/utils/routes.js';
 
 const descriptorSchema = z.object({});
 
@@ -38,9 +40,9 @@ export const auth0CallbackGenerator = createGenerator({
           build: async (builder) => {
             reactRoutes.registerRoute({
               path: 'auth0-callback',
-              element: new TypescriptCodeExpression(
-                `<Auth0CallbackPage />`,
-                `import Auth0CallbackPage from '${callbackPageImport}'`,
+              element: createRouteElement(
+                'Auth0CallbackPage',
+                callbackPageImport,
               ),
             });
 
@@ -53,9 +55,9 @@ export const auth0CallbackGenerator = createGenerator({
             );
             reactRoutes.registerRoute({
               path: 'signup',
-              element: new TypescriptCodeExpression(
+              element: tsCodeFragment(
                 `<SignupPage />`,
-                `import SignupPage from '${signupPageImport}'`,
+                tsImportBuilder().default('SignupPage').from(signupPageImport),
               ),
             });
 

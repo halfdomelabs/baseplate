@@ -13,6 +13,7 @@ import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
+import { createRouteElement } from '@src/utils/routes.js';
 import { writeReactComponent } from '@src/writers/component/index.js';
 
 const descriptorSchema = z.object({
@@ -43,10 +44,7 @@ export const authLayoutGenerator = createGenerator({
           `${reactRoutes.getDirectoryBase()}/components/AuthLayout/index.tsx`,
         );
 
-        const layoutExpression = TypescriptCodeUtils.createExpression(
-          `<${name} />`,
-          `import ${name} from '${layoutImport}';`,
-        );
+        const layoutExpression = createRouteElement(name, layoutImport);
 
         reactRoutes.registerLayout({
           key: 'auth',

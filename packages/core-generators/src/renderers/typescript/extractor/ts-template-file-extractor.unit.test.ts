@@ -436,10 +436,10 @@ export function SecondUtil() {
       );
 
     expect(result[firstComponentTemplatePath]).toContain(
-      "import { FirstUtil } from './first-util.ts'",
+      "import { FirstUtil } from './first-util.js'",
     );
     expect(result[secondComponentTemplatePath]).toContain(
-      "import { SecondUtil } from './second-util.ts'",
+      "import { SecondUtil } from './second-util.js'",
     );
     expect(result[secondComponentTemplatePath]).toContain(
       "import { FirstComponent } from '%testGeneratorImports'",
@@ -450,7 +450,7 @@ export function SecondUtil() {
 
       import { FirstComponent } from '%testGeneratorImports';
 
-      import { SecondUtil } from './second-util.ts';
+      import { SecondUtil } from './second-util.js';
 
       export function SecondComponent() {
         return FirstComponent() + SecondUtil();

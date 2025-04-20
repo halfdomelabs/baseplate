@@ -1,25 +1,33 @@
-import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
 
 import {
   projectScope,
-  TypescriptCodeUtils,
+  TsCodeUtils,
+  tsImportBuilder,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigFieldMap,
   createGenerator,
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { reactRouterProvider } from '@src/generators/core/react-router/react-router.generator.js';
+import { reactRouterConfigProvider } from '@src/generators/core/react-router/react-router.generator.js';
 
 import { authHooksProvider } from '../auth-hooks/auth-hooks.generator.js';
 
 const descriptorSchema = z.object({});
 
-export interface AuthIdentifyProvider {
-  addBlock(block: TypescriptCodeBlock): void;
-}
+const configSchema = createFieldMapSchemaBuilder((t) => ({
+  identifyFragments: t.map<string, TsCodeFragment>(),
+}));
+
+export type AuthIdentifyProvider = InferFieldMapSchemaFromBuilder<
+  typeof configSchema
+>;
 
 export const authIdentifyProvider =
   createProviderType<AuthIdentifyProvider>('auth-identify');
@@ -31,42 +39,38 @@ export const authIdentifyGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        reactRouter: reactRouterProvider,
+        reactRouterConfig: reactRouterConfigProvider,
         authHooks: authHooksProvider,
       },
       exports: {
         authIdentify: authIdentifyProvider.export(projectScope),
       },
-      run({ reactRouter, authHooks }) {
-        const blocks: TypescriptCodeBlock[] = [];
+      run({ reactRouterConfig, authHooks }) {
+        const fieldMap = createConfigFieldMap(configSchema);
         return {
           providers: {
-            authIdentify: {
-              addBlock(block) {
-                blocks.push(block);
-              },
-            },
+            authIdentify: fieldMap,
           },
           build: () => {
-            if (blocks.length > 0) {
-              reactRouter.addRouteHeader(
-                TypescriptCodeUtils.mergeBlocks(blocks)
-                  .wrap(
-                    (contents) => `
-              const { userId } = useSession();
+            const { identifyFragments } = fieldMap.getValues();
+            if (identifyFragments.size > 0) {
+              reactRouterConfig.renderHeaders.set(
+                'auth-identify',
+                TsCodeUtils.templateWithImports([
+                  tsImportBuilder(['useSession']).from(
+                    authHooks.getImportMap()['%auth-hooks/useSession']?.path ??
+                      '',
+                  ),
+                  tsImportBuilder(['useEffect']).from('react'),
+                ])`
+                const { userId } = useSession();
 
-            useEffect(() => {
-              if (!userId) return;
-              
-              ${contents}
-            }, [userId]);
-            `,
-                    [
-                      "import {useSession} from '%auth-hooks/useSession'",
-                      "import {useEffect} from 'react'",
-                    ],
-                  )
-                  .withImportMappers(authHooks),
+                useEffect(() => {
+                  if (!userId) return;
+                  
+                  ${TsCodeUtils.mergeFragments(identifyFragments)}
+                }, [userId]);
+                `,
               );
             }
           },

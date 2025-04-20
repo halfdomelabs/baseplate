@@ -1,22 +1,19 @@
-import type {
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import { createProviderType } from '@halfdomelabs/sync';
 
 export interface ReactRouteLayout {
   key: string;
-  header?: TypescriptCodeBlock;
-  element: TypescriptCodeExpression;
+  header?: TsCodeFragment;
+  element: TsCodeFragment;
 }
 
 export interface ReactRoute {
   path?: string;
   index?: boolean;
-  element?: TypescriptCodeExpression;
+  element?: TsCodeFragment;
   layoutKey?: string;
-  children?: TypescriptCodeExpression;
+  children?: TsCodeFragment;
 }
 
 export interface ReactRoutesProvider {

@@ -1,6 +1,8 @@
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+
 import {
-  TypescriptCodeUtils,
-  typescriptProvider,
+  TsCodeUtils,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -11,13 +13,15 @@ import {
   reactRoutesProvider,
   reactRoutesReadOnlyProvider,
 } from '@src/providers/routes.js';
-import { notEmpty } from '@src/utils/array.js';
 import { dasherizeCamel, upperCaseFirst } from '@src/utils/case.js';
+import { createRouteElement } from '@src/utils/routes.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
 import { reactNotFoundProvider } from '../react-not-found-handler/react-not-found-handler.generator.js';
+import { CORE_REACT_ROUTES_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
+  id: z.string().min(1),
   name: z.string().min(1),
   layoutKey: z.string().optional(),
   // whether to pass the routes through to the parent routes container
@@ -29,18 +33,18 @@ export const reactRoutesGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: ({ name, layoutKey, isPassthrough }) => ({
+  buildTasks: ({ id, name, layoutKey, isPassthrough }) => ({
     main: createGeneratorTask({
       dependencies: {
         reactRoutes: reactRoutesProvider.dependency().parentScopeOnly(),
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
         reactNotFound: reactNotFoundProvider.dependency().optional(),
       },
       exports: {
         reactRoutes: reactRoutesProvider.export(),
         reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(),
       },
-      run({ reactRoutes, typescript, reactNotFound }) {
+      run({ reactRoutes, typescriptFile, reactNotFound }) {
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];
 
@@ -94,35 +98,38 @@ export const reactRoutesGenerator = createGenerator({
 
               const componentName = `${upperCaseFirst(name)}Routes`;
 
-              const pagesRootFile = typescript.createTemplate({
-                ROUTE_HEADER: { type: 'code-block' },
-                ROUTES_NAME: { type: 'code-expression' },
-                ROUTES: { type: 'code-expression' },
-              });
-
-              pagesRootFile.addCodeEntries({
-                ROUTE_HEADER: layouts
-                  .map((layout) => layout.header)
-                  .filter(notEmpty),
-                ROUTES_NAME: `${upperCaseFirst(name)}FeatureRoutes`,
-                ROUTES: renderedRoutes,
-              });
+              await builder.apply(
+                typescriptFile.renderTemplateFile({
+                  id: `route-${id}`,
+                  template: CORE_REACT_ROUTES_TS_TEMPLATES.index,
+                  destination: `${directoryBase}/index.tsx`,
+                  includeMetadataOnDemand: true,
+                  variables: {
+                    TPL_ROUTE_HEADER: TsCodeUtils.mergeFragments(
+                      new Map(
+                        layouts.map(
+                          (layout) =>
+                            [layout.key, layout.header] as [
+                              string,
+                              TsCodeFragment | undefined,
+                            ],
+                        ),
+                      ),
+                    ),
+                    TPL_ROUTES: renderedRoutes,
+                    TPL_ROUTES_NAME: `${upperCaseFirst(name)}FeatureRoutes`,
+                  },
+                }),
+              );
 
               reactRoutes.registerRoute({
                 path: `${pathName}/*`,
                 layoutKey,
-                element: TypescriptCodeUtils.createExpression(
-                  `<${componentName} />`,
-                  `import ${componentName} from "@/${directoryBase}"`,
+                element: createRouteElement(
+                  componentName,
+                  `@/${directoryBase}`,
                 ),
               });
-
-              await builder.apply(
-                pagesRootFile.renderToAction(
-                  'index.tsx',
-                  `${directoryBase}/index.tsx`,
-                ),
-              );
             }
           },
         };

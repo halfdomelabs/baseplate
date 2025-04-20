@@ -57,6 +57,7 @@ export function compileAuthPages(
 ): GeneratorBundle {
   if (builder.projectDefinition.auth?.useAuth0) {
     return reactRoutesGenerator({
+      id: 'auth',
       name: 'auth',
       children: {
         auth: auth0CallbackGenerator({}),
@@ -65,6 +66,7 @@ export function compileAuthPages(
   }
 
   return reactRoutesGenerator({
+    id: 'auth',
     name: 'auth',
     children: {
       auth: authPagesGenerator({

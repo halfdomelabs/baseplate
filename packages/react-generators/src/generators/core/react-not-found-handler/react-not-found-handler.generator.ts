@@ -1,7 +1,8 @@
 import {
   makeImportAndFilePath,
   projectScope,
-  TypescriptCodeUtils,
+  tsCodeFragment,
+  tsImportBuilder,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -36,27 +37,27 @@ export const reactNotFoundHandlerGenerator = createGenerator({
   buildTasks: ({ layoutKey }) => ({
     main: createGeneratorTask({
       dependencies: {
-        reactPages: reactRoutesProvider,
+        reactRoutes: reactRoutesProvider,
         reactComponentsImports: reactComponentsImportsProvider,
         typescriptFile: typescriptFileProvider,
       },
       exports: {
         reactNotFound: reactNotFoundProvider.export(projectScope),
       },
-      run({ reactPages, reactComponentsImports, typescriptFile }) {
+      run({ reactRoutes, reactComponentsImports, typescriptFile }) {
         const [notFoundPageImport, notFoundPagePath] = makeImportAndFilePath(
-          `${reactPages.getDirectoryBase()}/NotFound.page.tsx`,
+          `${reactRoutes.getDirectoryBase()}/NotFound.page.tsx`,
         );
 
         const notFoundRoute = {
           path: '*',
-          element: TypescriptCodeUtils.createExpression(
+          element: tsCodeFragment(
             `<NotFoundPage />`,
-            `import NotFoundPage from '${notFoundPageImport}';`,
+            tsImportBuilder().default('NotFoundPage').from(notFoundPageImport),
           ),
         };
 
-        reactPages.registerRoute({
+        reactRoutes.registerRoute({
           ...notFoundRoute,
           layoutKey,
         });

@@ -1,6 +1,7 @@
 import {
   projectScope,
-  TypescriptCodeUtils,
+  tsCodeFragment,
+  tsImportBuilder,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -68,9 +69,11 @@ export const adminBullBoardGenerator = createGenerator({
 
             reactRoutes.registerRoute({
               path: 'bull-board',
-              element: TypescriptCodeUtils.createExpression(
+              element: tsCodeFragment(
                 '<BullBoardPage />',
-                `import BullBoardPage from '@/${baseDirectory}'`,
+                tsImportBuilder()
+                  .default('BullBoardPage')
+                  .from(`@/${baseDirectory}`),
               ),
             });
 

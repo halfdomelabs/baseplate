@@ -332,4 +332,109 @@ describe('TsCodeUtils', () => {
       });
     });
   });
+
+  describe('mergeFragmentsAsJsxElement', () => {
+    it('should create a self-closing JSX element with string and code fragment attributes', () => {
+      const result = TsCodeUtils.mergeFragmentsAsJsxElement('div', {
+        className: 'container',
+        id: tsCodeFragment('id'),
+      });
+
+      expect(result).toEqual({
+        contents: '<div className="container" id={id} />',
+        imports: [],
+        hoistedFragments: [],
+      });
+    });
+
+    it('should create a JSX element with children', () => {
+      const result = TsCodeUtils.mergeFragmentsAsJsxElement('div', {
+        className: 'container',
+        children: 'Hello World',
+      });
+
+      expect(result).toEqual({
+        contents: '<div className="container">Hello World</div>',
+        imports: [],
+        hoistedFragments: [],
+      });
+    });
+
+    it('should handle boolean attributes', () => {
+      const result = TsCodeUtils.mergeFragmentsAsJsxElement('input', {
+        type: 'text',
+        required: true,
+        disabled: false,
+      });
+
+      expect(result).toEqual({
+        contents: '<input required type="text" />',
+        imports: [],
+        hoistedFragments: [],
+      });
+    });
+
+    it('should handle fragment attributes with imports', () => {
+      const fooImport = tsImportBuilder().named('foo').from('./foo.js');
+      const barImport = tsImportBuilder().named('bar').from('./bar.js');
+      const h1Fragment = tsHoistedFragment(
+        tsCodeFragment('type A = string;'),
+        'h1',
+      );
+
+      const result = TsCodeUtils.mergeFragmentsAsJsxElement('div', {
+        className: tsCodeFragment('foo', fooImport, {
+          hoistedFragments: [h1Fragment],
+        }),
+        id: tsCodeFragment('bar', barImport),
+      });
+
+      expect(result).toEqual({
+        contents: '<div className={foo} id={bar} />',
+        imports: [fooImport, barImport],
+        hoistedFragments: [h1Fragment],
+      });
+    });
+
+    it('should handle fragment children with imports', () => {
+      const fooImport = tsImportBuilder().named('foo').from('./foo.js');
+      const h1Fragment = tsHoistedFragment(
+        tsCodeFragment('type A = string;'),
+        'h1',
+      );
+
+      const result = TsCodeUtils.mergeFragmentsAsJsxElement('div', {
+        className: 'container',
+        children: tsCodeFragment('foo', fooImport, {
+          hoistedFragments: [h1Fragment],
+        }),
+      });
+
+      expect(result).toEqual({
+        contents: '<div className="container">foo</div>',
+        imports: [fooImport],
+        hoistedFragments: [h1Fragment],
+      });
+    });
+
+    it('should throw error for invalid boolean children', () => {
+      expect(() => {
+        TsCodeUtils.mergeFragmentsAsJsxElement('div', {
+          children: true,
+        });
+      }).toThrow('children must be an expression');
+    });
+
+    it('should handle string attributes that need to be escaped', () => {
+      const result = TsCodeUtils.mergeFragmentsAsJsxElement('input', {
+        className: 'cont"iner',
+      });
+
+      expect(result).toEqual({
+        contents: String.raw`<input className={'cont"iner'} />`,
+        imports: [],
+        hoistedFragments: [],
+      });
+    });
+  });
 });

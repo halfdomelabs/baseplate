@@ -6,8 +6,8 @@ import {
   makeImportAndFilePath,
   projectScope,
   tsCodeFragment,
+  tsHoistedFragment,
   tsImportBuilder,
-  TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -23,7 +23,7 @@ import { authIdentifyProvider } from '@src/generators/auth/auth-identify/auth-id
 
 import { reactConfigProvider } from '../react-config/react-config.generator.js';
 import { reactErrorConfigProvider } from '../react-error/react-error.generator.js';
-import { reactRouterProvider } from '../react-router/react-router.generator.js';
+import { reactRouterConfigProvider } from '../react-router/react-router.generator.js';
 
 const descriptorSchema = z.object({});
 
@@ -85,12 +85,13 @@ export const reactSentryGenerator = createGenerator({
         });
 
         if (authIdentify) {
-          authIdentify.addBlock(
-            TypescriptCodeUtils.createBlock(
+          authIdentify.identifyFragments.set(
+            'identify-sentry-user',
+            tsCodeFragment(
               `identifySentryUser({
         id: userId,
       });`,
-              `import { identifySentryUser } from '${sentryImport}';`,
+              tsImportBuilder(['identifySentryUser']).from(sentryImport),
             ),
           );
         }
@@ -113,18 +114,21 @@ export const reactSentryGenerator = createGenerator({
     }),
     addRouterDomIntegration: createGeneratorTask({
       dependencies: {
-        reactRouter: reactRouterProvider,
+        reactRouterConfig: reactRouterConfigProvider,
       },
-      run({ reactRouter }) {
-        reactRouter.setRoutesComponent(
-          TypescriptCodeUtils.createExpression('SentryRoutes', [], {
-            headerBlocks: [
-              TypescriptCodeUtils.createBlock(
-                `const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);`,
-                [
-                  "import * as Sentry from '@sentry/react'",
-                  "import { Routes } from 'react-router-dom'",
-                ],
+      run({ reactRouterConfig }) {
+        reactRouterConfig.routesComponent.set(
+          tsCodeFragment('SentryRoutes', undefined, {
+            hoistedFragments: [
+              tsHoistedFragment(
+                tsCodeFragment(
+                  `const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);`,
+                  [
+                    tsImportBuilder().namespace('Sentry').from('@sentry/react'),
+                    tsImportBuilder(['Routes']).from('react-router-dom'),
+                  ],
+                ),
+                'sentry-routes',
               ),
             ],
           }),

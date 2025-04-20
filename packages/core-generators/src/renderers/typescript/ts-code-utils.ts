@@ -355,4 +355,73 @@ export const TsCodeUtils = {
         imports: Array.isArray(imports) ? imports : imports ? [imports] : [],
       });
   },
+
+  /**
+   * Merge fragments into a JSX element.
+   *
+   * Attribute values depending on their type are handled differently:
+   *
+   * - `string`: The value is used as is and automatically escaped if it contains double quotes.
+   * - `boolean`: The attribute is added to the JSX element if true, e.g.
+   *   <Component showBlink /> if showBlink is true. If false, the attribute is
+   *   not added.
+   * - `TsCodeFragment`: The value is used as is inside { } braces, e.g.
+   *   <Component foo={<div>bar</div>} />.
+   *
+   * @param name - The name of the JSX element.
+   * @param attributes - The attributes of the JSX element.
+   * @param imports - Optional imports to add to the fragment.
+   * @returns The merged code fragment as a JSX element.
+   */
+  mergeFragmentsAsJsxElement(
+    name: string,
+    attributes: Record<string, TsCodeFragment | string | boolean | undefined>,
+    imports?: TsImportDeclaration[] | TsImportDeclaration,
+  ): TsCodeFragment {
+    const { children, ...rest } = attributes;
+    const keys = Object.keys(rest);
+    const attributesStr = keys
+      .filter((key) => rest[key] !== false && rest[key] !== undefined)
+      .map((key) => {
+        const value = rest[key];
+        if (value === true) {
+          return key;
+        }
+        if (typeof value === 'string') {
+          return value.includes('"')
+            ? `${key}={${quot(value)}}`
+            : `${key}="${value}"`;
+        }
+        if (isTsCodeFragment(value)) {
+          return `${key}={${value.contents}}`;
+        }
+        throw new Error(`Invalid value for attribute ${key}`);
+      })
+      .join(' ');
+
+    const fragments = Object.values(attributes).filter(
+      (value): value is TsCodeFragment => isTsCodeFragment(value),
+    );
+
+    if (typeof children === 'boolean') {
+      throw new TypeError('children must be an expression');
+    }
+
+    const contents = children
+      ? `<${name} ${attributesStr}>${
+          typeof children === 'string' ? children : children.contents
+        }</${name}>`
+      : `<${name} ${attributesStr} />`;
+
+    return {
+      contents,
+      ...mergeFragmentImportsAndHoistedFragments([
+        ...fragments,
+        {
+          contents: '',
+          imports: Array.isArray(imports) ? imports : imports ? [imports] : [],
+        },
+      ]),
+    };
+  },
 };
