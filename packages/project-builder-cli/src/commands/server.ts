@@ -10,6 +10,8 @@ import {
 import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
 
+import { getUserConfig } from '@src/services/user-config.js';
+
 import { getEnabledFeatureFlags } from '../services/feature-flags.js';
 import { logger } from '../services/logger.js';
 import { expandPathWithTilde } from '../utils/path.js';
@@ -44,10 +46,13 @@ export async function serveWebServer(
     );
   }
 
+  const userConfig = await getUserConfig();
+
   const serviceManager = new BuilderServiceManager({
     initialDirectories: resolvedDirectories,
     cliVersion: version,
     builtInPlugins,
+    userConfig,
   });
 
   const fastifyInstance = await startWebServer({

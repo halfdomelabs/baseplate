@@ -25,6 +25,8 @@ import {
 } from '@src/plugins/index.js';
 import { buildProjectForDirectory } from '@src/runner/index.js';
 
+import type { BaseplateUserConfig } from '../user-config/user-config-schema.js';
+
 /**
  * The payload of a project definition file read operation.
  */
@@ -65,6 +67,7 @@ interface ProjectBuilderServiceOptions {
   id: string;
   builtInPlugins: PluginMetadataWithPaths[];
   cliVersion: string;
+  userConfig: BaseplateUserConfig;
 }
 
 interface ProjectBuilderServiceEvents {
@@ -93,11 +96,14 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   private schemaParserContext: SchemaParserContext | undefined;
 
+  private userConfig: BaseplateUserConfig;
+
   constructor({
     directory,
     id,
     cliVersion,
     builtInPlugins,
+    userConfig,
   }: ProjectBuilderServiceOptions) {
     super();
 
@@ -108,7 +114,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     );
     this.id = id;
     this.cliVersion = cliVersion;
-
+    this.userConfig = userConfig;
     this.logger = createEventedLogger();
     this.logger.onLog((message) => {
       this.emit('command-console-emitted', {
@@ -231,6 +237,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
         directory: this.directory,
         logger: this.logger,
         context: await this.getSchemaParserContext(),
+        userConfig: this.userConfig,
       });
     } catch (error) {
       this.logger.error(

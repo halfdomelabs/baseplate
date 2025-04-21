@@ -20,7 +20,7 @@ import { rename, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { environmentFlags } from '@src/service/environment-flags.js';
+import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
 
 import { writeGeneratorSteps } from './generator-steps-writer.js';
 
@@ -35,6 +35,7 @@ interface GenerateForDirectoryOptions {
   appEntry: AppEntry;
   logger: Logger;
   shouldWriteTemplateMetadata?: boolean;
+  userConfig: BaseplateUserConfig;
 }
 
 // /**
@@ -106,6 +107,7 @@ export async function generateForDirectory({
   appEntry,
   logger,
   shouldWriteTemplateMetadata,
+  userConfig,
 }: GenerateForDirectoryOptions): Promise<void> {
   const { appDirectory, name, generatorBundle } = appEntry;
   const engine = new GeneratorEngine();
@@ -164,10 +166,10 @@ export async function generateForDirectory({
       generatedContentsDirectory: generatedTemporaryDirectory,
       rerunCommands: oldBuildResult?.failedCommands,
       logger,
-      mergeDriver: environmentFlags.BASEPLATE_CUSTOM_MERGE_DRIVER
+      mergeDriver: userConfig.sync?.customMergeDriver
         ? {
             name: 'baseplate-custom-merge-driver',
-            driver: environmentFlags.BASEPLATE_CUSTOM_MERGE_DRIVER,
+            driver: userConfig.sync.customMergeDriver,
           }
         : undefined,
     });
@@ -235,10 +237,7 @@ export async function generateForDirectory({
       );
     }
 
-    if (
-      environmentFlags.BASEPLATE_WRITE_GENERATOR_STEPS_JSON &&
-      output.metadata
-    ) {
+    if (userConfig.sync?.writeGeneratorStepsJson && output.metadata) {
       await writeGeneratorSteps(output.metadata, projectDirectory);
     }
 

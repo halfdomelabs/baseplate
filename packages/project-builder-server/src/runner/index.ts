@@ -11,6 +11,8 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 
+import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
+
 import { compileApplications } from '@src/compiler/index.js';
 
 import { generateForDirectory } from '../sync/index.js';
@@ -46,12 +48,14 @@ export interface BuildProjectForDirectoryOptions {
   directory: string;
   logger: Logger;
   context: SchemaParserContext;
+  userConfig: BaseplateUserConfig;
 }
 
 export async function buildProjectForDirectory({
   directory,
   logger,
   context,
+  userConfig,
 }: BuildProjectForDirectoryOptions): Promise<void> {
   const projectJson = await loadProjectJson(directory);
 
@@ -63,6 +67,7 @@ export async function buildProjectForDirectory({
       appEntry: app,
       logger,
       shouldWriteTemplateMetadata: projectJson.templateExtractor?.writeMetadata,
+      userConfig,
     });
   }
 
