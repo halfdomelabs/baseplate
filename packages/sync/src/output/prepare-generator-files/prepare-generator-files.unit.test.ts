@@ -6,7 +6,7 @@ import type { FileData } from '../generator-task-output.js';
 import type { GeneratorOutputFileWriterContext } from './types.js';
 
 import { createCodebaseReaderFromMemory } from '../codebase-file-reader.js';
-import { PrepareGeneratorFilesError } from './errors.js';
+import { PrepareGeneratorFilesError } from '../errors.js';
 import { prepareGeneratorFiles } from './prepare-generator-files.js';
 
 function createMockContext(

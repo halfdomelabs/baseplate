@@ -18,7 +18,7 @@ import {
 /**
  * Options for creating a configuration provider task with additional info
  */
-export interface ConfigProviderTaskWithInfoOptions<
+interface ConfigProviderTaskWithInfoOptions<
   Descriptor extends Record<string, unknown>,
   InfoFromDescriptor extends Record<string, unknown>,
 > {
@@ -46,7 +46,7 @@ export interface ConfigProviderTaskWithInfoOptions<
   infoFromDescriptor: (descriptor: Descriptor) => InfoFromDescriptor;
 }
 
-export type ConfigProviderTaskWithInfoResult<
+type ConfigProviderTaskWithInfoResult<
   TSchema extends FieldMapSchema,
   Descriptor extends Record<string, unknown>,
   InfoFromDescriptor extends Record<string, unknown>,

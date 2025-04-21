@@ -8,7 +8,7 @@ import type {
   GeneratorOutputFileWriterContext,
 } from './types.js';
 
-import { PrepareGeneratorFilesError } from './errors.js';
+import { PrepareGeneratorFilesError } from '../errors.js';
 import { prepareGeneratorFile } from './prepare-generator-file.js';
 
 /**

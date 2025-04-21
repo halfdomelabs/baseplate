@@ -32,11 +32,14 @@ import { flattenGeneratorTaskEntriesAndPhases } from './utils.js';
 /**
  * Options for executing a generator entry
  */
-export interface ExecuteGeneratorEntryOptions {
+interface ExecuteGeneratorEntryOptions {
   logger: Logger;
   templateMetadataOptions?: TemplateMetadataOptions;
 }
 
+/**
+ * Execute a generator entry
+ */
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry,
   { logger, templateMetadataOptions }: ExecuteGeneratorEntryOptions,

@@ -9,8 +9,8 @@ import type {
 } from './types.js';
 
 import { createCodebaseReaderFromMemory } from '../codebase-file-reader.js';
+import { ConflictDetectedError, FormatterError } from '../errors.js';
 import { simpleDiffAlgorithm } from '../string-merge-algorithms/simple-diff.js';
-import { ConflictDetectedError, FormatterError } from './errors.js';
 import { prepareGeneratorFile } from './prepare-generator-file.js';
 
 function createMockContext(

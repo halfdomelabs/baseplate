@@ -6,7 +6,7 @@ import { createTestLogger } from '@src/tests/logger.test-helper.js';
 import type { GeneratorOutput } from './generator-task-output.js';
 
 import { executeCommand } from '../utils/exec.js';
-import { PrepareGeneratorFilesError } from './prepare-generator-files/errors.js';
+import { PrepareGeneratorFilesError } from './errors.js';
 import { writeGeneratorOutput } from './write-generator-output.js';
 
 vi.mock('node:fs');
