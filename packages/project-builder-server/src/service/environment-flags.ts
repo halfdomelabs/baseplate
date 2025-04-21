@@ -6,4 +6,10 @@ export const environmentFlags = {
    */
   BASEPLATE_WRITE_GENERATOR_STEPS_JSON:
     !!process.env.BASEPLATE_WRITE_GENERATOR_STEPS_JSON,
+  /**
+   * The custom merge driver to use
+   *
+   * See https://git-scm.com/docs/gitattributes#_defining_a_custom_merge_driver
+   */
+  BASEPLATE_CUSTOM_MERGE_DRIVER: process.env.BASEPLATE_CUSTOM_MERGE_DRIVER,
 };

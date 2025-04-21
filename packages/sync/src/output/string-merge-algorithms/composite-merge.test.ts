@@ -26,6 +26,7 @@ describe('buildCompositeMergeAlgorithm', () => {
       previousWorkingText: 'user',
       currentGeneratedText: 'new',
       previousGeneratedText: 'base',
+      filePath: '/root/test.txt',
     });
 
     expect(result).toEqual({
@@ -44,6 +45,7 @@ describe('buildCompositeMergeAlgorithm', () => {
       previousWorkingText: 'user',
       currentGeneratedText: 'new',
       previousGeneratedText: 'base',
+      filePath: '/root/test.txt',
     });
 
     expect(result).toBeNull();
@@ -56,6 +58,7 @@ describe('buildCompositeMergeAlgorithm', () => {
       previousWorkingText: 'user',
       currentGeneratedText: 'new',
       previousGeneratedText: 'base',
+      filePath: '/root/test.txt',
     });
 
     expect(result).toBeNull();

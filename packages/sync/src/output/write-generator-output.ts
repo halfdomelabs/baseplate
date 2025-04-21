@@ -39,6 +39,13 @@ export interface WriteGeneratorOutputOptions {
    * Logger to use
    */
   logger?: Logger;
+  /**
+   * The merge driver to use following the custom merge driver command instead of the
+   * default 3-way merge driver.
+   *
+   * See https://git-scm.com/docs/gitattributes#_defining_a_custom_merge_driver
+   */
+  mergeDriver?: { name: string; driver: string };
 }
 
 /**
@@ -93,6 +100,7 @@ export async function writeGeneratorOutput(
       outputDirectory,
       previousGeneratedPayload,
       previousWorkingCodebase: workingCodebase,
+      mergeDriver: options?.mergeDriver,
     };
 
     const { files, fileIdToRelativePathMap } = await prepareGeneratorFiles({

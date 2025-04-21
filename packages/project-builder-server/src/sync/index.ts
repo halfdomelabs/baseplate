@@ -164,6 +164,12 @@ export async function generateForDirectory({
       generatedContentsDirectory: generatedTemporaryDirectory,
       rerunCommands: oldBuildResult?.failedCommands,
       logger,
+      mergeDriver: environmentFlags.BASEPLATE_CUSTOM_MERGE_DRIVER
+        ? {
+            name: 'baseplate-custom-merge-driver',
+            driver: environmentFlags.BASEPLATE_CUSTOM_MERGE_DRIVER,
+          }
+        : undefined,
     });
 
     // write metadata to the generated directory

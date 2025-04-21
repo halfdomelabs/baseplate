@@ -9,6 +9,7 @@ import type {
 import {
   buildCompositeMergeAlgorithm,
   diff3MergeAlgorithm,
+  gitMergeDriverAlgorithmGenerator,
   jsonMergeAlgorithm,
   simpleDiffAlgorithm,
 } from '../string-merge-algorithms/index.js';
@@ -170,6 +171,9 @@ async function mergeStringContents({
   const mergeAlgorithm = buildCompositeMergeAlgorithm([
     ...(options.mergeAlgorithms ?? []),
     ...(relativePath.endsWith('.json') ? [jsonMergeAlgorithm] : []),
+    ...(context.mergeDriver
+      ? [gitMergeDriverAlgorithmGenerator(context.mergeDriver)]
+      : []),
     diff3MergeAlgorithm,
   ]);
 
@@ -179,6 +183,7 @@ async function mergeStringContents({
         previousWorkingText,
         currentGeneratedText,
         previousGeneratedText,
+        filePath: relativePath,
       })
     : simpleDiffAlgorithm({
         previousWorkingText,
