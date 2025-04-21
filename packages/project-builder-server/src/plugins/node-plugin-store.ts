@@ -1,10 +1,10 @@
 import type {
   PluginMetadataWithPaths,
+  PluginPlatformModule,
   PluginStore,
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
 import type { Logger } from '@halfdomelabs/sync';
-import type { PluginPlatformModule } from 'node_modules/@halfdomelabs/project-builder-lib/dist/plugins/imports/types.js';
 
 import {
   adminCrudInputCompilerSpec,

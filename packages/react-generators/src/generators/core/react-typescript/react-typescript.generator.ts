@@ -44,7 +44,6 @@ export const reactTypescriptGenerator = createGenerator({
             noEmit: true,
 
             /* Paths */
-            baseUrl: './',
             paths: {
               '@src/*': ['./src/*'],
             },
