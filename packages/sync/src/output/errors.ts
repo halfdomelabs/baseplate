@@ -28,16 +28,11 @@ export class FormatterError extends Error {
  * Error thrown when there is an error preparing the generator files
  */
 export class PrepareGeneratorFilesError extends Error {
-  constructor(
-    public causes: { projectRelativePath: string; cause: unknown }[],
-  ) {
+  constructor(public causes: { relativePath: string; cause: unknown }[]) {
     super(
       `Error preparing generator files (showing first 10): ${causes
         .slice(0, 10)
-        .map(
-          ({ projectRelativePath, cause }) =>
-            `${projectRelativePath}: ${String(cause)}`,
-        )
+        .map(({ relativePath, cause }) => `${relativePath}: ${String(cause)}`)
         .join('\n')}`,
     );
     this.name = 'PrepareGeneratorFilesError';

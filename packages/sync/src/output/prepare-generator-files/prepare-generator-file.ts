@@ -89,7 +89,7 @@ async function formatContents(
     const filePath = path.join(context.outputDirectory, relativePath);
     return await formatter.format(contents, filePath, context.logger);
   } catch (error) {
-    throw new FormatterError(error, contents);
+    throw new FormatterError(error, contents, relativePath);
   }
 }
 

@@ -65,7 +65,7 @@ export type GeneratorBundleChildren = Record<
  * @param options - Optional options to pass to the generator such as children
  * @returns The generator bundle
  */
-type GeneratorBundleCreator<
+export type GeneratorBundleCreator<
   Descriptor,
   TaskConfigs extends Record<string, AnyGeneratorTask | undefined> = Record<
     string,

@@ -123,7 +123,6 @@ export async function generateForDirectory({
 
   const project = await buildGeneratorEntry(generatorBundle);
   const output = await executeGeneratorEntry(project, {
-    logger,
     templateMetadataOptions: {
       includeTemplateMetadata: shouldWriteTemplateMetadata ?? false,
       hasTemplateMetadata: (projectRelativePath) =>

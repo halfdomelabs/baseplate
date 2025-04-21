@@ -59,16 +59,16 @@ export async function prepareGeneratorFiles({
           context,
         }).catch((err: unknown) => ({
           relativePath: filename,
-          error: err,
+          cause: err,
         })),
       ),
     ),
   );
 
-  const fileErrors: { relativePath: string; error: unknown }[] = [];
+  const fileErrors: { relativePath: string; cause: unknown }[] = [];
   const operationResults: GeneratorFileOperationResult[] = [];
   for (const result of fileResults) {
-    if ('error' in result) {
+    if ('cause' in result) {
       fileErrors.push(result);
     } else {
       operationResults.push(result);
@@ -85,7 +85,7 @@ export async function prepareGeneratorFiles({
       throw new PrepareGeneratorFilesError([
         {
           relativePath,
-          error: new Error(
+          cause: new Error(
             `File ID ${file.id} is already in use by file ${fileIdToRelativePathMap.get(
               file.id,
             )}`,

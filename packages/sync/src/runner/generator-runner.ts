@@ -1,8 +1,6 @@
 import { mapGroupBy } from '@halfdomelabs/utils';
 import { keyBy, mapValues } from 'es-toolkit';
 
-import type { Logger } from '@src/utils/evented-logger.js';
-
 import { sortTaskPhases } from '@src/phases/sort-task-phases.js';
 import { findDuplicates } from '@src/utils/find-duplicates.js';
 import { safeMergeMap } from '@src/utils/merge.js';
@@ -26,6 +24,7 @@ import {
   resolveTaskDependenciesForPhase,
 } from './dependency-map.js';
 import { getSortedRunSteps } from './dependency-sort.js';
+import { GeneratorTaskStepError } from './errors.js';
 import { runInRunnerContext } from './runner-context.js';
 import { flattenGeneratorTaskEntriesAndPhases } from './utils.js';
 
@@ -33,7 +32,6 @@ import { flattenGeneratorTaskEntriesAndPhases } from './utils.js';
  * Options for executing a generator entry
  */
 interface ExecuteGeneratorEntryOptions {
-  logger: Logger;
   templateMetadataOptions?: TemplateMetadataOptions;
 }
 
@@ -42,7 +40,7 @@ interface ExecuteGeneratorEntryOptions {
  */
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry,
-  { logger, templateMetadataOptions }: ExecuteGeneratorEntryOptions,
+  { templateMetadataOptions }: ExecuteGeneratorEntryOptions = {},
 ): Promise<GeneratorOutput> {
   const { taskEntries, phases } =
     flattenGeneratorTaskEntriesAndPhases(rootEntry);
@@ -73,7 +71,6 @@ export async function executeGeneratorEntry(
       generatorIdToScopesMap,
       phase,
       currentDynamicTaskEntries,
-      logger,
     );
     const filteredTaskEntries = taskEntries.filter(
       (taskEntry) => taskEntry.task.phase === phase,
@@ -270,10 +267,12 @@ export async function executeGeneratorEntry(
         }
       } catch (error) {
         const { generatorInfo } = taskEntriesById[taskId];
-        logger.error(
-          `Error encountered in ${action} step of ${taskId} (${generatorInfo.name})`,
+        throw new GeneratorTaskStepError(
+          error,
+          taskId,
+          action,
+          generatorInfo.name,
         );
-        throw error;
       }
     }
   }

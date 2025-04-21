@@ -1,6 +1,6 @@
 import type { BaseGeneratorDescriptor } from '@src/generators/generators.js';
 
-interface DescriptorWithChildren extends BaseGeneratorDescriptor {
+export interface DescriptorWithChildren extends BaseGeneratorDescriptor {
   children?: GeneratorDescriptorChildren;
 }
 
