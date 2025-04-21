@@ -1,6 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-We use vitest and colocate unit/integration tests next to the file that is written with the convention of: *.unit.test.ts (for unit tests) or *.int.test.ts (for integration tests). We also use Node 16 module resolution so filenames in import statements must end with .js. Please make sure to add the imports for all vitest globals, e.g. expect and describe.
