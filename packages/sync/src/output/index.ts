@@ -6,3 +6,4 @@ export * from './generator-task-output.js';
 export * from './post-write-commands/types.js';
 export type * from './prepare-generator-files/types.js';
 export * from './string-merge-algorithms/index.js';
+export * from './write-generator-output.js';

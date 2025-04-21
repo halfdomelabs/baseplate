@@ -2,13 +2,15 @@ import type { AppEntry } from '@halfdomelabs/project-builder-lib';
 import type { Logger, PreviousGeneratedPayload } from '@halfdomelabs/sync';
 
 import {
+  buildGeneratorEntry,
   createCodebaseFileReaderFromDirectory,
   deleteMetadataFiles,
-  GeneratorEngine,
   readTemplateMetadataPaths,
+  writeGeneratorOutput,
   writeGeneratorsMetadata,
   writeTemplateMetadata,
 } from '@halfdomelabs/sync';
+import { executeGeneratorEntry } from '@halfdomelabs/sync/dist/runner/generator-runner.js';
 import {
   dirExists,
   handleFileNotFoundError,
@@ -110,7 +112,6 @@ export async function generateForDirectory({
   userConfig,
 }: GenerateForDirectoryOptions): Promise<void> {
   const { appDirectory, name, generatorBundle } = appEntry;
-  const engine = new GeneratorEngine();
 
   const projectDirectory = path.join(baseDirectory, appDirectory);
 
@@ -120,8 +121,8 @@ export async function generateForDirectory({
     ? new Set(await readTemplateMetadataPaths(projectDirectory))
     : new Set();
 
-  const project = await engine.loadProject(generatorBundle, logger);
-  const output = await engine.build(project, {
+  const project = await buildGeneratorEntry(generatorBundle, { logger });
+  const output = await executeGeneratorEntry(project, {
     logger,
     templateMetadataOptions: {
       includeTemplateMetadata: shouldWriteTemplateMetadata ?? false,
@@ -161,7 +162,7 @@ export async function generateForDirectory({
       relativePathsPendingDelete,
       relativePathsWithConflicts,
       fileIdToRelativePathMap,
-    } = await engine.writeOutput(output, projectDirectory, {
+    } = await writeGeneratorOutput(output, projectDirectory, {
       previousGeneratedPayload,
       generatedContentsDirectory: generatedTemporaryDirectory,
       rerunCommands: oldBuildResult?.failedCommands,
