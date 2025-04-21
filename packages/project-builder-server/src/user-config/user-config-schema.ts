@@ -8,7 +8,10 @@ export const userConfigSchema = z.object({
        */
       writeGeneratorStepsJson: z.boolean().optional().default(false),
       /**
-       * The custom merge driver to use
+       * The merge driver to use following the custom merge driver command for custom Git merge drivers
+       * instead of the default 3-way merge driver.
+       *
+       * See https://git-scm.com/docs/gitattributes#_defining_a_custom_merge_driver
        */
       customMergeDriver: z.string().optional(),
     })

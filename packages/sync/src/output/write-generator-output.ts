@@ -40,8 +40,8 @@ export interface WriteGeneratorOutputOptions {
    */
   logger?: Logger;
   /**
-   * The merge driver to use following the custom merge driver command instead of the
-   * default 3-way merge driver.
+   * The merge driver to use following the custom merge driver command for custom Git merge drivers
+   * instead of the default 3-way merge driver.
    *
    * See https://git-scm.com/docs/gitattributes#_defining_a_custom_merge_driver
    */
