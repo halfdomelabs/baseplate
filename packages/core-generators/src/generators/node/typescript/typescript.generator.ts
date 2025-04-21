@@ -149,7 +149,6 @@ export const typescriptFileProvider =
 const DEFAULT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
   outDir: 'dist',
   declaration: true,
-  baseUrl: './src',
   target: 'es2022',
   lib: ['es2023'],
   esModuleInterop: true,
@@ -214,9 +213,7 @@ export const typescriptGenerator = createGenerator({
             if (!paths && (baseUrl === './' || baseUrl === '.')) {
               // TODO: Support other source folders
               cachedPathEntries = [{ from: 'src', to: 'src' }];
-            } else if (!paths || !baseUrl) {
-              cachedPathEntries = [];
-            } else {
+            } else if (paths) {
               cachedPathEntries = Object.entries(paths).map(([key, value]) => {
                 if (value.length !== 1) {
                   throw new Error(
@@ -228,11 +225,13 @@ export const typescriptGenerator = createGenerator({
                 }
                 return {
                   from: path
-                    .join(baseUrl, value[0].replace(/\/\*$/, ''))
+                    .join(baseUrl ?? '.', value[0].replace(/\/\*$/, ''))
                     .replace(/^\./, ''),
                   to: key.slice(0, Math.max(0, key.length - 2)),
                 };
               });
+            } else {
+              cachedPathEntries = [];
             }
           }
 
@@ -416,3 +415,5 @@ export const typescriptGenerator = createGenerator({
     }),
   }),
 });
+
+export { type TypescriptCompilerOptions } from './compiler-types.js';

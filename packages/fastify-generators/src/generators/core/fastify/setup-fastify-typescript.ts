@@ -9,7 +9,6 @@ export const fastifyTypescriptTask = createGeneratorTask({
     typescriptSetup.compilerOptions.set({
       outDir: 'dist',
       declaration: true,
-      baseUrl: './',
       paths: {
         '@src/*': ['./src/*'],
       },

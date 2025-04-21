@@ -14,7 +14,6 @@ describe('typescriptGenerator', () => {
     const typescriptBundle = typescriptGenerator({});
     const typescriptConfig = {
       compilerOptions: {
-        baseUrl: './src',
         paths: {
           '@src/*': ['src/*'],
         },

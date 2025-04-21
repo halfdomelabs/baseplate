@@ -25,6 +25,20 @@ describe('generatePathMapEntries', () => {
       { from: 'no-star', to: './src/something' },
     ]);
   });
+
+  it('should return a valid TsPathMapEntry list when baseUrl is undefined', () => {
+    // Arrange
+    const baseUrl = undefined;
+    const paths = {
+      '@src/*': ['./src/*'],
+    };
+
+    // Act
+    const result = generatePathMapEntries(baseUrl, paths);
+
+    // Assert
+    expect(result).toEqual([{ from: '@src/*', to: './src/*' }]);
+  });
 });
 
 describe('pathMapEntriesToRegexes', () => {

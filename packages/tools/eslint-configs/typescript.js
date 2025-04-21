@@ -144,6 +144,9 @@ export function generateTypescriptEslintConfig(options = []) {
         // Disallow importing dependencies that aren't explicitly listed in the package.json,
         // except for those explicitly allowed under `devDependencies` (e.g., test files)
         'import-x/no-extraneous-dependencies': ['error', { devDependencies }],
+
+        // Disallow import relative packages (e.g., `import '../other-package/foo'`)
+        'import-x/no-relative-packages': 'error',
       },
       settings: {
         'import-x/resolver-next': [createTypeScriptImportResolver()],

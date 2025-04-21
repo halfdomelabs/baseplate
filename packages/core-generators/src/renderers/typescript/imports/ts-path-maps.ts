@@ -10,7 +10,7 @@ import type { TsPathMapEntry } from './types.js';
  * @returns A list of TsPathMapEntry
  */
 export function generatePathMapEntries(
-  baseUrl: string,
+  baseUrl: string | undefined,
   paths: Record<string, string[]>,
 ): TsPathMapEntry[] {
   return Object.entries(paths).flatMap(([alias, targets]) => {
@@ -20,7 +20,7 @@ export function generatePathMapEntries(
     return [
       {
         from: alias,
-        to: `./${path.posix.join(baseUrl, targets[0]).replaceAll('\\', '/')}`,
+        to: `./${path.posix.join(baseUrl ?? '.', targets[0]).replaceAll('\\', '/')}`,
       },
     ];
   });

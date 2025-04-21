@@ -2,9 +2,8 @@
   "extends": "@halfdomelabs/tools/tsconfig.vite.lib.json",
   "compilerOptions": {
     "noEmit": true,
-    "baseUrl": "./",
     "paths": {
-      "@src/*": ["src/*"]
+      "@src/*": ["./src/*"]
     }
   },
   "include": ["src", ".storybook/**/*"]
