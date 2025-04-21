@@ -11,6 +11,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Test single file: `pnpm vitest <path/to/file.unit.test.ts>`
 - Run only specific tests: `pnpm vitest -t "test name pattern"`
 
+## Baseplate Documentation MCP Server Structure
+
+The `baseplate-docs` MCP server contains comprehensive documentation about Baseplate architecture and features, located at `doc-sync/docs/`. The documentation is organized as follows:
+
+### Main Sections
+
+- **baseplate-architecture/** - Core architecture documentation:
+
+  - **Architecture/** - Fundamental concepts and components:
+    - **Typescript Rendering System/** - Code generation system
+    - **intro, sync-engine, provider-scopes, plugin-system** files
+  - **Developing with Baseplate/** - Guides for plugin development
+  - **Internal Tooling/** - Internal tools documentation
+  - **Project Builder/** - Documentation for the project builder
+
+- **design-docs/** - Design documents for various features:
+  - **Completed/** - Implemented design documents
+    - **Draft/** - Draft design documents
+  - **design-doc-template.md** - Template for new design docs
+
+### Key Documentation Files
+
+For quick reference, these are important docs to look up:
+
+- Introduction: `baseplate-architecture/Architecture/introduction.md`
+- Plugin System: `baseplate-architecture/Architecture/plugin-system.md`
+- Creating Generators: `baseplate-architecture/Architecture/creating-a-baseplate-generator.md`
+- Plugin Developer Guide: `baseplate-architecture/Developing with Baseplate/building-baseplate-plugins-developer-guide.md`
+
 ## Code Style Guidelines
 
 - TypeScript with strict type checking
