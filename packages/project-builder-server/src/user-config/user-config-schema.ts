@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+/**
+ * Schema for validating user configuration stored in ~/.baseplate/config.json
+ * This configuration allows users to persist preferences across sessions.
+ */
 export const userConfigSchema = z.object({
   sync: z
     .object({
