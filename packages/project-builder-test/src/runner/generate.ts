@@ -17,5 +17,6 @@ export async function generateProject(projectDirectory: string): Promise<void> {
     directory: projectDirectory,
     logger,
     context: nodeSchemaParserContext,
+    userConfig: {},
   });
 }
