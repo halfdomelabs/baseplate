@@ -116,5 +116,6 @@
     // we can skip this for now because it's used minimally
     "postcss-load-config"
   ],
-  "includeEntryExports": true
+  // The goal is to enable this eventually
+  "includeEntryExports": false
 }
