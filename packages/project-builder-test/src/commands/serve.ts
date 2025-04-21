@@ -85,6 +85,7 @@ async function serveWebsite(projectDirectory: string): Promise<void> {
     initialDirectories: [projectDirectory],
     builtInPlugins,
     cliVersion,
+    userConfig: {},
   });
 
   await startWebServer({

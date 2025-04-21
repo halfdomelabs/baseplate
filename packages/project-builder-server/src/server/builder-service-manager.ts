@@ -2,6 +2,8 @@ import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib'
 
 import crypto from 'node:crypto';
 
+import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
+
 import { ProjectBuilderService } from '@src/service/builder-service.js';
 
 export class BuilderServiceManager {
@@ -12,6 +14,7 @@ export class BuilderServiceManager {
       initialDirectories?: string[];
       cliVersion: string;
       builtInPlugins: PluginMetadataWithPaths[];
+      userConfig: BaseplateUserConfig;
     },
   ) {
     for (const directory of this.options.initialDirectories ?? []) {
@@ -31,6 +34,7 @@ export class BuilderServiceManager {
       id,
       cliVersion: this.options.cliVersion,
       builtInPlugins: this.options.builtInPlugins,
+      userConfig: this.options.userConfig,
     });
     service.init();
     this.services.set(id, service);

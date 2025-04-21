@@ -3,6 +3,7 @@ import type { Command } from 'commander';
 import { buildProjectForDirectory } from '@halfdomelabs/project-builder-server';
 
 import { createSchemaParserContext } from '@src/services/schema-parser-context.js';
+import { getUserConfig } from '@src/services/user-config.js';
 import { expandPathWithTilde } from '@src/utils/path.js';
 
 import { logger } from '../services/logger.js';
@@ -22,10 +23,12 @@ export function addBuildCommand(program: Command): void {
         ? expandPathWithTilde(directory)
         : '.';
       const context = await createSchemaParserContext(resolvedDirectory);
+      const userConfig = await getUserConfig();
       return buildProjectForDirectory({
         directory: resolvedDirectory,
         logger,
         context,
+        userConfig,
       });
     });
 }
