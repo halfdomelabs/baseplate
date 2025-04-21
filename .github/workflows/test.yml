@@ -23,7 +23,7 @@ jobs:
       - name: Set environment variable for Turborepo
         run: echo "TURBO_SCM_BASE=$NX_BASE" >> $GITHUB_ENV
       - name: Cache turbo build setup
-        uses: rharkor/caching-for-turbo@7220c7f366bf362025ec742bd5bcf2bac6e1770e
+        uses: rharkor/caching-for-turbo@a1c4079258ae08389be75b57d4d7a70f23c1c66d # 1.8
       - name: Setup pnpm
         uses: pnpm/action-setup@v4.0.0
       - name: Setup Node.js

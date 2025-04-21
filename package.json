@@ -46,7 +46,7 @@
     "check-dependency-version-consistency": "5.0.0",
     "knip": "5.46.0",
     "prettier": "catalog:",
-    "turbo": "2.4.4",
+    "turbo": "2.5.0",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
