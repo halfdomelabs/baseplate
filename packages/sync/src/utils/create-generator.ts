@@ -14,7 +14,7 @@ import type { ProviderExportScope } from '@src/providers/index.js';
 /**
  * Configuration for creating a generator
  */
-export interface CreateGeneratorConfig<
+interface CreateGeneratorConfig<
   DescriptorSchema extends z.ZodType,
   TaskConfigs extends Record<string, AnyGeneratorTask | undefined>,
 > {
@@ -65,7 +65,7 @@ export type GeneratorBundleChildren = Record<
  * @param options - Optional options to pass to the generator such as children
  * @returns The generator bundle
  */
-export type GeneratorBundleCreator<
+type GeneratorBundleCreator<
   Descriptor,
   TaskConfigs extends Record<string, AnyGeneratorTask | undefined> = Record<
     string,
@@ -87,13 +87,6 @@ export type InferDescriptorFromGenerator<Creator> =
       }
     : never;
 
-/**
- * Infer the task configs from a generator bundle creator
- */
-export type InferTaskConfigsFromGenerator<Creator> =
-  Creator extends GeneratorBundleCreator<never, infer TaskConfigs>
-    ? TaskConfigs
-    : never;
 /**
  * Helper utility to create a generator with a standard format for customizable children
  *

@@ -1,6 +1,6 @@
 import { isEqual } from 'es-toolkit';
 
-export interface MergeMapOptions {
+interface MergeMapOptions {
   /**
    * If true, allows merging values that are deeply equal
    */

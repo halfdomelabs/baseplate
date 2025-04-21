@@ -121,7 +121,7 @@ export async function generateForDirectory({
     ? new Set(await readTemplateMetadataPaths(projectDirectory))
     : new Set();
 
-  const project = await buildGeneratorEntry(generatorBundle, { logger });
+  const project = await buildGeneratorEntry(generatorBundle);
   const output = await executeGeneratorEntry(project, {
     logger,
     templateMetadataOptions: {

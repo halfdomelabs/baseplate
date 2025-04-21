@@ -1,6 +1,5 @@
 import type { TaskPhase } from '@src/phases/types.js';
 import type { ProviderExportScope } from '@src/providers/index.js';
-import type { Logger } from '@src/utils/evented-logger.js';
 
 import type { GeneratorBundle, GeneratorTask } from './generators.js';
 
@@ -78,14 +77,9 @@ export interface GeneratorEntry {
   preRegisteredPhases: TaskPhase[];
 }
 
-export interface BuildGeneratorEntryContext {
-  logger: Logger;
-}
-
 async function buildGeneratorEntryRecursive(
   id: string,
   bundle: GeneratorBundle,
-  context: BuildGeneratorEntryContext,
   packageNameCache: Map<string, string>,
 ): Promise<GeneratorEntry> {
   const {
@@ -144,7 +138,6 @@ async function buildGeneratorEntryRecursive(
             return buildGeneratorEntryRecursive(
               subChildId,
               child,
-              context,
               packageNameCache,
             );
           }),
@@ -175,13 +168,7 @@ async function buildGeneratorEntryRecursive(
 
 export async function buildGeneratorEntry(
   bundle: GeneratorBundle,
-  context: BuildGeneratorEntryContext,
 ): Promise<GeneratorEntry> {
   const packageNameCache = new Map<string, string>();
-  return buildGeneratorEntryRecursive(
-    'root',
-    bundle,
-    context,
-    packageNameCache,
-  );
+  return buildGeneratorEntryRecursive('root', bundle, packageNameCache);
 }

@@ -3,7 +3,7 @@ const generatorNameRegex = /^([^#]+)#([^/]+\/)?([^#]+)$/;
 /**
  * A parsed generator name.
  */
-export interface ParsedGeneratorName {
+interface ParsedGeneratorName {
   /**
    * The package name.
    */
