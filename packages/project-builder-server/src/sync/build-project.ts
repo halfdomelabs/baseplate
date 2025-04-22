@@ -90,6 +90,10 @@ export interface BuildProjectOptions {
 function getPackageSyncStatusFromResult(
   result: PackageSyncResult,
 ): PackageSyncStatus {
+  if (result.wasCancelled) {
+    return 'cancelled';
+  }
+
   if (result.errors?.length) {
     return 'unknown-error';
   }
@@ -169,28 +173,27 @@ export async function buildProject({
       });
     } catch (err) {
       if (err instanceof CancelledSyncError) {
-        logger.info(`Sync cancelled`);
         newResult = {
           wasCancelled: true,
           completedAt: new Date().toISOString(),
         };
         wasCancelled = true;
-        break;
+      } else {
+        logger.error(`Encountered error while generating for ${app.name}:`);
+        logger.error(err);
+
+        newResult = {
+          errors: [
+            {
+              message: String(err),
+              stack: err instanceof Error ? err.stack : undefined,
+            },
+          ],
+          completedAt: new Date().toISOString(),
+        };
+
+        hasErrors = true;
       }
-      logger.error(`Encountered error while generating for ${app.name}:`);
-      logger.error(err);
-
-      newResult = {
-        errors: [
-          {
-            message: String(err),
-            stack: err instanceof Error ? err.stack : undefined,
-          },
-        ],
-        completedAt: new Date().toISOString(),
-      };
-
-      hasErrors = true;
     }
     syncMetadataController?.updateMetadataForPackage(app.id, (metadata) => ({
       ...metadata,
@@ -207,9 +210,9 @@ export async function buildProject({
   }));
 
   if (wasCancelled) {
-    logger.info('Project build cancelled');
+    logger.info('Project build cancelled.');
   } else if (hasErrors) {
-    logger.error('Project build failed');
+    logger.error('Project build failed.');
   } else {
     logger.info(`Project written to ${directory}!`);
   }
