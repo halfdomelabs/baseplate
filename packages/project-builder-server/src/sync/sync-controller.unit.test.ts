@@ -34,18 +34,22 @@ describe('SyncMetadataController', () => {
     vi.useRealTimers();
   });
 
+  const DEFAULT_METADATA: SyncMetadata = {
+    status: 'in-progress',
+    packages: {},
+    startedAt: '2024-01-01',
+    projectJsonHash: 'abc123',
+  };
+
   describe('getMetadata', () => {
     it('should read metadata on first call and cache it', async () => {
-      const mockMetadata: SyncMetadata = {
-        packages: {},
-      };
-      vi.mocked(readSyncMetadata).mockResolvedValue(mockMetadata);
+      vi.mocked(readSyncMetadata).mockResolvedValue(DEFAULT_METADATA);
 
       const result1 = await controller.getMetadata();
       const result2 = await controller.getMetadata();
 
-      expect(result1).toBe(mockMetadata);
-      expect(result2).toBe(mockMetadata);
+      expect(result1).toBe(DEFAULT_METADATA);
+      expect(result2).toBe(DEFAULT_METADATA);
       expect(readSyncMetadata).toHaveBeenCalledTimes(1);
       expect(readSyncMetadata).toHaveBeenCalledWith(mockProjectDirectory);
     });
@@ -61,11 +65,9 @@ describe('SyncMetadataController', () => {
 
   describe('writeMetadata', () => {
     it('should write metadata and emit change event', () => {
-      const mockMetadata: SyncMetadata = {
-        packages: {},
-      };
+      const mockMetadata = DEFAULT_METADATA;
       const changeListener = vi.fn();
-      controller.on('syncMetadataChange', changeListener);
+      controller.on('sync-metadata-changed', changeListener);
 
       controller.writeMetadata(mockMetadata);
 
@@ -84,6 +86,7 @@ describe('SyncMetadataController', () => {
     it('should update package metadata and write changes', async () => {
       const packageId = 'test-package';
       const initialMetadata: SyncMetadata = {
+        ...DEFAULT_METADATA,
         packages: {
           [packageId]: {
             name: 'test',
@@ -105,6 +108,7 @@ describe('SyncMetadataController', () => {
       vi.runAllTimers();
 
       expect(writeSyncMetadata).toHaveBeenCalledWith(mockProjectDirectory, {
+        ...DEFAULT_METADATA,
         packages: {
           [packageId]: {
             name: 'test',
@@ -124,7 +128,7 @@ describe('SyncMetadataController', () => {
 
     it('should throw error if package not found', async () => {
       const initialMetadata: SyncMetadata = {
-        packages: {},
+        ...DEFAULT_METADATA,
       };
       vi.mocked(readSyncMetadata).mockResolvedValue(initialMetadata);
       await controller.getMetadata();
@@ -139,18 +143,15 @@ describe('SyncMetadataController', () => {
   describe('updateMetadata', () => {
     it('should update metadata and write changes', async () => {
       const initialMetadata: SyncMetadata = {
-        packages: {},
+        ...DEFAULT_METADATA,
       };
       vi.mocked(readSyncMetadata).mockResolvedValue(initialMetadata);
       await controller.getMetadata();
 
       const updateFn = (metadata: SyncMetadata): SyncMetadata => ({
         ...metadata,
-        lastSyncResult: {
-          status: 'success' as const,
-          timestamp: '2024-01-01',
-          projectJsonHash: 'abc123',
-        },
+        status: 'success',
+        completedAt: '2024-01-01',
       });
 
       controller.updateMetadata(updateFn);
@@ -158,12 +159,9 @@ describe('SyncMetadataController', () => {
       vi.runAllTimers();
 
       expect(writeSyncMetadata).toHaveBeenCalledWith(mockProjectDirectory, {
-        packages: {},
-        lastSyncResult: {
-          status: 'success',
-          timestamp: '2024-01-01',
-          projectJsonHash: 'abc123',
-        },
+        ...DEFAULT_METADATA,
+        status: 'success',
+        completedAt: '2024-01-01',
       });
     });
   });

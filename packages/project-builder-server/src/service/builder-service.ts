@@ -19,6 +19,8 @@ import chokidar from 'chokidar';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import type { SyncMetadata } from '@src/sync/index.js';
+
 import {
   createNodeSchemaParserContext,
   discoverPlugins,
@@ -71,9 +73,27 @@ interface ProjectBuilderServiceOptions {
   userConfig: BaseplateUserConfig;
 }
 
+export interface SyncMetadataChangedPayload {
+  id: string;
+  syncMetadata: SyncMetadata;
+}
+
+export interface SyncStartedPayload {
+  id: string;
+}
+
+export interface SyncCompletedPayload {
+  id: string;
+}
+
+const MAX_CONSOLE_OUTPUT_LENGTH = 1000;
+
 interface ProjectBuilderServiceEvents {
   'project-json-changed': ProjectDefinitionFilePayload;
   'command-console-emitted': CommandConsoleEmittedPayload;
+  'sync-metadata-changed': SyncMetadataChangedPayload;
+  'sync-started': SyncStartedPayload;
+  'sync-completed': SyncCompletedPayload;
 }
 
 export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServiceEvents> {
@@ -101,6 +121,10 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   private syncMetadataController: SyncMetadataController;
 
+  private unsubscribeOperations: (() => void)[] = [];
+
+  private currentSyncConsoleOutput: string[] = [];
+
   constructor({
     directory,
     id,
@@ -119,22 +143,33 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     this.cliVersion = cliVersion;
     this.userConfig = userConfig;
     this.logger = createEventedLogger();
-    this.logger.onLog((message) => {
-      this.emit('command-console-emitted', {
-        id: this.id,
-        message,
-      });
-    });
-    this.logger.onError((message) => {
-      this.emit('command-console-emitted', {
-        id: this.id,
-        message,
-      });
-    });
     this.builtInPlugins = builtInPlugins;
     this.syncMetadataController = new SyncMetadataController(
       this.directory,
       this.logger,
+    );
+    const emitConsoleEvent = (message: string): void => {
+      if (this.currentSyncConsoleOutput.length > MAX_CONSOLE_OUTPUT_LENGTH) {
+        this.currentSyncConsoleOutput.shift();
+      }
+      this.currentSyncConsoleOutput.push(message);
+      this.emit('command-console-emitted', {
+        id: this.id,
+        message,
+      });
+    };
+    this.unsubscribeOperations.push(
+      this.logger.onLog(emitConsoleEvent),
+      this.logger.onError(emitConsoleEvent),
+      this.syncMetadataController.on(
+        'sync-metadata-changed',
+        (syncMetadata) => {
+          this.emit('sync-metadata-changed', {
+            id: this.id,
+            syncMetadata,
+          });
+        },
+      ),
     );
   }
 
@@ -162,6 +197,9 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     } satisfies ProjectDefinitionInput);
   }
 
+  /**
+   * Initializes the project builder service.
+   */
   public init(): void {
     this.watcher = chokidar.watch(this.projectJsonPath, {
       ignoreInitial: true,
@@ -177,12 +215,25 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     this.watcher.on('unlink', boundHandleProjectJsonChange);
   }
 
+  /**
+   * Closes the project builder service.
+   */
   public close(): void {
     if (this.watcher) {
       this.watcher.close().catch((err: unknown) => {
         this.logger.error(err);
       });
     }
+    for (const unsubscribe of this.unsubscribeOperations) unsubscribe();
+  }
+
+  /**
+   * Returns the sync metadata.
+   *
+   * @returns The sync metadata.
+   */
+  public async getSyncMetadata(): Promise<SyncMetadata | undefined> {
+    return this.syncMetadataController.getMetadata();
   }
 
   /**
@@ -233,12 +284,17 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     return { type: 'success' };
   }
 
+  /**
+   * Initiates a new build operation.
+   */
   public async buildProject(): Promise<void> {
     try {
       if (this.isRunningCommand) {
         throw new Error('Another command is already running');
       }
       this.isRunningCommand = true;
+      this.currentSyncConsoleOutput = [];
+      this.emit('sync-started', { id: this.id });
 
       await buildProject({
         directory: this.directory,
@@ -258,7 +314,12 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       throw error;
     } finally {
       this.isRunningCommand = false;
+      this.emit('sync-completed', { id: this.id });
     }
+  }
+
+  public getCurrentSyncConsoleOutput(): string[] {
+    return this.currentSyncConsoleOutput;
   }
 
   public async getSchemaParserContext(): Promise<SchemaParserContext> {

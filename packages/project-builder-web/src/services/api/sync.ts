@@ -1,3 +1,5 @@
+import type { SyncMetadata } from '@halfdomelabs/project-builder-server';
+
 import { IS_PREVIEW } from '../config';
 import { trpc } from '../trpc';
 import { createProjectNotFoundHandler } from './errors';
@@ -14,5 +16,27 @@ export async function startSync(id: string): Promise<void> {
   }
   await trpc.sync.startSync
     .mutate({ id })
+    .catch(createProjectNotFoundHandler(id));
+}
+
+export async function getSyncMetadata(
+  id: string,
+): Promise<SyncMetadata | undefined> {
+  if (IS_PREVIEW) {
+    return {
+      status: 'in-progress',
+      projectJsonHash: '123',
+      startedAt: new Date().toISOString(),
+      packages: {
+        ['app:NmEolDU3Iggt']: {
+          status: 'not-synced',
+          path: 'packages/admin',
+          name: 'admin',
+        },
+      },
+    };
+  }
+  return trpc.sync.getSyncMetadata
+    .query({ id })
     .catch(createProjectNotFoundHandler(id));
 }

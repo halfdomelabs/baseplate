@@ -3,6 +3,8 @@ import { z } from 'zod';
 const packageSyncStatusSchema = z.enum([
   // The package has not been synced yet
   'not-synced',
+  // The package is currently being synced
+  'in-progress',
   // The package was synced successfully
   'success',
   // The package failed to sync for unknown errors
@@ -52,6 +54,7 @@ export const packageSyncResultSchema = z.object({
       }),
     )
     .optional(),
+  completedAt: z.string(),
 });
 
 export type PackageSyncResult = z.infer<typeof packageSyncResultSchema>;
@@ -66,14 +69,20 @@ export const packageSyncInfoSchema = z.object({
 
 export type PackageSyncInfo = z.infer<typeof packageSyncInfoSchema>;
 
+export const syncStatusSchema = z.enum([
+  'in-progress',
+  'success',
+  'error',
+  'cancelled',
+]);
+
+export type SyncStatus = z.infer<typeof syncStatusSchema>;
+
 export const syncMetadataSchema = z.object({
-  lastSyncResult: z
-    .object({
-      status: z.enum(['success', 'error', 'cancelled']),
-      timestamp: z.string(),
-      projectJsonHash: z.string(),
-    })
-    .optional(),
+  status: syncStatusSchema,
+  projectJsonHash: z.string(),
+  startedAt: z.string(),
+  completedAt: z.string().optional(),
   packages: z.record(z.string(), packageSyncInfoSchema),
 });
 

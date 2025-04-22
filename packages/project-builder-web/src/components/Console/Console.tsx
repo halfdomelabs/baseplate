@@ -1,15 +1,11 @@
 import type { UIEventHandler } from 'react';
 
+import { toast } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useProjects } from '@src/hooks/useProjects';
+import { formatError } from '@src/services/error-formatter';
 import { trpc } from '@src/services/trpc';
 
 import { AnsiText } from '../AnsiText/AnsiText';
@@ -18,18 +14,8 @@ interface Props {
   className?: string;
 }
 
-export interface ConsoleRef {
-  clearConsole: () => void;
-}
-
-export const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
+export const Console = ({ className }: Props): React.JSX.Element => {
   const [consoleText, setConsoleText] = useState('');
-
-  useImperativeHandle(ref, () => ({
-    clearConsole: () => {
-      setConsoleText('');
-    },
-  }));
 
   const shouldScrollToBottom = useRef(true);
 
@@ -38,11 +24,30 @@ export const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
 
   const { currentProjectId } = useProjects();
 
+  // Load the current sync console output
   useEffect(() => {
     if (!currentProjectId) {
       return;
     }
-    const unsubscribe = trpc.sync.onConsoleEmitted.subscribe(
+
+    trpc.sync.getCurrentSyncConsoleOutput
+      .query({
+        id: currentProjectId,
+      })
+      .then((output) => {
+        setConsoleText((oldOutput) => `${output.join('\n')}\n${oldOutput}`);
+      })
+      .catch((err: unknown) => {
+        toast.error(formatError(err, 'Error loading sync console output'));
+      });
+  }, [currentProjectId]);
+
+  useEffect(() => {
+    if (!currentProjectId) {
+      return;
+    }
+
+    const unsubscribeConsoleEmitted = trpc.sync.onConsoleEmitted.subscribe(
       { id: currentProjectId },
       {
         onData: (msg) => {
@@ -52,9 +57,17 @@ export const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
         },
       },
     );
-
+    const unsubscribeSyncStarted = trpc.sync.onSyncStarted.subscribe(
+      { id: currentProjectId },
+      {
+        onData: () => {
+          setConsoleText('');
+        },
+      },
+    );
     return () => {
-      unsubscribe.unsubscribe();
+      unsubscribeConsoleEmitted.unsubscribe();
+      unsubscribeSyncStarted.unsubscribe();
     };
   }, [currentProjectId]);
 
@@ -85,7 +98,7 @@ export const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
   return (
     <code
       className={clsx(
-        'block h-72 w-full overflow-y-scroll whitespace-pre-wrap border border-gray-200 bg-slate-900 p-4 text-sm text-neutral-400 shadow-inner',
+        'block h-72 w-full overflow-y-scroll whitespace-pre-wrap break-words border border-gray-200 bg-slate-900 p-4 text-sm text-neutral-400 shadow-inner',
         className,
       )}
       ref={codeRef}
@@ -95,6 +108,6 @@ export const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
       <div ref={bottomRef} />
     </code>
   );
-});
+};
 
 Console.displayName = 'Console';

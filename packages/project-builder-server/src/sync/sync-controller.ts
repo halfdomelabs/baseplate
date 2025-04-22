@@ -15,7 +15,7 @@ import {
  * Uses throttling to coalesce multiple write calls into a single save.
  */
 export class SyncMetadataController extends TypedEventEmitter<{
-  syncMetadataChange: SyncMetadata;
+  ['sync-metadata-changed']: SyncMetadata;
 }> {
   protected syncMetadata: SyncMetadata | undefined;
   protected initialized = false;
@@ -52,7 +52,7 @@ export class SyncMetadataController extends TypedEventEmitter<{
     this.syncMetadata = syncMetadata;
     this.initialized = true;
     this.throttledWrite(syncMetadata);
-    this.emit('syncMetadataChange', syncMetadata);
+    this.emit('sync-metadata-changed', syncMetadata);
   }
 
   updateMetadataForPackage(

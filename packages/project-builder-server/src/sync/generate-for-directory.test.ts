@@ -118,6 +118,7 @@ describe('generateForDirectory', () => {
 
     // Verify results
     expect(result).toEqual({
+      completedAt: expect.any(String) as string,
       filesWithConflicts: [],
       failedCommands: [],
       filesPendingDelete: [],
@@ -224,6 +225,7 @@ describe('generateForDirectory', () => {
 
     // Verify results
     expect(result).toEqual({
+      completedAt: expect.any(String) as string,
       filesWithConflicts: [{ relativePath: 'conflict.txt', resolved: false }],
       failedCommands: [
         {

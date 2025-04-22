@@ -119,6 +119,9 @@ export async function buildProject({
   const existingSyncMetadata = await syncMetadataController?.getMetadata();
 
   syncMetadataController?.writeMetadata({
+    status: 'in-progress',
+    startedAt: new Date().toISOString(),
+    projectJsonHash: hash,
     packages: Object.fromEntries(
       apps.map((app) => [
         app.id,
@@ -140,6 +143,10 @@ export async function buildProject({
       existingSyncMetadata?.packages[app.id].result;
     let newResult: PackageSyncResult;
     try {
+      syncMetadataController?.updateMetadataForPackage(app.id, (metadata) => ({
+        ...metadata,
+        status: 'in-progress',
+      }));
       newResult = await generateForDirectory({
         baseDirectory: directory,
         appEntry: app,
@@ -160,6 +167,7 @@ export async function buildProject({
             stack: err instanceof Error ? err.stack : undefined,
           },
         ],
+        completedAt: new Date().toISOString(),
       };
 
       hasErrors = true;
@@ -174,11 +182,8 @@ export async function buildProject({
 
   syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
-    lastSyncResult: {
-      status: hasErrors ? 'error' : 'success',
-      timestamp: new Date().toISOString(),
-      projectJsonHash: hash,
-    },
+    status: hasErrors ? 'error' : 'success',
+    completedAt: new Date().toISOString(),
   }));
 
   if (hasErrors) {
