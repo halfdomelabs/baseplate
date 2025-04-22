@@ -36,5 +36,7 @@ export async function getSyncMetadata(
       },
     };
   }
-  return trpc.sync.getSyncMetadata.query({ id });
+  return trpc.sync.getSyncMetadata
+    .query({ id })
+    .catch(createProjectNotFoundHandler(id));
 }

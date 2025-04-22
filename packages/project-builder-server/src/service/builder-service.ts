@@ -86,6 +86,8 @@ export interface SyncCompletedPayload {
   id: string;
 }
 
+const MAX_CONSOLE_OUTPUT_LENGTH = 1000;
+
 interface ProjectBuilderServiceEvents {
   'project-json-changed': ProjectDefinitionFilePayload;
   'command-console-emitted': CommandConsoleEmittedPayload;
@@ -146,22 +148,19 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       this.directory,
       this.logger,
     );
-    // Listen to the logger and sync metadata controller for events and emit
+    const emitConsoleEvent = (message: string): void => {
+      if (this.currentSyncConsoleOutput.length > MAX_CONSOLE_OUTPUT_LENGTH) {
+        this.currentSyncConsoleOutput.shift();
+      }
+      this.currentSyncConsoleOutput.push(message);
+      this.emit('command-console-emitted', {
+        id: this.id,
+        message,
+      });
+    };
     this.unsubscribeOperations.push(
-      this.logger.onLog((message) => {
-        this.currentSyncConsoleOutput.push(message);
-        this.emit('command-console-emitted', {
-          id: this.id,
-          message,
-        });
-      }),
-      this.logger.onError((message) => {
-        this.currentSyncConsoleOutput.push(message);
-        this.emit('command-console-emitted', {
-          id: this.id,
-          message,
-        });
-      }),
+      this.logger.onLog(emitConsoleEvent),
+      this.logger.onError(emitConsoleEvent),
       this.syncMetadataController.on(
         'sync-metadata-changed',
         (syncMetadata) => {
