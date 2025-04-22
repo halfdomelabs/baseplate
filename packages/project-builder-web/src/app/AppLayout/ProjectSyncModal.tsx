@@ -9,8 +9,6 @@ import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
 
-import type { ConsoleRef } from '@src/components';
-
 import { Console } from '@src/components';
 import { useProjects } from '@src/hooks/useProjects';
 import { startSync } from '@src/services/api';
@@ -22,7 +20,6 @@ interface Props {
 
 function ProjectSyncModal({ className }: Props): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
-  const clearConsoleRef = useRef<ConsoleRef>(null);
   const { definitionContainer } = useProjectDefinition();
   const { currentProjectId, setLastSyncedAt } = useProjects();
   const blockBeforeContinue = useBlockBeforeContinue();
@@ -36,7 +33,6 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
       return;
     }
 
-    clearConsoleRef.current?.clearConsole();
     startSync(currentProjectId).catch((error: unknown) =>
       toast.error(formatError(error)),
     );
@@ -73,7 +69,7 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
               changes.
             </Dialog.Description>
           </Dialog.Header>
-          <Console ref={clearConsoleRef} />
+          <Console />
           <Dialog.Footer>
             <Button variant="secondary" onClick={startSyncProject}>
               Retry

@@ -73,10 +73,25 @@ interface ProjectBuilderServiceOptions {
   userConfig: BaseplateUserConfig;
 }
 
+export interface SyncMetadataChangedPayload {
+  id: string;
+  syncMetadata: SyncMetadata;
+}
+
+export interface SyncStartedPayload {
+  id: string;
+}
+
+export interface SyncCompletedPayload {
+  id: string;
+}
+
 interface ProjectBuilderServiceEvents {
   'project-json-changed': ProjectDefinitionFilePayload;
   'command-console-emitted': CommandConsoleEmittedPayload;
-  'sync-metadata-changed': SyncMetadata;
+  'sync-metadata-changed': SyncMetadataChangedPayload;
+  'sync-started': SyncStartedPayload;
+  'sync-completed': SyncCompletedPayload;
 }
 
 export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServiceEvents> {
@@ -106,6 +121,8 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   private unsubscribeOperations: (() => void)[] = [];
 
+  private currentSyncConsoleOutput: string[] = [];
+
   constructor({
     directory,
     id,
@@ -124,28 +141,34 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     this.cliVersion = cliVersion;
     this.userConfig = userConfig;
     this.logger = createEventedLogger();
-    this.logger.onLog((message) => {
-      this.emit('command-console-emitted', {
-        id: this.id,
-        message,
-      });
-    });
-    this.logger.onError((message) => {
-      this.emit('command-console-emitted', {
-        id: this.id,
-        message,
-      });
-    });
     this.builtInPlugins = builtInPlugins;
     this.syncMetadataController = new SyncMetadataController(
       this.directory,
       this.logger,
     );
+    // Listen to the logger and sync metadata controller for events and emit
     this.unsubscribeOperations.push(
+      this.logger.onLog((message) => {
+        this.currentSyncConsoleOutput.push(message);
+        this.emit('command-console-emitted', {
+          id: this.id,
+          message,
+        });
+      }),
+      this.logger.onError((message) => {
+        this.currentSyncConsoleOutput.push(message);
+        this.emit('command-console-emitted', {
+          id: this.id,
+          message,
+        });
+      }),
       this.syncMetadataController.on(
         'sync-metadata-changed',
         (syncMetadata) => {
-          this.emit('sync-metadata-changed', syncMetadata);
+          this.emit('sync-metadata-changed', {
+            id: this.id,
+            syncMetadata,
+          });
         },
       ),
     );
@@ -262,12 +285,17 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     return { type: 'success' };
   }
 
+  /**
+   * Initiates a new build operation.
+   */
   public async buildProject(): Promise<void> {
     try {
       if (this.isRunningCommand) {
         throw new Error('Another command is already running');
       }
       this.isRunningCommand = true;
+      this.currentSyncConsoleOutput = [];
+      this.emit('sync-started', { id: this.id });
 
       await buildProject({
         directory: this.directory,
@@ -287,7 +315,12 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       throw error;
     } finally {
       this.isRunningCommand = false;
+      this.emit('sync-completed', { id: this.id });
     }
+  }
+
+  public getCurrentSyncConsoleOutput(): string[] {
+    return this.currentSyncConsoleOutput;
   }
 
   public async getSchemaParserContext(): Promise<SchemaParserContext> {

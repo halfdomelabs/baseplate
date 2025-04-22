@@ -1,8 +1,11 @@
 import { observable } from '@trpc/server/observable';
 import { z } from 'zod';
 
-import type { CommandConsoleEmittedPayload } from '@src/service/builder-service.js';
-import type { SyncMetadata } from '@src/sync/index.js';
+import type {
+  CommandConsoleEmittedPayload,
+  SyncMetadataChangedPayload,
+  SyncStartedPayload,
+} from '@src/service/builder-service.js';
 
 import { privateProcedure, router, websocketProcedure } from './trpc.js';
 
@@ -38,10 +41,16 @@ export const syncRouter = router({
       }),
     ),
 
+  getCurrentSyncConsoleOutput: privateProcedure
+    .input(z.object({ id: z.string() }))
+    .query(({ input: { id }, ctx }) =>
+      ctx.getApi(id).getCurrentSyncConsoleOutput(),
+    ),
+
   onSyncMetadataChanged: websocketProcedure
     .input(z.object({ id: z.string() }))
     .subscription(({ input: { id }, ctx }) =>
-      observable<SyncMetadata>((emit) => {
+      observable<SyncMetadataChangedPayload>((emit) => {
         const unsubscribe = ctx
           .getApi(id)
           .on('sync-metadata-changed', (payload) => {
@@ -56,4 +65,17 @@ export const syncRouter = router({
   getSyncMetadata: privateProcedure
     .input(z.object({ id: z.string() }))
     .query(({ input: { id }, ctx }) => ctx.getApi(id).getSyncMetadata()),
+
+  onSyncStarted: websocketProcedure
+    .input(z.object({ id: z.string() }))
+    .subscription(({ input: { id }, ctx }) =>
+      observable<SyncStartedPayload>((emit) => {
+        const unsubscribe = ctx.getApi(id).on('sync-started', (payload) => {
+          emit.next(payload);
+        });
+        return () => {
+          unsubscribe();
+        };
+      }),
+    ),
 });
