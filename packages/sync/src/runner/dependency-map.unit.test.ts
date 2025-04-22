@@ -71,7 +71,6 @@ function resolveTaskDependencies(
     generatorIdToScopesMap,
     phase,
     dynamicTaskEntries,
-    logger,
   );
 }
 
