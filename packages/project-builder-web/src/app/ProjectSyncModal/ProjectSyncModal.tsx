@@ -70,7 +70,7 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
               Sync the project configuration to the codebase of your project.
             </Dialog.Description>
           </Dialog.Header>
-          <Tabs defaultValue="packages" className="mt-4">
+          <Tabs defaultValue="packages" className="mt-4 min-w-0">
             <Tabs.List className="grid w-full grid-cols-2">
               <Tabs.Trigger value="packages">Packages</Tabs.Trigger>
               <Tabs.Trigger value="console-log">Console log</Tabs.Trigger>
