@@ -459,9 +459,6 @@ importers:
       inflection:
         specifier: 3.0.0
         version: 3.0.0
-      nanoid:
-        specifier: 5.0.9
-        version: 5.0.9
       react:
         specifier: 'catalog:'
         version: 18.3.1
