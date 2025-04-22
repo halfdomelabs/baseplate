@@ -1,6 +1,6 @@
 import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
 import {
-  buildProjectForDirectory,
+  buildProject,
   createNodeSchemaParserContext,
 } from '@halfdomelabs/project-builder-server';
 
@@ -13,7 +13,7 @@ export async function generateProject(projectDirectory: string): Promise<void> {
     logger,
     defaultPlugins,
   );
-  return buildProjectForDirectory({
+  return buildProject({
     directory: projectDirectory,
     logger,
     context: nodeSchemaParserContext,

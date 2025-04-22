@@ -6,7 +6,8 @@ import { createTestLogger } from '@src/tests/logger.test-helper.js';
 import type { GeneratorOutput } from './generator-task-output.js';
 
 import { executeCommand } from '../utils/exec.js';
-import { PrepareGeneratorFilesError } from './prepare-generator-files/errors.js';
+import { createCodebaseReaderFromMemory } from './codebase-file-reader.js';
+import { PrepareGeneratorFilesError } from './errors.js';
 import { writeGeneratorOutput } from './write-generator-output.js';
 
 vi.mock('node:fs');
@@ -25,6 +26,11 @@ describe('writeGeneratorOutput', () => {
   });
 
   it('should successfully write files and run commands', async () => {
+    mockedExecuteCommand.mockResolvedValue({
+      failed: false,
+      exitCode: 0,
+      output: 'success',
+    });
     // Setup test files
     vol.fromJSON({
       [outputDirectory]: null, // Create directory
@@ -61,7 +67,7 @@ describe('writeGeneratorOutput', () => {
     });
 
     // Verify successful result
-    expect(result.relativePathsWithConflicts).toHaveLength(0);
+    expect(result.filesWithConflicts).toHaveLength(0);
     expect(result.failedCommands).toHaveLength(0);
     expect(result.fileIdToRelativePathMap.size).toBe(2);
     expect(result.fileIdToRelativePathMap.get('test-1')).toBe('test.txt');
@@ -72,6 +78,7 @@ describe('writeGeneratorOutput', () => {
   });
 
   it('should handle conflicts and return failed commands', async () => {
+    mockedExecuteCommand.mockRejectedValue(new Error('test error'));
     // Setup test files with conflicting content
     vol.fromJSON({
       [`${outputDirectory}/test.txt`]: 'existing conflicting content',
@@ -101,9 +108,45 @@ describe('writeGeneratorOutput', () => {
     });
 
     // Verify conflict handling
-    expect(result.relativePathsWithConflicts).toContain('test.txt');
-    expect(result.failedCommands).toContain('format');
+    expect(result.filesWithConflicts).toEqual([
+      {
+        relativePath: 'test.txt',
+        generatedConflictRelativePath: undefined,
+      },
+    ]);
+    expect(result.failedCommands).toEqual([
+      {
+        command: 'format',
+        workingDir: outputDirectory,
+      },
+    ]);
     expect(result.fileIdToRelativePathMap.size).toBe(1);
+  });
+
+  it('should handle failed deletions', async () => {
+    vol.fromJSON({
+      [`${outputDirectory}/test.txt`]: 'existing content',
+    }); // Setup test files with missing file
+
+    const previousGeneratedPayload = {
+      fileReader: createCodebaseReaderFromMemory(
+        new Map([['test.txt', Buffer.from('other content')]]),
+      ),
+      fileIdToRelativePathMap: new Map([['test-1', 'test.txt']]),
+    };
+
+    const output: GeneratorOutput = {
+      files: new Map(),
+      globalFormatters: [],
+      postWriteCommands: [],
+    };
+
+    const result = await writeGeneratorOutput(output, outputDirectory, {
+      logger,
+      previousGeneratedPayload,
+    });
+
+    expect(result.relativePathsPendingDelete).toEqual(['test.txt']);
   });
 
   it('should write to generated contents directory when specified', async () => {

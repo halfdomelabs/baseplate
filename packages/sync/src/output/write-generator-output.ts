@@ -1,6 +1,9 @@
+import path from 'node:path';
+
 import type { Logger } from '@src/utils/evented-logger.js';
 
 import type { GeneratorOutput } from './generator-task-output.js';
+import type { FailedCommandInfo } from './post-write-commands/index.js';
 import type {
   GeneratorOutputFileWriterContext,
   PreviousGeneratedPayload,
@@ -57,13 +60,16 @@ export interface WriteGeneratorOutputResult {
    */
   fileIdToRelativePathMap: Map<string, string>;
   /**
-   * Relative paths of files that had conflicts
+   * Files that had conflicts
    */
-  relativePathsWithConflicts: string[];
+  filesWithConflicts: {
+    relativePath: string;
+    generatedConflictRelativePath?: string;
+  }[];
   /**
    * Commands that failed to run
    */
-  failedCommands: string[];
+  failedCommands: FailedCommandInfo[];
   /**
    * Relative paths that were removed in new generation but were modified so
    * could not be automatically deleted.
@@ -132,17 +138,26 @@ export async function writeGeneratorOutput(
     });
     const orderedCommands = sortPostWriteCommands(commandsToRun);
 
-    const relativePathsWithConflicts: string[] = files
+    const filesWithConflicts = files
       .filter((result) => result.hasConflict)
-      .map((result) => result.relativePath);
+      .map((result) => ({
+        relativePath: result.relativePath,
+        generatedConflictRelativePath: result.generatedConflictRelativePath,
+      }));
 
     // don't run commands if there are conflicts
-    if (relativePathsWithConflicts.length > 0) {
+    if (filesWithConflicts.length > 0) {
       return {
-        relativePathsWithConflicts,
-        failedCommands: orderedCommands.map((c) => c.command),
-        fileIdToRelativePathMap,
         relativePathsPendingDelete,
+        failedCommands: orderedCommands.map((c) => ({
+          command: c.command,
+          workingDir: path.join(
+            outputDirectory,
+            c.options?.workingDirectory ?? '',
+          ),
+        })),
+        fileIdToRelativePathMap,
+        filesWithConflicts,
       };
     }
 
@@ -153,7 +168,7 @@ export async function writeGeneratorOutput(
     );
 
     return {
-      relativePathsWithConflicts: [],
+      filesWithConflicts,
       failedCommands,
       fileIdToRelativePathMap,
       relativePathsPendingDelete,

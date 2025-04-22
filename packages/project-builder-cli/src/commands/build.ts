@@ -1,6 +1,6 @@
 import type { Command } from 'commander';
 
-import { buildProjectForDirectory } from '@halfdomelabs/project-builder-server';
+import { buildProject } from '@halfdomelabs/project-builder-server';
 
 import { createSchemaParserContext } from '@src/services/schema-parser-context.js';
 import { getUserConfig } from '@src/services/user-config.js';
@@ -24,7 +24,7 @@ export function addBuildCommand(program: Command): void {
         : '.';
       const context = await createSchemaParserContext(resolvedDirectory);
       const userConfig = await getUserConfig();
-      return buildProjectForDirectory({
+      return buildProject({
         directory: resolvedDirectory,
         logger,
         context,

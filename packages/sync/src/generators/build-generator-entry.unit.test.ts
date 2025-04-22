@@ -6,7 +6,6 @@ import {
   createProviderType,
 } from '@src/providers/index.js';
 import { buildTestGeneratorBundle } from '@src/runner/tests/factories.test-helper.js';
-import { createEventedLogger } from '@src/utils/evented-logger.js';
 
 import type { GeneratorBundle, ProviderExportMap } from './generators.js';
 
@@ -18,7 +17,6 @@ vi.mock('node:fs/promises');
 
 describe('buildGeneratorEntry', () => {
   const testProviderType = createProviderType('test');
-  const logger = createEventedLogger({ noConsole: true });
 
   beforeEach(() => {
     vol.reset();
@@ -55,7 +53,7 @@ describe('buildGeneratorEntry', () => {
       },
     });
 
-    const entry = await buildGeneratorEntry(bundle, { logger });
+    const entry = await buildGeneratorEntry(bundle);
 
     expect(entry).toMatchObject({
       id: 'root',
@@ -124,7 +122,7 @@ describe('buildGeneratorEntry', () => {
       tasks: {},
     } satisfies GeneratorBundle;
 
-    const entry = await buildGeneratorEntry(bundle, { logger });
+    const entry = await buildGeneratorEntry(bundle);
 
     expect(entry).toMatchObject({
       id: 'root',
@@ -195,7 +193,7 @@ describe('buildGeneratorEntry', () => {
       tasks: {},
     } satisfies GeneratorBundle;
 
-    const entry = await buildGeneratorEntry(bundle, { logger });
+    const entry = await buildGeneratorEntry(bundle);
 
     expect(entry.scopes).toEqual([scope]);
   });

@@ -22,7 +22,7 @@ import { createConfigFieldMap } from './create-config-field-map.js';
 /**
  * Options for creating a configuration provider task
  */
-export interface ConfigProviderTaskOptions {
+interface ConfigProviderTaskOptions {
   /**
    * The prefix for the providers
    */
@@ -43,7 +43,7 @@ export interface ConfigProviderTaskOptions {
   configValuesScope?: ProviderExportScope;
 }
 
-export type ConfigProviderTaskResult<TSchema extends FieldMapSchema> = [
+type ConfigProviderTaskResult<TSchema extends FieldMapSchema> = [
   // Config task
   GeneratorTask,
   // Field map provider with modifiable containers

@@ -6,7 +6,7 @@ import type { FileData } from '../generator-task-output.js';
 import type { GeneratorOutputFileWriterContext } from './types.js';
 
 import { createCodebaseReaderFromMemory } from '../codebase-file-reader.js';
-import { PrepareGeneratorFilesError } from './errors.js';
+import { PrepareGeneratorFilesError } from '../errors.js';
 import { prepareGeneratorFiles } from './prepare-generator-files.js';
 
 function createMockContext(
@@ -81,9 +81,9 @@ describe('prepareGeneratorFiles', () => {
     }).catch((err: unknown) => err);
 
     expect(error).toBeInstanceOf(PrepareGeneratorFilesError);
-    const { errors } = error as PrepareGeneratorFilesError;
-    expect(errors.length).toEqual(1);
-    expect(errors[0].relativePath).toEqual('invalid-file.txt');
+    const { causes } = error as PrepareGeneratorFilesError;
+    expect(causes.length).toEqual(1);
+    expect(causes[0].relativePath).toEqual('invalid-file.txt');
   });
 
   it('should handle empty files map', async () => {

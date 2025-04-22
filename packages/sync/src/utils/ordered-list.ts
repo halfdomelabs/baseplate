@@ -7,7 +7,7 @@ interface OrderRule {
   comesAfter?: string | string[];
 }
 
-export interface OrderedList<T> {
+interface OrderedList<T> {
   addItem(key: string, item: T, orderRules?: OrderRule): OrderedList<T>;
   getItems(): T[];
 }

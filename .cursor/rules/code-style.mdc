@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- TypeScript with strict type checking
+- Unit tests use `.unit.test.ts` suffix, integration tests use `.int.test.ts`
+- Node 16 module resolution - include file extensions in imports (`.js`)
+- Always import vitest globals explicitly (describe, it, expect)
+- Sort imports by group: external libs first, then local imports
+- Use camelCase for variables/functions, PascalCase for types/classes
+- Prefer functional programming patterns
+- Colocate tests with implementation files
+- Include absolute paths in import statements via tsconfig paths
+- All functions excluding one-liner arrow functions require explicit return types

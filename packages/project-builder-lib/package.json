@@ -45,7 +45,6 @@
     "globby": "^14.0.2",
     "immer": "10.1.1",
     "inflection": "3.0.0",
-    "nanoid": "5.0.9",
     "react": "catalog:",
     "react-hook-form": "7.53.0",
     "zod": "catalog:",

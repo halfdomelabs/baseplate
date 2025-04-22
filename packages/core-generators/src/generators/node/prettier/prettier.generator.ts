@@ -186,7 +186,7 @@ export const prettierGenerator = createGenerator({
                     logger.info(
                       'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.',
                     );
-                    // use cached version of prettier if available
+                    // use the in-built version of prettier
                     return prettier;
                   }
                   if (result.version === prettier.version) {

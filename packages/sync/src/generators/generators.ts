@@ -10,7 +10,6 @@ import type {
   ProviderExportScope,
   ProviderType,
 } from '@src/providers/index.js';
-import type { Logger } from '@src/utils/evented-logger.js';
 
 /**
  * The base required fields for a generator descriptor
@@ -208,7 +207,6 @@ export interface CreateGeneratorContext {
   id: string;
   generatorName: string;
   generatorBaseDirectory: string;
-  logger: Logger;
 }
 
 /**
@@ -249,20 +247,4 @@ export interface GeneratorBundle<
    * dynamic tasks and thus need to be pre-registered
    */
   preRegisteredPhases?: TaskPhase[];
-}
-
-/**
- * The configuration of a generator that is the default export of a generator module
- */
-export interface GeneratorConfig<
-  Descriptor extends BaseGeneratorDescriptor = BaseGeneratorDescriptor,
-> {
-  /**
-   * Creates an instance of the generator with a given descriptor and
-   * resolved dependencies
-   */
-  createGenerator: (
-    descriptor: Descriptor,
-    context: CreateGeneratorContext,
-  ) => GeneratorBundle;
 }

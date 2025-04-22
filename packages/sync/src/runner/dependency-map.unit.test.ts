@@ -5,9 +5,6 @@ import type {
   GeneratorTaskEntry,
 } from '@src/generators/build-generator-entry.js';
 import type { TaskPhase } from '@src/phases/types.js';
-import type { Logger } from '@src/utils/index.js';
-
-import { createEventedLogger } from '@src/utils/index.js';
 
 import type { EntryDependencyMap } from './dependency-map.js';
 
@@ -33,7 +30,6 @@ import {
 const providerOne = createProviderType('provider-one');
 const providerTwo = createProviderType('provider-two');
 const readOnlyProvider = createReadOnlyProviderType('read-only-provider');
-const testLogger = createEventedLogger({ noConsole: true });
 
 // Create test scopes
 const defaultScope = createProviderExportScope(
@@ -61,7 +57,6 @@ const phase2: TaskPhase = {
 
 function resolveTaskDependencies(
   entry: GeneratorEntry,
-  logger: Logger,
   phase?: TaskPhase,
   dynamicTaskEntries?: Map<string, GeneratorTaskEntry[]>,
 ): EntryDependencyMap {
@@ -71,7 +66,6 @@ function resolveTaskDependencies(
     generatorIdToScopesMap,
     phase,
     dynamicTaskEntries,
-    logger,
   );
 }
 
@@ -103,7 +97,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     entry.children.push(childEntry);
 
     // Act
-    const dependencyMap = resolveTaskDependencies(entry, testLogger);
+    const dependencyMap = resolveTaskDependencies(entry);
 
     // Assert
     expect(dependencyMap).toEqual({
@@ -139,7 +133,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     entry.children.push(childEntry);
 
     // Act
-    const dependencyMap = resolveTaskDependencies(entry, testLogger);
+    const dependencyMap = resolveTaskDependencies(entry);
 
     // Assert
     expect(dependencyMap).toEqual({
@@ -185,7 +179,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     entry.children.push(child1, child2);
 
     // Act
-    const dependencyMap = resolveTaskDependencies(entry, testLogger);
+    const dependencyMap = resolveTaskDependencies(entry);
 
     // Assert
     expect(dependencyMap).toEqual({
@@ -240,7 +234,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     entry.children.push(child1, child2);
 
     // Act
-    const dependencyMap = resolveTaskDependencies(entry, testLogger);
+    const dependencyMap = resolveTaskDependencies(entry);
 
     // Assert
     expect(dependencyMap).toEqual({
@@ -303,7 +297,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     rootEntry.children.push(middleEntry);
 
     // Act
-    const dependencyMap = resolveTaskDependencies(rootEntry, testLogger);
+    const dependencyMap = resolveTaskDependencies(rootEntry);
 
     // Assert
     expect(dependencyMap).toEqual({
@@ -357,7 +351,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     entry.children.push(childEntry, peerEntry);
 
     // Act
-    const dependencyMap = resolveTaskDependencies(entry, testLogger);
+    const dependencyMap = resolveTaskDependencies(entry);
 
     // Assert
     expect(dependencyMap).toEqual({
@@ -388,7 +382,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     );
 
     // Act
-    expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
+    expect(() => resolveTaskDependencies(entry)).toThrow(
       /Duplicate scoped provider export detected/,
     );
   });
@@ -415,7 +409,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     entry.children.push(childEntry);
 
     // Act
-    expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
+    expect(() => resolveTaskDependencies(entry)).toThrow(
       /Could not resolve dependency provider-one/,
     );
   });
@@ -452,7 +446,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     rootEntry.children.push(middleEntry);
 
     // Act
-    const dependencyMap = resolveTaskDependencies(rootEntry, testLogger);
+    const dependencyMap = resolveTaskDependencies(rootEntry);
 
     // Assert
     expect(dependencyMap).toEqual({
@@ -511,7 +505,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     rootEntry.children.push(middleEntry);
 
     // Act
-    const dependencyMap = resolveTaskDependencies(rootEntry, testLogger);
+    const dependencyMap = resolveTaskDependencies(rootEntry);
 
     // Assert
     expect(dependencyMap).toEqual({
@@ -553,7 +547,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     entry.children.push(childEntry);
 
     // Act
-    const dependencyMap = resolveTaskDependencies(entry, testLogger);
+    const dependencyMap = resolveTaskDependencies(entry);
 
     // Assert
     expect(dependencyMap).toEqual({
@@ -591,7 +585,7 @@ describe('resolveTaskDependenciesForPhase', () => {
       ],
     });
     // Act
-    const dependencyMap = resolveTaskDependencies(entry, testLogger);
+    const dependencyMap = resolveTaskDependencies(entry);
 
     // Assert
     expect(dependencyMap).toEqual({
@@ -621,7 +615,7 @@ describe('resolveTaskDependenciesForPhase', () => {
     );
 
     // Act & Assert
-    expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
+    expect(() => resolveTaskDependencies(entry)).toThrow(
       /All providers in task outputs must be read-only providers/,
     );
   });
@@ -651,16 +645,8 @@ describe('resolveTaskDependenciesForPhase', () => {
     });
 
     // Act
-    const phase1DependencyMap = resolveTaskDependencies(
-      entry,
-      testLogger,
-      phase1,
-    );
-    const phase2DependencyMap = resolveTaskDependencies(
-      entry,
-      testLogger,
-      phase2,
-    );
+    const phase1DependencyMap = resolveTaskDependencies(entry, phase1);
+    const phase2DependencyMap = resolveTaskDependencies(entry, phase2);
 
     // Assert
     expect(phase1DependencyMap).toEqual({
@@ -707,16 +693,8 @@ describe('resolveTaskDependenciesForPhase', () => {
     });
 
     // Act
-    const phase1DependencyMap = resolveTaskDependencies(
-      entry,
-      testLogger,
-      phase1,
-    );
-    const phase2DependencyMap = resolveTaskDependencies(
-      entry,
-      testLogger,
-      phase2,
-    );
+    const phase1DependencyMap = resolveTaskDependencies(entry, phase1);
+    const phase2DependencyMap = resolveTaskDependencies(entry, phase2);
 
     // Assert
     expect(phase1DependencyMap).toEqual({
@@ -789,16 +767,8 @@ describe('resolveTaskDependenciesForPhase', () => {
     rootEntry.children.push(middleEntry);
 
     // Act
-    const phase1DependencyMap = resolveTaskDependencies(
-      rootEntry,
-      testLogger,
-      phase1,
-    );
-    const phase2DependencyMap = resolveTaskDependencies(
-      rootEntry,
-      testLogger,
-      phase2,
-    );
+    const phase1DependencyMap = resolveTaskDependencies(rootEntry, phase1);
+    const phase2DependencyMap = resolveTaskDependencies(rootEntry, phase2);
 
     // Assert
     expect(phase1DependencyMap).toEqual({
@@ -853,7 +823,6 @@ describe('resolveTaskDependenciesForPhase', () => {
     // Act
     const phase1DependencyMap = resolveTaskDependencies(
       entry,
-      testLogger,
       phase1,
       dynamicTaskMap,
     );
@@ -909,13 +878,11 @@ describe('resolveTaskDependenciesForPhase', () => {
     // Act
     const phase1DependencyMap = resolveTaskDependencies(
       entry,
-      testLogger,
       phase1,
       dynamicTaskMap,
     );
     const phase2DependencyMap = resolveTaskDependencies(
       entry,
-      testLogger,
       phase2,
       dynamicTaskMap,
     );
@@ -981,7 +948,6 @@ describe('resolveTaskDependenciesForPhase', () => {
     // Act
     const phase1DependencyMap = resolveTaskDependencies(
       rootEntry,
-      testLogger,
       phase1,
       dynamicTaskMap,
     );

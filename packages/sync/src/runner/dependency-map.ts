@@ -1,7 +1,6 @@
 import { mapValues, mergeWith } from 'es-toolkit';
 
 import type { TaskPhase } from '@src/phases/types.js';
-import type { Logger } from '@src/utils/evented-logger.js';
 
 import type {
   GeneratorEntry,
@@ -209,7 +208,6 @@ function buildTaskDependencyMap(
  * @param flattenedTasks Flattened generator tasks
  * @param phase Task phase to resolve dependencies for
  * @param dynamicTaskEntries Dynamic task entries
- * @param logger Logger to use
  */
 function buildEntryDependencyMapRecursive(
   entry: GeneratorEntry,
@@ -217,7 +215,6 @@ function buildEntryDependencyMapRecursive(
   generatorIdToScopesMap: GeneratorIdToScopesMap,
   phase: TaskPhase | undefined,
   dynamicTaskEntries: Map<string, GeneratorTaskEntry[]> | undefined,
-  logger: Logger,
 ): EntryDependencyMap {
   const parentChildIdsWithSelf = [...parentEntryIds, entry.id];
   const dynamicTasks = dynamicTaskEntries?.get(entry.id) ?? [];
@@ -245,7 +242,6 @@ function buildEntryDependencyMapRecursive(
         generatorIdToScopesMap,
         phase,
         dynamicTaskEntries,
-        logger,
       ),
     ),
   );
@@ -278,14 +274,12 @@ export function buildGeneratorIdToScopesMap(
  * @param generatorIdToScopesMap Generator ID to scopes map
  * @param phase Task phase to resolve dependencies for
  * @param dynamicTaskEntries Dynamic task entries
- * @param logger Logger to use
  */
 export function resolveTaskDependenciesForPhase(
   rootEntry: GeneratorEntry,
   generatorIdToScopesMap: GeneratorIdToScopesMap,
   phase: TaskPhase | undefined,
   dynamicTaskEntries: Map<string, GeneratorTaskEntry[]> | undefined,
-  logger: Logger,
 ): EntryDependencyMap {
   return buildEntryDependencyMapRecursive(
     rootEntry,
@@ -293,6 +287,5 @@ export function resolveTaskDependenciesForPhase(
     generatorIdToScopesMap,
     phase,
     dynamicTaskEntries,
-    logger,
   );
 }

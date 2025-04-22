@@ -4,7 +4,7 @@ export interface DescriptorWithChildren extends BaseGeneratorDescriptor {
   children?: GeneratorDescriptorChildren;
 }
 
-export type GenericDescriptorWithChildren = DescriptorWithChildren &
+type GenericDescriptorWithChildren = DescriptorWithChildren &
   Record<string, unknown>;
 
 export type GeneratorDescriptorChildren = Record<

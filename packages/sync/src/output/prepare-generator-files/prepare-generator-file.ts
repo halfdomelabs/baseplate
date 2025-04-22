@@ -6,6 +6,7 @@ import type {
   GeneratorOutputFileWriterContext,
 } from './types.js';
 
+import { ConflictDetectedError, FormatterError } from '../errors.js';
 import {
   buildCompositeMergeAlgorithm,
   diff3MergeAlgorithm,
@@ -13,7 +14,6 @@ import {
   jsonMergeAlgorithm,
   simpleDiffAlgorithm,
 } from '../string-merge-algorithms/index.js';
-import { ConflictDetectedError, FormatterError } from './errors.js';
 
 /**
  * Normalize a buffer or string to a buffer
@@ -89,7 +89,7 @@ async function formatContents(
     const filePath = path.join(context.outputDirectory, relativePath);
     return await formatter.format(contents, filePath, context.logger);
   } catch (error) {
-    throw new FormatterError(error, contents);
+    throw new FormatterError(error, contents, relativePath);
   }
 }
 

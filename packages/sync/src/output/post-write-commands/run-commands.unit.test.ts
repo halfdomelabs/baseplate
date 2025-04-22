@@ -33,7 +33,11 @@ describe('runPostWriteCommands', () => {
       },
     ];
 
-    executeCommandMock.mockResolvedValue('success');
+    executeCommandMock.mockResolvedValue({
+      failed: false,
+      exitCode: 0,
+      output: 'success',
+    });
 
     const result = await runPostWriteCommands(commands, '/root', mockLogger);
 
@@ -52,12 +56,21 @@ describe('runPostWriteCommands', () => {
   it('should handle command failures', async () => {
     const commands: PostWriteCommand[] = [{ command: 'failing-command' }];
 
-    const error = new Error('Command failed');
-    executeCommandMock.mockRejectedValue(error);
+    executeCommandMock.mockResolvedValue({
+      failed: true,
+      exitCode: 1,
+      output: 'error message',
+    });
 
     const result = await runPostWriteCommands(commands, '/root', mockLogger);
 
-    expect(result.failedCommands).toEqual(['failing-command']);
+    expect(result.failedCommands).toEqual([
+      {
+        command: 'failing-command',
+        workingDir: '/root',
+        output: 'error message',
+      },
+    ]);
     expect(mockLogger.error).toHaveBeenCalled();
   });
 
@@ -66,7 +79,11 @@ describe('runPostWriteCommands', () => {
       { command: 'long-running', options: { timeout: 600_000 } }, // 10 minutes
     ];
 
-    executeCommandMock.mockResolvedValue('success');
+    executeCommandMock.mockResolvedValue({
+      failed: false,
+      exitCode: 0,
+      output: 'success',
+    });
 
     await runPostWriteCommands(commands, '/root', mockLogger);
 
