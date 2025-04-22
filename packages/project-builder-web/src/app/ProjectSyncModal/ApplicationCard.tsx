@@ -26,26 +26,26 @@ interface Props {
 function getStatusIcon(status: PackageSyncInfo['status']): React.JSX.Element {
   switch (status) {
     case 'success': {
-      return <MdCheckCircle className="text-green-500" />;
+      return <MdCheckCircle className="text-success-foreground" />;
     }
     case 'unknown-error':
     case 'command-error': {
-      return <MdError className="text-red-500" />;
+      return <MdError className="text-error-foreground" />;
     }
     case 'conflicts': {
-      return <MdSyncProblem className="text-yellow-500" />;
+      return <MdSyncProblem className="text-warning-foreground" />;
     }
     case 'cancelled': {
-      return <MdCancel className="text-gray-500" />;
+      return <MdCancel className="text-secondary-foreground" />;
     }
     case 'not-synced': {
-      return <MdHourglassEmpty className="text-gray-500" />;
+      return <MdHourglassEmpty className="text-secondary-foreground" />;
     }
     case 'in-progress': {
-      return <MdSync className="text-gray-500" />;
+      return <MdSync className="text-secondary-foreground" />;
     }
     default: {
-      return <MdHourglassEmpty className="text-gray-500" />;
+      return <MdHourglassEmpty className="text-secondary-foreground" />;
     }
   }
 }
@@ -152,7 +152,7 @@ export function ApplicationCard({
             packageInfo.result.filesWithConflicts.length > 0 && (
               <div className="mt-2 space-y-1">
                 <h4 className="font-medium">Files with Conflicts:</h4>
-                <ul className="list-disc pl-5 text-sm text-yellow-600">
+                <ul className="list-disc pl-5 text-sm text-warning-foreground">
                   {packageInfo.result.filesWithConflicts.map((file, index) => (
                     <li key={index}>
                       {file.relativePath}{' '}
@@ -166,7 +166,7 @@ export function ApplicationCard({
             packageInfo.result.filesPendingDelete.length > 0 && (
               <div className="mt-2 space-y-1">
                 <h4 className="font-medium">Files Pending Delete:</h4>
-                <ul className="list-disc pl-5 text-sm text-yellow-600">
+                <ul className="list-disc pl-5 text-sm text-warning-foreground">
                   {packageInfo.result.filesPendingDelete.map((file, index) => (
                     <li key={index}>
                       {file.relativePath}{' '}
