@@ -1,4 +1,4 @@
-import { randomUid } from '@src/utils/randomUid.js';
+import { randomUid } from '@halfdomelabs/utils';
 
 export type ReferencePath = (string | number)[];
 

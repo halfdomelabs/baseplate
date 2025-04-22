@@ -23,7 +23,8 @@ import {
   createNodeSchemaParserContext,
   discoverPlugins,
 } from '@src/plugins/index.js';
-import { buildProjectForDirectory } from '@src/runner/index.js';
+import { buildProject } from '@src/sync/index.js';
+import { SyncMetadataController } from '@src/sync/sync-controller.js';
 
 import type { BaseplateUserConfig } from '../user-config/user-config-schema.js';
 
@@ -98,6 +99,8 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   private userConfig: BaseplateUserConfig;
 
+  private syncMetadataController: SyncMetadataController;
+
   constructor({
     directory,
     id,
@@ -129,6 +132,10 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       });
     });
     this.builtInPlugins = builtInPlugins;
+    this.syncMetadataController = new SyncMetadataController(
+      this.directory,
+      this.logger,
+    );
   }
 
   protected handleProjectJsonChange(): void {
@@ -233,26 +240,21 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       }
       this.isRunningCommand = true;
 
-      await buildProjectForDirectory({
+      await buildProject({
         directory: this.directory,
         logger: this.logger,
         context: await this.getSchemaParserContext(),
         userConfig: this.userConfig,
+        syncMetadataController: this.syncMetadataController,
       });
     } catch (error) {
       this.logger.error(
-        error instanceof Error ? error.toString() : typeof error,
-      );
-      this.emit('command-console-emitted', {
-        id: this.id,
-        message: chalk.red(
+        chalk.red(
           `Error building project: ${
-            error instanceof Error
-              ? `${error.message}${error.stack ? `\n${error.stack}` : ''}`
-              : 'Unknown error'
+            error instanceof Error ? error.stack : String(error)
           }`,
         ),
-      });
+      );
       throw error;
     } finally {
       this.isRunningCommand = false;

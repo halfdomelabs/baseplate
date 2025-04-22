@@ -34,10 +34,16 @@ const PASSTHROUGH_ENV_VARS = [
   'LANG',
 ];
 
+interface ExecuteCommandResult {
+  failed: boolean;
+  exitCode?: number;
+  output: string;
+}
+
 export async function executeCommand(
   command: string,
   options: ExecOptions,
-): Promise<string> {
+): Promise<ExecuteCommandResult> {
   const [file, ...commandArguments] = parseCommandString(command);
   const result = await execa(file, commandArguments, {
     all: true,
@@ -48,7 +54,12 @@ export async function executeCommand(
     },
     extendEnv: false,
     timeout: options.timeout,
+    reject: false,
   });
 
-  return result.all;
+  return {
+    failed: result.failed,
+    exitCode: result.exitCode,
+    output: result.all,
+  };
 }

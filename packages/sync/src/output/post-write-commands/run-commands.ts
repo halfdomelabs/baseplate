@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { ExecaError } from 'execa';
 import ms from 'ms';
 import path from 'node:path';
 
@@ -10,6 +9,12 @@ import { executeCommand } from '@src/utils/exec.js';
 import { type PostWriteCommand } from './types.js';
 
 const COMMAND_TIMEOUT_MILLIS = ms('5m');
+
+export interface FailedCommandInfo {
+  command: string;
+  workingDir: string;
+  output?: string | undefined;
+}
 
 /**
  * Run post-write commands
@@ -24,9 +29,9 @@ export async function runPostWriteCommands(
   outputDirectory: string,
   logger: Logger,
 ): Promise<{
-  failedCommands: string[];
+  failedCommands: FailedCommandInfo[];
 }> {
-  const failedCommands: string[] = [];
+  const failedCommands: FailedCommandInfo[] = [];
 
   for (const command of commands) {
     const { workingDirectory = '' } = command.options ?? {};
@@ -35,19 +40,33 @@ export async function runPostWriteCommands(
 
     logger.info(`Running ${commandString}...`);
     try {
-      await executeCommand(commandString, {
+      const result = await executeCommand(commandString, {
         cwd: path.join(outputDirectory, workingDirectory),
         timeout: command.options?.timeout ?? COMMAND_TIMEOUT_MILLIS,
         env: command.options?.env,
       });
-    } catch (error) {
-      logger.error(chalk.red(`Unable to run ${commandString}`));
-      if (error instanceof ExecaError) {
-        logger.error(error.all);
-      } else {
-        logger.error(String(error));
+
+      if (result.failed) {
+        logger.error(
+          chalk.red(
+            `${commandString} failed with exit code ${result.exitCode}`,
+          ),
+        );
+        logger.error(chalk.red(result.output));
+        failedCommands.push({
+          command: command.command,
+          workingDir: path.join(outputDirectory, workingDirectory),
+          output: result.output,
+        });
       }
-      failedCommands.push(command.command);
+    } catch (error) {
+      logger.error(
+        chalk.red(`${commandString} failed to run: ${String(error)}`),
+      );
+      failedCommands.push({
+        command: command.command,
+        workingDir: path.join(outputDirectory, workingDirectory),
+      });
     }
   }
 

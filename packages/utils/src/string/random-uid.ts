@@ -9,6 +9,10 @@ const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
  */
 const customNanoid = customAlphabet(`${NUMBERS}${LOWERCASE}${UPPERCASE}_`, 12);
 
-export function randomUid(): string {
-  return customNanoid();
+/**
+ * Generate a random ID string made up of numbers, lowercase, and uppercase letters
+ * @returns A random ID string
+ */
+export function randomUid(length = 12): string {
+  return customNanoid(length);
 }

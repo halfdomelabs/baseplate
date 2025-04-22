@@ -177,9 +177,6 @@ export function generateTypescriptEslintConfig(options = []) {
         // Allow ternary operators to be used when appropriate (this conflicts with https://typescript-eslint.io/rules/prefer-nullish-coalescing/)
         'unicorn/prefer-logical-operator-over-ternary': 'off',
 
-        // Allow the use of `undefined` as a default value in function parameters
-        'unicorn/no-useless-undefined': ['error', { checkArguments: false }],
-
         // Allow the use of arrow functions in nested scopes
         'unicorn/consistent-function-scoping': [
           'error',
@@ -194,6 +191,9 @@ export function generateTypescriptEslintConfig(options = []) {
 
         // False positives with array-like functions (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1394)
         'unicorn/no-array-method-this-argument': 'off',
+
+        // Prevents returning undefined from functions which Typescript assumes is void
+        'unicorn/no-useless-undefined': 'off',
       },
     },
 
