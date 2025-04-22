@@ -19,23 +19,23 @@ const packageSyncStatusSchema = z.enum([
 
 export type PackageSyncStatus = z.infer<typeof packageSyncStatusSchema>;
 
+const fileWithConflictSchema = z.object({
+  relativePath: z.string(),
+  generatedConflictRelativePath: z.string().optional(),
+  conflictType: z.enum([
+    // The file has a merge conflict
+    'merge-conflict',
+    // The file was deleted in the working codebase but baseplate is trying to add it back
+    'working-deleted',
+    // The file was deleted in the generated codebase but the current codebase has modified it
+    'generated-deleted',
+  ]),
+});
+
+export type FileWithConflict = z.infer<typeof fileWithConflictSchema>;
+
 export const packageSyncResultSchema = z.object({
-  filesWithConflicts: z
-    .array(
-      z.object({
-        relativePath: z.string(),
-        resolved: z.boolean(),
-      }),
-    )
-    .optional(),
-  filesPendingDelete: z
-    .array(
-      z.object({
-        relativePath: z.string(),
-        resolved: z.boolean(),
-      }),
-    )
-    .optional(),
+  filesWithConflicts: z.array(fileWithConflictSchema).optional(),
   errors: z
     .array(
       z.object({

@@ -1,12 +1,15 @@
 import type { Logger } from '@halfdomelabs/sync';
 
 import { TypedEventEmitter } from '@halfdomelabs/utils';
-import { throttle } from 'es-toolkit';
+import { watch } from 'chokidar';
+import { isEqual, throttle } from 'es-toolkit';
+import path from 'node:path';
 
 import type { PackageSyncInfo, SyncMetadata } from './sync-metadata.js';
 
 import {
   readSyncMetadata,
+  SYNC_METADATA_PATH,
   writeSyncMetadata,
 } from './sync-metadata-service.js';
 
@@ -15,22 +18,57 @@ import {
  * Uses throttling to coalesce multiple write calls into a single save.
  */
 export class SyncMetadataController extends TypedEventEmitter<{
-  ['sync-metadata-changed']: SyncMetadata;
+  ['sync-metadata-changed']: SyncMetadata | undefined;
 }> {
   protected syncMetadata: SyncMetadata | undefined;
   protected initialized = false;
 
   private readonly throttledWrite = throttle((metadata: SyncMetadata) => {
+    this.emit('sync-metadata-changed', metadata);
     writeSyncMetadata(this.projectDirectory, metadata).catch((err: unknown) => {
       this.logger.error(`Failed to write metadata: ${String(err)}`);
     });
-  }, 50);
+  }, 100);
 
   constructor(
     protected readonly projectDirectory: string,
     protected logger: Logger,
   ) {
     super();
+  }
+
+  watchMetadata(): () => void {
+    const watcher = watch(
+      path.join(this.projectDirectory, SYNC_METADATA_PATH),
+      {
+        awaitWriteFinish: true,
+      },
+    );
+
+    const handleMetadataChange = (): void => {
+      readSyncMetadata(this.projectDirectory)
+        .then((metadata) => {
+          if (!isEqual(metadata, this.syncMetadata)) {
+            this.syncMetadata = metadata;
+            this.emit('sync-metadata-changed', metadata);
+          }
+        })
+        .catch((err: unknown) => {
+          this.logger.error(
+            `Failed to read sync metadata. Please either fix or delete the file to continue: ${String(err)}`,
+          );
+        });
+    };
+
+    watcher.on('add', handleMetadataChange);
+    watcher.on('change', handleMetadataChange);
+    watcher.on('unlink', handleMetadataChange);
+
+    return () => {
+      watcher.close().catch((err: unknown) => {
+        this.logger.error(`Failed to close metadata watcher: ${String(err)}`);
+      });
+    };
   }
 
   async getMetadata(): Promise<SyncMetadata | undefined> {
@@ -52,7 +90,6 @@ export class SyncMetadataController extends TypedEventEmitter<{
     this.syncMetadata = syncMetadata;
     this.initialized = true;
     this.throttledWrite(syncMetadata);
-    this.emit('sync-metadata-changed', syncMetadata);
   }
 
   updateMetadataForPackage(

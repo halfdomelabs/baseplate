@@ -1,13 +1,17 @@
-import type { PackageSyncInfo } from '@halfdomelabs/project-builder-server';
+import type {
+  FileWithConflict,
+  PackageSyncInfo,
+} from '@halfdomelabs/project-builder-server';
 import type React from 'react';
 
-import { Badge } from '@halfdomelabs/ui-components';
+import { Badge, Tooltip } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import {
   MdCancel,
   MdCheckCircle,
   MdError,
   MdHourglassEmpty,
+  MdInfo,
   MdSync,
   MdSyncProblem,
 } from 'react-icons/md';
@@ -76,6 +80,43 @@ function getStatusLabel(status: PackageSyncInfo['status']): string {
   }
 }
 
+function FilesWithConflictsView({
+  filesWithConflicts,
+  title,
+  tooltip,
+}: {
+  filesWithConflicts: FileWithConflict[];
+  title: string;
+  tooltip: string;
+}): React.JSX.Element | null {
+  if (filesWithConflicts.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mt-2 space-y-1">
+      <div className="flex items-center gap-2">
+        <h4 className="font-medium">{title}</h4>
+        <Tooltip>
+          <Tooltip.Trigger>
+            <MdInfo className="text-muted-foreground" />
+          </Tooltip.Trigger>
+          <Tooltip.Content side="right" className="max-w-sm">
+            {tooltip}
+          </Tooltip.Content>
+        </Tooltip>
+      </div>
+      <ul className="list-disc pl-5 text-sm">
+        {filesWithConflicts.map((file, index) => (
+          <li key={index} className="text-sm text-warning-foreground">
+            {file.generatedConflictRelativePath ?? file.relativePath}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function ApplicationCard({
   packageInfo,
   className,
@@ -84,6 +125,9 @@ export function ApplicationCard({
     packageInfo.status === 'unknown-error' ||
     packageInfo.status === 'command-error' ||
     packageInfo.status === 'conflicts';
+
+  const filesWithConflicts = packageInfo.result?.filesWithConflicts ?? [];
+
   return (
     <div className={clsx('w-full rounded-md border', className)}>
       <div className="flex w-full items-center justify-between px-4 py-3">
@@ -140,34 +184,27 @@ export function ApplicationCard({
                 </ul>
               </div>
             )}
-          {packageInfo.result?.filesWithConflicts &&
-            packageInfo.result.filesWithConflicts.length > 0 && (
-              <div className="mt-2 space-y-1">
-                <h4 className="font-medium">Files with Conflicts:</h4>
-                <ul className="list-disc pl-5 text-sm text-warning-foreground">
-                  {packageInfo.result.filesWithConflicts.map((file, index) => (
-                    <li key={index}>
-                      {file.relativePath}{' '}
-                      {file.resolved ? '(Resolved)' : '(Unresolved)'}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <FilesWithConflictsView
+            filesWithConflicts={filesWithConflicts.filter(
+              (f) => f.conflictType === 'merge-conflict',
             )}
-          {packageInfo.result?.filesPendingDelete &&
-            packageInfo.result.filesPendingDelete.length > 0 && (
-              <div className="mt-2 space-y-1">
-                <h4 className="font-medium">Files Pending Delete:</h4>
-                <ul className="list-disc pl-5 text-sm text-warning-foreground">
-                  {packageInfo.result.filesPendingDelete.map((file, index) => (
-                    <li key={index}>
-                      {file.relativePath}{' '}
-                      {file.resolved ? '(Resolved)' : '(Unresolved)'}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            title="Files with merge conflicts:"
+            tooltip="These files were modified in both the working codebase and the generated codebase. Please resolve the conflicts manually."
+          />
+          <FilesWithConflictsView
+            filesWithConflicts={filesWithConflicts.filter(
+              (f) => f.conflictType === 'generated-deleted',
             )}
+            title="Deleted files that were modified by user:"
+            tooltip="Review whether these files should be deleted or not."
+          />
+          <FilesWithConflictsView
+            filesWithConflicts={filesWithConflicts.filter(
+              (f) => f.conflictType === 'working-deleted',
+            )}
+            title="Files deleted by user that were modified by Baseplate:"
+            tooltip="Review whether these files should be deleted or not."
+          />
         </div>
       )}
     </div>

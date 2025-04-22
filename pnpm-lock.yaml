@@ -562,6 +562,9 @@ importers:
       globby:
         specifier: ^14.0.2
         version: 14.0.2
+      immer:
+        specifier: 10.1.1
+        version: 10.1.1
       inflection:
         specifier: 3.0.0
         version: 3.0.0

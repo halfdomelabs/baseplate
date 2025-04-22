@@ -52,6 +52,7 @@
     "fastify-plugin": "5.0.1",
     "fastify-type-provider-zod": "4.0.1",
     "globby": "^14.0.2",
+    "immer": "10.1.1",
     "inflection": "3.0.0",
     "mime": "^4.0.3",
     "open": "10.1.0",

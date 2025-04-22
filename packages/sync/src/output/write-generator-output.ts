@@ -58,6 +58,27 @@ export interface WriteGeneratorOutputOptions {
 }
 
 /**
+ * A file that had a conflict
+ */
+export interface FileWithConflict {
+  /**
+   * The relative path of the file
+   */
+  relativePath: string;
+  /**
+   * The relative path of the generated file that had the conflict
+   */
+  generatedConflictRelativePath?: string;
+  /**
+   * The type of conflict
+   */
+  conflictType:
+    | 'merge-conflict' // The file was modified in both the working codebase and the generated codebase
+    | 'working-deleted' // The file was deleted in the working codebase but baseplate is trying to add it back
+    | 'generated-deleted'; // The file was deleted in the generated codebase but the current codebase has modified it
+}
+
+/**
  * Result of the write generator output operation
  */
 export interface WriteGeneratorOutputResult {
@@ -68,19 +89,11 @@ export interface WriteGeneratorOutputResult {
   /**
    * Files that had conflicts
    */
-  filesWithConflicts: {
-    relativePath: string;
-    generatedConflictRelativePath?: string;
-  }[];
+  filesWithConflicts: FileWithConflict[];
   /**
    * Commands that failed to run
    */
   failedCommands: FailedCommandInfo[];
-  /**
-   * Relative paths that were removed in new generation but were modified so
-   * could not be automatically deleted.
-   */
-  relativePathsPendingDelete: string[];
 }
 
 /**
@@ -149,17 +162,35 @@ export async function writeGeneratorOutput(
     });
     const orderedCommands = sortPostWriteCommands(commandsToRun);
 
-    const filesWithConflicts = files
-      .filter((result) => result.hasConflict)
-      .map((result) => ({
-        relativePath: result.relativePath,
-        generatedConflictRelativePath: result.generatedConflictRelativePath,
-      }));
+    const filesWithConflicts = [
+      ...files
+        .filter((result) => result.hasConflict)
+        .map(
+          (result): FileWithConflict => ({
+            relativePath: result.relativePath,
+            generatedConflictRelativePath: result.generatedConflictRelativePath,
+            conflictType: 'merge-conflict',
+          }),
+        ),
+      ...files
+        .filter((result) => result.deletedInWorking)
+        .map(
+          (result): FileWithConflict => ({
+            relativePath: result.relativePath,
+            conflictType: 'working-deleted',
+          }),
+        ),
+      ...relativePathsPendingDelete.map(
+        (relativePath): FileWithConflict => ({
+          relativePath,
+          conflictType: 'generated-deleted',
+        }),
+      ),
+    ];
 
     // don't run commands if there are conflicts
     if (filesWithConflicts.length > 0) {
       return {
-        relativePathsPendingDelete,
         failedCommands: orderedCommands.map((c) => ({
           command: c.command,
           workingDir: path.join(
@@ -182,7 +213,6 @@ export async function writeGeneratorOutput(
       filesWithConflicts,
       failedCommands,
       fileIdToRelativePathMap,
-      relativePathsPendingDelete,
     };
   } catch (error) {
     if (error instanceof FormatterError) {

@@ -25,8 +25,9 @@ import {
   createNodeSchemaParserContext,
   discoverPlugins,
 } from '@src/plugins/index.js';
+import { ConflictFileMonitor } from '@src/sync/conflict-file-monitor.js';
 import { buildProject } from '@src/sync/index.js';
-import { SyncMetadataController } from '@src/sync/sync-controller.js';
+import { SyncMetadataController } from '@src/sync/sync-metadata-controller.js';
 
 import type { BaseplateUserConfig } from '../user-config/user-config-schema.js';
 
@@ -75,7 +76,7 @@ interface ProjectBuilderServiceOptions {
 
 export interface SyncMetadataChangedPayload {
   id: string;
-  syncMetadata: SyncMetadata;
+  syncMetadata: SyncMetadata | undefined;
 }
 
 export interface SyncStartedPayload {
@@ -126,6 +127,8 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   private currentSyncConsoleOutput: string[] = [];
 
+  private conflictFileMonitor: ConflictFileMonitor | undefined;
+
   constructor({
     directory,
     id,
@@ -159,9 +162,26 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
         message,
       });
     };
+    this.conflictFileMonitor = new ConflictFileMonitor(
+      this.syncMetadataController,
+      this.logger,
+    );
+    this.conflictFileMonitor.start().catch((err: unknown) => {
+      this.logger.error(
+        `Unable to start conflict file monitor: ${String(err)}`,
+      );
+    });
     this.unsubscribeOperations.push(
+      () => {
+        this.conflictFileMonitor?.stop().catch((err: unknown) => {
+          this.logger.error(
+            `Unable to stop conflict file monitor: ${String(err)}`,
+          );
+        });
+      },
       this.logger.onLog(emitConsoleEvent),
       this.logger.onError(emitConsoleEvent),
+      this.syncMetadataController.watchMetadata(),
       this.syncMetadataController.on(
         'sync-metadata-changed',
         (syncMetadata) => {

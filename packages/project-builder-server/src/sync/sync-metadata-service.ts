@@ -10,7 +10,11 @@ import type { SyncMetadata } from './sync-metadata.js';
 
 import { syncMetadataSchema } from './sync-metadata.js';
 
-const SYNC_METADATA_PATH = path.join('baseplate', '.build', 'sync_result.json');
+export const SYNC_METADATA_PATH = path.join(
+  'baseplate',
+  '.build',
+  'sync_result.json',
+);
 
 export async function readSyncMetadata(
   projectDirectory: string,

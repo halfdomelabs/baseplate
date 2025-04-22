@@ -244,6 +244,40 @@ describe('prepareGeneratorFile', () => {
     );
   });
 
+  it('should handle renaming a file when target does not exist', async () => {
+    const workingFiles = new Map([
+      ['old-file.txt', Buffer.from('original content')],
+    ]);
+
+    const previousFiles = new Map([
+      ['old-file.txt', Buffer.from('original content')],
+    ]);
+
+    const mockPreviousPayload: PreviousGeneratedPayload = {
+      fileReader: createCodebaseReaderFromMemory(previousFiles),
+      fileIdToRelativePathMap: new Map([['test-id', 'old-file.txt']]),
+    };
+
+    const result = await prepareGeneratorFile({
+      relativePath: 'new-file.txt',
+      data: createMockFileData({
+        contents: 'new content',
+      }),
+      context: createMockContext({
+        previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+        previousGeneratedPayload: mockPreviousPayload,
+      }),
+    });
+
+    expect(result).toEqual({
+      relativePath: 'new-file.txt',
+      previousRelativePath: 'old-file.txt',
+      mergedContents: Buffer.from('new content'),
+      generatedContents: Buffer.from('new content'),
+      hasConflict: false,
+    });
+  });
+
   it('should handle renaming a file from an alternate file ID', async () => {
     const workingFiles = new Map([
       ['old-file.txt', Buffer.from('original content')],
@@ -277,39 +311,7 @@ describe('prepareGeneratorFile', () => {
       previousRelativePath: 'old-file.txt',
       mergedContents: Buffer.from('new content'),
       generatedContents: Buffer.from('new content'),
-    });
-  });
-
-  it('should handle renaming a file when target does not exist', async () => {
-    const workingFiles = new Map([
-      ['old-file.txt', Buffer.from('original content')],
-    ]);
-
-    const previousFiles = new Map([
-      ['old-file.txt', Buffer.from('original content')],
-    ]);
-
-    const mockPreviousPayload: PreviousGeneratedPayload = {
-      fileReader: createCodebaseReaderFromMemory(previousFiles),
-      fileIdToRelativePathMap: new Map([['test-id', 'old-file.txt']]),
-    };
-
-    const result = await prepareGeneratorFile({
-      relativePath: 'new-file.txt',
-      data: createMockFileData({
-        contents: 'new content',
-      }),
-      context: createMockContext({
-        previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
-        previousGeneratedPayload: mockPreviousPayload,
-      }),
-    });
-
-    expect(result).toEqual({
-      relativePath: 'new-file.txt',
-      previousRelativePath: 'old-file.txt',
-      mergedContents: Buffer.from('new content'),
-      generatedContents: Buffer.from('new content'),
+      hasConflict: false,
     });
   });
 
@@ -350,6 +352,39 @@ describe('prepareGeneratorFile', () => {
         })?.mergedText ?? '',
       ),
       generatedContents: Buffer.from('new content'),
+    });
+  });
+
+  it('should handle files that were deleted in working codebase but modified in generated codebase', async () => {
+    const content = 'modified content';
+    const workingFiles = new Map<string, Buffer>();
+
+    const previousGeneratedFiles = new Map([
+      ['file.txt', Buffer.from('original content')],
+    ]);
+
+    const mockPreviousPayload: PreviousGeneratedPayload = {
+      fileReader: createCodebaseReaderFromMemory(previousGeneratedFiles),
+      fileIdToRelativePathMap: new Map([[DEFAULT_FILE_ID, 'file.txt']]),
+    };
+
+    const result = await prepareGeneratorFile({
+      relativePath: 'file.txt',
+      data: createMockFileData({
+        contents: content,
+      }),
+      context: createMockContext({
+        previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+        previousGeneratedPayload: mockPreviousPayload,
+      }),
+    });
+
+    expect(result).toEqual({
+      relativePath: 'file.txt',
+      previousRelativePath: undefined,
+      mergedContents: Buffer.from(content),
+      generatedContents: Buffer.from(content),
+      deletedInWorking: true,
     });
   });
 

@@ -340,8 +340,9 @@ export async function prepareGeneratorFile({
     };
   }
 
-  const previousWorkingBuffer =
-    await previousWorkingCodebase?.readFile(relativePath);
+  const previousWorkingBuffer = await previousWorkingCodebase?.readFile(
+    previousRelativePath ?? relativePath,
+  );
   const currentGeneratedBuffer = normalizeBufferString(formattedContents);
 
   // If there is no previous working file, we use the generated file
@@ -350,6 +351,12 @@ export async function prepareGeneratorFile({
       relativePath,
       mergedContents: currentGeneratedBuffer,
       generatedContents: currentGeneratedBuffer,
+      // If there is a previous generated file, the file was deleted in the
+      // working codebase but modified in the generated codebase so should be flagged as a conflict
+      deletedInWorking:
+        previousGeneratedBuffer !== undefined && !previousWorkingBuffer
+          ? true
+          : undefined,
       previousRelativePath,
     };
   }

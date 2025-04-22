@@ -14,10 +14,11 @@ import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js
 
 import { compileApplications } from '@src/compiler/index.js';
 
-import type { PackageSyncResult, PackageSyncStatus } from '../sync/index.js';
-import type { SyncMetadataController } from './sync-controller.js';
+import type { PackageSyncResult } from '../sync/index.js';
+import type { SyncMetadataController } from './sync-metadata-controller.js';
 
 import { generateForDirectory } from '../sync/index.js';
+import { getPackageSyncStatusFromResult } from './utils.js';
 
 async function loadProjectJson(
   directory: string,
@@ -87,28 +88,6 @@ export interface BuildProjectOptions {
   abortSignal?: AbortSignal;
 }
 
-function getPackageSyncStatusFromResult(
-  result: PackageSyncResult,
-): PackageSyncStatus {
-  if (result.wasCancelled) {
-    return 'cancelled';
-  }
-
-  if (result.errors?.length) {
-    return 'unknown-error';
-  }
-
-  if (result.filesWithConflicts?.length || result.filesPendingDelete?.length) {
-    return 'conflicts';
-  }
-
-  if (result.failedCommands?.length) {
-    return 'command-error';
-  }
-
-  return 'success';
-}
-
 /**
  * Builds the project in the given directory.
  *
@@ -136,7 +115,7 @@ export async function buildProject({
         app.id,
         {
           name: app.name,
-          path: app.appDirectory,
+          path: path.join(directory, app.appDirectory),
           status: 'not-synced',
           statusMessage: undefined,
           result: undefined,

@@ -77,7 +77,7 @@ describe('writeGeneratorOutput', () => {
     expect(mockedExecuteCommand.mock.calls[0][0]).toBe('echo "test"');
   });
 
-  it('should handle conflicts and return failed commands', async () => {
+  it('should handle merge conflicts and return failed commands', async () => {
     mockedExecuteCommand.mockRejectedValue(new Error('test error'));
     // Setup test files with conflicting content
     vol.fromJSON({
@@ -112,6 +112,7 @@ describe('writeGeneratorOutput', () => {
       {
         relativePath: 'test.txt',
         generatedConflictRelativePath: undefined,
+        conflictType: 'merge-conflict',
       },
     ]);
     expect(result.failedCommands).toEqual([
@@ -123,10 +124,46 @@ describe('writeGeneratorOutput', () => {
     expect(result.fileIdToRelativePathMap.size).toBe(1);
   });
 
-  it('should handle failed deletions', async () => {
+  it('should handle working-deleted conflicts', async () => {
+    // Setup test files with a file that was deleted in working directory
+    vol.fromJSON({});
+
+    const output: GeneratorOutput = {
+      files: new Map([
+        [
+          'test.txt',
+          {
+            id: 'test-1',
+            contents: 'new content',
+          },
+        ],
+      ]),
+      globalFormatters: [],
+      postWriteCommands: [],
+    };
+
+    const result = await writeGeneratorOutput(output, outputDirectory, {
+      logger,
+      previousGeneratedPayload: {
+        fileReader: createCodebaseReaderFromMemory(
+          new Map([['test.txt', Buffer.from('other content')]]),
+        ),
+        fileIdToRelativePathMap: new Map([['test-1', 'test.txt']]),
+      },
+    });
+
+    expect(result.filesWithConflicts).toEqual([
+      {
+        relativePath: 'test.txt',
+        conflictType: 'working-deleted',
+      },
+    ]);
+  });
+
+  it('should handle generated-deleted conflicts', async () => {
     vol.fromJSON({
       [`${outputDirectory}/test.txt`]: 'existing content',
-    }); // Setup test files with missing file
+    });
 
     const previousGeneratedPayload = {
       fileReader: createCodebaseReaderFromMemory(
@@ -146,7 +183,12 @@ describe('writeGeneratorOutput', () => {
       previousGeneratedPayload,
     });
 
-    expect(result.relativePathsPendingDelete).toEqual(['test.txt']);
+    expect(result.filesWithConflicts).toEqual([
+      {
+        relativePath: 'test.txt',
+        conflictType: 'generated-deleted',
+      },
+    ]);
   });
 
   it('should write to generated contents directory when specified', async () => {
