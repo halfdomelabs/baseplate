@@ -5,12 +5,12 @@ import {
   buildGeneratorEntry,
   createCodebaseFileReaderFromDirectory,
   deleteMetadataFiles,
+  executeGeneratorEntry,
   readTemplateMetadataPaths,
   writeGeneratorOutput,
   writeGeneratorsMetadata,
   writeTemplateMetadata,
 } from '@halfdomelabs/sync';
-import { executeGeneratorEntry } from '@halfdomelabs/sync/dist/runner/generator-runner.js';
 import { randomUid } from '@halfdomelabs/utils';
 import {
   dirExists,
@@ -135,7 +135,7 @@ export async function generateForDirectory({
     await getPreviousGeneratedPayload(projectDirectory);
 
   if (previousGeneratedPayload) {
-    logger.info('Detected generated folder. Attempting 3-way merge...');
+    logger.debug('Detected generated folder. Attempting 3-way merge...');
   }
 
   const generatedTemporaryDirectory = path.join(
