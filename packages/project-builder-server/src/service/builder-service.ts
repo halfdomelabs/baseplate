@@ -19,6 +19,8 @@ import chokidar from 'chokidar';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import type { SyncMetadata } from '@src/sync/index.js';
+
 import {
   createNodeSchemaParserContext,
   discoverPlugins,
@@ -74,6 +76,7 @@ interface ProjectBuilderServiceOptions {
 interface ProjectBuilderServiceEvents {
   'project-json-changed': ProjectDefinitionFilePayload;
   'command-console-emitted': CommandConsoleEmittedPayload;
+  'sync-metadata-changed': SyncMetadata;
 }
 
 export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServiceEvents> {
@@ -100,6 +103,8 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
   private userConfig: BaseplateUserConfig;
 
   private syncMetadataController: SyncMetadataController;
+
+  private unsubscribeOperations: (() => void)[] = [];
 
   constructor({
     directory,
@@ -136,6 +141,14 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       this.directory,
       this.logger,
     );
+    this.unsubscribeOperations.push(
+      this.syncMetadataController.on(
+        'sync-metadata-changed',
+        (syncMetadata) => {
+          this.emit('sync-metadata-changed', syncMetadata);
+        },
+      ),
+    );
   }
 
   protected handleProjectJsonChange(): void {
@@ -162,6 +175,9 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     } satisfies ProjectDefinitionInput);
   }
 
+  /**
+   * Initializes the project builder service.
+   */
   public init(): void {
     this.watcher = chokidar.watch(this.projectJsonPath, {
       ignoreInitial: true,
@@ -177,12 +193,25 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     this.watcher.on('unlink', boundHandleProjectJsonChange);
   }
 
+  /**
+   * Closes the project builder service.
+   */
   public close(): void {
     if (this.watcher) {
       this.watcher.close().catch((err: unknown) => {
         this.logger.error(err);
       });
     }
+    for (const unsubscribe of this.unsubscribeOperations) unsubscribe();
+  }
+
+  /**
+   * Returns the sync metadata.
+   *
+   * @returns The sync metadata.
+   */
+  public async getSyncMetadata(): Promise<SyncMetadata | undefined> {
+    return this.syncMetadataController.getMetadata();
   }
 
   /**

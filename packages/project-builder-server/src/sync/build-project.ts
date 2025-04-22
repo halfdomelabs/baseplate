@@ -119,6 +119,9 @@ export async function buildProject({
   const existingSyncMetadata = await syncMetadataController?.getMetadata();
 
   syncMetadataController?.writeMetadata({
+    status: 'in-progress',
+    startedAt: new Date().toISOString(),
+    projectJsonHash: hash,
     packages: Object.fromEntries(
       apps.map((app) => [
         app.id,
@@ -174,11 +177,8 @@ export async function buildProject({
 
   syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
-    lastSyncResult: {
-      status: hasErrors ? 'error' : 'success',
-      timestamp: new Date().toISOString(),
-      projectJsonHash: hash,
-    },
+    status: hasErrors ? 'error' : 'success',
+    completedAt: new Date().toISOString(),
   }));
 
   if (hasErrors) {
