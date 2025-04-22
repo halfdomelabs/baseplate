@@ -70,7 +70,6 @@ export const syncMetadataSchema = z.object({
   lastSyncResult: z
     .object({
       status: z.enum(['success', 'error', 'cancelled']),
-      error: z.string().optional(),
       timestamp: z.string(),
       projectJsonHash: z.string(),
     })

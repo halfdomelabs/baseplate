@@ -57,11 +57,29 @@ async function loadProjectJson(
   }
 }
 
+/**
+ * Options for building the project.
+ */
 export interface BuildProjectOptions {
+  /**
+   * The directory to build the project in.
+   */
   directory: string;
+  /**
+   * The logger to use for logging.
+   */
   logger: Logger;
+  /**
+   * The context to use for parsing the project.
+   */
   context: SchemaParserContext;
+  /**
+   * The user config to use for building the project.
+   */
   userConfig: BaseplateUserConfig;
+  /**
+   * The sync metadata controller to use for updating metadata about the sync process.
+   */
   syncMetadataController?: SyncMetadataController;
 }
 
@@ -83,6 +101,11 @@ function getPackageSyncStatusFromResult(
   return 'success';
 }
 
+/**
+ * Builds the project in the given directory.
+ *
+ * @param options - The options for building the project.
+ */
 export async function buildProject({
   directory,
   logger,
