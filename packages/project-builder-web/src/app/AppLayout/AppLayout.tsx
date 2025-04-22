@@ -7,10 +7,10 @@ import { Outlet } from 'react-router-dom';
 
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 
+import ProjectSyncModal from '../ProjectSyncModal/ProjectSyncModal';
 import { AppBreadcrumbs } from './AppBreadcrumbs';
 import { AppDesktopSidebar } from './AppDesktopSidebar';
 import { AppMobileSidebar } from './AppMobileSidebar';
-import ProjectSyncModal from './ProjectSyncModal';
 import { ProjectSyncStatus } from './ProjectSyncStatus';
 
 interface AppLayoutProps {
