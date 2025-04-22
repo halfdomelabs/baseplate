@@ -54,6 +54,7 @@ export const packageSyncResultSchema = z.object({
       }),
     )
     .optional(),
+  wasCancelled: z.boolean().optional(),
   completedAt: z.string(),
 });
 

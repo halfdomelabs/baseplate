@@ -22,12 +22,14 @@ export interface FailedCommandInfo {
  * @param commands - The commands to run
  * @param outputDirectory - The output directory
  * @param logger - The logger to use
+ * @param abortSignal - The abort signal to use for cancelling the command run
  * @returns The failed commands
  */
 export async function runPostWriteCommands(
   commands: PostWriteCommand[],
   outputDirectory: string,
   logger: Logger,
+  abortSignal?: AbortSignal,
 ): Promise<{
   failedCommands: FailedCommandInfo[];
 }> {
@@ -40,10 +42,15 @@ export async function runPostWriteCommands(
 
     logger.info(`Running ${commandString}...`);
     try {
+      if (abortSignal?.aborted) {
+        throw new Error('Sync cancelled');
+      }
+
       const result = await executeCommand(commandString, {
         cwd: path.join(outputDirectory, workingDirectory),
         timeout: command.options?.timeout ?? COMMAND_TIMEOUT_MILLIS,
         env: command.options?.env,
+        abortSignal,
       });
 
       if (result.failed) {

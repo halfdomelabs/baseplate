@@ -7,10 +7,11 @@ import {
 import { Button, Dialog, Tabs, toast } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
-import { MdSync } from 'react-icons/md';
+import { MdSync, MdSyncProblem } from 'react-icons/md';
 
 import { Console } from '@src/components';
 import { useProjects } from '@src/hooks/useProjects';
+import { useSyncMetadata } from '@src/hooks/useSyncMetadata';
 import { startSync } from '@src/services/api';
 import { formatError } from '@src/services/error-formatter';
 
@@ -23,14 +24,18 @@ interface Props {
 function ProjectSyncModal({ className }: Props): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const { definitionContainer } = useProjectDefinition();
-  const { currentProjectId, setLastSyncedAt } = useProjects();
+  const { currentProjectId } = useProjects();
   const blockBeforeContinue = useBlockBeforeContinue();
 
   const definitionContainerRef = useRef(definitionContainer);
   definitionContainerRef.current = definitionContainer;
 
+  const syncStatus = useSyncMetadata((metadata) => metadata.status);
+  const hasConflicts = useSyncMetadata((metadata) =>
+    Object.values(metadata.packages).some((p) => p.status === 'conflicts'),
+  );
+
   const startSyncProject = (): void => {
-    setLastSyncedAt(new Date());
     if (!currentProjectId) {
       return;
     }
@@ -52,15 +57,22 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
         <Dialog.Trigger asChild>
           <Button
             onClick={(e) => {
-              blockBeforeContinue({
-                onContinue: startSyncProject,
-              });
-              e.preventDefault();
+              setIsOpen(true);
+              if (syncStatus !== 'in-progress' && !hasConflicts) {
+                blockBeforeContinue({
+                  onContinue: startSyncProject,
+                });
+                e.preventDefault();
+              }
             }}
             size="sm"
           >
-            <Button.Icon icon={MdSync} />
-            Sync
+            <Button.Icon icon={hasConflicts ? MdSyncProblem : MdSync} />
+            {syncStatus === 'in-progress'
+              ? 'Syncing...'
+              : hasConflicts
+                ? 'Resolve conflicts'
+                : 'Sync'}
           </Button>
         </Dialog.Trigger>
         <Dialog.Content width="lg" aria-description="Sync project dialog">

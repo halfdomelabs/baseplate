@@ -1,14 +1,9 @@
-import type { SyncMetadata } from '@halfdomelabs/project-builder-server';
 import type React from 'react';
 
-import { Alert, toast } from '@halfdomelabs/ui-components';
+import { Alert } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
 
-import { useProjects } from '@src/hooks/useProjects';
-import { getSyncMetadata } from '@src/services/api';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { trpc } from '@src/services/trpc';
+import { useSyncMetadata } from '@src/hooks/useSyncMetadata';
 
 import { ApplicationCard } from './ApplicationCard';
 
@@ -17,34 +12,7 @@ interface Props {
 }
 
 export function PackageSyncStatus({ className }: Props): React.JSX.Element {
-  const { currentProjectId } = useProjects();
-  const [metadata, setMetadata] = useState<SyncMetadata | undefined>(undefined);
-
-  useEffect(() => {
-    if (!currentProjectId) {
-      return;
-    }
-
-    getSyncMetadata(currentProjectId)
-      .then((metadata) => {
-        setMetadata(metadata);
-      })
-      .catch((error: unknown) => {
-        toast.error(logAndFormatError(error, 'Failed to fetch sync metadata.'));
-      });
-
-    const subscription = trpc.sync.onSyncMetadataChanged.subscribe(
-      { id: currentProjectId },
-      {
-        onData: (data) => {
-          setMetadata(data.syncMetadata);
-        },
-      },
-    );
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [currentProjectId]);
+  const metadata = useSyncMetadata();
 
   // Handle loading state
   if (!metadata) {

@@ -2,6 +2,8 @@ import path from 'node:path';
 
 import type { Logger } from '@src/utils/evented-logger.js';
 
+import { CancelledSyncError } from '@src/errors.js';
+
 import type { GeneratorOutput } from './generator-task-output.js';
 import type { FailedCommandInfo } from './post-write-commands/index.js';
 import type {
@@ -49,6 +51,10 @@ export interface WriteGeneratorOutputOptions {
    * See https://git-scm.com/docs/gitattributes#_defining_a_custom_merge_driver
    */
   mergeDriver?: { name: string; driver: string };
+  /**
+   * Abort signal to use for cancelling the write operation.
+   */
+  abortSignal?: AbortSignal;
 }
 
 /**
@@ -95,6 +101,7 @@ export async function writeGeneratorOutput(
     generatedContentsDirectory,
     rerunCommands = [],
     logger = console,
+    abortSignal,
   } = options ?? {};
   // write files
   try {
@@ -114,6 +121,8 @@ export async function writeGeneratorOutput(
       context: fileWriterContext,
     });
 
+    if (abortSignal?.aborted) throw new CancelledSyncError();
+
     await writeGeneratorFiles({
       fileOperations: files,
       outputDirectory,
@@ -126,6 +135,8 @@ export async function writeGeneratorOutput(
       previousGeneratedPayload,
       currentFileIdToRelativePathMap: fileIdToRelativePathMap,
     });
+
+    if (abortSignal?.aborted) throw new CancelledSyncError();
 
     const modifiedRelativePaths = new Set(
       files

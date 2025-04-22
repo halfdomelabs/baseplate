@@ -12,11 +12,8 @@ import {
   MdSyncProblem,
 } from 'react-icons/md';
 import TimeAgo from 'react-timeago';
-import { makeIntlFormatter } from 'react-timeago/defaultFormatter';
 
-const formatter = makeIntlFormatter({
-  locale: 'en',
-});
+import { timeAgoFormatter } from '@src/utils/time-ago';
 
 interface Props {
   packageInfo: PackageSyncInfo;
@@ -96,12 +93,7 @@ export function ApplicationCard({
             {packageInfo.result?.completedAt ? (
               <TimeAgo
                 date={new Date(packageInfo.result.completedAt)}
-                formatter={(...args) => {
-                  if (args[1] === 'second') {
-                    return 'Just now';
-                  }
-                  return formatter(...args);
-                }}
+                formatter={timeAgoFormatter}
               />
             ) : (
               '-'

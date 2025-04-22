@@ -8,6 +8,7 @@ import type {
 
 import {
   buildGeneratorEntry,
+  CancelledSyncError,
   createCodebaseFileReaderFromDirectory,
   deleteMetadataFiles,
   executeGeneratorEntry,
@@ -42,6 +43,7 @@ interface GenerateForDirectoryOptions {
   userConfig: BaseplateUserConfig;
   previousPackageSyncResult: PackageSyncResult | undefined;
   operations?: GeneratorOperations;
+  abortSignal?: AbortSignal;
 }
 
 export interface GeneratorOperations {
@@ -123,6 +125,7 @@ export async function generateForDirectory({
   userConfig,
   previousPackageSyncResult,
   operations = defaultGeneratorOperations,
+  abortSignal,
 }: GenerateForDirectoryOptions): Promise<PackageSyncResult> {
   const { appDirectory, name, generatorBundle } = appEntry;
 
@@ -144,6 +147,9 @@ export async function generateForDirectory({
         }
       : undefined,
   });
+
+  if (abortSignal?.aborted) throw new CancelledSyncError();
+
   logger.info('Project built! Writing output....');
 
   // load clean directory contents
@@ -180,6 +186,7 @@ export async function generateForDirectory({
             driver: userConfig.sync.customMergeDriver,
           }
         : undefined,
+      abortSignal,
     });
 
     // write metadata to the generated directory

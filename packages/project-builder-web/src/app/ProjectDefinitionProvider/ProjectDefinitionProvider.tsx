@@ -25,6 +25,7 @@ import semver from 'semver';
 import { useClientVersion } from '@src/hooks/useClientVersion';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useProjects } from '@src/hooks/useProjects';
+import { useSyncMetadataListener } from '@src/hooks/useSyncMetadata';
 import { formatError, logAndFormatError } from '@src/services/error-formatter';
 import { RefDeleteError } from '@src/utils/error';
 
@@ -58,6 +59,9 @@ export function ProjectDefinitionProvider({
   const { version: cliVersion } = useClientVersion();
   const { showRefIssues } = useDeleteReferenceDialog();
   const [isSavingDefinition, setIsSavingDefinition] = useState(false);
+
+  // Listen for sync metadata changes
+  useSyncMetadataListener();
 
   const updatedExternally = !!projectDefinitionFilePayload?.updatedExternally;
 

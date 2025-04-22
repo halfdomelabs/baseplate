@@ -2,9 +2,22 @@ import { pick } from 'es-toolkit';
 import { execa, parseCommandString } from 'execa';
 
 interface ExecOptions {
+  /**
+   * The working directory to run the command in.
+   */
   cwd?: string;
+  /**
+   * The timeout to use for the command.
+   */
   timeout?: number;
+  /**
+   * The environment variables to use for the command.
+   */
   env?: Record<string, string>;
+  /**
+   * The abort signal to use for cancelling the command.
+   */
+  abortSignal?: AbortSignal;
 }
 
 const PASSTHROUGH_ENV_VARS = [
@@ -55,6 +68,7 @@ export async function executeCommand(
     extendEnv: false,
     timeout: options.timeout,
     reject: false,
+    cancelSignal: options.abortSignal,
   });
 
   return {

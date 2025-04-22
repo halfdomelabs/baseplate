@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/project-builder-lib';
 
 import { runSchemaMigrations } from '@halfdomelabs/project-builder-lib';
-import { type Logger } from '@halfdomelabs/sync';
+import { CancelledSyncError, type Logger } from '@halfdomelabs/sync';
 import { hashWithSHA256, stringifyPrettyStable } from '@halfdomelabs/utils';
 import { fileExists } from '@halfdomelabs/utils/node';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -81,6 +81,10 @@ export interface BuildProjectOptions {
    * The sync metadata controller to use for updating metadata about the sync process.
    */
   syncMetadataController?: SyncMetadataController;
+  /**
+   * Abort signal to use for cancelling the sync.
+   */
+  abortSignal?: AbortSignal;
 }
 
 function getPackageSyncStatusFromResult(
@@ -112,6 +116,7 @@ export async function buildProject({
   context,
   userConfig,
   syncMetadataController,
+  abortSignal,
 }: BuildProjectOptions): Promise<void> {
   const { definition: projectJson, hash } = await loadProjectJson(directory);
   const apps = compileApplications(projectJson, context);
@@ -137,12 +142,17 @@ export async function buildProject({
   });
 
   let hasErrors = false;
+  let wasCancelled = false;
 
   for (const app of apps) {
     const previousPackageSyncResult =
       existingSyncMetadata?.packages[app.id].result;
     let newResult: PackageSyncResult;
     try {
+      if (abortSignal?.aborted) {
+        break;
+      }
+
       syncMetadataController?.updateMetadataForPackage(app.id, (metadata) => ({
         ...metadata,
         status: 'in-progress',
@@ -155,8 +165,18 @@ export async function buildProject({
           projectJson.templateExtractor?.writeMetadata,
         userConfig,
         previousPackageSyncResult,
+        abortSignal,
       });
     } catch (err) {
+      if (err instanceof CancelledSyncError) {
+        logger.info(`Sync cancelled`);
+        newResult = {
+          wasCancelled: true,
+          completedAt: new Date().toISOString(),
+        };
+        wasCancelled = true;
+        break;
+      }
       logger.error(`Encountered error while generating for ${app.name}:`);
       logger.error(err);
 
@@ -182,11 +202,13 @@ export async function buildProject({
 
   syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
-    status: hasErrors ? 'error' : 'success',
+    status: wasCancelled ? 'cancelled' : hasErrors ? 'error' : 'success',
     completedAt: new Date().toISOString(),
   }));
 
-  if (hasErrors) {
+  if (wasCancelled) {
+    logger.info('Project build cancelled');
+  } else if (hasErrors) {
     logger.error('Project build failed');
   } else {
     logger.info(`Project written to ${directory}!`);
