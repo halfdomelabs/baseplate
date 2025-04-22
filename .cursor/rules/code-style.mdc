@@ -12,3 +12,4 @@ alwaysApply: true
 - Prefer functional programming patterns
 - Colocate tests with implementation files
 - Include absolute paths in import statements via tsconfig paths
+- All functions excluding one-liner arrow functions require explicit return types

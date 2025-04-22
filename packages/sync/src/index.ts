@@ -6,4 +6,5 @@ export * from './providers/index.js';
 export * from './runner/index.js';
 export * from './templates/index.js';
 export * from './test-runners/index.js';
+export * from './tests/index.js';
 export * from './utils/index.js';

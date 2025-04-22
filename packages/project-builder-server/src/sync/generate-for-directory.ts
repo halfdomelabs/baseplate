@@ -1,5 +1,10 @@
 import type { AppEntry } from '@halfdomelabs/project-builder-lib';
-import type { Logger, PreviousGeneratedPayload } from '@halfdomelabs/sync';
+import type {
+  GeneratorEntry,
+  GeneratorOutput,
+  Logger,
+  PreviousGeneratedPayload,
+} from '@halfdomelabs/sync';
 
 import {
   buildGeneratorEntry,
@@ -19,7 +24,7 @@ import {
   writeJson,
 } from '@halfdomelabs/utils/node';
 import chalk from 'chalk';
-import { rename, rm } from 'node:fs/promises';
+import { mkdir, rename, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -36,26 +41,34 @@ interface GenerateForDirectoryOptions {
   shouldWriteTemplateMetadata?: boolean;
   userConfig: BaseplateUserConfig;
   previousPackageSyncResult: PackageSyncResult | undefined;
+  operations?: GeneratorOperations;
 }
 
-// /**
-//  * Rename the clean directory to the generated directory if it exists.
-//  *
-//  * The .clean directory was the old directory that was used to store the generated
-//  * contents. Now we use the generated directory instead.
-//  *
-//  * @param projectDirectory - The project directory.
-//  */
-// async function renameCleanDirectoryIfExists(
-//   projectDirectory: string,
-// ): Promise<void> {
-//   const generatedDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
-//   const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
-//   const cleanDirectoryExists = await fs.pathExists(cleanDirectory);
-//   if (cleanDirectoryExists) {
-//     await fs.rename(cleanDirectory, generatedDirectory);
-//   }
-// }
+export interface GeneratorOperations {
+  buildGeneratorEntry: typeof buildGeneratorEntry;
+  executeGeneratorEntry: typeof executeGeneratorEntry;
+  getPreviousGeneratedPayload: typeof getPreviousGeneratedPayload;
+  writeGeneratorOutput: typeof writeGeneratorOutput;
+  writeMetadata: (
+    project: GeneratorEntry,
+    output: GeneratorOutput,
+    projectDirectory: string,
+  ) => Promise<void>;
+  writeGeneratorSteps: typeof writeGeneratorSteps;
+}
+
+const defaultGeneratorOperations: GeneratorOperations = {
+  buildGeneratorEntry,
+  executeGeneratorEntry,
+  getPreviousGeneratedPayload,
+  writeGeneratorOutput,
+  writeMetadata: async (project, output, projectDirectory) => {
+    await deleteMetadataFiles(projectDirectory);
+    await writeGeneratorsMetadata(project, projectDirectory);
+    await writeTemplateMetadata(output.files, projectDirectory);
+  },
+  writeGeneratorSteps,
+};
 
 const GENERATED_DIRECTORY = 'baseplate/.clean';
 const FILE_ID_MAP_PATH = 'baseplate/file-id-map.json';
@@ -109,6 +122,7 @@ export async function generateForDirectory({
   shouldWriteTemplateMetadata,
   userConfig,
   previousPackageSyncResult,
+  operations = defaultGeneratorOperations,
 }: GenerateForDirectoryOptions): Promise<PackageSyncResult> {
   const { appDirectory, name, generatorBundle } = appEntry;
 
@@ -120,19 +134,21 @@ export async function generateForDirectory({
     ? new Set(await readTemplateMetadataPaths(projectDirectory))
     : new Set();
 
-  const project = await buildGeneratorEntry(generatorBundle);
-  const output = await executeGeneratorEntry(project, {
-    templateMetadataOptions: {
-      includeTemplateMetadata: shouldWriteTemplateMetadata ?? false,
-      hasTemplateMetadata: (projectRelativePath) =>
-        metadataPaths.has(projectRelativePath),
-    },
+  const project = await operations.buildGeneratorEntry(generatorBundle);
+  const output = await operations.executeGeneratorEntry(project, {
+    templateMetadataOptions: shouldWriteTemplateMetadata
+      ? {
+          includeTemplateMetadata: true,
+          hasTemplateMetadata: (projectRelativePath) =>
+            metadataPaths.has(projectRelativePath),
+        }
+      : undefined,
   });
   logger.info('Project built! Writing output....');
 
   // load clean directory contents
   const previousGeneratedPayload =
-    await getPreviousGeneratedPayload(projectDirectory);
+    await operations.getPreviousGeneratedPayload(projectDirectory);
 
   if (previousGeneratedPayload) {
     logger.debug('Detected generated folder. Attempting 3-way merge...');
@@ -143,13 +159,15 @@ export async function generateForDirectory({
     'baseplate/build/generated_tmp',
   );
 
+  await mkdir(generatedTemporaryDirectory, { recursive: true });
+
   try {
     const {
       failedCommands,
       relativePathsPendingDelete,
       filesWithConflicts,
       fileIdToRelativePathMap,
-    } = await writeGeneratorOutput(output, projectDirectory, {
+    } = await operations.writeGeneratorOutput(output, projectDirectory, {
       previousGeneratedPayload,
       generatedContentsDirectory: generatedTemporaryDirectory,
       rerunCommands: previousPackageSyncResult?.failedCommands?.map(
@@ -166,9 +184,7 @@ export async function generateForDirectory({
 
     // write metadata to the generated directory
     if (shouldWriteTemplateMetadata) {
-      await deleteMetadataFiles(projectDirectory);
-      await writeGeneratorsMetadata(project, projectDirectory);
-      await writeTemplateMetadata(output.files, projectDirectory);
+      await operations.writeMetadata(project, output, projectDirectory);
     }
 
     // swap out generated directory with generated_tmp
@@ -216,7 +232,7 @@ export async function generateForDirectory({
     }
 
     if (userConfig.sync?.writeGeneratorStepsJson && output.metadata) {
-      await writeGeneratorSteps(output.metadata, projectDirectory);
+      await operations.writeGeneratorSteps(output.metadata, projectDirectory);
     }
 
     if (failedCommands.length > 0) {
