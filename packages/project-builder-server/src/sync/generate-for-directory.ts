@@ -258,6 +258,7 @@ export async function generateForDirectory({
         relativePath: p,
         resolved: false,
       })),
+      completedAt: new Date().toISOString(),
     };
   } finally {
     // attempt to remove any temporary directory

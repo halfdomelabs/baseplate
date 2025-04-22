@@ -143,6 +143,10 @@ export async function buildProject({
       existingSyncMetadata?.packages[app.id].result;
     let newResult: PackageSyncResult;
     try {
+      syncMetadataController?.updateMetadataForPackage(app.id, (metadata) => ({
+        ...metadata,
+        status: 'in-progress',
+      }));
       newResult = await generateForDirectory({
         baseDirectory: directory,
         appEntry: app,
@@ -163,6 +167,7 @@ export async function buildProject({
             stack: err instanceof Error ? err.stack : undefined,
           },
         ],
+        completedAt: new Date().toISOString(),
       };
 
       hasErrors = true;
