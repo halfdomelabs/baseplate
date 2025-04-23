@@ -1,5 +1,11 @@
 # @halfdomelabs/core-generators
 
+## 0.11.2
+
+### Patch Changes
+
+- [#512](https://github.com/halfdomelabs/baseplate/pull/512) [`145a80c`](https://github.com/halfdomelabs/baseplate/commit/145a80cc348f858d4fdca218c658c490afe4271a) Thanks [@kingston](https://github.com/kingston)! - Fix global setup script path to be relative to src
+
 ## 0.11.1
 
 ### Patch Changes

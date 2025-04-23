@@ -1,5 +1,12 @@
 # @halfdomelabs/fastify-generators
 
+## 0.12.2
+
+### Patch Changes
+
+- Updated dependencies [[`145a80c`](https://github.com/halfdomelabs/baseplate/commit/145a80cc348f858d4fdca218c658c490afe4271a)]:
+  - @halfdomelabs/core-generators@0.11.2
+
 ## 0.12.1
 
 ### Patch Changes

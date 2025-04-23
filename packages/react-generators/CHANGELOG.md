@@ -1,5 +1,12 @@
 # @halfdomelabs/react-generators
 
+## 0.10.2
+
+### Patch Changes
+
+- Updated dependencies [[`145a80c`](https://github.com/halfdomelabs/baseplate/commit/145a80cc348f858d4fdca218c658c490afe4271a)]:
+  - @halfdomelabs/core-generators@0.11.2
+
 ## 0.10.1
 
 ### Patch Changes
