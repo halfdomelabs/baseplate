@@ -1,22 +1,26 @@
 import type { ImportEntry, ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
-  makeImportAndFilePath,
   projectScope,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { stringifyPrettyStable } from '@halfdomelabs/utils';
 import path from 'node:path';
 import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
 import { authConfigProvider } from '../auth/auth.generator.js';
+import {
+  authRolesImportsProvider,
+  createAuthRolesImports,
+} from './generated/ts-import-maps.js';
+import { AUTH_AUTH_ROLES_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   // Note: Public and user roles are automatically added
@@ -45,14 +49,15 @@ export const authRolesGenerator = createGenerator({
   buildTasks: ({ roles }) => ({
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
         appModule: appModuleProvider,
         authConfig: authConfigProvider,
       },
       exports: {
         authRoles: authRolesProvider.export(projectScope),
+        authRolesImports: authRolesImportsProvider.export(projectScope),
       },
-      run({ typescript, appModule }) {
+      run({ typescriptFile, appModule }) {
         if (
           !['public', 'user', 'system'].every((name) =>
             roles.some((r) => r.name === name),
@@ -61,15 +66,13 @@ export const authRolesGenerator = createGenerator({
           throw new Error('public, user, and system roles are required');
         }
 
-        const [fileImport, filePath] = makeImportAndFilePath(
-          path.join(
-            appModule.getModuleFolder(),
-            'constants/auth-roles.constants.ts',
-          ),
+        const filePath = path.join(
+          appModule.getModuleFolder(),
+          'constants/auth-roles.constants.ts',
         );
 
         const authRolesImport: ImportEntry = {
-          path: fileImport,
+          path: filePath,
           allowedImports: [
             'AUTH_ROLE_CONFIG',
             'AuthRole',
@@ -85,26 +88,24 @@ export const authRolesGenerator = createGenerator({
                 '%auth-roles': authRolesImport,
               }),
             },
+            authRolesImports: createAuthRolesImports(path.dirname(filePath)),
           },
           build: async (builder) => {
             await builder.apply(
-              typescript
-                .createTemplate({
-                  TPL_AUTH_ROLES: TypescriptCodeUtils.createExpression(
-                    JSON.stringify(
-                      Object.fromEntries(
-                        roles.map((r) => [
-                          r.name,
-                          {
-                            comment: r.comment,
-                            builtIn: r.builtIn,
-                          },
-                        ]),
-                      ),
+              typescriptFile.renderTemplateFile({
+                template: AUTH_AUTH_ROLES_TS_TEMPLATES.authRoles,
+                destination: filePath,
+                variables: {
+                  TPL_AUTH_ROLES: stringifyPrettyStable(
+                    Object.fromEntries(
+                      roles.map((r) => [
+                        r.name,
+                        { comment: r.comment, builtIn: r.builtIn },
+                      ]),
                     ),
                   ),
-                })
-                .renderToAction('constants/auth-roles.constants.ts', filePath),
+                },
+              }),
             );
           },
         };
