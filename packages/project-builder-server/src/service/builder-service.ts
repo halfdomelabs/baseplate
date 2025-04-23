@@ -31,6 +31,7 @@ import { ConflictFileMonitor } from '@src/sync/conflict-file-monitor.js';
 import { buildProject } from '@src/sync/index.js';
 import { SyncMetadataController } from '@src/sync/sync-metadata-controller.js';
 import { deleteSyncMetadata } from '@src/sync/sync-metadata-service.js';
+import { getPackageSyncStatusFromResult } from '@src/sync/utils.js';
 
 import type { BaseplateUserConfig } from '../user-config/user-config-schema.js';
 
@@ -455,17 +456,24 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
   private removeConflictFile(packageId: string, relativePath: string): void {
     this.syncMetadataController.updateMetadataForPackage(
       packageId,
-      (packageInfo) => ({
-        ...packageInfo,
-        result: packageInfo.result
-          ? {
-              ...packageInfo.result,
-              filesWithConflicts: packageInfo.result.filesWithConflicts?.filter(
-                (file) => file.relativePath !== relativePath,
-              ),
-            }
-          : undefined,
-      }),
+      (packageInfo) => {
+        const updatedPackageInfo = {
+          ...packageInfo,
+          result: packageInfo.result
+            ? {
+                ...packageInfo.result,
+                filesWithConflicts:
+                  packageInfo.result.filesWithConflicts?.filter(
+                    (file) => file.relativePath !== relativePath,
+                  ),
+              }
+            : undefined,
+        };
+        updatedPackageInfo.status = getPackageSyncStatusFromResult(
+          updatedPackageInfo.result,
+        );
+        return updatedPackageInfo;
+      },
     );
   }
 
