@@ -43,7 +43,7 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
   }
 
   const sortedPackageEntries = sortBy(packageEntries, [
-    ([, packageInfo]) => packageInfo.name,
+    ([, packageInfo]) => packageInfo.order,
   ]);
 
   return (
