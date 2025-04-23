@@ -1,5 +1,18 @@
 # @halfdomelabs/project-builder-server
 
+## 0.5.11
+
+### Patch Changes
+
+- [#512](https://github.com/halfdomelabs/baseplate/pull/512) [`145a80c`](https://github.com/halfdomelabs/baseplate/commit/145a80cc348f858d4fdca218c658c490afe4271a) Thanks [@kingston](https://github.com/kingston)! - Update status of sync metadata when keeping or deleting files
+
+- [#512](https://github.com/halfdomelabs/baseplate/pull/512) [`145a80c`](https://github.com/halfdomelabs/baseplate/commit/145a80cc348f858d4fdca218c658c490afe4271a) Thanks [@kingston](https://github.com/kingston)! - Fix conflict watcher handling of .conflict files
+
+- Updated dependencies [[`145a80c`](https://github.com/halfdomelabs/baseplate/commit/145a80cc348f858d4fdca218c658c490afe4271a)]:
+  - @halfdomelabs/core-generators@0.11.2
+  - @halfdomelabs/fastify-generators@0.12.2
+  - @halfdomelabs/react-generators@0.10.2
+
 ## 0.5.10
 
 ### Patch Changes
