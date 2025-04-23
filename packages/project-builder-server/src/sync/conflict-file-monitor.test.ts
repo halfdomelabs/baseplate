@@ -128,7 +128,7 @@ describe('ConflictFileMonitor', () => {
     );
     // wait for event to propagate
     await new Promise((resolve) => {
-      setTimeout(resolve, 5);
+      setTimeout(resolve, 10);
     });
 
     // Verify metadata was not updated
@@ -150,7 +150,7 @@ describe('ConflictFileMonitor', () => {
     );
     // wait for event to propagate
     await new Promise((resolve) => {
-      setTimeout(resolve, 5);
+      setTimeout(resolve, 10);
     });
 
     // Verify metadata was updated
@@ -204,7 +204,7 @@ describe('ConflictFileMonitor', () => {
     emitMockFsWatcherEvent('change', path.join(testPackagePath, 'delete.txt'));
     // wait for event to propagate
     await new Promise((resolve) => {
-      setTimeout(resolve, 5);
+      setTimeout(resolve, 10);
     });
 
     // Verify metadata was not updated
@@ -221,7 +221,7 @@ describe('ConflictFileMonitor', () => {
 
     // wait for event to propagate
     await new Promise((resolve) => {
-      setTimeout(resolve, 5);
+      setTimeout(resolve, 10);
     });
 
     // Verify metadata was updated
