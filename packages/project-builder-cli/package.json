@@ -31,6 +31,7 @@
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "start": "tsx --tsconfig ./tsconfig.app.json -r dotenv/config ./src",
+    "test": "vitest",
     "test:e2e": "pnpm playwright test",
     "typecheck": "tsc --build tsconfig.json"
   },
@@ -43,7 +44,8 @@
     "commander": "^12.1.0",
     "pino": "9.5.0",
     "pino-pretty": "13.0.0",
-    "pkg-dir": "^8.0.0"
+    "pkg-dir": "^8.0.0",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
@@ -55,7 +57,8 @@
     "prettier": "catalog:",
     "tsc-alias": "catalog:",
     "tsx": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": "^22.0.0"

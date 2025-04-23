@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/project-builder-server';
 import type React from 'react';
 
-import { Badge, Tooltip } from '@halfdomelabs/ui-components';
+import { Badge, Button, toast, Tooltip } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import {
   MdCancel,
@@ -17,9 +17,14 @@ import {
 } from 'react-icons/md';
 import TimeAgo from 'react-timeago';
 
+import { useClientVersion } from '@src/hooks/useClientVersion';
+import { useProjects } from '@src/hooks/useProjects';
+import { logAndFormatError } from '@src/services/error-formatter';
+import { trpc } from '@src/services/trpc';
 import { timeAgoFormatter } from '@src/utils/time-ago';
 
 interface Props {
+  packageId: string;
   packageInfo: PackageSyncInfo;
   className?: string;
 }
@@ -81,17 +86,35 @@ function getStatusLabel(status: PackageSyncInfo['status']): string {
 }
 
 function FilesWithConflictsView({
+  packageId,
   filesWithConflicts,
   title,
   tooltip,
 }: {
+  packageId: string;
   filesWithConflicts: FileWithConflict[];
   title: string;
   tooltip: string;
 }): React.JSX.Element | null {
+  const clientVersion = useClientVersion();
+  const { currentProjectId } = useProjects();
+
   if (filesWithConflicts.length === 0) {
     return null;
   }
+
+  const handleOpenEditor = (relativePath: string): void => {
+    if (!currentProjectId) return;
+    trpc.sync.openEditor
+      .mutate({
+        id: currentProjectId,
+        packageId,
+        relativePath,
+      })
+      .catch((err: unknown) => {
+        toast.error(logAndFormatError(err, 'Failed to open editor'));
+      });
+  };
 
   return (
     <div className="mt-2 space-y-1">
@@ -109,7 +132,23 @@ function FilesWithConflictsView({
       <ul className="list-disc pl-5 text-sm">
         {filesWithConflicts.map((file, index) => (
           <li key={index} className="text-sm text-warning-foreground">
-            {file.generatedConflictRelativePath ?? file.relativePath}
+            {clientVersion.userConfig.sync?.editor ? (
+              <Button
+                variant="link"
+                size="sm"
+                onClick={() => {
+                  handleOpenEditor(
+                    file.generatedConflictRelativePath ?? file.relativePath,
+                  );
+                }}
+              >
+                {file.generatedConflictRelativePath ?? file.relativePath}
+              </Button>
+            ) : (
+              <span>
+                {file.generatedConflictRelativePath ?? file.relativePath}
+              </span>
+            )}
           </li>
         ))}
       </ul>
@@ -118,6 +157,7 @@ function FilesWithConflictsView({
 }
 
 export function ApplicationCard({
+  packageId,
   packageInfo,
   className,
 }: Props): React.JSX.Element {
@@ -185,6 +225,7 @@ export function ApplicationCard({
               </div>
             )}
           <FilesWithConflictsView
+            packageId={packageId}
             filesWithConflicts={filesWithConflicts.filter(
               (f) => f.conflictType === 'merge-conflict',
             )}
@@ -192,6 +233,7 @@ export function ApplicationCard({
             tooltip="These files were modified in both the working codebase and the generated codebase. Please resolve the conflicts manually."
           />
           <FilesWithConflictsView
+            packageId={packageId}
             filesWithConflicts={filesWithConflicts.filter(
               (f) => f.conflictType === 'generated-deleted',
             )}
@@ -199,6 +241,7 @@ export function ApplicationCard({
             tooltip="Review whether these files should be deleted or not."
           />
           <FilesWithConflictsView
+            packageId={packageId}
             filesWithConflicts={filesWithConflicts.filter(
               (f) => f.conflictType === 'working-deleted',
             )}

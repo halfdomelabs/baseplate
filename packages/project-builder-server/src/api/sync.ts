@@ -98,4 +98,16 @@ export const syncRouter = router({
         };
       }),
     ),
+
+  openEditor: privateProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        packageId: z.string(),
+        relativePath: z.string(),
+      }),
+    )
+    .mutation(async ({ input: { id, packageId, relativePath }, ctx }) => {
+      await ctx.getApi(id).openEditor(packageId, relativePath);
+    }),
 });

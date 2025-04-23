@@ -1,10 +1,12 @@
 import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
+import type { BaseplateUserConfig } from '@halfdomelabs/project-builder-server';
 
 import React from 'react';
 
 export interface UseClientVersionResult {
   version: string;
   featureFlags: FeatureFlag[];
+  userConfig: BaseplateUserConfig;
 }
 
 export const ClientVersionContext =

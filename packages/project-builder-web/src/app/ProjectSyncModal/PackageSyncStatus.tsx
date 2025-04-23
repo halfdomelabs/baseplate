@@ -43,8 +43,12 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
 
   return (
     <div className={clsx('space-y-3', className)}>
-      {packageEntries.map(([packageName, packageInfo]) => (
-        <ApplicationCard key={packageName} packageInfo={packageInfo} />
+      {packageEntries.map(([packageId, packageInfo]) => (
+        <ApplicationCard
+          key={packageId}
+          packageId={packageId}
+          packageInfo={packageInfo}
+        />
       ))}
     </div>
   );

@@ -16,6 +16,7 @@ import {
 } from '@halfdomelabs/utils/node';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
+import { execa, parseCommandString } from 'execa';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -393,5 +394,26 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       ];
     }
     return this.cachedAvailablePlugins;
+  }
+
+  public async openEditor(
+    packageId: string,
+    relativePath: string,
+  ): Promise<void> {
+    const editor = this.userConfig.sync?.editor;
+    if (!editor) {
+      throw new Error('No editor configured');
+    }
+    const metadata = await this.syncMetadataController.getMetadata();
+    const packageInfo = metadata?.packages[packageId];
+    if (!packageInfo) {
+      throw new Error(`Package ${packageId} not found`);
+    }
+    const absolutePath = path.join(packageInfo.path, relativePath);
+    const [command, ...args] = parseCommandString(editor);
+    await execa(command, [...args, absolutePath], {
+      cwd: this.directory,
+      detached: true,
+    });
   }
 }
