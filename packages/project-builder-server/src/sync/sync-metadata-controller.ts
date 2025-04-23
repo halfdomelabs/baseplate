@@ -28,7 +28,7 @@ export class SyncMetadataController extends TypedEventEmitter<{
   constructor(
     protected readonly projectDirectory: string,
     protected logger: Logger,
-    protected options: { throttleWrites?: boolean } = {},
+    protected options: { disableThrottling?: boolean } = {},
   ) {
     super();
     const writeCallback = (metadata: SyncMetadata): void => {
@@ -40,9 +40,9 @@ export class SyncMetadataController extends TypedEventEmitter<{
         },
       );
     };
-    this.throttledWrite = options.throttleWrites
-      ? throttle(writeCallback, 100)
-      : writeCallback;
+    this.throttledWrite = options.disableThrottling
+      ? writeCallback
+      : throttle(writeCallback, 100);
   }
 
   watchMetadata(): () => void {
