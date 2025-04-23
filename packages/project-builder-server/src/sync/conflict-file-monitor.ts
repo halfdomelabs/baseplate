@@ -1,9 +1,9 @@
 import type { Logger } from '@halfdomelabs/sync';
 import type { ChokidarOptions } from 'chokidar';
 
+import { differenceSet } from '@halfdomelabs/utils';
 import { fileExists, handleFileNotFoundError } from '@halfdomelabs/utils/node';
-import { FSWatcher } from 'chokidar';
-import { difference } from 'es-toolkit';
+import { watch } from 'chokidar';
 import { produce } from 'immer';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -25,8 +25,9 @@ const FS_WATCHER_OPTIONS: ChokidarOptions = {
  * It will update the metadata when the files are resolved.
  */
 export class ConflictFileMonitor {
-  private conflictFileWatcher = new FSWatcher(FS_WATCHER_OPTIONS);
-  private conflictFiles: string[] = [];
+  // Start with an empty watched‑set; paths are added via `handleMetadataChange`
+  private conflictFileWatcher = watch([], FS_WATCHER_OPTIONS);
+  private conflictFiles = new Set<string>();
   private unsubscribers: (() => void)[] = [];
 
   constructor(
@@ -37,30 +38,31 @@ export class ConflictFileMonitor {
   private handleMetadataChange(metadata: SyncMetadata | undefined): void {
     if (!metadata) return;
 
-    const newConflictFiles: string[] = [];
+    const newConflictFiles = new Set<string>();
     for (const packageInfo of Object.values(metadata.packages)) {
       const { result } = packageInfo;
       if (!result) continue;
 
-      newConflictFiles.push(
-        ...(result.filesWithConflicts ?? []).map((f) =>
+      for (const f of result.filesWithConflicts ?? []) {
+        newConflictFiles.add(
           path.join(
             packageInfo.path,
             f.generatedConflictRelativePath ?? f.relativePath,
           ),
-        ),
-      );
+        );
+      }
     }
-    const conflictFilesToWatch = difference(
+    const conflictFilesToWatch = differenceSet(
       newConflictFiles,
       this.conflictFiles,
     );
-    this.conflictFileWatcher.add(conflictFilesToWatch);
-    const conflictFilesToUnwatch = difference(
+    this.conflictFileWatcher.add([...conflictFilesToWatch]);
+    const conflictFilesToUnwatch = differenceSet(
       this.conflictFiles,
       newConflictFiles,
     );
-    this.conflictFileWatcher.unwatch(conflictFilesToUnwatch);
+    this.conflictFileWatcher.unwatch([...conflictFilesToUnwatch]);
+    this.conflictFiles = newConflictFiles;
   }
 
   private async checkFileForConflicts(filePath: string): Promise<boolean> {

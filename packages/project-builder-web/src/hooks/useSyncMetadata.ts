@@ -35,8 +35,13 @@ export function useSyncMetadataListener(): void {
       return;
     }
 
+    let cancelled = false;
+
     getSyncMetadata(currentProjectId)
       .then((metadata) => {
+        if (cancelled) {
+          return;
+        }
         setMetadata(metadata);
       })
       .catch((error: unknown) => {
@@ -53,6 +58,7 @@ export function useSyncMetadataListener(): void {
     );
     return () => {
       subscription.unsubscribe();
+      cancelled = true;
     };
   }, [currentProjectId, setMetadata]);
 }

@@ -23,18 +23,26 @@ export class SyncMetadataController extends TypedEventEmitter<{
   protected syncMetadata: SyncMetadata | undefined;
   protected initialized = false;
 
-  private readonly throttledWrite = throttle((metadata: SyncMetadata) => {
-    this.emit('sync-metadata-changed', metadata);
-    writeSyncMetadata(this.projectDirectory, metadata).catch((err: unknown) => {
-      this.logger.error(`Failed to write metadata: ${String(err)}`);
-    });
-  }, 100);
+  private readonly throttledWrite: (metadata: SyncMetadata) => void;
 
   constructor(
     protected readonly projectDirectory: string,
     protected logger: Logger,
+    protected options: { throttleWrites?: boolean } = {},
   ) {
     super();
+    const writeCallback = (metadata: SyncMetadata): void => {
+      // we emit the event before writing since we cache the metadata in memory
+      this.emit('sync-metadata-changed', metadata);
+      writeSyncMetadata(this.projectDirectory, metadata).catch(
+        (err: unknown) => {
+          this.logger.error(`Failed to write metadata: ${String(err)}`);
+        },
+      );
+    };
+    this.throttledWrite = options.throttleWrites
+      ? throttle(writeCallback, 100)
+      : writeCallback;
   }
 
   watchMetadata(): () => void {

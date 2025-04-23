@@ -20,7 +20,7 @@ import { SyncMetadataController } from './sync-metadata-controller.js';
 vi.mock('node:fs');
 vi.mock('node:fs/promises');
 vi.mock('chokidar', () => ({
-  FSWatcher: MockFSWatcher,
+  watch: (paths: string | string[]) => new MockFSWatcher().add(paths),
 }));
 
 describe('ConflictFileMonitor', () => {
@@ -36,6 +36,7 @@ describe('ConflictFileMonitor', () => {
     syncMetadataController = new SyncMetadataController(
       outputDirectory,
       logger,
+      { throttleWrites: false },
     );
     monitor = new ConflictFileMonitor(syncMetadataController, logger);
   });
@@ -157,6 +158,10 @@ describe('ConflictFileMonitor', () => {
     const updatedPackageInfo = updatedMetadata?.packages['test-package'];
     expect(updatedPackageInfo?.status).toBe('success');
     expect(updatedPackageInfo?.result?.filesWithConflicts).toHaveLength(0);
+
+    // Verify watchers were removed
+    const watchedPaths = getMockFsWatchedFiles();
+    expect(watchedPaths).toEqual([]);
   });
 
   it('should handle file deletion and update metadata for generated-deleted conflicts', async () => {
