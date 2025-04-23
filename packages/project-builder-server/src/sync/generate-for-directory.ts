@@ -216,6 +216,10 @@ export async function generateForDirectory({
       conflicts: FileWithConflict[],
       message: string,
     ): void {
+      if (conflicts.length === 0) {
+        return;
+      }
+
       logger.warn(
         chalk.red(
           `${message}\n${conflicts.map((f) => f.relativePath).join('\n')}`,

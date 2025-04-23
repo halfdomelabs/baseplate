@@ -445,10 +445,28 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     }
     const absolutePath = path.join(packageInfo.path, relativePath);
     const [command, ...args] = parseCommandString(editor);
-    await execa(command, [...args, absolutePath], {
+    const result = execa(command, [...args, absolutePath], {
       cwd: this.directory,
       detached: true,
     });
+    result.unref();
+  }
+
+  private removeConflictFile(packageId: string, relativePath: string): void {
+    this.syncMetadataController.updateMetadataForPackage(
+      packageId,
+      (packageInfo) => ({
+        ...packageInfo,
+        result: packageInfo.result
+          ? {
+              ...packageInfo.result,
+              filesWithConflicts: packageInfo.result.filesWithConflicts?.filter(
+                (file) => file.relativePath !== relativePath,
+              ),
+            }
+          : undefined,
+      }),
+    );
   }
 
   /**
@@ -491,7 +509,9 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       packageInfo.path,
       conflictFile.generatedConflictRelativePath ?? conflictFile.relativePath,
     );
-    await unlink(absolutePath);
+    await unlink(absolutePath).catch(handleFileNotFoundError);
+
+    this.removeConflictFile(packageId, relativePath);
   }
 
   /**
@@ -529,19 +549,6 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       );
     }
 
-    this.syncMetadataController.updateMetadataForPackage(
-      packageId,
-      (packageInfo) => ({
-        ...packageInfo,
-        result: packageInfo.result
-          ? {
-              ...packageInfo.result,
-              filesWithConflicts: packageInfo.result.filesWithConflicts?.filter(
-                (file) => file.relativePath !== relativePath,
-              ),
-            }
-          : undefined,
-      }),
-    );
+    this.removeConflictFile(packageId, relativePath);
   }
 }

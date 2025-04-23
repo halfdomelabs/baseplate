@@ -161,6 +161,9 @@ function FilesWithConflictsView({
         packageId,
         relativePath: file.relativePath,
       })
+      .then(() => {
+        toast.success(`File ${file.relativePath} was kept!`);
+      })
       .catch((err: unknown) => {
         toast.error(logAndFormatError(err, 'Failed to keep file'));
       });
@@ -172,6 +175,9 @@ function FilesWithConflictsView({
         id: currentProjectId,
         packageId,
         relativePath: file.relativePath,
+      })
+      .then(() => {
+        toast.success(`File ${file.relativePath} was deleted!`);
       })
       .catch((err: unknown) => {
         toast.error(logAndFormatError(err, 'Failed to delete file'));
@@ -192,8 +198,8 @@ function FilesWithConflictsView({
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {filesWithConflicts.map((file, index) => (
-            <Table.Row key={index}>
+          {filesWithConflicts.map((file) => (
+            <Table.Row key={file.relativePath}>
               <Table.Cell>
                 {clientVersion.userConfig.sync?.editor ? (
                   <button

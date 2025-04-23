@@ -41,5 +41,5 @@ export async function deleteSyncMetadata(
   projectDirectory: string,
 ): Promise<void> {
   const syncMetadataPath = path.join(projectDirectory, SYNC_METADATA_PATH);
-  await unlink(syncMetadataPath);
+  await unlink(syncMetadataPath).catch(handleFileNotFoundError);
 }
