@@ -1,5 +1,20 @@
 # @halfdomelabs/react-generators
 
+## 0.10.1
+
+### Patch Changes
+
+- [#498](https://github.com/halfdomelabs/baseplate/pull/498) [`b6da698`](https://github.com/halfdomelabs/baseplate/commit/b6da69824a2a5b2ee1a7ce77f6d6d5cb901d67c3) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite to 6.3.0
+
+- [#505](https://github.com/halfdomelabs/baseplate/pull/505) [`1027f68`](https://github.com/halfdomelabs/baseplate/commit/1027f68b3dc330d5c76ffc138f99ee96ad6c3245) Thanks [@kingston](https://github.com/kingston)! - Remove baseUrl from tsconfig.json since it is no longer necessary and ensure better consistency with imports
+
+- [#496](https://github.com/halfdomelabs/baseplate/pull/496) [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9) Thanks [@kingston](https://github.com/kingston)! - Introduce reverse generation engine for Typescript
+
+- Updated dependencies [[`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af), [`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574), [`9cee1f3`](https://github.com/halfdomelabs/baseplate/commit/9cee1f308f887e0baf06a1478c4785234f3c5aa9), [`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af), [`f5956dd`](https://github.com/halfdomelabs/baseplate/commit/f5956ddf8835c3e7eca0b25a20d3d4fab54fcef2), [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9)]:
+  - @halfdomelabs/sync@0.11.0
+  - @halfdomelabs/utils@0.1.5
+  - @halfdomelabs/core-generators@0.11.1
+
 ## 0.10.0
 
 ### Minor Changes

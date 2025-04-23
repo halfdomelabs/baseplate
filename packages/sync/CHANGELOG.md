@@ -1,5 +1,26 @@
 # @halfdomelabs/sync
 
+## 0.11.0
+
+### Minor Changes
+
+- [#491](https://github.com/halfdomelabs/baseplate/pull/491) [`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574) Thanks [@kingston](https://github.com/kingston)! - Support template extractor functionality on web/CLI
+
+### Patch Changes
+
+- [#510](https://github.com/halfdomelabs/baseplate/pull/510) [`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af) Thanks [@kingston](https://github.com/kingston)! - Add ability to cancel running syncs
+
+- [#504](https://github.com/halfdomelabs/baseplate/pull/504) [`9cee1f3`](https://github.com/halfdomelabs/baseplate/commit/9cee1f308f887e0baf06a1478c4785234f3c5aa9) Thanks [@kingston](https://github.com/kingston)! - Allow for a custom merge driver to be set up
+
+- [#510](https://github.com/halfdomelabs/baseplate/pull/510) [`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af) Thanks [@kingston](https://github.com/kingston)! - Add support for tracking files with conflicts and track files deleted by user that may be improperly added back by user
+
+- [#502](https://github.com/halfdomelabs/baseplate/pull/502) [`f5956dd`](https://github.com/halfdomelabs/baseplate/commit/f5956ddf8835c3e7eca0b25a20d3d4fab54fcef2) Thanks [@kingston](https://github.com/kingston)! - By default strip out extra environment variables except essentials when running post write commands
+
+- [#496](https://github.com/halfdomelabs/baseplate/pull/496) [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9) Thanks [@kingston](https://github.com/kingston)! - Introduce reverse generation engine for Typescript
+
+- Updated dependencies [[`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574), [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9)]:
+  - @halfdomelabs/utils@0.1.5
+
 ## 0.10.0
 
 ### Minor Changes

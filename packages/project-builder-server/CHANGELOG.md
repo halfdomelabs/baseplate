@@ -1,5 +1,29 @@
 # @halfdomelabs/project-builder-server
 
+## 0.5.10
+
+### Patch Changes
+
+- [#510](https://github.com/halfdomelabs/baseplate/pull/510) [`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af) Thanks [@kingston](https://github.com/kingston)! - Add ability to cancel running syncs
+
+- [#491](https://github.com/halfdomelabs/baseplate/pull/491) [`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574) Thanks [@kingston](https://github.com/kingston)! - Support template extractor functionality on web/CLI
+
+- [#504](https://github.com/halfdomelabs/baseplate/pull/504) [`9cee1f3`](https://github.com/halfdomelabs/baseplate/commit/9cee1f308f887e0baf06a1478c4785234f3c5aa9) Thanks [@kingston](https://github.com/kingston)! - Allow for a custom merge driver to be set up
+
+- [#506](https://github.com/halfdomelabs/baseplate/pull/506) [`8b04342`](https://github.com/halfdomelabs/baseplate/commit/8b043425376d224b3d6c22824f746bb32d929c7d) Thanks [@kingston](https://github.com/kingston)! - Introduce persistent user config at ~/.baseplate/config.json that will allow configuration of Baseplate options persistently
+
+- [#510](https://github.com/halfdomelabs/baseplate/pull/510) [`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af) Thanks [@kingston](https://github.com/kingston)! - Add support for tracking files with conflicts and track files deleted by user that may be improperly added back by user
+
+- [#496](https://github.com/halfdomelabs/baseplate/pull/496) [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9) Thanks [@kingston](https://github.com/kingston)! - Introduce reverse generation engine for Typescript
+
+- Updated dependencies [[`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af), [`b6da698`](https://github.com/halfdomelabs/baseplate/commit/b6da69824a2a5b2ee1a7ce77f6d6d5cb901d67c3), [`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574), [`9cee1f3`](https://github.com/halfdomelabs/baseplate/commit/9cee1f308f887e0baf06a1478c4785234f3c5aa9), [`1027f68`](https://github.com/halfdomelabs/baseplate/commit/1027f68b3dc330d5c76ffc138f99ee96ad6c3245), [`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af), [`f5956dd`](https://github.com/halfdomelabs/baseplate/commit/f5956ddf8835c3e7eca0b25a20d3d4fab54fcef2), [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9)]:
+  - @halfdomelabs/sync@0.11.0
+  - @halfdomelabs/react-generators@0.10.1
+  - @halfdomelabs/project-builder-lib@0.9.9
+  - @halfdomelabs/fastify-generators@0.12.1
+  - @halfdomelabs/utils@0.1.5
+  - @halfdomelabs/core-generators@0.11.1
+
 ## 0.5.9
 
 ### Patch Changes
