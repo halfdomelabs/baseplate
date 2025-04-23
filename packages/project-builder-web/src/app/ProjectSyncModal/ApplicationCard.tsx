@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/project-builder-server';
 import type React from 'react';
 
-import { Badge, Button, toast, Tooltip } from '@halfdomelabs/ui-components';
+import { Badge, toast, Tooltip } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import {
   MdCancel,
@@ -133,9 +133,8 @@ function FilesWithConflictsView({
         {filesWithConflicts.map((file, index) => (
           <li key={index} className="text-sm text-warning-foreground">
             {clientVersion.userConfig.sync?.editor ? (
-              <Button
-                variant="link"
-                size="sm"
+              <button
+                className="hover:underline"
                 onClick={() => {
                   handleOpenEditor(
                     file.generatedConflictRelativePath ?? file.relativePath,
@@ -143,7 +142,7 @@ function FilesWithConflictsView({
                 }}
               >
                 {file.generatedConflictRelativePath ?? file.relativePath}
-              </Button>
+              </button>
             ) : (
               <span>
                 {file.generatedConflictRelativePath ?? file.relativePath}

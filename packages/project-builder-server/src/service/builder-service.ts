@@ -153,6 +153,20 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       this.directory,
       this.logger,
     );
+    // check current sync information and cancel if necessary
+    this.syncMetadataController
+      .getMetadata()
+      .then((syncMetadata) => {
+        if (syncMetadata?.status === 'in-progress') {
+          this.syncMetadataController.writeMetadata({
+            ...syncMetadata,
+            status: 'cancelled',
+          });
+        }
+      })
+      .catch((err: unknown) => {
+        this.logger.error(`Unable to get sync metadata: ${String(err)}`);
+      });
     const emitConsoleEvent = (message: string): void => {
       if (this.currentSyncConsoleOutput.length > MAX_CONSOLE_OUTPUT_LENGTH) {
         this.currentSyncConsoleOutput.shift();

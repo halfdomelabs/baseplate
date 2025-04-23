@@ -2,6 +2,7 @@ import type React from 'react';
 
 import { Alert } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
+import { sortBy } from 'es-toolkit';
 
 import { useSyncMetadata } from '@src/hooks/useSyncMetadata';
 
@@ -41,9 +42,13 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
     );
   }
 
+  const sortedPackageEntries = sortBy(packageEntries, [
+    ([, packageInfo]) => packageInfo.name,
+  ]);
+
   return (
     <div className={clsx('space-y-3', className)}>
-      {packageEntries.map(([packageId, packageInfo]) => (
+      {sortedPackageEntries.map(([packageId, packageInfo]) => (
         <ApplicationCard
           key={packageId}
           packageId={packageId}
