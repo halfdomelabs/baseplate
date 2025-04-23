@@ -74,7 +74,7 @@ export const vitestGenerator = createGenerator({
 
         eslint.getConfig().appendUnique('eslintIgnore', [vitestConfigFilename]);
 
-        const globalSetupPath = 'src/tests/scripts/global-setup.ts';
+        const globalSetupPath = 'tests/scripts/global-setup.ts';
 
         return {
           build: async (builder) => {
@@ -83,7 +83,7 @@ export const vitestGenerator = createGenerator({
               await builder.apply(
                 typescriptFile.renderTemplateFile({
                   template: NODE_VITEST_TS_TEMPLATES.globalSetup,
-                  destination: globalSetupPath,
+                  destination: `src/${globalSetupPath}`,
                   variables: {
                     TPL_OPERATIONS: TsCodeUtils.mergeFragments(
                       globalSetupOperations,

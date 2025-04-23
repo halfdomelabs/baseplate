@@ -67,6 +67,7 @@ export class ConflictFileMonitor {
 
   private async checkFileForConflicts(filePath: string): Promise<boolean> {
     try {
+      if (filePath.endsWith('.conflict')) return false;
       const contents = await readFile(filePath, 'utf8').catch(
         handleFileNotFoundError,
       );
