@@ -1,7 +1,8 @@
 // @ts-nocheck
 
-import { UnauthorizedError } from '%http-errors';
-import { AuthRole } from '%auth-roles';
+import type { AuthRole } from '%authRolesImports';
+
+import { UnauthorizedError } from '%errorHandlerServiceImports';
 
 /**
  * Error thrown when a session is invalid

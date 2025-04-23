@@ -18,7 +18,6 @@ const [setupTask, authConfigProvider, authSetupProvider] =
     (t) => ({
       userModelName: t.scalar<string>(),
       userSessionServiceImport: t.scalar<ImportEntry>(),
-      contextUtilsImport: t.scalar<ImportEntry>(),
     }),
     {
       prefix: 'auth',
@@ -46,15 +45,10 @@ export const authGenerator = createGenerator({
       exports: {
         auth: authProvider.export(projectScope),
       },
-      run({ authSetup: { userSessionServiceImport, contextUtilsImport } }) {
+      run({ authSetup: { userSessionServiceImport } }) {
         if (!userSessionServiceImport) {
           throw new Error(
             'userSessionServiceImport is required for auth module to work',
-          );
-        }
-        if (!contextUtilsImport) {
-          throw new Error(
-            'contextUtilsImport is required for auth module to work',
           );
         }
         return {
@@ -63,7 +57,6 @@ export const authGenerator = createGenerator({
               getImportMap() {
                 return {
                   '%auth/user-session-service': userSessionServiceImport,
-                  '%auth/context-utils': contextUtilsImport,
                 };
               },
             },

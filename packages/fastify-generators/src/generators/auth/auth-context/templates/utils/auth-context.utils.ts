@@ -1,7 +1,8 @@
 // @ts-nocheck
 
-import { UnauthorizedError } from '%http-errors';
-import { DEFAULT_PUBLIC_ROLES } from '%auth-roles';
+import { DEFAULT_PUBLIC_ROLES } from '%authRolesImports';
+import { UnauthorizedError } from '%errorHandlerServiceImports';
+
 import { AuthContext } from '../types/auth-context.types.js';
 import { AuthSessionInfo } from '../types/auth-session.types.js';
 

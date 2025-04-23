@@ -1,29 +1,32 @@
 import type { ImportMap, ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
-  makeImportAndFilePath,
   projectScope,
   tsCodeFragment,
   TsCodeUtils,
-  tsImportBuilder,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
+  createProviderTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import path from 'node:path';
 import { z } from 'zod';
 
-import {
-  appModuleProvider,
-  errorHandlerServiceProvider,
-} from '@src/generators/core/index.js';
+import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/generated/ts-import-maps.js';
+import { appModuleProvider } from '@src/generators/core/index.js';
 import { requestServiceContextConfigProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
 import { serviceContextConfigProvider } from '@src/generators/core/service-context/service-context.generator.js';
 
-import { authRolesProvider } from '../auth-roles/auth-roles.generator.js';
+import { authRolesImportsProvider } from '../auth-roles/generated/ts-import-maps.js';
 import { authConfigProvider } from '../auth/auth.generator.js';
+import {
+  authContextImportsProvider,
+  createAuthContextImports,
+} from './generated/ts-import-maps.js';
+import { AUTH_AUTH_CONTEXT_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
@@ -37,119 +40,105 @@ export const authContextGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    requestServiceContextConfig: createProviderTask(
+      requestServiceContextConfigProvider,
+      (requestServiceContextConfig) => {
+        requestServiceContextConfig.contextPassthroughs.set('auth', {
+          name: 'auth',
+          creator: (req) => tsCodeFragment(`${req}.auth`),
+        });
+      },
+    ),
     main: createGeneratorTask({
       dependencies: {
         serviceContextConfig: serviceContextConfigProvider,
-        requestServiceContextConfig: requestServiceContextConfigProvider,
-        authRoles: authRolesProvider,
+        authRolesImports: authRolesImportsProvider,
         appModule: appModuleProvider,
-        typescript: typescriptProvider,
-        errorHandlerService: errorHandlerServiceProvider,
+        typescriptFile: typescriptFileProvider,
+        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         authConfig: authConfigProvider,
       },
       exports: {
         authContext: authContextProvider.export(projectScope),
+        authContextImports: authContextImportsProvider.export(projectScope),
       },
       run({
         serviceContextConfig,
-        requestServiceContextConfig,
         appModule,
-        typescript,
-        errorHandlerService,
-        authRoles,
-        authConfig,
+        typescriptFile,
+        errorHandlerServiceImports,
+        authRolesImports,
       }) {
-        const [authContextTypesImport, authContextTypesFile] =
-          makeImportAndFilePath(
-            appModule.getModuleFolder(),
-            'types/auth-context.types.ts',
-          );
-        const [authSessionTypesImport, authSessionTypesFile] =
-          makeImportAndFilePath(
-            appModule.getModuleFolder(),
-            'types/auth-session.types.ts',
-          );
-        const [authContextUtilsImport, authContextUtilsFile] =
-          makeImportAndFilePath(
-            appModule.getModuleFolder(),
-            'utils/auth-context.utils.ts',
-          );
+        const authContextTypesFile = path.join(
+          appModule.getModuleFolder(),
+          'types/auth-context.types.ts',
+        );
+        const authSessionTypesFile = path.join(
+          appModule.getModuleFolder(),
+          'types/auth-session.types.ts',
+        );
+        const authContextUtilsFile = path.join(
+          appModule.getModuleFolder(),
+          'utils/auth-context.utils.ts',
+        );
 
         const importMap: ImportMap = {
           '%auth-context/types': {
-            path: authContextTypesImport,
+            path: authContextTypesFile,
             allowedImports: ['AuthContext'],
           },
           '%auth-context/session-types': {
-            path: authSessionTypesImport,
+            path: authSessionTypesFile,
             allowedImports: ['AuthSessionInfo', 'AuthUserSessionInfo'],
           },
           '%auth-context/utils': {
-            path: authContextUtilsImport,
+            path: authContextUtilsFile,
             allowedImports: ['createAuthContextFromSessionInfo'],
           },
         };
 
-        authConfig.contextUtilsImport.set({
-          path: authContextUtilsImport,
-          allowedImports: ['createAuthContextFromSessionInfo'],
-        });
+        const authContextImports = createAuthContextImports(
+          appModule.getModuleFolder(),
+        );
 
         return {
           providers: {
             authContext: {
               getImportMap: () => importMap,
             },
+            authContextImports,
           },
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'types/auth-context.types.ts',
-                destination: authContextTypesFile,
-                importMappers: [authRoles],
-              }),
-            );
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'types/auth-session.types.ts',
-                destination: authSessionTypesFile,
-                importMappers: [errorHandlerService, authRoles],
-              }),
-            );
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'utils/auth-context.utils.ts',
-                destination: authContextUtilsFile,
-                importMappers: [errorHandlerService, authRoles],
+              typescriptFile.renderTemplateGroup({
+                group: AUTH_AUTH_CONTEXT_TS_TEMPLATES.mainGroup,
+                baseDirectory: appModule.getModuleFolder(),
+                importMapProviders: {
+                  authContextTypes: {
+                    authRolesImports,
+                  },
+                  authContextUtils: {
+                    authRolesImports,
+                    errorHandlerServiceImports,
+                  },
+                  authSessionTypes: {
+                    authRolesImports,
+                    errorHandlerServiceImports,
+                  },
+                },
               }),
             );
 
             serviceContextConfig.contextFields.set('auth', {
-              type: TsCodeUtils.importFragment(
-                'AuthContext',
-                authContextTypesImport,
-              ),
+              type: authContextImports.AuthContext.typeFragment(),
               setter: 'auth',
               creatorArguments: [
                 {
                   name: 'auth',
-                  type: TsCodeUtils.importFragment(
-                    'AuthContext',
-                    authContextTypesImport,
-                  ),
-                  testDefault: tsCodeFragment(
-                    'createAuthContextFromSessionInfo(undefined)',
-                    tsImportBuilder(['createAuthContextFromSessionInfo']).from(
-                      authContextUtilsImport,
-                    ),
-                  ),
+                  type: authContextImports.AuthContext.typeFragment(),
+                  testDefault: TsCodeUtils.template`${authContextImports.createAuthContextFromSessionInfo.fragment()}(undefined)`,
                 },
               ],
-            });
-
-            requestServiceContextConfig.contextPassthroughs.set('auth', {
-              name: 'auth',
-              creator: (req) => tsCodeFragment(`${req}.auth`),
             });
           },
         };
