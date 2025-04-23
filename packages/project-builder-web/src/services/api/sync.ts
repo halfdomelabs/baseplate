@@ -32,6 +32,7 @@ export async function getSyncMetadata(
           status: 'not-synced',
           path: 'packages/admin',
           name: 'admin',
+          order: 0,
         },
       },
     };

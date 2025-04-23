@@ -8,6 +8,7 @@ export async function getVersionInfo(): Promise<ClientVersionInfo> {
     return {
       version: 'preview',
       featureFlags: [],
+      userConfig: {},
     };
   }
   return trpc.version.get.query();
