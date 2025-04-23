@@ -37,7 +37,7 @@ export const eslintGenerator = createGenerator({
       exports: {
         eslint: eslintProvider.export(projectScope),
       },
-      run({ node }, { taskId }) {
+      run({ node }) {
         const configMap = createNonOverwriteableMap<EslintConfig>(
           {
             eslintIgnore: ['/coverage', '/dist', '/lib', '/node_modules'],
@@ -88,11 +88,7 @@ export const eslintGenerator = createGenerator({
                       CORE_PACKAGES['eslint-plugin-vitest'],
                   }),
             });
-            node.scripts.set(
-              'lint',
-              'eslint --ext .ts,.tsx,.js.,.jsx .',
-              taskId,
-            );
+            node.scripts.set('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');
 
             const eslintDestination = node.isEsm
               ? '.eslintrc.cjs'

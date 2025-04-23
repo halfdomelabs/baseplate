@@ -173,19 +173,16 @@ export const pothosGenerator = createGenerator({
       exports: {
         pothos: pothosProvider.export(projectScope),
       },
-      run(
-        {
-          typescript,
-          requestServiceContextImports,
-          prettier,
-          appModuleImports,
-          yogaPluginConfig,
-          tsUtils,
-          pothosSetupOutput: { config: configMap, pothosTypes },
-          pothosSchemaOutput: { schemaFiles },
-        },
-        { taskId },
-      ) {
+      run({
+        typescript,
+        requestServiceContextImports,
+        prettier,
+        appModuleImports,
+        yogaPluginConfig,
+        tsUtils,
+        pothosSetupOutput: { config: configMap, pothosTypes },
+        pothosSchemaOutput: { schemaFiles },
+      }) {
         // ignore prettier for schema.graphql
         prettier.addPrettierIgnore('/schema.graphql');
 
@@ -290,7 +287,7 @@ export const pothosGenerator = createGenerator({
               ],
             );
 
-            yogaPluginConfig.schema.set(schemaExpression, taskId);
+            yogaPluginConfig.schema.set(schemaExpression);
 
             yogaPluginConfig.postSchemaBlocks.push(
               TypescriptCodeUtils.createBlock(
@@ -359,7 +356,7 @@ if (IS_DEVELOPMENT) {
         node: nodeProvider,
         fastifyOutput: fastifyOutputProvider,
       },
-      run({ node, fastifyOutput }, { taskId }) {
+      run({ node, fastifyOutput }) {
         // add script to generate types
         node.scripts.set(
           'generate:schema',
@@ -368,7 +365,6 @@ if (IS_DEVELOPMENT) {
             ...fastifyOutput.getNodeFlagsDev('dev-env'),
             'src/index.ts --exit-after-generate-schema',
           ].join(' '),
-          taskId,
         );
       },
     }),

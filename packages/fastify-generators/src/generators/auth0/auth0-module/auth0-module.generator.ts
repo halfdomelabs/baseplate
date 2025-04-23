@@ -64,19 +64,16 @@ export const auth0ModuleGenerator = createGenerator({
         auth0Module: auth0ModuleProvider.export(projectScope),
         userSessionService: userSessionServiceProvider.export(projectScope),
       },
-      run(
-        {
-          typescript,
-          authRoles,
-          prismaOutput,
-          configService,
-          appModule,
-          authConfig,
-          userSessionTypes,
-          authContext,
-        },
-        { taskId },
-      ) {
+      run({
+        typescript,
+        authRoles,
+        prismaOutput,
+        configService,
+        appModule,
+        authConfig,
+        userSessionTypes,
+        authContext,
+      }) {
         const [userSessionServiceImport, userSessionServicePath] =
           makeImportAndFilePath(
             `${appModule.getModuleFolder()}/services/user-session.service.ts`,
@@ -100,13 +97,10 @@ export const auth0ModuleGenerator = createGenerator({
           `${appModule.getModuleFolder()}/services/management.ts`,
         );
 
-        authConfig.userSessionServiceImport.set(
-          {
-            path: userSessionServiceImport,
-            allowedImports: ['userSessionService'],
-          },
-          taskId,
-        );
+        authConfig.userSessionServiceImport.set({
+          path: userSessionServiceImport,
+          allowedImports: ['userSessionService'],
+        });
 
         if (includeManagement) {
           configService.configFields.set('AUTH0_TENANT_DOMAIN', {

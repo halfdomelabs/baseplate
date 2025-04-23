@@ -87,26 +87,20 @@ export const prismaGenerator = createGenerator({
         node: nodeProvider,
         fastifyOutput: fastifyOutputProvider,
       },
-      run({ node, fastifyOutput }, { taskId }) {
+      run({ node, fastifyOutput }) {
         node.packages.addPackages({
           prod: extractPackageVersions(FASTIFY_PACKAGES, ['@prisma/client']),
           dev: extractPackageVersions(FASTIFY_PACKAGES, ['prisma']),
         });
         // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)
-        node.scripts.mergeObj(
-          {
-            postinstall: 'prisma generate',
+        node.scripts.mergeObj({
+          postinstall: 'prisma generate',
+        });
+        node.extraProperties.merge({
+          prisma: {
+            seed: `tsx ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} src/prisma/seed.ts`,
           },
-          taskId,
-        );
-        node.extraProperties.merge(
-          {
-            prisma: {
-              seed: `tsx ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} src/prisma/seed.ts`,
-            },
-          },
-          taskId,
-        );
+        });
       },
     }),
     schema: createGeneratorTask({

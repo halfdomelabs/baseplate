@@ -50,18 +50,15 @@ export const authContextGenerator = createGenerator({
       exports: {
         authContext: authContextProvider.export(projectScope),
       },
-      run(
-        {
-          serviceContextConfig,
-          requestServiceContextConfig,
-          appModule,
-          typescript,
-          errorHandlerService,
-          authRoles,
-          authConfig,
-        },
-        { taskId },
-      ) {
+      run({
+        serviceContextConfig,
+        requestServiceContextConfig,
+        appModule,
+        typescript,
+        errorHandlerService,
+        authRoles,
+        authConfig,
+      }) {
         const [authContextTypesImport, authContextTypesFile] =
           makeImportAndFilePath(
             appModule.getModuleFolder(),
@@ -93,13 +90,10 @@ export const authContextGenerator = createGenerator({
           },
         };
 
-        authConfig.contextUtilsImport.set(
-          {
-            path: authContextUtilsImport,
-            allowedImports: ['createAuthContextFromSessionInfo'],
-          },
-          taskId,
-        );
+        authConfig.contextUtilsImport.set({
+          path: authContextUtilsImport,
+          allowedImports: ['createAuthContextFromSessionInfo'],
+        });
 
         return {
           providers: {

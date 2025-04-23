@@ -17,7 +17,6 @@ const [setupTask, authConfigProvider, authSetupProvider] =
   createConfigProviderTask(
     (t) => ({
       userModelName: t.scalar<string>(),
-      authRolesImport: t.scalar<ImportEntry>(),
       userSessionServiceImport: t.scalar<ImportEntry>(),
       contextUtilsImport: t.scalar<ImportEntry>(),
     }),
@@ -47,18 +46,7 @@ export const authGenerator = createGenerator({
       exports: {
         auth: authProvider.export(projectScope),
       },
-      run({
-        authSetup: {
-          authRolesImport,
-          userSessionServiceImport,
-          contextUtilsImport,
-        },
-      }) {
-        if (!authRolesImport) {
-          throw new Error(
-            'authRolesImport is required for auth module to work',
-          );
-        }
+      run({ authSetup: { userSessionServiceImport, contextUtilsImport } }) {
         if (!userSessionServiceImport) {
           throw new Error(
             'userSessionServiceImport is required for auth module to work',
@@ -74,7 +62,6 @@ export const authGenerator = createGenerator({
             auth: {
               getImportMap() {
                 return {
-                  '%auth/auth-roles': authRolesImport,
                   '%auth/user-session-service': userSessionServiceImport,
                   '%auth/context-utils': contextUtilsImport,
                 };

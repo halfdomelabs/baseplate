@@ -52,7 +52,7 @@ export const authRolesGenerator = createGenerator({
       exports: {
         authRoles: authRolesProvider.export(projectScope),
       },
-      run({ typescript, appModule, authConfig }, { taskId }) {
+      run({ typescript, appModule }) {
         if (
           !['public', 'user', 'system'].every((name) =>
             roles.some((r) => r.name === name),
@@ -77,8 +77,6 @@ export const authRolesGenerator = createGenerator({
             'DEFAULT_USER_ROLES',
           ],
         };
-
-        authConfig.authRolesImport.set(authRolesImport, taskId);
 
         return {
           providers: {
