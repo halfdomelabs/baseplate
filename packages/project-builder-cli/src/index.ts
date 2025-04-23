@@ -3,6 +3,7 @@
 import { program } from 'commander';
 
 import { addBuildCommand } from './commands/build.js';
+import { addConfigCommand } from './commands/config.js';
 import { addExtractTemplatesCommand } from './commands/extract-templates.js';
 import { addServeCommand } from './commands/server.js';
 import { getEnabledFeatureFlags } from './services/feature-flags.js';
@@ -20,8 +21,8 @@ async function runMain(): Promise<void> {
   }
 
   addBuildCommand(program);
-
   addServeCommand(program);
+  addConfigCommand(program);
 
   await program.parseAsync(process.argv);
 }

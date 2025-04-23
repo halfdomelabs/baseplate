@@ -63,6 +63,7 @@ export type PackageSyncResult = z.infer<typeof packageSyncResultSchema>;
 export const packageSyncInfoSchema = z.object({
   name: z.string(),
   path: z.string(),
+  order: z.number(),
   status: packageSyncStatusSchema,
   statusMessage: z.string().optional(),
   result: packageSyncResultSchema.optional(),

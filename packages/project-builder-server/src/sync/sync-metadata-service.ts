@@ -3,7 +3,7 @@ import {
   readJsonWithSchema,
   writeStablePrettyJson,
 } from '@halfdomelabs/utils/node';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, unlink } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { SyncMetadata } from './sync-metadata.js';
@@ -35,4 +35,11 @@ export async function writeSyncMetadata(
   const syncMetadataPath = path.join(projectDirectory, SYNC_METADATA_PATH);
   await mkdir(path.dirname(syncMetadataPath), { recursive: true });
   await writeStablePrettyJson(syncMetadataPath, syncMetadata);
+}
+
+export async function deleteSyncMetadata(
+  projectDirectory: string,
+): Promise<void> {
+  const syncMetadataPath = path.join(projectDirectory, SYNC_METADATA_PATH);
+  await unlink(syncMetadataPath).catch(handleFileNotFoundError);
 }

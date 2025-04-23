@@ -92,6 +92,7 @@ describe('SyncMetadataController', () => {
             name: 'test',
             path: '/test',
             status: 'not-synced',
+            order: 0,
           },
         },
       };
@@ -114,6 +115,7 @@ describe('SyncMetadataController', () => {
             name: 'test',
             path: '/test',
             status: 'success',
+            order: 0,
           },
         },
       });

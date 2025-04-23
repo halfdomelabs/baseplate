@@ -63,6 +63,7 @@ export function ClientVersionProvider({
         ? {
             version: clientVersionInfo.version,
             featureFlags: clientVersionInfo.featureFlags,
+            userConfig: clientVersionInfo.userConfig,
           }
         : undefined,
     [clientVersionInfo],

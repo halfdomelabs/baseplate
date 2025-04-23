@@ -63,6 +63,7 @@ export async function serveWebServer(
     projectBuilderStaticDir: path.join(projectBuilderWebDir, 'dist'),
     logger: overrideLogger ?? logger,
     featureFlags: getEnabledFeatureFlags(),
+    userConfig,
   });
 
   return {

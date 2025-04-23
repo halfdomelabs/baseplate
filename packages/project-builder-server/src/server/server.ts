@@ -11,6 +11,8 @@ import {
   validatorCompiler,
 } from 'fastify-type-provider-zod';
 
+import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
+
 import type { BuilderServiceManager } from './builder-service-manager.js';
 
 import { gracefulShutdownPlugin } from './graceful-shutdown.js';
@@ -22,6 +24,7 @@ export interface WebServerOptions {
   logger: Logger;
   featureFlags: FeatureFlag[];
   serviceManager: BuilderServiceManager;
+  userConfig: BaseplateUserConfig;
 }
 
 export async function buildServer({
@@ -30,6 +33,7 @@ export async function buildServer({
   logger,
   featureFlags,
   serviceManager,
+  userConfig,
 }: WebServerOptions): Promise<FastifyInstance> {
   const server = fastify({
     forceCloseConnections: 'idle',
@@ -58,6 +62,7 @@ export async function buildServer({
     cliVersion,
     featureFlags,
     serviceManager,
+    userConfig,
   });
 
   if (projectBuilderStaticDir) {

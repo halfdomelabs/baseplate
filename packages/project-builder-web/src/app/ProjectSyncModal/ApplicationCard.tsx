@@ -4,22 +4,32 @@ import type {
 } from '@halfdomelabs/project-builder-server';
 import type React from 'react';
 
-import { Badge, Tooltip } from '@halfdomelabs/ui-components';
+import {
+  Badge,
+  Button,
+  Table,
+  toast,
+  Tooltip,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import {
   MdCancel,
   MdCheckCircle,
   MdError,
   MdHourglassEmpty,
-  MdInfo,
   MdSync,
   MdSyncProblem,
 } from 'react-icons/md';
 import TimeAgo from 'react-timeago';
 
+import { useClientVersion } from '@src/hooks/useClientVersion';
+import { useProjects } from '@src/hooks/useProjects';
+import { logAndFormatError } from '@src/services/error-formatter';
+import { trpc } from '@src/services/trpc';
 import { timeAgoFormatter } from '@src/utils/time-ago';
 
 interface Props {
+  packageId: string;
   packageInfo: PackageSyncInfo;
   className?: string;
 }
@@ -80,44 +90,193 @@ function getStatusLabel(status: PackageSyncInfo['status']): string {
   }
 }
 
+function getConflictTypeLabel(type: FileWithConflict['conflictType']): string {
+  switch (type) {
+    case 'merge-conflict': {
+      return 'Merge Conflict';
+    }
+    case 'working-deleted': {
+      return 'Deleted by User';
+    }
+    case 'generated-deleted': {
+      return 'Deleted in Generated';
+    }
+    default: {
+      return 'Unknown';
+    }
+  }
+}
+
+function getConflictTypeTooltip(
+  type: FileWithConflict['conflictType'],
+): string {
+  switch (type) {
+    case 'merge-conflict': {
+      return 'This file was modified in both the working codebase and the generated codebase. Please resolve the conflicts manually.';
+    }
+    case 'working-deleted': {
+      return 'This file was deleted in the working codebase but modified in the generated codebase. Choose whether to keep or delete it.';
+    }
+    case 'generated-deleted': {
+      return 'This file was deleted in the generated codebase but modified in the working codebase. Choose whether to keep or delete it.';
+    }
+    default: {
+      return 'Unknown conflict type';
+    }
+  }
+}
+
 function FilesWithConflictsView({
+  packageId,
   filesWithConflicts,
-  title,
-  tooltip,
 }: {
+  packageId: string;
   filesWithConflicts: FileWithConflict[];
-  title: string;
-  tooltip: string;
 }): React.JSX.Element | null {
+  const clientVersion = useClientVersion();
+  const { currentProjectId } = useProjects();
+
   if (filesWithConflicts.length === 0) {
     return null;
   }
 
+  const handleOpenEditor = (relativePath: string): void => {
+    if (!currentProjectId) return;
+    trpc.sync.openEditor
+      .mutate({
+        id: currentProjectId,
+        packageId,
+        relativePath,
+      })
+      .catch((err: unknown) => {
+        toast.error(logAndFormatError(err, 'Failed to open editor'));
+      });
+  };
+
+  const handleKeepFile = (file: FileWithConflict): void => {
+    if (!currentProjectId) return;
+    trpc.sync.keepConflictFile
+      .mutate({
+        id: currentProjectId,
+        packageId,
+        relativePath: file.relativePath,
+      })
+      .then(() => {
+        toast.success(`File ${file.relativePath} was kept!`);
+      })
+      .catch((err: unknown) => {
+        toast.error(logAndFormatError(err, 'Failed to keep file'));
+      });
+  };
+  const handleDeleteFile = (file: FileWithConflict): void => {
+    if (!currentProjectId) return;
+    trpc.sync.deleteConflictFile
+      .mutate({
+        id: currentProjectId,
+        packageId,
+        relativePath: file.relativePath,
+      })
+      .then(() => {
+        toast.success(`File ${file.relativePath} was deleted!`);
+      })
+      .catch((err: unknown) => {
+        toast.error(logAndFormatError(err, 'Failed to delete file'));
+      });
+  };
+
   return (
-    <div className="mt-2 space-y-1">
-      <div className="flex items-center gap-2">
-        <h4 className="font-medium">{title}</h4>
-        <Tooltip>
-          <Tooltip.Trigger>
-            <MdInfo className="text-muted-foreground" />
-          </Tooltip.Trigger>
-          <Tooltip.Content side="right" className="max-w-sm">
-            {tooltip}
-          </Tooltip.Content>
-        </Tooltip>
-      </div>
-      <ul className="list-disc pl-5 text-sm">
-        {filesWithConflicts.map((file, index) => (
-          <li key={index} className="text-sm text-warning-foreground">
-            {file.generatedConflictRelativePath ?? file.relativePath}
-          </li>
-        ))}
-      </ul>
+    <div>
+      <h4 className="font-medium">Merge Conflicts</h4>
+      <Table>
+        <Table.Header>
+          <Table.Row>
+            <Table.Head className="w-3/5">Name</Table.Head>
+            <Table.Head className="w-1/5">
+              <div className="flex items-center gap-2">Type</div>
+            </Table.Head>
+            <Table.Head className="w-1/5">Actions</Table.Head>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {filesWithConflicts.map((file) => (
+            <Table.Row key={file.relativePath}>
+              <Table.Cell>
+                {clientVersion.userConfig.sync?.editor ? (
+                  <button
+                    className="hover:underline"
+                    onClick={() => {
+                      handleOpenEditor(
+                        file.generatedConflictRelativePath ?? file.relativePath,
+                      );
+                    }}
+                  >
+                    {file.generatedConflictRelativePath ?? file.relativePath}
+                  </button>
+                ) : (
+                  <span>
+                    {file.generatedConflictRelativePath ?? file.relativePath}
+                  </span>
+                )}
+              </Table.Cell>
+              <Table.Cell>
+                <Tooltip>
+                  <Tooltip.Trigger>
+                    <span>{getConflictTypeLabel(file.conflictType)}</span>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content side="left" className="max-w-sm">
+                    {getConflictTypeTooltip(file.conflictType)}
+                  </Tooltip.Content>
+                </Tooltip>
+              </Table.Cell>
+              <Table.Cell>
+                {file.conflictType === 'merge-conflict' &&
+                  clientVersion.userConfig.sync?.editor && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        handleOpenEditor(
+                          file.generatedConflictRelativePath ??
+                            file.relativePath,
+                        );
+                      }}
+                    >
+                      View
+                    </Button>
+                  )}
+                {file.conflictType !== 'merge-conflict' && (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        handleKeepFile(file);
+                      }}
+                    >
+                      Keep
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        handleDeleteFile(file);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                )}
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table>
     </div>
   );
 }
 
 export function ApplicationCard({
+  packageId,
   packageInfo,
   className,
 }: Props): React.JSX.Element {
@@ -158,7 +317,7 @@ export function ApplicationCard({
         </div>
       </div>
       {syncHasErrors && (
-        <div className="border-t px-4 pb-4 pt-2">
+        <div className="space-y-4 border-t p-4">
           {packageInfo.result?.errors &&
             packageInfo.result.errors.length > 0 && (
               <div className="mt-2 space-y-1">
@@ -170,6 +329,10 @@ export function ApplicationCard({
                 </ul>
               </div>
             )}
+          <FilesWithConflictsView
+            packageId={packageId}
+            filesWithConflicts={filesWithConflicts}
+          />
           {packageInfo.result?.failedCommands &&
             packageInfo.result.failedCommands.length > 0 && (
               <div className="mt-2 space-y-1">
@@ -177,34 +340,12 @@ export function ApplicationCard({
                 <ul className="list-disc pl-5 text-sm text-destructive">
                   {packageInfo.result.failedCommands.map((cmd, index) => (
                     <li key={index}>
-                      <code>{cmd.command}</code> in{' '}
-                      <code>{cmd.workingDir ?? '.'}</code>
+                      <code>{cmd.command}</code>
                     </li>
                   ))}
                 </ul>
               </div>
             )}
-          <FilesWithConflictsView
-            filesWithConflicts={filesWithConflicts.filter(
-              (f) => f.conflictType === 'merge-conflict',
-            )}
-            title="Files with merge conflicts:"
-            tooltip="These files were modified in both the working codebase and the generated codebase. Please resolve the conflicts manually."
-          />
-          <FilesWithConflictsView
-            filesWithConflicts={filesWithConflicts.filter(
-              (f) => f.conflictType === 'generated-deleted',
-            )}
-            title="Deleted files that were modified by user:"
-            tooltip="Review whether these files should be deleted or not."
-          />
-          <FilesWithConflictsView
-            filesWithConflicts={filesWithConflicts.filter(
-              (f) => f.conflictType === 'working-deleted',
-            )}
-            title="Files deleted by user that were modified by Baseplate:"
-            tooltip="Review whether these files should be deleted or not."
-          />
         </div>
       )}
     </div>

@@ -8,6 +8,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 
+import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
+
 import { createContextBuilder } from '@src/api/context.js';
 import { getCsrfToken } from '@src/api/crsf.js';
 import { appRouter, type AppRouter } from '@src/api/index.js';
@@ -19,7 +21,11 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
   cliVersion: string;
   featureFlags: FeatureFlag[];
   serviceManager: BuilderServiceManager;
-}> = async function (fastify, { cliVersion, featureFlags, serviceManager }) {
+  userConfig: BaseplateUserConfig;
+}> = async function (
+  fastify,
+  { cliVersion, featureFlags, serviceManager, userConfig },
+) {
   const csrfToken = getCsrfToken();
 
   fastify.log.info(
@@ -39,6 +45,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
         cliVersion,
         logger: fastify.log,
         featureFlags,
+        userConfig,
       }),
       onError: ({ error }) => {
         fastify.log.error(error);

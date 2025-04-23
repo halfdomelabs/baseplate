@@ -14,6 +14,7 @@ describe('ClientVersionProvider', () => {
   const mockVersionInfo = {
     version: '1.0.0',
     featureFlags: [],
+    userConfig: {},
   };
 
   const mockChild = <div data-testid="child">Test Child</div>;

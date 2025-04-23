@@ -96,6 +96,7 @@ async function serveWebsite(projectDirectory: string): Promise<void> {
     projectBuilderStaticDir: path.join(projectBuilderWebDir, 'dist'),
     logger: pinoLogger,
     featureFlags: [],
+    userConfig: {},
   });
 }
 

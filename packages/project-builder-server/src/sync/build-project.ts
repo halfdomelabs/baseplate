@@ -111,7 +111,7 @@ export async function buildProject({
     startedAt: new Date().toISOString(),
     projectJsonHash: hash,
     packages: Object.fromEntries(
-      apps.map((app) => [
+      apps.map((app, index) => [
         app.id,
         {
           name: app.name,
@@ -119,6 +119,7 @@ export async function buildProject({
           status: 'not-synced',
           statusMessage: undefined,
           result: undefined,
+          order: index,
         },
       ]),
     ),

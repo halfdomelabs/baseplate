@@ -16,8 +16,10 @@ import {
 } from '@halfdomelabs/utils/node';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
-import { readFile, writeFile } from 'node:fs/promises';
+import { execa, parseCommandString } from 'execa';
+import { readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { ZodError } from 'zod';
 
 import type { SyncMetadata } from '@src/sync/index.js';
 
@@ -28,6 +30,7 @@ import {
 import { ConflictFileMonitor } from '@src/sync/conflict-file-monitor.js';
 import { buildProject } from '@src/sync/index.js';
 import { SyncMetadataController } from '@src/sync/sync-metadata-controller.js';
+import { deleteSyncMetadata } from '@src/sync/sync-metadata-service.js';
 
 import type { BaseplateUserConfig } from '../user-config/user-config-schema.js';
 
@@ -152,6 +155,32 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       this.directory,
       this.logger,
     );
+    // check current sync information and cancel if necessary
+    this.syncMetadataController
+      .getMetadata()
+      .then((syncMetadata) => {
+        if (syncMetadata?.status === 'in-progress') {
+          this.syncMetadataController.writeMetadata({
+            ...syncMetadata,
+            status: 'cancelled',
+          });
+        }
+      })
+      // delete the sync metadata if the schema is invalid
+      .catch(async (err: unknown) => {
+        if (
+          err instanceof ZodError ||
+          (err instanceof Error && err.message.includes('Invalid JSON'))
+        ) {
+          this.logger.error(
+            `Invalid sync metadata found, deleting sync metadata file: ${String(err)}`,
+          );
+          await deleteSyncMetadata(this.directory);
+        }
+      })
+      .catch((err: unknown) => {
+        this.logger.error(`Unable to get sync metadata: ${String(err)}`);
+      });
     const emitConsoleEvent = (message: string): void => {
       if (this.currentSyncConsoleOutput.length > MAX_CONSOLE_OUTPUT_LENGTH) {
         this.currentSyncConsoleOutput.shift();
@@ -393,5 +422,133 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       ];
     }
     return this.cachedAvailablePlugins;
+  }
+
+  /**
+   * Opens the editor for a file.
+   *
+   * @param packageId - The ID of the package.
+   * @param relativePath - The relative path of the file.
+   */
+  public async openEditor(
+    packageId: string,
+    relativePath: string,
+  ): Promise<void> {
+    const editor = this.userConfig.sync?.editor;
+    if (!editor) {
+      throw new Error('No editor configured');
+    }
+    const metadata = await this.syncMetadataController.getMetadata();
+    const packageInfo = metadata?.packages[packageId];
+    if (!packageInfo) {
+      throw new Error(`Package ${packageId} not found`);
+    }
+    const absolutePath = path.join(packageInfo.path, relativePath);
+    const [command, ...args] = parseCommandString(editor);
+    const result = execa(command, [...args, absolutePath], {
+      cwd: this.directory,
+      detached: true,
+    });
+    result.unref();
+  }
+
+  private removeConflictFile(packageId: string, relativePath: string): void {
+    this.syncMetadataController.updateMetadataForPackage(
+      packageId,
+      (packageInfo) => ({
+        ...packageInfo,
+        result: packageInfo.result
+          ? {
+              ...packageInfo.result,
+              filesWithConflicts: packageInfo.result.filesWithConflicts?.filter(
+                (file) => file.relativePath !== relativePath,
+              ),
+            }
+          : undefined,
+      }),
+    );
+  }
+
+  /**
+   * Deletes a conflict file.
+   *
+   * @param packageId - The ID of the package.
+   * @param relativePath - The relative path of the file.
+   */
+  public async deleteConflictFile(
+    packageId: string,
+    relativePath: string,
+  ): Promise<void> {
+    const metadata = await this.syncMetadataController.getMetadata();
+    const packageInfo = metadata?.packages[packageId];
+    if (!packageInfo) {
+      throw new Error(`Package ${packageId} not found`);
+    }
+
+    // check if file exists as a conflict file
+    const conflictFile = packageInfo.result?.filesWithConflicts?.find(
+      (file) => file.relativePath === relativePath,
+    );
+    if (!conflictFile) {
+      throw new Error(
+        `File ${relativePath} could not be found with any conflicts`,
+      );
+    }
+
+    if (
+      !['generated-deleted', 'working-deleted'].includes(
+        conflictFile.conflictType,
+      )
+    ) {
+      throw new Error(
+        `File ${relativePath} is a ${conflictFile.conflictType} and cannot be deleted`,
+      );
+    }
+
+    const absolutePath = path.join(
+      packageInfo.path,
+      conflictFile.generatedConflictRelativePath ?? conflictFile.relativePath,
+    );
+    await unlink(absolutePath).catch(handleFileNotFoundError);
+
+    this.removeConflictFile(packageId, relativePath);
+  }
+
+  /**
+   * Keeps a conflict file.
+   *
+   * @param packageId - The ID of the package.
+   * @param relativePath - The relative path of the file.
+   */
+  public async keepConflictFile(
+    packageId: string,
+    relativePath: string,
+  ): Promise<void> {
+    const metadata = await this.syncMetadataController.getMetadata();
+    const packageInfo = metadata?.packages[packageId];
+    if (!packageInfo) {
+      throw new Error(`Package ${packageId} not found`);
+    }
+    // check if file exists as a conflict file
+    const conflictFile = packageInfo.result?.filesWithConflicts?.find(
+      (file) => file.relativePath === relativePath,
+    );
+    if (!conflictFile) {
+      throw new Error(
+        `File ${relativePath} could not be found with any conflicts`,
+      );
+    }
+
+    if (
+      !['generated-deleted', 'working-deleted'].includes(
+        conflictFile.conflictType,
+      )
+    ) {
+      throw new Error(
+        `File ${relativePath} is a ${conflictFile.conflictType} and cannot be kept`,
+      );
+    }
+
+    this.removeConflictFile(packageId, relativePath);
   }
 }

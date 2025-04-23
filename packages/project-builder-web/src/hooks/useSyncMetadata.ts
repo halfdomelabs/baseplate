@@ -56,8 +56,30 @@ export function useSyncMetadataListener(): void {
         },
       },
     );
+    const syncCompletedSubscription = trpc.sync.onSyncCompleted.subscribe(
+      { id: currentProjectId },
+      {
+        onData: (data) => {
+          if (!data.syncMetadata) return;
+          const { status } = data.syncMetadata;
+
+          const hasConflicts = Object.values(data.syncMetadata.packages).some(
+            (packageInfo) => packageInfo.status === 'conflicts',
+          );
+
+          if (hasConflicts) {
+            toast.warning('Sync completed with conflicts! Please review.');
+          } else if (status === 'success') {
+            toast.success('Sync completed successfully!');
+          } else if (status === 'error') {
+            toast.error('Sync failed with errors!');
+          }
+        },
+      },
+    );
     return () => {
       subscription.unsubscribe();
+      syncCompletedSubscription.unsubscribe();
       cancelled = true;
     };
   }, [currentProjectId, setMetadata]);

@@ -36,7 +36,7 @@ describe('ConflictFileMonitor', () => {
     syncMetadataController = new SyncMetadataController(
       outputDirectory,
       logger,
-      { throttleWrites: false },
+      { disableThrottling: true },
     );
     monitor = new ConflictFileMonitor(syncMetadataController, logger);
   });
@@ -67,6 +67,7 @@ describe('ConflictFileMonitor', () => {
             ],
             completedAt: new Date().toISOString(),
           },
+          order: 0,
         },
       },
     };
@@ -105,6 +106,7 @@ describe('ConflictFileMonitor', () => {
             ],
             completedAt: new Date().toISOString(),
           },
+          order: 0,
         },
       },
     };
@@ -185,6 +187,7 @@ describe('ConflictFileMonitor', () => {
             ],
             completedAt: new Date().toISOString(),
           },
+          order: 0,
         },
       },
     };
