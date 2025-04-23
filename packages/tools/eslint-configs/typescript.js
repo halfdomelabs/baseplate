@@ -216,7 +216,11 @@ export function generateTypescriptEslintConfig(options = []) {
     {
       files: ['**/*.test.{ts,js,tsx,jsx}', 'tests/**'],
       plugins: { vitest },
-      rules: vitest.configs.recommended.rules,
+      rules: {
+        ...vitest.configs.recommended.rules,
+        // Helpful in dev but should flag as errors when linting
+        'vitest/no-focused-tests': 'error',
+      },
       settings: {
         vitest: {
           typecheck: true,

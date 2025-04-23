@@ -3,7 +3,8 @@ import type React from 'react';
 import clsx from 'clsx';
 import TimeAgo from 'react-timeago';
 
-import { useProjects } from '@src/hooks/useProjects';
+import { useSyncMetadata } from '@src/hooks/useSyncMetadata';
+import { timeAgoFormatter } from '@src/utils/time-ago';
 
 interface ProjectSyncStatusProps {
   className?: string;
@@ -12,15 +13,15 @@ interface ProjectSyncStatusProps {
 export function ProjectSyncStatus({
   className,
 }: ProjectSyncStatusProps): React.JSX.Element | null {
-  const lastSyncedAt = useProjects((store) => store.lastSyncedAt);
+  const completedAt = useSyncMetadata((metadata) => metadata.completedAt);
 
-  if (!lastSyncedAt) {
+  if (!completedAt) {
     return null;
   }
 
   return (
     <div className={clsx('text-style-muted', className)}>
-      Last Sync: <TimeAgo date={lastSyncedAt} />
+      Last Sync: <TimeAgo date={completedAt} formatter={timeAgoFormatter} />
     </div>
   );
 }

@@ -7,11 +7,12 @@ import {
 import { Button, Dialog, Tabs, toast } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
-import { MdSync } from 'react-icons/md';
+import { MdSync, MdSyncProblem } from 'react-icons/md';
 
 import { Console } from '@src/components';
 import { useProjects } from '@src/hooks/useProjects';
-import { startSync } from '@src/services/api';
+import { useSyncMetadata } from '@src/hooks/useSyncMetadata';
+import { cancelSync, startSync } from '@src/services/api';
 import { formatError } from '@src/services/error-formatter';
 
 import { PackageSyncStatus } from './PackageSyncStatus';
@@ -23,15 +24,26 @@ interface Props {
 function ProjectSyncModal({ className }: Props): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const { definitionContainer } = useProjectDefinition();
-  const { currentProjectId, setLastSyncedAt } = useProjects();
+  const { currentProjectId } = useProjects();
   const blockBeforeContinue = useBlockBeforeContinue();
 
   const definitionContainerRef = useRef(definitionContainer);
   definitionContainerRef.current = definitionContainer;
 
+  const isSyncing = useSyncMetadata(
+    (metadata) => metadata.status === 'in-progress',
+  );
+  const hasConflicts = useSyncMetadata((metadata) =>
+    Object.values(metadata.packages).some((p) => p.status === 'conflicts'),
+  );
+
   const startSyncProject = (): void => {
-    setLastSyncedAt(new Date());
     if (!currentProjectId) {
+      return;
+    }
+
+    if (hasConflicts) {
+      toast.warning('Conflicts must be resolved before syncing');
       return;
     }
 
@@ -39,6 +51,16 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
       toast.error(formatError(error)),
     );
     setIsOpen(true);
+  };
+
+  const cancelSyncProject = (): void => {
+    if (!currentProjectId) {
+      return;
+    }
+
+    cancelSync(currentProjectId).catch((error: unknown) =>
+      toast.error(formatError(error)),
+    );
   };
 
   return (
@@ -52,15 +74,22 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
         <Dialog.Trigger asChild>
           <Button
             onClick={(e) => {
-              blockBeforeContinue({
-                onContinue: startSyncProject,
-              });
-              e.preventDefault();
+              setIsOpen(true);
+              if (!isSyncing && !hasConflicts) {
+                blockBeforeContinue({
+                  onContinue: startSyncProject,
+                });
+                e.preventDefault();
+              }
             }}
             size="sm"
           >
-            <Button.Icon icon={MdSync} />
-            Sync
+            <Button.Icon icon={hasConflicts ? MdSyncProblem : MdSync} />
+            {isSyncing
+              ? 'Syncing...'
+              : hasConflicts
+                ? 'Resolve conflicts'
+                : 'Sync'}
           </Button>
         </Dialog.Trigger>
         <Dialog.Content width="lg" aria-description="Sync project dialog">
@@ -83,16 +112,22 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
             </Tabs.Content>
           </Tabs>
           <Dialog.Footer>
-            <Button variant="secondary" onClick={startSyncProject}>
-              Retry
-            </Button>
+            {isSyncing ? (
+              <Button variant="destructive" onClick={cancelSyncProject}>
+                Stop
+              </Button>
+            ) : (
+              <Button variant="secondary" onClick={startSyncProject}>
+                Sync Again
+              </Button>
+            )}
             <Button
               variant="outline"
               onClick={() => {
                 setIsOpen(false);
               }}
             >
-              Cancel
+              Close
             </Button>
           </Dialog.Footer>
         </Dialog.Content>

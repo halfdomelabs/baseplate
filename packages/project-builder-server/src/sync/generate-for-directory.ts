@@ -1,5 +1,6 @@
 import type { AppEntry } from '@halfdomelabs/project-builder-lib';
 import type {
+  FileWithConflict,
   GeneratorEntry,
   GeneratorOutput,
   Logger,
@@ -8,6 +9,7 @@ import type {
 
 import {
   buildGeneratorEntry,
+  CancelledSyncError,
   createCodebaseFileReaderFromDirectory,
   deleteMetadataFiles,
   executeGeneratorEntry,
@@ -42,6 +44,7 @@ interface GenerateForDirectoryOptions {
   userConfig: BaseplateUserConfig;
   previousPackageSyncResult: PackageSyncResult | undefined;
   operations?: GeneratorOperations;
+  abortSignal?: AbortSignal;
 }
 
 export interface GeneratorOperations {
@@ -123,6 +126,7 @@ export async function generateForDirectory({
   userConfig,
   previousPackageSyncResult,
   operations = defaultGeneratorOperations,
+  abortSignal,
 }: GenerateForDirectoryOptions): Promise<PackageSyncResult> {
   const { appDirectory, name, generatorBundle } = appEntry;
 
@@ -144,6 +148,9 @@ export async function generateForDirectory({
         }
       : undefined,
   });
+
+  if (abortSignal?.aborted) throw new CancelledSyncError();
+
   logger.info('Project built! Writing output....');
 
   // load clean directory contents
@@ -162,25 +169,22 @@ export async function generateForDirectory({
   await mkdir(generatedTemporaryDirectory, { recursive: true });
 
   try {
-    const {
-      failedCommands,
-      relativePathsPendingDelete,
-      filesWithConflicts,
-      fileIdToRelativePathMap,
-    } = await operations.writeGeneratorOutput(output, projectDirectory, {
-      previousGeneratedPayload,
-      generatedContentsDirectory: generatedTemporaryDirectory,
-      rerunCommands: previousPackageSyncResult?.failedCommands?.map(
-        (c) => c.command,
-      ),
-      logger,
-      mergeDriver: userConfig.sync?.customMergeDriver
-        ? {
-            name: 'baseplate-custom-merge-driver',
-            driver: userConfig.sync.customMergeDriver,
-          }
-        : undefined,
-    });
+    const { failedCommands, filesWithConflicts, fileIdToRelativePathMap } =
+      await operations.writeGeneratorOutput(output, projectDirectory, {
+        previousGeneratedPayload,
+        generatedContentsDirectory: generatedTemporaryDirectory,
+        rerunCommands: previousPackageSyncResult?.failedCommands?.map(
+          (c) => c.command,
+        ),
+        logger,
+        mergeDriver: userConfig.sync?.customMergeDriver
+          ? {
+              name: 'baseplate-custom-merge-driver',
+              driver: userConfig.sync.customMergeDriver,
+            }
+          : undefined,
+        abortSignal,
+      });
 
     // write metadata to the generated directory
     if (shouldWriteTemplateMetadata) {
@@ -202,38 +206,34 @@ export async function generateForDirectory({
     );
     await writeJson(path.join(projectDirectory, FILE_ID_MAP_PATH), fileIdMap);
 
-    // List out conflicts
-    if (filesWithConflicts.length > 0) {
-      logger.warn(
-        chalk.red(
-          `Conflicts occurred while writing files:\n${filesWithConflicts
-            .map((f) => f.relativePath)
-            .join('\n')}`,
-        ),
-      );
-      if (failedCommands.length > 0) {
-        logger.warn(
-          `\nOnce resolved, please re-run the generator or run the following commands:`,
-        );
-        for (const command of failedCommands) {
-          logger.warn(`  ${command.command}`);
-        }
-      }
-    }
-
-    if (relativePathsPendingDelete.length > 0) {
-      logger.warn(
-        chalk.red(
-          `Files were removed in the new generation but were modified so could not be automatically deleted:\n${relativePathsPendingDelete.join(
-            '\n',
-          )}`,
-        ),
-      );
-    }
-
+    // Write generator steps
     if (userConfig.sync?.writeGeneratorStepsJson && output.metadata) {
       await operations.writeGeneratorSteps(output.metadata, projectDirectory);
     }
+
+    // List out conflicts
+    function warnAboutConflicts(
+      conflicts: FileWithConflict[],
+      message: string,
+    ): void {
+      logger.warn(
+        chalk.red(
+          `${message}\n${conflicts.map((f) => f.relativePath).join('\n')}`,
+        ),
+      );
+    }
+    warnAboutConflicts(
+      filesWithConflicts.filter((f) => f.conflictType === 'merge-conflict'),
+      'Merge conflicts occurred while writing files:',
+    );
+    warnAboutConflicts(
+      filesWithConflicts.filter((f) => f.conflictType === 'generated-deleted'),
+      'Files were deleted in the new generation but were modified by user so could not be automatically deleted:',
+    );
+    warnAboutConflicts(
+      filesWithConflicts.filter((f) => f.conflictType === 'working-deleted'),
+      'Files were deleted by user but were added back in the new generation so should be reviewed:',
+    );
 
     if (failedCommands.length > 0) {
       logger.error(
@@ -244,19 +244,12 @@ export async function generateForDirectory({
     }
 
     return {
-      filesWithConflicts: filesWithConflicts.map((f) => ({
-        relativePath: f.relativePath,
-        resolved: false,
-      })),
+      filesWithConflicts,
       failedCommands: failedCommands.map((c) => ({
         id: randomUid(),
         command: c.command,
         workingDir: c.workingDir,
         output: c.output,
-      })),
-      filesPendingDelete: relativePathsPendingDelete.map((p) => ({
-        relativePath: p,
-        resolved: false,
       })),
       completedAt: new Date().toISOString(),
     };

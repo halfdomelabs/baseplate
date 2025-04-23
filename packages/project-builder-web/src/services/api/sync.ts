@@ -40,3 +40,12 @@ export async function getSyncMetadata(
     .query({ id })
     .catch(createProjectNotFoundHandler(id));
 }
+
+export async function cancelSync(id: string): Promise<void> {
+  if (IS_PREVIEW) {
+    return;
+  }
+  await trpc.sync.cancelSync
+    .mutate({ id })
+    .catch(createProjectNotFoundHandler(id));
+}

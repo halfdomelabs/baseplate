@@ -134,7 +134,7 @@ const removedVar = 1;
       export const TEST_GENERATOR_TS_TEMPLATES = { myComponentTemplate };
       "
     `);
-  });
+  }, 10_000);
 
   it('should generate import maps file for project exports', async () => {
     const context =

@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 import type {
   CommandConsoleEmittedPayload,
+  SyncCompletedPayload,
   SyncMetadataChangedPayload,
   SyncStartedPayload,
 } from '@src/service/builder-service.js';
@@ -24,6 +25,12 @@ export const syncRouter = router({
       });
 
       return { success: true };
+    }),
+
+  cancelSync: privateProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(({ input: { id }, ctx }) => {
+      ctx.getApi(id).cancelSync();
     }),
 
   onConsoleEmitted: websocketProcedure
@@ -71,6 +78,19 @@ export const syncRouter = router({
     .subscription(({ input: { id }, ctx }) =>
       observable<SyncStartedPayload>((emit) => {
         const unsubscribe = ctx.getApi(id).on('sync-started', (payload) => {
+          emit.next(payload);
+        });
+        return () => {
+          unsubscribe();
+        };
+      }),
+    ),
+
+  onSyncCompleted: websocketProcedure
+    .input(z.object({ id: z.string() }))
+    .subscription(({ input: { id }, ctx }) =>
+      observable<SyncCompletedPayload>((emit) => {
+        const unsubscribe = ctx.getApi(id).on('sync-completed', (payload) => {
           emit.next(payload);
         });
         return () => {

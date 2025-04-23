@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { PackageSyncInfo, SyncMetadata } from './sync-metadata.js';
 
-import { SyncMetadataController } from './sync-controller.js';
+import { SyncMetadataController } from './sync-metadata-controller.js';
 import {
   readSyncMetadata,
   writeSyncMetadata,

@@ -100,7 +100,6 @@ describe('generateForDirectory', () => {
       ]),
       filesWithConflicts: [],
       failedCommands: [],
-      relativePathsPendingDelete: [],
     });
 
     const baseDirectory = '/test-base';
@@ -121,7 +120,6 @@ describe('generateForDirectory', () => {
       completedAt: expect.any(String) as string,
       filesWithConflicts: [],
       failedCommands: [],
-      filesPendingDelete: [],
     });
     expect(testLogger.getInfoOutput()).toContain(
       'Project successfully generated!',
@@ -205,9 +203,18 @@ describe('generateForDirectory', () => {
     });
     mockOperations.writeGeneratorOutput.mockResolvedValue({
       fileIdToRelativePathMap: new Map([['file1', 'conflict.txt']]),
-      filesWithConflicts: [{ relativePath: 'conflict.txt' }],
+      filesWithConflicts: [
+        { relativePath: 'conflict.txt', conflictType: 'merge-conflict' },
+        {
+          relativePath: 'generated-deleted.txt',
+          conflictType: 'generated-deleted',
+        },
+        {
+          relativePath: 'working-deleted.txt',
+          conflictType: 'working-deleted',
+        },
+      ],
       failedCommands: [{ command: 'npm install', workingDir: '/test-app' }],
-      relativePathsPendingDelete: ['deleted.txt'],
     });
 
     const baseDirectory = '/test-base';
@@ -226,7 +233,17 @@ describe('generateForDirectory', () => {
     // Verify results
     expect(result).toEqual({
       completedAt: expect.any(String) as string,
-      filesWithConflicts: [{ relativePath: 'conflict.txt', resolved: false }],
+      filesWithConflicts: [
+        { relativePath: 'conflict.txt', conflictType: 'merge-conflict' },
+        {
+          relativePath: 'generated-deleted.txt',
+          conflictType: 'generated-deleted',
+        },
+        {
+          relativePath: 'working-deleted.txt',
+          conflictType: 'working-deleted',
+        },
+      ],
       failedCommands: [
         {
           id: expect.any(String) as string,
@@ -235,13 +252,15 @@ describe('generateForDirectory', () => {
           output: undefined,
         },
       ],
-      filesPendingDelete: [{ relativePath: 'deleted.txt', resolved: false }],
     });
     expect(testLogger.getWarnOutput()).toContain(
-      'Conflicts occurred while writing files',
+      'Merge conflicts occurred while writing files',
     );
     expect(testLogger.getWarnOutput()).toContain(
-      'Files were removed in the new generation',
+      'Files were deleted in the new generation but were modified by user so could not be automatically deleted:',
+    );
+    expect(testLogger.getWarnOutput()).toContain(
+      'Files were deleted by user but were added back in the new generation so should be reviewed:',
     );
   });
 

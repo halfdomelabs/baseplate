@@ -25,8 +25,9 @@ import {
   createNodeSchemaParserContext,
   discoverPlugins,
 } from '@src/plugins/index.js';
+import { ConflictFileMonitor } from '@src/sync/conflict-file-monitor.js';
 import { buildProject } from '@src/sync/index.js';
-import { SyncMetadataController } from '@src/sync/sync-controller.js';
+import { SyncMetadataController } from '@src/sync/sync-metadata-controller.js';
 
 import type { BaseplateUserConfig } from '../user-config/user-config-schema.js';
 
@@ -75,7 +76,7 @@ interface ProjectBuilderServiceOptions {
 
 export interface SyncMetadataChangedPayload {
   id: string;
-  syncMetadata: SyncMetadata;
+  syncMetadata: SyncMetadata | undefined;
 }
 
 export interface SyncStartedPayload {
@@ -84,6 +85,7 @@ export interface SyncStartedPayload {
 
 export interface SyncCompletedPayload {
   id: string;
+  syncMetadata: SyncMetadata | undefined;
 }
 
 const MAX_CONSOLE_OUTPUT_LENGTH = 1000;
@@ -105,7 +107,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   public readonly id: string;
 
-  private isRunningCommand = false;
+  private abortController: AbortController | undefined;
 
   private logger: EventedLogger;
 
@@ -124,6 +126,8 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
   private unsubscribeOperations: (() => void)[] = [];
 
   private currentSyncConsoleOutput: string[] = [];
+
+  private conflictFileMonitor: ConflictFileMonitor | undefined;
 
   constructor({
     directory,
@@ -158,9 +162,26 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
         message,
       });
     };
+    this.conflictFileMonitor = new ConflictFileMonitor(
+      this.syncMetadataController,
+      this.logger,
+    );
+    this.conflictFileMonitor.start().catch((err: unknown) => {
+      this.logger.error(
+        `Unable to start conflict file monitor: ${String(err)}`,
+      );
+    });
     this.unsubscribeOperations.push(
+      () => {
+        this.conflictFileMonitor?.stop().catch((err: unknown) => {
+          this.logger.error(
+            `Unable to stop conflict file monitor: ${String(err)}`,
+          );
+        });
+      },
       this.logger.onLog(emitConsoleEvent),
       this.logger.onError(emitConsoleEvent),
+      this.syncMetadataController.watchMetadata(),
       this.syncMetadataController.on(
         'sync-metadata-changed',
         (syncMetadata) => {
@@ -289,10 +310,18 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
    */
   public async buildProject(): Promise<void> {
     try {
-      if (this.isRunningCommand) {
-        throw new Error('Another command is already running');
+      if (this.abortController) {
+        throw new Error('Build process is already running');
       }
-      this.isRunningCommand = true;
+      const syncMetadata = await this.getSyncMetadata();
+      if (
+        Object.values(syncMetadata?.packages ?? {}).some(
+          (p) => p.status === 'conflicts',
+        )
+      ) {
+        throw new Error('Conflicts must be resolved before building');
+      }
+      this.abortController = new AbortController();
       this.currentSyncConsoleOutput = [];
       this.emit('sync-started', { id: this.id });
 
@@ -302,6 +331,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
         context: await this.getSchemaParserContext(),
         userConfig: this.userConfig,
         syncMetadataController: this.syncMetadataController,
+        abortSignal: this.abortController.signal,
       });
     } catch (error) {
       this.logger.error(
@@ -313,11 +343,26 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       );
       throw error;
     } finally {
-      this.isRunningCommand = false;
-      this.emit('sync-completed', { id: this.id });
+      this.abortController = undefined;
+      this.emit('sync-completed', {
+        id: this.id,
+        syncMetadata: await this.getSyncMetadata().catch(() => undefined),
+      });
     }
   }
 
+  /**
+   * Cancels the current sync operation.
+   */
+  public cancelSync(): void {
+    this.abortController?.abort();
+  }
+
+  /**
+   * Returns the console output from the current sync operation.
+   *
+   * @returns The console output from the current sync operation.
+   */
   public getCurrentSyncConsoleOutput(): string[] {
     return this.currentSyncConsoleOutput;
   }

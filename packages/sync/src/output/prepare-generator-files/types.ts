@@ -79,4 +79,8 @@ export interface GeneratorFileOperationResult {
    * Whether the file has a conflict
    */
   hasConflict?: boolean;
+  /**
+   * Whether the file was deleted in the working codebase but modified in the generated codebase
+   */
+  deletedInWorking?: boolean;
 }
