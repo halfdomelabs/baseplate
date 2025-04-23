@@ -1,5 +1,24 @@
 # @halfdomelabs/project-builder-web
 
+## 0.15.9
+
+### Patch Changes
+
+- [#510](https://github.com/halfdomelabs/baseplate/pull/510) [`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af) Thanks [@kingston](https://github.com/kingston)! - Add ability to cancel running syncs
+
+- [#491](https://github.com/halfdomelabs/baseplate/pull/491) [`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574) Thanks [@kingston](https://github.com/kingston)! - Support template extractor functionality on web/CLI
+
+- [#510](https://github.com/halfdomelabs/baseplate/pull/510) [`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af) Thanks [@kingston](https://github.com/kingston)! - Add support for tracking files with conflicts and track files deleted by user that may be improperly added back by user
+
+- [#509](https://github.com/halfdomelabs/baseplate/pull/509) [`1e064d9`](https://github.com/halfdomelabs/baseplate/commit/1e064d926dc51919b78f4a2ae639f0b52d42c908) Thanks [@kingston](https://github.com/kingston)! - Introduce new UI for tracking syncs
+
+- [#511](https://github.com/halfdomelabs/baseplate/pull/511) [`6b2690b`](https://github.com/halfdomelabs/baseplate/commit/6b2690b2ddbfdfefdd63fc3ce195f86c89963fae) Thanks [@kingston](https://github.com/kingston)! - Introduce ability to view conflict files in a table and act on them accordingly
+
+- Updated dependencies [[`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574), [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9)]:
+  - @halfdomelabs/project-builder-lib@0.9.9
+  - @halfdomelabs/utils@0.1.5
+  - @halfdomelabs/ui-components@0.5.5
+
 ## 0.15.8
 
 ### Patch Changes

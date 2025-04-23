@@ -1,5 +1,22 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.9.10
+
+### Patch Changes
+
+- [#491](https://github.com/halfdomelabs/baseplate/pull/491) [`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574) Thanks [@kingston](https://github.com/kingston)! - Support template extractor functionality on web/CLI
+
+- [#506](https://github.com/halfdomelabs/baseplate/pull/506) [`8b04342`](https://github.com/halfdomelabs/baseplate/commit/8b043425376d224b3d6c22824f746bb32d929c7d) Thanks [@kingston](https://github.com/kingston)! - Introduce persistent user config at ~/.baseplate/config.json that will allow configuration of Baseplate options persistently
+
+- [#496](https://github.com/halfdomelabs/baseplate/pull/496) [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9) Thanks [@kingston](https://github.com/kingston)! - Introduce reverse generation engine for Typescript
+
+- Updated dependencies [[`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af), [`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574), [`9cee1f3`](https://github.com/halfdomelabs/baseplate/commit/9cee1f308f887e0baf06a1478c4785234f3c5aa9), [`8b04342`](https://github.com/halfdomelabs/baseplate/commit/8b043425376d224b3d6c22824f746bb32d929c7d), [`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af), [`1e064d9`](https://github.com/halfdomelabs/baseplate/commit/1e064d926dc51919b78f4a2ae639f0b52d42c908), [`6b2690b`](https://github.com/halfdomelabs/baseplate/commit/6b2690b2ddbfdfefdd63fc3ce195f86c89963fae), [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9)]:
+  - @halfdomelabs/project-builder-server@0.5.10
+  - @halfdomelabs/project-builder-web@0.15.9
+  - @halfdomelabs/project-builder-lib@0.9.9
+  - @halfdomelabs/utils@0.1.5
+  - @halfdomelabs/project-builder-common@0.1.19
+
 ## 0.9.9
 
 ### Patch Changes

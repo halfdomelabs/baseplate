@@ -1,5 +1,11 @@
 # @halfdomelabs/tools
 
+## 0.5.13
+
+### Patch Changes
+
+- [#491](https://github.com/halfdomelabs/baseplate/pull/491) [`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574) Thanks [@kingston](https://github.com/kingston)! - Support template extractor functionality on web/CLI
+
 ## 0.5.12
 
 ### Patch Changes
