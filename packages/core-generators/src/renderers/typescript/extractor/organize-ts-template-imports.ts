@@ -1,8 +1,8 @@
 import type { ResolverFactory } from 'oxc-resolver';
-import type { Identifier } from 'ts-morph';
+import type { SourceFile } from 'ts-morph';
 
 import path from 'node:path';
-import { Project, StringLiteral } from 'ts-morph';
+import { Node, Project, SyntaxKind } from 'ts-morph';
 
 import type { TsImportDeclaration } from '../imports/index.js';
 import type { TsProjectExport } from './write-ts-project-exports.js';
@@ -22,13 +22,25 @@ export interface TsTemplateImportLookupContext {
   resolver: ResolverFactory;
 }
 
-function isIdentifierUsed(
-  node: Identifier | undefined | StringLiteral,
-): node is Identifier {
-  if (node instanceof StringLiteral) {
-    return false;
-  }
-  return node !== undefined && node.findReferencesAsNodes().length > 1;
+/**
+ * Collects all Identifier names from a SourceFile,
+ * skipping nodes within ImportDeclaration structures.
+ */
+function collectUsedIdentifierNames(sourceFile: SourceFile): Set<string> {
+  const usedIdentifiers = new Set<string>();
+
+  sourceFile.forEachDescendant((node, traversal) => {
+    if (node.isKind(SyntaxKind.ImportDeclaration)) {
+      traversal.skip();
+      return;
+    }
+
+    if (Node.isIdentifier(node)) {
+      usedIdentifiers.add(node.getText());
+    }
+  });
+
+  return usedIdentifiers;
 }
 
 /**
@@ -64,6 +76,29 @@ export async function organizeTsTemplateImports(
     getTsMorphImportDeclarationsFromSourceFile(sourceFile);
 
   // Filter out import declarations that are not used
+  // Note: This is a rudimentary implementation that has a known issue
+  // where it will incorrectly identify a used import if the identifier
+  // has been declared in a different scope, e.g.
+  // import { foo } from './foo';
+  // const foo = 'foo';
+  //
+  // In this case, the import { foo } is incorrectly identified as used.
+  // The proper way is to check if the identifier has been used. However,
+  // this comes with a significant performance penalty so we should only use
+  // this if we can't use collectUsedIdentifierNames.
+
+  const usedIdentifierNames = collectUsedIdentifierNames(sourceFile);
+  const isNodeUsed = (node: Node | undefined): node is Node => {
+    if (!node) {
+      return false;
+    }
+    const name =
+      (Node.isImportSpecifier(node)
+        ? node.getAliasNode()?.getText()
+        : undefined) ?? node.getText();
+    return usedIdentifierNames.has(name);
+  };
+
   const tsImportDeclarations = importDeclarations
     .map((declaration) => {
       const namespaceImport = declaration.getNamespaceImport();
@@ -71,19 +106,15 @@ export async function organizeTsTemplateImports(
       return {
         source: declaration.getModuleSpecifier().getLiteralValue(),
         isTypeOnly: declaration.isTypeOnly(),
-        namespaceImport: isIdentifierUsed(namespaceImport)
+        namespaceImport: isNodeUsed(namespaceImport)
           ? namespaceImport.getText()
           : undefined,
-        defaultImport: isIdentifierUsed(defaultImport)
+        defaultImport: isNodeUsed(defaultImport)
           ? defaultImport.getText()
           : undefined,
         namedImports: declaration
           .getNamedImports()
-          .filter((namedImport) =>
-            isIdentifierUsed(
-              namedImport.getAliasNode() ?? namedImport.getNameNode(),
-            ),
-          )
+          .filter((namedImport) => isNodeUsed(namedImport))
           .map((namedImport) => ({
             name: namedImport.getName(),
             alias: namedImport.getAliasNode()?.getText(),
