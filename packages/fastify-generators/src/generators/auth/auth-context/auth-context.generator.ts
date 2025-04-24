@@ -114,17 +114,8 @@ export const authContextGenerator = createGenerator({
                 group: AUTH_AUTH_CONTEXT_TS_TEMPLATES.mainGroup,
                 baseDirectory: appModule.getModuleFolder(),
                 importMapProviders: {
-                  authContextTypes: {
-                    authRolesImports,
-                  },
-                  authContextUtils: {
-                    authRolesImports,
-                    errorHandlerServiceImports,
-                  },
-                  authSessionTypes: {
-                    authRolesImports,
-                    errorHandlerServiceImports,
-                  },
+                  authRolesImports,
+                  errorHandlerServiceImports,
                 },
               }),
             );

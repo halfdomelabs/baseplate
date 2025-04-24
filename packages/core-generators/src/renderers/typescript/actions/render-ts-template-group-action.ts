@@ -1,8 +1,11 @@
-import {
-  type BuilderAction,
-  normalizePathToProjectPath,
-  type WriteFileOptions,
+import type {
+  BuilderAction,
+  ProviderType,
+  WriteFileOptions,
 } from '@halfdomelabs/sync';
+
+import { normalizePathToProjectPath } from '@halfdomelabs/sync';
+import { mapValues } from 'es-toolkit';
 import path from 'node:path';
 
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
@@ -30,22 +33,34 @@ type InferTsTemplateVariablesFromTemplateGroup<T extends TsTemplateGroup> = {
   >;
 };
 
-type HasImportMapProviders<T extends TsTemplateFile> =
-  keyof InferImportMapProvidersFromProviderTypeMap<
-    T['importMapProviders']
-  > extends never
-    ? false
-    : true;
+type IntersectionOfValues<T> = UnionToIntersection<T[keyof T]>;
 
-type InferImportMapProvidersFromTemplateGroup<T extends TsTemplateGroup> = {
-  [K in keyof T['templates'] as HasImportMapProviders<
-    T['templates'][K]['template']
-  > extends true
-    ? K
-    : never]: InferImportMapProvidersFromProviderTypeMap<
-    T['templates'][K]['template']['importMapProviders']
+// Helper type to convert a union to an intersection
+type UnionToIntersection<U> = (
+  U extends unknown ? (k: U) => void : never
+) extends (k: infer I) => void
+  ? I
+  : never;
+
+/**
+ * Typescript hack to force IDEs to show raw object
+ * type without additional typing that we have added
+ */
+type NormalizeTypes<T> =
+  T extends Record<string, unknown>
+    ? {
+        [K in keyof T]: T[K];
+      }
+    : T;
+
+type InferImportMapProvidersFromTemplateGroup<T extends TsTemplateGroup> =
+  NormalizeTypes<
+    IntersectionOfValues<{
+      [K in keyof T['templates']]: InferImportMapProvidersFromProviderTypeMap<
+        T['templates'][K]['template']['importMapProviders']
+      >;
+    }>
   >;
-};
 
 interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
   group: T;
@@ -68,9 +83,9 @@ export type RenderTsTemplateGroupActionInput<
     ? Partial<{ variables: InferTsTemplateVariablesFromTemplateGroup<T> }>
     : { variables: InferTsTemplateVariablesFromTemplateGroup<T> }) &
   (keyof InferImportMapProvidersFromTemplateGroup<T> extends never
-    ? Partial<{
-        importMapProviders: InferImportMapProvidersFromTemplateGroup<T>;
-      }>
+    ? {
+        importMapProviders?: never;
+      }
     : { importMapProviders: InferImportMapProvidersFromTemplateGroup<T> });
 
 export function renderTsTemplateGroupAction<
@@ -85,17 +100,36 @@ export function renderTsTemplateGroupAction<
 }: RenderTsTemplateGroupActionInput<T>): BuilderAction {
   return {
     execute: async (builder) => {
-      for (const [key, template] of Object.entries(group.templates)) {
+      const typedImportMapProviders = (importMapProviders ?? {}) as Record<
+        string,
+        ProviderType
+      >;
+      for (const [key, templateEntry] of Object.entries(group.templates)) {
         const destination = path.join(
           normalizePathToProjectPath(baseDirectory),
-          template.destination,
+          templateEntry.destination,
         );
+
+        const templateSpecificProviders = templateEntry.template
+          .importMapProviders
+          ? mapValues(
+              templateEntry.template.importMapProviders,
+              (_, providerKey: string) => {
+                if (!(providerKey in typedImportMapProviders)) {
+                  throw new Error(
+                    `Import map provider "${providerKey}" is not defined in the import map providers`,
+                  );
+                }
+                return typedImportMapProviders[providerKey];
+              },
+            )
+          : undefined;
 
         try {
           const destinationDirectory = path.dirname(destination);
           await builder.apply(
             renderTsTemplateFileAction({
-              template: template.template,
+              template: templateEntry.template,
               destination,
               variables:
                 variables && typeof variables === 'object'
@@ -105,12 +139,7 @@ export function renderTsTemplateGroupAction<
                     >)
                   : undefined,
               writeOptions: writeOptions?.[key],
-              importMapProviders:
-                importMapProviders && typeof importMapProviders === 'object'
-                  ? (importMapProviders[
-                      key as keyof typeof importMapProviders
-                    ] as Record<never, string>)
-                  : undefined,
+              importMapProviders: templateSpecificProviders,
               renderOptions: {
                 ...renderOptions,
                 resolveModule: (specifier) => {

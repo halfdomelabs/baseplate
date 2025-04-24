@@ -1,4 +1,4 @@
-import { testAction } from '@halfdomelabs/sync';
+import { createProviderType, testAction } from '@halfdomelabs/sync';
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -142,6 +142,9 @@ describe('renderTsTemplateGroupAction', () => {
       Test: 'test-package',
     });
 
+    const importProvider =
+      createProviderType<typeof importMap>('test-provider');
+
     const group = createTsTemplateGroup({
       templates: {
         test1: {
@@ -156,6 +159,9 @@ describe('renderTsTemplateGroupAction', () => {
               `,
             },
             variables: {},
+            importMapProviders: {
+              testImport: importProvider,
+            },
           }),
         },
         test2: {
@@ -170,6 +176,9 @@ describe('renderTsTemplateGroupAction', () => {
               `,
             },
             variables: {},
+            importMapProviders: {
+              testImport: importProvider,
+            },
           }),
         },
       },
@@ -179,12 +188,7 @@ describe('renderTsTemplateGroupAction', () => {
       group,
       baseDirectory: 'output',
       importMapProviders: {
-        test1: {
-          testImport: importMap,
-        },
-        test2: {
-          testImport: importMap,
-        },
+        testImport: importMap,
       },
     });
 
