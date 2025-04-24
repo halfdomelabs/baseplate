@@ -10,7 +10,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-  createProviderType,
+  createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
@@ -33,7 +33,7 @@ const descriptorSchema = z.object({});
 export type AuthContextProvider = ImportMapper;
 
 export const authContextProvider =
-  createProviderType<AuthContextProvider>('auth-context');
+  createReadOnlyProviderType<AuthContextProvider>('auth-context');
 
 export const authContextGenerator = createGenerator({
   name: 'auth/auth-context',

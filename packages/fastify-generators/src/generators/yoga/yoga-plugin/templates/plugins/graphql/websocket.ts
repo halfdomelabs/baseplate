@@ -14,7 +14,7 @@ import {
 } from 'graphql-ws';
 import { logger } from '@/src/services/logger.js';
 // <% if (it.authEnabled) { %>
-import { createAuthContextFromSessionInfo } from '%auth/context-utils';
+import { createAuthContextFromSessionInfo } from '%auth-context/utils';
 import { HttpError } from '@/src/utils/http-errors.js';
 // <% } %>
 import * as ws from 'ws';
