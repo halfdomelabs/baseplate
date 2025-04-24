@@ -16,6 +16,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
+  createProviderTask,
   createProviderType,
 } from '@halfdomelabs/sync';
 
@@ -60,9 +61,11 @@ export const loggerServiceGenerator = createGenerator({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['pino']),
       dev: extractPackageVersions(FASTIFY_PACKAGES, ['pino-pretty']),
     }),
+    fastify: createProviderTask(fastifyProvider, (fastify) => {
+      fastify.devOutputFormatter.set('pino-pretty -t');
+    }),
     main: createGeneratorTask({
       dependencies: {
-        fastify: fastifyProvider,
         typescriptFile: typescriptFileProvider,
       },
       exports: {
@@ -72,12 +75,10 @@ export const loggerServiceGenerator = createGenerator({
       outputs: {
         loggerServiceImports: loggerServiceImportsProvider.export(projectScope),
       },
-      run({ fastify, typescriptFile }) {
+      run({ typescriptFile }) {
         const mixins = createNonOverwriteableMap<
           Record<string, TsCodeFragment>
         >({}, { name: 'logger-service-mixins' });
-
-        fastify.devOutputFormatter.set('pino-pretty -t');
 
         const importMap = {
           '%logger-service': {
@@ -126,7 +127,6 @@ export const loggerServiceGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template: CORE_LOGGER_SERVICE_TS_TEMPLATES.logger,
-                id: 'logger',
                 variables: {
                   TPL_LOGGER_OPTIONS:
                     Object.keys(loggerOptions).length > 0
@@ -134,12 +134,6 @@ export const loggerServiceGenerator = createGenerator({
                       : '',
                 },
                 destination: 'src/services/logger.ts',
-                importMapProviders: {},
-                writeOptions: {
-                  alternateFullIds: [
-                    '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',
-                  ],
-                },
               }),
             );
 
