@@ -10,7 +10,6 @@ import {
   projectProvider,
   projectScope,
   tsCodeFragment,
-  tsImportBuilder,
   TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
@@ -153,19 +152,31 @@ export const prismaGenerator = createGenerator({
             );
 
             return {
-              prismaImports: createPrismaImports('@/src'),
+              prismaImports: createPrismaImports('@/src/services'),
             };
           },
         };
       },
     }),
-    schema: createGeneratorTask({
+    fastifyHealthCheckConfig: createGeneratorTask({
       dependencies: {
         fastifyHealthCheckConfig: fastifyHealthCheckConfigProvider,
+        prismaImports: prismaImportsProvider,
       },
+      run({ fastifyHealthCheckConfig, prismaImports }) {
+        fastifyHealthCheckConfig.healthChecks.set(
+          'prisma',
+          tsCodeFragment(
+            '// check Prisma is operating\nawait prisma.$queryRaw`SELECT 1;`;',
+            prismaImports.prisma.declaration(),
+          ),
+        );
+      },
+    }),
+    schema: createGeneratorTask({
       exports: { prismaSchema: prismaSchemaProvider.export(projectScope) },
       outputs: { prismaOutput: prismaOutputProvider.export(projectScope) },
-      run({ fastifyHealthCheckConfig }) {
+      run() {
         const schemaFile = new PrismaSchemaFile();
 
         schemaFile.addGeneratorBlock(
@@ -181,14 +192,6 @@ export const prismaGenerator = createGenerator({
             provider: 'postgresql',
             url: 'env("DATABASE_URL")',
           }),
-        );
-
-        fastifyHealthCheckConfig.healthChecks.set(
-          'prisma',
-          tsCodeFragment(
-            '// check Prisma is operating\nawait prisma.$queryRaw`SELECT 1;`;',
-            tsImportBuilder(['prisma']).from('@/src/services/prisma.js'),
-          ),
         );
 
         return {
