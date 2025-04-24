@@ -33,12 +33,11 @@ describe('writeTsProjectExports', () => {
 
     const result = writeTsProjectExports(
       files,
-      '/test',
       TEST_GENERATOR_NAME,
       TEST_IMPORT_MAP_PATH,
     );
 
-    expect(result.importsFileContents).toBeUndefined();
+    expect(result.importsFileFragment).toBeUndefined();
     expect(result.projectExports).toEqual([]);
   });
 
@@ -62,7 +61,6 @@ describe('writeTsProjectExports', () => {
 
     const result = writeTsProjectExports(
       files,
-      '/test',
       TEST_GENERATOR_NAME,
       TEST_IMPORT_MAP_PATH,
     );
@@ -82,12 +80,11 @@ describe('writeTsProjectExports', () => {
       },
     ]);
 
-    expect(result.importsFileContents).toContain('TestExport: {}');
-    expect(result.importsFileContents).toContain(
-      'TypeOnlyExport: {"isTypeOnly":true}',
-    );
-    expect(result.importsFileContents).toContain('test-generator');
-    expect(result.importsFileContents).toContain('createTestGeneratorImports');
+    const importsContents = result.importsFileFragment?.contents;
+    expect(importsContents).toContain('TestExport: {}');
+    expect(importsContents).toContain('TypeOnlyExport: {"isTypeOnly":true}');
+    expect(importsContents).toContain('test-generator');
+    expect(importsContents).toContain('createTestGeneratorImports');
   });
 
   it('should handle local imports for core-generators', () => {
@@ -109,17 +106,14 @@ describe('writeTsProjectExports', () => {
 
     const result = writeTsProjectExports(
       files,
-      '/test',
       '@halfdomelabs/core-generators#test',
       TEST_IMPORT_MAP_PATH,
     );
 
-    expect(result.importsFileContents).toContain(
-      '@src/renderers/typescript/index.js',
-    );
-    expect(result.importsFileContents).not.toContain(
-      '@halfdomelabs/core-generators',
-    );
+    const imports =
+      result.importsFileFragment?.imports?.map((m) => m.source) ?? [];
+    expect(imports).toContain('@src/renderers/typescript/index.js');
+    expect(imports).not.toContain('@halfdomelabs/core-generators');
   });
 
   it('should handle external imports for non-core-generators', () => {
@@ -141,17 +135,14 @@ describe('writeTsProjectExports', () => {
 
     const result = writeTsProjectExports(
       files,
-      '/test',
       'external-generator#test',
       TEST_IMPORT_MAP_PATH,
     );
 
-    expect(result.importsFileContents).toContain(
-      '@halfdomelabs/core-generators',
-    );
-    expect(result.importsFileContents).not.toContain(
-      '@src/renderers/typescript/index.ts',
-    );
+    const imports =
+      result.importsFileFragment?.imports?.map((m) => m.source) ?? [];
+    expect(imports).toContain('@halfdomelabs/core-generators');
+    expect(imports).not.toContain('@src/renderers/typescript/index.ts');
   });
 
   it('should throw error for duplicate exports', () => {
@@ -185,12 +176,7 @@ describe('writeTsProjectExports', () => {
     ];
 
     expect(() =>
-      writeTsProjectExports(
-        files,
-        '/test',
-        TEST_GENERATOR_NAME,
-        TEST_IMPORT_MAP_PATH,
-      ),
+      writeTsProjectExports(files, TEST_GENERATOR_NAME, TEST_IMPORT_MAP_PATH),
     ).toThrow(
       `Duplicate project exports found in template files for generator ${TEST_GENERATOR_NAME}: TestExport`,
     );
@@ -215,12 +201,12 @@ describe('writeTsProjectExports', () => {
 
     const result = writeTsProjectExports(
       files,
-      '/test',
       TEST_GENERATOR_NAME,
       TEST_IMPORT_MAP_PATH,
     );
 
-    expect(result.importsFileContents).toContain(
+    const importsContents = result.importsFileFragment?.contents;
+    expect(importsContents).toContain(
       "TestExport: path.join(importBase, 'file1.js')",
     );
   });

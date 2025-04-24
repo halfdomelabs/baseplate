@@ -313,20 +313,34 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
       this.getGeneratorBaseDirectory(generatorName),
       'generated/ts-import-maps.ts',
     );
-    const { importsFileContents, projectExports } = writeTsProjectExports(
+    const { importsFileFragment, projectExports } = writeTsProjectExports(
       files,
-      this.getProjectBaseDirectory(),
       generatorName,
       importMapsPath,
     );
 
-    if (importsFileContents) {
-      await this.writeGeneratedTypescriptFileIfModified(
-        generatorName,
-        'ts-import-maps.ts',
-        importsFileContents,
-      );
-    }
+    const importsFileContents = importsFileFragment
+      ? renderTsCodeFileTemplate(
+          `TPL_CONTENTS`,
+          {
+            TPL_CONTENTS: importsFileFragment,
+          },
+          {},
+          {
+            importSortOptions: {
+              internalPatterns: [/^@src\//],
+            },
+          },
+        )
+      : undefined;
+
+    await (importsFileContents
+      ? this.writeGeneratedTypescriptFileIfModified(
+          generatorName,
+          'ts-import-maps.ts',
+          importsFileContents,
+        )
+      : this.deleteGeneratedTypescriptFile(generatorName, 'ts-import-maps.ts'));
 
     return projectExports;
   }

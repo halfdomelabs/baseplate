@@ -2,17 +2,17 @@ import {
   parseGeneratorName,
   type TemplateFileExtractorFile,
 } from '@halfdomelabs/sync';
+import { quot } from '@halfdomelabs/utils';
 import { getCommonPathPrefix } from '@halfdomelabs/utils/node';
 import { camelCase, pascalCase } from 'change-case';
 import { sortBy } from 'es-toolkit';
 
+import type { TsCodeFragment } from '../fragments/types.js';
 import type { TsTemplateFileMetadata } from '../templates/types.js';
 
 import { tsCodeFragment } from '../fragments/creators.js';
 import { tsImportBuilder } from '../imports/builder.js';
-import { renderTsCodeFileTemplate } from '../renderers/file.js';
 import { TsCodeUtils } from '../ts-code-utils.js';
-import { IMPORTS_FILE_TEMPLATE } from './templates/imports-file.js';
 
 /**
  * A project export that represents a single export from a generator.
@@ -58,11 +58,10 @@ export interface TsProjectExport {
  */
 export function writeTsProjectExports(
   files: TemplateFileExtractorFile<TsTemplateFileMetadata>[],
-  outputDirectory: string,
   generatorName: string,
   importMapFilePath: string,
 ): {
-  importsFileContents: string | undefined;
+  importsFileFragment: TsCodeFragment | undefined;
   projectExports: TsProjectExport[];
 } {
   // get imports name based off generator name
@@ -105,7 +104,7 @@ export function writeTsProjectExports(
 
   if (projectExports.length === 0) {
     return {
-      importsFileContents: undefined,
+      importsFileFragment: undefined,
       projectExports: [],
     };
   }
@@ -121,56 +120,85 @@ export function writeTsProjectExports(
     projectExports.map((projectExport) => projectExport.filePath),
   );
 
-  const importsFileContents = renderTsCodeFileTemplate(
-    IMPORTS_FILE_TEMPLATE,
-    {
-      TPL_TS_IMPORTS: tsImports,
-
-      TPL_IMPORTS_SCHEMA_VAR: `${providerNameCamelCase}Schema`,
-      TPL_IMPORTS_SCHEMA: TsCodeUtils.mergeFragmentsAsObject(
-        Object.fromEntries(
-          projectExports.map((projectExport) => [
-            projectExport.name,
-            JSON.stringify({
-              isTypeOnly: projectExport.isTypeOnly ? true : undefined,
-            }),
-          ]),
-        ),
+  const schemaVarName = `${providerNameCamelCase}Schema`;
+  const importsSchemaFragment = TsCodeUtils.templateWithImports(
+    tsImportBuilder(['createTsImportMapSchema']).from(tsImports),
+  )`
+  const ${schemaVarName} = createTsImportMapSchema(
+    ${TsCodeUtils.mergeFragmentsAsObject(
+      Object.fromEntries(
+        projectExports.map((projectExport) => [
+          projectExport.name,
+          JSON.stringify({
+            isTypeOnly: projectExport.isTypeOnly ? true : undefined,
+          }),
+        ]),
       ),
+    )},
+  );
+  `;
 
-      TPL_IMPORTS_PROVIDER_TYPE_VAR: `${providerNamePascalCase}Provider`,
+  const providerTypeVarName = `${providerNamePascalCase}Provider`;
+  const importsProviderTypeFragment = TsCodeUtils.templateWithImports(
+    tsImportBuilder(['TsImportMapProviderFromSchema'])
+      .typeOnly()
+      .from(tsImports),
+  )`
+    type ${providerTypeVarName} = TsImportMapProviderFromSchema<
+      typeof ${schemaVarName}
+    >;
+  `;
 
-      TPL_IMPORTS_PROVIDER_VAR: providerNameVar,
-      TPL_PROVIDER_NAME: providerName,
+  const importsProviderFragment = TsCodeUtils.templateWithImports(
+    tsImportBuilder(['createReadOnlyProviderType']).from('@halfdomelabs/sync'),
+  )`
+    export const ${providerNameVar} = createReadOnlyProviderType<${providerTypeVarName}>(
+      ${quot(providerName)},
+    );
+  `;
 
-      TPL_CREATE_IMPORT_MAP_FUNCTION: `create${providerNamePascalCase}`,
-
-      TPL_IMPORT_MAP_CREATOR: TsCodeUtils.mergeFragmentsAsObject(
-        Object.fromEntries(
-          projectExports.map((projectExport) => [
-            projectExport.name,
-            tsCodeFragment(
-              `path.join(importBase, '${projectExport.filePath
-                .slice(
-                  commonPathPrefix === '.' ? 0 : commonPathPrefix.length + 1,
-                )
-                .replace(/\.tsx?$/, '.js')}')`,
-              [tsImportBuilder().default('path').from('node:path/posix')],
-            ),
-          ]),
-        ),
-      ),
-    },
-    {},
-    {
-      importSortOptions: {
-        internalPatterns: [/^@src\//],
-      },
-    },
+  const importProviderDeclaration = TsCodeUtils.mergeFragmentsPresorted(
+    [
+      importsSchemaFragment,
+      importsProviderTypeFragment,
+      importsProviderFragment,
+    ],
+    '\n\n',
   );
 
+  const createImportMapFunctionName = `create${providerNamePascalCase}`;
+  const creatorFragment = TsCodeUtils.mergeFragmentsAsObject(
+    Object.fromEntries(
+      projectExports.map((projectExport) => [
+        projectExport.name,
+        tsCodeFragment(
+          `path.join(importBase, '${projectExport.filePath
+            .slice(commonPathPrefix === '.' ? 0 : commonPathPrefix.length + 1)
+            .replace(/\.tsx?$/, '.js')}')`,
+          [tsImportBuilder().default('path').from('node:path/posix')],
+        ),
+      ]),
+    ),
+  );
+  const createImportMapFunctionFragment = TsCodeUtils.templateWithImports(
+    tsImportBuilder(['createTsImportMap']).from(tsImports),
+  )`
+    export function ${createImportMapFunctionName}(
+      importBase: string,
+    ): ${providerTypeVarName} {
+      if (!importBase.startsWith('@/')) {
+        throw new Error('importBase must start with @/');
+      }
+
+      return createTsImportMap(${schemaVarName}, ${creatorFragment});
+    }
+  `;
+
   return {
-    importsFileContents,
+    importsFileFragment: TsCodeUtils.mergeFragmentsPresorted(
+      [importProviderDeclaration, createImportMapFunctionFragment],
+      '\n\n',
+    ),
     projectExports,
   };
 }

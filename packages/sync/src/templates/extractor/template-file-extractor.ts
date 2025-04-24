@@ -155,6 +155,17 @@ export abstract class TemplateFileExtractor<
     );
   }
 
+  protected async deleteGeneratedTypescriptFile(
+    generatorName: string,
+    destination: string,
+  ): Promise<void> {
+    const generatorFilePath = path.join(
+      this.getGeneratorBaseDirectory(generatorName),
+      path.join('generated', destination),
+    );
+    await fs.unlink(generatorFilePath).catch(handleFileNotFoundError);
+  }
+
   protected async readSourceFile(path: string): Promise<string> {
     const buffer = await this.readSourceFileBuffer(path);
     return buffer.toString('utf8');
