@@ -44,6 +44,7 @@ describe('createGeneratorPathMap', () => {
             name: '@halfdomelabs/fastify-generators#core/readme',
             baseDirectory:
               '/test/packages/fastify-generators/src/generators/core/readme',
+            packagePath: '/test/packages/fastify-generators',
           },
         ],
       ]),

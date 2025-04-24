@@ -109,6 +109,7 @@ describe('runTemplateFileExtractors', () => {
     expect(context.generatorInfoMap.get('test-pkg#test-generator')).toEqual({
       name: 'test-pkg#test-generator',
       baseDirectory: '/test/pkg/src/generators/test-generator',
+      packagePath: '/test/pkg',
     });
 
     expect(mockExtract).toHaveBeenCalledTimes(2);
