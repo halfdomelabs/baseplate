@@ -27,7 +27,10 @@ import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/index.js';
-import { authProvider } from '@src/generators/auth/index.js';
+import {
+  authContextProvider,
+  userSessionServiceImportsProvider,
+} from '@src/generators/auth/index.js';
 import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/fastify-redis.generator.js';
@@ -276,20 +279,22 @@ export const yogaPluginGenerator = createGenerator({
               node: nodeProvider,
               typescript: typescriptProvider,
               fastifyRedis: fastifyRedisProvider,
-              auth: authProvider.dependency().optional(),
+              authContext: authContextProvider.dependency().optional(),
               errorLoggerService: errorHandlerServiceProvider,
               loggerService: loggerServiceProvider,
               requestServiceContextImports:
                 requestServiceContextImportsProvider,
+              userSessionServiceImports: userSessionServiceImportsProvider,
             },
             run({
               node,
               typescript,
               fastifyRedis,
-              auth,
+              authContext,
               errorLoggerService,
               loggerService,
               requestServiceContextImports,
+              userSessionServiceImports,
             }) {
               node.packages.addPackages({
                 prod: extractPackageVersions(FASTIFY_PACKAGES, [
@@ -317,7 +322,7 @@ export const yogaPluginGenerator = createGenerator({
 
                   const websocketFile = typescript.createTemplate(
                     {
-                      AUTH_INFO_CREATOR: auth
+                      AUTH_INFO_CREATOR: authContext
                         ? TypescriptCodeUtils.createExpression(
                             `await userSessionService.getSessionInfoFromToken(
               ctx.extra.request,
@@ -325,7 +330,7 @@ export const yogaPluginGenerator = createGenerator({
                 ? authorizationHeader
                 : undefined,
             )`,
-                            "import { userSessionService } from '%auth/user-session-service';",
+                            `import { userSessionService } from '${userSessionServiceImports.userSessionService.source}';`,
                           )
                         : { type: 'code-expression' },
                     },
@@ -333,7 +338,7 @@ export const yogaPluginGenerator = createGenerator({
                       importMappers: [
                         errorLoggerService,
                         loggerService,
-                        auth,
+                        authContext,
                         {
                           getImportMap: () => ({
                             '%request-service-context': {
@@ -356,7 +361,7 @@ export const yogaPluginGenerator = createGenerator({
                       websocketPath,
                       {
                         preprocessWithEta: {
-                          data: { authEnabled: !!auth },
+                          data: { authEnabled: !!authContext },
                         },
                       },
                     ),

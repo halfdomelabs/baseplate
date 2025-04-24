@@ -14,14 +14,11 @@ export const fastifyVitestGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    node: createNodeTask((node, { taskId }) => {
-      node.scripts.mergeObj(
-        {
-          test: 'vitest run',
-          'test:unit': 'cross-env TEST_MODE=unit vitest run .unit.',
-        },
-        taskId,
-      );
+    node: createNodeTask((node) => {
+      node.scripts.mergeObj({
+        test: 'vitest run',
+        'test:unit': 'cross-env TEST_MODE=unit vitest run .unit.',
+      });
     }),
     main: createGeneratorTask({
       dependencies: {

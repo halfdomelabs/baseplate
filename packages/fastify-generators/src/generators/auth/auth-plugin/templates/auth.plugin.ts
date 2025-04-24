@@ -1,11 +1,12 @@
 // @ts-nocheck
 
+import type { AuthContext } from '%authContextImports';
+import type { UserSessionService } from '%userSessionTypesImports';
+
+import { createAuthContextFromSessionInfo } from '%authContextImports';
+import { userSessionService } from '%userSessionServiceImports';
 import { requestContext } from '@fastify/request-context';
 import fp from 'fastify-plugin';
-import { userSessionService } from '%user-session-service';
-import { AuthContext } from '%auth-context/types';
-import { createAuthContextFromSessionInfo } from '%auth-context/utils';
-import type { UserSessionService } from '%user-session-types';
 
 declare module 'fastify' {
   interface FastifyRequest {

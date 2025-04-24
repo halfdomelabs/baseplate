@@ -55,6 +55,7 @@ export async function createGeneratorInfoMap(
           {
             name: generatorName,
             baseDirectory: path.join(packagePath, generatorPackageRelativePath),
+            packagePath,
           },
         ];
       },

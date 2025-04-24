@@ -45,17 +45,14 @@ export const bullMqGenerator = createGenerator({
       exports: {
         bullMq: bullMqProvider.export(projectScope),
       },
-      run(
-        {
-          errorHandlerService,
-          loggerService,
-          fastifyRedis,
-          node,
-          typescript,
-          fastifyOutput,
-        },
-        { taskId },
-      ) {
+      run({
+        errorHandlerService,
+        loggerService,
+        fastifyRedis,
+        node,
+        typescript,
+        fastifyOutput,
+      }) {
         const devOutputFormatter = fastifyOutput.getDevOutputFormatter();
         const devWorkersCommand = [
           'tsx watch --clear-screen=false',
@@ -66,13 +63,10 @@ export const bullMqGenerator = createGenerator({
           .filter(Boolean)
           .join(' ');
 
-        node.scripts.mergeObj(
-          {
-            'dev:workers': devWorkersCommand,
-            'run:workers': 'pnpm run:script ./scripts/run-workers.ts',
-          },
-          taskId,
-        );
+        node.scripts.mergeObj({
+          'dev:workers': devWorkersCommand,
+          'run:workers': 'pnpm run:script ./scripts/run-workers.ts',
+        });
 
         return {
           providers: {

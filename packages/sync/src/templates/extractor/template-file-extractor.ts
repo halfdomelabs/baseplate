@@ -36,6 +36,10 @@ export interface TemplateFileExtractorGeneratorInfo {
    * The base directory of the generator.
    */
   baseDirectory: string;
+  /**
+   * The package path of the generator.
+   */
+  packagePath: string;
 }
 
 export interface TemplateFileExtractorContext {
@@ -82,6 +86,17 @@ export abstract class TemplateFileExtractor<
       );
     }
     return generatorInfo.baseDirectory;
+  }
+
+  protected getGeneratorPackagePath(generatorName: string): string {
+    const generatorInfo = this.context.generatorInfoMap.get(generatorName);
+    if (!generatorInfo) {
+      throw new Error(
+        `Could not find generator info for generator: ${generatorName}.
+         Please ensure that the generator is present in the ${GENERATOR_INFO_FILENAME} file.`,
+      );
+    }
+    return generatorInfo.packagePath;
   }
 
   protected getTemplatePathForFile(file: TemplateFileExtractorFile): string {
@@ -153,6 +168,17 @@ export abstract class TemplateFileExtractor<
       path.join('generated', destination),
       formattedContents,
     );
+  }
+
+  protected async deleteGeneratedTypescriptFile(
+    generatorName: string,
+    destination: string,
+  ): Promise<void> {
+    const generatorFilePath = path.join(
+      this.getGeneratorBaseDirectory(generatorName),
+      path.join('generated', destination),
+    );
+    await fs.unlink(generatorFilePath).catch(handleFileNotFoundError);
   }
 
   protected async readSourceFile(path: string): Promise<string> {

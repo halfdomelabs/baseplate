@@ -74,17 +74,17 @@ export function generateConfig({
         rules: {
           // we should prefer logger over console
           'no-console': 'error',
-          // ensure we alphabetize imports for easier reading
-          'import/order': [
-            'error',
-            {
-              pathGroups: [
-                { pattern: 'src/**', group: 'external', position: 'after' },
-                { pattern: '@src/**', group: 'external', position: 'after' },
-              ],
-              alphabetize: { order: 'asc', caseInsensitive: true },
-            },
-          ],
+          // // ensure we alphabetize imports for easier reading
+          // 'import/order': [
+          //   'error',
+          //   {
+          //     pathGroups: [
+          //       { pattern: 'src/**', group: 'external', position: 'after' },
+          //       { pattern: '@src/**', group: 'external', position: 'after' },
+          //     ],
+          //     alphabetize: { order: 'asc', caseInsensitive: true },
+          //   },
+          // ],
           // ensure we don't have devDependencies imported in production code
           'import/no-extraneous-dependencies': [
             'error',

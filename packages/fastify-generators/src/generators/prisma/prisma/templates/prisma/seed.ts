@@ -1,13 +1,15 @@
 // @ts-nocheck
 
+import { prisma } from '../services/prisma.js';
+
 /* eslint-disable no-console */
 
 async function main(): Promise<void> {
   try {
     // your seed script goes here
-    await PRISMA_SERVICE.$queryRaw`SELECT 1;`;
+    await prisma.$queryRaw`SELECT 1;`;
   } finally {
-    await PRISMA_SERVICE.$disconnect();
+    await prisma.$disconnect();
   }
 }
 

@@ -127,7 +127,7 @@ export const prettierGenerator = createGenerator({
       exports: {
         prettier: prettierProvider.export(projectScope),
       },
-      run({ node }, { taskId }) {
+      run({ node }) {
         const prettierConfig = createNonOverwriteableMap<PrettierConfig>({
           tabWidth: descriptor.tabWidth,
           singleQuote: descriptor.singleQuote,
@@ -260,13 +260,10 @@ export const prettierGenerator = createGenerator({
               ),
             });
 
-            node.scripts.mergeObj(
-              {
-                'prettier:check': 'prettier --check .',
-                'prettier:write': 'prettier -w .',
-              },
-              taskId,
-            );
+            node.scripts.mergeObj({
+              'prettier:check': 'prettier --check .',
+              'prettier:write': 'prettier -w .',
+            });
 
             writeJsonToBuilder(builder, {
               id: 'prettier-config',

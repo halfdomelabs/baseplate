@@ -9,11 +9,16 @@ import {
   TemplateFileExtractor,
 } from '@halfdomelabs/sync';
 import { mapGroupBy, mapKeyBy, quot } from '@halfdomelabs/utils';
-import { getCommonPathPrefix } from '@halfdomelabs/utils/node';
+import {
+  getCommonPathPrefix,
+  handleFileNotFoundError,
+  readJsonWithSchema,
+} from '@halfdomelabs/utils/node';
 import { camelCase, constantCase, sortBy, uniq } from 'es-toolkit';
 import path from 'node:path';
 import { ResolverFactory } from 'oxc-resolver';
 import pLimit from 'p-limit';
+import { z } from 'zod';
 
 import type { TsCodeFragment } from '../fragments/types.js';
 import type { TsTemplateFileMetadata } from '../templates/types.js';
@@ -48,6 +53,38 @@ function getImportSourceForGenerator(
   const { packageName } = parseGeneratorName(generatorName);
   return importPackage === packageName ? importPath : importPackage;
 }
+
+const GENERATOR_OPTIONS_FILENAME = 'ts-extractor.json';
+const generatorOptionsSchema = z.object({
+  exportConfiguration: z
+    .object({
+      existingImportsProvider: z
+        .object({
+          /**
+           * The module specifier of the existing imports provider.
+           *
+           * Can be a relative path with @/ or a package name.
+           */
+          moduleSpecifier: z.string(),
+          /**
+           * The name of the import schema export.
+           */
+          importSchemaName: z.string(),
+          /**
+           * The name of the provider type export.
+           */
+          providerTypeName: z.string(),
+          /**
+           * The name of the provider export.
+           */
+          providerName: z.string(),
+        })
+        .optional(),
+    })
+    .optional(),
+});
+
+type GeneratorOptions = z.infer<typeof generatorOptionsSchema>;
 
 export class TsTemplateFileExtractor extends TemplateFileExtractor<
   typeof tsTemplateFileMetadataSchema
@@ -84,6 +121,28 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
           '.mjs': ['.mts', '.d.mts', '.mjs'],
         },
       });
+  }
+
+  private generatorConfigCacheMap = new Map<string, GeneratorOptions>();
+
+  protected async getGeneratorOptions(
+    generatorName: string,
+  ): Promise<GeneratorOptions> {
+    let generatorOptions = this.generatorConfigCacheMap.get(generatorName);
+    if (!generatorOptions) {
+      const generatorBase = this.getGeneratorBaseDirectory(generatorName);
+      const generatorOptionsPath = path.join(
+        generatorBase,
+        GENERATOR_OPTIONS_FILENAME,
+      );
+      generatorOptions =
+        (await readJsonWithSchema(
+          generatorOptionsPath,
+          generatorOptionsSchema,
+        ).catch(handleFileNotFoundError)) ?? {};
+      this.generatorConfigCacheMap.set(generatorName, generatorOptions);
+    }
+    return generatorOptions;
   }
 
   protected getTypescriptRendererImport(generatorName: string): string {
@@ -313,20 +372,41 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
       this.getGeneratorBaseDirectory(generatorName),
       'generated/ts-import-maps.ts',
     );
-    const { importsFileContents, projectExports } = writeTsProjectExports(
+    const generatorOptions = await this.getGeneratorOptions(generatorName);
+    const packagePath = this.getGeneratorPackagePath(generatorName);
+    const { importsFileFragment, projectExports } = writeTsProjectExports(
       files,
-      this.getProjectBaseDirectory(),
       generatorName,
-      importMapsPath,
+      {
+        importMapFilePath: importMapsPath,
+        packagePath,
+        existingImportsProvider:
+          generatorOptions.exportConfiguration?.existingImportsProvider,
+      },
     );
 
-    if (importsFileContents) {
-      await this.writeGeneratedTypescriptFileIfModified(
-        generatorName,
-        'ts-import-maps.ts',
-        importsFileContents,
-      );
-    }
+    const importsFileContents = importsFileFragment
+      ? renderTsCodeFileTemplate(
+          `TPL_CONTENTS`,
+          {
+            TPL_CONTENTS: importsFileFragment,
+          },
+          {},
+          {
+            importSortOptions: {
+              internalPatterns: [/^@src\//],
+            },
+          },
+        )
+      : undefined;
+
+    await (importsFileContents
+      ? this.writeGeneratedTypescriptFileIfModified(
+          generatorName,
+          'ts-import-maps.ts',
+          importsFileContents,
+        )
+      : this.deleteGeneratedTypescriptFile(generatorName, 'ts-import-maps.ts'));
 
     return projectExports;
   }

@@ -1,7 +1,8 @@
 // @ts-nocheck
 
-import { AuthRole } from '%auth-roles';
-import { AuthSessionInfo } from './auth-session.types.js';
+import type { AuthRole } from '%authRolesImports';
+
+import type { AuthSessionInfo } from './auth-session.types.js';
 
 export interface AuthContext {
   session: AuthSessionInfo | undefined;

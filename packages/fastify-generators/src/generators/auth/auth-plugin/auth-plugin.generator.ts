@@ -1,20 +1,21 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
   tsCodeFragment,
   tsImportBuilder,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import path from 'node:path';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
-import { userSessionServiceProvider } from '../_providers/index.js';
-import { authContextProvider } from '../auth-context/auth-context.generator.js';
-import { userSessionTypesProvider } from '../user-session-types/user-session-types.generator.js';
+import { userSessionServiceImportsProvider } from '../_providers/index.js';
+import { authContextImportsProvider } from '../auth-context/auth-context.generator.js';
+import { userSessionTypesImportsProvider } from '../user-session-types/user-session-types.generator.js';
+import { AUTH_AUTH_PLUGIN_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
@@ -30,43 +31,44 @@ export const authPluginGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
         appModule: appModuleProvider,
-        authContext: authContextProvider,
-        userSessionService: userSessionServiceProvider,
-        userSessionTypes: userSessionTypesProvider,
+        authContextImports: authContextImportsProvider,
+        userSessionServiceImports: userSessionServiceImportsProvider,
+        userSessionTypesImports: userSessionTypesImportsProvider,
       },
       run({
-        typescript,
+        typescriptFile,
         appModule,
-        authContext,
-        userSessionService,
-        userSessionTypes,
+        authContextImports,
+        userSessionServiceImports,
+        userSessionTypesImports,
       }) {
-        const [authPluginImport, authPluginPath] = makeImportAndFilePath(
+        const authPluginPath = path.posix.join(
           appModule.getModuleFolder(),
-          'plugins/auth.plugin.ts',
+          'plugins',
+          'auth.plugin.ts',
         );
         appModule.moduleFields.set(
           'plugins',
           'authPlugin',
           tsCodeFragment(
             'authPlugin',
-            tsImportBuilder(['authPlugin']).from(authPluginImport),
+            tsImportBuilder(['authPlugin']).from(authPluginPath),
           ),
         );
 
         return {
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'plugins/auth.plugin.ts',
+              typescriptFile.renderTemplateFile({
+                template: AUTH_AUTH_PLUGIN_TS_TEMPLATES.authPlugin,
                 destination: authPluginPath,
-                importMappers: [
-                  authContext,
-                  userSessionService,
-                  userSessionTypes,
-                ],
+                importMapProviders: {
+                  authContextImports,
+                  userSessionServiceImports,
+                  userSessionTypesImports,
+                },
               }),
             );
           },

@@ -3,8 +3,7 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   projectScope,
-  tsCodeFragment,
-  tsImportBuilder,
+  tsTemplate,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
@@ -27,15 +26,25 @@ export const axiosGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(CORE_PACKAGES, ['axios']),
     }),
+    axiosImports: createGeneratorTask({
+      exports: {
+        axiosImports: axiosImportsProvider.export(projectScope),
+      },
+      run() {
+        return {
+          providers: {
+            axiosImports: createAxiosImports('@/src/services'),
+          },
+        };
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         errorHandlerServiceConfig: errorHandlerServiceConfigProvider,
         typescriptFile: typescriptFileProvider,
+        axiosImports: axiosImportsProvider,
       },
-      exports: {
-        axiosImports: axiosImportsProvider.export(projectScope),
-      },
-      run({ errorHandlerServiceConfig, typescriptFile }) {
+      run({ errorHandlerServiceConfig, typescriptFile, axiosImports }) {
         const axiosFilePath = '@/src/services/axios.ts';
 
         return {
@@ -52,10 +61,9 @@ export const axiosGenerator = createGenerator({
 
             errorHandlerServiceConfig.contextActions.set(
               'getAxiosErrorInfo',
-              tsCodeFragment(
-                `Object.assign(context, getAxiosErrorInfo(error));`,
-                tsImportBuilder(['getAxiosErrorInfo']).from(axiosFilePath),
-              ),
+              tsTemplate`
+                Object.assign(context, ${axiosImports.getAxiosErrorInfo.fragment()}(error));
+              `,
             );
           },
         };

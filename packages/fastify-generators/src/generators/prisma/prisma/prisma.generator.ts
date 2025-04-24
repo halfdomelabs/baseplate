@@ -1,5 +1,6 @@
 import type {
   ImportMapper,
+  TsCodeFragment,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
 import type { formatSchema } from '@prisma/internals';
@@ -10,9 +11,9 @@ import {
   projectProvider,
   projectScope,
   tsCodeFragment,
-  tsImportBuilder,
+  tsTemplate,
   TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -42,6 +43,12 @@ import {
   PrismaSchemaFile,
 } from '@src/writers/prisma-schema/schema.js';
 
+import {
+  createPrismaImports,
+  prismaImportsProvider,
+} from './generated/ts-import-maps.js';
+import { PRISMA_PRISMA_TS_TEMPLATES } from './generated/ts-templates.js';
+
 const descriptorSchema = z.object({
   defaultPort: z.number().default(5432),
   defaultDatabaseUrl: z.string().optional(),
@@ -62,6 +69,7 @@ export interface PrismaOutputProvider extends ImportMapper {
   getPrismaModel(model: string): PrismaOutputModel;
   getServiceEnum(name: string): ServiceOutputEnum;
   getPrismaModelExpression(model: string): TypescriptCodeExpression;
+  getPrismaModelFragment(model: string): TsCodeFragment;
   getModelTypeExpression(model: string): TypescriptCodeExpression;
 }
 
@@ -87,38 +95,94 @@ export const prismaGenerator = createGenerator({
         node: nodeProvider,
         fastifyOutput: fastifyOutputProvider,
       },
-      run({ node, fastifyOutput }, { taskId }) {
+      run({ node, fastifyOutput }) {
         node.packages.addPackages({
           prod: extractPackageVersions(FASTIFY_PACKAGES, ['@prisma/client']),
           dev: extractPackageVersions(FASTIFY_PACKAGES, ['prisma']),
         });
         // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)
-        node.scripts.mergeObj(
-          {
-            postinstall: 'prisma generate',
+        node.scripts.mergeObj({
+          postinstall: 'prisma generate',
+        });
+        node.extraProperties.merge({
+          prisma: {
+            seed: `tsx ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} src/prisma/seed.ts`,
           },
-          taskId,
-        );
-        node.extraProperties.merge(
-          {
-            prisma: {
-              seed: `tsx ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} src/prisma/seed.ts`,
-            },
+        });
+      },
+    }),
+    configService: createGeneratorTask({
+      dependencies: {
+        configService: configServiceProvider,
+        project: projectProvider,
+      },
+      run({ configService, project }) {
+        const defaultDatabaseUrl =
+          descriptor.defaultDatabaseUrl ??
+          `postgres://postgres:${project.getProjectName()}-password@localhost:${
+            descriptor.defaultPort
+          }/postgres?schema=public`;
+
+        configService.configFields.set('DATABASE_URL', {
+          comment: 'Connection URL of the database',
+          validator: tsCodeFragment('z.string().min(1)'),
+          exampleValue: defaultDatabaseUrl,
+        });
+      },
+    }),
+    service: createGeneratorTask({
+      dependencies: {
+        typescriptFile: typescriptFileProvider,
+      },
+      outputs: {
+        prismaImports: prismaImportsProvider.export(projectScope),
+      },
+      run({ typescriptFile }) {
+        return {
+          build: async (builder) => {
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: PRISMA_PRISMA_TS_TEMPLATES.service,
+                destination: '@/src/services/prisma.ts',
+              }),
+            );
+
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: PRISMA_PRISMA_TS_TEMPLATES.seed,
+                destination: '@/src/prisma/seed.ts',
+              }),
+            );
+
+            return {
+              prismaImports: createPrismaImports('@/src/services'),
+            };
           },
-          taskId,
+        };
+      },
+    }),
+    fastifyHealthCheckConfig: createGeneratorTask({
+      dependencies: {
+        fastifyHealthCheckConfig: fastifyHealthCheckConfigProvider,
+        prismaImports: prismaImportsProvider,
+      },
+      run({ fastifyHealthCheckConfig, prismaImports }) {
+        fastifyHealthCheckConfig.healthChecks.set(
+          'prisma',
+          tsCodeFragment(
+            '// check Prisma is operating\nawait prisma.$queryRaw`SELECT 1;`;',
+            prismaImports.prisma.declaration(),
+          ),
         );
       },
     }),
     schema: createGeneratorTask({
       dependencies: {
-        configService: configServiceProvider,
-        project: projectProvider,
-        fastifyHealthCheckConfig: fastifyHealthCheckConfigProvider,
-        typescript: typescriptProvider,
+        prismaImports: prismaImportsProvider,
       },
       exports: { prismaSchema: prismaSchemaProvider.export(projectScope) },
       outputs: { prismaOutput: prismaOutputProvider.export(projectScope) },
-      run({ configService, project, fastifyHealthCheckConfig, typescript }) {
+      run({ prismaImports }) {
         const schemaFile = new PrismaSchemaFile();
 
         schemaFile.addGeneratorBlock(
@@ -134,26 +198,6 @@ export const prismaGenerator = createGenerator({
             provider: 'postgresql',
             url: 'env("DATABASE_URL")',
           }),
-        );
-
-        const defaultDatabaseUrl =
-          descriptor.defaultDatabaseUrl ??
-          `postgres://postgres:${project.getProjectName()}-password@localhost:${
-            descriptor.defaultPort
-          }/postgres?schema=public`;
-
-        configService.configFields.set('DATABASE_URL', {
-          comment: 'Connection URL of the database',
-          validator: tsCodeFragment('z.string().min(1)'),
-          exampleValue: defaultDatabaseUrl,
-        });
-
-        fastifyHealthCheckConfig.healthChecks.set(
-          'prisma',
-          tsCodeFragment(
-            '// check Prisma is operating\nawait prisma.$queryRaw`SELECT 1;`;',
-            tsImportBuilder(['prisma']).from('@/src/services/prisma.js'),
-          ),
         );
 
         return {
@@ -188,30 +232,6 @@ export const prismaGenerator = createGenerator({
               priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
               onlyIfChanged: ['prisma/schema.prisma'],
             });
-
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'services/prisma.ts',
-                destination: 'src/services/prisma.ts',
-              }),
-            );
-
-            const seedFile = typescript.createTemplate({
-              PRISMA_SERVICE: { type: 'code-expression' },
-            });
-
-            seedFile.addCodeEntries({
-              PRISMA_SERVICE: TypescriptCodeUtils.createExpression(
-                'prisma',
-                "import { prisma } from '@/src/services/prisma.js'",
-              ),
-            });
-
-            await builder.apply(
-              seedFile.renderToAction('prisma/seed.ts', 'src/prisma/seed.ts', {
-                shouldNeverOverwrite: true,
-              }),
-            );
 
             return {
               prismaOutput: {
@@ -257,6 +277,12 @@ export const prismaGenerator = createGenerator({
                     "import { prisma } from '@/src/services/prisma.js'",
                   );
                 },
+                getPrismaModelFragment: (modelName) => {
+                  const modelExport =
+                    modelName.charAt(0).toLocaleLowerCase() +
+                    modelName.slice(1);
+                  return tsTemplate`${prismaImports.prisma.fragment()}.${modelExport}`;
+                },
                 getModelTypeExpression: (modelName) =>
                   TypescriptCodeUtils.createExpression(
                     modelName,
@@ -270,3 +296,5 @@ export const prismaGenerator = createGenerator({
     }),
   }),
 });
+
+export { prismaImportsProvider } from './generated/ts-import-maps.js';

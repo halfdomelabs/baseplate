@@ -11,7 +11,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authProvider } from '@src/generators/auth/auth/auth.generator.js';
+import { authRolesProvider } from '@src/generators/auth/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 
 import { pothosSetupProvider } from '../pothos/pothos.generator.js';
@@ -45,11 +45,11 @@ export const pothosAuthGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         pothosSetup: pothosSetupProvider,
-        auth: authProvider,
         errorHandlerService: errorHandlerServiceProvider,
         typescript: typescriptProvider,
+        authRoles: authRolesProvider,
       },
-      run({ pothosSetup, errorHandlerService, typescript, auth }) {
+      run({ pothosSetup, errorHandlerService, typescript, authRoles }) {
         return {
           build: async (builder) => {
             await builder.apply(
@@ -79,8 +79,8 @@ export const pothosAuthGenerator = createGenerator({
                 key: 'AuthRole',
                 value: new TypescriptCodeExpression(
                   'AuthRole',
-                  "import { AuthRole } from '%auth/auth-roles';",
-                  { importMappers: [auth] },
+                  "import { AuthRole } from '%auth-roles';",
+                  { importMappers: [authRoles] },
                 ),
               })
               .append('schemaBuilderOptions', {

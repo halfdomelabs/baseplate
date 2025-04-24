@@ -92,7 +92,7 @@ export const fastifyGenerator = createGenerator({
       },
     }),
     fastifyTypescript: fastifyTypescriptTask,
-    node: createNodeTask((node, { taskId }) => {
+    node: createNodeTask((node) => {
       node.packages.addDevPackages(
         extractPackageVersions(FASTIFY_PACKAGES, [
           'tsc-alias',
@@ -100,13 +100,10 @@ export const fastifyGenerator = createGenerator({
           '@types/node',
         ]),
       );
-      node.extraProperties.merge(
-        {
-          main: 'dist/index.js',
-          files: ['dist/**/*', 'package.json', 'README.md'],
-        },
-        taskId,
-      );
+      node.extraProperties.merge({
+        main: 'dist/index.js',
+        files: ['dist/**/*', 'package.json', 'README.md'],
+      });
     }),
     gitIgnore: createProviderTask(nodeGitIgnoreProvider, (nodeGitIgnore) => {
       nodeGitIgnore.addExclusions(['/dist']);
@@ -121,7 +118,7 @@ export const fastifyGenerator = createGenerator({
       outputs: {
         fastifyOutput: fastifyOutputProvider.export(projectScope),
       },
-      run({ node }, { taskId }) {
+      run({ node }) {
         const fastifyConfig = createConfigFieldMap(fastifyConfigSchema);
 
         return {
@@ -164,14 +161,11 @@ export const fastifyGenerator = createGenerator({
               'dist/index.js',
             ].join(' ');
 
-            node.scripts.mergeObj(
-              {
-                build: 'tsc && tsc-alias',
-                start: startCommand,
-                dev: devCommand,
-              },
-              taskId,
-            );
+            node.scripts.mergeObj({
+              build: 'tsc && tsc-alias',
+              start: startCommand,
+              dev: devCommand,
+            });
 
             return {
               fastifyOutput: {

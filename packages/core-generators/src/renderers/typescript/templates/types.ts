@@ -81,9 +81,12 @@ export type InferTsTemplateVariablesFromMap<
 
 export type InferImportMapProvidersFromProviderTypeMap<
   T extends Record<string, ProviderType> | undefined,
-> = {
-  [K in keyof T]: InferProviderType<T[K]>;
-};
+> = Exclude<
+  {
+    [K in keyof T]: InferProviderType<T[K]>;
+  },
+  undefined
+>;
 
 export function createTsTemplateFile<
   TVariables extends TsTemplateVariableMap = Record<never, TsTemplateVariable>,

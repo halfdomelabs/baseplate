@@ -338,7 +338,7 @@ export const TsCodeUtils = {
     }
 
     return {
-      contents: result.join(''),
+      contents: result.join('').trim(),
       ...mergeFragmentImportsAndHoistedFragments(fragments),
     };
   },
@@ -425,3 +425,6 @@ export const TsCodeUtils = {
     };
   },
 };
+
+// Shortcut for template function
+export const tsTemplate = TsCodeUtils.template.bind(TsCodeUtils);
