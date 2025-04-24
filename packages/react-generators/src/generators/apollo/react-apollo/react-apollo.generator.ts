@@ -20,6 +20,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
+  createProviderTask,
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
   renderTextTemplateFileAction,
@@ -111,44 +112,48 @@ export const reactApolloGenerator = createGenerator({
           prod: extractPackageVersions(REACT_PACKAGES, ['graphql-ws']),
         })
       : undefined,
+    eslint: createProviderTask(eslintProvider, (eslint) => {
+      eslint
+        .getConfig()
+        .appendUnique('eslintIgnore', ['src/generated/graphql.tsx']);
+    }),
+    prettier: createProviderTask(prettierProvider, (prettier) => {
+      prettier.addPrettierIgnore('src/generated/graphql.tsx');
+    }),
+    reactProxy: createProviderTask(reactProxyProvider, (reactProxy) => {
+      if (enableSubscriptions) {
+        reactProxy.enableWebSocket();
+      }
+    }),
+    reactConfig: createProviderTask(reactConfigProvider, (reactConfig) => {
+      reactConfig.configEntries.set('VITE_GRAPH_API_ENDPOINT', {
+        comment: 'URL for the GraphQL API endpoint',
+        validator: 'z.string().min(1)',
+        devDefaultValue: devApiEndpoint,
+      });
+
+      if (enableSubscriptions) {
+        reactConfig.configEntries.set('VITE_GRAPH_WS_API_ENDPOINT', {
+          comment: 'URL for the GraphQL web socket API endpoint (optional)',
+          validator: 'z.string()',
+          devDefaultValue: '',
+        });
+      }
+    }),
     main: createGeneratorTask({
       dependencies: {
         reactConfig: reactConfigProvider,
         typescript: typescriptProvider,
         reactAppConfig: reactAppConfigProvider,
-        eslint: eslintProvider,
-        prettier: prettierProvider,
-        reactProxy: reactProxyProvider,
       },
       exports: {
         reactApolloSetup: reactApolloSetupProvider.export(projectScope),
         reactApollo: reactApolloProvider.export(projectScope),
       },
-      run({
-        reactConfig,
-        typescript,
-        reactAppConfig,
-        eslint,
-        prettier,
-        reactProxy,
-      }) {
+      run({ reactConfig, typescript, reactAppConfig }) {
         const apolloCreateArgs: ApolloCreateArg[] = [];
         const links: ApolloLink[] = [];
         const gqlFiles: string[] = [];
-
-        reactConfig.configEntries.set('VITE_GRAPH_API_ENDPOINT', {
-          comment: 'URL for the GraphQL API endpoint',
-          validator: 'z.string().min(1)',
-          devDefaultValue: devApiEndpoint,
-        });
-
-        if (enableSubscriptions) {
-          reactConfig.configEntries.set('VITE_GRAPH_WS_API_ENDPOINT', {
-            comment: 'URL for the GraphQL web socket API endpoint (optional)',
-            validator: 'z.string()',
-            devDefaultValue: '',
-          });
-        }
 
         const cacheFile = typescript.createTemplate({});
         const cachePath = 'src/services/apollo/cache.ts';
@@ -182,19 +187,9 @@ export const reactApolloGenerator = createGenerator({
           },
         };
 
-        eslint
-          .getConfig()
-          .appendUnique('eslintIgnore', ['src/generated/graphql.tsx']);
-
-        prettier.addPrettierIgnore('src/generated/graphql.tsx');
-
         const websocketOptions = createNonOverwriteableMap<
           Record<string, TypescriptCodeExpression | string>
         >({});
-
-        if (enableSubscriptions) {
-          reactProxy.enableWebSocket();
-        }
 
         return {
           providers: {
