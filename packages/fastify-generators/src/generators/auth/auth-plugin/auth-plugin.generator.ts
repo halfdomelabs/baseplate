@@ -6,6 +6,7 @@ import {
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import path from 'node:path';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
@@ -43,7 +44,11 @@ export const authPluginGenerator = createGenerator({
         userSessionServiceImports,
         userSessionTypesImports,
       }) {
-        const authPluginPath = `${appModule.getModuleFolder()}/plugins/auth.plugin.ts`;
+        const authPluginPath = path.posix.join(
+          appModule.getModuleFolder(),
+          'plugins',
+          'auth.plugin.ts',
+        );
         appModule.moduleFields.set(
           'plugins',
           'authPlugin',

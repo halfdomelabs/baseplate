@@ -15,7 +15,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { authContextImportsProvider } from '@src/generators/auth/auth-context/auth-context.generator.js';
-import { authRolesImportsProvider } from '@src/generators/auth/auth-roles/generated/ts-import-maps.js';
+import { authRolesImportsProvider } from '@src/generators/auth/auth-roles/auth-roles.generator.js';
 import {
   userSessionServiceImportsProvider,
   userSessionServiceProvider,

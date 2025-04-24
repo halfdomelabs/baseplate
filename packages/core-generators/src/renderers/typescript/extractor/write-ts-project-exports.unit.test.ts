@@ -8,7 +8,7 @@ import { writeTsProjectExports } from './write-ts-project-exports.js';
 
 const TEST_GENERATOR_NAME = 'package#test/test-generator';
 const TEST_IMPORT_MAP_PATH = '/root/import-map.ts';
-
+const TEST_GENERATOR_PACKAGE_PATH = '/root';
 const EXPORT_METADATA_COMMON = {
   providerImportName: 'testGeneratorImportsProvider',
   providerPath: TEST_IMPORT_MAP_PATH,
@@ -31,11 +31,10 @@ describe('writeTsProjectExports', () => {
       },
     ];
 
-    const result = writeTsProjectExports(
-      files,
-      TEST_GENERATOR_NAME,
-      TEST_IMPORT_MAP_PATH,
-    );
+    const result = writeTsProjectExports(files, TEST_GENERATOR_NAME, {
+      importMapFilePath: TEST_IMPORT_MAP_PATH,
+      packagePath: TEST_GENERATOR_PACKAGE_PATH,
+    });
 
     expect(result.importsFileFragment).toBeUndefined();
     expect(result.projectExports).toEqual([]);
@@ -59,11 +58,10 @@ describe('writeTsProjectExports', () => {
       },
     ];
 
-    const result = writeTsProjectExports(
-      files,
-      TEST_GENERATOR_NAME,
-      TEST_IMPORT_MAP_PATH,
-    );
+    const result = writeTsProjectExports(files, TEST_GENERATOR_NAME, {
+      importMapFilePath: TEST_IMPORT_MAP_PATH,
+      packagePath: TEST_GENERATOR_PACKAGE_PATH,
+    });
 
     expect(result.projectExports).toEqual([
       {
@@ -107,7 +105,10 @@ describe('writeTsProjectExports', () => {
     const result = writeTsProjectExports(
       files,
       '@halfdomelabs/core-generators#test',
-      TEST_IMPORT_MAP_PATH,
+      {
+        importMapFilePath: TEST_IMPORT_MAP_PATH,
+        packagePath: TEST_GENERATOR_PACKAGE_PATH,
+      },
     );
 
     const imports =
@@ -133,11 +134,10 @@ describe('writeTsProjectExports', () => {
       },
     ];
 
-    const result = writeTsProjectExports(
-      files,
-      'external-generator#test',
-      TEST_IMPORT_MAP_PATH,
-    );
+    const result = writeTsProjectExports(files, 'external-generator#test', {
+      importMapFilePath: TEST_IMPORT_MAP_PATH,
+      packagePath: TEST_GENERATOR_PACKAGE_PATH,
+    });
 
     const imports =
       result.importsFileFragment?.imports?.map((m) => m.source) ?? [];
@@ -169,12 +169,11 @@ describe('writeTsProjectExports', () => {
       providerName: 'existingImportsProvider',
     };
 
-    const result = writeTsProjectExports(
-      files,
-      TEST_GENERATOR_NAME,
-      TEST_IMPORT_MAP_PATH,
-      { existingImportsProvider },
-    );
+    const result = writeTsProjectExports(files, TEST_GENERATOR_NAME, {
+      importMapFilePath: TEST_IMPORT_MAP_PATH,
+      packagePath: TEST_GENERATOR_PACKAGE_PATH,
+      existingImportsProvider,
+    });
 
     const imports = result.importsFileFragment?.imports;
     expect(imports).toContainEqual({
@@ -224,7 +223,10 @@ describe('writeTsProjectExports', () => {
     ];
 
     expect(() =>
-      writeTsProjectExports(files, TEST_GENERATOR_NAME, TEST_IMPORT_MAP_PATH),
+      writeTsProjectExports(files, TEST_GENERATOR_NAME, {
+        importMapFilePath: TEST_IMPORT_MAP_PATH,
+        packagePath: TEST_GENERATOR_PACKAGE_PATH,
+      }),
     ).toThrow(
       `Duplicate project exports found in template files for generator ${TEST_GENERATOR_NAME}: TestExport`,
     );
@@ -247,11 +249,10 @@ describe('writeTsProjectExports', () => {
       },
     ];
 
-    const result = writeTsProjectExports(
-      files,
-      TEST_GENERATOR_NAME,
-      TEST_IMPORT_MAP_PATH,
-    );
+    const result = writeTsProjectExports(files, TEST_GENERATOR_NAME, {
+      importMapFilePath: TEST_IMPORT_MAP_PATH,
+      packagePath: TEST_GENERATOR_PACKAGE_PATH,
+    });
 
     const importsContents = result.importsFileFragment?.contents;
     expect(importsContents).toContain(

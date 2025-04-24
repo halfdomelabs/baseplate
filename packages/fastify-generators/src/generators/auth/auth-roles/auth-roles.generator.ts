@@ -111,3 +111,5 @@ export const authRolesGenerator = createGenerator({
     }),
   }),
 });
+
+export { authRolesImportsProvider } from './generated/ts-import-maps.js';
