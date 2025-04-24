@@ -163,7 +163,7 @@ describe('writeTsProjectExports', () => {
     ];
 
     const existingImportsProvider = {
-      moduleSpecifier: '@test/existing-imports',
+      moduleSpecifier: '@/test/existing-imports',
       importSchemaName: 'existingImportsSchema',
       providerTypeName: 'ExistingImportsProvider',
       providerName: 'existingImportsProvider',
@@ -177,11 +177,11 @@ describe('writeTsProjectExports', () => {
 
     const imports = result.importsFileFragment?.imports;
     expect(imports).toContainEqual({
-      source: '@test/existing-imports',
+      source: 'test/existing-imports',
       namedImports: [{ name: 'existingImportsSchema' }],
     });
     expect(imports).toContainEqual({
-      source: '@test/existing-imports',
+      source: 'test/existing-imports',
       namedImports: [{ name: 'ExistingImportsProvider' }],
       isTypeOnly: true,
     });
