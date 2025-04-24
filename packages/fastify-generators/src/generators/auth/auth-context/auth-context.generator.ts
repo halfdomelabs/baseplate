@@ -21,7 +21,6 @@ import { requestServiceContextConfigProvider } from '@src/generators/core/reques
 import { serviceContextConfigProvider } from '@src/generators/core/service-context/service-context.generator.js';
 
 import { authRolesImportsProvider } from '../auth-roles/generated/ts-import-maps.js';
-import { authConfigProvider } from '../auth/auth.generator.js';
 import {
   authContextImportsProvider,
   createAuthContextImports,
@@ -56,7 +55,6 @@ export const authContextGenerator = createGenerator({
         appModule: appModuleProvider,
         typescriptFile: typescriptFileProvider,
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-        authConfig: authConfigProvider,
       },
       exports: {
         authContext: authContextProvider.export(projectScope),

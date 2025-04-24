@@ -145,6 +145,54 @@ describe('writeTsProjectExports', () => {
     expect(imports).not.toContain('@src/renderers/typescript/index.ts');
   });
 
+  it('should use existing imports provider when specified', () => {
+    const files: TemplateFileExtractorFile<TsTemplateFileMetadata>[] = [
+      {
+        path: '/test/path/file1.ts',
+        metadata: {
+          type: 'ts',
+          name: 'test1',
+          generator: TEST_GENERATOR_NAME,
+          template: 'test1.ts',
+          variables: {},
+          projectExports: {
+            TestExport: { isTypeOnly: false },
+          },
+        },
+      },
+    ];
+
+    const existingImportsProvider = {
+      moduleSpecifier: '@test/existing-imports',
+      importSchemaName: 'existingImportsSchema',
+      providerTypeName: 'ExistingImportsProvider',
+      providerName: 'existingImportsProvider',
+    };
+
+    const result = writeTsProjectExports(
+      files,
+      TEST_GENERATOR_NAME,
+      TEST_IMPORT_MAP_PATH,
+      { existingImportsProvider },
+    );
+
+    const imports = result.importsFileFragment?.imports;
+    expect(imports).toContainEqual({
+      source: '@test/existing-imports',
+      namedImports: [{ name: 'existingImportsSchema' }],
+    });
+    expect(imports).toContainEqual({
+      source: '@test/existing-imports',
+      namedImports: [{ name: 'ExistingImportsProvider' }],
+      isTypeOnly: true,
+    });
+    const importsContents = result.importsFileFragment?.contents;
+    expect(importsContents).toContain(
+      'return createTsImportMap(existingImportsSchema',
+    );
+    expect(importsContents).toContain('): ExistingImportsProvider');
+  });
+
   it('should throw error for duplicate exports', () => {
     const files: TemplateFileExtractorFile<TsTemplateFileMetadata>[] = [
       {

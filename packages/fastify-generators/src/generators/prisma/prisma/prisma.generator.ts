@@ -1,5 +1,6 @@
 import type {
   ImportMapper,
+  TsCodeFragment,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
 import type { formatSchema } from '@prisma/internals';
@@ -10,6 +11,7 @@ import {
   projectProvider,
   projectScope,
   tsCodeFragment,
+  tsTemplate,
   TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
@@ -67,6 +69,7 @@ export interface PrismaOutputProvider extends ImportMapper {
   getPrismaModel(model: string): PrismaOutputModel;
   getServiceEnum(name: string): ServiceOutputEnum;
   getPrismaModelExpression(model: string): TypescriptCodeExpression;
+  getPrismaModelFragment(model: string): TsCodeFragment;
   getModelTypeExpression(model: string): TypescriptCodeExpression;
 }
 
@@ -174,9 +177,12 @@ export const prismaGenerator = createGenerator({
       },
     }),
     schema: createGeneratorTask({
+      dependencies: {
+        prismaImports: prismaImportsProvider,
+      },
       exports: { prismaSchema: prismaSchemaProvider.export(projectScope) },
       outputs: { prismaOutput: prismaOutputProvider.export(projectScope) },
-      run() {
+      run({ prismaImports }) {
         const schemaFile = new PrismaSchemaFile();
 
         schemaFile.addGeneratorBlock(
@@ -270,6 +276,12 @@ export const prismaGenerator = createGenerator({
                     `prisma.${modelExport}`,
                     "import { prisma } from '@/src/services/prisma.js'",
                   );
+                },
+                getPrismaModelFragment: (modelName) => {
+                  const modelExport =
+                    modelName.charAt(0).toLocaleLowerCase() +
+                    modelName.slice(1);
+                  return tsTemplate`${prismaImports.prisma.fragment()}.${modelExport}`;
                 },
                 getModelTypeExpression: (modelName) =>
                   TypescriptCodeUtils.createExpression(

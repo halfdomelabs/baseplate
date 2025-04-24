@@ -1,25 +1,26 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
   projectScope,
   tsCodeFragment,
   tsImportBuilder,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
-  createProviderType,
+  createProviderTask,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { authContextProvider } from '@src/generators/auth/auth-context/auth-context.generator.js';
-import { authRolesProvider } from '@src/generators/auth/auth-roles/auth-roles.generator.js';
-import { authConfigProvider } from '@src/generators/auth/auth/auth.generator.js';
-import { userSessionServiceProvider } from '@src/generators/auth/index.js';
-import { userSessionTypesProvider } from '@src/generators/auth/user-session-types/user-session-types.generator.js';
+import { authContextImportsProvider } from '@src/generators/auth/auth-context/auth-context.generator.js';
+import { authRolesImportsProvider } from '@src/generators/auth/auth-roles/generated/ts-import-maps.js';
+import {
+  userSessionServiceImportsProvider,
+  userSessionServiceProvider,
+} from '@src/generators/auth/index.js';
+import { userSessionTypesImportsProvider } from '@src/generators/auth/user-session-types/user-session-types.generator.js';
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 import {
   configServiceImportsProvider,
@@ -29,15 +30,13 @@ import { fastifyServerConfigProvider } from '@src/generators/core/index.js';
 import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
 
+import { createAuth0ModuleImports } from './generated/ts-import-maps.js';
+import { AUTH_0_AUTH_0_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';
+
 const descriptorSchema = z.object({
   userModelName: z.string().min(1),
   includeManagement: z.boolean().optional(),
 });
-
-export type Auth0ModuleProvider = unknown;
-
-export const auth0ModuleProvider =
-  createProviderType<Auth0ModuleProvider>('auth0-module');
 
 export const auth0ModuleGenerator = createGenerator({
   name: 'auth0/auth0-module',
@@ -49,125 +48,112 @@ export const auth0ModuleGenerator = createGenerator({
           prod: extractPackageVersions(FASTIFY_PACKAGES, ['auth0']),
         })
       : undefined,
+    config: createProviderTask(configServiceProvider, (configService) => {
+      configService.configFields.set('AUTH0_DOMAIN', {
+        validator: tsCodeFragment('z.string().min(1)'),
+        comment: 'Auth0 domain (can be custom domain)',
+        seedValue: 'subdomain.auth0.com',
+        exampleValue: '<AUTH0_DOMAIN>',
+      });
+
+      configService.configFields.set('AUTH0_AUDIENCE', {
+        validator: tsCodeFragment('z.string().min(1)'),
+        comment: 'Auth0 audience',
+        seedValue: 'https://api.example.com',
+        exampleValue: '<AUTH0_AUDIENCE>',
+      });
+
+      if (includeManagement) {
+        configService.configFields.set('AUTH0_TENANT_DOMAIN', {
+          validator: tsCodeFragment('z.string().min(1)'),
+          comment:
+            'Auth0 tenant domain (ends with auth0.com), e.g. domain.auth0.com',
+          seedValue: 'domain.auth0.com',
+          exampleValue: '<AUTH0_TENANT_DOMAIN>',
+        });
+
+        configService.configFields.set('AUTH0_CLIENT_ID', {
+          validator: tsCodeFragment('z.string().min(1)'),
+          comment:
+            'Auth0 management client ID (https://auth0.com/docs/get-started/auth0-overview/create-applications/machine-to-machine-apps)',
+          seedValue: 'CLIENT_ID',
+          exampleValue: '<AUTH0_CLIENT_ID>',
+        });
+
+        configService.configFields.set('AUTH0_CLIENT_SECRET', {
+          validator: tsCodeFragment('z.string().min(1)'),
+          comment: 'Auth0 management client secret',
+          seedValue: 'CLIENT_SECRET',
+          exampleValue: '<AUTH0_CLIENT_SECRET>',
+        });
+      }
+    }),
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
-        authRoles: authRolesProvider,
+        typescriptFile: typescriptFileProvider,
+        authRolesImports: authRolesImportsProvider,
         appModule: appModuleProvider,
-        configService: configServiceProvider,
+        configServiceImports: configServiceImportsProvider,
         prismaOutput: prismaOutputProvider,
-        authConfig: authConfigProvider,
-        userSessionTypes: userSessionTypesProvider,
-        authContext: authContextProvider,
+        userSessionTypesImports: userSessionTypesImportsProvider,
+        authContextImports: authContextImportsProvider,
       },
       exports: {
-        auth0Module: auth0ModuleProvider.export(projectScope),
         userSessionService: userSessionServiceProvider.export(projectScope),
+        userSessionServiceImports:
+          userSessionServiceImportsProvider.export(projectScope),
       },
       run({
-        typescript,
-        authRoles,
+        typescriptFile,
+        authRolesImports,
         prismaOutput,
-        configService,
+        configServiceImports,
         appModule,
-        authConfig,
-        userSessionTypes,
-        authContext,
+        userSessionTypesImports,
+        authContextImports,
       }) {
-        const [userSessionServiceImport, userSessionServicePath] =
-          makeImportAndFilePath(
-            `${appModule.getModuleFolder()}/services/user-session.service.ts`,
-          );
-
-        configService.configFields.set('AUTH0_DOMAIN', {
-          validator: tsCodeFragment('z.string().min(1)'),
-          comment: 'Auth0 domain (can be custom domain)',
-          seedValue: 'subdomain.auth0.com',
-          exampleValue: '<AUTH0_DOMAIN>',
-        });
-
-        configService.configFields.set('AUTH0_AUDIENCE', {
-          validator: tsCodeFragment('z.string().min(1)'),
-          comment: 'Auth0 audience',
-          seedValue: 'https://api.example.com',
-          exampleValue: '<AUTH0_AUDIENCE>',
-        });
-
-        const [, managementPath] = makeImportAndFilePath(
-          `${appModule.getModuleFolder()}/services/management.ts`,
-        );
-
-        authConfig.userSessionServiceImport.set({
-          path: userSessionServiceImport,
-          allowedImports: ['userSessionService'],
-        });
-
-        if (includeManagement) {
-          configService.configFields.set('AUTH0_TENANT_DOMAIN', {
-            validator: tsCodeFragment('z.string().min(1)'),
-            comment:
-              'Auth0 tenant domain (ends with auth0.com), e.g. domain.auth0.com',
-            seedValue: 'domain.auth0.com',
-            exampleValue: '<AUTH0_TENANT_DOMAIN>',
-          });
-
-          configService.configFields.set('AUTH0_CLIENT_ID', {
-            validator: tsCodeFragment('z.string().min(1)'),
-            comment:
-              'Auth0 management client ID (https://auth0.com/docs/get-started/auth0-overview/create-applications/machine-to-machine-apps)',
-            seedValue: 'CLIENT_ID',
-            exampleValue: '<AUTH0_CLIENT_ID>',
-          });
-
-          configService.configFields.set('AUTH0_CLIENT_SECRET', {
-            validator: tsCodeFragment('z.string().min(1)'),
-            comment: 'Auth0 management client secret',
-            seedValue: 'CLIENT_SECRET',
-            exampleValue: '<AUTH0_CLIENT_SECRET>',
-          });
-        }
-
+        const userSessionServicePath = `${appModule.getModuleFolder()}/services/user-session.service.ts`;
+        const managementPath = `${appModule.getModuleFolder()}/services/management.ts`;
         return {
           providers: {
             auth0Module: {},
             userSessionService: {
               getImportMap: () => ({
                 '%user-session-service': {
-                  path: userSessionServiceImport,
+                  path: userSessionServicePath,
                   allowedImports: ['userSessionService'],
                 },
               }),
             },
+            userSessionServiceImports: createAuth0ModuleImports(
+              `${appModule.getModuleFolder()}/services`,
+            ),
           },
           build: async (builder) => {
-            const serviceFile = typescript.createTemplate(
-              {
-                USER_MODEL:
-                  prismaOutput.getPrismaModelExpression(userModelName),
-              },
-              {
-                importMappers: [
-                  configService,
-                  authRoles,
-                  authContext,
-                  userSessionTypes,
-                ],
-              },
-            );
-
             await builder.apply(
-              serviceFile.renderToAction(
-                'services/user-session.service.ts',
-                userSessionServicePath,
-              ),
+              typescriptFile.renderTemplateFile({
+                template: AUTH_0_AUTH_0_MODULE_TS_TEMPLATES.userSessionService,
+                destination: userSessionServicePath,
+                variables: {
+                  TPL_USER_MODEL:
+                    prismaOutput.getPrismaModelFragment(userModelName),
+                },
+                importMapProviders: {
+                  authContextImports,
+                  authRolesImports,
+                  userSessionTypesImports,
+                },
+              }),
             );
 
             if (includeManagement) {
               await builder.apply(
-                typescript.createCopyAction({
-                  source: 'services/management.ts',
+                typescriptFile.renderTemplateFile({
+                  template: AUTH_0_AUTH_0_MODULE_TS_TEMPLATES.management,
                   destination: managementPath,
-                  importMappers: [configService],
+                  importMapProviders: {
+                    configServiceImports,
+                  },
                 }),
               );
             }

@@ -1,7 +1,7 @@
 // @ts-nocheck
 
+import { config } from '%configServiceImports';
 import { ManagementClient } from 'auth0';
-import { config } from '%config';
 
 let cachedClient: ManagementClient | null = null;
 

@@ -1,9 +1,11 @@
 // @ts-nocheck
 
+import type { AuthUserSessionInfo } from '%authContextImports';
+import type { AuthRole } from '%authRolesImports';
+import type { UserSessionService } from '%userSessionTypesImports';
+
+import { DEFAULT_USER_ROLES } from '%authRolesImports';
 import { FastifyRequest } from 'fastify';
-import { AuthRole, DEFAULT_USER_ROLES } from '%auth-roles';
-import { AuthUserSessionInfo } from '%auth-context/session-types';
-import { UserSessionService } from '%user-session-types';
 
 const USER_ID_CLAIM = 'https://app.com/user_id';
 const EMAIL_CLAIM = 'https://app.com/email';
@@ -46,7 +48,7 @@ export class Auth0UserSessionService implements UserSessionService {
       throw new Error(`Missing user id in JWT`);
     }
 
-    const user = await USER_MODEL.findUnique({ where: { id: userId } });
+    const user = await TPL_USER_MODEL.findUnique({ where: { id: userId } });
 
     // create user if one does not exist already
     if (!email) {
@@ -54,7 +56,7 @@ export class Auth0UserSessionService implements UserSessionService {
     }
     if (!user) {
       // Use createMany to avoid race-conditions with creating the user
-      await prisma.user.createMany({
+      await TPL_USER_MODEL.createMany({
         data: [
           {
             id: userId,

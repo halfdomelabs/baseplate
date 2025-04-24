@@ -25,7 +25,7 @@ import {
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { authProvider } from '@src/generators/auth/index.js';
+import { authContextImportsProvider } from '@src/generators/auth/index.js';
 import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
 
 import { configServiceProvider } from '../config-service/config-service.generator.js';
@@ -277,10 +277,10 @@ export const fastifySentryGenerator = createGenerator({
     auth: createGeneratorTask({
       dependencies: {
         fastifySentry: fastifySentryProvider,
-        auth: authProvider.dependency().optional(),
+        authContextImports: authContextImportsProvider.dependency().optional(),
       },
-      run({ auth, fastifySentry }) {
-        if (auth) {
+      run({ authContextImports, fastifySentry }) {
+        if (authContextImports) {
           fastifySentry.addScopeConfigurationBlock(
             TypescriptCodeUtils.createBlock(
               `const userId = requestContext.get('userId');

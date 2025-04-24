@@ -6,6 +6,7 @@ import { quot } from '@halfdomelabs/utils';
 import { getCommonPathPrefix } from '@halfdomelabs/utils/node';
 import { camelCase, pascalCase } from 'change-case';
 import { sortBy } from 'es-toolkit';
+import path from 'node:path';
 
 import type { TsCodeFragment } from '../fragments/types.js';
 import type { TsTemplateFileMetadata } from '../templates/types.js';
@@ -48,18 +49,55 @@ export interface TsProjectExport {
   providerPackage: string;
 }
 
+interface WriteTsProjectExportsOptions {
+  /**
+   * The path to the import map file.
+   */
+  importMapFilePath: string;
+  /**
+   * The path of the package
+   */
+  packagePath: string;
+  /**
+   * The existing imports provider to use.
+   */
+  existingImportsProvider?: {
+    /**
+     * The module specifier of the existing imports provider.
+     */
+    moduleSpecifier: string;
+    /**
+     * The name of the import schema export.
+     */
+    importSchemaName: string;
+    /**
+     * The name of the provider type export.
+     */
+    providerTypeName: string;
+    /**
+     * The name of the provider export.
+     */
+    providerName: string;
+  };
+}
+
 /**
  * Writes the project exports to the import map file.
  * @param files - The files to write the project exports to.
  * @param outputDirectory - The output directory to write the project exports to.
  * @param generatorName - The name of the generator.
  * @param importMapFilePath - The path to the import map file.
+ * @param options - The options for the writeTsProjectExports function.
  * @returns The import map file contents and the project exports.
  */
 export function writeTsProjectExports(
   files: TemplateFileExtractorFile<TsTemplateFileMetadata>[],
   generatorName: string,
-  importMapFilePath: string,
+  {
+    importMapFilePath,
+    packagePath,
+    existingImportsProvider,
+  }: WriteTsProjectExportsOptions,
 ): {
   importsFileFragment: TsCodeFragment | undefined;
   projectExports: TsProjectExport[];
@@ -71,7 +109,24 @@ export function writeTsProjectExports(
   const providerNameCamelCase = `${camelCase(generatorBasename)}Imports`;
   const providerName = `${generatorBasename}-imports`;
 
-  const providerNameVar = `${providerNameCamelCase}Provider`;
+  const providerNameVar = existingImportsProvider
+    ? existingImportsProvider.providerName
+    : `${providerNameCamelCase}Provider`;
+
+  const providerPath = existingImportsProvider
+    ? existingImportsProvider.moduleSpecifier.replace(/^@/, packagePath)
+    : importMapFilePath;
+
+  const importSource = existingImportsProvider
+    ? `%${existingImportsProvider.providerName.replace(/Provider$/, '')}`
+    : `%${providerNameCamelCase}`;
+
+  // If the module specifier is relative, use the package name otherwise use the module specifier's package name
+  const providerPackage = existingImportsProvider
+    ? existingImportsProvider.moduleSpecifier.startsWith('@/')
+      ? packageName
+      : existingImportsProvider.moduleSpecifier
+    : packageName;
 
   // Extract project exports
   const projectExports: TsProjectExport[] = sortBy(
@@ -81,10 +136,10 @@ export function writeTsProjectExports(
           name: exportName,
           isTypeOnly,
           filePath: file.path,
-          importSource: `%${providerNameCamelCase}`,
+          importSource,
           providerImportName: providerNameVar,
-          providerPath: importMapFilePath,
-          providerPackage: packageName,
+          providerPath,
+          providerPackage,
         }),
       ),
     ),
@@ -180,25 +235,48 @@ export function writeTsProjectExports(
       ]),
     ),
   );
-  const createImportMapFunctionFragment = TsCodeUtils.templateWithImports(
+
+  const resolvedExistingImportsProvider = existingImportsProvider
+    ? existingImportsProvider.moduleSpecifier.startsWith('@/')
+      ? path.relative(path.dirname(importMapFilePath), providerPath)
+      : providerPath
+    : '';
+
+  const providerImports = existingImportsProvider
+    ? [
+        tsImportBuilder([existingImportsProvider.importSchemaName]).from(
+          resolvedExistingImportsProvider,
+        ),
+        tsImportBuilder([existingImportsProvider.providerTypeName])
+          .typeOnly()
+          .from(resolvedExistingImportsProvider),
+      ]
+    : [];
+
+  const createImportMapFunctionFragment = TsCodeUtils.templateWithImports([
+    ...providerImports,
     tsImportBuilder(['createTsImportMap']).from(tsImports),
-  )`
+  ])`
     export function ${createImportMapFunctionName}(
       importBase: string,
-    ): ${providerTypeVarName} {
+    ): ${existingImportsProvider?.providerTypeName ?? providerTypeVarName} {
       if (!importBase.startsWith('@/')) {
         throw new Error('importBase must start with @/');
       }
 
-      return createTsImportMap(${schemaVarName}, ${creatorFragment});
+      return createTsImportMap(${
+        existingImportsProvider?.importSchemaName ?? schemaVarName
+      }, ${creatorFragment});
     }
   `;
 
   return {
-    importsFileFragment: TsCodeUtils.mergeFragmentsPresorted(
-      [importProviderDeclaration, createImportMapFunctionFragment],
-      '\n\n',
-    ),
+    importsFileFragment: existingImportsProvider
+      ? createImportMapFunctionFragment
+      : TsCodeUtils.mergeFragmentsPresorted(
+          [importProviderDeclaration, createImportMapFunctionFragment],
+          '\n\n',
+        ),
     projectExports,
   };
 }

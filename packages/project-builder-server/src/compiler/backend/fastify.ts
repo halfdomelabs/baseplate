@@ -3,7 +3,6 @@ import type { GeneratorBundle } from '@halfdomelabs/sync';
 
 import {
   appModuleGenerator,
-  authGenerator,
   axiosGenerator,
   bullMqGenerator,
   composeFastifyApplication,
@@ -95,7 +94,6 @@ export function buildFastify(
         stripe: app.enableStripe ? fastifyStripeGenerator({}) : undefined,
         ...(projectDefinition.auth
           ? {
-              auth: authGenerator({}),
               pothosAuth: pothosAuthGenerator({}),
             }
           : {}),

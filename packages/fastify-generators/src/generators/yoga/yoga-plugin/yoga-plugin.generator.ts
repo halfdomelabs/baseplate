@@ -29,7 +29,7 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '@src/constants/index.js';
 import {
   authContextProvider,
-  authProvider,
+  userSessionServiceImportsProvider,
 } from '@src/generators/auth/index.js';
 import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
@@ -279,22 +279,22 @@ export const yogaPluginGenerator = createGenerator({
               node: nodeProvider,
               typescript: typescriptProvider,
               fastifyRedis: fastifyRedisProvider,
-              auth: authProvider.dependency().optional(),
               authContext: authContextProvider.dependency().optional(),
               errorLoggerService: errorHandlerServiceProvider,
               loggerService: loggerServiceProvider,
               requestServiceContextImports:
                 requestServiceContextImportsProvider,
+              userSessionServiceImports: userSessionServiceImportsProvider,
             },
             run({
               node,
               typescript,
               fastifyRedis,
-              auth,
               authContext,
               errorLoggerService,
               loggerService,
               requestServiceContextImports,
+              userSessionServiceImports,
             }) {
               node.packages.addPackages({
                 prod: extractPackageVersions(FASTIFY_PACKAGES, [
@@ -330,7 +330,7 @@ export const yogaPluginGenerator = createGenerator({
                 ? authorizationHeader
                 : undefined,
             )`,
-                            "import { userSessionService } from '%auth/user-session-service';",
+                            `import { userSessionService } from '${userSessionServiceImports.userSessionService.source}';`,
                           )
                         : { type: 'code-expression' },
                     },
@@ -339,7 +339,6 @@ export const yogaPluginGenerator = createGenerator({
                         errorLoggerService,
                         loggerService,
                         authContext,
-                        auth,
                         {
                           getImportMap: () => ({
                             '%request-service-context': {

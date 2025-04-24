@@ -15,7 +15,6 @@ import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
-import { authConfigProvider } from '../auth/auth.generator.js';
 import {
   authRolesImportsProvider,
   createAuthRolesImports,
@@ -51,7 +50,6 @@ export const authRolesGenerator = createGenerator({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         appModule: appModuleProvider,
-        authConfig: authConfigProvider,
       },
       exports: {
         authRoles: authRolesProvider.export(projectScope),
