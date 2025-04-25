@@ -27,7 +27,7 @@ export const auth0ApolloGenerator = createGenerator({
           type: '() => Promise<string | undefined>',
           reactRenderBody: tsCodeFragment(
             'const { getAccessTokenSilently: getAccessToken } = useAuth0();',
-            tsImportBuilder(['useAuth0']).from('auth0-react'),
+            tsImportBuilder(['useAuth0']).from('@auth0/auth0-react'),
           ),
         });
 

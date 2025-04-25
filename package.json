@@ -14,6 +14,7 @@
     "knip": "knip",
     "lint": "turbo run lint --continue",
     "lint:affected": "turbo run lint --affected --continue",
+    "lint:only": "pnpm run -r lint",
     "meta:test": "meta-updater --test",
     "meta:update": "meta-updater",
     "precheck": "turbo run lint prettier:check typecheck --output-logs=errors-only --affected --continue && pnpm run knip",
