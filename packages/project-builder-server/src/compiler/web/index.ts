@@ -42,7 +42,7 @@ function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
             children: {
               reactNotFoundHandler: reactNotFoundHandlerGenerator({}),
               auth: builder.appConfig.includeAuth
-                ? compileAuthPages(builder, appConfig.allowedRoles)
+                ? compileAuthPages(builder)
                 : undefined,
             },
           }),

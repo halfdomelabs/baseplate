@@ -1,3 +1,5 @@
+import type { ImportMapper } from '@halfdomelabs/core-generators';
+
 import {
   projectScope,
   tsCodeFragment,
@@ -7,13 +9,17 @@ import {
 import {
   createGenerator,
   createGeneratorTask,
+  createProviderTask,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
-import { reactConfigProvider } from '@src/generators/core/react-config/react-config.generator.js';
+import {
+  reactConfigImportsProvider,
+  reactConfigProvider,
+} from '@src/generators/core/react-config/react-config.generator.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
 
@@ -31,11 +37,18 @@ export const adminBullBoardGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ bullBoardUrl }) => ({
+    reactConfig: createProviderTask(reactConfigProvider, (reactConfig) => {
+      reactConfig.configEntries.set('VITE_BULL_BOARD_BASE', {
+        comment: 'Base path for bull-board site',
+        validator: 'z.string().min(1)',
+        devDefaultValue: bullBoardUrl,
+      });
+    }),
     main: createGeneratorTask({
       dependencies: {
         typescript: typescriptProvider,
         reactComponents: reactComponentsProvider,
-        reactConfig: reactConfigProvider,
+        reactConfigImports: reactConfigImportsProvider,
         reactError: reactErrorProvider,
         reactApollo: reactApolloProvider,
         reactRoutes: reactRoutesProvider,
@@ -46,7 +59,7 @@ export const adminBullBoardGenerator = createGenerator({
       run({
         typescript,
         reactComponents,
-        reactConfig,
+        reactConfigImports,
         reactError,
         reactApollo,
         reactRoutes,
@@ -58,9 +71,16 @@ export const adminBullBoardGenerator = createGenerator({
             adminBullBoard: {},
           },
           build: async (builder) => {
-            const importMappers = [
+            const importMappers: ImportMapper[] = [
               reactComponents,
-              reactConfig,
+              {
+                getImportMap: () => ({
+                  '%react-config': {
+                    path: reactConfigImports.config.source,
+                    allowedImports: ['config'],
+                  },
+                }),
+              },
               reactError,
               reactApollo,
             ];
@@ -75,12 +95,6 @@ export const adminBullBoardGenerator = createGenerator({
                   .default('BullBoardPage')
                   .from(`@/${baseDirectory}`),
               ),
-            });
-
-            reactConfig.configEntries.set('VITE_BULL_BOARD_BASE', {
-              comment: 'Base path for bull-board site',
-              validator: 'z.string().min(1)',
-              devDefaultValue: bullBoardUrl,
             });
 
             await builder.apply(

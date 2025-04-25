@@ -263,6 +263,27 @@ export const TsCodeUtils = {
   },
 
   /**
+   * Merge an array of code fragments into an array literal.
+   *
+   * @param fragments - The code fragments to merge.
+   * @returns The merged code fragment as an array literal.
+   */
+  mergeFragmentsAsArrayPresorted(
+    fragments: (string | TsCodeFragment)[],
+  ): TsCodeFragment {
+    return {
+      contents: `[${fragments
+        .map((fragment) =>
+          typeof fragment === 'string' ? fragment : fragment.contents,
+        )
+        .join(',\n')}]`,
+      ...mergeFragmentImportsAndHoistedFragments(
+        fragments.filter(isTsCodeFragment),
+      ),
+    };
+  },
+
+  /**
    * Merge a map of code fragments into an array literal. The fragments are sorted by key
    * to ensure deterministic output.
    *
@@ -277,18 +298,9 @@ export const TsCodeUtils = {
     const map =
       objOrMap instanceof Map ? objOrMap : new Map(Object.entries(objOrMap));
     const sortedFragmentEntries = sortBy([...map.entries()], [([key]) => key]);
-    return {
-      contents: `[${sortedFragmentEntries
-        .map(([, fragment]) =>
-          typeof fragment === 'string' ? fragment : fragment.contents,
-        )
-        .join(',\n')}]`,
-      ...mergeFragmentImportsAndHoistedFragments(
-        sortedFragmentEntries
-          .map(([, fragment]) => fragment)
-          .filter(isTsCodeFragment),
-      ),
-    };
+    return this.mergeFragmentsAsArrayPresorted(
+      sortedFragmentEntries.map(([, fragment]) => fragment),
+    );
   },
 
   /**

@@ -10,7 +10,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authHooksProvider } from '@src/generators/auth/auth-hooks/auth-hooks.generator.js';
+import { authHooksProvider } from '@src/generators/auth/_providers/auth-hooks.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
 import { createRouteElement } from '@src/utils/routes.js';

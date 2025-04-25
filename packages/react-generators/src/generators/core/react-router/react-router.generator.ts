@@ -14,6 +14,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
+  createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -47,6 +48,11 @@ export { reactRouterConfigProvider };
 
 const pagesPath = '@/src/pages/index.tsx';
 
+const reactRouteValuesProvider = createReadOnlyProviderType<{
+  routes: ReactRoute[];
+  layouts: ReactRouteLayout[];
+}>('react-route-values');
+
 export const reactRouterGenerator = createGenerator({
   name: 'core/react-router',
   generatorFileUrl: import.meta.url,
@@ -75,25 +81,15 @@ export const reactRouterGenerator = createGenerator({
         );
       },
     ),
-    main: createGeneratorTask({
-      dependencies: {
-        reactRouterConfigValues: reactRouterConfigValuesProvider,
-        typescriptFile: typescriptFileProvider,
-      },
+    routes: createGeneratorTask({
       exports: {
         reactRoutes: reactRoutesProvider.export(projectScope),
         reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(projectScope),
       },
-      run({
-        reactRouterConfigValues: {
-          routesComponent = tsCodeFragment(
-            'Routes',
-            tsImportBuilder(['Routes']).from('react-router-dom'),
-          ),
-          renderHeaders,
-        },
-        typescriptFile,
-      }) {
+      outputs: {
+        reactRouteValuesProvider: reactRouteValuesProvider.export(),
+      },
+      run() {
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];
 
@@ -114,6 +110,33 @@ export const reactRouterGenerator = createGenerator({
               getRoutePrefix: () => ``,
             },
           },
+          build: () => ({
+            reactRouteValuesProvider: {
+              routes,
+              layouts,
+            },
+          }),
+        };
+      },
+    }),
+    main: createGeneratorTask({
+      dependencies: {
+        reactRouterConfigValues: reactRouterConfigValuesProvider,
+        reactRouteValues: reactRouteValuesProvider,
+        typescriptFile: typescriptFileProvider,
+      },
+      run({
+        reactRouterConfigValues: {
+          routesComponent = tsCodeFragment(
+            'Routes',
+            tsImportBuilder(['Routes']).from('react-router-dom'),
+          ),
+          renderHeaders,
+        },
+        reactRouteValues: { routes, layouts },
+        typescriptFile,
+      }) {
+        return {
           build: async (builder) => {
             // TODO: Make sure we don't have more than one layout key
 

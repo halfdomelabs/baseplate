@@ -9,14 +9,7 @@ import {
   auth0CallbackGenerator,
   auth0ComponentsGenerator,
   auth0HooksGenerator,
-  authApolloGenerator,
-  authComponentsGenerator,
-  authHooksGenerator,
   authIdentifyGenerator,
-  authLayoutGenerator,
-  authLoginPageGenerator,
-  authPagesGenerator,
-  authServiceGenerator,
   reactAuth0Generator,
   reactRoutesGenerator,
 } from '@halfdomelabs/react-generators';
@@ -29,56 +22,31 @@ export function compileAuthFeatures(
   if (builder.appConfig.type === 'web' && !builder.appConfig.includeAuth) {
     return undefined;
   }
-  if (builder.projectDefinition.auth?.useAuth0) {
-    return {
-      auth: reactAuth0Generator({
-        callbackPath: 'auth/auth0-callback',
-      }),
-      authHooks: auth0HooksGenerator({}),
-      authIdentify: authIdentifyGenerator({}),
-      auth0Apollo: auth0ApolloGenerator({}),
-      auth0Components: auth0ComponentsGenerator({}),
-    };
+  if (!builder.projectDefinition.auth?.useAuth0) {
+    throw new Error('Auth0 is not enabled');
   }
   return {
-    authService: authServiceGenerator({}),
-    authHooks: authHooksGenerator({}),
-    authIdentify: authIdentifyGenerator({}),
-    authApollo: authApolloGenerator({}),
-    authComponents: authComponentsGenerator({
-      loginPath: '/auth/login',
+    auth: reactAuth0Generator({
+      callbackPath: 'auth/auth0-callback',
     }),
+    authHooks: auth0HooksGenerator({}),
+    authIdentify: authIdentifyGenerator({}),
+    auth0Apollo: auth0ApolloGenerator({}),
+    auth0Components: auth0ComponentsGenerator({}),
   };
 }
 
 export function compileAuthPages(
   builder: AppEntryBuilder<AppConfig>,
-  allowedRoles: string[] = [],
 ): GeneratorBundle {
-  if (builder.projectDefinition.auth?.useAuth0) {
-    return reactRoutesGenerator({
-      id: 'auth',
-      name: 'auth',
-      children: {
-        auth: auth0CallbackGenerator({}),
-      },
-    });
+  if (!builder.projectDefinition.auth?.useAuth0) {
+    throw new Error('Auth0 is not enabled');
   }
-
   return reactRoutesGenerator({
     id: 'auth',
     name: 'auth',
     children: {
-      auth: authPagesGenerator({
-        children: {
-          layout: authLayoutGenerator({
-            name: 'AuthLayout',
-          }),
-          login: authLoginPageGenerator({
-            allowedRoles: allowedRoles.map((r) => builder.nameFromId(r)),
-          }),
-        },
-      }),
+      auth: auth0CallbackGenerator({}),
     },
   });
 }

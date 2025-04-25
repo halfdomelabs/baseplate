@@ -1,15 +1,15 @@
 // @ts-nocheck
 
 import { ApolloClient, from, NormalizedCacheObject } from '@apollo/client';
-import { createApolloCache } from './cache';
+
+import { createApolloCache } from './cache.js';
 
 export function createApolloClient(
-  CREATE_ARGS,
+  TPL_CREATE_ARGS,
 ): ApolloClient<NormalizedCacheObject> {
-  LINK_BODIES;
-
+  TPL_LINK_BODIES;
   const client = new ApolloClient({
-    link: from(LINKS),
+    link: from(TPL_LINKS),
     cache: createApolloCache(),
   });
 

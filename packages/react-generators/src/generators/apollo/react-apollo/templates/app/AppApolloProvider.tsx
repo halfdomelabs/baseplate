@@ -2,18 +2,19 @@
 
 import { ApolloProvider } from '@apollo/client';
 import { useMemo } from 'react';
-import { createApolloClient } from '%react-apollo/client';
+
+import { createApolloClient } from '../services/apollo/index.js';
 
 interface Props {
   children: React.ReactNode;
 }
 
 function AppApolloProvider({ children }: Props): JSX.Element {
-  RENDER_BODY;
+  TPL_RENDER_BODY;
 
   const client = useMemo(
-    () => createApolloClient(CREATE_ARG_VALUE),
-    [CREATE_ARGS],
+    () => createApolloClient(TPL_CREATE_ARGS),
+    [TPL_MEMO_DEPENDENCIES],
   );
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;

@@ -3,7 +3,6 @@ import {
   tsCodeFragment,
   tsHoistedFragment,
   tsImportBuilder,
-  TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
@@ -11,7 +10,8 @@ import { z } from 'zod';
 
 import { reactSentryConfigProvider } from '@src/generators/core/react-sentry/react-sentry.generator.js';
 
-import { reactApolloSetupProvider } from '../react-apollo/react-apollo.generator.js';
+import { apolloErrorLinkProvider } from '../apollo-error-link/apollo-error-link.generator.js';
+import { reactApolloConfigProvider } from '../react-apollo/react-apollo.generator.js';
 
 const descriptorSchema = z.object({});
 
@@ -81,10 +81,11 @@ export const apolloSentryGenerator = createGenerator({
     }),
     apolloSentryLink: createGeneratorTask({
       dependencies: {
-        reactApolloSetup: reactApolloSetupProvider,
+        reactApolloConfig: reactApolloConfigProvider,
+        apolloErrorLink: apolloErrorLinkProvider,
         typescript: typescriptProvider,
       },
-      run({ reactApolloSetup, typescript }) {
+      run({ reactApolloConfig, apolloErrorLink, typescript }) {
         const [linkImport, linkPath] = makeImportAndFilePath(
           'src/services/apollo/apollo-sentry-link.ts',
         );
@@ -97,12 +98,13 @@ export const apolloSentryGenerator = createGenerator({
               }),
             );
 
-            reactApolloSetup.addLink({
-              key: 'apolloSentryLink',
-              name: TypescriptCodeUtils.createExpression(`apolloSentryLink`, [
-                `import { apolloSentryLink } from '${linkImport}'`,
-              ]),
-              dependencies: [['errorLink', 'apolloSentryLink']],
+            reactApolloConfig.apolloLinks.add({
+              name: 'apolloSentryLink',
+              nameImport: tsImportBuilder(['apolloSentryLink']).from(
+                linkImport,
+              ),
+              priority: 'error',
+              dependencies: [apolloErrorLink.errorLinkName],
             });
           },
         };

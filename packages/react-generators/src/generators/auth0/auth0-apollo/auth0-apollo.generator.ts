@@ -1,23 +1,15 @@
 import {
-  projectScope,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { apolloErrorProvider } from '@src/generators/apollo/apollo-error/apollo-error.generator.js';
-import { reactApolloSetupProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
+import { reactApolloConfigProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
 
 const descriptorSchema = z.object({});
-
-export type Auth0ApolloProvider = unknown;
-
-export const auth0ApolloProvider =
-  createProviderType<Auth0ApolloProvider>('auth0-apollo');
 
 export const auth0ApolloGenerator = createGenerator({
   name: 'auth0/auth0-apollo',
@@ -26,25 +18,16 @@ export const auth0ApolloGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        reactApolloSetup: reactApolloSetupProvider,
+        reactApolloConfig: reactApolloConfigProvider,
         apolloError: apolloErrorProvider,
       },
-      exports: {
-        auth0Apollo: auth0ApolloProvider.export(projectScope),
-      },
-      run({ reactApolloSetup }) {
-        reactApolloSetup.addCreateArg({
+      run({ reactApolloConfig }) {
+        reactApolloConfig.createApolloClientArguments.add({
           name: 'getAccessToken',
-          type: TypescriptCodeUtils.createExpression(
-            '() => Promise<string | undefined>',
-          ),
-          creatorValue: TypescriptCodeUtils.createExpression(
-            'getAccessTokenSilently',
-          ),
-          hookDependency: 'getAccessTokenSilently',
-          renderBody: TypescriptCodeUtils.createBlock(
-            'const { getAccessTokenSilently } = useAuth0();',
-            "import { useAuth0 } from '@auth0/auth0-react';",
+          type: '() => Promise<string | undefined>',
+          reactRenderBody: tsCodeFragment(
+            'const { getAccessTokenSilently: getAccessToken } = useAuth0();',
+            tsImportBuilder(['useAuth0']).from('auth0-react'),
           ),
         });
 
@@ -59,12 +42,14 @@ export const auth0ApolloGenerator = createGenerator({
               'AUTH_LINK',
             );
 
-            reactApolloSetup.addLink({
+            reactApolloConfig.apolloLinks.add({
               name: 'authLink',
-              bodyExpression: TypescriptCodeUtils.createBlock(authLink, [
-                'import { setContext } from "@apollo/client/link/context"',
+              bodyFragment: tsCodeFragment(authLink, [
+                tsImportBuilder(['setContext']).from(
+                  '@apollo/client/link/context',
+                ),
               ]),
-              dependencies: [['errorLink', 'authLink']],
+              priority: 'auth',
             });
           },
         };

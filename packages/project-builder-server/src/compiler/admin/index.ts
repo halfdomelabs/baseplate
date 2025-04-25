@@ -83,7 +83,7 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
                 })
               : undefined,
             routes: [
-              compileAuthPages(builder, appConfig.allowedRoles),
+              compileAuthPages(builder),
               ...compileAdminFeatures(builder),
             ],
           },
