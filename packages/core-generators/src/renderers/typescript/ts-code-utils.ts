@@ -307,7 +307,7 @@ export const TsCodeUtils = {
         const content = typeof value === 'string' ? value : value.contents;
         validatePropertyKey(key);
         const escapedKey =
-          key.startsWith('"') || key.startsWith("'") ? `[${quot(key)}]` : key;
+          key.startsWith('"') || key.startsWith("'") ? `[${key}]` : key;
         return `${escapedKey}: ${content};`;
       })
       .join('\n');

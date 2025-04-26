@@ -162,7 +162,7 @@ describe('TsCodeUtils', () => {
       };
 
       expect(() => TsCodeUtils.mergeFragmentsAsObject(obj)).toThrow(
-        'Invalid key: invalid-key. Please escape the key with quot.',
+        'Invalid key: invalid-key. Please escape the key with quotes.',
       );
     });
 
@@ -269,9 +269,9 @@ describe('TsCodeUtils', () => {
 
     it('should escape non-simple keys', () => {
       const obj = {
-        'simple-key': tsCodeFragment('string'),
-        "key with ' and spaces": tsCodeFragment('number'),
-        'key-with-hyphens': tsCodeFragment('boolean'),
+        "'simple-key'": tsCodeFragment('string'),
+        "'key with \\' and spaces'": tsCodeFragment('number'),
+        "'key-with-hyphens'": tsCodeFragment('boolean'),
       };
 
       const result = TsCodeUtils.mergeFragmentsAsInterfaceContent(obj);
