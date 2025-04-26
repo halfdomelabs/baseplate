@@ -11,6 +11,7 @@ import {
   projectProvider,
   projectScope,
   tsCodeFragment,
+  TsCodeUtils,
   tsTemplate,
   TypescriptCodeUtils,
   typescriptFileProvider,
@@ -70,6 +71,7 @@ export interface PrismaOutputProvider extends ImportMapper {
   getServiceEnum(name: string): ServiceOutputEnum;
   getPrismaModelExpression(model: string): TypescriptCodeExpression;
   getPrismaModelFragment(model: string): TsCodeFragment;
+  getModelTypeFragment(model: string): TsCodeFragment;
   getModelTypeExpression(model: string): TypescriptCodeExpression;
 }
 
@@ -262,9 +264,9 @@ export const prismaGenerator = createGenerator({
                   return {
                     name: block.name,
                     values: block.values,
-                    expression: TypescriptCodeUtils.createExpression(
+                    expression: TsCodeUtils.importFragment(
                       block.name,
-                      `import { ${block.name} } from '@prisma/client'`,
+                      '@prisma/client',
                     ),
                   };
                 },
@@ -283,6 +285,8 @@ export const prismaGenerator = createGenerator({
                     modelName.slice(1);
                   return tsTemplate`${prismaImports.prisma.fragment()}.${modelExport}`;
                 },
+                getModelTypeFragment: (modelName) =>
+                  TsCodeUtils.importFragment(modelName, '@prisma/client'),
                 getModelTypeExpression: (modelName) =>
                   TypescriptCodeUtils.createExpression(
                     modelName,

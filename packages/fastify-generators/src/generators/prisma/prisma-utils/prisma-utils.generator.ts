@@ -117,4 +117,5 @@ export const prismaUtilsGenerator = createGenerator({
   }),
 });
 
+export type { PrismaUtilsImportsProvider } from './generated/ts-import-maps.js';
 export { prismaUtilsImportsProvider } from './generated/ts-import-maps.js';

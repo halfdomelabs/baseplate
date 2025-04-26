@@ -24,7 +24,7 @@ const prismaUtilsImportsSchema = createTsImportMapSchema({
   mergePipeOperations: {},
 });
 
-type PrismaUtilsImportsProvider = TsImportMapProviderFromSchema<
+export type PrismaUtilsImportsProvider = TsImportMapProviderFromSchema<
   typeof prismaUtilsImportsSchema
 >;
 

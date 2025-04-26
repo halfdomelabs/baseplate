@@ -1,10 +1,15 @@
-import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+import type {
+  TsCodeFragment,
+  TsImportDeclaration,
+} from '@halfdomelabs/core-generators';
 
 import {
   makeImportAndFilePath,
   projectScope,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  tsCodeFileTemplate,
+  TsCodeUtils,
+  tsImportBuilder,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -34,9 +39,10 @@ const descriptorSchema = z.object({
 export interface ServiceFileProvider {
   getServiceImport: () => string;
   getServicePath: () => string;
+  getMethodImport: (methodName: string) => TsImportDeclaration;
   registerMethod(
     key: string,
-    block: TypescriptCodeBlock,
+    block: TsCodeFragment,
     outputMethod?: ServiceOutputMethod,
   ): void;
 }
@@ -60,7 +66,7 @@ export const serviceFileGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: { serviceFile: serviceFileProvider.export() },
       outputs: {
@@ -68,9 +74,9 @@ export const serviceFileGenerator = createGenerator({
           ? serviceFileOutputProvider.export(projectScope, descriptor.id)
           : serviceFileOutputProvider.export(),
       },
-      run({ appModule, typescript }) {
+      run({ appModule, typescriptFile }) {
         const methodMap = createNonOverwriteableMap<
-          Record<string, TypescriptCodeBlock>
+          Record<string, TsCodeFragment>
         >({}, { name: 'prisma-crud-service-method-map' });
         const outputMap = createNonOverwriteableMap<
           Record<string, ServiceOutputMethod>
@@ -91,6 +97,8 @@ export const serviceFileGenerator = createGenerator({
             serviceFile: {
               getServiceImport: () => servicesImport,
               getServicePath: () => servicesPath,
+              getMethodImport: (methodName) =>
+                tsImportBuilder([methodName]).from(servicesImport),
               registerMethod(key, block, outputMethod) {
                 methodMap.set(key, block);
                 if (outputMethod) {
@@ -109,13 +117,29 @@ export const serviceFileGenerator = createGenerator({
                 .map((key) => methods[key]),
             ];
 
-            const servicesFile = typescript.createTemplate({
-              METHODS: TypescriptCodeUtils.mergeBlocks(orderedMethods, '\n\n'),
+            const template = tsCodeFileTemplate({
+              name:
+                descriptor.id ??
+                kebabCase(descriptor.name.replace(/\.ts$/, '')),
+              source: { contents: 'TPL_METHODS' },
+              variables: {
+                TPL_METHODS: {},
+              },
             });
 
             if (Object.keys(methodMap.value()).length > 0) {
               await builder.apply(
-                servicesFile.renderToActionFromText('METHODS;', servicesPath),
+                typescriptFile.renderTemplateFile({
+                  template,
+                  destination: servicesPath,
+                  includeMetadataOnDemand: true,
+                  variables: {
+                    TPL_METHODS: TsCodeUtils.mergeFragmentsPresorted(
+                      orderedMethods,
+                      '\n\n',
+                    ),
+                  },
+                }),
               );
             }
             return {

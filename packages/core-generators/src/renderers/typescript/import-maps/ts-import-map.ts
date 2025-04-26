@@ -55,7 +55,7 @@ export function createTsImportMap<
           declaration: (alias) => {
             if (value.isTypeOnly) {
               throw new Error(
-                'Type only imports cannot be marked as named imports',
+                `Type only imports cannot be marked as named imports: ${name} in ${source}`,
               );
             }
             return makeDeclaration(alias);

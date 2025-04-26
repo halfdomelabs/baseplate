@@ -1,6 +1,9 @@
 // standard typings of service output
 
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type {
+  TsCodeFragment,
+  TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
 
 import type { ScalarFieldType } from './field-types.js';
 import type {
@@ -26,7 +29,7 @@ export interface ServiceOutputEnumValue {
 export interface ServiceOutputEnum {
   name: string;
   values: ServiceOutputEnumValue[];
-  expression: TypescriptCodeExpression;
+  expression: TsCodeFragment;
 }
 
 export interface ServiceOutputDtoScalarField extends ServiceOutputDtoBaseField {
@@ -45,7 +48,7 @@ export interface ServiceOutputDtoNestedFieldWithoutPrisma
   type: 'nested';
   isPrismaType?: false;
   nestedType: ServiceOutputDto;
-  typescriptType?: TypescriptCodeExpression;
+  typescriptType?: TsCodeFragment;
   schemaFieldName?: string;
 }
 
@@ -54,7 +57,7 @@ export interface ServiceOutputDtoNestedFieldWithPrisma
   type: 'nested';
   isPrismaType: true;
   nestedType: Omit<ServiceOutputDto, 'fields'>;
-  typescriptType?: TypescriptCodeExpression;
+  typescriptType?: TsCodeFragment;
   schemaFieldName?: string;
 }
 

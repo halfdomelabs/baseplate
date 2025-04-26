@@ -1,6 +1,10 @@
-import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+import type { TsHoistedFragment } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  tsCodeFragment,
+  tsHoistedFragment,
+  tsImportBuilder,
+} from '@halfdomelabs/core-generators';
 import { quot } from '@halfdomelabs/utils';
 
 import type { PrismaOutputModel } from '@src/types/prisma-output.js';
@@ -11,7 +15,7 @@ import { getScalarFieldTypeInfo } from '@src/types/field-types.js';
 interface PrimaryKeyOutput {
   argumentName: string;
   whereClause: string;
-  headerTypeBlock?: TypescriptCodeBlock;
+  headerTypeBlock?: TsHoistedFragment;
   argumentType: string;
 }
 
@@ -112,14 +116,12 @@ export function getPrimaryKeyExpressions(
   // handle multiple primary key case
   const primaryKeyInputName = `${model.name}PrimaryKey`;
 
-  const headerTypeBlock = TypescriptCodeUtils.createBlock(
-    `export type ${primaryKeyInputName} = Pick<${model.name}, ${idFields
-      .map(quot)
-      .join(' | ')}>`,
-    `import {${model.name}} from '@prisma/client';`,
-    {
-      headerKey: primaryKeyInputName,
-    },
+  const headerTypeBlock = tsHoistedFragment(
+    tsCodeFragment(
+      `export type ${primaryKeyInputName} = Pick<${model.name}, ${idFields.map(quot).join(' | ')}>`,
+      tsImportBuilder([model.name]).from('@prisma/client'),
+    ),
+    `primary-key-type-${primaryKeyInputName}`,
   );
 
   return {

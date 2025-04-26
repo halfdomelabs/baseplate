@@ -30,14 +30,46 @@ function isTsCodeFragment(value: unknown): value is TsCodeFragment {
   return typeof value === 'object' && value !== null && 'contents' in value;
 }
 
-function mergeFragmentImportsAndHoistedFragments(fragments: TsCodeFragment[]): {
+function mergeFragmentImportsAndHoistedFragments(
+  fragments: TsCodeFragment[],
+  options?: {
+    imports?: TsImportDeclaration[];
+    hoistedFragments?: TsHoistedFragment[];
+  },
+): {
   imports: TsImportDeclaration[];
   hoistedFragments: TsHoistedFragment[];
 } {
   return {
-    imports: fragments.flatMap((f) => f.imports ?? []),
-    hoistedFragments: fragments.flatMap((f) => f.hoistedFragments ?? []),
+    imports: [
+      ...(options?.imports ?? []),
+      ...fragments.flatMap((f) => f.imports ?? []),
+    ],
+    hoistedFragments: [
+      ...(options?.hoistedFragments ?? []),
+      ...fragments.flatMap((f) => f.hoistedFragments ?? []),
+    ],
   };
+}
+
+/**
+ * Validate a property key.
+ *
+ * Property keys must be valid identifiers or quoted strings and may optionally end with a question mark.
+ *
+ * @param key - The key to validate.
+ * @throws An error if the key is invalid.
+ */
+function validatePropertyKey(key: string): void {
+  const quotedKeyRegex = /^(['"])[^]*\1\??$/;
+  const unquotedKeyRegex = /^[A-Za-z0-9_]+\??$/;
+
+  const isQuoted = quotedKeyRegex.test(key);
+  const isValidUnquoted = unquotedKeyRegex.test(key);
+
+  if (!isQuoted && !isValidUnquoted) {
+    throw new Error(`Invalid key: ${key}. Please escape the key with quotes.`);
+  }
 }
 
 /**
@@ -151,11 +183,19 @@ export const TsCodeUtils = {
   formatFragment(
     formatString: string,
     args: Record<string, TsCodeFragment | string>,
+    imports?: TsImportDeclaration[] | TsImportDeclaration,
+    options?: {
+      hoistedFragments?: TsHoistedFragment[];
+    },
   ): TsCodeFragment {
     return {
       contents: formatStringWithContent(formatString, args),
       ...mergeFragmentImportsAndHoistedFragments(
         Object.values(args).filter(isTsCodeFragment),
+        {
+          imports: imports && (Array.isArray(imports) ? imports : [imports]),
+          hoistedFragments: options?.hoistedFragments,
+        },
       ),
     };
   },
@@ -209,8 +249,8 @@ export const TsCodeUtils = {
         if (trimmedContent.startsWith(`async function ${key}`)) {
           return `${trimmedContent.replace(/^async function /, 'async ')},`;
         }
-        const escapedKey = /^[A-Z0-9_a-z]+$/.test(key) ? key : quot(key);
-        return `${escapedKey}: ${content},`;
+        validatePropertyKey(key);
+        return `${key}: ${content},`;
       })
       .join('\n');
 
@@ -220,6 +260,20 @@ export const TsCodeUtils = {
         : `{${mergedContent}}`,
       ...mergeFragmentImportsAndHoistedFragments(fragments),
     };
+  },
+
+  mergeFragmentsAsObjectPresorted(
+    objOrMap:
+      | Record<string, TsCodeFragment | string | undefined>
+      | Map<string, TsCodeFragment | string | undefined>,
+    options: {
+      wrapWithParenthesis?: boolean;
+    } = {},
+  ): TsCodeFragment {
+    return this.mergeFragmentsAsObject(objOrMap, {
+      ...options,
+      disableSort: true,
+    });
   },
 
   /**
@@ -251,7 +305,9 @@ export const TsCodeUtils = {
       .map((key) => {
         const value = map.get(key) ?? '';
         const content = typeof value === 'string' ? value : value.contents;
-        const escapedKey = /^[A-Z0-9_a-z]+$/.test(key) ? key : `[${quot(key)}]`;
+        validatePropertyKey(key);
+        const escapedKey =
+          key.startsWith('"') || key.startsWith("'") ? `[${quot(key)}]` : key;
         return `${escapedKey}: ${content};`;
       })
       .join('\n');

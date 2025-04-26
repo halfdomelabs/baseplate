@@ -156,14 +156,24 @@ describe('TsCodeUtils', () => {
       });
     });
 
-    it('should escape keys that are not valid identifiers', () => {
+    it('should throw on keys that are not valid identifiers', () => {
       const obj = {
         'invalid-key': tsCodeFragment('42'),
       };
 
+      expect(() => TsCodeUtils.mergeFragmentsAsObject(obj)).toThrow(
+        'Invalid key: invalid-key. Please escape the key with quot.',
+      );
+    });
+
+    it('should allow optional keys with question marks', () => {
+      const obj = {
+        'optionalKey?': tsCodeFragment('42'),
+      };
+
       const result = TsCodeUtils.mergeFragmentsAsObject(obj);
 
-      expect(result.contents).toBe("{'invalid-key': 42,}");
+      expect(result.contents).toBe('{optionalKey?: 42,}');
     });
 
     it('should wrap with parenthesis when option is set', () => {

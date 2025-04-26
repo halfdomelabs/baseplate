@@ -1,9 +1,13 @@
 import type {
-  TypescriptCodeBlock,
+  TsCodeFragment,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  TsCodeUtils,
+  tsImportBuilder,
+  TypescriptCodeUtils,
+} from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -13,7 +17,7 @@ import type {
 } from '@src/providers/prisma/prisma-data-transformable.js';
 import type { ServiceOutputMethod } from '@src/types/service-output.js';
 
-import { serviceContextProvider } from '@src/generators/core/service-context/service-context.generator.js';
+import { serviceContextImportsProvider } from '@src/generators/core/service-context/service-context.generator.js';
 import { serviceFileProvider } from '@src/generators/core/service-file/service-file.generator.js';
 import { prismaToServiceOutputDto } from '@src/types/service-output.js';
 import { notEmpty } from '@src/utils/array.js';
@@ -32,7 +36,7 @@ import {
   getPrimaryKeyExpressions,
 } from '../_shared/crud-method/primary-key-input.js';
 import { prismaCrudServiceProvider } from '../prisma-crud-service/prisma-crud-service.generator.js';
-import { prismaUtilsProvider } from '../prisma-utils/prisma-utils.generator.js';
+import { prismaUtilsImportsProvider } from '../prisma-utils/prisma-utils.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
 const descriptorSchema = z.object({
@@ -80,7 +84,7 @@ function getMethodDefinition(
   };
 }
 
-function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
+function getMethodBlock(options: PrismaDataMethodOptions): TsCodeFragment {
   const { name, modelName, prismaOutput, prismaUtils } = options;
 
   const updateInputTypeName = `${modelName}UpdateData`;
@@ -92,16 +96,16 @@ function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
 
   const contextRequired = getDataMethodContextRequired(options);
 
-  const modelType = prismaOutput.getModelTypeExpression(modelName);
+  const modelType = prismaOutput.getModelTypeFragment(modelName);
 
   const model = prismaOutput.getPrismaModel(modelName);
   const primaryKey = getPrimaryKeyExpressions(model);
 
-  const operation = TypescriptCodeUtils.formatExpression(
+  const operation = TsCodeUtils.formatFragment(
     `PRISMA_MODEL.update(UPDATE_ARGS)`,
     {
-      PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
-      UPDATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
+      PRISMA_MODEL: prismaOutput.getPrismaModelFragment(modelName),
+      UPDATE_ARGS: TsCodeUtils.mergeFragmentsAsObjectPresorted({
         where: primaryKey.whereClause,
         data: updateExpression,
         '...': 'query',
@@ -109,7 +113,7 @@ function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
     },
   );
 
-  return TypescriptCodeUtils.formatBlock(
+  return TsCodeUtils.formatFragment(
     `
 export async function METHOD_NAME({ ID_ARG, data, query, EXTRA_ARGS }: UpdateServiceInput<PRIMARY_KEY_TYPE, UPDATE_INPUT_TYPE_NAME, QUERY_ARGS>): Promise<MODEL_TYPE> {
   FUNCTION_BODY
@@ -127,20 +131,19 @@ export async function METHOD_NAME({ ID_ARG, data, query, EXTRA_ARGS }: UpdateSer
           : `id : ${primaryKey.argumentName}`,
       PRIMARY_KEY_TYPE: primaryKey.argumentType,
       QUERY_ARGS: `Prisma.${modelName}DefaultArgs`,
-      PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
+      PRISMA_MODEL: prismaOutput.getPrismaModelFragment(modelName),
       FUNCTION_BODY: functionBody,
       OPERATION: wrapWithApplyDataPipe(operation, dataPipeNames, prismaUtils),
       EXTRA_ARGS: contextRequired ? 'context' : '',
     },
+    [
+      prismaUtils.UpdateServiceInput.typeDeclaration(),
+      tsImportBuilder(['Prisma']).from('@prisma/client'),
+    ],
     {
-      headerBlocks: [typeHeaderBlock, primaryKey.headerTypeBlock].filter(
+      hoistedFragments: [typeHeaderBlock, primaryKey.headerTypeBlock].filter(
         notEmpty,
       ),
-      importText: [
-        "import { UpdateServiceInput } from '%prisma-utils/crudServiceTypes';",
-        "import { Prisma } from '@prisma/client';",
-      ],
-      importMappers: [prismaUtils],
     },
   );
 }
@@ -155,15 +158,15 @@ export const prismaCrudUpdateGenerator = createGenerator({
         prismaOutput: prismaOutputProvider,
         serviceFile: serviceFileProvider.dependency(),
         crudPrismaService: prismaCrudServiceProvider,
-        serviceContext: serviceContextProvider,
-        prismaUtils: prismaUtilsProvider,
+        serviceContextImports: serviceContextImportsProvider,
+        prismaUtilsImports: prismaUtilsImportsProvider,
       },
       run({
         prismaOutput,
         serviceFile,
         crudPrismaService,
-        serviceContext,
-        prismaUtils,
+        serviceContextImports,
+        prismaUtilsImports,
       }) {
         const { name, modelName, prismaFields, transformerNames } = descriptor;
         const methodName = `${name}${modelName}`;
@@ -194,8 +197,8 @@ export const prismaCrudUpdateGenerator = createGenerator({
               operationName: 'update',
               isPartial: true,
               transformers,
-              serviceContext,
-              prismaUtils,
+              serviceContextImports,
+              prismaUtils: prismaUtilsImports,
               operationType: 'update',
               whereUniqueExpression: primaryKey.whereClause,
             };

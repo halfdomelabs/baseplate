@@ -1,12 +1,19 @@
 import type {
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
+  TsCodeFragment,
+  TsHoistedFragment,
 } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  tsCodeFragment,
+  TsCodeUtils,
+  tsHoistedFragment,
+  tsImportBuilder,
+  tsTemplate,
+} from '@halfdomelabs/core-generators';
 import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
+import { sortBy } from 'es-toolkit';
 
-import type { ServiceContextProvider } from '@src/generators/core/service-context/service-context.generator.js';
+import type { ServiceContextImportsProvider } from '@src/generators/core/service-context/service-context.generator.js';
 import type {
   PrismaDataTransformer,
   PrismaDataTransformOutputField,
@@ -17,7 +24,7 @@ import type { ServiceOutputDto } from '@src/types/service-output.js';
 import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
 
-import type { PrismaUtilsProvider } from '../../prisma-utils/prisma-utils.generator.js';
+import type { PrismaUtilsImportsProvider } from '../../prisma-utils/prisma-utils.generator.js';
 import type { PrismaOutputProvider } from '../../prisma/prisma.generator.js';
 
 export interface PrismaDataMethodOptions {
@@ -32,8 +39,8 @@ export interface PrismaDataMethodOptions {
   parentIdCheckField?: string;
   isPartial: boolean;
   transformers: PrismaDataTransformer[];
-  serviceContext: ServiceContextProvider;
-  prismaUtils: PrismaUtilsProvider;
+  serviceContextImports: ServiceContextImportsProvider;
+  prismaUtils: PrismaUtilsImportsProvider;
 }
 
 export function getDataMethodContextRequired({
@@ -43,26 +50,16 @@ export function getDataMethodContextRequired({
 }
 
 export function wrapWithApplyDataPipe(
-  operation: TypescriptCodeExpression,
+  operation: TsCodeFragment,
   pipeNames: string[],
-  prismaUtils: PrismaUtilsProvider,
-): TypescriptCodeExpression {
+  prismaUtils: PrismaUtilsImportsProvider,
+): TsCodeFragment {
   if (pipeNames.length === 0) {
     return operation;
   }
-  return TypescriptCodeUtils.formatExpression(
-    `applyDataPipeOutput(PIPE_NAMES, OPERATION)`,
-    {
-      PIPE_NAMES: `[${pipeNames.join(', ')}]`,
-      OPERATION: operation,
-    },
-    {
-      importText: [
-        "import {applyDataPipeOutput} from '%prisma-utils/dataPipes'",
-      ],
-      importMappers: [prismaUtils],
-    },
-  );
+  return TsCodeUtils.templateWithImports(
+    prismaUtils.applyDataPipeOutput.declaration(),
+  )`applyDataPipeOutput([${pipeNames.join(', ')}], ${operation})`;
 }
 
 export function getDataMethodDataType({
@@ -124,7 +121,7 @@ export function getDataInputTypeBlock(
     operationName,
     transformers,
   }: Omit<PrismaDataMethodOptions, 'name'>,
-): TypescriptCodeBlock {
+): TsHoistedFragment {
   const prismaFieldSelection = prismaFieldNames
     .map((field) => `'${field}'`)
     .join(' | ');
@@ -133,23 +130,24 @@ export function getDataInputTypeBlock(
     (transformer) => transformer.inputFields,
   );
 
-  let prismaDataInput = `Prisma.${modelName}UncheckedCreateInput`;
+  let prismaDataInput = tsCodeFragment(
+    `Prisma.${modelName}UncheckedCreateInput`,
+    tsImportBuilder(['Prisma']).from('@prisma/client'),
+  );
   prismaDataInput =
     operationName === 'create'
       ? prismaDataInput
-      : `Partial<${prismaDataInput}>`;
+      : tsTemplate`Partial<${prismaDataInput}>`;
+
+  const hoistedFragmentName = `data-input-type-${dataInputTypeName}`;
 
   if (transformerInputs.length === 0) {
-    return TypescriptCodeUtils.formatBlock(
-      `type DATA_INPUT_TYPE_NAME = Pick<PRISMA_DATA_INPUT, PRISMA_FIELDS>;`,
-      {
-        DATA_INPUT_TYPE_NAME: dataInputTypeName,
-        PRISMA_DATA_INPUT: prismaDataInput,
-        PRISMA_FIELDS: prismaFieldSelection,
-      },
-      { importText: [`import {Prisma} from '@prisma/client'`] },
+    return tsHoistedFragment(
+      tsTemplate`type ${dataInputTypeName} = Pick<${prismaDataInput}, ${prismaFieldSelection}>;`,
+      hoistedFragmentName,
     );
   }
+
   const customFields = safeMergeAllWithOptions(
     transformers.flatMap((transformer) =>
       transformer.inputFields.map((f) => ({
@@ -158,18 +156,12 @@ export function getDataInputTypeBlock(
     ),
   );
 
-  return TypescriptCodeUtils.formatBlock(
-    `interface DATA_INPUT_TYPE_NAME extends Pick<PRISMA_DATA_INPUT, PRISMA_FIELDS> {
-  CUSTOM_FIELDS
-}`,
-    {
-      DATA_INPUT_TYPE_NAME: dataInputTypeName,
-      PRISMA_DATA_INPUT: prismaDataInput,
-      PRISMA_FIELDS: prismaFieldSelection,
-      CUSTOM_FIELDS:
-        TypescriptCodeUtils.mergeBlocksAsInterfaceContent(customFields),
-    },
-    { importText: [`import {Prisma} from '@prisma/client'`] },
+  return tsHoistedFragment(
+    tsTemplate`
+  interface ${dataInputTypeName} extends Pick<${prismaDataInput}, ${prismaFieldSelection}> {
+    ${TsCodeUtils.mergeFragmentsAsInterfaceContent(customFields)}
+  }`,
+    hoistedFragmentName,
   );
 }
 
@@ -193,16 +185,16 @@ export function getDataMethodDataExpressions({
   | 'prismaFieldNames'
   | 'prismaUtils'
 >): {
-  functionBody: TypescriptCodeBlock | string;
-  createExpression: TypescriptCodeExpression;
-  updateExpression: TypescriptCodeExpression;
+  functionBody: TsCodeFragment | string;
+  createExpression: TsCodeFragment;
+  updateExpression: TsCodeFragment;
   dataPipeNames: string[];
 } {
   if (transformers.length === 0) {
     return {
       functionBody: '',
-      createExpression: TypescriptCodeUtils.createExpression('data'),
-      updateExpression: TypescriptCodeUtils.createExpression('data'),
+      createExpression: tsCodeFragment('data'),
+      updateExpression: tsCodeFragment('data'),
       dataPipeNames: [],
     };
   }
@@ -253,7 +245,7 @@ export function getDataMethodDataExpressions({
         throw new Error(`Foreign model has to have primary key`);
       }
 
-      const uniqueWhereValue = TypescriptCodeUtils.mergeExpressionsAsObject(
+      const uniqueWhereValue = TsCodeUtils.mergeFragmentsAsObject(
         Object.fromEntries(
           foreignIdFields.map((idField): [string, string] => {
             const idx = field.references?.findIndex(
@@ -272,23 +264,14 @@ export function getDataMethodDataExpressions({
 
       const uniqueWhere =
         foreignIdFields.length > 1
-          ? uniqueWhereValue.wrap(
-              (contents) => `{ ${foreignIdFields.join('_')}: ${contents}}`,
-            )
+          ? tsTemplate`{ ${foreignIdFields.join('_')}: ${uniqueWhereValue}}`
           : uniqueWhereValue;
 
-      const transformer = TypescriptCodeUtils.formatBlock(
-        'const FIELD_NAME = TRANSFORMER_PREFIX { connect: UNIQUE_WHERE }',
-        {
-          FIELD_NAME: field.name,
-          TRANSFORMER_PREFIX: transformerPrefix,
-          UNIQUE_WHERE: uniqueWhere,
-        },
-      );
+      const transformer = tsTemplate`const ${field.name} = ${transformerPrefix} { connect: ${uniqueWhere} }`;
 
       return {
         inputFields: relationScalarFields.map((f) => ({
-          type: TypescriptCodeUtils.createExpression(''),
+          type: tsCodeFragment(''),
           dtoField: { name: f, type: 'scalar', scalarType: 'string' },
         })),
         outputFields: [
@@ -300,10 +283,9 @@ export function getDataMethodDataExpressions({
                 ? `${field.name} || undefined`
                 : undefined,
             updateExpression: field.isOptional
-              ? TypescriptCodeUtils.createExpression(
+              ? tsCodeFragment(
                   `createPrismaDisconnectOrConnectData(${field.name})`,
-                  'import {createPrismaDisconnectOrConnectData} from "%prisma-utils/prismaRelations"',
-                  { importMappers: [prismaUtils] },
+                  prismaUtils.createPrismaDisconnectOrConnectData.declaration(),
                 )
               : undefined,
           },
@@ -324,7 +306,7 @@ export function getDataMethodDataExpressions({
     augmentedTransformers.some((t) => t.needsExistingItem);
 
   const existingItemGetter = needsExistingItem
-    ? TypescriptCodeUtils.formatBlock(
+    ? TsCodeUtils.formatFragment(
         `
 const existingItem = OPTIONAL_WHERE
 (await PRISMA_MODEL.findUniqueOrThrow({ where: WHERE_UNIQUE }))
@@ -335,11 +317,11 @@ const existingItem = OPTIONAL_WHERE
             operationType === 'upsert' && whereUniqueExpression
               ? `${whereUniqueExpression} && `
               : '',
-          PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
+          PRISMA_MODEL: prismaOutput.getPrismaModelFragment(modelName),
           WHERE_UNIQUE: whereUniqueExpression ?? '',
         },
       )
-    : TypescriptCodeUtils.createBlock('');
+    : tsCodeFragment('');
 
   const parentIdCheck =
     parentIdCheckField &&
@@ -349,7 +331,7 @@ const existingItem = OPTIONAL_WHERE
     }
     `;
 
-  const functionBody = TypescriptCodeUtils.formatBlock(
+  const functionBody = TsCodeUtils.formatFragment(
     `const { CUSTOM_INPUTS, ...rest } = data;
 
     EXISTING_ITEM_GETTER
@@ -361,10 +343,17 @@ TRANSFORMERS`,
       CUSTOM_INPUTS: customInputs.join(', '),
       EXISTING_ITEM_GETTER: existingItemGetter,
       PARENT_ID_CHECK: parentIdCheck ?? '',
-      TRANSFORMERS: TypescriptCodeUtils.mergeBlocks(
-        augmentedTransformers
-          .flatMap((t) => t.outputFields.map((f) => f.transformer))
-          .filter(notEmpty),
+      TRANSFORMERS: TsCodeUtils.mergeFragments(
+        new Map(
+          augmentedTransformers
+            .flatMap((t) =>
+              t.outputFields.map(
+                (f): [string, TsCodeFragment] | undefined =>
+                  f.transformer && [f.name, f.transformer],
+              ),
+            )
+            .filter(notEmpty),
+        ),
         '\n\n',
       ),
     },
@@ -373,21 +362,25 @@ TRANSFORMERS`,
   function createExpressionEntries(
     expressionExtractor: (
       field: PrismaDataTransformOutputField,
-    ) => TypescriptCodeExpression | string | undefined,
-  ): TypescriptCodeExpression {
+    ) => TsCodeFragment | string | undefined,
+  ): TsCodeFragment {
     const dataExpressionEntries = [
-      ...augmentedTransformers.flatMap((t) =>
-        t.outputFields.map((f): [string, TypescriptCodeExpression | string] => [
-          f.name,
-          expressionExtractor(f) ??
-            (f.pipeOutputName ? `${f.pipeOutputName}.data` : f.name),
-        ]),
+      ...sortBy(
+        augmentedTransformers.flatMap((t) =>
+          t.outputFields.map((f): [string, TsCodeFragment | string] => [
+            f.name,
+            expressionExtractor(f) ??
+              (f.pipeOutputName ? `${f.pipeOutputName}.data` : f.name),
+          ]),
+        ),
+        [([name]) => name],
       ),
       ['...', 'rest'] as [string, string],
     ];
 
-    return TypescriptCodeUtils.mergeExpressionsAsObject(
+    return TsCodeUtils.mergeFragmentsAsObject(
       Object.fromEntries(dataExpressionEntries),
+      { disableSort: true },
     );
   }
 
