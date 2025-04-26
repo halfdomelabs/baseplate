@@ -27,6 +27,10 @@ import {
 } from '../react-config/react-config.generator.js';
 import { reactErrorConfigProvider } from '../react-error/react-error.generator.js';
 import { reactRouterConfigProvider } from '../react-router/react-router.generator.js';
+import {
+  createReactSentryImports,
+  reactSentryImportsProvider,
+} from './generated/ts-import-maps.js';
 import { CORE_REACT_SENTRY_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
@@ -92,6 +96,18 @@ export const reactSentryGenerator = createGenerator({
         }
       },
     ),
+    imports: createGeneratorTask({
+      exports: {
+        reactSentryImports: reactSentryImportsProvider.export(projectScope),
+      },
+      run() {
+        return {
+          providers: {
+            reactSentryImports: createReactSentryImports('@/src/services'),
+          },
+        };
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
@@ -148,3 +164,5 @@ export const reactSentryGenerator = createGenerator({
     }),
   }),
 });
+
+export { reactSentryImportsProvider } from './generated/ts-import-maps.js';

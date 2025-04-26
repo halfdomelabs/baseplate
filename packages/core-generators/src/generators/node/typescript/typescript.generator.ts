@@ -340,6 +340,19 @@ export const typescriptGenerator = createGenerator({
           });
         }
 
+        const sharedRenderOptions = {
+          importSortOptions: {
+            groups: [
+              'builtin',
+              'external',
+              'internal',
+              ['parent', 'sibling'],
+              'index',
+            ] as const,
+            internalPatterns,
+          },
+        };
+
         function renderTemplateFile(
           payload: RenderTsTemplateFileActionInput,
         ): BuilderAction {
@@ -352,9 +365,7 @@ export const typescriptGenerator = createGenerator({
               resolveModule(moduleSpecifier) {
                 return resolveModuleSpecifier(moduleSpecifier, directory);
               },
-              importSortOptions: {
-                internalPatterns,
-              },
+              ...sharedRenderOptions,
             },
           });
         }
@@ -379,9 +390,7 @@ export const typescriptGenerator = createGenerator({
                         sourceDirectory,
                       );
                     },
-                    importSortOptions: {
-                      internalPatterns,
-                    },
+                    ...sharedRenderOptions,
                   },
                 }),
             },

@@ -1,15 +1,26 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import {
+  projectScope,
+  tsCodeFragment,
+  tsHoistedFragment,
+  tsImportBuilder,
+} from '@halfdomelabs/core-generators';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createReadOnlyProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
-import { reactLoggerProvider } from '@src/generators/core/react-logger/react-logger.generator.js';
+import { reactErrorImportsProvider } from '@src/generators/core/react-error/react-error.generator.js';
+import { reactLoggerImportsProvider } from '@src/generators/core/react-logger/react-logger.generator.js';
 
-import { reactApolloSetupProvider } from '../react-apollo/react-apollo.generator.js';
+import { reactApolloConfigProvider } from '../react-apollo/react-apollo.generator.js';
 
-const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
-});
+const descriptorSchema = z.object({});
+
+export const apolloErrorLinkProvider = createReadOnlyProviderType<{
+  errorLinkName: string;
+}>('apollo-error-link');
 
 export const apolloErrorLinkGenerator = createGenerator({
   name: 'apollo/apollo-error-link',
@@ -18,14 +29,18 @@ export const apolloErrorLinkGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        reactApolloSetup: reactApolloSetupProvider,
-        reactError: reactErrorProvider,
-        reactLogger: reactLoggerProvider,
+        reactApolloConfig: reactApolloConfigProvider,
+        reactErrorImports: reactErrorImportsProvider,
+        reactLoggerImports: reactLoggerImportsProvider,
       },
-      run({ reactApolloSetup, reactError, reactLogger }) {
-        reactApolloSetup.addLink({
+      exports: {
+        apolloErrorLink: apolloErrorLinkProvider.export(projectScope),
+      },
+      run({ reactApolloConfig, reactErrorImports, reactLoggerImports }) {
+        reactApolloConfig.apolloLinks.add({
           name: 'errorLink',
-          bodyExpression: TypescriptCodeUtils.createBlock(
+          priority: 'error',
+          bodyFragment: tsCodeFragment(
             `const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
           // log query/subscription errors but not mutations since it should be handled by caller
           const definition = getMainDefinition(operation.query);
@@ -65,31 +80,39 @@ export const apolloErrorLinkGenerator = createGenerator({
           }
         });`,
             [
-              'import { logError } from "%react-error/logger"',
-              'import { logger } from "%react-logger"',
-              'import { onError } from "@apollo/client/link/error"',
-              'import { getMainDefinition } from "@apollo/client/utilities"',
-              'import { GraphQLError, Kind } from "graphql";',
-              'import { ServerError } from "@apollo/client/link/utils";',
+              reactErrorImports.logError.declaration(),
+              reactLoggerImports.logger.declaration(),
+              tsImportBuilder(['onError']).from('@apollo/client/link/error'),
+              tsImportBuilder(['getMainDefinition']).from(
+                '@apollo/client/utilities',
+              ),
+              tsImportBuilder(['GraphQLError', 'Kind']).from('graphql'),
+              tsImportBuilder(['ServerError']).from(
+                '@apollo/client/link/utils',
+              ),
             ],
             {
-              importMappers: [reactError, reactLogger],
-              headerBlocks: [
-                TypescriptCodeUtils.createBlock(
+              hoistedFragments: [
+                tsHoistedFragment(
                   `export interface ErrorExtensions {
   code?: string;
   statusCode?: number;
   extraData?: Record<string, unknown>;
   reqId?: string;
 }`,
-                  undefined,
-                  { headerKey: 'ErrorExtensions' },
+                  'error-extensions',
                 ),
               ],
             },
           ),
         });
-        return {};
+        return {
+          providers: {
+            apolloErrorLink: {
+              errorLinkName: 'errorLink',
+            },
+          },
+        };
       },
     }),
   }),

@@ -1,75 +1,165 @@
-import type { ImportMapper } from '@halfdomelabs/core-generators';
+import type {
+  ImportMapper,
+  TsCodeFragment,
+  TsImportDeclaration,
+} from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
   createNodeTask,
   eslintProvider,
   extractPackageVersions,
-  makeImportAndFilePath,
   prettierProvider,
   projectScope,
   tsCodeFragment,
   TsCodeUtils,
+  tsHoistedFragment,
   tsImportBuilder,
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
+  tsTemplate,
   TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
+  createProviderTask,
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
   renderTextTemplateFileAction,
 } from '@halfdomelabs/sync';
-import { toposort } from '@halfdomelabs/utils';
+import { toposortOrdered } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 import { reactAppConfigProvider } from '@src/generators/core/react-app/react-app.generator.js';
-import { reactConfigProvider } from '@src/generators/core/react-config/react-config.generator.js';
+import {
+  reactConfigImportsProvider,
+  reactConfigProvider,
+} from '@src/generators/core/react-config/react-config.generator.js';
 import { reactErrorConfigProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactProxyProvider } from '@src/generators/core/react-proxy/react-proxy.generator.js';
 
 import { notEmpty } from '../../../utils/array.js';
 import { APOLLO_REACT_APOLLO_TEXT_TEMPLATES } from './generated/text-templates.js';
+import {
+  createReactApolloImports,
+  reactApolloImportsProvider,
+} from './generated/ts-import-maps.js';
+import { APOLLO_REACT_APOLLO_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
+  /**
+   * URL for the GraphQL API endpoint for use in development, e.g. /api/graphql
+   */
   devApiEndpoint: z.string().min(1),
+  /**
+   * Location to get the GraphQL schema relative to the app root, e.g. ../backend/schema.graphql
+   */
   schemaLocation: z.string().min(1),
+  /**
+   * Whether to enable GraphQL subscriptions
+   */
   enableSubscriptions: z.boolean().optional(),
 });
 
-export interface ApolloCreateArg {
+/**
+ * Argument for the createApolloClient function with various
+ * hooks to get the appropriate values
+ *
+ * @example
+ * ```ts
+ * // In app/AppApolloProvider.tsx
+ * function AppApolloProvider() {
+ *   REACT_RENDER_BODY;
+ *
+ *   const client = useMemo(
+ *     () => createApolloClient({ NAME }),
+ *     [NAME],
+ *   );
+ * }
+ *
+ * // In services/apollo/index.ts
+ *
+ * function createApolloClient({ NAME }: { NAME: TYPE }) {
+ *   ...
+ * }
+ * ```
+ */
+export interface ApolloCreateArgument {
+  /**
+   * Name of the argument
+   */
   name: string;
-  type: TypescriptCodeExpression;
-  creatorValue: TypescriptCodeExpression;
-  createArgs?: string[];
-  hookDependency?: string;
-  renderBody?: TypescriptCodeBlock;
+  /**
+   * Type of the argument
+   */
+  type: TsCodeFragment | string;
+  /**
+   * Fragment to add to the React render function for the Apollo Provider
+   *
+   * This should add the name of the argument to the scope to be used in the
+   * createApolloClient function.
+   */
+  reactRenderBody: TsCodeFragment;
 }
 
+const APOLLO_LINK_PRIORITY = {
+  error: 1,
+  auth: 2,
+  network: 3,
+};
+
+type ApolloLinkPriority = keyof typeof APOLLO_LINK_PRIORITY;
+
+/**
+ * Link for the ApolloClient
+ */
 export interface ApolloLink {
-  key?: string;
-  name: string | TypescriptCodeExpression;
-  bodyExpression?: TypescriptCodeBlock;
-  dependencies?: [string, string][];
-  httpOnly?: boolean;
-  wsOnly?: boolean;
+  /**
+   * Name of the link
+   */
+  name: string;
+  /**
+   * Import of the link if not declared in the bodyFragment
+   */
+  nameImport?: TsImportDeclaration;
+  /**
+   * Priority of the link
+   */
+  priority: ApolloLinkPriority;
+  /**
+   * Fragment to add the body of the createApolloClient function.
+   *
+   * This should add the name of the link to the function scope.
+   */
+  bodyFragment?: TsCodeFragment;
+  /**
+   * The name of any links this link depends on.
+   */
+  dependencies?: string[];
+  /**
+   * Which network transport this link applies to.
+   *
+   * @default 'all'
+   */
+  transport?: 'http' | 'ws' | 'all';
 }
 
-export interface ReactApolloSetupProvider extends ImportMapper {
-  addCreateArg(arg: ApolloCreateArg): void;
-  addLink(link: ApolloLink): void;
-  addWebsocketOption(name: string, expression: TypescriptCodeExpression): void;
-  getApiEndpointExpression(): TypescriptCodeExpression;
-  registerGqlFile(filePath: string): void;
-}
+const [setupTask, reactApolloConfigProvider, reactApolloConfigValuesProvider] =
+  createConfigProviderTask(
+    (t) => ({
+      createApolloClientArguments: t.namedArray<ApolloCreateArgument>(),
+      apolloLinks: t.namedArray<ApolloLink>(),
+      websocketOptions: t.map<string, TsCodeFragment | string>(),
+    }),
+    {
+      prefix: 'react-apollo',
+      configScope: projectScope,
+    },
+  );
 
-export const reactApolloSetupProvider =
-  createProviderType<ReactApolloSetupProvider>('react-apollo-setup');
+export { reactApolloConfigProvider };
 
 export interface ReactApolloProvider extends ImportMapper {
   registerGqlFile(filePath: string): void;
@@ -79,11 +169,14 @@ export interface ReactApolloProvider extends ImportMapper {
 export const reactApolloProvider =
   createProviderType<ReactApolloProvider>('react-apollo');
 
+const appApolloProviderPath = '@/src/app/AppApolloProvider.tsx';
+
 export const reactApolloGenerator = createGenerator({
   name: 'apollo/react-apollo',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ devApiEndpoint, schemaLocation, enableSubscriptions }) => ({
+    setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
         '@apollo/client',
@@ -111,123 +204,102 @@ export const reactApolloGenerator = createGenerator({
           prod: extractPackageVersions(REACT_PACKAGES, ['graphql-ws']),
         })
       : undefined,
-    main: createGeneratorTask({
-      dependencies: {
-        reactConfig: reactConfigProvider,
-        typescript: typescriptProvider,
-        reactAppConfig: reactAppConfigProvider,
-        eslint: eslintProvider,
-        prettier: prettierProvider,
-        reactProxy: reactProxyProvider,
-      },
-      exports: {
-        reactApolloSetup: reactApolloSetupProvider.export(projectScope),
-        reactApollo: reactApolloProvider.export(projectScope),
-      },
-      run({
-        reactConfig,
-        typescript,
-        reactAppConfig,
-        eslint,
-        prettier,
-        reactProxy,
-      }) {
-        const apolloCreateArgs: ApolloCreateArg[] = [];
-        const links: ApolloLink[] = [];
-        const gqlFiles: string[] = [];
+    eslint: createProviderTask(eslintProvider, (eslint) => {
+      eslint
+        .getConfig()
+        .appendUnique('eslintIgnore', ['src/generated/graphql.tsx']);
+    }),
+    prettier: createProviderTask(prettierProvider, (prettier) => {
+      prettier.addPrettierIgnore('src/generated/graphql.tsx');
+    }),
+    reactProxy: createProviderTask(reactProxyProvider, (reactProxy) => {
+      if (enableSubscriptions) {
+        reactProxy.enableWebSocket();
+      }
+    }),
+    reactConfig: createProviderTask(reactConfigProvider, (reactConfig) => {
+      reactConfig.configEntries.set('VITE_GRAPH_API_ENDPOINT', {
+        comment: 'URL for the GraphQL API endpoint',
+        validator: 'z.string().min(1)',
+        devDefaultValue: devApiEndpoint,
+      });
 
-        reactConfig.configEntries.set('VITE_GRAPH_API_ENDPOINT', {
-          comment: 'URL for the GraphQL API endpoint',
-          validator: 'z.string().min(1)',
-          devDefaultValue: devApiEndpoint,
+      if (enableSubscriptions) {
+        reactConfig.configEntries.set('VITE_GRAPH_WS_API_ENDPOINT', {
+          comment: 'URL for the GraphQL web socket API endpoint (optional)',
+          validator: 'z.string()',
+          devDefaultValue: '',
         });
-
-        if (enableSubscriptions) {
-          reactConfig.configEntries.set('VITE_GRAPH_WS_API_ENDPOINT', {
-            comment: 'URL for the GraphQL web socket API endpoint (optional)',
-            validator: 'z.string()',
-            devDefaultValue: '',
-          });
-        }
-
-        const cacheFile = typescript.createTemplate({});
-        const cachePath = 'src/services/apollo/cache.ts';
-
-        const [clientImport, clientPath] = makeImportAndFilePath(
-          'src/services/apollo/index.ts',
-        );
-
-        const [providerImport, providerPath] = makeImportAndFilePath(
-          'src/app/AppApolloProvider.tsx',
-        );
-
+      }
+    }),
+    reactApolloImports: createGeneratorTask({
+      exports: {
+        reactApolloImports: reactApolloImportsProvider.export(projectScope),
+      },
+      run() {
+        return {
+          providers: {
+            reactApolloImports: createReactApolloImports(
+              '@/src/services/apollo',
+            ),
+          },
+        };
+      },
+    }),
+    reactAppConfig: createProviderTask(
+      reactAppConfigProvider,
+      (reactAppConfig) => {
         reactAppConfig.renderWrappers.set('react-apollo', {
           wrap: (contents) =>
             TsCodeUtils.templateWithImports(
               tsImportBuilder()
                 .default('AppApolloProvider')
-                .from(providerImport),
+                .from(appApolloProviderPath),
             )`<AppApolloProvider>${contents}</AppApolloProvider>`,
           type: 'data',
         });
+      },
+    ),
+    main: createGeneratorTask({
+      dependencies: {
+        reactConfigImports: reactConfigImportsProvider,
+        typescriptFile: typescriptFileProvider,
+        reactApolloConfigValues: reactApolloConfigValuesProvider,
+      },
+      exports: {
+        reactApollo: reactApolloProvider.export(projectScope),
+      },
+      run({
+        reactConfigImports,
+        typescriptFile,
+        reactApolloConfigValues: {
+          createApolloClientArguments,
+          apolloLinks,
+          websocketOptions,
+        },
+      }) {
+        const gqlFiles: string[] = [];
 
-        const importMap = {
-          '%react-apollo/client': {
-            path: clientImport,
-            allowedImports: ['createApolloClient'],
-          },
-          '%react-apollo/generated': {
-            path: '@/src/generated/graphql',
-            allowedImports: ['*'],
-          },
-        };
-
-        eslint
-          .getConfig()
-          .appendUnique('eslintIgnore', ['src/generated/graphql.tsx']);
-
-        prettier.addPrettierIgnore('src/generated/graphql.tsx');
-
-        const websocketOptions = createNonOverwriteableMap<
-          Record<string, TypescriptCodeExpression | string>
-        >({});
-
-        if (enableSubscriptions) {
-          reactProxy.enableWebSocket();
-        }
+        const cachePath = '@/src/services/apollo/cache.ts';
+        const clientPath = '@/src/services/apollo/index.ts';
 
         return {
           providers: {
-            reactApolloSetup: {
-              addCreateArg(arg) {
-                apolloCreateArgs.push(arg);
-              },
-              addLink(link) {
-                links.push(link);
-              },
-              getApiEndpointExpression() {
-                return new TypescriptCodeExpression(
-                  'config.VITE_GRAPH_API_ENDPOINT',
-                  'import { config } from "%react-config";',
-                  { importMappers: [reactConfig] },
-                );
-              },
-              registerGqlFile(filePath) {
-                gqlFiles.push(filePath);
-              },
-              getImportMap() {
-                return importMap;
-              },
-              addWebsocketOption(name, expression) {
-                websocketOptions.set(name, expression);
-              },
-            },
             reactApollo: {
               registerGqlFile(filePath) {
                 gqlFiles.push(filePath);
               },
               getImportMap() {
-                return importMap;
+                return {
+                  '%react-apollo/client': {
+                    path: clientPath,
+                    allowedImports: ['createApolloClient'],
+                  },
+                  '%react-apollo/generated': {
+                    path: '@/src/generated/graphql',
+                    allowedImports: ['*'],
+                  },
+                };
               },
               getGeneratedFilePath() {
                 return '@/src/generated/graphql';
@@ -235,25 +307,40 @@ export const reactApolloGenerator = createGenerator({
             },
           },
           build: async (builder) => {
-            const sortedLinks = toposort(
-              links.map((link) => link.key ?? link.name),
-              links.flatMap((link) => link.dependencies ?? []),
-            )
-              .map((name) => links.find((link) => link.name === name))
-              .filter(notEmpty);
-            // always push http link at the last one
+            const findLink = (name: string): ApolloLink => {
+              const link = apolloLinks.find((link) => link.name === name);
+              if (!link) {
+                throw new Error(`Link ${name} not found`);
+              }
+              return link;
+            };
+            const sortedLinks = toposortOrdered(
+              apolloLinks,
+              apolloLinks.flatMap(
+                (link) =>
+                  link.dependencies?.map((dep): [ApolloLink, ApolloLink] => [
+                    findLink(dep),
+                    link,
+                  ]) ?? [],
+              ),
+            ).toSorted(
+              (a, b) =>
+                APOLLO_LINK_PRIORITY[a.priority] -
+                APOLLO_LINK_PRIORITY[b.priority],
+            );
+
             sortedLinks.push({
               name: 'httpLink',
-              httpOnly: true,
-              bodyExpression: new TypescriptCodeBlock(
+              transport: 'http',
+              priority: 'network',
+              bodyFragment: tsCodeFragment(
                 `const httpLink = new HttpLink({
                   uri: config.VITE_GRAPH_API_ENDPOINT,
                 });`,
                 [
-                  `import { HttpLink } from '@apollo/client';`,
-                  `import { config } from '%react-config';`,
+                  tsImportBuilder(['HttpLink']).from('@apollo/client'),
+                  reactConfigImports.config.declaration(),
                 ],
-                { importMappers: [reactConfig] },
               ),
             });
 
@@ -271,148 +358,167 @@ export const reactApolloGenerator = createGenerator({
                   'RETRY_WAIT',
                 ).replace(/;$/, '');
 
-              websocketOptions.merge({
-                connectionParams:
-                  TypescriptCodeUtils.createExpression(`async () => {
+              // TODO: This should not live here but in auth service
+              // TODO: This should live in the defaults not set afterwards to prevent them from being overridden
+              websocketOptions.set(
+                'connectionParams',
+                tsCodeFragment(`async () => {
                   const accessToken = await getAccessToken();
                   if (!accessToken) {
                     return {};
                   }
                   return { authorization: \`Bearer \${accessToken}\` };
                 }`),
-                url: TypescriptCodeUtils.createExpression(
-                  `getWsUrl()`,
-                  undefined,
-                  {
-                    headerBlocks: [
-                      TypescriptCodeUtils.createBlock(getWsUrlTemplate),
-                    ],
-                  },
-                ),
-                retryAttempts:
-                  "86400 /* effectively retry forever (1 month of retries) - there's no way of disabling retry attempts */",
-                retryWait: retryWaitTemplate,
-                shouldRetry: '() => true',
-              });
-
-              const wsOptions = TypescriptCodeUtils.mergeExpressionsAsObject(
-                websocketOptions.value(),
               );
+
+              websocketOptions.set(
+                'url',
+                tsCodeFragment(`getWsUrl()`, [], {
+                  hoistedFragments: [
+                    tsHoistedFragment(
+                      tsCodeFragment(getWsUrlTemplate),
+                      'get-ws-url',
+                    ),
+                  ],
+                }),
+              );
+              websocketOptions.set(
+                'retryAttempts',
+                "86400 /* effectively retry forever (1 month of retries) - there's no way of disabling retry attempts */",
+              );
+              websocketOptions.set('retryWait', retryWaitTemplate);
+              websocketOptions.set('shouldRetry', '() => true');
+
+              const wsOptionsFragment =
+                TsCodeUtils.mergeFragmentsAsObject(websocketOptions);
 
               sortedLinks.push({
                 name: 'wsLink',
-                wsOnly: true,
-                bodyExpression: TypescriptCodeUtils.formatBlock(
-                  `const wsLink = new GraphQLWsLink(createClient(WS_OPTIONS));`,
-                  { WS_OPTIONS: wsOptions },
-                  {
-                    importText: [
-                      `import { GraphQLWsLink } from '@apollo/client/link/subscriptions';`,
-                      `import { createClient } from 'graphql-ws';`,
-                    ],
-                  },
-                ),
+                transport: 'ws',
+                priority: 'network',
+                bodyFragment: TsCodeUtils.templateWithImports([
+                  tsImportBuilder(['GraphQLWsLink']).from(
+                    '@apollo/client/link/subscriptions',
+                  ),
+                  tsImportBuilder(['createClient']).from('graphql-ws'),
+                ])`const wsLink = new GraphQLWsLink(createClient(${wsOptionsFragment}));`,
               });
 
-              const splitLinkTemplate =
-                TypescriptCodeUtils.extractTemplateSnippet(
-                  websocketTemplate,
-                  'SPLIT_LINK',
-                );
-
-              const wsLinks = sortedLinks.filter((l) => l.wsOnly);
-              const httpLinks = sortedLinks.filter((l) => l.httpOnly);
+              const wsLinks = sortedLinks.filter((l) => l.transport === 'ws');
+              const httpLinks = sortedLinks.filter(
+                (l) => l.transport === 'http',
+              );
 
               const formatLinks = (
                 linksToFormat: ApolloLink[],
-              ): TypescriptCodeExpression => {
-                const linkNames = linksToFormat.map((link) =>
-                  typeof link.name === 'string'
-                    ? new TypescriptCodeExpression(link.name)
-                    : link.name,
-                );
+              ): TsCodeFragment | string => {
+                const linkNames = linksToFormat.map((link) => link.name);
                 if (linkNames.length === 1) {
                   return linkNames[0];
                 }
-                return TypescriptCodeUtils.mergeExpressionsAsArray(
-                  linkNames,
-                ).wrap(
-                  (contents) => `from(${contents})`,
-                  'import { from } from "@apollo/client";',
-                );
+                return TsCodeUtils.templateWithImports([
+                  tsImportBuilder(['from']).from('@apollo/client'),
+                ])`from(${TsCodeUtils.mergeFragmentsPresorted(linkNames)})`;
               };
 
               sortedLinks.push({
                 name: 'splitLink',
-                bodyExpression: TypescriptCodeUtils.formatBlock(
-                  splitLinkTemplate,
-                  {
-                    WS_LINK: formatLinks(wsLinks),
-                    HTTP_LINK: formatLinks(httpLinks),
-                  },
-                  {
-                    importText: [
-                      `import { split } from '@apollo/client';`,
-                      `import { getMainDefinition } from '@apollo/client/utilities';`,
-                      `import { Kind, OperationTypeNode } from 'graphql';`,
-                    ],
-                  },
-                ),
+                priority: 'network',
+                bodyFragment: TsCodeUtils.templateWithImports([
+                  tsImportBuilder(['split']).from('@apollo/client'),
+                  tsImportBuilder(['getMainDefinition']).from(
+                    '@apollo/client/utilities',
+                  ),
+                  tsImportBuilder(['Kind', 'OperationTypeNode']).from(
+                    'graphql',
+                  ),
+                ])`
+                const splitLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === Kind.OPERATION_DEFINITION &&
+      definition.operation === OperationTypeNode.SUBSCRIPTION
+    );
+  },
+  ${formatLinks(wsLinks)},
+  ${formatLinks(httpLinks)},
+);`,
               });
             }
 
-            await builder.apply(
-              cacheFile.renderToAction('services/apollo/cache.ts', cachePath),
-            );
-
-            const createArgNames = apolloCreateArgs
+            const createArgNames = createApolloClientArguments
               .map((arg) => arg.name)
               .join(', ');
+            const apolloLinkFragments = sortedLinks
+              .filter((apolloLink) => {
+                if (enableSubscriptions) {
+                  // subscriptions use the split link from above for transport-specific links
+                  return (
+                    !apolloLink.transport || apolloLink.transport === 'all'
+                  );
+                }
+                return true;
+              })
+              .map((apolloLink) =>
+                tsCodeFragment(apolloLink.name, apolloLink.nameImport),
+              );
 
-            const clientFile = typescript.createTemplate({
-              CREATE_ARGS:
-                apolloCreateArgs.length === 0
-                  ? new TypescriptCodeExpression('')
-                  : TypescriptCodeUtils.createExpression(
-                      `{${createArgNames}}: CreateApolloClientOptions`,
-                      undefined,
-                      {
-                        headerBlocks: [
-                          TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                            Object.fromEntries(
-                              apolloCreateArgs.map((arg) => [
-                                arg.name,
-                                arg.type,
-                              ]),
-                            ),
-                          ).wrap(
-                            (contents) =>
-                              `interface CreateApolloClientOptions {\n${contents}\n}`,
-                          ),
-                        ],
-                      },
-                    ),
-              LINK_BODIES: TypescriptCodeUtils.mergeBlocks(
-                sortedLinks.map((link) => link.bodyExpression).filter(notEmpty),
-                '\n\n',
-              ),
-              LINKS: TypescriptCodeUtils.mergeExpressionsAsArray(
-                sortedLinks
-                  .filter((l) =>
-                    enableSubscriptions ? !l.httpOnly && !l.wsOnly : true,
-                  )
-                  .map((link) =>
-                    typeof link.name === 'string'
-                      ? new TypescriptCodeExpression(link.name)
-                      : link.name,
-                  ),
-              ),
-            });
-
+            // services/apollo/index.ts
             await builder.apply(
-              clientFile.renderToAction('services/apollo/index.ts', clientPath),
+              typescriptFile.renderTemplateFile({
+                template: APOLLO_REACT_APOLLO_TS_TEMPLATES.service,
+                destination: clientPath,
+                variables: {
+                  TPL_CREATE_ARGS:
+                    createApolloClientArguments.length === 0
+                      ? ''
+                      : tsCodeFragment(
+                          `{${createArgNames}}: CreateApolloClientOptions`,
+                          undefined,
+                          {
+                            hoistedFragments: [
+                              tsHoistedFragment(
+                                tsTemplate`
+                              interface CreateApolloClientOptions {
+                                ${TsCodeUtils.mergeFragmentsAsInterfaceContent(
+                                  Object.fromEntries(
+                                    createApolloClientArguments.map((arg) => [
+                                      arg.name,
+                                      arg.type,
+                                    ]),
+                                  ),
+                                )}
+                              }
+                              `,
+                                'create-apollo-client-options',
+                              ),
+                            ],
+                          },
+                        ),
+                  TPL_LINK_BODIES: TsCodeUtils.mergeFragmentsPresorted(
+                    sortedLinks
+                      .map((link) => link.bodyFragment)
+                      .filter(notEmpty),
+                    '\n\n',
+                  ),
+                  TPL_LINKS:
+                    TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                      apolloLinkFragments,
+                    ),
+                },
+              }),
             );
 
+            // services/apollo/cache.ts
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: APOLLO_REACT_APOLLO_TS_TEMPLATES.cache,
+                destination: cachePath,
+              }),
+            );
+
+            // codegen.yml
             await builder.apply(
               renderTextTemplateFileAction({
                 template: APOLLO_REACT_APOLLO_TEXT_TEMPLATES.codegenYml,
@@ -423,46 +529,30 @@ export const reactApolloGenerator = createGenerator({
               }),
             );
 
-            const apolloProviderFile = typescript.createTemplate(
-              {
-                RENDER_BODY: TypescriptCodeUtils.mergeBlocks(
-                  apolloCreateArgs
-                    .map((arg) => arg.renderBody)
-                    .filter(notEmpty),
-                ),
-                CREATE_ARG_VALUE:
-                  apolloCreateArgs.length === 0
-                    ? TypescriptCodeUtils.createExpression('')
-                    : TypescriptCodeUtils.mergeExpressionsAsObject(
-                        Object.fromEntries(
-                          apolloCreateArgs.map((arg) => [
-                            arg.name,
-                            arg.creatorValue,
-                          ]),
-                        ),
-                      ),
-                CREATE_ARGS: TypescriptCodeUtils.createExpression(
-                  apolloCreateArgs
-                    .map((arg) => arg.hookDependency)
-                    .filter(notEmpty)
-                    .join(', '),
-                ),
-              },
-              {
-                importMappers: [{ getImportMap: () => importMap }],
-              },
-            );
-
+            // app/AppApolloProvider.tsx
             await builder.apply(
-              apolloProviderFile.renderToAction(
-                'app/AppApolloProvider.tsx',
-                providerPath,
-              ),
+              typescriptFile.renderTemplateFile({
+                template: APOLLO_REACT_APOLLO_TS_TEMPLATES.appApolloProvider,
+                destination: appApolloProviderPath,
+                variables: {
+                  TPL_RENDER_BODY: TsCodeUtils.mergeFragmentsPresorted(
+                    createApolloClientArguments.map(
+                      (arg) => arg.reactRenderBody,
+                    ),
+                    '\n\n',
+                  ),
+                  TPL_CREATE_ARGS: `{ ${createApolloClientArguments
+                    .map((arg) => arg.name)
+                    .join(', ')} }`,
+                  TPL_MEMO_DEPENDENCIES: createApolloClientArguments
+                    .map((arg) => arg.name)
+                    .join(', '),
+                },
+              }),
             );
 
             builder.addPostWriteCommand('pnpm generate', {
-              // run after prisma generate
-              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN + 1,
+              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
               onlyIfChanged: [...gqlFiles, 'codegen.yml'],
             });
           },
@@ -554,3 +644,5 @@ export const reactApolloGenerator = createGenerator({
     }),
   }),
 });
+
+export { reactApolloImportsProvider } from './generated/ts-import-maps.js';

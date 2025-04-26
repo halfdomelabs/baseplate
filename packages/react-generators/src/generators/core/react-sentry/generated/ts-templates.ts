@@ -5,7 +5,7 @@ import { reactConfigImportsProvider } from '../../react-config/generated/ts-impo
 const sentry = createTsTemplateFile({
   importMapProviders: { reactConfigImports: reactConfigImportsProvider },
   name: 'sentry',
-  projectExports: {},
+  projectExports: { logBreadcrumbToSentry: {}, logErrorToSentry: {} },
   source: { path: 'sentry.ts' },
   variables: { TPL_SENTRY_SCOPE_ACTIONS: {} },
 });

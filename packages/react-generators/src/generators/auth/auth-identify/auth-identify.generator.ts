@@ -17,7 +17,7 @@ import { z } from 'zod';
 
 import { reactRouterConfigProvider } from '@src/generators/core/react-router/react-router.generator.js';
 
-import { authHooksProvider } from '../auth-hooks/auth-hooks.generator.js';
+import { authHooksProvider } from '../_providers/auth-hooks.js';
 
 const descriptorSchema = z.object({});
 

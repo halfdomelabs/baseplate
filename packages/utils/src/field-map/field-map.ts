@@ -1,3 +1,5 @@
+import { sortBy } from 'es-toolkit';
+
 export type FieldContainerDynamicSourceGetter = () => string | undefined;
 
 export interface FieldContainerOptions {
@@ -178,6 +180,59 @@ export class MapContainer<K extends string | number | symbol, V>
   }
 }
 
+/**
+ * Named field container
+ *
+ * This container stores objects that contains a name field that can be used for
+ * detecting duplicate names.
+ */
+export class NamedArrayFieldContainer<V extends { name: string }>
+  implements FieldContainer<V[]>
+{
+  private readonly _value: Map<
+    string,
+    { value: V; setBySource: string | undefined }
+  >;
+  protected getDynamicSource: FieldContainerDynamicSourceGetter | undefined;
+
+  constructor(initialValue?: V[], options?: FieldContainerOptions) {
+    this.getDynamicSource = options?.getDynamicSource;
+    const value = initialValue ?? [];
+    this._value = new Map(
+      value.map((val) => [
+        val.name,
+        { value: val, setBySource: this.getDynamicSource?.() },
+      ]),
+    );
+  }
+
+  add(value: V, source?: string): void {
+    const existingValue = this._value.get(value.name);
+    if (existingValue?.setBySource) {
+      throw new Error(
+        `Value for name ${value.name} has already been set by ${existingValue.setBySource} and cannot be overwritten by ${source}`,
+      );
+    }
+    this._value.set(value.name, {
+      value,
+      setBySource: source ?? this.getDynamicSource?.(),
+    });
+  }
+
+  addMany(values: V[], source?: string): void {
+    for (const value of values) {
+      this.add(value, source);
+    }
+  }
+
+  getValue(): V[] {
+    return sortBy(
+      [...this._value.values()].map((value) => value.value),
+      [(v) => v.name],
+    );
+  }
+}
+
 // Map of maps field container
 export class MapOfMapsContainer<
   K1 extends string | number | symbol,
@@ -345,6 +400,12 @@ export class FieldMapSchemaBuilder {
       new Map(Object.entries(initialValue ?? {})),
       this.options,
     );
+  }
+
+  namedArray<V extends { name: string }>(
+    initialValue?: V[],
+  ): NamedArrayFieldContainer<V> {
+    return new NamedArrayFieldContainer(initialValue, this.options);
   }
 
   mapOfMaps<

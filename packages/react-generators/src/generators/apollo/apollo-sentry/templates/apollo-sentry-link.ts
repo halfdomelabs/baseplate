@@ -1,10 +1,10 @@
 // @ts-nocheck
 
+import { logError } from '%reactErrorImports';
+import { logBreadcrumbToSentry } from '%reactSentryImports';
 import { ApolloLink } from '@apollo/client';
-import { Observable, getMainDefinition } from '@apollo/client/utilities';
+import { getMainDefinition, Observable } from '@apollo/client/utilities';
 import { Kind } from 'graphql';
-import { logError } from '../error-logger';
-import { logBreadcrumbToSentry } from '../sentry';
 
 export const apolloSentryLink = new ApolloLink((operation, forward) => {
   operation.setContext({ startAt: new Date().getTime() });

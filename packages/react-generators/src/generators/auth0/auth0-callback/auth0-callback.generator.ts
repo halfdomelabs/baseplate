@@ -7,7 +7,7 @@ import {
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authHooksProvider } from '@src/generators/auth/auth-hooks/auth-hooks.generator.js';
+import { authHooksProvider } from '@src/generators/auth/index.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';

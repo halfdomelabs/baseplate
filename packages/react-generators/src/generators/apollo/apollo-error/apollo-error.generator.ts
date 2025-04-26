@@ -1,9 +1,8 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
-  makeImportAndFilePath,
   projectScope,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -11,6 +10,12 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import {
+  apolloErrorImportsProvider,
+  createApolloErrorImports,
+} from './generated/ts-import-maps.js';
+import { APOLLO_APOLLO_ERROR_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -28,31 +33,31 @@ export const apolloErrorGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         apolloError: apolloErrorProvider.export(projectScope),
+        apolloErrorImports: apolloErrorImportsProvider.export(projectScope),
       },
-      run({ typescript }) {
-        const [utilImport, utilPath] = makeImportAndFilePath(
-          'src/utils/apollo-error.ts',
-        );
+      run({ typescriptFile }) {
+        const utilPath = '@/src/utils/apollo-error.ts';
 
         return {
           providers: {
             apolloError: {
               getImportMap: () => ({
                 '%apollo-error/utils': {
-                  path: utilImport,
+                  path: utilPath,
                   allowedImports: ['getApolloErrorCode'],
                 },
               }),
             },
+            apolloErrorImports: createApolloErrorImports('@/src/utils'),
           },
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'apollo-error.ts',
+              typescriptFile.renderTemplateFile({
+                template: APOLLO_APOLLO_ERROR_TS_TEMPLATES.apolloError,
                 destination: utilPath,
               }),
             );
@@ -62,3 +67,5 @@ export const apolloErrorGenerator = createGenerator({
     }),
   }),
 });
+
+export { apolloErrorImportsProvider } from './generated/ts-import-maps.js';

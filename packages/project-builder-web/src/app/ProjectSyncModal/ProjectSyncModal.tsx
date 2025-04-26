@@ -13,7 +13,7 @@ import { Console } from '@src/components';
 import { useProjects } from '@src/hooks/useProjects';
 import { useSyncMetadata } from '@src/hooks/useSyncMetadata';
 import { cancelSync, startSync } from '@src/services/api';
-import { formatError } from '@src/services/error-formatter';
+import { formatError, logAndFormatError } from '@src/services/error-formatter';
 
 import { PackageSyncStatus } from './PackageSyncStatus';
 
@@ -48,7 +48,7 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
     }
 
     startSync(currentProjectId).catch((error: unknown) =>
-      toast.error(formatError(error)),
+      toast.error(logAndFormatError(error)),
     );
     setIsOpen(true);
   };

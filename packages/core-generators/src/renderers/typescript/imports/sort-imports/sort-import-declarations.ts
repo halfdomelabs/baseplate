@@ -14,7 +14,7 @@ export interface SortImportDeclarationsOptions {
    * Groups to sort imports by. Each inner array represents imports
    * that should be grouped together.
    */
-  groups: (ImportSortGroup | ImportSortGroup[])[];
+  groups: readonly (ImportSortGroup | readonly ImportSortGroup[])[];
   /**
    * Whether to ignore case when sorting imports
    *
