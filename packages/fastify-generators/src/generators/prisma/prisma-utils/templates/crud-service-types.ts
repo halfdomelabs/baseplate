@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { ServiceContext } from '%service-context';
+import type { ServiceContext } from '%serviceContextImports';
 
 export interface CreateServiceInput<
   CreateData,

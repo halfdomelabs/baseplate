@@ -29,6 +29,7 @@ import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
 import { renderTsTemplateFileAction } from '@src/renderers/typescript/actions/render-ts-template-file-action.js';
 import {
+  extractTsTemplateFileInputsFromTemplateGroup,
   generatePathMapEntries,
   getProjectRelativePathFromModuleSpecifier,
   normalizeModuleSpecifier,
@@ -124,6 +125,19 @@ export interface TypescriptFileProvider {
     options?: Omit<LazyTemplateFileEntry, 'payload'>,
   ): void;
   /**
+   * Adds a lazy template group whose files will be written only if
+   * another template depends on it.
+   *
+   * @param payload - The payload for the template group
+   * @returns The action for the template group
+   */
+  addLazyTemplateGroup<T extends TsTemplateGroup = TsTemplateGroup>(
+    payload: RenderTsTemplateGroupActionInput<T> & {
+      generatorInfo: GeneratorInfo;
+    },
+    options?: Omit<LazyTemplateFileEntry, 'payload'>,
+  ): void;
+  /**
    * Renders a template file to an action
    *
    * @param payload - The payload for the template file
@@ -141,6 +155,12 @@ export interface TypescriptFileProvider {
   renderTemplateGroup<T extends TsTemplateGroup = TsTemplateGroup>(
     payload: RenderTsTemplateGroupActionInput<T>,
   ): BuilderAction;
+  /**
+   * Marks an import as used
+   *
+   * @param projectRelativePath - The project relative path to mark as used
+   */
+  markImportAsUsed(projectRelativePath: string): void;
 }
 
 export const typescriptFileProvider =
@@ -379,6 +399,20 @@ export const typescriptGenerator = createGenerator({
                   ...options,
                 });
               },
+              addLazyTemplateGroup: (payload, options) => {
+                // break out files of the group
+                const files =
+                  extractTsTemplateFileInputsFromTemplateGroup(payload);
+                for (const file of files) {
+                  lazyTemplates.add({
+                    payload: {
+                      ...file,
+                      generatorInfo: payload.generatorInfo,
+                    },
+                    ...options,
+                  });
+                }
+              },
               renderTemplateFile,
               renderTemplateGroup: (payload) =>
                 renderTsTemplateGroupAction({
@@ -393,6 +427,11 @@ export const typescriptGenerator = createGenerator({
                     ...sharedRenderOptions,
                   },
                 }),
+              markImportAsUsed: (projectRelativePath) => {
+                usedProjectRelativePaths.add(
+                  projectRelativePath.replace(/\.(j|t)sx?$/, ''),
+                );
+              },
             },
           },
           async build(builder) {

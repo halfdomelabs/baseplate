@@ -1,8 +1,9 @@
 // @ts-nocheck
 
-import { Prisma } from '@prisma/client';
-import { prisma } from '%prisma-service';
-import { notEmpty } from '%ts-utils/arrays';
+import type { Prisma } from '@prisma/client';
+
+import { prisma } from '%prismaImports';
+import { notEmpty } from '%tsUtilsImports';
 
 interface DataPipeOperations {
   beforePrismaPromises?: Prisma.PrismaPromise<unknown>[];

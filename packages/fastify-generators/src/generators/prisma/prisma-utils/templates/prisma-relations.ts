@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /**
  * Small helper function to make it easier to use optional relations in Prisma since the
  * only way to set a Prisma relation to null is to disconnect it.
