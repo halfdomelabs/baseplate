@@ -1,4 +1,4 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { tsCodeFragment, tsImportBuilder } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -25,7 +25,7 @@ export const prismaPasswordTransformerGenerator = createGenerator({
           buildTransformer: () => ({
             inputFields: [
               {
-                type: TypescriptCodeUtils.createExpression('string | null'),
+                type: tsCodeFragment('string | null'),
                 dtoField: {
                   name: 'password',
                   type: 'scalar',
@@ -38,10 +38,13 @@ export const prismaPasswordTransformerGenerator = createGenerator({
             outputFields: [
               {
                 name: 'passwordHash',
-                transformer: TypescriptCodeUtils.createBlock(
+                transformer: tsCodeFragment(
                   'const passwordHash = password ?? await createPasswordHash(password);',
-                  'import {createPasswordHash} from "%password-hasher-service";',
-                  { importMappers: [passwordHasherService] },
+                  tsImportBuilder(['createPasswordHash']).from(
+                    passwordHasherService.getImportMap()[
+                      '%password-hasher-service'
+                    ]?.path ?? '',
+                  ),
                 ),
               },
             ],

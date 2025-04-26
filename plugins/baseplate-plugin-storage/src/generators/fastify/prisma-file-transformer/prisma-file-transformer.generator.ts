@@ -1,10 +1,14 @@
 import type { PrismaOutputRelationField } from '@halfdomelabs/fastify-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  tsCodeFragment,
+  tsImportBuilder,
+  tsTemplate,
+} from '@halfdomelabs/core-generators';
 import {
   prismaCrudServiceSetupProvider,
   prismaOutputProvider,
-  prismaUtilsProvider,
+  prismaUtilsImportsProvider,
 } from '@halfdomelabs/fastify-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { quot } from '@halfdomelabs/utils';
@@ -28,14 +32,14 @@ export const prismaFileTransformerGenerator = createGenerator({
         prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
         storageModule: storageModuleProvider,
         prismaOutput: prismaOutputProvider,
-        prismaUtils: prismaUtilsProvider,
+        prismaUtilsImports: prismaUtilsImportsProvider,
       },
       exports: {},
       run({
         prismaOutput,
         prismaCrudServiceSetup,
         storageModule,
-        prismaUtils,
+        prismaUtilsImports,
       }) {
         const modelName = prismaCrudServiceSetup.getModelName();
         const model = prismaOutput.getPrismaModel(modelName);
@@ -63,7 +67,7 @@ export const prismaFileTransformerGenerator = createGenerator({
           buildTransformer: ({ operationType }) => {
             const isFieldOptional =
               operationType === 'update' || foreignRelation.isOptional;
-            const transformer = TypescriptCodeUtils.createExpression(
+            const transformer = tsCodeFragment(
               `await validateFileUploadInput(${name}, ${quot(category)}, context${
                 operationType === 'create'
                   ? ''
@@ -71,8 +75,11 @@ export const prismaFileTransformerGenerator = createGenerator({
                       operationType === 'upsert' ? '?' : ''
                     }.${foreignRelationFieldName}`
               })`,
-              'import {validateFileUploadInput} from "%storage-module/validate-upload-input";',
-              { importMappers: [storageModule] },
+              tsImportBuilder(['validateFileUploadInput']).from(
+                storageModule.getImportMap()[
+                  '%storage-module/validate-upload-input'
+                ]?.path ?? '',
+              ),
             );
 
             const prefix = isFieldOptional
@@ -82,10 +89,13 @@ export const prismaFileTransformerGenerator = createGenerator({
             return {
               inputFields: [
                 {
-                  type: TypescriptCodeUtils.createExpression(
+                  type: tsCodeFragment(
                     `FileUploadInput${foreignRelation.isOptional ? '| null' : ''}`,
-                    'import {FileUploadInput} from "%storage-module/validate-upload-input";',
-                    { importMappers: [storageModule] },
+                    tsImportBuilder(['FileUploadInput']).from(
+                      storageModule.getImportMap()[
+                        '%storage-module/validate-upload-input'
+                      ]?.path ?? '',
+                    ),
                   ),
                   dtoField: {
                     name,
@@ -105,18 +115,15 @@ export const prismaFileTransformerGenerator = createGenerator({
               outputFields: [
                 {
                   name,
-                  transformer: transformer
-                    .prepend(`const ${name}Output = ${prefix}`)
-                    .toBlock(),
+                  transformer: tsTemplate`const ${name}Output = ${prefix}${transformer}`,
                   pipeOutputName: `${name}Output`,
                   createExpression: isFieldOptional
                     ? `${name}Output?.data`
                     : undefined,
                   updateExpression: foreignRelation.isOptional
-                    ? TypescriptCodeUtils.createExpression(
+                    ? tsCodeFragment(
                         `createPrismaDisconnectOrConnectData(${name}Output?.data)`,
-                        `import {createPrismaDisconnectOrConnectData} from "%prisma-utils/prismaRelations";`,
-                        { importMappers: [prismaUtils] },
+                        prismaUtilsImports.createPrismaDisconnectOrConnectData.declaration(),
                       )
                     : `${name}Output?.data`,
                 },

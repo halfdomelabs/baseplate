@@ -59,6 +59,10 @@ interface WriteTsProjectExportsOptions {
    */
   packagePath: string;
   /**
+   * Whether to export the provider type.
+   */
+  exportProviderType?: boolean;
+  /**
    * The existing imports provider to use.
    */
   existingImportsProvider?: {
@@ -97,6 +101,7 @@ export function writeTsProjectExports(
     importMapFilePath,
     packagePath,
     existingImportsProvider,
+    exportProviderType,
   }: WriteTsProjectExportsOptions,
 ): {
   importsFileFragment: TsCodeFragment | undefined;
@@ -199,7 +204,7 @@ export function writeTsProjectExports(
       .typeOnly()
       .from(tsImports),
   )`
-    type ${providerTypeVarName} = TsImportMapProviderFromSchema<
+    ${exportProviderType ? 'export ' : ''}type ${providerTypeVarName} = TsImportMapProviderFromSchema<
       typeof ${schemaVarName}
     >;
   `;

@@ -1,9 +1,13 @@
 import type {
-  TypescriptCodeBlock,
+  TsCodeFragment,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  TsCodeUtils,
+  tsImportBuilder,
+  TypescriptCodeUtils,
+} from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -12,14 +16,14 @@ import type { ServiceOutputMethod } from '@src/types/service-output.js';
 import { serviceFileProvider } from '@src/generators/core/service-file/service-file.generator.js';
 import { prismaToServiceOutputDto } from '@src/types/service-output.js';
 
-import type { PrismaUtilsProvider } from '../prisma-utils/prisma-utils.generator.js';
+import type { PrismaUtilsImportsProvider } from '../prisma-utils/prisma-utils.generator.js';
 import type { PrismaOutputProvider } from '../prisma/prisma.generator.js';
 
 import {
   getPrimaryKeyDefinition,
   getPrimaryKeyExpressions,
 } from '../_shared/crud-method/primary-key-input.js';
-import { prismaUtilsProvider } from '../prisma-utils/prisma-utils.generator.js';
+import { prismaUtilsImportsProvider } from '../prisma-utils/prisma-utils.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
 const descriptorSchema = z.object({
@@ -32,7 +36,7 @@ interface PrismaDeleteMethodOptions {
   descriptor: z.infer<typeof descriptorSchema>;
   prismaOutput: PrismaOutputProvider;
   methodExpression: TypescriptCodeExpression;
-  prismaUtils: PrismaUtilsProvider;
+  prismaUtils: PrismaUtilsImportsProvider;
 }
 
 function getMethodDefinition({
@@ -67,16 +71,13 @@ function getMethodBlock({
   descriptor: { modelName },
   prismaOutput,
   prismaUtils,
-}: PrismaDeleteMethodOptions): TypescriptCodeBlock {
-  const modelType = TypescriptCodeUtils.createExpression(
-    modelName,
-    `import {${modelName}} from '@prisma/client'`,
-  );
+}: PrismaDeleteMethodOptions): TsCodeFragment {
+  const modelType = prismaOutput.getModelTypeFragment(modelName);
 
   const model = prismaOutput.getPrismaModel(modelName);
   const primaryKey = getPrimaryKeyExpressions(model);
 
-  return TypescriptCodeUtils.formatBlock(
+  return TsCodeUtils.formatFragment(
     `
 export async function OPERATION_NAME({ ID_ARG, query }: DeleteServiceInput<PRIMARY_KEY_TYPE, QUERY_ARGS>): Promise<MODEL_TYPE> {
 return PRISMA_MODEL.delete({ where: WHERE_CLAUSE, ...query });
@@ -92,15 +93,16 @@ return PRISMA_MODEL.delete({ where: WHERE_CLAUSE, ...query });
       PRIMARY_KEY_TYPE: primaryKey.argumentType,
       QUERY_ARGS: `Prisma.${modelName}DefaultArgs`,
       WHERE_CLAUSE: primaryKey.whereClause,
-      PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
+      PRISMA_MODEL: prismaOutput.getPrismaModelFragment(modelName),
     },
+    [
+      prismaUtils.DeleteServiceInput.typeDeclaration(),
+      tsImportBuilder(['Prisma']).from('@prisma/client'),
+    ],
     {
-      headerBlocks: primaryKey.headerTypeBlock && [primaryKey.headerTypeBlock],
-      importText: [
-        "import { DeleteServiceInput } from '%prisma-utils/crudServiceTypes';",
-        "import { Prisma } from '@prisma/client';",
+      hoistedFragments: primaryKey.headerTypeBlock && [
+        primaryKey.headerTypeBlock,
       ],
-      importMappers: [prismaUtils],
     },
   );
 }
@@ -114,9 +116,9 @@ export const prismaCrudDeleteGenerator = createGenerator({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         serviceFile: serviceFileProvider,
-        prismaUtils: prismaUtilsProvider,
+        prismaUtilsImports: prismaUtilsImportsProvider,
       },
-      run({ prismaOutput, serviceFile, prismaUtils }) {
+      run({ prismaOutput, serviceFile, prismaUtilsImports }) {
         const { name, modelName } = descriptor;
 
         const methodName = `${name}${modelName}`;
@@ -131,7 +133,7 @@ export const prismaCrudDeleteGenerator = createGenerator({
           descriptor,
           prismaOutput,
           methodExpression,
-          prismaUtils,
+          prismaUtils: prismaUtilsImports,
         };
 
         serviceFile.registerMethod(

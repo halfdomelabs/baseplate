@@ -210,4 +210,5 @@ export const serviceContextGenerator = createGenerator({
   }),
 });
 
+export type { ServiceContextImportsProvider } from './generated/ts-import-maps.js';
 export { serviceContextImportsProvider } from './generated/ts-import-maps.js';

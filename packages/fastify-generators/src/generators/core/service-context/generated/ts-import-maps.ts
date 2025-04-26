@@ -13,7 +13,7 @@ const serviceContextImportsSchema = createTsImportMapSchema({
   createTestServiceContext: {},
 });
 
-type ServiceContextImportsProvider = TsImportMapProviderFromSchema<
+export type ServiceContextImportsProvider = TsImportMapProviderFromSchema<
   typeof serviceContextImportsSchema
 >;
 

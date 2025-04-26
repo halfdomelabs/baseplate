@@ -1,9 +1,13 @@
 import type {
-  TypescriptCodeBlock,
+  TsCodeFragment,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  TsCodeUtils,
+  tsImportBuilder,
+  TypescriptCodeUtils,
+} from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -13,7 +17,7 @@ import type {
 } from '@src/providers/prisma/prisma-data-transformable.js';
 import type { ServiceOutputMethod } from '@src/types/service-output.js';
 
-import { serviceContextProvider } from '@src/generators/core/service-context/service-context.generator.js';
+import { serviceContextImportsProvider } from '@src/generators/core/service-context/service-context.generator.js';
 import { serviceFileProvider } from '@src/generators/core/service-file/service-file.generator.js';
 import { prismaToServiceOutputDto } from '@src/types/service-output.js';
 
@@ -27,7 +31,7 @@ import {
   wrapWithApplyDataPipe,
 } from '../_shared/crud-method/data-method.js';
 import { prismaCrudServiceProvider } from '../prisma-crud-service/prisma-crud-service.generator.js';
-import { prismaUtilsProvider } from '../prisma-utils/prisma-utils.generator.js';
+import { prismaUtilsImportsProvider } from '../prisma-utils/prisma-utils.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
 const descriptorSchema = z.object({
@@ -72,7 +76,7 @@ function getMethodDefinition(
   };
 }
 
-function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
+function getMethodBlock(options: PrismaDataMethodOptions): TsCodeFragment {
   const { name, modelName, prismaOutput, prismaUtils } = options;
 
   const createInputTypeName = `${modelName}CreateData`;
@@ -84,20 +88,20 @@ function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
 
   const contextRequired = getDataMethodContextRequired(options);
 
-  const modelType = prismaOutput.getModelTypeExpression(modelName);
+  const modelType = prismaOutput.getModelTypeFragment(modelName);
 
-  const operation = TypescriptCodeUtils.formatExpression(
+  const operation = TsCodeUtils.formatFragment(
     `PRISMA_MODEL.create(CREATE_ARGS)`,
     {
-      PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
-      CREATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
+      PRISMA_MODEL: prismaOutput.getPrismaModelFragment(modelName),
+      CREATE_ARGS: TsCodeUtils.mergeFragmentsAsObjectPresorted({
         data: createExpression,
         '...': 'query',
       }),
     },
   );
 
-  return TypescriptCodeUtils.formatBlock(
+  return TsCodeUtils.formatFragment(
     `
 export async function METHOD_NAME({ data, query, EXTRA_ARGS }: CreateServiceInput<CREATE_INPUT_TYPE_NAME, QUERY_ARGS>): Promise<MODEL_TYPE> {
   FUNCTION_BODY
@@ -114,14 +118,11 @@ export async function METHOD_NAME({ data, query, EXTRA_ARGS }: CreateServiceInpu
       FUNCTION_BODY: functionBody,
       OPERATION: wrapWithApplyDataPipe(operation, dataPipeNames, prismaUtils),
     },
-    {
-      headerBlocks: [typeHeaderBlock],
-      importText: [
-        "import { CreateServiceInput } from '%prisma-utils/crudServiceTypes';",
-        "import { Prisma } from '@prisma/client';",
-      ],
-      importMappers: [prismaUtils],
-    },
+    [
+      tsImportBuilder(['Prisma']).from('@prisma/client'),
+      prismaUtils.CreateServiceInput.typeDeclaration(),
+    ],
+    { hoistedFragments: [typeHeaderBlock] },
   );
 }
 
@@ -135,15 +136,15 @@ export const prismaCrudCreateGenerator = createGenerator({
         prismaOutput: prismaOutputProvider,
         serviceFile: serviceFileProvider.dependency(),
         crudPrismaService: prismaCrudServiceProvider,
-        serviceContext: serviceContextProvider,
-        prismaUtils: prismaUtilsProvider,
+        serviceContextImports: serviceContextImportsProvider,
+        prismaUtilsImports: prismaUtilsImportsProvider,
       },
       run({
         prismaOutput,
         serviceFile,
         crudPrismaService,
-        serviceContext,
-        prismaUtils,
+        serviceContextImports,
+        prismaUtilsImports,
       }) {
         const { name, modelName, prismaFields, transformerNames } = descriptor;
 
@@ -173,8 +174,8 @@ export const prismaCrudCreateGenerator = createGenerator({
               operationName: 'create',
               isPartial: false,
               transformers,
-              serviceContext,
-              prismaUtils,
+              serviceContextImports,
+              prismaUtils: prismaUtilsImports,
               operationType: 'create',
               whereUniqueExpression: null,
             };

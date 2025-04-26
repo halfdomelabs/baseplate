@@ -58,6 +58,13 @@ const GENERATOR_OPTIONS_FILENAME = 'ts-extractor.json';
 const generatorOptionsSchema = z.object({
   exportConfiguration: z
     .object({
+      /**
+       * Whether to export the provider type.
+       */
+      exportProviderType: z.boolean().optional(),
+      /**
+       * The existing imports provider to use.
+       */
       existingImportsProvider: z
         .object({
           /**
@@ -380,6 +387,8 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
       {
         importMapFilePath: importMapsPath,
         packagePath,
+        exportProviderType:
+          generatorOptions.exportConfiguration?.exportProviderType,
         existingImportsProvider:
           generatorOptions.exportConfiguration?.existingImportsProvider,
       },

@@ -1,21 +1,18 @@
-import type {
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import type { ServiceOutputDtoField } from '@src/types/service-output.js';
 
 export interface PrismaDataTransformInputField {
-  type: TypescriptCodeExpression;
+  type: TsCodeFragment;
   dtoField: ServiceOutputDtoField;
 }
 
 export interface PrismaDataTransformOutputField {
   name: string;
-  transformer?: TypescriptCodeBlock;
+  transformer?: TsCodeFragment;
   pipeOutputName?: string;
-  createExpression?: TypescriptCodeExpression | string;
-  updateExpression?: TypescriptCodeExpression | string;
+  createExpression?: TsCodeFragment | string;
+  updateExpression?: TsCodeFragment | string;
 }
 
 export interface PrismaDataTransformer {

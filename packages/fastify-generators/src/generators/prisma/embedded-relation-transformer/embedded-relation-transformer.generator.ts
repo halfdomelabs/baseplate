@@ -1,9 +1,15 @@
 import type {
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
+  TsCodeFragment,
+  TsHoistedFragment,
 } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  tsCodeFragment,
+  TsCodeUtils,
+  tsHoistedFragment,
+  tsImportBuilder,
+  tsTemplate,
+} from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
@@ -18,12 +24,12 @@ import type {
   PrismaOutputRelationField,
 } from '@src/types/prisma-output.js';
 
-import { serviceContextProvider } from '@src/generators/core/service-context/service-context.generator.js';
+import { serviceContextImportsProvider } from '@src/generators/core/service-context/service-context.generator.js';
 import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
 
 import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method.js';
-import type { PrismaUtilsProvider } from '../prisma-utils/prisma-utils.generator.js';
+import type { PrismaUtilsImportsProvider } from '../prisma-utils/prisma-utils.generator.js';
 import type { PrismaOutputProvider } from '../prisma/prisma.generator.js';
 
 import {
@@ -35,7 +41,7 @@ import {
   prismaCrudServiceProvider,
   prismaCrudServiceSetupProvider,
 } from '../prisma-crud-service/prisma-crud-service.generator.js';
-import { prismaUtilsProvider } from '../prisma-utils/prisma-utils.generator.js';
+import { prismaUtilsImportsProvider } from '../prisma-utils/prisma-utils.generator.js';
 import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
 const descriptorSchema = z.object({
@@ -89,7 +95,7 @@ function getForeignModelRelation(
 
 interface EmbeddedTransformFunctionOutput {
   name: string;
-  func: TypescriptCodeBlock;
+  func: TsHoistedFragment;
 }
 
 function createEmbeddedTransformFunction(options: {
@@ -97,8 +103,8 @@ function createEmbeddedTransformFunction(options: {
   inputDataType: string;
   outputDataType: string;
   dataMethodOptions: Omit<PrismaDataMethodOptions, 'name'>;
-  prismaUtils: PrismaUtilsProvider;
-  serviceContextType: TypescriptCodeExpression;
+  prismaUtils: PrismaUtilsImportsProvider;
+  serviceContextType: TsCodeFragment;
   isOneToOne?: boolean;
   whereUniqueType: string;
 }): EmbeddedTransformFunctionOutput {
@@ -120,13 +126,12 @@ function createEmbeddedTransformFunction(options: {
   const { functionBody, createExpression, updateExpression, dataPipeNames } =
     getDataMethodDataExpressions(dataMethodOptions);
 
-  const outputPipeType = TypescriptCodeUtils.createExpression(
+  const outputPipeType = tsCodeFragment(
     `DataPipeOutput<${outputDataType}>`,
-    "import { DataPipeOutput } from '%prisma-utils/dataPipes';",
-    { importMappers: [prismaUtils] },
+    prismaUtils.DataPipeOutput.typeDeclaration(),
   );
   const outputType = isAsync
-    ? outputPipeType.wrap((contents) => `Promise<${contents}>`)
+    ? tsTemplate`Promise<${outputPipeType}>`
     : outputPipeType;
 
   // get a primary key to add a dummy where unique (since create operations don't have a whereunique)
@@ -141,7 +146,7 @@ function createEmbeddedTransformFunction(options: {
     );
   }
 
-  const func = TypescriptCodeUtils.formatBlock(
+  const func = TsCodeUtils.formatFragment(
     `${
       isAsync ? 'async ' : ''
     }function FUNC_NAME(data: INPUT_DATA_TYPE, context: CONTEXT_TYPE, whereUnique?: WHERE_UNIQUE_TYPE, parentId?: string): OUTPUT_TYPE {
@@ -154,8 +159,8 @@ function createEmbeddedTransformFunction(options: {
       INPUT_DATA_TYPE: inputDataType,
       FUNCTION_BODY: functionBody,
       WHERE_UNIQUE_TYPE: whereUniqueType,
-      DATA_RESULT: TypescriptCodeUtils.mergeExpressionsAsObject({
-        data: TypescriptCodeUtils.mergeExpressionsAsObject({
+      DATA_RESULT: TsCodeUtils.mergeFragmentsAsObject({
+        data: TsCodeUtils.mergeFragmentsAsObject({
           where: isOneToOne
             ? undefined
             : `whereUnique ?? { ${primaryKey}: '' }`,
@@ -165,20 +170,19 @@ function createEmbeddedTransformFunction(options: {
         operations:
           dataPipeNames.length === 0
             ? undefined
-            : TypescriptCodeUtils.createExpression(
+            : tsCodeFragment(
                 `mergePipeOperations([${dataPipeNames.join(', ')}])`,
-                "import { mergePipeOperations } from '%prisma-utils/dataPipes';",
-                { importMappers: [prismaUtils] },
+                prismaUtils.mergePipeOperations.declaration(),
               ),
       }),
       OUTPUT_TYPE: outputType,
       CONTEXT_TYPE: serviceContextType,
     },
-  ).withHeaderKey(name);
+  );
 
   return {
     name,
-    func,
+    func: tsHoistedFragment(func, `embedded-transform-${name}`),
   };
 }
 
@@ -201,15 +205,15 @@ export const embeddedRelationTransformerGenerator = createGenerator({
         foreignCrudService: prismaCrudServiceProvider
           .dependency()
           .optionalReference(foreignModelName),
-        serviceContext: serviceContextProvider,
-        prismaUtils: prismaUtilsProvider,
+        serviceContextImports: serviceContextImportsProvider,
+        prismaUtilsImports: prismaUtilsImportsProvider,
       },
       run({
         prismaOutput,
         prismaCrudServiceSetup,
         foreignCrudService,
-        serviceContext,
-        prismaUtils,
+        serviceContextImports,
+        prismaUtilsImports,
       }) {
         function buildTransformer({
           operationType,
@@ -292,8 +296,8 @@ export const embeddedRelationTransformerGenerator = createGenerator({
             transformers: upsertTransformers,
             prismaOutput,
             isPartial: false,
-            serviceContext,
-            prismaUtils,
+            serviceContextImports,
+            prismaUtils: prismaUtilsImports,
             operationType: 'upsert',
             whereUniqueExpression: 'whereUnique',
             parentIdCheckField: upsertTransformers.some(
@@ -324,8 +328,9 @@ export const embeddedRelationTransformerGenerator = createGenerator({
                   outputDataType,
                   dataMethodOptions,
                   isOneToOne,
-                  prismaUtils,
-                  serviceContextType: serviceContext.getServiceContextType(),
+                  prismaUtils: prismaUtilsImports,
+                  serviceContextType:
+                    serviceContextImports.ServiceContext.typeFragment(),
                   whereUniqueType: `Prisma.${upperCaseFirst(
                     foreignModel.name,
                   )}WhereUniqueInput`,
@@ -334,20 +339,20 @@ export const embeddedRelationTransformerGenerator = createGenerator({
           const dataInputType = getDataInputTypeBlock(
             dataInputName,
             dataMethodOptions,
-          ).withHeaderKey(dataInputName);
+          );
           const dataMethodDataType = getDataMethodDataType(dataMethodOptions);
 
           const isNullable =
             !localRelation.isList && operationType === 'update';
 
           const inputField: PrismaDataTransformInputField = {
-            type: TypescriptCodeUtils.createExpression(
+            type: tsCodeFragment(
               `${dataInputName}${localRelation.isList ? '[]' : ''}${
                 isNullable ? ' | null' : ''
               }`,
               undefined,
               {
-                headerBlocks: [dataInputType],
+                hoistedFragments: [dataInputType],
               },
             ),
             dtoField: {
@@ -379,17 +384,16 @@ export const embeddedRelationTransformerGenerator = createGenerator({
            *  - May have no transform function
            */
 
-          const embeddedCallName = `createOneTo${isOneToOne ? 'One' : 'Many'}${
-            operationType === 'create' ? 'Create' : 'Upsert'
-          }Data`;
-          const embeddedCallImport = `%prisma-utils/embeddedOneTo${
-            isOneToOne ? 'One' : 'Many'
-          }`;
-          const embeddedCallExpression = TypescriptCodeUtils.createExpression(
-            embeddedCallName,
-            `import { ${embeddedCallName} } from '${embeddedCallImport}'`,
-            { importMappers: [prismaUtils] },
-          );
+          const embeddedCallExpression = (() => {
+            if (operationType === 'create') {
+              return isOneToOne
+                ? prismaUtilsImports.createOneToOneCreateData.fragment()
+                : prismaUtilsImports.createOneToManyCreateData.fragment();
+            }
+            return isOneToOne
+              ? prismaUtilsImports.createOneToOneUpsertData.fragment()
+              : prismaUtilsImports.createOneToManyUpsertData.fragment();
+          })();
 
           // finds the discriminator ID field in the input for 1:many relationships
           const getDiscriminatorIdField = (): string => {
@@ -407,14 +411,14 @@ export const embeddedRelationTransformerGenerator = createGenerator({
           };
 
           const getWhereUniqueFunction = (): {
-            func: TypescriptCodeExpression;
+            func: TsCodeFragment;
             needsExistingItem: boolean;
           } => {
-            const returnType = TypescriptCodeUtils.createExpression(
+            const returnType = tsCodeFragment(
               `Prisma.${upperCaseFirst(
                 foreignModel.name,
               )}WhereUniqueInput | undefined`,
-              "import { Prisma } from '@prisma/client'",
+              tsImportBuilder(['Prisma']).from('@prisma/client'),
             );
 
             // convert primary keys to where unique
@@ -472,20 +476,19 @@ export const embeddedRelationTransformerGenerator = createGenerator({
               },
             );
 
-            const primaryKeyExpression =
-              TypescriptCodeUtils.mergeExpressionsAsObject(
-                Object.fromEntries(
-                  primaryKeyFields.map((keyField): [string, string] => [
-                    keyField.name,
-                    keyField.value,
-                  ]),
-                ),
-                { wrapWithParenthesis: true },
-              );
+            const primaryKeyExpression = TsCodeUtils.mergeFragmentsAsObject(
+              Object.fromEntries(
+                primaryKeyFields.map((keyField): [string, string] => [
+                  keyField.name,
+                  keyField.value,
+                ]),
+              ),
+              { wrapWithParenthesis: true },
+            );
 
             const value =
               primaryKeyFields.length > 1
-                ? TypescriptCodeUtils.mergeExpressionsAsObject(
+                ? TsCodeUtils.mergeFragmentsAsObject(
                     {
                       [foreignIds.join('_')]: primaryKeyExpression,
                     },
@@ -511,7 +514,7 @@ export const embeddedRelationTransformerGenerator = createGenerator({
             ];
 
             return {
-              func: TypescriptCodeUtils.formatExpression(
+              func: TsCodeUtils.formatFragment(
                 `(INPUT): RETURN_TYPE => VALUE`,
                 {
                   INPUT: usesInput ? 'input' : '',
@@ -519,9 +522,7 @@ export const embeddedRelationTransformerGenerator = createGenerator({
                   PREFIX: '',
                   VALUE:
                     requirementsList.length > 0
-                      ? value.prepend(
-                          `${requirementsList.join(' || ')} ? undefined : `,
-                        )
+                      ? tsTemplate`${requirementsList.join(' || ')} ? undefined : ${value}`
                       : value,
                 },
               ),
@@ -530,12 +531,12 @@ export const embeddedRelationTransformerGenerator = createGenerator({
           };
 
           const embeddedCallArgs = ((): {
-            args: TypescriptCodeExpression;
+            args: TsCodeFragment;
             needsExistingItem?: boolean;
           } => {
             if (operationType === 'create') {
               return {
-                args: TypescriptCodeUtils.mergeExpressionsAsObject({
+                args: TsCodeUtils.mergeFragmentsAsObject({
                   input: inputName,
                   transform: upsertFunction?.name,
                   context: upsertFunction && 'context',
@@ -567,13 +568,13 @@ export const embeddedRelationTransformerGenerator = createGenerator({
 
             const oneToOneAdditions = isOneToOne
               ? {
-                  deleteRelation: TypescriptCodeUtils.formatExpression(
+                  deleteRelation: TsCodeUtils.formatFragment(
                     '() => PRISMA_MODEL.deleteMany({ where: WHERE_ARGS })',
                     {
-                      PRISMA_MODEL: prismaOutput.getPrismaModelExpression(
+                      PRISMA_MODEL: prismaOutput.getPrismaModelFragment(
                         foreignModel.name,
                       ),
-                      WHERE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
+                      WHERE_ARGS: TsCodeUtils.mergeFragmentsAsObject({
                         [parentField]: parentId,
                       }),
                     },
@@ -582,7 +583,7 @@ export const embeddedRelationTransformerGenerator = createGenerator({
               : {};
 
             return {
-              args: TypescriptCodeUtils.mergeExpressionsAsObject({
+              args: TsCodeUtils.mergeFragmentsAsObject({
                 input: inputName,
                 ...transformAdditions,
                 ...oneToManyAdditions,
@@ -596,14 +597,15 @@ export const embeddedRelationTransformerGenerator = createGenerator({
 
           const outputName = `${localRelationName}Output`;
 
-          const transformer = TypescriptCodeUtils.formatBlock(
+          const transformer = TsCodeUtils.formatFragment(
             `const OUTPUT_NAME = await EMBEDDED_CALL(ARGS)`,
             {
               OUTPUT_NAME: outputName,
               EMBEDDED_CALL: embeddedCallExpression,
               ARGS: embeddedCallArgs.args,
             },
-            { headerBlocks: upsertFunction ? [upsertFunction.func] : [] },
+            [],
+            { hoistedFragments: upsertFunction ? [upsertFunction.func] : [] },
           );
 
           return {
