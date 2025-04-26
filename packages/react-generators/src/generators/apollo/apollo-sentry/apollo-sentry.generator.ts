@@ -1,19 +1,25 @@
 import {
-  makeImportAndFilePath,
   tsCodeFragment,
   tsHoistedFragment,
   tsImportBuilder,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactSentryConfigProvider } from '@src/generators/core/react-sentry/react-sentry.generator.js';
+import { reactErrorImportsProvider } from '@src/generators/core/index.js';
+import {
+  reactSentryConfigProvider,
+  reactSentryImportsProvider,
+} from '@src/generators/core/react-sentry/react-sentry.generator.js';
 
 import { apolloErrorLinkProvider } from '../apollo-error-link/apollo-error-link.generator.js';
 import { reactApolloConfigProvider } from '../react-apollo/react-apollo.generator.js';
+import { APOLLO_APOLLO_SENTRY_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
+
+const apolloSentryLinkPath = '@/src/services/apollo/apollo-sentry-link.ts';
 
 export const apolloSentryGenerator = createGenerator({
   name: 'apollo/apollo-sentry',
@@ -83,29 +89,37 @@ export const apolloSentryGenerator = createGenerator({
       dependencies: {
         reactApolloConfig: reactApolloConfigProvider,
         apolloErrorLink: apolloErrorLinkProvider,
-        typescript: typescriptProvider,
       },
-      run({ reactApolloConfig, apolloErrorLink, typescript }) {
-        const [linkImport, linkPath] = makeImportAndFilePath(
-          'src/services/apollo/apollo-sentry-link.ts',
-        );
+      run({ reactApolloConfig, apolloErrorLink }) {
+        reactApolloConfig.apolloLinks.add({
+          name: 'apolloSentryLink',
+          nameImport: tsImportBuilder(['apolloSentryLink']).from(
+            apolloSentryLinkPath,
+          ),
+          priority: 'error',
+          dependencies: [apolloErrorLink.errorLinkName],
+        });
+      },
+    }),
+    apolloSentryLinkFile: createGeneratorTask({
+      dependencies: {
+        typescriptFile: typescriptFileProvider,
+        reactSentryImports: reactSentryImportsProvider,
+        reactErrorImports: reactErrorImportsProvider,
+      },
+      run({ typescriptFile, reactSentryImports, reactErrorImports }) {
         return {
           async build(builder) {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'apollo-sentry-link.ts',
-                destination: linkPath,
+              typescriptFile.renderTemplateFile({
+                template: APOLLO_APOLLO_SENTRY_TS_TEMPLATES.apolloSentryLink,
+                destination: apolloSentryLinkPath,
+                importMapProviders: {
+                  reactSentryImports,
+                  reactErrorImports,
+                },
               }),
             );
-
-            reactApolloConfig.apolloLinks.add({
-              name: 'apolloSentryLink',
-              nameImport: tsImportBuilder(['apolloSentryLink']).from(
-                linkImport,
-              ),
-              priority: 'error',
-              dependencies: [apolloErrorLink.errorLinkName],
-            });
           },
         };
       },
