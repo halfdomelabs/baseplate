@@ -1,28 +1,18 @@
-export class ToposortCyclicalDependencyError extends Error {
-  public cyclePath: unknown[];
-  constructor(nodes: unknown[]) {
-    super(
-      `Cyclical dependency detected: ${nodes.map((n) => JSON.stringify(n)).join(' -> ')}`,
-    );
-    this.name = 'ToposortCyclicalDependencyError';
-    this.cyclePath = nodes; // Store the path for potential inspection
-  }
-}
+import TinyQueue from 'tinyqueue';
 
-export class ToposortUnknownNodeError extends Error {
-  public unknownNode: unknown;
-  constructor(node: unknown) {
-    super(`Unknown node referenced in edges: ${JSON.stringify(node)}`);
-    this.name = 'ToposortUnknownNodeError';
-    this.unknownNode = node; // Store the node for potential inspection
-  }
-}
+import {
+  ToposortCyclicalDependencyError,
+  ToposortUnknownNodeError,
+} from './errors.js';
 
+/**
+ * Creates a map of outgoing edges from node indices to their target indices
+ */
 function makeOutgoingEdges<T>(
   nodes: Map<T, number>,
   edgeArr: [T, T][],
 ): Map<number, Set<number>> {
-  const edges = new Map<number, Set<number>>();
+  const outgoingEdgesMap = new Map<number, Set<number>>();
   for (const edge of edgeArr) {
     const [source, target] = edge;
     const sourceIndex = nodes.get(source);
@@ -31,74 +21,190 @@ function makeOutgoingEdges<T>(
     if (sourceIndex === undefined) throw new ToposortUnknownNodeError(source);
     if (targetIndex === undefined) throw new ToposortUnknownNodeError(target);
 
-    const sourceEdges = edges.get(sourceIndex);
+    const sourceEdges = outgoingEdgesMap.get(sourceIndex);
     if (sourceEdges) {
       sourceEdges.add(targetIndex);
     } else {
-      edges.set(sourceIndex, new Set([targetIndex]));
+      outgoingEdgesMap.set(sourceIndex, new Set([targetIndex]));
     }
   }
-  return edges;
+  return outgoingEdgesMap;
 }
 
 /**
- * Topological sort of nodes using the depth-first search algorithm
+ * Creates a map of node indices to their in-degree
+ */
+function makeNodeInDegrees(
+  outgoingEdgesMap: Map<number, Set<number>>,
+  nodeLength: number,
+): number[] {
+  const nodeInDegrees = Array.from({ length: nodeLength }, () => 0);
+  for (const [, targets] of outgoingEdgesMap.entries()) {
+    for (const target of targets) {
+      nodeInDegrees[target]++;
+    }
+  }
+  return nodeInDegrees;
+}
+
+/**
+ * Detects cycles in a graph by checking if all nodes are included in the topological sort
+ */
+function detectCycle<T>(
+  nodes: T[],
+  visited: Set<number>,
+  edges: Map<number, Set<number>>,
+): T[] {
+  // If all nodes were visited, no cycle exists
+  if (visited.size === nodes.length) {
+    return [];
+  }
+
+  // Run DFS from any unvisited node to find a cycle
+  const path: number[] = [];
+  const visitSet = new Set<number>();
+
+  function dfs(node: number): boolean {
+    if (visitSet.has(node)) {
+      path.push(node);
+      return true;
+    }
+
+    if (visited.has(node)) {
+      return false;
+    }
+
+    visitSet.add(node);
+    path.push(node);
+
+    const neighbors = edges.get(node) ?? new Set<number>();
+    for (const neighbor of neighbors) {
+      if (dfs(neighbor)) {
+        return true;
+      }
+    }
+
+    path.pop();
+    visitSet.delete(node);
+    return false;
+  }
+
+  // For cycle detection, we need to find nodes that weren't visited
+  const unvistedNodeIdx = nodes.findIndex((node, idx) => !visited.has(idx));
+
+  if (unvistedNodeIdx === -1) {
+    return [];
+  }
+
+  // Start DFS from any unvisited node
+  dfs(unvistedNodeIdx);
+
+  // Convert path indices to actual nodes
+  return path.map((idx) => nodes[idx]);
+}
+
+/**
+ * Default comparison function for stable topological sort
+ */
+function defaultCompareFunc<T>(a: T, b: T): number {
+  if (typeof a === 'string' && typeof b === 'string') {
+    return a.localeCompare(b);
+  }
+  if (a === b) return 0;
+  return a < b ? -1 : 1;
+}
+
+interface ToposortOptions<T> {
+  /**
+   * Optional custom comparison function to break ties between nodes with the same topological level
+   *
+   * This allows for a stable topological sort that is consistent with the input order of nodes with the same topological level.
+   */
+  compareFunc?: (a: T, b: T) => number;
+}
+
+/**
+ * Performs a topological sort on a directed acyclic graph.
  *
  * @param nodes - The nodes to sort
  * @param edges - The edges of the graph
+ * @param options - Optional options for the topological sort
  * @returns The sorted nodes
  */
-export function toposort<T>(nodes: T[], edges: [T, T][]): T[] {
+export function toposort<T>(
+  nodes: T[],
+  edges: [T, T][],
+  options: ToposortOptions<T> = {},
+): T[] {
+  const { compareFunc } = options;
+
+  // Map each node to its index
   const nodeIndexMap = new Map<T, number>(
     nodes.map((node, index) => [node, index]),
   );
 
-  let cursor = nodes.length;
-  const sorted = Array.from<T>({ length: cursor });
+  // Create a map of outgoing edges from each node
   const outgoingEdgesMap = makeOutgoingEdges(nodeIndexMap, edges);
+  const nodeInDegrees = makeNodeInDegrees(outgoingEdgesMap, nodes.length);
 
-  const visited = new Set<number>(); // Nodes whose subgraph is fully explored (Black set)
-  const visiting = new Set<number>(); // Nodes currently on the recursion stack (Gray set)
+  // Create a queue of nodes with no incoming edges (in-degree == 0)
+  const zeroInDegreeQueue = compareFunc
+    ? new TinyQueue<number>([], (a, b) => compareFunc(nodes[a], nodes[b]))
+    : ([] as number[]);
 
-  function visit(idx: number, path: number[]): void {
-    if (visited.has(idx)) {
-      return; // Already fully processed, do nothing
+  for (const [i, nodeInDegree] of nodeInDegrees.entries()) {
+    if (nodeInDegree === 0) {
+      zeroInDegreeQueue.push(i);
     }
-    if (visiting.has(idx)) {
-      // Cycle detected! Reconstruct the cycle path from the current path
-      const cycleStartIndex = path.indexOf(idx);
-      const cyclePath = [...path.slice(cycleStartIndex), idx].map(
-        (i) => nodes[i],
-      );
-      throw new ToposortCyclicalDependencyError(cyclePath);
-    }
+  }
 
-    visiting.add(idx);
-    path.push(idx); // Add node to current path (for error reporting)
+  const result: T[] = [];
+  const visited = new Set<number>();
 
-    const outgoingEdges = outgoingEdgesMap.get(idx);
+  // Process nodes in BFS order
+  while (zeroInDegreeQueue.length > 0) {
+    const current = zeroInDegreeQueue.pop();
+    if (current === undefined) break;
+    visited.add(current);
+    result.push(nodes[current]);
+
+    // Process all outgoing edges from the current node
+    const outgoingEdges = outgoingEdgesMap.get(current);
     if (outgoingEdges) {
-      // TODO: Reversing the array is necessary to keep the behavior consistent
-      // with toposort.array from the toposort package. Once we make the
-      // generation order independent, we can remove this logic and the reverse
-      // iteration below.
-      const outgoingEdgesArray = [...outgoingEdges];
-      for (const neighbor of outgoingEdgesArray.reverse()) {
-        visit(neighbor, path);
+      for (const target of outgoingEdges) {
+        nodeInDegrees[target]--;
+
+        // If the target node now has no incoming edges, add it to the queue
+        if (nodeInDegrees[target] === 0) {
+          zeroInDegreeQueue.push(target);
+        }
       }
     }
-
-    path.pop(); // Remove node from current path as we backtrack
-    visiting.delete(idx); // Move from visiting (Gray) set...
-    visited.add(idx); // ...to visited (Black) set
-    sorted[--cursor] = nodes[idx]; // Add to the head of the sorted list
   }
 
-  // Iterate through the original nodes array to maintain initial order preference
-  // for disconnected components or nodes with same topological level.
-  for (let i = nodes.length - 1; i >= 0; i--) {
-    visit(i, []);
+  // Check for cycles
+  if (result.length !== nodes.length) {
+    const cyclePath = detectCycle(nodes, visited, outgoingEdgesMap);
+    throw new ToposortCyclicalDependencyError(cyclePath);
   }
 
-  return sorted;
+  return result;
+}
+
+/**
+ * Performs a topological sort on a directed acyclic graph, always selecting
+ * the smallest available node according to the provided comparison function,
+ * yielding the lexicographically minimal ordering.
+ *
+ * @param nodes - The nodes to sort
+ * @param edges - The edges of the graph
+ * @param compareFunc - Optional custom comparison function to break ties between nodes with the same topological level (default is string comparison)
+ * @returns The sorted nodes
+ */
+export function toposortOrdered<T>(
+  nodes: T[],
+  edges: [T, T][],
+  compareFunc: (a: T, b: T) => number = defaultCompareFunc,
+): T[] {
+  return toposort(nodes, edges, { compareFunc });
 }

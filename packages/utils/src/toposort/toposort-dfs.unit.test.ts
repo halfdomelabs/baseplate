@@ -4,9 +4,9 @@ import {
   ToposortCyclicalDependencyError,
   ToposortUnknownNodeError,
 } from './errors.js';
-import { toposort } from './toposort.js';
+import { toposortDfs } from './toposort-dfs.js';
 
-describe('toposort', () => {
+describe('toposortDfs', () => {
   // Helper to check if dependencies are met in the sorted output
   const expectOrder = <T>(sorted: T[], edges: [T, T][]): void => {
     const positions = new Map<T, number>();
@@ -38,12 +38,12 @@ describe('toposort', () => {
   };
 
   it('should return an empty array for an empty graph', () => {
-    expect(toposort([], [])).toEqual([]);
+    expect(toposortDfs([], [])).toEqual([]);
   });
 
   it('should return the single node for a graph with one node', () => {
-    expect(toposort(['a'], [])).toEqual(['a']);
-    expect(toposort([1], [])).toEqual([1]);
+    expect(toposortDfs(['a'], [])).toEqual(['a']);
+    expect(toposortDfs([1], [])).toEqual([1]);
   });
 
   it('should sort nodes in a simple linear chain', () => {
@@ -52,7 +52,7 @@ describe('toposort', () => {
       ['a', 'b'],
       ['b', 'c'],
     ];
-    const sorted = toposort(nodes, edges);
+    const sorted = toposortDfs(nodes, edges);
     expect(sorted).toEqual(['a', 'b', 'c']);
     expectOrder(sorted, edges);
   });
@@ -64,7 +64,7 @@ describe('toposort', () => {
       [2, 3],
       [0, 1],
     ];
-    const sorted = toposort(nodes, edges);
+    const sorted = toposortDfs(nodes, edges);
     expect(sorted).toEqual([0, 1, 2, 3]);
     expectOrder(sorted, edges);
   });
@@ -77,7 +77,7 @@ describe('toposort', () => {
       ['b', 'd'],
       ['c', 'd'],
     ];
-    const sorted = toposort(nodes, edges);
+    const sorted = toposortDfs(nodes, edges);
     expect(sorted).toHaveLength(4);
     expect(new Set(sorted)).toEqual(new Set(nodes)); // Ensure all nodes are present
     expectOrder(sorted, edges);
@@ -91,7 +91,7 @@ describe('toposort', () => {
       ['a', 'b'],
       ['c', 'd'],
     ];
-    const sorted = toposort(nodes, edges);
+    const sorted = toposortDfs(nodes, edges);
     expect(sorted).toHaveLength(4);
     expect(new Set(sorted)).toEqual(new Set(nodes));
     expectOrder(sorted, edges);
@@ -101,7 +101,7 @@ describe('toposort', () => {
   it('should handle nodes with no edges', () => {
     const nodes = ['a', 'b', 'c', 'd'];
     const edges: [string, string][] = [['a', 'b']];
-    const sorted = toposort(nodes, edges);
+    const sorted = toposortDfs(nodes, edges);
     expect(sorted).toHaveLength(4);
     expect(new Set(sorted)).toEqual(new Set(nodes));
     expectOrder(sorted, edges);
@@ -117,7 +117,7 @@ describe('toposort', () => {
       ['b', 'a'],
     ];
     try {
-      toposort(nodes.reverse(), edges);
+      toposortDfs(nodes.reverse(), edges);
     } catch (e) {
       expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
       // Depending on traversal order, the reported cycle might start at 'b'
@@ -144,14 +144,14 @@ describe('toposort', () => {
       ['d', 'b'],
     ]; // Cycle: b -> c -> d -> b
     try {
-      toposort(nodes.reverse(), edges);
+      toposortDfs(nodes.reverse(), edges);
     } catch (e) {
       expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
       expect((e as ToposortCyclicalDependencyError).cyclePath).toEqual([
-        'd',
         'b',
         'c',
         'd',
+        'b',
       ]);
     }
   });
@@ -162,14 +162,14 @@ describe('toposort', () => {
       ['a', 'a'],
       ['a', 'b'],
     ];
-    expect(() => toposort(nodes, edges)).toThrowError(
+    expect(() => toposortDfs(nodes, edges)).toThrowError(
       ToposortCyclicalDependencyError,
     );
-    expect(() => toposort(nodes, edges)).toThrowError(
+    expect(() => toposortDfs(nodes, edges)).toThrowError(
       /Cyclical dependency detected: "a" -> "a"/,
     );
     try {
-      toposort(nodes, edges);
+      toposortDfs(nodes, edges);
     } catch (e) {
       expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
       expect((e as ToposortCyclicalDependencyError).cyclePath).toEqual([
@@ -182,12 +182,14 @@ describe('toposort', () => {
   it('should throw ToposortUnknownNodeError if edge source is not in nodes', () => {
     const nodes = ['a', 'b'];
     const edges: [string, string][] = [['c', 'a']]; // 'c' is unknown
-    expect(() => toposort(nodes, edges)).toThrowError(ToposortUnknownNodeError);
-    expect(() => toposort(nodes, edges)).toThrowError(
+    expect(() => toposortDfs(nodes, edges)).toThrowError(
+      ToposortUnknownNodeError,
+    );
+    expect(() => toposortDfs(nodes, edges)).toThrowError(
       /Unknown node referenced in edges: "c"/,
     );
     try {
-      toposort(nodes, edges);
+      toposortDfs(nodes, edges);
     } catch (e) {
       expect(e).toBeInstanceOf(ToposortUnknownNodeError);
       expect((e as ToposortUnknownNodeError).unknownNode).toBe('c');
@@ -197,12 +199,14 @@ describe('toposort', () => {
   it('should throw ToposortUnknownNodeError if edge target is not in nodes', () => {
     const nodes = ['a', 'b'];
     const edges: [string, string][] = [['a', 'c']]; // 'c' is unknown
-    expect(() => toposort(nodes, edges)).toThrowError(ToposortUnknownNodeError);
-    expect(() => toposort(nodes, edges)).toThrowError(
+    expect(() => toposortDfs(nodes, edges)).toThrowError(
+      ToposortUnknownNodeError,
+    );
+    expect(() => toposortDfs(nodes, edges)).toThrowError(
       /Unknown node referenced in edges: "c"/,
     );
     try {
-      toposort(nodes, edges);
+      toposortDfs(nodes, edges);
     } catch (e) {
       expect(e).toBeInstanceOf(ToposortUnknownNodeError);
       expect((e as ToposortUnknownNodeError).unknownNode).toBe('c');
@@ -218,7 +222,7 @@ describe('toposort', () => {
       [nodeA, nodeB],
       [nodeB, nodeC],
     ];
-    const sorted = toposort(nodes, edges);
+    const sorted = toposortDfs(nodes, edges);
     // Use toStrictEqual for deep equality check with objects
     expect(sorted).toStrictEqual([nodeA, nodeB, nodeC]);
     expectOrder(sorted, edges);
@@ -231,25 +235,8 @@ describe('toposort', () => {
       ['b', 'c'],
       ['a', 'b'],
     ]; // Duplicate a -> b
-    const sorted = toposort(nodes, edges);
+    const sorted = toposortDfs(nodes, edges);
     expect(sorted).toEqual(['a', 'b', 'c']);
     expectOrder(sorted, edges.slice(0, 2)); // Check order against unique edges
-  });
-
-  it('should sort nodes lexically when there is a tie', () => {
-    const nodes = ['a', 'b', 'c'];
-    const edges: [string, string][] = [
-      ['a', 'b'],
-      ['a', 'c'],
-    ];
-    const sorted = toposort(nodes, edges, {
-      compareFunc: (a, b) => a.localeCompare(b),
-    });
-    expect(sorted).toEqual(['a', 'b', 'c']);
-    const sortedReverse = toposort(nodes, edges, {
-      compareFunc: (a, b) => b.localeCompare(a),
-    });
-    expect(sortedReverse).toEqual(['a', 'c', 'b']);
-    expectOrder(sorted, edges);
   });
 });

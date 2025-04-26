@@ -28,7 +28,7 @@ import {
   POST_WRITE_COMMAND_PRIORITY,
   renderTextTemplateFileAction,
 } from '@halfdomelabs/sync';
-import { toposort } from '@halfdomelabs/utils';
+import { toposortOrdered } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
@@ -314,7 +314,7 @@ export const reactApolloGenerator = createGenerator({
               }
               return link;
             };
-            const sortedLinks = toposort(
+            const sortedLinks = toposortOrdered(
               apolloLinks,
               apolloLinks.flatMap(
                 (link) =>

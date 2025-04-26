@@ -38,6 +38,7 @@
     "es-toolkit": "1.31.0",
     "nanoid": "5.0.9",
     "sort-keys": "^5.1.0",
+    "tinyqueue": "3.0.0",
     "zod": "catalog:"
   },
   "devDependencies": {
