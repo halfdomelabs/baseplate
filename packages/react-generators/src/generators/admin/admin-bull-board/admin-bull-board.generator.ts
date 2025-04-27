@@ -91,9 +91,7 @@ export const adminBullBoardGenerator = createGenerator({
               path: 'bull-board',
               element: tsCodeFragment(
                 '<BullBoardPage />',
-                tsImportBuilder()
-                  .default('BullBoardPage')
-                  .from(`@/${baseDirectory}`),
+                tsImportBuilder().default('BullBoardPage').from(baseDirectory),
               ),
             });
 

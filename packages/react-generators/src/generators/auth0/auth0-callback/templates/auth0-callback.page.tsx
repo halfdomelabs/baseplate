@@ -1,11 +1,11 @@
 // @ts-nocheck
 
+import { useLogOut } from '%authHooksImports';
+import { Alert, Button, Card, Spinner } from '%reactComponentsImports';
+import { logError } from '%reactErrorImports';
 import { OAuthError, useAuth0 } from '@auth0/auth0-react';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, Card, Spinner } from '%react-components';
-import { useLogOut } from '%auth-hooks/useLogOut';
-import { logError } from '%react-error/logger';
 
 function formatAndReportAuthError(error: unknown): string {
   if (

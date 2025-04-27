@@ -102,11 +102,11 @@ export const reactRouterGenerator = createGenerator({
               registerLayout(layout) {
                 layouts.push(layout);
               },
-              getDirectoryBase: () => `src/pages`,
+              getDirectoryBase: () => `@/src/pages`,
               getRoutePrefix: () => ``,
             },
             reactRoutesReadOnly: {
-              getDirectoryBase: () => `src/pages`,
+              getDirectoryBase: () => `@/src/pages`,
               getRoutePrefix: () => ``,
             },
           },

@@ -228,6 +228,16 @@ describe('TsCodeUtils', () => {
 
       expect(result.contents).toBe('{async value() { return 42; },}');
     });
+
+    it('should strip unnecessary quotes', () => {
+      const obj = {
+        "'simplekey'": tsCodeFragment('string'),
+      };
+
+      const result = TsCodeUtils.mergeFragmentsAsObject(obj);
+
+      expect(result.contents).toBe('{simplekey: string,}');
+    });
   });
 
   describe('mergeFragmentsAsInterfaceContent', () => {
@@ -279,6 +289,16 @@ describe('TsCodeUtils', () => {
       expect(result.contents).toBe(
         "['key with \\' and spaces']: number;\n['key-with-hyphens']: boolean;\n['simple-key']: string;",
       );
+    });
+
+    it('should strip unnecessary quotes', () => {
+      const obj = {
+        "'simplekey'": tsCodeFragment('string'),
+      };
+
+      const result = TsCodeUtils.mergeFragmentsAsInterfaceContent(obj);
+
+      expect(result.contents).toBe('simplekey: string;');
     });
   });
 

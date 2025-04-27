@@ -1,10 +1,10 @@
 // @ts-nocheck
 
+import { Alert, Button, Card, Spinner } from '%reactComponentsImports';
+import { logAndFormatError } from '%reactErrorImports';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Alert, Button, Card, Spinner } from '%react-components';
-import { logAndFormatError } from '%react-error/formatter';
 
 function SignupPage(): JSX.Element {
   const { loginWithRedirect, isAuthenticated } = useAuth0();

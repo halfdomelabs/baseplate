@@ -1,18 +1,27 @@
 import {
-  makeImportAndFilePath,
   projectScope,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  copyFileAction,
   createGenerator,
   createGeneratorTask,
+  renderTextTemplateFileAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
-import { authHooksProvider } from '@src/generators/auth/_providers/auth-hooks.js';
-import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
+import {
+  generatedGraphqlImportsProvider,
+  reactApolloProvider,
+} from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
+import {
+  authHooksImportsProvider,
+  authHooksProvider,
+} from '@src/generators/auth/_providers/auth-hooks.js';
+import { reactErrorImportsProvider } from '@src/generators/core/react-error/react-error.generator.js';
+
+import { AUTH_0_AUTH_0_HOOKS_TEXT_TEMPLATES } from './generated/text-templates.js';
+import { createAuth0HooksImports } from './generated/ts-import-maps.js';
+import { AUTH_0_AUTH_0_HOOKS_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   userQueryName: z.string().default('user'),
@@ -23,51 +32,57 @@ export const auth0HooksGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ userQueryName }) => ({
+    authHooksImports: createGeneratorTask({
+      exports: {
+        authHooksImports: authHooksImportsProvider.export(projectScope),
+      },
+      run() {
+        return {
+          providers: {
+            authHooksImports: createAuth0HooksImports('@/src/hooks'),
+          },
+        };
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
         reactApollo: reactApolloProvider,
-        reactError: reactErrorProvider,
+        reactErrorImports: reactErrorImportsProvider,
+        generatedGraphqlImports: generatedGraphqlImportsProvider,
       },
       exports: {
         authHooks: authHooksProvider.export(projectScope),
       },
-      run({ typescript, reactApollo, reactError }) {
-        const currentUserFields: string[] = [];
-
-        const hookFolder = 'src/hooks';
-        const [useCurrentUserImport, useCurrentUserPath] =
-          makeImportAndFilePath(`${hookFolder}/useCurrentUser.ts`);
-        const [useLogOutImport, useLogOutPath] = makeImportAndFilePath(
-          `${hookFolder}/useLogOut.ts`,
-        );
-        const [useSessionImport, useSessionPath] = makeImportAndFilePath(
-          `${hookFolder}/useSession.ts`,
-        );
-        const [useRequiredUserIdImport, useRequiredUserIdPath] =
-          makeImportAndFilePath(`${hookFolder}/useRequiredUserId.ts`);
+      run({
+        typescriptFile,
+        reactErrorImports,
+        generatedGraphqlImports,
+        reactApollo,
+      }) {
+        const useCurrentUserPath = '@/src/hooks/useCurrentUser.ts';
+        const useLogOutPath = '@/src/hooks/useLogOut.ts';
+        const useSessionPath = '@/src/hooks/useSession.ts';
+        const useRequiredUserIdPath = '@/src/hooks/useRequiredUserId.ts';
 
         return {
           providers: {
             authHooks: {
-              addCurrentUserField: (field: string) => {
-                currentUserFields.push(field);
-              },
               getImportMap: () => ({
                 '%auth-hooks/useCurrentUser': {
-                  path: useCurrentUserImport,
+                  path: useCurrentUserPath.replace('.ts', ''),
                   allowedImports: ['useCurrentUser'],
                 },
                 '%auth-hooks/useLogOut': {
-                  path: useLogOutImport,
+                  path: useLogOutPath.replace('.ts', ''),
                   allowedImports: ['useLogOut'],
                 },
                 '%auth-hooks/useRequiredUserId': {
-                  path: useRequiredUserIdImport,
+                  path: useRequiredUserIdPath.replace('.ts', ''),
                   allowedImports: ['useRequiredUserId'],
                 },
                 '%auth-hooks/useSession': {
-                  path: useSessionImport,
+                  path: useSessionPath.replace('.ts', ''),
                   allowedImports: ['useSession'],
                 },
               }),
@@ -75,49 +90,32 @@ export const auth0HooksGenerator = createGenerator({
           },
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'hooks/useCurrentUser.ts',
-                destination: useCurrentUserPath,
-                replacements: {
-                  USER_QUERY: userQueryName,
+              typescriptFile.renderTemplateGroup({
+                group: AUTH_0_AUTH_0_HOOKS_TS_TEMPLATES.hooksGroup,
+                baseDirectory: '@/src/hooks',
+                variables: {
+                  useCurrentUser: {
+                    TPL_USER: userQueryName,
+                  },
                 },
-                importMappers: [reactApollo],
-              }),
-            );
-
-            await builder.apply(
-              copyFileAction({
-                source: 'hooks/useCurrentUser.gql',
-                destination: `${hookFolder}/useCurrentUser.gql`,
-                replacements: {
-                  CURRENT_USER_FIELDS: currentUserFields.join('\n'),
-                  USER_QUERY: userQueryName,
+                importMapProviders: {
+                  generatedGraphqlImports,
+                  reactErrorImports,
                 },
               }),
             );
-            reactApollo.registerGqlFile(`${hookFolder}/useCurrentUser.gql`);
 
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'hooks/useLogOut.ts',
-                destination: useLogOutPath,
-                importMappers: [reactError],
+              renderTextTemplateFileAction({
+                template: AUTH_0_AUTH_0_HOOKS_TEXT_TEMPLATES.useCurrentUserGql,
+                destination: '@/src/hooks/useCurrentUser.gql',
+                variables: {
+                  TPL_USER_QUERY_NAME: userQueryName,
+                },
               }),
             );
 
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'hooks/useSession.ts',
-                destination: useSessionPath,
-              }),
-            );
-
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'hooks/useRequiredUserId.ts',
-                destination: useRequiredUserIdPath,
-              }),
-            );
+            reactApollo.registerGqlFile(`@/src/hooks/useCurrentUser.gql`);
           },
         };
       },

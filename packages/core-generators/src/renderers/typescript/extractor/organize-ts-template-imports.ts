@@ -180,7 +180,8 @@ export async function organizeTsTemplateImports(
         );
       }
       return importDeclaration.namedImports.map((namedImport) => {
-        const projectExport = pathExports.get(namedImport.name);
+        const projectExport =
+          pathExports.get(namedImport.name) ?? pathExports.get('*');
         if (!projectExport) {
           throw new Error(
             `Import ${namedImport.name} from ${source} in ${filePath} is not found in the project exports.`,

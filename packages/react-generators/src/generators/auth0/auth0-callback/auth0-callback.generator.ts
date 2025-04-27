@@ -1,17 +1,15 @@
-import {
-  makeImportAndFilePath,
-  tsCodeFragment,
-  tsImportBuilder,
-  typescriptProvider,
-} from '@halfdomelabs/core-generators';
+import { typescriptFileProvider } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import path from 'node:path/posix';
 import { z } from 'zod';
 
-import { authHooksProvider } from '@src/generators/auth/index.js';
-import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
-import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
+import { authHooksImportsProvider } from '@src/generators/auth/index.js';
+import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import { reactErrorImportsProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
 import { createRouteElement } from '@src/utils/routes.js';
+
+import { AUTH_0_AUTH_0_CALLBACK_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
@@ -22,50 +20,65 @@ export const auth0CallbackGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
-        reactComponents: reactComponentsProvider,
-        authHooks: authHooksProvider,
-        reactError: reactErrorProvider,
+        typescriptFile: typescriptFileProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
+        authHooksImports: authHooksImportsProvider,
+        reactErrorImports: reactErrorImportsProvider,
         reactRoutes: reactRoutesProvider,
       },
-      run({ typescript, reactComponents, authHooks, reactError, reactRoutes }) {
-        const [callbackPageImport, callbackPagePath] = makeImportAndFilePath(
-          `${reactRoutes.getDirectoryBase()}/auth0-callback.page.tsx`,
+      run({
+        typescriptFile,
+        reactComponentsImports,
+        authHooksImports,
+        reactErrorImports,
+        reactRoutes,
+      }) {
+        const callbackPagePath = path.join(
+          reactRoutes.getDirectoryBase(),
+          'auth0-callback.page.tsx',
         );
-        const [signupPageImport, signupPagePath] = makeImportAndFilePath(
-          `${reactRoutes.getDirectoryBase()}/signup.page.tsx`,
+        const signupPagePath = path.join(
+          reactRoutes.getDirectoryBase(),
+          'signup.page.tsx',
         );
 
         return {
           build: async (builder) => {
+            // Callback page
             reactRoutes.registerRoute({
               path: 'auth0-callback',
               element: createRouteElement(
                 'Auth0CallbackPage',
-                callbackPageImport,
+                callbackPagePath,
               ),
             });
 
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'auth0-callback.page.tsx',
+              typescriptFile.renderTemplateFile({
+                template: AUTH_0_AUTH_0_CALLBACK_TS_TEMPLATES.auth0CallbackPage,
                 destination: callbackPagePath,
-                importMappers: [reactComponents, authHooks, reactError],
+                importMapProviders: {
+                  authHooksImports,
+                  reactComponentsImports,
+                  reactErrorImports,
+                },
               }),
             );
+
+            // Signup page
             reactRoutes.registerRoute({
               path: 'signup',
-              element: tsCodeFragment(
-                `<SignupPage />`,
-                tsImportBuilder().default('SignupPage').from(signupPageImport),
-              ),
+              element: createRouteElement('SignupPage', signupPagePath),
             });
 
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'signup.page.tsx',
+              typescriptFile.renderTemplateFile({
+                template: AUTH_0_AUTH_0_CALLBACK_TS_TEMPLATES.signupPage,
                 destination: signupPagePath,
-                importMappers: [reactComponents, reactError],
+                importMapProviders: {
+                  reactComponentsImports,
+                  reactErrorImports,
+                },
               }),
             );
           },

@@ -39,6 +39,11 @@ export const tsTemplateFileMetadataSchema =
     projectExports: z
       .record(z.string(), z.object({ isTypeOnly: z.boolean().optional() }))
       .optional(),
+    /**
+     * Whether the template is only exporting types and we should not attempt to extract
+     * the contents of the template.
+     */
+    projectExportsOnly: z.boolean().optional(),
   });
 
 export type TsTemplateFileMetadata = z.infer<

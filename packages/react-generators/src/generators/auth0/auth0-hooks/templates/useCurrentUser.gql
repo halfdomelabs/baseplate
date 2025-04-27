@@ -1,11 +1,10 @@
 fragment CurrentUser on User {
   id
   email
-  CURRENT_USER_FIELDS
 }
 
 query getUserById($id: Uuid!) {
-  USER_QUERY(id: $id) {
+  {{TPL_USER_QUERY_NAME}}(id: $id) {
     ...CurrentUser
   }
 }
