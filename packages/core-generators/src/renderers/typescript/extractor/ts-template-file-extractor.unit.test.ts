@@ -611,4 +611,109 @@ export function GroupedUtil() {
       "
     `);
   });
+
+  it('should handle export groups with generator options', async () => {
+    const context =
+      TemplateFileExtractorTestUtils.createTestTemplateFileExtractorContext();
+    const mockResolver = createMockResolver();
+    const extractor = new TsTemplateFileExtractor(context, {
+      pathResolver: mockResolver,
+    });
+
+    // Set up files with different export groups
+    const componentPath = TemplateFileExtractorTestUtils.outputPath(
+      'components/grouped-component.ts',
+    );
+    const utilPath = TemplateFileExtractorTestUtils.outputPath(
+      'components/grouped-util.ts',
+    );
+
+    // Mock the generator options file
+    const generatorOptionsPath = path.join(
+      TemplateFileExtractorTestUtils.TEST_GENERATOR_BASE_DIRECTORY,
+      'ts-extractor.json',
+    );
+
+    vol.fromJSON({
+      [componentPath]: `
+export function GroupedComponent() {
+  return 'component';
+}
+`,
+      [utilPath]: `
+export function GroupedUtil() {
+  return 'util';
+}
+`,
+      [generatorOptionsPath]: JSON.stringify({
+        exportGroups: {
+          components: {
+            exportProviderType: true,
+          },
+          utils: {
+            exportProviderType: false,
+          },
+        },
+      }),
+    });
+
+    // Extract files with different export groups
+    await extractor.extractTemplateFiles([
+      {
+        path: componentPath,
+        metadata: {
+          type: TS_TEMPLATE_TYPE,
+          name: 'groupedComponent',
+          generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
+          template: 'grouped-component.ts',
+          variables: {},
+          projectExports: {
+            GroupedComponent: { isTypeOnly: false },
+          },
+          exportGroup: 'components',
+        },
+      },
+      {
+        path: utilPath,
+        metadata: {
+          type: TS_TEMPLATE_TYPE,
+          name: 'groupedUtil',
+          generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
+          template: 'grouped-util.ts',
+          variables: {},
+          projectExports: {
+            GroupedUtil: { isTypeOnly: false },
+          },
+          exportGroup: 'utils',
+        },
+      },
+    ]);
+
+    const result = vol.toJSON();
+    const generatedImportsPath =
+      TemplateFileExtractorTestUtils.generatedPath('ts-import-maps.ts');
+
+    // Check that the import maps file was generated with both export groups
+    expect(result[generatedImportsPath]).toBeDefined();
+    expect(result[generatedImportsPath]).toContain('componentsImportsSchema');
+    expect(result[generatedImportsPath]).toContain('utilsImportsSchema');
+    expect(result[generatedImportsPath]).toContain('GroupedComponent');
+    expect(result[generatedImportsPath]).toContain('GroupedUtil');
+
+    // Check that the exports are in their respective groups
+    expect(result[generatedImportsPath]).toContain(
+      "GroupedComponent: path.join(importBase, 'grouped-component.js')",
+    );
+    expect(result[generatedImportsPath]).toContain(
+      "GroupedUtil: path.join(importBase, 'grouped-util.js')",
+    );
+
+    // Check that the provider types are exported correctly based on options
+    expect(result[generatedImportsPath]).toContain(
+      'export type ComponentsImportsProvider',
+    );
+    expect(result[generatedImportsPath]).not.toContain(
+      'export type UtilsImportsProvider',
+    );
+  });
 });

@@ -56,38 +56,46 @@ function getImportSourceForGenerator(
 
 const GENERATOR_OPTIONS_FILENAME = 'ts-extractor.json';
 const generatorOptionsSchema = z.object({
-  exportConfiguration: z
-    .object({
-      /**
-       * Whether to export the provider type.
-       */
-      exportProviderType: z.boolean().optional(),
-      /**
-       * The existing imports provider to use.
-       */
-      existingImportsProvider: z
-        .object({
-          /**
-           * The module specifier of the existing imports provider.
-           *
-           * Can be a relative path with @/ or a package name.
-           */
-          moduleSpecifier: z.string(),
-          /**
-           * The name of the import schema export.
-           */
-          importSchemaName: z.string(),
-          /**
-           * The name of the provider type export.
-           */
-          providerTypeName: z.string(),
-          /**
-           * The name of the provider export.
-           */
-          providerName: z.string(),
-        })
-        .optional(),
-    })
+  /**
+   * A map of export group names to export group configuration.
+   *
+   * To refer to the default export group name, use an empty string.
+   */
+  exportGroups: z
+    .record(
+      z.string(),
+      z.object({
+        /**
+         * Whether to export the provider type.
+         */
+        exportProviderType: z.boolean().optional(),
+        /**
+         * The existing imports provider to use.
+         */
+        existingImportsProvider: z
+          .object({
+            /**
+             * The module specifier of the existing imports provider.
+             *
+             * Can be a relative path with @/ or a package name.
+             */
+            moduleSpecifier: z.string(),
+            /**
+             * The name of the import schema export.
+             */
+            importSchemaName: z.string(),
+            /**
+             * The name of the provider type export.
+             */
+            providerTypeName: z.string(),
+            /**
+             * The name of the provider export.
+             */
+            providerName: z.string(),
+          })
+          .optional(),
+      }),
+    )
     .optional(),
 });
 
@@ -391,13 +399,12 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
     const importsFileFragmentMap = new Map<string, TsCodeFragment>();
 
     for (const [key, files] of exportGroupMap) {
+      const exportConfiguration = generatorOptions.exportGroups?.[key];
       const result = writeTsProjectExports(files, generatorName, {
         importMapFilePath: importMapsPath,
         packagePath,
-        exportProviderType:
-          generatorOptions.exportConfiguration?.exportProviderType,
-        existingImportsProvider:
-          generatorOptions.exportConfiguration?.existingImportsProvider,
+        exportProviderType: exportConfiguration?.exportProviderType,
+        existingImportsProvider: exportConfiguration?.existingImportsProvider,
         exportGroupName: key === '' ? undefined : key,
       });
       if (result.importsFileFragment) {
