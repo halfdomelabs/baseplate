@@ -59,6 +59,10 @@ interface WriteTsProjectExportsOptions {
    */
   packagePath: string;
   /**
+   * Export group name. If undefined, the export group name will be the generator name.
+   */
+  exportGroupName?: string;
+  /**
    * Whether to export the provider type.
    */
   exportProviderType?: boolean;
@@ -102,6 +106,7 @@ export function writeTsProjectExports(
     packagePath,
     existingImportsProvider,
     exportProviderType,
+    exportGroupName,
   }: WriteTsProjectExportsOptions,
 ): {
   importsFileFragment: TsCodeFragment | undefined;
@@ -110,9 +115,10 @@ export function writeTsProjectExports(
   // get imports name based off generator name
   const parsedGeneratorName = parseGeneratorName(generatorName);
   const { packageName, generatorBasename } = parsedGeneratorName;
-  const providerNamePascalCase = `${pascalCase(generatorBasename)}Imports`;
-  const providerNameCamelCase = `${camelCase(generatorBasename)}Imports`;
-  const providerName = `${generatorBasename}-imports`;
+  const exportBasename = exportGroupName ?? generatorBasename;
+  const providerNamePascalCase = `${pascalCase(exportBasename)}Imports`;
+  const providerNameCamelCase = `${camelCase(exportBasename)}Imports`;
+  const providerName = `${exportBasename}-imports`;
 
   const providerNameVar = existingImportsProvider
     ? existingImportsProvider.providerName

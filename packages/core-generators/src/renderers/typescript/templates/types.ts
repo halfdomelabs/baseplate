@@ -6,6 +6,7 @@ import {
 } from '@halfdomelabs/sync';
 import { TsCodeFragment } from '../fragments/types.js';
 import { z } from 'zod';
+import { CASE_VALIDATORS } from '@halfdomelabs/utils';
 
 export const TS_TEMPLATE_TYPE = 'ts';
 
@@ -15,7 +16,12 @@ export const tsTemplateFileMetadataSchema =
     /**
      * The group of templates that this template belongs to.
      */
-    group: z.string().optional(),
+    group: CASE_VALIDATORS.KEBAB_CASE.optional(),
+    /**
+     * The name of the export group that this template belongs to. Export groups
+     * allow you to group templates together that share the same import provider.
+     */
+    exportGroup: CASE_VALIDATORS.KEBAB_CASE.optional(),
     /**
      * The variables for the template.
      */

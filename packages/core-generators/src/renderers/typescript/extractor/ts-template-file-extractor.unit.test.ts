@@ -475,4 +475,140 @@ export function SecondUtil() {
     expect(result[secondGeneratorTemplatesPath]).toContain('secondComponent');
     expect(result[secondGeneratorTemplatesPath]).toContain('secondUtil');
   });
+
+  it('should handle project export groups correctly', async () => {
+    const context =
+      TemplateFileExtractorTestUtils.createTestTemplateFileExtractorContext();
+    const mockResolver = createMockResolver();
+    const extractor = new TsTemplateFileExtractor(context, {
+      pathResolver: mockResolver,
+    });
+
+    // Set up files with different export groups
+    const componentPath = TemplateFileExtractorTestUtils.outputPath(
+      'components/grouped-component.ts',
+    );
+    const utilPath = TemplateFileExtractorTestUtils.outputPath(
+      'components/grouped-util.ts',
+    );
+
+    vol.fromJSON({
+      [componentPath]: `
+export function GroupedComponent() {
+  return 'component';
+}
+`,
+      [utilPath]: `
+export function GroupedUtil() {
+  return 'util';
+}
+`,
+    });
+
+    // Extract files with different export groups
+    await extractor.extractTemplateFiles([
+      {
+        path: componentPath,
+        metadata: {
+          type: TS_TEMPLATE_TYPE,
+          name: 'groupedComponent',
+          generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
+          template: 'grouped-component.ts',
+          variables: {},
+          projectExports: {
+            GroupedComponent: { isTypeOnly: false },
+          },
+          exportGroup: 'components',
+        },
+      },
+      {
+        path: utilPath,
+        metadata: {
+          type: TS_TEMPLATE_TYPE,
+          name: 'groupedUtil',
+          generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
+          template: 'grouped-util.ts',
+          variables: {},
+          projectExports: {
+            GroupedUtil: { isTypeOnly: false },
+          },
+          exportGroup: 'utils',
+        },
+      },
+    ]);
+
+    const result = vol.toJSON();
+    const generatedImportsPath =
+      TemplateFileExtractorTestUtils.generatedPath('ts-import-maps.ts');
+
+    // Check that the import maps file was generated with both export groups
+    expect(result[generatedImportsPath]).toBeDefined();
+    expect(result[generatedImportsPath]).toContain('componentsImportsSchema');
+    expect(result[generatedImportsPath]).toContain('utilsImportsSchema');
+    expect(result[generatedImportsPath]).toContain('GroupedComponent');
+    expect(result[generatedImportsPath]).toContain('GroupedUtil');
+
+    // Check that the exports are in their respective groups
+    expect(result[generatedImportsPath]).toContain(
+      "GroupedComponent: path.join(importBase, 'grouped-component.js')",
+    );
+    expect(result[generatedImportsPath]).toContain(
+      "GroupedUtil: path.join(importBase, 'grouped-util.js')",
+    );
+
+    // Snapshot the imports file for detailed verification
+    expect(result[generatedImportsPath]).toMatchInlineSnapshot(`
+      "import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
+
+      import {
+        createTsImportMap,
+        createTsImportMapSchema,
+      } from '@halfdomelabs/core-generators';
+      import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+      import path from 'node:path/posix';
+
+      const componentsImportsSchema = createTsImportMapSchema({
+        GroupedComponent: {},
+      });
+
+      type ComponentsImportsProvider = TsImportMapProviderFromSchema<
+        typeof componentsImportsSchema
+      >;
+
+      export const componentsImportsProvider =
+        createReadOnlyProviderType<ComponentsImportsProvider>('components-imports');
+
+      export function createComponentsImports(
+        importBase: string,
+      ): ComponentsImportsProvider {
+        if (!importBase.startsWith('@/')) {
+          throw new Error('importBase must start with @/');
+        }
+
+        return createTsImportMap(componentsImportsSchema, {
+          GroupedComponent: path.join(importBase, 'grouped-component.js'),
+        });
+      }
+
+      const utilsImportsSchema = createTsImportMapSchema({ GroupedUtil: {} });
+
+      type UtilsImportsProvider = TsImportMapProviderFromSchema<
+        typeof utilsImportsSchema
+      >;
+
+      export const utilsImportsProvider =
+        createReadOnlyProviderType<UtilsImportsProvider>('utils-imports');
+
+      export function createUtilsImports(importBase: string): UtilsImportsProvider {
+        if (!importBase.startsWith('@/')) {
+          throw new Error('importBase must start with @/');
+        }
+
+        return createTsImportMap(utilsImportsSchema, {
+          GroupedUtil: path.join(importBase, 'grouped-util.js'),
+        });
+      }
+      "
+    `);
+  });
 });

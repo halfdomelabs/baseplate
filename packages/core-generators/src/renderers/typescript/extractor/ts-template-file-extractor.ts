@@ -381,33 +381,49 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
     );
     const generatorOptions = await this.getGeneratorOptions(generatorName);
     const packagePath = this.getGeneratorPackagePath(generatorName);
-    const { importsFileFragment, projectExports } = writeTsProjectExports(
+
+    const exportGroupMap = mapGroupBy(
       files,
-      generatorName,
-      {
+      (file) => file.metadata.exportGroup ?? '',
+    );
+
+    const projectExports: TsProjectExport[] = [];
+    const importsFileFragmentMap = new Map<string, TsCodeFragment>();
+
+    for (const [key, files] of exportGroupMap) {
+      const result = writeTsProjectExports(files, generatorName, {
         importMapFilePath: importMapsPath,
         packagePath,
         exportProviderType:
           generatorOptions.exportConfiguration?.exportProviderType,
         existingImportsProvider:
           generatorOptions.exportConfiguration?.existingImportsProvider,
-      },
-    );
+        exportGroupName: key === '' ? undefined : key,
+      });
+      if (result.importsFileFragment) {
+        importsFileFragmentMap.set(key, result.importsFileFragment);
+      }
+      projectExports.push(...result.projectExports);
+    }
 
-    const importsFileContents = importsFileFragment
-      ? renderTsCodeFileTemplate(
-          `TPL_CONTENTS`,
-          {
-            TPL_CONTENTS: importsFileFragment,
-          },
-          {},
-          {
-            importSortOptions: {
-              internalPatterns: [/^@src\//],
+    const importsFileContents =
+      importsFileFragmentMap.size > 0
+        ? renderTsCodeFileTemplate(
+            `TPL_CONTENTS`,
+            {
+              TPL_CONTENTS: TsCodeUtils.mergeFragments(
+                importsFileFragmentMap,
+                '\n\n',
+              ),
             },
-          },
-        )
-      : undefined;
+            {},
+            {
+              importSortOptions: {
+                internalPatterns: [/^@src\//],
+              },
+            },
+          )
+        : undefined;
 
     await (importsFileContents
       ? this.writeGeneratedTypescriptFileIfModified(
