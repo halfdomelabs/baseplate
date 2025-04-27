@@ -83,6 +83,16 @@ const removedVar = 1;
           },
         },
       },
+      {
+        path: TemplateFileExtractorTestUtils.outputPath('ignored.ts'),
+        metadata: {
+          name: 'ignored',
+          type: TS_TEMPLATE_TYPE,
+          generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
+          template: templatePath,
+          projectExportsOnly: true,
+        },
+      },
     ]);
 
     const result = vol.toJSON();

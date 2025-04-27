@@ -309,11 +309,17 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
   ): Promise<void> {
     const extractLimit = pLimit(getGenerationConcurrencyLimit());
 
+    const filesToExtract = files.filter(
+      (file) => !file.metadata.projectExportsOnly,
+    );
+
     const filesByGroups = mapGroupBy(
-      files.filter((file) => file.metadata.group),
+      filesToExtract.filter((file) => file.metadata.group),
       (file) => file.metadata.group ?? '',
     );
-    const filesWithoutGroups = files.filter((file) => !file.metadata.group);
+    const filesWithoutGroups = filesToExtract.filter(
+      (file) => !file.metadata.group,
+    );
 
     const lookupContext: TsTemplateImportLookupContext = {
       projectExportMap,
