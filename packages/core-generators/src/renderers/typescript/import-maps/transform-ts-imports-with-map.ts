@@ -39,15 +39,30 @@ export function transformTsImportsWithMap(
       );
     }
 
+    const wildcardImport = (importMap as Partial<TsImportMap>)['*'];
+
     return (
       importDeclaration.namedImports?.map((namedImport) => {
         if (!(namedImport.name in importMap)) {
+          if (wildcardImport) {
+            return {
+              source: wildcardImport.source,
+              namedImports: [
+                {
+                  name: namedImport.name,
+                  alias: namedImport.alias,
+                  isTypeOnly: namedImport.isTypeOnly,
+                },
+              ],
+              isTypeOnly: importDeclaration.isTypeOnly,
+            };
+          }
           throw new Error(`Import map entry not found for ${namedImport.name}`);
         }
 
         const entry = importMap[namedImport.name];
 
-        return importDeclaration.isTypeOnly
+        return importDeclaration.isTypeOnly || namedImport.isTypeOnly
           ? entry.typeDeclaration()
           : entry.declaration();
       }) ?? []

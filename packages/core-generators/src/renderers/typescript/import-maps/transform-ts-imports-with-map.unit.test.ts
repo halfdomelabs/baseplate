@@ -35,12 +35,26 @@ describe('transformImportsWithMap', () => {
   describe('for a test import map', () => {
     const testSchema = createTsImportMapSchema({
       test: { name: 'test' },
+      test2: { name: 'test2' },
+    });
+
+    const wildcardSchema = createTsImportMapSchema({
+      '*': { name: 'wildcard' },
     });
 
     const testImportMaps = new Map<string, TsImportMap>([
       [
         'test',
-        createTsImportMap(testSchema, { test: 'test-package' }) as TsImportMap,
+        createTsImportMap(testSchema, {
+          test: 'test-package',
+          test2: 'test-package2',
+        }) as TsImportMap,
+      ],
+      [
+        'wildcard',
+        createTsImportMap(wildcardSchema, {
+          '*': 'test-package',
+        }) as TsImportMap,
       ],
     ]);
 
@@ -100,11 +114,15 @@ describe('transformImportsWithMap', () => {
       ]);
     });
 
-    it('should handle type-only imports correctly', () => {
+    it('should handle wildcard imports correctly', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '%test',
-          namedImports: [{ name: 'test' }],
+          source: '%wildcard',
+          namedImports: [{ name: 'someObject' }],
+        },
+        {
+          source: '%wildcard',
+          namedImports: [{ name: 'SomeType' }],
           isTypeOnly: true,
         },
       ];
@@ -113,7 +131,39 @@ describe('transformImportsWithMap', () => {
       expect(result).toEqual([
         {
           source: 'test-package',
+          namedImports: [{ name: 'someObject' }],
+        },
+        {
+          source: 'test-package',
+          namedImports: [{ name: 'SomeType' }],
+          isTypeOnly: true,
+        },
+      ]);
+    });
+
+    it('should handle type-only imports correctly', () => {
+      const imports: TsImportDeclaration[] = [
+        {
+          source: '%test',
           namedImports: [{ name: 'test' }],
+          isTypeOnly: true,
+        },
+        {
+          source: '%test',
+          namedImports: [{ name: 'test2', isTypeOnly: true }],
+        },
+      ];
+
+      const result = transformTsImportsWithMap(imports, testImportMaps);
+      expect(result).toEqual([
+        {
+          source: 'test-package',
+          namedImports: [{ name: 'test' }],
+          isTypeOnly: true,
+        },
+        {
+          source: 'test-package2',
+          namedImports: [{ name: 'test2' }],
           isTypeOnly: true,
         },
       ]);
