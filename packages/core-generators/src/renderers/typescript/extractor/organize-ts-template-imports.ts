@@ -1,6 +1,7 @@
 import type { ResolverFactory } from 'oxc-resolver';
 import type { SourceFile } from 'ts-morph';
 
+import { isBuiltin } from 'node:module';
 import path from 'node:path';
 import { Node, Project, SyntaxKind } from 'ts-morph';
 
@@ -134,6 +135,9 @@ export async function organizeTsTemplateImports(
   const updatedImportDeclarations = await Promise.all(
     tsImportDeclarations.map(async (importDeclaration) => {
       const { moduleSpecifier } = importDeclaration;
+      if (isBuiltin(moduleSpecifier)) {
+        return [importDeclaration];
+      }
       const resolutionResult = await resolver.async(
         path.dirname(filePath),
         moduleSpecifier,

@@ -1,12 +1,12 @@
 // @ts-nocheck
 
-import { execSync } from 'child_process';
-import path from 'path';
-import { nanoid } from 'nanoid';
 import { Prisma, PrismaClient } from '@prisma/client';
+import { execSync } from 'child_process';
+import { nanoid } from 'nanoid';
+import path from 'path';
 import { parse } from 'pg-connection-string';
 
-const TEST_DATABASE_NAME = 'TEST_DATABASE_NAME_VALUE';
+const TEST_DATABASE_NAME = TPL_TEST_DB;
 
 export function replaceDatabase(
   connectionString: string,

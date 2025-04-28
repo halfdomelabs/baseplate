@@ -161,6 +161,14 @@ export interface TypescriptFileProvider {
    * @param projectRelativePath - The project relative path to mark as used
    */
   markImportAsUsed(projectRelativePath: string): void;
+  /**
+   * Resolves a module specifier to a project relative path
+   *
+   * @param moduleSpecifier - The module specifier to resolve
+   * @param from - The directory to resolve the module from
+   * @returns The project relative path
+   */
+  resolveModuleSpecifier(moduleSpecifier: string, from: string): string;
 }
 
 export const typescriptFileProvider =
@@ -432,6 +440,7 @@ export const typescriptGenerator = createGenerator({
                   projectRelativePath.replace(/\.(j|t)sx?$/, ''),
                 );
               },
+              resolveModuleSpecifier,
             },
           },
           async build(builder) {

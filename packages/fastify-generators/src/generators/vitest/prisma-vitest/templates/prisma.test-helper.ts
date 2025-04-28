@@ -1,11 +1,11 @@
 // @ts-nocheck
 
+import { prisma } from '%prismaImports';
 import { PrismaClient } from '@prisma/client';
 import { beforeEach, vi } from 'vitest';
-import { mockDeep, mockReset, DeepMockProxy } from 'vitest-mock-extended';
-import { prisma } from '%prisma-service';
+import { DeepMockProxy, mockDeep, mockReset } from 'vitest-mock-extended';
 
-vi.mock('PRISMA_SERVICE_PATH', () => ({
+vi.mock(TPL_PRISMA_PATH, () => ({
   __esModule: true,
   prisma: mockDeep<PrismaClient>(),
 }));
