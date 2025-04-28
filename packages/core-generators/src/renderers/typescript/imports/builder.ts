@@ -42,7 +42,7 @@ export interface TsImportDeclarationBuilder {
  * @returns The builder.
  */
 function tsImportDeclarationBuilder(
-  declarationPartial: Omit<TsImportDeclaration, 'source'>,
+  declarationPartial: Omit<TsImportDeclaration, 'moduleSpecifier'>,
 ): TsImportDeclarationBuilder {
   const newBuilder = (
     partial: Partial<TsImportDeclaration>,
@@ -62,7 +62,7 @@ function tsImportDeclarationBuilder(
         ],
       }),
     typeOnly: () => newBuilder({ isTypeOnly: true }),
-    from: (from: string) => ({ ...declarationPartial, source: from }),
+    from: (from: string) => ({ ...declarationPartial, moduleSpecifier: from }),
   };
 }
 

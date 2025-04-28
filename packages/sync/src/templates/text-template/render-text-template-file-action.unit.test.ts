@@ -127,6 +127,34 @@ describe('renderTextTemplateFileAction', () => {
     );
   });
 
+  it('should write a gql file from template contents with variables', async () => {
+    const action = renderTextTemplateFileAction({
+      template: createTextTemplateFile({
+        name: 'test',
+        source: {
+          contents:
+            'query TPL_USER_QUERY_NAME($id: Uuid!) { user(id: $id) { id email } }',
+        },
+        variables: {
+          TPL_USER_QUERY_NAME: { description: 'The name of the user query' },
+        },
+      }),
+      id: 'test-id',
+      destination: 'output/test.gql',
+      variables: {
+        TPL_USER_QUERY_NAME: 'getUserById',
+      },
+    });
+
+    const output = await testAction(action);
+
+    expect(output.files.size).toBe(1);
+    const file = output.files.get('output/test.gql');
+    expect(file?.contents).toEqual(
+      'query getUserById($id: Uuid!) { user(id: $id) { id email } }',
+    );
+  });
+
   it('should throw error when template contains variable value', async () => {
     vol.fromJSON({
       '/root/pkg/test-generator/templates/test.txt': 'Hello John {{TPL_NAME}}!',

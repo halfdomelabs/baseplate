@@ -9,6 +9,14 @@ export function getTextTemplateDelimiters(filename: string): {
     };
   }
 
+  // no delimiters for gql files
+  if (filename.endsWith('.gql')) {
+    return {
+      start: '',
+      end: '',
+    };
+  }
+
   return {
     start: '{{',
     end: '}}',

@@ -475,4 +475,22 @@ describe('prepareGeneratorFile', () => {
 
     expect(result.mergedContents?.toString()).toBe('content');
   });
+
+  it('should handle skipWriting option', async () => {
+    const result = await prepareGeneratorFile({
+      relativePath: 'file.txt',
+      data: createMockFileData({
+        contents: 'content',
+        options: { skipWriting: true },
+      }),
+      context: createMockContext(),
+    });
+
+    expect(result).toEqual({
+      relativePath: 'file.txt',
+      previousRelativePath: undefined,
+      mergedContents: undefined,
+      generatedContents: Buffer.from('content'),
+    });
+  });
 });

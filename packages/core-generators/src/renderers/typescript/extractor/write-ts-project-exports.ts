@@ -24,6 +24,12 @@ export interface TsProjectExport {
    */
   name: string;
   /**
+   * The exported name of the export within the file, e.g. 'default' for default exports.
+   *
+   * If not provided, the name will be the same as the export name.
+   */
+  exportName?: string;
+  /**
    * The path to the file that contains the export.
    */
   filePath: string;
@@ -58,6 +64,10 @@ interface WriteTsProjectExportsOptions {
    * The path of the package
    */
   packagePath: string;
+  /**
+   * Export group name. If undefined, the export group name will be the generator name.
+   */
+  exportGroupName?: string;
   /**
    * Whether to export the provider type.
    */
@@ -102,6 +112,7 @@ export function writeTsProjectExports(
     packagePath,
     existingImportsProvider,
     exportProviderType,
+    exportGroupName,
   }: WriteTsProjectExportsOptions,
 ): {
   importsFileFragment: TsCodeFragment | undefined;
@@ -110,9 +121,10 @@ export function writeTsProjectExports(
   // get imports name based off generator name
   const parsedGeneratorName = parseGeneratorName(generatorName);
   const { packageName, generatorBasename } = parsedGeneratorName;
-  const providerNamePascalCase = `${pascalCase(generatorBasename)}Imports`;
-  const providerNameCamelCase = `${camelCase(generatorBasename)}Imports`;
-  const providerName = `${generatorBasename}-imports`;
+  const exportBasename = exportGroupName ?? generatorBasename;
+  const providerNamePascalCase = `${pascalCase(exportBasename)}Imports`;
+  const providerNameCamelCase = `${camelCase(exportBasename)}Imports`;
+  const providerName = `${exportBasename}-imports`;
 
   const providerNameVar = existingImportsProvider
     ? existingImportsProvider.providerName
@@ -137,9 +149,10 @@ export function writeTsProjectExports(
   const projectExports: TsProjectExport[] = sortBy(
     files.flatMap((file) =>
       Object.entries(file.metadata.projectExports ?? {}).map(
-        ([exportName, { isTypeOnly }]) => ({
-          name: exportName,
+        ([name, { isTypeOnly, exportName }]) => ({
+          name,
           isTypeOnly,
+          exportName,
           filePath: file.path,
           importSource,
           providerImportName: providerNameVar,
@@ -191,6 +204,7 @@ export function writeTsProjectExports(
           projectExport.name,
           JSON.stringify({
             isTypeOnly: projectExport.isTypeOnly ? true : undefined,
+            exportName: projectExport.exportName ?? undefined,
           }),
         ]),
       ),

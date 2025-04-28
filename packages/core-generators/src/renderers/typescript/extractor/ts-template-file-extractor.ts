@@ -56,38 +56,46 @@ function getImportSourceForGenerator(
 
 const GENERATOR_OPTIONS_FILENAME = 'ts-extractor.json';
 const generatorOptionsSchema = z.object({
-  exportConfiguration: z
-    .object({
-      /**
-       * Whether to export the provider type.
-       */
-      exportProviderType: z.boolean().optional(),
-      /**
-       * The existing imports provider to use.
-       */
-      existingImportsProvider: z
-        .object({
-          /**
-           * The module specifier of the existing imports provider.
-           *
-           * Can be a relative path with @/ or a package name.
-           */
-          moduleSpecifier: z.string(),
-          /**
-           * The name of the import schema export.
-           */
-          importSchemaName: z.string(),
-          /**
-           * The name of the provider type export.
-           */
-          providerTypeName: z.string(),
-          /**
-           * The name of the provider export.
-           */
-          providerName: z.string(),
-        })
-        .optional(),
-    })
+  /**
+   * A map of export group names to export group configuration.
+   *
+   * To refer to the default export group name, use an empty string.
+   */
+  exportGroups: z
+    .record(
+      z.string(),
+      z.object({
+        /**
+         * Whether to export the provider type.
+         */
+        exportProviderType: z.boolean().optional(),
+        /**
+         * The existing imports provider to use.
+         */
+        existingImportsProvider: z
+          .object({
+            /**
+             * The module specifier of the existing imports provider.
+             *
+             * Can be a relative path with @/ or a package name.
+             */
+            moduleSpecifier: z.string(),
+            /**
+             * The name of the import schema export.
+             */
+            importSchemaName: z.string(),
+            /**
+             * The name of the provider type export.
+             */
+            providerTypeName: z.string(),
+            /**
+             * The name of the provider export.
+             */
+            providerName: z.string(),
+          })
+          .optional(),
+      }),
+    )
     .optional(),
 });
 
@@ -301,11 +309,17 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
   ): Promise<void> {
     const extractLimit = pLimit(getGenerationConcurrencyLimit());
 
+    const filesToExtract = files.filter(
+      (file) => !file.metadata.projectExportsOnly,
+    );
+
     const filesByGroups = mapGroupBy(
-      files.filter((file) => file.metadata.group),
+      filesToExtract.filter((file) => file.metadata.group),
       (file) => file.metadata.group ?? '',
     );
-    const filesWithoutGroups = files.filter((file) => !file.metadata.group);
+    const filesWithoutGroups = filesToExtract.filter(
+      (file) => !file.metadata.group,
+    );
 
     const lookupContext: TsTemplateImportLookupContext = {
       projectExportMap,
@@ -381,33 +395,48 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
     );
     const generatorOptions = await this.getGeneratorOptions(generatorName);
     const packagePath = this.getGeneratorPackagePath(generatorName);
-    const { importsFileFragment, projectExports } = writeTsProjectExports(
+
+    const exportGroupMap = mapGroupBy(
       files,
-      generatorName,
-      {
-        importMapFilePath: importMapsPath,
-        packagePath,
-        exportProviderType:
-          generatorOptions.exportConfiguration?.exportProviderType,
-        existingImportsProvider:
-          generatorOptions.exportConfiguration?.existingImportsProvider,
-      },
+      (file) => file.metadata.exportGroup ?? '',
     );
 
-    const importsFileContents = importsFileFragment
-      ? renderTsCodeFileTemplate(
-          `TPL_CONTENTS`,
-          {
-            TPL_CONTENTS: importsFileFragment,
-          },
-          {},
-          {
-            importSortOptions: {
-              internalPatterns: [/^@src\//],
+    const projectExports: TsProjectExport[] = [];
+    const importsFileFragmentMap = new Map<string, TsCodeFragment>();
+
+    for (const [key, files] of exportGroupMap) {
+      const exportConfiguration = generatorOptions.exportGroups?.[key];
+      const result = writeTsProjectExports(files, generatorName, {
+        importMapFilePath: importMapsPath,
+        packagePath,
+        exportProviderType: exportConfiguration?.exportProviderType,
+        existingImportsProvider: exportConfiguration?.existingImportsProvider,
+        exportGroupName: key === '' ? undefined : key,
+      });
+      if (result.importsFileFragment) {
+        importsFileFragmentMap.set(key, result.importsFileFragment);
+      }
+      projectExports.push(...result.projectExports);
+    }
+
+    const importsFileContents =
+      importsFileFragmentMap.size > 0
+        ? renderTsCodeFileTemplate(
+            `TPL_CONTENTS`,
+            {
+              TPL_CONTENTS: TsCodeUtils.mergeFragments(
+                importsFileFragmentMap,
+                '\n\n',
+              ),
             },
-          },
-        )
-      : undefined;
+            {},
+            {
+              importSortOptions: {
+                internalPatterns: [/^@src\//],
+              },
+            },
+          )
+        : undefined;
 
     await (importsFileContents
       ? this.writeGeneratedTypescriptFileIfModified(
@@ -456,7 +485,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
     const projectExportMap = new Map<string, Map<string, TsProjectExport>>();
     for (const projectExport of projectExports) {
       const { filePath } = projectExport;
-      const exportName = projectExport.name;
+      const exportName = projectExport.exportName ?? projectExport.name;
       if (!projectExportMap.has(filePath)) {
         projectExportMap.set(filePath, new Map());
       }

@@ -17,7 +17,7 @@ const DEFAULT_SYMBOL = Symbol('default');
 const NAMESPACE_SYMBOL = Symbol('namespace');
 
 interface NamedImportEntry {
-  source: string;
+  moduleSpecifier: string;
   name: string | typeof DEFAULT_SYMBOL | typeof NAMESPACE_SYMBOL;
   alias: string;
   isTypeOnly: boolean;
@@ -31,7 +31,7 @@ function convertToNamedImportEntries(
       i.defaultImport === undefined
         ? undefined
         : ({
-            source: i.source,
+            moduleSpecifier: i.moduleSpecifier,
             name: DEFAULT_SYMBOL,
             alias: i.defaultImport,
             isTypeOnly: i.isTypeOnly ?? false,
@@ -39,13 +39,13 @@ function convertToNamedImportEntries(
       i.namespaceImport === undefined
         ? undefined
         : ({
-            source: i.source,
+            moduleSpecifier: i.moduleSpecifier,
             name: NAMESPACE_SYMBOL,
             alias: i.namespaceImport,
             isTypeOnly: i.isTypeOnly ?? false,
           } as NamedImportEntry),
       ...(i.namedImports ?? []).map((namedImport) => ({
-        source: i.source,
+        moduleSpecifier: i.moduleSpecifier,
         name: namedImport.name,
         alias: namedImport.alias ?? namedImport.name,
         isTypeOnly: i.isTypeOnly ? true : (namedImport.isTypeOnly ?? false),
@@ -62,14 +62,14 @@ function assertNoConflictingImportEntries(entries: NamedImportEntry[]): void {
 
     if (nameSet.size !== 1) {
       throw new ImportConflictError(
-        `Conflicting aliases for named import "${name.toString()}" from "${entries[0].source}" (${entries.map((e) => e.alias).join(', ')})`,
+        `Conflicting aliases for named import "${name.toString()}" from "${entries[0].moduleSpecifier}" (${entries.map((e) => e.alias).join(', ')})`,
       );
     }
   }
 }
 
 function convertToImportDeclarations(
-  source: string,
+  moduleSpecifier: string,
   isTypeOnly: boolean,
   entries: NamedImportEntry[],
 ): TsImportDeclaration[] {
@@ -86,7 +86,7 @@ function convertToImportDeclarations(
   const importDeclarations: TsImportDeclaration[] = [];
   const addDeclaration = (declaration: Partial<TsImportDeclaration>): void => {
     importDeclarations.push({
-      source,
+      moduleSpecifier,
       isTypeOnly: isTypeOnly ? true : undefined,
       ...declaration,
     });
@@ -119,7 +119,7 @@ function convertToImportDeclarations(
 /**
  * Merges multiple TypeScript import declarations to create optimized imports.
  *
- * This function resolves conflicts and merges imports with the same source,
+ * This function resolves conflicts and merges imports with the same moduleSpecifier,
  * handling both regular and type-only imports appropriately. It also supports
  * individual named imports marked as type-only.
  *
@@ -131,12 +131,12 @@ export function mergeTsImportDeclarations(
   declarations: TsImportDeclaration[],
 ): TsImportDeclaration[] {
   const namedImportEntries = convertToNamedImportEntries(declarations);
-  const importGroups = mapGroupBy(namedImportEntries, (e) => e.source);
+  const importGroups = mapGroupBy(namedImportEntries, (e) => e.moduleSpecifier);
 
   const result: TsImportDeclaration[] = [];
 
-  // Process each source's imports
-  for (const [source, entries] of importGroups.entries()) {
+  // Process each module specifier's imports
+  for (const [moduleSpecifier, entries] of importGroups.entries()) {
     // Remove type-only imports that conflict with regular imports
     assertNoConflictingImportEntries(entries);
     const regularEntries = entries.filter((e) => !e.isTypeOnly);
@@ -148,8 +148,16 @@ export function mergeTsImportDeclarations(
     const uniqueTypeOnlyEntries = uniqBy(typeOnlyEntries, (e) => e.name);
 
     result.push(
-      ...convertToImportDeclarations(source, false, uniqueRegularEntries),
-      ...convertToImportDeclarations(source, true, uniqueTypeOnlyEntries),
+      ...convertToImportDeclarations(
+        moduleSpecifier,
+        false,
+        uniqueRegularEntries,
+      ),
+      ...convertToImportDeclarations(
+        moduleSpecifier,
+        true,
+        uniqueTypeOnlyEntries,
+      ),
     );
   }
 

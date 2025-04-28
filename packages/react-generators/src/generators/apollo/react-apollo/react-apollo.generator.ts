@@ -2,6 +2,7 @@ import type {
   ImportMapper,
   TsCodeFragment,
   TsImportDeclaration,
+  TsTemplateFileMetadata,
 } from '@halfdomelabs/core-generators';
 
 import {
@@ -43,7 +44,9 @@ import { reactProxyProvider } from '@src/generators/core/react-proxy/react-proxy
 import { notEmpty } from '../../../utils/array.js';
 import { APOLLO_REACT_APOLLO_TEXT_TEMPLATES } from './generated/text-templates.js';
 import {
+  createGeneratedGraphqlImports,
   createReactApolloImports,
+  generatedGraphqlImportsProvider,
   reactApolloImportsProvider,
 } from './generated/ts-import-maps.js';
 import { APOLLO_REACT_APOLLO_TS_TEMPLATES } from './generated/ts-templates.js';
@@ -235,6 +238,8 @@ export const reactApolloGenerator = createGenerator({
     reactApolloImports: createGeneratorTask({
       exports: {
         reactApolloImports: reactApolloImportsProvider.export(projectScope),
+        generatedGraphqlImports:
+          generatedGraphqlImportsProvider.export(projectScope),
       },
       run() {
         return {
@@ -242,6 +247,8 @@ export const reactApolloGenerator = createGenerator({
             reactApolloImports: createReactApolloImports(
               '@/src/services/apollo',
             ),
+            generatedGraphqlImports:
+              createGeneratedGraphqlImports('@/src/generated'),
           },
         };
       },
@@ -551,6 +558,28 @@ export const reactApolloGenerator = createGenerator({
               }),
             );
 
+            // write a pseudo-file so that the template extractor can infer metadata for the
+            // generated graphql file
+
+            // generated/graphql.tsx
+            builder.writeFile({
+              id: 'generated/graphql.tsx',
+              destination: '@/src/generated/graphql.tsx',
+              contents: '',
+              options: { skipWriting: true },
+              templateMetadata: {
+                generator: builder.generatorInfo.name,
+                name: 'graphql',
+                template: '',
+                projectExportsOnly: true,
+                type: 'ts',
+                exportGroup: 'generated-graphql',
+                projectExports: {
+                  '*': {},
+                },
+              } satisfies TsTemplateFileMetadata,
+            });
+
             builder.addPostWriteCommand('pnpm generate', {
               priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
               onlyIfChanged: [...gqlFiles, 'codegen.yml'],
@@ -645,4 +674,7 @@ export const reactApolloGenerator = createGenerator({
   }),
 });
 
-export { reactApolloImportsProvider } from './generated/ts-import-maps.js';
+export {
+  generatedGraphqlImportsProvider,
+  reactApolloImportsProvider,
+} from './generated/ts-import-maps.js';

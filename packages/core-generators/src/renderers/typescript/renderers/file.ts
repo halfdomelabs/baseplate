@@ -55,9 +55,9 @@ function mergeImportsAndHoistedFragments(
   const normalizedTsImportDeclarations = tsImportDeclarations.map(
     (declaration) => ({
       ...declaration,
-      source: resolveModule
-        ? resolveModule(declaration.source)
-        : declaration.source,
+      moduleSpecifier: resolveModule
+        ? resolveModule(declaration.moduleSpecifier)
+        : declaration.moduleSpecifier,
     }),
   );
 

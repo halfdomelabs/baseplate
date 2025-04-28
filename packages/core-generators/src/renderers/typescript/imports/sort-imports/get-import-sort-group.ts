@@ -150,7 +150,7 @@ export function getImportSortGroup(
   importDecl: TsImportDeclaration,
   options: Partial<GetImportSortGroupOptions> = {},
 ): ImportSortGroup {
-  const { source, isTypeOnly } = importDecl;
+  const { moduleSpecifier: source, isTypeOnly } = importDecl;
   const { internalPatterns, styleExtensions, allowedSortGroups } = {
     ...DEFAULT_OPTIONS,
     ...options,

@@ -1,10 +1,11 @@
 // @ts-nocheck
 
-import { useSession } from './useSession';
 import {
   CurrentUserFragment,
   useGetUserByIdQuery,
-} from '%react-apollo/generated';
+} from '%generatedGraphqlImports';
+
+import { useSession } from './useSession.js';
 
 interface UseCurrentUserResult {
   user?: CurrentUserFragment;
@@ -20,10 +21,10 @@ export function useCurrentUser(): UseCurrentUserResult {
   });
 
   const noUserError =
-    data && data.USER_QUERY === null ? new Error('No user found') : null;
+    data && data.TPL_USER === null ? new Error('No user found') : null;
 
   return {
-    user: data?.USER_QUERY ?? undefined,
+    user: data?.TPL_USER ?? undefined,
     loading,
     error: error ?? noUserError,
   };

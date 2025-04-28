@@ -301,6 +301,15 @@ export async function prepareGeneratorFile({
   const { options } = data;
   const { previousWorkingCodebase, previousGeneratedPayload } = context;
 
+  if (options?.skipWriting) {
+    return {
+      relativePath,
+      mergedContents: undefined,
+      generatedContents: normalizeBufferString(data.contents),
+      previousRelativePath: undefined,
+    };
+  }
+
   // Find previous relative path
   const previousRelativePath = await findPreviousRelativePath(
     data,

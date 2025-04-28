@@ -20,7 +20,7 @@ function createImportDeclaration(
   } = {},
 ): TsImportDeclaration {
   return {
-    source,
+    moduleSpecifier: source,
     isTypeOnly,
     defaultImport,
     namespaceImport,
@@ -79,7 +79,7 @@ describe('sortImportDeclarations', () => {
 
     const sorted = sortImportDeclarations(imports);
 
-    expect(sorted[0].map((i) => i.source)).toEqual([
+    expect(sorted[0].map((i) => i.moduleSpecifier)).toEqual([
       './style3.css',
       './style1.css',
       './style3.css',
@@ -95,7 +95,11 @@ describe('sortImportDeclarations', () => {
 
     const sorted = sortImportDeclarations(imports, { ignoreCase: false });
 
-    expect(sorted[0].map((i) => i.source)).toEqual(['Alpha', 'Gamma', 'beta']);
+    expect(sorted[0].map((i) => i.moduleSpecifier)).toEqual([
+      'Alpha',
+      'Gamma',
+      'beta',
+    ]);
   });
 
   it('should respect case when ignoreCase is false', () => {
@@ -107,7 +111,11 @@ describe('sortImportDeclarations', () => {
 
     const sorted = sortImportDeclarations(imports, { ignoreCase: false });
 
-    expect(sorted[0].map((i) => i.source)).toEqual(['Zebra', 'alpha', 'beta']);
+    expect(sorted[0].map((i) => i.moduleSpecifier)).toEqual([
+      'Zebra',
+      'alpha',
+      'beta',
+    ]);
   });
 
   it('should handle custom group configurations', () => {
@@ -121,8 +129,8 @@ describe('sortImportDeclarations', () => {
       groups: ['sibling', ['builtin', 'external']],
     });
 
-    expect(sorted[0][0].source).toBe('./local');
-    expect(sorted[1].map((i) => i.source)).toEqual(['fs', 'react']);
+    expect(sorted[0][0].moduleSpecifier).toBe('./local');
+    expect(sorted[1].map((i) => i.moduleSpecifier)).toEqual(['fs', 'react']);
   });
 
   it('should handle empty import arrays', () => {

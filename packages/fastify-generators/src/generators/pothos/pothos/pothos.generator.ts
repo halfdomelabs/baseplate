@@ -199,7 +199,7 @@ export const pothosGenerator = createGenerator({
               TypescriptCodeUtils.mergeBlocksAsInterfaceContent({
                 Context: TypescriptCodeUtils.createExpression(
                   `RequestServiceContext`,
-                  `import { ${requestServiceContextImports.RequestServiceContext.name} } from '${requestServiceContextImports.RequestServiceContext.source}'`,
+                  `import { ${requestServiceContextImports.RequestServiceContext.name} } from '${requestServiceContextImports.RequestServiceContext.moduleSpecifier}'`,
                 ),
                 Scalars:
                   customScalars.length > 0

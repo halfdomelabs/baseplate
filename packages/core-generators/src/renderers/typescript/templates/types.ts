@@ -6,6 +6,7 @@ import {
 } from '@halfdomelabs/sync';
 import { TsCodeFragment } from '../fragments/types.js';
 import { z } from 'zod';
+import { CASE_VALIDATORS } from '@halfdomelabs/utils';
 
 export const TS_TEMPLATE_TYPE = 'ts';
 
@@ -15,7 +16,12 @@ export const tsTemplateFileMetadataSchema =
     /**
      * The group of templates that this template belongs to.
      */
-    group: z.string().optional(),
+    group: CASE_VALIDATORS.KEBAB_CASE.optional(),
+    /**
+     * The name of the export group that this template belongs to. Export groups
+     * allow you to group templates together that share the same import provider.
+     */
+    exportGroup: CASE_VALIDATORS.KEBAB_CASE.optional(),
     /**
      * The variables for the template.
      */
@@ -31,8 +37,25 @@ export const tsTemplateFileMetadataSchema =
      * The exports of the file that are unique across the project.
      */
     projectExports: z
-      .record(z.string(), z.object({ isTypeOnly: z.boolean().optional() }))
+      .record(
+        z.string(),
+        z.object({
+          /**
+           * Whether the export is a type only export.
+           */
+          isTypeOnly: z.boolean().optional(),
+          /**
+           * The exported name of the export within the file, e.g. 'default' for default exports.
+           */
+          exportName: z.string().optional(),
+        }),
+      )
       .optional(),
+    /**
+     * Whether the template is only exporting types and we should not attempt to extract
+     * the contents of the template.
+     */
+    projectExportsOnly: z.boolean().optional(),
   });
 
 export type TsTemplateFileMetadata = z.infer<
@@ -68,7 +91,10 @@ export interface TsTemplateFile<
   /**
    * The exports of the file that are unique across the project.
    */
-  projectExports?: Record<string, { isTypeOnly?: boolean }>;
+  projectExports?: Record<
+    string,
+    { isTypeOnly?: boolean; exportName?: string }
+  >;
 }
 
 export type TsTemplateFileVariableValue = TsCodeFragment | string;

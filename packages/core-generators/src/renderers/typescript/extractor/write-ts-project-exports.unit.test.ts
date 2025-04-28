@@ -51,8 +51,9 @@ describe('writeTsProjectExports', () => {
           template: 'test1.ts',
           variables: {},
           projectExports: {
-            TestExport: { isTypeOnly: false },
+            TestExport: {},
             TypeOnlyExport: { isTypeOnly: true },
+            TestDefaultExport: { exportName: 'default' },
           },
         },
       },
@@ -65,8 +66,13 @@ describe('writeTsProjectExports', () => {
 
     expect(result.projectExports).toEqual([
       {
+        name: 'TestDefaultExport',
+        exportName: 'default',
+        filePath: '/test/path/file1.ts',
+        ...EXPORT_METADATA_COMMON,
+      },
+      {
         name: 'TestExport',
-        isTypeOnly: false,
         filePath: '/test/path/file1.ts',
         ...EXPORT_METADATA_COMMON,
       },
@@ -81,6 +87,9 @@ describe('writeTsProjectExports', () => {
     const importsContents = result.importsFileFragment?.contents;
     expect(importsContents).toContain('TestExport: {}');
     expect(importsContents).toContain('TypeOnlyExport: {"isTypeOnly":true}');
+    expect(importsContents).toContain(
+      'TestDefaultExport: {"exportName":"default"}',
+    );
     expect(importsContents).toContain('test-generator');
     expect(importsContents).toContain('createTestGeneratorImports');
   });
@@ -112,7 +121,7 @@ describe('writeTsProjectExports', () => {
     );
 
     const imports =
-      result.importsFileFragment?.imports?.map((m) => m.source) ?? [];
+      result.importsFileFragment?.imports?.map((m) => m.moduleSpecifier) ?? [];
     expect(imports).toContain('@src/renderers/typescript/index.js');
     expect(imports).not.toContain('@halfdomelabs/core-generators');
   });
@@ -140,7 +149,7 @@ describe('writeTsProjectExports', () => {
     });
 
     const imports =
-      result.importsFileFragment?.imports?.map((m) => m.source) ?? [];
+      result.importsFileFragment?.imports?.map((m) => m.moduleSpecifier) ?? [];
     expect(imports).toContain('@halfdomelabs/core-generators');
     expect(imports).not.toContain('@src/renderers/typescript/index.ts');
   });
@@ -177,11 +186,11 @@ describe('writeTsProjectExports', () => {
 
     const imports = result.importsFileFragment?.imports;
     expect(imports).toContainEqual({
-      source: 'test/existing-imports',
+      moduleSpecifier: 'test/existing-imports',
       namedImports: [{ name: 'existingImportsSchema' }],
     });
     expect(imports).toContainEqual({
-      source: 'test/existing-imports',
+      moduleSpecifier: 'test/existing-imports',
       namedImports: [{ name: 'ExistingImportsProvider' }],
       isTypeOnly: true,
     });

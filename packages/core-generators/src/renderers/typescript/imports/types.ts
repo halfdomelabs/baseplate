@@ -23,7 +23,7 @@ export interface TsImportDeclaration {
   /**
    * The module specifier for the import
    */
-  source: string;
+  moduleSpecifier: string;
   /**
    * Whether the import is a type-only import
    */

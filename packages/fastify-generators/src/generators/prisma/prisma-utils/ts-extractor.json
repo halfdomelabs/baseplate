@@ -1,5 +1,7 @@
 {
-  "exportConfiguration": {
-    "exportProviderType": true
+  "exportGroups": {
+    "": {
+      "exportProviderType": true
+    }
   }
 }

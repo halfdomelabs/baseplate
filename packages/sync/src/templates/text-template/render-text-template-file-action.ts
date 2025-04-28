@@ -115,7 +115,7 @@ export function renderTextTemplateFileAction<
           (match) => {
             const key = match.slice(
               startDelimiter.length,
-              -endDelimiter.length,
+              endDelimiter === '' ? undefined : -endDelimiter.length,
             );
             const value = variablesObj[key];
             if (value === undefined) {

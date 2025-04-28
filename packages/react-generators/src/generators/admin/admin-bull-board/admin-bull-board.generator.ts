@@ -76,7 +76,7 @@ export const adminBullBoardGenerator = createGenerator({
               {
                 getImportMap: () => ({
                   '%react-config': {
-                    path: reactConfigImports.config.source,
+                    path: reactConfigImports.config.moduleSpecifier,
                     allowedImports: ['config'],
                   },
                 }),
@@ -91,9 +91,7 @@ export const adminBullBoardGenerator = createGenerator({
               path: 'bull-board',
               element: tsCodeFragment(
                 '<BullBoardPage />',
-                tsImportBuilder()
-                  .default('BullBoardPage')
-                  .from(`@/${baseDirectory}`),
+                tsImportBuilder().default('BullBoardPage').from(baseDirectory),
               ),
             });
 

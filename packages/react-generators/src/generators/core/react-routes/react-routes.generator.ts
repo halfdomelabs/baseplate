@@ -125,10 +125,7 @@ export const reactRoutesGenerator = createGenerator({
               reactRoutes.registerRoute({
                 path: `${pathName}/*`,
                 layoutKey,
-                element: createRouteElement(
-                  componentName,
-                  `@/${directoryBase}`,
-                ),
+                element: createRouteElement(componentName, directoryBase),
               });
             }
           },

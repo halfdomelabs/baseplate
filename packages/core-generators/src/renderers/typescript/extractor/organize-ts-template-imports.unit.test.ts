@@ -6,12 +6,14 @@ import { organizeTsTemplateImports } from './organize-ts-template-imports.js';
 
 function createMockResolver(): ResolverFactory {
   return {
-    async: vi.fn().mockImplementation((filePath: string, source: string) => ({
-      path: source.startsWith('./')
-        ? `/project-root/${source.slice(2)}`
-        : source,
-      error: null,
-    })),
+    async: vi
+      .fn()
+      .mockImplementation((filePath: string, moduleSpecifier: string) => ({
+        path: moduleSpecifier.startsWith('./')
+          ? `/project-root/${moduleSpecifier.slice(2)}`
+          : moduleSpecifier,
+        error: null,
+      })),
     sync: vi.fn(),
   } as unknown as ResolverFactory;
 }
@@ -57,13 +59,15 @@ import { A, B } from './module1.ts';
 import { C } from './module2.ts';
 import { D } from 'external-package';
 import { E } from 'unused-package';
+import F from './default-module.ts';
 
 export function test() {
   const a = new A();
   const b = B();
   const c = C();
   const d = D();
-  return a + b + c + d;
+  const f = F();
+  return a + b + c + d + f;
 }
 `;
 
@@ -86,6 +90,13 @@ export function test() {
       isTypeOnly: false,
       ...sharedExportData,
     };
+    const projectExportC = {
+      name: 'F',
+      filePath: '/project-root/default-module.ts',
+      isTypeOnly: false,
+      exportName: 'default',
+      ...sharedExportData,
+    };
 
     const projectExportMap = new Map([
       [
@@ -94,6 +105,10 @@ export function test() {
           ['A', projectExportA],
           ['B', projectExportB],
         ]),
+      ],
+      [
+        '/project-root/default-module.ts',
+        new Map([['default', projectExportC]]),
       ],
     ]);
 
@@ -107,7 +122,7 @@ export function test() {
     const result = await organizeTsTemplateImports(filePath, contents, context);
 
     // Check that the output contains the organized imports
-    expect(result.contents).toContain('import { A, B } from "%testImports"');
+    expect(result.contents).toContain('import { A, B, F } from "%testImports"');
     expect(result.contents).toContain('import { C } from "./module2.js"');
     expect(result.contents).toContain('import { D } from "external-package"');
 
@@ -115,9 +130,10 @@ export function test() {
     expect(result.contents).not.toContain('unused-package');
 
     // Check that the used project exports are returned
-    expect(result.usedProjectExports).toHaveLength(2);
+    expect(result.usedProjectExports).toHaveLength(3);
     expect(result.usedProjectExports[0]).toBe(projectExportA);
     expect(result.usedProjectExports[1]).toBe(projectExportB);
+    expect(result.usedProjectExports[2]).toBe(projectExportC);
   });
 
   it('should throw error for namespace imports', async () => {
@@ -138,7 +154,7 @@ Module.A;
 
     await expect(
       organizeTsTemplateImports(filePath, contents, context),
-    ).rejects.toThrow('cannot be a namespace or default import');
+    ).rejects.toThrow('cannot be a namespace import');
   });
 
   it('should throw error for missing project exports', async () => {

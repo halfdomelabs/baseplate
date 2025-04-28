@@ -78,7 +78,7 @@ describe('renderTsTemplateToTsCodeFragment', () => {
 
     expect(result.imports).toHaveLength(1);
     expect(result.imports?.[0]).toMatchObject({
-      source: './my-class',
+      moduleSpecifier: './my-class',
     });
     expect(result.hoistedFragments).toHaveLength(1);
     expect(result.hoistedFragments?.[0].key).toBe('helper');

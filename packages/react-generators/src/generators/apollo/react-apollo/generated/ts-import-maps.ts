@@ -33,3 +33,26 @@ export function createReactApolloImports(
     createApolloClient: path.join(importBase, 'index.js'),
   });
 }
+
+const generatedGraphqlImportsSchema = createTsImportMapSchema({ '*': {} });
+
+type GeneratedGraphqlImportsProvider = TsImportMapProviderFromSchema<
+  typeof generatedGraphqlImportsSchema
+>;
+
+export const generatedGraphqlImportsProvider =
+  createReadOnlyProviderType<GeneratedGraphqlImportsProvider>(
+    'generated-graphql-imports',
+  );
+
+export function createGeneratedGraphqlImports(
+  importBase: string,
+): GeneratedGraphqlImportsProvider {
+  if (!importBase.startsWith('@/')) {
+    throw new Error('importBase must start with @/');
+  }
+
+  return createTsImportMap(generatedGraphqlImportsSchema, {
+    '*': path.join(importBase, 'graphql.js'),
+  });
+}

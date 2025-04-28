@@ -34,6 +34,11 @@ export interface WriteFileOptions {
    */
   shouldNeverOverwrite?: boolean;
   /**
+   * Skip writing the file. Useful if you need to write metadata for
+   * generated files but don't want to write the file itself.
+   */
+  skipWriting?: boolean;
+  /**
    * Merge algorithms to use for the file
    */
   mergeAlgorithms?: StringMergeAlgorithm[];
@@ -206,7 +211,7 @@ export class GeneratorTaskOutputBuilder {
     destination: string;
     contents: string | Buffer;
     options?: Omit<WriteFileOptions, 'templateMetadata'>;
-    templateMetadata?: TemplateFileMetadataBase;
+    templateMetadata?: TemplateFileMetadataBase & Record<string, unknown>;
   }): void {
     // normalize all paths to POSIX style / paths and remove any preceding @/
     const fullPath = filePath

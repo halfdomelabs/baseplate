@@ -17,7 +17,7 @@ type ImportMapInputFromSchema<T extends TsImportMapSchema> = {
   [K in keyof T]:
     | string
     | {
-        source: string;
+        moduleSpecifier: string;
       };
 };
 
@@ -30,14 +30,16 @@ export function createTsImportMap<
   return Object.fromEntries(
     Object.entries(importSchema).map(([key, value]) => {
       const name = value.name ?? key;
-      const source =
-        typeof imports[key] === 'string' ? imports[key] : imports[key].source;
+      const moduleSpecifier =
+        typeof imports[key] === 'string'
+          ? imports[key]
+          : imports[key].moduleSpecifier;
 
       const makeDeclaration = (
         alias?: string,
         isTypeOnly?: boolean,
       ): TsImportDeclaration => ({
-        source,
+        moduleSpecifier,
         ...(name === 'default'
           ? { defaultImport: alias ?? key }
           : {
@@ -50,12 +52,12 @@ export function createTsImportMap<
         key,
         {
           name,
-          source,
+          moduleSpecifier,
           isTypeOnly: value.isTypeOnly,
           declaration: (alias) => {
             if (value.isTypeOnly) {
               throw new Error(
-                `Type only imports cannot be marked as named imports: ${name} in ${source}`,
+                `Type only imports cannot be marked as named imports: ${name} in ${moduleSpecifier}`,
               );
             }
             return makeDeclaration(alias);

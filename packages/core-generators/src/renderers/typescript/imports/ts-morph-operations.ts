@@ -44,7 +44,7 @@ export function convertTsMorphImportDeclarationToTsImportDeclaration(
   declaration: ImportDeclaration,
 ): TsImportDeclaration {
   return {
-    source: declaration.getModuleSpecifier().getLiteralValue(),
+    moduleSpecifier: declaration.getModuleSpecifier().getLiteralValue(),
     isTypeOnly: declaration.isTypeOnly(),
     namespaceImport: declaration.getNamespaceImport()?.getText(),
     defaultImport: declaration.getDefaultImport()?.getText(),
@@ -64,7 +64,7 @@ function writeImportDeclaration(
     namespaceImport,
     defaultImport,
     namedImports = [],
-    source,
+    moduleSpecifier: source,
     isTypeOnly,
   } = importDeclaration;
   const hasNamedImports = namedImports.length > 0;

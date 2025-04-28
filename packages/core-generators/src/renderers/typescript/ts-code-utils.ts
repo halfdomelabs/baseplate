@@ -53,14 +53,14 @@ function mergeFragmentImportsAndHoistedFragments(
 }
 
 /**
- * Validate a property key.
+ * Validate a property key and strips out unnecessary quotes.
  *
  * Property keys must be valid identifiers or quoted strings and may optionally end with a question mark.
  *
  * @param key - The key to validate.
  * @throws An error if the key is invalid.
  */
-function validatePropertyKey(key: string): void {
+function validatePropertyKey(key: string): string {
   const quotedKeyRegex = /^(['"])[^]*\1\??$/;
   const unquotedKeyRegex = /^[A-Za-z0-9_]+\??$/;
 
@@ -70,6 +70,13 @@ function validatePropertyKey(key: string): void {
   if (!isQuoted && !isValidUnquoted) {
     throw new Error(`Invalid key: ${key}. Please escape the key with quotes.`);
   }
+
+  const unnecessaryQuoteRegex = /^(['"])[A-Za-z0-9_]+\1\??$/;
+  if (isQuoted && unnecessaryQuoteRegex.test(key)) {
+    return key.slice(1, -1);
+  }
+
+  return key;
 }
 
 /**
@@ -249,8 +256,8 @@ export const TsCodeUtils = {
         if (trimmedContent.startsWith(`async function ${key}`)) {
           return `${trimmedContent.replace(/^async function /, 'async ')},`;
         }
-        validatePropertyKey(key);
-        return `${key}: ${content},`;
+        const escapedKey = /^[a-zA-Z0-9_]+$/.test(key) ? key : `'${key}'`;
+        return `${escapedKey}: ${content},`;
       })
       .join('\n');
 
@@ -280,6 +287,9 @@ export const TsCodeUtils = {
    * Merge a map of code fragments into interface content. The fragments are sorted by key
    * to ensure deterministic output.
    *
+   * Add quotes around property keys that should be escaped and optional properties should be
+   * marked with a question mark, e.g. 'complex-key'? for an optional property named complex-key.
+   *
    * @param fragments - The code fragments to merge.
    * @param options - The options for the merge.
    * @returns The merged code fragment as interface content.
@@ -305,9 +315,11 @@ export const TsCodeUtils = {
       .map((key) => {
         const value = map.get(key) ?? '';
         const content = typeof value === 'string' ? value : value.contents;
-        validatePropertyKey(key);
+        const validatedKey = validatePropertyKey(key);
         const escapedKey =
-          key.startsWith('"') || key.startsWith("'") ? `[${key}]` : key;
+          validatedKey.startsWith('"') || validatedKey.startsWith("'")
+            ? `[${validatedKey}]`
+            : validatedKey;
         return `${escapedKey}: ${content};`;
       })
       .join('\n');

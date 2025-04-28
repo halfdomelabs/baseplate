@@ -1,7 +1,7 @@
 // @ts-nocheck
 
+import { logError } from '%reactErrorImports';
 import { useAuth0 } from '@auth0/auth0-react';
-import { logError } from '%react-error/logger';
 
 export function useLogOut(): () => void {
   const { logout } = useAuth0();
