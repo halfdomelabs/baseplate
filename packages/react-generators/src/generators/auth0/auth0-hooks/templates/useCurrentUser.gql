@@ -4,7 +4,7 @@ fragment CurrentUser on User {
 }
 
 query getUserById($id: Uuid!) {
-  {{TPL_USER_QUERY_NAME}}(id: $id) {
+  TPL_USER_QUERY_NAME(id: $id) {
     ...CurrentUser
   }
 }

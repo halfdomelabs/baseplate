@@ -91,7 +91,10 @@ export interface TsTemplateFile<
   /**
    * The exports of the file that are unique across the project.
    */
-  projectExports?: Record<string, { isTypeOnly?: boolean }>;
+  projectExports?: Record<
+    string,
+    { isTypeOnly?: boolean; exportName?: string }
+  >;
 }
 
 export type TsTemplateFileVariableValue = TsCodeFragment | string;
