@@ -485,7 +485,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
     const projectExportMap = new Map<string, Map<string, TsProjectExport>>();
     for (const projectExport of projectExports) {
       const { filePath } = projectExport;
-      const exportName = projectExport.name;
+      const exportName = projectExport.exportName ?? projectExport.name;
       if (!projectExportMap.has(filePath)) {
         projectExportMap.set(filePath, new Map());
       }

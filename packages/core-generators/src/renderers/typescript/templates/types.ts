@@ -37,7 +37,19 @@ export const tsTemplateFileMetadataSchema =
      * The exports of the file that are unique across the project.
      */
     projectExports: z
-      .record(z.string(), z.object({ isTypeOnly: z.boolean().optional() }))
+      .record(
+        z.string(),
+        z.object({
+          /**
+           * Whether the export is a type only export.
+           */
+          isTypeOnly: z.boolean().optional(),
+          /**
+           * The exported name of the export within the file, e.g. 'default' for default exports.
+           */
+          exportName: z.string().optional(),
+        }),
+      )
       .optional(),
     /**
      * Whether the template is only exporting types and we should not attempt to extract

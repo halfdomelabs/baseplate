@@ -162,13 +162,9 @@ export async function organizeTsTemplateImports(
         };
         return [fixedImportDeclaration];
       }
-      if (
-        importDeclaration.namespaceImport ||
-        importDeclaration.defaultImport ||
-        importDeclaration.namedImports.length === 0
-      ) {
+      if (importDeclaration.namespaceImport) {
         throw new Error(
-          `Import ${moduleSpecifier} in ${filePath} cannot be a namespace or default import since they are not supported currently
+          `Import ${moduleSpecifier} in ${filePath} cannot be a namespace import since it are not supported currently
           for template extraction.`,
         );
       }
@@ -179,28 +175,53 @@ export async function organizeTsTemplateImports(
           `Import ${resolvedPath} in ${filePath} is not found in the project exports.`,
         );
       }
-      return importDeclaration.namedImports.map((namedImport) => {
+      const importDeclarations: TsImportDeclaration[] = [];
+      const { defaultImport } = importDeclaration;
+      if (defaultImport) {
         const projectExport =
-          pathExports.get(namedImport.name) ?? pathExports.get('*');
+          pathExports.get('default') ?? pathExports.get('*');
         if (!projectExport) {
           throw new Error(
-            `Import ${namedImport.name} from ${moduleSpecifier} in ${filePath} is not found in the project exports.`,
+            `Default import from ${moduleSpecifier} in ${filePath} is not found in the project exports.`,
+          );
+        }
+        if (projectExport.isTypeOnly && !importDeclaration.isTypeOnly) {
+          throw new Error(
+            `Default import from ${moduleSpecifier} in ${filePath} is not a type only import but the project export is a type only import.`,
           );
         }
         usedProjectExports.push(projectExport);
-        const isTypeOnly =
-          !!importDeclaration.isTypeOnly || !!namedImport.isTypeOnly;
-        if (!isTypeOnly && projectExport.isTypeOnly) {
-          throw new Error(
-            `Import ${namedImport.name} from ${moduleSpecifier} in ${filePath} is not a type only import but the project export is a type only import.`,
-          );
-        }
-        return {
-          namedImports: [namedImport],
+        importDeclarations.push({
+          namedImports: [{ name: projectExport.name }],
           moduleSpecifier: projectExport.importSource,
-          isTypeOnly,
-        };
-      });
+          isTypeOnly: projectExport.isTypeOnly,
+        });
+      }
+      importDeclarations.push(
+        ...importDeclaration.namedImports.map((namedImport) => {
+          const projectExport =
+            pathExports.get(namedImport.name) ?? pathExports.get('*');
+          if (!projectExport) {
+            throw new Error(
+              `Import ${namedImport.name} from ${moduleSpecifier} in ${filePath} is not found in the project exports.`,
+            );
+          }
+          const isTypeOnly =
+            !!importDeclaration.isTypeOnly || !!namedImport.isTypeOnly;
+          if (!isTypeOnly && projectExport.isTypeOnly) {
+            throw new Error(
+              `Import ${namedImport.name} from ${moduleSpecifier} in ${filePath} is not a type only import but the project export is a type only import.`,
+            );
+          }
+          usedProjectExports.push(projectExport);
+          return {
+            namedImports: [namedImport],
+            moduleSpecifier: projectExport.importSource,
+            isTypeOnly,
+          };
+        }),
+      );
+      return importDeclarations;
     }),
   );
   for (const importDeclaration of importDeclarations) {

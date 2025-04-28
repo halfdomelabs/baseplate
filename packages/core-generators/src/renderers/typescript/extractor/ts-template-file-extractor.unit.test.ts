@@ -161,6 +161,7 @@ const removedVar = 1;
       [inputFilePath]: `
       export const TestComponent = () => {};
       export type TestComponentProps = {};
+      export default TestDefaultExport = 'default';
       `,
     });
 
@@ -176,6 +177,7 @@ const removedVar = 1;
           projectExports: {
             TestComponent: { isTypeOnly: false },
             TestComponentProps: { isTypeOnly: true },
+            TestDefaultExport: { exportName: 'default' },
           },
         },
       },
@@ -228,6 +230,7 @@ const removedVar = 1;
       const testGeneratorImportsSchema = createTsImportMapSchema({
         TestComponent: {},
         TestComponentProps: { isTypeOnly: true },
+        TestDefaultExport: { exportName: 'default' },
       });
 
       type TestGeneratorImportsProvider = TsImportMapProviderFromSchema<
@@ -249,6 +252,7 @@ const removedVar = 1;
         return createTsImportMap(testGeneratorImportsSchema, {
           TestComponent: path.join(importBase, 'test-component.js'),
           TestComponentProps: path.join(importBase, 'test-component.js'),
+          TestDefaultExport: path.join(importBase, 'test-component.js'),
         });
       }
       "

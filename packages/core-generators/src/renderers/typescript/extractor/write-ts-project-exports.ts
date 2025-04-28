@@ -24,6 +24,12 @@ export interface TsProjectExport {
    */
   name: string;
   /**
+   * The exported name of the export within the file, e.g. 'default' for default exports.
+   *
+   * If not provided, the name will be the same as the export name.
+   */
+  exportName?: string;
+  /**
    * The path to the file that contains the export.
    */
   filePath: string;
@@ -143,9 +149,10 @@ export function writeTsProjectExports(
   const projectExports: TsProjectExport[] = sortBy(
     files.flatMap((file) =>
       Object.entries(file.metadata.projectExports ?? {}).map(
-        ([exportName, { isTypeOnly }]) => ({
-          name: exportName,
+        ([name, { isTypeOnly, exportName }]) => ({
+          name,
           isTypeOnly,
+          exportName,
           filePath: file.path,
           importSource,
           providerImportName: providerNameVar,
@@ -197,6 +204,7 @@ export function writeTsProjectExports(
           projectExport.name,
           JSON.stringify({
             isTypeOnly: projectExport.isTypeOnly ? true : undefined,
+            exportName: projectExport.exportName ?? undefined,
           }),
         ]),
       ),
