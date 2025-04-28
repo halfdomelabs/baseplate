@@ -16,7 +16,7 @@ function mergeTsImportDeclarationsSorted(
   declarations: TsImportDeclaration[],
 ): TsImportDeclaration[] {
   const sortedImports = sortBy(mergeTsImportDeclarations(declarations), [
-    (d) => d.source,
+    (d) => d.moduleSpecifier,
     (d) => (d.isTypeOnly ? 0 : 1),
   ]);
   return sortedImports.map((d) =>
@@ -33,11 +33,11 @@ describe('mergeTsImportDeclarations', () => {
   it('should merge named imports from the same source', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'react',
+        moduleSpecifier: 'react',
         namedImports: [{ name: 'useState' }],
       },
       {
-        source: 'react',
+        moduleSpecifier: 'react',
         namedImports: [{ name: 'useEffect' }],
       },
     ];
@@ -45,7 +45,7 @@ describe('mergeTsImportDeclarations', () => {
     const result = mergeTsImportDeclarationsSorted(input);
     expect(result).toEqual([
       {
-        source: 'react',
+        moduleSpecifier: 'react',
         namedImports: [{ name: 'useEffect' }, { name: 'useState' }],
       },
     ]);
@@ -54,11 +54,11 @@ describe('mergeTsImportDeclarations', () => {
   it('should throw on conflicting aliases', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         namedImports: [{ name: 'thing', alias: 'thing1' }],
       },
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         namedImports: [{ name: 'thing', alias: 'thing2' }],
       },
     ];
@@ -71,11 +71,11 @@ describe('mergeTsImportDeclarations', () => {
   it('should throw on conflicting namespace imports', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         namespaceImport: 'ns1',
       },
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         namespaceImport: 'ns2',
       },
     ];
@@ -88,11 +88,11 @@ describe('mergeTsImportDeclarations', () => {
   it('should throw on conflicting default imports', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         defaultImport: 'default1',
       },
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         defaultImport: 'default2',
       },
     ];
@@ -105,12 +105,12 @@ describe('mergeTsImportDeclarations', () => {
   it('should keep type-only and regular imports separate', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'lib',
+        moduleSpecifier: 'lib',
         isTypeOnly: true,
         namedImports: [{ name: 'Foo', isTypeOnly: false }],
       },
       {
-        source: 'lib',
+        moduleSpecifier: 'lib',
         namedImports: [{ name: 'Soo', isTypeOnly: false }],
       },
     ];
@@ -118,12 +118,12 @@ describe('mergeTsImportDeclarations', () => {
     const result = mergeTsImportDeclarationsSorted(input);
     expect(result).toEqual([
       {
-        source: 'lib',
+        moduleSpecifier: 'lib',
         isTypeOnly: true,
         namedImports: [{ name: 'Foo' }],
       },
       {
-        source: 'lib',
+        moduleSpecifier: 'lib',
         namedImports: [{ name: 'Soo' }],
       },
     ]);
@@ -132,12 +132,12 @@ describe('mergeTsImportDeclarations', () => {
   it('should merge multiple type-only imports', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'types',
+        moduleSpecifier: 'types',
         isTypeOnly: true,
         namedImports: [{ name: 'Type1' }],
       },
       {
-        source: 'types',
+        moduleSpecifier: 'types',
         isTypeOnly: true,
         namedImports: [{ name: 'Type2' }],
       },
@@ -146,7 +146,7 @@ describe('mergeTsImportDeclarations', () => {
     const result = mergeTsImportDeclarationsSorted(input);
     expect(result).toEqual([
       {
-        source: 'types',
+        moduleSpecifier: 'types',
         isTypeOnly: true,
         namedImports: [{ name: 'Type1' }, { name: 'Type2' }],
       },
@@ -156,11 +156,11 @@ describe('mergeTsImportDeclarations', () => {
   it('should merge multiple regular imports', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         namedImports: [{ name: 'func1' }],
       },
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         namedImports: [{ name: 'func2' }],
       },
     ];
@@ -168,7 +168,7 @@ describe('mergeTsImportDeclarations', () => {
     const result = mergeTsImportDeclarationsSorted(input);
     expect(result).toEqual([
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         namedImports: [{ name: 'func1' }, { name: 'func2' }],
       },
     ]);
@@ -177,12 +177,12 @@ describe('mergeTsImportDeclarations', () => {
   it('should throw on conflicting aliases within the same type category', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         isTypeOnly: true,
         namedImports: [{ name: 'thing', alias: 'thing1' }],
       },
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         isTypeOnly: true,
         namedImports: [{ name: 'thing', alias: 'thing2' }],
       },
@@ -196,7 +196,7 @@ describe('mergeTsImportDeclarations', () => {
   it('should sort named imports by name', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'source',
+        moduleSpecifier: 'source',
         namedImports: [{ name: 'z' }, { name: 'b' }, { name: 'a' }],
       },
     ];
@@ -208,12 +208,12 @@ describe('mergeTsImportDeclarations', () => {
   it('should remove type imports that exist as regular imports', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         isTypeOnly: true,
         namedImports: [{ name: 'Thing' }, { name: 'OtherThing' }],
       },
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         namedImports: [{ name: 'Thing' }],
       },
     ];
@@ -221,12 +221,12 @@ describe('mergeTsImportDeclarations', () => {
     const result = mergeTsImportDeclarationsSorted(input);
     expect(result).toEqual([
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         isTypeOnly: true,
         namedImports: [{ name: 'OtherThing' }],
       },
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         namedImports: [{ name: 'Thing' }],
       },
     ]);
@@ -235,12 +235,12 @@ describe('mergeTsImportDeclarations', () => {
   it('should handle default imports existing in both type and regular imports', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         isTypeOnly: true,
         defaultImport: 'Thing',
       },
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         defaultImport: 'Thing',
       },
     ];
@@ -248,7 +248,7 @@ describe('mergeTsImportDeclarations', () => {
     const result = mergeTsImportDeclarationsSorted(input);
     expect(result).toEqual([
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         defaultImport: 'Thing',
       },
     ]);
@@ -257,12 +257,12 @@ describe('mergeTsImportDeclarations', () => {
   it('should handle namespace imports existing in both type and regular imports', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         isTypeOnly: true,
         namespaceImport: 'Types',
       },
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         namespaceImport: 'Types',
       },
     ];
@@ -270,7 +270,7 @@ describe('mergeTsImportDeclarations', () => {
     const result = mergeTsImportDeclarationsSorted(input);
     expect(result).toEqual([
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         namespaceImport: 'Types',
       },
     ]);
@@ -279,13 +279,13 @@ describe('mergeTsImportDeclarations', () => {
   it('should handle mixed type and regular imports with partial overlap', () => {
     const input: TsImportDeclaration[] = [
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         isTypeOnly: true,
         defaultImport: 'Thing',
         namedImports: [{ name: 'Type1' }, { name: 'Type2' }],
       },
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         defaultImport: 'Thing',
         namedImports: [{ name: 'Type1' }, { name: 'Value1' }],
       },
@@ -294,12 +294,12 @@ describe('mergeTsImportDeclarations', () => {
     const result = mergeTsImportDeclarationsSorted(input);
     expect(result).toEqual([
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         isTypeOnly: true,
         namedImports: [{ name: 'Type2' }],
       },
       {
-        source: 'module',
+        moduleSpecifier: 'module',
         defaultImport: 'Thing',
         namedImports: [{ name: 'Type1' }, { name: 'Value1' }],
       },

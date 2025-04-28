@@ -112,7 +112,7 @@ describe('writeTsProjectExports', () => {
     );
 
     const imports =
-      result.importsFileFragment?.imports?.map((m) => m.source) ?? [];
+      result.importsFileFragment?.imports?.map((m) => m.moduleSpecifier) ?? [];
     expect(imports).toContain('@src/renderers/typescript/index.js');
     expect(imports).not.toContain('@halfdomelabs/core-generators');
   });
@@ -140,7 +140,7 @@ describe('writeTsProjectExports', () => {
     });
 
     const imports =
-      result.importsFileFragment?.imports?.map((m) => m.source) ?? [];
+      result.importsFileFragment?.imports?.map((m) => m.moduleSpecifier) ?? [];
     expect(imports).toContain('@halfdomelabs/core-generators');
     expect(imports).not.toContain('@src/renderers/typescript/index.ts');
   });
@@ -177,11 +177,11 @@ describe('writeTsProjectExports', () => {
 
     const imports = result.importsFileFragment?.imports;
     expect(imports).toContainEqual({
-      source: 'test/existing-imports',
+      moduleSpecifier: 'test/existing-imports',
       namedImports: [{ name: 'existingImportsSchema' }],
     });
     expect(imports).toContainEqual({
-      source: 'test/existing-imports',
+      moduleSpecifier: 'test/existing-imports',
       namedImports: [{ name: 'ExistingImportsProvider' }],
       isTypeOnly: true,
     });

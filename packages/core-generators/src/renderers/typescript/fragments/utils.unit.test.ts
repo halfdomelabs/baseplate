@@ -17,19 +17,23 @@ describe('flattenImportsAndHoistedFragments', () => {
     const fragments: TsCodeFragment[] = [
       {
         contents: 'const a = 1;',
-        imports: [{ source: 'module-a', namedImports: [{ name: 'A' }] }],
+        imports: [
+          { moduleSpecifier: 'module-a', namedImports: [{ name: 'A' }] },
+        ],
       },
       {
         contents: 'const b = 2;',
-        imports: [{ source: 'module-b', namedImports: [{ name: 'B' }] }],
+        imports: [
+          { moduleSpecifier: 'module-b', namedImports: [{ name: 'B' }] },
+        ],
       },
     ];
 
     const result = flattenImportsAndHoistedFragments(fragments);
     expect(result.imports).toHaveLength(2);
     expect(result.imports).toEqual([
-      { source: 'module-a', namedImports: [{ name: 'A' }] },
-      { source: 'module-b', namedImports: [{ name: 'B' }] },
+      { moduleSpecifier: 'module-a', namedImports: [{ name: 'A' }] },
+      { moduleSpecifier: 'module-b', namedImports: [{ name: 'B' }] },
     ]);
   });
 

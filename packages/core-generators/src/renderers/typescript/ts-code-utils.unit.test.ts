@@ -101,7 +101,9 @@ describe('TsCodeUtils', () => {
 
       expect(result).toEqual({
         contents: 'const foo = "bar";',
-        imports: [{ namedImports: [{ name: 'foo' }], source: './foo.js' }],
+        imports: [
+          { namedImports: [{ name: 'foo' }], moduleSpecifier: './foo.js' },
+        ],
         hoistedFragments: [],
       });
     });
@@ -149,31 +151,21 @@ describe('TsCodeUtils', () => {
       expect(result).toEqual({
         contents: '{prop1: 42,\nprop2: string value,\n...restProps,}',
         imports: [
-          { defaultImport: 'foo', source: './foo.js' },
-          { defaultImport: 'bar', source: './bar.js' },
+          { defaultImport: 'foo', moduleSpecifier: './foo.js' },
+          { defaultImport: 'bar', moduleSpecifier: './bar.js' },
         ],
         hoistedFragments: [],
       });
     });
 
-    it('should throw on keys that are not valid identifiers', () => {
+    it('should escape keys that need to be quoted', () => {
       const obj = {
-        'invalid-key': tsCodeFragment('42'),
-      };
-
-      expect(() => TsCodeUtils.mergeFragmentsAsObject(obj)).toThrow(
-        'Invalid key: invalid-key. Please escape the key with quotes.',
-      );
-    });
-
-    it('should allow optional keys with question marks', () => {
-      const obj = {
-        'optionalKey?': tsCodeFragment('42'),
+        'key-with-hyphens': tsCodeFragment('42'),
       };
 
       const result = TsCodeUtils.mergeFragmentsAsObject(obj);
 
-      expect(result.contents).toBe('{optionalKey?: 42,}');
+      expect(result.contents).toBe(`{'key-with-hyphens': 42,}`);
     });
 
     it('should wrap with parenthesis when option is set', () => {
@@ -227,16 +219,6 @@ describe('TsCodeUtils', () => {
       const result = TsCodeUtils.mergeFragmentsAsObject(obj);
 
       expect(result.contents).toBe('{async value() { return 42; },}');
-    });
-
-    it('should strip unnecessary quotes', () => {
-      const obj = {
-        "'simplekey'": tsCodeFragment('string'),
-      };
-
-      const result = TsCodeUtils.mergeFragmentsAsObject(obj);
-
-      expect(result.contents).toBe('{simplekey: string,}');
     });
   });
 

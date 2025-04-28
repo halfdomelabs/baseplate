@@ -71,7 +71,7 @@ describe('Import Utilities', () => {
 
       // Assert
       expect(result).toEqual({
-        source: 'react',
+        moduleSpecifier: 'react',
         isTypeOnly: false,
         defaultImport: 'React',
         namespaceImport: undefined,
@@ -92,7 +92,7 @@ describe('Import Utilities', () => {
 
       // Assert
       expect(result).toEqual({
-        source: 'lodash',
+        moduleSpecifier: 'lodash',
         isTypeOnly: false,
         defaultImport: undefined,
         namespaceImport: undefined,
@@ -116,7 +116,7 @@ describe('Import Utilities', () => {
 
       // Assert
       expect(result).toEqual({
-        source: 'styles',
+        moduleSpecifier: 'styles',
         isTypeOnly: false,
         defaultImport: undefined,
         namespaceImport: 'styles',
@@ -138,7 +138,7 @@ describe('Import Utilities', () => {
 
       // Assert
       expect(result).toEqual({
-        source: 'types',
+        moduleSpecifier: 'types',
         isTypeOnly: true,
         defaultImport: undefined,
         namespaceImport: undefined,
@@ -159,7 +159,7 @@ describe('Import Utilities', () => {
 
       // Assert
       expect(result).toEqual({
-        source: 'types',
+        moduleSpecifier: 'types',
         isTypeOnly: false,
         defaultImport: undefined,
         namespaceImport: undefined,
@@ -185,7 +185,7 @@ describe('Import Utilities', () => {
 
       // Assert
       expect(result).toEqual({
-        source: 'module',
+        moduleSpecifier: 'module',
         isTypeOnly: false,
         defaultImport: 'DefaultExport',
         namespaceImport: undefined,
@@ -210,7 +210,7 @@ describe('Import Utilities', () => {
       const imports: TsImportDeclaration[][] = [
         [
           {
-            source: 'react',
+            moduleSpecifier: 'react',
             defaultImport: 'React',
           },
         ],
@@ -228,7 +228,7 @@ describe('Import Utilities', () => {
       const imports: TsImportDeclaration[][] = [
         [
           {
-            source: 'lodash',
+            moduleSpecifier: 'lodash',
             namedImports: [{ name: 'map' }, { name: 'filter' }],
           },
         ],
@@ -248,7 +248,7 @@ describe('Import Utilities', () => {
       const imports: TsImportDeclaration[][] = [
         [
           {
-            source: 'styles',
+            moduleSpecifier: 'styles',
             namespaceImport: 'styles',
           },
         ],
@@ -266,7 +266,7 @@ describe('Import Utilities', () => {
       const imports: TsImportDeclaration[][] = [
         [
           {
-            source: 'types',
+            moduleSpecifier: 'types',
             isTypeOnly: true,
             namedImports: [{ name: 'User' }],
           },
@@ -285,7 +285,7 @@ describe('Import Utilities', () => {
       const imports: TsImportDeclaration[][] = [
         [
           {
-            source: 'types',
+            moduleSpecifier: 'types',
             namedImports: [
               { name: 'User', isTypeOnly: true },
               { name: 'Post' },
@@ -308,7 +308,7 @@ describe('Import Utilities', () => {
       const imports: TsImportDeclaration[][] = [
         [
           {
-            source: 'module',
+            moduleSpecifier: 'module',
             namedImports: [{ name: 'longName', alias: 'short' }],
           },
         ],
@@ -328,7 +328,7 @@ describe('Import Utilities', () => {
       const imports: TsImportDeclaration[][] = [
         [
           {
-            source: 'module',
+            moduleSpecifier: 'module',
             defaultImport: 'Default',
             namedImports: [{ name: 'named' }],
           },
@@ -347,10 +347,10 @@ describe('Import Utilities', () => {
     it('should write multiple import sections', () => {
       // Arrange
       const imports: TsImportDeclaration[][] = [
-        [{ source: 'react', defaultImport: 'React' }],
+        [{ moduleSpecifier: 'react', defaultImport: 'React' }],
         [
-          { source: 'lodash', namedImports: [{ name: 'map' }] },
-          { source: 'axios', defaultImport: 'axios' },
+          { moduleSpecifier: 'lodash', namedImports: [{ name: 'map' }] },
+          { moduleSpecifier: 'axios', defaultImport: 'axios' },
         ],
       ];
 
@@ -370,7 +370,7 @@ describe('Import Utilities', () => {
       const imports: TsImportDeclaration[][] = [
         [
           {
-            source: 'module',
+            moduleSpecifier: 'module',
             namespaceImport: 'NS',
             defaultImport: 'Default',
           },

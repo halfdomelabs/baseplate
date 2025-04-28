@@ -6,12 +6,14 @@ import { organizeTsTemplateImports } from './organize-ts-template-imports.js';
 
 function createMockResolver(): ResolverFactory {
   return {
-    async: vi.fn().mockImplementation((filePath: string, source: string) => ({
-      path: source.startsWith('./')
-        ? `/project-root/${source.slice(2)}`
-        : source,
-      error: null,
-    })),
+    async: vi
+      .fn()
+      .mockImplementation((filePath: string, moduleSpecifier: string) => ({
+        path: moduleSpecifier.startsWith('./')
+          ? `/project-root/${moduleSpecifier.slice(2)}`
+          : moduleSpecifier,
+        error: null,
+      })),
     sync: vi.fn(),
   } as unknown as ResolverFactory;
 }

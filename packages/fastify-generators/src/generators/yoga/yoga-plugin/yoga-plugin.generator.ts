@@ -182,7 +182,7 @@ export const yogaPluginGenerator = createGenerator({
                     getImportMap: () => ({
                       '%request-service-context': {
                         path: requestServiceContextImports
-                          .createContextFromRequest.source,
+                          .createContextFromRequest.moduleSpecifier,
                         allowedImports: [
                           requestServiceContextImports.createContextFromRequest
                             .name,
@@ -330,7 +330,7 @@ export const yogaPluginGenerator = createGenerator({
                 ? authorizationHeader
                 : undefined,
             )`,
-                            `import { userSessionService } from '${userSessionServiceImports.userSessionService.source}';`,
+                            `import { userSessionService } from '${userSessionServiceImports.userSessionService.moduleSpecifier}';`,
                           )
                         : { type: 'code-expression' },
                     },
@@ -343,7 +343,7 @@ export const yogaPluginGenerator = createGenerator({
                           getImportMap: () => ({
                             '%request-service-context': {
                               path: requestServiceContextImports
-                                .createContextFromRequest.source,
+                                .createContextFromRequest.moduleSpecifier,
                               allowedImports: [
                                 requestServiceContextImports
                                   .createContextFromRequest.name,

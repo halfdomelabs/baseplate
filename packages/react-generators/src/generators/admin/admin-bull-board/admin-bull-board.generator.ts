@@ -76,7 +76,7 @@ export const adminBullBoardGenerator = createGenerator({
               {
                 getImportMap: () => ({
                   '%react-config': {
-                    path: reactConfigImports.config.source,
+                    path: reactConfigImports.config.moduleSpecifier,
                     allowedImports: ['config'],
                   },
                 }),

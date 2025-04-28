@@ -20,7 +20,7 @@ function createImportDeclaration(
   } = {},
 ): TsImportDeclaration {
   return {
-    source,
+    moduleSpecifier: source,
     isTypeOnly,
     defaultImport,
     namespaceImport,

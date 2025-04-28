@@ -10,7 +10,7 @@ describe('transformImportsWithMap', () => {
   it('should return unchanged imports when no $ prefix is present', () => {
     const imports: TsImportDeclaration[] = [
       {
-        source: 'react',
+        moduleSpecifier: 'react',
         namedImports: [{ name: 'useState' }],
       },
     ];
@@ -22,7 +22,7 @@ describe('transformImportsWithMap', () => {
   it('should throw error when import map is not found', () => {
     const imports: TsImportDeclaration[] = [
       {
-        source: '%unknown',
+        moduleSpecifier: '%unknown',
         namedImports: [{ name: 'test' }],
       },
     ];
@@ -61,7 +61,7 @@ describe('transformImportsWithMap', () => {
     it('should throw error for namespace imports', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '%test',
+          moduleSpecifier: '%test',
           namespaceImport: 'test',
         },
       ];
@@ -74,7 +74,7 @@ describe('transformImportsWithMap', () => {
     it('should throw error for default imports', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '%test',
+          moduleSpecifier: '%test',
           defaultImport: 'test',
         },
       ];
@@ -87,7 +87,7 @@ describe('transformImportsWithMap', () => {
     it('should throw error when import map entry is not found', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '%test',
+          moduleSpecifier: '%test',
           namedImports: [{ name: 'unknown' }],
         },
       ];
@@ -100,7 +100,7 @@ describe('transformImportsWithMap', () => {
     it('should transform named imports using import map', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '%test',
+          moduleSpecifier: '%test',
           namedImports: [{ name: 'test' }],
         },
       ];
@@ -108,7 +108,7 @@ describe('transformImportsWithMap', () => {
       const result = transformTsImportsWithMap(imports, testImportMaps);
       expect(result).toEqual([
         {
-          source: 'test-package',
+          moduleSpecifier: 'test-package',
           namedImports: [{ name: 'test' }],
         },
       ]);
@@ -117,11 +117,11 @@ describe('transformImportsWithMap', () => {
     it('should handle wildcard imports correctly', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '%wildcard',
+          moduleSpecifier: '%wildcard',
           namedImports: [{ name: 'someObject' }],
         },
         {
-          source: '%wildcard',
+          moduleSpecifier: '%wildcard',
           namedImports: [{ name: 'SomeType' }],
           isTypeOnly: true,
         },
@@ -130,11 +130,11 @@ describe('transformImportsWithMap', () => {
       const result = transformTsImportsWithMap(imports, testImportMaps);
       expect(result).toEqual([
         {
-          source: 'test-package',
+          moduleSpecifier: 'test-package',
           namedImports: [{ name: 'someObject' }],
         },
         {
-          source: 'test-package',
+          moduleSpecifier: 'test-package',
           namedImports: [{ name: 'SomeType' }],
           isTypeOnly: true,
         },
@@ -144,12 +144,12 @@ describe('transformImportsWithMap', () => {
     it('should handle type-only imports correctly', () => {
       const imports: TsImportDeclaration[] = [
         {
-          source: '%test',
+          moduleSpecifier: '%test',
           namedImports: [{ name: 'test' }],
           isTypeOnly: true,
         },
         {
-          source: '%test',
+          moduleSpecifier: '%test',
           namedImports: [{ name: 'test2', isTypeOnly: true }],
         },
       ];
@@ -157,12 +157,12 @@ describe('transformImportsWithMap', () => {
       const result = transformTsImportsWithMap(imports, testImportMaps);
       expect(result).toEqual([
         {
-          source: 'test-package',
+          moduleSpecifier: 'test-package',
           namedImports: [{ name: 'test' }],
           isTypeOnly: true,
         },
         {
-          source: 'test-package2',
+          moduleSpecifier: 'test-package2',
           namedImports: [{ name: 'test2' }],
           isTypeOnly: true,
         },
@@ -173,7 +173,7 @@ describe('transformImportsWithMap', () => {
   it('should handle multiple named imports', () => {
     const imports: TsImportDeclaration[] = [
       {
-        source: '%test',
+        moduleSpecifier: '%test',
         namedImports: [{ name: 'test1' }, { name: 'test2' }],
       },
     ];
@@ -196,11 +196,11 @@ describe('transformImportsWithMap', () => {
     const result = transformTsImportsWithMap(imports, importMaps);
     expect(result).toEqual([
       {
-        source: 'test-package1',
+        moduleSpecifier: 'test-package1',
         namedImports: [{ name: 'test1' }],
       },
       {
-        source: 'test-package2',
+        moduleSpecifier: 'test-package2',
         namedImports: [{ name: 'test2' }],
       },
     ]);

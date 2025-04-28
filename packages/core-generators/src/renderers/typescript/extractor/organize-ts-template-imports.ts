@@ -104,7 +104,7 @@ export async function organizeTsTemplateImports(
       const namespaceImport = declaration.getNamespaceImport();
       const defaultImport = declaration.getDefaultImport();
       return {
-        source: declaration.getModuleSpecifier().getLiteralValue(),
+        moduleSpecifier: declaration.getModuleSpecifier().getLiteralValue(),
         isTypeOnly: declaration.isTypeOnly(),
         namespaceImport: isNodeUsed(namespaceImport)
           ? namespaceImport.getText()
@@ -133,14 +133,14 @@ export async function organizeTsTemplateImports(
 
   const updatedImportDeclarations = await Promise.all(
     tsImportDeclarations.map(async (importDeclaration) => {
-      const { source } = importDeclaration;
+      const { moduleSpecifier } = importDeclaration;
       const resolutionResult = await resolver.async(
         path.dirname(filePath),
-        source,
+        moduleSpecifier,
       );
       if (!resolutionResult.path) {
         throw new Error(
-          `Could not resolve import ${source} in ${filePath}: ${String(resolutionResult.error)}`,
+          `Could not resolve import ${moduleSpecifier} in ${filePath}: ${String(resolutionResult.error)}`,
         );
       }
       const resolvedPath = resolutionResult.path;
@@ -156,7 +156,7 @@ export async function organizeTsTemplateImports(
         const fixedImportDeclaration: TsImportDeclaration = {
           ...importDeclaration,
           // convert to relative path
-          source: relativeImportPath.startsWith('.')
+          moduleSpecifier: relativeImportPath.startsWith('.')
             ? relativeImportPath
             : `./${relativeImportPath}`,
         };
@@ -168,7 +168,7 @@ export async function organizeTsTemplateImports(
         importDeclaration.namedImports.length === 0
       ) {
         throw new Error(
-          `Import ${source} in ${filePath} cannot be a namespace or default import since they are not supported currently
+          `Import ${moduleSpecifier} in ${filePath} cannot be a namespace or default import since they are not supported currently
           for template extraction.`,
         );
       }
@@ -184,7 +184,7 @@ export async function organizeTsTemplateImports(
           pathExports.get(namedImport.name) ?? pathExports.get('*');
         if (!projectExport) {
           throw new Error(
-            `Import ${namedImport.name} from ${source} in ${filePath} is not found in the project exports.`,
+            `Import ${namedImport.name} from ${moduleSpecifier} in ${filePath} is not found in the project exports.`,
           );
         }
         usedProjectExports.push(projectExport);
@@ -192,12 +192,12 @@ export async function organizeTsTemplateImports(
           !!importDeclaration.isTypeOnly || !!namedImport.isTypeOnly;
         if (!isTypeOnly && projectExport.isTypeOnly) {
           throw new Error(
-            `Import ${namedImport.name} from ${source} in ${filePath} is not a type only import but the project export is a type only import.`,
+            `Import ${namedImport.name} from ${moduleSpecifier} in ${filePath} is not a type only import but the project export is a type only import.`,
           );
         }
         return {
           namedImports: [namedImport],
-          source: projectExport.importSource,
+          moduleSpecifier: projectExport.importSource,
           isTypeOnly,
         };
       });

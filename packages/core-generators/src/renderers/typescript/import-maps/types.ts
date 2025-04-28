@@ -20,7 +20,7 @@ export interface TsImportMapEntry<
   IsTypeOnly extends boolean | undefined = boolean | undefined,
 > {
   name: string;
-  source: string;
+  moduleSpecifier: string;
   isTypeOnly: IsTypeOnly;
   declaration(
     alias?: string,

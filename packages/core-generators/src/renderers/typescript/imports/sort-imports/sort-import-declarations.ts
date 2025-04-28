@@ -116,8 +116,8 @@ export function sortImportDeclarations(
       ...sortBy(nonSideEffectImports, [
         (declarationWithMetadata) =>
           ignoreCase
-            ? declarationWithMetadata.importDeclaration.source.toLowerCase()
-            : declarationWithMetadata.importDeclaration.source,
+            ? declarationWithMetadata.importDeclaration.moduleSpecifier.toLowerCase()
+            : declarationWithMetadata.importDeclaration.moduleSpecifier,
       ]),
       ...sideEffectImports,
     ].map(

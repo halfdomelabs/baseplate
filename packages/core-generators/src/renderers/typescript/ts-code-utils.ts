@@ -256,7 +256,7 @@ export const TsCodeUtils = {
         if (trimmedContent.startsWith(`async function ${key}`)) {
           return `${trimmedContent.replace(/^async function /, 'async ')},`;
         }
-        const escapedKey = /[a-zA-Z0-9_]+/.test(key) ? key : `'${key}'`;
+        const escapedKey = /^[a-zA-Z0-9_]+$/.test(key) ? key : `'${key}'`;
         return `${escapedKey}: ${content},`;
       })
       .join('\n');

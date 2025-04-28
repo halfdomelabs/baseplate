@@ -21,21 +21,23 @@ export function transformTsImportsWithMap(
   importMaps: Map<string, TsImportMap>,
 ): TsImportDeclaration[] {
   return imports.flatMap((importDeclaration) => {
-    if (!importDeclaration.source.startsWith('%')) {
+    if (!importDeclaration.moduleSpecifier.startsWith('%')) {
       return [importDeclaration];
     }
 
-    const importMapKey = importDeclaration.source.slice(1);
+    const importMapKey = importDeclaration.moduleSpecifier.slice(1);
 
     const importMap = importMaps.get(importMapKey);
 
     if (!importMap) {
-      throw new Error(`Import map not found for ${importDeclaration.source}`);
+      throw new Error(
+        `Import map not found for ${importDeclaration.moduleSpecifier}`,
+      );
     }
 
     if (importDeclaration.namespaceImport || importDeclaration.defaultImport) {
       throw new Error(
-        `Import map does not support namespace or default imports: ${importDeclaration.source}`,
+        `Import map does not support namespace or default imports: ${importDeclaration.moduleSpecifier}`,
       );
     }
 
@@ -46,7 +48,7 @@ export function transformTsImportsWithMap(
         if (!(namedImport.name in importMap)) {
           if (wildcardImport) {
             return {
-              source: wildcardImport.source,
+              moduleSpecifier: wildcardImport.moduleSpecifier,
               namedImports: [
                 {
                   name: namedImport.name,
