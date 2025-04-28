@@ -12,6 +12,8 @@ import {
   nodeProvider,
   prettierProvider,
   projectScope,
+  tsCodeFragment,
+  tsImportBuilder,
   tsUtilsProvider,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -279,18 +281,21 @@ export const pothosGenerator = createGenerator({
               builderFile.renderToAction('builder.ts', builderPath),
             );
 
-            const schemaExpression = TypescriptCodeUtils.createExpression(
+            const schemaExpression = tsCodeFragment(
               `builder.toSchema()`,
-              [
-                `import { builder } from '${builderImport}';`,
-                `import '${appModuleImports.getModulePath()}';`,
-              ],
+              tsImportBuilder(['builder']).from(builderImport),
             );
 
             yogaPluginConfig.schema.set(schemaExpression);
 
-            yogaPluginConfig.postSchemaBlocks.push(
-              TypescriptCodeUtils.createBlock(
+            yogaPluginConfig.sideEffectImports.set(
+              'rootModule',
+              tsCodeFragment(`import '${appModuleImports.getModulePath()}';`),
+            );
+
+            yogaPluginConfig.postSchemaFragments.set(
+              'writeSchemaToFile',
+              tsCodeFragment(
                 `
 async function writeSchemaToFile(): Promise<void> {
   // only write the schema to file if it has changed to avoid unnecessary GraphQL codegen generations
@@ -311,8 +316,11 @@ if (IS_DEVELOPMENT) {
   writeSchemaToFile().catch((err) => logger.error(err));
 }`,
                 [
-                  `import { printSchema, lexicographicSortSchema } from 'graphql';`,
-                  `import fs from 'fs/promises';`,
+                  tsImportBuilder([
+                    'printSchema',
+                    'lexicographicSortSchema',
+                  ]).from('graphql'),
+                  tsImportBuilder().default('fs').from('fs/promises'),
                 ],
               ),
             );

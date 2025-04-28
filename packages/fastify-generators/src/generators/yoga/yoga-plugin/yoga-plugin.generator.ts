@@ -1,4 +1,4 @@
-import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 import type {
   FieldMapValues,
   InferFieldMapSchemaFromBuilder,
@@ -7,14 +7,13 @@ import type {
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
   nodeProvider,
   projectScope,
   tsCodeFragment,
+  TsCodeUtils,
   tsImportBuilder,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createConfigFieldMap,
@@ -28,45 +27,55 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/index.js';
 import {
-  authContextProvider,
+  authContextImportsProvider,
   userSessionServiceImportsProvider,
 } from '@src/generators/auth/index.js';
-import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
-import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/fastify-redis.generator.js';
+import { configServiceImportsProvider } from '@src/generators/core/config-service/config-service.generator.js';
+import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
+import { fastifyRedisImportsProvider } from '@src/generators/core/fastify-redis/generated/ts-import-maps.js';
 import { fastifyServerConfigProvider } from '@src/generators/core/fastify-server/fastify-server.generator.js';
-import { loggerServiceProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
+import { loggerServiceImportsProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 import { requestServiceContextImportsProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
+
+import { YOGA_YOGA_PLUGIN_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   enableSubscriptions: z.boolean().optional(),
 });
 
-export interface YogaPluginConfig {
-  envelopPlugins: TypescriptCodeExpression[];
-  postSchemaBlocks: TypescriptCodeBlock[];
-  schema: TypescriptCodeExpression;
-  customImports: TypescriptCodeBlock[];
-}
-
 const schemaBuilder = createFieldMapSchemaBuilder((t) => ({
-  envelopPlugins: t.array<TypescriptCodeExpression>([
-    TypescriptCodeUtils.createExpression('useGraphLogger()', [
-      "import { useGraphLogger } from './useGraphLogger.js'",
-    ]),
-    TypescriptCodeUtils.createExpression(
-      'useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT })',
-      "import { useDisableIntrospection } from '@envelop/disable-introspection';",
+  /**
+   * Envelop plugins to be applied to the GraphQL server.
+   */
+  envelopPlugins: t.mapFromObj<TsCodeFragment>({
+    useGraphLogger: tsCodeFragment(
+      'useGraphLogger()',
+      tsImportBuilder(['useGraphLogger']).from('./useGraphLogger.js'),
     ),
-  ]),
-  postSchemaBlocks: t.array<TypescriptCodeBlock>(),
-  schema: t.scalar<TypescriptCodeExpression>(
-    new TypescriptCodeExpression(
+    useDisableIntrospection: tsCodeFragment(
+      'useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT })',
+      tsImportBuilder(['useDisableIntrospection']).from(
+        '@envelop/disable-introspection',
+      ),
+    ),
+  }),
+  /**
+   * Fragments to be applied to the GraphQL schema after it is built.
+   */
+  postSchemaFragments: t.map<string, TsCodeFragment>(),
+  /**
+   * The GraphQL schema to be used by the GraphQL server.
+   */
+  schema: t.scalar<TsCodeFragment>(
+    tsCodeFragment(
       `new GraphQLSchema({})`,
-      `import { GraphQLSchema } from 'graphql';`,
+      tsImportBuilder(['GraphQLSchema']).from('graphql'),
     ),
   ),
-  customImports: t.array<TypescriptCodeBlock>(),
+  /**
+   * Side effect imports prior to loading the GraphQL schema.
+   */
+  sideEffectImports: t.map<string, TsCodeFragment>(),
 }));
 
 export interface YogaPluginConfigProvider
@@ -143,104 +152,83 @@ export const yogaPluginGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
-        configService: configServiceProvider,
-        errorHandlerService: errorHandlerServiceProvider,
+        typescriptFile: typescriptFileProvider,
+        configServiceImports: configServiceImportsProvider,
+        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         requestServiceContextImports: requestServiceContextImportsProvider,
-        loggerService: loggerServiceProvider,
+        loggerServiceImports: loggerServiceImportsProvider,
         yogaPluginSetup: yogaPluginSetupProvider,
       },
       run({
-        typescript,
-        configService,
+        typescriptFile,
+        configServiceImports,
         requestServiceContextImports,
-        loggerService,
-        errorHandlerService,
+        loggerServiceImports,
+        errorHandlerServiceImports,
         yogaPluginSetup: config,
       }) {
         return {
           async build(builder) {
-            const pluginFile = typescript.createTemplate(
-              {
-                SCHEMA: { type: 'code-expression' },
-                ROOT_MODULE: { type: 'code-expression' },
-                ENVELOP_PLUGINS: { type: 'code-expression' },
-                GRAPHQL_HANDLER: { type: 'code-block' },
-                POST_SCHEMA_BLOCKS: TypescriptCodeUtils.mergeBlocks(
-                  config.postSchemaBlocks,
-                  '\n\n',
-                ),
-                CUSTOM_IMPORTS: TypescriptCodeUtils.mergeBlocks(
-                  config.customImports,
-                ),
-              },
-              {
-                importMappers: [
-                  errorHandlerService,
-                  configService,
-                  {
-                    getImportMap: () => ({
-                      '%request-service-context': {
-                        path: requestServiceContextImports
-                          .createContextFromRequest.moduleSpecifier,
-                        allowedImports: [
-                          requestServiceContextImports.createContextFromRequest
-                            .name,
-                        ],
-                      },
-                    }),
-                  },
-                  loggerService,
-                ],
-              },
-            );
+            const graphqlHandler = enableSubscriptions
+              ? tsCodeFragment(
+                  `fastify.route({
+  url: '/graphql',
+  method: 'GET',
+  handler: httpHandler,
+  wsHandler: getGraphqlWsHandler(graphQLServer),
+});
 
-            pluginFile.addCodeExpression('SCHEMA', config.schema);
+fastify.route({
+  url: '/graphql',
+  method: ['POST', 'OPTIONS'],
+  handler: httpHandler,
+});`,
+                  tsImportBuilder(['getGraphqlWsHandler']).from(
+                    './websocket.js',
+                  ),
+                )
+              : `fastify.route({
+url: '/graphql',
+method: ['GET', 'POST', 'OPTIONS'],
+handler: httpHandler,
+});`;
 
-            pluginFile.addCodeExpression(
-              'ENVELOP_PLUGINS',
-              TypescriptCodeUtils.mergeExpressionsAsArray(
-                config.envelopPlugins,
-              ),
-            );
-
-            pluginFile.addCodeBlock(
-              'GRAPHQL_HANDLER',
-              enableSubscriptions
-                ? TypescriptCodeUtils.createBlock(
-                    `fastify.route({
-                  url: '/graphql',
-                  method: 'GET',
-                  handler: httpHandler,
-                  wsHandler: getGraphqlWsHandler(graphQLServer),
-                });
-                
-                fastify.route({
-                  url: '/graphql',
-                  method: ['POST', 'OPTIONS'],
-                  handler: httpHandler,
-                });`,
-                    "import { getGraphqlWsHandler } from './websocket.js';",
-                  )
-                : `fastify.route({
-              url: '/graphql',
-              method: ['GET', 'POST', 'OPTIONS'],
-              handler: httpHandler,
-            });`,
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: YOGA_YOGA_PLUGIN_TS_TEMPLATES.graphqlPlugin,
+                destination: '@/src/plugins/graphql/index.ts',
+                variables: {
+                  TPL_SCHEMA: config.schema,
+                  TPL_ENVELOP_PLUGINS: TsCodeUtils.mergeFragmentsAsArray(
+                    config.envelopPlugins,
+                  ),
+                  TPL_GRAPHQL_HANDLER: graphqlHandler,
+                  TPL_POST_SCHEMA_FRAGMENTS: TsCodeUtils.mergeFragments(
+                    config.postSchemaFragments,
+                    '\n\n',
+                  ),
+                  TPL_SIDE_EFFECT_IMPORTS: TsCodeUtils.mergeFragments(
+                    config.sideEffectImports,
+                    '\n',
+                  ),
+                },
+                importMapProviders: {
+                  configServiceImports,
+                  requestServiceContextImports,
+                  loggerServiceImports,
+                  errorHandlerServiceImports,
+                },
+              }),
             );
 
             await builder.apply(
-              pluginFile.renderToAction(
-                'plugins/graphql/index.ts',
-                'src/plugins/graphql/index.ts',
-              ),
-            );
-
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'plugins/graphql/useGraphLogger.ts',
+              typescriptFile.renderTemplateFile({
+                template: YOGA_YOGA_PLUGIN_TS_TEMPLATES.useGraphLogger,
                 destination: 'src/plugins/graphql/useGraphLogger.ts',
-                importMappers: [loggerService, errorHandlerService],
+                importMapProviders: {
+                  loggerServiceImports,
+                  errorHandlerServiceImports,
+                },
               }),
             );
           },
@@ -277,22 +265,26 @@ export const yogaPluginGenerator = createGenerator({
           subscription: createGeneratorTask({
             dependencies: {
               node: nodeProvider,
-              typescript: typescriptProvider,
-              fastifyRedis: fastifyRedisProvider,
-              authContext: authContextProvider.dependency().optional(),
-              errorLoggerService: errorHandlerServiceProvider,
-              loggerService: loggerServiceProvider,
+              typescriptFile: typescriptFileProvider,
+              fastifyRedisImports: fastifyRedisImportsProvider,
+              authContextImports: authContextImportsProvider
+                .dependency()
+                .optional(),
+              errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+              loggerServiceImports: loggerServiceImportsProvider,
               requestServiceContextImports:
                 requestServiceContextImportsProvider,
-              userSessionServiceImports: userSessionServiceImportsProvider,
+              userSessionServiceImports: userSessionServiceImportsProvider
+                .dependency()
+                .optional(),
             },
             run({
               node,
-              typescript,
-              fastifyRedis,
-              authContext,
-              errorLoggerService,
-              loggerService,
+              typescriptFile,
+              fastifyRedisImports,
+              authContextImports,
+              errorHandlerServiceImports,
+              loggerServiceImports,
               requestServiceContextImports,
               userSessionServiceImports,
             }) {
@@ -303,68 +295,56 @@ export const yogaPluginGenerator = createGenerator({
                 ]),
               });
 
-              const [, pubsubPath] = makeImportAndFilePath(
-                'src/plugins/graphql/pubsub.ts',
-              );
-              const [, websocketPath] = makeImportAndFilePath(
-                'src/plugins/graphql/websocket.ts',
-              );
-
               return {
                 async build(builder) {
-                  await builder.apply(
-                    typescript.createCopyAction({
-                      source: 'plugins/graphql/pubsub.ts',
-                      destination: pubsubPath,
-                      importMappers: [fastifyRedis],
-                    }),
+                  const websocketOnConnect = await builder.readTemplate(
+                    'websocket-fragments.ts',
                   );
-
-                  const websocketFile = typescript.createTemplate(
-                    {
-                      AUTH_INFO_CREATOR: authContext
-                        ? TypescriptCodeUtils.createExpression(
-                            `await userSessionService.getSessionInfoFromToken(
+                  const websocketOnConnectFragment =
+                    authContextImports && userSessionServiceImports
+                      ? TsCodeUtils.formatFragment(
+                          TypescriptCodeUtils.extractTemplateSnippet(
+                            websocketOnConnect,
+                            'ON_CONNECT',
+                          ).replace(/;$/, ''),
+                          {
+                            TPL_SESSION_INFO_CREATOR: tsCodeFragment(
+                              `await userSessionService.getSessionInfoFromToken(
               ctx.extra.request,
               typeof authorizationHeader === 'string'
                 ? authorizationHeader
                 : undefined,
             )`,
-                            `import { userSessionService } from '${userSessionServiceImports.userSessionService.moduleSpecifier}';`,
-                          )
-                        : { type: 'code-expression' },
-                    },
-                    {
-                      importMappers: [
-                        errorLoggerService,
-                        loggerService,
-                        authContext,
-                        {
-                          getImportMap: () => ({
-                            '%request-service-context': {
-                              path: requestServiceContextImports
-                                .createContextFromRequest.moduleSpecifier,
-                              allowedImports: [
-                                requestServiceContextImports
-                                  .createContextFromRequest.name,
-                              ],
-                            },
-                          }),
-                        },
-                      ],
-                    },
-                  );
+                              userSessionServiceImports.userSessionService.declaration(),
+                            ),
+                          },
+                          [
+                            authContextImports.createAuthContextFromSessionInfo.declaration(),
+                            errorHandlerServiceImports.HttpError.declaration(),
+                          ],
+                        )
+                      : undefined;
 
                   await builder.apply(
-                    websocketFile.renderToAction(
-                      'plugins/graphql/websocket.ts',
-                      websocketPath,
-                      {
-                        preprocessWithEta: {
-                          data: { authEnabled: !!authContext },
+                    typescriptFile.renderTemplateGroup({
+                      group: YOGA_YOGA_PLUGIN_TS_TEMPLATES.subscriptionsGroup,
+                      baseDirectory: '@/src/plugins/graphql',
+                      variables: {
+                        pubsub: {
+                          // Placeholder args for now
+                          TPL_PUBLISH_ARGS: `{}`,
+                        },
+                        websocket: {
+                          TPL_ON_CONNECT: websocketOnConnectFragment ?? '',
                         },
                       },
-                    ),
+                      importMapProviders: {
+                        errorHandlerServiceImports,
+                        loggerServiceImports,
+                        requestServiceContextImports,
+                        fastifyRedisImports,
+                      },
+                    }),
                   );
                 },
               };

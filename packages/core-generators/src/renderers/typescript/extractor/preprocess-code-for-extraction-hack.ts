@@ -5,6 +5,7 @@
  *
  * Pattern 1: identifier /* TPL_VAR:START *\/ ( => identifier(/* TPL_VAR:START *\/
  * Pattern 2: ) /* TPL_VAR:END *\/ => /* TPL_VAR:END *\/)
+ * Pattern 3: ,[whitespace]/* TPL_VAR:END *\/ => /* TPL_VAR:END *\/,[whitespace]
  *
  * WARNING: This is a temporary workaround and might be fragile.
  * It assumes specific formatting outputs from Prettier.
@@ -38,6 +39,19 @@ export function preprocessCodeForExtractionHack(code: string): string {
     (match, endMarkerComment) =>
       // Replace with: the END comment, opening parenthesis
       `${endMarkerComment}(`,
+  );
+
+  // --- Pattern 3: Move END marker before comma ---
+  // Addresses cases where the END marker appears after a comma, potentially
+  // separated by whitespace (including a single newline).
+  // Example `Before`: arg1, /* TPL_ARGS:END */ arg2
+  // Example `After`:  arg1 /* TPL_ARGS:END */, arg2
+  const commaEndMarkerRegex = /,(\s*)(\/\* (TPL_[A-Z0-9_]+):END \*\/)/g;
+  transformedCode = transformedCode.replaceAll(
+    commaEndMarkerRegex,
+    (match, whitespace, endMarkerComment) =>
+      // Replace with: the END comment, comma
+      `${endMarkerComment},${whitespace}`,
   );
 
   return transformedCode;

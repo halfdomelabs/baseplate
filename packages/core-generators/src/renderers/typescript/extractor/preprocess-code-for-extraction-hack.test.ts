@@ -57,6 +57,48 @@ describe('preprocessCodeForExtractionHack', () => {
     expect(result).toBe(expected);
   });
 
+  // Test Pattern 3: ,[whitespace]/* TPL_VAR:END */ => /* TPL_VAR:END */,[whitespace]
+  it('should move END markers before commas', () => {
+    const input = `
+      function processArgs(arg1, /* TPL_ARGS:END */arg2, arg3) {
+        return [arg1, /* TPL_ARRAY:END */arg2, arg3];
+      }
+
+      const obj = {
+        prop1: 'value1',
+        /* TPL_PROPS:END */prop2: 'value2',
+        prop3: 'value3'
+      };
+
+      const array = [
+        'item1',
+        /* TPL_ITEMS:END */'item2',
+        'item3'
+      ];
+    `;
+
+    const expected = `
+      function processArgs(arg1/* TPL_ARGS:END */, arg2, arg3) {
+        return [arg1/* TPL_ARRAY:END */, arg2, arg3];
+      }
+
+      const obj = {
+        prop1: 'value1'/* TPL_PROPS:END */,
+        prop2: 'value2',
+        prop3: 'value3'
+      };
+
+      const array = [
+        'item1'/* TPL_ITEMS:END */,
+        'item2',
+        'item3'
+      ];
+    `;
+
+    const result = preprocessCodeForExtractionHack(input);
+    expect(result).toBe(expected);
+  });
+
   // Test both patterns together in complex code
   it('should handle both patterns in complex code', () => {
     const input = `

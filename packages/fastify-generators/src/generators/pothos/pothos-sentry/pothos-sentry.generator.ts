@@ -2,6 +2,8 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   makeImportAndFilePath,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -40,9 +42,10 @@ export const pothosSentryGenerator = createGenerator({
           'src/plugins/graphql/useSentry.ts',
         );
 
-        yogaPluginConfig.envelopPlugins.push(
-          new TypescriptCodeExpression(`useSentry()`, [
-            `import { useSentry } from '${pluginImport}'`,
+        yogaPluginConfig.envelopPlugins.set(
+          'useSentry',
+          tsCodeFragment(`useSentry()`, [
+            tsImportBuilder(['useSentry']).from(pluginImport),
           ]),
         );
 

@@ -210,7 +210,6 @@ export function getGraphqlWsHandler(
   return makeHandler({
     execute: (args) => (args.rootValue as RootValueWithExecutor).execute(args),
     TPL_ON_CONNECT,
-
     subscribe: (args) =>
       (args.rootValue as RootValueWithExecutor).subscribe(args),
     onSubscribe: (ctx, msg) => {

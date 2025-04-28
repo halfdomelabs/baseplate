@@ -138,6 +138,12 @@ export async function organizeTsTemplateImports(
       if (isBuiltin(moduleSpecifier)) {
         return [importDeclaration];
       }
+      // TODO: A bit of a hack but no easy fix in the short term
+      // Don't modify imports for ws since we install only the types
+      // but not the implementation
+      if (moduleSpecifier === 'ws') {
+        return [importDeclaration];
+      }
       const resolutionResult = await resolver.async(
         path.dirname(filePath),
         moduleSpecifier,
