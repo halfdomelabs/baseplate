@@ -4,7 +4,7 @@ import {
   projectScope,
   TsCodeUtils,
   TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -14,12 +14,13 @@ import {
 import { z } from 'zod';
 
 import { authRolesImportsProvider } from '@src/generators/auth/index.js';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
+import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 
 import {
   pothosConfigProvider,
   pothosSchemaProvider,
 } from '../pothos/pothos.generator.js';
+import { POTHOS_POTHOS_AUTH_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   requireOnRootFields: z.boolean().default(true),
@@ -53,9 +54,9 @@ export const pothosAuthGenerator = createGenerator({
     pothosConfig: createGeneratorTask({
       dependencies: {
         pothosConfig: pothosConfigProvider,
-        authRoles: authRolesImportsProvider,
+        authRolesImports: authRolesImportsProvider,
       },
-      run({ pothosConfig, authRoles }) {
+      run({ pothosConfig, authRolesImports }) {
         pothosConfig.pothosPlugins.set(
           'pothosAuthorizeByRolesPlugin',
           TsCodeUtils.importFragment(
@@ -66,7 +67,7 @@ export const pothosAuthGenerator = createGenerator({
 
         pothosConfig.schemaTypeOptions.set(
           'AuthRole',
-          authRoles.AuthRole.typeFragment(),
+          authRolesImports.AuthRole.typeFragment(),
         );
 
         pothosConfig.schemaBuilderOptions.set(
@@ -81,19 +82,20 @@ export const pothosAuthGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         pothosSchema: pothosSchemaProvider,
-        errorHandlerService: errorHandlerServiceProvider,
-        typescript: typescriptProvider,
+        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+        typescriptFile: typescriptFileProvider,
       },
-      run({ errorHandlerService, typescript, pothosSchema }) {
+      run({ errorHandlerServiceImports, typescriptFile, pothosSchema }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyFilesAction({
-                sourceBaseDirectory: 'FieldAuthorizePlugin',
-                destinationBaseDirectory:
-                  'src/plugins/graphql/FieldAuthorizePlugin',
-                paths: ['global-types.ts', 'index.ts', 'types.ts'],
-                importMappers: [errorHandlerService],
+              typescriptFile.renderTemplateGroup({
+                group:
+                  POTHOS_POTHOS_AUTH_TS_TEMPLATES.fieldAuthorizePluginGroup,
+                baseDirectory: '@/src/plugins/graphql/FieldAuthorizePlugin',
+                importMapProviders: {
+                  errorHandlerServiceImports,
+                },
               }),
             );
 

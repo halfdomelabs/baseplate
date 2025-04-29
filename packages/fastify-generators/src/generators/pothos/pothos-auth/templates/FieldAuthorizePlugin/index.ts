@@ -1,16 +1,18 @@
 // @ts-nocheck
 
-/* eslint-disable class-methods-use-this */
-import './global-types.js';
+import { ForbiddenError } from '%errorHandlerServiceImports';
 import SchemaBuilder, {
   BasePlugin,
   PothosOutputFieldConfig,
   SchemaTypes,
 } from '@pothos/core';
 import { GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql';
-import { ForbiddenError } from '%http-errors';
+
 import { AuthorizeRoleRuleFunction, AuthorizeRoleRuleOption } from './types.js';
 
+import './global-types.js';
+
+/* eslint-disable class-methods-use-this */
 export const pothosAuthorizeByRolesPlugin = 'authorizeByRoles';
 
 export class PothosAuthorizeByRolesPlugin<
