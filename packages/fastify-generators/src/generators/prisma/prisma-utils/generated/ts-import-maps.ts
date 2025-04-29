@@ -8,11 +8,6 @@ import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 
 const prismaUtilsImportsSchema = createTsImportMapSchema({
-  CreateServiceInput: { isTypeOnly: true },
-  DataPipeOutput: { isTypeOnly: true },
-  DeleteServiceInput: { isTypeOnly: true },
-  UpdateServiceInput: { isTypeOnly: true },
-  UpsertPayload: { isTypeOnly: true },
   applyDataPipeOutput: {},
   applyDataPipeOutputToOperations: {},
   applyDataPipeOutputWithoutOperation: {},
@@ -21,7 +16,12 @@ const prismaUtilsImportsSchema = createTsImportMapSchema({
   createOneToOneCreateData: {},
   createOneToOneUpsertData: {},
   createPrismaDisconnectOrConnectData: {},
+  CreateServiceInput: { isTypeOnly: true },
+  DataPipeOutput: { isTypeOnly: true },
+  DeleteServiceInput: { isTypeOnly: true },
   mergePipeOperations: {},
+  UpdateServiceInput: { isTypeOnly: true },
+  UpsertPayload: { isTypeOnly: true },
 });
 
 export type PrismaUtilsImportsProvider = TsImportMapProviderFromSchema<
@@ -41,11 +41,6 @@ export function createPrismaUtilsImports(
   }
 
   return createTsImportMap(prismaUtilsImportsSchema, {
-    CreateServiceInput: path.join(importBase, 'crud-service-types.js'),
-    DataPipeOutput: path.join(importBase, 'data-pipes.js'),
-    DeleteServiceInput: path.join(importBase, 'crud-service-types.js'),
-    UpdateServiceInput: path.join(importBase, 'crud-service-types.js'),
-    UpsertPayload: path.join(importBase, 'embedded-pipes/embedded-types.js'),
     applyDataPipeOutput: path.join(importBase, 'data-pipes.js'),
     applyDataPipeOutputToOperations: path.join(importBase, 'data-pipes.js'),
     applyDataPipeOutputWithoutOperation: path.join(importBase, 'data-pipes.js'),
@@ -69,6 +64,11 @@ export function createPrismaUtilsImports(
       importBase,
       'prisma-relations.js',
     ),
+    CreateServiceInput: path.join(importBase, 'crud-service-types.js'),
+    DataPipeOutput: path.join(importBase, 'data-pipes.js'),
+    DeleteServiceInput: path.join(importBase, 'crud-service-types.js'),
     mergePipeOperations: path.join(importBase, 'data-pipes.js'),
+    UpdateServiceInput: path.join(importBase, 'crud-service-types.js'),
+    UpsertPayload: path.join(importBase, 'embedded-pipes/embedded-types.js'),
   });
 }

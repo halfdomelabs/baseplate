@@ -8,9 +8,9 @@ import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 
 const yogaPluginImportsSchema = createTsImportMapSchema({
-  LiveQueryPayload: { isTypeOnly: true },
   getGraphqlWsHandler: {},
   getPubSub: {},
+  LiveQueryPayload: { isTypeOnly: true },
   makeHandler: {},
   useGraphLogger: {},
 });
@@ -30,9 +30,9 @@ export function createYogaPluginImports(
   }
 
   return createTsImportMap(yogaPluginImportsSchema, {
-    LiveQueryPayload: path.join(importBase, 'pubsub.js'),
     getGraphqlWsHandler: path.join(importBase, 'websocket.js'),
     getPubSub: path.join(importBase, 'pubsub.js'),
+    LiveQueryPayload: path.join(importBase, 'pubsub.js'),
     makeHandler: path.join(importBase, 'websocket.js'),
     useGraphLogger: path.join(importBase, 'useGraphLogger.js'),
   });

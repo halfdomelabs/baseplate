@@ -8,8 +8,8 @@ import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 
 const requestServiceContextImportsSchema = createTsImportMapSchema({
-  RequestServiceContext: { isTypeOnly: true },
   createContextFromRequest: {},
+  RequestServiceContext: { isTypeOnly: true },
 });
 
 type RequestServiceContextImportsProvider = TsImportMapProviderFromSchema<
@@ -29,10 +29,10 @@ export function createRequestServiceContextImports(
   }
 
   return createTsImportMap(requestServiceContextImportsSchema, {
-    RequestServiceContext: path.join(importBase, 'request-service-context.js'),
     createContextFromRequest: path.join(
       importBase,
       'request-service-context.js',
     ),
+    RequestServiceContext: path.join(importBase, 'request-service-context.js'),
   });
 }
