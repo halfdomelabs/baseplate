@@ -17,7 +17,7 @@ const graphqlPlugin = createTsTemplateFile({
     requestServiceContextImports: requestServiceContextImportsProvider,
   },
   name: 'graphql-plugin',
-  projectExports: { graphqlPlugin: {} },
+  projectExports: {},
   source: { path: 'graphql-plugin.ts' },
   variables: {
     TPL_ENVELOP_PLUGINS: {},

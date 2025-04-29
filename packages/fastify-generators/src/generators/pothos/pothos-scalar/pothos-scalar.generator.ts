@@ -12,7 +12,8 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 
-import { pothosSetupProvider } from '../pothos/pothos.generator.js';
+import { pothosImportsProvider } from '../pothos/generated/ts-import-maps.js';
+import { pothosConfigProvider } from '../pothos/pothos.generator.js';
 
 interface PothosScalarConfig {
   name: string;
@@ -84,12 +85,20 @@ export const pothosScalarGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
-        pothosSetup: pothosSetupProvider,
+        pothosConfig: pothosConfigProvider,
+        pothosImports: pothosImportsProvider,
         node: nodeProvider,
         errorHandlerService: errorHandlerServiceProvider,
         typescript: typescriptProvider,
       },
-      run({ appModule, pothosSetup, node, errorHandlerService, typescript }) {
+      run({
+        appModule,
+        pothosConfig,
+        pothosImports,
+        node,
+        errorHandlerService,
+        typescript,
+      }) {
         const scalarConfig = scalarConfigMap[type];
         const [scalarImport, scalarPath] = makeImportAndFilePath(
           `${appModule.getModuleFolder()}/scalars/${scalarConfig.templatePath}`,
@@ -98,11 +107,14 @@ export const pothosScalarGenerator = createGenerator({
 
         const { name, scalar, inputType, outputType } = scalarConfig;
 
-        pothosSetup
-          .getTypeReferences()
-          .addCustomScalar({ name, scalar, inputType, outputType });
+        pothosConfig.customScalars.set(scalar, {
+          name,
+          scalar,
+          inputType,
+          outputType,
+        });
 
-        pothosSetup.registerSchemaFile(scalarPath);
+        pothosConfig.schemaFiles.push(scalarPath);
 
         node.packages.addPackages({
           prod: scalarConfig.dependencies,
@@ -115,7 +127,19 @@ export const pothosScalarGenerator = createGenerator({
               typescript.createCopyAction({
                 source: scalarConfig.templatePath,
                 destination: scalarPath,
-                importMappers: [pothosSetup, errorHandlerService],
+                importMappers: [
+                  {
+                    getImportMap() {
+                      return {
+                        '%pothos': {
+                          allowedImports: ['builder'],
+                          path: pothosImports.builder.moduleSpecifier,
+                        },
+                      };
+                    },
+                  },
+                  errorHandlerService,
+                ],
               }),
             );
           },

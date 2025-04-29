@@ -16,7 +16,8 @@ import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
-import { pothosSetupProvider } from '../pothos/pothos.generator.js';
+import { pothosImportsProvider } from '../pothos/generated/ts-import-maps.js';
+import { pothosConfigProvider } from '../pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
@@ -46,18 +47,19 @@ export const pothosEnumsFileGenerator = createGenerator({
       dependencies: {
         appModule: appModuleProvider,
         typescript: typescriptProvider,
-        pothosSetup: pothosSetupProvider,
+        pothosConfig: pothosConfigProvider,
+        pothosImports: pothosImportsProvider,
       },
       exports: {
         pothosEnumsFile: pothosEnumsFileProvider.export(),
       },
-      run({ appModule, typescript, pothosSetup }) {
+      run({ appModule, typescript, pothosConfig, pothosImports }) {
         const [typesImport, typesPath] = makeImportAndFilePath(
           `${appModule.getModuleFolder()}/schema/${kebabCase(name)}.ts`,
         );
 
         appModule.moduleImports.push(typesImport);
-        pothosSetup.registerSchemaFile(typesPath);
+        pothosConfig.schemaFiles.push(typesPath);
 
         const enums: PothosEnum[] = [];
 
@@ -67,7 +69,7 @@ export const pothosEnumsFileGenerator = createGenerator({
               getBuilder: () => 'builder',
               registerEnum(pothosEnum) {
                 enums.push(pothosEnum);
-                pothosSetup.getTypeReferences().addPothosEnum({
+                pothosConfig.enums.set(pothosEnum.name, {
                   typeName: pothosEnum.name,
                   exportName: pothosEnum.exportName,
                   moduleName: typesImport,
@@ -86,8 +88,9 @@ export const pothosEnumsFileGenerator = createGenerator({
             });
 
             enumsFile.addCodeAddition({
-              importText: [`import {builder} from '%pothos'`],
-              importMappers: [pothosSetup],
+              importText: [
+                `import {builder} from '${pothosImports.builder.moduleSpecifier}'`,
+              ],
             });
 
             await builder.apply(

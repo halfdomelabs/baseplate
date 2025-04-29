@@ -3,8 +3,8 @@ import {
   extractPackageVersions,
   makeImportAndFilePath,
   tsCodeFragment,
+  tsHoistedFragment,
   tsImportBuilder,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -16,7 +16,7 @@ import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-
 import { fastifySentryProvider } from '@src/generators/core/fastify-sentry/fastify-sentry.generator.js';
 import { yogaPluginConfigProvider } from '@src/generators/yoga/yoga-plugin/yoga-plugin.generator.js';
 
-import { pothosSetupProvider } from '../pothos/pothos.generator.js';
+import { pothosConfigProvider } from '../pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({});
 
@@ -85,39 +85,45 @@ export const pothosSentryGenerator = createGenerator({
     }),
     pothosPlugin: createGeneratorTask({
       dependencies: {
-        pothosSetupProvider,
+        pothosConfig: pothosConfigProvider,
       },
-      run: ({ pothosSetupProvider }) => {
-        pothosSetupProvider
-          .getConfig()
-          .appendUnique('pothosPlugins', [
-            new TypescriptCodeExpression(
-              `TracingPlugin`,
-              `import TracingPlugin from '@pothos/plugin-tracing'`,
-            ),
-          ]);
+      run: ({ pothosConfig }) => {
+        pothosConfig.pothosPlugins.set(
+          'TracingPlugin',
 
-        pothosSetupProvider.getConfig().append('schemaBuilderOptions', {
-          key: 'tracing',
-          value: TypescriptCodeUtils.createExpression(
+          tsCodeFragment(
+            `TracingPlugin`,
+            tsImportBuilder()
+              .default('TracingPlugin')
+              .from('@pothos/plugin-tracing'),
+          ),
+        );
+        pothosConfig.schemaBuilderOptions.set(
+          'tracing',
+          tsCodeFragment(
             `{
     default: (config) => isRootField(config),
     wrap: (resolver, options) => traceResolver(resolver, options),
   }`,
-            [`import {isRootField} from '@pothos/plugin-tracing'`],
+            tsImportBuilder(['isRootField']).from('@pothos/plugin-tracing'),
             {
-              headerBlocks: [
-                TypescriptCodeUtils.createBlock(
-                  `const traceResolver = createSentryWrapper({
-  includeSource: true,
-  ignoreError: true,
-});`,
-                  `import { createSentryWrapper } from '@pothos/tracing-sentry';`,
+              hoistedFragments: [
+                tsHoistedFragment(
+                  tsCodeFragment(
+                    `const traceResolver = createSentryWrapper({
+          includeSource: true,
+          ignoreError: true,
+        });`,
+                    tsImportBuilder(['createSentryWrapper']).from(
+                      '@pothos/tracing-sentry',
+                    ),
+                  ),
+                  'traceResolver',
                 ),
               ],
             },
           ),
-        });
+        );
 
         return {};
       },

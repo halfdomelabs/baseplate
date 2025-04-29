@@ -17,8 +17,8 @@ import {
   appModuleProvider,
   configServiceProvider,
   errorHandlerServiceProvider,
+  pothosConfigProvider,
   pothosSchemaProvider,
-  pothosSetupProvider,
   pothosTypeOutputProvider,
   prismaOutputProvider,
   prismaUtilsProvider,
@@ -79,11 +79,11 @@ export const storageModuleGenerator = createGenerator({
     setupFileInputSchema: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
-        pothosSetup: pothosSetupProvider,
+        pothosConfig: pothosConfigProvider,
       },
-      run({ pothosSetup, appModule }) {
+      run({ pothosConfig, appModule }) {
         const moduleFolder = appModule.getModuleFolder();
-        pothosSetup.getTypeReferences().addInputType({
+        pothosConfig.inputTypes.set('FileUploadInput', {
           typeName: 'FileUploadInput',
           exportName: 'fileUploadInputInputType',
           moduleName: path.posix.join(

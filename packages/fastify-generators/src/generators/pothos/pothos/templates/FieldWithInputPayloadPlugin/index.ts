@@ -1,8 +1,9 @@
 // @ts-nocheck
 
+import SchemaBuilder, { BasePlugin, SchemaTypes } from '@pothos/core';
+
 import './global-types.js';
 import './schema-builder.js';
-import SchemaBuilder, { BasePlugin, SchemaTypes } from '@pothos/core';
 
 export * from './types.js';
 

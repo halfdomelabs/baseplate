@@ -2,7 +2,9 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   projectScope,
-  TypescriptCodeUtils,
+  tsCodeFragment,
+  tsImportBuilder,
+  tsTemplate,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -13,12 +15,12 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import {
-  prismaOutputProvider,
+  prismaImportsProvider,
   prismaSchemaProvider,
 } from '@src/generators/prisma/prisma/prisma.generator.js';
 import { createPrismaSchemaGeneratorBlock } from '@src/writers/prisma-schema/index.js';
 
-import { pothosSetupProvider } from '../pothos/pothos.generator.js';
+import { pothosConfigProvider } from '../pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({});
 
@@ -37,46 +39,45 @@ export const pothosPrismaGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        pothosSetup: pothosSetupProvider,
-        prismaOutput: prismaOutputProvider,
+        pothosConfig: pothosConfigProvider,
+        prismaImports: prismaImportsProvider,
       },
       exports: {
         pothosPrisma: pothosPrismaProvider.export(projectScope),
       },
-      run({ pothosSetup, prismaOutput }) {
+      run({ pothosConfig, prismaImports }) {
         return {
           providers: {
             pothosPrisma: {},
           },
           build: () => {
-            pothosSetup
-              .getConfig()
-              .append(
-                'pothosPlugins',
-                TypescriptCodeUtils.createExpression(
-                  `PrismaPlugin`,
-                  `import PrismaPlugin from '@pothos/plugin-prisma';`,
-                ),
-              )
-              .append('schemaTypeOptions', {
-                key: 'PrismaTypes',
-                value: TypescriptCodeUtils.createExpression(
-                  `PrismaTypes`,
-                  `import type PrismaTypes from '@pothos/plugin-prisma/generated';`,
-                ),
-              })
-              .append('schemaBuilderOptions', {
-                key: 'prisma',
-                value: TypescriptCodeUtils.createExpression(
-                  `{
-                client: prisma,
+            pothosConfig.pothosPlugins.set(
+              'PrismaPlugin',
+              tsCodeFragment(
+                'PrismaPlugin',
+                tsImportBuilder()
+                  .default('PrismaPlugin')
+                  .from('@pothos/plugin-prisma'),
+              ),
+            );
+            pothosConfig.schemaTypeOptions.set(
+              'PrismaTypes',
+              tsCodeFragment(
+                'PrismaTypes',
+                tsImportBuilder()
+                  .default('PrismaTypes')
+                  .typeOnly()
+                  .from('@pothos/plugin-prisma/generated'),
+              ),
+            );
+            pothosConfig.schemaBuilderOptions.set(
+              'prisma',
+              tsTemplate`{
+                client: ${prismaImports.prisma.fragment()},
                 exposeDescriptions: false,
                 filterConnectionTotalCount: true,
               }`,
-                  'import { prisma } from "%prisma-service"',
-                  { importMappers: [prismaOutput] },
-                ),
-              });
+            );
           },
         };
       },

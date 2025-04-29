@@ -11,7 +11,6 @@ const yogaPluginImportsSchema = createTsImportMapSchema({
   LiveQueryPayload: { isTypeOnly: true },
   getGraphqlWsHandler: {},
   getPubSub: {},
-  graphqlPlugin: {},
   makeHandler: {},
   useGraphLogger: {},
 });
@@ -34,7 +33,6 @@ export function createYogaPluginImports(
     LiveQueryPayload: path.join(importBase, 'pubsub.js'),
     getGraphqlWsHandler: path.join(importBase, 'websocket.js'),
     getPubSub: path.join(importBase, 'pubsub.js'),
-    graphqlPlugin: path.join(importBase, 'index.js'),
     makeHandler: path.join(importBase, 'websocket.js'),
     useGraphLogger: path.join(importBase, 'useGraphLogger.js'),
   });
