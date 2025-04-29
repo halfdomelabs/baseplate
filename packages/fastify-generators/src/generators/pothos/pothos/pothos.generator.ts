@@ -24,7 +24,6 @@ import {
   createReadOnlyProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@halfdomelabs/sync';
-import { mapValuesOfMap } from '@halfdomelabs/utils';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -185,10 +184,13 @@ export const pothosGenerator = createGenerator({
                 Scalars:
                   customScalars.size > 0
                     ? TsCodeUtils.mergeFragmentsAsObject(
-                        mapValuesOfMap(customScalars, (scalar) =>
-                          tsCodeFragment(
-                            `{ Input: ${scalar.inputType}, Output: ${scalar.outputType} }`,
-                          ),
+                        Object.fromEntries(
+                          [...customScalars].map(([, scalar]) => [
+                            scalar.name,
+                            tsCodeFragment(
+                              `{ Input: ${scalar.inputType}, Output: ${scalar.outputType} }`,
+                            ),
+                          ]),
                         ),
                       )
                     : undefined,
