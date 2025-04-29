@@ -1,22 +1,20 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
   tsCodeFragment,
   tsHoistedFragment,
   tsImportBuilder,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
-import { fastifySentryProvider } from '@src/generators/core/fastify-sentry/fastify-sentry.generator.js';
+import { fastifySentryConfigProvider } from '@src/generators/core/fastify-sentry/fastify-sentry.generator.js';
 import { yogaPluginConfigProvider } from '@src/generators/yoga/yoga-plugin/yoga-plugin.generator.js';
 
 import { pothosConfigProvider } from '../pothos/pothos.generator.js';
+import { POTHOS_POTHOS_SENTRY_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
@@ -34,28 +32,24 @@ export const pothosSentryGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         yogaPluginConfig: yogaPluginConfigProvider,
-        errorHandlerService: errorHandlerServiceProvider,
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
       },
-      run({ yogaPluginConfig, typescript, errorHandlerService }) {
-        const [pluginImport, pluginPath] = makeImportAndFilePath(
-          'src/plugins/graphql/useSentry.ts',
-        );
+      run({ yogaPluginConfig, typescriptFile }) {
+        const pluginPath = '@/src/plugins/graphql/useSentry.ts';
 
         yogaPluginConfig.envelopPlugins.set(
           'useSentry',
           tsCodeFragment(`useSentry()`, [
-            tsImportBuilder(['useSentry']).from(pluginImport),
+            tsImportBuilder(['useSentry']).from(pluginPath),
           ]),
         );
 
         return {
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'useSentry.ts',
+              typescriptFile.renderTemplateFile({
+                template: POTHOS_POTHOS_SENTRY_TS_TEMPLATES.useSentry,
                 destination: pluginPath,
-                importMappers: [errorHandlerService],
               }),
             );
           },
@@ -64,11 +58,12 @@ export const pothosSentryGenerator = createGenerator({
     }),
     sentry: createGeneratorTask({
       dependencies: {
-        fastifyServerSentry: fastifySentryProvider.dependency(),
+        fastifySentryConfig: fastifySentryConfigProvider.dependency(),
       },
-      run({ fastifyServerSentry }) {
-        fastifyServerSentry.addShouldLogToSentryBlock(
-          TypescriptCodeUtils.createBlock(
+      run({ fastifySentryConfig }) {
+        fastifySentryConfig.shouldLogToSentryFragments.set(
+          'graphql',
+          tsCodeFragment(
             `
           if (error instanceof GraphQLError) {
             return (
@@ -76,7 +71,7 @@ export const pothosSentryGenerator = createGenerator({
             );
           }
           `,
-            `import { GraphQLError } from 'graphql';`,
+            tsImportBuilder(['GraphQLError']).from('graphql'),
           ),
         );
 
