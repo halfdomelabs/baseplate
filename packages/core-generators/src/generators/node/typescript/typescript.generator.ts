@@ -18,6 +18,7 @@ import { z } from 'zod';
 
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
 import type {
+  RenderTsFragmentActionInput,
   RenderTsTemplateFileActionInput,
   RenderTsTemplateGroupActionInput,
   TsTemplateFile,
@@ -34,6 +35,7 @@ import {
   getProjectRelativePathFromModuleSpecifier,
   normalizeModuleSpecifier,
   pathMapEntriesToRegexes,
+  renderTsFragmentAction,
   renderTsTemplateGroupAction,
 } from '@src/renderers/typescript/index.js';
 import { extractPackageVersions } from '@src/utils/extract-packages.js';
@@ -146,6 +148,8 @@ export interface TypescriptFileProvider {
   renderTemplateFile<T extends TsTemplateFile = TsTemplateFile>(
     payload: RenderTsTemplateFileActionInput<T>,
   ): BuilderAction;
+  /** Renders a template fragment to an action */
+  renderTemplateFragment(payload: RenderTsFragmentActionInput): BuilderAction;
   /**
    * Renders a template group to an action
    *
@@ -420,6 +424,20 @@ export const typescriptGenerator = createGenerator({
                     ...options,
                   });
                 }
+              },
+              renderTemplateFragment: (payload) => {
+                const directory = path.dirname(
+                  normalizePathToProjectPath(payload.destination),
+                );
+                return renderTsFragmentAction({
+                  ...payload,
+                  renderOptions: {
+                    resolveModule(moduleSpecifier) {
+                      return resolveModuleSpecifier(moduleSpecifier, directory);
+                    },
+                    ...sharedRenderOptions,
+                  },
+                });
               },
               renderTemplateFile,
               renderTemplateGroup: (payload) =>

@@ -186,12 +186,14 @@ function buildMutationsFileForModel(
 }
 
 function buildEnumFileForModel(
+  enumFileId: string,
   enums: EnumConfig[],
 ): GeneratorBundle | undefined {
   if (enums.length === 0) {
     return undefined;
   }
   return pothosEnumsFileGenerator({
+    id: enumFileId,
     name: `Enums`,
     children: {
       enums: enums.map((enumConfig) =>
@@ -223,6 +225,6 @@ export function buildGraphqlForFeature(
       buildQueriesFileForModel(appBuilder, model),
       buildMutationsFileForModel(appBuilder, model),
     ]),
-    buildEnumFileForModel(enums),
+    buildEnumFileForModel(featureId, enums),
   ].filter(notEmpty);
 }
