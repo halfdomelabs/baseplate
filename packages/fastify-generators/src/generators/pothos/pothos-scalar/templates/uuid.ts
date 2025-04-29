@@ -1,8 +1,9 @@
 // @ts-nocheck
+
+import { BadRequestError } from '%errorHandlerServiceImports';
+import { builder } from '%pothosImports';
 import { Kind } from 'graphql';
-import { builder } from '%pothos';
 import { validate } from 'uuid';
-import { BadRequestError } from '%http-errors';
 
 function parseUuid(value: string): string {
   if (!validate(value)) {

@@ -1,7 +1,8 @@
 // @ts-nocheck
+
+import { BadRequestError } from '%errorHandlerServiceImports';
+import { builder } from '%pothosImports';
 import { Kind } from 'graphql';
-import { builder } from '%pothos';
-import { BadRequestError } from '%http-errors';
 
 export const DateTimeScalar = builder.scalarType('DateTime', {
   description: 'Scalar with date and time information',

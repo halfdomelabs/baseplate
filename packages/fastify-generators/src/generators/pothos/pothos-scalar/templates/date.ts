@@ -1,7 +1,8 @@
 // @ts-nocheck
+
+import { BadRequestError } from '%errorHandlerServiceImports';
+import { builder } from '%pothosImports';
 import { Kind } from 'graphql';
-import { builder } from '%pothos';
-import { BadRequestError } from '%http-errors';
 
 const DATE_REGEX = /^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/;
 
