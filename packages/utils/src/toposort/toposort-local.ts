@@ -141,9 +141,8 @@ export function toposortLocal<T>(
   options: ToposortOptions<T> = {},
 ): T[] {
   const { compareFunc = defaultCompareFunc } = options;
-  // Reverse the compare function to sort in descending order
-  const reverseCompareFunc = (a: number, b: number): number =>
-    compareFunc(nodes[b], nodes[a]);
+  const compareIdx = (a: number, b: number): number =>
+    compareFunc(nodes[a], nodes[b]);
 
   // Map each node to its index
   const nodeIndexMap = new Map<T, number>(
@@ -163,7 +162,7 @@ export function toposortLocal<T>(
       zeroOutDegreeStack.push(i);
     }
   }
-  zeroOutDegreeStack.sort(reverseCompareFunc);
+  zeroOutDegreeStack.sort(compareIdx);
 
   const reverseResult: T[] = [];
   const visited = new Set<number>();
@@ -188,7 +187,7 @@ export function toposortLocal<T>(
         }
       }
     }
-    newZeroOutDegreeNodes.sort(reverseCompareFunc).reverse();
+    newZeroOutDegreeNodes.sort(compareIdx);
     zeroOutDegreeStack.push(...newZeroOutDegreeNodes);
   }
 

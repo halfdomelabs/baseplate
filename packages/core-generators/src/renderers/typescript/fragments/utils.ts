@@ -1,51 +1,111 @@
-import { isEqual, orderBy, uniqWith } from 'es-toolkit';
+import { toposortLocal } from '@halfdomelabs/utils';
+import { isEqual, keyBy, uniqWith } from 'es-toolkit';
 
 import type { TsImportDeclaration } from '../imports/types.js';
 import type { TsCodeFragment, TsHoistedFragment } from './types.js';
 
-interface HoistedFragmentWithPriority extends TsHoistedFragment {
-  priority: number;
-}
-
-interface FlattenedImportsAndHoistedFragmentsWithPriority {
+interface FlattenedImportsAndHoistedFragmentsWithDependencies {
   imports: TsImportDeclaration[];
-  hoistedFragments: HoistedFragmentWithPriority[];
+  hoistedFragments: TsHoistedFragment[];
+  // A list of edges in the dependency graph
+  dependencies: [string, string][];
 }
 
-function flattenImportsAndHoistedFragmentsRecursive(
-  fragments: TsCodeFragment[],
-  priority = 0,
-): FlattenedImportsAndHoistedFragmentsWithPriority {
-  const imports: TsImportDeclaration[] = [];
-  const hoistedFragments: HoistedFragmentWithPriority[] = [];
+/**
+ * Flattens a hoisted fragment and all of its dependencies.
+ *
+ * @param hoistedFragment - The hoisted fragment to flatten
+ * @returns An object containing flattened imports, hoisted fragments, and dependencies
+ */
+function flattenHoistedFragment({
+  fragment,
+  key,
+}: TsHoistedFragment): FlattenedImportsAndHoistedFragmentsWithDependencies {
+  const imports: TsImportDeclaration[] = fragment.imports ?? [];
+  const hoistedFragments: TsHoistedFragment[] = fragment.hoistedFragments ?? [];
+  const dependencies: [string, string][] =
+    fragment.hoistedFragments?.map((f) => [f.key, key]) ?? [];
 
-  for (const fragment of fragments) {
-    // Add imports and hoisted fragments from the current fragment
-    imports.push(...(fragment.imports ?? []));
-    hoistedFragments.push(
-      ...(fragment.hoistedFragments?.map((f) => ({
-        ...f,
-        priority,
-      })) ?? []),
-    );
-
-    // Add imports and hoisted fragments from nested fragments
-    const hoistedExtractionResult = flattenImportsAndHoistedFragmentsRecursive(
-      fragment.hoistedFragments?.map((f) => f.fragment) ?? [],
-      priority + 1,
-    );
-    imports.push(...hoistedExtractionResult.imports);
-    hoistedFragments.push(...hoistedExtractionResult.hoistedFragments);
+  for (const childHoistedFragment of fragment.hoistedFragments ?? []) {
+    const childExtractionResult = flattenHoistedFragment(childHoistedFragment);
+    imports.push(...childExtractionResult.imports);
+    hoistedFragments.push(...childExtractionResult.hoistedFragments);
+    dependencies.push(...childExtractionResult.dependencies);
   }
 
   return {
     imports,
     hoistedFragments,
+    dependencies,
   };
 }
 
+/**
+ * Flattens a code fragment and all of its dependencies.
+ *
+ * @param fragment - The code fragment to flatten
+ * @returns An object containing flattened imports, hoisted fragments, and dependencies
+ */
+function flattenCodeFragment(
+  fragment: TsCodeFragment,
+): FlattenedImportsAndHoistedFragmentsWithDependencies {
+  const imports: TsImportDeclaration[] = fragment.imports ?? [];
+  const hoistedFragments: TsHoistedFragment[] = fragment.hoistedFragments ?? [];
+  const dependencies: [string, string][] = [];
+
+  for (const hoistedFragment of hoistedFragments) {
+    // Add imports and hoisted fragments from nested fragments
+    const hoistedExtractionResult = flattenHoistedFragment(hoistedFragment);
+    imports.push(...hoistedExtractionResult.imports);
+    hoistedFragments.push(...hoistedExtractionResult.hoistedFragments);
+    dependencies.push(...hoistedExtractionResult.dependencies);
+  }
+
+  return {
+    imports,
+    hoistedFragments,
+    dependencies,
+  };
+}
+
+/**
+ * Flattens a collection of code fragments and all of their dependencies.
+ *
+ * @param fragments - The code fragments to flatten
+ * @returns An object containing flattened imports, hoisted fragments, and dependencies
+ */
+function flattenCodeFragments(
+  fragments: TsCodeFragment[],
+): FlattenedImportsAndHoistedFragmentsWithDependencies {
+  const imports: TsImportDeclaration[] = [];
+  const hoistedFragments: TsHoistedFragment[] = [];
+  const dependencies: [string, string][] = [];
+
+  for (const fragment of fragments) {
+    const flattenedFragment = flattenCodeFragment(fragment);
+    imports.push(...flattenedFragment.imports);
+    hoistedFragments.push(...flattenedFragment.hoistedFragments);
+    dependencies.push(...flattenedFragment.dependencies);
+  }
+
+  return {
+    imports,
+    hoistedFragments,
+    dependencies,
+  };
+}
+
+/**
+ * An object containing flattened imports and hoisted fragments.
+ */
 export interface FlattenedImportsAndHoistedFragments {
+  /**
+   * A list of imports.
+   */
   imports: TsImportDeclaration[];
+  /**
+   * A list of hoisted fragments ordered by lexical closeness/topological sort.
+   */
   hoistedFragments: TsHoistedFragment[];
 }
 
@@ -58,33 +118,34 @@ export interface FlattenedImportsAndHoistedFragments {
 export function flattenImportsAndHoistedFragments(
   fragments: TsCodeFragment[],
 ): FlattenedImportsAndHoistedFragments {
-  const flattenedFragments =
-    flattenImportsAndHoistedFragmentsRecursive(fragments);
-  return {
-    imports: flattenedFragments.imports,
-    /**
-     * Process hoisted fragments:
-     * 1. Sort by priority (highest to lowest) and then by key
-     * 2. Deduplicate by key, keeping only the highest priority version
-     * Example: [a(p:2), b(p:1), c(p:0), a(p:0)] becomes [a(p:2), b(p:1), c(p:0)]
-     */
-    hoistedFragments: uniqWith(
-      orderBy(
-        flattenedFragments.hoistedFragments,
-        ['priority', 'key'],
-        ['desc', 'asc'],
-      ),
-      (a, b) => {
-        if (a.key === b.key) {
-          if (!isEqual(a.fragment, b.fragment)) {
-            throw new Error(
-              `Duplicate hoisted fragment key ${a.key} with different contents`,
-            );
-          }
-          return true;
+  const flattenResult = flattenCodeFragments(fragments);
+  const uniqueHoistedFragments = uniqWith(
+    flattenResult.hoistedFragments,
+    (a, b) => {
+      if (a.key === b.key) {
+        if (!isEqual(a.fragment, b.fragment)) {
+          throw new Error(
+            `Duplicate hoisted fragment key ${a.key} with different contents`,
+          );
         }
-        return false;
-      },
+        return true;
+      }
+      return false;
+    },
+  );
+
+  const hoistedFragmentsByKey = keyBy(uniqueHoistedFragments, (f) => f.key);
+  const sortedHoistedFragmentKeys = toposortLocal(
+    uniqueHoistedFragments.map((f) => f.key),
+    flattenResult.dependencies,
+  );
+  return {
+    imports: flattenResult.imports,
+    /**
+     * Process hoisted fragments by lexical closeness/topological sort.
+     */
+    hoistedFragments: sortedHoistedFragmentKeys.map(
+      (key) => hoistedFragmentsByKey[key],
     ),
   };
 }

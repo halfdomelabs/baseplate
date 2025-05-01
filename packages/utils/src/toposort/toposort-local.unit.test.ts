@@ -7,36 +7,6 @@ import {
 import { toposortLocal } from './toposort-local.js';
 
 describe('toposortLocal', () => {
-  // Helper to check if dependencies are met in the sorted output
-  const expectOrder = <T>(sorted: T[], edges: [T, T][]): void => {
-    const positions = new Map<T, number>();
-    for (const [index, node] of sorted.entries()) positions.set(node, index);
-
-    for (const [source, target] of edges) {
-      const sourcePos = positions.get(source);
-      const targetPos = positions.get(target);
-      // Check if both nodes are in the sorted output before comparing positions
-      // (Handles cases where edges might involve nodes not in the primary 'nodes' list,
-      // although our makeOutgoingEdges prevents this)
-      if (sourcePos !== undefined && targetPos !== undefined) {
-        expect(
-          sourcePos,
-          `Dependency violated: ${JSON.stringify(source)} should come before ${JSON.stringify(target)}`,
-        ).toBeLessThan(targetPos);
-      } else {
-        // This case should ideally not be reached if input validation is correct
-        if (!positions.has(source))
-          throw new Error(
-            `Source node ${JSON.stringify(source)} not found in sorted output`,
-          );
-        if (!positions.has(target))
-          throw new Error(
-            `Target node ${JSON.stringify(target)} not found in sorted output`,
-          );
-      }
-    }
-  };
-
   it('should return an empty array for an empty graph', () => {
     expect(toposortLocal([], [])).toEqual([]);
   });
@@ -54,7 +24,6 @@ describe('toposortLocal', () => {
     ];
     const sorted = toposortLocal(nodes, edges);
     expect(sorted).toEqual(['a', 'b', 'c']);
-    expectOrder(sorted, edges);
   });
 
   it('should sort nodes in a simple linear chain (numbers)', () => {
@@ -66,7 +35,6 @@ describe('toposortLocal', () => {
     ];
     const sorted = toposortLocal(nodes, edges);
     expect(sorted).toEqual([0, 1, 2, 3]);
-    expectOrder(sorted, edges);
   });
 
   it('should handle multiple paths correctly', () => {
@@ -84,29 +52,27 @@ describe('toposortLocal', () => {
     expect(reverseSorted).toEqual(['a', 'b', 'c', 'd']);
   });
 
-  it('should handle disconnected components', () => {
+  it('should handle disconnected components alphabetically', () => {
     const nodes = ['a', 'b', 'c', 'd'];
     const edges: [string, string][] = [
       ['a', 'b'],
       ['c', 'd'],
     ];
     const sorted = toposortLocal(nodes, edges);
-    expect(sorted).toHaveLength(4);
-    expect(new Set(sorted)).toEqual(new Set(nodes));
-    expectOrder(sorted, edges);
-    // Example valid sorts: ['c', 'd', 'a', 'b'], ['a', 'b', 'c', 'd']
+    expect(sorted).toEqual(['a', 'b', 'c', 'd']);
+    // check reverse order
+    const reverseSorted = toposortLocal(nodes.toReversed(), edges);
+    expect(reverseSorted).toEqual(['a', 'b', 'c', 'd']);
   });
 
-  it('should handle nodes with no edges', () => {
+  it('should handle nodes without edges alphabetically', () => {
     const nodes = ['a', 'b', 'c', 'd'];
-    const edges: [string, string][] = [['a', 'b']];
+    const edges: [string, string][] = [];
     const sorted = toposortLocal(nodes, edges);
-    expect(sorted).toHaveLength(4);
-    expect(new Set(sorted)).toEqual(new Set(nodes));
-    expectOrder(sorted, edges);
-    // Example valid sorts: ['c', 'd', 'a', 'b'], ['d', 'a', 'b', 'c'] etc.
-    // Check that 'a' comes before 'b'.
-    expect(sorted.indexOf('a')).toBeLessThan(sorted.indexOf('b'));
+    expect(sorted).toEqual(['a', 'b', 'c', 'd']);
+    // check reverse order
+    const reverseSorted = toposortLocal(nodes.toReversed(), edges);
+    expect(reverseSorted).toEqual(['a', 'b', 'c', 'd']);
   });
 
   it('should handle a local sort with custom compare function', () => {
@@ -300,14 +266,13 @@ describe('toposortLocal', () => {
     const nodeB = { id: 'b' };
     const nodeC = { id: 'c' };
     const nodes = [nodeA, nodeB, nodeC];
-    const edges: [object, object][] = [
+    const edges: [{ id: string }, { id: string }][] = [
       [nodeA, nodeB],
       [nodeB, nodeC],
     ];
     const sorted = toposortLocal(nodes, edges);
     // Use toStrictEqual for deep equality check with objects
     expect(sorted).toStrictEqual([nodeA, nodeB, nodeC]);
-    expectOrder(sorted, edges);
   });
 
   it('should handle duplicate edges gracefully', () => {
@@ -319,6 +284,5 @@ describe('toposortLocal', () => {
     ]; // Duplicate a -> b
     const sorted = toposortLocal(nodes, edges);
     expect(sorted).toEqual(['a', 'b', 'c']);
-    expectOrder(sorted, edges.slice(0, 2)); // Check order against unique edges
   });
 });
