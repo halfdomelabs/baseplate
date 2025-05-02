@@ -47,11 +47,11 @@ const serviceIndex = createTsTemplateFile({
   group: 'service',
   name: 'service-index',
   projectExports: {
-    getOrCreateManagedQueue: {},
     ManagedRepeatableJobConfig: { isTypeOnly: true },
     ManagedRepeatableJobsConfig: { isTypeOnly: true },
-    synchronizeRepeatableJobs: {},
     createWorker: {},
+    getOrCreateManagedQueue: {},
+    synchronizeRepeatableJobs: {},
   },
   source: { path: 'service/index.ts' },
   variables: {},
