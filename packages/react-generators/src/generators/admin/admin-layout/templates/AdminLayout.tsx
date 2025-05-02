@@ -1,10 +1,10 @@
 // @ts-nocheck
 
+import { useLogOut } from '%authHooksImports';
+import { Sidebar } from '%reactComponentsImports';
 import clsx from 'clsx';
-import { Outlet } from 'react-router-dom';
-import { Sidebar } from '%react-components';
-import { useLogOut } from '%auth-hooks/useLogOut';
 import { MdLogout } from 'react-icons/md';
+import { Outlet } from 'react-router-dom';
 
 interface Props {
   className?: string;
@@ -20,7 +20,7 @@ function AdminLayout({ className }: Props): JSX.Element {
           <h1>Admin Dashboard</h1>
         </Sidebar.Header>
         <Sidebar.LinkGroup>
-          <SIDEBAR_NAV />
+          <TPL_SIDEBAR_LINKS />
           <Sidebar.ButtonItem Icon={MdLogout} onClick={() => logOut()}>
             Log Out
           </Sidebar.ButtonItem>

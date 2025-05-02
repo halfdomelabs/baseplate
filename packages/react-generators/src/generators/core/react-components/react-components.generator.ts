@@ -155,7 +155,7 @@ export const reactComponentsGenerator = createGenerator({
           providers: {
             reactComponents: {
               registerComponent: (entry) => allReactComponents.push(entry),
-              getComponentsFolder: () => `src/components`,
+              getComponentsFolder: () => `@/src/components`,
               getComponentsImport: () => `@/src/components`,
               getImportMap: () => ({
                 '%react-components': {

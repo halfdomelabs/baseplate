@@ -214,13 +214,13 @@ const componentsGroup = createTsTemplateGroup({
       destination: 'ConfirmDialog/index.tsx',
       template: confirmDialog,
     },
-    errorDisplay: {
-      destination: 'ErrorDisplay/index.tsx',
-      template: errorDisplay,
-    },
     errorableLoader: {
       destination: 'ErrorableLoader/index.tsx',
       template: errorableLoader,
+    },
+    errorDisplay: {
+      destination: 'ErrorDisplay/index.tsx',
+      template: errorDisplay,
     },
     formError: { destination: 'FormError/index.tsx', template: formError },
     formLabel: { destination: 'FormLabel/index.tsx', template: formLabel },

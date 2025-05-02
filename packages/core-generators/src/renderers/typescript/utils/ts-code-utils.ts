@@ -122,13 +122,14 @@ export const TsCodeUtils = {
    * @returns The merged code fragment.
    */
   mergeFragments(
-    fragments: Map<string, TsCodeFragment | string | undefined>,
+    fragments:
+      | Map<string, TsCodeFragment | string | undefined>
+      | Record<string, TsCodeFragment | string | undefined>,
     separator = '\n',
   ): TsCodeFragment {
-    const sortedFragmentEntries = sortBy(
-      [...fragments.entries()],
-      [([key]) => key],
-    );
+    const map =
+      fragments instanceof Map ? fragments : new Map(Object.entries(fragments));
+    const sortedFragmentEntries = sortBy([...map.entries()], [([key]) => key]);
     return {
       contents: sortedFragmentEntries
         .map(([, fragment]) => fragment)
