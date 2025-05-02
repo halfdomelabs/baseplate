@@ -30,6 +30,10 @@
         // Tricky bug where @tailwlindcss/forms is being used by prettier-plugin-tailwindcss
         // so must be included to not bug the build
         "@tailwindcss/forms"
+      ],
+      "ignore": [
+        // For some reason, Knip doesn't recognize this file as used.
+        "src/utils/case.ts"
       ]
     },
     "packages/react-generators": {
