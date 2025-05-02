@@ -230,7 +230,7 @@ const removedVar = 1;
       const testGeneratorImportsSchema = createTsImportMapSchema({
         TestComponent: {},
         TestComponentProps: { isTypeOnly: true },
-        TestDefaultExport: { exportName: 'default' },
+        TestDefaultExport: { name: 'default' },
       });
 
       type TestGeneratorImportsProvider = TsImportMapProviderFromSchema<

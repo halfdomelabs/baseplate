@@ -87,9 +87,7 @@ describe('writeTsProjectExports', () => {
     const importsContents = result.importsFileFragment?.contents;
     expect(importsContents).toContain('TestExport: {}');
     expect(importsContents).toContain('TypeOnlyExport: {"isTypeOnly":true}');
-    expect(importsContents).toContain(
-      'TestDefaultExport: {"exportName":"default"}',
-    );
+    expect(importsContents).toContain('TestDefaultExport: {"name":"default"}');
     expect(importsContents).toContain('test-generator');
     expect(importsContents).toContain('createTestGeneratorImports');
   });
