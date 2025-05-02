@@ -1,13 +1,6 @@
-import type {
-  TsCodeFragment,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import {
-  TsCodeUtils,
-  tsImportBuilder,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import { TsCodeUtils, tsImportBuilder } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -35,7 +28,7 @@ interface PrismaDeleteMethodOptions {
   methodName: string;
   descriptor: z.infer<typeof descriptorSchema>;
   prismaOutput: PrismaOutputProvider;
-  methodExpression: TypescriptCodeExpression;
+  serviceMethodReference: TsCodeFragment;
   prismaUtils: PrismaUtilsImportsProvider;
 }
 
@@ -43,13 +36,13 @@ function getMethodDefinition({
   methodName,
   descriptor: { modelName },
   prismaOutput,
-  methodExpression,
+  serviceMethodReference,
 }: PrismaDeleteMethodOptions): ServiceOutputMethod {
   const prismaDefinition = prismaOutput.getPrismaModel(modelName);
   const idArgument = getPrimaryKeyDefinition(prismaDefinition);
   return {
     name: methodName,
-    expression: methodExpression,
+    referenceFragment: serviceMethodReference,
     arguments: [
       {
         type: 'nested',
@@ -123,16 +116,16 @@ export const prismaCrudDeleteGenerator = createGenerator({
 
         const methodName = `${name}${modelName}`;
 
-        const methodExpression = TypescriptCodeUtils.createExpression(
+        const serviceMethodReference = TsCodeUtils.importFragment(
           methodName,
-          `import { ${methodName} } from '${serviceFile.getServiceImport()}';`,
+          serviceFile.getServiceImport(),
         );
 
         const methodOptions = {
           methodName,
           descriptor,
           prismaOutput,
-          methodExpression,
+          serviceMethodReference,
           prismaUtils: prismaUtilsImports,
         };
 

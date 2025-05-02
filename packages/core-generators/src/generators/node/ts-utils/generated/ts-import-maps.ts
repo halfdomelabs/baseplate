@@ -9,13 +9,13 @@ import {
 } from '@src/renderers/typescript/index.js';
 
 const tsUtilsImportsSchema = createTsImportMapSchema({
-  NormalizeTypes: { isTypeOnly: true },
   capitalizeString: {},
+  NormalizeTypes: { isTypeOnly: true },
   notEmpty: {},
   restrictObjectNulls: {},
 });
 
-type TsUtilsImportsProvider = TsImportMapProviderFromSchema<
+export type TsUtilsImportsProvider = TsImportMapProviderFromSchema<
   typeof tsUtilsImportsSchema
 >;
 
@@ -30,8 +30,8 @@ export function createTsUtilsImports(
   }
 
   return createTsImportMap(tsUtilsImportsSchema, {
-    NormalizeTypes: path.join(importBase, 'normalize-types.js'),
     capitalizeString: path.join(importBase, 'string.js'),
+    NormalizeTypes: path.join(importBase, 'normalize-types.js'),
     notEmpty: path.join(importBase, 'arrays.js'),
     restrictObjectNulls: path.join(importBase, 'nulls.js'),
   });

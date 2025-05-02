@@ -42,6 +42,7 @@ function buildObjectTypeFile(
   const { fields, localRelations = [], foreignRelations = [] } = objectType;
 
   return pothosTypesFileGenerator({
+    id: `${model.id}-object-type`,
     fileName: `${kebabCase(model.name)}.object-type`,
     children: {
       primaryKey:
@@ -49,6 +50,7 @@ function buildObjectTypeFile(
         ModelUtils.getModelIdFields(model).length > 1
           ? pothosPrismaPrimaryKeyGenerator({
               modelName: model.name,
+              order: 0,
             })
           : undefined,
       objectType: pothosPrismaObjectGenerator({
@@ -56,6 +58,7 @@ function buildObjectTypeFile(
         exposedFields: [...fields, ...foreignRelations, ...localRelations].map(
           (id) => appBuilder.nameFromId(id),
         ),
+        order: 1,
       }),
     },
   });
@@ -77,12 +80,15 @@ function buildQueriesFileForModel(
   const isAuthEnabled = !!appBuilder.definitionContainer.definition.auth;
 
   return pothosTypesFileGenerator({
+    id: `${model.id}-queries`,
     fileName: `${kebabCase(model.name)}.queries`,
-    categoryOrder: ['find-query', 'list-query'],
     children: {
       findQuery: get?.enabled
         ? pothosPrismaFindQueryGenerator({
+            order: 0,
             modelName: model.name,
+            hasPrimaryKeyInputType:
+              ModelUtils.getModelIdFields(model).length > 1,
             children: {
               authorize:
                 !isAuthEnabled || !get.roles?.length
@@ -95,6 +101,7 @@ function buildQueriesFileForModel(
         : undefined,
       listQuery: list?.enabled
         ? pothosPrismaListQueryGenerator({
+            order: 1,
             modelName: model.name,
             children: {
               authorize:
@@ -134,14 +141,17 @@ function buildMutationsFileForModel(
   const sharedMutationConfig = {
     modelName: model.name,
     crudServiceRef: `prisma-crud-service:${model.name}`,
+    hasPrimaryKeyInputType: ModelUtils.getModelIdFields(model).length > 1,
   };
 
   return pothosTypesFileGenerator({
+    id: `${model.id}-mutations`,
     fileName: `${kebabCase(model.name)}.mutations`,
     children: {
       create: create?.enabled
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
+            order: 0,
             type: 'create',
             children: {
               authorize:
@@ -156,6 +166,7 @@ function buildMutationsFileForModel(
       update: update?.enabled
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
+            order: 1,
             type: 'update',
             children: {
               authorize:
@@ -170,6 +181,7 @@ function buildMutationsFileForModel(
       delete: del?.enabled
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
+            order: 2,
             type: 'delete',
             children: {
               authorize:
@@ -186,12 +198,14 @@ function buildMutationsFileForModel(
 }
 
 function buildEnumFileForModel(
+  enumFileId: string,
   enums: EnumConfig[],
 ): GeneratorBundle | undefined {
   if (enums.length === 0) {
     return undefined;
   }
   return pothosEnumsFileGenerator({
+    id: enumFileId,
     name: `Enums`,
     children: {
       enums: enums.map((enumConfig) =>
@@ -223,6 +237,6 @@ export function buildGraphqlForFeature(
       buildQueriesFileForModel(appBuilder, model),
       buildMutationsFileForModel(appBuilder, model),
     ]),
-    buildEnumFileForModel(enums),
+    buildEnumFileForModel(`${featureId}-enums`, enums),
   ].filter(notEmpty);
 }

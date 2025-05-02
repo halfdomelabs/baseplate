@@ -9,6 +9,7 @@ import { hashWithSHA256, stringifyPrettyStable } from '@halfdomelabs/utils';
 import { fileExists } from '@halfdomelabs/utils/node';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { stripVTControlCharacters } from 'node:util';
 
 import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
 
@@ -165,7 +166,9 @@ export async function buildProject({
         newResult = {
           errors: [
             {
-              message: String(err),
+              // stripVTControlCharacters is used to remove any control characters from the error message
+              // which can happen when prettier encounters an error.
+              message: stripVTControlCharacters(String(err)),
               stack: err instanceof Error ? err.stack : undefined,
             },
           ],

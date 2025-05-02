@@ -10,12 +10,12 @@ import path from 'node:path/posix';
 const errorHandlerServiceImportsSchema = createTsImportMapSchema({
   BadRequestError: {},
   ForbiddenError: {},
+  handleZodRequestValidationError: {},
   HttpError: {},
   InternalServerError: {},
+  logError: {},
   NotFoundError: {},
   UnauthorizedError: {},
-  handleZodRequestValidationError: {},
-  logError: {},
 });
 
 type ErrorHandlerServiceImportsProvider = TsImportMapProviderFromSchema<
@@ -37,11 +37,11 @@ export function createErrorHandlerServiceImports(
   return createTsImportMap(errorHandlerServiceImportsSchema, {
     BadRequestError: path.join(importBase, 'utils/http-errors.js'),
     ForbiddenError: path.join(importBase, 'utils/http-errors.js'),
+    handleZodRequestValidationError: path.join(importBase, 'utils/zod.js'),
     HttpError: path.join(importBase, 'utils/http-errors.js'),
     InternalServerError: path.join(importBase, 'utils/http-errors.js'),
+    logError: path.join(importBase, 'services/error-logger.js'),
     NotFoundError: path.join(importBase, 'utils/http-errors.js'),
     UnauthorizedError: path.join(importBase, 'utils/http-errors.js'),
-    handleZodRequestValidationError: path.join(importBase, 'utils/zod.js'),
-    logError: path.join(importBase, 'services/error-logger.js'),
   });
 }

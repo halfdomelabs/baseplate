@@ -13,7 +13,7 @@ import type { TsTemplateFileMetadata } from '../templates/types.js';
 
 import { tsCodeFragment } from '../fragments/creators.js';
 import { tsImportBuilder } from '../imports/builder.js';
-import { TsCodeUtils } from '../ts-code-utils.js';
+import { TsCodeUtils } from '../utils/ts-code-utils.js';
 
 /**
  * A project export that represents a single export from a generator.

@@ -6,43 +6,60 @@ import type { PothosWriterOptions } from '@src/writers/pothos/index.js';
 
 import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
-import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
-import { writePothosInputDefinitionFromDtoFields } from '@src/writers/pothos/index.js';
+import {
+  createPothosTypeReference,
+  writePothosInputDefinitionFromDtoFields,
+} from '@src/writers/pothos/index.js';
 
+import { pothosTypeOutputProvider } from '../_providers/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
-import { pothosSchemaProvider } from '../pothos/pothos.generator.js';
+import { pothosSchemaBaseTypesProvider } from '../pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({
+  /**
+   * The name of the model.
+   */
   modelName: z.string().min(1),
+  /**
+   * The order of the type in the types file.
+   */
+  order: z.number(),
 });
+
+export function getPothosPrismaPrimaryKeyTypeOutputName(
+  modelName: string,
+): string {
+  return `prisma-primary-key-type:${modelName}`;
+}
 
 export const pothosPrismaPrimaryKeyGenerator = createGenerator({
   name: 'pothos/pothos-prisma-primary-key',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ modelName }) => ({
+  buildTasks: ({ modelName, order }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         pothosTypeFile: pothosTypesFileProvider,
-        pothosSchema: pothosSchemaProvider,
+        pothosSchemaBaseTypes: pothosSchemaBaseTypesProvider,
       },
       exports: {
         pothosTypeOutput: pothosTypeOutputProvider.export(
           projectScope,
-          `prisma-primary-key-type:${modelName}`,
+          getPothosPrismaPrimaryKeyTypeOutputName(modelName),
         ),
       },
-      run({ prismaOutput, pothosTypeFile, pothosSchema }) {
+      run({ prismaOutput, pothosTypeFile, pothosSchemaBaseTypes }) {
         const model = prismaOutput.getPrismaModel(modelName);
 
         const inputName = `${model.name}PrimaryKey`;
 
         const writerOptions: PothosWriterOptions = {
-          schemaBuilder: 'builder',
+          schemaBuilder: pothosTypeFile.getBuilderFragment(),
           fieldBuilder: 't',
-          typeReferences: pothosSchema.getTypeReferences(),
+          pothosSchemaBaseTypes,
+          typeReferences: [],
         };
         const primaryKeyDefinition = getPrimaryKeyDefinition(model);
 
@@ -60,11 +77,11 @@ export const pothosPrismaPrimaryKeyGenerator = createGenerator({
           true,
         );
 
-        const typeReference = {
-          typeName: inputName,
+        const typeReference = createPothosTypeReference({
+          name: inputName,
           exportName: `${lowerCaseFirst(inputName)}InputType`,
-          moduleName: pothosTypeFile.getModuleName(),
-        };
+          moduleSpecifier: pothosTypeFile.getModuleSpecifier(),
+        });
 
         return {
           providers: {
@@ -73,13 +90,9 @@ export const pothosPrismaPrimaryKeyGenerator = createGenerator({
             },
           },
           build: () => {
-            const typeReferences = pothosSchema.getTypeReferences();
-
-            typeReferences.addInputType(typeReference);
-
-            pothosTypeFile.registerType({
-              block: inputDefinition.definition,
-              category: 'input-type',
+            pothosTypeFile.typeDefinitions.add({
+              ...inputDefinition,
+              order,
             });
           },
         };

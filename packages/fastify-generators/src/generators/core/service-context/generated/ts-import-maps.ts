@@ -8,9 +8,9 @@ import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 
 const serviceContextImportsSchema = createTsImportMapSchema({
-  ServiceContext: { isTypeOnly: true },
   createServiceContext: {},
   createTestServiceContext: {},
+  ServiceContext: { isTypeOnly: true },
 });
 
 export type ServiceContextImportsProvider = TsImportMapProviderFromSchema<
@@ -30,11 +30,11 @@ export function createServiceContextImports(
   }
 
   return createTsImportMap(serviceContextImportsSchema, {
-    ServiceContext: path.join(importBase, 'utils/service-context.js'),
     createServiceContext: path.join(importBase, 'utils/service-context.js'),
     createTestServiceContext: path.join(
       importBase,
       'tests/helpers/service-context.test-helper.js',
     ),
+    ServiceContext: path.join(importBase, 'utils/service-context.js'),
   });
 }

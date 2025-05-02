@@ -1,13 +1,13 @@
 import { quot } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 
-import type { TsCodeFragmentOptions } from './fragments/creators.js';
-import type { TsCodeFragment, TsHoistedFragment } from './fragments/types.js';
-import type { TsImportDeclarationBuilder } from './imports/builder.js';
-import type { TsImportDeclaration } from './imports/types.js';
+import type { TsCodeFragmentOptions } from '../fragments/creators.js';
+import type { TsCodeFragment, TsHoistedFragment } from '../fragments/types.js';
+import type { TsImportDeclarationBuilder } from '../imports/builder.js';
+import type { TsImportDeclaration } from '../imports/types.js';
 
-import { tsCodeFragment } from './fragments/creators.js';
-import { tsImportBuilder } from './imports/builder.js';
+import { tsCodeFragment } from '../fragments/creators.js';
+import { tsImportBuilder } from '../imports/builder.js';
 
 function formatStringWithContent(
   str: string,
@@ -30,7 +30,7 @@ function isTsCodeFragment(value: unknown): value is TsCodeFragment {
   return typeof value === 'object' && value !== null && 'contents' in value;
 }
 
-function mergeFragmentImportsAndHoistedFragments(
+export function mergeFragmentImportsAndHoistedFragments(
   fragments: TsCodeFragment[],
   options?: {
     imports?: TsImportDeclaration[];
@@ -223,15 +223,22 @@ export const TsCodeUtils = {
     options: {
       wrapWithParenthesis?: boolean;
       disableSort?: boolean;
+      caseSensitive?: boolean;
     } = {},
   ): TsCodeFragment {
-    const { wrapWithParenthesis = false, disableSort = false } = options;
+    const {
+      wrapWithParenthesis = false,
+      disableSort = false,
+      caseSensitive = false,
+    } = options;
     const map =
       objOrMap instanceof Map ? objOrMap : new Map(Object.entries(objOrMap));
     const keys = [...map.keys()];
     const fragments = [...map.values()].filter(isTsCodeFragment);
 
-    const sortedKeys = disableSort ? keys : keys.toSorted();
+    const sortedKeys = disableSort
+      ? keys
+      : keys.toSorted(caseSensitive ? undefined : (a, b) => a.localeCompare(b));
 
     if (!disableSort && keys.some((k) => k.startsWith('...'))) {
       throw new Error('Cannot have spread keys when sorting is enabled');
@@ -300,15 +307,18 @@ export const TsCodeUtils = {
       | Map<string, TsCodeFragment | string | undefined>,
     options: {
       disableSort?: boolean;
+      caseSensitive?: boolean;
     } = {},
   ): TsCodeFragment {
-    const { disableSort = false } = options;
+    const { disableSort = false, caseSensitive = false } = options;
     const map =
       objOrMap instanceof Map ? objOrMap : new Map(Object.entries(objOrMap));
     const keys = [...map.keys()];
     const fragments = [...map.values()].filter(isTsCodeFragment);
 
-    const sortedKeys = disableSort ? keys : keys.toSorted();
+    const sortedKeys = disableSort
+      ? keys
+      : keys.toSorted(caseSensitive ? undefined : (a, b) => a.localeCompare(b));
 
     const mergedContent = sortedKeys
       .filter((key) => map.get(key))

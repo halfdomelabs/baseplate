@@ -1,9 +1,6 @@
 // standard typings of service output
 
-import type {
-  TsCodeFragment,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import type { ScalarFieldType } from './field-types.js';
 import type {
@@ -72,7 +69,10 @@ export interface ServiceOutputDto {
 
 export interface ServiceOutputMethod {
   name: string;
-  expression: TypescriptCodeExpression;
+  /**
+   * Fragment that references the method.
+   */
+  referenceFragment: TsCodeFragment;
   arguments: ServiceOutputDtoField[];
   returnType: ServiceOutputDto;
   requiresContext?: boolean;

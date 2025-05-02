@@ -1,6 +1,7 @@
 import type {
   BuilderAction,
   GeneratorInfo,
+  Provider,
   WriteFileOptions,
 } from '@halfdomelabs/sync';
 
@@ -56,9 +57,8 @@ type RenderTsTemplateFileActionImportMapProvidersInput<
   T extends TsTemplateFile,
 > = keyof Exclude<T['importMapProviders'], undefined> extends never
   ? Partial<{
-      importMapProviders: InferImportMapProvidersFromProviderTypeMap<
-        T['importMapProviders']
-      >;
+      // Slightly awkward hack to force Typescript to enforce the keys for an empty import map providers object
+      importMapProviders: Partial<Record<'', Provider>>;
     }>
   : {
       importMapProviders: InferImportMapProvidersFromProviderTypeMap<

@@ -1,31 +1,46 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TsCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
+import { quot, sortObjectKeys } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import type { PothosWriterOptions } from '@src/writers/pothos/index.js';
 
 import {
+  pothosFieldProvider,
+  pothosTypeOutputProvider,
+} from '@src/generators/pothos/_providers/index.js';
+import {
   getModelIdFieldName,
   getPrimaryKeyDefinition,
 } from '@src/generators/prisma/_shared/crud-method/primary-key-input.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
-import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import { writePothosArgsFromDtoFields } from '@src/writers/pothos/index.js';
 
+import { pothosFieldScope } from '../_providers/scopes.js';
+import { getPothosPrismaPrimaryKeyTypeOutputName } from '../pothos-prisma-primary-key/pothos-prisma-primary-key.generator.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
-import { pothosSchemaProvider } from '../pothos/pothos.generator.js';
-import { pothosFieldScope } from '../providers/scopes.js';
+import { pothosSchemaBaseTypesProvider } from '../pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({
+  /**
+   * The name of the model.
+   */
   modelName: z.string().min(1),
+  /**
+   * The order of the type in the types file.
+   */
+  order: z.number(),
+  /**
+   * Whether the model has a primary key input type.
+   */
+  hasPrimaryKeyInputType: z.boolean(),
 });
 
 export const pothosPrismaFindQueryGenerator = createGenerator({
@@ -33,17 +48,29 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName }) => ({
+  buildTasks: ({ modelName, order, hasPrimaryKeyInputType }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         pothosTypesFile: pothosTypesFileProvider,
-        pothosSchema: pothosSchemaProvider,
+        pothosSchemaBaseTypes: pothosSchemaBaseTypesProvider,
+        pothosPrimaryKeyInputType: pothosTypeOutputProvider
+          .dependency()
+          .optionalReference(
+            hasPrimaryKeyInputType
+              ? getPothosPrismaPrimaryKeyTypeOutputName(modelName)
+              : undefined,
+          ),
       },
       exports: {
         pothosField: pothosFieldProvider.export(pothosFieldScope),
       },
-      run({ prismaOutput, pothosSchema, pothosTypesFile }) {
+      run({
+        prismaOutput,
+        pothosSchemaBaseTypes,
+        pothosTypesFile,
+        pothosPrimaryKeyInputType,
+      }) {
         const modelOutput = prismaOutput.getPrismaModel(modelName);
 
         const { idFields } = modelOutput;
@@ -55,15 +82,18 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
         const primaryKeyDefinition = getPrimaryKeyDefinition(modelOutput);
 
         const writerOptions: PothosWriterOptions = {
-          schemaBuilder: 'builder',
+          schemaBuilder: pothosTypesFile.getBuilderFragment(),
           fieldBuilder: 't',
-          typeReferences: pothosSchema.getTypeReferences(),
+          pothosSchemaBaseTypes,
+          typeReferences: pothosPrimaryKeyInputType
+            ? [pothosPrimaryKeyInputType.getTypeReference()]
+            : undefined,
         };
 
         const lowerFirstModelName = lowerCaseFirst(modelName);
 
         const customFields = createNonOverwriteableMap<
-          Record<string, TypescriptCodeExpression>
+          Record<string, TsCodeFragment>
         >({});
 
         return {
@@ -80,21 +110,13 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
               writerOptions,
             );
 
-            if (pothosArgs.childDefinitions)
-              for (const child of pothosArgs.childDefinitions) {
-                pothosTypesFile.registerType({
-                  name: child.name,
-                  block: child.definition,
-                });
-              }
-
             const primaryKeyFieldName = getModelIdFieldName(modelOutput);
 
-            const resolveFunction = TypescriptCodeUtils.formatExpression(
+            const resolveFunction = TsCodeUtils.formatFragment(
               `async (query, root, ARG_INPUT) => MODEL.findUniqueOrThrow({...query,where: WHERE_CLAUSE})`,
               {
                 ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
-                MODEL: prismaOutput.getPrismaModelExpression(modelName),
+                MODEL: prismaOutput.getPrismaModelFragment(modelName),
                 WHERE_CLAUSE:
                   primaryKeyFieldName === primaryKeyDefinition.name
                     ? `{ ${primaryKeyFieldName} }`
@@ -104,12 +126,12 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
 
             const options = {
               type: quot(modelName),
-              ...customFields.value(),
-              args: pothosArgs.expression,
+              ...sortObjectKeys(customFields.value()),
+              args: pothosArgs.fragment,
               resolve: resolveFunction,
             };
 
-            const block = TypescriptCodeUtils.formatBlock(
+            const block = TsCodeUtils.formatFragment(
               `BUILDER.queryField(QUERY_NAME, (t) => 
           t.prismaField(OPTIONS)
         );`,
@@ -117,13 +139,17 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
                 QUERY_EXPORT: `${lowerFirstModelName}Query`,
                 BUILDER: 'builder',
                 QUERY_NAME: quot(lowerFirstModelName),
-                OPTIONS: TypescriptCodeUtils.mergeExpressionsAsObject(options),
+                OPTIONS: TsCodeUtils.mergeFragmentsAsObject(options, {
+                  disableSort: true,
+                }),
               },
             );
 
-            pothosTypesFile.registerType({
-              category: 'find-query',
-              block,
+            pothosTypesFile.typeDefinitions.add({
+              name: `${lowerFirstModelName}Query`,
+              fragment: block,
+              dependencies: pothosArgs.dependencies,
+              order,
             });
           },
         };

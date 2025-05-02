@@ -1,26 +1,21 @@
-import type {
-  ImportMap,
-  ImportMapper,
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
   nodeProvider,
   projectScope,
   tsCodeFragment,
+  TsCodeUtils,
   tsHoistedFragment,
   tsImportBuilder,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createProviderType,
+  createProviderTask,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -28,32 +23,74 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { authContextImportsProvider } from '@src/generators/auth/index.js';
 import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
 
-import { configServiceProvider } from '../config-service/config-service.generator.js';
+import {
+  configServiceImportsProvider,
+  configServiceProvider,
+} from '../config-service/config-service.generator.js';
 import {
   errorHandlerServiceConfigProvider,
-  errorHandlerServiceProvider,
+  errorHandlerServiceImportsProvider,
 } from '../error-handler-service/error-handler-service.generator.js';
 import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { fastifyProvider } from '../fastify/fastify.generator.js';
+import {
+  createFastifySentryImports,
+  fastifySentryImportsProvider,
+} from './generated/ts-import-maps.js';
+import { CORE_FASTIFY_SENTRY_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
-export interface FastifySentryProvider extends ImportMapper {
-  addScopeConfigurationBlock(block: TypescriptCodeBlock): void;
-  addShouldLogToSentryBlock(block: TypescriptCodeBlock): void;
-  addSentryIntegration(integration: TypescriptCodeExpression): void;
-}
+const [
+  setupTask,
+  fastifySentryConfigProvider,
+  fastifySentryConfigValuesProvider,
+] = createConfigProviderTask(
+  (t) => ({
+    scopeConfigurationFragments: t.map<string, TsCodeFragment>(),
+    shouldLogToSentryFragments: t.map<string, TsCodeFragment>(),
+    sentryIntegrations: t.mapFromObj<TsCodeFragment>({
+      nodeProfilingIntegration: tsCodeFragment(
+        `nodeProfilingIntegration()`,
+        tsImportBuilder(['nodeProfilingIntegration']).from(
+          '@sentry/profiling-node',
+        ),
+      ),
+      requestDataIntegration: tsCodeFragment(
+        `Sentry.requestDataIntegration({ include: { ip: true } })`,
+        tsImportBuilder().namespace('Sentry').from('@sentry/node'),
+      ),
+    }),
+  }),
+  {
+    prefix: 'fastify-sentry',
+    configScope: projectScope,
+  },
+);
 
-export const fastifySentryProvider =
-  createProviderType<FastifySentryProvider>('fastify-sentry');
+export { fastifySentryConfigProvider };
 
-const sentryServicePath = 'src/services/sentry.ts';
+const sentryServicePath = '@/src/services/sentry.ts';
+const sentryInstrumentPath = '@/src/instrument.ts';
 
 export const fastifySentryGenerator = createGenerator({
   name: 'core/fastify-sentry',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    setup: setupTask,
+    imports: createGeneratorTask({
+      exports: {
+        fastifySentryImports: fastifySentryImportsProvider.export(projectScope),
+      },
+      run() {
+        return {
+          providers: {
+            fastifySentryImports: createFastifySentryImports('@/src/services'),
+          },
+        };
+      },
+    }),
     fastifyInstrument: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
@@ -82,15 +119,21 @@ export const fastifySentryGenerator = createGenerator({
         node: nodeProvider,
         fastifyServerConfig: fastifyServerConfigProvider,
         errorHandlerServiceConfig: errorHandlerServiceConfigProvider,
+        fastifySentryImports: fastifySentryImportsProvider,
       },
-      run({ node, errorHandlerServiceConfig, fastifyServerConfig }) {
+      run({
+        node,
+        errorHandlerServiceConfig,
+        fastifyServerConfig,
+        fastifySentryImports,
+      }) {
         if (!node.isEsm) {
           fastifyServerConfig.initializerFragments.set(
             'sentry-instrument',
             tsCodeFragment('', [], {
               hoistedFragments: [
                 tsHoistedFragment(
-                  "import './instrument.js';",
+                  `import '${sentryInstrumentPath}';`,
                   'sentry-instrument',
                   'beforeImports',
                 ),
@@ -103,10 +146,10 @@ export const fastifySentryGenerator = createGenerator({
           'sentry-setup',
           tsCodeFragment(
             `Sentry.setupFastifyErrorHandler(fastify);
-          registerSentryEventProcessor();`,
+             registerSentryEventProcessor();`,
             [
               tsImportBuilder(['registerSentryEventProcessor']).from(
-                '@/src/services/sentry.js',
+                sentryServicePath,
               ),
               tsImportBuilder().namespace('Sentry').from('@sentry/node'),
             ],
@@ -119,9 +162,7 @@ export const fastifySentryGenerator = createGenerator({
               'logErrorToSentry',
               tsCodeFragment(
                 `context.errorId = logErrorToSentry(error, context);`,
-                tsImportBuilder(['logErrorToSentry']).from(
-                  '@/src/services/sentry.js',
-                ),
+                fastifySentryImports.logErrorToSentry.declaration(),
               ),
             );
           },
@@ -137,121 +178,66 @@ export const fastifySentryGenerator = createGenerator({
       ]),
       dev: extractPackageVersions(FASTIFY_PACKAGES, ['@types/lodash']),
     }),
+    config: createProviderTask(configServiceProvider, (configService) => {
+      configService.configFields.set('SENTRY_DSN', {
+        comment: 'Sentry DSN',
+        validator: tsCodeFragment('z.string().optional()'),
+        seedValue: '',
+        exampleValue: '',
+      });
+    }),
     main: createGeneratorTask({
       dependencies: {
-        configService: configServiceProvider,
-        typescript: typescriptProvider,
-        errorHandler: errorHandlerServiceProvider,
+        configServiceImports: configServiceImportsProvider,
+        typescriptFile: typescriptFileProvider,
+        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+        fastifySentryConfigValues: fastifySentryConfigValuesProvider,
       },
-      exports: {
-        fastifySentry: fastifySentryProvider.export(projectScope),
-      },
-      run({ configService, typescript, errorHandler }) {
-        const sentryServiceFile = typescript.createTemplate(
-          {
-            SHOULD_LOG_TO_SENTRY_BLOCKS: { type: 'code-block' },
-            SCOPE_CONFIGURATION_BLOCKS: { type: 'code-block' },
-          },
-          {
-            importMappers: [errorHandler],
-          },
-        );
-
-        const shouldLogToSentryBlocks: TypescriptCodeBlock[] = [];
-
-        configService.configFields.set('SENTRY_DSN', {
-          comment: 'Sentry DSN',
-          validator: tsCodeFragment('z.string().optional()'),
-          seedValue: '',
-          exampleValue: '',
-        });
-
-        const [serviceImport, servicePath] =
-          makeImportAndFilePath(sentryServicePath);
-
-        const errorLoggerPath =
-          errorHandler.getImportMap()['%error-logger']?.path;
-
-        if (!errorLoggerPath) {
-          throw new Error('Error logger path not found');
-        }
-
-        const importMap: ImportMap = {
-          '%fastify-sentry/service': {
-            path: serviceImport,
-            allowedImports: [
-              'extractSentryRequestData',
-              'configureSentryScope',
-              'logErrorToSentry',
-              'isSentryEnabled',
-            ],
-          },
-          '%fastify-sentry/logger': {
-            path: errorLoggerPath,
-            allowedImports: ['shouldLogToSentry'],
-          },
-        };
-
-        const scopeConfigurationBlocks: TypescriptCodeBlock[] = [];
-
-        const sentryIntegrations: TypescriptCodeExpression[] = [];
-
-        sentryIntegrations.push(
-          TypescriptCodeUtils.createExpression(
-            `nodeProfilingIntegration()`,
-            `import { nodeProfilingIntegration } from '@sentry/profiling-node'`,
-          ),
-          TypescriptCodeUtils.createExpression(
-            `Sentry.requestDataIntegration({ include: { ip: true } })`,
-            `import * as Sentry from '@sentry/node'`,
-          ),
-        );
-
+      run({
+        configServiceImports,
+        typescriptFile,
+        errorHandlerServiceImports,
+        fastifySentryConfigValues: {
+          sentryIntegrations,
+          scopeConfigurationFragments,
+          shouldLogToSentryFragments,
+        },
+      }) {
         return {
-          providers: {
-            fastifySentry: {
-              getImportMap: () => importMap,
-              addScopeConfigurationBlock(block) {
-                scopeConfigurationBlocks.push(block);
-              },
-              addShouldLogToSentryBlock(block) {
-                shouldLogToSentryBlocks.push(block);
-              },
-              addSentryIntegration(integration) {
-                sentryIntegrations.push(integration);
-              },
-            },
-          },
           build: async (builder) => {
-            sentryServiceFile.addCodeEntries({
-              SCOPE_CONFIGURATION_BLOCKS: scopeConfigurationBlocks,
-              SHOULD_LOG_TO_SENTRY_BLOCKS: TypescriptCodeUtils.mergeBlocks(
-                shouldLogToSentryBlocks,
-              ),
-            });
-
             await builder.apply(
-              sentryServiceFile.renderToAction(
-                'services/sentry.ts',
-                servicePath,
-              ),
-            );
-
-            const sentryInstrumentFile = typescript.createTemplate(
-              {
-                SENTRY_INTEGRATIONS:
-                  TypescriptCodeUtils.mergeExpressionsAsArray(
-                    sentryIntegrations,
+              typescriptFile.renderTemplateFile({
+                template: CORE_FASTIFY_SENTRY_TS_TEMPLATES.sentry,
+                destination: sentryServicePath,
+                variables: {
+                  TPL_SCOPE_CONFIGURATION: TsCodeUtils.mergeFragments(
+                    scopeConfigurationFragments,
+                    '\n\n',
                   ),
-              },
-              { importMappers: [configService] },
+                  TPL_LOG_TO_SENTRY_CONDITIONS: TsCodeUtils.mergeFragments(
+                    shouldLogToSentryFragments,
+                    '\n\n',
+                  ),
+                },
+                importMapProviders: {
+                  configServiceImports,
+                  errorHandlerServiceImports,
+                },
+              }),
             );
 
             await builder.apply(
-              sentryInstrumentFile.renderToAction(
-                'instrument.ts',
-                'src/instrument.ts',
-              ),
+              typescriptFile.renderTemplateFile({
+                template: CORE_FASTIFY_SENTRY_TS_TEMPLATES.instrument,
+                destination: sentryInstrumentPath,
+                variables: {
+                  TPL_INTEGRATIONS:
+                    TsCodeUtils.mergeFragmentsAsArray(sentryIntegrations),
+                },
+                importMapProviders: {
+                  configServiceImports,
+                },
+              }),
             );
           },
         };
@@ -260,14 +246,15 @@ export const fastifySentryGenerator = createGenerator({
     prisma: createGeneratorTask({
       dependencies: {
         prismaSchemaProvider: prismaSchemaProvider.dependency().optional(),
-        fastifySentryProvider,
+        fastifySentryConfig: fastifySentryConfigProvider,
       },
-      run({ prismaSchemaProvider, fastifySentryProvider }) {
+      run({ prismaSchemaProvider, fastifySentryConfig }) {
         if (prismaSchemaProvider) {
-          fastifySentryProvider.addSentryIntegration(
-            TypescriptCodeUtils.createExpression(
+          fastifySentryConfig.sentryIntegrations.set(
+            'prismaIntegration',
+            tsCodeFragment(
               `Sentry.prismaIntegration()`,
-              `import * as Sentry from '@sentry/node'`,
+              tsImportBuilder().namespace('Sentry').from('@sentry/node'),
             ),
           );
         }
@@ -276,13 +263,14 @@ export const fastifySentryGenerator = createGenerator({
     }),
     auth: createGeneratorTask({
       dependencies: {
-        fastifySentry: fastifySentryProvider,
+        fastifySentryConfig: fastifySentryConfigProvider,
         authContextImports: authContextImportsProvider.dependency().optional(),
       },
-      run({ authContextImports, fastifySentry }) {
+      run({ authContextImports, fastifySentryConfig }) {
         if (authContextImports) {
-          fastifySentry.addScopeConfigurationBlock(
-            TypescriptCodeUtils.createBlock(
+          fastifySentryConfig.scopeConfigurationFragments.set(
+            'user-id',
+            tsCodeFragment(
               `const userId = requestContext.get('userId');
     if (userId) {
       event.user = {
@@ -290,7 +278,9 @@ export const fastifySentryGenerator = createGenerator({
         id: userId,
       };
     }`,
-              `import { requestContext } from '@fastify/request-context';`,
+              tsImportBuilder(['requestContext']).from(
+                '@fastify/request-context',
+              ),
             ),
           );
         }

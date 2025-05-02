@@ -11,11 +11,13 @@ import {
   ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
+
+import type { PothosFieldWithInputPayloadPlugin } from './index.js';
+
 import {
   MutationWithInputPayloadOptions,
   OutputShapeFromFields,
 } from './types.js';
-import type { PothosFieldWithInputPayloadPlugin } from './index.js';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

@@ -112,4 +112,5 @@ export const tsUtilsGenerator = createGenerator({
   }),
 });
 
+export type { TsUtilsImportsProvider } from './generated/ts-import-maps.js';
 export { tsUtilsImportsProvider } from './generated/ts-import-maps.js';

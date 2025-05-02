@@ -1,9 +1,8 @@
 // @ts-nocheck
 
-import os from 'node:os';
+import { config } from '%configServiceImports';
 import * as Sentry from '@sentry/node';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { config } from '%config';
+import os from 'node:os';
 
 const SENTRY_ENABLED = !!config.SENTRY_DSN;
 
@@ -19,7 +18,8 @@ if (SENTRY_ENABLED) {
     dsn: config.SENTRY_DSN,
     environment: config.APP_ENVIRONMENT,
     serverName: os.hostname(),
-    integrations: SENTRY_INTEGRATIONS,
+    integrations: TPL_INTEGRATIONS,
+
     tracesSampler: ({ parentSampled, attributes }) => {
       const httpTarget = attributes?.['http.target'];
       if (

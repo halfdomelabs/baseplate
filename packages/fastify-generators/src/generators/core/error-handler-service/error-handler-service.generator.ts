@@ -218,3 +218,5 @@ export const errorHandlerServiceGenerator = createGenerator({
     }),
   }),
 });
+
+export { errorHandlerServiceImportsProvider } from './generated/ts-import-maps.js';

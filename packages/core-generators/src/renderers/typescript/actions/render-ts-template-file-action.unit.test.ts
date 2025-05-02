@@ -1,4 +1,4 @@
-import { testAction } from '@halfdomelabs/sync';
+import { createProviderType, testAction } from '@halfdomelabs/sync';
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -163,6 +163,10 @@ describe('renderTsTemplateFileAction', () => {
         },
         variables: {
           TPL_GREETING: { description: 'The greeting to use' },
+        },
+        importMapProviders: {
+          testImport1: createProviderType('test-import-1'),
+          testImport2: createProviderType('test-import-2'),
         },
       }),
       id: 'test-id',

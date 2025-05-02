@@ -1,18 +1,20 @@
 // @ts-nocheck
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   FieldNullability,
   InputFieldMap,
+  InputShapeFromFields,
   SchemaTypes,
   TypeParam,
-  InputShapeFromFields,
 } from '@pothos/core';
+
+import type { PothosAuthorizeByRolesPlugin } from './index.js';
 import type {
   AuthorizeRolePluginOptions,
   AuthorizeRoleRuleOption,
 } from './types.js';
-import type { PothosAuthorizeByRolesPlugin } from './index.js';
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

@@ -2,10 +2,10 @@
 
 import SchemaBuilder from '@pothos/core';
 
-export const builder = new SchemaBuilder<{ SCHEMA_TYPE_OPTIONS }>(
-  SCHEMA_BUILDER_OPTIONS,
-);
+export const builder = new SchemaBuilder<{
+  TPL_SCHEMA_TYPE_OPTIONS;
+}>(TPL_SCHEMA_BUILDER_OPTIONS);
 
 builder.queryType();
 builder.mutationType();
-SUBSCRIPTION_TYPE;
+TPL_SUBSCRIPTION_TYPE;

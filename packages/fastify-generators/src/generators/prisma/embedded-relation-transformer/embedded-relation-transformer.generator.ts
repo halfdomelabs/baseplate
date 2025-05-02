@@ -11,7 +11,7 @@ import {
   tsTemplate,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
+import { notEmpty, quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import type {
@@ -25,7 +25,6 @@ import type {
 } from '@src/types/prisma-output.js';
 
 import { serviceContextImportsProvider } from '@src/generators/core/service-context/service-context.generator.js';
-import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
 
 import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method.js';

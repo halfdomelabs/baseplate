@@ -1,9 +1,6 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import {
-  projectScope,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import { projectScope, TsCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -14,53 +11,74 @@ import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
-import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
 import { prismaToServiceOutputDto } from '@src/types/service-output.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
-import { writePothosExposeFieldFromDtoScalarField } from '@src/writers/pothos/index.js';
+import {
+  createPothosTypeReference,
+  writePothosExposeFieldFromDtoScalarField,
+} from '@src/writers/pothos/index.js';
 
+import {
+  pothosFieldScope,
+  pothosTypeOutputProvider,
+} from '../_providers/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
-import { pothosSchemaProvider } from '../pothos/pothos.generator.js';
-import { pothosFieldScope } from '../providers/scopes.js';
+import { pothosSchemaBaseTypesProvider } from '../pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({
+  /**
+   * The name of the model.
+   */
   modelName: z.string().min(1),
+  /**
+   * The fields to expose.
+   */
   exposedFields: z.array(z.string().min(1)),
+  /**
+   * The order of the type in the types file.
+   */
+  order: z.number(),
 });
 
 export interface PothosPrismaObjectProvider {
-  addCustomField: (name: string, expression: TypescriptCodeExpression) => void;
+  addCustomField: (name: string, expression: TsCodeFragment) => void;
 }
 
 export const pothosPrismaObjectProvider =
   createProviderType<PothosPrismaObjectProvider>('pothos-prisma-object');
+
+export function createPothosPrismaObjectTypeOutputName(
+  modelName: string,
+): string {
+  return `prisma-object-type:${modelName}`;
+}
 
 export const pothosPrismaObjectGenerator = createGenerator({
   name: 'pothos/pothos-prisma-object',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName, exposedFields }) => ({
+  buildTasks: ({ modelName, exposedFields, order }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         pothosTypeFile: pothosTypesFileProvider,
-        pothosSchema: pothosSchemaProvider,
+        pothosSchemaBaseTypes: pothosSchemaBaseTypesProvider,
       },
       exports: {
         pothosPrismaObject: pothosPrismaObjectProvider.export(pothosFieldScope),
         pothosTypeOutput: pothosTypeOutputProvider.export(
           projectScope,
-          `prisma-object-type:${modelName}`,
+          createPothosPrismaObjectTypeOutputName(modelName),
         ),
       },
-      run({ prismaOutput, pothosTypeFile, pothosSchema }) {
+      run({ prismaOutput, pothosTypeFile, pothosSchemaBaseTypes }) {
         const model = prismaOutput.getPrismaModel(modelName);
 
-        const exportName = `${lowerCaseFirst(model.name)}ObjectType`;
+        const variableName = `${lowerCaseFirst(model.name)}ObjectType`;
 
         const customFields = createNonOverwriteableMap<
-          Record<string, TypescriptCodeExpression>
+          Record<string, TsCodeFragment>
         >({});
 
         return {
@@ -71,19 +89,18 @@ export const pothosPrismaObjectGenerator = createGenerator({
               },
             },
             pothosTypeOutput: {
-              getTypeReference: () => ({
-                typeName: model.name,
-                exportName,
-                moduleName: pothosTypeFile.getModuleName(),
-              }),
+              getTypeReference: () =>
+                createPothosTypeReference({
+                  name: model.name,
+                  exportName: variableName,
+                  moduleSpecifier: pothosTypeFile.getModuleSpecifier(),
+                }),
             },
           },
           build: () => {
             const outputDto = prismaToServiceOutputDto(model, (enumName) =>
               prismaOutput.getServiceEnum(enumName),
             );
-
-            const typeReferences = pothosSchema.getTypeReferences();
 
             const missingField = exposedFields.find(
               (exposedFieldName) =>
@@ -102,41 +119,46 @@ export const pothosPrismaObjectGenerator = createGenerator({
               .filter((field) => exposedFields.includes(field.name))
               .map((field) => ({
                 name: field.name,
-                expression:
+                fragment:
                   field.type === 'scalar'
                     ? writePothosExposeFieldFromDtoScalarField(field, {
-                        schemaBuilder: 'builder',
+                        schemaBuilder: pothosTypeFile.getBuilderFragment(),
                         fieldBuilder: 't',
-                        typeReferences,
+                        pothosSchemaBaseTypes,
+                        typeReferences: [],
                       })
                     : `t.relation('${field.name}'${
                         field.isNullable ? ', { nullable: true }' : ''
                       })`,
               }));
 
-            const objectTypeBlock = TypescriptCodeUtils.formatBlock(
-              `export const OBJECT_TYPE_EXPORT = BUILDER.prismaObject(MODEL_NAME, {
+            const objectTypeBlock = TsCodeUtils.formatFragment(
+              `export const VARIABLE_NAME = BUILDER.prismaObject(MODEL_NAME, {
               fields: (t) => (FIELDS)
             });`,
               {
-                OBJECT_TYPE_EXPORT: exportName,
-                BUILDER: pothosTypeFile.getBuilder(),
+                VARIABLE_NAME: variableName,
+                BUILDER: pothosTypeFile.getBuilderFragment(),
                 MODEL_NAME: quot(model.name),
-                FIELDS: TypescriptCodeUtils.mergeExpressionsAsObject({
-                  ...Object.fromEntries(
-                    fieldDefinitions.map((fieldDefinition) => [
-                      fieldDefinition.name,
-                      fieldDefinition.expression,
-                    ]),
-                  ),
-                  ...customFields.value(),
-                }),
+                FIELDS: TsCodeUtils.mergeFragmentsAsObject(
+                  {
+                    ...Object.fromEntries(
+                      fieldDefinitions.map((fieldDefinition) => [
+                        fieldDefinition.name,
+                        fieldDefinition.fragment,
+                      ]),
+                    ),
+                    ...customFields.value(),
+                  },
+                  { disableSort: true },
+                ),
               },
             );
 
-            pothosTypeFile.registerType({
-              block: objectTypeBlock,
-              category: 'object-type',
+            pothosTypeFile.typeDefinitions.add({
+              name: model.name,
+              fragment: objectTypeBlock,
+              order,
             });
           },
         };

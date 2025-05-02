@@ -1,35 +1,36 @@
-import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
-  makeImportAndFilePath,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  TsCodeUtils,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { mapValuesOfMap } from '@halfdomelabs/utils';
 import { kebabCase } from 'change-case';
-import { sortBy } from 'es-toolkit';
+import path from 'node:path';
 import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
+import { createPothosTypeReference } from '@src/writers/pothos/options.js';
 
-import { pothosSetupProvider } from '../pothos/pothos.generator.js';
+import { pothosConfigProvider } from '../pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({
+  id: z.string().min(1),
   name: z.string().min(1),
 });
 
 interface PothosEnum {
   name: string;
   exportName: string;
-  block: TypescriptCodeBlock;
+  fragment: TsCodeFragment;
 }
 
 export interface PothosEnumsFileProvider {
-  getBuilder: () => string;
   registerEnum(type: PothosEnum): void;
 }
 
@@ -41,57 +42,54 @@ export const pothosEnumsFileGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: ({ name }) => ({
+  buildTasks: ({ id, name }) => ({
     main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
-        typescript: typescriptProvider,
-        pothosSetup: pothosSetupProvider,
+        typescriptFile: typescriptFileProvider,
+        pothosConfig: pothosConfigProvider,
       },
       exports: {
         pothosEnumsFile: pothosEnumsFileProvider.export(),
       },
-      run({ appModule, typescript, pothosSetup }) {
-        const [typesImport, typesPath] = makeImportAndFilePath(
-          `${appModule.getModuleFolder()}/schema/${kebabCase(name)}.ts`,
+      run({ appModule, typescriptFile, pothosConfig }) {
+        const typesPath = path.posix.join(
+          appModule.getModuleFolder(),
+          'schema',
+          `${kebabCase(name)}.ts`,
         );
 
-        appModule.moduleImports.push(typesImport);
-        pothosSetup.registerSchemaFile(typesPath);
+        appModule.moduleImports.push(typesPath);
+        pothosConfig.schemaFiles.push(typesPath);
 
-        const enums: PothosEnum[] = [];
+        const enums = new Map<string, PothosEnum>();
 
         return {
           providers: {
             pothosEnumsFile: {
-              getBuilder: () => 'builder',
               registerEnum(pothosEnum) {
-                enums.push(pothosEnum);
-                pothosSetup.getTypeReferences().addPothosEnum({
-                  typeName: pothosEnum.name,
-                  exportName: pothosEnum.exportName,
-                  moduleName: typesImport,
-                });
+                enums.set(pothosEnum.name, pothosEnum);
+                pothosConfig.enums.set(
+                  pothosEnum.name,
+                  createPothosTypeReference({
+                    name: pothosEnum.name,
+                    exportName: pothosEnum.exportName,
+                    moduleSpecifier: typesPath,
+                  }),
+                );
               },
             },
           },
           build: async (builder) => {
-            const orderedTypes = sortBy(enums, [(type) => type.name]);
-
-            const enumsFile = typescript.createTemplate({
-              TYPES: TypescriptCodeUtils.mergeBlocks(
-                orderedTypes.map((t) => t.block),
-                '\n\n',
-              ),
-            });
-
-            enumsFile.addCodeAddition({
-              importText: [`import {builder} from '%pothos'`],
-              importMappers: [pothosSetup],
-            });
-
             await builder.apply(
-              enumsFile.renderToActionFromText('TYPES', typesPath),
+              typescriptFile.renderTemplateFragment({
+                id,
+                destination: typesPath,
+                fragment: TsCodeUtils.mergeFragments(
+                  mapValuesOfMap(enums, (pothosEnum) => pothosEnum.fragment),
+                  '\n\n',
+                ),
+              }),
             );
           },
         };

@@ -1,14 +1,8 @@
-import type {
-  TsCodeFragment,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import {
-  TsCodeUtils,
-  tsImportBuilder,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import { TsCodeUtils, tsImportBuilder } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { notEmpty } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import type {
@@ -20,7 +14,6 @@ import type { ServiceOutputMethod } from '@src/types/service-output.js';
 import { serviceContextImportsProvider } from '@src/generators/core/service-context/service-context.generator.js';
 import { serviceFileProvider } from '@src/generators/core/service-file/service-file.generator.js';
 import { prismaToServiceOutputDto } from '@src/types/service-output.js';
-import { notEmpty } from '@src/utils/array.js';
 
 import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method.js';
 
@@ -47,7 +40,7 @@ const descriptorSchema = z.object({
 });
 
 function getMethodDefinition(
-  serviceMethodExpression: TypescriptCodeExpression,
+  serviceMethodReference: TsCodeFragment,
   options: PrismaDataMethodOptions,
 ): ServiceOutputMethod {
   const { name, modelName, prismaOutput } = options;
@@ -59,7 +52,7 @@ function getMethodDefinition(
 
   return {
     name,
-    expression: serviceMethodExpression,
+    referenceFragment: serviceMethodReference,
     arguments: [
       {
         type: 'nested',
@@ -171,9 +164,9 @@ export const prismaCrudUpdateGenerator = createGenerator({
         const { name, modelName, prismaFields, transformerNames } = descriptor;
         const methodName = `${name}${modelName}`;
 
-        const serviceMethodExpression = TypescriptCodeUtils.createExpression(
+        const serviceMethodReference = TsCodeUtils.importFragment(
           methodName,
-          `import { ${methodName} } from '${serviceFile.getServiceImport()}';`,
+          serviceFile.getServiceImport(),
         );
         const transformerOption: PrismaDataTransformerOptions = {
           operationType: 'update',
@@ -206,7 +199,7 @@ export const prismaCrudUpdateGenerator = createGenerator({
             serviceFile.registerMethod(
               name,
               getMethodBlock(methodOptions),
-              getMethodDefinition(serviceMethodExpression, methodOptions),
+              getMethodDefinition(serviceMethodReference, methodOptions),
             );
           },
         };

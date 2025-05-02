@@ -1,4 +1,4 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TsCodeUtils, tsTemplate } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
@@ -7,6 +7,7 @@ import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.gener
 import { lowerCaseFirst } from '@src/utils/case.js';
 
 import { pothosEnumsFileProvider } from '../pothos-enums-file/pothos-enums-file.generator.js';
+import { pothosImportsProvider } from '../pothos/generated/ts-import-maps.js';
 
 const descriptorSchema = z.object({
   enumName: z.string().min(1),
@@ -22,31 +23,26 @@ export const pothosPrismaEnumGenerator = createGenerator({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         pothosEnumsFile: pothosEnumsFileProvider,
+        pothosImports: pothosImportsProvider,
       },
-      run({ prismaOutput, pothosEnumsFile }) {
+      run({ prismaOutput, pothosEnumsFile, pothosImports }) {
         const enumBlock = prismaOutput.getServiceEnum(enumName);
         const exportName = `${lowerCaseFirst(enumName)}Enum`;
 
-        const pothosBlock = TypescriptCodeUtils.formatBlock(
-          `export const ENUM_TYPE_EXPORT = BUILDER.enumType(ENUM_NAME, ENUM_OPTIONS);`,
-          {
-            ENUM_TYPE_EXPORT: exportName,
-            BUILDER: pothosEnumsFile.getBuilder(),
-            ENUM_NAME: quot(enumName),
-            ENUM_OPTIONS: TypescriptCodeUtils.mergeExpressionsAsObject({
-              values: TypescriptCodeUtils.mergeExpressionsAsObject(
-                Object.fromEntries(
-                  enumBlock.values.map((value) => [value.name, '{}']),
-                ),
+        const enumFragment = tsTemplate`
+          export const ${exportName} = ${pothosImports.builder.fragment()}.enumType(${quot(enumName)}, {
+            values: ${TsCodeUtils.mergeFragmentsAsObject(
+              Object.fromEntries(
+                enumBlock.values.map((value) => [value.name, '{}']),
               ),
-            }),
-          },
-        );
+            )}
+          })
+        `;
 
         pothosEnumsFile.registerEnum({
           name: enumName,
           exportName,
-          block: pothosBlock,
+          fragment: enumFragment,
         });
 
         return {};

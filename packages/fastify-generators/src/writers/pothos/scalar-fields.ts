@@ -1,6 +1,6 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { tsTemplate } from '@halfdomelabs/core-generators';
 import { quot } from '@halfdomelabs/utils';
 
 import type { ServiceOutputDtoScalarField } from '@src/types/service-output.js';
@@ -14,10 +14,20 @@ import {
   writePothosFieldOptions,
 } from './helpers.js';
 
+/**
+ * Write a Pothos input field from a scalar field, e.g.
+ * ```ts
+ * t.field({ type: 'String' });
+ * ```
+ *
+ * @param field - The field to write the Pothos input field for.
+ * @param options - The options for the Pothos writer.
+ * @returns The Pothos input field.
+ */
 export function writePothosInputFieldFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
   options: PothosWriterOptions,
-): TypescriptCodeExpression {
+): TsCodeFragment {
   const { methodName = 'field', type } = getPothosMethodAndTypeForScalar(
     field,
     options,
@@ -28,20 +38,23 @@ export function writePothosInputFieldFromDtoScalarField(
     type,
   });
 
-  return TypescriptCodeUtils.formatExpression(
-    `BUILDER.POTHOS_METHOD(${fieldOptions ? 'OPTIONS' : ''})`,
-    {
-      BUILDER: options.fieldBuilder,
-      POTHOS_METHOD: methodName,
-      OPTIONS: fieldOptions ?? '',
-    },
-  );
+  return tsTemplate`${options.fieldBuilder}.${methodName}(${fieldOptions ?? ''})`;
 }
 
+/**
+ * Write a Pothos object field from a scalar field, e.g.
+ * ```ts
+ * t.field({ type: 'String' });
+ * ```
+ *
+ * @param field - The field to write the Pothos object field for.
+ * @param options - The options for the Pothos writer.
+ * @returns The Pothos object field.
+ */
 export function writePothosObjectFieldFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
   options: PothosWriterOptions,
-): TypescriptCodeExpression {
+): TsCodeFragment {
   const { methodName = 'field', type } = getPothosMethodAndTypeForScalar(
     field,
     options,
@@ -51,38 +64,37 @@ export function writePothosObjectFieldFromDtoScalarField(
     type,
   });
 
-  return TypescriptCodeUtils.formatExpression(
-    `BUILDER.POTHOS_METHOD(${fieldOptions ? 'OPTIONS' : ''})`,
-    {
-      BUILDER: options.fieldBuilder,
-      POTHOS_METHOD: methodName,
-      OPTIONS: fieldOptions ?? '',
-    },
-  );
+  return tsTemplate`${options.fieldBuilder}.${methodName}(${fieldOptions ?? ''})`;
 }
 
+/**
+ * Write a Pothos expose field from a scalar field, e.g.
+ * ```ts
+ * t.exposeId();
+ * ```
+ *
+ * @param field - The field to write the Pothos expose field for.
+ * @param options - The options for the Pothos writer.
+ * @returns The Pothos expose field.
+ */
 export function writePothosExposeFieldFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
   options: PothosWriterOptions,
-): TypescriptCodeExpression {
+): TsCodeFragment {
   const { methodName, type } = getPothosMethodAndTypeForScalar(field, options);
   const fieldOptions = writePothosFieldOptions({
     nullable: field.isOptional,
     type,
   });
 
-  const exposeMethodName = methodName
-    ? // exposeID instead of exposeId
-      `expose${upperCaseFirst(methodName === 'id' ? 'ID' : methodName)}`
-    : 'expose';
+  const exposeMethodName = (() => {
+    // exposeID instead of exposeId
+    if (methodName === 'id') return 'exposeID';
+    if (methodName === 'idList') return 'exposeIDList';
+    // If the method name is an inbuilt Pothos method, use the method name directly
+    if (methodName) return `expose${upperCaseFirst(methodName)}`;
+    return 'expose';
+  })();
 
-  return TypescriptCodeUtils.formatExpression(
-    `BUILDER.POTHOS_METHOD(FIELD_NAME${fieldOptions ? ', OPTIONS' : ''})`,
-    {
-      BUILDER: options.fieldBuilder,
-      FIELD_NAME: quot(field.name),
-      POTHOS_METHOD: exposeMethodName,
-      OPTIONS: fieldOptions ?? '',
-    },
-  );
+  return tsTemplate`${options.fieldBuilder}.${exposeMethodName}(${quot(field.name)}, ${fieldOptions ?? ''})`;
 }

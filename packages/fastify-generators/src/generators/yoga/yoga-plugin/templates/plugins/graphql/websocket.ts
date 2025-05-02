@@ -1,9 +1,11 @@
 // @ts-nocheck
 
+import { logError } from '%errorHandlerServiceImports';
+import { logger } from '%loggerServiceImports';
+import { createContextFromRequest } from '%requestServiceContextImports';
 import { WebsocketHandler } from '@fastify/websocket';
-import { FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { ExecutionArgs, ExecutionResult, GraphQLError } from 'graphql';
-import { YogaServerInstance } from 'graphql-yoga';
 import {
   CloseCode,
   ConnectionInitMessage,
@@ -12,14 +14,8 @@ import {
   makeServer,
   ServerOptions,
 } from 'graphql-ws';
-import { logger } from '@/src/services/logger.js';
-// <% if (it.authEnabled) { %>
-import { createAuthContextFromSessionInfo } from '%auth-context/utils';
-import { HttpError } from '@/src/utils/http-errors.js';
-// <% } %>
+import { YogaServerInstance } from 'graphql-yoga';
 import * as ws from 'ws';
-import { logError } from '@/src/services/error-logger.js';
-import { createContextFromRequest } from '@/src/utils/request-service-context.js';
 
 interface RootValueWithExecutor {
   execute: (args: ExecutionArgs) => Promise<ExecutionResult>;
@@ -213,57 +209,8 @@ export function getGraphqlWsHandler(
 ): WebsocketHandler {
   return makeHandler({
     execute: (args) => (args.rootValue as RootValueWithExecutor).execute(args),
-    // <% if (it.authEnabled) { %>
-    onConnect: async (ctx) => {
-      try {
-        // attach auth info to request
-        const authorizationHeader = ctx.connectionParams?.authorization;
-        const sessionInfo = AUTH_INFO_CREATOR;
-        ctx.extra.request.auth = createAuthContextFromSessionInfo(sessionInfo);
+    TPL_ON_CONNECT,
 
-        // set expiry for socket based on auth token expiry
-        const tokenExpiry = sessionInfo?.expiresAt;
-        if (tokenExpiry) {
-          const socket = ctx.extra.socket;
-
-          const timeoutHandle = setTimeout(() => {
-            try {
-              socket.close(CloseCode.Forbidden, 'token-expired');
-            } catch (err) {
-              logError(err);
-            }
-          }, tokenExpiry.getTime() - Date.now());
-          socket.on('close', () => clearTimeout(timeoutHandle));
-        }
-      } catch (err) {
-        // only a subset of HTTP errors are mapped
-        const httpToSocketErrorMap: Record<number, CloseCode> = {
-          403: CloseCode.Forbidden,
-          // due to implementation of graphql-ws, only Forbidden will be retried
-          // https://github.com/enisdenjo/graphql-ws/blob/master/src/client.ts#L827
-          401: CloseCode.Forbidden,
-          400: CloseCode.BadRequest,
-        };
-        logger.error(
-          `websocket connection failed: ${
-            err instanceof Error ? err.message : typeof err
-          }`,
-        );
-        if (err instanceof HttpError && httpToSocketErrorMap[err.statusCode]) {
-          ctx.extra.socket.close(
-            httpToSocketErrorMap[err.statusCode],
-            err.code,
-          );
-        } else {
-          logError(err);
-          ctx.extra.socket.close(
-            CloseCode.InternalServerError,
-            'unknown-error',
-          );
-        }
-      }
-    },
-    // <% } %>
     subscribe: (args) =>
       (args.rootValue as RootValueWithExecutor).subscribe(args),
     onSubscribe: (ctx, msg) => {

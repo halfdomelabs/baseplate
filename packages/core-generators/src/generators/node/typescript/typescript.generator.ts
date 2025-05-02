@@ -18,6 +18,7 @@ import { z } from 'zod';
 
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
 import type {
+  RenderTsFragmentActionInput,
   RenderTsTemplateFileActionInput,
   RenderTsTemplateGroupActionInput,
   TsTemplateFile,
@@ -34,6 +35,7 @@ import {
   getProjectRelativePathFromModuleSpecifier,
   normalizeModuleSpecifier,
   pathMapEntriesToRegexes,
+  renderTsFragmentAction,
   renderTsTemplateGroupAction,
 } from '@src/renderers/typescript/index.js';
 import { extractPackageVersions } from '@src/utils/extract-packages.js';
@@ -146,6 +148,8 @@ export interface TypescriptFileProvider {
   renderTemplateFile<T extends TsTemplateFile = TsTemplateFile>(
     payload: RenderTsTemplateFileActionInput<T>,
   ): BuilderAction;
+  /** Renders a template fragment to an action */
+  renderTemplateFragment(payload: RenderTsFragmentActionInput): BuilderAction;
   /**
    * Renders a template group to an action
    *
@@ -161,6 +165,14 @@ export interface TypescriptFileProvider {
    * @param projectRelativePath - The project relative path to mark as used
    */
   markImportAsUsed(projectRelativePath: string): void;
+  /**
+   * Resolves a module specifier to a project relative path
+   *
+   * @param moduleSpecifier - The module specifier to resolve
+   * @param from - The directory to resolve the module from
+   * @returns The project relative path
+   */
+  resolveModuleSpecifier(moduleSpecifier: string, from: string): string;
 }
 
 export const typescriptFileProvider =
@@ -413,6 +425,20 @@ export const typescriptGenerator = createGenerator({
                   });
                 }
               },
+              renderTemplateFragment: (payload) => {
+                const directory = path.dirname(
+                  normalizePathToProjectPath(payload.destination),
+                );
+                return renderTsFragmentAction({
+                  ...payload,
+                  renderOptions: {
+                    resolveModule(moduleSpecifier) {
+                      return resolveModuleSpecifier(moduleSpecifier, directory);
+                    },
+                    ...sharedRenderOptions,
+                  },
+                });
+              },
               renderTemplateFile,
               renderTemplateGroup: (payload) =>
                 renderTsTemplateGroupAction({
@@ -432,6 +458,7 @@ export const typescriptGenerator = createGenerator({
                   projectRelativePath.replace(/\.(j|t)sx?$/, ''),
                 );
               },
+              resolveModuleSpecifier,
             },
           },
           async build(builder) {

@@ -1,7 +1,8 @@
 // @ts-nocheck
+
+import { config } from '%configServiceImports';
+import { HttpError } from '%errorHandlerServiceImports';
 import * as Sentry from '@sentry/node';
-import { config } from './config.js';
-import { HttpError } from '%http-errors';
 import { FastifyError } from 'fastify';
 
 const SENTRY_ENABLED = !!config.SENTRY_DSN;
@@ -20,7 +21,7 @@ export function shouldLogToSentry(error: unknown): boolean {
     return fastifyError.statusCode <= 500;
   }
 
-  SHOULD_LOG_TO_SENTRY_BLOCKS;
+  TPL_LOG_TO_SENTRY_CONDITIONS;
 
   return true;
 }
@@ -30,7 +31,9 @@ export function registerSentryEventProcessor(): void {
     if (hint?.originalException && !shouldLogToSentry(hint.originalException)) {
       return null;
     }
-    SCOPE_CONFIGURATION_BLOCKS;
+
+    TPL_SCOPE_CONFIGURATION;
+
     return event;
   });
 }

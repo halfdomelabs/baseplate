@@ -11,8 +11,8 @@ const authContextImportsSchema = createTsImportMapSchema({
   AuthContext: { isTypeOnly: true },
   AuthSessionInfo: { isTypeOnly: true },
   AuthUserSessionInfo: { isTypeOnly: true },
-  InvalidSessionError: {},
   createAuthContextFromSessionInfo: {},
+  InvalidSessionError: {},
 });
 
 type AuthContextImportsProvider = TsImportMapProviderFromSchema<
@@ -35,10 +35,10 @@ export function createAuthContextImports(
     AuthContext: path.join(importBase, 'types/auth-context.types.js'),
     AuthSessionInfo: path.join(importBase, 'types/auth-session.types.js'),
     AuthUserSessionInfo: path.join(importBase, 'types/auth-session.types.js'),
-    InvalidSessionError: path.join(importBase, 'types/auth-session.types.js'),
     createAuthContextFromSessionInfo: path.join(
       importBase,
       'utils/auth-context.utils.js',
     ),
+    InvalidSessionError: path.join(importBase, 'types/auth-session.types.js'),
   });
 }

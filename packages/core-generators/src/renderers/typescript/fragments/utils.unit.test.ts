@@ -37,7 +37,7 @@ describe('flattenImportsAndHoistedFragments', () => {
     ]);
   });
 
-  it('should handle nested hoisted fragments with correct priorities', () => {
+  it('should handle nested hoisted fragments with correct ordering', () => {
     const nestedFragment: TsCodeFragment = {
       contents: 'const nested = true;',
       hoistedFragments: [
@@ -63,15 +63,8 @@ describe('flattenImportsAndHoistedFragments', () => {
     ];
 
     const result = flattenImportsAndHoistedFragments(fragments);
-    expect(result.hoistedFragments).toHaveLength(2);
-
-    // Check that root-type has lower priority than nested-type
-    const rootType = result.hoistedFragments.find((f) => f.key === 'root-type');
-    const nestedType = result.hoistedFragments.find(
-      (f) => f.key === 'nested-type',
-    );
-    expect(rootType).toBeDefined();
-    expect(nestedType).toBeDefined();
+    expect(result.hoistedFragments[0].key).toBe('nested-type');
+    expect(result.hoistedFragments[1].key).toBe('root-type');
   });
 
   it('should deduplicate hoisted fragments by key', () => {
@@ -112,7 +105,7 @@ describe('flattenImportsAndHoistedFragments', () => {
     );
   });
 
-  it('should order hoisted fragments by priority (highest to lowest) and then by key', () => {
+  it('should order hoisted fragments by locality-based topological sort and then by key', () => {
     const fragments: TsCodeFragment[] = [
       {
         contents: 'const a = 1;',
@@ -143,7 +136,7 @@ describe('flattenImportsAndHoistedFragments', () => {
               contents: 'type C = string;',
               hoistedFragments: [
                 {
-                  key: 'z-nested-key', // nested, so higher priority despite alphabetically last
+                  key: 'z-nested-key', // nested, so next to c-key despite alphabetically last
                   position: 'afterImports',
                   fragment: {
                     contents: 'type Z = string;',
@@ -159,11 +152,13 @@ describe('flattenImportsAndHoistedFragments', () => {
     const result = flattenImportsAndHoistedFragments(fragments);
     expect(result.hoistedFragments).toHaveLength(4);
 
-    // Check ordering: nested fragment should come first (highest priority)
-    // then root fragments in alphabetical order by key
-    expect(result.hoistedFragments[0].key).toBe('z-nested-key');
-    expect(result.hoistedFragments[1].key).toBe('a-key');
-    expect(result.hoistedFragments[2].key).toBe('b-key');
-    expect(result.hoistedFragments[3].key).toBe('c-key');
+    // Check ordering: nested fragment should come before c-key
+    // and root fragments should be in alphabetical order by key
+    expect(result.hoistedFragments.map((h) => h.key)).toEqual([
+      'a-key',
+      'b-key',
+      'z-nested-key',
+      'c-key',
+    ]);
   });
 });

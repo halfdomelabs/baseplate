@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { capitalizeString } from '%tsUtilsImports';
 import {
   FieldRef,
   InputFieldBuilder,
@@ -7,7 +8,6 @@ import {
   RootFieldBuilder,
   SchemaTypes,
 } from '@pothos/core';
-import { capitalizeString } from '%ts-utils/string';
 
 const rootBuilderProto =
   RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<

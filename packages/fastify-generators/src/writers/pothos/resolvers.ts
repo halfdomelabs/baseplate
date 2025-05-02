@@ -1,8 +1,12 @@
-import type { TsUtilsProvider } from '@halfdomelabs/core-generators';
+import type {
+  TsCodeFragment,
+  TsUtilsImportsProvider,
+} from '@halfdomelabs/core-generators';
 
 import {
-  TypescriptCodeExpression,
-  TypescriptCodeUtils,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsTemplate,
 } from '@halfdomelabs/core-generators';
 import { singularize } from 'inflection';
 
@@ -13,8 +17,8 @@ import type {
 
 function buildNestedArgExpression(
   arg: ServiceOutputDtoNestedField,
-  tsUtils: TsUtilsProvider,
-): TypescriptCodeExpression {
+  tsUtils: TsUtilsImportsProvider,
+): TsCodeFragment {
   if (arg.isPrismaType) {
     throw new Error(`Prisma types are not supported in input fields`);
   }
@@ -40,33 +44,27 @@ function buildNestedArgExpression(
           tsUtils,
         ),
       }))
-      .filter((f) => f.expression.content.includes('restrictObjectNulls'));
+      .filter((f) => f.expression.contents.includes('restrictObjectNulls'));
 
     if (nestedExpressionsWithRestrict.length > 0) {
-      return TypescriptCodeUtils.formatExpression(
+      return TsCodeUtils.formatFragment(
         `{
           ...${arg.name},
           RESTRICT_EXPRESSIONS
         }`,
         {
-          RESTRICT_EXPRESSIONS: TypescriptCodeUtils.mergeExpressions(
+          RESTRICT_EXPRESSIONS: TsCodeUtils.mergeFragmentsPresorted(
             nestedExpressionsWithRestrict.map(({ field, expression }) => {
               if (field.isList) {
-                return expression.wrap(
-                  (contents) =>
-                    `${field.name}: ${arg.name}.${
-                      field.name
-                    }?.map((${singularize(field.name)}) => ${
-                      contents.trimStart().startsWith('{')
-                        ? `(${contents})`
-                        : contents
-                    })`,
-                );
+                return tsTemplate`${field.name}: ${arg.name}.${
+                  field.name
+                }?.map((${singularize(field.name)}) => ${
+                  expression.contents.trimStart().startsWith('{')
+                    ? tsTemplate`(${expression})`
+                    : expression
+                })`;
               }
-              return expression.wrap(
-                (contents) =>
-                  `${field.name}: ${arg.name}.${field.name} && ${contents}`,
-              );
+              return tsTemplate`${field.name}: ${arg.name}.${field.name} && ${expression}`;
             }),
             ',\n',
           ),
@@ -74,13 +72,13 @@ function buildNestedArgExpression(
       );
     }
   }
-  return new TypescriptCodeExpression(arg.name);
+  return tsCodeFragment(arg.name);
 }
 
 function convertNestedArgForCall(
   arg: ServiceOutputDtoNestedField,
-  tsUtils: TsUtilsProvider,
-): TypescriptCodeExpression {
+  tsUtils: TsUtilsImportsProvider,
+): TsCodeFragment {
   if (arg.isPrismaType) {
     throw new Error(`Prisma types are not supported in input fields`);
   }
@@ -89,28 +87,25 @@ function convertNestedArgForCall(
     (f) => f.isOptional && !f.isNullable,
   );
 
-  const nestedArgExpression: TypescriptCodeExpression =
-    buildNestedArgExpression(arg, tsUtils);
+  const nestedArgExpression: TsCodeFragment = buildNestedArgExpression(
+    arg,
+    tsUtils,
+  );
 
   if (nonNullableOptionalFields.length > 0) {
-    return TypescriptCodeUtils.formatExpression(
-      `restrictObjectNulls(ARG, [${nonNullableOptionalFields
-        .map((f) => `'${f.name}'`)
-        .join(', ')}])`,
-      { ARG: nestedArgExpression },
-      {
-        importText: [`import {restrictObjectNulls} from '%ts-utils/nulls';`],
-        importMappers: [tsUtils],
-      },
-    );
+    return TsCodeUtils.templateWithImports([
+      tsUtils.restrictObjectNulls.declaration(),
+    ])`restrictObjectNulls(${nestedArgExpression}, [${nonNullableOptionalFields
+      .map((f) => `'${f.name}'`)
+      .join(', ')}])`;
   }
   return nestedArgExpression;
 }
 
 export function writeValueFromPothosArg(
   arg: ServiceOutputDtoField,
-  tsUtils: TsUtilsProvider,
-): TypescriptCodeExpression {
+  tsUtils: TsUtilsImportsProvider,
+): TsCodeFragment {
   // TODO: Handle convert all nulls
   if (arg.isOptional && !arg.isNullable) {
     throw new Error(`Optional non-nullable top-level args not handled`);
@@ -118,5 +113,5 @@ export function writeValueFromPothosArg(
   if (arg.type === 'nested') {
     return convertNestedArgForCall(arg, tsUtils);
   }
-  return new TypescriptCodeExpression(arg.name);
+  return tsCodeFragment(arg.name);
 }

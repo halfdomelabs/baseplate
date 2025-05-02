@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { tsCodeFragment, tsHoistedFragment } from './fragments/creators.js';
-import { tsImportBuilder } from './imports/builder.js';
+import { tsCodeFragment, tsHoistedFragment } from '../fragments/creators.js';
+import { tsImportBuilder } from '../imports/builder.js';
 import { TsCodeUtils } from './ts-code-utils.js';
 
 describe('TsCodeUtils', () => {
