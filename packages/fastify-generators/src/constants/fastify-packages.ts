@@ -84,9 +84,6 @@ export const FASTIFY_PACKAGES = {
   // Postmark
   postmark: '4.0.2',
 
-  // Sendgrid
-  '@sendgrid/mail': '8.1.0',
-
   // Stripe
   stripe: '14.5.0',
 

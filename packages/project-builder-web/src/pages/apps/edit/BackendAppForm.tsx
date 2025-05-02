@@ -56,11 +56,6 @@ function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
           name="enablePostmark"
         />
         <CheckboxField.Controller
-          label="Enable Sendgrid?"
-          control={control}
-          name="enableSendgrid"
-        />
-        <CheckboxField.Controller
           label="Enable Redis?"
           control={control}
           name="enableRedis"
