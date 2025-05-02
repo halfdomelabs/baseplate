@@ -11,7 +11,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
-import { fastifyRedisImportsProvider } from '@src/generators/core/fastify-redis/generated/ts-import-maps.js';
+import { fastifyRedisImportsProvider } from '@src/generators/core/fastify-redis/fastify-redis.generator.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/fastify.generator.js';
 import { loggerServiceImportsProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 

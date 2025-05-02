@@ -136,3 +136,5 @@ export const fastifyRedisGenerator = createGenerator({
     }),
   }),
 });
+
+export { fastifyRedisImportsProvider } from './generated/ts-import-maps.js';
