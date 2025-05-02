@@ -1,10 +1,12 @@
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+
 import {
   makeImportAndFilePath,
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
-  TypescriptCodeUtils,
-  typescriptProvider,
-  TypescriptStringReplacement,
+  tsCodeFragment,
+  TsCodeUtils,
+  tsHoistedFragment,
+  tsTemplate,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -12,12 +14,13 @@ import {
   createProviderType,
   createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
+import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
 import type { GraphQLField } from '@src/writers/graphql/index.js';
 
-import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
-import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
+import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import { reactErrorImportsProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
 
@@ -27,7 +30,7 @@ import type {
   AdminCrudInputValidation,
 } from '../_providers/admin-crud-input-container.js';
 import type { AdminCrudDataDependency } from '../_utils/data-loaders.js';
-import type { AdminComponentsProvider } from '../admin-components/admin-components.generator.js';
+import type { AdminComponentsImportsProvider } from '../admin-components/admin-components.generator.js';
 
 import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-column-container.js';
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
@@ -35,9 +38,10 @@ import {
   getPassthroughExtraProps,
   mergeAdminCrudDataDependencies,
 } from '../_utils/data-loaders.js';
-import { adminComponentsProvider } from '../admin-components/admin-components.generator.js';
+import { adminComponentsImportsProvider } from '../admin-components/admin-components.generator.js';
 import { adminCrudEditProvider } from '../admin-crud-edit/admin-crud-edit.generator.js';
 import { adminCrudSectionScope } from '../admin-crud-section/admin-crud-section.generator.js';
+import { ADMIN_CRUD_EMBEDDED_FORM_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   id: z.string(),
@@ -48,7 +52,7 @@ const descriptorSchema = z.object({
 });
 
 interface AdminCrudEmbeddedComponent {
-  expression: TypescriptCodeExpression;
+  expression: TsCodeFragment;
   extraProps: string;
 }
 
@@ -57,7 +61,7 @@ interface AdminCrudEmbeddedObjectFormInfo {
   embeddedFormComponent: AdminCrudEmbeddedComponent;
   dataDependencies: AdminCrudDataDependency[];
   graphQLFields: GraphQLField[];
-  validationExpression: TypescriptCodeExpression;
+  validationExpression: TsCodeFragment;
 }
 
 interface AdminCrudEmbeddedListFormInfo
@@ -85,45 +89,51 @@ function getComponentProps({
   componentType,
   formDataType,
   dataDependencies,
-  adminComponents,
+  adminComponentsImports,
 }: {
   inputType: 'Object' | 'List';
   componentType: 'Form' | 'Table';
   formDataType: string;
   dataDependencies: AdminCrudDataDependency[];
-  adminComponents: AdminComponentsProvider;
-}): TypescriptCodeExpression {
-  const defaultProps = `Embedded${inputType}${componentType}Props`;
-  const defaultPropsExpression = new TypescriptCodeExpression(
-    `Embedded${inputType}${componentType}Props`,
-    `import { ${defaultProps} } from "%admin-components/Embedded${inputType}Input"`,
-    { importMappers: [adminComponents] },
-  ).append(`<${formDataType}>`);
+  adminComponentsImports: AdminComponentsImportsProvider;
+}): TsCodeFragment {
+  const defaultProps = `Embedded${inputType}${componentType}Props` as const;
+
+  // actually not sure why it's not supported here but it doesn't exist
+  if (defaultProps === 'EmbeddedObjectTableProps') {
+    throw new Error('EmbeddedObjectTableProps is not supported');
+  }
+
+  const defaultPropsImport = adminComponentsImports[defaultProps].fragment();
+  const defaultPropsExpression = tsTemplate`${defaultPropsImport}<${formDataType}>`;
   if (dataDependencies.length === 0) {
     return defaultPropsExpression;
   }
 
   const propsName = `${componentType}Props`;
 
-  return new TypescriptCodeExpression(propsName, null, {
-    headerBlocks: [
-      TypescriptCodeUtils.formatBlock(
-        `
+  return tsCodeFragment(propsName, undefined, {
+    hoistedFragments: [
+      tsHoistedFragment(
+        TsCodeUtils.formatFragment(
+          `
         interface PROPS_NAME extends DEFAULT_PROPS {
           INTERFACE_CONTENT
         }`,
-        {
-          PROPS_NAME: propsName,
-          DEFAULT_PROPS: defaultPropsExpression,
-          INTERFACE_CONTENT: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-            Object.fromEntries(
-              dataDependencies.map((d): [string, TypescriptCodeExpression] => [
-                d.propName,
-                d.propType,
-              ]),
+          {
+            PROPS_NAME: propsName,
+            DEFAULT_PROPS: defaultPropsExpression,
+            INTERFACE_CONTENT: TsCodeUtils.mergeFragmentsAsInterfaceContent(
+              Object.fromEntries(
+                dataDependencies.map((d): [string, TsCodeFragment] => [
+                  d.propName,
+                  d.propType,
+                ]),
+              ),
             ),
-          ),
-        },
+          },
+        ),
+        propsName,
       ),
     ],
   });
@@ -181,10 +191,10 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         adminCrudEdit: adminCrudEditProvider,
-        adminComponents: adminComponentsProvider,
-        reactComponents: reactComponentsProvider,
-        reactError: reactErrorProvider,
-        typescript: typescriptProvider,
+        adminComponentsImports: adminComponentsImportsProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
+        reactErrorImports: reactErrorImportsProvider,
+        typescriptFile: typescriptFileProvider,
         adminCrudEmbeddedFormSetup: adminCrudEmbeddedFormSetupProvider,
       },
       exports: {
@@ -195,10 +205,10 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
       },
       run({
         adminCrudEdit,
-        reactComponents,
-        reactError,
-        typescript,
-        adminComponents,
+        reactComponentsImports,
+        reactErrorImports,
+        typescriptFile,
+        adminComponentsImports,
         adminCrudEmbeddedFormSetup: { inputFields, tableColumns },
       }) {
         const capitalizedName = upperCaseFirst(name);
@@ -238,33 +248,36 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                 {
                   key: idField,
                   // TODO: Allow non-string IDs
-                  expression: new TypescriptCodeExpression(
-                    'z.string().nullish()',
-                  ),
+                  expression: tsCodeFragment('z.string().nullish()'),
                 },
               ]
             : []),
           ...inputFields.flatMap((f) => f.validation),
         ];
-        const embeddedBlock = TypescriptCodeUtils.formatBlock(
-          `
-  export const SCHEMA_NAME = z.object(SCHEMA_OBJECT);
+        const embeddedBlock = tsHoistedFragment(
+          TsCodeUtils.formatFragment(
+            `
+  export const TPL_SCHEMA_NAME = z.object(TPL_SCHEMA_OBJECT);
   
-  export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
+  export type TPL_SCHEMA_TYPE = z.infer<typeof TPL_SCHEMA_NAME>;
   `,
-          {
-            SCHEMA_NAME: formSchema,
-            SCHEMA_TYPE: formDataType,
-            SCHEMA_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
-              Object.fromEntries(validations.map((v) => [v.key, v.expression])),
-            ),
-          },
-        ).withHeaderKey(formSchema);
+            {
+              TPL_SCHEMA_NAME: formSchema,
+              TPL_SCHEMA_TYPE: formDataType,
+              TPL_SCHEMA_OBJECT: TsCodeUtils.mergeFragmentsAsObject(
+                Object.fromEntries(
+                  validations.map((v) => [v.key, v.expression]),
+                ),
+              ),
+            },
+          ),
+          formSchema,
+        );
 
-        const validationExpression = TypescriptCodeUtils.createExpression(
+        const validationExpression = tsCodeFragment(
           isList ? `z.array(${formSchema})` : formSchema,
           undefined,
-          { headerBlocks: [embeddedBlock] },
+          { hoistedFragments: [embeddedBlock] },
         );
 
         return {
@@ -273,9 +286,9 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
               getEmbeddedFormInfo: () => {
                 const sharedData = {
                   embeddedFormComponent: {
-                    expression: TypescriptCodeUtils.createExpression(
+                    expression: TsCodeUtils.importFragment(
                       formName,
-                      `import { ${formName} } from '${formImport}'`,
+                      formImport,
                     ),
                     extraProps: getPassthroughExtraProps(inputDataDependencies),
                   },
@@ -288,9 +301,9 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                     type: 'list',
                     ...sharedData,
                     embeddedTableComponent: {
-                      expression: TypescriptCodeUtils.createExpression(
+                      expression: TsCodeUtils.importFragment(
                         tableName,
-                        `import { ${tableName} } from '${formImport}'`,
+                        formImport,
                       ),
                       extraProps: getPassthroughExtraProps(
                         tableDataDependencies,
@@ -307,36 +320,35 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
           },
           build: async (builder) => {
             const headers = tableColumns.map((column) =>
-              TypescriptCodeUtils.createExpression(
+              tsCodeFragment(
                 `<Table.HeadCell>${column.label}</Table.HeadCell>`,
               ),
             );
-            const cells = tableColumns.map((column) =>
-              column.display
-                .content('item')
-                .wrap((content) => `<Table.Cell>${content}</Table.Cell>`),
+            const cells = tableColumns.map(
+              (column) =>
+                tsTemplate`<Table.Cell>${column.display.content('item')}</Table.Cell>`,
             );
             const tableComponent = isList
-              ? TypescriptCodeUtils.formatBlock(
+              ? TsCodeUtils.formatFragment(
                   `
-              export function COMPONENT_NAME({
+              export function TPL_COMPONENT_NAME({
                 items,
                 edit,
                 remove,
-                EXTRA_PROP_SPREAD
-              }: PROPS): JSX.Element {
+                TPL_EXTRA_PROP_SPREAD
+              }: TPL_PROPS): JSX.Element {
               return (
                   <Table className="max-w-6xl">
                     <Table.Head>
                       <Table.HeadRow>
-                        HEADERS
+                        TPL_HEADERS
                         <Table.HeadCell>Actions</Table.HeadCell>
                       </Table.HeadRow>
                     </Table.Head>
                     <Table.Body>
                       {items.map((item, idx) => (
                         <Table.Row key={item.id}>
-                          CELLS
+                          TPL_CELLS
                           <Table.Cell className="space-x-4">
                             <LinkButton onClick={() => edit(idx)}>Edit</LinkButton>
                             <LinkButton negative onClick={() => remove(idx)}>
@@ -351,67 +363,78 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
               }
   `,
                   {
-                    COMPONENT_NAME: tableName,
-                    EXTRA_PROP_SPREAD: new TypescriptStringReplacement(
-                      tableDataDependencies.map((d) => d.propName).join(',\n'),
-                    ),
-                    PROPS: getComponentProps({
+                    TPL_COMPONENT_NAME: tableName,
+                    TPL_EXTRA_PROP_SPREAD: tableDataDependencies
+                      .map((d) => d.propName)
+                      .join(',\n'),
+                    TPL_PROPS: getComponentProps({
                       inputType: 'List',
                       componentType: 'Table',
                       formDataType,
                       dataDependencies: tableDataDependencies,
-                      adminComponents,
+                      adminComponentsImports,
                     }),
-                    HEADERS: TypescriptCodeUtils.mergeExpressions(
+                    TPL_HEADERS: TsCodeUtils.mergeFragmentsPresorted(
                       headers,
                       '\n',
                     ),
-                    CELLS: TypescriptCodeUtils.mergeExpressions(cells, '\n'),
+                    TPL_CELLS: TsCodeUtils.mergeFragmentsPresorted(cells, '\n'),
                   },
-                  {
-                    importText: [
-                      'import {Table, LinkButton} from "%react-components"',
-                    ],
-                    importMappers: [reactComponents],
-                  },
+                  [
+                    reactComponentsImports.Table.declaration(),
+                    reactComponentsImports.LinkButton.declaration(),
+                  ],
                 )
-              : new TypescriptCodeBlock('');
+              : tsCodeFragment('');
 
-            const formFile = typescript.createTemplate(
-              {
-                EMBEDDED_FORM_DATA_TYPE: TypescriptCodeUtils.createExpression(
-                  formDataType,
-                  `import { ${formDataType} } from "${adminCrudEdit.getSchemaImport()}`,
-                ),
-                EMBEDDED_FORM_DATA_SCHEMA: TypescriptCodeUtils.createExpression(
-                  formSchema,
-                  `import { ${formSchema} } from "${adminCrudEdit.getSchemaImport()}`,
-                ),
-                COMPONENT_NAME: new TypescriptStringReplacement(formName),
-                INPUTS: TypescriptCodeUtils.mergeExpressions(
-                  inputFields.map((input) => input.content),
-                  '\n',
-                ),
-                HEADER: TypescriptCodeUtils.mergeBlocks(
-                  inputFields.map((field) => field.header).filter(notEmpty),
-                ),
-                'EXTRA_PROP_SPREAD,': new TypescriptStringReplacement(
-                  inputDataDependencies.map((d) => d.propName).join(',\n'),
-                ),
-                PROPS: getComponentProps({
-                  inputType: isList ? 'List' : 'Object',
-                  componentType: 'Form',
-                  formDataType,
-                  dataDependencies: inputDataDependencies,
-                  adminComponents,
-                }),
-                TABLE_COMPONENT: tableComponent,
-              },
-              { importMappers: [reactComponents, reactError] },
-            );
+            const sortedInputFields = sortBy(inputFields, [(f) => f.order]);
 
             await builder.apply(
-              formFile.renderToAction('EmbeddedForm.tsx', formPath),
+              typescriptFile.renderTemplateFile({
+                id: `embedded-form-${id}`,
+                template: ADMIN_CRUD_EMBEDDED_FORM_TS_TEMPLATES.embeddedForm,
+                destination: formPath,
+                variables: {
+                  TPL_EMBEDDED_FORM_DATA_TYPE: TsCodeUtils.importFragment(
+                    formDataType,
+                    adminCrudEdit.getSchemaImport(),
+                  ),
+                  TPL_EMBEDDED_FORM_DATA_SCHEMA: TsCodeUtils.importFragment(
+                    formSchema,
+                    adminCrudEdit.getSchemaImport(),
+                  ),
+                  TPL_COMPONENT_NAME: formName,
+                  TPL_INPUTS: TsCodeUtils.mergeFragmentsPresorted(
+                    sortedInputFields.map((input) => input.content),
+                    '\n',
+                  ),
+                  TPL_HEADER: TsCodeUtils.mergeFragmentsPresorted(
+                    sortedInputFields
+                      .map((field) => field.header)
+                      .filter(notEmpty),
+                  ),
+                  TPL_DESTRUCTURED_PROPS: `{
+                      initialData,
+                      onSubmit,
+                      ${inputDataDependencies
+                        .map((d) => d.propName)
+                        .join(',\n')}
+                    }`,
+                  TPL_PROPS: getComponentProps({
+                    inputType: isList ? 'List' : 'Object',
+                    componentType: 'Form',
+                    formDataType,
+                    dataDependencies: inputDataDependencies,
+                    adminComponentsImports,
+                  }),
+                  TPL_TABLE_COMPONENT: tableComponent,
+                },
+                importMapProviders: {
+                  reactComponentsImports,
+                  reactErrorImports,
+                },
+                includeMetadataOnDemand: true,
+              }),
             );
           },
         };

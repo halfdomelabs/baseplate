@@ -1,28 +1,28 @@
-import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { tsCodeFragment, TsCodeUtils } from '@halfdomelabs/core-generators';
 
-import type { ReactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import type { ReactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 
 export interface DataLoader {
-  loader: TypescriptCodeBlock;
+  loader: TsCodeFragment;
   loaderValueName: string;
   loaderErrorName: string;
 }
 
 export function printDataLoaders(
   loaders: DataLoader[],
-  reactComponents: ReactComponentsProvider,
+  reactComponentsImports: ReactComponentsImportsProvider,
 ): {
-  loader: TypescriptCodeBlock;
-  gate: TypescriptCodeBlock;
+  loader: TsCodeFragment;
+  gate: TsCodeFragment;
   dataParts: string;
   errorParts: string;
 } {
   if (loaders.length === 0) {
     return {
-      loader: TypescriptCodeUtils.createBlock(''),
-      gate: TypescriptCodeUtils.createBlock(''),
+      loader: tsCodeFragment(''),
+      gate: tsCodeFragment(''),
       dataParts: '',
       errorParts: '',
     };
@@ -39,22 +39,14 @@ export function printDataLoaders(
   return {
     dataParts,
     errorParts,
-    loader: TypescriptCodeUtils.mergeBlocks(
-      loaders.map((loader) => loader.loader),
+    loader: TsCodeUtils.mergeFragments(
+      new Map(loaders.map((loader) => [loader.loaderValueName, loader.loader])),
       '\n\n',
     ),
-    gate: TypescriptCodeUtils.formatBlock(
-      `if (DATA_PARTS) {
-        return <ErrorableLoader error={ERROR_PARTS} />;
+    gate: TsCodeUtils.templateWithImports(
+      reactComponentsImports.ErrorableLoader.declaration(),
+    )`if (${dataParts}) {
+        return <ErrorableLoader error={${errorParts}} />;
       }`,
-      {
-        DATA_PARTS: dataParts,
-        ERROR_PARTS: errorParts,
-      },
-      {
-        importText: [`import { ErrorableLoader } from '%react-components'`],
-        importMappers: [reactComponents],
-      },
-    ),
   };
 }

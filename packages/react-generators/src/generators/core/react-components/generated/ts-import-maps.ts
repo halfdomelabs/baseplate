@@ -16,6 +16,7 @@ const reactComponentsImportsSchema = createTsImportMapSchema({
   Card: {},
   CheckedInput: {},
   ConfirmDialog: {},
+  ReactDatePickerInput: {},
   ErrorableLoader: {},
   ErrorDisplay: {},
   FormError: {},
@@ -41,7 +42,7 @@ const reactComponentsImportsSchema = createTsImportMapSchema({
   useToast: {},
 });
 
-type ReactComponentsImportsProvider = TsImportMapProviderFromSchema<
+export type ReactComponentsImportsProvider = TsImportMapProviderFromSchema<
   typeof reactComponentsImportsSchema
 >;
 
@@ -66,6 +67,7 @@ export function createReactComponentsImports(
     Card: path.join(importBase, 'components/index.js'),
     CheckedInput: path.join(importBase, 'components/index.js'),
     ConfirmDialog: path.join(importBase, 'components/index.js'),
+    ReactDatePickerInput: path.join(importBase, 'components/index.js'),
     ErrorableLoader: path.join(importBase, 'components/index.js'),
     ErrorDisplay: path.join(importBase, 'components/index.js'),
     FormError: path.join(importBase, 'components/index.js'),

@@ -1,4 +1,4 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { tsCodeFragment, tsImportBuilder } from '@halfdomelabs/core-generators';
 import { pluralize } from 'inflection';
 
 import type { ReactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
@@ -39,9 +39,11 @@ export function createForeignDataDependency({
 
   const dataDependency: AdminCrudDataDependency = {
     propName,
-    propType: TypescriptCodeUtils.createExpression(
+    propType: tsCodeFragment(
       `${fragmentName}Fragment[]`,
-      `import { ${fragmentName}Fragment } from '${reactApollo.getGeneratedFilePath()}'`,
+      tsImportBuilder([`${fragmentName}Fragment`]).from(
+        reactApollo.getGeneratedFilePath(),
+      ),
     ),
     graphFragments: [
       {
@@ -72,9 +74,11 @@ export function createForeignDataDependency({
       },
     ],
     loader: {
-      loader: TypescriptCodeUtils.createBlock(
+      loader: tsCodeFragment(
         `const { data: ${loaderValueName}, error: ${loaderErrorName} } = useGet${dataName}Query();`,
-        `import { useGet${dataName}Query } from '${reactApollo.getGeneratedFilePath()}'`,
+        tsImportBuilder([`useGet${dataName}Query`]).from(
+          reactApollo.getGeneratedFilePath(),
+        ),
       ),
       loaderErrorName,
       loaderValueName,

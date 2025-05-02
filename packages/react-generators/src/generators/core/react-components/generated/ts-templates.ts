@@ -305,6 +305,7 @@ const index = createTsTemplateFile({
     Card: {},
     CheckedInput: {},
     ConfirmDialog: {},
+    ReactDatePickerInput: {},
     ErrorDisplay: {},
     ErrorableLoader: {},
     FormError: {},

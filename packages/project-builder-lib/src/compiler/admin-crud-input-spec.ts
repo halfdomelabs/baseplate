@@ -15,10 +15,8 @@ export interface AdminCrudInputCompiler<
   name: string;
   compileInput: (
     definition: T,
-    {
-      definitionContainer,
-      model,
-    }: {
+    options: {
+      order: number;
       definitionContainer: ProjectDefinitionContainer;
       model: ModelConfig;
       crudSectionId: string;

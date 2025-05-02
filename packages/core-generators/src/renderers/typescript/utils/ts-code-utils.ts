@@ -104,6 +104,15 @@ export const TsCodeUtils = {
     return tsImportBuilder(namedImports);
   },
   /**
+   * Create a default import declaration.
+   * @param name - The name of the import.
+   * @param importFrom - The module to import from.
+   * @returns The import declaration.
+   */
+  defaultImport(name: string, importFrom: string): TsImportDeclaration {
+    return tsImportBuilder().default(name).from(importFrom);
+  },
+  /**
    * Shortcut function for creating a fragment that imports a named import from a module.
    * @param name - The name of the import.
    * @param importFrom - The module to import from.
@@ -111,6 +120,18 @@ export const TsCodeUtils = {
    */
   importFragment(name: string, importFrom: string): TsCodeFragment {
     return tsCodeFragment(name, tsImportBuilder([name]).from(importFrom));
+  },
+  /**
+   * Shortcut function for creating a fragment that imports a default import from a module.
+   * @param name - The name of the import.
+   * @param importFrom - The module to import from.
+   * @returns The import fragment.
+   */
+  defaultImportFragment(name: string, importFrom: string): TsCodeFragment {
+    return tsCodeFragment(
+      name,
+      tsImportBuilder().default(name).from(importFrom),
+    );
   },
   /**
    * Merge a map of code fragments into a single code fragment. We by default use

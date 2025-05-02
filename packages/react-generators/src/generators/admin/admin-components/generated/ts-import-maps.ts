@@ -8,15 +8,15 @@ import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 
 const adminComponentsImportsSchema = createTsImportMapSchema({
-  DescriptionList: {},
+  DescriptionList: { name: 'default' },
   EmbeddedListFormProps: { isTypeOnly: true },
-  EmbeddedListInput: {},
+  EmbeddedListInput: { name: 'default' },
   EmbeddedListTableProps: { isTypeOnly: true },
   EmbeddedObjectFormProps: { isTypeOnly: true },
-  EmbeddedObjectInput: {},
+  EmbeddedObjectInput: { name: 'default' },
 });
 
-type AdminComponentsImportsProvider = TsImportMapProviderFromSchema<
+export type AdminComponentsImportsProvider = TsImportMapProviderFromSchema<
   typeof adminComponentsImportsSchema
 >;
 

@@ -1,4 +1,4 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { tsCodeFragment, tsImportBuilder } from '@halfdomelabs/core-generators';
 import { adminCrudInputContainerProvider } from '@halfdomelabs/react-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { uploadComponentsProvider } from '../upload-components/upload-components.generator';
 
 const descriptorSchema = z.object({
+  order: z.number(),
   label: z.string().min(1),
   modelRelation: z.string().min(1),
   isOptional: z.boolean().optional(),
@@ -17,7 +18,7 @@ export const adminCrudFileInputGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelRelation,
-  buildTasks: ({ label, modelRelation, isOptional, category }) => ({
+  buildTasks: ({ order, label, modelRelation, isOptional, category }) => ({
     main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
@@ -25,17 +26,18 @@ export const adminCrudFileInputGenerator = createGenerator({
       },
       run({ adminCrudInputContainer, uploadComponents }) {
         adminCrudInputContainer.addInput({
-          content: TypescriptCodeUtils.createExpression(
+          order,
+          content: tsCodeFragment(
             `<FileInput.LabelledController
           label="${label}"
           category="${category}"
           control={control}
           name="${modelRelation}"
         />`,
-            'import { FileInput } from "%upload-components/file-input"',
-            {
-              importMappers: [uploadComponents],
-            },
+            tsImportBuilder(['FileInput']).from(
+              uploadComponents.getImportMap()['%upload-components/file-input']
+                ?.path ?? '',
+            ),
           ),
           graphQLFields: [
             {
@@ -46,7 +48,7 @@ export const adminCrudFileInputGenerator = createGenerator({
           validation: [
             {
               key: modelRelation,
-              expression: TypescriptCodeUtils.createExpression(
+              expression: tsCodeFragment(
                 `z.object({ id: z.string(), name: z.string().nullish() })${
                   isOptional ? '.nullish()' : ''
                 }`,

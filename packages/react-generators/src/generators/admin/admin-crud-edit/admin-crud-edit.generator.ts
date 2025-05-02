@@ -1,20 +1,22 @@
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+
 import {
-  makeImportAndFilePath,
-  TypescriptCodeExpression,
-  TypescriptCodeUtils,
-  typescriptProvider,
-  TypescriptStringReplacement,
+  TsCodeUtils,
+  tsImportBuilder,
+  tsTemplate,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { sortBy } from 'es-toolkit';
 import { dasherize, underscore } from 'inflection';
 import { z } from 'zod';
 
-import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
-import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
+import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import { reactErrorImportsProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
 import { notEmpty } from '@src/utils/array.js';
 import { lowerCaseFirst, titleizeCamel } from '@src/utils/case.js';
@@ -28,8 +30,10 @@ import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-
 import { printDataLoaders } from '../_providers/admin-loader.js';
 import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
 import { adminCrudQueriesProvider } from '../admin-crud-queries/admin-crud-queries.generator.js';
+import { ADMIN_CRUD_EDIT_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
+  modelId: z.string(),
   modelName: z.string(),
   disableCreate: z.boolean().optional(),
 });
@@ -52,65 +56,57 @@ export const adminCrudEditGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelName,
-  buildTasks: ({ modelName, disableCreate }) => ({
+  buildTasks: ({ modelId, modelName, disableCreate }) => ({
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
         reactRoutes: reactRoutesProvider,
         adminCrudQueries: adminCrudQueriesProvider,
-        reactComponents: reactComponentsProvider,
-        reactError: reactErrorProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
+        reactErrorImports: reactErrorImportsProvider,
       },
       exports: {
         adminCrudEdit: adminCrudEditProvider.export(),
         adminCrudInputContainer: adminCrudInputContainerProvider.export(),
       },
       run({
-        typescript,
+        typescriptFile,
         adminCrudQueries,
         reactRoutes,
-        reactComponents,
-        reactError,
+        reactComponentsImports,
+        reactErrorImports,
       }) {
-        const [editSchemaImport, editSchemaPath] = makeImportAndFilePath(
-          `${reactRoutes.getDirectoryBase()}/edit/${lowerCaseFirst(
-            dasherize(underscore(modelName)),
-          )}-schema.ts`,
-        );
+        const editSchemaPath = `${reactRoutes.getDirectoryBase()}/edit/${lowerCaseFirst(
+          dasherize(underscore(modelName)),
+        )}-schema.ts`;
+
         const editSchemaName = `${lowerCaseFirst(modelName)}EditFormSchema`;
-        const editSchemaExpression = TypescriptCodeUtils.createExpression(
+        const editSchemaExpression = TsCodeUtils.importFragment(
           editSchemaName,
-          `import { ${editSchemaName} } from '${editSchemaImport}';`,
+          editSchemaPath,
         );
 
         const formDataName = `${modelName}FormData`;
-        const formDataExpression = TypescriptCodeUtils.createExpression(
+        const formDataExpression = TsCodeUtils.importFragment(
           formDataName,
-          `import { ${formDataName} } from '${editSchemaImport}';`,
+          editSchemaPath,
         );
 
-        const [editFormComponentImport, editFormComponentPath] =
-          makeImportAndFilePath(
-            `${reactRoutes.getDirectoryBase()}/edit/${modelName}EditForm.tsx`,
-          );
+        const editFormComponentPath = `${reactRoutes.getDirectoryBase()}/edit/${modelName}EditForm.tsx`;
         const editFormComponentName = `${modelName}EditForm`;
-        const editFormComponentExpression = new TypescriptCodeExpression(
+        const editFormComponentExpression = TsCodeUtils.defaultImportFragment(
           editFormComponentName,
-          `import ${editFormComponentName} from '${editFormComponentImport}';`,
+          editFormComponentPath,
         );
 
-        const [editPageImport, editPagePath] = makeImportAndFilePath(
-          `${reactRoutes.getDirectoryBase()}/edit/edit.page.tsx`,
-        );
+        const editPagePath = `${reactRoutes.getDirectoryBase()}/edit/edit.page.tsx`;
         const editPageName = `${modelName}EditPage`;
         reactRoutes.registerRoute({
           path: ':id/edit',
-          element: createRouteElement(editPageName, editPageImport),
+          element: createRouteElement(editPageName, editPagePath),
         });
 
-        const [createPageImport, createPagePath] = makeImportAndFilePath(
-          `${reactRoutes.getDirectoryBase()}/edit/create.page.tsx`,
-        );
+        const createPagePath = `${reactRoutes.getDirectoryBase()}/edit/create.page.tsx`;
         const createPageName = `${modelName}CreatePage`;
 
         const editQueryInfo = adminCrudQueries.getEditQueryHookInfo();
@@ -123,7 +119,7 @@ export const adminCrudEditGenerator = createGenerator({
             adminCrudEdit: {
               getDirectoryBase: () => `${reactRoutes.getDirectoryBase()}/edit`,
               getSchemaPath: () => editSchemaPath,
-              getSchemaImport: () => editSchemaImport,
+              getSchemaImport: () => editSchemaPath,
             },
             adminCrudInputContainer: {
               addInput: (input) => {
@@ -157,56 +153,67 @@ export const adminCrudEditGenerator = createGenerator({
             }
 
             const validations = inputFields.flatMap((c) => c.validation);
-            const schemaPage = typescript.createTemplate({
-              SCHEMA_NAME: new TypescriptStringReplacement(editSchemaName),
-              SCHEMA_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
-                Object.fromEntries(
-                  validations.map((v) => [v.key, v.expression]),
-                ),
-              ),
-              FORM_DATA_NAME: new TypescriptStringReplacement(formDataName),
-            });
             await builder.apply(
-              schemaPage.renderToAction('schema.ts', editSchemaPath),
-            );
-
-            const editFormPage = typescript.createTemplate(
-              {
-                COMPONENT_NAME: new TypescriptStringReplacement(
-                  editFormComponentName,
-                ),
-                FORM_DATA_NAME: formDataExpression,
-                EDIT_SCHEMA: editSchemaExpression,
-                INPUTS: TypescriptCodeUtils.mergeExpressions(
-                  inputFields.map((input) => input.content),
-                  '\n',
-                ),
-                HEADER: TypescriptCodeUtils.mergeBlocks(
-                  inputFields.map((field) => field.header).filter(notEmpty),
-                ),
-                EXTRA_PROPS: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                  Object.fromEntries(
-                    dataDependencies.map(
-                      (d): [string, TypescriptCodeExpression] => [
-                        d.propName,
-                        d.propType,
-                      ],
+              typescriptFile.renderTemplateFile({
+                id: `edit-schema-${modelId}`,
+                template: ADMIN_CRUD_EDIT_TS_TEMPLATES.schema,
+                destination: editSchemaPath,
+                variables: {
+                  TPL_SCHEMA_NAME: editSchemaName,
+                  TPL_SCHEMA_OBJECT: TsCodeUtils.mergeFragmentsAsObject(
+                    Object.fromEntries(
+                      validations.map((v) => [v.key, v.expression]),
                     ),
                   ),
-                ),
-                'EXTRA_PROP_SPREAD,': new TypescriptStringReplacement(
-                  dataDependencies.map((d) => d.propName).join(',\n'),
-                ),
-              },
-              {
-                importMappers: [reactComponents, reactError],
-              },
+                  TPL_FORM_DATA_NAME: formDataName,
+                },
+                importMapProviders: {
+                  reactComponentsImports,
+                  reactErrorImports,
+                },
+                includeMetadataOnDemand: true,
+              }),
             );
+
+            const sortedInputs = sortBy(inputFields, [(i) => i.order]);
             await builder.apply(
-              editFormPage.renderToAction(
-                'EditForm.tsx',
-                editFormComponentPath,
-              ),
+              typescriptFile.renderTemplateFile({
+                id: `edit-form-${modelId}`,
+                template: ADMIN_CRUD_EDIT_TS_TEMPLATES.editForm,
+                destination: editFormComponentPath,
+                variables: {
+                  TPL_COMPONENT_NAME: editFormComponentName,
+                  TPL_FORM_DATA_NAME: formDataExpression,
+                  TPL_EDIT_SCHEMA: editSchemaExpression,
+                  TPL_INPUTS: TsCodeUtils.mergeFragmentsPresorted(
+                    sortedInputs.map((input) => input.content),
+                    '\n',
+                  ),
+                  TPL_HEADER: TsCodeUtils.mergeFragmentsPresorted(
+                    sortedInputs.map((input) => input.header).filter(notEmpty),
+                    '\n',
+                  ),
+                  TPL_EXTRA_PROPS: TsCodeUtils.mergeFragmentsAsInterfaceContent(
+                    Object.fromEntries(
+                      dataDependencies.map((d): [string, TsCodeFragment] => [
+                        d.propName,
+                        d.propType,
+                      ]),
+                    ),
+                  ),
+                  TPL_DESTRUCTURED_PROPS: `{
+                    className,
+                    initialData,
+                    submitData,
+                    ${dataDependencies.map((d) => d.propName).join(',\n')}
+                  }`,
+                },
+                importMapProviders: {
+                  reactComponentsImports,
+                  reactErrorImports,
+                },
+                includeMetadataOnDemand: true,
+              }),
             );
 
             const inputLoaders = inputFields.flatMap(
@@ -226,49 +233,44 @@ export const adminCrudEditGenerator = createGenerator({
 
             const createLoaderOutput = printDataLoaders(
               inputLoaders,
-              reactComponents,
+              reactComponentsImports,
             );
 
             if (!disableCreate) {
               const createInfo = adminCrudQueries.getCreateHookInfo();
-              const createPage = typescript.createTemplate(
-                {
-                  COMPONENT_NAME: new TypescriptStringReplacement(
-                    createPageName,
-                  ),
-                  EDIT_FORM: editFormComponentExpression.wrap(
-                    (content) =>
-                      `<${content} submitData={submitData} ${inputLoaderExtraProps} />`,
-                  ),
-                  CREATE_MUTATION: createInfo.hookExpression,
-                  MUTATION_NAME: new TypescriptStringReplacement(
-                    createInfo.fieldName,
-                  ),
-                  FORM_DATA_NAME: formDataExpression,
-                  MODEL_NAME: new TypescriptStringReplacement(
-                    titleizeCamel(modelName),
-                  ),
-                  REFETCH_DOCUMENT:
-                    adminCrudQueries.getListDocumentExpression(),
-                  DATA_LOADER: createLoaderOutput.loader,
-                  DATA_GATE: createLoaderOutput.gate,
-                },
-                {
-                  importMappers: [reactComponents, reactError],
-                },
-              );
               await builder.apply(
-                createPage.renderToAction('create.page.tsx', createPagePath),
+                typescriptFile.renderTemplateFile({
+                  id: `create-${modelId}`,
+                  template: ADMIN_CRUD_EDIT_TS_TEMPLATES.createPage,
+                  destination: createPagePath,
+                  variables: {
+                    TPL_COMPONENT_NAME: createPageName,
+                    TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} ${inputLoaderExtraProps} />`,
+                    TPL_CREATE_MUTATION: createInfo.hookExpression,
+                    TPL_MUTATION_NAME: createInfo.fieldName,
+                    TPL_FORM_DATA_NAME: formDataExpression,
+                    TPL_MODEL_NAME: titleizeCamel(modelName),
+                    TPL_REFETCH_DOCUMENT:
+                      adminCrudQueries.getListDocumentExpression(),
+                    TPL_DATA_LOADER: createLoaderOutput.loader,
+                    TPL_DATA_GATE: createLoaderOutput.gate,
+                  },
+                  importMapProviders: {
+                    reactComponentsImports,
+                    reactErrorImports,
+                  },
+                  includeMetadataOnDemand: true,
+                }),
               );
 
               reactRoutes.registerRoute({
                 path: 'new',
-                element: createRouteElement(createPageName, createPageImport),
+                element: createRouteElement(createPageName, createPagePath),
               });
             }
 
             const editPageLoader: DataLoader = {
-              loader: TypescriptCodeUtils.formatBlock(
+              loader: TsCodeUtils.formatFragment(
                 `
           const { data, error } = GET_EDIT_BY_ID_QUERY({
             variables: { id },
@@ -284,9 +286,7 @@ export const adminCrudEditGenerator = createGenerator({
                   FORM_DATA_NAME: formDataExpression,
                   QUERY_FIELD_NAME: editQueryInfo.fieldName,
                 },
-                {
-                  importText: ['import {useMemo} from "react"'],
-                },
+                tsImportBuilder(['useMemo']).from('react'),
               ),
               loaderErrorName: 'error',
               loaderValueName: 'initialData',
@@ -294,33 +294,30 @@ export const adminCrudEditGenerator = createGenerator({
 
             const editPageLoaderOutput = printDataLoaders(
               [editPageLoader, ...inputLoaders],
-              reactComponents,
+              reactComponentsImports,
             );
 
-            const editPage = typescript.createTemplate(
-              {
-                COMPONENT_NAME: new TypescriptStringReplacement(editPageName),
-                EDIT_FORM: editFormComponentExpression.wrap(
-                  (content) =>
-                    `<${content} submitData={submitData} initialData={initialData} ${inputLoaderExtraProps} />`,
-                ),
-                UPDATE_MUTATION: updateInfo.hookExpression,
-                MUTATION_NAME: new TypescriptStringReplacement(
-                  updateInfo.fieldName,
-                ),
-                FORM_DATA_NAME: formDataExpression,
-                MODEL_NAME: new TypescriptStringReplacement(
-                  titleizeCamel(modelName),
-                ),
-                DATA_LOADER: editPageLoaderOutput.loader,
-                DATA_GATE: editPageLoaderOutput.gate,
-              },
-              {
-                importMappers: [reactComponents, reactError],
-              },
-            );
             await builder.apply(
-              editPage.renderToAction('edit.page.tsx', editPagePath),
+              typescriptFile.renderTemplateFile({
+                id: `edit-${modelId}`,
+                template: ADMIN_CRUD_EDIT_TS_TEMPLATES.editPage,
+                destination: editPagePath,
+                variables: {
+                  TPL_COMPONENT_NAME: editPageName,
+                  TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} initialData={initialData} ${inputLoaderExtraProps} />`,
+                  TPL_UPDATE_MUTATION: updateInfo.hookExpression,
+                  TPL_MUTATION_NAME: updateInfo.fieldName,
+                  TPL_FORM_DATA_NAME: formDataExpression,
+                  TPL_MODEL_NAME: titleizeCamel(modelName),
+                  TPL_DATA_LOADER: editPageLoaderOutput.loader,
+                  TPL_DATA_GATE: editPageLoaderOutput.gate,
+                },
+                importMapProviders: {
+                  reactComponentsImports,
+                  reactErrorImports,
+                },
+                includeMetadataOnDemand: true,
+              }),
             );
           },
         };

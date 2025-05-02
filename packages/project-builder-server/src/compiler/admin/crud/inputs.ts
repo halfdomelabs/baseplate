@@ -31,7 +31,7 @@ import type { AppEntryBuilder } from '@src/compiler/app-entry-builder.js';
 const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
   {
     name: 'enum',
-    compileInput: (definition, { definitionContainer, model }) => {
+    compileInput: (definition, { order, definitionContainer, model }) => {
       const fieldConfig = model.model.fields.find(
         (f) => f.id === definition.modelFieldRef,
       );
@@ -53,6 +53,7 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
         definition.modelFieldRef,
       );
       return adminCrudEnumInputGenerator({
+        order,
         modelField: fieldName,
         label: definition.label,
         isOptional: fieldConfig.isOptional,
@@ -67,7 +68,7 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
 const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputConfig> =
   {
     name: 'foreign',
-    compileInput: (definition, { definitionContainer, model }) => {
+    compileInput: (definition, { order, definitionContainer, model }) => {
       const relation = model.model.relations?.find(
         (r) => r.id === definition.localRelationRef,
       );
@@ -87,6 +88,7 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
       );
 
       return adminCrudForeignInputGenerator({
+        order,
         label: definition.label,
         localRelationName: relation.name,
         isOptional: ModelFieldUtils.isRelationOptional(model, relation),
@@ -122,7 +124,7 @@ function getInputType(
 const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfig> =
   {
     name: 'text',
-    compileInput: (definition, { definitionContainer, model }) => {
+    compileInput: (definition, { order, definitionContainer, model }) => {
       const fieldConfig = model.model.fields.find(
         (f) => f.id === definition.modelFieldRef,
       );
@@ -135,6 +137,7 @@ const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfi
         definition.modelFieldRef,
       );
       return adminCrudTextInputGenerator({
+        order,
         label: definition.label,
         modelField: fieldName,
         type: getInputType(fieldConfig),
@@ -153,11 +156,12 @@ const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfi
 const adminCrudEmbeddedInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedInputConfig> =
   {
     name: 'embedded',
-    compileInput: (definition, { definitionContainer }) => {
+    compileInput: (definition, { order, definitionContainer }) => {
       const relationName = definitionContainer.nameFromId(
         definition.modelRelationRef,
       );
       return adminCrudEmbeddedInputGenerator({
+        order,
         // TODO: We should use an actual ID on the input
         id: makeIdSafe(definition.label),
         label: definition.label,
@@ -170,7 +174,7 @@ const adminCrudEmbeddedInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedIn
 const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedLocalInputConfig> =
   {
     name: 'embeddedLocal',
-    compileInput(definition, { definitionContainer, model }) {
+    compileInput(definition, { order, definitionContainer, model }) {
       const localRelation = model.model.relations?.find(
         (r) => r.id === definition.localRelationRef,
       );
@@ -186,6 +190,7 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
       );
 
       return adminCrudEmbeddedInputGenerator({
+        order,
         // TODO: We should use an actual ID on the input
         id: makeIdSafe(definition.label),
         label: definition.label,
@@ -199,8 +204,9 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
 const adminCrudPasswordInputCompiler: AdminCrudInputCompiler<AdminCrudPasswordInputConfig> =
   {
     name: 'password',
-    compileInput: (definition) =>
+    compileInput: (definition, { order }) =>
       adminCrudPasswordInputGenerator({
+        order,
         label: definition.label,
       }),
   };
@@ -219,6 +225,7 @@ export function compileAdminCrudInput(
   modelId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
   crudSectionId: string,
+  order: number,
 ): GeneratorBundle {
   const inputCompiler = builder.pluginStore.getPluginSpec(
     adminCrudInputCompilerSpec,
@@ -227,6 +234,7 @@ export function compileAdminCrudInput(
   const compiler = inputCompiler.getCompiler(field.type, builtInCompilers);
 
   return compiler.compileInput(field, {
+    order,
     definitionContainer: builder.definitionContainer,
     model: ModelUtils.byIdOrThrow(builder.projectDefinition, modelId),
     crudSectionId,

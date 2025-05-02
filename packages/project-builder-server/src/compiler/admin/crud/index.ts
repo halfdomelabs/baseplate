@@ -63,8 +63,14 @@ function compileAdminCrudEmbeddedForm(
             },
           }),
         ),
-        inputs: form.form.fields.map((field) =>
-          compileAdminCrudInput(field, form.modelRef, builder, crudSectionId),
+        inputs: form.form.fields.map((field, idx) =>
+          compileAdminCrudInput(
+            field,
+            form.modelRef,
+            builder,
+            crudSectionId,
+            idx,
+          ),
         ),
       },
     });
@@ -73,8 +79,14 @@ function compileAdminCrudEmbeddedForm(
     ...sharedData,
     isList: false,
     children: {
-      inputs: form.form.fields.map((field) =>
-        compileAdminCrudInput(field, form.modelRef, builder, crudSectionId),
+      inputs: form.form.fields.map((field, idx) =>
+        compileAdminCrudInput(
+          field,
+          form.modelRef,
+          builder,
+          crudSectionId,
+          idx,
+        ),
       ),
     },
   });
@@ -99,15 +111,17 @@ export function compileAdminCrudSection(
       section: adminCrudSectionGenerator({
         children: {
           edit: adminCrudEditGenerator({
+            modelId: crudSection.modelRef,
             modelName,
             disableCreate,
             children: {
-              inputs: crudSection.form.fields.map((field) =>
+              inputs: crudSection.form.fields.map((field, idx) =>
                 compileAdminCrudInput(
                   field,
                   crudSection.modelRef,
                   builder,
                   crudSectionId,
+                  idx,
                 ),
               ),
               embeddedForms: crudSection.embeddedForms?.map((form) =>
@@ -116,6 +130,7 @@ export function compileAdminCrudSection(
             },
           }),
           list: adminCrudListGenerator({
+            modelId: crudSection.modelRef,
             modelName,
             disableCreate,
             children: {
@@ -136,6 +151,7 @@ export function compileAdminCrudSection(
             },
           }),
           queries: adminCrudQueriesGenerator({
+            modelId: crudSection.modelRef,
             modelName,
           }),
         },

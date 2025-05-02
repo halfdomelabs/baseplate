@@ -2,24 +2,22 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Alert, Button } from '%react-components';
-import { useStatus } from '%react-components/useStatus';
-import { logAndFormatError } from '%react-error/formatter';
+import { Alert, Button } from '%reactComponentsImports';
+import { useStatus } from '%reactComponentsImports';
+import { logAndFormatError } from '%reactErrorImports';
 
-TABLE_COMPONENT;
+TPL_TABLE_COMPONENT;
 
-export function COMPONENT_NAME({
-  initialData,
-  onSubmit,
-  EXTRA_PROP_SPREAD,
-}: PROPS): JSX.Element {
-  const { handleSubmit, control } = useForm<EMBEDDED_FORM_DATA_TYPE>({
-    resolver: zodResolver(EMBEDDED_FORM_DATA_SCHEMA),
+export function TPL_COMPONENT_NAME(
+  TPL_DESTRUCTURED_PROPS: TPL_PROPS,
+): JSX.Element {
+  const { handleSubmit, control } = useForm<TPL_EMBEDDED_FORM_DATA_TYPE>({
+    resolver: zodResolver(TPL_EMBEDDED_FORM_DATA_SCHEMA),
     defaultValues: initialData,
   });
   const { status, setError } = useStatus();
 
-  HEADER;
+  TPL_HEADER;
 
   return (
     <form
@@ -32,7 +30,7 @@ export function COMPONENT_NAME({
       className="space-y-4"
     >
       <Alert.WithStatus status={status} />
-      <INPUTS />
+      <TPL_INPUTS />
       <Button type="submit">Update</Button>
     </form>
   );

@@ -227,4 +227,7 @@ export const reactComponentsGenerator = createGenerator({
   }),
 });
 
-export { reactComponentsImportsProvider } from './generated/ts-import-maps.js';
+export {
+  reactComponentsImportsProvider,
+  type ReactComponentsImportsProvider,
+} from './generated/ts-import-maps.js';

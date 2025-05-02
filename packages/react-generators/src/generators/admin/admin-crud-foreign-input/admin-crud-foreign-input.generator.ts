@@ -1,16 +1,21 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  tsCodeFragment,
+  TsCodeUtils,
+  tsTemplate,
+} from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
-import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 import { createForeignDataDependency } from '../_utils/foreign-data-dependency.js';
 
 const descriptorSchema = z.object({
   label: z.string().min(1),
+  order: z.number(),
   localRelationName: z.string().min(1),
   isOptional: z.boolean().optional(),
   localField: z.string().min(1),
@@ -36,14 +41,15 @@ export const adminCrudForeignInputGenerator = createGenerator({
     valueExpression,
     defaultLabel,
     nullLabel,
+    order,
   }) => ({
     main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
-        reactComponents: reactComponentsProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
         reactApollo: reactApolloProvider,
       },
-      run({ adminCrudInputContainer, reactComponents, reactApollo }) {
+      run({ adminCrudInputContainer, reactComponentsImports, reactApollo }) {
         const optionsName = `${localRelationName}Options`;
         const modelName = adminCrudInputContainer.getModelName();
 
@@ -55,7 +61,7 @@ export const adminCrudForeignInputGenerator = createGenerator({
           valueExpression,
         });
 
-        const optionsCreator = TypescriptCodeUtils.createExpression(
+        const optionsCreator = tsCodeFragment(
           `${propName}.map((option) => ({
         label: option.${labelExpression}${
           defaultLabel ? ` ?? ${defaultLabel}` : ''
@@ -65,7 +71,8 @@ export const adminCrudForeignInputGenerator = createGenerator({
         );
 
         adminCrudInputContainer.addInput({
-          content: TypescriptCodeUtils.createExpression(
+          order,
+          content: tsCodeFragment(
             `<ReactSelectInput.LabelledController
           label="${label}"
           control={control}
@@ -73,31 +80,27 @@ export const adminCrudForeignInputGenerator = createGenerator({
           options={${optionsName}}
           ${adminCrudInputContainer.isInModal() ? 'fixedPosition' : ''}
         />`,
-            'import { ReactSelectInput } from "%react-components"',
-            { importMappers: [reactComponents] },
+            reactComponentsImports.ReactSelectInput.declaration(),
           ),
           graphQLFields: [{ name: localField }],
           validation: [
             {
               key: localField,
-              expression: TypescriptCodeUtils.createExpression(
+              expression: tsCodeFragment(
                 `z.string().uuid()${isOptional ? '.nullish()' : ''}`,
               ),
             },
           ],
           dataDependencies: [dataDependency],
-          header: TypescriptCodeUtils.formatBlock(
+          header: TsCodeUtils.formatFragment(
             `
         const ${optionsName} = OPTIONS;`,
             {
               OPTIONS: nullLabel
-                ? optionsCreator.wrap(
-                    (contents) =>
-                      `[
+                ? tsTemplate`[
               { label: ${quot(nullLabel)}, value: null },
-              ...${contents}
-            ]`,
-                  )
+              ...${optionsCreator}
+            ]`
                 : optionsCreator,
             },
           ),

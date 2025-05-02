@@ -9,6 +9,7 @@ import {
   normalizePathToProjectPath,
   readTemplateFileSource,
 } from '@halfdomelabs/sync';
+import { differenceSet } from '@halfdomelabs/utils';
 import { mapValues } from 'es-toolkit';
 
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
@@ -106,10 +107,12 @@ export function renderTsTemplateFileAction<
         templateKeySet.size !== providedKeySet.size ||
         [...templateKeySet].some((k) => !providedKeySet.has(k))
       ) {
+        const missingKeys = differenceSet(templateKeySet, providedKeySet);
+        const extraKeys = differenceSet(providedKeySet, templateKeySet);
         throw new Error(
-          `Template variables and provided variables do not match: ${[
-            ...templateKeySet,
-          ].join(', ')} !== ${[...providedKeySet].join(', ')}`,
+          `Template variables and provided variables do not match. Missing keys: ${[
+            ...missingKeys,
+          ].join(', ')}. Extra keys: ${[...extraKeys].join(', ')}.`,
         );
       }
 

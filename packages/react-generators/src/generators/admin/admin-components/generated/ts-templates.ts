@@ -8,7 +8,7 @@ import { reactComponentsImportsProvider } from '../../../core/react-components/g
 const descriptionList = createTsTemplateFile({
   group: 'components',
   name: 'description-list',
-  projectExports: { DescriptionList: {} },
+  projectExports: { DescriptionList: { exportName: 'default' } },
   source: { path: 'DescriptionList/index.tsx' },
   variables: {},
 });
@@ -21,7 +21,7 @@ const embeddedListInput = createTsTemplateFile({
   name: 'embedded-list-input',
   projectExports: {
     EmbeddedListFormProps: { isTypeOnly: true },
-    EmbeddedListInput: {},
+    EmbeddedListInput: { exportName: 'default' },
     EmbeddedListTableProps: { isTypeOnly: true },
   },
   source: { path: 'EmbeddedListInput/index.tsx' },
@@ -36,7 +36,7 @@ const embeddedObjectInput = createTsTemplateFile({
   name: 'embedded-object-input',
   projectExports: {
     EmbeddedObjectFormProps: { isTypeOnly: true },
-    EmbeddedObjectInput: {},
+    EmbeddedObjectInput: { exportName: 'default' },
   },
   source: { path: 'EmbeddedObjectInput/index.tsx' },
   variables: {},

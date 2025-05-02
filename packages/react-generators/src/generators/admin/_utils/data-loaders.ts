@@ -1,4 +1,4 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import type {
   GraphQLFragment,
@@ -11,7 +11,7 @@ import type { DataLoader } from '../_providers/admin-loader.js';
 
 export interface AdminCrudDataDependency {
   propName: string;
-  propType: TypescriptCodeExpression;
+  propType: TsCodeFragment;
   propLoaderValueGetter: (value: string) => string;
   loader: DataLoader;
   graphRoots?: GraphQLRoot[];
