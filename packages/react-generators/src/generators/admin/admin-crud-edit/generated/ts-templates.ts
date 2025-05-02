@@ -6,41 +6,20 @@ import { reactErrorImportsProvider } from '../../../core/react-error/generated/t
 const createPage = createTsTemplateFile({
   importMapProviders: {
     reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
   },
-  name: 'admin-crud-edit-create',
+  name: 'create-page',
   projectExports: {},
   source: { path: 'create.page.tsx' },
   variables: {
     TPL_COMPONENT_NAME: {},
-    TPL_DATA_LOADER: {},
     TPL_CREATE_MUTATION: {},
-    TPL_MUTATION_NAME: {},
-    TPL_FORM_DATA_NAME: {},
-    TPL_MODEL_NAME: {},
-    TPL_REFETCH_DOCUMENT: {},
     TPL_DATA_GATE: {},
-    TPL_EDIT_FORM: {},
-  },
-});
-
-const editPage = createTsTemplateFile({
-  importMapProviders: {
-    reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
-  },
-  name: 'admin-crud-edit-edit',
-  projectExports: {},
-  source: { path: 'edit.page.tsx' },
-  variables: {
-    TPL_COMPONENT_NAME: {},
     TPL_DATA_LOADER: {},
-    TPL_UPDATE_MUTATION: {},
-    TPL_MUTATION_NAME: {},
+    TPL_EDIT_FORM: {},
     TPL_FORM_DATA_NAME: {},
     TPL_MODEL_NAME: {},
-    TPL_DATA_GATE: {},
-    TPL_EDIT_FORM: {},
+    TPL_MUTATION_NAME: {},
+    TPL_REFETCH_DOCUMENT: {},
   },
 });
 
@@ -49,38 +28,53 @@ const editForm = createTsTemplateFile({
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
   },
-  name: 'admin-crud-edit-form',
+  name: 'edit-form',
   projectExports: {},
   source: { path: 'EditForm.tsx' },
   variables: {
     TPL_COMPONENT_NAME: {},
-    TPL_FORM_DATA_NAME: {},
-    TPL_EDIT_SCHEMA: {},
-    TPL_INPUTS: {},
-    TPL_HEADER: {},
-    TPL_EXTRA_PROPS: {},
     TPL_DESTRUCTURED_PROPS: {},
+    TPL_EDIT_SCHEMA: {},
+    TPL_EXTRA_PROPS: {},
+    TPL_FORM_DATA_NAME: {},
+    TPL_HEADER: {},
+    TPL_INPUTS: {},
+  },
+});
+
+const editPage = createTsTemplateFile({
+  importMapProviders: {
+    reactComponentsImports: reactComponentsImportsProvider,
+  },
+  name: 'edit-page',
+  projectExports: {},
+  source: { path: 'edit.page.tsx' },
+  variables: {
+    TPL_COMPONENT_NAME: {},
+    TPL_DATA_GATE: {},
+    TPL_DATA_LOADER: {},
+    TPL_EDIT_FORM: {},
+    TPL_FORM_DATA_NAME: {},
+    TPL_MODEL_NAME: {},
+    TPL_MUTATION_NAME: {},
+    TPL_UPDATE_MUTATION: {},
   },
 });
 
 const schema = createTsTemplateFile({
-  importMapProviders: {
-    reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
-  },
-  name: 'admin-crud-edit-schema',
+  name: 'schema',
   projectExports: {},
   source: { path: 'schema.ts' },
   variables: {
+    TPL_FORM_DATA_NAME: {},
     TPL_SCHEMA_NAME: {},
     TPL_SCHEMA_OBJECT: {},
-    TPL_FORM_DATA_NAME: {},
   },
 });
 
-export const ADMIN_CRUD_EDIT_TS_TEMPLATES = {
+export const ADMIN_ADMIN_CRUD_EDIT_TS_TEMPLATES = {
   createPage,
-  editPage,
   editForm,
+  editPage,
   schema,
 };

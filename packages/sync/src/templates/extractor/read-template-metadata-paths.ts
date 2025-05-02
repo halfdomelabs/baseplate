@@ -5,7 +5,6 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
-import { templateFileMetadataBaseSchema } from '../metadata/metadata.js';
 
 /**
  * Finds all template metadata files in the output directory and returns an array of
@@ -32,7 +31,7 @@ export async function readTemplateMetadataPaths(
     templateMetadataFiles.map(async (metadataFile) => {
       const metadataFileContents = await readJsonWithSchema(
         metadataFile,
-        z.record(z.string(), templateFileMetadataBaseSchema.passthrough()),
+        z.record(z.string(), z.unknown()),
       );
 
       return Object.keys(metadataFileContents).map((filename) => {

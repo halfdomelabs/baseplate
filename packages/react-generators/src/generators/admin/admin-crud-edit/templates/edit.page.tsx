@@ -1,9 +1,7 @@
 // @ts-nocheck
 
-import { useMemo } from 'react';
+import { BackButton, useToast } from '%reactComponentsImports';
 import { useNavigate, useParams } from 'react-router-dom';
-import { BackButton, ErrorableLoader } from '%reactComponentsImports';
-import { useToast } from '%reactComponentsImports';
 
 function TPL_COMPONENT_NAME(): JSX.Element {
   const { id } = useParams() as { id: string };

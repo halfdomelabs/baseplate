@@ -1,14 +1,17 @@
 // @ts-nocheck
 
-import { BackButton } from '%reactComponentsImports';
-import { useToast } from '%reactComponentsImports';
+import { BackButton, useToast } from '%reactComponentsImports';
 import { useNavigate } from 'react-router-dom';
 
 function TPL_COMPONENT_NAME(): JSX.Element {
   TPL_DATA_LOADER;
 
   const [TPL_MUTATION_NAME] = TPL_CREATE_MUTATION({
-    refetchQueries: [{ query: TPL_REFETCH_DOCUMENT }],
+    refetchQueries: [
+      {
+        query: TPL_REFETCH_DOCUMENT,
+      },
+    ],
   });
 
   const toast = useToast();
@@ -28,7 +31,9 @@ function TPL_COMPONENT_NAME(): JSX.Element {
     <div className="space-y-4">
       <h1 className="flex space-x-2">
         <BackButton />
-        <span>Create New TPL_MODEL_NAME</span>
+        <span>
+          Create New <TPL_MODEL_NAME />
+        </span>
       </h1>
       <TPL_EDIT_FORM />
     </div>
