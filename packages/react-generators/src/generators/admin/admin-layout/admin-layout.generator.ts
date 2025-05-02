@@ -9,7 +9,6 @@ import {
   createGeneratorTask,
   createProviderTask,
 } from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { authComponentsImportsProvider } from '@src/generators/auth/_providers/auth-components.js';
