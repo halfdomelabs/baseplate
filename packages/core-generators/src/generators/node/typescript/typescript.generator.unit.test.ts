@@ -171,7 +171,7 @@ describe('typescriptGenerator', () => {
         async ({ typescriptFile }) => {
           const action = typescriptFile.renderTemplateGroup({
             group: testTemplateGroup,
-            baseDirectory: 'src/utils',
+            baseDirectory: '@/src/utils',
           });
 
           const { files } = await testAction(action);

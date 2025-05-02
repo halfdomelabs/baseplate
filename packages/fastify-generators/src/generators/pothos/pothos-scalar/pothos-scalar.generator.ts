@@ -16,8 +16,10 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 
-import { pothosImportsProvider } from '../pothos/generated/ts-import-maps.js';
-import { pothosConfigProvider } from '../pothos/pothos.generator.js';
+import {
+  pothosConfigProvider,
+  pothosImportsProvider,
+} from '../pothos/pothos.generator.js';
 import { POTHOS_POTHOS_SCALAR_TS_TEMPLATES } from './generated/ts-templates.js';
 
 type ScalarTemplateKey = keyof typeof POTHOS_POTHOS_SCALAR_TS_TEMPLATES;

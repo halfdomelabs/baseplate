@@ -1,9 +1,12 @@
 // @ts-nocheck
 
+import {
+  BadRequestError,
+  UnauthorizedError,
+} from '%errorHandlerServiceImports';
+import { getRedisClient } from '%fastifyRedisImports';
 import ms from 'ms';
 import { nanoid } from 'nanoid';
-import { getRedisClient } from '%fastify-redis';
-import { BadRequestError, UnauthorizedError } from '%http-errors';
 
 const AUTH_CODE_EXPIRY = ms('1 minute');
 export const BULL_BOARD_ACCESS_TOKEN_EXPIRY = ms('1 hour');

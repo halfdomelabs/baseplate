@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { StorageAdapter } from './types.js';
 
 /**

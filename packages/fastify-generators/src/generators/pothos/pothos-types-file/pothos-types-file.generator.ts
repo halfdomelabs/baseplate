@@ -17,8 +17,10 @@ import type { PothosTypeDefinition } from '@src/writers/pothos/definitions.js';
 
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
-import { pothosImportsProvider } from '../pothos/generated/ts-import-maps.js';
-import { pothosSchemaProvider } from '../pothos/pothos.generator.js';
+import {
+  pothosImportsProvider,
+  pothosSchemaProvider,
+} from '../pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({
   /**

@@ -10,7 +10,6 @@ export const backendAppSchema = z.object({
   enableRedis: z.boolean().optional(),
   enableBullQueue: z.boolean().optional(),
   enablePostmark: z.boolean().optional(),
-  enableSendgrid: z.boolean().optional(),
   enableSubscriptions: z.boolean().optional(),
   enableAxios: z.boolean().optional(),
 });

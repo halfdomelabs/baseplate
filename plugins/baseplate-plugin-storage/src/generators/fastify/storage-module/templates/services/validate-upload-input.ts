@@ -1,8 +1,9 @@
 // @ts-nocheck
 
-import { DataPipeOutput } from '%prisma-utils/dataPipes';
-import { BadRequestError } from '%http-errors';
-import { ServiceContext } from '%service-context';
+import type { DataPipeOutput } from '%prismaUtilsImports';
+import type { ServiceContext } from '%serviceContextImports';
+
+import { BadRequestError } from '%errorHandlerServiceImports';
 
 export interface FileUploadInput {
   id: string;
@@ -19,7 +20,7 @@ export async function validateFileUploadInput(
     return { data: { connect: { id } } };
   }
 
-  const file = await prisma.file.findUnique({
+  const file = await TPL_FILE_MODEL.findUnique({
     where: { id },
   });
 
@@ -45,7 +46,7 @@ export async function validateFileUploadInput(
     data: { connect: { id } },
     operations: {
       afterPrismaPromises: [
-        prisma.file.update({ where: { id }, data: { isUsed: true } }),
+        TPL_FILE_MODEL.update({ where: { id }, data: { isUsed: true } }),
       ],
     },
   };

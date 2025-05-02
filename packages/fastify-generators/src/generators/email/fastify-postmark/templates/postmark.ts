@@ -1,12 +1,12 @@
 // @ts-nocheck
 
+import { config } from '%configServiceImports';
 import { ServerClient } from 'postmark';
 import { z } from 'zod';
-import { config } from '%config';
 
 const client = new ServerClient(config.POSTMARK_API_TOKEN);
 
-const DEFAULT_FROM = '<DEFAULT_FROM>';
+const DEFAULT_FROM = TPL_DEFAULT_FROM;
 
 interface EmailTemplateConfiguration {
   alias: string;
@@ -20,7 +20,7 @@ function createTemplateConfig<
   return templateConfig;
 }
 
-const POSTMARK_TEMPLATES = createTemplateConfig({});
+const POSTMARK_TEMPLATES = createTemplateConfig(TPL_TEMPLATE_CONFIG);
 
 export type PostmarkTemplateKey = keyof typeof POSTMARK_TEMPLATES;
 

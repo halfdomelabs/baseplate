@@ -1,4 +1,4 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
@@ -6,38 +6,54 @@ import {
   nodeProvider,
   projectScope,
   tsCodeFragment,
+  TsCodeUtils,
   tsImportBuilder,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createProviderType,
 } from '@halfdomelabs/sync';
+import path from 'node:path';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
-import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/fastify-redis.generator.js';
+import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
+import { fastifyRedisImportsProvider } from '@src/generators/core/fastify-redis/fastify-redis.generator.js';
 import { fastifyServerConfigProvider } from '@src/generators/core/fastify-server/fastify-server.generator.js';
-import { pothosSchemaProvider } from '@src/generators/pothos/pothos/pothos.generator.js';
+import {
+  pothosImportsProvider,
+  pothosSchemaProvider,
+} from '@src/generators/pothos/pothos/pothos.generator.js';
+
+import { BULL_FASTIFY_BULL_BOARD_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
-export interface FastifyBullBoardProvider {
-  addQueueToTrack(queue: TypescriptCodeExpression): void;
-}
+const [
+  setupTask,
+  fastifyBullBoardConfigProvider,
+  fastifyBullBoardConfigValuesProvider,
+] = createConfigProviderTask(
+  (t) => ({
+    queuesToTrack: t.map<string, TsCodeFragment>(),
+  }),
+  {
+    prefix: 'fastify-bull-board',
+    configScope: projectScope,
+  },
+);
 
-export const fastifyBullBoardProvider =
-  createProviderType<FastifyBullBoardProvider>('fastify-bull-board');
+export { fastifyBullBoardConfigProvider };
 
 export const fastifyBullBoardGenerator = createGenerator({
   name: 'bull/fastify-bull-board',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         '@bull-board/api',
@@ -51,40 +67,50 @@ export const fastifyBullBoardGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
-        errorHandlerService: errorHandlerServiceProvider,
-        redis: fastifyRedisProvider,
+        typescriptFile: typescriptFileProvider,
+        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+        fastifyRedisImports: fastifyRedisImportsProvider,
         pothosSchema: pothosSchemaProvider,
+        pothosImports: pothosImportsProvider,
         appModule: appModuleProvider,
+        fastifyBullBoardConfigValues: fastifyBullBoardConfigValuesProvider,
       },
-      exports: {
-        fastifyBullBoard: fastifyBullBoardProvider.export(projectScope),
-      },
-      run({ typescript, errorHandlerService, redis, pothosSchema, appModule }) {
-        const queuesToTrack: TypescriptCodeExpression[] = [];
-
-        const moduleFolder = `${appModule.getModuleFolder()}/bull-board`;
+      run({
+        typescriptFile,
+        errorHandlerServiceImports,
+        fastifyRedisImports,
+        pothosSchema,
+        pothosImports,
+        appModule,
+        fastifyBullBoardConfigValues: { queuesToTrack },
+      }) {
+        const moduleFolder = path.posix.join(
+          appModule.getModuleFolder(),
+          'bull-board',
+        );
 
         pothosSchema.registerSchemaFile(
           `${moduleFolder}/schema/authenticate.mutations.ts`,
         );
 
         return {
-          providers: {
-            fastifyBullBoard: {
-              addQueueToTrack(queue) {
-                queuesToTrack.push(queue);
-              },
-            },
-          },
           build: async (builder) => {
-            const importMappers = [errorHandlerService, redis, pothosSchema];
-            const pluginFile = typescript.createTemplate(
-              {
-                QUEUES_TO_TRACK:
-                  TypescriptCodeUtils.mergeExpressionsAsArray(queuesToTrack),
-              },
-              { importMappers },
+            await builder.apply(
+              typescriptFile.renderTemplateGroup({
+                group: BULL_FASTIFY_BULL_BOARD_TS_TEMPLATES.moduleGroup,
+                baseDirectory: moduleFolder,
+                importMapProviders: {
+                  fastifyRedisImports,
+                  errorHandlerServiceImports,
+                  pothosImports,
+                },
+                variables: {
+                  pluginsBullBoard: {
+                    TPL_QUEUES:
+                      TsCodeUtils.mergeFragmentsAsArray(queuesToTrack),
+                  },
+                },
+              }),
             );
 
             appModule.moduleFields.set(
@@ -96,25 +122,6 @@ export const fastifyBullBoardGenerator = createGenerator({
                   `${moduleFolder}/index.js`,
                 ),
               ),
-            );
-
-            await builder.apply(
-              pluginFile.renderToAction(
-                'plugins/bull-board.ts',
-                `${moduleFolder}/plugins/bull-board.ts`,
-              ),
-            );
-
-            await builder.apply(
-              typescript.createCopyFilesAction({
-                destinationBaseDirectory: moduleFolder,
-                paths: [
-                  'schema/authenticate.mutations.ts',
-                  'services/auth.service.ts',
-                  'index.ts',
-                ],
-                importMappers,
-              }),
             );
           },
         };

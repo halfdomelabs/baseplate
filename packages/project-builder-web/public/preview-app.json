@@ -168,7 +168,6 @@
       "enableBullQueue": true,
       "enablePostmark": true,
       "enableRedis": true,
-      "enableSendgrid": true,
       "enableStripe": true,
       "enableSubscriptions": true,
       "id": "app:OHiu1F64bPmB",

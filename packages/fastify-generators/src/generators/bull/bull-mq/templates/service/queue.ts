@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-import { Queue, QueueOptions, ConnectionOptions } from 'bullmq';
-import { logError } from '%error-logger';
-import { getRedisClient } from '%fastify-redis';
+import { logError } from '%errorHandlerServiceImports';
+import { getRedisClient } from '%fastifyRedisImports';
+import { ConnectionOptions, Queue, QueueOptions } from 'bullmq';
 
 const managedQueues: Record<string, Queue> = {};
 

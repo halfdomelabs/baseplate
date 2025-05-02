@@ -1,10 +1,10 @@
 // @ts-nocheck
 
-import { builder } from '%pothos';
-import { STORAGE_ADAPTERS, StorageAdapterKey } from '../constants/adapters.js';
-import { FILE_OBJECT_TYPE } from 'FILE_OBJECT_MODULE';
+import { builder } from '%pothosImports';
 
-builder.objectField(FILE_OBJECT_TYPE, 'hostedUrl', (t) =>
+import { STORAGE_ADAPTERS, StorageAdapterKey } from '../constants/adapters.js';
+
+builder.objectField(TPL_FILE_OBJECT_TYPE, 'hostedUrl', (t) =>
   t.string({
     description:
       'URL of the file where it is publicly hosted. Returns null if it is not publicly available.',

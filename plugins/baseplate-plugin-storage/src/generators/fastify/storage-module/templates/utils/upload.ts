@@ -1,12 +1,14 @@
 // @ts-nocheck
 
-import { Prisma } from '@prisma/client';
+import type { ServiceContext } from '%serviceContextImports';
+
+import { BadRequestError, ForbiddenError } from '%errorHandlerServiceImports';
 import { nanoid } from 'nanoid';
-import { BadRequestError, ForbiddenError } from '%http-errors';
-import { ServiceContext } from '%service-context';
-import { StorageAdapter } from '../adapters/index.js';
+
+import type { StorageAdapter } from '../adapters/index.js';
+
 import { STORAGE_ADAPTERS } from '../constants/adapters.js';
-import { FileCategory, FILE_CATEGORIES } from '../constants/file-categories.js';
+import { FILE_CATEGORIES, FileCategory } from '../constants/file-categories.js';
 import {
   getMimeTypeFromContentType,
   validateFileExtensionWithMimeType,
@@ -33,7 +35,7 @@ export async function prepareUploadData(
   { category, contentType, fileName, fileSize }: UploadDataInput,
   context: ServiceContext,
 ): Promise<{
-  data: Prisma.FILE_CREATE_INPUT;
+  data: TPL_FILE_CREATE_INPUT;
   fileCategory: FileCategory;
   adapter: StorageAdapter;
 }> {

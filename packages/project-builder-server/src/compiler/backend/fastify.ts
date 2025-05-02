@@ -9,7 +9,6 @@ import {
   fastifyBullBoardGenerator,
   fastifyPostmarkGenerator,
   fastifyRedisGenerator,
-  fastifySendgridGenerator,
   fastifySentryGenerator,
   fastifyServerGenerator,
   fastifyStripeGenerator,
@@ -75,7 +74,6 @@ export function buildFastify(
           : {}),
         postmark: app.enablePostmark ? fastifyPostmarkGenerator({}) : undefined,
         axios: app.enableAxios ? axiosGenerator({}) : undefined,
-        sendgrid: app.enableSendgrid ? fastifySendgridGenerator({}) : undefined,
         prisma: prismaGenerator({
           defaultDatabaseUrl: getPostgresSettings(projectDefinition).url,
         }),

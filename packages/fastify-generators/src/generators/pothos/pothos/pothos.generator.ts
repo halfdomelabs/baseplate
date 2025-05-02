@@ -386,3 +386,5 @@ if (IS_DEVELOPMENT) {
     }),
   }),
 });
+
+export { pothosImportsProvider } from './generated/ts-import-maps.js';

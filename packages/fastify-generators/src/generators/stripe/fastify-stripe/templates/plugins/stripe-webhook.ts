@@ -1,12 +1,12 @@
 // @ts-nocheck
 
+import { config } from '%configServiceImports';
+import { BadRequestError, logError } from '%errorHandlerServiceImports';
 import { FastifyPluginAsync } from 'fastify';
 import { Stripe } from 'stripe';
-import { config } from '%config';
-import { logError } from '%error-logger';
-import { stripe } from '@/src/services/stripe.js';
-import { stripeEventService } from '@/src/services/stripe-events.js';
-import { BadRequestError } from '%http-errors';
+
+import { stripeEventService } from '../services/stripe-events.js';
+import { stripe } from '../services/stripe.js';
 
 async function getStripeEvent(
   rawBody: string | Buffer = '',

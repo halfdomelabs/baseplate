@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-import { Worker, Processor, WorkerOptions, ConnectionOptions } from 'bullmq';
-import { logError } from '%error-logger';
-import { logger } from '%logger-service';
-import { getRedisClient } from '%fastify-redis';
+import { logError } from '%errorHandlerServiceImports';
+import { getRedisClient } from '%fastifyRedisImports';
+import { logger } from '%loggerServiceImports';
+import { ConnectionOptions, Processor, Worker, WorkerOptions } from 'bullmq';
 
 export function createWorker<DataType>(
   queueName: string,

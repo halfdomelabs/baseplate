@@ -4,29 +4,33 @@ import {
   projectScope,
   tsCodeFragment,
   tsImportBuilder,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
-  createProviderType,
+  createProviderTask,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
+import {
+  configServiceImportsProvider,
+  configServiceProvider,
+} from '@src/generators/core/config-service/config-service.generator.js';
+import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
 import { fastifyServerConfigProvider } from '@src/generators/core/fastify-server/fastify-server.generator.js';
-import { loggerServiceProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
+import { loggerServiceImportsProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
+
+import {
+  createFastifyStripeImports,
+  fastifyStripeImportsProvider,
+} from './generated/ts-import-maps.js';
+import { STRIPE_FASTIFY_STRIPE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
-
-export type FastifyStripeProvider = unknown;
-
-export const fastifyStripeProvider =
-  createProviderType<FastifyStripeProvider>('fastify-stripe');
 
 export const fastifyStripeGenerator = createGenerator({
   name: 'stripe/fastify-stripe',
@@ -39,34 +43,24 @@ export const fastifyStripeGenerator = createGenerator({
         'fastify-raw-body',
       ]),
     }),
-    main: createGeneratorTask({
-      dependencies: {
-        typescript: typescriptProvider,
-        configService: configServiceProvider,
-        errorHandlerService: errorHandlerServiceProvider,
-        loggerService: loggerServiceProvider,
-        fastifyServerConfig: fastifyServerConfigProvider,
-      },
-      exports: {
-        fastifyStripe: fastifyStripeProvider.export(projectScope),
-      },
-      run({
-        typescript,
-        configService,
-        errorHandlerService,
-        loggerService,
-        fastifyServerConfig,
-      }) {
+    configService: createProviderTask(
+      configServiceProvider,
+      (configService) => {
         configService.configFields.set('STRIPE_SECRET_KEY', {
           comment: 'Stripe secret API key',
-          validator: tsCodeFragment('z.string().min(1)'),
+          validator: 'z.string().min(1)',
           seedValue: 'STRIPE_SECRET_KEY',
         });
         configService.configFields.set('STRIPE_ENDPOINT_SECRET', {
           comment: 'Stripe webhook endpoint secret',
-          validator: tsCodeFragment('z.string().min(1)'),
+          validator: 'z.string().min(1)',
           seedValue: 'STRIPE_ENDPOINT_SECRET',
         });
+      },
+    ),
+    fastifyServerConfig: createProviderTask(
+      fastifyServerConfigProvider,
+      (fastifyServerConfig) => {
         fastifyServerConfig.plugins.set('rawBodyPlugin', {
           plugin: tsCodeFragment(
             'rawBodyPlugin',
@@ -81,26 +75,47 @@ export const fastifyStripeGenerator = createGenerator({
             ),
           ),
         });
-
+      },
+    ),
+    main: createGeneratorTask({
+      dependencies: {
+        typescriptFile: typescriptFileProvider,
+        configServiceImports: configServiceImportsProvider,
+        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+        loggerServiceImports: loggerServiceImportsProvider,
+      },
+      exports: {
+        fastifyStripeImports: fastifyStripeImportsProvider.export(projectScope),
+      },
+      run({
+        typescriptFile,
+        configServiceImports,
+        errorHandlerServiceImports,
+        loggerServiceImports,
+      }) {
         return {
           providers: {
-            fastifyStripe: {},
+            fastifyStripeImports: createFastifyStripeImports('@/src/services'),
           },
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyFilesAction({
-                destinationBaseDirectory: 'src',
-                paths: [
-                  'plugins/stripe-webhook.int.test.ts',
-                  'plugins/stripe-webhook.ts',
-                  'services/stripe-events.ts',
-                  'services/stripe.ts',
-                ],
-                importMappers: [
-                  configService,
-                  errorHandlerService,
-                  loggerService,
-                ],
+              typescriptFile.renderTemplateGroup({
+                group: STRIPE_FASTIFY_STRIPE_TS_TEMPLATES.pluginsGroup,
+                baseDirectory: '@/src/plugins',
+                importMapProviders: {
+                  configServiceImports,
+                  errorHandlerServiceImports,
+                },
+              }),
+            );
+            await builder.apply(
+              typescriptFile.renderTemplateGroup({
+                group: STRIPE_FASTIFY_STRIPE_TS_TEMPLATES.servicesGroup,
+                baseDirectory: '@/src/services',
+                importMapProviders: {
+                  configServiceImports,
+                  loggerServiceImports,
+                },
               }),
             );
           },

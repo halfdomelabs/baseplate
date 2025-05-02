@@ -1,8 +1,9 @@
 // @ts-nocheck
 
-import { File } from '@prisma/client';
-import { BadRequestError } from '%http-errors';
-import { ServiceContext } from '%service-context';
+import type { ServiceContext } from '%serviceContextImports';
+
+import { BadRequestError } from '%errorHandlerServiceImports';
+
 import { AdapterPresignedUploadUrlPayload } from '../adapters/index.js';
 import { prepareUploadData, UploadDataInput } from '../utils/upload.js';
 
@@ -10,7 +11,7 @@ type CreatePresignedUploadUrlInput = UploadDataInput;
 
 export interface CreatePresignedUploadUrlPayload
   extends AdapterPresignedUploadUrlPayload {
-  file: File;
+  file: TPL_FILE_MODEL_TYPE;
 }
 
 export async function createPresignedUploadUrl(
@@ -28,7 +29,7 @@ export async function createPresignedUploadUrl(
     );
   }
 
-  const file = await FILE_MODEL.create({ data });
+  const file = await TPL_FILE_MODEL.create({ data });
 
   const result = await adapter.createPresignedUploadUrl({
     path: data.path,

@@ -1,13 +1,15 @@
 // @ts-nocheck
 
-import { Readable } from 'stream';
 import {
-  S3Client,
+  DeleteObjectsCommand,
   GetObjectCommand,
   PutObjectCommand,
+  S3Client,
 } from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Readable } from 'stream';
+
 import {
   AdapterPresignedUploadUrlInput,
   AdapterPresignedUploadUrlPayload,
@@ -72,6 +74,29 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
     return `${hostedUrl.replace(/\/$/, '')}/${path}`;
   }
 
+  async function deleteFiles(paths: string[]): Promise<void> {
+    if (paths.length > 1000) {
+      throw new Error('Cannot delete more than 1000 files at once');
+    }
+    const command = new DeleteObjectsCommand({
+      Bucket: bucket,
+      Delete: {
+        Objects: paths.map((Key) => ({ Key })),
+      },
+    });
+
+    const response = await client.send(command);
+
+    // for now, if we encounter a single error, throw the entire operation
+    // TODO: handle partial failures
+    if (response.Errors?.length) {
+      const error = response.Errors[0];
+      throw new Error(
+        `Unable to delete key: ${error.Key ?? ''}, ${error.Message ?? ''}`,
+      );
+    }
+  }
+
   async function uploadFile(
     path: string,
     contents: Buffer | ReadableStream | string,
@@ -101,6 +126,7 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
     createPresignedUploadUrl,
     createPresignedDownloadUrl,
     getHostedUrl,
+    deleteFiles,
     uploadFile,
     downloadFile,
   };

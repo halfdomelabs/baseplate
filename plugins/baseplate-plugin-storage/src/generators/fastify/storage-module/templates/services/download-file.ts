@@ -1,18 +1,21 @@
 // @ts-nocheck
 
+import type { ServiceContext } from '%serviceContextImports';
+
+import { ForbiddenError } from '%errorHandlerServiceImports';
+import { File } from '@prisma/client';
 import { Readable } from 'stream';
-import { ForbiddenError } from '%http-errors';
-import { ServiceContext } from '%service-context';
+
 import { STORAGE_ADAPTERS } from '../constants/adapters.js';
 import { FILE_CATEGORIES } from '../constants/file-categories.js';
 
 export async function downloadFile(
-  fileIdOrFile: string | FILE_MODEL_TYPE,
+  fileIdOrFile: string | File,
   context: ServiceContext,
 ): Promise<Readable> {
   const file =
     typeof fileIdOrFile === 'string'
-      ? await FILE_MODEL.findUniqueOrThrow({
+      ? await TPL_FILE_MODEL.findUniqueOrThrow({
           where: { id: fileIdOrFile },
         })
       : fileIdOrFile;

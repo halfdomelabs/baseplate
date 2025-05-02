@@ -1,12 +1,16 @@
 // @ts-nocheck
 
+import {
+  HttpError,
+  logError,
+  UnauthorizedError,
+} from '%errorHandlerServiceImports';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { FastifyAdapter } from '@bull-board/fastify';
 import { Queue } from 'bullmq';
 import { FastifyPluginAsync } from 'fastify';
-import { logError } from '%error-logger';
-import { HttpError, UnauthorizedError } from '%http-errors';
+
 import {
   authenticateBullBoardUser,
   BULL_BOARD_ACCESS_TOKEN_EXPIRY,
@@ -17,7 +21,7 @@ import {
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
 function getQueuesToTrack(): Queue[] {
-  return QUEUES_TO_TRACK;
+  return TPL_QUEUES;
 }
 
 const ACCESS_TOKEN_COOKIE_NAME = 'bull-board-access-token';
