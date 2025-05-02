@@ -1,4 +1,8 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  tsCodeFragment,
+  TsCodeUtils,
+  tsTemplate,
+} from '@halfdomelabs/core-generators';
 import { quot } from '@halfdomelabs/utils';
 
 import type {
@@ -10,59 +14,54 @@ import { notEmpty } from '@src/utils/array.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 
 import type {
-  PothosExpressionWithChildren,
-  PothosTypeDefinitionWithChildren,
+  PothosCodeFragment,
+  PothosTypeDefinitionWithVariableName,
 } from './definitions.js';
 import type { PothosWriterOptions } from './options.js';
 
-import { wrapPothosTypeWithList, writePothosFieldOptions } from './helpers.js';
-import { getExpressionFromPothosTypeReference } from './options.js';
+import { getPothosTypeAsFragment, writePothosFieldOptions } from './helpers.js';
 import { writePothosInputFieldFromDtoScalarField } from './scalar-fields.js';
 
 function writePothosInputFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions,
-): PothosExpressionWithChildren {
+): PothosCodeFragment {
   // recursive call
-
   const pothosType = getPothosTypeForNestedInput(field, options);
 
   const fieldOptions = writePothosFieldOptions({
     required: !field.isOptional,
-    type: pothosType.expression,
+    type: pothosType.fragment,
   });
 
   return {
-    expression: TypescriptCodeUtils.formatExpression(`BUILDER.field(OPTIONS)`, {
-      BUILDER: options.fieldBuilder,
-      OPTIONS: fieldOptions ?? '',
-    }),
-    childDefinitions: pothosType.childDefinitions,
+    fragment: tsTemplate`${options.fieldBuilder}.field(${fieldOptions ?? ''})`,
+    dependencies: pothosType.dependencies,
   };
 }
 
 export function writePothosInputFieldsFromDtoFields(
   fields: ServiceOutputDtoField[],
   options: PothosWriterOptions,
-): PothosExpressionWithChildren {
-  const pothosFields: PothosExpressionWithChildren[] = fields.map((field) => {
+): PothosCodeFragment {
+  const pothosFields: PothosCodeFragment[] = fields.map((field) => {
     if (field.type === 'scalar') {
       return {
-        expression: writePothosInputFieldFromDtoScalarField(field, options),
+        fragment: writePothosInputFieldFromDtoScalarField(field, options),
       };
     }
     return writePothosInputFieldFromDtoNestedField(field, options);
   });
 
   return {
-    expression: TypescriptCodeUtils.mergeExpressionsAsObject(
+    fragment: TsCodeUtils.mergeFragmentsAsObject(
       Object.fromEntries(
-        pothosFields.map((field, i) => [fields[i].name, field.expression]),
+        pothosFields.map((field, i) => [fields[i].name, field.fragment]),
       ),
-      { wrapWithParenthesis: true },
+      { wrapWithParenthesis: true, disableSort: true },
     ),
-    childDefinitions: pothosFields
-      .flatMap((field) => field.childDefinitions)
+    dependencies: pothosFields
+      .flatMap((field) => field.dependencies)
       .filter(notEmpty),
   };
 }
@@ -72,63 +71,67 @@ export function writePothosInputDefinitionFromDtoFields(
   fields: ServiceOutputDtoField[],
   options: PothosWriterOptions,
   shouldExport?: boolean,
-): PothosTypeDefinitionWithChildren {
+): PothosTypeDefinitionWithVariableName {
   const pothosFields = writePothosInputFieldsFromDtoFields(fields, {
     ...options,
     fieldBuilder: 't',
   });
 
-  const exportName = `${lowerCaseFirst(name)}InputType`;
+  const variableName = `${lowerCaseFirst(name)}InputType`;
 
-  const definition = TypescriptCodeUtils.formatBlock(
+  const fragment = TsCodeUtils.formatFragment(
     `${
       shouldExport ? `export ` : ''
-    }const EXPORT_NAME = BUILDER.inputType(NAME, {
+    }const VARIABLE_NAME = BUILDER.inputType(NAME, {
       fields: (t) => FIELDS
     })`,
     {
-      EXPORT_NAME: exportName,
+      VARIABLE_NAME: variableName,
       BUILDER: options.schemaBuilder,
       NAME: quot(name),
-      FIELDS: pothosFields.expression,
+      FIELDS: pothosFields.fragment,
     },
   );
 
   return {
     name,
-    exportName,
-    definition,
-    childDefinitions: pothosFields.childDefinitions,
+    variableName,
+    fragment,
+    dependencies: pothosFields.dependencies,
   };
 }
 
 export function getPothosTypeForNestedInput(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions,
-): PothosExpressionWithChildren {
+): PothosCodeFragment {
   if (field.isPrismaType) {
     throw new Error(`Prisma types are not supported in input fields`);
   }
   const { name, fields } = field.nestedType;
-  const inputType = options.typeReferences.getInputType(name);
+
+  // Check if the input type is already defined in the base types
+  const inputType =
+    options.pothosSchemaBaseTypes.inputRef(name) ??
+    options.typeReferences?.find((x) => x.name === name);
 
   if (inputType) {
     return {
-      expression: wrapPothosTypeWithList(
-        getExpressionFromPothosTypeReference(inputType),
-        field.isList,
-      ),
+      fragment: getPothosTypeAsFragment(inputType.fragment, field.isList),
     };
   }
 
-  const { childDefinitions, ...inputDefinition } =
-    writePothosInputDefinitionFromDtoFields(name, fields, options);
+  const pothosInputType = writePothosInputDefinitionFromDtoFields(
+    name,
+    fields,
+    options,
+  );
 
   return {
-    expression: wrapPothosTypeWithList(
-      TypescriptCodeUtils.createExpression(inputDefinition.exportName),
+    fragment: getPothosTypeAsFragment(
+      tsCodeFragment(pothosInputType.variableName),
       field.isList,
     ),
-    childDefinitions: [...(childDefinitions ?? []), inputDefinition],
+    dependencies: [pothosInputType],
   };
 }

@@ -1,13 +1,13 @@
 import { quot } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 
-import type { TsCodeFragmentOptions } from './fragments/creators.js';
-import type { TsCodeFragment, TsHoistedFragment } from './fragments/types.js';
-import type { TsImportDeclarationBuilder } from './imports/builder.js';
-import type { TsImportDeclaration } from './imports/types.js';
+import type { TsCodeFragmentOptions } from '../fragments/creators.js';
+import type { TsCodeFragment, TsHoistedFragment } from '../fragments/types.js';
+import type { TsImportDeclarationBuilder } from '../imports/builder.js';
+import type { TsImportDeclaration } from '../imports/types.js';
 
-import { tsCodeFragment } from './fragments/creators.js';
-import { tsImportBuilder } from './imports/builder.js';
+import { tsCodeFragment } from '../fragments/creators.js';
+import { tsImportBuilder } from '../imports/builder.js';
 
 function formatStringWithContent(
   str: string,
@@ -30,7 +30,7 @@ function isTsCodeFragment(value: unknown): value is TsCodeFragment {
   return typeof value === 'object' && value !== null && 'contents' in value;
 }
 
-function mergeFragmentImportsAndHoistedFragments(
+export function mergeFragmentImportsAndHoistedFragments(
   fragments: TsCodeFragment[],
   options?: {
     imports?: TsImportDeclaration[];

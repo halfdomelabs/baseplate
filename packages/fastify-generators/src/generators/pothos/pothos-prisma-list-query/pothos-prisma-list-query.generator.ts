@@ -1,12 +1,12 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TsCodeUtils, tsTemplate } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
+import { quot, sortObjectKeys } from '@halfdomelabs/utils';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
 
@@ -18,7 +18,14 @@ import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.
 import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({
+  /**
+   * The name of the model.
+   */
   modelName: z.string().min(1),
+  /**
+   * The order of the type in the types file.
+   */
+  order: z.number(),
 });
 
 export const pothosPrismaListQueryGenerator = createGenerator({
@@ -26,7 +33,7 @@ export const pothosPrismaListQueryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName }) => ({
+  buildTasks: ({ modelName, order }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
@@ -47,7 +54,7 @@ export const pothosPrismaListQueryGenerator = createGenerator({
         const queryName = pluralize(lowerCaseFirst(modelName));
 
         const customFields = createNonOverwriteableMap<
-          Record<string, TypescriptCodeExpression>
+          Record<string, TsCodeFragment>
         >({});
 
         return {
@@ -59,34 +66,27 @@ export const pothosPrismaListQueryGenerator = createGenerator({
             },
           },
           build: () => {
-            const resolveFunction = TypescriptCodeUtils.formatExpression(
-              `async (query) => MODEL.findMany({ ...query })`,
-              {
-                MODEL: prismaOutput.getPrismaModelExpression(modelName),
-              },
-            );
+            const prismaModelFragment =
+              prismaOutput.getPrismaModelFragment(modelName);
+
+            const resolveFunction = tsTemplate`async (query) => ${prismaModelFragment}.findMany({ ...query })`;
 
             const options = {
               type: `[${quot(modelName)}]`,
-              ...customFields.value(),
+              ...sortObjectKeys(customFields.value()),
               resolve: resolveFunction,
             };
 
-            const block = TypescriptCodeUtils.formatBlock(
-              `BUILDER.queryField(QUERY_NAME, (t) => 
-          t.prismaField(OPTIONS)
-        );`,
-              {
-                QUERY_EXPORT: `${queryName}Query`,
-                BUILDER: 'builder',
-                QUERY_NAME: quot(queryName),
-                OPTIONS: TypescriptCodeUtils.mergeExpressionsAsObject(options),
-              },
-            );
+            const block = tsTemplate`${pothosTypesFile.getBuilderFragment()}.queryField(
+              ${quot(queryName)},
+              (t) => t.prismaField(${TsCodeUtils.mergeFragmentsAsObject(options, { disableSort: true })})
+            )`;
 
-            pothosTypesFile.registerType({
-              category: 'list-query',
-              block,
+            pothosTypesFile.typeDefinitions.add({
+              name: `${queryName}Query`,
+              fragment: block,
+              dependencies: [],
+              order,
             });
           },
         };

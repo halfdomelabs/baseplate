@@ -15,6 +15,7 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
+import { createPothosTypeReference } from '@src/writers/pothos/options.js';
 
 import { pothosConfigProvider } from '../pothos/pothos.generator.js';
 
@@ -68,11 +69,14 @@ export const pothosEnumsFileGenerator = createGenerator({
             pothosEnumsFile: {
               registerEnum(pothosEnum) {
                 enums.set(pothosEnum.name, pothosEnum);
-                pothosConfig.enums.set(pothosEnum.name, {
-                  typeName: pothosEnum.name,
-                  exportName: pothosEnum.exportName,
-                  moduleName: typesPath,
-                });
+                pothosConfig.enums.set(
+                  pothosEnum.name,
+                  createPothosTypeReference({
+                    name: pothosEnum.name,
+                    exportName: pothosEnum.exportName,
+                    moduleSpecifier: typesPath,
+                  }),
+                );
               },
             },
           },

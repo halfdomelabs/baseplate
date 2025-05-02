@@ -24,6 +24,7 @@ import {
   prismaUtilsProvider,
   serviceContextProvider,
 } from '@halfdomelabs/fastify-generators';
+import { createPothosTypeReference } from '@halfdomelabs/fastify-generators/dist/writers/pothos';
 import {
   createGenerator,
   createGeneratorTask,
@@ -83,14 +84,17 @@ export const storageModuleGenerator = createGenerator({
       },
       run({ pothosConfig, appModule }) {
         const moduleFolder = appModule.getModuleFolder();
-        pothosConfig.inputTypes.set('FileUploadInput', {
-          typeName: 'FileUploadInput',
-          exportName: 'fileUploadInputInputType',
-          moduleName: path.posix.join(
-            moduleFolder,
-            'schema/file-upload.input-type.js',
-          ),
-        });
+        pothosConfig.inputTypes.set(
+          'FileUploadInput',
+          createPothosTypeReference({
+            name: 'FileUploadInput',
+            exportName: 'fileUploadInputInputType',
+            moduleSpecifier: path.posix.join(
+              moduleFolder,
+              'schema/file-upload.input-type.js',
+            ),
+          }),
+        );
 
         return {};
       },
@@ -208,8 +212,10 @@ export const storageModuleGenerator = createGenerator({
                   destination: path.join(moduleFolder, `${file}.ts`),
                   importMappers: [pothosSchema],
                   replacements: {
-                    FILE_OBJECT_MODULE: fileObjectRef.moduleName,
-                    FILE_OBJECT_TYPE: fileObjectRef.exportName,
+                    // definitive hack until we convert this to using the new TS system
+                    FILE_OBJECT_MODULE:
+                      fileObjectRef.fragment.imports?.[0].moduleSpecifier ?? '',
+                    FILE_OBJECT_TYPE: fileObjectRef.fragment.contents,
                   },
                 }),
               );

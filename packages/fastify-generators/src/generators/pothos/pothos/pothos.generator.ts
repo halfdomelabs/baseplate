@@ -30,6 +30,7 @@ import { z } from 'zod';
 import type { ScalarFieldType } from '@src/types/field-types.js';
 import type {
   PothosCustomScalarConfig,
+  PothosScalarConfig,
   PothosTypeReference,
 } from '@src/writers/pothos/index.js';
 
@@ -38,7 +39,7 @@ import { appModuleImportsProvider } from '@src/generators/core/app-module/app-mo
 import { fastifyOutputProvider } from '@src/generators/core/fastify/fastify.generator.js';
 import { requestServiceContextImportsProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
 import { yogaPluginConfigProvider } from '@src/generators/yoga/yoga-plugin/yoga-plugin.generator.js';
-import { PothosTypeReferenceContainer } from '@src/writers/pothos/index.js';
+import { INBUILT_POTHOS_SCALARS } from '@src/writers/pothos/index.js';
 
 import {
   createPothosImports,
@@ -69,11 +70,26 @@ export { pothosConfigProvider };
 
 export interface PothosSchemaProvider extends ImportMapper {
   registerSchemaFile: (filePath: string) => void;
-  getTypeReferences: () => PothosTypeReferenceContainer;
 }
 
 export const pothosSchemaProvider =
   createProviderType<PothosSchemaProvider>('pothos-schema');
+
+export interface PothosSchemaBaseTypesProvider {
+  scalarConfig: (name: ScalarFieldType) => PothosScalarConfig;
+  enumRef: (name: string) => PothosTypeReference | undefined;
+  enumRefOrThrow: (name: string) => PothosTypeReference;
+  inputRef: (name: string) => PothosTypeReference | undefined;
+  inputRefOrThrow: (name: string) => PothosTypeReference;
+}
+
+/**
+ * A provider that provides base types for the Pothos schema, e.g. enums.
+ */
+export const pothosSchemaBaseTypesProvider =
+  createReadOnlyProviderType<PothosSchemaBaseTypesProvider>(
+    'pothos-schema-base-types',
+  );
 
 const pothosSchemaOutputProvider = createReadOnlyProviderType<{
   schemaFiles: string[];
@@ -105,16 +121,13 @@ export const pothosGenerator = createGenerator({
       },
       exports: {
         pothosSchema: pothosSchemaProvider.export(projectScope),
+        pothosSchemaBaseTypes:
+          pothosSchemaBaseTypesProvider.export(projectScope),
       },
       outputs: { pothosSchemaOutput: pothosSchemaOutputProvider.export() },
       run({
         pothosConfigValues: { schemaFiles, customScalars, enums, inputTypes },
       }) {
-        const typeReferences = new PothosTypeReferenceContainer(
-          customScalars,
-          enums,
-          inputTypes,
-        );
         return {
           providers: {
             pothosSchema: {
@@ -127,8 +140,25 @@ export const pothosGenerator = createGenerator({
               registerSchemaFile(filePath) {
                 schemaFiles.push(filePath);
               },
-              getTypeReferences() {
-                return typeReferences;
+            },
+            pothosSchemaBaseTypes: {
+              scalarConfig: (name) =>
+                customScalars.get(name) ?? INBUILT_POTHOS_SCALARS[name],
+              enumRef: (name) => enums.get(name),
+              enumRefOrThrow: (name) => {
+                const ref = enums.get(name);
+                if (!ref) {
+                  throw new Error(`Enum ${name} not found`);
+                }
+                return ref;
+              },
+              inputRef: (name) => inputTypes.get(name),
+              inputRefOrThrow: (name) => {
+                const ref = inputTypes.get(name);
+                if (!ref) {
+                  throw new Error(`Input type ${name} not found`);
+                }
+                return ref;
               },
             },
           },

@@ -1,9 +1,9 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   projectScope,
+  tsCodeFragment,
   TsCodeUtils,
-  TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -35,9 +35,7 @@ export interface PothosAuthorizeConfig {
 }
 
 export interface PothosAuthProvider {
-  formatAuthorizeConfig(
-    config: PothosAuthorizeConfig,
-  ): TypescriptCodeExpression;
+  formatAuthorizeConfig(config: PothosAuthorizeConfig): TsCodeFragment;
 }
 
 export const pothosAuthProvider =
@@ -116,9 +114,7 @@ export const pothosAuthGenerator = createGenerator({
             pothosAuth: {
               formatAuthorizeConfig: (config) =>
                 // TODO: Validate roles
-                TypescriptCodeUtils.createExpression(
-                  JSON.stringify(config.roles),
-                ),
+                tsCodeFragment(JSON.stringify(config.roles)),
             },
           },
         };

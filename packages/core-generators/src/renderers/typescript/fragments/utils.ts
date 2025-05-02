@@ -41,12 +41,12 @@ function flattenHoistedFragment({
 }
 
 /**
- * Flattens a code fragment and all of its dependencies.
+ * Extracts the imports and hoisted fragments from a code fragment.
  *
- * @param fragment - The code fragment to flatten
- * @returns An object containing flattened imports, hoisted fragments, and dependencies
+ * @param fragment - The code fragment to extract imports and hoisted fragments from
+ * @returns An object containing flattened imports and hoisted fragments
  */
-function flattenCodeFragment(
+function extractFlattenedImportsAndHoistedFragmentsFromFragment(
   fragment: TsCodeFragment,
 ): FlattenedImportsAndHoistedFragmentsWithDependencies {
   const imports: TsImportDeclaration[] = fragment.imports ?? [];
@@ -69,12 +69,12 @@ function flattenCodeFragment(
 }
 
 /**
- * Flattens a collection of code fragments and all of their dependencies.
+ * Extracts the imports and hoisted fragments from a collection of code fragments.
  *
- * @param fragments - The code fragments to flatten
- * @returns An object containing flattened imports, hoisted fragments, and dependencies
+ * @param fragments - The code fragments to extract imports and hoisted fragments from
+ * @returns An object containing flattened imports and hoisted fragments
  */
-function flattenCodeFragments(
+function extractFlattenedImportsAndHoistedFragmentsFromFragments(
   fragments: TsCodeFragment[],
 ): FlattenedImportsAndHoistedFragmentsWithDependencies {
   const imports: TsImportDeclaration[] = [];
@@ -82,7 +82,8 @@ function flattenCodeFragments(
   const dependencies: [string, string][] = [];
 
   for (const fragment of fragments) {
-    const flattenedFragment = flattenCodeFragment(fragment);
+    const flattenedFragment =
+      extractFlattenedImportsAndHoistedFragmentsFromFragment(fragment);
     imports.push(...flattenedFragment.imports);
     hoistedFragments.push(...flattenedFragment.hoistedFragments);
     dependencies.push(...flattenedFragment.dependencies);
@@ -118,7 +119,8 @@ export interface FlattenedImportsAndHoistedFragments {
 export function flattenImportsAndHoistedFragments(
   fragments: TsCodeFragment[],
 ): FlattenedImportsAndHoistedFragments {
-  const flattenResult = flattenCodeFragments(fragments);
+  const flattenResult =
+    extractFlattenedImportsAndHoistedFragmentsFromFragments(fragments);
   const uniqueHoistedFragments = uniqWith(
     flattenResult.hoistedFragments,
     (a, b) => {

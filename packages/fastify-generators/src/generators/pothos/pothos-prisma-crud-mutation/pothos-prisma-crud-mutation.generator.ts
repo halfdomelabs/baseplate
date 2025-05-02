@@ -1,15 +1,16 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
-  tsUtilsProvider,
-  TypescriptCodeUtils,
+  TsCodeUtils,
+  tsImportBuilder,
+  tsUtilsImportsProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
+import { quot, sortObjectKeys } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { serviceFileOutputProvider } from '@src/generators/core/service-file/service-file.generator.js';
@@ -22,14 +23,33 @@ import {
 } from '@src/writers/pothos/index.js';
 import { writeValueFromPothosArg } from '@src/writers/pothos/resolvers.js';
 
+import { createPothosPrismaObjectTypeOutputName } from '../pothos-prisma-object/pothos-prisma-object.generator.js';
+import { getPothosPrismaPrimaryKeyTypeOutputName } from '../pothos-prisma-primary-key/pothos-prisma-primary-key.generator.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
-import { pothosSchemaProvider } from '../pothos/pothos.generator.js';
+import { pothosSchemaBaseTypesProvider } from '../pothos/pothos.generator.js';
 import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({
+  /**
+   * The name of the model.
+   */
   modelName: z.string().min(1),
+  /**
+   * The type of the mutation.
+   */
   type: z.enum(['create', 'update', 'delete']),
+  /**
+   * The reference to the crud service.
+   */
   crudServiceRef: z.string().min(1),
+  /**
+   * The order of the type in the types file.
+   */
+  order: z.number(),
+  /**
+   * Whether the mutation has a primary key input type.
+   */
+  hasPrimaryKeyInputType: z.boolean(),
 });
 
 export const pothosPrismaCrudMutationGenerator = createGenerator({
@@ -37,36 +57,53 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  buildTasks: ({ modelName, type, crudServiceRef }) => ({
+  buildTasks: ({
+    modelName,
+    type,
+    crudServiceRef,
+    order,
+    hasPrimaryKeyInputType,
+  }) => ({
     main: createGeneratorTask({
       dependencies: {
-        pothosSchema: pothosSchemaProvider,
+        pothosSchemaBaseTypes: pothosSchemaBaseTypesProvider,
         pothosTypesFile: pothosTypesFileProvider,
         serviceFileOutput: serviceFileOutputProvider
           .dependency()
           .reference(crudServiceRef),
-        tsUtils: tsUtilsProvider,
+        tsUtilsImports: tsUtilsImportsProvider,
         pothosObjectType: pothosTypeOutputProvider
           .dependency()
-          .reference(`prisma-object-type:${modelName}`),
+          .reference(createPothosPrismaObjectTypeOutputName(modelName)),
+        pothosPrimaryKeyInputType: pothosTypeOutputProvider
+          .dependency()
+          .optionalReference(
+            hasPrimaryKeyInputType
+              ? getPothosPrismaPrimaryKeyTypeOutputName(modelName)
+              : undefined,
+          ),
       },
       exports: {
         pothosField: pothosFieldProvider.export(pothosFieldScope),
       },
       run({
-        pothosSchema,
+        pothosSchemaBaseTypes,
         pothosTypesFile,
         serviceFileOutput,
-        tsUtils,
+        tsUtilsImports,
         pothosObjectType,
+        pothosPrimaryKeyInputType,
       }) {
         const serviceOutput = serviceFileOutput.getServiceMethod(type);
-        const typeReferences = pothosSchema.getTypeReferences();
+        const typeReferences = [
+          pothosObjectType.getTypeReference(),
+          pothosPrimaryKeyInputType?.getTypeReference(),
+        ].filter((x) => x !== undefined);
 
         const mutationName = `${type}${modelName}`;
 
         const customFields = createNonOverwriteableMap<
-          Record<string, TypescriptCodeExpression>
+          Record<string, TsCodeFragment>
         >({});
 
         // unwrap input object arguments
@@ -98,8 +135,9 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
         const inputFields = writePothosInputFieldsFromDtoFields(
           inputArgument.nestedType.fields,
           {
+            pothosSchemaBaseTypes,
             typeReferences,
-            schemaBuilder: 'builder',
+            schemaBuilder: pothosTypesFile.getBuilderFragment(),
             fieldBuilder: 't.input',
           },
         );
@@ -113,14 +151,6 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
             },
           },
           build: () => {
-            if (inputFields.childDefinitions)
-              for (const childDefinition of inputFields.childDefinitions) {
-                pothosTypesFile.registerType({
-                  name: childDefinition.name,
-                  block: childDefinition.definition,
-                });
-              }
-
             const returnFieldName = lowerCaseFirst(modelName);
 
             const payloadFields = writePothosSimpleObjectFieldsFromDtoFields(
@@ -133,10 +163,9 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
                 },
               ],
               {
-                typeReferences: typeReferences.cloneWithObjectType(
-                  pothosObjectType.getTypeReference(),
-                ),
-                schemaBuilder: 'builder',
+                pothosSchemaBaseTypes,
+                typeReferences,
+                schemaBuilder: pothosTypesFile.getBuilderFragment(),
                 fieldBuilder: 't.payload',
               },
             );
@@ -145,7 +174,7 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
               (arg) => arg.name,
             );
 
-            const resolveFunction = TypescriptCodeUtils.formatExpression(
+            const resolveFunction = TsCodeUtils.formatFragment(
               `async (root, { input: INPUT_PARTS }, context, info) => {
               const RETURN_FIELD_NAME = await SERVICE_CALL(SERVICE_ARGUMENTS);
               return { RETURN_FIELD_NAME };
@@ -154,54 +183,59 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
                 INPUT_PARTS: `{ ${argNames.join(', ')} }`,
                 CONTEXT: serviceOutput.requiresContext ? 'context' : '',
                 RETURN_FIELD_NAME: returnFieldName,
-                SERVICE_CALL: serviceOutput.expression,
-                SERVICE_ARGUMENTS: TypescriptCodeUtils.mergeExpressionsAsObject(
+                SERVICE_CALL: serviceOutput.referenceFragment,
+                SERVICE_ARGUMENTS: TsCodeUtils.mergeFragmentsAsObject(
                   {
                     ...Object.fromEntries(
                       unwrappedArguments.map((arg) => [
                         arg.name,
-                        writeValueFromPothosArg(arg, tsUtils),
+                        writeValueFromPothosArg(arg, tsUtilsImports),
                       ]),
                     ),
                     context: 'context',
-                    query: TypescriptCodeUtils.formatExpression(
+                    query: TsCodeUtils.formatFragment(
                       'queryFromInfo({ context, info, path: PATH })',
                       {
-                        PATH: `['${returnFieldName}']`,
+                        PATH: `[${quot(returnFieldName)}]`,
                       },
-                      {
-                        importText: [
-                          `import { queryFromInfo } from '@pothos/plugin-prisma';`,
-                        ],
-                      },
+                      tsImportBuilder(['queryFromInfo']).from(
+                        '@pothos/plugin-prisma',
+                      ),
                     ),
                   },
+                  { disableSort: true },
                 ),
               },
             );
 
             const fieldOptions = {
-              input: inputFields.expression,
-              payload: payloadFields.expression,
-              ...customFields.value(),
+              input: inputFields.fragment,
+              payload: payloadFields.fragment,
+              ...sortObjectKeys(customFields.value()),
               resolve: resolveFunction,
             };
 
-            const block = TypescriptCodeUtils.formatBlock(
+            const mutationFragment = TsCodeUtils.formatFragment(
               `BUILDER.mutationField(NAME, (t) =>
             t.fieldWithInputPayload(OPTIONS)
           );`,
               {
-                BUILDER: 'builder',
+                BUILDER: pothosTypesFile.getBuilderFragment(),
                 NAME: quot(mutationName),
-                OPTIONS:
-                  TypescriptCodeUtils.mergeExpressionsAsObject(fieldOptions),
+                OPTIONS: TsCodeUtils.mergeFragmentsAsObject(fieldOptions, {
+                  disableSort: true,
+                }),
               },
             );
 
-            pothosTypesFile.registerType({
+            pothosTypesFile.typeDefinitions.add({
               name: mutationName,
-              block,
+              fragment: mutationFragment,
+              order,
+              dependencies: [
+                ...(inputFields.dependencies ?? []),
+                ...(payloadFields.dependencies ?? []),
+              ],
             });
           },
         };

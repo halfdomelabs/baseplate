@@ -15,7 +15,7 @@ const tsUtilsImportsSchema = createTsImportMapSchema({
   restrictObjectNulls: {},
 });
 
-type TsUtilsImportsProvider = TsImportMapProviderFromSchema<
+export type TsUtilsImportsProvider = TsImportMapProviderFromSchema<
   typeof tsUtilsImportsSchema
 >;
 

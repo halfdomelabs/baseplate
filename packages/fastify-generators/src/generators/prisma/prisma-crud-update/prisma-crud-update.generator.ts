@@ -1,13 +1,6 @@
-import type {
-  TsCodeFragment,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import {
-  TsCodeUtils,
-  tsImportBuilder,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import { TsCodeUtils, tsImportBuilder } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -47,7 +40,7 @@ const descriptorSchema = z.object({
 });
 
 function getMethodDefinition(
-  serviceMethodExpression: TypescriptCodeExpression,
+  serviceMethodReference: TsCodeFragment,
   options: PrismaDataMethodOptions,
 ): ServiceOutputMethod {
   const { name, modelName, prismaOutput } = options;
@@ -59,7 +52,7 @@ function getMethodDefinition(
 
   return {
     name,
-    expression: serviceMethodExpression,
+    referenceFragment: serviceMethodReference,
     arguments: [
       {
         type: 'nested',
@@ -171,9 +164,9 @@ export const prismaCrudUpdateGenerator = createGenerator({
         const { name, modelName, prismaFields, transformerNames } = descriptor;
         const methodName = `${name}${modelName}`;
 
-        const serviceMethodExpression = TypescriptCodeUtils.createExpression(
+        const serviceMethodReference = TsCodeUtils.importFragment(
           methodName,
-          `import { ${methodName} } from '${serviceFile.getServiceImport()}';`,
+          serviceFile.getServiceImport(),
         );
         const transformerOption: PrismaDataTransformerOptions = {
           operationType: 'update',
@@ -206,7 +199,7 @@ export const prismaCrudUpdateGenerator = createGenerator({
             serviceFile.registerMethod(
               name,
               getMethodBlock(methodOptions),
-              getMethodDefinition(serviceMethodExpression, methodOptions),
+              getMethodDefinition(serviceMethodReference, methodOptions),
             );
           },
         };

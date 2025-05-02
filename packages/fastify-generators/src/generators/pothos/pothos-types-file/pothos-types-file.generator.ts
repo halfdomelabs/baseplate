@@ -1,37 +1,47 @@
-import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
-  makeImportAndFilePath,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  mergeFragmentsWithColocatedDependencies,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { NamedArrayFieldContainer } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
+import type { PothosTypeDefinition } from '@src/writers/pothos/definitions.js';
+
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
+import { pothosImportsProvider } from '../pothos/generated/ts-import-maps.js';
 import { pothosSchemaProvider } from '../pothos/pothos.generator.js';
 
 const descriptorSchema = z.object({
+  /**
+   * The id of the types file - should be unique within the app.
+   */
+  id: z.string().min(1),
+  /**
+   * The file name of the types file.
+   */
   fileName: z.string().min(1),
-  categoryOrder: z.array(z.string()).optional(),
 });
 
-interface PothosType {
-  name?: string;
-  block: TypescriptCodeBlock;
-  category?: string;
+interface PothosTypeDefinitionWithOrder extends PothosTypeDefinition {
+  order: number;
 }
 
 export interface PothosTypesFileProvider {
-  getBuilder: () => string;
-  getModuleName: () => string;
-  registerType(type: PothosType): void;
+  getBuilderFragment: () => TsCodeFragment;
+  getModuleSpecifier: () => string;
+  typeDefinitions: Omit<
+    NamedArrayFieldContainer<PothosTypeDefinitionWithOrder>,
+    'getValue'
+  >;
 }
 
 export const pothosTypesFileProvider =
@@ -42,69 +52,50 @@ export const pothosTypesFileGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.fileName,
-  buildTasks: ({ fileName, categoryOrder }) => ({
+  buildTasks: ({ id, fileName }) => ({
     pothosTypesFile: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
         pothosSchema: pothosSchemaProvider,
+        pothosImports: pothosImportsProvider,
       },
       exports: {
         pothosTypes: pothosTypesFileProvider.export(),
       },
-      run({ appModule, typescript, pothosSchema }) {
-        const [typesImport, typesPath] = makeImportAndFilePath(
-          `${appModule.getModuleFolder()}/schema/${fileName}.ts`,
-        );
+      run({ appModule, typescriptFile, pothosSchema, pothosImports }) {
+        const typesPath = `${appModule.getModuleFolder()}/schema/${fileName}.ts`;
 
-        appModule.moduleImports.push(typesImport);
+        appModule.moduleImports.push(typesPath);
         pothosSchema.registerSchemaFile(typesPath);
 
-        const registeredKeys: string[] = [];
-
-        const types: PothosType[] = [];
+        const typesContainer =
+          new NamedArrayFieldContainer<PothosTypeDefinitionWithOrder>();
 
         return {
           providers: {
             pothosTypes: {
-              getBuilder: () => 'builder',
-              getModuleName: () => typesImport,
-              registerType(type) {
-                const { name: typeName } = type;
-                if (typeName) {
-                  if (registeredKeys.includes(typeName)) {
-                    return;
-                  }
-                  registeredKeys.push(typeName);
-                }
-                types.push(type);
-              },
+              getBuilderFragment: () => pothosImports.builder.fragment(),
+              getModuleSpecifier: () => typesPath,
+              typeDefinitions: typesContainer,
             },
           },
           build: async (builder) => {
-            const orderedTypes = sortBy(types, [
-              (type) => {
-                if (!type.category || !categoryOrder?.includes(type.category)) {
-                  return (categoryOrder ?? []).length;
-                }
-                return categoryOrder.indexOf(type.category);
-              },
-            ]);
+            const types = typesContainer.getValue();
+            const orderedTypes = sortBy(types, [(type) => type.order]);
 
-            const typesFile = typescript.createTemplate({
-              TYPES: TypescriptCodeUtils.mergeBlocks(
-                orderedTypes.map((t) => t.block),
-                '\n\n',
-              ),
-            });
+            const mergedFragment = mergeFragmentsWithColocatedDependencies(
+              orderedTypes,
+              '\n\n',
+              { preserveOrder: true },
+            );
 
-            typesFile.addCodeAddition({
-              importText: [`import {builder} from '%pothos'`],
-              importMappers: [pothosSchema],
-            });
-
-            await builder.apply(
-              typesFile.renderToActionFromText('TYPES', typesPath),
+            return builder.apply(
+              typescriptFile.renderTemplateFragment({
+                fragment: mergedFragment,
+                id,
+                destination: typesPath,
+              }),
             );
           },
         };

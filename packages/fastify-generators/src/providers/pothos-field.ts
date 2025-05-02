@@ -1,10 +1,10 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import { createProviderType } from '@halfdomelabs/sync';
 
 export interface PothosCustomOption {
   name: string;
-  value: TypescriptCodeExpression;
+  value: TsCodeFragment;
 }
 
 export interface PothosFieldProvider {

@@ -35,7 +35,7 @@ import {
   TS_TEMPLATE_TYPE,
   tsTemplateFileMetadataSchema,
 } from '../templates/types.js';
-import { TsCodeUtils } from '../ts-code-utils.js';
+import { TsCodeUtils } from '../utils/ts-code-utils.js';
 import { organizeTsTemplateImports } from './organize-ts-template-imports.js';
 import { stripTsTemplateVariables } from './strip-ts-template-variables.js';
 import { writeTsProjectExports } from './write-ts-project-exports.js';
