@@ -3,9 +3,8 @@ import type { ImportMapper } from '@halfdomelabs/core-generators';
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
   projectScope,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -15,7 +14,12 @@ import {
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
-import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import {
+  reactComponentsImportsProvider,
+  reactComponentsProvider,
+} from '@src/generators/core/react-components/react-components.generator.js';
+
+import { ADMIN_ADMIN_COMPONENTS_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
@@ -35,26 +39,21 @@ export const adminComponentsGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactComponents: reactComponentsProvider,
-        typescript: typescriptProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         adminComponents: adminComponentsProvider.export(projectScope),
       },
-      run({ reactComponents, typescript }) {
-        const [embeddedListImport, embeddedListPath] = makeImportAndFilePath(
-          `${reactComponents.getComponentsFolder()}/EmbeddedListInput/index.tsx`,
-        );
+      run({ reactComponents, reactComponentsImports, typescriptFile }) {
+        const embeddedListPath = `${reactComponents.getComponentsFolder()}/EmbeddedListInput/index.tsx`;
         reactComponents.registerComponent({ name: 'EmbeddedListInput' });
 
-        const [embeddedObjectImport, embeddedObjectPath] =
-          makeImportAndFilePath(
-            `${reactComponents.getComponentsFolder()}/EmbeddedObjectInput/index.tsx`,
-          );
-        reactComponents.registerComponent({ name: 'EmbeddedObjectInput' });
+        const embeddedObjectPath = `${reactComponents.getComponentsFolder()}/EmbeddedObjectInput/index.tsx`;
+        reactComponents.registerComponent({
+          name: 'EmbeddedObjectInput',
+        });
 
-        const [, descriptionListPath] = makeImportAndFilePath(
-          `${reactComponents.getComponentsFolder()}/DescriptionList/index.tsx`,
-        );
         reactComponents.registerComponent({ name: 'DescriptionList' });
 
         return {
@@ -62,15 +61,15 @@ export const adminComponentsGenerator = createGenerator({
             adminComponents: {
               getImportMap: () => ({
                 '%admin-components': {
-                  path: reactComponents.getComponentsImport(),
+                  path: reactComponentsImports.Button.moduleSpecifier,
                   allowedImports: ['EmbeddedListInput', 'EmbeddedObjectInput'],
                 },
                 '%admin-components/EmbeddedObjectInput': {
-                  path: embeddedObjectImport,
+                  path: embeddedObjectPath.replace(/\/index\.tsx$/, ''),
                   allowedImports: ['EmbeddedObjectFormProps'],
                 },
                 '%admin-components/EmbeddedListInput': {
-                  path: embeddedListImport,
+                  path: embeddedListPath.replace(/\/index\.tsx$/, ''),
                   allowedImports: [
                     'EmbeddedListTableProps',
                     'EmbeddedListFormProps',
@@ -81,21 +80,12 @@ export const adminComponentsGenerator = createGenerator({
           },
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'DescriptionList/index.tsx',
-                destination: descriptionListPath,
-              }),
-            );
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'EmbeddedListInput/index.tsx',
-                destination: embeddedListPath,
-              }),
-            );
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'EmbeddedObjectInput/index.tsx',
-                destination: embeddedObjectPath,
+              typescriptFile.renderTemplateGroup({
+                group: ADMIN_ADMIN_COMPONENTS_TS_TEMPLATES.componentsGroup,
+                baseDirectory: reactComponents.getComponentsFolder(),
+                importMapProviders: {
+                  reactComponentsImports,
+                },
               }),
             );
           },

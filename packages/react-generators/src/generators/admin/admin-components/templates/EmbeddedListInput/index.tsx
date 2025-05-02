@@ -1,21 +1,23 @@
 // @ts-nocheck
 
+import {
+  Alert,
+  Button,
+  FormError,
+  FormLabel,
+  Modal,
+} from '%reactComponentsImports';
 import clsx from 'clsx';
 import { nanoid } from 'nanoid';
 import { useMemo, useState } from 'react';
 import {
   Control,
+  DefaultValues,
   FieldPath,
   FieldPathValue,
   FieldValues,
   useController,
-  DefaultValues,
 } from 'react-hook-form';
-import Alert from '../Alert';
-import Button from '../Button';
-import FormError from '../FormError';
-import FormLabel from '../FormLabel';
-import Modal from '../Modal';
 
 export interface EmbeddedListTableProps<InputType> {
   items: (InputType & { id: string })[];
