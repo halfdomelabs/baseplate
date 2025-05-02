@@ -1,7 +1,7 @@
 // @ts-nocheck
 
+import { logger } from '%loggerServiceImports';
 import Stripe from 'stripe';
-import { logger } from '%logger-service';
 
 export type StripeEventHandler = (event: Stripe.Event) => Promise<void>;
 
