@@ -29,9 +29,18 @@ async function buildGeneratorPackageMap(
 ): Promise<Map<string, string>> {
   const generatorPackageMap = new Map<string, string>();
   for (const plugin of context.pluginStore.availablePlugins) {
+    const nearestPackageJsonPath = await findNearestPackageJson({
+      cwd: plugin.metadata.pluginDirectory,
+      stopAtNodeModules: true,
+    });
+    if (!nearestPackageJsonPath) {
+      throw new Error(
+        `Could not find package.json for ${plugin.metadata.packageName}`,
+      );
+    }
     generatorPackageMap.set(
       plugin.metadata.packageName,
-      plugin.metadata.pluginDirectory,
+      path.dirname(nearestPackageJsonPath),
     );
   }
   // attach generator packages

@@ -1,7 +1,9 @@
 // @ts-nocheck
 
-import { ForbiddenError } from '%http-errors';
-import { ServiceContext } from '%service-context';
+import type { ServiceContext } from '%serviceContextImports';
+
+import { ForbiddenError } from '%errorHandlerServiceImports';
+
 import { STORAGE_ADAPTERS } from '../constants/adapters.js';
 import { FILE_CATEGORIES } from '../constants/file-categories.js';
 
@@ -17,7 +19,7 @@ export async function createPresignedDownloadUrl(
   { fileId }: CreatePresignedDownloadUrlInput,
   context: ServiceContext,
 ): Promise<CreatePresignedDownloadUrlPayload> {
-  const file = await FILE_MODEL.findUniqueOrThrow({
+  const file = await TPL_FILE_MODEL.findUniqueOrThrow({
     where: { id: fileId },
   });
 

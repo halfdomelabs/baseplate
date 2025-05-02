@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-import { builder } from '%pothos';
+import { builder } from '%pothosImports';
+
 import { createPresignedDownloadUrl } from '../services/create-presigned-download-url.js';
 import { createPresignedUploadUrl } from '../services/create-presigned-upload-url.js';
-import { FILE_OBJECT_TYPE } from 'FILE_OBJECT_MODULE';
 
 export const presignedUrlFieldObjectType = builder.simpleObject(
   'PresignedUrlField',
@@ -31,7 +31,9 @@ builder.mutationField('createPresignedUploadUrl', (t) =>
         type: [presignedUrlFieldObjectType],
         nullable: true,
       }),
-      file: t.payload.field({ type: FILE_OBJECT_TYPE }),
+      file: t.payload.field({
+        type: TPL_FILE_OBJECT_TYPE,
+      }),
     },
     resolve: (root, args, context) =>
       createPresignedUploadUrl(args.input, context),

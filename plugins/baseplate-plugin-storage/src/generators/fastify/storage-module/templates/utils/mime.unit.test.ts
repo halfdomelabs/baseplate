@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import { describe, expect, it } from 'vitest';
+
 import { validateFileExtensionWithMimeType } from './mime.js';
 
 describe('validateFileExtensionWithMimeType', () => {

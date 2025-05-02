@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import { extname } from 'path';
 import mime from 'mime-types';
+import { extname } from 'path';
 
 export function getMimeTypeFromContentType(contentType: string): string {
   return contentType.split(':')[0];

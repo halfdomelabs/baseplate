@@ -4,7 +4,6 @@ import type {
   WriteFileOptions,
 } from '@halfdomelabs/sync';
 
-import { normalizePathToProjectPath } from '@halfdomelabs/sync';
 import { mapValues } from 'es-toolkit';
 import path from 'node:path';
 
@@ -75,6 +74,11 @@ interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
       sourceDirectory: string,
     ) => string;
   };
+  /**
+   * Called when a template file is rendered
+   * @param canonicalPath - The canonical path to the template file
+   */
+  onRenderTemplateFile?: (canonicalPath: string) => void;
 }
 
 export type RenderTsTemplateGroupActionInput<
@@ -104,13 +108,16 @@ export function extractTsTemplateFileInputsFromTemplateGroup<
   writeOptions,
   renderOptions,
 }: RenderTsTemplateGroupActionInput<T>): RenderTsTemplateFileActionInput[] {
+  if (!baseDirectory.startsWith('@/')) {
+    throw new Error('baseDirectory must start with @/');
+  }
   const fileActionInputs: RenderTsTemplateFileActionInput[] = [];
   const typedImportMapProviders =
     (importMapProviders as undefined | Record<string, ProviderType>) ?? {};
 
   for (const [key, templateEntry] of Object.entries(group.templates)) {
-    const destination = path.join(
-      normalizePathToProjectPath(baseDirectory),
+    const destination = path.posix.join(
+      baseDirectory,
       templateEntry.destination,
     );
 
@@ -165,6 +172,7 @@ export function renderTsTemplateGroupAction<
       for (const fileActionInput of fileActionInputs) {
         try {
           await builder.apply(renderTsTemplateFileAction(fileActionInput));
+          input.onRenderTemplateFile?.(fileActionInput.destination);
         } catch (error) {
           throw new Error(
             `Failed to render template "${fileActionInput.template.name}": ${String(error)}`,

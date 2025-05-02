@@ -1,7 +1,9 @@
 // @ts-nocheck
 
-import { BadRequestError } from '%http-errors';
-import { ServiceContext } from '%service-context';
+import type { ServiceContext } from '%serviceContextImports';
+
+import { BadRequestError } from '%errorHandlerServiceImports';
+
 import { prepareUploadData, UploadDataInput } from '../utils/upload.js';
 
 interface UploadFileInput extends UploadDataInput {
@@ -11,7 +13,7 @@ interface UploadFileInput extends UploadDataInput {
 export async function uploadFile(
   input: UploadFileInput,
   context: ServiceContext,
-): Promise<FILE_TYPE> {
+): Promise<TPL_FILE_MODEL_TYPE> {
   const { data, fileCategory, adapter } = await prepareUploadData(
     input,
     context,
@@ -23,7 +25,7 @@ export async function uploadFile(
     );
   }
 
-  const file = await FILE_MODEL.create({ data });
+  const file = await TPL_FILE_MODEL.create({ data });
 
   await adapter.uploadFile(file.path, input.contents);
 

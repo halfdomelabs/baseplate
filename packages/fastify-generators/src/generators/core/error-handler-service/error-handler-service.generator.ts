@@ -145,7 +145,7 @@ export const errorHandlerServiceGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template: CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.errorLogger,
-                destination: 'src/services/error-logger.ts',
+                destination: '@/src/services/error-logger.ts',
                 importMapProviders: { loggerServiceImports },
                 variables: {
                   TPL_CONTEXT_ACTIONS: TsCodeUtils.mergeFragments(
@@ -173,7 +173,7 @@ export const errorHandlerServiceGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateGroup({
                 group: CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.utilsGroup,
-                baseDirectory: 'src/utils',
+                baseDirectory: '@/src/utils',
               }),
             );
           },

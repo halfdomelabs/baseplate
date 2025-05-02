@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { builder } from '%pothos';
+import { builder } from '%pothosImports';
 
 export const fileUploadInputInputType = builder.inputType('FileUploadInput', {
   fields: (t) => ({

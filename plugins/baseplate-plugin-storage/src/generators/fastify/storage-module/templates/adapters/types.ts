@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Readable } from 'stream';
 
 export interface PresignedUrlField {
@@ -24,6 +26,7 @@ export interface StorageAdapter {
   ) => Promise<AdapterPresignedUploadUrlPayload>;
   createPresignedDownloadUrl?: (path: string) => Promise<string>;
   getHostedUrl?: (path: string) => string | null;
+  deleteFiles?: (paths: string[]) => Promise<void>;
   uploadFile?: (
     path: string,
     contents: Buffer | ReadableStream | string,

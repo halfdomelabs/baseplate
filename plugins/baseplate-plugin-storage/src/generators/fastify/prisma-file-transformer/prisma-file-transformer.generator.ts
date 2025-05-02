@@ -1,10 +1,6 @@
 import type { PrismaOutputRelationField } from '@halfdomelabs/fastify-generators';
 
-import {
-  tsCodeFragment,
-  tsImportBuilder,
-  tsTemplate,
-} from '@halfdomelabs/core-generators';
+import { tsCodeFragment, tsTemplate } from '@halfdomelabs/core-generators';
 import {
   prismaCrudServiceSetupProvider,
   prismaOutputProvider,
@@ -14,7 +10,7 @@ import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { storageModuleProvider } from '../storage-module/storage-module.generator';
+import { storageModuleImportsProvider } from '../storage-module/storage-module.generator';
 
 const descriptorSchema = z.object({
   name: z.string(),
@@ -30,7 +26,7 @@ export const prismaFileTransformerGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
-        storageModule: storageModuleProvider,
+        storageModuleImports: storageModuleImportsProvider,
         prismaOutput: prismaOutputProvider,
         prismaUtilsImports: prismaUtilsImportsProvider,
       },
@@ -38,7 +34,7 @@ export const prismaFileTransformerGenerator = createGenerator({
       run({
         prismaOutput,
         prismaCrudServiceSetup,
-        storageModule,
+        storageModuleImports,
         prismaUtilsImports,
       }) {
         const modelName = prismaCrudServiceSetup.getModelName();
@@ -75,11 +71,7 @@ export const prismaFileTransformerGenerator = createGenerator({
                       operationType === 'upsert' ? '?' : ''
                     }.${foreignRelationFieldName}`
               })`,
-              tsImportBuilder(['validateFileUploadInput']).from(
-                storageModule.getImportMap()[
-                  '%storage-module/validate-upload-input'
-                ]?.path ?? '',
-              ),
+              storageModuleImports.validateFileUploadInput.declaration(),
             );
 
             const prefix = isFieldOptional
@@ -91,11 +83,7 @@ export const prismaFileTransformerGenerator = createGenerator({
                 {
                   type: tsCodeFragment(
                     `FileUploadInput${foreignRelation.isOptional ? '| null' : ''}`,
-                    tsImportBuilder(['FileUploadInput']).from(
-                      storageModule.getImportMap()[
-                        '%storage-module/validate-upload-input'
-                      ]?.path ?? '',
-                    ),
+                    storageModuleImports.FileUploadInput.typeDeclaration(),
                   ),
                   dtoField: {
                     name,
