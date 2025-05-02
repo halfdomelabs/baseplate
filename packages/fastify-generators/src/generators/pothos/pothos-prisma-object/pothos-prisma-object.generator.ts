@@ -11,7 +11,6 @@ import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
-import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
 import { prismaToServiceOutputDto } from '@src/types/service-output.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import {
@@ -19,9 +18,12 @@ import {
   writePothosExposeFieldFromDtoScalarField,
 } from '@src/writers/pothos/index.js';
 
+import {
+  pothosFieldScope,
+  pothosTypeOutputProvider,
+} from '../_providers/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
 import { pothosSchemaBaseTypesProvider } from '../pothos/pothos.generator.js';
-import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({
   /**

@@ -5,7 +5,7 @@ import type { PothosTypeReference } from '@src/writers/pothos/index.js';
 /**
  * A provider that provides a Pothos type reference.
  */
-interface PothosTypeOutputProvider {
+export interface PothosTypeOutputProvider {
   /**
    * Get the Pothos type reference.
    */

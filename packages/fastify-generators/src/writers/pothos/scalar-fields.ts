@@ -90,6 +90,7 @@ export function writePothosExposeFieldFromDtoScalarField(
   const exposeMethodName = (() => {
     // exposeID instead of exposeId
     if (methodName === 'id') return 'exposeID';
+    if (methodName === 'idList') return 'exposeIDList';
     // If the method name is an inbuilt Pothos method, use the method name directly
     if (methodName) return `expose${upperCaseFirst(methodName)}`;
     return 'expose';

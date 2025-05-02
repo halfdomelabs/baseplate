@@ -10,7 +10,7 @@ import {
   tsImportBuilder,
   tsTemplate,
 } from '@halfdomelabs/core-generators';
-import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
+import { notEmpty, safeMergeAllWithOptions } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 
 import type { ServiceContextImportsProvider } from '@src/generators/core/service-context/service-context.generator.js';
@@ -21,7 +21,6 @@ import type {
 import type { PrismaOutputRelationField } from '@src/types/prisma-output.js';
 import type { ServiceOutputDto } from '@src/types/service-output.js';
 
-import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
 
 import type { PrismaUtilsImportsProvider } from '../../prisma-utils/prisma-utils.generator.js';

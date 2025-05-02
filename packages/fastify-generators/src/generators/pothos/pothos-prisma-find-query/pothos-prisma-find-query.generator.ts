@@ -12,19 +12,21 @@ import { z } from 'zod';
 import type { PothosWriterOptions } from '@src/writers/pothos/index.js';
 
 import {
+  pothosFieldProvider,
+  pothosTypeOutputProvider,
+} from '@src/generators/pothos/_providers/index.js';
+import {
   getModelIdFieldName,
   getPrimaryKeyDefinition,
 } from '@src/generators/prisma/_shared/crud-method/primary-key-input.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
-import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import { writePothosArgsFromDtoFields } from '@src/writers/pothos/index.js';
 
-import { pothosTypeOutputProvider } from '../_providers/pothos-type-output.js';
+import { pothosFieldScope } from '../_providers/scopes.js';
 import { getPothosPrismaPrimaryKeyTypeOutputName } from '../pothos-prisma-primary-key/pothos-prisma-primary-key.generator.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
 import { pothosSchemaBaseTypesProvider } from '../pothos/pothos.generator.js';
-import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({
   /**

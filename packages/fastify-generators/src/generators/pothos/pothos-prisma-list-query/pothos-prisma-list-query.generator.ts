@@ -10,12 +10,12 @@ import { quot, sortObjectKeys } from '@halfdomelabs/utils';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
 
+import { pothosFieldProvider } from '@src/generators/pothos/_providers/pothos-field.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
-import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 
+import { pothosFieldScope } from '../_providers/scopes.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
-import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({
   /**

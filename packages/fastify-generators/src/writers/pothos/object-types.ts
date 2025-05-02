@@ -3,14 +3,13 @@ import {
   TsCodeUtils,
   tsTemplate,
 } from '@halfdomelabs/core-generators';
-import { quot } from '@halfdomelabs/utils';
+import { notEmpty, quot } from '@halfdomelabs/utils';
 
 import type {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
 } from '@src/types/service-output.js';
 
-import { notEmpty } from '@src/utils/array.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 
 import type {

@@ -237,6 +237,6 @@ export function buildGraphqlForFeature(
       buildQueriesFileForModel(appBuilder, model),
       buildMutationsFileForModel(appBuilder, model),
     ]),
-    buildEnumFileForModel(featureId, enums),
+    buildEnumFileForModel(`${featureId}-enums`, enums),
   ].filter(notEmpty);
 }

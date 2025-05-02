@@ -1,6 +1,6 @@
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 
-import { pothosFieldProvider } from '@src/providers/pothos-field.js';
+import { pothosFieldProvider } from '@src/generators/pothos/_providers/pothos-field.js';
 
 import {
   pothosAuthorizeConfigSchema,

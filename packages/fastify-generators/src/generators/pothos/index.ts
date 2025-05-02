@@ -1,3 +1,4 @@
+export * from './_providers/index.js';
 export * from './pothos-auth/pothos-auth.generator.js';
 export * from './pothos-authorize-field/pothos-authorize-field.generator.js';
 export * from './pothos-enums-file/pothos-enums-file.generator.js';
@@ -12,4 +13,3 @@ export * from './pothos-scalar/pothos-scalar.generator.js';
 export * from './pothos-sentry/pothos-sentry.generator.js';
 export * from './pothos-types-file/pothos-types-file.generator.js';
 export * from './pothos/pothos.generator.js';
-export * from './providers/index.js';

@@ -6,13 +6,13 @@ import type { PothosWriterOptions } from '@src/writers/pothos/index.js';
 
 import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
-import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import {
   createPothosTypeReference,
   writePothosInputDefinitionFromDtoFields,
 } from '@src/writers/pothos/index.js';
 
+import { pothosTypeOutputProvider } from '../_providers/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
 import { pothosSchemaBaseTypesProvider } from '../pothos/pothos.generator.js';
 

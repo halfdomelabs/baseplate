@@ -14,8 +14,10 @@ import { quot, sortObjectKeys } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { serviceFileOutputProvider } from '@src/generators/core/service-file/service-file.generator.js';
-import { pothosFieldProvider } from '@src/providers/pothos-field.js';
-import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
+import {
+  pothosFieldProvider,
+  pothosTypeOutputProvider,
+} from '@src/generators/pothos/_providers/index.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import {
   writePothosInputFieldsFromDtoFields,
@@ -23,11 +25,11 @@ import {
 } from '@src/writers/pothos/index.js';
 import { writeValueFromPothosArg } from '@src/writers/pothos/resolvers.js';
 
+import { pothosFieldScope } from '../_providers/scopes.js';
 import { createPothosPrismaObjectTypeOutputName } from '../pothos-prisma-object/pothos-prisma-object.generator.js';
 import { getPothosPrismaPrimaryKeyTypeOutputName } from '../pothos-prisma-primary-key/pothos-prisma-primary-key.generator.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
 import { pothosSchemaBaseTypesProvider } from '../pothos/pothos.generator.js';
-import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({
   /**

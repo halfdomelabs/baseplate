@@ -16,6 +16,7 @@ import {
 import {
   appModuleProvider,
   configServiceProvider,
+  createPothosTypeReference,
   errorHandlerServiceProvider,
   pothosConfigProvider,
   pothosSchemaProvider,
@@ -24,7 +25,6 @@ import {
   prismaUtilsProvider,
   serviceContextProvider,
 } from '@halfdomelabs/fastify-generators';
-import { createPothosTypeReference } from '@halfdomelabs/fastify-generators/dist/writers/pothos';
 import {
   createGenerator,
   createGeneratorTask,
