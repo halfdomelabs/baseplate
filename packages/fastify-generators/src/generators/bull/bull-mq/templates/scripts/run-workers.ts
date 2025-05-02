@@ -1,12 +1,12 @@
 // @ts-nocheck
 
+import { logError } from '%errorHandlerServiceImports';
+import { logger } from '%loggerServiceImports';
 import { Worker } from 'bullmq';
-import { logError } from '%error-logger';
-import { logger } from '%logger-service';
 
 type WorkerCreator = () => Worker;
 
-const WORKER_CREATORS: WorkerCreator[] = WORKERS;
+const WORKER_CREATORS: WorkerCreator[] = TPL_WORKERS;
 
 function handleError(err: unknown): void {
   logError(err);

@@ -3,27 +3,25 @@ import {
   extractPackageVersions,
   nodeProvider,
   projectScope,
-  TypescriptCodeUtils,
-  typescriptProvider,
+  tsCodeFragment,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
-import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/fastify-redis.generator.js';
+import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
+import { fastifyRedisImportsProvider } from '@src/generators/core/fastify-redis/generated/ts-import-maps.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/fastify.generator.js';
-import { loggerServiceProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
+import { loggerServiceImportsProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
+
+import {
+  bullMqImportsProvider,
+  createBullMqImports,
+} from './generated/ts-import-maps.js';
+import { BULL_BULL_MQ_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
-
-export type BullMqProvider = unknown;
-
-export const bullMqProvider = createProviderType<BullMqProvider>('bull-mq');
 
 export const bullMqGenerator = createGenerator({
   name: 'bull/bull-mq',
@@ -33,26 +31,12 @@ export const bullMqGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['bullmq']),
     }),
-    main: createGeneratorTask({
+    nodeScripts: createGeneratorTask({
       dependencies: {
-        errorHandlerService: errorHandlerServiceProvider,
-        loggerService: loggerServiceProvider,
-        fastifyRedis: fastifyRedisProvider,
         node: nodeProvider,
-        typescript: typescriptProvider,
         fastifyOutput: fastifyOutputProvider,
       },
-      exports: {
-        bullMq: bullMqProvider.export(projectScope),
-      },
-      run({
-        errorHandlerService,
-        loggerService,
-        fastifyRedis,
-        node,
-        typescript,
-        fastifyOutput,
-      }) {
+      run({ node, fastifyOutput }) {
         const devOutputFormatter = fastifyOutput.getDevOutputFormatter();
         const devWorkersCommand = [
           'tsx watch --clear-screen=false',
@@ -67,57 +51,59 @@ export const bullMqGenerator = createGenerator({
           'dev:workers': devWorkersCommand,
           'run:workers': 'pnpm run:script ./scripts/run-workers.ts',
         });
-
+      },
+    }),
+    main: createGeneratorTask({
+      dependencies: {
+        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+        loggerServiceImports: loggerServiceImportsProvider,
+        fastifyRedisImports: fastifyRedisImportsProvider,
+        typescriptFile: typescriptFileProvider,
+      },
+      exports: {
+        bullMqImports: bullMqImportsProvider.export(projectScope),
+      },
+      run({
+        errorHandlerServiceImports,
+        loggerServiceImports,
+        fastifyRedisImports,
+        typescriptFile,
+      }) {
+        const bullServiceBase = '@/src/services/bull';
         return {
           providers: {
-            bullMq: {},
+            bullMqImports: createBullMqImports(bullServiceBase),
           },
           build: async (builder) => {
-            const importMappers = [
-              errorHandlerService,
-              loggerService,
-              fastifyRedis,
-            ];
-
             await builder.apply(
-              typescript.createCopyFilesAction({
-                sourceBaseDirectory: 'services/bull',
-                destinationBaseDirectory: 'src/services/bull',
-                paths: ['index.ts', 'queue.ts', 'repeatable.ts', 'worker.ts'],
-                importMappers,
+              typescriptFile.renderTemplateGroup({
+                group: BULL_BULL_MQ_TS_TEMPLATES.scriptsGroup,
+                baseDirectory: '@/scripts',
+                importMapProviders: {
+                  errorHandlerServiceImports,
+                  loggerServiceImports,
+                },
+                variables: {
+                  scriptsRunWorkers: {
+                    TPL_WORKERS: tsCodeFragment('[]'),
+                  },
+                  scriptsSynchronizeRepeatJobs: {
+                    TPL_REPEAT_JOBS: tsCodeFragment('[]'),
+                  },
+                },
               }),
             );
 
-            const workersFile = typescript.createTemplate(
-              {
-                WORKERS: TypescriptCodeUtils.createExpression('[]'),
-              },
-              {
-                importMappers,
-              },
-            );
-
             await builder.apply(
-              workersFile.renderToAction(
-                'scripts/run-workers.ts',
-                'scripts/run-workers.ts',
-              ),
-            );
-
-            const repeatJobsFile = typescript.createTemplate(
-              {
-                REPEAT_JOBS: TypescriptCodeUtils.createExpression('[]'),
-              },
-              {
-                importMappers,
-              },
-            );
-
-            await builder.apply(
-              repeatJobsFile.renderToAction(
-                'scripts/synchronize-repeat-jobs.ts',
-                'scripts/synchronize-repeat-jobs.ts',
-              ),
+              typescriptFile.renderTemplateGroup({
+                group: BULL_BULL_MQ_TS_TEMPLATES.serviceGroup,
+                baseDirectory: bullServiceBase,
+                importMapProviders: {
+                  fastifyRedisImports,
+                  errorHandlerServiceImports,
+                  loggerServiceImports,
+                },
+              }),
             );
           },
         };
