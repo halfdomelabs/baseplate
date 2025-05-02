@@ -32,7 +32,7 @@ const pubsub = createTsTemplateFile({
   group: 'subscriptions',
   importMapProviders: { fastifyRedisImports: fastifyRedisImportsProvider },
   name: 'pubsub',
-  projectExports: { LiveQueryPayload: { isTypeOnly: true }, getPubSub: {} },
+  projectExports: {},
   source: { path: 'pubsub.ts' },
   variables: { TPL_PUBLISH_ARGS: {} },
 });
@@ -45,7 +45,7 @@ const websocket = createTsTemplateFile({
     requestServiceContextImports: requestServiceContextImportsProvider,
   },
   name: 'websocket',
-  projectExports: { getGraphqlWsHandler: {}, makeHandler: {} },
+  projectExports: {},
   source: { path: 'websocket.ts' },
   variables: { TPL_ON_CONNECT: {} },
 });
@@ -63,7 +63,7 @@ const useGraphLogger = createTsTemplateFile({
     loggerServiceImports: loggerServiceImportsProvider,
   },
   name: 'use-graph-logger',
-  projectExports: { useGraphLogger: {} },
+  projectExports: {},
   source: { path: 'useGraphLogger.ts' },
   variables: {},
 });
