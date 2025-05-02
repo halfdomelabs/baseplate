@@ -61,7 +61,7 @@ describe('renderTsTemplateGroupAction', () => {
 
     const action = renderTsTemplateGroupAction({
       group,
-      baseDirectory: 'src',
+      baseDirectory: '@/src',
       variables: {
         greeting: {
           TPL_GREETING: tsCodeFragment('"Hello World"'),
@@ -110,7 +110,7 @@ describe('renderTsTemplateGroupAction', () => {
 
     const action = renderTsTemplateGroupAction({
       group,
-      baseDirectory: 'src',
+      baseDirectory: '@/src',
       variables: {
         greeting: {
           TPL_GREETING: tsCodeFragment('new Greeting("Hello")', [
@@ -186,7 +186,7 @@ describe('renderTsTemplateGroupAction', () => {
 
     const action = renderTsTemplateGroupAction({
       group,
-      baseDirectory: 'output',
+      baseDirectory: '@/output',
       importMapProviders: {
         testImport: importMap,
       },

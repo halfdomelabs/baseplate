@@ -36,7 +36,7 @@ describe('renderTextTemplateGroupAction', () => {
           }),
         },
         welcome: {
-          destination: 'output/welcome.txt',
+          destination: '@/output/welcome.txt',
           template: createTextTemplateFile({
             name: 'welcome',
             source: {

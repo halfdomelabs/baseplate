@@ -1,9 +1,9 @@
-import type {
-  BuilderAction,
-  ProviderType,
-  WriteFileOptions,
+import {
+  type BuilderAction,
+  normalizePathToProjectPath,
+  type ProviderType,
+  type WriteFileOptions,
 } from '@halfdomelabs/sync';
-
 import { mapValues } from 'es-toolkit';
 import path from 'node:path';
 
@@ -135,7 +135,9 @@ export function extractTsTemplateFileInputsFromTemplateGroup<
         )
       : undefined;
 
-    const destinationDirectory = path.dirname(destination);
+    const destinationDirectory = path.dirname(
+      normalizePathToProjectPath(destination),
+    );
     fileActionInputs.push({
       template: templateEntry.template,
       destination,
