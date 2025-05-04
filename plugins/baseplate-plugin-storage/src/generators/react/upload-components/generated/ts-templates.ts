@@ -12,7 +12,7 @@ const fileInputComponent = createTsTemplateFile({
     reactErrorImports: reactErrorImportsProvider,
   },
   name: 'file-input-component',
-  projectExports: { FileInput: {} },
+  projectExports: { FileInput: { exportName: 'default' } },
   source: { path: 'components/FileInput/index.tsx' },
   variables: {},
 });

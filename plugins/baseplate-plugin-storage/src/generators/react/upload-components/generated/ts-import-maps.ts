@@ -8,7 +8,7 @@ import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 
 const uploadComponentsImportsSchema = createTsImportMapSchema({
-  FileInput: {},
+  FileInput: { name: 'default' },
   useUpload: {},
 });
 
