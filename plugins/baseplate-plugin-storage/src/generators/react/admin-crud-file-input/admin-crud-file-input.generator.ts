@@ -1,9 +1,9 @@
-import { tsCodeFragment, tsImportBuilder } from '@halfdomelabs/core-generators';
+import { tsCodeFragment } from '@halfdomelabs/core-generators';
 import { adminCrudInputContainerProvider } from '@halfdomelabs/react-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { uploadComponentsProvider } from '../upload-components/upload-components.generator';
+import { uploadComponentsImportsProvider } from '../upload-components/upload-components.generator';
 
 const descriptorSchema = z.object({
   order: z.number(),
@@ -22,9 +22,9 @@ export const adminCrudFileInputGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
-        uploadComponents: uploadComponentsProvider,
+        uploadComponentsImports: uploadComponentsImportsProvider,
       },
-      run({ adminCrudInputContainer, uploadComponents }) {
+      run({ adminCrudInputContainer, uploadComponentsImports }) {
         adminCrudInputContainer.addInput({
           order,
           content: tsCodeFragment(
@@ -34,10 +34,7 @@ export const adminCrudFileInputGenerator = createGenerator({
           control={control}
           name="${modelRelation}"
         />`,
-            tsImportBuilder(['FileInput']).from(
-              uploadComponents.getImportMap()['%upload-components/file-input']
-                ?.path ?? '',
-            ),
+            uploadComponentsImports.FileInput.declaration(),
           ),
           graphQLFields: [
             {

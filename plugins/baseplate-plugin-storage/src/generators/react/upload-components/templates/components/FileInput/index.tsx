@@ -1,5 +1,8 @@
 // @ts-nocheck
 
+import { useCreateUploadUrlMutation } from '%generatedGraphqlImports';
+import { FormError, FormLabel, LinkButton } from '%reactComponentsImports';
+import { formatError, logError } from '%reactErrorImports';
 import clsx from 'clsx';
 import { useCallback } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
@@ -14,13 +17,8 @@ import {
   useController,
 } from 'react-hook-form';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
-import FormError from '../FormError';
-import FormLabel from '../FormLabel';
-import { useCreateUploadUrlMutation } from '%react-apollo/generated';
-import { useUpload } from '%upload-components/use-upload';
-import { formatError } from '%react-error/formatter';
-import { logError } from '%react-error/logger';
-import LinkButton from '../LinkButton';
+
+import { useUpload } from '../../hooks/useUpload.js';
 
 import 'react-circular-progressbar/dist/styles.css';
 

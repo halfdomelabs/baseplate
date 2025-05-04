@@ -12,7 +12,10 @@ import type { TextTemplateFile, TextTemplateFileMetadata } from './types.js';
 
 import { TemplateFileExtractor } from '../extractor/template-file-extractor.js';
 import { TEXT_TEMPLATE_TYPE, textTemplateFileMetadataSchema } from './types.js';
-import { getTextTemplateDelimiters } from './utils.js';
+import {
+  getTextTemplateDelimiters,
+  getTextTemplateVariableRegExp,
+} from './utils.js';
 
 interface TypescriptCodeEntry {
   codeBlock: string;
@@ -37,15 +40,20 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
     // replace variable values with template string
     let templateContents = sourceFileContents;
     for (const [key, variable] of Object.entries(metadata.variables ?? {})) {
-      if (!templateContents.includes(variable.value)) {
+      const variableRegex = getTextTemplateVariableRegExp(
+        variable,
+        variable.value,
+      );
+      const newTemplateContents = templateContents.replaceAll(
+        variableRegex,
+        `${start}${key}${end}`,
+      );
+      if (newTemplateContents === templateContents) {
         throw new Error(
           `Variable ${key} with value ${variable.value} not found in template ${file.path}`,
         );
       }
-      templateContents = templateContents.replaceAll(
-        variable.value,
-        `${start}${key}${end}`,
-      );
+      templateContents = newTemplateContents;
     }
 
     await this.writeTemplateFileIfModified(file, templateContents);
@@ -62,6 +70,7 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
           },
           variables: mapValues(metadata.variables ?? {}, (variable) => ({
             description: variable.description,
+            isIdentifier: variable.isIdentifier,
           })),
         } satisfies TextTemplateFile,
       )});`,

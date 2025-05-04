@@ -20,8 +20,13 @@ export const textTemplateFileMetadataSchema =
       .record(
         z.string(),
         z.object({
+          // The description of the variable.
           description: z.string().optional(),
+          // The value of the variable.
           value: z.string(),
+          // Whether the variable is an identifier so we check for non-alphanumeric characters around
+          // the variable name.
+          isIdentifier: z.boolean().optional(),
         }),
       )
       .optional(),
@@ -39,6 +44,11 @@ export interface TextTemplateFileVariable {
    * A description of the variable.
    */
   description?: string;
+  /**
+   * Whether the variable is an identifier so we check for non-alphanumeric characters around
+   * the variable name.
+   */
+  isIdentifier?: boolean;
 }
 
 /**

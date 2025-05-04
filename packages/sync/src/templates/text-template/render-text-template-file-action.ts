@@ -1,4 +1,4 @@
-import { mapValues } from 'es-toolkit';
+import { escapeRegExp, mapValues } from 'es-toolkit';
 
 import type { BuilderAction } from '@src/output/builder-action.js';
 import type { WriteFileOptions } from '@src/output/generator-task-output.js';
@@ -12,7 +12,10 @@ import type {
 
 import { readTemplateFileSource } from '../utils/index.js';
 import { TEXT_TEMPLATE_TYPE } from './types.js';
-import { getTextTemplateDelimiters } from './utils.js';
+import {
+  getTextTemplateDelimiters,
+  getTextTemplateVariableRegExp,
+} from './utils.js';
 
 interface RenderTextTemplateFileActionInputBase<T extends TextTemplateFile> {
   template: T;
@@ -28,10 +31,6 @@ type RenderTextTemplateFileActionInput<
     ? Partial<{ variables: InferTextTemplateVariablesFromTemplate<T> }>
     : { variables: InferTextTemplateVariablesFromTemplate<T> });
 
-function escapeRegExp(str: string): string {
-  return str.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
-}
-
 export function renderTextTemplateFileAction<
   T extends TextTemplateFile = TextTemplateFile,
 >({
@@ -43,7 +42,7 @@ export function renderTextTemplateFileAction<
 }: RenderTextTemplateFileActionInput<T>): BuilderAction {
   return {
     execute: async (builder) => {
-      let renderedTemplate = await readTemplateFileSource(
+      let templateContents = await readTemplateFileSource(
         builder.generatorInfo.baseDirectory,
         template.source,
       );
@@ -64,6 +63,11 @@ export function renderTextTemplateFileAction<
           hasManualId: !!id,
         });
 
+      const templateVariables = template.variables as Record<
+        string,
+        TextTemplateFileVariable
+      >;
+
       if (variablesObj && Object.keys(variablesObj).length > 0) {
         // make sure all variables begin with TPL_
         const invalidVariableKey = Object.keys(variablesObj).find(
@@ -76,7 +80,7 @@ export function renderTextTemplateFileAction<
         }
         const missingTemplateVariableKey = Object.keys(template.variables).find(
           (key) =>
-            !renderedTemplate.includes(
+            !templateContents.includes(
               `${startDelimiter}${key}${endDelimiter}`,
             ),
         );
@@ -90,14 +94,21 @@ export function renderTextTemplateFileAction<
         // If a variable value already exists in the template, it could lead to incorrect extraction because
         // the system wouldn't be able to distinguish between the original text and the replaced variables.
 
-        const invalidVariableValue = Object.values(variablesObj).find(
-          (val) => val !== undefined && renderedTemplate.includes(val),
+        const invalidVariableValue = Object.entries(variablesObj).find(
+          ([key, val]) => {
+            if (val === undefined) return false;
+            const variableRegex = getTextTemplateVariableRegExp(
+              templateVariables[key],
+              val,
+            );
+            return variableRegex.test(templateContents);
+          },
         );
-        if (invalidVariableValue) {
+        if (invalidVariableValue && shouldWriteMetadata) {
           throw new Error(
-            `The pre-rendered template contains the value of a template variable (${invalidVariableValue}) which would prevent
-            template extraction from working correctly. Please ensure that no template variables values
-            are present in the original template file. ${JSON.stringify(template.source)}`,
+            `The rendered template contains the value of a template variable (${invalidVariableValue[1]}) which would prevent ` +
+              'template extraction from working correctly. Please ensure that no template variables values ' +
+              `are present in the original template file. ${JSON.stringify(template.source)}`,
           );
         }
 
@@ -111,7 +122,7 @@ export function renderTextTemplateFileAction<
           );
         }
 
-        renderedTemplate = renderedTemplate.replaceAll(
+        templateContents = templateContents.replaceAll(
           new RegExp(
             `${escapeRegExp(startDelimiter)}TPL_[A-Z0-9_]+${escapeRegExp(
               endDelimiter,
@@ -133,11 +144,6 @@ export function renderTextTemplateFileAction<
         );
       }
 
-      const templateVariables = template.variables as Record<
-        string,
-        TextTemplateFileVariable
-      >;
-
       const templateMetadata: TextTemplateFileMetadata | undefined =
         'path' in template.source
           ? {
@@ -151,6 +157,7 @@ export function renderTextTemplateFileAction<
                   ? mapValues(templateVariables, (val, key) => ({
                       description: val.description,
                       value: (variables as Record<string, string>)[key],
+                      isIdentifier: val.isIdentifier,
                     }))
                   : undefined,
             }
@@ -159,7 +166,7 @@ export function renderTextTemplateFileAction<
       builder.writeFile({
         id: id ?? template.name,
         destination,
-        contents: renderedTemplate,
+        contents: templateContents,
         options,
         templateMetadata: shouldWriteMetadata ? templateMetadata : undefined,
       });
