@@ -43,10 +43,7 @@ export const reactUtilsGenerator = createGenerator({
             reactUtilsImports: createReactUtilsImports('@/src/utils'),
           },
           build: (builder) => {
-            // add all remaining files as lazy files
-            const unusedTemplates = Object.keys(REACT_UTILS_TS_TEMPLATES);
-
-            for (const key of unusedTemplates) {
+            for (const key of Object.keys(REACT_UTILS_TS_TEMPLATES)) {
               const template = REACT_UTILS_TS_TEMPLATES[key as ReactUtilKey];
               typescriptFile.addLazyTemplateFile({
                 template,
