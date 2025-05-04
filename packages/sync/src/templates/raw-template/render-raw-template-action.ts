@@ -27,6 +27,14 @@ export function renderRawTemplateFileAction({
         builder.generatorInfo.baseDirectory,
         template.source,
       );
+      const shouldWriteMetadata =
+        builder.metadataOptions.includeTemplateMetadata &&
+        builder.metadataOptions.shouldGenerateMetadata({
+          fileId: id ?? template.name,
+          filePath: destination,
+          generatorName: builder.generatorInfo.name,
+          hasManualId: !!id,
+        });
 
       const templateMetadata: RawTemplateFileMetadata | undefined =
         'path' in template.source
@@ -46,7 +54,7 @@ export function renderRawTemplateFileAction({
           skipFormatting: true,
           ...options,
         },
-        templateMetadata,
+        templateMetadata: shouldWriteMetadata ? templateMetadata : undefined,
       });
     },
   };

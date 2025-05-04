@@ -55,6 +55,15 @@ export function renderTextTemplateFileAction<
       const { start: startDelimiter, end: endDelimiter } =
         getTextTemplateDelimiters(destination);
 
+      const shouldWriteMetadata =
+        builder.metadataOptions.includeTemplateMetadata &&
+        builder.metadataOptions.shouldGenerateMetadata({
+          fileId: id ?? template.name,
+          filePath: destination,
+          generatorName: builder.generatorInfo.name,
+          hasManualId: !!id,
+        });
+
       if (variablesObj && Object.keys(variablesObj).length > 0) {
         // make sure all variables begin with TPL_
         const invalidVariableKey = Object.keys(variablesObj).find(
@@ -96,10 +105,7 @@ export function renderTextTemplateFileAction<
         const missingVariableValue = Object.keys(variablesObj).find(
           (key) => variablesObj[key] === '',
         );
-        if (
-          missingVariableValue &&
-          builder.metadataOptions.includeTemplateMetadata
-        ) {
+        if (missingVariableValue && shouldWriteMetadata) {
           throw new Error(
             `Template variable is empty: ${missingVariableValue}. All template variables must have a value when metadata is included.`,
           );
@@ -155,7 +161,7 @@ export function renderTextTemplateFileAction<
         destination,
         contents: renderedTemplate,
         options,
-        templateMetadata,
+        templateMetadata: shouldWriteMetadata ? templateMetadata : undefined,
       });
     },
   };

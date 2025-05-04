@@ -142,12 +142,28 @@ export async function buildProject({
         ...metadata,
         status: 'in-progress',
       }));
+
+      const fileIdRegexWhitelist =
+        projectJson.templateExtractor?.fileIdRegexWhitelist.split('\n') ?? [];
+
       newResult = await generateForDirectory({
         baseDirectory: directory,
         appEntry: app,
         logger,
-        shouldWriteTemplateMetadata:
-          projectJson.templateExtractor?.writeMetadata,
+        writeTemplateMetadataOptions: projectJson.templateExtractor
+          ?.writeMetadata
+          ? {
+              includeTemplateMetadata: true,
+              shouldGenerateMetadata: (context) => {
+                // always write metadata for files without a manual ID
+                if (!context.hasManualId) return true;
+                return fileIdRegexWhitelist.some((pattern) => {
+                  const regex = new RegExp(pattern);
+                  return regex.test(context.fileId);
+                });
+              },
+            }
+          : undefined,
         userConfig,
         previousPackageSyncResult,
         abortSignal,

@@ -433,7 +433,6 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                   reactComponentsImports,
                   reactErrorImports,
                 },
-                includeMetadataOnDemand: true,
               }),
             );
           },

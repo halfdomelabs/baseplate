@@ -163,7 +163,6 @@ export const adminCrudListGenerator = createGenerator({
                 importMapProviders: {
                   reactComponentsImports,
                 },
-                includeMetadataOnDemand: true,
               }),
             );
 
@@ -213,7 +212,6 @@ export const adminCrudListGenerator = createGenerator({
                   reactComponentsImports,
                   reactErrorImports,
                 },
-                includeMetadataOnDemand: true,
               }),
             );
           },

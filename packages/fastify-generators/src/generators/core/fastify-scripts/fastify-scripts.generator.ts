@@ -60,7 +60,6 @@ export const fastifyScriptsGenerator = createGenerator({
             await builder.apply(
               renderRawTemplateFileAction({
                 template: CORE_FASTIFY_SCRIPTS_RAW_TEMPLATES.tsconfig,
-                id: 'tsconfig',
                 destination: 'scripts/tsconfig.json',
               }),
             );

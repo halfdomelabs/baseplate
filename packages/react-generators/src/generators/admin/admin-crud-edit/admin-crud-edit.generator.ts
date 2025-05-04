@@ -167,7 +167,6 @@ export const adminCrudEditGenerator = createGenerator({
                   ),
                   TPL_FORM_DATA_NAME: formDataName,
                 },
-                includeMetadataOnDemand: true,
               }),
             );
 
@@ -208,7 +207,6 @@ export const adminCrudEditGenerator = createGenerator({
                   reactComponentsImports,
                   reactErrorImports,
                 },
-                includeMetadataOnDemand: true,
               }),
             );
 
@@ -254,7 +252,6 @@ export const adminCrudEditGenerator = createGenerator({
                   importMapProviders: {
                     reactComponentsImports,
                   },
-                  includeMetadataOnDemand: true,
                 }),
               );
 
@@ -310,7 +307,6 @@ export const adminCrudEditGenerator = createGenerator({
                 importMapProviders: {
                   reactComponentsImports,
                 },
-                includeMetadataOnDemand: true,
               }),
             );
           },

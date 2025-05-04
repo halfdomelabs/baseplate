@@ -103,7 +103,6 @@ export const reactRoutesGenerator = createGenerator({
                   id: `route-${id}`,
                   template: CORE_REACT_ROUTES_TS_TEMPLATES.index,
                   destination: `${directoryBase}/index.tsx`,
-                  includeMetadataOnDemand: true,
                   variables: {
                     TPL_ROUTE_HEADER: TsCodeUtils.mergeFragments(
                       new Map(

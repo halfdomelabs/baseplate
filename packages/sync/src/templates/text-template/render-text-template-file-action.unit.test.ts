@@ -46,6 +46,7 @@ describe('renderTextTemplateFileAction', () => {
       },
       templateMetadataOptions: {
         includeTemplateMetadata: true,
+        shouldGenerateMetadata: () => true,
       },
     });
 

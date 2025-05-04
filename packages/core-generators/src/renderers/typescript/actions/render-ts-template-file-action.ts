@@ -34,14 +34,6 @@ interface RenderTsTemplateFileActionInputBase<T extends TsTemplateFile> {
     'prefix' | 'includeMetadata'
   >;
   /**
-   * Whether to include the metadata only if there's template metadata
-   * already present.
-   *
-   * This is useful when the same template is used for many files and you
-   * want to avoid having to generate metadata for every file.
-   */
-  includeMetadataOnDemand?: boolean;
-  /**
    * The generator info for the generator that is writing the template file
    *
    * If not provided, it will be inferred from the builder.
@@ -83,7 +75,6 @@ export function renderTsTemplateFileAction<
   variables,
   importMapProviders,
   renderOptions,
-  includeMetadataOnDemand,
   generatorInfo: providedGeneratorInfo,
 }: RenderTsTemplateFileActionInput<T>): BuilderAction {
   return {
@@ -139,10 +130,12 @@ export function renderTsTemplateFileAction<
 
       const shouldIncludeMetadata =
         builder.metadataOptions.includeTemplateMetadata &&
-        (!includeMetadataOnDemand ||
-          builder.metadataOptions.hasTemplateMetadata?.(
-            normalizePathToProjectPath(destination),
-          ));
+        builder.metadataOptions.shouldGenerateMetadata({
+          fileId: id ?? template.name,
+          filePath: normalizePathToProjectPath(destination),
+          generatorName: generatorInfo.name,
+          hasManualId: !!id,
+        });
 
       const renderedTemplate = renderTsCodeFileTemplate(
         templateContents,
