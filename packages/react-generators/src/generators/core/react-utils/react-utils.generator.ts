@@ -1,15 +1,10 @@
-import type { ImportMapper } from '@halfdomelabs/core-generators';
 import type { TemplateFileSource } from '@halfdomelabs/sync';
 
 import {
   projectScope,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -20,11 +15,6 @@ import {
 import { REACT_UTILS_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
-
-type ReactUtilsProvider = ImportMapper;
-
-export const reactUtilsProvider =
-  createProviderType<ReactUtilsProvider>('react-utils');
 
 function getUtilsPath(source: TemplateFileSource): string {
   if (!('path' in source)) {
@@ -45,58 +35,16 @@ export const reactUtilsGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
       },
       exports: {
-        reactUtils: reactUtilsProvider.export(projectScope),
         reactUtilsImports: reactUtilsImportsProvider.export(projectScope),
       },
       run({ typescriptFile }) {
-        const usedTemplates = new Set<ReactUtilKey>();
-
-        const files = Object.entries(REACT_UTILS_TS_TEMPLATES).map(
-          ([key, template]) => ({
-            key,
-            template,
-          }),
-        );
-
         return {
           providers: {
-            reactUtils: {
-              getImportMap: () =>
-                Object.fromEntries(
-                  files.map(({ key, template }) => [
-                    `%react-utils/${key}`,
-                    {
-                      path: getUtilsPath(template.source),
-                      allowedImports: Object.keys(
-                        template.projectExports ?? {},
-                      ),
-                      onImportUsed: () => {
-                        usedTemplates.add(key as ReactUtilKey);
-                      },
-                    },
-                  ]),
-                ),
-            },
             reactUtilsImports: createReactUtilsImports('@/src/utils'),
           },
-          build: async (builder) => {
-            // render all ts-utils files that were used
-            await Promise.all(
-              [...usedTemplates].map((key) => {
-                const template = REACT_UTILS_TS_TEMPLATES[key];
-                return builder.apply(
-                  typescriptFile.renderTemplateFile({
-                    template,
-                    destination: getUtilsPath(template.source),
-                  }),
-                );
-              }),
-            );
-
+          build: (builder) => {
             // add all remaining files as lazy files
-            const unusedTemplates = Object.keys(
-              REACT_UTILS_TS_TEMPLATES,
-            ).filter((key) => !usedTemplates.has(key as ReactUtilKey));
+            const unusedTemplates = Object.keys(REACT_UTILS_TS_TEMPLATES);
 
             for (const key of unusedTemplates) {
               const template = REACT_UTILS_TS_TEMPLATES[key as ReactUtilKey];
