@@ -106,7 +106,7 @@ export function renderTextTemplateFileAction<
         );
         if (invalidVariableValue && shouldWriteMetadata) {
           throw new Error(
-            `The rendered template contains the value of a template variable (${invalidVariableValue[1]}) which would prevent ` +
+            `The template contents contain the value of a template variable (${invalidVariableValue[1]}) which would prevent ` +
               'template extraction from working correctly. Please ensure that no template variables values ' +
               `are present in the original template file. ${JSON.stringify(template.source)}`,
           );
