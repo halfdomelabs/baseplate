@@ -1,14 +1,14 @@
 // @ts-nocheck
 
-import { Link } from 'react-router-dom';
 import {
   Alert,
   LinkButton,
   Table,
-  useToast,
   useConfirmDialog,
+  useToast,
 } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
+import { Link } from 'react-router-dom';
 
 interface Props {
   items: TPL_ROW_FRAGMENT[];
@@ -54,6 +54,7 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): JSX.Element {
           <Table.Row key={item.id}>
             <TPL_CELLS />
             <Table.Cell className="space-x-4">
+              <Link to={`${item.id}/show`}>Show</Link>
               <Link to={`${item.id}/edit`}>Edit</Link>
               <LinkButton negative onClick={() => handleDelete(item)}>
                 Delete

@@ -3,25 +3,25 @@ import { createTsTemplateFile } from '@halfdomelabs/core-generators';
 import { reactComponentsImportsProvider } from '../../../core/react-components/generated/ts-import-maps.js';
 import { reactErrorImportsProvider } from '../../../core/react-error/generated/ts-import-maps.js';
 
-const indexPage = createTsTemplateFile({
+const listPage = createTsTemplateFile({
   importMapProviders: {
     reactComponentsImports: reactComponentsImportsProvider,
   },
-  name: 'admin-crud-list-index',
+  name: 'list-page',
   projectExports: {},
   source: { path: 'index.page.tsx' },
   variables: {
-    TPL_PAGE_NAME: {},
+    TPL_CREATE_BUTTON: {},
     TPL_DATA_LOADER: {},
+    TPL_DATA_PARTS: {},
     TPL_DELETE_FUNCTION: {},
     TPL_DELETE_MUTATION: {},
-    TPL_ROW_FRAGMENT_NAME: {},
-    TPL_PLURAL_MODEL: {},
-    TPL_CREATE_BUTTON: {},
-    TPL_DATA_PARTS: {},
     TPL_ERROR_PARTS: {},
-    TPL_TABLE_COMPONENT: {},
+    TPL_PAGE_NAME: {},
+    TPL_PLURAL_MODEL: {},
     TPL_REFETCH_DOCUMENT: {},
+    TPL_ROW_FRAGMENT_NAME: {},
+    TPL_TABLE_COMPONENT: {},
   },
 });
 
@@ -30,21 +30,18 @@ const table = createTsTemplateFile({
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
   },
-  name: 'admin-crud-list-table',
+  name: 'table',
   projectExports: {},
   source: { path: 'Table.tsx' },
   variables: {
-    TPL_COMPONENT_NAME: {},
-    TPL_ROW_FRAGMENT: {},
-    TPL_HEADERS: {},
     TPL_CELLS: {},
-    TPL_PLURAL_MODEL: {},
-    TPL_EXTRA_PROPS: {},
+    TPL_COMPONENT_NAME: {},
     TPL_DESTRUCTURED_PROPS: {},
+    TPL_EXTRA_PROPS: {},
+    TPL_HEADERS: {},
+    TPL_PLURAL_MODEL: {},
+    TPL_ROW_FRAGMENT: {},
   },
 });
 
-export const ADMIN_CRUD_LIST_TS_TEMPLATES = {
-  indexPage,
-  table,
-};
+export const ADMIN_ADMIN_CRUD_LIST_TS_TEMPLATES = { listPage, table };

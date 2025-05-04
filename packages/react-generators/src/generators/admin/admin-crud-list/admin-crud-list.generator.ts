@@ -26,7 +26,7 @@ import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-colum
 import { printDataLoaders } from '../_providers/admin-loader.js';
 import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
 import { adminCrudQueriesProvider } from '../admin-crud-queries/admin-crud-queries.generator.js';
-import { ADMIN_CRUD_LIST_TS_TEMPLATES } from './generated/ts-templates.js';
+import { ADMIN_ADMIN_CRUD_LIST_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   modelId: z.string(),
@@ -123,7 +123,7 @@ export const adminCrudListGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 id: `list-${modelId}`,
-                template: ADMIN_CRUD_LIST_TS_TEMPLATES.indexPage,
+                template: ADMIN_ADMIN_CRUD_LIST_TS_TEMPLATES.listPage,
                 destination: listPagePath,
                 variables: {
                   TPL_PAGE_NAME: listPageComponentName,
@@ -183,7 +183,7 @@ export const adminCrudListGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 id: `table-${modelId}`,
-                template: ADMIN_CRUD_LIST_TS_TEMPLATES.table,
+                template: ADMIN_ADMIN_CRUD_LIST_TS_TEMPLATES.table,
                 destination: tableComponentPath,
                 variables: {
                   TPL_COMPONENT_NAME: tableComponentName,
