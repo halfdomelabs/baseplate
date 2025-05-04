@@ -1,10 +1,9 @@
 // @ts-nocheck
 
+import { Alert, Button, useStatus } from '%reactComponentsImports';
+import { logAndFormatError } from '%reactErrorImports';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Alert, Button } from '%reactComponentsImports';
-import { useStatus } from '%reactComponentsImports';
-import { logAndFormatError } from '%reactErrorImports';
 
 TPL_TABLE_COMPONENT;
 

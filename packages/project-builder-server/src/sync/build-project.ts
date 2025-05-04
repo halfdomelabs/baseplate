@@ -157,10 +157,14 @@ export async function buildProject({
               shouldGenerateMetadata: (context) => {
                 // always write metadata for files without a manual ID
                 if (!context.hasManualId) return true;
-                return fileIdRegexWhitelist.some((pattern) => {
-                  const regex = new RegExp(pattern);
-                  return regex.test(context.fileId);
-                });
+                return fileIdRegexWhitelist
+                  .filter((x) => x.trim() !== '')
+                  .some((pattern) => {
+                    const regex = new RegExp(pattern);
+                    return regex.test(
+                      `${context.generatorName}:${context.fileId}`,
+                    );
+                  });
               },
             }
           : undefined,

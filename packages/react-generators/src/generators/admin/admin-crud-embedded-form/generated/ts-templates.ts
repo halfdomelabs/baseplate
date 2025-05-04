@@ -8,21 +8,19 @@ const embeddedForm = createTsTemplateFile({
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
   },
-  name: 'admin-crud-embedded-form',
+  name: 'embedded-form',
   projectExports: {},
   source: { path: 'EmbeddedForm.tsx' },
   variables: {
     TPL_COMPONENT_NAME: {},
-    TPL_EMBEDDED_FORM_DATA_TYPE: {},
-    TPL_EMBEDDED_FORM_DATA_SCHEMA: {},
-    TPL_INPUTS: {},
-    TPL_HEADER: {},
     TPL_DESTRUCTURED_PROPS: {},
+    TPL_EMBEDDED_FORM_DATA_SCHEMA: {},
+    TPL_EMBEDDED_FORM_DATA_TYPE: {},
+    TPL_HEADER: {},
+    TPL_INPUTS: {},
     TPL_PROPS: {},
     TPL_TABLE_COMPONENT: {},
   },
 });
 
-export const ADMIN_CRUD_EMBEDDED_FORM_TS_TEMPLATES = {
-  embeddedForm,
-};
+export const ADMIN_ADMIN_CRUD_EMBEDDED_FORM_TS_TEMPLATES = { embeddedForm };
