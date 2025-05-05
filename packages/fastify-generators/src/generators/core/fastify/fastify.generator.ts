@@ -106,7 +106,7 @@ export const fastifyGenerator = createGenerator({
       });
     }),
     gitIgnore: createProviderTask(nodeGitIgnoreProvider, (nodeGitIgnore) => {
-      nodeGitIgnore.addExclusions(['/dist']);
+      nodeGitIgnore.exclusions.set('fastify', ['/dist']);
     }),
     main: createGeneratorTask({
       dependencies: {

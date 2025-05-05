@@ -1,7 +1,7 @@
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -11,24 +11,30 @@ const descriptorSchema = z.object({
   additionalExclusions: z.array(z.string().min(1)).optional(),
 });
 
-export interface NodeGitIgnoreProvider {
-  addExclusions(exclusions: string[]): void;
-}
+const [setupTask, nodeGitIgnoreProvider, nodeGitIgnoreConfigValuesProvider] =
+  createConfigProviderTask(
+    (t) => ({
+      exclusions: t.map<string, string[]>(),
+    }),
+    {
+      prefix: 'node-git-ignore',
+      configScope: projectScope,
+    },
+  );
 
-export const nodeGitIgnoreProvider =
-  createProviderType<NodeGitIgnoreProvider>('node-git-ignore');
+export { nodeGitIgnoreProvider };
 
 export const nodeGitIgnoreGenerator = createGenerator({
   name: 'node/node-git-ignore',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: (descriptor) => ({
+    setup: setupTask,
     main: createGeneratorTask({
-      dependencies: {},
-      exports: {
-        nodeGitIgnore: nodeGitIgnoreProvider.export(projectScope),
+      dependencies: {
+        nodeGitIgnoreConfigValues: nodeGitIgnoreConfigValuesProvider,
       },
-      run() {
+      run({ nodeGitIgnoreConfigValues: { exclusions } }) {
         const exclusionLines: string[] = [
           '# See https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_ignoring for more about ignoring files.',
           '',
@@ -59,17 +65,18 @@ export const nodeGitIgnoreGenerator = createGenerator({
           '# Baseplate build artifacts',
           'baseplate/build',
         ];
+        if (exclusions.size > 0) {
+          const sortedExclusions = [...exclusions.entries()].sort((a, b) =>
+            a[0].localeCompare(b[0]),
+          );
+          exclusionLines.push(
+            ...sortedExclusions.flatMap(([, value]) => ['', ...value]),
+          );
+        }
         return {
-          providers: {
-            nodeGitIgnore: {
-              addExclusions(exclusions: string[]) {
-                exclusionLines.push('', ...exclusions);
-              },
-            },
-          },
           build: (builder) => {
             if (descriptor.additionalExclusions) {
-              exclusionLines.push(...descriptor.additionalExclusions);
+              exclusionLines.push('', ...descriptor.additionalExclusions);
             }
             builder.writeFile({
               id: 'gitignore',

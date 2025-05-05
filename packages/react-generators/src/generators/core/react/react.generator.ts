@@ -58,7 +58,7 @@ export const reactGenerator = createGenerator({
     }),
     viteNode: viteNodeTask,
     gitIgnore: createProviderTask(nodeGitIgnoreProvider, (nodeGitIgnore) => {
-      nodeGitIgnore.addExclusions([
+      nodeGitIgnore.exclusions.set('react', [
         '# production',
         '/build',
         '',

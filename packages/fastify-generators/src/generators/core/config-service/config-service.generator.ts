@@ -102,7 +102,7 @@ export const configServiceGenerator = createGenerator({
     nodeGitIgnore: createProviderTask(
       nodeGitIgnoreProvider,
       (nodeGitIgnore) => {
-        nodeGitIgnore.addExclusions(['/.env', '/.*.env']);
+        nodeGitIgnore.exclusions.set('config', ['/.env', '/.*.env']);
       },
     ),
     setup: setupTask,
