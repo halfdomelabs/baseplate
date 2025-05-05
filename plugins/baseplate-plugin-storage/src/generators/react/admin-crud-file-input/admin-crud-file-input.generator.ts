@@ -1,4 +1,4 @@
-import { tsCodeFragment } from '@halfdomelabs/core-generators';
+import { tsCodeFragment, TsCodeUtils } from '@halfdomelabs/core-generators';
 import { adminCrudInputContainerProvider } from '@halfdomelabs/react-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -27,13 +27,14 @@ export const adminCrudFileInputGenerator = createGenerator({
       run({ adminCrudInputContainer, uploadComponentsImports }) {
         adminCrudInputContainer.addInput({
           order,
-          content: tsCodeFragment(
-            `<FileInput.LabelledController
-          label="${label}"
-          category="${category}"
-          control={control}
-          name="${modelRelation}"
-        />`,
+          content: TsCodeUtils.mergeFragmentsAsJsxElement(
+            'FileInput.LabelledController',
+            {
+              label,
+              category,
+              control: tsCodeFragment('control'),
+              name: modelRelation,
+            },
             uploadComponentsImports.FileInput.declaration(),
           ),
           graphQLFields: [

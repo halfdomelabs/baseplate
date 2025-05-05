@@ -34,7 +34,12 @@ export function getTextTemplateDelimiters(filename: string): {
 
 /**
  * Get the regex for a text template variable.
+ *
+ * If the variable is an identifier, we check for non-alphanumeric characters around
+ * the variable name.
+ *
  * @param variable The variable to get the regex for.
+ * @param value The value of the variable.
  * @returns The regex for the text template variable.
  */
 export function getTextTemplateVariableRegExp(

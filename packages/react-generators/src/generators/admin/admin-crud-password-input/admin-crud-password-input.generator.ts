@@ -1,4 +1,4 @@
-import { tsCodeFragment } from '@halfdomelabs/core-generators';
+import { tsCodeFragment, TsCodeUtils } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -26,14 +26,17 @@ export const adminCrudPasswordInputGenerator = createGenerator({
       run({ adminCrudInputContainer, reactComponentsImports }) {
         adminCrudInputContainer.addInput({
           order,
-          content: tsCodeFragment(
-            `<TextInput.LabelledController
-          label="${label}"
-          control={control}
-          name="${modelField}"
-          type="password"
-          registerOptions={{ setValueAs: (val: string) => val === '' ? undefined : val }}
-        />`,
+          content: TsCodeUtils.mergeFragmentsAsJsxElement(
+            'TextInput.LabelledController',
+            {
+              label,
+              control: tsCodeFragment('control'),
+              name: modelField,
+              type: 'password',
+              registerOptions: tsCodeFragment(
+                '{ setValueAs: (val: string) => val === "" ? undefined : val }',
+              ),
+            },
             reactComponentsImports.TextInput.declaration(),
           ),
           graphQLFields: [],
