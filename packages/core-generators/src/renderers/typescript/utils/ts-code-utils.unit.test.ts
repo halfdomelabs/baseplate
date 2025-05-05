@@ -449,4 +449,72 @@ describe('TsCodeUtils', () => {
       });
     });
   });
+
+  describe('extractTemplateSnippet', () => {
+    it('should extract a snippet between start and end markers', () => {
+      const template = `
+// TEST:START
+const foo = 'bar';
+// TEST:END
+`;
+      const result = TsCodeUtils.extractTemplateSnippet(template, 'TEST');
+      expect(result).toBe("const foo = 'bar';");
+    });
+
+    it('should handle multiline snippets', () => {
+      const template = `
+// TEST:START
+const foo = 'bar';
+const baz = 'qux';
+// TEST:END
+`;
+      const result = TsCodeUtils.extractTemplateSnippet(template, 'TEST');
+      expect(result).toBe("const foo = 'bar';\nconst baz = 'qux';");
+    });
+
+    it('should throw error when start marker is not found', () => {
+      const template = `
+// WRONG:START
+const foo = 'bar';
+// TEST:END
+`;
+      expect(() => {
+        TsCodeUtils.extractTemplateSnippet(template, 'TEST');
+      }).toThrow('Could not find start divider // TEST:START in template file');
+    });
+
+    it('should throw error when end marker is not found', () => {
+      const template = `
+// TEST:START
+const foo = 'bar';
+// WRONG:END
+`;
+      expect(() => {
+        TsCodeUtils.extractTemplateSnippet(template, 'TEST');
+      }).toThrow('Could not find end divider // TEST:END in template file');
+    });
+
+    it('should handle empty snippets', () => {
+      const template = `
+// TEST:START
+// TEST:END
+`;
+      const result = TsCodeUtils.extractTemplateSnippet(template, 'TEST');
+      expect(result).toBe('');
+    });
+
+    it('should handle snippets with comments', () => {
+      const template = `
+// TEST:START
+// This is a comment
+const foo = 'bar';
+// Another comment
+// TEST:END
+`;
+      const result = TsCodeUtils.extractTemplateSnippet(template, 'TEST');
+      expect(result).toBe(
+        "// This is a comment\nconst foo = 'bar';\n// Another comment",
+      );
+    });
+  });
 });

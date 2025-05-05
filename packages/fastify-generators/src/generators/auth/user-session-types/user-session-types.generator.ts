@@ -1,14 +1,8 @@
-import type { ImportMapper } from '@halfdomelabs/core-generators';
-
 import {
   projectScope,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -23,11 +17,6 @@ import { AUTH_USER_SESSION_TYPES_TS_TEMPLATES } from './generated/ts-templates.j
 
 const descriptorSchema = z.object({});
 
-export type UserSessionTypesProvider = ImportMapper;
-
-export const userSessionTypesProvider =
-  createProviderType<UserSessionTypesProvider>('user-session-types');
-
 export const userSessionTypesGenerator = createGenerator({
   name: 'auth/user-session-types',
   generatorFileUrl: import.meta.url,
@@ -40,7 +29,6 @@ export const userSessionTypesGenerator = createGenerator({
         authContextImports: authContextImportsProvider,
       },
       exports: {
-        userSessionTypes: userSessionTypesProvider.export(projectScope),
         userSessionTypesImports:
           userSessionTypesImportsProvider.export(projectScope),
       },
@@ -51,18 +39,6 @@ export const userSessionTypesGenerator = createGenerator({
         );
         return {
           providers: {
-            userSessionTypes: {
-              getImportMap: () => ({
-                '%user-session-types': {
-                  path: userSessionTypesFile,
-                  allowedImports: [
-                    'InvalidSessionError',
-                    'UserSessionPayload',
-                    'UserSessionService',
-                  ],
-                },
-              }),
-            },
             userSessionTypesImports: createUserSessionTypesImports(
               path.dirname(userSessionTypesFile),
             ),

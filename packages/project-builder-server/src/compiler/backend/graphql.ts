@@ -16,9 +16,8 @@ import {
   pothosTypesFileGenerator,
 } from '@halfdomelabs/fastify-generators';
 import { ModelUtils } from '@halfdomelabs/project-builder-lib';
+import { notEmpty } from '@halfdomelabs/utils';
 import { kebabCase } from 'change-case';
-
-import { notEmpty } from '@src/utils/array.js';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 

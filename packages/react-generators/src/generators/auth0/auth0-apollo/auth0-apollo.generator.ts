@@ -1,12 +1,11 @@
 import {
   tsCodeFragment,
+  TsCodeUtils,
   tsImportBuilder,
-  TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { apolloErrorProvider } from '@src/generators/apollo/apollo-error/apollo-error.generator.js';
 import { reactApolloConfigProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
 
 const descriptorSchema = z.object({});
@@ -19,7 +18,6 @@ export const auth0ApolloGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactApolloConfig: reactApolloConfigProvider,
-        apolloError: apolloErrorProvider,
       },
       run({ reactApolloConfig }) {
         reactApolloConfig.createApolloClientArguments.add({
@@ -37,7 +35,7 @@ export const auth0ApolloGenerator = createGenerator({
           },
           build: async (builder) => {
             const linkTemplate = await builder.readTemplate('auth-link.ts');
-            const authLink = TypescriptCodeUtils.extractTemplateSnippet(
+            const authLink = TsCodeUtils.extractTemplateSnippet(
               linkTemplate,
               'AUTH_LINK',
             );

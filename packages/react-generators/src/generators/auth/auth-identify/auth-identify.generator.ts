@@ -17,7 +17,7 @@ import { z } from 'zod';
 
 import { reactRouterConfigProvider } from '@src/generators/core/react-router/react-router.generator.js';
 
-import { authHooksProvider } from '../_providers/auth-hooks.js';
+import { authHooksImportsProvider } from '../_providers/auth-hooks.js';
 
 const descriptorSchema = z.object({});
 
@@ -40,12 +40,12 @@ export const authIdentifyGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactRouterConfig: reactRouterConfigProvider,
-        authHooks: authHooksProvider,
+        authHooksImports: authHooksImportsProvider,
       },
       exports: {
         authIdentify: authIdentifyProvider.export(projectScope),
       },
-      run({ reactRouterConfig, authHooks }) {
+      run({ reactRouterConfig, authHooksImports }) {
         const fieldMap = createConfigFieldMap(configSchema);
         return {
           providers: {
@@ -57,10 +57,7 @@ export const authIdentifyGenerator = createGenerator({
               reactRouterConfig.renderHeaders.set(
                 'auth-identify',
                 TsCodeUtils.templateWithImports([
-                  tsImportBuilder(['useSession']).from(
-                    authHooks.getImportMap()['%auth-hooks/useSession']?.path ??
-                      '',
-                  ),
+                  authHooksImports.useSession.declaration(),
                   tsImportBuilder(['useEffect']).from('react'),
                 ])`
                 const { userId } = useSession();

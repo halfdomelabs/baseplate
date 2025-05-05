@@ -11,12 +11,14 @@ export default createTypescriptMorpher({
     'Moves an import from one package/name to another package/name (can be the same package but different name)',
   options: {
     fromImport: {
-      description: 'The import from which to move',
+      description:
+        'The import from which to move of the form "<package or path>:<name>"',
       optional: false,
       validation: z.string().regex(/^[^:]+:[^:]+$/),
     },
     toImport: {
-      description: 'The import to move to',
+      description:
+        'The import to move to of the form "<package or path>:<name>"',
       optional: false,
       validation: z.string().regex(/^[^:]+:[^:]+$/),
     },

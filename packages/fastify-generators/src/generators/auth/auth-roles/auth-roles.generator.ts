@@ -1,15 +1,10 @@
-import type { ImportEntry, ImportMapper } from '@halfdomelabs/core-generators';
-
 import {
   projectScope,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { stringifyPrettyStable } from '@halfdomelabs/utils';
+import { posixJoin } from '@halfdomelabs/utils/node';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -36,11 +31,6 @@ const descriptorSchema = z.object({
   ),
 });
 
-export type AuthRolesProvider = ImportMapper;
-
-export const authRolesProvider =
-  createProviderType<AuthRolesProvider>('auth-roles');
-
 export const authRolesGenerator = createGenerator({
   name: 'auth/auth-roles',
   generatorFileUrl: import.meta.url,
@@ -52,7 +42,6 @@ export const authRolesGenerator = createGenerator({
         appModule: appModuleProvider,
       },
       exports: {
-        authRoles: authRolesProvider.export(projectScope),
         authRolesImports: authRolesImportsProvider.export(projectScope),
       },
       run({ typescriptFile, appModule }) {
@@ -64,28 +53,13 @@ export const authRolesGenerator = createGenerator({
           throw new Error('public, user, and system roles are required');
         }
 
-        const filePath = path.join(
+        const filePath = posixJoin(
           appModule.getModuleFolder(),
           'constants/auth-roles.constants.ts',
         );
 
-        const authRolesImport: ImportEntry = {
-          path: filePath,
-          allowedImports: [
-            'AUTH_ROLE_CONFIG',
-            'AuthRole',
-            'DEFAULT_PUBLIC_ROLES',
-            'DEFAULT_USER_ROLES',
-          ],
-        };
-
         return {
           providers: {
-            authRoles: {
-              getImportMap: () => ({
-                '%auth-roles': authRolesImport,
-              }),
-            },
             authRolesImports: createAuthRolesImports(path.dirname(filePath)),
           },
           build: async (builder) => {

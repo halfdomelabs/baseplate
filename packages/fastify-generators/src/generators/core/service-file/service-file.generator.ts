@@ -4,7 +4,6 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import {
-  makeImportAndFilePath,
   projectScope,
   tsCodeFileTemplate,
   TsCodeUtils,
@@ -19,6 +18,7 @@ import {
   createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
 import { notEmpty } from '@halfdomelabs/utils';
+import { posixJoin } from '@halfdomelabs/utils/node';
 import { kebabCase } from 'change-case';
 import path from 'node:path';
 import { z } from 'zod';
@@ -84,20 +84,18 @@ export const serviceFileGenerator = createGenerator({
           appModule.getModuleFolder(),
           'services',
         );
-        const [servicesImport, servicesPath] = makeImportAndFilePath(
-          path.join(
-            servicesFolder,
-            `${descriptor.fileName ?? kebabCase(descriptor.name)}.ts`,
-          ),
+        const servicesPath = posixJoin(
+          servicesFolder,
+          `${descriptor.fileName ?? kebabCase(descriptor.name)}.ts`,
         );
 
         return {
           providers: {
             serviceFile: {
-              getServiceImport: () => servicesImport,
+              getServiceImport: () => servicesPath,
               getServicePath: () => servicesPath,
               getMethodImport: (methodName) =>
-                tsImportBuilder([methodName]).from(servicesImport),
+                tsImportBuilder([methodName]).from(servicesPath),
               registerMethod(key, block, outputMethod) {
                 methodMap.set(key, block);
                 if (outputMethod) {

@@ -1,18 +1,7 @@
-import type {
-  ImportMapper,
-  InferTsImportMapFromSchema,
-} from '@halfdomelabs/core-generators';
+import type { InferTsImportMapFromSchema } from '@halfdomelabs/core-generators';
 
 import { createTsImportMapSchema } from '@halfdomelabs/core-generators';
-import {
-  createProviderType,
-  createReadOnlyProviderType,
-} from '@halfdomelabs/sync';
-
-export type UserSessionServiceProvider = ImportMapper;
-
-export const userSessionServiceProvider =
-  createProviderType<UserSessionServiceProvider>('user-session-service');
+import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 
 export const userSessionServiceImportsSchema = createTsImportMapSchema({
   userSessionService: {},

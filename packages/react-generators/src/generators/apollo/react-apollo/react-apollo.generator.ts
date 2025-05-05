@@ -1,5 +1,4 @@
 import type {
-  ImportMapper,
   TsCodeFragment,
   TsImportDeclaration,
   TsTemplateFileMetadata,
@@ -17,7 +16,6 @@ import {
   tsHoistedFragment,
   tsImportBuilder,
   tsTemplate,
-  TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -29,7 +27,7 @@ import {
   POST_WRITE_COMMAND_PRIORITY,
   renderTextTemplateFileAction,
 } from '@halfdomelabs/sync';
-import { toposortLocal } from '@halfdomelabs/utils';
+import { notEmpty, toposortLocal } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
@@ -41,7 +39,6 @@ import {
 import { reactErrorConfigProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactProxyProvider } from '@src/generators/core/react-proxy/react-proxy.generator.js';
 
-import { notEmpty } from '../../../utils/array.js';
 import { APOLLO_REACT_APOLLO_TEXT_TEMPLATES } from './generated/text-templates.js';
 import {
   createGeneratedGraphqlImports,
@@ -164,8 +161,19 @@ const [setupTask, reactApolloConfigProvider, reactApolloConfigValuesProvider] =
 
 export { reactApolloConfigProvider };
 
-export interface ReactApolloProvider extends ImportMapper {
+export interface ReactApolloProvider {
+  /**
+   * Register a gql file so that any changes to this file will
+   * trigger a regeneration of the generated graphql file
+   *
+   * @param filePath - The path to the gql file
+   */
   registerGqlFile(filePath: string): void;
+  /**
+   * Get the path to the generated graphql file
+   *
+   * @returns The path to the generated graphql file
+   */
   getGeneratedFilePath(): string;
 }
 
@@ -296,18 +304,6 @@ export const reactApolloGenerator = createGenerator({
               registerGqlFile(filePath) {
                 gqlFiles.push(filePath);
               },
-              getImportMap() {
-                return {
-                  '%react-apollo/client': {
-                    path: clientPath,
-                    allowedImports: ['createApolloClient'],
-                  },
-                  '%react-apollo/generated': {
-                    path: '@/src/generated/graphql',
-                    allowedImports: ['*'],
-                  },
-                };
-              },
               getGeneratedFilePath() {
                 return '@/src/generated/graphql';
               },
@@ -354,16 +350,14 @@ export const reactApolloGenerator = createGenerator({
             if (enableSubscriptions) {
               const websocketTemplate =
                 await builder.readTemplate('websocket-links.ts');
-              const getWsUrlTemplate =
-                TypescriptCodeUtils.extractTemplateSnippet(
-                  websocketTemplate,
-                  'GET_WS_URL',
-                );
-              const retryWaitTemplate =
-                TypescriptCodeUtils.extractTemplateSnippet(
-                  websocketTemplate,
-                  'RETRY_WAIT',
-                ).replace(/;$/, '');
+              const getWsUrlTemplate = TsCodeUtils.extractTemplateSnippet(
+                websocketTemplate,
+                'GET_WS_URL',
+              );
+              const retryWaitTemplate = TsCodeUtils.extractTemplateSnippet(
+                websocketTemplate,
+                'RETRY_WAIT',
+              ).replace(/;$/, '');
 
               // TODO: This should not live here but in auth service
               // TODO: This should live in the defaults not set afterwards to prevent them from being overridden

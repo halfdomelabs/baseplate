@@ -2,6 +2,8 @@ import type { ForwardedRef } from 'react';
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
+import { notEmpty } from '@halfdomelabs/utils';
+
 import type {
   AddOptionRequiredFields,
   FieldProps,
@@ -10,7 +12,6 @@ import type {
 
 import { useComponentStrings } from '@src/contexts/component-strings.js';
 import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
-import { notEmpty } from '@src/utils/array.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 import { FormItem } from '../FormItem/FormItem.js';

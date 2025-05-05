@@ -3,8 +3,7 @@ import type { GeneratorBundle } from '@halfdomelabs/sync';
 
 import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { reactRoutesGenerator } from '@halfdomelabs/react-generators';
-
-import { notEmpty } from '@src/utils/array.js';
+import { notEmpty } from '@halfdomelabs/utils';
 
 import type { AppEntryBuilder } from '../app-entry-builder.js';
 

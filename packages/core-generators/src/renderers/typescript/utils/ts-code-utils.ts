@@ -536,6 +536,38 @@ export const TsCodeUtils = {
       ]),
     };
   },
+
+  /**
+   * Extract a snippet from a template string of the form:
+   *
+   * ```
+   * // <key>:START
+   * <snippet>
+   * // <key>:END
+   * ```
+   *
+   * Note: This is a temporary carry-over from the old TS system. In the future,
+   * we will aim to have auto-generated properly typed template snippets.
+   *
+   * @param template - The template string.
+   * @param key - The key to extract.
+   * @returns The extracted snippet.
+   */
+  extractTemplateSnippet(template: string, key: string): string {
+    const startDivision = template.split(`// ${key}:START`);
+    if (startDivision.length !== 2) {
+      throw new Error(
+        `Could not find start divider // ${key}:START in template file`,
+      );
+    }
+    const endDivision = startDivision[1].split(`// ${key}:END`);
+    if (endDivision.length !== 2) {
+      throw new Error(
+        `Could not find end divider // ${key}:END in template file`,
+      );
+    }
+    return endDivision[0].trim();
+  },
 };
 
 // Shortcut for template function

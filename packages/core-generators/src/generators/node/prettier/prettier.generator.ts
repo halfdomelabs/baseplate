@@ -7,6 +7,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { notEmpty } from '@halfdomelabs/utils';
 import {
   findNearestPackageJson,
   readJsonWithSchema,
@@ -21,7 +22,6 @@ import { z } from 'zod';
 
 import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
-import { notEmpty } from '@src/utils/array.js';
 import { writeJsonToBuilder } from '@src/writers/json.js';
 
 import { nodeProvider } from '../node/node.generator.js';

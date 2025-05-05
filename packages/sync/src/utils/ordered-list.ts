@@ -1,6 +1,4 @@
-import { toposortOrdered } from '@halfdomelabs/utils';
-
-import { notEmpty } from './arrays.js';
+import { notEmpty, toposortOrdered } from '@halfdomelabs/utils';
 
 interface OrderRule {
   comesBefore?: string | string[];

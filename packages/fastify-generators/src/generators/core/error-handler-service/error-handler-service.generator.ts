@@ -1,22 +1,16 @@
-import type {
-  ImportMapper,
-  TsCodeFragment,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   projectScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-  TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -30,14 +24,6 @@ import {
 import { CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
-
-const ERROR_MAP = {
-  http: 'HttpError',
-  badRequest: 'BadRequestError',
-  unauthorized: 'UnauthorizedError',
-  forbidden: 'ForbiddenError',
-  notFound: 'NotFoundError',
-};
 
 export const [
   configTask,
@@ -53,16 +39,6 @@ export const [
     configScope: projectScope,
   },
 );
-
-export interface ErrorHandlerServiceProvider extends ImportMapper {
-  getHttpErrorsImport(): string;
-  getErrorFunction(): TypescriptCodeExpression;
-}
-
-export const errorHandlerServiceProvider =
-  createProviderType<ErrorHandlerServiceProvider>('error-handler-service', {
-    isReadOnly: true,
-  });
 
 export const errorHandlerServiceGenerator = createGenerator({
   name: 'core/error-handler-service',
@@ -176,42 +152,6 @@ export const errorHandlerServiceGenerator = createGenerator({
                 baseDirectory: '@/src/utils',
               }),
             );
-          },
-        };
-      },
-    }),
-    main: createGeneratorTask({
-      exports: {
-        errorHandlerService: errorHandlerServiceProvider.export(projectScope),
-      },
-      run() {
-        const errorFunction = TypescriptCodeUtils.createExpression(
-          'logError',
-          "import { logError } from '@/src/services/error-logger.js'",
-        );
-
-        const importMap = {
-          '%http-errors': {
-            path: `@/src/utils/http-errors.js`,
-            allowedImports: Object.values(ERROR_MAP),
-          },
-          '%error-logger': {
-            path: '@/src/services/error-logger.js',
-            allowedImports: ['logError'],
-          },
-          '%utils-zod': {
-            path: '@/src/utils/zod.js',
-            allowedImports: ['handleZodRequestValidationError'],
-          },
-        };
-
-        return {
-          providers: {
-            errorHandlerService: {
-              getErrorFunction: () => errorFunction,
-              getHttpErrorsImport: () => '@/src/utils/http-errors.js',
-              getImportMap: () => importMap,
-            },
           },
         };
       },

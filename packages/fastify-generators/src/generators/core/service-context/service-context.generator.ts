@@ -1,20 +1,14 @@
-import type {
-  ImportMapper,
-  TsCodeFragment,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   projectScope,
   TsCodeUtils,
-  TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
 import { mapValuesOfMap } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
@@ -74,13 +68,6 @@ const [
 
 export { serviceContextConfigProvider };
 
-export interface ServiceContextProvider extends ImportMapper {
-  getServiceContextType(): TypescriptCodeExpression;
-}
-
-export const serviceContextProvider =
-  createReadOnlyProviderType<ServiceContextProvider>('service-context');
-
 export const serviceContextGenerator = createGenerator({
   name: 'core/service-context',
   generatorFileUrl: import.meta.url,
@@ -95,35 +82,15 @@ export const serviceContextGenerator = createGenerator({
       exports: {
         serviceContextImports:
           serviceContextImportsProvider.export(projectScope),
-        serviceContext: serviceContextProvider.export(projectScope),
       },
       run({ typescriptFile, serviceContextConfigValues: { contextFields } }) {
         const serviceContextPath = '@/src/utils/service-context.ts';
         const testHelperPath =
           '@/src/tests/helpers/service-context.test-helper.ts';
 
-        const importMap = {
-          '%service-context': {
-            path: serviceContextPath,
-            allowedImports: ['ServiceContext', 'createServiceContext'],
-          },
-          '%service-context/test': {
-            path: testHelperPath,
-            allowedImports: ['createTestServiceContext'],
-          },
-        };
-
         return {
           providers: {
             serviceContextImports: createServiceContextImports('@/src'),
-            serviceContext: {
-              getImportMap: () => importMap,
-              getServiceContextType: () =>
-                TypescriptCodeUtils.createExpression(
-                  'ServiceContext',
-                  `import {ServiceContext} from '${serviceContextPath}'`,
-                ),
-            },
           },
           build: async (builder) => {
             const orderedContextArgs = sortBy(
@@ -210,5 +177,5 @@ export const serviceContextGenerator = createGenerator({
   }),
 });
 
-export type { ServiceContextImportsProvider } from './generated/ts-import-maps.js';
 export { serviceContextImportsProvider } from './generated/ts-import-maps.js';
+export type { ServiceContextImportsProvider } from './generated/ts-import-maps.js';

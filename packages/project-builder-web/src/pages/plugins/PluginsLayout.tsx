@@ -6,10 +6,9 @@ import {
   NavigationMenu,
   SidebarLayout,
 } from '@halfdomelabs/ui-components';
+import { notEmpty } from '@halfdomelabs/utils';
 import { MdAdd } from 'react-icons/md';
 import { Link, NavLink, Outlet } from 'react-router-dom';
-
-import { notEmpty } from '@src/utils/array';
 
 function PluginsLayout(): React.JSX.Element {
   const { definition, schemaParserContext } = useProjectDefinition();

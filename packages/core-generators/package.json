@@ -49,8 +49,6 @@
     "@halfdomelabs/utils": "workspace:*",
     "change-case": "5.4.4",
     "es-toolkit": "1.31.0",
-    "eta": "^3.5.0",
-    "is-core-module": "2.15.1",
     "memfs": "4.15.1",
     "oxc-resolver": "5.2.0",
     "p-limit": "6.1.0",
@@ -64,7 +62,6 @@
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
-    "@types/is-core-module": "^2.2.0",
     "@types/node": "catalog:",
     "@types/prettier": "^2.7.3",
     "@types/semver": "^7.5.0",

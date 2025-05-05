@@ -1,7 +1,4 @@
-import type {
-  ImportMapper,
-  TsCodeFragment,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
@@ -68,7 +65,7 @@ const [setupTask, pothosConfigProvider, pothosConfigValuesProvider] =
 
 export { pothosConfigProvider };
 
-export interface PothosSchemaProvider extends ImportMapper {
+export interface PothosSchemaProvider {
   registerSchemaFile: (filePath: string) => void;
 }
 
@@ -131,12 +128,6 @@ export const pothosGenerator = createGenerator({
         return {
           providers: {
             pothosSchema: {
-              getImportMap: () => ({
-                '%pothos': {
-                  path: '@/src/plugins/graphql/builder.js',
-                  allowedImports: ['builder'],
-                },
-              }),
               registerSchemaFile(filePath) {
                 schemaFiles.push(filePath);
               },

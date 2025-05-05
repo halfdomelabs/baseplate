@@ -16,7 +16,7 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
-import { loggerServiceSetupProvider } from '../logger-service/logger-service.generator.js';
+import { loggerServiceConfigProvider } from '../logger-service/logger-service.generator.js';
 import {
   createRequestContextImports,
   requestContextImportsProvider,
@@ -33,9 +33,9 @@ export const requestContextGenerator = createGenerator({
   descriptorSchema,
   buildTasks: () => ({
     loggerRequestContext: createGeneratorTask({
-      dependencies: { loggerServiceSetup: loggerServiceSetupProvider },
-      run({ loggerServiceSetup }) {
-        loggerServiceSetup.addMixin(
+      dependencies: { loggerServiceConfig: loggerServiceConfigProvider },
+      run({ loggerServiceConfig }) {
+        loggerServiceConfig.mixins.set(
           'reqId',
           tsCodeFragment(
             "requestContext.get('reqInfo')?.id",

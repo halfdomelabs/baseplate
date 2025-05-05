@@ -60,6 +60,7 @@ export async function runMorpher(
       ...sourceGlobs.map((glob) => `${targetPath}/${glob}`),
       '!**/node_modules/**',
       '!**/dist/**',
+      '!**/templates/**',
     ]);
   } else {
     project.addSourceFileAtPath(targetPath);
