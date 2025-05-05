@@ -6,10 +6,7 @@ import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
-import {
-  authComponentsImportsProvider,
-  authComponentsProvider,
-} from '@src/generators/auth/_providers/auth-components.js';
+import { authComponentsImportsProvider } from '@src/generators/auth/_providers/auth-components.js';
 import {
   reactComponentsImportsProvider,
   reactComponentsProvider,
@@ -32,7 +29,6 @@ export const auth0ComponentsGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
       },
       exports: {
-        authComponents: authComponentsProvider.export(projectScope),
         authComponentsImports:
           authComponentsImportsProvider.export(projectScope),
       },
@@ -42,14 +38,6 @@ export const auth0ComponentsGenerator = createGenerator({
 
         return {
           providers: {
-            authComponents: {
-              getImportMap: () => ({
-                '%auth-components': {
-                  path: reactComponents.getComponentsFolder(),
-                  allowedImports: ['RequireAuth'],
-                },
-              }),
-            },
             authComponentsImports: createAuth0ComponentsImports(
               path.dirname(requireAuthPath),
             ),

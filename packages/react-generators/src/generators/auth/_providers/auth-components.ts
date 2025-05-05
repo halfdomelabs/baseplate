@@ -1,17 +1,8 @@
 import {
   createTsImportMapSchema,
-  type ImportMapper,
   type TsImportMapProviderFromSchema,
 } from '@halfdomelabs/core-generators';
-import {
-  createProviderType,
-  createReadOnlyProviderType,
-} from '@halfdomelabs/sync';
-
-export type AuthComponentsProvider = ImportMapper;
-
-export const authComponentsProvider =
-  createProviderType<AuthComponentsProvider>('auth-components');
+import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 
 export const authComponentsImportsSchema = createTsImportMapSchema({
   RequireAuth: { name: 'default' },

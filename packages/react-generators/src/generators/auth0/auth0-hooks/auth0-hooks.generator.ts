@@ -13,10 +13,7 @@ import {
   generatedGraphqlImportsProvider,
   reactApolloProvider,
 } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
-import {
-  authHooksImportsProvider,
-  authHooksProvider,
-} from '@src/generators/auth/_providers/auth-hooks.js';
+import { authHooksImportsProvider } from '@src/generators/auth/_providers/auth-hooks.js';
 import { reactErrorImportsProvider } from '@src/generators/core/react-error/react-error.generator.js';
 
 import { AUTH_0_AUTH_0_HOOKS_TEXT_TEMPLATES } from './generated/text-templates.js';
@@ -51,43 +48,13 @@ export const auth0HooksGenerator = createGenerator({
         reactErrorImports: reactErrorImportsProvider,
         generatedGraphqlImports: generatedGraphqlImportsProvider,
       },
-      exports: {
-        authHooks: authHooksProvider.export(projectScope),
-      },
       run({
         typescriptFile,
         reactErrorImports,
         generatedGraphqlImports,
         reactApollo,
       }) {
-        const useCurrentUserPath = '@/src/hooks/useCurrentUser.ts';
-        const useLogOutPath = '@/src/hooks/useLogOut.ts';
-        const useSessionPath = '@/src/hooks/useSession.ts';
-        const useRequiredUserIdPath = '@/src/hooks/useRequiredUserId.ts';
-
         return {
-          providers: {
-            authHooks: {
-              getImportMap: () => ({
-                '%auth-hooks/useCurrentUser': {
-                  path: useCurrentUserPath.replace('.ts', ''),
-                  allowedImports: ['useCurrentUser'],
-                },
-                '%auth-hooks/useLogOut': {
-                  path: useLogOutPath.replace('.ts', ''),
-                  allowedImports: ['useLogOut'],
-                },
-                '%auth-hooks/useRequiredUserId': {
-                  path: useRequiredUserIdPath.replace('.ts', ''),
-                  allowedImports: ['useRequiredUserId'],
-                },
-                '%auth-hooks/useSession': {
-                  path: useSessionPath.replace('.ts', ''),
-                  allowedImports: ['useSession'],
-                },
-              }),
-            },
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateGroup({

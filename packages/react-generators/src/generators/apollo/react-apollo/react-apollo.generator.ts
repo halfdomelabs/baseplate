@@ -1,5 +1,4 @@
 import type {
-  ImportMapper,
   TsCodeFragment,
   TsImportDeclaration,
   TsTemplateFileMetadata,
@@ -163,7 +162,7 @@ const [setupTask, reactApolloConfigProvider, reactApolloConfigValuesProvider] =
 
 export { reactApolloConfigProvider };
 
-export interface ReactApolloProvider extends ImportMapper {
+export interface ReactApolloProvider {
   registerGqlFile(filePath: string): void;
   getGeneratedFilePath(): string;
 }
@@ -294,18 +293,6 @@ export const reactApolloGenerator = createGenerator({
             reactApollo: {
               registerGqlFile(filePath) {
                 gqlFiles.push(filePath);
-              },
-              getImportMap() {
-                return {
-                  '%react-apollo/client': {
-                    path: clientPath,
-                    allowedImports: ['createApolloClient'],
-                  },
-                  '%react-apollo/generated': {
-                    path: '@/src/generated/graphql',
-                    allowedImports: ['*'],
-                  },
-                };
               },
               getGeneratedFilePath() {
                 return '@/src/generated/graphql';
