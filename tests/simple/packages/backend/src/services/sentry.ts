@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/node';
 import { FastifyError } from 'fastify';
 import { GraphQLError } from 'graphql';
+
 import { HttpError } from '../utils/http-errors.js';
 import { config } from './config.js';
 

@@ -44,7 +44,7 @@
     "@sentry/profiling-node": "9.10.1",
     "altair-fastify-plugin": "8.0.4",
     "cross-env": "7.0.3",
-    "fastify": "5.1.0",
+    "fastify": "5.3.2",
     "fastify-plugin": "5.0.1",
     "graphql": "16.9.0",
     "graphql-yoga": "5.6.1",

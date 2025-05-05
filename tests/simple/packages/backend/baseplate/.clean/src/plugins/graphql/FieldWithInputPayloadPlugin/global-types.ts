@@ -9,10 +9,12 @@ import {
   ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
+
 import {
   MutationWithInputPayloadOptions,
   OutputShapeFromFields,
 } from './types.js';
+
 import type { PothosFieldWithInputPayloadPlugin } from './index.js';
 
 declare global {

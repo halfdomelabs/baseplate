@@ -5,8 +5,10 @@ import RelayPlugin from '@pothos/plugin-relay';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing';
 import { createSentryWrapper } from '@pothos/tracing-sentry';
+
 import { prisma } from '@src/services/prisma.js';
 import { RequestServiceContext } from '@src/utils/request-service-context.js';
+
 import { pothosFieldWithInputPayloadPlugin } from './FieldWithInputPayloadPlugin/index.js';
 import { pothosStripQueryMutationPlugin } from './stripQueryMutationPlugin.js';
 
@@ -17,37 +19,37 @@ const traceResolver = createSentryWrapper({
 
 export const builder = new SchemaBuilder<{
   Context: RequestServiceContext;
-  Scalars: {
-    Uuid: { Input: string; Output: string };
-    DateTime: { Input: Date; Output: Date | string };
-    Date: { Input: Date; Output: Date | string };
-  };
   DefaultEdgesNullability: false;
   DefaultFieldNullability: false;
   PrismaTypes: PrismaTypes;
+  Scalars: {
+    Date: { Input: Date; Output: Date | string };
+    DateTime: { Input: Date; Output: Date | string };
+    Uuid: { Input: string; Output: string };
+  };
 }>({
+  defaultFieldNullability: false,
   plugins: [
+    PrismaPlugin,
+    TracingPlugin,
     pothosFieldWithInputPayloadPlugin,
     pothosStripQueryMutationPlugin,
-    SimpleObjectsPlugin,
     RelayPlugin,
-    TracingPlugin,
-    PrismaPlugin,
+    SimpleObjectsPlugin,
   ],
+  prisma: {
+    client: prisma,
+    exposeDescriptions: false,
+    filterConnectionTotalCount: true,
+  },
   relay: {
     clientMutationId: 'omit',
     cursorType: 'String',
     edgesFieldOptions: { nullable: false },
   },
-  defaultFieldNullability: false,
   tracing: {
     default: (config) => isRootField(config),
     wrap: (resolver, options) => traceResolver(resolver, options),
-  },
-  prisma: {
-    client: prisma,
-    exposeDescriptions: false,
-    filterConnectionTotalCount: true,
   },
 });
 
