@@ -1,4 +1,4 @@
-import { Plugin, getDocumentString } from '@envelop/core';
+import { getDocumentString, Plugin } from '@envelop/core';
 import { AttributeNames } from '@pothos/tracing-sentry';
 import * as Sentry from '@sentry/node';
 import { ExecutionArgs, Kind, OperationDefinitionNode, print } from 'graphql';

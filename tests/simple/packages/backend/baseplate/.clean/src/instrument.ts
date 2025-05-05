@@ -1,6 +1,8 @@
 import os from 'node:os';
+
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
+
 import { config } from './services/config.js';
 
 const SENTRY_ENABLED = !!config.SENTRY_DSN;
@@ -19,9 +21,10 @@ if (SENTRY_ENABLED) {
     serverName: os.hostname(),
     integrations: [
       nodeProfilingIntegration(),
-      Sentry.requestDataIntegration({ include: { ip: true } }),
       Sentry.prismaIntegration(),
+      Sentry.requestDataIntegration({ include: { ip: true } }),
     ],
+
     tracesSampler: ({ parentSampled, attributes }) => {
       const httpTarget = attributes?.['http.target'];
       if (

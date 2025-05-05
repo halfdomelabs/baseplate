@@ -1,5 +1,6 @@
 import { performance } from 'perf_hooks';
-import { Plugin, handleStreamOrSingleExecutionResult } from '@envelop/core';
+
+import { handleStreamOrSingleExecutionResult, Plugin } from '@envelop/core';
 import type { OnExecuteDoneHookResultOnNextHookPayload } from '@envelop/types';
 import {
   DocumentNode,
@@ -7,6 +8,7 @@ import {
   Kind,
   OperationDefinitionNode,
 } from 'graphql';
+
 import { logError } from '@src/services/error-logger.js';
 import { logger } from '@src/services/logger.js';
 

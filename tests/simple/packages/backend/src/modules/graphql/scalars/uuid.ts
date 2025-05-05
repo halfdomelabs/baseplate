@@ -1,5 +1,6 @@
 import { Kind } from 'graphql';
 import { validate } from 'uuid';
+
 import { builder } from '@src/plugins/graphql/builder.js';
 import { BadRequestError } from '@src/utils/http-errors.js';
 

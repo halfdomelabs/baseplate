@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+
 import { useDisableIntrospection } from '@envelop/disable-introspection';
 import { requestContext } from '@fastify/request-context';
 import { AltairFastify } from 'altair-fastify-plugin';
@@ -6,10 +7,12 @@ import { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
 import fp from 'fastify-plugin';
 import { GraphQLError, lexicographicSortSchema, printSchema } from 'graphql';
 import { createYoga } from 'graphql-yoga';
+
 import { config } from '@src/services/config.js';
 import { logger } from '@src/services/logger.js';
 import { HttpError } from '@src/utils/http-errors.js';
 import { createContextFromRequest } from '@src/utils/request-service-context.js';
+
 import { builder } from './builder.js';
 import { useGraphLogger } from './useGraphLogger.js';
 import { useSentry } from './useSentry.js';
@@ -94,8 +97,8 @@ export const graphqlPlugin = fp(async (fastify) => {
       },
     },
     plugins: [
-      useGraphLogger(),
       useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT }),
+      useGraphLogger(),
       useSentry(),
     ],
   });
