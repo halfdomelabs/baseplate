@@ -5,6 +5,6 @@ reviews:
   profile: 'chill'
   high_level_summary: true
   poem: false
-  path_filters: ['!/tests/**']
+  path_filters: ['!tests/**']
 chat:
   auto_reply: true
