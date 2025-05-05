@@ -178,9 +178,6 @@ importers:
       eta:
         specifier: ^3.5.0
         version: 3.5.0
-      is-core-module:
-        specifier: 2.15.1
-        version: 2.15.1
       memfs:
         specifier: 4.15.1
         version: 4.15.1
@@ -215,9 +212,6 @@ importers:
       '@halfdomelabs/tools':
         specifier: workspace:*
         version: link:../tools
-      '@types/is-core-module':
-        specifier: ^2.2.0
-        version: 2.2.2
       '@types/node':
         specifier: 'catalog:'
         version: 22.10.9
@@ -3629,9 +3623,6 @@ packages:
 
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
-
-  '@types/is-core-module@2.2.2':
-    resolution: {integrity: sha512-ht+SC4Z4M1WOSaGweZ052H51lNGErPltoQiCRMvlPUUxAx5fuNAk9f6oqFjxGH2ViBSjdGVUwOwpT9YNsDjFLQ==}
 
   '@types/js-yaml@4.0.9':
     resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
@@ -10927,8 +10918,6 @@ snapshots:
       '@types/json-schema': 7.0.15
 
   '@types/estree@1.0.7': {}
-
-  '@types/is-core-module@2.2.2': {}
 
   '@types/js-yaml@4.0.9': {}
 
