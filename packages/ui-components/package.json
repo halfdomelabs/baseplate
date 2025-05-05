@@ -51,6 +51,7 @@
     ]
   },
   "dependencies": {
+    "@halfdomelabs/utils": "workspace:*",
     "@hookform/resolvers": "3.9.0",
     "@radix-ui/react-checkbox": "1.1.4",
     "@radix-ui/react-dialog": "1.1.6",

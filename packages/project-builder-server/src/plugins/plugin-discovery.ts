@@ -2,6 +2,7 @@ import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib'
 import type { Logger } from '@halfdomelabs/sync';
 
 import { loadPluginsInPackage } from '@halfdomelabs/project-builder-lib/plugin-tools';
+import { notEmpty } from '@halfdomelabs/utils';
 import {
   findNearestPackageJson,
   readJsonWithSchema,
@@ -10,7 +11,6 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { notEmpty } from '@src/utils/array.js';
 import { UserVisibleError } from '@src/utils/errors.js';
 
 /**

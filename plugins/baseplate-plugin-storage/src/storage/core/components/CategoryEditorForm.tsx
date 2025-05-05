@@ -8,9 +8,8 @@ import {
   InputField,
   MultiComboboxField,
 } from '@halfdomelabs/ui-components';
+import { notEmpty } from '@halfdomelabs/utils';
 import { useFieldArray, useWatch } from 'react-hook-form';
-
-import { notEmpty } from '@src/utils/array';
 
 import type { StoragePluginDefinition } from '../schema/plugin-definition';
 

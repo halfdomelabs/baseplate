@@ -20,8 +20,7 @@ import {
   ModelUtils,
   undefinedIfEmpty,
 } from '@halfdomelabs/project-builder-lib';
-
-import { notEmpty } from '@src/utils/array.js';
+import { notEmpty } from '@halfdomelabs/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 

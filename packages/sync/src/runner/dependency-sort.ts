@@ -1,8 +1,6 @@
-import { toposortDfs } from '@halfdomelabs/utils';
+import { notEmpty, toposortDfs } from '@halfdomelabs/utils';
 
 import type { GeneratorOutputMetadata } from '@src/output/generator-task-output.js';
-
-import { notEmpty } from '@src/utils/arrays.js';
 
 import type { GeneratorTaskEntry } from '../generators/index.js';
 import type { EntryDependencyMap } from './dependency-map.js';
