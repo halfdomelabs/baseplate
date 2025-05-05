@@ -13,6 +13,7 @@ import {
   createProviderType,
   createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
+import { notEmpty } from '@halfdomelabs/utils';
 import { posixJoin } from '@halfdomelabs/utils/node';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
@@ -21,7 +22,6 @@ import type { GraphQLField } from '@src/writers/graphql/index.js';
 
 import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 import { reactErrorImportsProvider } from '@src/generators/core/react-error/react-error.generator.js';
-import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
 
 import type { AdminCrudColumn } from '../_providers/admin-crud-column-container.js';

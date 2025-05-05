@@ -27,7 +27,7 @@ import {
   POST_WRITE_COMMAND_PRIORITY,
   renderTextTemplateFileAction,
 } from '@halfdomelabs/sync';
-import { toposortLocal } from '@halfdomelabs/utils';
+import { notEmpty, toposortLocal } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '@src/constants/react-packages.js';
@@ -39,7 +39,6 @@ import {
 import { reactErrorConfigProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactProxyProvider } from '@src/generators/core/react-proxy/react-proxy.generator.js';
 
-import { notEmpty } from '../../../utils/array.js';
 import { APOLLO_REACT_APOLLO_TEXT_TEMPLATES } from './generated/text-templates.js';
 import {
   createGeneratedGraphqlImports,

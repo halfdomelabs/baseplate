@@ -11,6 +11,7 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@halfdomelabs/sync';
+import { notEmpty } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 import { dasherize, underscore } from 'inflection';
 import { z } from 'zod';
@@ -18,7 +19,6 @@ import { z } from 'zod';
 import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 import { reactErrorImportsProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
-import { notEmpty } from '@src/utils/array.js';
 import { lowerCaseFirst, titleizeCamel } from '@src/utils/case.js';
 import { createRouteElement } from '@src/utils/routes.js';
 import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
