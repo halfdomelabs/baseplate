@@ -9,6 +9,7 @@ import { adminCrudDisplayContainerProvider } from '../_providers/admin-crud-disp
 const descriptorSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
+  order: z.number().int().nonnegative(),
 });
 
 export const adminCrudColumnGenerator = createGenerator({
@@ -16,7 +17,7 @@ export const adminCrudColumnGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.id,
-  buildTasks: ({ label }) => ({
+  buildTasks: ({ label, order }) => ({
     main: createGeneratorTask({
       dependencies: {
         adminCrudColumnContainer: adminCrudColumnContainerProvider,
@@ -49,6 +50,7 @@ export const adminCrudColumnGenerator = createGenerator({
             adminCrudColumnContainer.addColumn({
               label,
               display,
+              order,
             });
           },
         };

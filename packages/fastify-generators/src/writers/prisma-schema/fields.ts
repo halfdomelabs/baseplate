@@ -161,6 +161,7 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
 export function buildPrismaScalarField<T extends ScalarFieldType>(
   name: string,
   type: ScalarFieldType,
+  order: number,
   options?: {
     id?: boolean;
     unique?: boolean;
@@ -214,8 +215,10 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
 
   return {
     name,
-    type: `${prismaType}${optional ? '?' : ''}`,
+    type: prismaType,
+    isOptional: optional,
     attributes,
+    order,
     fieldType: 'scalar',
     scalarType: type,
     enumType,

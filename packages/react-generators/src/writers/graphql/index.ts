@@ -1,4 +1,4 @@
-import { isEqual } from 'es-toolkit';
+import { isEqual, sortBy } from 'es-toolkit';
 
 interface GraphQLArgumentScalarValue {
   type: 'scalar';
@@ -24,6 +24,7 @@ interface GraphQLSimpleField {
   name: string;
   args?: GraphQLArgument[];
   fields?: GraphQLField[];
+  order?: number;
 }
 
 interface GraphQLSpreadField {
@@ -135,7 +136,19 @@ function renderGraphQLField(field: GraphQLField): string {
 }
 
 function renderGraphQLFields(fields: GraphQLField[]): string {
-  return fields.map((field) => renderGraphQLField(field)).join('\n');
+  const sortedFields = sortBy(fields, [
+    // Sort by simple fields, spread fields, and then nested fields
+    (f) => {
+      if (f.type === 'spread') return 1;
+      if (f.fields?.length) return 2;
+      return 0;
+    },
+    // Sort by order if provided
+    (f) => (f.type === 'spread' ? 0 : (f.order ?? 0)),
+    // Sort by name otherwise
+    (f) => (f.type === 'spread' ? f.on : f.name),
+  ]);
+  return sortedFields.map((field) => renderGraphQLField(field)).join('\n');
 }
 
 export function renderGraphQLFragment({

@@ -7,6 +7,7 @@
   "scripts": {
     "build": "turbo run build",
     "build:affected": "turbo run build --affected",
+    "build:storybook": "turbo run build:storybook --filter=@halfdomelabs/ui-components",
     "clean": "turbo run clean",
     "dev:serve": "pnpm --filter @halfdomelabs/project-builder-cli dev:serve",
     "extract:templates": "pnpm --filter @halfdomelabs/project-builder-cli extract:templates",

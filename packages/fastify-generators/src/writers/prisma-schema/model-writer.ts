@@ -15,14 +15,55 @@ export interface PrismaModelAttribute {
   args?: (string | string[] | Record<string, string | string[]>)[];
 }
 
-export interface PrismaModelField {
+/**
+ * A field in a Prisma model.
+ */
+interface PrismaModelFieldBase {
+  /**
+   * The name of the field.
+   */
   name: string;
+  /**
+   * The type of the field, e.g. `String`, `User`.
+   */
   type: string;
+  /**
+   * The attributes of the field e.g. `@id` for the primary key, `@relation` for a relation.
+   */
   attributes?: PrismaModelAttribute[];
-  fieldType: 'scalar' | 'relation';
-  scalarType?: ScalarFieldType;
+  /**
+   * Whether the field is optional.
+   */
+  isOptional?: boolean;
+  /**
+   * Whether the field is a list.
+   */
+  isList?: boolean;
+}
+
+interface PrismaModelScalarField extends PrismaModelFieldBase {
+  fieldType: 'scalar';
+  /**
+   * The order of the field in the model list.
+   */
+  order: number;
+  /**
+   * The scalar type of the field.
+   */
+  scalarType: ScalarFieldType;
+  /**
+   * The enum type of the field.
+   */
   enumType?: string;
 }
+
+interface PrismaModelRelationField extends PrismaModelFieldBase {
+  fieldType: 'relation';
+}
+
+export type PrismaModelField =
+  | PrismaModelScalarField
+  | PrismaModelRelationField;
 
 function formatAttributeArgument(argument: string | string[]): string {
   return Array.isArray(argument) ? `[${argument.join(', ')}]` : argument;
@@ -82,8 +123,18 @@ function parseArguments(
   return argumentMap;
 }
 
-function formatModel({ name, type, attributes }: PrismaModelField): string {
-  return [name, type, ...(attributes?.map(formatAttribute) ?? [])].join(' ');
+function formatModelField({
+  name,
+  type,
+  isList,
+  isOptional,
+  attributes,
+}: PrismaModelField): string {
+  const typeWithList = isList ? `${type}[]` : type;
+  const typeWithOptional = isOptional ? `${typeWithList}?` : typeWithList;
+  return [name, typeWithOptional, ...(attributes?.map(formatAttribute) ?? [])]
+    .join(' ')
+    .trim();
 }
 
 export class PrismaModelBlockWriter {
@@ -129,15 +180,35 @@ export class PrismaModelBlockWriter {
     return null;
   }
 
+  protected getSortedFields(): PrismaModelField[] {
+    const scalarFields = this.fields
+      .filter((field) => field.fieldType === 'scalar')
+      .sort((a, b) => a.order - b.order);
+    const relationFields = this.fields
+      .filter((field) => field.fieldType === 'relation')
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    // Look for duplicated orders in scalar fields
+    const orderSet = new Set(scalarFields.map((field) => field.order));
+    if (orderSet.size !== scalarFields.length) {
+      throw new Error(
+        `Duplicate order in scalar fields for model ${this.name}`,
+      );
+    }
+
+    return [...scalarFields, ...relationFields];
+  }
+
   toOutputModel(): PrismaOutputModel {
+    const sortedFields = this.getSortedFields();
     return {
       name: this.options.name,
-      fields: this.fields.map((field) => {
+      fields: sortedFields.map((field) => {
         const sharedFields = {
           name: field.name,
           id: field.attributes?.some((attr) => attr.name === '@id') ?? false,
-          isOptional: field.type.endsWith('?'),
-          isList: /\[\]\??$/.test(field.type),
+          isOptional: field.isOptional ?? false,
+          isList: field.isList ?? false,
           hasDefault:
             field.attributes?.some((attr) => attr.name === '@default') ?? false,
         };
@@ -167,13 +238,11 @@ export class PrismaModelBlockWriter {
             ...sharedFields,
           };
         }
-        if (!field.scalarType) {
-          throw new Error('Scalar type not set for scalar field');
-        }
         return {
           type: 'scalar',
           scalarType: field.scalarType,
           enumType: field.enumType,
+          order: field.order,
           ...sharedFields,
         };
       }),
@@ -182,6 +251,7 @@ export class PrismaModelBlockWriter {
   }
 
   toBlock(): PrismaModelBlock {
+    const sortedFields = this.getSortedFields();
     const attributes = [...this.attributes];
     if (this.options.tableName) {
       attributes.push({
@@ -190,7 +260,7 @@ export class PrismaModelBlockWriter {
       });
     }
 
-    const fieldsString = this.fields.map(formatModel).join('\n');
+    const fieldsString = sortedFields.map(formatModelField).join('\n');
     const modelAttributeString = attributes.map(formatAttribute).join('\n');
 
     return {

@@ -5,6 +5,7 @@ import type { AdminCrudDisplay } from '../_utils/data-display.js';
 export interface AdminCrudColumn {
   label: string;
   display: AdminCrudDisplay;
+  order: number;
 }
 
 export interface AdminCrudColumnContainer {

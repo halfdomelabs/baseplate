@@ -173,9 +173,9 @@ export const reactComponentsGenerator = createGenerator({
             }
 
             // build component index
-            const componentNames = allReactComponents.map(
-              (entry) => entry.name,
-            );
+            const componentNames = allReactComponents
+              .toSorted((a, b) => a.name.localeCompare(b.name))
+              .map((entry) => entry.name);
             const componentIndex = componentNames
               .map((name) => `export { default as ${name} } from './${name}';`)
               .join('\n');

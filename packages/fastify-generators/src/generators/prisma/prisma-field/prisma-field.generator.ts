@@ -20,6 +20,7 @@ const prismaScalarFieldTypes = PRISMA_SCALAR_FIELD_TYPES as Record<
 const descriptorSchema = z
   .object({
     name: z.string().min(1),
+    order: z.number().int().nonnegative(),
     dbName: z.string().optional(),
     type: z.enum(
       Object.keys(prismaScalarFieldTypes) as [
@@ -58,8 +59,17 @@ export const prismaFieldGenerator = createGenerator({
         prismaModel: prismaModelProvider,
       },
       run({ prismaModel }) {
-        const { name, type, id, unique, options, optional, dbName, enumType } =
-          descriptor;
+        const {
+          name,
+          type,
+          id,
+          unique,
+          options,
+          optional,
+          dbName,
+          enumType,
+          order,
+        } = descriptor;
 
         if (type === 'enum' && !enumType) {
           throw new Error(`Enum type required`);
@@ -69,7 +79,7 @@ export const prismaFieldGenerator = createGenerator({
           throw new Error(`Enum type can only be used with type 'enum'`);
         }
 
-        const prismaField = buildPrismaScalarField(name, type, {
+        const prismaField = buildPrismaScalarField(name, type, order, {
           id,
           unique,
           optional,

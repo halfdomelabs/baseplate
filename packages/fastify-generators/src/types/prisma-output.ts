@@ -12,6 +12,7 @@ interface PrismaOutputBaseField {
 
 export interface PrismaOutputScalarField extends PrismaOutputBaseField {
   type: 'scalar';
+  order: number;
   scalarType: ScalarFieldType;
   enumType?: string;
 }

@@ -150,9 +150,9 @@ describe('getSortedRunSteps', () => {
 
       const result = getSortedRunSteps(entries, dependencyMap);
       expect(result.steps).toEqual([
+        'init|normalProducer',
         'init|outputProducer',
         'build|outputProducer',
-        'init|normalProducer',
         'init|consumer',
         'build|consumer',
         'build|normalProducer',
@@ -188,9 +188,9 @@ describe('getSortedRunSteps', () => {
       const result = getSortedRunSteps(entries, dependencyMap);
       expect(result.steps).toEqual([
         'init|producer',
-        'build|producer', // Build order doesn't matter for read-only providers
         'init|consumer',
         'build|consumer',
+        'build|producer', // Build order doesn't matter for read-only providers
       ]);
     });
 
@@ -249,14 +249,14 @@ describe('getSortedRunSteps', () => {
 
       const result = getSortedRunSteps(entries, dependencyMap);
       expect(result.steps).toEqual([
+        'init|readonlyProducer',
+        'build|readonlyProducer',
         'init|outputProducer',
         'build|outputProducer',
         'init|middleConsumer',
-        'init|readonlyProducer',
         'init|finalConsumer',
         'build|finalConsumer',
         'build|middleConsumer',
-        'build|readonlyProducer',
       ]);
     });
   });
