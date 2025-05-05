@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import { ErrorableLoader } from '%react-components';
-import { useCurrentUser } from '%auth-hooks/useCurrentUser';
+import { useCurrentUser } from '%authHooksImports';
+import { ErrorableLoader } from '%reactComponentsImports';
 
 function HomePage(): JSX.Element {
   const { user, error } = useCurrentUser();

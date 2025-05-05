@@ -136,12 +136,12 @@ export const storageModuleGenerator = createGenerator({
         AWS_ACCESS_KEY_ID: {
           comment: 'AWS access key ID',
           validator: tsCodeFragment('z.string().min(1)'),
-          seedValue: 'AWS_ACCESS_KEY',
+          seedValue: 'AWS_ACCESS_KEY_ID',
         },
         AWS_SECRET_ACCESS_KEY: {
           comment: 'AWS secret access key',
           validator: tsCodeFragment('z.string().min(1)'),
-          seedValue: 'AWS_SECRET_ACCSS_KEY',
+          seedValue: 'AWS_SECRET_ACCESS_KEY',
         },
         AWS_DEFAULT_REGION: {
           comment: 'AWS default region',

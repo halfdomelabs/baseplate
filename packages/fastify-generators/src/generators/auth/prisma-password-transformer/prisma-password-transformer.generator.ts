@@ -1,10 +1,10 @@
-import { tsCodeFragment, tsImportBuilder } from '@halfdomelabs/core-generators';
+import { tsCodeFragment } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { prismaCrudServiceSetupProvider } from '@src/generators/prisma/prisma-crud-service/prisma-crud-service.generator.js';
 
-import { passwordHasherServiceProvider } from '../password-hasher-service/password-hasher-service.generator.js';
+import { passwordHasherServiceImportsProvider } from '../password-hasher-service/password-hasher-service.generator.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -17,10 +17,10 @@ export const prismaPasswordTransformerGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {
-        passwordHasherService: passwordHasherServiceProvider,
+        passwordHasherServiceImports: passwordHasherServiceImportsProvider,
         prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
       },
-      run({ prismaCrudServiceSetup, passwordHasherService }) {
+      run({ prismaCrudServiceSetup, passwordHasherServiceImports }) {
         prismaCrudServiceSetup.addTransformer('password', {
           buildTransformer: () => ({
             inputFields: [
@@ -40,11 +40,7 @@ export const prismaPasswordTransformerGenerator = createGenerator({
                 name: 'passwordHash',
                 transformer: tsCodeFragment(
                   'const passwordHash = password ?? await createPasswordHash(password);',
-                  tsImportBuilder(['createPasswordHash']).from(
-                    passwordHasherService.getImportMap()[
-                      '%password-hasher-service'
-                    ]?.path ?? '',
-                  ),
+                  passwordHasherServiceImports.createPasswordHash.declaration(),
                 ),
               },
             ],

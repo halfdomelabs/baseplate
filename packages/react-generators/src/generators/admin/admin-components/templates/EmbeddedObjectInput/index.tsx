@@ -1,19 +1,16 @@
 // @ts-nocheck
 
+import { Button, FormError, FormLabel, Modal } from '%reactComponentsImports';
 import clsx from 'clsx';
 import { useState } from 'react';
 import {
   Control,
+  DefaultValues,
   FieldPath,
   FieldPathValue,
   FieldValues,
   useController,
-  DefaultValues,
 } from 'react-hook-form';
-import Button from '../Button';
-import FormError from '../FormError';
-import FormLabel from '../FormLabel';
-import Modal from '../Modal';
 
 export interface EmbeddedObjectFormProps<InputType> {
   initialData?: DefaultValues<Exclude<InputType, undefined | null>>;

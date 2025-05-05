@@ -1,11 +1,12 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { tsCodeFragment, TsCodeUtils } from '@halfdomelabs/core-generators';
 import { adminCrudInputContainerProvider } from '@halfdomelabs/react-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { uploadComponentsProvider } from '../upload-components/upload-components.generator';
+import { uploadComponentsImportsProvider } from '../upload-components/upload-components.generator';
 
 const descriptorSchema = z.object({
+  order: z.number(),
   label: z.string().min(1),
   modelRelation: z.string().min(1),
   isOptional: z.boolean().optional(),
@@ -17,25 +18,24 @@ export const adminCrudFileInputGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelRelation,
-  buildTasks: ({ label, modelRelation, isOptional, category }) => ({
+  buildTasks: ({ order, label, modelRelation, isOptional, category }) => ({
     main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
-        uploadComponents: uploadComponentsProvider,
+        uploadComponentsImports: uploadComponentsImportsProvider,
       },
-      run({ adminCrudInputContainer, uploadComponents }) {
+      run({ adminCrudInputContainer, uploadComponentsImports }) {
         adminCrudInputContainer.addInput({
-          content: TypescriptCodeUtils.createExpression(
-            `<FileInput.LabelledController
-          label="${label}"
-          category="${category}"
-          control={control}
-          name="${modelRelation}"
-        />`,
-            'import { FileInput } from "%upload-components/file-input"',
+          order,
+          content: TsCodeUtils.mergeFragmentsAsJsxElement(
+            'FileInput.LabelledController',
             {
-              importMappers: [uploadComponents],
+              label,
+              category,
+              control: tsCodeFragment('control'),
+              name: modelRelation,
             },
+            uploadComponentsImports.FileInput.declaration(),
           ),
           graphQLFields: [
             {
@@ -46,7 +46,7 @@ export const adminCrudFileInputGenerator = createGenerator({
           validation: [
             {
               key: modelRelation,
-              expression: TypescriptCodeUtils.createExpression(
+              expression: tsCodeFragment(
                 `z.object({ id: z.string(), name: z.string().nullish() })${
                   isOptional ? '.nullish()' : ''
                 }`,

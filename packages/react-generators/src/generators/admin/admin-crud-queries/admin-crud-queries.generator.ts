@@ -1,6 +1,6 @@
-import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TsCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -29,6 +29,7 @@ import {
 import { adminCrudSectionScope } from '../admin-crud-section/admin-crud-section.generator.js';
 
 const descriptorSchema = z.object({
+  modelId: z.string(),
   modelName: z.string(),
 });
 
@@ -41,21 +42,21 @@ interface AdminCrudQueriesConfig {
 }
 
 interface ApolloHookInfo {
-  hookExpression: TypescriptCodeExpression;
+  hookExpression: TsCodeFragment;
   fieldName: string;
 }
 
 export interface AdminCrudQueriesProvider {
   setRowFields: (fields: GraphQLField[]) => void;
   setFormFields: (fields: GraphQLField[]) => void;
-  getRowFragmentExpression: () => TypescriptCodeExpression;
-  getEditFragmentExpression: () => TypescriptCodeExpression;
+  getRowFragmentExpression: () => TsCodeFragment;
+  getEditFragmentExpression: () => TsCodeFragment;
   getListQueryHookInfo: () => ApolloHookInfo;
   getEditQueryHookInfo: () => ApolloHookInfo;
   getCreateHookInfo: () => ApolloHookInfo;
   getUpdateHookInfo: () => ApolloHookInfo;
   getDeleteHookInfo: () => ApolloHookInfo;
-  getListDocumentExpression: () => TypescriptCodeExpression;
+  getListDocumentExpression: () => TsCodeFragment;
   addRoot: (root: GraphQLRoot) => void;
   addFragment: (fragment: GraphQLFragment) => void;
 }
@@ -68,7 +69,7 @@ export const adminCrudQueriesGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelName,
-  buildTasks: ({ modelName }) => ({
+  buildTasks: ({ modelName, modelId }) => ({
     main: createGeneratorTask({
       dependencies: {
         reactApollo: reactApolloProvider,
@@ -102,10 +103,10 @@ export const adminCrudQueriesGenerator = createGenerator({
         const deleteFieldName = `delete${modelName}`;
         const deleteMutationName = `Delete${modelName}`;
 
-        function getGeneratedImport(name: string): TypescriptCodeExpression {
-          return TypescriptCodeUtils.createExpression(
+        function getGeneratedImport(name: string): TsCodeFragment {
+          return TsCodeUtils.importFragment(
             name,
-            `import { ${name} } from '${reactApollo.getGeneratedFilePath()}'`,
+            reactApollo.getGeneratedFilePath(),
           );
         }
 
@@ -315,7 +316,7 @@ export const adminCrudQueriesGenerator = createGenerator({
               );
               reactApollo.registerGqlFile(filePath);
               builder.writeFile({
-                id: `admin-crud-queries>${modelName}`,
+                id: `${modelId}-crud-queries`,
                 destination: filePath,
                 contents: queries.join('\n\n'),
               });

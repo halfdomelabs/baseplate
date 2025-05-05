@@ -1,7 +1,4 @@
-import type {
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import { createProviderType } from '@halfdomelabs/sync';
 
@@ -11,15 +8,16 @@ import type { AdminCrudDataDependency } from '../_utils/data-loaders.js';
 
 export interface AdminCrudInputValidation {
   key: string;
-  expression: TypescriptCodeExpression;
+  expression: TsCodeFragment;
 }
 
 export interface AdminCrudInput {
-  content: TypescriptCodeExpression;
+  order: number;
+  content: TsCodeFragment;
   graphQLFields: GraphQLField[];
   validation: AdminCrudInputValidation[];
   dataDependencies?: AdminCrudDataDependency[];
-  header?: TypescriptCodeBlock;
+  header?: TsCodeFragment;
 }
 
 export interface AdminCrudInputContainer {

@@ -20,7 +20,8 @@ describe('TextTemplateFileExtractor', () => {
     const extractor = new TextTemplateFileExtractor(context);
 
     vol.fromJSON({
-      '/root/test-generator/test.txt': 'Hello world from my couch!',
+      '/root/test-generator/test.txt':
+        'Hello world from my couch! And with a fro identifier.',
     });
 
     await extractor.extractTemplateFiles([
@@ -36,6 +37,11 @@ describe('TextTemplateFileExtractor', () => {
               description: 'The location of the test',
               value: 'my couch',
             },
+            TPL_IDENTIFIER: {
+              description: 'A fro identifier',
+              isIdentifier: true,
+              value: 'fro',
+            },
           },
         },
       },
@@ -45,7 +51,9 @@ describe('TextTemplateFileExtractor', () => {
 
     expect(
       result[TemplateFileExtractorTestUtils.templatePath('test.txt')],
-    ).toBe('Hello world from {{TPL_LOCATION}}!');
+    ).toBe(
+      'Hello world from {{TPL_LOCATION}}! And with a {{TPL_IDENTIFIER}} identifier.',
+    );
     expect(
       result[TemplateFileExtractorTestUtils.generatedPath('text-templates.ts')],
     ).toMatchInlineSnapshot(`
@@ -54,7 +62,10 @@ describe('TextTemplateFileExtractor', () => {
       const test = createTextTemplateFile({
         name: 'test',
         source: { path: 'test.txt' },
-        variables: { TPL_LOCATION: { description: 'The location of the test' } },
+        variables: {
+          TPL_LOCATION: { description: 'The location of the test' },
+          TPL_IDENTIFIER: { description: 'A fro identifier', isIdentifier: true },
+        },
       });
 
       export const TEST_GENERATOR_TEXT_TEMPLATES = {

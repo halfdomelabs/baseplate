@@ -1,31 +1,23 @@
-import type { ImportMapper } from '@halfdomelabs/core-generators';
-
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
   projectScope,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
-const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
-});
+import {
+  createPasswordHasherServiceImports,
+  passwordHasherServiceImportsProvider,
+} from './generated/ts-import-maps.js';
+import { AUTH_PASSWORD_HASHER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
-export type PasswordHasherServiceProvider = ImportMapper;
-
-export const passwordHasherServiceProvider =
-  createProviderType<PasswordHasherServiceProvider>('password-hasher-service');
+const descriptorSchema = z.object({});
 
 export const passwordHasherServiceGenerator = createGenerator({
   name: 'auth/password-hasher-service',
@@ -38,35 +30,32 @@ export const passwordHasherServiceGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         appModule: appModuleProvider,
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
-        passwordHasherService:
-          passwordHasherServiceProvider.export(projectScope),
+        passwordHasherServiceImports:
+          passwordHasherServiceImportsProvider.export(projectScope),
       },
-      run({ appModule, typescript }) {
+      run({ appModule, typescriptFile }) {
         const moduleFolder = appModule.getModuleFolder();
 
-        const [fileImport, filePath] = makeImportAndFilePath(
-          path.join(moduleFolder, 'services/password-hasher.service.ts'),
+        const servicePath = path.posix.join(
+          moduleFolder,
+          'services/password-hasher.service.ts',
         );
 
         return {
           providers: {
-            passwordHasherService: {
-              getImportMap: () => ({
-                '%password-hasher-service': {
-                  path: fileImport,
-                  allowedImports: ['createPasswordHash', 'verifyPasswordHash'],
-                },
-              }),
-            },
+            passwordHasherServiceImports: createPasswordHasherServiceImports(
+              path.posix.join(moduleFolder, 'services'),
+            ),
           },
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'services/password-hasher.service.ts',
-                destination: filePath,
+              typescriptFile.renderTemplateFile({
+                template:
+                  AUTH_PASSWORD_HASHER_SERVICE_TS_TEMPLATES.passwordHasherService,
+                destination: servicePath,
               }),
             );
           },
@@ -75,3 +64,5 @@ export const passwordHasherServiceGenerator = createGenerator({
     }),
   }),
 });
+
+export { passwordHasherServiceImportsProvider } from './generated/ts-import-maps.js';

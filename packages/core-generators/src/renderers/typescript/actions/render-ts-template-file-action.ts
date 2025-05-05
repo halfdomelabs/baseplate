@@ -9,6 +9,7 @@ import {
   normalizePathToProjectPath,
   readTemplateFileSource,
 } from '@halfdomelabs/sync';
+import { differenceSet } from '@halfdomelabs/utils';
 import { mapValues } from 'es-toolkit';
 
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
@@ -32,14 +33,6 @@ interface RenderTsTemplateFileActionInputBase<T extends TsTemplateFile> {
     RenderTsCodeFileTemplateOptions,
     'prefix' | 'includeMetadata'
   >;
-  /**
-   * Whether to include the metadata only if there's template metadata
-   * already present.
-   *
-   * This is useful when the same template is used for many files and you
-   * want to avoid having to generate metadata for every file.
-   */
-  includeMetadataOnDemand?: boolean;
   /**
    * The generator info for the generator that is writing the template file
    *
@@ -82,7 +75,6 @@ export function renderTsTemplateFileAction<
   variables,
   importMapProviders,
   renderOptions,
-  includeMetadataOnDemand,
   generatorInfo: providedGeneratorInfo,
 }: RenderTsTemplateFileActionInput<T>): BuilderAction {
   return {
@@ -106,10 +98,12 @@ export function renderTsTemplateFileAction<
         templateKeySet.size !== providedKeySet.size ||
         [...templateKeySet].some((k) => !providedKeySet.has(k))
       ) {
+        const missingKeys = differenceSet(templateKeySet, providedKeySet);
+        const extraKeys = differenceSet(providedKeySet, templateKeySet);
         throw new Error(
-          `Template variables and provided variables do not match: ${[
-            ...templateKeySet,
-          ].join(', ')} !== ${[...providedKeySet].join(', ')}`,
+          `Template variables and provided variables do not match. Missing keys: ${[
+            ...missingKeys,
+          ].join(', ')}. Extra keys: ${[...extraKeys].join(', ')}.`,
         );
       }
 
@@ -136,10 +130,12 @@ export function renderTsTemplateFileAction<
 
       const shouldIncludeMetadata =
         builder.metadataOptions.includeTemplateMetadata &&
-        (!includeMetadataOnDemand ||
-          builder.metadataOptions.hasTemplateMetadata?.(
-            normalizePathToProjectPath(destination),
-          ));
+        builder.metadataOptions.shouldGenerateMetadata({
+          fileId: id ?? template.name,
+          filePath: normalizePathToProjectPath(destination),
+          generatorName: generatorInfo.name,
+          hasManualId: !!id,
+        });
 
       const renderedTemplate = renderTsCodeFileTemplate(
         templateContents,

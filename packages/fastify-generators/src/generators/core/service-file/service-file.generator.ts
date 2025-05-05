@@ -117,9 +117,7 @@ export const serviceFileGenerator = createGenerator({
             ];
 
             const template = tsCodeFileTemplate({
-              name:
-                descriptor.id ??
-                kebabCase(descriptor.name.replace(/\.ts$/, '')),
+              name: 'service-file',
               source: { contents: 'TPL_METHODS' },
               variables: {
                 TPL_METHODS: {},
@@ -129,9 +127,11 @@ export const serviceFileGenerator = createGenerator({
             if (Object.keys(methodMap.value()).length > 0) {
               await builder.apply(
                 typescriptFile.renderTemplateFile({
+                  id:
+                    descriptor.id ??
+                    kebabCase(descriptor.name.replace(/\.ts$/, '')),
                   template,
                   destination: servicesPath,
-                  includeMetadataOnDemand: true,
                   variables: {
                     TPL_METHODS: TsCodeUtils.mergeFragmentsPresorted(
                       orderedMethods,

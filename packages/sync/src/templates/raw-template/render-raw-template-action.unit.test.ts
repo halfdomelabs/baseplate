@@ -37,6 +37,7 @@ describe('renderRawTemplateFileAction', () => {
       },
       templateMetadataOptions: {
         includeTemplateMetadata: true,
+        shouldGenerateMetadata: () => true,
       },
     });
 

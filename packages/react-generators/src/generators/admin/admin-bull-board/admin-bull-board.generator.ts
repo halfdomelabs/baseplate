@@ -1,36 +1,34 @@
-import type { ImportMapper } from '@halfdomelabs/core-generators';
-
 import {
-  projectScope,
   tsCodeFragment,
   tsImportBuilder,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-  createProviderType,
+  renderTextTemplateFileAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
-import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import {
+  generatedGraphqlImportsProvider,
+  reactApolloProvider,
+} from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
+import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 import {
   reactConfigImportsProvider,
   reactConfigProvider,
 } from '@src/generators/core/react-config/react-config.generator.js';
-import { reactErrorProvider } from '@src/generators/core/react-error/react-error.generator.js';
+import { reactErrorImportsProvider } from '@src/generators/core/react-error/react-error.generator.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
+
+import { ADMIN_ADMIN_BULL_BOARD_TEXT_TEMPLATES } from './generated/text-templates.js';
+import { ADMIN_ADMIN_BULL_BOARD_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   bullBoardUrl: z.string().min(1),
 });
-
-export type AdminBullBoardProvider = unknown;
-
-export const adminBullBoardProvider =
-  createProviderType<AdminBullBoardProvider>('admin-bull-board');
 
 export const adminBullBoardGenerator = createGenerator({
   name: 'admin/admin-bull-board',
@@ -46,60 +44,59 @@ export const adminBullBoardGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        typescript: typescriptProvider,
-        reactComponents: reactComponentsProvider,
+        typescriptFile: typescriptFileProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
         reactConfigImports: reactConfigImportsProvider,
-        reactError: reactErrorProvider,
+        reactErrorImports: reactErrorImportsProvider,
         reactApollo: reactApolloProvider,
         reactRoutes: reactRoutesProvider,
-      },
-      exports: {
-        adminBullBoard: adminBullBoardProvider.export(projectScope),
+        generatedGraphqlImports: generatedGraphqlImportsProvider,
       },
       run({
-        typescript,
-        reactComponents,
+        typescriptFile,
+        reactComponentsImports,
         reactConfigImports,
-        reactError,
+        reactErrorImports,
         reactApollo,
         reactRoutes,
+        generatedGraphqlImports,
       }) {
         const baseDirectory = `${reactRoutes.getDirectoryBase()}/bull-board`;
+        const bullBoardPagePath = `${baseDirectory}/index.tsx`;
+        const bullBoardGqlPath = `${baseDirectory}/bull-board.gql`;
 
         return {
-          providers: {
-            adminBullBoard: {},
-          },
           build: async (builder) => {
-            const importMappers: ImportMapper[] = [
-              reactComponents,
-              {
-                getImportMap: () => ({
-                  '%react-config': {
-                    path: reactConfigImports.config.moduleSpecifier,
-                    allowedImports: ['config'],
-                  },
-                }),
-              },
-              reactError,
-              reactApollo,
-            ];
-
             reactApollo.registerGqlFile(`${baseDirectory}/bull-board.gql`);
 
             reactRoutes.registerRoute({
               path: 'bull-board',
               element: tsCodeFragment(
                 '<BullBoardPage />',
-                tsImportBuilder().default('BullBoardPage').from(baseDirectory),
+                tsImportBuilder()
+                  .default('BullBoardPage')
+                  .from(bullBoardPagePath),
               ),
             });
 
             await builder.apply(
-              typescript.createCopyFilesAction({
-                paths: ['index.tsx', 'bull-board.gql'],
-                destinationBaseDirectory: baseDirectory,
-                importMappers,
+              typescriptFile.renderTemplateFile({
+                template: ADMIN_ADMIN_BULL_BOARD_TS_TEMPLATES.bullBoardPage,
+                destination: bullBoardPagePath,
+                variables: {},
+                importMapProviders: {
+                  reactComponentsImports,
+                  reactConfigImports,
+                  reactErrorImports,
+                  generatedGraphqlImports,
+                },
+              }),
+            );
+
+            await builder.apply(
+              renderTextTemplateFileAction({
+                template: ADMIN_ADMIN_BULL_BOARD_TEXT_TEMPLATES.bullBoard,
+                destination: bullBoardGqlPath,
               }),
             );
           },

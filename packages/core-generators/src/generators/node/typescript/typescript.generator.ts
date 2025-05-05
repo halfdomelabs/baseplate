@@ -2,7 +2,6 @@ import type {
   BuilderAction,
   GeneratorInfo,
   InferProviderType,
-  WriteFileOptions,
 } from '@halfdomelabs/sync';
 
 import {
@@ -16,7 +15,6 @@ import { safeMergeAll } from '@halfdomelabs/utils';
 import path from 'node:path';
 import { z } from 'zod';
 
-import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
 import type {
   RenderTsFragmentActionInput,
   RenderTsTemplateFileActionInput,
@@ -25,7 +23,6 @@ import type {
   TsTemplateGroup,
 } from '@src/renderers/typescript/index.js';
 
-import { copyTypescriptFilesAction } from '@src/actions/copy-typescript-files-action.js';
 import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
 import { renderTsTemplateFileAction } from '@src/renderers/typescript/actions/render-ts-template-file-action.js';
@@ -40,21 +37,9 @@ import {
 } from '@src/renderers/typescript/index.js';
 import { extractPackageVersions } from '@src/utils/extract-packages.js';
 
-import type { CopyTypescriptFileOptions } from '../../../actions/index.js';
-import type { PathMapEntry } from '../../../writers/typescript/imports.js';
-import type {
-  TypescriptSourceFileOptions,
-  TypescriptTemplateConfigOrEntry,
-} from '../../../writers/typescript/source-file.js';
 import type { TypescriptCompilerOptions } from './compiler-types.js';
 
-import { copyTypescriptFileAction } from '../../../actions/index.js';
-import {
-  type TypescriptCodeBlock,
-  writeJsonToBuilder,
-} from '../../../writers/index.js';
-import { resolveModule } from '../../../writers/typescript/imports.js';
-import { TypescriptSourceFile } from '../../../writers/typescript/source-file.js';
+import { writeJsonToBuilder } from '../../../writers/index.js';
 import {
   createNodePackagesTask,
   nodeProvider,
@@ -65,37 +50,6 @@ const typescriptGeneratorDescriptorSchema = z.object({});
 export interface TypescriptConfigReference {
   path: string;
 }
-
-export interface TypescriptProvider {
-  createTemplate<Config extends TypescriptTemplateConfigOrEntry>(
-    config: Config,
-    options?: Omit<
-      TypescriptSourceFileOptions,
-      'pathMappings' | 'moduleResolution'
-    >,
-  ): TypescriptSourceFile<Config>;
-  createCopyFilesAction(
-    options: Omit<
-      CopyTypescriptFilesOptions,
-      'pathMappings' | 'moduleResolution'
-    >,
-  ): ReturnType<typeof copyTypescriptFilesAction>;
-  createCopyAction(
-    options: Omit<
-      CopyTypescriptFileOptions,
-      'pathMappings' | 'moduleResolution'
-    >,
-  ): ReturnType<typeof copyTypescriptFileAction>;
-  renderBlockToAction(
-    block: TypescriptCodeBlock,
-    destination: string,
-    options?: WriteFileOptions,
-  ): BuilderAction;
-  resolveModule(moduleSpecifier: string, from: string): string;
-}
-
-export const typescriptProvider =
-  createProviderType<TypescriptProvider>('typescript');
 
 interface LazyTemplateFileEntry {
   payload: RenderTsTemplateFileActionInput & {
@@ -193,7 +147,7 @@ const DEFAULT_COMPILER_OPTIONS: TypescriptCompilerOptions = {
   sourceMap: true,
 };
 
-const [setupTask, typescriptSetupProvider, typescriptConfigProvider] =
+const [setupTask, typescriptSetupProvider, typescriptSetupValuesProvider] =
   createConfigProviderTask(
     (t) => ({
       compilerOptions: t.scalar<TypescriptCompilerOptions>(
@@ -211,10 +165,10 @@ const [setupTask, typescriptSetupProvider, typescriptConfigProvider] =
     },
   );
 
-export { typescriptConfigProvider, typescriptSetupProvider };
+export { typescriptSetupProvider, typescriptSetupValuesProvider };
 
 export type TypescriptConfigProvider = InferProviderType<
-  typeof typescriptConfigProvider
+  typeof typescriptSetupValuesProvider
 >;
 
 export type TypescriptSetupProvider = InferProviderType<
@@ -230,91 +184,14 @@ export const typescriptGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(CORE_PACKAGES, ['typescript']),
     }),
-    main: createGeneratorTask({
+    tsconfig: createGeneratorTask({
       dependencies: {
-        typescriptConfig: typescriptConfigProvider,
+        typescriptConfig: typescriptSetupValuesProvider,
       },
-      exports: { typescript: typescriptProvider.export(projectScope) },
       run({ typescriptConfig }) {
         const { compilerOptions } = typescriptConfig;
-        let cachedPathEntries: PathMapEntry[] | undefined;
-
-        function getPathEntries(): PathMapEntry[] {
-          if (!cachedPathEntries) {
-            const { baseUrl, paths } = compilerOptions;
-            if (!paths && (baseUrl === './' || baseUrl === '.')) {
-              // TODO: Support other source folders
-              cachedPathEntries = [{ from: 'src', to: 'src' }];
-            } else if (paths) {
-              cachedPathEntries = Object.entries(paths).map(([key, value]) => {
-                if (value.length !== 1) {
-                  throw new Error(
-                    'We do not support paths with multiple values',
-                  );
-                }
-                if (!key.endsWith('/*')) {
-                  throw new Error('Paths must end in /*');
-                }
-                return {
-                  from: path
-                    .join(baseUrl ?? '.', value[0].replace(/\/\*$/, ''))
-                    .replace(/^\./, ''),
-                  to: key.slice(0, Math.max(0, key.length - 2)),
-                };
-              });
-            } else {
-              cachedPathEntries = [];
-            }
-          }
-
-          return cachedPathEntries;
-        }
-
-        const moduleResolution = compilerOptions.moduleResolution ?? 'node';
 
         return {
-          providers: {
-            typescript: {
-              createTemplate: (fileConfig, options) =>
-                new TypescriptSourceFile(fileConfig, {
-                  ...options,
-                  pathMappings: getPathEntries(),
-                  moduleResolution,
-                }),
-              createCopyFilesAction: (options) =>
-                copyTypescriptFilesAction({
-                  ...options,
-                  pathMappings: getPathEntries(),
-                  moduleResolution,
-                }),
-              createCopyAction: (options) =>
-                copyTypescriptFileAction({
-                  ...options,
-                  pathMappings: getPathEntries(),
-                  moduleResolution,
-                }),
-              renderBlockToAction: (block, destination, options) => {
-                const file = new TypescriptSourceFile(
-                  { BLOCK: { type: 'code-block' } },
-                  {
-                    pathMappings: getPathEntries(),
-                    moduleResolution,
-                  },
-                );
-                file.addCodeEntries({ BLOCK: block });
-                return file.renderToActionFromText(
-                  'BLOCK',
-                  destination,
-                  options,
-                );
-              },
-              resolveModule: (moduleSpecifier, from) =>
-                resolveModule(moduleSpecifier, from, {
-                  pathMapEntries: getPathEntries(),
-                  moduleResolution,
-                }),
-            } as TypescriptProvider,
-          },
           build(builder) {
             const { include, exclude, references, extraSections } =
               typescriptConfig;
@@ -336,7 +213,7 @@ export const typescriptGenerator = createGenerator({
     }),
     file: createGeneratorTask({
       dependencies: {
-        typescriptConfig: typescriptConfigProvider,
+        typescriptConfig: typescriptSetupValuesProvider,
         node: nodeProvider,
       },
       exports: { typescriptFile: typescriptFileProvider.export(projectScope) },

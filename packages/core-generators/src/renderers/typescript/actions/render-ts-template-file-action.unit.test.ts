@@ -49,6 +49,7 @@ describe('renderTsTemplateFileAction', () => {
       },
       templateMetadataOptions: {
         includeTemplateMetadata: true,
+        shouldGenerateMetadata: () => true,
       },
     });
 

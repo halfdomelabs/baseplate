@@ -1,36 +1,36 @@
-import type { ImportMapper } from '@halfdomelabs/core-generators';
-
 import {
   CORE_PACKAGES,
   createNodePackagesTask,
-  makeImportAndFilePath,
   projectScope,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  generatedGraphqlImportsProvider,
   reactApolloProvider,
+  reactComponentsImportsProvider,
   reactComponentsProvider,
-  reactErrorProvider,
+  reactErrorImportsProvider,
 } from '@halfdomelabs/react-generators';
 import {
-  copyFileAction,
   createGenerator,
   createGeneratorTask,
-  createProviderType,
+  renderTextTemplateFileAction,
 } from '@halfdomelabs/sync';
 import { capitalize } from 'inflection';
 import { z } from 'zod';
 
 import { STORAGE_PACKAGES } from '@src/constants';
 
+import { REACT_UPLOAD_COMPONENTS_TEXT_TEMPLATES } from './generated/text-templates';
+import {
+  createUploadComponentsImports,
+  uploadComponentsImportsProvider,
+} from './generated/ts-import-maps';
+import { REACT_UPLOAD_COMPONENTS_TS_TEMPLATES } from './generated/ts-templates';
+
 const descriptorSchema = z.object({
   fileModelName: z.string().min(1),
 });
-
-type UploadComponentsProvider = ImportMapper;
-
-export const uploadComponentsProvider =
-  createProviderType<UploadComponentsProvider>('upload-components');
 
 export const uploadComponentsGenerator = createGenerator({
   name: 'react/upload-components',
@@ -47,71 +47,66 @@ export const uploadComponentsGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        reactError: reactErrorProvider,
-        typescript: typescriptProvider,
+        reactErrorImports: reactErrorImportsProvider,
+        typescriptFile: typescriptFileProvider,
         reactComponents: reactComponentsProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
+        generatedGraphqlImports: generatedGraphqlImportsProvider,
         reactApollo: reactApolloProvider,
       },
       exports: {
-        uploadComponents: uploadComponentsProvider.export(projectScope),
+        uploadComponentsImports:
+          uploadComponentsImportsProvider.export(projectScope),
       },
-      run({ reactError, typescript, reactComponents, reactApollo }) {
+      run({
+        reactErrorImports,
+        typescriptFile,
+        reactComponentsImports,
+        generatedGraphqlImports,
+        reactApollo,
+        reactComponents,
+      }) {
         reactComponents.registerComponent({
           name: 'FileInput',
         });
 
-        const [hookImport, hookPath] = makeImportAndFilePath(
-          `src/hooks/useUpload.ts`,
-        );
-
-        const importMap = {
-          '%upload-components/file-input': {
-            path: reactComponents.getComponentsImport(),
-            allowedImports: ['FileInput'],
-          },
-          '%upload-components/use-upload': {
-            path: hookImport,
-            allowedImports: ['useUpload'],
-          },
-        };
-
+        const hookPath = '@/src/hooks/useUpload.ts';
+        const fileInputComponentPath = `${reactComponents.getComponentsFolder()}/FileInput/index.tsx`;
         const gqlFilePath = `${reactComponents.getComponentsFolder()}/FileInput/upload.gql`;
         reactApollo.registerGqlFile(gqlFilePath);
 
         return {
           providers: {
-            uploadComponents: {
-              getImportMap() {
-                return importMap;
-              },
-            },
+            uploadComponentsImports: createUploadComponentsImports('@/src'),
           },
           build: async (builder) => {
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'components/FileInput/index.tsx',
-                destination: `${reactComponents.getComponentsFolder()}/FileInput/index.tsx`,
-                importMappers: [
-                  reactError,
-                  { getImportMap: () => importMap },
-                  reactApollo,
-                ],
-              }),
-            );
-
-            await builder.apply(
-              copyFileAction({
-                source: 'components/FileInput/upload.gql',
-                destination: gqlFilePath,
-                replacements: {
-                  FILE_SCHEMA: capitalize(fileModelName),
+              typescriptFile.renderTemplateFile({
+                template:
+                  REACT_UPLOAD_COMPONENTS_TS_TEMPLATES.fileInputComponent,
+                destination: fileInputComponentPath,
+                importMapProviders: {
+                  reactErrorImports,
+                  reactComponentsImports,
+                  generatedGraphqlImports,
                 },
               }),
             );
 
             await builder.apply(
-              typescript.createCopyAction({
-                source: 'hooks/useUpload.ts',
+              renderTextTemplateFileAction({
+                template:
+                  REACT_UPLOAD_COMPONENTS_TEXT_TEMPLATES.fileInputUploadGql,
+                destination: gqlFilePath,
+                variables: {
+                  TPL_FILE_TYPE: capitalize(fileModelName),
+                },
+              }),
+            );
+
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: REACT_UPLOAD_COMPONENTS_TS_TEMPLATES.hooksUseUpload,
                 destination: hookPath,
               }),
             );
@@ -121,3 +116,5 @@ export const uploadComponentsGenerator = createGenerator({
     }),
   }),
 });
+
+export { uploadComponentsImportsProvider } from './generated/ts-import-maps';

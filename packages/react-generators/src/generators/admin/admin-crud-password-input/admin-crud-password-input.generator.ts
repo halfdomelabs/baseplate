@@ -1,14 +1,15 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { tsCodeFragment, TsCodeUtils } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactComponentsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 
 const descriptorSchema = z.object({
   label: z.string().min(1),
   modelField: z.string().default('password'),
+  order: z.number(),
 });
 
 export const adminCrudPasswordInputGenerator = createGenerator({
@@ -16,32 +17,33 @@ export const adminCrudPasswordInputGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelField,
-  buildTasks: ({ label, modelField }) => ({
+  buildTasks: ({ label, modelField, order }) => ({
     main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
-        reactComponents: reactComponentsProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
       },
-      run({ adminCrudInputContainer, reactComponents }) {
+      run({ adminCrudInputContainer, reactComponentsImports }) {
         adminCrudInputContainer.addInput({
-          content: TypescriptCodeUtils.createExpression(
-            `<TextInput.LabelledController
-          label="${label}"
-          control={control}
-          name="${modelField}"
-          type="password"
-          registerOptions={{ setValueAs: (val: string) => val === '' ? undefined : val }}
-        />`,
-            `import { TextInput } from "%react-components"`,
-            { importMappers: [reactComponents] },
+          order,
+          content: TsCodeUtils.mergeFragmentsAsJsxElement(
+            'TextInput.LabelledController',
+            {
+              label,
+              control: tsCodeFragment('control'),
+              name: modelField,
+              type: 'password',
+              registerOptions: tsCodeFragment(
+                '{ setValueAs: (val: string) => val === "" ? undefined : val }',
+              ),
+            },
+            reactComponentsImports.TextInput.declaration(),
           ),
           graphQLFields: [],
           validation: [
             {
               key: modelField,
-              expression: TypescriptCodeUtils.createExpression(
-                'z.string().nullish()',
-              ),
+              expression: tsCodeFragment('z.string().nullish()'),
             },
           ],
         });

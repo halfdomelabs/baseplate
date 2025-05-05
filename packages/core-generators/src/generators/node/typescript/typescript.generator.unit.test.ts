@@ -80,7 +80,10 @@ describe('typescriptGenerator', () => {
 
     it('handles lazy template files and package dependencies', async () => {
       const runner = createTaskTestRunner(typescriptBundle.tasks.file, {
-        templateMetadataOptions: { includeTemplateMetadata: true },
+        templateMetadataOptions: {
+          includeTemplateMetadata: true,
+          shouldGenerateMetadata: () => true,
+        },
       });
       const { nodeProvider, nodeFieldMap } = createTestNodeProvider();
 

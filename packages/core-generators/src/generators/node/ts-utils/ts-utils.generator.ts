@@ -1,16 +1,10 @@
 import type { TemplateFileSource } from '@halfdomelabs/sync';
 
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
 import { projectScope } from '@src/providers/scopes.js';
-
-import type { ImportMapper } from '../../../providers/index.js';
 
 import { typescriptFileProvider } from '../typescript/typescript.generator.js';
 import {
@@ -20,10 +14,6 @@ import {
 import { NODE_TS_UTILS_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
-
-export type TsUtilsProvider = ImportMapper;
-
-export const tsUtilsProvider = createProviderType<TsUtilsProvider>('ts-utils');
 
 function getUtilsPath(source: TemplateFileSource): string {
   if (!('path' in source)) {
@@ -44,60 +34,15 @@ export const tsUtilsGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
       },
       exports: {
-        tsUtils: tsUtilsProvider.export(projectScope),
         tsUtilsImports: tsUtilsImportsProvider.export(projectScope),
       },
       run({ typescriptFile }) {
-        const usedTemplates = new Set<TsUtilKey>();
-
-        const files = Object.entries(NODE_TS_UTILS_TS_TEMPLATES).map(
-          ([key, template]) => ({
-            key,
-            template,
-          }),
-        );
-
         return {
           providers: {
-            tsUtils: {
-              getImportMap: () =>
-                Object.fromEntries(
-                  files.map(({ key, template }) => [
-                    `%ts-utils/${key}`,
-                    {
-                      path: getUtilsPath(template.source),
-                      allowedImports: Object.keys(
-                        template.projectExports ?? {},
-                      ),
-                      onImportUsed: () => {
-                        usedTemplates.add(key as TsUtilKey);
-                      },
-                    },
-                  ]),
-                ),
-            },
             tsUtilsImports: createTsUtilsImports('@/src/utils'),
           },
-          build: async (builder) => {
-            // render all ts-utils files that were used
-            await Promise.all(
-              [...usedTemplates].map((key) => {
-                const template = NODE_TS_UTILS_TS_TEMPLATES[key];
-                return builder.apply(
-                  typescriptFile.renderTemplateFile({
-                    template,
-                    destination: getUtilsPath(template.source),
-                  }),
-                );
-              }),
-            );
-
-            // add all remaining files as lazy files
-            const unusedTemplates = Object.keys(
-              NODE_TS_UTILS_TS_TEMPLATES,
-            ).filter((key) => !usedTemplates.has(key as TsUtilKey));
-
-            for (const key of unusedTemplates) {
+          build: (builder) => {
+            for (const key of Object.keys(NODE_TS_UTILS_TS_TEMPLATES)) {
               const template = NODE_TS_UTILS_TS_TEMPLATES[key as TsUtilKey];
               typescriptFile.addLazyTemplateFile({
                 template,
@@ -112,5 +57,5 @@ export const tsUtilsGenerator = createGenerator({
   }),
 });
 
-export type { TsUtilsImportsProvider } from './generated/ts-import-maps.js';
 export { tsUtilsImportsProvider } from './generated/ts-import-maps.js';
+export type { TsUtilsImportsProvider } from './generated/ts-import-maps.js';

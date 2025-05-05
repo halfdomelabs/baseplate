@@ -16,14 +16,15 @@ const reactComponentsImportsSchema = createTsImportMapSchema({
   Card: {},
   CheckedInput: {},
   ConfirmDialog: {},
-  ErrorDisplay: {},
   ErrorableLoader: {},
+  ErrorDisplay: {},
   FormError: {},
   FormLabel: {},
   LinkButton: {},
   ListGroup: {},
   Modal: {},
   NotFoundCard: {},
+  ReactDatePickerInput: {},
   ReactSelectInput: {},
   SelectInput: {},
   Sidebar: {},
@@ -34,14 +35,14 @@ const reactComponentsImportsSchema = createTsImportMapSchema({
   TextAreaInput: {},
   TextInput: {},
   Toast: {},
-  UseConfirmDialogRequestOptions: { isTypeOnly: true },
   useConfirmDialog: {},
+  UseConfirmDialogRequestOptions: { isTypeOnly: true },
   useConfirmDialogState: {},
   useStatus: {},
   useToast: {},
 });
 
-type ReactComponentsImportsProvider = TsImportMapProviderFromSchema<
+export type ReactComponentsImportsProvider = TsImportMapProviderFromSchema<
   typeof reactComponentsImportsSchema
 >;
 
@@ -66,14 +67,15 @@ export function createReactComponentsImports(
     Card: path.join(importBase, 'components/index.js'),
     CheckedInput: path.join(importBase, 'components/index.js'),
     ConfirmDialog: path.join(importBase, 'components/index.js'),
-    ErrorDisplay: path.join(importBase, 'components/index.js'),
     ErrorableLoader: path.join(importBase, 'components/index.js'),
+    ErrorDisplay: path.join(importBase, 'components/index.js'),
     FormError: path.join(importBase, 'components/index.js'),
     FormLabel: path.join(importBase, 'components/index.js'),
     LinkButton: path.join(importBase, 'components/index.js'),
     ListGroup: path.join(importBase, 'components/index.js'),
     Modal: path.join(importBase, 'components/index.js'),
     NotFoundCard: path.join(importBase, 'components/index.js'),
+    ReactDatePickerInput: path.join(importBase, 'components/index.js'),
     ReactSelectInput: path.join(importBase, 'components/index.js'),
     SelectInput: path.join(importBase, 'components/index.js'),
     Sidebar: path.join(importBase, 'components/index.js'),
@@ -84,11 +86,11 @@ export function createReactComponentsImports(
     TextAreaInput: path.join(importBase, 'components/index.js'),
     TextInput: path.join(importBase, 'components/index.js'),
     Toast: path.join(importBase, 'components/index.js'),
+    useConfirmDialog: path.join(importBase, 'hooks/useConfirmDialog.js'),
     UseConfirmDialogRequestOptions: path.join(
       importBase,
       'hooks/useConfirmDialog.js',
     ),
-    useConfirmDialog: path.join(importBase, 'hooks/useConfirmDialog.js'),
     useConfirmDialogState: path.join(importBase, 'hooks/useConfirmDialog.js'),
     useStatus: path.join(importBase, 'hooks/useStatus.js'),
     useToast: path.join(importBase, 'hooks/useToast.js'),

@@ -1,5 +1,6 @@
 // @ts-nocheck
-import { hash, verify, Options, Algorithm } from '@node-rs/argon2';
+
+import { Algorithm, hash, Options, verify } from '@node-rs/argon2';
 
 // Using recommendations from https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
 const DEFAULT_ARGON_OPTIONS: Options = {

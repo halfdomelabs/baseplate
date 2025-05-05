@@ -177,7 +177,6 @@ export const appModuleGenerator = createGenerator({
                     ),
                   ),
                 },
-                includeMetadataOnDemand: true,
               }),
             );
           },

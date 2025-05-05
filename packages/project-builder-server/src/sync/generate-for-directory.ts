@@ -5,6 +5,7 @@ import type {
   GeneratorOutput,
   Logger,
   PreviousGeneratedPayload,
+  TemplateMetadataOptions,
 } from '@halfdomelabs/sync';
 
 import {
@@ -13,7 +14,6 @@ import {
   createCodebaseFileReaderFromDirectory,
   deleteMetadataFiles,
   executeGeneratorEntry,
-  readTemplateMetadataPaths,
   writeGeneratorOutput,
   writeGeneratorsMetadata,
   writeTemplateMetadata,
@@ -40,7 +40,7 @@ interface GenerateForDirectoryOptions {
   baseDirectory: string;
   appEntry: AppEntry;
   logger: Logger;
-  shouldWriteTemplateMetadata?: boolean;
+  writeTemplateMetadataOptions?: TemplateMetadataOptions;
   userConfig: BaseplateUserConfig;
   previousPackageSyncResult: PackageSyncResult | undefined;
   operations?: GeneratorOperations;
@@ -122,7 +122,7 @@ export async function generateForDirectory({
   baseDirectory,
   appEntry,
   logger,
-  shouldWriteTemplateMetadata,
+  writeTemplateMetadataOptions,
   userConfig,
   previousPackageSyncResult,
   operations = defaultGeneratorOperations,
@@ -134,19 +134,9 @@ export async function generateForDirectory({
 
   logger.info(`Generating project ${name} in ${projectDirectory}...`);
 
-  const metadataPaths = shouldWriteTemplateMetadata
-    ? new Set(await readTemplateMetadataPaths(projectDirectory))
-    : new Set();
-
   const project = await operations.buildGeneratorEntry(generatorBundle);
   const output = await operations.executeGeneratorEntry(project, {
-    templateMetadataOptions: shouldWriteTemplateMetadata
-      ? {
-          includeTemplateMetadata: true,
-          hasTemplateMetadata: (projectRelativePath) =>
-            metadataPaths.has(projectRelativePath),
-        }
-      : undefined,
+    templateMetadataOptions: writeTemplateMetadataOptions,
   });
 
   if (abortSignal?.aborted) throw new CancelledSyncError();
@@ -187,7 +177,7 @@ export async function generateForDirectory({
       });
 
     // write metadata to the generated directory
-    if (shouldWriteTemplateMetadata) {
+    if (writeTemplateMetadataOptions?.includeTemplateMetadata) {
       await operations.writeMetadata(project, output, projectDirectory);
     }
 

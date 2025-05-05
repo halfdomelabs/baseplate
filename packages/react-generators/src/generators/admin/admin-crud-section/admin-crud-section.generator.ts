@@ -2,16 +2,10 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderExportScope,
-  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});
-
-export type AdminCrudSectionProvider = unknown;
-
-export const adminCrudSectionProvider =
-  createProviderType<AdminCrudSectionProvider>('admin-crud-section');
 
 export const adminCrudSectionScope = createProviderExportScope(
   'react/admin-crud-section',
@@ -26,11 +20,7 @@ export const adminCrudSectionGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       dependencies: {},
-      exports: {
-        adminCrudSection: adminCrudSectionProvider.export(
-          adminCrudSectionScope,
-        ),
-      },
+      exports: {},
       run() {
         return {
           providers: {

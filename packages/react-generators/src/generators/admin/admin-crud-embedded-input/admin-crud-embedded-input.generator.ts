@@ -1,4 +1,4 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { TsCodeUtils, tsTemplate } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -9,11 +9,12 @@ import { z } from 'zod';
 import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
-import { adminComponentsProvider } from '../admin-components/admin-components.generator.js';
+import { adminComponentsImportsProvider } from '../admin-components/admin-components.generator.js';
 import { adminCrudEmbeddedFormProvider } from '../admin-crud-embedded-form/admin-crud-embedded-form.generator.js';
 
 const descriptorSchema = z.object({
   id: z.string().min(1),
+  order: z.number(),
   label: z.string().min(1),
   modelRelation: z.string().min(1),
   embeddedFormRef: z.string().min(1),
@@ -32,11 +33,17 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.id,
-  buildTasks: ({ label, modelRelation, embeddedFormRef, isRequired }) => ({
+  buildTasks: ({
+    label,
+    modelRelation,
+    embeddedFormRef,
+    isRequired,
+    order,
+  }) => ({
     main: createGeneratorTask({
       dependencies: {
         adminCrudInputContainer: adminCrudInputContainerProvider,
-        adminComponents: adminComponentsProvider,
+        adminComponentsImports: adminComponentsImportsProvider,
         adminCrudEmbeddedForm: adminCrudEmbeddedFormProvider
           .dependency()
           .reference(embeddedFormRef),
@@ -44,7 +51,11 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
       exports: {
         adminCrudEmbeddedInput: adminCrudEmbeddedInputProvider.export(),
       },
-      run({ adminCrudInputContainer, adminComponents, adminCrudEmbeddedForm }) {
+      run({
+        adminCrudInputContainer,
+        adminComponentsImports,
+        adminCrudEmbeddedForm,
+      }) {
         const formInfo = adminCrudEmbeddedForm.getEmbeddedFormInfo();
         const {
           embeddedFormComponent,
@@ -55,7 +66,7 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
 
         const content =
           formInfo.type === 'object'
-            ? TypescriptCodeUtils.formatExpression(
+            ? TsCodeUtils.formatFragment(
                 `<EmbeddedObjectInput.LabelledController
           label="${label}"
           control={control}
@@ -68,14 +79,9 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
                   EMBEDDED_FORM_COMPONENT: embeddedFormComponent.expression,
                   EXTRA_FORM_PROPS: embeddedFormComponent.extraProps,
                 },
-                {
-                  importText: [
-                    `import { EmbeddedObjectInput } from "%admin-components"`,
-                  ],
-                  importMappers: [adminComponents],
-                },
+                adminComponentsImports.EmbeddedObjectInput.declaration(),
               )
-            : TypescriptCodeUtils.formatExpression(
+            : TsCodeUtils.formatFragment(
                 `<EmbeddedListInput.LabelledController
         label="${label}"
         control={control}
@@ -94,15 +100,11 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
                     formInfo.embeddedTableComponent.expression,
                   EXTRA_TABLE_PROPS: formInfo.embeddedTableComponent.extraProps,
                 },
-                {
-                  importText: [
-                    `import { EmbeddedListInput } from "%admin-components"`,
-                  ],
-                  importMappers: [adminComponents],
-                },
+                adminComponentsImports.EmbeddedListInput.declaration(),
               );
 
         adminCrudInputContainer.addInput({
+          order,
           content,
           graphQLFields: [
             { name: modelRelation, fields: mergeGraphQLFields(graphQLFields) },
@@ -110,9 +112,9 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
           validation: [
             {
               key: modelRelation,
-              expression: validationExpression.append(
-                isRequired ? '' : '.nullish()',
-              ),
+              expression: tsTemplate`${validationExpression}${
+                isRequired ? '' : '.nullish()'
+              }`,
             },
           ],
           dataDependencies,

@@ -1,38 +1,43 @@
 // @ts-nocheck
 
-import { BackButton } from '%react-components';
-import { useToast } from '%react-components/useToast';
+import { BackButton, useToast } from '%reactComponentsImports';
 import { useNavigate } from 'react-router-dom';
 
-function COMPONENT_NAME(): JSX.Element {
-  DATA_LOADER;
+function TPL_COMPONENT_NAME(): JSX.Element {
+  TPL_DATA_LOADER;
 
-  const [MUTATION_NAME] = CREATE_MUTATION({
-    refetchQueries: [{ query: REFETCH_DOCUMENT }],
+  const [TPL_MUTATION_NAME] = TPL_CREATE_MUTATION({
+    refetchQueries: [
+      {
+        query: TPL_REFETCH_DOCUMENT,
+      },
+    ],
   });
 
   const toast = useToast();
   const navigate = useNavigate();
 
-  const submitData = async (formData: FORM_DATA_NAME): Promise<void> => {
-    await MUTATION_NAME({
+  const submitData = async (formData: TPL_FORM_DATA_NAME): Promise<void> => {
+    await TPL_MUTATION_NAME({
       variables: { input: { data: formData } },
     });
     toast.success('Successfully created item!');
     navigate('..');
   };
 
-  DATA_GATE;
+  TPL_DATA_GATE;
 
   return (
     <div className="space-y-4">
       <h1 className="flex space-x-2">
         <BackButton />
-        <span>Create New MODEL_NAME</span>
+        <span>
+          Create New <TPL_MODEL_NAME />
+        </span>
       </h1>
-      <EDIT_FORM />
+      <TPL_EDIT_FORM />
     </div>
   );
 }
 
-export default COMPONENT_NAME;
+export default TPL_COMPONENT_NAME;

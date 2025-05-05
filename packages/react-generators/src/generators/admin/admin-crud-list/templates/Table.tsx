@@ -1,25 +1,25 @@
 // @ts-nocheck
 
+import {
+  Alert,
+  LinkButton,
+  Table,
+  useConfirmDialog,
+  useToast,
+} from '%reactComponentsImports';
+import { logAndFormatError } from '%reactErrorImports';
 import { Link } from 'react-router-dom';
-import { Alert, LinkButton, Table } from '%react-components';
-import { useToast } from '%react-components/useToast';
-import { useConfirmDialog } from '%react-components/useConfirmDialog';
-import { logAndFormatError } from '%react-error/formatter';
 
 interface Props {
-  items: ROW_FRAGMENT[];
-  deleteItem: (item: ROW_FRAGMENT) => Promise<void>;
-  EXTRA_PROPS;
+  items: TPL_ROW_FRAGMENT[];
+  deleteItem: (item: TPL_ROW_FRAGMENT) => Promise<void>;
+  TPL_EXTRA_PROPS;
 }
 
-function COMPONENT_NAME({
-  items,
-  deleteItem,
-  EXTRA_PROP_SPREAD,
-}: Props): JSX.Element {
+function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const toast = useToast();
-  async function handleDelete(item: ROW_FRAGMENT): Promise<void> {
+  async function handleDelete(item: TPL_ROW_FRAGMENT): Promise<void> {
     requestConfirm({
       title: 'Delete Item',
       content: `Are you sure you want to delete this item?`,
@@ -38,22 +38,23 @@ function COMPONENT_NAME({
   }
 
   if (!items.length) {
-    return <Alert type="info">No PLURAL_MODEL found.</Alert>;
+    return <Alert type="info">No TPL_PLURAL_MODEL found.</Alert>;
   }
 
   return (
     <Table>
       <Table.Head>
         <Table.HeadRow>
-          <HEADERS />
+          <TPL_HEADERS />
           <Table.HeadCell>Actions</Table.HeadCell>
         </Table.HeadRow>
       </Table.Head>
       <Table.Body>
         {items.map((item) => (
           <Table.Row key={item.id}>
-            <CELLS />
+            <TPL_CELLS />
             <Table.Cell className="space-x-4">
+              <Link to={`${item.id}/show`}>Show</Link>
               <Link to={`${item.id}/edit`}>Edit</Link>
               <LinkButton negative onClick={() => handleDelete(item)}>
                 Delete
@@ -66,4 +67,4 @@ function COMPONENT_NAME({
   );
 }
 
-export default COMPONENT_NAME;
+export default TPL_COMPONENT_NAME;

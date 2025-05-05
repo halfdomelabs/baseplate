@@ -1,10 +1,10 @@
 // @ts-nocheck
 
+import { useCreateBullBoardAuthCodeMutation } from '%generatedGraphqlImports';
+import { ErrorableLoader } from '%reactComponentsImports';
+import { config } from '%reactConfigImports';
+import { logAndFormatError } from '%reactErrorImports';
 import { useEffect, useState } from 'react';
-import { ErrorableLoader } from '%react-components';
-import { useCreateBullBoardAuthCodeMutation } from '%react-apollo/generated';
-import { config } from '%react-config';
-import { logAndFormatError } from '%react-error/formatter';
 
 function BullBoardPage(): JSX.Element {
   const [createBullBoardAuthCode] = useCreateBullBoardAuthCodeMutation();

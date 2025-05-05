@@ -204,7 +204,7 @@ export function writeTsProjectExports(
           projectExport.name,
           JSON.stringify({
             isTypeOnly: projectExport.isTypeOnly ? true : undefined,
-            exportName: projectExport.exportName ?? undefined,
+            name: projectExport.exportName ?? undefined,
           }),
         ]),
       ),

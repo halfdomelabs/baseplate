@@ -78,7 +78,13 @@ export function useUpload<FileMetadata>({
           formData.append(name, value);
         });
 
-        formData.append('Content-Type', file.type);
+        if (
+          !uploadParams.fields.some(
+            ({ name }) => name.toLowerCase() === 'content-type',
+          )
+        ) {
+          formData.append('Content-Type', file.type);
+        }
 
         formData.append('file', file);
 

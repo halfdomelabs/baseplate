@@ -155,7 +155,7 @@ export const reactComponentsGenerator = createGenerator({
           providers: {
             reactComponents: {
               registerComponent: (entry) => allReactComponents.push(entry),
-              getComponentsFolder: () => `src/components`,
+              getComponentsFolder: () => `@/src/components`,
               getComponentsImport: () => `@/src/components`,
               getImportMap: () => ({
                 '%react-components': {
@@ -227,4 +227,7 @@ export const reactComponentsGenerator = createGenerator({
   }),
 });
 
-export { reactComponentsImportsProvider } from './generated/ts-import-maps.js';
+export {
+  reactComponentsImportsProvider,
+  type ReactComponentsImportsProvider,
+} from './generated/ts-import-maps.js';

@@ -1,33 +1,27 @@
 // @ts-nocheck
 
+import { Alert, Button, useStatus } from '%reactComponentsImports';
+import { logAndFormatError } from '%reactErrorImports';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, Button } from '%react-components';
-import { useStatus } from '%react-components/useStatus';
-import { logAndFormatError } from '%react-error/formatter';
 
 interface Props {
   className?: string;
-  initialData?: Partial<FORM_DATA_NAME>;
-  submitData: (data: FORM_DATA_NAME) => Promise<void>;
-  EXTRA_PROPS;
+  initialData?: Partial<TPL_FORM_DATA_NAME>;
+  submitData: (data: TPL_FORM_DATA_NAME) => Promise<void>;
+  TPL_EXTRA_PROPS;
 }
 
-function COMPONENT_NAME({
-  className,
-  initialData,
-  submitData,
-  EXTRA_PROP_SPREAD,
-}: Props): JSX.Element {
-  const { handleSubmit, control } = useForm<FORM_DATA_NAME>({
-    resolver: zodResolver(EDIT_SCHEMA),
+function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): JSX.Element {
+  const { handleSubmit, control } = useForm<TPL_FORM_DATA_NAME>({
+    resolver: zodResolver(TPL_EDIT_SCHEMA),
     defaultValues: initialData,
   });
   const { status, setError } = useStatus();
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const onSubmit = async (data: FORM_DATA_NAME): Promise<void> => {
+  const onSubmit = async (data: TPL_FORM_DATA_NAME): Promise<void> => {
     try {
       setIsUpdating(true);
       await submitData(data);
@@ -38,13 +32,13 @@ function COMPONENT_NAME({
     }
   };
 
-  HEADER;
+  TPL_HEADER;
 
   return (
     <div className={className}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-md space-y-4">
         <Alert.WithStatus status={status} />
-        <INPUTS />
+        <TPL_INPUTS />
         <Button type="submit" disabled={isUpdating}>
           Save
         </Button>
@@ -53,4 +47,4 @@ function COMPONENT_NAME({
   );
 }
 
-export default COMPONENT_NAME;
+export default TPL_COMPONENT_NAME;

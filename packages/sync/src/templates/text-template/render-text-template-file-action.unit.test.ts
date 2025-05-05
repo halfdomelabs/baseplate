@@ -46,6 +46,7 @@ describe('renderTextTemplateFileAction', () => {
       },
       templateMetadataOptions: {
         includeTemplateMetadata: true,
+        shouldGenerateMetadata: () => true,
       },
     });
 
@@ -183,9 +184,13 @@ describe('renderTextTemplateFileAction', () => {
           name: 'test-generator',
           baseDirectory: '/root/pkg/test-generator',
         },
+        templateMetadataOptions: {
+          includeTemplateMetadata: true,
+          shouldGenerateMetadata: () => true,
+        },
       }),
     ).rejects.toThrow(
-      'The pre-rendered template contains the value of a template variable',
+      'The template contents contain the value of a template variable',
     );
   });
 

@@ -18,7 +18,7 @@ function buildFileTransformerCompiler(
 ): AdminCrudInputCompiler<AdminCrudFileInputConfig> {
   return {
     name: 'file',
-    compileInput(definition, { definitionContainer, model }) {
+    compileInput(definition, { order, definitionContainer, model }) {
       const transformer = model.service?.transformers?.find(
         (t): t is FileTransformerConfig =>
           t.id === definition.modelRelationRef && t.type === 'file',
@@ -52,6 +52,7 @@ function buildFileTransformerCompiler(
       );
 
       return adminCrudFileInputGenerator({
+        order,
         label: definition.label,
         isOptional,
         category: category.name,

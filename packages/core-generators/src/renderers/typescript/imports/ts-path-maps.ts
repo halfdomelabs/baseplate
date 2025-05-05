@@ -1,3 +1,4 @@
+import { escapeRegExp } from 'es-toolkit';
 import path from 'node:path';
 
 import type { TsPathMapEntry } from './types.js';
@@ -27,16 +28,6 @@ export function generatePathMapEntries(
 }
 
 /**
- * Escape a string for use in a regex.
- *
- * @param str The string to escape
- * @returns The escaped string
- */
-function escapeRegex(str: string): string {
-  return str.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
-}
-
-/**
  * Convert TsPathMapEntry list to regexes matching internal modules.
  * Handles entries with and without a single wildcard '*'.
  *
@@ -47,8 +38,8 @@ export function pathMapEntriesToRegexes(entries: TsPathMapEntry[]): RegExp[] {
   return entries.map(({ from }) => {
     if (from.includes('*')) {
       const [prefix, suffix] = from.split('*');
-      return new RegExp(`^${escapeRegex(prefix)}.*${escapeRegex(suffix)}$`);
+      return new RegExp(`^${escapeRegExp(prefix)}.*${escapeRegExp(suffix)}$`);
     }
-    return new RegExp(`^${escapeRegex(from)}$`);
+    return new RegExp(`^${escapeRegExp(from)}$`);
   });
 }

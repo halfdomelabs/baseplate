@@ -1,4 +1,4 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { tsCodeFragment } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -62,7 +62,7 @@ export const adminCrudForeignDisplayGenerator = createGenerator({
             const optionalClause = isOptional
               ? `${itemName}.${localField} == null ? "None" : `
               : '';
-            return TypescriptCodeUtils.createExpression(`{
+            return tsCodeFragment(`{
             ${optionalClause}
             ${propName}.find(option => option.${valueExpression} === ${itemName}.${localField})?.${labelExpression}
             || "Unknown Item"}`);

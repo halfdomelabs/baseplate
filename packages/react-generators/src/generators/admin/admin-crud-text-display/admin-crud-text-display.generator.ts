@@ -1,4 +1,4 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { tsCodeFragment } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -20,8 +20,7 @@ export const adminCrudTextDisplayGenerator = createGenerator({
       },
       run({ adminCrudDisplayContainer }) {
         adminCrudDisplayContainer.addDisplay({
-          content: (itemName) =>
-            TypescriptCodeUtils.createExpression(`{${itemName}.${modelField}}`),
+          content: (itemName) => tsCodeFragment(`{${itemName}.${modelField}}`),
           graphQLFields: [{ name: modelField }],
         });
         return {};

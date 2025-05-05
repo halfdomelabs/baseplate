@@ -1,7 +1,7 @@
 import { mapGroupBy } from '@halfdomelabs/utils';
 import { getCommonPathPrefix } from '@halfdomelabs/utils/node';
 import { camelCase } from 'change-case';
-import { constantCase, mapValues, uniq } from 'es-toolkit';
+import { constantCase, mapValues, omit, uniq } from 'es-toolkit';
 import path from 'node:path/posix';
 import pLimit from 'p-limit';
 
@@ -12,7 +12,10 @@ import type { TextTemplateFile, TextTemplateFileMetadata } from './types.js';
 
 import { TemplateFileExtractor } from '../extractor/template-file-extractor.js';
 import { TEXT_TEMPLATE_TYPE, textTemplateFileMetadataSchema } from './types.js';
-import { getTextTemplateDelimiters } from './utils.js';
+import {
+  getTextTemplateDelimiters,
+  getTextTemplateVariableRegExp,
+} from './utils.js';
 
 interface TypescriptCodeEntry {
   codeBlock: string;
@@ -37,15 +40,20 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
     // replace variable values with template string
     let templateContents = sourceFileContents;
     for (const [key, variable] of Object.entries(metadata.variables ?? {})) {
-      if (!templateContents.includes(variable.value)) {
+      const variableRegex = getTextTemplateVariableRegExp(
+        variable,
+        variable.value,
+      );
+      const newTemplateContents = templateContents.replaceAll(
+        variableRegex,
+        `${start}${key}${end}`,
+      );
+      if (newTemplateContents === templateContents) {
         throw new Error(
           `Variable ${key} with value ${variable.value} not found in template ${file.path}`,
         );
       }
-      templateContents = templateContents.replaceAll(
-        variable.value,
-        `${start}${key}${end}`,
-      );
+      templateContents = newTemplateContents;
     }
 
     await this.writeTemplateFileIfModified(file, templateContents);
@@ -60,9 +68,9 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
           source: {
             path: file.metadata.template,
           },
-          variables: mapValues(metadata.variables ?? {}, (variable) => ({
-            description: variable.description,
-          })),
+          variables: mapValues(metadata.variables ?? {}, (variable) =>
+            omit(variable, ['value']),
+          ),
         } satisfies TextTemplateFile,
       )});`,
       exports: [templateName],
