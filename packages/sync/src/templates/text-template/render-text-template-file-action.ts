@@ -155,9 +155,8 @@ export function renderTextTemplateFileAction<
               variables:
                 Object.keys(templateVariables).length > 0
                   ? mapValues(templateVariables, (val, key) => ({
-                      description: val.description,
+                      ...val,
                       value: (variables as Record<string, string>)[key],
-                      isIdentifier: val.isIdentifier,
                     }))
                   : undefined,
             }

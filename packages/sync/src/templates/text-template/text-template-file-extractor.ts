@@ -1,7 +1,7 @@
 import { mapGroupBy } from '@halfdomelabs/utils';
 import { getCommonPathPrefix } from '@halfdomelabs/utils/node';
 import { camelCase } from 'change-case';
-import { constantCase, mapValues, uniq } from 'es-toolkit';
+import { constantCase, mapValues, omit, uniq } from 'es-toolkit';
 import path from 'node:path/posix';
 import pLimit from 'p-limit';
 
@@ -68,10 +68,9 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
           source: {
             path: file.metadata.template,
           },
-          variables: mapValues(metadata.variables ?? {}, (variable) => ({
-            description: variable.description,
-            isIdentifier: variable.isIdentifier,
-          })),
+          variables: mapValues(metadata.variables ?? {}, (variable) =>
+            omit(variable, ['value']),
+          ),
         } satisfies TextTemplateFile,
       )});`,
       exports: [templateName],

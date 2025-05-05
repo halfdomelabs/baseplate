@@ -20,7 +20,8 @@ describe('TextTemplateFileExtractor', () => {
     const extractor = new TextTemplateFileExtractor(context);
 
     vol.fromJSON({
-      '/root/test-generator/test.txt': 'Hello world from my couch!',
+      '/root/test-generator/test.txt':
+        'Hello world from my couch! And with a fro identifier.',
     });
 
     await extractor.extractTemplateFiles([
@@ -35,6 +36,11 @@ describe('TextTemplateFileExtractor', () => {
             TPL_LOCATION: {
               description: 'The location of the test',
               value: 'my couch',
+            },
+            TPL_IDENTIFIER: {
+              description: 'A fro identifier',
+              isIdentifier: true,
+              value: 'fro',
             },
           },
         },

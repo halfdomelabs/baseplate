@@ -6,6 +6,15 @@ import { templateFileMetadataBaseSchema } from '../metadata/metadata.js';
 
 export const TEXT_TEMPLATE_TYPE = 'text';
 
+const textTemplateFileVariableSchema = z.object({
+  // The description of the variable.
+  description: z.string().optional(),
+  // Whether the variable is an identifier so we check for non-alphanumeric characters around
+  isIdentifier: z.boolean().optional(),
+  // The value of the variable.
+  value: z.string(),
+});
+
 export const textTemplateFileMetadataSchema =
   templateFileMetadataBaseSchema.extend({
     type: z.literal(TEXT_TEMPLATE_TYPE),
@@ -16,20 +25,7 @@ export const textTemplateFileMetadataSchema =
     /**
      * The variables for the template.
      */
-    variables: z
-      .record(
-        z.string(),
-        z.object({
-          // The description of the variable.
-          description: z.string().optional(),
-          // The value of the variable.
-          value: z.string(),
-          // Whether the variable is an identifier so we check for non-alphanumeric characters around
-          // the variable name.
-          isIdentifier: z.boolean().optional(),
-        }),
-      )
-      .optional(),
+    variables: z.record(z.string(), textTemplateFileVariableSchema).optional(),
   });
 
 export type TextTemplateFileMetadata = z.infer<
@@ -39,17 +35,10 @@ export type TextTemplateFileMetadata = z.infer<
 /**
  * A variable for a text template.
  */
-export interface TextTemplateFileVariable {
-  /**
-   * A description of the variable.
-   */
-  description?: string;
-  /**
-   * Whether the variable is an identifier so we check for non-alphanumeric characters around
-   * the variable name.
-   */
-  isIdentifier?: boolean;
-}
+export type TextTemplateFileVariable = Omit<
+  z.infer<typeof textTemplateFileVariableSchema>,
+  'value'
+>;
 
 /**
  * A template for a text file with replacements.
