@@ -27,4 +27,5 @@ onlyBuiltDependencies:
   - '@prisma/engines'
   - cpu-features
   - esbuild
+  - protobufjs
   - ssh2
