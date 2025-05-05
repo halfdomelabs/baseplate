@@ -198,7 +198,7 @@ describe('Import Utilities', () => {
     });
   });
 
-  describe('writeImportDeclarationsWithCodeBlockWriter', () => {
+  describe('writeGroupedImportDeclarationsWithCodeBlockWriter', () => {
     let writer: CodeBlockWriter;
 
     beforeEach(() => {

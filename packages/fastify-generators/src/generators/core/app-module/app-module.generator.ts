@@ -1,7 +1,4 @@
-import type {
-  TsCodeFragment,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
 
 import {
@@ -10,7 +7,6 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-  TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -46,7 +42,6 @@ export const appModuleProvider =
 
 export interface AppModuleImportsProvider {
   getModuleFragment(): TsCodeFragment;
-  getModule(): TypescriptCodeExpression;
   getModulePath(): string;
 }
 
@@ -132,14 +127,9 @@ export const appModuleGenerator = createGenerator({
               getModuleFragment: () =>
                 TsCodeUtils.importFragment(
                   moduleName,
-                  `${moduleFolder}/index.js`,
+                  `${moduleFolder}/index.ts`,
                 ),
-              getModule: () =>
-                TypescriptCodeUtils.createExpression(
-                  moduleName,
-                  `import { ${moduleName} } from '${moduleFolder}/index.js'`,
-                ),
-              getModulePath: () => `${moduleFolder}/index.js`,
+              getModulePath: () => `${moduleFolder}/index.ts`,
             },
           },
           build: async (builder) => {
