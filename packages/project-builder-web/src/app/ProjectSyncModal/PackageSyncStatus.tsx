@@ -29,6 +29,21 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
     );
   }
 
+  if (metadata.globalErrors?.length) {
+    return (
+      <Alert variant="error">
+        <Alert.Title>Error compiling project.</Alert.Title>
+        <Alert.Description>
+          {metadata.globalErrors.map((error) => (
+            <div key={error} className="whitespace-pre-wrap font-mono">
+              {error}
+            </div>
+          ))}
+        </Alert.Description>
+      </Alert>
+    );
+  }
+
   const packageEntries = Object.entries(metadata.packages);
 
   if (packageEntries.length === 0) {

@@ -210,7 +210,9 @@ function FilesWithConflictsView({
                       );
                     }}
                   >
-                    {file.generatedConflictRelativePath ?? file.relativePath}
+                    <div className="w-full text-start">
+                      {file.generatedConflictRelativePath ?? file.relativePath}
+                    </div>
                   </button>
                 ) : (
                   <span>
