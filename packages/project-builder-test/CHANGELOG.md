@@ -1,5 +1,17 @@
 # @halfdomelabs/project-builder-test
 
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies [[`25dde93`](https://github.com/halfdomelabs/baseplate/commit/25dde93545bfab47df44cd82ce64a8d4e26b7a25), [`4695cbe`](https://github.com/halfdomelabs/baseplate/commit/4695cbe9759a5743b421cfe0dd9e87c991d9e652), [`a74e788`](https://github.com/halfdomelabs/baseplate/commit/a74e788dbd2987cf0be786ce3da7095c96965350), [`75761f1`](https://github.com/halfdomelabs/baseplate/commit/75761f146b202b2c50f43dc602bc30d14280651f), [`4e691a0`](https://github.com/halfdomelabs/baseplate/commit/4e691a06458b3b17f44b80a113d77d551c1ec7f9), [`85dc19e`](https://github.com/halfdomelabs/baseplate/commit/85dc19e9938db676c50cb9ccec17afe442e6c979), [`4695cbe`](https://github.com/halfdomelabs/baseplate/commit/4695cbe9759a5743b421cfe0dd9e87c991d9e652), [`25dde93`](https://github.com/halfdomelabs/baseplate/commit/25dde93545bfab47df44cd82ce64a8d4e26b7a25), [`a74e788`](https://github.com/halfdomelabs/baseplate/commit/a74e788dbd2987cf0be786ce3da7095c96965350), [`4695cbe`](https://github.com/halfdomelabs/baseplate/commit/4695cbe9759a5743b421cfe0dd9e87c991d9e652)]:
+  - @halfdomelabs/utils@0.1.6
+  - @halfdomelabs/project-builder-server@0.5.12
+  - @halfdomelabs/project-builder-lib@0.9.10
+  - @halfdomelabs/project-builder-web@0.15.10
+  - @halfdomelabs/sync@0.11.1
+  - @halfdomelabs/project-builder-common@0.1.21
+
 ## 0.1.11
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @halfdomelabs/utils
 
+## 0.1.6
+
+### Patch Changes
+
+- [#518](https://github.com/halfdomelabs/baseplate/pull/518) [`25dde93`](https://github.com/halfdomelabs/baseplate/commit/25dde93545bfab47df44cd82ce64a8d4e26b7a25) Thanks [@kingston](https://github.com/kingston)! - Add case validators
+
+- [#519](https://github.com/halfdomelabs/baseplate/pull/519) [`4695cbe`](https://github.com/halfdomelabs/baseplate/commit/4695cbe9759a5743b421cfe0dd9e87c991d9e652) Thanks [@kingston](https://github.com/kingston)! - Add toposortLocal and sortObjectKeys functions
+
+- [#523](https://github.com/halfdomelabs/baseplate/pull/523) [`a74e788`](https://github.com/halfdomelabs/baseplate/commit/a74e788dbd2987cf0be786ce3da7095c96965350) Thanks [@kingston](https://github.com/kingston)! - Remove toposort DFS in favor of BFS
+
+- [#516](https://github.com/halfdomelabs/baseplate/pull/516) [`85dc19e`](https://github.com/halfdomelabs/baseplate/commit/85dc19e9938db676c50cb9ccec17afe442e6c979) Thanks [@kingston](https://github.com/kingston)! - Introduce new toposort algorithm using BFS instead of DFS for improved topological ordering
+
 ## 0.1.5
 
 ### Patch Changes
