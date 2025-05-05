@@ -108,7 +108,7 @@ export const eslintGenerator = createGenerator({
             builder.writeFile({
               id: 'eslint-ignore',
               destination: '.eslintignore',
-              contents: `${config.eslintIgnore.join('\n')}\n`,
+              contents: `${config.eslintIgnore.toSorted().join('\n')}\n`,
             });
           },
         };
