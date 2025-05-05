@@ -12,7 +12,6 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-  TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -303,7 +302,7 @@ handler: httpHandler,
                   const websocketOnConnectFragment =
                     authContextImports && userSessionServiceImports
                       ? TsCodeUtils.formatFragment(
-                          TypescriptCodeUtils.extractTemplateSnippet(
+                          TsCodeUtils.extractTemplateSnippet(
                             websocketOnConnect,
                             'ON_CONNECT',
                           ).replace(/;$/, ''),

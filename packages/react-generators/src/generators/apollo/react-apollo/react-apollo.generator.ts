@@ -17,7 +17,6 @@ import {
   tsHoistedFragment,
   tsImportBuilder,
   tsTemplate,
-  TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -354,16 +353,14 @@ export const reactApolloGenerator = createGenerator({
             if (enableSubscriptions) {
               const websocketTemplate =
                 await builder.readTemplate('websocket-links.ts');
-              const getWsUrlTemplate =
-                TypescriptCodeUtils.extractTemplateSnippet(
-                  websocketTemplate,
-                  'GET_WS_URL',
-                );
-              const retryWaitTemplate =
-                TypescriptCodeUtils.extractTemplateSnippet(
-                  websocketTemplate,
-                  'RETRY_WAIT',
-                ).replace(/;$/, '');
+              const getWsUrlTemplate = TsCodeUtils.extractTemplateSnippet(
+                websocketTemplate,
+                'GET_WS_URL',
+              );
+              const retryWaitTemplate = TsCodeUtils.extractTemplateSnippet(
+                websocketTemplate,
+                'RETRY_WAIT',
+              ).replace(/;$/, '');
 
               // TODO: This should not live here but in auth service
               // TODO: This should live in the defaults not set afterwards to prevent them from being overridden

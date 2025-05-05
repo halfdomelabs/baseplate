@@ -1,7 +1,7 @@
 import {
   tsCodeFragment,
+  TsCodeUtils,
   tsImportBuilder,
-  TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -37,7 +37,7 @@ export const auth0ApolloGenerator = createGenerator({
           },
           build: async (builder) => {
             const linkTemplate = await builder.readTemplate('auth-link.ts');
-            const authLink = TypescriptCodeUtils.extractTemplateSnippet(
+            const authLink = TsCodeUtils.extractTemplateSnippet(
               linkTemplate,
               'AUTH_LINK',
             );
