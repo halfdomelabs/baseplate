@@ -10,6 +10,5 @@ export * from './prisma-model-index/prisma-model-index.generator.js';
 export * from './prisma-model-unique/prisma-model-unique.generator.js';
 export * from './prisma-model/prisma-model.generator.js';
 export * from './prisma-relation-field/prisma-relation-field.generator.js';
-export * from './prisma-timestamp-fields/prisma-timestamp-fields.generator.js';
 export * from './prisma-utils/prisma-utils.generator.js';
 export * from './prisma/prisma.generator.js';
