@@ -1,7 +1,6 @@
 import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
-  makeImportAndFilePath,
   tsCodeFragment,
   TsCodeUtils,
   tsHoistedFragment,
@@ -14,6 +13,7 @@ import {
   createProviderType,
   createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
+import { posixJoin } from '@halfdomelabs/utils/node';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
@@ -216,8 +216,9 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
         const formDataType = `Embedded${capitalizedName}FormData`;
         const formSchema = `embedded${capitalizedName}FormSchema`;
 
-        const [formImport, formPath] = makeImportAndFilePath(
-          `${adminCrudEdit.getDirectoryBase()}/${formName}.tsx`,
+        const formPath = posixJoin(
+          adminCrudEdit.getDirectoryBase(),
+          `${formName}.tsx`,
         );
 
         const inputDataDependencies = inputFields.flatMap(
@@ -286,10 +287,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
               getEmbeddedFormInfo: () => {
                 const sharedData = {
                   embeddedFormComponent: {
-                    expression: TsCodeUtils.importFragment(
-                      formName,
-                      formImport,
-                    ),
+                    expression: TsCodeUtils.importFragment(formName, formPath),
                     extraProps: getPassthroughExtraProps(inputDataDependencies),
                   },
                   dataDependencies: allDataDependencies,
@@ -303,7 +301,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                     embeddedTableComponent: {
                       expression: TsCodeUtils.importFragment(
                         tableName,
-                        formImport,
+                        formPath,
                       ),
                       extraProps: getPassthroughExtraProps(
                         tableDataDependencies,

@@ -37,7 +37,7 @@ export const auth0ComponentsGenerator = createGenerator({
           authComponentsImportsProvider.export(projectScope),
       },
       run({ reactComponents, typescriptFile, reactComponentsImports }) {
-        const requireAuthPath = `${reactComponents.getComponentsImport()}/RequireAuth/index.tsx`;
+        const requireAuthPath = `${reactComponents.getComponentsFolder()}/RequireAuth/index.tsx`;
         reactComponents.registerComponent({ name: 'RequireAuth' });
 
         return {
@@ -45,7 +45,7 @@ export const auth0ComponentsGenerator = createGenerator({
             authComponents: {
               getImportMap: () => ({
                 '%auth-components': {
-                  path: reactComponents.getComponentsImport(),
+                  path: reactComponents.getComponentsFolder(),
                   allowedImports: ['RequireAuth'],
                 },
               }),

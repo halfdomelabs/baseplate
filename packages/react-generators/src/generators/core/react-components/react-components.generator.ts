@@ -1,9 +1,6 @@
-import type { ImportMapper } from '@halfdomelabs/core-generators';
-
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  makeImportAndFilePath,
   projectScope,
   tsCodeFragment,
   tsImportBuilder,
@@ -60,15 +57,17 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'Toast' },
 ];
 
-export interface ReactComponentsProvider extends ImportMapper {
+export interface ReactComponentsProvider {
   /**
    * Registers component entry so it gets exported by root index component
    *
    * @param entry Component entry to register
    */
   registerComponent(entry: ReactComponentEntry): void;
+  /**
+   * Get the canonical path to the components folder, e.g. `@/src/components`
+   */
   getComponentsFolder(): string;
-  getComponentsImport(): string;
 }
 
 export const reactComponentsProvider =
@@ -113,16 +112,6 @@ export const reactComponentsGenerator = createGenerator({
           reactComponentsImportsProvider.export(projectScope),
       },
       run({ typescriptFile, reactAppConfig }) {
-        const [useStatusImport] = makeImportAndFilePath(
-          `src/hooks/useStatus.ts`,
-        );
-        const [useToastImport] = makeImportAndFilePath(
-          `src/hooks/useToast.tsx`,
-        );
-        const [useConfirmDialogImport] = makeImportAndFilePath(
-          `src/hooks/useConfirmDialog.ts`,
-        );
-
         const coreReactComponents = [...REACT_COMPONENTS];
 
         if (includeDatePicker) {
@@ -156,27 +145,6 @@ export const reactComponentsGenerator = createGenerator({
             reactComponents: {
               registerComponent: (entry) => allReactComponents.push(entry),
               getComponentsFolder: () => `@/src/components`,
-              getComponentsImport: () => `@/src/components`,
-              getImportMap: () => ({
-                '%react-components': {
-                  path: `@/src/components`,
-                  allowedImports: coreReactComponents.map(
-                    (entry) => entry.name,
-                  ),
-                },
-                '%react-components/useStatus': {
-                  path: useStatusImport,
-                  allowedImports: ['StatusType', 'Status', 'useStatus'],
-                },
-                '%react-components/useToast': {
-                  path: useToastImport,
-                  allowedImports: ['useToast'],
-                },
-                '%react-components/useConfirmDialog': {
-                  path: useConfirmDialogImport,
-                  allowedImports: ['useConfirmDialog'],
-                },
-              }),
             },
             reactComponentsImports: createReactComponentsImports('@/src'),
           },

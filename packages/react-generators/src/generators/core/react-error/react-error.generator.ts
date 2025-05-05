@@ -1,7 +1,4 @@
-import type {
-  ImportMapper,
-  TsCodeFragment,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   projectScope,
@@ -12,7 +9,6 @@ import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -40,15 +36,6 @@ const [setupTask, reactErrorConfigProvider, reactErrorConfigValuesProvider] =
 
 export { reactErrorConfigProvider };
 
-export type ReactErrorProvider = ImportMapper;
-
-export const reactErrorProvider = createProviderType<ReactErrorProvider>(
-  'react-error',
-  {
-    isReadOnly: true,
-  },
-);
-
 export const reactErrorGenerator = createGenerator({
   name: 'core/react-error',
   generatorFileUrl: import.meta.url,
@@ -62,7 +49,6 @@ export const reactErrorGenerator = createGenerator({
         reactErrorConfigValues: reactErrorConfigValuesProvider,
       },
       exports: {
-        reactError: reactErrorProvider.export(projectScope),
         reactErrorImports: reactErrorImportsProvider.export(projectScope),
       },
       run({
@@ -76,18 +62,6 @@ export const reactErrorGenerator = createGenerator({
       }) {
         return {
           providers: {
-            reactError: {
-              getImportMap: () => ({
-                '%react-error/formatter': {
-                  path: '@/src/services/error-formatter',
-                  allowedImports: ['formatError', 'logAndFormatError'],
-                },
-                '%react-error/logger': {
-                  path: '@/src/services/error-logger',
-                  allowedImports: ['logError'],
-                },
-              }),
-            },
             reactErrorImports: createReactErrorImports('@/src/services'),
           },
           build: async (builder) => {
