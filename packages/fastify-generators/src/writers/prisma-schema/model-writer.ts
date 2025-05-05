@@ -18,7 +18,7 @@ export interface PrismaModelAttribute {
 /**
  * A field in a Prisma model.
  */
-export interface PrismaModelFieldBase {
+interface PrismaModelFieldBase {
   /**
    * The name of the field.
    */
@@ -41,7 +41,7 @@ export interface PrismaModelFieldBase {
   isList?: boolean;
 }
 
-export interface PrismaModelScalarField extends PrismaModelFieldBase {
+interface PrismaModelScalarField extends PrismaModelFieldBase {
   fieldType: 'scalar';
   /**
    * The order of the field in the model list.
@@ -57,7 +57,7 @@ export interface PrismaModelScalarField extends PrismaModelFieldBase {
   enumType?: string;
 }
 
-export interface PrismaModelRelationField extends PrismaModelFieldBase {
+interface PrismaModelRelationField extends PrismaModelFieldBase {
   fieldType: 'relation';
 }
 
