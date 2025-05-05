@@ -74,8 +74,9 @@ export const adminCrudListGenerator = createGenerator({
             },
           },
           build: async (builder) => {
+            const sortedColumns = columns.sort((a, b) => a.order - b.order);
             const dataDependencies = mergeAdminCrudDataDependencies(
-              columns
+              sortedColumns
                 .flatMap((c) => c.display.dataDependencies)
                 .filter(notEmpty),
             );
@@ -107,7 +108,7 @@ export const adminCrudListGenerator = createGenerator({
             adminCrudQueries.setRowFields(
               mergeGraphQLFields([
                 { name: 'id' },
-                ...columns.flatMap((c) => c.display.graphQLFields),
+                ...sortedColumns.flatMap((c) => c.display.graphQLFields),
               ]),
             );
             const tableLoaderExtraProps = dataDependencies
@@ -171,12 +172,12 @@ export const adminCrudListGenerator = createGenerator({
               element: createRouteElement(listPageComponentName, listPagePath),
             });
 
-            const headers = columns.map((column) =>
+            const headers = sortedColumns.map((column) =>
               tsCodeFragment(
                 `<Table.HeadCell>${column.label}</Table.HeadCell>`,
               ),
             );
-            const cells = columns.map(
+            const cells = sortedColumns.map(
               (column) =>
                 tsTemplate`<Table.Cell>${column.display.content('item')}</Table.Cell>`,
             );

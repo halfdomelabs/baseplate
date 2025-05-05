@@ -49,11 +49,12 @@ function compileAdminCrudEmbeddedForm(
       ...sharedData,
       isList: true,
       children: {
-        columns: form.table.columns.map((c) =>
+        columns: form.table.columns.map((c, idx) =>
           adminCrudColumnGenerator({
             // TODO: We should use an actual ID on the column
             id: makeIdSafe(c.label),
             label: c.label,
+            order: idx,
             children: {
               display: compileAdminCrudDisplay(
                 builder,
@@ -134,11 +135,12 @@ export function compileAdminCrudSection(
             modelName,
             disableCreate,
             children: {
-              columns: crudSection.table.columns.map((column) =>
+              columns: crudSection.table.columns.map((column, idx) =>
                 adminCrudColumnGenerator({
                   // TODO: We should use an actual ID on the column
                   id: makeIdSafe(column.label),
                   label: column.label,
+                  order: idx,
                   children: {
                     display: compileAdminCrudDisplay(
                       builder,
