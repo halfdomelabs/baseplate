@@ -35,7 +35,13 @@ export const Console = ({ className }: Props): React.JSX.Element => {
         id: currentProjectId,
       })
       .then((output) => {
-        setConsoleText((oldOutput) => `${output.join('\n')}\n${oldOutput}`);
+        setConsoleText((oldOutput) => {
+          const newOutput = output.join('\n');
+
+          // handle React strict mode which triggers multiple calls to this function
+          if (oldOutput === newOutput) return oldOutput;
+          return oldOutput ? `${newOutput}\n${oldOutput}` : newOutput;
+        });
       })
       .catch((err: unknown) => {
         toast.error(formatError(err, 'Error loading sync console output'));

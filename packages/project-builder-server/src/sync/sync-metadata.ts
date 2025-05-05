@@ -82,6 +82,7 @@ export type SyncStatus = z.infer<typeof syncStatusSchema>;
 
 export const syncMetadataSchema = z.object({
   status: syncStatusSchema,
+  globalErrors: z.array(z.string()).optional(),
   projectJsonHash: z.string(),
   startedAt: z.string(),
   completedAt: z.string().optional(),

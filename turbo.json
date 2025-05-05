@@ -34,9 +34,7 @@
     "prettier:write": {
       "cache": false
     },
-    "typecheck": {
-      "cache": false
-    },
+    "typecheck": {},
     "dev": {
       "persistent": true,
       "cache": false

@@ -102,121 +102,141 @@ export async function buildProject({
   syncMetadataController,
   abortSignal,
 }: BuildProjectOptions): Promise<void> {
-  const { definition: projectJson, hash } = await loadProjectJson(directory);
-  const apps = compileApplications(projectJson, context);
-
-  const existingSyncMetadata = await syncMetadataController?.getMetadata();
-
-  syncMetadataController?.writeMetadata({
-    status: 'in-progress',
-    startedAt: new Date().toISOString(),
-    projectJsonHash: hash,
-    packages: Object.fromEntries(
-      apps.map((app, index) => [
-        app.id,
-        {
-          name: app.name,
-          path: path.join(directory, app.appDirectory),
-          status: 'not-synced',
-          statusMessage: undefined,
-          result: undefined,
-          order: index,
-        },
-      ]),
-    ),
-  });
-
-  let hasErrors = false;
-  let wasCancelled = false;
-
-  for (const app of apps) {
-    const previousPackageSyncResult =
-      existingSyncMetadata?.packages[app.id].result;
-    let newResult: PackageSyncResult;
-    try {
-      if (abortSignal?.aborted) {
-        break;
-      }
-
-      syncMetadataController?.updateMetadataForPackage(app.id, (metadata) => ({
-        ...metadata,
-        status: 'in-progress',
-      }));
-
-      const fileIdRegexWhitelist =
-        projectJson.templateExtractor?.fileIdRegexWhitelist.split('\n') ?? [];
-
-      newResult = await generateForDirectory({
-        baseDirectory: directory,
-        appEntry: app,
-        logger,
-        writeTemplateMetadataOptions: projectJson.templateExtractor
-          ?.writeMetadata
-          ? {
-              includeTemplateMetadata: true,
-              shouldGenerateMetadata: (context) => {
-                // always write metadata for files without a manual ID
-                if (!context.hasManualId) return true;
-                return fileIdRegexWhitelist
-                  .filter((x) => x.trim() !== '')
-                  .some((pattern) => {
-                    const regex = new RegExp(pattern);
-                    return regex.test(
-                      `${context.generatorName}:${context.fileId}`,
-                    );
-                  });
-              },
-            }
-          : undefined,
-        userConfig,
-        previousPackageSyncResult,
-        abortSignal,
-      });
-    } catch (err) {
-      if (err instanceof CancelledSyncError) {
-        newResult = {
-          wasCancelled: true,
-          completedAt: new Date().toISOString(),
-        };
-        wasCancelled = true;
-      } else {
-        logger.error(`Encountered error while generating for ${app.name}:`);
-        logger.error(err);
-
-        newResult = {
-          errors: [
-            {
-              // stripVTControlCharacters is used to remove any control characters from the error message
-              // which can happen when prettier encounters an error.
-              message: stripVTControlCharacters(String(err)),
-              stack: err instanceof Error ? err.stack : undefined,
-            },
-          ],
-          completedAt: new Date().toISOString(),
-        };
-
-        hasErrors = true;
-      }
-    }
-    syncMetadataController?.updateMetadataForPackage(app.id, (metadata) => ({
-      ...metadata,
-      status: getPackageSyncStatusFromResult(newResult),
-      statusMessage: undefined,
-      result: newResult,
-    }));
-  }
-
+  // Update the sync metadata to indicate that the sync is in progress
   syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
-    status: wasCancelled ? 'cancelled' : hasErrors ? 'error' : 'success',
-    completedAt: new Date().toISOString(),
+    status: 'in-progress',
+    globalErrors: undefined,
   }));
 
-  if (wasCancelled) {
-    logger.info('Project build cancelled.');
-  } else if (hasErrors) {
+  try {
+    const { definition: projectJson, hash } = await loadProjectJson(directory);
+    const apps = compileApplications(projectJson, context);
+
+    const existingSyncMetadata = await syncMetadataController?.getMetadata();
+    syncMetadataController?.writeMetadata({
+      status: 'in-progress',
+      startedAt: new Date().toISOString(),
+      projectJsonHash: hash,
+      packages: Object.fromEntries(
+        apps.map((app, index) => [
+          app.id,
+          {
+            name: app.name,
+            path: path.join(directory, app.appDirectory),
+            status: 'not-synced',
+            statusMessage: undefined,
+            order: index,
+            // Keep the result from the previous sync if it exists
+            result: existingSyncMetadata?.packages[app.id]?.result,
+          },
+        ]),
+      ),
+    });
+
+    let hasErrors = false;
+    let wasCancelled = false;
+
+    for (const app of apps) {
+      let newResult: PackageSyncResult;
+      try {
+        if (abortSignal?.aborted) {
+          break;
+        }
+
+        syncMetadataController?.updateMetadataForPackage(
+          app.id,
+          (metadata) => ({
+            ...metadata,
+            status: 'in-progress',
+          }),
+        );
+
+        const fileIdRegexWhitelist =
+          projectJson.templateExtractor?.fileIdRegexWhitelist.split('\n') ?? [];
+
+        newResult = await generateForDirectory({
+          baseDirectory: directory,
+          appEntry: app,
+          logger,
+          writeTemplateMetadataOptions: projectJson.templateExtractor
+            ?.writeMetadata
+            ? {
+                includeTemplateMetadata: true,
+                shouldGenerateMetadata: (context) => {
+                  // always write metadata for files without a manual ID
+                  if (!context.hasManualId) return true;
+                  return fileIdRegexWhitelist
+                    .filter((x) => x.trim() !== '')
+                    .some((pattern) => {
+                      const regex = new RegExp(pattern);
+                      return regex.test(
+                        `${context.generatorName}:${context.fileId}`,
+                      );
+                    });
+                },
+              }
+            : undefined,
+          userConfig,
+          previousPackageSyncResult:
+            existingSyncMetadata?.packages[app.id]?.result,
+          abortSignal,
+        });
+      } catch (err) {
+        if (err instanceof CancelledSyncError) {
+          newResult = {
+            wasCancelled: true,
+            completedAt: new Date().toISOString(),
+          };
+          wasCancelled = true;
+        } else {
+          logger.error(`Encountered error while generating for ${app.name}:`);
+          logger.error(err);
+
+          newResult = {
+            errors: [
+              {
+                // stripVTControlCharacters is used to remove any control characters from the error message
+                // which can happen when prettier encounters an error.
+                message: stripVTControlCharacters(String(err)),
+                stack: err instanceof Error ? err.stack : undefined,
+              },
+            ],
+            completedAt: new Date().toISOString(),
+          };
+
+          hasErrors = true;
+        }
+      }
+      syncMetadataController?.updateMetadataForPackage(app.id, (metadata) => ({
+        ...metadata,
+        status: getPackageSyncStatusFromResult(newResult),
+        statusMessage: undefined,
+        result: newResult,
+      }));
+    }
+
+    syncMetadataController?.updateMetadata((metadata) => ({
+      ...metadata,
+      status: wasCancelled ? 'cancelled' : hasErrors ? 'error' : 'success',
+      completedAt: new Date().toISOString(),
+    }));
+
+    if (wasCancelled) {
+      logger.info('Project build cancelled.');
+    } else if (hasErrors) {
+      logger.error('Project build failed.');
+    } else {
+      logger.info(`Project written to ${directory}!`);
+    }
+  } catch (err) {
+    syncMetadataController?.updateMetadata((metadata) => ({
+      ...metadata,
+      status: 'error',
+      completedAt: new Date().toISOString(),
+      globalErrors: [String(err)],
+    }));
     logger.error('Project build failed.');
-  } else {
-    logger.info(`Project written to ${directory}!`);
+    throw err;
   }
 }

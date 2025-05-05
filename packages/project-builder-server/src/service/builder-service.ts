@@ -67,6 +67,9 @@ export type ProjectDefinitionFileWriteResult =
  */
 export interface CommandConsoleEmittedPayload {
   id: string;
+  /**
+   * The message to display in the console.
+   */
   message: string;
 }
 
