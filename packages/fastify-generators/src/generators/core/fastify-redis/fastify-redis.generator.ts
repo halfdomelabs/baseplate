@@ -1,5 +1,3 @@
-import type { ImportMapper } from '@halfdomelabs/core-generators';
-
 import {
   createNodePackagesTask,
   extractPackageVersions,
@@ -13,7 +11,6 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-  createProviderType,
 } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 import { z } from 'zod';
@@ -35,13 +32,6 @@ const descriptorSchema = z.object({
   defaultUrl: z.string().min(1),
 });
 
-export type FastifyRedisProvider = ImportMapper;
-
-export const fastifyRedisProvider = createProviderType<FastifyRedisProvider>(
-  'fastify-redis',
-  { isReadOnly: true },
-);
-
 const redisPath = '@/src/services/redis.ts';
 
 export const fastifyRedisGenerator = createGenerator({
@@ -55,20 +45,11 @@ export const fastifyRedisGenerator = createGenerator({
     }),
     imports: createGeneratorTask({
       exports: {
-        fastifyRedis: fastifyRedisProvider.export(projectScope),
         fastifyRedisImports: fastifyRedisImportsProvider.export(projectScope),
       },
       run() {
         return {
           providers: {
-            fastifyRedis: {
-              getImportMap: () => ({
-                '%fastify-redis': {
-                  path: redisPath,
-                  allowedImports: ['getRedisClient', 'createRedisClient'],
-                },
-              }),
-            },
             fastifyRedisImports: createFastifyRedisImports(
               path.dirname(redisPath),
             ),

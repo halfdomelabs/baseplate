@@ -163,7 +163,18 @@ const [setupTask, reactApolloConfigProvider, reactApolloConfigValuesProvider] =
 export { reactApolloConfigProvider };
 
 export interface ReactApolloProvider {
+  /**
+   * Register a gql file so that any changes to this file will
+   * trigger a regeneration of the generated graphql file
+   *
+   * @param filePath - The path to the gql file
+   */
   registerGqlFile(filePath: string): void;
+  /**
+   * Get the path to the generated graphql file
+   *
+   * @returns The path to the generated graphql file
+   */
   getGeneratedFilePath(): string;
 }
 

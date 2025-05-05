@@ -1,9 +1,4 @@
-import type {
-  ImportMapper,
-  TsCodeFragment,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
-import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
@@ -13,17 +8,14 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-  TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createConfigFieldMap,
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-  createProviderType,
 } from '@halfdomelabs/sync';
-import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
@@ -43,7 +35,7 @@ const descriptorSchema = z.object({
 /**
  * A field in the config service that will be added to the config schema
  */
-interface ConfigField {
+export interface ConfigServiceField {
   /**
    * The comment to attach to the config field
    */
@@ -62,18 +54,27 @@ interface ConfigField {
   exampleValue?: string;
 }
 
-const configServiceConfigSchema = createFieldMapSchemaBuilder((t) => ({
-  configFields: t.map(new Map<string, ConfigField>()),
-}));
+const [setupTask, configServiceProvider, configServiceConfigValuesProvider] =
+  createConfigProviderTask(
+    (t) => ({
+      configFields: t.mapFromObj<ConfigServiceField>({
+        APP_ENVIRONMENT: {
+          comment: 'Environment the app is running in',
+          validator: tsCodeFragment(
+            `z.enum(['development', 'test', 'staging', 'production'])`,
+            tsImportBuilder().named('z').from('zod'),
+          ),
+          exampleValue: 'development',
+        },
+      }),
+    }),
+    {
+      prefix: 'config-service',
+      configScope: projectScope,
+    },
+  );
 
-export interface ConfigServiceProvider
-  extends ImportMapper,
-    InferFieldMapSchemaFromBuilder<typeof configServiceConfigSchema> {
-  getConfigExpression(): TypescriptCodeExpression;
-}
-
-export const configServiceProvider =
-  createProviderType<ConfigServiceProvider>('config-service');
+export { configServiceProvider };
 
 /**
  * The generator for the Fastify config service that provides a typed
@@ -104,57 +105,30 @@ export const configServiceGenerator = createGenerator({
         nodeGitIgnore.addExclusions(['/.env', '/.*.env']);
       },
     ),
+    setup: setupTask,
+    imports: createGeneratorTask({
+      exports: {
+        configServiceImports: configServiceImportsProvider.export(projectScope),
+      },
+      run() {
+        return {
+          providers: {
+            configServiceImports: createConfigServiceImports('@/src/services'),
+          },
+        };
+      },
+    }),
     // create the config service
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        configServiceConfigValues: configServiceConfigValuesProvider,
       },
-      exports: {
-        configService: configServiceProvider.export(projectScope),
-        configServiceImports: configServiceImportsProvider.export(projectScope),
-      },
-      run({ typescriptFile }) {
-        const configServiceConfig = createConfigFieldMap(
-          configServiceConfigSchema,
-        );
-
-        configServiceConfig.configFields.set(
-          'APP_ENVIRONMENT',
-          {
-            comment: 'Environment the app is running in',
-            validator: tsCodeFragment(
-              `z.enum(['development', 'test', 'staging', 'production'])`,
-              tsImportBuilder().named('z').from('zod'),
-            ),
-            exampleValue: 'development',
-          },
-          'configService',
-        );
-
+      run({ typescriptFile, configServiceConfigValues: { configFields } }) {
         return {
-          providers: {
-            configService: {
-              ...configServiceConfig,
-              getConfigExpression: () =>
-                TypescriptCodeUtils.createExpression(
-                  'config',
-                  "import { config } from '@/src/services/config.js'",
-                ),
-              getImportMap: () => ({
-                '%config': {
-                  path: '@/src/services/config.js',
-                  allowedImports: ['config'],
-                },
-              }),
-            },
-            configServiceImports: createConfigServiceImports('@/src/services'),
-          },
           build: async (builder) => {
-            // write config service file
-            const config = configServiceConfig.getValues();
-
             const sortedConfigEntries = sortBy(
-              [...config.configFields],
+              [...configFields],
               [(entry) => entry[0]],
             );
             const sortedConfigFields = sortedConfigEntries.map(

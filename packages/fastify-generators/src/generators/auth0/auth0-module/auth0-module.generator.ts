@@ -16,10 +16,7 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { authContextImportsProvider } from '@src/generators/auth/auth-context/auth-context.generator.js';
 import { authRolesImportsProvider } from '@src/generators/auth/auth-roles/auth-roles.generator.js';
-import {
-  userSessionServiceImportsProvider,
-  userSessionServiceProvider,
-} from '@src/generators/auth/index.js';
+import { userSessionServiceImportsProvider } from '@src/generators/auth/index.js';
 import { userSessionTypesImportsProvider } from '@src/generators/auth/user-session-types/user-session-types.generator.js';
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 import {
@@ -27,7 +24,7 @@ import {
   configServiceProvider,
 } from '@src/generators/core/config-service/config-service.generator.js';
 import { fastifyServerConfigProvider } from '@src/generators/core/index.js';
-import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
+import { loggerServiceConfigProvider } from '@src/generators/core/logger-service/logger-service.generator.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
 
 import { createAuth0ModuleImports } from './generated/ts-import-maps.js';
@@ -99,7 +96,6 @@ export const auth0ModuleGenerator = createGenerator({
         authContextImports: authContextImportsProvider,
       },
       exports: {
-        userSessionService: userSessionServiceProvider.export(projectScope),
         userSessionServiceImports:
           userSessionServiceImportsProvider.export(projectScope),
       },
@@ -117,14 +113,6 @@ export const auth0ModuleGenerator = createGenerator({
         return {
           providers: {
             auth0Module: {},
-            userSessionService: {
-              getImportMap: () => ({
-                '%user-session-service': {
-                  path: userSessionServicePath,
-                  allowedImports: ['userSessionService'],
-                },
-              }),
-            },
             userSessionServiceImports: createAuth0ModuleImports(
               `${appModule.getModuleFolder()}/services`,
             ),
@@ -189,10 +177,10 @@ export const auth0ModuleGenerator = createGenerator({
     }),
     loggerSetup: createGeneratorTask({
       dependencies: {
-        loggerServiceSetup: loggerServiceSetupProvider,
+        loggerServiceConfig: loggerServiceConfigProvider,
       },
-      run({ loggerServiceSetup }) {
-        loggerServiceSetup.addMixin(
+      run({ loggerServiceConfig }) {
+        loggerServiceConfig.mixins.set(
           'userId',
           tsCodeFragment(
             "requestContext.get('userId')",

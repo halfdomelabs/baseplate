@@ -1,8 +1,4 @@
-import type {
-  ImportMapper,
-  TsCodeFragment,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 import type { formatSchema } from '@prisma/internals';
 
 import {
@@ -13,7 +9,6 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsTemplate,
-  TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -64,26 +59,16 @@ export interface PrismaSchemaProvider {
 export const prismaSchemaProvider =
   createProviderType<PrismaSchemaProvider>('prisma-schema');
 
-export interface PrismaOutputProvider extends ImportMapper {
+export interface PrismaOutputProvider {
   getPrismaServicePath(): string;
-  getPrismaClient(): TypescriptCodeExpression;
   getPrismaModel(model: string): PrismaOutputModel;
   getServiceEnum(name: string): ServiceOutputEnum;
-  getPrismaModelExpression(model: string): TypescriptCodeExpression;
   getPrismaModelFragment(model: string): TsCodeFragment;
   getModelTypeFragment(model: string): TsCodeFragment;
-  getModelTypeExpression(model: string): TypescriptCodeExpression;
 }
 
 export const prismaOutputProvider =
   createReadOnlyProviderType<PrismaOutputProvider>('prisma-output');
-
-export type PrismaCrudServiceTypesProvider = ImportMapper;
-
-export const prismaCrudServiceTypesProvider =
-  createProviderType<PrismaCrudServiceTypesProvider>(
-    'prisma-crud-service-types',
-  );
 
 const internalRequire = createRequire(import.meta.url);
 
@@ -237,18 +222,7 @@ export const prismaGenerator = createGenerator({
 
             return {
               prismaOutput: {
-                getImportMap: () => ({
-                  '%prisma-service': {
-                    path: '@/src/services/prisma.js',
-                    allowedImports: ['prisma'],
-                  },
-                }),
                 getPrismaServicePath: () => '@/src/services/prisma.js',
-                getPrismaClient: () =>
-                  TypescriptCodeUtils.createExpression(
-                    'prisma',
-                    "import { prisma } from '@/src/services/prisma.js'",
-                  ),
                 getPrismaModel: (modelName) => {
                   const modelBlock = schemaFile.getModelBlock(modelName);
                   if (!modelBlock) {
@@ -270,15 +244,6 @@ export const prismaGenerator = createGenerator({
                     ),
                   };
                 },
-                getPrismaModelExpression: (modelName) => {
-                  const modelExport =
-                    modelName.charAt(0).toLocaleLowerCase() +
-                    modelName.slice(1);
-                  return TypescriptCodeUtils.createExpression(
-                    `prisma.${modelExport}`,
-                    "import { prisma } from '@/src/services/prisma.js'",
-                  );
-                },
                 getPrismaModelFragment: (modelName) => {
                   const modelExport =
                     modelName.charAt(0).toLocaleLowerCase() +
@@ -287,11 +252,6 @@ export const prismaGenerator = createGenerator({
                 },
                 getModelTypeFragment: (modelName) =>
                   TsCodeUtils.importFragment(modelName, '@prisma/client'),
-                getModelTypeExpression: (modelName) =>
-                  TypescriptCodeUtils.createExpression(
-                    modelName,
-                    `import { ${modelName} } from '@prisma/client'`,
-                  ),
               },
             };
           },

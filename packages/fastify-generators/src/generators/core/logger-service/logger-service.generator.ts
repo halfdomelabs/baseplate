@@ -1,23 +1,17 @@
-import type {
-  ImportMapper,
-  TsCodeFragment,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
   extractPackageVersions,
   projectScope,
   TsCodeUtils,
-  TypescriptCodeUtils,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
   createProviderTask,
-  createProviderType,
 } from '@halfdomelabs/sync';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
@@ -29,34 +23,27 @@ import {
 } from './generated/ts-import-maps.js';
 import { CORE_LOGGER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
-export interface LoggerServiceSetupProvider extends ImportMapper {
-  addMixin(key: string, expression: TsCodeFragment): void;
-}
-
-export const loggerServiceSetupProvider =
-  createProviderType<LoggerServiceSetupProvider>('logger-service-setup');
-
-export interface LoggerServiceProvider extends ImportMapper {
-  /**
-   * Exports expression of singleton loggerService with standard methods:
-   *  - .debug
-   *  - .info
-   *  - .error
-   *  - .log
-   *  - .warn
-   */
-  getLogger(): TypescriptCodeExpression;
-}
-
-export const loggerServiceProvider = createProviderType<LoggerServiceProvider>(
-  'logger-service',
-  { isReadOnly: true },
+const [
+  setupTask,
+  loggerServiceConfigProvider,
+  loggerServiceConfigValuesProvider,
+] = createConfigProviderTask(
+  (t) => ({
+    mixins: t.map<string, TsCodeFragment>(),
+  }),
+  {
+    prefix: 'logger-service',
+    configScope: projectScope,
+  },
 );
+
+export { loggerServiceConfigProvider };
 
 export const loggerServiceGenerator = createGenerator({
   name: 'core/logger-service',
   generatorFileUrl: import.meta.url,
   buildTasks: () => ({
+    setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['pino']),
       dev: extractPackageVersions(FASTIFY_PACKAGES, ['pino-pretty']),
@@ -64,49 +51,25 @@ export const loggerServiceGenerator = createGenerator({
     fastify: createProviderTask(fastifyProvider, (fastify) => {
       fastify.devOutputFormatter.set('pino-pretty -t');
     }),
+    imports: createGeneratorTask({
+      exports: {
+        loggerServiceImports: loggerServiceImportsProvider.export(projectScope),
+      },
+      run() {
+        return {
+          providers: {
+            loggerServiceImports: createLoggerServiceImports('@/src/services'),
+          },
+        };
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        loggerServiceConfigValues: loggerServiceConfigValuesProvider,
       },
-      exports: {
-        loggerServiceSetup: loggerServiceSetupProvider.export(projectScope),
-        loggerService: loggerServiceProvider.export(projectScope),
-      },
-      outputs: {
-        loggerServiceImports: loggerServiceImportsProvider.export(projectScope),
-      },
-      run({ typescriptFile }) {
-        const mixins = createNonOverwriteableMap<
-          Record<string, TsCodeFragment>
-        >({}, { name: 'logger-service-mixins' });
-
-        const importMap = {
-          '%logger-service': {
-            path: '@/src/services/logger.js',
-            allowedImports: ['logger'],
-          },
-        };
-
+      run({ typescriptFile, loggerServiceConfigValues: { mixins } }) {
         return {
-          providers: {
-            loggerServiceSetup: {
-              addMixin(key, expression) {
-                mixins.merge({ [key]: expression });
-              },
-              getImportMap: () => importMap,
-            },
-            loggerService: {
-              getLogger() {
-                return TypescriptCodeUtils.createExpression(
-                  'logger',
-                  'import { logger } from "@/src/services/logger.js"',
-                );
-              },
-              getImportMap() {
-                return importMap;
-              },
-            },
-          },
           build: async (builder) => {
             const loggerOptions: Record<string, TsCodeFragment | string> = {};
 
@@ -117,10 +80,10 @@ export const loggerServiceGenerator = createGenerator({
   },
 }`;
 
-            if (Object.keys(mixins.value()).length > 0) {
+            if (mixins.size > 0) {
               loggerOptions.mixin = TsCodeUtils.template`
                 function mixin() {
-                  return ${TsCodeUtils.mergeFragmentsAsObject(mixins.value())};
+                  return ${TsCodeUtils.mergeFragmentsAsObject(mixins)};
                 }`;
             }
 
@@ -136,11 +99,6 @@ export const loggerServiceGenerator = createGenerator({
                 destination: 'src/services/logger.ts',
               }),
             );
-
-            return {
-              loggerServiceImports:
-                createLoggerServiceImports('@/src/services'),
-            };
           },
         };
       },
