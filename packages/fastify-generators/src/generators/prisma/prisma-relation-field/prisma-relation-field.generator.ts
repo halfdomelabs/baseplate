@@ -60,8 +60,9 @@ export const prismaRelationFieldGenerator = createGenerator({
 
         prismaModel.addField({
           name,
-          type: `${modelName}${optional ? '?' : ''}`,
+          type: modelName,
           fieldType: 'relation',
+          isOptional: optional,
           attributes: [
             {
               name: '@relation',
@@ -81,7 +82,9 @@ export const prismaRelationFieldGenerator = createGenerator({
         if (foreignRelationName) {
           foreignModel.addField({
             name: foreignRelationName,
-            type: `${prismaModel.getName()}${isManyToOne ? '[]' : '?'}`,
+            type: prismaModel.getName(),
+            isList: isManyToOne,
+            isOptional: !isManyToOne,
             fieldType: 'relation',
             attributes: relationshipName
               ? [{ name: '@relation', args: [doubleQuot(relationshipName)] }]

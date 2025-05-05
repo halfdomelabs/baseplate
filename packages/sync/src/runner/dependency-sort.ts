@@ -79,7 +79,7 @@ export function getSortedRunSteps(
   const fullSteps = entries.flatMap(({ id }) => [`init|${id}`, `build|${id}`]);
   const fullEdges = dependencyGraph;
 
-  const result = toposortDfs(fullSteps, fullEdges);
+  const result = toposortDfs(fullSteps, fullEdges.reverse());
 
   return {
     steps: result,

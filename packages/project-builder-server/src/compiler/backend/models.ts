@@ -24,6 +24,7 @@ function buildScalarField(
   builder: BackendAppEntryBuilder,
   model: ModelConfig,
   field: ModelScalarFieldConfig,
+  order: number,
 ): GeneratorBundle {
   const { options = {} } = field;
   const { primaryKeyFieldRefs, uniqueConstraints } = model.model;
@@ -36,6 +37,7 @@ function buildScalarField(
   return prismaFieldGenerator({
     name: field.name,
     type: field.type,
+    order,
     id: isId,
     options: {
       autoGenerate: options.genUuid,
@@ -117,8 +119,8 @@ function buildModel(
   return prismaModelGenerator({
     name: model.name,
     children: {
-      fields: model.model.fields.map((field) =>
-        buildScalarField(appBuilder, model, field),
+      fields: model.model.fields.map((field, idx) =>
+        buildScalarField(appBuilder, model, field, idx),
       ),
       relations: model.model.relations?.map((r) =>
         buildRelationField(appBuilder, r, model),
