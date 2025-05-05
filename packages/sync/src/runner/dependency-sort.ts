@@ -1,4 +1,4 @@
-import { notEmpty, toposort, toposortDfs } from '@halfdomelabs/utils';
+import { notEmpty, toposort } from '@halfdomelabs/utils';
 
 import type { GeneratorOutputMetadata } from '@src/output/generator-task-output.js';
 
@@ -79,7 +79,7 @@ export function getSortedRunSteps(
   const fullSteps = entries.flatMap(({ id }) => [`init|${id}`, `build|${id}`]);
   const fullEdges = dependencyGraph;
 
-  const result = toposortDfs(fullSteps, fullEdges);
+  const result = toposort(fullSteps, fullEdges);
 
   return {
     steps: result,
