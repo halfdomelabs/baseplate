@@ -6,8 +6,9 @@ import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
 import { getSyncMetadata } from '@src/services/api/sync';
+import { IS_PREVIEW } from '@src/services/config';
 import { logAndFormatError } from '@src/services/error-formatter';
-import { trpc } from '@src/services/trpc';
+import { trpc, trpcWebsocketEvents } from '@src/services/trpc';
 
 import { useProjects } from './useProjects';
 
@@ -40,18 +41,33 @@ export function useSyncMetadataListener(): void {
       return;
     }
 
+    if (IS_PREVIEW) {
+      return;
+    }
+
     let cancelled = false;
 
-    getSyncMetadata(currentProjectId)
-      .then((metadata) => {
-        if (cancelled) {
-          return;
-        }
-        setMetadata(metadata);
-      })
-      .catch((error: unknown) => {
-        toast.error(logAndFormatError(error, 'Failed to fetch sync metadata.'));
-      });
+    const fetchSyncMetadata = (): void => {
+      getSyncMetadata(currentProjectId)
+        .then((metadata) => {
+          if (cancelled) {
+            return;
+          }
+          setMetadata(metadata);
+        })
+        .catch((error: unknown) => {
+          toast.error(
+            logAndFormatError(error, 'Failed to fetch sync metadata.'),
+          );
+        });
+    };
+
+    fetchSyncMetadata();
+
+    const unsubscribeFromWebsocket = trpcWebsocketEvents.on(
+      'open',
+      fetchSyncMetadata,
+    );
 
     const subscription = trpc.sync.onSyncMetadataChanged.subscribe(
       { id: currentProjectId },
@@ -85,6 +101,7 @@ export function useSyncMetadataListener(): void {
     return () => {
       subscription.unsubscribe();
       syncCompletedSubscription.unsubscribe();
+      unsubscribeFromWebsocket();
       cancelled = true;
     };
   }, [currentProjectId, setMetadata]);

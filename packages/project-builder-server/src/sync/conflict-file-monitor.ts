@@ -17,6 +17,11 @@ const FS_WATCHER_OPTIONS: ChokidarOptions = {
   awaitWriteFinish: {
     stabilityThreshold: 1000,
   },
+  ignoreInitial: true,
+  // we use polling since fs events has some glitchiness with regards to deleting
+  // the parent directory of a file that is being deleted
+  usePolling: true,
+  interval: 500,
 };
 
 /**
@@ -55,6 +60,16 @@ export class ConflictFileMonitor {
       this.conflictFiles,
     );
     this.conflictFileWatcher.add([...conflictFilesToWatch]);
+    // trigger the change event for each file on first load since
+    // chokidar won't trigger the event for files that do not exist
+    for (const filePath of conflictFilesToWatch) {
+      this.handleFileChange(filePath).catch((err: unknown) => {
+        this.logger.error(
+          `Error handling conflict file change: ${String(err)}`,
+        );
+      });
+    }
+
     const conflictFilesToUnwatch = differenceSet(
       this.conflictFiles,
       newConflictFiles,
@@ -119,7 +134,10 @@ export class ConflictFileMonitor {
    * This method will start the monitor and watch for changes in the metadata.
    */
   public async start(): Promise<void> {
-    const handleConflictFileChange = (filePath: string): void => {
+    const handleConflictFileChange = (
+      event: string,
+      filePath: string,
+    ): void => {
       this.handleFileChange(filePath).catch((err: unknown) => {
         this.logger.error(
           `Error handling conflict file change: ${String(err)}`,
