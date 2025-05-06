@@ -7,6 +7,7 @@ import { runSchemaMigrations } from '@halfdomelabs/project-builder-lib';
 import { CancelledSyncError, type Logger } from '@halfdomelabs/sync';
 import { hashWithSHA256, stringifyPrettyStable } from '@halfdomelabs/utils';
 import { fileExists } from '@halfdomelabs/utils/node';
+import { mapValues } from 'es-toolkit';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
@@ -102,22 +103,26 @@ export async function buildProject({
   syncMetadataController,
   abortSignal,
 }: BuildProjectOptions): Promise<void> {
-  // Update the sync metadata to indicate that the sync is in progress
-  syncMetadataController?.updateMetadata((metadata) => ({
+  await syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
     status: 'in-progress',
     globalErrors: undefined,
+    startedAt: new Date().toISOString(),
+    // retain the packages of the previous sync initially
+    packages: mapValues(metadata.packages, (packageInfo) => ({
+      ...packageInfo,
+      status: 'not-synced',
+    })),
   }));
 
   try {
-    const { definition: projectJson, hash } = await loadProjectJson(directory);
+    const { definition: projectJson } = await loadProjectJson(directory);
     const apps = compileApplications(projectJson, context);
 
-    const existingSyncMetadata = await syncMetadataController?.getMetadata();
-    syncMetadataController?.writeMetadata({
+    await syncMetadataController?.updateMetadata((metadata) => ({
+      ...metadata,
       status: 'in-progress',
       startedAt: new Date().toISOString(),
-      projectJsonHash: hash,
       packages: Object.fromEntries(
         apps.map((app, index) => [
           app.id,
@@ -127,12 +132,16 @@ export async function buildProject({
             status: 'not-synced',
             statusMessage: undefined,
             order: index,
-            // Keep the result from the previous sync if it exists
-            result: existingSyncMetadata?.packages[app.id]?.result,
+            // Keep the result from the previous sync if it exists so we can
+            // keep any errored commands from the previous sync.
+            result:
+              app.id in metadata.packages
+                ? metadata.packages[app.id].result
+                : undefined,
           },
         ]),
       ),
-    });
+    }));
 
     let hasErrors = false;
     let wasCancelled = false;
@@ -144,13 +153,12 @@ export async function buildProject({
           break;
         }
 
-        syncMetadataController?.updateMetadataForPackage(
+        await syncMetadataController?.updateMetadataForPackage(
           app.id,
-          (metadata) => ({
-            ...metadata,
-            status: 'in-progress',
-          }),
+          (metadata) => ({ ...metadata, status: 'in-progress' }),
         );
+        const metadata = await syncMetadataController?.getMetadata();
+        const packageInfo = metadata?.packages[app.id];
 
         const fileIdRegexWhitelist =
           projectJson.templateExtractor?.fileIdRegexWhitelist.split('\n') ?? [];
@@ -178,8 +186,7 @@ export async function buildProject({
               }
             : undefined,
           userConfig,
-          previousPackageSyncResult:
-            existingSyncMetadata?.packages[app.id]?.result,
+          previousPackageSyncResult: packageInfo?.result,
           abortSignal,
         });
       } catch (err) {
@@ -208,15 +215,18 @@ export async function buildProject({
           hasErrors = true;
         }
       }
-      syncMetadataController?.updateMetadataForPackage(app.id, (metadata) => ({
-        ...metadata,
-        status: getPackageSyncStatusFromResult(newResult),
-        statusMessage: undefined,
-        result: newResult,
-      }));
+      await syncMetadataController?.updateMetadataForPackage(
+        app.id,
+        (metadata) => ({
+          ...metadata,
+          status: getPackageSyncStatusFromResult(newResult),
+          statusMessage: undefined,
+          result: newResult,
+        }),
+      );
     }
 
-    syncMetadataController?.updateMetadata((metadata) => ({
+    await syncMetadataController?.updateMetadata((metadata) => ({
       ...metadata,
       status: wasCancelled ? 'cancelled' : hasErrors ? 'error' : 'success',
       completedAt: new Date().toISOString(),
@@ -230,7 +240,7 @@ export async function buildProject({
       logger.info(`Project written to ${directory}!`);
     }
   } catch (err) {
-    syncMetadataController?.updateMetadata((metadata) => ({
+    await syncMetadataController?.updateMetadata((metadata) => ({
       ...metadata,
       status: 'error',
       completedAt: new Date().toISOString(),

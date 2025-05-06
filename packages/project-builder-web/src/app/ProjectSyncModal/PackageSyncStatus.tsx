@@ -15,20 +15,6 @@ interface Props {
 export function PackageSyncStatus({ className }: Props): React.JSX.Element {
   const metadata = useSyncMetadata();
 
-  // Handle loading state
-  if (!metadata) {
-    return (
-      <div
-        className={clsx(
-          'flex h-40 items-center justify-center text-muted-foreground',
-          className,
-        )}
-      >
-        <span>Loading sync status...</span>
-      </div>
-    );
-  }
-
   if (metadata.globalErrors?.length) {
     return (
       <Alert variant="error">
@@ -44,10 +30,19 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
     );
   }
 
-  const packageEntries = Object.entries(metadata.packages);
-
-  if (packageEntries.length === 0) {
-    return (
+  const hasPackages = Object.keys(metadata.packages).length > 0;
+  if (!hasPackages) {
+    return metadata.status === 'not-started' ||
+      metadata.status === 'in-progress' ? (
+      <div
+        className={clsx(
+          'flex h-40 items-center justify-center text-muted-foreground',
+          className,
+        )}
+      >
+        <span>Waiting for sync to start...</span>
+      </div>
+    ) : (
       <Alert variant="default">
         <Alert.Title>No packages found to be synced.</Alert.Title>
         <Alert.Description>
@@ -56,6 +51,8 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
       </Alert>
     );
   }
+
+  const packageEntries = Object.entries(metadata.packages);
 
   const sortedPackageEntries = sortBy(packageEntries, [
     ([, packageInfo]) => packageInfo.order,

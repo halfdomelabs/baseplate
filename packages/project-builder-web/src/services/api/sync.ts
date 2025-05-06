@@ -19,13 +19,10 @@ export async function startSync(id: string): Promise<void> {
     .catch(createProjectNotFoundHandler(id));
 }
 
-export async function getSyncMetadata(
-  id: string,
-): Promise<SyncMetadata | undefined> {
+export async function getSyncMetadata(id: string): Promise<SyncMetadata> {
   if (IS_PREVIEW) {
     return {
       status: 'in-progress',
-      projectJsonHash: '123',
       startedAt: new Date().toISOString(),
       packages: {
         ['app:NmEolDU3Iggt']: {

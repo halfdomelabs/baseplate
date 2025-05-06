@@ -11,11 +11,16 @@ import { trpc } from '@src/services/trpc';
 
 import { useProjects } from './useProjects';
 
+const INITIAL_SYNC_METADATA: SyncMetadata = {
+  status: 'not-started',
+  packages: {},
+};
+
 const useSyncMetadataStore = create<{
-  metadata: SyncMetadata | undefined;
-  setMetadata: (metadata: SyncMetadata | undefined) => void;
+  metadata: SyncMetadata;
+  setMetadata: (metadata: SyncMetadata) => void;
 }>((set) => ({
-  metadata: undefined,
+  metadata: INITIAL_SYNC_METADATA,
   setMetadata: (metadata) => {
     set({ metadata });
   },
@@ -30,7 +35,7 @@ export function useSyncMetadataListener(): void {
   const { setMetadata } = useSyncMetadataStore();
 
   useEffect(() => {
-    setMetadata(undefined);
+    setMetadata(INITIAL_SYNC_METADATA);
     if (!currentProjectId) {
       return;
     }
@@ -90,13 +95,10 @@ export function useSyncMetadataListener(): void {
  */
 export function useSyncMetadata<T = SyncMetadata>(
   selector?: (metadata: SyncMetadata) => T,
-): T | undefined {
+): T {
   return useSyncMetadataStore(
-    useShallow((state) => {
-      if (!state.metadata) {
-        return undefined;
-      }
-      return selector ? selector(state.metadata) : (state.metadata as T);
-    }),
+    useShallow((state) =>
+      selector ? selector(state.metadata) : (state.metadata as T),
+    ),
   );
 }

@@ -6,6 +6,7 @@ export class MockFSWatcher extends TypedEventEmitter<{
   add: string;
   change: string;
   unlink: string;
+  all: string;
 }> {
   private watchedPaths = new Set<string>();
 
@@ -44,6 +45,7 @@ export class MockFSWatcher extends TypedEventEmitter<{
   simulateFileEvent(event: 'add' | 'change' | 'unlink', path: string): boolean {
     if (this.watchedPaths.has(path)) {
       this.emit(event, path);
+      this.emit('all', path);
       return true;
     }
     return false;

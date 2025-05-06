@@ -35,9 +35,7 @@ export class ConflictFileMonitor {
     private logger: Logger,
   ) {}
 
-  private handleMetadataChange(metadata: SyncMetadata | undefined): void {
-    if (!metadata) return;
-
+  private handleMetadataChange(metadata: SyncMetadata): void {
     const newConflictFiles = new Set<string>();
     for (const packageInfo of Object.values(metadata.packages)) {
       const { result } = packageInfo;
@@ -79,15 +77,12 @@ export class ConflictFileMonitor {
   }
 
   private async handleFileChange(filePath: string): Promise<void> {
-    const metadata = await this.syncMetadataController.getMetadata();
-    if (!metadata) return;
-
     const doesFileExist = await fileExists(filePath);
     const isResolved =
       !doesFileExist || (await this.checkFileForConflicts(filePath));
 
     if (isResolved) {
-      this.syncMetadataController.updateMetadata(
+      await this.syncMetadataController.updateMetadata(
         produce((draft) => {
           for (const packageInfo of Object.values(draft.packages)) {
             const relativePath = path.relative(packageInfo.path, filePath);
@@ -132,15 +127,11 @@ export class ConflictFileMonitor {
       });
     };
 
-    this.conflictFileWatcher.on('add', handleConflictFileChange);
-    this.conflictFileWatcher.on('change', handleConflictFileChange);
-    this.conflictFileWatcher.on('unlink', handleConflictFileChange);
+    this.conflictFileWatcher.on('all', handleConflictFileChange);
 
     try {
       const metadata = await this.syncMetadataController.getMetadata();
-      if (metadata) {
-        this.handleMetadataChange(metadata);
-      }
+      this.handleMetadataChange(metadata);
     } catch (err) {
       this.logger.error(
         `Error getting initial metadata for conflict file monitor: ${String(err)}`,
