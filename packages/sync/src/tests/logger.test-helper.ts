@@ -1,11 +1,13 @@
 import type { Logger } from '@src/utils/evented-logger.js';
 
-export function createTestLogger(): Logger & {
+export interface TestLogger extends Logger {
   getErrorOutput(): string;
   getWarnOutput(): string;
   getInfoOutput(): string;
   getDebugOutput(): string;
-} {
+}
+
+export function createTestLogger(): TestLogger {
   let [errorOutput, warnOutput, infoOutput, debugOutput] = Array.from({
     length: 4,
   }).fill('') as string[];

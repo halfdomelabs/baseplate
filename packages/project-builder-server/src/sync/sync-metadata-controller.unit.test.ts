@@ -1,84 +1,91 @@
-import type { Logger } from '@halfdomelabs/sync';
+import type { TestLogger } from '@halfdomelabs/sync';
 
+import { createTestLogger } from '@halfdomelabs/sync';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { PackageSyncInfo, SyncMetadata } from './sync-metadata.js';
-
+import {
+  emitMockFsWatcherEvent,
+  getMockFsWatchedFiles,
+  MockFSWatcher,
+  resetMockFsWatchers,
+} from '../tests/chokidar.test-helper.js';
 import { SyncMetadataController } from './sync-metadata-controller.js';
 import {
   readSyncMetadata,
   writeSyncMetadata,
 } from './sync-metadata-service.js';
+import {
+  INITIAL_SYNC_METADATA,
+  type PackageSyncInfo,
+  type SyncMetadata,
+} from './sync-metadata.js';
 
 vi.mock('./sync-metadata-service.js');
+vi.mock('chokidar', () => ({
+  watch: (paths: string | string[]) => new MockFSWatcher().add(paths),
+}));
 
 describe('SyncMetadataController', () => {
   const mockProjectDirectory = '/test/project';
-  const mockLogger: Logger = {
-    info: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    debug: vi.fn(),
-  };
+  let mockLogger: TestLogger;
 
   let controller: SyncMetadataController;
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
+    mockLogger = createTestLogger();
     controller = new SyncMetadataController(mockProjectDirectory, mockLogger);
     vi.mocked(writeSyncMetadata).mockResolvedValue();
+    resetMockFsWatchers();
   });
 
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  const DEFAULT_METADATA: SyncMetadata = {
-    status: 'in-progress',
-    packages: {},
-    startedAt: '2024-01-01',
-    projectJsonHash: 'abc123',
-  };
-
   describe('getMetadata', () => {
     it('should read metadata on first call and cache it', async () => {
-      vi.mocked(readSyncMetadata).mockResolvedValue(DEFAULT_METADATA);
+      vi.mocked(readSyncMetadata).mockResolvedValue(INITIAL_SYNC_METADATA);
 
       const result1 = await controller.getMetadata();
       const result2 = await controller.getMetadata();
 
-      expect(result1).toBe(DEFAULT_METADATA);
-      expect(result2).toBe(DEFAULT_METADATA);
+      expect(result1).toEqual(INITIAL_SYNC_METADATA);
+      expect(result2).toEqual(INITIAL_SYNC_METADATA);
       expect(readSyncMetadata).toHaveBeenCalledTimes(1);
       expect(readSyncMetadata).toHaveBeenCalledWith(mockProjectDirectory);
     });
 
-    it('should return undefined if no metadata exists', async () => {
-      vi.mocked(readSyncMetadata).mockResolvedValue(undefined);
+    it('should handle invalid metadata', async () => {
+      vi.mocked(readSyncMetadata).mockRejectedValue(
+        new TypeError('Invalid JSON'),
+      );
 
       const result = await controller.getMetadata();
 
-      expect(result).toBeUndefined();
+      expect(result).toEqual(INITIAL_SYNC_METADATA);
+      expect(mockLogger.getWarnOutput()).toContain(
+        'Invalid sync metadata found in /test/project/baseplate/.build/sync_result.json. Will use default metadata instead.',
+      );
     });
   });
 
   describe('writeMetadata', () => {
     it('should write metadata and emit change event', () => {
-      const mockMetadata = DEFAULT_METADATA;
       const changeListener = vi.fn();
       controller.on('sync-metadata-changed', changeListener);
 
-      controller.writeMetadata(mockMetadata);
+      controller.writeMetadata(INITIAL_SYNC_METADATA);
 
       // Advance the timer to trigger the throttled function
       vi.runAllTimers();
 
       expect(writeSyncMetadata).toHaveBeenCalledWith(
         mockProjectDirectory,
-        mockMetadata,
+        INITIAL_SYNC_METADATA,
       );
-      expect(changeListener).toHaveBeenCalledWith(mockMetadata);
+      expect(changeListener).toHaveBeenCalledWith(INITIAL_SYNC_METADATA);
     });
   });
 
@@ -86,7 +93,7 @@ describe('SyncMetadataController', () => {
     it('should update package metadata and write changes', async () => {
       const packageId = 'test-package';
       const initialMetadata: SyncMetadata = {
-        ...DEFAULT_METADATA,
+        ...INITIAL_SYNC_METADATA,
         packages: {
           [packageId]: {
             name: 'test',
@@ -104,12 +111,12 @@ describe('SyncMetadataController', () => {
         status: 'success' as const,
       });
 
-      controller.updateMetadataForPackage(packageId, updateFn);
+      await controller.updateMetadataForPackage(packageId, updateFn);
 
       vi.runAllTimers();
 
       expect(writeSyncMetadata).toHaveBeenCalledWith(mockProjectDirectory, {
-        ...DEFAULT_METADATA,
+        ...INITIAL_SYNC_METADATA,
         packages: {
           [packageId]: {
             name: 'test',
@@ -120,34 +127,11 @@ describe('SyncMetadataController', () => {
         },
       });
     });
-
-    it('should throw error if no metadata exists', () => {
-      const testFn = (): void => {
-        controller.updateMetadataForPackage('test-package', (m) => m);
-      };
-      expect(testFn).toThrow('No metadata found');
-    });
-
-    it('should throw error if package not found', async () => {
-      const initialMetadata: SyncMetadata = {
-        ...DEFAULT_METADATA,
-      };
-      vi.mocked(readSyncMetadata).mockResolvedValue(initialMetadata);
-      await controller.getMetadata();
-
-      const testFn = (): void => {
-        controller.updateMetadataForPackage('non-existent', (m) => m);
-      };
-      expect(testFn).toThrow('No package metadata found for non-existent');
-    });
   });
 
   describe('updateMetadata', () => {
     it('should update metadata and write changes', async () => {
-      const initialMetadata: SyncMetadata = {
-        ...DEFAULT_METADATA,
-      };
-      vi.mocked(readSyncMetadata).mockResolvedValue(initialMetadata);
+      vi.mocked(readSyncMetadata).mockResolvedValue(INITIAL_SYNC_METADATA);
       await controller.getMetadata();
 
       const updateFn = (metadata: SyncMetadata): SyncMetadata => ({
@@ -156,15 +140,72 @@ describe('SyncMetadataController', () => {
         completedAt: '2024-01-01',
       });
 
-      controller.updateMetadata(updateFn);
+      await controller.updateMetadata(updateFn);
 
       vi.runAllTimers();
 
       expect(writeSyncMetadata).toHaveBeenCalledWith(mockProjectDirectory, {
-        ...DEFAULT_METADATA,
+        ...INITIAL_SYNC_METADATA,
         status: 'success',
         completedAt: '2024-01-01',
       });
+    });
+  });
+
+  describe('watchMetadata', () => {
+    it('should watch the metadata file and handle changes', async () => {
+      const changeListener = vi.fn();
+      controller.on('sync-metadata-changed', changeListener);
+
+      const stopWatching = controller.watchMetadata();
+
+      // Verify the watcher was set up correctly
+      const watchedPaths = getMockFsWatchedFiles();
+      expect(watchedPaths).toContain(
+        '/test/project/baseplate/.build/sync_result.json',
+      );
+
+      // Simulate a file change
+      const newMetadata: SyncMetadata = {
+        ...INITIAL_SYNC_METADATA,
+        status: 'success',
+        completedAt: '2024-01-01',
+      };
+      vi.mocked(readSyncMetadata).mockResolvedValue(newMetadata);
+
+      emitMockFsWatcherEvent(
+        'change',
+        '/test/project/baseplate/.build/sync_result.json',
+      );
+      await vi.runAllTimersAsync();
+
+      expect(changeListener).toHaveBeenCalledWith(newMetadata);
+      expect(readSyncMetadata).toHaveBeenCalledWith(mockProjectDirectory);
+
+      // Clean up
+      stopWatching();
+    });
+
+    it('should handle errors when reading metadata during watch', async () => {
+      const changeListener = vi.fn();
+      controller.on('sync-metadata-changed', changeListener);
+
+      const stopWatching = controller.watchMetadata();
+
+      // Simulate an error reading the metadata
+      vi.mocked(readSyncMetadata).mockRejectedValue(new Error('Read error'));
+
+      emitMockFsWatcherEvent(
+        'change',
+        '/test/project/baseplate/.build/sync_result.json',
+      );
+      await vi.runAllTimersAsync();
+
+      expect(changeListener).not.toHaveBeenCalled();
+      expect(mockLogger.getErrorOutput()).toContain('Read error');
+
+      // Clean up
+      stopWatching();
     });
   });
 });

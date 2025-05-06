@@ -6,16 +6,22 @@ import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
 import { getSyncMetadata } from '@src/services/api/sync';
+import { IS_PREVIEW } from '@src/services/config';
 import { logAndFormatError } from '@src/services/error-formatter';
-import { trpc } from '@src/services/trpc';
+import { trpc, trpcWebsocketEvents } from '@src/services/trpc';
 
 import { useProjects } from './useProjects';
 
+const INITIAL_SYNC_METADATA: SyncMetadata = {
+  status: 'not-started',
+  packages: {},
+};
+
 const useSyncMetadataStore = create<{
-  metadata: SyncMetadata | undefined;
-  setMetadata: (metadata: SyncMetadata | undefined) => void;
+  metadata: SyncMetadata;
+  setMetadata: (metadata: SyncMetadata) => void;
 }>((set) => ({
-  metadata: undefined,
+  metadata: INITIAL_SYNC_METADATA,
   setMetadata: (metadata) => {
     set({ metadata });
   },
@@ -30,23 +36,38 @@ export function useSyncMetadataListener(): void {
   const { setMetadata } = useSyncMetadataStore();
 
   useEffect(() => {
-    setMetadata(undefined);
+    setMetadata(INITIAL_SYNC_METADATA);
     if (!currentProjectId) {
+      return;
+    }
+
+    if (IS_PREVIEW) {
       return;
     }
 
     let cancelled = false;
 
-    getSyncMetadata(currentProjectId)
-      .then((metadata) => {
-        if (cancelled) {
-          return;
-        }
-        setMetadata(metadata);
-      })
-      .catch((error: unknown) => {
-        toast.error(logAndFormatError(error, 'Failed to fetch sync metadata.'));
-      });
+    const fetchSyncMetadata = (): void => {
+      getSyncMetadata(currentProjectId)
+        .then((metadata) => {
+          if (cancelled) {
+            return;
+          }
+          setMetadata(metadata);
+        })
+        .catch((error: unknown) => {
+          toast.error(
+            logAndFormatError(error, 'Failed to fetch sync metadata.'),
+          );
+        });
+    };
+
+    fetchSyncMetadata();
+
+    const unsubscribeFromWebsocket = trpcWebsocketEvents.on(
+      'open',
+      fetchSyncMetadata,
+    );
 
     const subscription = trpc.sync.onSyncMetadataChanged.subscribe(
       { id: currentProjectId },
@@ -60,7 +81,6 @@ export function useSyncMetadataListener(): void {
       { id: currentProjectId },
       {
         onData: (data) => {
-          if (!data.syncMetadata) return;
           const { status } = data.syncMetadata;
 
           const hasConflicts = Object.values(data.syncMetadata.packages).some(
@@ -80,6 +100,7 @@ export function useSyncMetadataListener(): void {
     return () => {
       subscription.unsubscribe();
       syncCompletedSubscription.unsubscribe();
+      unsubscribeFromWebsocket();
       cancelled = true;
     };
   }, [currentProjectId, setMetadata]);
@@ -90,13 +111,10 @@ export function useSyncMetadataListener(): void {
  */
 export function useSyncMetadata<T = SyncMetadata>(
   selector?: (metadata: SyncMetadata) => T,
-): T | undefined {
+): T {
   return useSyncMetadataStore(
-    useShallow((state) => {
-      if (!state.metadata) {
-        return undefined;
-      }
-      return selector ? selector(state.metadata) : (state.metadata as T);
-    }),
+    useShallow((state) =>
+      selector ? selector(state.metadata) : (state.metadata as T),
+    ),
   );
 }

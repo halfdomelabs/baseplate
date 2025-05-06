@@ -1,12 +1,9 @@
-import { TypedEventEmitter } from '@halfdomelabs/utils';
+import EventEmitter from 'node:events';
 
 const mockFsWatchers = new Set<MockFSWatcher>();
 
-export class MockFSWatcher extends TypedEventEmitter<{
-  add: string;
-  change: string;
-  unlink: string;
-}> {
+// eslint-disable-next-line unicorn/prefer-event-target -- chokidar uses EventEmitter
+export class MockFSWatcher extends EventEmitter {
   private watchedPaths = new Set<string>();
 
   constructor() {
@@ -44,6 +41,7 @@ export class MockFSWatcher extends TypedEventEmitter<{
   simulateFileEvent(event: 'add' | 'change' | 'unlink', path: string): boolean {
     if (this.watchedPaths.has(path)) {
       this.emit(event, path);
+      this.emit('all', event, path);
       return true;
     }
     return false;

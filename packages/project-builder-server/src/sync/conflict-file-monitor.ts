@@ -17,6 +17,11 @@ const FS_WATCHER_OPTIONS: ChokidarOptions = {
   awaitWriteFinish: {
     stabilityThreshold: 1000,
   },
+  ignoreInitial: true,
+  // we use polling since fs events has some glitchiness with regards to deleting
+  // the parent directory of a file that is being deleted
+  usePolling: true,
+  interval: 500,
 };
 
 /**
@@ -35,9 +40,7 @@ export class ConflictFileMonitor {
     private logger: Logger,
   ) {}
 
-  private handleMetadataChange(metadata: SyncMetadata | undefined): void {
-    if (!metadata) return;
-
+  private handleMetadataChange(metadata: SyncMetadata): void {
     const newConflictFiles = new Set<string>();
     for (const packageInfo of Object.values(metadata.packages)) {
       const { result } = packageInfo;
@@ -57,6 +60,16 @@ export class ConflictFileMonitor {
       this.conflictFiles,
     );
     this.conflictFileWatcher.add([...conflictFilesToWatch]);
+    // trigger the change event for each file on first load since
+    // chokidar won't trigger the event for files that do not exist
+    for (const filePath of conflictFilesToWatch) {
+      this.handleFileChange(filePath).catch((err: unknown) => {
+        this.logger.error(
+          `Error handling conflict file change: ${String(err)}`,
+        );
+      });
+    }
+
     const conflictFilesToUnwatch = differenceSet(
       this.conflictFiles,
       newConflictFiles,
@@ -79,15 +92,12 @@ export class ConflictFileMonitor {
   }
 
   private async handleFileChange(filePath: string): Promise<void> {
-    const metadata = await this.syncMetadataController.getMetadata();
-    if (!metadata) return;
-
     const doesFileExist = await fileExists(filePath);
     const isResolved =
       !doesFileExist || (await this.checkFileForConflicts(filePath));
 
     if (isResolved) {
-      this.syncMetadataController.updateMetadata(
+      await this.syncMetadataController.updateMetadata(
         produce((draft) => {
           for (const packageInfo of Object.values(draft.packages)) {
             const relativePath = path.relative(packageInfo.path, filePath);
@@ -124,7 +134,10 @@ export class ConflictFileMonitor {
    * This method will start the monitor and watch for changes in the metadata.
    */
   public async start(): Promise<void> {
-    const handleConflictFileChange = (filePath: string): void => {
+    const handleConflictFileChange = (
+      event: string,
+      filePath: string,
+    ): void => {
       this.handleFileChange(filePath).catch((err: unknown) => {
         this.logger.error(
           `Error handling conflict file change: ${String(err)}`,
@@ -132,15 +145,11 @@ export class ConflictFileMonitor {
       });
     };
 
-    this.conflictFileWatcher.on('add', handleConflictFileChange);
-    this.conflictFileWatcher.on('change', handleConflictFileChange);
-    this.conflictFileWatcher.on('unlink', handleConflictFileChange);
+    this.conflictFileWatcher.on('all', handleConflictFileChange);
 
     try {
       const metadata = await this.syncMetadataController.getMetadata();
-      if (metadata) {
-        this.handleMetadataChange(metadata);
-      }
+      this.handleMetadataChange(metadata);
     } catch (err) {
       this.logger.error(
         `Error getting initial metadata for conflict file monitor: ${String(err)}`,

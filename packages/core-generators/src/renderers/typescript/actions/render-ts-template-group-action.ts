@@ -4,6 +4,7 @@ import {
   type ProviderType,
   type WriteFileOptions,
 } from '@halfdomelabs/sync';
+import { enhanceErrorWithContext } from '@halfdomelabs/utils';
 import { mapValues } from 'es-toolkit';
 import path from 'node:path';
 
@@ -176,8 +177,9 @@ export function renderTsTemplateGroupAction<
           await builder.apply(renderTsTemplateFileAction(fileActionInput));
           input.onRenderTemplateFile?.(fileActionInput.destination);
         } catch (error) {
-          throw new Error(
-            `Failed to render template "${fileActionInput.template.name}": ${String(error)}`,
+          throw enhanceErrorWithContext(
+            error,
+            `Failed to render template "${fileActionInput.template.name}"`,
           );
         }
       }
