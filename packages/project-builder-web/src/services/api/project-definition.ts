@@ -70,6 +70,11 @@ export function listenForProjectDefinitionChanges(
   id: string,
   onData: (value: ProjectDefinitionFilePayload) => void,
 ): () => void {
+  if (IS_PREVIEW) {
+    return () => {
+      /* no-op */
+    };
+  }
   const result = trpc.projects.onProjectJsonChanged.subscribe(
     { id },
     { onData },

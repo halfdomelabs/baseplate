@@ -22,7 +22,7 @@ export async function startSync(id: string): Promise<void> {
 export async function getSyncMetadata(id: string): Promise<SyncMetadata> {
   if (IS_PREVIEW) {
     return {
-      status: 'in-progress',
+      status: 'success',
       startedAt: new Date().toISOString(),
       packages: {
         ['app:NmEolDU3Iggt']: {
