@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 
 import { useProjects } from '@src/hooks/useProjects';
+import { IS_PREVIEW } from '@src/services/config';
 import { formatError } from '@src/services/error-formatter';
 import { trpc } from '@src/services/trpc';
 
@@ -27,6 +28,10 @@ export const Console = ({ className }: Props): React.JSX.Element => {
   // Load the current sync console output
   useEffect(() => {
     if (!currentProjectId) {
+      return;
+    }
+
+    if (IS_PREVIEW) {
       return;
     }
 

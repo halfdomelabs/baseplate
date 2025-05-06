@@ -6,6 +6,7 @@ import { EmptyDisplay, ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 
 import { useProjects } from '@src/hooks/useProjects';
+import { IS_PREVIEW } from '@src/services/config';
 import { trpc } from '@src/services/trpc';
 
 import { PluginCard } from './PluginCard';
@@ -21,6 +22,10 @@ export function PluginsHomePage(): React.JSX.Element {
   useEffect(() => {
     setPlugins(null);
     if (!currentProjectId) {
+      return;
+    }
+    if (IS_PREVIEW) {
+      setPlugins([]);
       return;
     }
     trpc.plugins.getAvailablePlugins

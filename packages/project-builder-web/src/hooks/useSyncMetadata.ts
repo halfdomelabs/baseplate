@@ -41,10 +41,6 @@ export function useSyncMetadataListener(): void {
       return;
     }
 
-    if (IS_PREVIEW) {
-      return;
-    }
-
     let cancelled = false;
 
     const fetchSyncMetadata = (): void => {
@@ -63,6 +59,10 @@ export function useSyncMetadataListener(): void {
     };
 
     fetchSyncMetadata();
+
+    if (IS_PREVIEW) {
+      return;
+    }
 
     const unsubscribeFromWebsocket = trpcWebsocketEvents.on(
       'open',
