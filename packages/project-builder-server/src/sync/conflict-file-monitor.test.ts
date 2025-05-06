@@ -46,7 +46,6 @@ describe('ConflictFileMonitor', () => {
     const testPackagePath = path.join(outputDirectory, 'test-package');
     const initialMetadata: SyncMetadata = {
       status: 'in-progress',
-      projectJsonHash: 'test-hash',
       startedAt: new Date().toISOString(),
       packages: {
         'test-package': {
@@ -85,12 +84,11 @@ describe('ConflictFileMonitor', () => {
     ]);
   });
 
-  it('should handle file changes and update metadata when conflicts are resolved', async () => {
+  it('should handle file changes for merge-conflicts and update metadata when conflicts are resolved', async () => {
     // Set up initial metadata with conflicts
     const testPackagePath = path.join(outputDirectory, 'test-package');
     const initialMetadata: SyncMetadata = {
       status: 'in-progress',
-      projectJsonHash: 'test-hash',
       startedAt: new Date().toISOString(),
       packages: {
         'test-package': {
@@ -135,9 +133,9 @@ describe('ConflictFileMonitor', () => {
 
     // Verify metadata was not updated
     const noUpdateMetadata = await syncMetadataController.getMetadata();
-    const noUpdatePackageInfo = noUpdateMetadata?.packages['test-package'];
-    expect(noUpdatePackageInfo?.status).toBe('conflicts');
-    expect(noUpdatePackageInfo?.result?.filesWithConflicts).toHaveLength(1);
+    const noUpdatePackageInfo = noUpdateMetadata.packages['test-package'];
+    expect(noUpdatePackageInfo.status).toBe('conflicts');
+    expect(noUpdatePackageInfo.result?.filesWithConflicts).toHaveLength(1);
 
     // Simulate resolving the conflict
     await vol.promises.writeFile(
@@ -157,21 +155,20 @@ describe('ConflictFileMonitor', () => {
 
     // Verify metadata was updated
     const updatedMetadata = await syncMetadataController.getMetadata();
-    const updatedPackageInfo = updatedMetadata?.packages['test-package'];
-    expect(updatedPackageInfo?.status).toBe('success');
-    expect(updatedPackageInfo?.result?.filesWithConflicts).toHaveLength(0);
+    const updatedPackageInfo = updatedMetadata.packages['test-package'];
+    expect(updatedPackageInfo.status).toBe('success');
+    expect(updatedPackageInfo.result?.filesWithConflicts).toHaveLength(0);
 
     // Verify watchers were removed
     const watchedPaths = getMockFsWatchedFiles();
     expect(watchedPaths).toEqual([]);
   });
 
-  it('should handle file deletion and update metadata for generated-deleted conflicts', async () => {
+  it('should handle file changes for generated-deleted conflicts and update metadata when conflicts are resolved', async () => {
     // Set up initial metadata with generated-deleted conflicts
     const testPackagePath = path.join(outputDirectory, 'test-package');
     const initialMetadata: SyncMetadata = {
       status: 'in-progress',
-      projectJsonHash: 'test-hash',
       startedAt: new Date().toISOString(),
       packages: {
         'test-package': {
@@ -212,9 +209,9 @@ describe('ConflictFileMonitor', () => {
 
     // Verify metadata was not updated
     const noUpdateMetadata = await syncMetadataController.getMetadata();
-    const noUpdatePackageInfo = noUpdateMetadata?.packages['test-package'];
-    expect(noUpdatePackageInfo?.status).toBe('conflicts');
-    expect(noUpdatePackageInfo?.result?.filesWithConflicts).toHaveLength(1);
+    const noUpdatePackageInfo = noUpdateMetadata.packages['test-package'];
+    expect(noUpdatePackageInfo.status).toBe('conflicts');
+    expect(noUpdatePackageInfo.result?.filesWithConflicts).toHaveLength(1);
 
     // Simulate file deletion
     await vol.promises.unlink(path.join(testPackagePath, 'delete.txt'));
@@ -230,8 +227,77 @@ describe('ConflictFileMonitor', () => {
     // Verify metadata was updated
     const updatedMetadata = await syncMetadataController.getMetadata();
     expect(
-      updatedMetadata?.packages['test-package'].result?.filesWithConflicts,
+      updatedMetadata.packages['test-package'].result?.filesWithConflicts,
     ).toHaveLength(0);
+    expect(updatedMetadata.packages['test-package'].status).toBe('success');
+  });
+
+  it('should handle file changes for working-deleted conflicts and update metadata when conflicts are resolved', async () => {
+    // Set up initial metadata with working-deleted conflicts
+    const testPackagePath = path.join(outputDirectory, 'test-package');
+    const initialMetadata: SyncMetadata = {
+      status: 'in-progress',
+      startedAt: new Date().toISOString(),
+      packages: {
+        'test-package': {
+          name: 'test-package',
+          path: testPackagePath,
+          status: 'conflicts',
+          result: {
+            filesWithConflicts: [
+              {
+                relativePath: 'delete.txt',
+                conflictType: 'working-deleted',
+              },
+            ],
+            completedAt: new Date().toISOString(),
+          },
+          order: 0,
+        },
+      },
+    };
+
+    // Mock the getMetadata method
+    syncMetadataController.writeMetadata(initialMetadata);
+
+    // Create the file to be deleted
+    vol.fromJSON({
+      [path.join(testPackagePath, 'delete.txt')]: 'content to delete',
+    });
+
+    // Start the monitor
+    await monitor.start();
+
+    // Simulate file change event without any changes
+    emitMockFsWatcherEvent('change', path.join(testPackagePath, 'delete.txt'));
+    // wait for event to propagate
+    await new Promise((resolve) => {
+      setTimeout(resolve, 10);
+    });
+
+    // Verify metadata was not updated
+    const noUpdateMetadata = await syncMetadataController.getMetadata();
+    const noUpdatePackageInfo = noUpdateMetadata.packages['test-package'];
+    expect(noUpdatePackageInfo.status).toBe('conflicts');
+    expect(noUpdatePackageInfo.result?.filesWithConflicts).toHaveLength(1);
+
+    // Simulate file deletion
+    await vol.promises.unlink(path.join(testPackagePath, 'delete.txt'));
+
+    // Simulate file unlink event
+    emitMockFsWatcherEvent('unlink', path.join(testPackagePath, 'delete.txt'));
+
+    // wait for event to propagate
+    await new Promise((resolve) => {
+      setTimeout(resolve, 10);
+    });
+
+    // Verify metadata was updated
+    const updatedMetadata = await syncMetadataController.getMetadata();
+    expect(
+      updatedMetadata.packages['test-package'].result?.filesWithConflicts,
+    ).toHaveLength(0);
+    expect(updatedMetadata.packages['test-package'].status).toBe('success');
   });
 
   it('should stop monitoring when stop is called', async () => {

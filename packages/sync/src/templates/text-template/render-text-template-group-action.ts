@@ -1,3 +1,4 @@
+import { enhanceErrorWithContext } from '@halfdomelabs/utils';
 import path from 'node:path';
 
 import type { BuilderAction } from '@src/output/builder-action.js';
@@ -68,8 +69,9 @@ export function renderTextTemplateGroupAction<
             }),
           );
         } catch (error) {
-          throw new Error(
-            `Failed to render template "${key}": ${String(error)}`,
+          throw enhanceErrorWithContext(
+            error,
+            `Failed to render template "${key}"`,
           );
         }
       }

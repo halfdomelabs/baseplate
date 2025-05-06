@@ -19,9 +19,8 @@ import chokidar from 'chokidar';
 import { execa, parseCommandString } from 'execa';
 import { readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { ZodError } from 'zod';
 
-import type { SyncMetadata } from '@src/sync/index.js';
+import type { PackageSyncInfo, SyncMetadata } from '@src/sync/index.js';
 
 import {
   createNodeSchemaParserContext,
@@ -30,7 +29,6 @@ import {
 import { ConflictFileMonitor } from '@src/sync/conflict-file-monitor.js';
 import { buildProject } from '@src/sync/index.js';
 import { SyncMetadataController } from '@src/sync/sync-metadata-controller.js';
-import { deleteSyncMetadata } from '@src/sync/sync-metadata-service.js';
 import { getPackageSyncStatusFromResult } from '@src/sync/utils.js';
 
 import type { BaseplateUserConfig } from '../user-config/user-config-schema.js';
@@ -83,7 +81,7 @@ interface ProjectBuilderServiceOptions {
 
 export interface SyncMetadataChangedPayload {
   id: string;
-  syncMetadata: SyncMetadata | undefined;
+  syncMetadata: SyncMetadata;
 }
 
 export interface SyncStartedPayload {
@@ -92,7 +90,7 @@ export interface SyncStartedPayload {
 
 export interface SyncCompletedPayload {
   id: string;
-  syncMetadata: SyncMetadata | undefined;
+  syncMetadata: SyncMetadata;
 }
 
 const MAX_CONSOLE_OUTPUT_LENGTH = 1000;
@@ -159,27 +157,17 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       this.directory,
       this.logger,
     );
-    // check current sync information and cancel if necessary
     this.syncMetadataController
       .getMetadata()
       .then((syncMetadata) => {
-        if (syncMetadata?.status === 'in-progress') {
+        // if the sync is in progress, cancel it - it's more likely
+        // the previous sync crashed then we have two simultaneous syncs
+        // happening.
+        if (syncMetadata.status === 'in-progress') {
           this.syncMetadataController.writeMetadata({
             ...syncMetadata,
             status: 'cancelled',
           });
-        }
-      })
-      // delete the sync metadata if the schema is invalid
-      .catch(async (err: unknown) => {
-        if (
-          err instanceof ZodError ||
-          (err instanceof Error && err.message.includes('Invalid JSON'))
-        ) {
-          this.logger.error(
-            `Invalid sync metadata found, deleting sync metadata file: ${String(err)}`,
-          );
-          await deleteSyncMetadata(this.directory);
         }
       })
       .catch((err: unknown) => {
@@ -264,9 +252,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
     const boundHandleProjectJsonChange =
       this.handleProjectJsonChange.bind(this);
-    this.watcher.on('add', boundHandleProjectJsonChange);
-    this.watcher.on('change', boundHandleProjectJsonChange);
-    this.watcher.on('unlink', boundHandleProjectJsonChange);
+    this.watcher.on('all', boundHandleProjectJsonChange);
   }
 
   /**
@@ -286,7 +272,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
    *
    * @returns The sync metadata.
    */
-  public async getSyncMetadata(): Promise<SyncMetadata | undefined> {
+  public async getSyncMetadata(): Promise<SyncMetadata> {
     return this.syncMetadataController.getMetadata();
   }
 
@@ -348,7 +334,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       }
       const syncMetadata = await this.getSyncMetadata();
       if (
-        Object.values(syncMetadata?.packages ?? {}).some(
+        Object.values(syncMetadata.packages).some(
           (p) => p.status === 'conflicts',
         )
       ) {
@@ -379,7 +365,12 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       this.abortController = undefined;
       this.emit('sync-completed', {
         id: this.id,
-        syncMetadata: await this.getSyncMetadata().catch(() => undefined),
+        syncMetadata: await this.getSyncMetadata().catch((err: unknown) => ({
+          status: 'error',
+          completedAt: new Date().toISOString(),
+          globalErrors: [String(err)],
+          packages: {},
+        })),
       });
     }
   }
@@ -428,6 +419,14 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     return this.cachedAvailablePlugins;
   }
 
+  private async getPackageInfo(packageId: string): Promise<PackageSyncInfo> {
+    const metadata = await this.syncMetadataController.getMetadata();
+    if (!(packageId in metadata.packages)) {
+      throw new Error(`Package ${packageId} not found`);
+    }
+    return metadata.packages[packageId];
+  }
+
   /**
    * Opens the editor for a file.
    *
@@ -442,11 +441,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     if (!editor) {
       throw new Error('No editor configured');
     }
-    const metadata = await this.syncMetadataController.getMetadata();
-    const packageInfo = metadata?.packages[packageId];
-    if (!packageInfo) {
-      throw new Error(`Package ${packageId} not found`);
-    }
+    const packageInfo = await this.getPackageInfo(packageId);
     const absolutePath = path.join(packageInfo.path, relativePath);
     const [command, ...args] = parseCommandString(editor);
     const result = execa(command, [...args, absolutePath], {
@@ -456,8 +451,11 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     result.unref();
   }
 
-  private removeConflictFile(packageId: string, relativePath: string): void {
-    this.syncMetadataController.updateMetadataForPackage(
+  private async removeConflictFile(
+    packageId: string,
+    relativePath: string,
+  ): Promise<void> {
+    await this.syncMetadataController.updateMetadataForPackage(
       packageId,
       (packageInfo) => {
         const updatedPackageInfo = {
@@ -490,11 +488,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     packageId: string,
     relativePath: string,
   ): Promise<void> {
-    const metadata = await this.syncMetadataController.getMetadata();
-    const packageInfo = metadata?.packages[packageId];
-    if (!packageInfo) {
-      throw new Error(`Package ${packageId} not found`);
-    }
+    const packageInfo = await this.getPackageInfo(packageId);
 
     // check if file exists as a conflict file
     const conflictFile = packageInfo.result?.filesWithConflicts?.find(
@@ -522,7 +516,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     );
     await unlink(absolutePath).catch(handleFileNotFoundError);
 
-    this.removeConflictFile(packageId, relativePath);
+    await this.removeConflictFile(packageId, relativePath);
   }
 
   /**
@@ -535,11 +529,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     packageId: string,
     relativePath: string,
   ): Promise<void> {
-    const metadata = await this.syncMetadataController.getMetadata();
-    const packageInfo = metadata?.packages[packageId];
-    if (!packageInfo) {
-      throw new Error(`Package ${packageId} not found`);
-    }
+    const packageInfo = await this.getPackageInfo(packageId);
     // check if file exists as a conflict file
     const conflictFile = packageInfo.result?.filesWithConflicts?.find(
       (file) => file.relativePath === relativePath,
@@ -560,6 +550,6 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       );
     }
 
-    this.removeConflictFile(packageId, relativePath);
+    await this.removeConflictFile(packageId, relativePath);
   }
 }

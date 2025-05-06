@@ -1,27 +1,32 @@
 import type { Logger } from '@halfdomelabs/sync';
 
-import { TypedEventEmitter } from '@halfdomelabs/utils';
+import {
+  enhanceErrorWithContext,
+  TypedEventEmitter,
+} from '@halfdomelabs/utils';
 import { watch } from 'chokidar';
 import { isEqual, throttle } from 'es-toolkit';
 import path from 'node:path';
-
-import type { PackageSyncInfo, SyncMetadata } from './sync-metadata.js';
 
 import {
   readSyncMetadata,
   SYNC_METADATA_PATH,
   writeSyncMetadata,
 } from './sync-metadata-service.js';
+import {
+  INITIAL_SYNC_METADATA,
+  type PackageSyncInfo,
+  type SyncMetadata,
+} from './sync-metadata.js';
 
 /**
  * Controller for getting updates about the latest sync metadata.
  * Uses throttling to coalesce multiple write calls into a single save.
  */
 export class SyncMetadataController extends TypedEventEmitter<{
-  ['sync-metadata-changed']: SyncMetadata | undefined;
+  ['sync-metadata-changed']: SyncMetadata;
 }> {
   protected syncMetadata: SyncMetadata | undefined;
-  protected initialized = false;
 
   private readonly throttledWrite: (metadata: SyncMetadata) => void;
 
@@ -45,16 +50,31 @@ export class SyncMetadataController extends TypedEventEmitter<{
       : throttle(writeCallback, 100);
   }
 
+  private getMetadataPath(): string {
+    return path.resolve(this.projectDirectory, SYNC_METADATA_PATH);
+  }
+
+  async readSyncMetadata(): Promise<SyncMetadata> {
+    return readSyncMetadata(this.projectDirectory).catch((err: unknown) => {
+      if (err instanceof TypeError) {
+        this.logger.warn(
+          `Invalid sync metadata found in ${this.getMetadataPath()}. Will use default metadata instead.`,
+        );
+        this.logger.warn(err.message);
+        return structuredClone(INITIAL_SYNC_METADATA);
+      }
+      throw enhanceErrorWithContext(
+        err,
+        `Failed to read sync metadata from ${this.getMetadataPath()}`,
+      );
+    });
+  }
+
   watchMetadata(): () => void {
-    const watcher = watch(
-      path.join(this.projectDirectory, SYNC_METADATA_PATH),
-      {
-        awaitWriteFinish: true,
-      },
-    );
+    const watcher = watch(this.getMetadataPath(), { awaitWriteFinish: true });
 
     const handleMetadataChange = (): void => {
-      readSyncMetadata(this.projectDirectory)
+      this.readSyncMetadata()
         .then((metadata) => {
           if (!isEqual(metadata, this.syncMetadata)) {
             this.syncMetadata = metadata;
@@ -62,15 +82,11 @@ export class SyncMetadataController extends TypedEventEmitter<{
           }
         })
         .catch((err: unknown) => {
-          this.logger.error(
-            `Failed to read sync metadata. Please either fix or delete the file to continue: ${String(err)}`,
-          );
+          this.logger.error(`Failed to update sync metadata: ${String(err)}`);
         });
     };
 
-    watcher.on('add', handleMetadataChange);
-    watcher.on('change', handleMetadataChange);
-    watcher.on('unlink', handleMetadataChange);
+    watcher.on('all', handleMetadataChange);
 
     return () => {
       watcher.close().catch((err: unknown) => {
@@ -79,16 +95,9 @@ export class SyncMetadataController extends TypedEventEmitter<{
     };
   }
 
-  async getMetadata(): Promise<SyncMetadata | undefined> {
-    if (!this.initialized) {
-      this.syncMetadata = await readSyncMetadata(this.projectDirectory).catch(
-        (err: unknown) => {
-          throw new Error(
-            `Failed to read sync metadata. Please either fix or delete the file to continue: ${String(err)}`,
-          );
-        },
-      );
-      this.initialized = true;
+  async getMetadata(): Promise<SyncMetadata> {
+    if (!this.syncMetadata) {
+      this.syncMetadata = await this.readSyncMetadata();
     }
 
     return this.syncMetadata;
@@ -96,16 +105,14 @@ export class SyncMetadataController extends TypedEventEmitter<{
 
   writeMetadata(syncMetadata: SyncMetadata): void {
     this.syncMetadata = syncMetadata;
-    this.initialized = true;
     this.throttledWrite(syncMetadata);
   }
 
-  updateMetadataForPackage(
+  async updateMetadataForPackage(
     packageId: string,
     update: (metadata: PackageSyncInfo) => PackageSyncInfo,
-  ): void {
-    const metadata = this.syncMetadata;
-    if (!metadata) throw new Error('No metadata found');
+  ): Promise<void> {
+    const metadata = await this.getMetadata();
     if (!(packageId in metadata.packages)) {
       throw new Error(`No package metadata found for ${packageId}`);
     }
@@ -121,9 +128,10 @@ export class SyncMetadataController extends TypedEventEmitter<{
     this.writeMetadata(updatedMetadata);
   }
 
-  updateMetadata(update: (metadata: SyncMetadata) => SyncMetadata): void {
-    const metadata = this.syncMetadata;
-    if (!metadata) throw new Error('No metadata found');
+  async updateMetadata(
+    update: (metadata: SyncMetadata) => SyncMetadata,
+  ): Promise<void> {
+    const metadata = await this.getMetadata();
     const updatedMetadata = update(metadata);
     this.writeMetadata(updatedMetadata);
   }

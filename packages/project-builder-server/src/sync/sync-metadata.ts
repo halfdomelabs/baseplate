@@ -72,9 +72,15 @@ export const packageSyncInfoSchema = z.object({
 export type PackageSyncInfo = z.infer<typeof packageSyncInfoSchema>;
 
 export const syncStatusSchema = z.enum([
+  // The sync is not started
+  'not-started',
+  // The sync is in progress
   'in-progress',
+  // The sync was successful
   'success',
+  // The sync failed due to errors
   'error',
+  // The sync was cancelled
   'cancelled',
 ]);
 
@@ -83,10 +89,14 @@ export type SyncStatus = z.infer<typeof syncStatusSchema>;
 export const syncMetadataSchema = z.object({
   status: syncStatusSchema,
   globalErrors: z.array(z.string()).optional(),
-  projectJsonHash: z.string(),
-  startedAt: z.string(),
+  startedAt: z.string().optional(),
   completedAt: z.string().optional(),
   packages: z.record(z.string(), packageSyncInfoSchema),
 });
 
 export type SyncMetadata = z.output<typeof syncMetadataSchema>;
+
+export const INITIAL_SYNC_METADATA: SyncMetadata = {
+  status: 'not-started',
+  packages: {},
+};
