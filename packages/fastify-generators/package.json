@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/fastify-generators",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "description": "Fastify generators for Baseplate",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {

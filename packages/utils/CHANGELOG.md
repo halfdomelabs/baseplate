@@ -1,5 +1,11 @@
 # @halfdomelabs/utils
 
+## 0.1.7
+
+### Patch Changes
+
+- [#527](https://github.com/halfdomelabs/baseplate/pull/527) [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1) Thanks [@kingston](https://github.com/kingston)! - Add enhanceErrorWithContext to better support errors that have causes
+
 ## 0.1.6
 
 ### Patch Changes

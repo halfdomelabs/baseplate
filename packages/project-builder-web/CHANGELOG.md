@@ -1,5 +1,18 @@
 # @halfdomelabs/project-builder-web
 
+## 0.15.11
+
+### Patch Changes
+
+- [#529](https://github.com/halfdomelabs/baseplate/pull/529) [`5d85041`](https://github.com/halfdomelabs/baseplate/commit/5d85041e782818c604376538925c2596556dfcad) Thanks [@kingston](https://github.com/kingston)! - Fix up preview.json so that it loads without any backend
+
+- [#527](https://github.com/halfdomelabs/baseplate/pull/527) [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1) Thanks [@kingston](https://github.com/kingston)! - Refactor sync metadata to more reliably handle initial states
+
+- Updated dependencies [[`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1)]:
+  - @halfdomelabs/utils@0.1.7
+  - @halfdomelabs/project-builder-lib@0.9.11
+  - @halfdomelabs/ui-components@0.5.7
+
 ## 0.15.10
 
 ### Patch Changes
