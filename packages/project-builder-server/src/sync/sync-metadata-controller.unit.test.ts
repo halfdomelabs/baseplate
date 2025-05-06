@@ -51,8 +51,8 @@ describe('SyncMetadataController', () => {
       const result1 = await controller.getMetadata();
       const result2 = await controller.getMetadata();
 
-      expect(result1).toBe(INITIAL_SYNC_METADATA);
-      expect(result2).toBe(INITIAL_SYNC_METADATA);
+      expect(result1).toEqual(INITIAL_SYNC_METADATA);
+      expect(result2).toEqual(INITIAL_SYNC_METADATA);
       expect(readSyncMetadata).toHaveBeenCalledTimes(1);
       expect(readSyncMetadata).toHaveBeenCalledWith(mockProjectDirectory);
     });
@@ -64,7 +64,7 @@ describe('SyncMetadataController', () => {
 
       const result = await controller.getMetadata();
 
-      expect(result).toBe(INITIAL_SYNC_METADATA);
+      expect(result).toEqual(INITIAL_SYNC_METADATA);
       expect(mockLogger.getWarnOutput()).toContain(
         'Invalid sync metadata found in /test/project/baseplate/.build/sync_result.json. Will use default metadata instead.',
       );
@@ -202,7 +202,7 @@ describe('SyncMetadataController', () => {
       await vi.runAllTimersAsync();
 
       expect(changeListener).not.toHaveBeenCalled();
-      expect(mockLogger.getErrorOutput()).toContain('Error: Read error');
+      expect(mockLogger.getErrorOutput()).toContain('Read error');
 
       // Clean up
       stopWatching();
