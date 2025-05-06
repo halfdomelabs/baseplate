@@ -3,6 +3,12 @@ import type { TestLogger } from '@halfdomelabs/sync';
 import { createTestLogger } from '@halfdomelabs/sync';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import {
+  emitMockFsWatcherEvent,
+  getMockFsWatchedFiles,
+  MockFSWatcher,
+  resetMockFsWatchers,
+} from '../tests/chokidar.test-helper.js';
 import { SyncMetadataController } from './sync-metadata-controller.js';
 import {
   readSyncMetadata,
@@ -15,6 +21,9 @@ import {
 } from './sync-metadata.js';
 
 vi.mock('./sync-metadata-service.js');
+vi.mock('chokidar', () => ({
+  watch: (paths: string | string[]) => new MockFSWatcher().add(paths),
+}));
 
 describe('SyncMetadataController', () => {
   const mockProjectDirectory = '/test/project';
@@ -28,6 +37,7 @@ describe('SyncMetadataController', () => {
     mockLogger = createTestLogger();
     controller = new SyncMetadataController(mockProjectDirectory, mockLogger);
     vi.mocked(writeSyncMetadata).mockResolvedValue();
+    resetMockFsWatchers();
   });
 
   afterEach(() => {
@@ -139,6 +149,63 @@ describe('SyncMetadataController', () => {
         status: 'success',
         completedAt: '2024-01-01',
       });
+    });
+  });
+
+  describe('watchMetadata', () => {
+    it('should watch the metadata file and handle changes', async () => {
+      const changeListener = vi.fn();
+      controller.on('sync-metadata-changed', changeListener);
+
+      const stopWatching = controller.watchMetadata();
+
+      // Verify the watcher was set up correctly
+      const watchedPaths = getMockFsWatchedFiles();
+      expect(watchedPaths).toContain(
+        '/test/project/baseplate/.build/sync_result.json',
+      );
+
+      // Simulate a file change
+      const newMetadata: SyncMetadata = {
+        ...INITIAL_SYNC_METADATA,
+        status: 'success',
+        completedAt: '2024-01-01',
+      };
+      vi.mocked(readSyncMetadata).mockResolvedValue(newMetadata);
+
+      emitMockFsWatcherEvent(
+        'change',
+        '/test/project/baseplate/.build/sync_result.json',
+      );
+      await vi.runAllTimersAsync();
+
+      expect(changeListener).toHaveBeenCalledWith(newMetadata);
+      expect(readSyncMetadata).toHaveBeenCalledWith(mockProjectDirectory);
+
+      // Clean up
+      stopWatching();
+    });
+
+    it('should handle errors when reading metadata during watch', async () => {
+      const changeListener = vi.fn();
+      controller.on('sync-metadata-changed', changeListener);
+
+      const stopWatching = controller.watchMetadata();
+
+      // Simulate an error reading the metadata
+      vi.mocked(readSyncMetadata).mockRejectedValue(new Error('Read error'));
+
+      emitMockFsWatcherEvent(
+        'change',
+        '/test/project/baseplate/.build/sync_result.json',
+      );
+      await vi.runAllTimersAsync();
+
+      expect(changeListener).not.toHaveBeenCalled();
+      expect(mockLogger.getErrorOutput()).toContain('Error: Read error');
+
+      // Clean up
+      stopWatching();
     });
   });
 });
