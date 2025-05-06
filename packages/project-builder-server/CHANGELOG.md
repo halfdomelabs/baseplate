@@ -1,5 +1,21 @@
 # @halfdomelabs/project-builder-server
 
+## 0.5.13
+
+### Patch Changes
+
+- [#527](https://github.com/halfdomelabs/baseplate/pull/527) [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1) Thanks [@kingston](https://github.com/kingston)! - Use FS polling instead of events to watch conflict files so that parent directory deletions are picked up
+
+- [#527](https://github.com/halfdomelabs/baseplate/pull/527) [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1) Thanks [@kingston](https://github.com/kingston)! - Refactor sync metadata to more reliably handle initial states
+
+- Updated dependencies [[`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1), [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1)]:
+  - @halfdomelabs/sync@0.11.2
+  - @halfdomelabs/utils@0.1.7
+  - @halfdomelabs/core-generators@0.11.4
+  - @halfdomelabs/fastify-generators@0.12.4
+  - @halfdomelabs/project-builder-lib@0.9.11
+  - @halfdomelabs/react-generators@0.10.4
+
 ## 0.5.12
 
 ### Patch Changes

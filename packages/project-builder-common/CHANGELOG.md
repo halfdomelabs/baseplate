@@ -1,5 +1,15 @@
 # @halfdomelabs/project-builder-common
 
+## 0.1.22
+
+### Patch Changes
+
+- Updated dependencies [[`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1), [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1), [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1)]:
+  - @halfdomelabs/sync@0.11.2
+  - @halfdomelabs/project-builder-server@0.5.13
+  - @halfdomelabs/project-builder-lib@0.9.11
+  - @halfdomelabs/baseplate-plugin-storage@5.0.3
+
 ## 0.1.21
 
 ### Patch Changes

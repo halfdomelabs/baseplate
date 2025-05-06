@@ -1,5 +1,14 @@
 # @halfdomelabs/sync
 
+## 0.11.2
+
+### Patch Changes
+
+- [#527](https://github.com/halfdomelabs/baseplate/pull/527) [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1) Thanks [@kingston](https://github.com/kingston)! - Add TestLogger type to exports
+
+- Updated dependencies [[`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1)]:
+  - @halfdomelabs/utils@0.1.7
+
 ## 0.11.1
 
 ### Patch Changes

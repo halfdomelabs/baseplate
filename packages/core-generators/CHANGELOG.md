@@ -1,5 +1,13 @@
 # @halfdomelabs/core-generators
 
+## 0.11.4
+
+### Patch Changes
+
+- Updated dependencies [[`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1), [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1)]:
+  - @halfdomelabs/sync@0.11.2
+  - @halfdomelabs/utils@0.1.7
+
 ## 0.11.3
 
 ### Patch Changes
