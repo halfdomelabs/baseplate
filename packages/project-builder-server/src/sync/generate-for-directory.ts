@@ -18,7 +18,7 @@ import {
   writeGeneratorsMetadata,
   writeTemplateMetadata,
 } from '@halfdomelabs/sync';
-import { randomUid } from '@halfdomelabs/utils';
+import { enhanceErrorWithContext, randomUid } from '@halfdomelabs/utils';
 import {
   dirExists,
   handleFileNotFoundError,
@@ -92,9 +92,9 @@ async function getPreviousGeneratedFileIdMap(
 
     return new Map(Object.entries(fileIdMap));
   } catch (err) {
-    throw new Error(
-      `Failed to get previous generated file id map (${generatedFileIdMapPath}): ${String(err)}`,
-      { cause: err },
+    throw enhanceErrorWithContext(
+      err,
+      `Failed to get previous generated file id map (${generatedFileIdMapPath})`,
     );
   }
 }

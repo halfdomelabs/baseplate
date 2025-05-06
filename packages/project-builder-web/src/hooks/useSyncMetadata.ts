@@ -81,7 +81,6 @@ export function useSyncMetadataListener(): void {
       { id: currentProjectId },
       {
         onData: (data) => {
-          if (!data.syncMetadata) return;
           const { status } = data.syncMetadata;
 
           const hasConflicts = Object.values(data.syncMetadata.packages).some(

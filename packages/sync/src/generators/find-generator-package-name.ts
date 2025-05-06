@@ -1,3 +1,4 @@
+import { enhanceErrorWithContext } from '@halfdomelabs/utils';
 import { findNearestPackageJson } from '@halfdomelabs/utils/node';
 import { readFile } from 'node:fs/promises';
 
@@ -49,8 +50,9 @@ export async function findGeneratorPackageName(
 
     return packageName;
   } catch (error) {
-    throw new Error(
-      `Failed to read or parse package.json at ${packageJsonPath}: ${String(error)}`,
+    throw enhanceErrorWithContext(
+      error,
+      `Failed to read or parse package.json at ${packageJsonPath}`,
     );
   }
 }

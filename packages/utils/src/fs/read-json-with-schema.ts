@@ -21,10 +21,13 @@ export async function readJsonWithSchema<T extends z.ZodType>(
     if (error instanceof ZodError) {
       throw new TypeError(
         `Validation failed for ${filePath}: ${error.message}`,
+        { cause: error },
       );
     }
     if (error instanceof SyntaxError) {
-      throw new TypeError(`Invalid JSON in file: ${filePath}`);
+      throw new TypeError(`Invalid JSON in file: ${filePath}`, {
+        cause: error,
+      });
     }
     throw error;
   }

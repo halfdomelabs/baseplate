@@ -5,7 +5,11 @@ import type {
 
 import { runSchemaMigrations } from '@halfdomelabs/project-builder-lib';
 import { CancelledSyncError, type Logger } from '@halfdomelabs/sync';
-import { hashWithSHA256, stringifyPrettyStable } from '@halfdomelabs/utils';
+import {
+  enhanceErrorWithContext,
+  hashWithSHA256,
+  stringifyPrettyStable,
+} from '@halfdomelabs/utils';
 import { fileExists } from '@halfdomelabs/utils/node';
 import { mapValues } from 'es-toolkit';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -54,8 +58,9 @@ async function loadProjectJson(
 
     return { definition: migratedDefinition, hash };
   } catch (err) {
-    throw new Error(
-      `Error parsing project definition at ${projectJsonPath}: ${String(err)}`,
+    throw enhanceErrorWithContext(
+      err,
+      `Error parsing project definition at ${projectJsonPath}`,
     );
   }
 }
@@ -205,7 +210,9 @@ export async function buildProject({
               {
                 // stripVTControlCharacters is used to remove any control characters from the error message
                 // which can happen when prettier encounters an error.
-                message: stripVTControlCharacters(String(err)),
+                message: stripVTControlCharacters(
+                  err instanceof Error ? err.message : String(err),
+                ),
                 stack: err instanceof Error ? err.stack : undefined,
               },
             ],

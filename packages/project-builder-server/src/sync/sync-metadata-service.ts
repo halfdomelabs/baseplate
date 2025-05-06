@@ -34,7 +34,7 @@ export async function readSyncMetadata(
     syncMetadataSchema,
   ).catch(handleFileNotFoundError);
 
-  return syncMetadata ?? INITIAL_SYNC_METADATA;
+  return syncMetadata ?? structuredClone(INITIAL_SYNC_METADATA);
 }
 
 /**

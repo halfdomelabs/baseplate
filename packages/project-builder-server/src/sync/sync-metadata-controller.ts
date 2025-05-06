@@ -1,6 +1,9 @@
 import type { Logger } from '@halfdomelabs/sync';
 
-import { TypedEventEmitter } from '@halfdomelabs/utils';
+import {
+  enhanceErrorWithContext,
+  TypedEventEmitter,
+} from '@halfdomelabs/utils';
 import { watch } from 'chokidar';
 import { isEqual, throttle } from 'es-toolkit';
 import path from 'node:path';
@@ -48,7 +51,7 @@ export class SyncMetadataController extends TypedEventEmitter<{
   }
 
   private getMetadataPath(): string {
-    return path.join(this.projectDirectory, SYNC_METADATA_PATH);
+    return path.resolve(this.projectDirectory, SYNC_METADATA_PATH);
   }
 
   async readSyncMetadata(): Promise<SyncMetadata> {
@@ -58,10 +61,11 @@ export class SyncMetadataController extends TypedEventEmitter<{
           `Invalid sync metadata found in ${this.getMetadataPath()}. Will use default metadata instead.`,
         );
         this.logger.warn(err.message);
-        return INITIAL_SYNC_METADATA;
+        return structuredClone(INITIAL_SYNC_METADATA);
       }
-      throw new Error(
-        `Failed to read sync metadata from ${this.getMetadataPath()}: ${String(err)}`,
+      throw enhanceErrorWithContext(
+        err,
+        `Failed to read sync metadata from ${this.getMetadataPath()}`,
       );
     });
   }

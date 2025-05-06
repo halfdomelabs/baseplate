@@ -1,5 +1,6 @@
 // src/git-merge-driver.ts
 
+import { enhanceErrorWithContext } from '@halfdomelabs/utils';
 import { execa, ExecaError, parseCommandString } from 'execa';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
@@ -118,8 +119,9 @@ export const gitMergeDriverAlgorithmGenerator =
           // Otherwise, assume non-zero means conflict (exit codes 1-128)
         } else {
           // Other errors (e.g., command not found, permission denied)
-          throw new TypeError(
-            `Failed to execute git merge driver '${config.name}': ${String(error)}`,
+          throw enhanceErrorWithContext(
+            error,
+            `Failed to execute git merge driver '${config.name}'`,
           );
         }
       }
@@ -138,8 +140,9 @@ export const gitMergeDriverAlgorithmGenerator =
         hasConflict,
       };
     } catch (error) {
-      throw new Error(
-        `Error during git merge driver process for '${config.name}': ${String(error)}`,
+      throw enhanceErrorWithContext(
+        error,
+        `Error during git merge driver process for '${config.name}'`,
       );
     } finally {
       // 8. Clean up temporary directory
