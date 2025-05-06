@@ -24,7 +24,7 @@ export async function getSyncMetadata(
 ): Promise<SyncMetadata | undefined> {
   if (IS_PREVIEW) {
     return {
-      status: 'in-progress',
+      status: 'success',
       projectJsonHash: '123',
       startedAt: new Date().toISOString(),
       packages: {
