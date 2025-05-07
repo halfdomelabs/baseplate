@@ -7,7 +7,8 @@ import { ModelUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { createStore, useStore } from 'zustand';
-import { useShallow } from 'zustand/react/shallow';
+
+import { useDeep } from '@src/hooks/useDeep';
 
 interface ModelConfigStore {
   model: ModelConfig;
@@ -77,6 +78,6 @@ export function useEditedModelConfig<T>(
   }
   return useStore(
     store,
-    useShallow((state) => selector(state.model)),
+    useDeep((state) => selector(state.model)),
   );
 }
