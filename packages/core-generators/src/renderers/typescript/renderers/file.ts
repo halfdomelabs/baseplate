@@ -89,7 +89,7 @@ function mergeImportsAndHoistedFragments(
         if (includeMetadata) {
           writer.writeLine(`/* HOISTED:${h.key}:START */`);
         }
-        writer.writeLine(h.fragment.contents);
+        writer.writeLine(h.contents);
         if (includeMetadata) {
           writer.writeLine(`/* HOISTED:${h.key}:END */`);
         }

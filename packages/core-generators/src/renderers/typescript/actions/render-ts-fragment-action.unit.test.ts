@@ -31,7 +31,7 @@ describe('renderTsFragmentAction', () => {
         hoistedFragments: [
           {
             key: 'types',
-            fragment: tsCodeFragment('type Greeting = string;'),
+            contents: 'type Greeting = string;',
           },
         ],
       }),

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { TsCodeFragment } from './types.js';
+import type { TsCodeFragment, TsHoistedFragment } from './types.js';
 
 import { flattenImportsAndHoistedFragments } from './utils.js';
 
@@ -38,16 +38,9 @@ describe('flattenImportsAndHoistedFragments', () => {
   });
 
   it('should handle nested hoisted fragments with correct ordering', () => {
-    const nestedFragment: TsCodeFragment = {
-      contents: 'const nested = true;',
-      hoistedFragments: [
-        {
-          key: 'nested-type',
-          fragment: {
-            contents: 'type NestedType = string;',
-          },
-        },
-      ],
+    const nestedFragment: TsHoistedFragment = {
+      key: 'nested-type',
+      contents: 'type NestedType = string;',
     };
 
     const fragments: TsCodeFragment[] = [
@@ -56,7 +49,8 @@ describe('flattenImportsAndHoistedFragments', () => {
         hoistedFragments: [
           {
             key: 'root-type',
-            fragment: nestedFragment,
+            contents: 'type RootType = string;',
+            hoistedFragments: [nestedFragment],
           },
         ],
       },
@@ -74,10 +68,8 @@ describe('flattenImportsAndHoistedFragments', () => {
         hoistedFragments: [
           {
             key: 'duplicate-key',
-            fragment: {
-              contents: 'type DuplicateKey = number;',
-              hoistedFragments: [],
-            },
+            contents: 'type DuplicateKey = number;',
+            hoistedFragments: [],
           },
         ],
       },
@@ -86,10 +78,8 @@ describe('flattenImportsAndHoistedFragments', () => {
         hoistedFragments: [
           {
             key: 'duplicate-key',
-            fragment: {
-              contents: 'type DuplicateKey = number;',
-              hoistedFragments: [],
-            },
+            contents: 'type DuplicateKey = number;',
+            hoistedFragments: [],
           },
         ],
       },
@@ -98,7 +88,7 @@ describe('flattenImportsAndHoistedFragments', () => {
     const result = flattenImportsAndHoistedFragments(fragments);
     expect(result.hoistedFragments).toHaveLength(1);
     expect(result.hoistedFragments[0].key).toBe('duplicate-key');
-    expect(result.hoistedFragments[0].fragment.contents).toBe(
+    expect(result.hoistedFragments[0].contents).toBe(
       'type DuplicateKey = number;',
     );
   });
@@ -110,15 +100,11 @@ describe('flattenImportsAndHoistedFragments', () => {
         hoistedFragments: [
           {
             key: 'b-key', // alphabetically second
-            fragment: {
-              contents: 'type B = string;',
-            },
+            contents: 'type B = string;',
           },
           {
             key: 'a-key', // alphabetically first
-            fragment: {
-              contents: 'type A = string;',
-            },
+            contents: 'type A = string;',
           },
         ],
       },
@@ -127,17 +113,13 @@ describe('flattenImportsAndHoistedFragments', () => {
         hoistedFragments: [
           {
             key: 'c-key', // alphabetically third
-            fragment: {
-              contents: 'type C = string;',
-              hoistedFragments: [
-                {
-                  key: 'z-nested-key', // nested, so next to c-key despite alphabetically last
-                  fragment: {
-                    contents: 'type Z = string;',
-                  },
-                },
-              ],
-            },
+            contents: 'type C = string;',
+            hoistedFragments: [
+              {
+                key: 'z-nested-key', // nested, so next to c-key despite alphabetically last
+                contents: 'type Z = string;',
+              },
+            ],
           },
         ],
       },

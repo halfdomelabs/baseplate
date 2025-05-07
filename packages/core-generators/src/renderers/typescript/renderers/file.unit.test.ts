@@ -116,7 +116,7 @@ describe('renderTsCodeFileTemplate', () => {
           hoistedFragments: [
             {
               key: 'helper2',
-              fragment: tsCodeFragment('function helper2() { return 24; }'),
+              contents: 'function helper2() { return 24; }',
             },
           ],
         },
@@ -130,7 +130,7 @@ describe('renderTsCodeFileTemplate', () => {
       positionedHoistedFragments: [
         {
           key: 'helper1',
-          fragment: tsCodeFragment('function helper1() { return 42; }'),
+          contents: 'function helper1() { return 42; }',
           position: 'beforeImports',
         },
       ],

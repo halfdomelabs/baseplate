@@ -44,16 +44,14 @@ export const fastifyCookieContextGenerator = createGenerator({
             hoistedFragments: [
               tsHoistedFragment(
                 'cookie-store-interface',
-                tsCodeFragment(
-                  `
+                `
 interface CookieStore {
   get(name: string): string | undefined;
   set(name: string, value: string, options?: CookieSerializeOptions): void;
   clear(name: string): void;
                 }`,
-                  tsImportBuilder(['CookieSerializeOptions']).from(
-                    '@fastify/cookie',
-                  ),
+                tsImportBuilder(['CookieSerializeOptions']).from(
+                  '@fastify/cookie',
                 ),
               ),
             ],

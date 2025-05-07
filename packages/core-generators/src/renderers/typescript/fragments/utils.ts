@@ -18,15 +18,16 @@ interface FlattenedImportsAndHoistedFragmentsWithDependencies {
  * @returns An object containing flattened imports, hoisted fragments, and dependencies
  */
 function flattenHoistedFragment({
-  fragment,
+  imports = [],
+  hoistedFragments = [],
   key,
 }: TsHoistedFragment): FlattenedImportsAndHoistedFragmentsWithDependencies {
-  const imports: TsImportDeclaration[] = fragment.imports ?? [];
-  const hoistedFragments: TsHoistedFragment[] = fragment.hoistedFragments ?? [];
-  const dependencies: [string, string][] =
-    fragment.hoistedFragments?.map((f) => [f.key, key]) ?? [];
+  const dependencies: [string, string][] = hoistedFragments.map((f) => [
+    f.key,
+    key,
+  ]);
 
-  for (const childHoistedFragment of fragment.hoistedFragments ?? []) {
+  for (const childHoistedFragment of hoistedFragments) {
     const childExtractionResult = flattenHoistedFragment(childHoistedFragment);
     imports.push(...childExtractionResult.imports);
     hoistedFragments.push(...childExtractionResult.hoistedFragments);
@@ -125,7 +126,7 @@ export function flattenImportsAndHoistedFragments(
     flattenResult.hoistedFragments,
     (a, b) => {
       if (a.key === b.key) {
-        if (!isEqual(a.fragment, b.fragment)) {
+        if (!isEqual(a, b)) {
           throw new Error(
             `Duplicate hoisted fragment key ${a.key} with different contents`,
           );

@@ -161,8 +161,8 @@ export const fastifyServerGenerator = createGenerator({
                 positionedHoistedFragments: [
                   ...initializerFragments.entries(),
                 ].map(([key, fragment]) => ({
+                  ...fragment,
                   key,
-                  fragment,
                   position: 'beforeImports',
                 })),
               }),

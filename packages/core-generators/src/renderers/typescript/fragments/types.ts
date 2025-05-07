@@ -3,22 +3,19 @@ import type { TsImportDeclaration } from '../imports/index.js';
 /**
  * Represents a code fragment that will be hoisted to a specific position in the generated file.
  *
- * Hoisted fragments allow code to be placed at strategic locations in the file
- * (currently supporting placement after import declarations), which is useful for
- * type declarations, utility functions, or constants that need to be available
- * throughout the file.
+ * Hoisted fragments allow code to be placed outside of the main code block, which is useful for
+ * type declarations, utility functions, or constants that need to be available in the module scope.
+ *
+ * They also support deduplication, so if multiple fragments with the same key are provided,
+ * they will be deduplicated. However, if any of the fragments have different contents, an error
+ * will be thrown.
  */
-export interface TsHoistedFragment {
+export interface TsHoistedFragment extends TsCodeFragment {
   /**
-   * Unique identifier for this hoisted fragment.
-   * Used for deduplication when multiple fragments with the same key are provided.
+   * Unique identifier for this hoisted fragment used for deduplication and ordering
+   * (fragments are ordered by topological sort and then alphabetically by key).
    */
   key: string;
-
-  /**
-   * The actual code fragment to be hoisted to the specified position.
-   */
-  fragment: TsCodeFragment;
 }
 
 /**
@@ -57,8 +54,8 @@ export interface TsCodeFragment {
   imports?: TsImportDeclaration[];
 
   /**
-   * Additional code fragments that should be hoisted to specific positions in the file.
-   * These fragments are collected and positioned according to their specified position.
+   * Additional code fragments that should be hoisted outside the current code block.
+   * These fragments are collected and placed in the module scope.
    */
   hoistedFragments?: TsHoistedFragment[];
 }

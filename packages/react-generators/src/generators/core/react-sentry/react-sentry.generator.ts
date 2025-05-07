@@ -148,13 +148,11 @@ export const reactSentryGenerator = createGenerator({
             hoistedFragments: [
               tsHoistedFragment(
                 'sentry-routes',
-                tsCodeFragment(
-                  `const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);`,
-                  [
-                    tsImportBuilder().namespace('Sentry').from('@sentry/react'),
-                    tsImportBuilder(['Routes']).from('react-router-dom'),
-                  ],
-                ),
+                `const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);`,
+                [
+                  tsImportBuilder().namespace('Sentry').from('@sentry/react'),
+                  tsImportBuilder(['Routes']).from('react-router-dom'),
+                ],
               ),
             ],
           }),

@@ -6,6 +6,10 @@ import type {
   TsPositionedHoistedFragment,
 } from './types.js';
 
+export interface TsCodeFragmentOptions {
+  hoistedFragments?: TsHoistedFragment[];
+}
+
 /**
  * Create a hoisted fragment.
  * @param key - The key to use for the hoisted fragment.
@@ -15,11 +19,20 @@ import type {
 export function tsHoistedFragment(
   key: string,
   fragment: TsCodeFragment | string,
+  imports?: TsImportDeclaration[] | TsImportDeclaration,
+  { hoistedFragments }: TsCodeFragmentOptions = {},
 ): TsHoistedFragment {
+  const importArr = Array.isArray(imports) ? imports : imports ? [imports] : [];
+  const fragmentObj =
+    typeof fragment === 'string' ? tsCodeFragment(fragment) : fragment;
   return {
-    fragment:
-      typeof fragment === 'string' ? tsCodeFragment(fragment) : fragment,
     key,
+    contents: fragmentObj.contents,
+    imports: [...importArr, ...(fragmentObj.imports ?? [])],
+    hoistedFragments: [
+      ...(hoistedFragments ?? []),
+      ...(fragmentObj.hoistedFragments ?? []),
+    ],
   };
 }
 
@@ -36,10 +49,6 @@ export function tsPositionedHoistedFragment(
   position: TsHoistedFragmentPosition,
 ): TsPositionedHoistedFragment {
   return { ...tsHoistedFragment(key, fragment), position };
-}
-
-export interface TsCodeFragmentOptions {
-  hoistedFragments?: TsHoistedFragment[];
 }
 
 /**

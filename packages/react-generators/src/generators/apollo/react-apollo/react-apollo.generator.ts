@@ -654,7 +654,7 @@ export const reactApolloGenerator = createGenerator({
             ],
             {
               hoistedFragments: [
-                { key: 'annotate-graphql-error', fragment: headerBlock },
+                tsHoistedFragment('annotate-graphql-error', headerBlock),
               ],
             },
           ),
