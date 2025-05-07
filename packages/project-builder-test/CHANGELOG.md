@@ -1,5 +1,14 @@
 # @halfdomelabs/project-builder-test
 
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies [[`b8f125e`](https://github.com/halfdomelabs/baseplate/commit/b8f125e5275895c23032316a517c84ed258b6331)]:
+  - @halfdomelabs/project-builder-web@0.15.12
+  - @halfdomelabs/project-builder-common@0.1.23
+  - @halfdomelabs/project-builder-server@0.5.14
+
 ## 0.1.13
 
 ### Patch Changes

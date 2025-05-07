@@ -1,5 +1,11 @@
 # @halfdomelabs/core-generators
 
+## 0.11.5
+
+### Patch Changes
+
+- [#530](https://github.com/halfdomelabs/baseplate/pull/530) [`78ccef7`](https://github.com/halfdomelabs/baseplate/commit/78ccef71ff93055e2442f52879da75e46d696dab) Thanks [@kingston](https://github.com/kingston)! - Migrate TsHoistedFragment to extend TsCodeFragment and refactor merging logic
+
 ## 0.11.4
 
 ### Patch Changes

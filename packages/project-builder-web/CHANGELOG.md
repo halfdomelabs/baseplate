@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-web
 
+## 0.15.12
+
+### Patch Changes
+
+- [#534](https://github.com/halfdomelabs/baseplate/pull/534) [`b8f125e`](https://github.com/halfdomelabs/baseplate/commit/b8f125e5275895c23032316a517c84ed258b6331) Thanks [@kingston](https://github.com/kingston)! - Add ability to sort enums and keep order when generating Pothos enum
+
 ## 0.15.11
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @halfdomelabs/baseplate-plugin-storage
 
+## 5.0.4
+
+### Patch Changes
+
+- [#530](https://github.com/halfdomelabs/baseplate/pull/530) [`78ccef7`](https://github.com/halfdomelabs/baseplate/commit/78ccef71ff93055e2442f52879da75e46d696dab) Thanks [@kingston](https://github.com/kingston)! - Migrate TsHoistedFragment to extend TsCodeFragment and refactor merging logic
+
+- Updated dependencies [[`78ccef7`](https://github.com/halfdomelabs/baseplate/commit/78ccef71ff93055e2442f52879da75e46d696dab), [`b8f125e`](https://github.com/halfdomelabs/baseplate/commit/b8f125e5275895c23032316a517c84ed258b6331), [`4b42805`](https://github.com/halfdomelabs/baseplate/commit/4b42805351e51219d986fe765f462f314f245e33), [`78ccef7`](https://github.com/halfdomelabs/baseplate/commit/78ccef71ff93055e2442f52879da75e46d696dab)]:
+  - @halfdomelabs/fastify-generators@0.12.5
+  - @halfdomelabs/react-generators@0.10.5
+  - @halfdomelabs/core-generators@0.11.5
+
 ## 5.0.3
 
 ### Patch Changes
