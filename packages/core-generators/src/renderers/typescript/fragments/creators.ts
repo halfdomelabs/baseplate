@@ -48,10 +48,17 @@ export function tsPositionedHoistedFragment(
   fragment: TsCodeFragment | string,
   position: TsHoistedFragmentPosition,
   imports?: TsImportDeclaration[] | TsImportDeclaration,
-  options: TsCodeFragmentOptions = {},
 ): TsPositionedHoistedFragment {
+  // we don't support positioned hoisted fragments with hoisted fragments for now since it requires
+  // doing a topological sort of the positioned hoisted fragments and there are very few use cases
+  // for this
+  if (typeof fragment !== 'string' && fragment.hoistedFragments?.length) {
+    throw new Error(
+      'Positioned hoisted fragments with hoisted fragments are not supported',
+    );
+  }
   return {
-    ...tsHoistedFragment(key, fragment, imports, options),
+    ...tsHoistedFragment(key, fragment, imports),
     position,
   };
 }

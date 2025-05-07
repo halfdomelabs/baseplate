@@ -75,11 +75,27 @@ function mergeImportsAndHoistedFragments(
   for (const i of importDeclarationsFromFile) i.remove();
 
   // Combine the hoisted fragments with the positioned hoisted fragments
+
+  // Note: Positioned hoisted fragments are currently limited in their functionality
+  // such as not supporting hoisted fragments and no deduplication of keys.
+  // This can be improved in the future but since the use-case is very limited,
+  // we'll just throw an error if this happens.
+  const sortedPositionedHoistedFragments = positionedHoistedFragments.sort(
+    (a, b) => a.key.localeCompare(b.key),
+  );
+  if (
+    new Set(sortedPositionedHoistedFragments.map((f) => f.key)).size !==
+    sortedPositionedHoistedFragments.length
+  ) {
+    throw new Error('Positioned hoisted fragments must have unique keys');
+  }
   const afterImportsHoistedFragments = [
     ...hoistedFragments,
-    ...positionedHoistedFragments.filter((f) => f.position === 'afterImports'),
+    ...sortedPositionedHoistedFragments.filter(
+      (f) => f.position === 'afterImports',
+    ),
   ];
-  const beforeImportsHoistedFragments = positionedHoistedFragments.filter(
+  const beforeImportsHoistedFragments = sortedPositionedHoistedFragments.filter(
     (f) => f.position === 'beforeImports',
   );
 
