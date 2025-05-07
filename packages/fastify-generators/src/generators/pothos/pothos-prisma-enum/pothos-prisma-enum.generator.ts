@@ -35,6 +35,8 @@ export const pothosPrismaEnumGenerator = createGenerator({
               Object.fromEntries(
                 enumBlock.values.map((value) => [value.name, '{}']),
               ),
+              // use sort from prisma output
+              { disableSort: true },
             )}
           })
         `;
