@@ -20,7 +20,7 @@ import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js
 
 import { compileApplications } from '@src/compiler/index.js';
 
-import type { PackageSyncResult } from '../sync/index.js';
+import type { PackageSyncResult, SyncStatus } from '../sync/index.js';
 import type { SyncMetadataController } from './sync-metadata-controller.js';
 
 import { generateForDirectory } from '../sync/index.js';
@@ -96,6 +96,16 @@ export interface BuildProjectOptions {
 }
 
 /**
+ * The result of building the project.
+ */
+export interface BuildProjectResult {
+  /**
+   * The status of the build.
+   */
+  status: SyncStatus;
+}
+
+/**
  * Builds the project in the given directory.
  *
  * @param options - The options for building the project.
@@ -107,7 +117,7 @@ export async function buildProject({
   userConfig,
   syncMetadataController,
   abortSignal,
-}: BuildProjectOptions): Promise<void> {
+}: BuildProjectOptions): Promise<BuildProjectResult> {
   await syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
     status: 'in-progress',
@@ -233,9 +243,11 @@ export async function buildProject({
       );
     }
 
+    const status = wasCancelled ? 'cancelled' : hasErrors ? 'error' : 'success';
+
     await syncMetadataController?.updateMetadata((metadata) => ({
       ...metadata,
-      status: wasCancelled ? 'cancelled' : hasErrors ? 'error' : 'success',
+      status,
       completedAt: new Date().toISOString(),
     }));
 
@@ -246,6 +258,8 @@ export async function buildProject({
     } else {
       logger.info(`Project written to ${directory}!`);
     }
+
+    return { status };
   } catch (err) {
     await syncMetadataController?.updateMetadata((metadata) => ({
       ...metadata,
