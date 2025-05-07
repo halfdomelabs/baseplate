@@ -4,20 +4,18 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import {
+  mergeFragmentsWithHoistedFragmentsPresorted,
   projectScope,
-  tsCodeFileTemplate,
-  TsCodeUtils,
   tsImportBuilder,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
   createProviderType,
   createReadOnlyProviderType,
 } from '@halfdomelabs/sync';
-import { notEmpty } from '@halfdomelabs/utils';
+import { NamedArrayFieldContainer } from '@halfdomelabs/utils';
 import { posixJoin } from '@halfdomelabs/utils/node';
 import { kebabCase } from 'change-case';
 import path from 'node:path';
@@ -28,29 +26,62 @@ import type { ServiceOutputMethod } from '@src/types/service-output.js';
 import { appModuleProvider } from '../app-module/app-module.generator.js';
 
 const descriptorSchema = z.object({
-  // unique identifier for the service file to allow it to be referenced by other generators
-  id: z.string().optional(),
+  /**
+   * The unique identifier for the service file.
+   */
+  id: z.string(),
+  /**
+   * The name of the service file.
+   */
   name: z.string().min(1),
-  methodOrder: z.array(z.string()).optional(),
+  /**
+   * The file name of the service file.
+   */
   fileName: z.string().optional(),
 });
 
+/**
+ * A method that is registered with the service file.
+ */
+interface ServiceMethod {
+  /**
+   * The order of the method in the service file.
+   */
+  order: number;
+  /**
+   * The name of the method.
+   */
+  name: string;
+  /**
+   * The fragment of code that implements the method.
+   */
+  fragment: TsCodeFragment;
+  /**
+   * The service output data that can be consumed by other generators.
+   */
+  outputMethod?: ServiceOutputMethod;
+}
+
 export interface ServiceFileProvider {
-  getServiceImport: () => string;
+  /**
+   * Get the canonical path to the service file.
+   */
   getServicePath: () => string;
+  /**
+   * Get the import declaration for a method.
+   */
   getMethodImport: (methodName: string) => TsImportDeclaration;
-  registerMethod(
-    key: string,
-    block: TsCodeFragment,
-    outputMethod?: ServiceOutputMethod,
-  ): void;
+  /**
+   * Register a method with the service file.
+   */
+  registerMethod(method: ServiceMethod): void;
 }
 
 export const serviceFileProvider =
   createProviderType<ServiceFileProvider>('service-file');
 
 export interface ServiceFileOutputProvider {
-  getServiceMethod(key: string): ServiceOutputMethod;
+  getServiceMethod(name: string): ServiceOutputMethod;
 }
 
 export const serviceFileOutputProvider =
@@ -74,12 +105,7 @@ export const serviceFileGenerator = createGenerator({
           : serviceFileOutputProvider.export(),
       },
       run({ appModule, typescriptFile }) {
-        const methodMap = createNonOverwriteableMap<
-          Record<string, TsCodeFragment>
-        >({}, { name: 'prisma-crud-service-method-map' });
-        const outputMap = createNonOverwriteableMap<
-          Record<string, ServiceOutputMethod>
-        >({}, { name: 'prisma-crud-service-output-map' });
+        const methodsContainer = new NamedArrayFieldContainer<ServiceMethod>();
         const servicesFolder = path.join(
           appModule.getModuleFolder(),
           'services',
@@ -92,61 +118,39 @@ export const serviceFileGenerator = createGenerator({
         return {
           providers: {
             serviceFile: {
-              getServiceImport: () => servicesPath,
               getServicePath: () => servicesPath,
               getMethodImport: (methodName) =>
                 tsImportBuilder([methodName]).from(servicesPath),
-              registerMethod(key, block, outputMethod) {
-                methodMap.set(key, block);
-                if (outputMethod) {
-                  outputMap.set(key, outputMethod);
-                }
+              registerMethod(method) {
+                methodsContainer.add(method);
               },
             },
           },
           build: async (builder) => {
-            const methods = methodMap.value();
-            const methodOrder = descriptor.methodOrder ?? [];
-            const orderedMethods = [
-              ...methodOrder.map((key) => methods[key]).filter(notEmpty),
-              ...Object.keys(methods)
-                .filter((m) => !methodOrder.includes(m))
-                .map((key) => methods[key]),
-            ];
+            const orderedMethods = methodsContainer
+              .getValue()
+              .sort((a, b) => a.order - b.order);
 
-            const template = tsCodeFileTemplate({
-              name: 'service-file',
-              source: { contents: 'TPL_METHODS' },
-              variables: {
-                TPL_METHODS: {},
-              },
-            });
-
-            if (Object.keys(methodMap.value()).length > 0) {
+            if (orderedMethods.length > 0) {
+              const mergedMethods = mergeFragmentsWithHoistedFragmentsPresorted(
+                orderedMethods.map((m) => m.fragment),
+              );
               await builder.apply(
-                typescriptFile.renderTemplateFile({
-                  id:
-                    descriptor.id ??
-                    kebabCase(descriptor.name.replace(/\.ts$/, '')),
-                  template,
+                typescriptFile.renderTemplateFragment({
+                  id: descriptor.id,
+                  fragment: mergedMethods,
                   destination: servicesPath,
-                  variables: {
-                    TPL_METHODS: TsCodeUtils.mergeFragmentsPresorted(
-                      orderedMethods,
-                      '\n\n',
-                    ),
-                  },
                 }),
               );
             }
             return {
               serviceFileOutput: {
-                getServiceMethod(key) {
-                  const output = outputMap.get(key);
-                  if (!output) {
-                    throw new Error(`No output method found for key ${key}`);
+                getServiceMethod(name) {
+                  const output = orderedMethods.find((m) => m.name === name);
+                  if (!output?.outputMethod) {
+                    throw new Error(`No output method found with name ${name}`);
                   }
-                  return output;
+                  return output.outputMethod;
                 },
               },
             };

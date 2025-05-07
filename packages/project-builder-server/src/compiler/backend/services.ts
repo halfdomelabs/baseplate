@@ -99,7 +99,6 @@ function buildServiceForModel(
   return serviceFileGenerator({
     name: `${model.name}Service`,
     id: `prisma-crud-service:${model.name}`,
-    methodOrder: ['create', 'update', 'delete'],
     children: {
       $crud: prismaCrudServiceGenerator({
         modelName: model.name,
@@ -111,6 +110,7 @@ function buildServiceForModel(
             service.create?.fields?.length && service.create.enabled
               ? prismaCrudCreateGenerator({
                   name: 'create',
+                  order: 1,
                   modelName: model.name,
                   prismaFields: service.create.fields.map((f) =>
                     appBuilder.nameFromId(f),
@@ -126,6 +126,7 @@ function buildServiceForModel(
             service.update?.fields?.length && service.update.enabled
               ? prismaCrudUpdateGenerator({
                   name: 'update',
+                  order: 2,
                   modelName: model.name,
                   prismaFields: service.update.fields.map((f) =>
                     appBuilder.nameFromId(f),
@@ -140,6 +141,7 @@ function buildServiceForModel(
           delete: service.delete?.enabled
             ? prismaCrudDeleteGenerator({
                 name: 'delete',
+                order: 3,
                 modelName: model.name,
               })
             : undefined,

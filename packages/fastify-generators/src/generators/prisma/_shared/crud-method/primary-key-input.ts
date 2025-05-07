@@ -116,7 +116,7 @@ export function getPrimaryKeyExpressions(
   const primaryKeyInputName = `${model.name}PrimaryKey`;
 
   const headerTypeBlock = tsHoistedFragment(
-    `primary-key-type-${primaryKeyInputName}`,
+    primaryKeyInputName,
     `export type ${primaryKeyInputName} = Pick<${model.name}, ${idFields.map(quot).join(' | ')}>`,
     tsImportBuilder([model.name]).from('@prisma/client'),
   );
