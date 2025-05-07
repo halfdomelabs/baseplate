@@ -111,7 +111,7 @@ function getPothosTypeForNestedObject(
     tsCodeFragment(pothosObjectTypeDefinition.variableName, [], {
       hoistedFragments: [
         tsHoistedFragment(
-          pothosObjectTypeDefinition.name,
+          `object-type:${pothosObjectTypeDefinition.name}`,
           pothosObjectTypeDefinition.fragment,
         ),
       ],

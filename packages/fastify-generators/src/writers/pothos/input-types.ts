@@ -33,7 +33,7 @@ function writePothosInputFieldFromDtoNestedField(
     type: pothosType,
   });
 
-  return tsTemplate`${options.fieldBuilder}.field(${fieldOptions ?? ''})`;
+  return tsTemplate`${options.fieldBuilder}.field(${fieldOptions ?? '{}'})`;
 }
 
 export function writePothosInputFieldsFromDtoFields(
@@ -114,7 +114,10 @@ export function getPothosTypeForNestedInput(
   return getPothosTypeAsFragment(
     tsCodeFragment(pothosInputType.variableName, [], {
       hoistedFragments: [
-        tsHoistedFragment(pothosInputType.name, pothosInputType.fragment),
+        tsHoistedFragment(
+          `input-type:${pothosInputType.name}`,
+          pothosInputType.fragment,
+        ),
       ],
     }),
     field.isList,

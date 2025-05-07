@@ -47,8 +47,13 @@ export function tsPositionedHoistedFragment(
   key: string,
   fragment: TsCodeFragment | string,
   position: TsHoistedFragmentPosition,
+  imports?: TsImportDeclaration[] | TsImportDeclaration,
+  options: TsCodeFragmentOptions = {},
 ): TsPositionedHoistedFragment {
-  return { ...tsHoistedFragment(key, fragment), position };
+  return {
+    ...tsHoistedFragment(key, fragment, imports, options),
+    position,
+  };
 }
 
 /**

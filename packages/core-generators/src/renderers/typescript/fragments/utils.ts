@@ -35,8 +35,10 @@ function extractFlattenedHoistedFragmentsWithDependencies(
   fragment: TsCodeFragment,
   parentKey?: string,
 ): FlattenedHoistedFragmentsWithDependencies {
-  const hoistedFragments: TsHoistedFragment[] = fragment.hoistedFragments ?? [];
-  const imports: TsImportDeclaration[] = fragment.imports ?? [];
+  const hoistedFragments: TsHoistedFragment[] = [
+    ...(fragment.hoistedFragments ?? []),
+  ];
+  const imports: TsImportDeclaration[] = [...(fragment.imports ?? [])];
   const dependencies: [string, string][] =
     parentKey && fragment.hoistedFragments
       ? fragment.hoistedFragments.map((d) => [d.key, parentKey])
