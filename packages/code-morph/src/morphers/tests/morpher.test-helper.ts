@@ -63,11 +63,9 @@ export function runMorpherTests(morpher: TypescriptMorpher<any>): void {
 
   describe(`Test morpher ${morpher.name}`, () => {
     test.each(testCases)('case $caseName', async ({ casePath }) => {
-      if (!prettierConfig) {
-        prettierConfig = await prettier.resolveConfig(
-          path.dirname(fileURLToPath(import.meta.url)),
-        );
-      }
+      prettierConfig ??= await prettier.resolveConfig(
+        path.dirname(fileURLToPath(import.meta.url)),
+      );
       // Load files with arbitrary extensions
       const optionsPath = path.join(casePath, 'options.json');
       const inputFilename = getFileWithTsExtension(casePath, 'input');

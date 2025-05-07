@@ -176,67 +176,63 @@ export const prettierGenerator = createGenerator({
               ) {
                 return input;
               }
-              if (!prettierModulePromise) {
-                prettierModulePromise = (async () => {
-                  const result = await resolveModuleWithVersion(
-                    'prettier',
-                    fullPath,
+              prettierModulePromise ??= (async () => {
+                const result = await resolveModuleWithVersion(
+                  'prettier',
+                  fullPath,
+                );
+                if (!result) {
+                  logger.info(
+                    'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.',
                   );
-                  if (!result) {
-                    logger.info(
-                      'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.',
-                    );
-                    // use the in-built version of prettier
-                    return prettier;
-                  }
-                  if (result.version === prettier.version) {
-                    return prettier;
-                  }
-                  const rawImport = (await import(
-                    // use file:// to support Windows
-                    pathToFileURL(result.modulePath).href
-                  )) as {
-                    default: PrettierModule;
-                  };
-                  return rawImport.default;
-                })();
-              }
+                  // use the in-built version of prettier
+                  return prettier;
+                }
+                if (result.version === prettier.version) {
+                  return prettier;
+                }
+                const rawImport = (await import(
+                  // use file:// to support Windows
+                  pathToFileURL(result.modulePath).href
+                )) as {
+                  default: PrettierModule;
+                };
+                return rawImport.default;
+              })();
 
               const prettierModule = await prettierModulePromise;
 
-              if (!prettierConfigPromise) {
-                prettierConfigPromise = (async () => {
-                  const resolvedPlugins = await Promise.all(
-                    plugins.map(async (plugin) => {
-                      const resolvedModule = await resolveModuleWithVersion(
-                        plugin.name,
-                        fullPath,
+              prettierConfigPromise ??= (async () => {
+                const resolvedPlugins = await Promise.all(
+                  plugins.map(async (plugin) => {
+                    const resolvedModule = await resolveModuleWithVersion(
+                      plugin.name,
+                      fullPath,
+                    );
+
+                    if (!resolvedModule) {
+                      logger.info(
+                        `Could not resolve prettier plugin ${plugin.name}. Run again once dependencies have been installed.`,
                       );
+                      return plugin.default;
+                    }
 
-                      if (!resolvedModule) {
-                        logger.info(
-                          `Could not resolve prettier plugin ${plugin.name}. Run again once dependencies have been installed.`,
-                        );
-                        return plugin.default;
-                      }
+                    return plugin.version === resolvedModule.version
+                      ? plugin.default
+                      : (import(
+                          pathToFileURL(resolvedModule.modulePath).href
+                        ) as Plugin);
+                  }),
+                );
 
-                      return plugin.version === resolvedModule.version
-                        ? plugin.default
-                        : (import(
-                            pathToFileURL(resolvedModule.modulePath).href
-                          ) as Plugin);
-                    }),
-                  );
-
-                  return {
-                    ...prettierConfig.value(),
-                    plugins:
-                      resolvedPlugins.length > 0
-                        ? resolvedPlugins.filter(notEmpty)
-                        : [],
-                  };
-                })();
-              }
+                return {
+                  ...prettierConfig.value(),
+                  plugins:
+                    resolvedPlugins.length > 0
+                      ? resolvedPlugins.filter(notEmpty)
+                      : [],
+                };
+              })();
 
               const config = await prettierConfigPromise;
 
