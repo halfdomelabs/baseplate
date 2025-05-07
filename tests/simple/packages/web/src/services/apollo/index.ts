@@ -1,16 +1,18 @@
 import {
   ApolloClient,
+  from,
   HttpLink,
   NormalizedCacheObject,
-  from,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { ServerError } from '@apollo/client/link/utils';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLError, Kind } from 'graphql';
+
 import { config } from '../config';
 import { logError } from '../error-logger';
 import { logger } from '../logger';
+import { apolloSentryLink } from './apollo-sentry-link';
 import { createApolloCache } from './cache';
 
 export interface ErrorExtensions {
@@ -63,9 +65,8 @@ export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
   const httpLink = new HttpLink({
     uri: config.VITE_GRAPH_API_ENDPOINT,
   });
-
   const client = new ApolloClient({
-    link: from([errorLink, httpLink]),
+    link: from([errorLink, apolloSentryLink, httpLink]),
     cache: createApolloCache(),
   });
 

@@ -539,9 +539,12 @@ export const reactApolloGenerator = createGenerator({
                     ),
                     '\n\n',
                   ),
-                  TPL_CREATE_ARGS: `{ ${createApolloClientArguments
-                    .map((arg) => arg.name)
-                    .join(', ')} }`,
+                  TPL_CREATE_ARGS:
+                    createApolloClientArguments.length > 0
+                      ? `{ ${createApolloClientArguments
+                          .map((arg) => arg.name)
+                          .join(', ')} }`
+                      : '',
                   TPL_MEMO_DEPENDENCIES: createApolloClientArguments
                     .map((arg) => arg.name)
                     .join(', '),

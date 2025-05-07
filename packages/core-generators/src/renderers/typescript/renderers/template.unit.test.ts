@@ -32,6 +32,32 @@ describe('renderTsTemplateToTsCodeFragment', () => {
     expect(result.hoistedFragments).toEqual([]);
   });
 
+  it('should handle inline variables followed by a comma', () => {
+    const template = `const value = [TPL_VARIABLE, 123];`;
+    const variables = {
+      TPL_VARIABLE: {
+        contents: '"test"',
+      },
+    };
+
+    const result = renderTsTemplateToTsCodeFragment(template, variables);
+
+    expect(result.contents).toEqual(`const value = ["test", 123];`);
+  });
+
+  it('should handle empty inline variables followed by a comma', () => {
+    const template = `const value = [TPL_VARIABLE,123];`;
+    const variables = {
+      TPL_VARIABLE: {
+        contents: '',
+      },
+    };
+
+    const result = renderTsTemplateToTsCodeFragment(template, variables);
+
+    expect(result.contents).toEqual(`const value = [123];`);
+  });
+
   it('should include metadata when option is enabled', () => {
     const template =
       'const name = TPL_VARIABLE;\nTPL_BLOCK;\nconst inlineBlock = TPL_BLOCK;';

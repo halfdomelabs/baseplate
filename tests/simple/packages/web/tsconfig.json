@@ -14,7 +14,6 @@
     "moduleResolution": "bundler",
     "isolatedModules": true,
     "noEmit": true,
-    "baseUrl": "./",
     "paths": {
       "@src/*": ["./src/*"]
     }
