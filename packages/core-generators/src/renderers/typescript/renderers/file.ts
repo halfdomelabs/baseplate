@@ -2,7 +2,10 @@ import type { SourceFile } from 'ts-morph';
 
 import { Project } from 'ts-morph';
 
-import type { TsHoistedFragment } from '../fragments/types.js';
+import type {
+  TsHoistedFragment,
+  TsPositionedHoistedFragment,
+} from '../fragments/types.js';
 import type { TsImportMap } from '../import-maps/types.js';
 import type { SortImportDeclarationsOptions } from '../imports/index.js';
 import type { TsImportDeclaration } from '../imports/types.js';
@@ -31,6 +34,7 @@ function mergeImportsAndHoistedFragments(
   imports: TsImportDeclaration[],
   hoistedFragments: TsHoistedFragment[],
   importMaps: Map<string, TsImportMap>,
+  positionedHoistedFragments: TsPositionedHoistedFragment[],
   {
     resolveModule,
     importSortOptions,
@@ -70,11 +74,13 @@ function mergeImportsAndHoistedFragments(
   // Remove the existing import declarations
   for (const i of importDeclarationsFromFile) i.remove();
 
-  const afterImportsHoistedFragments = hoistedFragments.filter(
-    (h) => !h.position || h.position === 'afterImports',
-  );
-  const beforeImportsHoistedFragments = hoistedFragments.filter(
-    (h) => h.position === 'beforeImports',
+  // Combine the hoisted fragments with the positioned hoisted fragments
+  const afterImportsHoistedFragments = [
+    ...hoistedFragments,
+    ...positionedHoistedFragments.filter((f) => f.position === 'afterImports'),
+  ];
+  const beforeImportsHoistedFragments = positionedHoistedFragments.filter(
+    (f) => f.position === 'beforeImports',
   );
 
   function writeHoistedFragments(fragments: TsHoistedFragment[]): void {
@@ -119,12 +125,21 @@ function mergeImportsAndHoistedFragments(
   }
 }
 
-export function renderTsCodeFileTemplate(
-  templateContents: string,
-  variables: Record<string, TsTemplateFileVariableValue>,
-  importMapProviders: Record<string, unknown> = {},
-  options: RenderTsCodeFileTemplateOptions = {},
-): string {
+interface RenderTsCodeFileTemplateInput {
+  templateContents: string;
+  variables?: Record<string, TsTemplateFileVariableValue>;
+  importMapProviders?: Record<string, unknown>;
+  positionedHoistedFragments?: TsPositionedHoistedFragment[];
+  options?: RenderTsCodeFileTemplateOptions;
+}
+
+export function renderTsCodeFileTemplate({
+  templateContents,
+  variables = {},
+  importMapProviders = {},
+  positionedHoistedFragments = [],
+  options = {},
+}: RenderTsCodeFileTemplateInput): string {
   // Render the template into a code fragment
   const { contents, imports, hoistedFragments } =
     renderTsTemplateToTsCodeFragment(templateContents, variables, {
@@ -153,6 +168,7 @@ export function renderTsCodeFileTemplate(
     imports ?? [],
     hoistedFragments ?? [],
     new Map(Object.entries(importMapProviders) as [string, TsImportMap][]),
+    positionedHoistedFragments,
     options,
   );
 

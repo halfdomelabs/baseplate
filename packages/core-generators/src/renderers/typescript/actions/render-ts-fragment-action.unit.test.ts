@@ -31,7 +31,6 @@ describe('renderTsFragmentAction', () => {
         hoistedFragments: [
           {
             key: 'types',
-            position: 'beforeImports',
             fragment: tsCodeFragment('type Greeting = string;'),
           },
         ],

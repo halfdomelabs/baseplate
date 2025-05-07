@@ -1,11 +1,6 @@
 import type { TsImportDeclaration } from '../imports/index.js';
 
 /**
- * The position where a hoisted fragment should be placed in the generated file.
- */
-export type TsHoistedFragmentPosition = 'beforeImports' | 'afterImports';
-
-/**
  * Represents a code fragment that will be hoisted to a specific position in the generated file.
  *
  * Hoisted fragments allow code to be placed at strategic locations in the file
@@ -21,18 +16,25 @@ export interface TsHoistedFragment {
   key: string;
 
   /**
-   * Position where this fragment should be placed in the generated file.
-   * Currently only supports 'beforeImports' (placed before import declarations)
-   * and 'afterImports' (placed after import declarations but before main content).
-   *
-   * @default 'afterImports'
-   */
-  position?: TsHoistedFragmentPosition;
-
-  /**
    * The actual code fragment to be hoisted to the specified position.
    */
   fragment: TsCodeFragment;
+}
+
+/**
+ * The position where a hoisted fragment should be placed in the generated file.
+ */
+export type TsHoistedFragmentPosition = 'beforeImports' | 'afterImports';
+
+/**
+ * A hoisted fragment with a specific position in the generated file, e.g.
+ * before imports or after imports.
+ */
+export interface TsPositionedHoistedFragment extends TsHoistedFragment {
+  /**
+   * Position where this fragment should be placed in the generated file.
+   */
+  position: TsHoistedFragmentPosition;
 }
 
 /**

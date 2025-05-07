@@ -74,7 +74,6 @@ describe('flattenImportsAndHoistedFragments', () => {
         hoistedFragments: [
           {
             key: 'duplicate-key',
-            position: 'afterImports',
             fragment: {
               contents: 'type DuplicateKey = number;',
               hoistedFragments: [],
@@ -87,7 +86,6 @@ describe('flattenImportsAndHoistedFragments', () => {
         hoistedFragments: [
           {
             key: 'duplicate-key',
-            position: 'afterImports',
             fragment: {
               contents: 'type DuplicateKey = number;',
               hoistedFragments: [],
@@ -112,14 +110,12 @@ describe('flattenImportsAndHoistedFragments', () => {
         hoistedFragments: [
           {
             key: 'b-key', // alphabetically second
-            position: 'afterImports',
             fragment: {
               contents: 'type B = string;',
             },
           },
           {
             key: 'a-key', // alphabetically first
-            position: 'afterImports',
             fragment: {
               contents: 'type A = string;',
             },
@@ -131,13 +127,11 @@ describe('flattenImportsAndHoistedFragments', () => {
         hoistedFragments: [
           {
             key: 'c-key', // alphabetically third
-            position: 'afterImports',
             fragment: {
               contents: 'type C = string;',
               hoistedFragments: [
                 {
                   key: 'z-nested-key', // nested, so next to c-key despite alphabetically last
-                  position: 'afterImports',
                   fragment: {
                     contents: 'type Z = string;',
                   },

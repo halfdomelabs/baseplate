@@ -5,8 +5,6 @@ import { logger } from '%loggerServiceImports';
 
 import { buildServer } from './server.js';
 
-TPL_INITIALIZERS;
-
 async function startServer(): Promise<void> {
   const fastify = await buildServer({
     loggerInstance: logger,

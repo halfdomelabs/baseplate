@@ -3,6 +3,7 @@ import type {
   TsCodeFragment,
   TsHoistedFragment,
   TsHoistedFragmentPosition,
+  TsPositionedHoistedFragment,
 } from './types.js';
 
 /**
@@ -15,14 +16,27 @@ import type {
 export function tsHoistedFragment(
   fragment: TsCodeFragment | string,
   key: string,
-  position?: TsHoistedFragmentPosition,
 ): TsHoistedFragment {
   return {
-    key,
-    position,
     fragment:
       typeof fragment === 'string' ? tsCodeFragment(fragment) : fragment,
+    key,
   };
+}
+
+/**
+ * Create a positioned hoisted fragment.
+ * @param key - The key to use for the positioned hoisted fragment.
+ * @param fragment - The fragment to hoist.
+ * @param position - The position to insert the positioned hoisted fragment.
+ * @returns The positioned hoisted fragment.
+ */
+export function tsPositionedHoistedFragment(
+  key: string,
+  fragment: TsCodeFragment | string,
+  position: TsHoistedFragmentPosition,
+): TsPositionedHoistedFragment {
+  return { ...tsHoistedFragment(fragment, key), position };
 }
 
 export interface TsCodeFragmentOptions {
