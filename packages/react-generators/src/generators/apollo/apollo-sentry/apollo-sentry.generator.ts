@@ -74,8 +74,8 @@ export const apolloSentryGenerator = createGenerator({
                 {
                   hoistedFragments: [
                     tsHoistedFragment(
-                      headerFragment,
                       'apollo-sentry-scope-action',
+                      headerFragment,
                     ),
                   ],
                 },

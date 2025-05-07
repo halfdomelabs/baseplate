@@ -8,14 +8,13 @@ import type {
 
 /**
  * Create a hoisted fragment.
- * @param fragment - The fragment to hoist.
  * @param key - The key to use for the hoisted fragment.
- * @param position - The position to insert the hoisted fragment.
+ * @param fragment - The fragment to hoist.
  * @returns The hoisted fragment.
  */
 export function tsHoistedFragment(
-  fragment: TsCodeFragment | string,
   key: string,
+  fragment: TsCodeFragment | string,
 ): TsHoistedFragment {
   return {
     fragment:
@@ -36,7 +35,7 @@ export function tsPositionedHoistedFragment(
   fragment: TsCodeFragment | string,
   position: TsHoistedFragmentPosition,
 ): TsPositionedHoistedFragment {
-  return { ...tsHoistedFragment(fragment, key), position };
+  return { ...tsHoistedFragment(key, fragment), position };
 }
 
 export interface TsCodeFragmentOptions {

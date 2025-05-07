@@ -10,12 +10,12 @@ describe('TsCodeUtils', () => {
       const fooImport = tsImportBuilder().named('foo').from('./foo.js');
       const barImport = tsImportBuilder().named('bar').from('./bar.js');
       const h1Fragment = tsHoistedFragment(
-        tsCodeFragment('type A = string;'),
         'h1',
+        tsCodeFragment('type A = string;'),
       );
       const h2Fragment = tsHoistedFragment(
-        tsCodeFragment('type B = number;'),
         'h2',
+        tsCodeFragment('type B = number;'),
       );
       const fragments = new Map([
         [
@@ -56,8 +56,8 @@ describe('TsCodeUtils', () => {
       const fooImport = tsImportBuilder().named('foo').from('./foo.js');
       const barImport = tsImportBuilder().named('bar').from('./bar.js');
       const h1Fragment = tsHoistedFragment(
-        tsCodeFragment('type A = string;'),
         'h1',
+        tsCodeFragment('type A = string;'),
       );
       const fragments = [
         tsCodeFragment('const a = 1;', fooImport, {
@@ -241,8 +241,8 @@ describe('TsCodeUtils', () => {
     it('should handle imports and hoisted fragments', () => {
       const fooImport = tsImportBuilder().named('foo').from('./foo.js');
       const h1Fragment = tsHoistedFragment(
-        tsCodeFragment('type A = string;'),
         'h1',
+        tsCodeFragment('type A = string;'),
       );
       const obj = {
         prop: tsCodeFragment('foo', fooImport, {
@@ -289,12 +289,12 @@ describe('TsCodeUtils', () => {
       const fooImport = tsImportBuilder().named('foo').from('./foo.js');
       const barImport = tsImportBuilder().named('bar').from('./bar.js');
       const h1Fragment = tsHoistedFragment(
-        tsCodeFragment('type A = string;'),
         'h1',
+        tsCodeFragment('type A = string;'),
       );
       const h2Fragment = tsHoistedFragment(
-        tsCodeFragment('type B = number;'),
         'h2',
+        tsCodeFragment('type B = number;'),
       );
       const fragments = new Map([
         [
@@ -390,8 +390,8 @@ describe('TsCodeUtils', () => {
       const fooImport = tsImportBuilder().named('foo').from('./foo.js');
       const barImport = tsImportBuilder().named('bar').from('./bar.js');
       const h1Fragment = tsHoistedFragment(
-        tsCodeFragment('type A = string;'),
         'h1',
+        tsCodeFragment('type A = string;'),
       );
 
       const result = TsCodeUtils.mergeFragmentsAsJsxElement('div', {
@@ -411,8 +411,8 @@ describe('TsCodeUtils', () => {
     it('should handle fragment children with imports', () => {
       const fooImport = tsImportBuilder().named('foo').from('./foo.js');
       const h1Fragment = tsHoistedFragment(
-        tsCodeFragment('type A = string;'),
         'h1',
+        tsCodeFragment('type A = string;'),
       );
 
       const result = TsCodeUtils.mergeFragmentsAsJsxElement('div', {

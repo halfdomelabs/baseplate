@@ -181,7 +181,7 @@ function createEmbeddedTransformFunction(options: {
 
   return {
     name,
-    func: tsHoistedFragment(func, `embedded-transform-${name}`),
+    func: tsHoistedFragment(`embedded-transform-${name}`, func),
   };
 }
 

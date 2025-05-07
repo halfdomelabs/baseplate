@@ -66,8 +66,8 @@ describe('renderTsTemplateToTsCodeFragment', () => {
         {
           hoistedFragments: [
             tsHoistedFragment(
-              tsCodeFragment('function helper() { return true; }', []),
               'helper',
+              tsCodeFragment('function helper() { return true; }', []),
             ),
           ],
         },
