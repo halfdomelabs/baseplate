@@ -91,18 +91,25 @@ export function renderTsTemplateToTsCodeFragment(
 
   // --- Pass 3: Replace inline placeholders with unique markers ---
   // This regex ensures the TPL_ variable is not immediately followed by another valid variable character
-  const inlineRegex = new RegExp(`(${prefix}[A-Z0-9_]+)(?![A-Z0-9_])`, 'g');
+  const inlineRegex = new RegExp(`(${prefix}[A-Z0-9_]+)([^A-Z0-9_]|$)`, 'g');
   renderedTemplate = renderedTemplate.replace(
     inlineRegex,
-    (match, key: string) => {
+    (match, key: string, followingCharacter: string) => {
       if (!(key in variables)) {
         throw new Error(`Template variable not found: ${key}`);
       }
+      // HACK: handle specific scenario where the variable is followed by a comma and the variable
+      // value itself is an empty string which would result in invalid syntax, e.g. { TEST, } => { , }
+      const value = variables[key];
+      const contents = typeof value === 'string' ? value : value.contents;
+      const shouldRemoveComma =
+        followingCharacter === ',' && contents.trim() === '';
+
       const marker = `__INLINE_MARKER_${inlineMarkers.size}__`; // Unique marker
-      inlineMarkers.set(marker, { key, value: variables[key] });
+      inlineMarkers.set(marker, { key, value });
       variableKeys.delete(key); // Mark as used
 
-      return marker; // Replace with marker
+      return `${marker}${shouldRemoveComma ? '' : followingCharacter}`; // Replace with marker
     },
   );
 

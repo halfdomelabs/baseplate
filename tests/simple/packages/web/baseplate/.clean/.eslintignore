@@ -2,7 +2,7 @@
 /dist
 /lib
 /node_modules
-vite.config.ts
 postcss.config.js
-tailwind.config.js
 src/generated/graphql.tsx
+tailwind.config.js
+vite.config.ts

@@ -25,7 +25,11 @@ async function runTest(test: ProjectBuilderTest): Promise<void> {
 
   // Generate project
   logger.log(`Generating project for ${test.projectDirectory}...`);
-  await generateProject(projectDirectoryPath);
+  const result = await generateProject(projectDirectoryPath);
+
+  if (result.status !== 'success') {
+    throw new Error(`Project generation failed: ${result.status}`);
+  }
   logger.log(`Project generated for ${test.projectDirectory}!`);
 
   const context: TestRunnerContext = {

@@ -24,7 +24,7 @@ export function addBuildCommand(program: Command): void {
         : '.';
       const context = await createSchemaParserContext(resolvedDirectory);
       const userConfig = await getUserConfig();
-      return buildProject({
+      await buildProject({
         directory: resolvedDirectory,
         logger,
         context,
