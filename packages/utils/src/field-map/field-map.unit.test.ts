@@ -283,6 +283,94 @@ describe('FieldMap', () => {
     });
   });
 
+  describe('NamedArrayFieldContainer', () => {
+    it('should handle initialization with default values', () => {
+      const fieldMap = createFieldMap((t) => ({
+        items: t.namedArray([
+          { name: 'item1', value: 'value1' },
+          { name: 'item2', value: 'value2' },
+        ]),
+      }));
+
+      expect(fieldMap.getValues()).toEqual({
+        items: [
+          { name: 'item1', value: 'value1' },
+          { name: 'item2', value: 'value2' },
+        ],
+      });
+    });
+
+    it('should allow adding new items', () => {
+      const fieldMap = createFieldMap((t) => ({
+        items: t.namedArray<{ name: string; value: string }>(),
+      }));
+
+      fieldMap.items.add({ name: 'item1', value: 'value1' }, 'source1');
+      fieldMap.items.add({ name: 'item2', value: 'value2' }, 'source1');
+
+      expect(fieldMap.getValues()).toEqual({
+        items: [
+          { name: 'item1', value: 'value1' },
+          { name: 'item2', value: 'value2' },
+        ],
+      });
+    });
+
+    it('should throw error when adding item with duplicate key', () => {
+      const fieldMap = createFieldMap((t) => ({
+        items: t.namedArray<{ name: string; value: string }>(),
+      }));
+
+      fieldMap.items.add({ name: 'item1', value: 'value1' }, 'source1');
+      expect(() => {
+        fieldMap.items.add({ name: 'item1', value: 'value2' }, 'source2');
+      }).toThrow(
+        'Value for name item1 has already been set by source1 and cannot be overwritten by source2',
+      );
+    });
+
+    it('should maintain order based on keys', () => {
+      const fieldMap = createFieldMap((t) => ({
+        items: t.namedArray<{ name: string; value: string }>(),
+      }));
+
+      fieldMap.items.add({ name: 'item2', value: 'value2' }, 'source1');
+      fieldMap.items.add({ name: 'item1', value: 'value1' }, 'source1');
+      fieldMap.items.add({ name: 'item3', value: 'value3' }, 'source1');
+
+      expect(fieldMap.getValues()).toEqual({
+        items: [
+          { name: 'item1', value: 'value1' },
+          { name: 'item2', value: 'value2' },
+          { name: 'item3', value: 'value3' },
+        ],
+      });
+    });
+
+    it('should handle adding multiple items at once', () => {
+      const fieldMap = createFieldMap((t) => ({
+        items: t.namedArray<{ name: string; value: string }>(),
+      }));
+
+      fieldMap.items.addMany(
+        [
+          { name: 'item2', value: 'value2' },
+          { name: 'item1', value: 'value1' },
+          { name: 'item3', value: 'value3' },
+        ],
+        'source1',
+      );
+
+      expect(fieldMap.getValues()).toEqual({
+        items: [
+          { name: 'item1', value: 'value1' },
+          { name: 'item2', value: 'value2' },
+          { name: 'item3', value: 'value3' },
+        ],
+      });
+    });
+  });
+
   describe('Mixed field types', () => {
     it('should handle multiple field types together', () => {
       const fieldMap = createFieldMap((t) => ({

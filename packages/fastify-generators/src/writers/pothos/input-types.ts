@@ -1,9 +1,12 @@
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+
 import {
   tsCodeFragment,
   TsCodeUtils,
+  tsHoistedFragment,
   tsTemplate,
 } from '@halfdomelabs/core-generators';
-import { notEmpty, quot } from '@halfdomelabs/utils';
+import { quot } from '@halfdomelabs/utils';
 
 import type {
   ServiceOutputDtoField,
@@ -12,10 +15,7 @@ import type {
 
 import { lowerCaseFirst } from '@src/utils/case.js';
 
-import type {
-  PothosCodeFragment,
-  PothosTypeDefinitionWithVariableName,
-} from './definitions.js';
+import type { PothosTypeDefinitionWithVariableName } from './definitions.js';
 import type { PothosWriterOptions } from './options.js';
 
 import { getPothosTypeAsFragment, writePothosFieldOptions } from './helpers.js';
@@ -24,45 +24,33 @@ import { writePothosInputFieldFromDtoScalarField } from './scalar-fields.js';
 function writePothosInputFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions,
-): PothosCodeFragment {
+): TsCodeFragment {
   // recursive call
   const pothosType = getPothosTypeForNestedInput(field, options);
 
   const fieldOptions = writePothosFieldOptions({
     required: !field.isOptional,
-    type: pothosType.fragment,
+    type: pothosType,
   });
 
-  return {
-    fragment: tsTemplate`${options.fieldBuilder}.field(${fieldOptions ?? ''})`,
-    dependencies: pothosType.dependencies,
-  };
+  return tsTemplate`${options.fieldBuilder}.field(${fieldOptions ?? ''})`;
 }
 
 export function writePothosInputFieldsFromDtoFields(
   fields: ServiceOutputDtoField[],
   options: PothosWriterOptions,
-): PothosCodeFragment {
-  const pothosFields: PothosCodeFragment[] = fields.map((field) => {
+): TsCodeFragment {
+  const pothosFields: TsCodeFragment[] = fields.map((field) => {
     if (field.type === 'scalar') {
-      return {
-        fragment: writePothosInputFieldFromDtoScalarField(field, options),
-      };
+      return writePothosInputFieldFromDtoScalarField(field, options);
     }
     return writePothosInputFieldFromDtoNestedField(field, options);
   });
 
-  return {
-    fragment: TsCodeUtils.mergeFragmentsAsObject(
-      Object.fromEntries(
-        pothosFields.map((field, i) => [fields[i].name, field.fragment]),
-      ),
-      { wrapWithParenthesis: true, disableSort: true },
-    ),
-    dependencies: pothosFields
-      .flatMap((field) => field.dependencies)
-      .filter(notEmpty),
-  };
+  return TsCodeUtils.mergeFragmentsAsObject(
+    Object.fromEntries(pothosFields.map((field, i) => [fields[i].name, field])),
+    { wrapWithParenthesis: true, disableSort: true },
+  );
 }
 
 export function writePothosInputDefinitionFromDtoFields(
@@ -88,7 +76,7 @@ export function writePothosInputDefinitionFromDtoFields(
       VARIABLE_NAME: variableName,
       BUILDER: options.schemaBuilder,
       NAME: quot(name),
-      FIELDS: pothosFields.fragment,
+      FIELDS: pothosFields,
     },
   );
 
@@ -96,14 +84,13 @@ export function writePothosInputDefinitionFromDtoFields(
     name,
     variableName,
     fragment,
-    dependencies: pothosFields.dependencies,
   };
 }
 
 export function getPothosTypeForNestedInput(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions,
-): PothosCodeFragment {
+): TsCodeFragment {
   if (field.isPrismaType) {
     throw new Error(`Prisma types are not supported in input fields`);
   }
@@ -115,9 +102,7 @@ export function getPothosTypeForNestedInput(
     options.typeReferences?.find((x) => x.name === name);
 
   if (inputType) {
-    return {
-      fragment: getPothosTypeAsFragment(inputType.fragment, field.isList),
-    };
+    return getPothosTypeAsFragment(inputType.fragment, field.isList);
   }
 
   const pothosInputType = writePothosInputDefinitionFromDtoFields(
@@ -126,11 +111,12 @@ export function getPothosTypeForNestedInput(
     options,
   );
 
-  return {
-    fragment: getPothosTypeAsFragment(
-      tsCodeFragment(pothosInputType.variableName),
-      field.isList,
-    ),
-    dependencies: [pothosInputType],
-  };
+  return getPothosTypeAsFragment(
+    tsCodeFragment(pothosInputType.variableName, [], {
+      hoistedFragments: [
+        tsHoistedFragment(pothosInputType.name, pothosInputType.fragment),
+      ],
+    }),
+    field.isList,
+  );
 }

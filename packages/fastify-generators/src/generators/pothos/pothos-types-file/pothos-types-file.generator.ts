@@ -1,7 +1,7 @@
 import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
-  mergeFragmentsWithColocatedDependencies,
+  mergeFragmentsWithHoistedFragmentsPresorted,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -12,8 +12,6 @@ import {
 import { NamedArrayFieldContainer } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
-
-import type { PothosTypeDefinition } from '@src/writers/pothos/definitions.js';
 
 import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
 
@@ -33,8 +31,19 @@ const descriptorSchema = z.object({
   fileName: z.string().min(1),
 });
 
-interface PothosTypeDefinitionWithOrder extends PothosTypeDefinition {
+interface PothosTypeDefinitionWithOrder {
+  /**
+   * The name of the type that is being defined.
+   */
+  name: string;
+  /**
+   * The order of the type definition.
+   */
   order: number;
+  /**
+   * The fragment of the type definition.
+   */
+  fragment: TsCodeFragment;
 }
 
 export interface PothosTypesFileProvider {
@@ -86,10 +95,9 @@ export const pothosTypesFileGenerator = createGenerator({
             const types = typesContainer.getValue();
             const orderedTypes = sortBy(types, [(type) => type.order]);
 
-            const mergedFragment = mergeFragmentsWithColocatedDependencies(
-              orderedTypes,
+            const mergedFragment = mergeFragmentsWithHoistedFragmentsPresorted(
+              orderedTypes.map((type) => type.fragment),
               '\n\n',
-              { preserveOrder: true },
             );
 
             return builder.apply(

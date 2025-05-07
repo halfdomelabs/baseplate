@@ -1,6 +1,16 @@
 import type { TsImportDeclaration } from '../imports/index.js';
 
 /**
+ * A code fragment that has a key.
+ */
+export interface TsKeyedFragment extends TsCodeFragment {
+  /**
+   * The key of the fragment.
+   */
+  key: string;
+}
+
+/**
  * Represents a code fragment that will be hoisted to a specific position in the generated file.
  *
  * Hoisted fragments allow code to be placed outside of the main code block, which is useful for
@@ -10,7 +20,7 @@ import type { TsImportDeclaration } from '../imports/index.js';
  * they will be deduplicated. However, if any of the fragments have different contents, an error
  * will be thrown.
  */
-export interface TsHoistedFragment extends TsCodeFragment {
+export interface TsHoistedFragment extends TsKeyedFragment {
   /**
    * Unique identifier for this hoisted fragment used for deduplication and ordering
    * (fragments are ordered by topological sort and then alphabetically by key).

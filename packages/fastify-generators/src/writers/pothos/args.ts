@@ -1,6 +1,7 @@
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+
 import { TsCodeUtils, tsTemplate } from '@halfdomelabs/core-generators';
 import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
-import { mapValues } from 'es-toolkit';
 
 import type {
   ServiceOutputDtoField,
@@ -8,7 +9,6 @@ import type {
   ServiceOutputDtoScalarField,
 } from '@src/types/service-output.js';
 
-import type { PothosCodeFragment } from './definitions.js';
 import type { PothosWriterOptions } from './options.js';
 
 import {
@@ -20,7 +20,7 @@ import { getPothosTypeForNestedInput } from './input-types.js';
 function writePothosArgFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
   options: PothosWriterOptions,
-): PothosCodeFragment {
+): TsCodeFragment {
   const { methodName = 'arg', type } = getPothosMethodAndTypeForScalar(
     field,
     options,
@@ -30,32 +30,26 @@ function writePothosArgFromDtoScalarField(
     type,
   });
 
-  return {
-    fragment: tsTemplate`${options.fieldBuilder}.${methodName}(${argOptions ?? ''})`,
-    dependencies: [],
-  };
+  return tsTemplate`${options.fieldBuilder}.${methodName}(${argOptions ?? ''})`;
 }
 
 function writePothosArgFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions,
-): PothosCodeFragment {
+): TsCodeFragment {
   const pothosType = getPothosTypeForNestedInput(field, options);
   const argOptions = writePothosFieldOptions({
     required: !field.isOptional,
-    type: pothosType.fragment,
+    type: pothosType,
   });
 
-  return {
-    fragment: tsTemplate`${options.fieldBuilder}.arg(${argOptions ?? ''})`,
-    dependencies: pothosType.dependencies,
-  };
+  return tsTemplate`${options.fieldBuilder}.arg(${argOptions ?? ''})`;
 }
 
 export function writePothosArgsFromDtoFields(
   fields: ServiceOutputDtoField[],
   options: PothosWriterOptions,
-): PothosCodeFragment {
+): TsCodeFragment {
   const argOutputs = fields.map((field) => {
     if (field.type === 'nested') {
       return { [field.name]: writePothosArgFromDtoNestedField(field, options) };
@@ -63,12 +57,5 @@ export function writePothosArgsFromDtoFields(
     return { [field.name]: writePothosArgFromDtoScalarField(field, options) };
   });
   const argMap = safeMergeAllWithOptions(argOutputs);
-  return {
-    fragment: TsCodeUtils.mergeFragmentsAsObject(
-      mapValues(argMap, (val) => val.fragment),
-    ),
-    dependencies: Object.values(argMap).flatMap(
-      (arg) => arg.dependencies ?? [],
-    ),
-  };
+  return TsCodeUtils.mergeFragmentsAsObject(argMap);
 }

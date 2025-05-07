@@ -127,7 +127,7 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
             const options = {
               type: quot(modelName),
               ...sortObjectKeys(customFields.value()),
-              args: pothosArgs.fragment,
+              args: pothosArgs,
               resolve: resolveFunction,
             };
 
@@ -148,7 +148,6 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
             pothosTypesFile.typeDefinitions.add({
               name: `${lowerFirstModelName}Query`,
               fragment: block,
-              dependencies: pothosArgs.dependencies,
               order,
             });
           },
