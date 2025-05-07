@@ -77,6 +77,6 @@ export function useEditedModelConfig<T>(
   }
   return useStore(
     store,
-    useShallow((state) => selector({ ...state.model, ...state.getValues() })),
+    useShallow((state) => selector(state.model)),
   );
 }
