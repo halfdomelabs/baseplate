@@ -211,8 +211,8 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
             );
 
             const fieldOptions = {
-              input: inputFields.fragment,
-              payload: payloadFields.fragment,
+              input: inputFields,
+              payload: payloadFields,
               ...sortObjectKeys(customFields.value()),
               resolve: resolveFunction,
             };
@@ -234,10 +234,6 @@ export const pothosPrismaCrudMutationGenerator = createGenerator({
               name: mutationName,
               fragment: mutationFragment,
               order,
-              dependencies: [
-                ...(inputFields.dependencies ?? []),
-                ...(payloadFields.dependencies ?? []),
-              ],
             });
           },
         };

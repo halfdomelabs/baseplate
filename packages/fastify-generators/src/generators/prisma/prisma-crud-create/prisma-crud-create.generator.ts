@@ -2,6 +2,7 @@ import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import { TsCodeUtils, tsImportBuilder } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { NUMBER_VALIDATORS } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import type {
@@ -29,6 +30,7 @@ import { prismaOutputProvider } from '../prisma/prisma.generator.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
+  order: NUMBER_VALIDATORS.POSITIVE_INT,
   modelName: z.string().min(1),
   prismaFields: z.array(z.string().min(1)),
   transformerNames: z.array(z.string().min(1)).optional(),
@@ -145,7 +147,7 @@ export const prismaCrudCreateGenerator = createGenerator({
 
         const serviceMethodReference = TsCodeUtils.importFragment(
           methodName,
-          serviceFile.getServiceImport(),
+          serviceFile.getServicePath(),
         );
         const transformerOption: PrismaDataTransformerOptions = {
           operationType: 'create',
@@ -173,11 +175,15 @@ export const prismaCrudCreateGenerator = createGenerator({
               whereUniqueExpression: null,
             };
 
-            serviceFile.registerMethod(
+            serviceFile.registerMethod({
+              order: descriptor.order,
               name,
-              getMethodBlock(methodOptions),
-              getMethodDefinition(serviceMethodReference, methodOptions),
-            );
+              fragment: getMethodBlock(methodOptions),
+              outputMethod: getMethodDefinition(
+                serviceMethodReference,
+                methodOptions,
+              ),
+            });
           },
         };
       },

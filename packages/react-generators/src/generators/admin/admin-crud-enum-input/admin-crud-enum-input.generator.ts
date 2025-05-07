@@ -48,8 +48,8 @@ export const adminCrudEnumInputGenerator = createGenerator({
             {
               hoistedFragments: [
                 tsHoistedFragment(
-                  tsCodeFragment(
-                    `const ${modelField}Options = [
+                  `${modelField}Options`,
+                  `const ${modelField}Options = [
               ${options
                 .map(
                   (option) =>
@@ -59,8 +59,6 @@ export const adminCrudEnumInputGenerator = createGenerator({
                 )
                 .join(',\n')}
             ];`,
-                  ),
-                  `${modelField}Options`,
                 ),
               ],
             },

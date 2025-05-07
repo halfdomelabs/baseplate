@@ -22,10 +22,10 @@ describe('renderTsCodeFileTemplate', () => {
       TPL_CONTENT: tsCodeFragment('42'),
     };
 
-    const result = renderTsCodeFileTemplate(
-      template.source.contents,
+    const result = renderTsCodeFileTemplate({
+      templateContents: template.source.contents,
       variables,
-    );
+    });
     expect(result).toBe('const value = 42;');
   });
 
@@ -49,10 +49,10 @@ describe('renderTsCodeFileTemplate', () => {
       ),
     };
 
-    const result = renderTsCodeFileTemplate(
-      template.source.contents,
+    const result = renderTsCodeFileTemplate({
+      templateContents: template.source.contents,
       variables,
-    );
+    });
 
     expect(result).toMatchInlineSnapshot(`
       "import type { type MyType } from "./types";
@@ -81,14 +81,15 @@ describe('renderTsCodeFileTemplate', () => {
       ),
     };
 
-    const result = renderTsCodeFileTemplate(
-      template.source.contents,
+    const result = renderTsCodeFileTemplate({
+      templateContents: template.source.contents,
       variables,
-      {},
-      {
+      importMapProviders: {},
+      positionedHoistedFragments: [],
+      options: {
         resolveModule: (moduleSpecifier) => `@project/${moduleSpecifier}`,
       },
-    );
+    });
 
     expect(result).toMatchInlineSnapshot(`
       "import { Test } from "@project/test";
@@ -114,24 +115,26 @@ describe('renderTsCodeFileTemplate', () => {
         {
           hoistedFragments: [
             {
-              key: 'helper1',
-              fragment: tsCodeFragment('function helper1() { return 42; }'),
-              position: 'beforeImports',
-            },
-            {
               key: 'helper2',
-              fragment: tsCodeFragment('function helper2() { return 24; }'),
-              position: 'afterImports',
+              contents: 'function helper2() { return 24; }',
             },
           ],
         },
       ),
     };
 
-    const result = renderTsCodeFileTemplate(
-      template.source.contents,
+    const result = renderTsCodeFileTemplate({
+      templateContents: template.source.contents,
       variables,
-    );
+      importMapProviders: {},
+      positionedHoistedFragments: [
+        {
+          key: 'helper1',
+          contents: 'function helper1() { return 42; }',
+          position: 'beforeImports',
+        },
+      ],
+    });
 
     expect(result).toMatchInlineSnapshot(
       `
@@ -177,14 +180,13 @@ describe('renderTsCodeFileTemplate', () => {
       Test2: 'test-package2',
     });
 
-    const result = renderTsCodeFileTemplate(
-      template.source.contents,
-      {},
-      {
+    const result = renderTsCodeFileTemplate({
+      templateContents: template.source.contents,
+      importMapProviders: {
         testImport1: importMap1,
         testImport2: importMap2,
       },
-    );
+    });
 
     expect(result).toMatchInlineSnapshot(`
       "import { Test1 } from "test-package1";

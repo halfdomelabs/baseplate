@@ -1,9 +1,12 @@
+import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+
 import {
   tsCodeFragment,
   TsCodeUtils,
+  tsHoistedFragment,
   tsTemplate,
 } from '@halfdomelabs/core-generators';
-import { notEmpty, quot } from '@halfdomelabs/utils';
+import { quot } from '@halfdomelabs/utils';
 
 import type {
   ServiceOutputDtoField,
@@ -12,10 +15,7 @@ import type {
 
 import { lowerCaseFirst } from '@src/utils/case.js';
 
-import type {
-  PothosCodeFragment,
-  PothosTypeDefinitionWithVariableName,
-} from './definitions.js';
+import type { PothosTypeDefinitionWithVariableName } from './definitions.js';
 import type { PothosWriterOptions } from './options.js';
 
 import { getPothosTypeAsFragment, writePothosFieldOptions } from './helpers.js';
@@ -24,47 +24,35 @@ import { writePothosObjectFieldFromDtoScalarField } from './scalar-fields.js';
 function writeSimplePothosObjectFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions,
-): PothosCodeFragment {
+): TsCodeFragment {
   // recursive call
 
   const pothosType = getPothosTypeForNestedObject(field, options);
 
   const fieldOptions = writePothosFieldOptions({
     nullable: field.isOptional,
-    type: pothosType.fragment,
+    type: pothosType,
   });
 
-  return {
-    fragment: tsTemplate`${options.fieldBuilder}.field(${fieldOptions ?? ''})`,
-    dependencies: pothosType.dependencies,
-  };
+  return tsTemplate`${options.fieldBuilder}.field(${fieldOptions ?? ''})`;
 }
 
 export function writePothosSimpleObjectFieldsFromDtoFields(
   fields: ServiceOutputDtoField[],
   options: PothosWriterOptions,
-): PothosCodeFragment {
-  const pothosFields: PothosCodeFragment[] = fields.map((field) => {
+): TsCodeFragment {
+  const pothosFields: TsCodeFragment[] = fields.map((field) => {
     if (field.type === 'scalar') {
-      return {
-        fragment: writePothosObjectFieldFromDtoScalarField(field, options),
-      };
+      return writePothosObjectFieldFromDtoScalarField(field, options);
     }
     return writeSimplePothosObjectFieldFromDtoNestedField(field, options);
   });
 
-  return {
-    fragment: TsCodeUtils.mergeFragmentsAsObject(
-      Object.fromEntries(
-        pothosFields.map((field, i) => [fields[i].name, field.fragment]),
-      ),
-      // TODO: Re-enable sort once we have better ways of sorting Prisma fields
-      { wrapWithParenthesis: true, disableSort: true },
-    ),
-    dependencies: pothosFields
-      .flatMap((field) => field.dependencies)
-      .filter(notEmpty),
-  };
+  return TsCodeUtils.mergeFragmentsAsObject(
+    Object.fromEntries(pothosFields.map((field, i) => [fields[i].name, field])),
+    // TODO: Re-enable sort once we have better ways of sorting Prisma fields
+    { wrapWithParenthesis: true, disableSort: true },
+  );
 }
 
 function writePothosSimpleObjectDefinitionFromDtoFields(
@@ -87,7 +75,7 @@ function writePothosSimpleObjectDefinitionFromDtoFields(
       VARIABLE_NAME: variableName,
       BUILDER: options.schemaBuilder,
       NAME: quot(name),
-      FIELDS: pothosFields.fragment,
+      FIELDS: pothosFields,
     },
   );
 
@@ -95,22 +83,19 @@ function writePothosSimpleObjectDefinitionFromDtoFields(
     name,
     variableName,
     fragment,
-    dependencies: pothosFields.dependencies,
   };
 }
 
 function getPothosTypeForNestedObject(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions,
-): PothosCodeFragment {
+): TsCodeFragment {
   const { name } = field.nestedType;
 
   const objectType = options.typeReferences?.find((x) => x.name === name);
 
   if (objectType) {
-    return {
-      fragment: getPothosTypeAsFragment(objectType.fragment, field.isList),
-    };
+    return getPothosTypeAsFragment(objectType.fragment, field.isList);
   }
 
   if (field.isPrismaType) {
@@ -122,11 +107,15 @@ function getPothosTypeForNestedObject(
   const pothosObjectTypeDefinition =
     writePothosSimpleObjectDefinitionFromDtoFields(name, fields, options);
 
-  return {
-    fragment: getPothosTypeAsFragment(
-      tsCodeFragment(pothosObjectTypeDefinition.variableName),
-      field.isList,
-    ),
-    dependencies: [pothosObjectTypeDefinition],
-  };
+  return getPothosTypeAsFragment(
+    tsCodeFragment(pothosObjectTypeDefinition.variableName, [], {
+      hoistedFragments: [
+        tsHoistedFragment(
+          `object-type:${pothosObjectTypeDefinition.name}`,
+          pothosObjectTypeDefinition.fragment,
+        ),
+      ],
+    }),
+    field.isList,
+  );
 }

@@ -2,7 +2,10 @@ import type { SourceFile } from 'ts-morph';
 
 import { Project } from 'ts-morph';
 
-import type { TsHoistedFragment } from '../fragments/types.js';
+import type {
+  TsHoistedFragment,
+  TsPositionedHoistedFragment,
+} from '../fragments/types.js';
 import type { TsImportMap } from '../import-maps/types.js';
 import type { SortImportDeclarationsOptions } from '../imports/index.js';
 import type { TsImportDeclaration } from '../imports/types.js';
@@ -31,6 +34,7 @@ function mergeImportsAndHoistedFragments(
   imports: TsImportDeclaration[],
   hoistedFragments: TsHoistedFragment[],
   importMaps: Map<string, TsImportMap>,
+  positionedHoistedFragments: TsPositionedHoistedFragment[],
   {
     resolveModule,
     importSortOptions,
@@ -70,11 +74,29 @@ function mergeImportsAndHoistedFragments(
   // Remove the existing import declarations
   for (const i of importDeclarationsFromFile) i.remove();
 
-  const afterImportsHoistedFragments = hoistedFragments.filter(
-    (h) => !h.position || h.position === 'afterImports',
+  // Combine the hoisted fragments with the positioned hoisted fragments
+
+  // Note: Positioned hoisted fragments are currently limited in their functionality
+  // such as not supporting hoisted fragments and no deduplication of keys.
+  // This can be improved in the future but since the use-case is very limited,
+  // we'll just throw an error if this happens.
+  const sortedPositionedHoistedFragments = positionedHoistedFragments.sort(
+    (a, b) => a.key.localeCompare(b.key),
   );
-  const beforeImportsHoistedFragments = hoistedFragments.filter(
-    (h) => h.position === 'beforeImports',
+  if (
+    new Set(sortedPositionedHoistedFragments.map((f) => f.key)).size !==
+    sortedPositionedHoistedFragments.length
+  ) {
+    throw new Error('Positioned hoisted fragments must have unique keys');
+  }
+  const afterImportsHoistedFragments = [
+    ...hoistedFragments,
+    ...sortedPositionedHoistedFragments.filter(
+      (f) => f.position === 'afterImports',
+    ),
+  ];
+  const beforeImportsHoistedFragments = sortedPositionedHoistedFragments.filter(
+    (f) => f.position === 'beforeImports',
   );
 
   function writeHoistedFragments(fragments: TsHoistedFragment[]): void {
@@ -83,7 +105,7 @@ function mergeImportsAndHoistedFragments(
         if (includeMetadata) {
           writer.writeLine(`/* HOISTED:${h.key}:START */`);
         }
-        writer.writeLine(h.fragment.contents);
+        writer.writeLine(h.contents);
         if (includeMetadata) {
           writer.writeLine(`/* HOISTED:${h.key}:END */`);
         }
@@ -119,12 +141,21 @@ function mergeImportsAndHoistedFragments(
   }
 }
 
-export function renderTsCodeFileTemplate(
-  templateContents: string,
-  variables: Record<string, TsTemplateFileVariableValue>,
-  importMapProviders: Record<string, unknown> = {},
-  options: RenderTsCodeFileTemplateOptions = {},
-): string {
+interface RenderTsCodeFileTemplateInput {
+  templateContents: string;
+  variables?: Record<string, TsTemplateFileVariableValue>;
+  importMapProviders?: Record<string, unknown>;
+  positionedHoistedFragments?: TsPositionedHoistedFragment[];
+  options?: RenderTsCodeFileTemplateOptions;
+}
+
+export function renderTsCodeFileTemplate({
+  templateContents,
+  variables = {},
+  importMapProviders = {},
+  positionedHoistedFragments = [],
+  options = {},
+}: RenderTsCodeFileTemplateInput): string {
   // Render the template into a code fragment
   const { contents, imports, hoistedFragments } =
     renderTsTemplateToTsCodeFragment(templateContents, variables, {
@@ -153,6 +184,7 @@ export function renderTsCodeFileTemplate(
     imports ?? [],
     hoistedFragments ?? [],
     new Map(Object.entries(importMapProviders) as [string, TsImportMap][]),
+    positionedHoistedFragments,
     options,
   );
 

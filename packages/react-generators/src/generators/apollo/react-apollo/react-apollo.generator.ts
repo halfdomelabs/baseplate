@@ -376,10 +376,7 @@ export const reactApolloGenerator = createGenerator({
                 'url',
                 tsCodeFragment(`getWsUrl()`, [], {
                   hoistedFragments: [
-                    tsHoistedFragment(
-                      tsCodeFragment(getWsUrlTemplate),
-                      'get-ws-url',
-                    ),
+                    tsHoistedFragment('get-ws-url', getWsUrlTemplate),
                   ],
                 }),
               );
@@ -480,6 +477,7 @@ export const reactApolloGenerator = createGenerator({
                           {
                             hoistedFragments: [
                               tsHoistedFragment(
+                                'create-apollo-client-options',
                                 tsTemplate`
                               interface CreateApolloClientOptions {
                                 ${TsCodeUtils.mergeFragmentsAsInterfaceContent(
@@ -492,7 +490,6 @@ export const reactApolloGenerator = createGenerator({
                                 )}
                               }
                               `,
-                                'create-apollo-client-options',
                               ),
                             ],
                           },
@@ -657,7 +654,7 @@ export const reactApolloGenerator = createGenerator({
             ],
             {
               hoistedFragments: [
-                { key: 'annotate-graphql-error', fragment: headerBlock },
+                tsHoistedFragment('annotate-graphql-error', headerBlock),
               ],
             },
           ),

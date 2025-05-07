@@ -104,16 +104,14 @@ export const pothosSentryGenerator = createGenerator({
             {
               hoistedFragments: [
                 tsHoistedFragment(
-                  tsCodeFragment(
-                    `const traceResolver = createSentryWrapper({
+                  'traceResolver',
+                  `const traceResolver = createSentryWrapper({
           includeSource: true,
           ignoreError: true,
         });`,
-                    tsImportBuilder(['createSentryWrapper']).from(
-                      '@pothos/tracing-sentry',
-                    ),
+                  tsImportBuilder(['createSentryWrapper']).from(
+                    '@pothos/tracing-sentry',
                   ),
-                  'traceResolver',
                 ),
               ],
             },

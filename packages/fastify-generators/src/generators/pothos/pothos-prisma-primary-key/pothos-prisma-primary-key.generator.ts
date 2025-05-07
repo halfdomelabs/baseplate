@@ -91,7 +91,8 @@ export const pothosPrismaPrimaryKeyGenerator = createGenerator({
           },
           build: () => {
             pothosTypeFile.typeDefinitions.add({
-              ...inputDefinition,
+              name: inputName,
+              fragment: inputDefinition.fragment,
               order,
             });
           },

@@ -31,7 +31,8 @@ export const apolloSentryGenerator = createGenerator({
         reactSentryConfig: reactSentryConfigProvider,
       },
       run({ reactSentryConfig }) {
-        const headerFragment = tsCodeFragment(
+        const headerFragment = tsHoistedFragment(
+          'configureSentryScopeForGraphqlError',
           `
           function configureSentryScopeForGraphqlError(
             scope: Sentry.Scope,
@@ -72,12 +73,7 @@ export const apolloSentryGenerator = createGenerator({
                   tsImportBuilder(['ApolloError']).from('@apollo/client'),
                 ],
                 {
-                  hoistedFragments: [
-                    tsHoistedFragment(
-                      headerFragment,
-                      'apollo-sentry-scope-action',
-                    ),
-                  ],
+                  hoistedFragments: [headerFragment],
                 },
               ),
             );

@@ -21,7 +21,7 @@ export async function uploadFile(
 
   if (!adapter.uploadFile) {
     throw new BadRequestError(
-      `Adapter for ${fileCategory.name} does not support createPresignedUploadUrl`,
+      `Adapter for ${fileCategory.name} does not support uploadFile`,
     );
   }
 

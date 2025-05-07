@@ -7,7 +7,6 @@ import {
   projectScope,
   tsCodeFragment,
   TsCodeUtils,
-  tsHoistedFragment,
   tsImportBuilder,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
@@ -130,15 +129,7 @@ export const fastifySentryGenerator = createGenerator({
         if (!node.isEsm) {
           fastifyServerConfig.initializerFragments.set(
             'sentry-instrument',
-            tsCodeFragment('', [], {
-              hoistedFragments: [
-                tsHoistedFragment(
-                  `import '${sentryInstrumentPath}';`,
-                  'sentry-instrument',
-                  'beforeImports',
-                ),
-              ],
-            }),
+            tsCodeFragment(`import '${sentryInstrumentPath}';`),
           );
         }
 

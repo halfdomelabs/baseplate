@@ -45,9 +45,21 @@ const [
   fastifyServerConfigValuesProvider,
 ] = createConfigProviderTask(
   (t) => ({
+    /**
+     * Function to handle errors.
+     */
     errorHandlerFunction: t.scalar<TsCodeFragment>(),
+    /**
+     * Fragments to be inserted before the imports.
+     */
     initializerFragments: t.map<string, TsCodeFragment>(),
+    /**
+     * Fastify plugins to be registered.
+     */
     plugins: t.map<string, FastifyServerPlugin>(),
+    /**
+     * Fragments to be inserted before the plugins.
+     */
     prePluginFragments: t.map<string, TsCodeFragment>(),
   }),
   {
@@ -140,14 +152,19 @@ export const fastifyServerGenerator = createGenerator({
                 template: CORE_FASTIFY_SERVER_TS_TEMPLATES.index,
                 destination: '@/src/index.ts',
                 variables: {
-                  TPL_INITIALIZERS:
-                    TsCodeUtils.mergeFragments(initializerFragments),
                   TPL_LOG_ERROR: TsCodeUtils.template`${errorHandlerFunction}(err)`,
                 },
                 importMapProviders: {
                   loggerServiceImports,
                   configServiceImports,
                 },
+                positionedHoistedFragments: [
+                  ...initializerFragments.entries(),
+                ].map(([key, fragment]) => ({
+                  ...fragment,
+                  key,
+                  position: 'beforeImports',
+                })),
               }),
             );
 

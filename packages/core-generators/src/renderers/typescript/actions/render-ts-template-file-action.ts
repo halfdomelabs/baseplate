@@ -12,6 +12,7 @@ import {
 import { differenceSet } from '@halfdomelabs/utils';
 import { mapValues } from 'es-toolkit';
 
+import type { TsPositionedHoistedFragment } from '../fragments/types.js';
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
 import type {
   InferImportMapProvidersFromProviderTypeMap,
@@ -29,6 +30,7 @@ interface RenderTsTemplateFileActionInputBase<T extends TsTemplateFile> {
   id?: string;
   destination: string;
   writeOptions?: Omit<WriteFileOptions, 'templateMetadata'>;
+  positionedHoistedFragments?: TsPositionedHoistedFragment[];
   renderOptions?: Omit<
     RenderTsCodeFileTemplateOptions,
     'prefix' | 'includeMetadata'
@@ -75,6 +77,7 @@ export function renderTsTemplateFileAction<
   variables,
   importMapProviders,
   renderOptions,
+  positionedHoistedFragments,
   generatorInfo: providedGeneratorInfo,
 }: RenderTsTemplateFileActionInput<T>): BuilderAction {
   return {
@@ -137,16 +140,17 @@ export function renderTsTemplateFileAction<
           hasManualId: !!id,
         });
 
-      const renderedTemplate = renderTsCodeFileTemplate(
+      const renderedTemplate = renderTsCodeFileTemplate({
         templateContents,
-        variableValues,
+        variables: variableValues,
         importMapProviders,
-        {
+        positionedHoistedFragments,
+        options: {
           ...renderOptions,
           includeMetadata: shouldIncludeMetadata,
           prefix,
         },
-      );
+      });
 
       builder.writeFile({
         id: id ?? template.name,

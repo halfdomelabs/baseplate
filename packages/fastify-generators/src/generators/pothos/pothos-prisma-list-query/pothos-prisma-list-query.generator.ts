@@ -85,7 +85,6 @@ export const pothosPrismaListQueryGenerator = createGenerator({
             pothosTypesFile.typeDefinitions.add({
               name: `${queryName}Query`,
               fragment: block,
-              dependencies: [],
               order,
             });
           },

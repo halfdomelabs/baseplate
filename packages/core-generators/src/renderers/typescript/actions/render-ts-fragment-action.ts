@@ -22,15 +22,16 @@ export function renderTsFragmentAction({
 }: RenderTsFragmentActionInput): BuilderAction {
   return {
     execute: (builder) => {
-      const renderedTemplate = renderTsCodeFileTemplate(
-        'TPL_CONTENTS',
-        { TPL_CONTENTS: fragment },
-        {},
-        {
+      const renderedTemplate = renderTsCodeFileTemplate({
+        templateContents: 'TPL_CONTENTS',
+        variables: { TPL_CONTENTS: fragment },
+        importMapProviders: {},
+        positionedHoistedFragments: [],
+        options: {
           includeMetadata: false,
           ...renderOptions,
         },
-      );
+      });
 
       builder.writeFile({
         id,

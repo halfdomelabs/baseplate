@@ -52,6 +52,7 @@ For quick reference, these are important docs to look up:
 - Colocate tests with implementation files
 - Use Prettier for formatting (configured via @halfdomelabs/tools)
 - Include absolute paths in import statements via tsconfig paths
+- Order functions such that functions are placed below the variables/functions they use
 
 ## Repository Structure
 

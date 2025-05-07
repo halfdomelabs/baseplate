@@ -115,6 +115,7 @@ function getComponentProps({
   return tsCodeFragment(propsName, undefined, {
     hoistedFragments: [
       tsHoistedFragment(
+        propsName,
         TsCodeUtils.formatFragment(
           `
         interface PROPS_NAME extends DEFAULT_PROPS {
@@ -133,7 +134,6 @@ function getComponentProps({
             ),
           },
         ),
-        propsName,
       ),
     ],
   });
@@ -259,6 +259,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
           ...inputFields.flatMap((f) => f.validation),
         ];
         const embeddedBlock = tsHoistedFragment(
+          formSchema,
           TsCodeUtils.formatFragment(
             `
   export const TPL_SCHEMA_NAME = z.object(TPL_SCHEMA_OBJECT);
@@ -275,7 +276,6 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
               ),
             },
           ),
-          formSchema,
         );
 
         const validationExpression = tsCodeFragment(

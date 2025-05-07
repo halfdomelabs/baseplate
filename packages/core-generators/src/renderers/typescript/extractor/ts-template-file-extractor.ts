@@ -351,11 +351,11 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
     }
     const templatesVariableName = `${constantCase(generatorName.split('#')[1])}_TS_TEMPLATES`;
 
-    const templatesFile = renderTsCodeFileTemplate(
-      `TPL_CODE_BLOCKS
+    const templatesFile = renderTsCodeFileTemplate({
+      templateContents: `TPL_CODE_BLOCKS
       
       export const TPL_TEMPLATE_VARIABLE_NAME = TPL_RESULT;`,
-      {
+      variables: {
         TPL_CODE_BLOCKS: TsCodeUtils.mergeFragmentsPresorted(
           sortBy(results, [(r) => r.exportName]).map(
             (result) => result.codeBlock,
@@ -369,7 +369,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
           ),
         ),
       },
-    );
+    });
 
     await this.writeGeneratedTypescriptFileIfModified(
       generatorName,
@@ -421,21 +421,21 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
 
     const importsFileContents =
       importsFileFragmentMap.size > 0
-        ? renderTsCodeFileTemplate(
-            `TPL_CONTENTS`,
-            {
+        ? renderTsCodeFileTemplate({
+            templateContents: `TPL_CONTENTS`,
+            variables: {
               TPL_CONTENTS: TsCodeUtils.mergeFragments(
                 importsFileFragmentMap,
                 '\n\n',
               ),
             },
-            {},
-            {
+            importMapProviders: {},
+            options: {
               importSortOptions: {
                 internalPatterns: [/^@src\//],
               },
             },
-          )
+          })
         : undefined;
 
     await (importsFileContents

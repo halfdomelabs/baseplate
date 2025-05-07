@@ -11,7 +11,7 @@ const index = createTsTemplateFile({
   name: 'index',
   projectExports: {},
   source: { path: 'index.ts' },
-  variables: { TPL_INITIALIZERS: {}, TPL_LOG_ERROR: {} },
+  variables: { TPL_LOG_ERROR: {} },
 });
 
 const server = createTsTemplateFile({
