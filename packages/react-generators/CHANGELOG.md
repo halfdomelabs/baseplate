@@ -1,5 +1,16 @@
 # @halfdomelabs/react-generators
 
+## 0.10.5
+
+### Patch Changes
+
+- [#530](https://github.com/halfdomelabs/baseplate/pull/530) [`78ccef7`](https://github.com/halfdomelabs/baseplate/commit/78ccef71ff93055e2442f52879da75e46d696dab) Thanks [@kingston](https://github.com/kingston)! - Migrate TsHoistedFragment to extend TsCodeFragment and refactor merging logic
+
+- [#532](https://github.com/halfdomelabs/baseplate/pull/532) [`4b42805`](https://github.com/halfdomelabs/baseplate/commit/4b42805351e51219d986fe765f462f314f245e33) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite to 6.3.5
+
+- Updated dependencies [[`78ccef7`](https://github.com/halfdomelabs/baseplate/commit/78ccef71ff93055e2442f52879da75e46d696dab)]:
+  - @halfdomelabs/core-generators@0.11.5
+
 ## 0.10.4
 
 ### Patch Changes

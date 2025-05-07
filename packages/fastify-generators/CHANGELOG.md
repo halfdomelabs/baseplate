@@ -1,5 +1,18 @@
 # @halfdomelabs/fastify-generators
 
+## 0.12.5
+
+### Patch Changes
+
+- [#530](https://github.com/halfdomelabs/baseplate/pull/530) [`78ccef7`](https://github.com/halfdomelabs/baseplate/commit/78ccef71ff93055e2442f52879da75e46d696dab) Thanks [@kingston](https://github.com/kingston)! - Migrate TsHoistedFragment to extend TsCodeFragment and refactor merging logic
+
+- [#534](https://github.com/halfdomelabs/baseplate/pull/534) [`b8f125e`](https://github.com/halfdomelabs/baseplate/commit/b8f125e5275895c23032316a517c84ed258b6331) Thanks [@kingston](https://github.com/kingston)! - Add ability to sort enums and keep order when generating Pothos enum
+
+- [#530](https://github.com/halfdomelabs/baseplate/pull/530) [`78ccef7`](https://github.com/halfdomelabs/baseplate/commit/78ccef71ff93055e2442f52879da75e46d696dab) Thanks [@kingston](https://github.com/kingston)! - Refactor service files so that hoisted fragments are colocated next to their uses
+
+- Updated dependencies [[`78ccef7`](https://github.com/halfdomelabs/baseplate/commit/78ccef71ff93055e2442f52879da75e46d696dab)]:
+  - @halfdomelabs/core-generators@0.11.5
+
 ## 0.12.4
 
 ### Patch Changes

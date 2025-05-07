@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/project-builder-web",
-  "version": "0.15.11",
+  "version": "0.15.12",
   "description": "Web interface for constructing project builder JSON",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "SEE LICENSE IN LICENSE",
