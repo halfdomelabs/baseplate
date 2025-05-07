@@ -142,8 +142,8 @@ export function getDataInputTypeBlock(
 
   if (transformerInputs.length === 0) {
     return tsHoistedFragment(
-      tsTemplate`type ${dataInputTypeName} = Pick<${prismaDataInput}, ${prismaFieldSelection}>;`,
       hoistedFragmentName,
+      tsTemplate`type ${dataInputTypeName} = Pick<${prismaDataInput}, ${prismaFieldSelection}>;`,
     );
   }
 
@@ -156,11 +156,11 @@ export function getDataInputTypeBlock(
   );
 
   return tsHoistedFragment(
+    hoistedFragmentName,
     tsTemplate`
   interface ${dataInputTypeName} extends Pick<${prismaDataInput}, ${prismaFieldSelection}> {
     ${TsCodeUtils.mergeFragmentsAsInterfaceContent(customFields)}
   }`,
-    hoistedFragmentName,
   );
 }
 

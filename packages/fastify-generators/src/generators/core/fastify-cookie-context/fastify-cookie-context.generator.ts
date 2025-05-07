@@ -43,6 +43,7 @@ export const fastifyCookieContextGenerator = createGenerator({
           type: tsCodeFragment('CookieStore', undefined, {
             hoistedFragments: [
               tsHoistedFragment(
+                'cookie-store-interface',
                 tsCodeFragment(
                   `
 interface CookieStore {
@@ -54,7 +55,6 @@ interface CookieStore {
                     '@fastify/cookie',
                   ),
                 ),
-                'cookie-store-interface',
               ),
             ],
           }),

@@ -94,13 +94,13 @@ export const apolloErrorLinkGenerator = createGenerator({
             {
               hoistedFragments: [
                 tsHoistedFragment(
+                  'error-extensions',
                   `export interface ErrorExtensions {
   code?: string;
   statusCode?: number;
   extraData?: Record<string, unknown>;
   reqId?: string;
 }`,
-                  'error-extensions',
                 ),
               ],
             },
