@@ -64,7 +64,7 @@ const useGraphLogger = createTsTemplateFile({
   },
   name: 'use-graph-logger',
   projectExports: {},
-  source: { path: 'useGraphLogger.ts' },
+  source: { path: 'use-graph-logger.ts' },
   variables: {},
 });
 

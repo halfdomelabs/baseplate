@@ -1,8 +1,7 @@
 // @ts-nocheck
 
 import type { AuthUserSessionInfo } from '%authContextImports';
-
-import { FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 export interface UserSessionPayload {
   userId: string;

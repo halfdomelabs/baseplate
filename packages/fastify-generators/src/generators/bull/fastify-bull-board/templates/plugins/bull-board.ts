@@ -1,5 +1,8 @@
 // @ts-nocheck
 
+import type { Queue } from 'bullmq';
+import type { FastifyPluginAsync } from 'fastify';
+
 import {
   HttpError,
   logError,
@@ -8,17 +11,12 @@ import {
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { FastifyAdapter } from '@bull-board/fastify';
-import { Queue } from 'bullmq';
-import { FastifyPluginAsync } from 'fastify';
 
 import {
   authenticateBullBoardUser,
   BULL_BOARD_ACCESS_TOKEN_EXPIRY,
   validateBullBoardAccessToken,
 } from '../services/auth.service.js';
-
-// https://github.com/fastify/fastify/issues/1864
-/* eslint-disable @typescript-eslint/no-floating-promises */
 
 function getQueuesToTrack(): Queue[] {
   return TPL_QUEUES;

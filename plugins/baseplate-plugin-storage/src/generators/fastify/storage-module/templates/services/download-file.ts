@@ -1,10 +1,10 @@
 // @ts-nocheck
 
 import type { ServiceContext } from '%serviceContextImports';
+import type { File } from '@prisma/client';
+import type { Readable } from 'node:stream';
 
 import { ForbiddenError } from '%errorHandlerServiceImports';
-import { File } from '@prisma/client';
-import { Readable } from 'stream';
 
 import { STORAGE_ADAPTERS } from '../constants/adapters.js';
 import { FILE_CATEGORIES } from '../constants/file-categories.js';

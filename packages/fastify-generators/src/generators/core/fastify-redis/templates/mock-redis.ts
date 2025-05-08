@@ -29,11 +29,11 @@ class IoRedisMockAugmented extends IoRedisMock {
   }
 }
 
-Object.keys(IoRedisMock).forEach((key) => {
+for (const key of Object.keys(IoRedisMock)) {
   (IoRedisMockAugmented as unknown as Record<string, unknown>)[key] = (
     IoRedisMock as unknown as Record<string, unknown>
   )[key];
-});
+}
 
 vi.mock('ioredis', () => ({
   default: IoRedisMockAugmented,

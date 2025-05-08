@@ -3,8 +3,8 @@
 import { DEFAULT_PUBLIC_ROLES } from '%authRolesImports';
 import { UnauthorizedError } from '%errorHandlerServiceImports';
 
-import { AuthContext } from '../types/auth-context.types.js';
-import { AuthSessionInfo } from '../types/auth-session.types.js';
+import type { AuthContext } from '../types/auth-context.types.js';
+import type { AuthSessionInfo } from '../types/auth-session.types.js';
 
 export function createAuthContextFromSessionInfo(
   session: AuthSessionInfo | undefined,

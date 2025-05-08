@@ -2,8 +2,6 @@
 
 import { prisma } from '../services/prisma.js';
 
-/* eslint-disable no-console */
-
 async function main(): Promise<void> {
   try {
     // your seed script goes here

@@ -1,9 +1,10 @@
 // @ts-nocheck
 
+import type { FastifyPluginAsync } from 'fastify';
+import type { Stripe } from 'stripe';
+
 import { config } from '%configServiceImports';
 import { BadRequestError, logError } from '%errorHandlerServiceImports';
-import { FastifyPluginAsync } from 'fastify';
-import { Stripe } from 'stripe';
 
 import { stripeEventService } from '../services/stripe-events.js';
 import { stripe } from '../services/stripe.js';

@@ -1,9 +1,9 @@
 // @ts-nocheck
 
 import { Prisma, PrismaClient } from '@prisma/client';
-import { execSync } from 'child_process';
 import { nanoid } from 'nanoid';
-import path from 'path';
+import { execSync } from 'node:child_process';
+import path from 'node:path';
 import { parse } from 'pg-connection-string';
 
 const TEST_DATABASE_NAME = TPL_TEST_DB;

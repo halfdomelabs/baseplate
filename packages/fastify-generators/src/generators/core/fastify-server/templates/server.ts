@@ -1,6 +1,8 @@
 // @ts-nocheck
 
-import Fastify, { FastifyInstance, FastifyServerOptions } from 'fastify';
+import type { FastifyInstance, FastifyServerOptions } from 'fastify';
+
+import Fastify from 'fastify';
 import { nanoid } from 'nanoid';
 
 export async function buildServer(

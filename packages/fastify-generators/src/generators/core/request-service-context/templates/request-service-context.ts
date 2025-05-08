@@ -1,8 +1,7 @@
 // @ts-nocheck
 
 import type { ServiceContext } from '%serviceContextImports';
-
-import { FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 export interface RequestServiceContext extends ServiceContext {
   TPL_CONTEXT_FIELDS;

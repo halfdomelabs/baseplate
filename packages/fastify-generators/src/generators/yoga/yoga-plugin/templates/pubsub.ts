@@ -1,8 +1,10 @@
 // @ts-nocheck
 
+import type { PubSub } from 'graphql-yoga';
+
 import { createRedisClient } from '%fastifyRedisImports';
 import { createRedisEventTarget } from '@graphql-yoga/redis-event-target';
-import { createPubSub, PubSub } from 'graphql-yoga';
+import { createPubSub } from 'graphql-yoga';
 
 // must be a type to be used in the PubSub type
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions

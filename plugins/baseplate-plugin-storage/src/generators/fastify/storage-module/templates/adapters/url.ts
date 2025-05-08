@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { StorageAdapter } from './types.js';
+import type { StorageAdapter } from './types.js';
 
 /**
  * Minimal adapter that just converts path to URL directly.

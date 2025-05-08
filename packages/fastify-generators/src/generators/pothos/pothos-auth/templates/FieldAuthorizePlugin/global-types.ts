@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import {
+import type {
   FieldNullability,
   InputFieldMap,
   InputShapeFromFields,

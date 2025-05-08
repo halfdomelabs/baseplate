@@ -1,21 +1,22 @@
 // @ts-nocheck
 
+import type { WebsocketHandler } from '@fastify/websocket';
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { ExecutionArgs, ExecutionResult } from 'graphql';
+import type { ConnectionInitMessage, ServerOptions } from 'graphql-ws';
+import type { YogaServerInstance } from 'graphql-yoga';
+import type * as ws from 'ws';
+
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import { createContextFromRequest } from '%requestServiceContextImports';
-import { WebsocketHandler } from '@fastify/websocket';
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { ExecutionArgs, ExecutionResult, GraphQLError } from 'graphql';
+import { GraphQLError } from 'graphql';
 import {
   CloseCode,
-  ConnectionInitMessage,
   DEPRECATED_GRAPHQL_WS_PROTOCOL,
   handleProtocols,
   makeServer,
-  ServerOptions,
 } from 'graphql-ws';
-import { YogaServerInstance } from 'graphql-yoga';
-import * as ws from 'ws';
 
 interface RootValueWithExecutor {
   execute: (args: ExecutionArgs) => Promise<ExecutionResult>;
@@ -153,10 +154,17 @@ export function makeHandler<
         protocol: socket.protocol,
         send: (data) =>
           new Promise((resolve, reject) => {
-            if (socket.readyState !== socket.OPEN) return resolve();
-            socket.send(data, (err) => (err ? reject(err) : resolve()));
+            if (socket.readyState !== socket.OPEN) {
+              resolve();
+              return;
+            }
+            socket.send(data, (err) => {
+              err ? reject(err) : resolve();
+            });
           }),
-        close: (code, reason) => socket.close(code, reason),
+        close: (code, reason) => {
+          socket.close(code, reason);
+        },
         onMessage: (cb) =>
           socket.on('message', (event) => {
             cb(String(event)).catch((err) => {
@@ -240,7 +248,7 @@ export function getGraphqlWsHandler(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const errors = validate(args.schema, args.document);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-        if (errors.length) return errors;
+        if (errors.length > 0) return errors;
         return args;
       } catch (err) {
         logError(err);

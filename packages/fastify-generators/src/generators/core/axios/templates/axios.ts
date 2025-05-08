@@ -1,6 +1,8 @@
 // @ts-nocheck
 
-import axios, { AxiosError, AxiosInstance, isAxiosError } from 'axios';
+import type { AxiosError, AxiosInstance } from 'axios';
+
+import axios, { isAxiosError } from 'axios';
 
 const originalStackSymbol = Symbol('originalStack');
 

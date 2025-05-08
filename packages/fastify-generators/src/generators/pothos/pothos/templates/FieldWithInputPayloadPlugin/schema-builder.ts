@@ -1,12 +1,12 @@
 // @ts-nocheck
 
+import type { FieldRef, SchemaTypes } from '@pothos/core';
+
 import { capitalizeString } from '%tsUtilsImports';
 import {
-  FieldRef,
   InputFieldBuilder,
   ObjectFieldBuilder,
   RootFieldBuilder,
-  SchemaTypes,
 } from '@pothos/core';
 
 const rootBuilderProto =
@@ -30,15 +30,14 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     string,
     FieldRef<SchemaTypes, unknown, 'PayloadObject'>
   > => {
-    Object.keys(payload).forEach((key) => {
+    for (const key of Object.keys(payload)) {
       payload[key].onFirstUse((cfg) => {
         if (cfg.kind === 'Object') {
-          // eslint-disable-next-line no-param-reassign
           cfg.resolve = (parent) =>
             (parent as Record<string, unknown>)[key] as Readonly<unknown>;
         }
       });
-    });
+    }
 
     return payload;
   };

@@ -1,8 +1,9 @@
 // @ts-nocheck
 
+import type { Queue } from 'bullmq';
+
 import { getRedisClient } from '%fastifyRedisImports';
 import { logger } from '%loggerServiceImports';
-import { Queue } from 'bullmq';
 
 const DEFAULT_TZ = 'Etc/UTC';
 

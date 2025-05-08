@@ -2,10 +2,9 @@
 
 import { logError } from '%errorHandlerServiceImports';
 
-import {
-  ManagedRepeatableJobsConfig,
-  synchronizeRepeatableJobs,
-} from '../src/services/bull/index.js';
+import type { ManagedRepeatableJobsConfig } from '../src/services/bull/index.js';
+
+import { synchronizeRepeatableJobs } from '../src/services/bull/index.js';
 
 const REPEAT_JOB_CONFIGS: ManagedRepeatableJobsConfig[] = TPL_REPEAT_JOBS;
 

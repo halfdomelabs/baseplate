@@ -3,9 +3,9 @@
 import type { AuthUserSessionInfo } from '%authContextImports';
 import type { AuthRole } from '%authRolesImports';
 import type { UserSessionService } from '%userSessionTypesImports';
+import type { FastifyRequest } from 'fastify';
 
 import { DEFAULT_USER_ROLES } from '%authRolesImports';
-import { FastifyRequest } from 'fastify';
 
 const USER_ID_CLAIM = 'https://app.com/user_id';
 const EMAIL_CLAIM = 'https://app.com/email';
@@ -71,7 +71,7 @@ export class Auth0UserSessionService implements UserSessionService {
     return {
       id: verifiedJwt.sub,
       type: 'user',
-      userId: userId,
+      userId,
       roles: [...DEFAULT_USER_ROLES, ...roles] as AuthRole[],
       expiresAt:
         typeof verifiedJwt.exp === 'number'

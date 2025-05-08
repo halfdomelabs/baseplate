@@ -224,7 +224,7 @@ export const pothosGenerator = createGenerator({
             );
             const stripQueryMutationPluginPath = path.posix.join(
               basePath,
-              'stripQueryMutationPlugin.ts',
+              'strip-query-mutation-plugin.ts',
             );
 
             const DEFAULT_PLUGINS = {

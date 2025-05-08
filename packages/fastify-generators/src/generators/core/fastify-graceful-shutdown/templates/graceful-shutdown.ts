@@ -4,7 +4,7 @@ import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import fp from 'fastify-plugin';
 
-const TIMEOUT = 10000; // time out if shutdown takes longer than 10 seconds
+const TIMEOUT = 10_000; // time out if shutdown takes longer than 10 seconds
 
 export const gracefulShutdownPlugin = fp(async (fastify) => {
   const shutdownServer: NodeJS.SignalsListener = (signal) => {

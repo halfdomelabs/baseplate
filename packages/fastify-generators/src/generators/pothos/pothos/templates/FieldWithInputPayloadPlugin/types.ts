@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import {
+import type {
   ArgumentRef,
   FieldKind,
   FieldMap,
@@ -23,8 +23,8 @@ export type MutationWithInputPayloadOptions<
   Types extends SchemaTypes,
   ParentShape,
   Kind extends FieldKind,
-  Args extends Record<string, ArgumentRef<Types, unknown>>,
-  InputFields extends Record<string, InputFieldRef<Types, unknown>>,
+  Args extends Record<string, ArgumentRef<Types>>,
+  InputFields extends Record<string, InputFieldRef<Types>>,
   PayloadFields extends Record<string, FieldRef<Types, unknown, 'Object'>>,
   ResolveShape,
   ResolveReturnShape,

@@ -1,8 +1,9 @@
 // @ts-nocheck
 
+import type { Worker } from 'bullmq';
+
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
-import { Worker } from 'bullmq';
 
 type WorkerCreator = () => Worker;
 
@@ -13,7 +14,7 @@ function handleError(err: unknown): void {
   process.exit(1);
 }
 
-const TIMEOUT = 10000; // time out if shutdown takes longer than 10 seconds
+const TIMEOUT = 10_000; // time out if shutdown takes longer than 10 seconds
 
 try {
   const workers = WORKER_CREATORS.map((creator) => creator());
@@ -34,7 +35,9 @@ try {
 
     Promise.all(workers.map((worker) => worker.close()))
       .then(() => process.exit(0))
-      .catch((err) => handleError(err));
+      .catch((err) => {
+        handleError(err);
+      });
   };
 
   process.on('SIGINT', shutdownWorkers);

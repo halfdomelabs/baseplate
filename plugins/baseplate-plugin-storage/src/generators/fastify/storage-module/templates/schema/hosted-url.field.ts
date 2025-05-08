@@ -2,7 +2,9 @@
 
 import { builder } from '%pothosImports';
 
-import { STORAGE_ADAPTERS, StorageAdapterKey } from '../constants/adapters.js';
+import type { StorageAdapterKey } from '../constants/adapters.js';
+
+import { STORAGE_ADAPTERS } from '../constants/adapters.js';
 
 builder.objectField(TPL_FILE_OBJECT_TYPE, 'hostedUrl', (t) =>
   t.string({

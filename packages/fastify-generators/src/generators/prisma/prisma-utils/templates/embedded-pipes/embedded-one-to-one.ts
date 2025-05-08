@@ -1,8 +1,7 @@
 // @ts-nocheck
 
 import type { ServiceContext } from '%serviceContextImports';
-
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 
 import type { DataPipeOutput } from '../data-pipes.js';
 import type { UpsertPayload } from './embedded-types.js';

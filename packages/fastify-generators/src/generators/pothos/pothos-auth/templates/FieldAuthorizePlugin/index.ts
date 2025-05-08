@@ -1,18 +1,18 @@
 // @ts-nocheck
 
-import { ForbiddenError } from '%errorHandlerServiceImports';
-import SchemaBuilder, {
-  BasePlugin,
-  PothosOutputFieldConfig,
-  SchemaTypes,
-} from '@pothos/core';
-import { GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql';
+import type { PothosOutputFieldConfig, SchemaTypes } from '@pothos/core';
+import type { GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql';
 
-import { AuthorizeRoleRuleFunction, AuthorizeRoleRuleOption } from './types.js';
+import { ForbiddenError } from '%errorHandlerServiceImports';
+import SchemaBuilder, { BasePlugin } from '@pothos/core';
+
+import type {
+  AuthorizeRoleRuleFunction,
+  AuthorizeRoleRuleOption,
+} from './types.js';
 
 import './global-types.js';
 
-/* eslint-disable class-methods-use-this */
 export const pothosAuthorizeByRolesPlugin = 'authorizeByRoles';
 
 export class PothosAuthorizeByRolesPlugin<
@@ -67,7 +67,7 @@ export class PothosAuthorizeByRolesPlugin<
     );
 
     // if any check passed, return success
-    if (results.some((r) => r.status === 'fulfilled' && r.value === true)) {
+    if (results.some((r) => r.status === 'fulfilled' && r.value)) {
       return;
     }
 

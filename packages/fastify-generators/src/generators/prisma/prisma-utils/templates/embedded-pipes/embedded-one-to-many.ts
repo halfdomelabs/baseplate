@@ -85,7 +85,7 @@ interface UpsertManyPayload<
   IdField extends string | number | symbol,
   IdType = string,
 > {
-  deleteMany?: { [key in IdField]: { notIn: IdType[] } };
+  deleteMany?: Record<IdField, { notIn: IdType[] }>;
   upsert?: {
     where: WhereUniqueInput;
     create: UpsertData['create'];
@@ -233,11 +233,12 @@ export async function createOneToManyUpsertData<
           [idField]: {
             notIn: input.map((data) => data[idField]).filter(notEmpty),
           },
-        } as {
-          [key in IdField]: {
+        } as Record<
+          IdField,
+          {
             notIn: Exclude<DataInput[IdField], undefined>[];
-          };
-        }),
+          }
+        >),
       upsert: upsertOutput.map((output) => output.data),
       create: createOutput.map((output) => output.data),
     },

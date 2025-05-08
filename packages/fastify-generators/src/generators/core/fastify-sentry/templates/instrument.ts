@@ -6,9 +6,9 @@ import os from 'node:os';
 
 const SENTRY_ENABLED = !!config.SENTRY_DSN;
 
-const IGNORED_TRANSACTION_PATHS = ['/healthz'];
+const IGNORED_TRANSACTION_PATHS = new Set(['/healthz']);
 
-const SENTRY_TRACES_SAMPLE_RATE = 1.0;
+const SENTRY_TRACES_SAMPLE_RATE = 1;
 
 const EXCLUDED_HEADERS = ['cookie', 'authorization'];
 
@@ -24,7 +24,7 @@ if (SENTRY_ENABLED) {
       const httpTarget = attributes?.['http.target'];
       if (
         typeof httpTarget === 'string' &&
-        IGNORED_TRANSACTION_PATHS.includes(httpTarget)
+        IGNORED_TRANSACTION_PATHS.has(httpTarget)
       ) {
         return false;
       }
@@ -38,7 +38,7 @@ if (SENTRY_ENABLED) {
 
     // Set sampling rate for profiling
     // This is relative to tracesSampleRate
-    profilesSampleRate: 1.0,
+    profilesSampleRate: 1,
   });
 
   // Make sure we don't send sensitive data to Sentry
@@ -49,9 +49,9 @@ if (SENTRY_ENABLED) {
       }
       // create a copy of the headers object to avoid mutating the original
       const headers = { ...event.request.headers };
-      EXCLUDED_HEADERS.forEach((header) => {
+      for (const header of EXCLUDED_HEADERS) {
         delete headers[header];
-      });
+      }
       event.request.headers = headers;
     }
     return event;

@@ -1,9 +1,10 @@
 // @ts-nocheck
 
+import type { FastifyError } from 'fastify';
+
 import { config } from '%configServiceImports';
 import { HttpError } from '%errorHandlerServiceImports';
 import * as Sentry from '@sentry/node';
-import { FastifyError } from 'fastify';
 
 const SENTRY_ENABLED = !!config.SENTRY_DSN;
 
