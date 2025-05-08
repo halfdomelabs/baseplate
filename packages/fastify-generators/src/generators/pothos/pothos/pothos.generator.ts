@@ -2,7 +2,6 @@ import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
-  eslintProvider,
   extractPackageVersions,
   nodeProvider,
   prettierProvider,
@@ -169,7 +168,6 @@ export const pothosGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
-        eslint: eslintProvider,
         requestServiceContextImports: requestServiceContextImportsProvider,
         prettier: prettierProvider,
         appModuleImports: appModuleImportsProvider,

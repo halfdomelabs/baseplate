@@ -1,5 +1,4 @@
 import {
-  eslintProvider,
   typescriptSetupProvider,
   writeJsonToBuilder,
 } from '@halfdomelabs/core-generators';
@@ -16,9 +15,8 @@ export const reactTypescriptGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         typescriptSetup: typescriptSetupProvider,
-        eslint: eslintProvider,
       },
-      run({ typescriptSetup, eslint }) {
+      run({ typescriptSetup }) {
         typescriptSetup.compilerOptions.set(
           {
             /* Compilation */
@@ -54,9 +52,6 @@ export const reactTypescriptGenerator = createGenerator({
         typescriptSetup.references.push({
           path: './tsconfig.node.json',
         });
-        eslint
-          .getConfig()
-          .appendUnique('extraTsconfigProjects', './tsconfig.node.json');
         return {
           build: (builder) => {
             writeJsonToBuilder(builder, {
@@ -66,6 +61,7 @@ export const reactTypescriptGenerator = createGenerator({
                 compilerOptions: {
                   composite: true,
                   moduleResolution: 'Node',
+                  strict: true,
                 },
                 include: ['vite.config.ts'],
               },

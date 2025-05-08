@@ -1,21 +1,7 @@
-// @ts-check
+import { tsCodeFragment, tsImportBuilder } from '@src/renderers/index.js';
 
-/**
- * @typedef {import('./typescript.js').GenerateTypescriptEslintConfigOptions} GenerateTypescriptEslintConfigOptions
- */
-
-import eslintPluginImportX from 'eslint-plugin-import-x';
-import reactJsxA11yPlugin from 'eslint-plugin-jsx-a11y';
-import reactPlugin from 'eslint-plugin-react';
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
-import tsEslint from 'typescript-eslint';
-
-/** @type {GenerateTypescriptEslintConfigOptions} */
-export const reactTypescriptEslintOptions = {
-  extraDefaultProjectFiles: ['vite.config.ts'],
-};
-
-export const reactEslintConfig = tsEslint.config(
+export const REACT_ESLINT_RULES = tsCodeFragment(
+  `
   // React & A11y
   {
     files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
@@ -60,6 +46,17 @@ export const reactEslintConfig = tsEslint.config(
       'unicorn/filename-case': 'off',
     },
   },
+`,
+  [
+    tsImportBuilder()
+      .default('eslintPluginImportX')
+      .from('eslint-plugin-import-x'),
+    tsImportBuilder()
+      .default('reactJsxA11yPlugin')
+      .from('eslint-plugin-jsx-a11y'),
+    tsImportBuilder().default('reactPlugin').from('eslint-plugin-react'),
+    tsImportBuilder()
+      .default('reactHooksPlugin')
+      .from('eslint-plugin-react-hooks'),
+  ],
 );
-
-export default reactEslintConfig;

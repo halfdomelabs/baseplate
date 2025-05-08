@@ -9,7 +9,7 @@ import { CORE_PACKAGES } from '@src/constants/index.js';
 import { projectScope } from '@src/providers/scopes.js';
 import { extractPackageVersions } from '@src/utils/extract-packages.js';
 
-import { eslintProvider } from '../eslint/eslint.generator.js';
+import { eslintConfigProvider } from '../eslint/eslint.generator.js';
 import {
   createNodePackagesTask,
   nodeProvider,
@@ -59,20 +59,20 @@ export const vitestGenerator = createGenerator({
       dependencies: {
         node: nodeProvider,
         typescriptFile: typescriptFileProvider,
-        eslint: eslintProvider,
+        eslintConfig: eslintConfigProvider,
         vitestConfigValues: vitestConfigValuesProvider,
       },
       run({
         node,
         typescriptFile,
-        eslint,
+        eslintConfig,
         vitestConfigValues: { globalSetupOperations, setupFiles },
       }) {
         const vitestConfigFilename = node.isEsm
           ? 'vitest.config.ts'
           : 'vitest.config.mts';
 
-        eslint.getConfig().appendUnique('eslintIgnore', [vitestConfigFilename]);
+        eslintConfig.tsDefaultProjectFiles.push(vitestConfigFilename);
 
         const globalSetupPath = 'tests/scripts/global-setup.ts';
 

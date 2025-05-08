@@ -1,6 +1,6 @@
 import {
   createNodePackagesTask,
-  eslintProvider,
+  eslintConfigProvider,
   extractPackageVersions,
   prettierProvider,
   projectScope,
@@ -47,20 +47,17 @@ export const reactTailwindGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactBaseConfig: reactBaseConfigProvider,
-        eslint: eslintProvider,
+        eslintConfig: eslintConfigProvider,
         prettier: prettierProvider,
       },
       exports: {
         reactTailwind: reactTailwindProvider.export(projectScope),
       },
-      run({ reactBaseConfig, eslint, prettier }) {
-        eslint
-          .getConfig()
-          .appendUnique('eslintIgnore', [
-            'vite.config.ts',
-            'postcss.config.js',
-            'tailwind.config.js',
-          ]);
+      run({ reactBaseConfig, eslintConfig, prettier }) {
+        eslintConfig.tsDefaultProjectFiles.push(
+          'postcss.config.js',
+          'tailwind.config.js',
+        );
 
         prettier.addPlugin({
           name: 'prettier-plugin-tailwindcss',

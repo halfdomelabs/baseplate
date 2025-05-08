@@ -7,7 +7,7 @@ import type {
 import {
   createNodePackagesTask,
   createNodeTask,
-  eslintProvider,
+  eslintConfigProvider,
   extractPackageVersions,
   prettierProvider,
   projectScope,
@@ -215,10 +215,8 @@ export const reactApolloGenerator = createGenerator({
           prod: extractPackageVersions(REACT_PACKAGES, ['graphql-ws']),
         })
       : undefined,
-    eslint: createProviderTask(eslintProvider, (eslint) => {
-      eslint
-        .getConfig()
-        .appendUnique('eslintIgnore', ['src/generated/graphql.tsx']);
+    eslintConfig: createProviderTask(eslintConfigProvider, (eslintConfig) => {
+      eslintConfig.eslintIgnore.push('src/generated/graphql.tsx');
     }),
     prettier: createProviderTask(prettierProvider, (prettier) => {
       prettier.addPrettierIgnore('src/generated/graphql.tsx');
