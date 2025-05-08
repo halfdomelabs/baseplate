@@ -1,5 +1,12 @@
 # @halfdomelabs/sync
 
+## 0.11.3
+
+### Patch Changes
+
+- Updated dependencies [[`d8b98da`](https://github.com/halfdomelabs/baseplate/commit/d8b98da9e50456f1b541be1616b9a5266752540c)]:
+  - @halfdomelabs/utils@0.1.8
+
 ## 0.11.2
 
 ### Patch Changes

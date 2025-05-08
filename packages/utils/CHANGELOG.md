@@ -1,5 +1,11 @@
 # @halfdomelabs/utils
 
+## 0.1.8
+
+### Patch Changes
+
+- [#535](https://github.com/halfdomelabs/baseplate/pull/535) [`d8b98da`](https://github.com/halfdomelabs/baseplate/commit/d8b98da9e50456f1b541be1616b9a5266752540c) Thanks [@kingston](https://github.com/kingston)! - Add NUMBER_VALIDATOR
+
 ## 0.1.7
 
 ### Patch Changes
