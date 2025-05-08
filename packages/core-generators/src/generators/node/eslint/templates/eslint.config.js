@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 import eslint from '@eslint/js';
-import vitest from '@vitest/eslint-plugin';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import eslintPluginImportX from 'eslint-plugin-import-x';
@@ -180,22 +179,6 @@ export default tsEslint.config(
       'perfectionist/sort-exports': ['error'],
       'perfectionist/sort-named-imports': ['error'],
       'perfectionist/sort-named-exports': ['error'],
-    },
-  },
-
-  // Vitest Configs
-  {
-    files: ['**/*.test.{ts,js,tsx,jsx}', 'tests/**'],
-    plugins: { vitest },
-    rules: {
-      ...vitest.configs.recommended.rules,
-      // Helpful in dev but should flag as errors when linting
-      'vitest/no-focused-tests': 'error',
-    },
-    settings: {
-      vitest: {
-        typecheck: true,
-      },
     },
   },
 

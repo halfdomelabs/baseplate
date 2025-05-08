@@ -14,6 +14,7 @@ import { nodeProvider } from '../node/node.generator.js';
 import { typescriptFileProvider } from '../typescript/typescript.generator.js';
 import { NODE_ESLINT_TS_TEMPLATES } from './generated/ts-templates.js';
 import { REACT_ESLINT_RULES } from './react-rules.js';
+import { VITEST_ESLINT_RULES } from './vitest-rules.js';
 
 const [setupTask, eslintConfigProvider, eslintConfigValuesProvider] =
   createConfigProviderTask(
@@ -127,7 +128,13 @@ export const eslintGenerator = createGenerator({
                   TPL_IGNORE_FILES: TsCodeUtils.mergeFragmentsAsArrayPresorted(
                     eslintIgnore.map(quot).toSorted(),
                   ),
-                  TPL_EXTRA_CONFIGS: react ? REACT_ESLINT_RULES : '',
+                  TPL_EXTRA_CONFIGS: TsCodeUtils.mergeFragments(
+                    {
+                      react: react ? REACT_ESLINT_RULES : undefined,
+                      vitest: disableVitest ? undefined : VITEST_ESLINT_RULES,
+                    },
+                    '\n\n',
+                  ),
                 },
               }),
             );
