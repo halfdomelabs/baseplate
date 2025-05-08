@@ -37,3 +37,11 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
       - run: pnpm test:affected
+
+      # Make sure we have changesets for all changes in our repo
+      - name: Setup NPM Registry
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_READONLY_TOKEN }}
+      - name: Check changesets
+        run: pnpm changesets:check

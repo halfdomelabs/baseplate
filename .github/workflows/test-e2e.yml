@@ -32,8 +32,24 @@ jobs:
         with:
           node-version-file: package.json
           cache: 'pnpm'
+
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile --filter @halfdomelabs/project-builder-test... --filter @halfdomelabs/project-builder-cli... --filter @halfdomelabs/root
+
+      - name: Get Playwright version
+        id: get-playwright-version
+        working-directory: packages/project-builder-cli
+        shell: bash
+        run: |
+          version=$(jq -r '.devDependencies["@playwright/test"]' package.json | sed 's/^[^0-9]*//')
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: 'playwright-browsers-${{ runner.os }}-${{ steps.get-playwright-version.outputs.version }}'
 
       - name: Install Playwright with dependencies
         run: pnpm playwright install --with-deps
