@@ -159,7 +159,7 @@ export function generateTypescriptEslintConfig(options = []) {
     },
 
     // Unicorn Configs
-    eslintPluginUnicorn.configs['flat/recommended'],
+    eslintPluginUnicorn.configs['recommended'],
     {
       rules: {
         // Disable the rule that prevents using abbreviations in identifiers, allowing
