@@ -363,9 +363,9 @@ async function checkChangesets(): Promise<void> {
       throw new Error('Some packages have issues and need changesets');
     }
 
-    console.log('Pre-publish validation completed successfully!');
+    console.log('Package changeset validation completed successfully!');
   } catch (error) {
-    console.error('Pre-publish validation failed:', error);
+    console.error('Package changeset validation failed:', error);
     exitCode = 1;
   } finally {
     // Ensure cleanup of temp directory always happens
