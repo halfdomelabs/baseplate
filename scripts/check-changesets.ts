@@ -1,6 +1,7 @@
 #!/usr/bin/env node
+
 /**
- * Pre-publish validation script for monorepo npm packages
+ * Check changesets script for monorepo npm packages
  * - Validates non-private packages against their "files" array
  * - Ensures packages with changes are properly staged for publishing
  */
@@ -47,8 +48,9 @@ interface ChangesetStatus {
 const CHANGESET_OUTPUT_FILE = 'changeset-output.json';
 
 // Main function to run the validation
-async function validatePrePublish(): Promise<void> {
+async function checkChangesets(): Promise<void> {
   let tempDir: string | null = null;
+  let exitCode = 0;
 
   try {
     // Step 1: Create a temporary directory
@@ -250,7 +252,7 @@ async function validatePrePublish(): Promise<void> {
     console.log('Pre-publish validation completed successfully!');
   } catch (error) {
     console.error('Pre-publish validation failed:', error);
-    process.exit(1);
+    exitCode = 1;
   } finally {
     // Ensure cleanup of temp directory always happens
     if (tempDir) {
@@ -266,8 +268,9 @@ async function validatePrePublish(): Promise<void> {
     } catch (cleanupError) {
       console.error('Error during cleanup:', cleanupError);
     }
+    process.exit(exitCode);
   }
 }
 
 // Run the validation
-validatePrePublish();
+checkChangesets();
