@@ -8,6 +8,7 @@
     "build": "turbo run build",
     "build:affected": "turbo run build --affected",
     "build:storybook": "turbo run build:storybook --filter=@halfdomelabs/ui-components",
+    "changesets:check": "node --experimental-strip-types ./scripts/check-changesets.ts",
     "clean": "turbo run clean",
     "dev:serve": "pnpm --filter @halfdomelabs/project-builder-cli dev:serve",
     "extract:templates": "pnpm --filter @halfdomelabs/project-builder-cli extract:templates",
