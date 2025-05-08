@@ -4,9 +4,9 @@ export const VITEST_ESLINT_RULES = tsCodeFragment(
   `  // Vitest Configs
   {
     files: ['**/*.test.{ts,js,tsx,jsx}', 'tests/**'],
-    plugins: { vitestPlugin },
+    plugins: { vitest },
     rules: {
-      ...vitestPlugin.configs.recommended.rules,
+      ...vitest.configs.recommended.rules,
       // Helpful in dev but should flag as errors when linting
       'vitest/no-focused-tests': 'error',
     },
@@ -16,5 +16,5 @@ export const VITEST_ESLINT_RULES = tsCodeFragment(
       },
     },
   },`,
-  [tsImportBuilder().default('vitestPlugin').from('@vitest/eslint-plugin')],
+  [tsImportBuilder().default('vitest').from('@vitest/eslint-plugin')],
 );
