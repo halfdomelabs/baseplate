@@ -1,5 +1,3 @@
-# Sync
+# Utils
 
-The sync library provides the ability to sync the codebase from Baseplate
-definitions. It is a simple Javascript library that can be used by other
-packages, e.g. the CLI client.
+The utils package provides a collection of utility functions that are used across the project.
