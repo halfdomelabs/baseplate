@@ -6,6 +6,8 @@ const VARIABLE_REGEX =
   /\/\* TPL_([A-Z0-9_]+):START \*\/([\s\S]*?)\/\* TPL_\1:END \*\//g;
 const TSX_VARIABLE_REGEX =
   /\{\/\* TPL_([A-Z0-9_]+):START \*\/\}([\s\S]*?)\{\/\* TPL_\1:END \*\/\}/g;
+const COMMENT_VARIABLE_REGEX =
+  /\/\* TPL_([A-Z0-9_]+):COMMENT:START \*\/([\s\S]*?)\/\* TPL_\1:COMMENT:END \*\//g;
 const HOISTED_REGEX =
   /\/\* HOISTED:([A-Za-z0-9_-]+):START \*\/([\s\S]*?)\/\* HOISTED:\1:END \*\/\n?/g;
 
@@ -30,22 +32,32 @@ export function stripTsTemplateVariables(
   const processedVariables = new Set<string>();
 
   // Replace TPL variable blocks and extract variable names
-  const processVariableBlock = (varName: string, isTsx = false): string => {
+  const processVariableBlock = (
+    varName: string,
+    formatName: (name: string) => string,
+  ): string => {
     const fullName = `TPL_${varName}`;
     if (!templateVariables.has(fullName)) {
       throw new Error(`Found unknown template variable: ${fullName}`);
     }
     processedVariables.add(fullName);
-    return isTsx ? `<${fullName} />` : fullName;
+    return formatName(fullName);
   };
 
   processedContent = processedContent.replaceAll(
     TSX_VARIABLE_REGEX,
-    (match: string, varName: string) => processVariableBlock(varName, true),
+    (match: string, varName: string) =>
+      processVariableBlock(varName, (name) => `<${name} />`),
   );
   processedContent = processedContent.replaceAll(
     VARIABLE_REGEX,
-    (match: string, varName: string) => processVariableBlock(varName, false),
+    (match: string, varName: string) =>
+      processVariableBlock(varName, (name) => name),
+  );
+  processedContent = processedContent.replaceAll(
+    COMMENT_VARIABLE_REGEX,
+    (match: string, varName: string) =>
+      processVariableBlock(varName, (name) => `/* ${name} */`),
   );
 
   // Make sure all template variables are processed

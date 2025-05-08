@@ -217,4 +217,42 @@ describe('stripTsTemplateVariables', () => {
           "
     `);
   });
+
+  it('should handle comment-style template variables', () => {
+    const metadata: TsTemplateFileMetadata = {
+      type: TS_TEMPLATE_TYPE,
+      name: 'test-template',
+      generator: 'test-generator',
+      template: 'test-template.ts',
+      variables: {
+        TPL_DESCRIPTION: { description: 'Description comment' },
+        TPL_TODO: { description: 'Todo comment' },
+      },
+    };
+
+    const content = `
+      /* TPL_DESCRIPTION:COMMENT:START */
+      // Description comment
+      /* TPL_DESCRIPTION:COMMENT:END */
+
+      const Component = () => {
+        /* TPL_TODO:COMMENT:START */
+        // TODO: Implement error handling
+        /* TPL_TODO:COMMENT:END */
+        return null;
+      };
+    `;
+
+    const result = stripTsTemplateVariables(metadata, content);
+    expect(result).toMatchInlineSnapshot(`
+      "
+            /* TPL_DESCRIPTION */
+
+            const Component = () => {
+              /* TPL_TODO */
+              return null;
+            };
+          "
+    `);
+  });
 });

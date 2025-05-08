@@ -254,4 +254,76 @@ describe('renderTsTemplateToTsCodeFragment', () => {
           "
     `);
   });
+
+  it('should handle comment-style template variables without metadata', () => {
+    const template = `
+      /* TPL_DESCRIPTION */
+      
+      const Component = () => {
+        /* TPL_TODO */
+        return null;
+      };
+    `;
+
+    const variables = {
+      TPL_DESCRIPTION: {
+        contents: 'This is a component description',
+      },
+      TPL_TODO: {
+        contents: 'TODO: Implement error handling',
+      },
+    };
+
+    const result = renderTsTemplateToTsCodeFragment(template, variables);
+
+    expect(result.contents).toMatchInlineSnapshot(`
+      "
+            This is a component description
+            
+            const Component = () => {
+              TODO: Implement error handling
+              return null;
+            };
+          "
+    `);
+  });
+
+  it('should handle comment-style template variables with metadata', () => {
+    const template = `
+      /* TPL_DESCRIPTION */
+      
+      const Component = () => {
+        /* TPL_TODO */
+        return null;
+      };
+    `;
+
+    const variables = {
+      TPL_DESCRIPTION: {
+        contents: 'This is a component description',
+      },
+      TPL_TODO: {
+        contents: 'TODO: Implement error handling',
+      },
+    };
+
+    const result = renderTsTemplateToTsCodeFragment(template, variables, {
+      includeMetadata: true,
+    });
+
+    expect(result.contents).toMatchInlineSnapshot(`
+      "
+            /* TPL_DESCRIPTION:COMMENT:START */
+      This is a component description
+      /* TPL_DESCRIPTION:COMMENT:END */
+            
+            const Component = () => {
+              /* TPL_TODO:COMMENT:START */
+      TODO: Implement error handling
+      /* TPL_TODO:COMMENT:END */
+              return null;
+            };
+          "
+    `);
+  });
 });
