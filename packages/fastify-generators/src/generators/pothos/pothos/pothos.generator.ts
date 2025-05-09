@@ -308,12 +308,15 @@ async function writeSchemaToFile(): Promise<void> {
   }
 
   if (process.argv.includes('--exit-after-generate-schema')) {
+    // eslint-disable-next-line unicorn/no-process-exit -- we want to exit after the schema is generated
     process.exit(0);
   }
 }
 
 if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
-  writeSchemaToFile().catch((err) => logger.error(err));
+  writeSchemaToFile().catch((err: unknown) => {
+    logger.error(err);
+  });
 }`,
                 [
                   tsImportBuilder([
