@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { useLogOut } from '%authHooksImports';
 import { Sidebar } from '%reactComponentsImports';
 import clsx from 'clsx';
@@ -10,7 +12,7 @@ interface Props {
   className?: string;
 }
 
-function AdminLayout({ className }: Props): JSX.Element {
+function AdminLayout({ className }: Props): ReactElement {
   const logOut = useLogOut();
 
   return (

@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
 import type {
   Control,
   FieldError,
@@ -32,7 +33,7 @@ function SelectInput({
   onChange,
   value,
   register,
-}: Props): JSX.Element {
+}: Props): ReactElement {
   const onChangeHandler =
     onChange &&
     ((event: React.ChangeEvent<HTMLSelectElement>): void => {
@@ -73,7 +74,7 @@ SelectInput.Labelled = function SelectInputLabelled({
   className,
   error,
   ...rest
-}: SelectInputLabelledProps): JSX.Element {
+}: SelectInputLabelledProps): ReactElement {
   return (
     <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -91,7 +92,7 @@ interface SelectInputLabelledController<T extends FieldValues>
 
 SelectInput.LabelledController = function SelectInputController<
   T extends FieldValues,
->({ name, control, ...rest }: SelectInputLabelledController<T>): JSX.Element {
+>({ name, control, ...rest }: SelectInputLabelledController<T>): ReactElement {
   const { errors } = useFormState({ name, control });
   const error = get(errors, name) as FieldError | undefined;
 

@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { MdArrowBack } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +12,7 @@ interface Props {
   href?: string;
 }
 
-function BackButton({ className, href }: Props): JSX.Element {
+function BackButton({ className, href }: Props): ReactElement {
   const navigate = useNavigate();
 
   return (

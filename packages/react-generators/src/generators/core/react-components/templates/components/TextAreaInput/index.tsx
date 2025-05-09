@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { TextareaHTMLAttributes } from 'react';
+import type { ReactElement, TextareaHTMLAttributes } from 'react';
 import type {
   Control,
   FieldError,
@@ -37,7 +37,7 @@ const TextAreaInput = function TextInput({
   value,
   register,
   rows,
-}: Props): JSX.Element {
+}: Props): ReactElement {
   const inputProps: TextareaHTMLAttributes<HTMLTextAreaElement> = {
     name,
     placeholder,
@@ -73,7 +73,7 @@ TextAreaInput.Labelled = function TextInputLabelled({
   className,
   error,
   ...rest
-}: TextInputLabelledProps): JSX.Element {
+}: TextInputLabelledProps): ReactElement {
   return (
     <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -91,7 +91,7 @@ interface TextInputControllerProps<T extends FieldValues>
 
 TextAreaInput.LabelledController = function TextInputController<
   T extends FieldValues,
->({ control, name, ...rest }: TextInputControllerProps<T>): JSX.Element {
+>({ control, name, ...rest }: TextInputControllerProps<T>): ReactElement {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;
 

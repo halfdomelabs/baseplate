@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { Button, ErrorDisplay } from '%reactComponentsImports';
 import { logError } from '%reactErrorImports';
 import { useContext } from 'react';
@@ -24,7 +26,7 @@ function ErrorBoundaryFallback({
   resetButtonLabel,
 }: {
   resetButtonLabel: string;
-}): JSX.Element {
+}): ReactElement {
   const {
     resetErrorBoundary,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -53,7 +55,7 @@ export function ErrorBoundary({
   children,
   resetButtonLabel,
   onReset,
-}: ErrorBoundaryProps): JSX.Element {
+}: ErrorBoundaryProps): ReactElement {
   return (
     <ReactErrorBoundary
       fallback={

@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
 import type {
   Control,
   FieldError,
@@ -34,7 +35,7 @@ function CheckedInput({
   value,
   register,
   type = 'checkbox',
-}: Props): JSX.Element {
+}: Props): ReactElement {
   const onChangeHandler =
     onChange &&
     ((event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -74,7 +75,7 @@ CheckedInput.Labelled = function SelectInputLabelled({
   error,
   horizontalLabel,
   ...rest
-}: CheckedInputLabelledProps): JSX.Element {
+}: CheckedInputLabelledProps): ReactElement {
   if (horizontalLabel) {
     return (
       <div>
@@ -113,7 +114,7 @@ CheckedInput.LabelledController = function CheckedInputLabelledController<
   name,
   noError,
   ...rest
-}: CheckedInputLabelledControllerProps<T>): JSX.Element {
+}: CheckedInputLabelledControllerProps<T>): ReactElement {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;
 

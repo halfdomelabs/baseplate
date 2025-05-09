@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 import React from 'react';
 import { MdOutlineErrorOutline } from 'react-icons/md';
@@ -28,7 +30,7 @@ function ErrorDisplay({
   header,
   error,
   actions,
-}: ErrorDisplayProps): JSX.Element {
+}: ErrorDisplayProps): ReactElement {
   return (
     <div className={clsx('flex h-full items-center justify-center', className)}>
       <div className="flex max-w-xl flex-col items-center space-y-4 text-center">

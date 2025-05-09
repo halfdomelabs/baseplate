@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
 import type { IconType } from 'react-icons';
 
 import clsx from 'clsx';
@@ -55,7 +56,7 @@ function getAlertClassAndIcon(type: StatusType): {
   }
 }
 
-function AlertIcon({ className, type }: Props): JSX.Element {
+function AlertIcon({ className, type }: Props): ReactElement {
   const { colorClasses, Icon } = getAlertClassAndIcon(type);
 
   return (

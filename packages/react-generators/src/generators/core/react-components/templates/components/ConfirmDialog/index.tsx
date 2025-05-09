@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import * as React from 'react';
 
 import type { UseConfirmDialogRequestOptions } from '../../hooks/useConfirmDialog.js';
@@ -12,7 +14,7 @@ import Modal from '../Modal/index.js';
  * A confirm dialog that is placed at the top level of the page
  * enabling the use of the useConfirmDialog hook.
  */
-export function ConfirmDialog(): JSX.Element {
+export function ConfirmDialog(): ReactElement {
   const { confirmOptions, setConfirmOptions } = useConfirmDialogState();
 
   // We need to store the text content in a ref because the Dialog component

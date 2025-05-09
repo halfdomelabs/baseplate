@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 
 // adapted from https://flowbite.com/docs/typography/lists/#description-list
@@ -9,7 +11,7 @@ interface Props {
   children?: React.ReactNode;
 }
 
-function DescriptionList({ className, children }: Props): JSX.Element {
+function DescriptionList({ className, children }: Props): ReactElement {
   return (
     <dl
       className={clsx('grid md:grid-cols-[minmax(100px,_1fr)_2fr]', className)}
@@ -27,7 +29,7 @@ interface DescriptionListItemProps {
 DescriptionList.Item = function DescriptionListItem({
   children,
   label,
-}: DescriptionListItemProps): JSX.Element {
+}: DescriptionListItemProps): ReactElement {
   return (
     <>
       <dt className="col-start-1 mt-2 text-gray-500 first-of-type:mt-0 first-of-type:border-t-0 md:mt-0 md:border-t md:py-4 md:pr-2">

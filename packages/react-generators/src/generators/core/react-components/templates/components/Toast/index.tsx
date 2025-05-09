@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { MouseEventHandler } from 'react';
+import type { MouseEventHandler, ReactElement } from 'react';
 
 import { Transition } from '@headlessui/react';
 import clsx from 'clsx';
@@ -19,7 +19,7 @@ function Toast({
   visible,
   children,
   onClose,
-}: Props): JSX.Element {
+}: Props): ReactElement {
   return (
     <Transition
       show={visible}

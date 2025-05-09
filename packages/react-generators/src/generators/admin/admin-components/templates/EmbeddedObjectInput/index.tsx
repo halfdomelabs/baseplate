@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
 import type {
   Control,
   DefaultValues,
@@ -21,7 +22,7 @@ export interface EmbeddedObjectFormProps<InputType> {
 interface Props<InputType> {
   className?: string;
   onChange: (value: InputType | null | undefined) => void;
-  renderForm: (options: EmbeddedObjectFormProps<InputType>) => JSX.Element;
+  renderForm: (options: EmbeddedObjectFormProps<InputType>) => ReactElement;
   value: InputType | null | undefined;
   itemName?: string;
   defaultValue?: DefaultValues<InputType>;
@@ -34,7 +35,7 @@ function EmbeddedObjectInput<InputType>({
   value,
   itemName,
   defaultValue = {} as DefaultValues<InputType>,
-}: Props<InputType>): JSX.Element {
+}: Props<InputType>): ReactElement {
   const [valueToEdit, setValueToEdit] = useState<
     DefaultValues<Exclude<InputType, undefined | null>> | undefined
   >();
@@ -103,7 +104,7 @@ EmbeddedObjectInput.Labelled = function EmbeddedOneToOneInputLabelled<
   className,
   error,
   ...rest
-}: EmbeddedObjectInputLabelledProps<InputType>): JSX.Element {
+}: EmbeddedObjectInputLabelledProps<InputType>): ReactElement {
   return (
     <div className={clsx('', className)}>
       <div className={className}>
@@ -139,7 +140,7 @@ EmbeddedObjectInput.LabelledController =
   }: EmbeddedObjectInputLabelledControllerProps<
     FormType,
     FormPath
-  >): JSX.Element {
+  >): ReactElement {
     const {
       field,
       fieldState: { error },

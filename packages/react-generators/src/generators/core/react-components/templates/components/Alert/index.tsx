@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 
 import type { Status, StatusType } from '../../hooks/useStatus.js';
@@ -36,7 +38,7 @@ function getAlertClasses(type: StatusType): string {
 
 // https://flowbite.com/docs/components/alerts/
 
-function Alert({ type, icon, className, children }: Props): JSX.Element {
+function Alert({ type, icon, className, children }: Props): ReactElement {
   const alertClasses = getAlertClasses(type);
   return (
     <div
@@ -60,7 +62,7 @@ interface AlertWithStatusProps extends Omit<Props, 'children' | 'type'> {
 Alert.WithStatus = function AlertWithStatus({
   status,
   ...props
-}: AlertWithStatusProps): JSX.Element | null {
+}: AlertWithStatusProps): ReactElement | null {
   if (!status) {
     return null;
   }

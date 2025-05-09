@@ -1,6 +1,10 @@
 // @ts-nocheck
 
-import type { FocusEventHandler, KeyboardEventHandler } from 'react';
+import type {
+  FocusEventHandler,
+  KeyboardEventHandler,
+  ReactElement,
+} from 'react';
 import type {
   ChangeHandler,
   Control,
@@ -66,7 +70,7 @@ function ReactDatePickerInput({
   value,
   showTimeSelect,
   isClearable,
-}: Props): JSX.Element {
+}: Props): ReactElement {
   const selectedDate = useMemo(() => (value ? parseISO(value) : null), [value]);
   return (
     <DatePicker
@@ -112,7 +116,7 @@ ReactDatePickerInput.Labelled = function ReactDatePickerInputLabelled({
   className,
   error,
   ...rest
-}: ReactDatePickerInputLabelledProps): JSX.Element {
+}: ReactDatePickerInputLabelledProps): ReactElement {
   return (
     <div className={className}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -146,7 +150,7 @@ ReactDatePickerInput.LabelledController =
   }: ReactDatePickerInputLabelledControllerProps<
     TFieldValues,
     TFieldName
-  >): JSX.Element {
+  >): ReactElement {
     const {
       field,
       fieldState: { error },

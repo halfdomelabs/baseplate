@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 
 interface Props {
@@ -9,7 +11,7 @@ interface Props {
 
 // adapted from https://flowbite.com/docs/components/button-group/
 
-function ButtonGroup({ className, children }: Props): JSX.Element {
+function ButtonGroup({ className, children }: Props): ReactElement {
   return (
     <div
       className={clsx('inline-flex rounded-md shadow-sm', className)}
@@ -32,7 +34,7 @@ ButtonGroup.Button = function ButtonGroupButton({
   children,
   type,
   onClick,
-}: ButtonGroupButtonProps): JSX.Element {
+}: ButtonGroupButtonProps): ReactElement {
   return (
     <button
       className={clsx(

@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
 import type {
   Control,
   FieldError,
@@ -61,7 +62,7 @@ const FileInput = function FileInput({
   placeholder,
   imagePreview,
   accept,
-}: Props): JSX.Element {
+}: Props): ReactElement {
   const [createUploadUrl] = useCreateUploadUrlMutation();
 
   const { isUploading, error, progress, uploadFile, cancelUpload } =
@@ -255,7 +256,7 @@ FileInput.Labelled = function FileInputLabelled({
   className,
   error,
   ...rest
-}: FileInputLabelledProps): JSX.Element {
+}: FileInputLabelledProps): ReactElement {
   return (
     <div className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -280,7 +281,7 @@ FileInput.LabelledController = function FileInputController<
   control,
   name,
   ...rest
-}: FileInputControllerProps<TFieldValues, TFieldName>): JSX.Element {
+}: FileInputControllerProps<TFieldValues, TFieldName>): ReactElement {
   const {
     field: { value, onChange },
     formState: { errors },

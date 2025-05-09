@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 
 type ButtonColor = 'blue' | 'green' | 'red' | 'light' | 'dark';
@@ -57,7 +59,7 @@ function getButtonSizeClass(size: ButtonSize): string {
   }
 }
 
-function Button(props: ButtonProps): JSX.Element {
+function Button(props: ButtonProps): ReactElement {
   const {
     className,
     children,

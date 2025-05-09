@@ -1,12 +1,14 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { useCreateBullBoardAuthCodeMutation } from '%generatedGraphqlImports';
 import { ErrorableLoader } from '%reactComponentsImports';
 import { config } from '%reactConfigImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { useEffect, useState } from 'react';
 
-function BullBoardPage(): JSX.Element {
+function BullBoardPage(): ReactElement {
   const [createBullBoardAuthCode] = useCreateBullBoardAuthCodeMutation();
   const [error, setError] = useState<string | null>(null);
 

@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
 import type {
   Control,
   DefaultValues,
@@ -34,8 +35,8 @@ export interface EmbeddedListFormProps<InputType> {
 interface Props<InputType> {
   className?: string;
   onChange: (value: InputType[]) => void;
-  renderTable: (tableProps: EmbeddedListTableProps<InputType>) => JSX.Element;
-  renderForm: (formProps: EmbeddedListFormProps<InputType>) => JSX.Element;
+  renderTable: (tableProps: EmbeddedListTableProps<InputType>) => ReactElement;
+  renderForm: (formProps: EmbeddedListFormProps<InputType>) => ReactElement;
   value: InputType[] | null | undefined;
   itemName?: string;
   defaultValue?: DefaultValues<InputType>;
@@ -49,7 +50,7 @@ function EmbeddedListInput<InputType>({
   value,
   itemName,
   defaultValue = {} as DefaultValues<InputType>,
-}: Props<InputType>): JSX.Element {
+}: Props<InputType>): ReactElement {
   const [valueToEdit, setValueToEdit] = useState<
     { idx?: number; data: DefaultValues<InputType> } | undefined
   >();
@@ -139,7 +140,7 @@ EmbeddedListInput.Labelled = function EmbeddedOneToOneInputLabelled<InputType>({
   className,
   error,
   ...rest
-}: EmbeddedListInputLabelledProps<InputType>): JSX.Element {
+}: EmbeddedListInputLabelledProps<InputType>): ReactElement {
   return (
     <div className={clsx('', className)}>
       <div className={className}>
@@ -182,7 +183,7 @@ EmbeddedListInput.LabelledController =
   }: EmbeddedListInputLabelledControllerProps<
     FormType,
     FormPath
-  >): JSX.Element {
+  >): ReactElement {
     const {
       field,
       fieldState: { error },

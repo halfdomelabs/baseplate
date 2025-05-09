@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 
@@ -15,7 +17,7 @@ function Spinner({
   size = 'medium',
   center,
   noDelay,
-}: Props): JSX.Element | null {
+}: Props): ReactElement | null {
   const [show, setShow] = useState(noDelay);
 
   useEffect(() => {

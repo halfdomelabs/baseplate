@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { ApolloProvider } from '@apollo/client';
 import { useMemo } from 'react';
 
@@ -9,7 +11,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-function AppApolloProvider({ children }: Props): JSX.Element {
+function AppApolloProvider({ children }: Props): ReactElement {
   TPL_RENDER_BODY;
 
   const client = useMemo(

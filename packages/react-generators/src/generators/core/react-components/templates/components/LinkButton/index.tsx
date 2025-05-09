@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import type React from 'react';
+import type { ReactElement } from 'react';
 
 import clsx from 'clsx';
 
@@ -20,7 +21,7 @@ function LinkButton({
   type = 'button',
   negative,
   disabled,
-}: Props): JSX.Element {
+}: Props): ReactElement {
   const colorClass = (() => {
     if (disabled) {
       return 'text-gray-400 dark:text-gray-500';

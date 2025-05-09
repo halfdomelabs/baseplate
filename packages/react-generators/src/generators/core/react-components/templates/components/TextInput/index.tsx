@@ -6,6 +6,7 @@ import type {
   InputHTMLAttributes,
   KeyboardEventHandler,
   MouseEventHandler,
+  ReactElement,
 } from 'react';
 import type {
   Control,
@@ -50,7 +51,7 @@ const TextInput = function TextInput({
   onKeyDown,
   value,
   register,
-}: Props): JSX.Element {
+}: Props): ReactElement {
   const inputProps: InputHTMLAttributes<HTMLInputElement> = {
     name,
     placeholder,
@@ -89,7 +90,7 @@ TextInput.Labelled = function TextInputLabelled({
   className,
   error,
   ...rest
-}: TextInputLabelledProps): JSX.Element {
+}: TextInputLabelledProps): ReactElement {
   return (
     <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -116,7 +117,7 @@ TextInput.LabelledController = function TextInputController<
   name,
   registerOptions,
   ...rest
-}: TextInputControllerProps<TFieldValues, TFieldName>): JSX.Element {
+}: TextInputControllerProps<TFieldValues, TFieldName>): ReactElement {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;
 

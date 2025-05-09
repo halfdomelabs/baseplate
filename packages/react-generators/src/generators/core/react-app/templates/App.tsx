@@ -1,6 +1,8 @@
 // @ts-nocheck
 
-function App(): JSX.Element {
+import type { ReactElement } from 'react';
+
+function App(): ReactElement {
   return TPL_RENDER_ROOT;
 }
 

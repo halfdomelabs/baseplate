@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { Disclosure } from '@headlessui/react';
 import clsx from 'clsx';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
@@ -12,7 +14,7 @@ interface Props {
 
 // https://flowbite.com/docs/components/sidebar/
 
-function Sidebar({ className, children }: Props): JSX.Element {
+function Sidebar({ className, children }: Props): ReactElement {
   return (
     <aside
       className={clsx('w-64 overflow-auto bg-gray-50', className)}
@@ -33,7 +35,7 @@ interface SidebarHeaderProps {
 Sidebar.Header = function SidebarHeader({
   className,
   children,
-}: SidebarHeaderProps): JSX.Element {
+}: SidebarHeaderProps): ReactElement {
   return <div className={clsx('pl-2', className)}>{children}</div>;
 };
 
@@ -45,7 +47,7 @@ interface SidebarLinkGroupProps {
 Sidebar.LinkGroup = function SidebarLinkGroup({
   className,
   children,
-}: SidebarLinkGroupProps): JSX.Element {
+}: SidebarLinkGroupProps): ReactElement {
   return <ul className={clsx('space-y-2', className)}>{children}</ul>;
 };
 
@@ -64,7 +66,7 @@ interface SidebarItemProps {
 Sidebar.Item = function SidebarItem({
   className,
   children,
-}: SidebarItemProps): JSX.Element {
+}: SidebarItemProps): ReactElement {
   return <li className={className}>{children}</li>;
 };
 
@@ -73,7 +75,7 @@ Sidebar.ButtonItem = function SidebarButton({
   Icon,
   onClick,
   children,
-}: SidebarButtonProps): JSX.Element {
+}: SidebarButtonProps): ReactElement {
   return (
     <li className={className}>
       <button
@@ -106,7 +108,7 @@ Sidebar.LinkItem = function SidebarLink({
   Icon,
   to,
   children,
-}: SidebarLinkProps): JSX.Element {
+}: SidebarLinkProps): ReactElement {
   const resolved = useResolvedPath(to);
   const match = useMatch({ path: `${resolved.pathname}/*` });
 
@@ -144,7 +146,7 @@ Sidebar.Dropdown = function SidebarDropdown({
   Icon,
   label,
   children,
-}: SidebarDropdownProps): JSX.Element {
+}: SidebarDropdownProps): ReactElement {
   return (
     <Disclosure as="li" className={className}>
       {({ open }) => (
@@ -187,7 +189,7 @@ Sidebar.DropdownLinkItem = function SidebarDropdownLinkItem({
   to,
   children,
   withParentIcon,
-}: SidebarDropdownLinkItemProps): JSX.Element {
+}: SidebarDropdownLinkItemProps): ReactElement {
   const resolved = useResolvedPath(to);
   const match = useMatch({ path: resolved.pathname });
 

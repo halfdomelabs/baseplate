@@ -1,9 +1,11 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { useCurrentUser } from '%authHooksImports';
 import { ErrorableLoader } from '%reactComponentsImports';
 
-function HomePage(): JSX.Element {
+function HomePage(): ReactElement {
   const { user, error } = useCurrentUser();
 
   if (!user) {

@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
 import type {
   Control,
   FieldPath,
@@ -35,7 +36,7 @@ function Input<
   OptionType = unknown,
   IsMultiType extends boolean = boolean,
   GroupType extends GroupBase<OptionType> = GroupBase<OptionType>,
->(props: InputProps<OptionType, IsMultiType, GroupType>): JSX.Element {
+>(props: InputProps<OptionType, IsMultiType, GroupType>): ReactElement {
   return <components.Input {...props} inputClassName="focus:ring-0" />;
 }
 
@@ -46,7 +47,7 @@ function ReactSelectInput<ValueType>({
   options,
   value,
   fixedPosition,
-}: Props<ValueType>): JSX.Element {
+}: Props<ValueType>): ReactElement {
   const selectedOption = options.find((option) => option.value === value);
 
   const fixedPositionProps = fixedPosition
@@ -89,7 +90,7 @@ ReactSelectInput.Labelled = function ReactSelectInputLabelled({
   className,
   error,
   ...rest
-}: ReactSelectInputLabelledProps): JSX.Element {
+}: ReactSelectInputLabelledProps): ReactElement {
   return (
     <div className={className}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -124,7 +125,7 @@ ReactSelectInput.LabelledController = function ReactSelectInputController<
 }: ReactSelectInputLabelledControllerProps<
   TFieldValues,
   TFieldName
->): JSX.Element {
+>): ReactElement {
   const {
     field,
     fieldState: { error },
