@@ -19,7 +19,7 @@ interface Props {
   className?: string;
   name?: string;
   disabled?: boolean;
-  onChange?(checked: boolean, value?: string): void;
+  onChange?: (checked: boolean, value?: string) => void;
   checked?: boolean;
   value?: string;
   type?: 'checkbox' | 'radio';

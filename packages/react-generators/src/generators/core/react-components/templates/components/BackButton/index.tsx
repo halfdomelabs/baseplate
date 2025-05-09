@@ -19,7 +19,11 @@ function BackButton({ className, href }: Props): ReactElement {
     <LinkButton
       className={className}
       onClick={() => {
-        href ? navigate(href) : navigate(-1);
+        if (href) {
+          navigate(href);
+        } else {
+          navigate(-1);
+        }
       }}
     >
       <MdArrowBack className="h-6 w-6 text-gray-600" />

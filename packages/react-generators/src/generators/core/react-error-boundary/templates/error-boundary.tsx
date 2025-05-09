@@ -6,8 +6,8 @@ import { Button, ErrorDisplay } from '%reactComponentsImports';
 import { logError } from '%reactErrorImports';
 import { useContext } from 'react';
 import {
-  ErrorBoundary as ReactErrorBoundary,
   ErrorBoundaryContext,
+  ErrorBoundary as ReactErrorBoundary,
 } from 'react-error-boundary';
 
 interface ErrorBoundaryProps {

@@ -117,7 +117,6 @@ ReactSelectInput.LabelledController = function ReactSelectInputController<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
-  className,
   name,
   control,
   emptyAsNull,

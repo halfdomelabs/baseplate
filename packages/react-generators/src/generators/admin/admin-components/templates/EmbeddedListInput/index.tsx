@@ -176,7 +176,6 @@ EmbeddedListInput.LabelledController =
     FormType extends FieldValues,
     FormPath extends FieldPath<FormType>,
   >({
-    className,
     control,
     name,
     ...rest
