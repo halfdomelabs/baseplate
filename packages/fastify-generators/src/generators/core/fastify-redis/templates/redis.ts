@@ -12,8 +12,6 @@ export function createRedisClient(): Redis {
 let cachedRedisClient: Redis | null = null;
 
 export function getRedisClient(): Redis {
-  if (cachedRedisClient === null) {
-    cachedRedisClient = createRedisClient();
-  }
+  cachedRedisClient ??= createRedisClient();
   return cachedRedisClient;
 }

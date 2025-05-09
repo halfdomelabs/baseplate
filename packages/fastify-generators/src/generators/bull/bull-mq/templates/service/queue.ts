@@ -6,7 +6,7 @@ import { logError } from '%errorHandlerServiceImports';
 import { getRedisClient } from '%fastifyRedisImports';
 import { Queue } from 'bullmq';
 
-const managedQueues: Record<string, Queue> = {};
+const managedQueues: Partial<Record<string, Queue>> = {};
 
 export function getOrCreateManagedQueue<DataType>(
   queueName: string,

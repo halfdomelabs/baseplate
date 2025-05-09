@@ -6,7 +6,7 @@ import { logger } from '%loggerServiceImports';
 
 export type StripeEventHandler = (event: Stripe.Event) => Promise<void>;
 
-const eventHandlers: Record<string, StripeEventHandler> = {};
+const eventHandlers: Partial<Record<string, StripeEventHandler>> = {};
 
 /**
  * Service that allows registering handlers from Stripe events.

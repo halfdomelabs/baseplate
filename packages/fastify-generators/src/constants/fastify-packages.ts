@@ -44,8 +44,7 @@ export const FASTIFY_PACKAGES = {
   ms: '2.1.3',
   '@types/redis-info': '3.0.3',
   '@types/ms': '0.7.34',
-  lodash: '4.17.21',
-  '@types/lodash': '4.17.7',
+  'es-toolkit': '1.31.0',
   uuid: '9.0.0',
   '@types/uuid': '9.0.1',
 

@@ -111,7 +111,7 @@ export const fastifyServerGenerator = createGenerator({
         SERVER_PORT: {
           comment: 'Port to bind the server to',
           validator: tsCodeFragment(
-            `z.coerce.number().min(1).max(65535).default(${descriptor.defaultPort})`,
+            `z.coerce.number().min(1).max(65_535).default(${descriptor.defaultPort})`,
           ),
         },
       });

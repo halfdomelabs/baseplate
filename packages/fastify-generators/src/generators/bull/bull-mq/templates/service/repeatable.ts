@@ -41,9 +41,8 @@ export async function synchronizeRepeatableJobs(
           );
           const jobHasIdenticalRepeat =
             existingJob &&
-            (existingJob?.pattern ?? '') ===
-              String(job.pattern ?? job.every ?? '') &&
-            (existingJob?.endDate ?? '') ===
+            existingJob.pattern === String(job.pattern ?? job.every ?? '') &&
+            (existingJob.endDate ?? '') ===
               ((job.endDate && new Date(job.endDate).getTime()) ?? '');
 
           // if job already exists and has identical repeat, do nothing
@@ -52,7 +51,7 @@ export async function synchronizeRepeatableJobs(
           }
 
           // if job already exists and has different repeat, remove it
-          if (existingJob && !jobHasIdenticalRepeat) {
+          if (existingJob) {
             logger.info(
               `Removed duplicate repeatable job ${job.name} for queue ${queue.name}`,
             );

@@ -67,7 +67,7 @@ export const pothosSentryGenerator = createGenerator({
             `
           if (error instanceof GraphQLError) {
             return (
-              !error.extensions?.http?.status || error.extensions?.http?.status >= 500
+              !error.extensions.http?.status || error.extensions.http.status >= 500
             );
           }
           `,

@@ -165,9 +165,8 @@ export const fastifySentryGenerator = createGenerator({
         '@sentry/core',
         '@sentry/node',
         '@sentry/profiling-node',
-        'lodash',
+        'es-toolkit',
       ]),
-      dev: extractPackageVersions(FASTIFY_PACKAGES, ['@types/lodash']),
     }),
     config: createProviderTask(configServiceProvider, (configService) => {
       configService.configFields.set('SENTRY_DSN', {
