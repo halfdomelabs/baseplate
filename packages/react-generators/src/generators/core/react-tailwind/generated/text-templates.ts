@@ -12,17 +12,17 @@ const indexCss = createTextTemplateFile({
   },
 });
 
-const tailwindConfig = createTextTemplateFile({
-  name: 'tailwind-config',
-  group: 'main',
-  source: { path: 'tpl.tailwind.config.js' },
-  variables: {},
-});
-
 const postcssConfig = createTextTemplateFile({
   name: 'postcss-config',
   group: 'main',
   source: { path: 'postcss.config.js' },
+  variables: {},
+});
+
+const tailwindConfig = createTextTemplateFile({
+  name: 'tailwind-config',
+  group: 'main',
+  source: { path: 'tpl.tailwind.config.js' },
   variables: {},
 });
 
@@ -32,13 +32,13 @@ const mainGroup = createTextTemplateGroup({
       destination: 'src/index.css',
       template: indexCss,
     },
-    tailwindConfig: {
-      destination: 'tailwind.config.js',
-      template: tailwindConfig,
-    },
     postcssConfig: {
       destination: 'postcss.config.js',
       template: postcssConfig,
+    },
+    tailwindConfig: {
+      destination: 'tailwind.config.js',
+      template: tailwindConfig,
     },
   },
 });

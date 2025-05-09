@@ -3,6 +3,16 @@ import {
   createTextTemplateGroup,
 } from '@halfdomelabs/sync';
 
+const indexHtml = createTextTemplateFile({
+  name: 'index-html',
+  group: 'static',
+  source: { path: 'index.html' },
+  variables: {
+    TPL_DESCRIPTION: { description: 'Description of the project' },
+    TPL_TITLE: { description: 'Title of the home page' },
+  },
+});
+
 const readme = createTextTemplateFile({
   name: 'readme',
   group: 'static',
@@ -17,18 +27,12 @@ const viteEnv = createTextTemplateFile({
   variables: {},
 });
 
-const indexHtml = createTextTemplateFile({
-  name: 'index-html',
-  group: 'static',
-  source: { path: 'index.html' },
-  variables: {
-    TPL_DESCRIPTION: { description: 'Description of the project' },
-    TPL_TITLE: { description: 'Title of the home page' },
-  },
-});
-
 const staticGroup = createTextTemplateGroup({
   templates: {
+    indexHtml: {
+      destination: 'index.html',
+      template: indexHtml,
+    },
     readme: {
       destination: 'README.md',
       template: readme,
@@ -36,10 +40,6 @@ const staticGroup = createTextTemplateGroup({
     viteEnv: {
       destination: 'src/vite-env.d.ts',
       template: viteEnv,
-    },
-    indexHtml: {
-      destination: 'index.html',
-      template: indexHtml,
     },
   },
 });
