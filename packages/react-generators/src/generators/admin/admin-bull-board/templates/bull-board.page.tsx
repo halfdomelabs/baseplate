@@ -28,13 +28,15 @@ function BullBoardPage(): JSX.Element {
 
       codeInput.value = code;
       codeInput.name = 'code';
-      form.appendChild(codeInput);
+      form.append(codeInput);
 
-      document.body.appendChild(form);
+      document.body.append(form);
 
       form.submit();
     }
-    createPath().catch((err) => setError(logAndFormatError(err)));
+    createPath().catch((err) => {
+      setError(logAndFormatError(err));
+    });
   }, [createBullBoardAuthCode]);
 
   return <ErrorableLoader error={error} />;

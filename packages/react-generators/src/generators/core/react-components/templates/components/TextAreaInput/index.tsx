@@ -1,16 +1,16 @@
 // @ts-nocheck
 
-import clsx from 'clsx';
-import { TextareaHTMLAttributes } from 'react';
-import {
+import type { TextareaHTMLAttributes } from 'react';
+import type {
   Control,
   FieldError,
   FieldPath,
   FieldValues,
-  get,
   UseFormRegisterReturn,
-  useFormState,
 } from 'react-hook-form';
+
+import clsx from 'clsx';
+import { get, useFormState } from 'react-hook-form';
 
 import FormError from '../FormError/index.js';
 import FormLabel from '../FormLabel/index.js';
@@ -42,7 +42,11 @@ const TextAreaInput = function TextInput({
     name,
     placeholder,
     disabled,
-    onChange: onChange && ((e) => onChange(e.target.value)),
+    onChange:
+      onChange &&
+      ((e) => {
+        onChange(e.target.value);
+      }),
     onBlur,
     value,
     rows,
@@ -71,7 +75,6 @@ TextAreaInput.Labelled = function TextInputLabelled({
   ...rest
 }: TextInputLabelledProps): JSX.Element {
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <TextAreaInput {...rest} />

@@ -1,15 +1,17 @@
 // @ts-nocheck
 
-import clsx from 'clsx';
-import {
+import type {
   Control,
   FieldPath,
   FieldPathValue,
   FieldValues,
   PathValue,
-  useController,
 } from 'react-hook-form';
-import Select, { components, GroupBase, InputProps } from 'react-select';
+import type { GroupBase, InputProps } from 'react-select';
+
+import clsx from 'clsx';
+import { useController } from 'react-hook-form';
+import Select, { components } from 'react-select';
 
 import FormError from '../FormError/index.js';
 import FormLabel from '../FormLabel/index.js';

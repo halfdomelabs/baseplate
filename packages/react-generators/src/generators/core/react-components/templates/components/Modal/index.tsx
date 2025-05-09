@@ -18,14 +18,18 @@ interface Props {
 
 function getModalWidthClass(width: ModalWidth): string {
   switch (width) {
-    case 'small':
+    case 'small': {
       return 'w-72 md:w-72';
-    case 'base':
+    }
+    case 'base': {
       return 'w-72 md:w-[50rem]';
-    case 'large':
+    }
+    case 'large': {
       return 'w-72 md:w-[80rem]';
-    default:
+    }
+    default: {
       throw new Error(`Unknown modal width: ${width as string}`);
+    }
   }
 }
 

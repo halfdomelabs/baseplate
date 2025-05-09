@@ -7,12 +7,11 @@ import { getMainDefinition, Observable } from '@apollo/client/utilities';
 import { Kind } from 'graphql';
 
 export const apolloSentryLink = new ApolloLink((operation, forward) => {
-  operation.setContext({ startAt: new Date().getTime() });
+  operation.setContext({ startAt: Date.now() });
   return new Observable((observer) => {
     function logResult(error?: Error): void {
       try {
-        const operationDuration =
-          new Date().getTime() - operation.getContext().startAt;
+        const operationDuration = Date.now() - operation.getContext().startAt;
         const { operationName, query } = operation;
         const definition = getMainDefinition(query);
         const operationType =

@@ -21,8 +21,15 @@ function Spinner({
   useEffect(() => {
     if (noDelay) setShow(true);
 
-    const showDelayTimeout = setTimeout(() => setShow(true), noDelay ? 0 : 500);
-    return () => clearTimeout(showDelayTimeout);
+    const showDelayTimeout = setTimeout(
+      () => {
+        setShow(true);
+      },
+      noDelay ? 0 : 500,
+    );
+    return () => {
+      clearTimeout(showDelayTimeout);
+    };
   }, [noDelay]);
 
   if (!show) {

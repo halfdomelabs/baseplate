@@ -1,5 +1,13 @@
 // @ts-nocheck
 
+import type {
+  Control,
+  FieldError,
+  FieldPath,
+  FieldPathValue,
+  FieldValues,
+} from 'react-hook-form';
+
 import { useCreateUploadUrlMutation } from '%generatedGraphqlImports';
 import { FormError, FormLabel, LinkButton } from '%reactComponentsImports';
 import { formatError, logError } from '%reactErrorImports';
@@ -7,15 +15,7 @@ import clsx from 'clsx';
 import { useCallback } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import { useDropzone } from 'react-dropzone';
-import {
-  Control,
-  FieldError,
-  FieldPath,
-  FieldPathValue,
-  FieldValues,
-  get,
-  useController,
-} from 'react-hook-form';
+import { get, useController } from 'react-hook-form';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
 
 import { useUpload } from '../../hooks/useUpload.js';
@@ -257,7 +257,6 @@ FileInput.Labelled = function FileInputLabelled({
   ...rest
 }: FileInputLabelledProps): JSX.Element {
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <div className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <FileInput {...rest} />
@@ -295,9 +294,9 @@ FileInput.LabelledController = function FileInputController<
 
   return (
     <FileInput.Labelled
-      onChange={(newValue) =>
-        onChange(newValue as FieldPathValue<TFieldValues, TFieldName>)
-      }
+      onChange={(newValue) => {
+        onChange(newValue as FieldPathValue<TFieldValues, TFieldName>);
+      }}
       value={validatedValue}
       error={error?.message}
       {...rest}

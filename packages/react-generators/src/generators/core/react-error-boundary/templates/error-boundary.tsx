@@ -66,7 +66,7 @@ export function ErrorBoundary({
         if (onReset) {
           onReset();
         } else {
-          window.location.reload();
+          globalThis.location.reload();
         }
       }}
     >

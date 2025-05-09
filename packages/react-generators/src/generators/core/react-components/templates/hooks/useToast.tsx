@@ -1,6 +1,8 @@
 // @ts-nocheck
 
-import React, { useCallback, useMemo } from 'react';
+import type React from 'react';
+
+import { useCallback, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { AlertIcon, Toast } from '../components/index.js';
@@ -19,7 +21,9 @@ export function useToast(): UseToastResult {
         <Toast
           visible={t.visible}
           icon={icon}
-          onClose={() => toast.dismiss(t.id)}
+          onClose={() => {
+            toast.dismiss(t.id);
+          }}
         >
           {message}
         </Toast>

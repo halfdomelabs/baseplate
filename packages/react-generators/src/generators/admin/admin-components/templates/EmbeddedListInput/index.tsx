@@ -1,5 +1,13 @@
 // @ts-nocheck
 
+import type {
+  Control,
+  DefaultValues,
+  FieldPath,
+  FieldPathValue,
+  FieldValues,
+} from 'react-hook-form';
+
 import {
   Alert,
   Button,
@@ -10,14 +18,7 @@ import {
 import clsx from 'clsx';
 import { nanoid } from 'nanoid';
 import { useMemo, useState } from 'react';
-import {
-  Control,
-  DefaultValues,
-  FieldPath,
-  FieldPathValue,
-  FieldValues,
-  useController,
-} from 'react-hook-form';
+import { useController } from 'react-hook-form';
 
 export interface EmbeddedListTableProps<InputType> {
   items: (InputType & { id: string })[];
@@ -81,29 +82,40 @@ function EmbeddedListInput<InputType>({
     <div className={clsx('space-y-2', className)}>
       <Button
         size="small"
-        onClick={() => setValueToEdit({ data: defaultValue })}
+        onClick={() => {
+          setValueToEdit({ data: defaultValue });
+        }}
       >
         Add Item
       </Button>
-      {definedValue.length ? (
+      {definedValue.length > 0 ? (
         renderTable({
           items: valueWithIds,
-          edit: (idx) =>
+          edit: (idx) => {
             setValueToEdit({
               idx,
               data: definedValue[idx] as DefaultValues<InputType>,
-            }),
-          remove: (idx) => onChange(definedValue.filter((_, i) => i !== idx)),
+            });
+          },
+          remove: (idx) => {
+            onChange(definedValue.filter((_, i) => i !== idx));
+          },
         })
       ) : (
         <Alert type="info">No items currently</Alert>
       )}
       <Modal
         isOpen={!!valueToEdit}
-        onClose={() => setValueToEdit(undefined)}
+        onClose={() => {
+          setValueToEdit(undefined);
+        }}
         width="large"
       >
-        <Modal.Header onClose={() => setValueToEdit(undefined)}>
+        <Modal.Header
+          onClose={() => {
+            setValueToEdit(undefined);
+          }}
+        >
           Edit {itemName ?? 'Item'}
         </Modal.Header>
         <Modal.Body>
@@ -183,9 +195,9 @@ EmbeddedListInput.LabelledController =
       <EmbeddedListInput.Labelled
         {...rest}
         error={error?.message}
-        onChange={(value) =>
-          field.onChange(value as FieldPathValue<FormType, FormPath>)
-        }
+        onChange={(value) => {
+          field.onChange(value as FieldPathValue<FormType, FormPath>);
+        }}
         value={
           field.value as (FieldPathValue<
             FormType,

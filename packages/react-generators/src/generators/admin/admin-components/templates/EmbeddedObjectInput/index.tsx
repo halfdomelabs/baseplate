@@ -1,16 +1,17 @@
 // @ts-nocheck
 
-import { Button, FormError, FormLabel, Modal } from '%reactComponentsImports';
-import clsx from 'clsx';
-import { useState } from 'react';
-import {
+import type {
   Control,
   DefaultValues,
   FieldPath,
   FieldPathValue,
   FieldValues,
-  useController,
 } from 'react-hook-form';
+
+import { Button, FormError, FormLabel, Modal } from '%reactComponentsImports';
+import clsx from 'clsx';
+import { useState } from 'react';
+import { useController } from 'react-hook-form';
 
 export interface EmbeddedObjectFormProps<InputType> {
   initialData?: DefaultValues<Exclude<InputType, undefined | null>>;
@@ -47,27 +48,39 @@ function EmbeddedObjectInput<InputType>({
     <div className={clsx('flex flex-row space-x-4', className)}>
       <Button
         size="small"
-        onClick={() =>
+        onClick={() => {
           setValueToEdit(
             (value ?? defaultValue) as DefaultValues<
               Exclude<InputType, undefined | null>
             >,
-          )
-        }
+          );
+        }}
       >
         {value ? 'Edit' : 'Create'}
       </Button>
       {value && (
-        <Button size="small" color="light" onClick={() => onChange(null)}>
+        <Button
+          size="small"
+          color="light"
+          onClick={() => {
+            onChange(null);
+          }}
+        >
           Remove
         </Button>
       )}
       <Modal
         isOpen={!!valueToEdit}
-        onClose={() => setValueToEdit(undefined)}
+        onClose={() => {
+          setValueToEdit(undefined);
+        }}
         width="large"
       >
-        <Modal.Header onClose={() => setValueToEdit(undefined)}>
+        <Modal.Header
+          onClose={() => {
+            setValueToEdit(undefined);
+          }}
+        >
           Edit {itemName ?? 'Item'}
         </Modal.Header>
         <Modal.Body>
@@ -139,9 +152,9 @@ EmbeddedObjectInput.LabelledController =
       <EmbeddedObjectInput.Labelled
         {...rest}
         error={error?.message}
-        onChange={(value) =>
-          field.onChange(value as FieldPathValue<FormType, FormPath>)
-        }
+        onChange={(value) => {
+          field.onChange(value as FieldPathValue<FormType, FormPath>);
+        }}
         value={field.value as FieldPathValue<FormType, FormPath>}
       />
     );

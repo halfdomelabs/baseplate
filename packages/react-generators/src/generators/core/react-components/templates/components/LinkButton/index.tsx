@@ -1,7 +1,8 @@
 // @ts-nocheck
 
+import type React from 'react';
+
 import clsx from 'clsx';
-import React from 'react';
 
 interface Props {
   className?: string;
@@ -39,7 +40,7 @@ function LinkButton({
         className,
       )}
       // a type is being provided but eslint doesn't know
-      // eslint-disable-next-line react/button-has-type
+
       type={type}
       onClick={onClick}
       disabled={disabled}

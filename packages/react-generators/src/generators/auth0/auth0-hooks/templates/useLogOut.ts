@@ -7,7 +7,7 @@ export function useLogOut(): () => void {
   const { logout } = useAuth0();
 
   return () => {
-    logout({ logoutParams: { returnTo: window.location.origin } }).catch(
+    logout({ logoutParams: { returnTo: globalThis.location.origin } }).catch(
       (err) => logError(err),
     );
   };

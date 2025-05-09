@@ -199,7 +199,7 @@ export default tsEslint.config(
             {
               selector: 'side-effect',
               groupName: 'instrument',
-              elementNamePattern: 'instrument(.test-helper)?(\\.js)?$',
+              elementNamePattern: String.raw`instrument(.test-helper)?(\.js)?$`,
             },
           ],
         },

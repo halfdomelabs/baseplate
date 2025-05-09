@@ -21,7 +21,12 @@ function AdminLayout({ className }: Props): JSX.Element {
         </Sidebar.Header>
         <Sidebar.LinkGroup>
           <TPL_SIDEBAR_LINKS />
-          <Sidebar.ButtonItem Icon={MdLogout} onClick={() => logOut()}>
+          <Sidebar.ButtonItem
+            Icon={MdLogout}
+            onClick={() => {
+              logOut();
+            }}
+          >
             Log Out
           </Sidebar.ButtonItem>
         </Sidebar.LinkGroup>

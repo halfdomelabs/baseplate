@@ -1,23 +1,20 @@
 // @ts-nocheck
 
-import { format, parseISO } from 'date-fns';
-import {
-  FocusEventHandler,
-  forwardRef,
-  KeyboardEventHandler,
-  useMemo,
-} from 'react';
-import DatePicker from 'react-datepicker';
-import {
+import type { FocusEventHandler, KeyboardEventHandler } from 'react';
+import type {
   ChangeHandler,
   Control,
   FieldPath,
   FieldPathValue,
   FieldValues,
   RefCallBack,
-  useController,
   UseFormRegisterReturn,
 } from 'react-hook-form';
+
+import { format, parseISO } from 'date-fns';
+import { forwardRef, useMemo } from 'react';
+import DatePicker from 'react-datepicker';
+import { useController } from 'react-hook-form';
 
 import FormError from '../FormError/index.js';
 import FormLabel from '../FormLabel/index.js';
@@ -74,12 +71,12 @@ function ReactDatePickerInput({
   return (
     <DatePicker
       className={className}
-      onChange={(date) =>
+      onChange={(date) => {
         onChange(
           date &&
             (showTimeSelect ? date.toISOString() : format(date, 'yyyy-MM-dd')),
-        )
-      }
+        );
+      }}
       onBlur={onBlur}
       selected={selectedDate}
       customInput={<DatePickerTextInput />}

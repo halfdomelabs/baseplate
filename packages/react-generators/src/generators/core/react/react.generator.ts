@@ -73,7 +73,6 @@ export const reactGenerator = createGenerator({
     eslintConfig: createProviderTask(eslintConfigProvider, (eslintConfig) => {
       eslintConfig.react.set(true);
       eslintConfig.disableVitest.set(true);
-      eslintConfig.tsDefaultProjectFiles.push('vite.config.ts');
     }),
     defaultConfig: createProviderTask(
       reactBaseConfigProvider,

@@ -15,7 +15,13 @@ function NotFoundCard(): JSX.Element {
         <p className="text-center text-gray-600">
           Sorry, we were unable to find the page you were looking for.
         </p>
-        <Button onClick={() => navigate('/')}>Back to Home</Button>
+        <Button
+          onClick={() => {
+            navigate('/');
+          }}
+        >
+          Back to Home
+        </Button>
       </Card>
     </div>
   );

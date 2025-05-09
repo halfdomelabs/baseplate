@@ -1,15 +1,15 @@
 // @ts-nocheck
 
-import clsx from 'clsx';
-import {
+import type {
   Control,
   FieldError,
   FieldPath,
   FieldValues,
-  get,
   UseFormRegisterReturn,
-  useFormState,
 } from 'react-hook-form';
+
+import clsx from 'clsx';
+import { get, useFormState } from 'react-hook-form';
 
 import FormError from '../FormError/index.js';
 import FormLabel from '../FormLabel/index.js';
@@ -75,7 +75,6 @@ SelectInput.Labelled = function SelectInputLabelled({
   ...rest
 }: SelectInputLabelledProps): JSX.Element {
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <SelectInput {...rest} />

@@ -1,9 +1,8 @@
 // @ts-nocheck
 
-import {
-  CurrentUserFragment,
-  useGetUserByIdQuery,
-} from '%generatedGraphqlImports';
+import type { CurrentUserFragment } from '%generatedGraphqlImports';
+
+import { useGetUserByIdQuery } from '%generatedGraphqlImports';
 
 import { useSession } from './useSession.js';
 

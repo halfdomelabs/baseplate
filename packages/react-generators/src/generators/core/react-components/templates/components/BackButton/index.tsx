@@ -16,7 +16,9 @@ function BackButton({ className, href }: Props): JSX.Element {
   return (
     <LinkButton
       className={className}
-      onClick={() => (href ? navigate(href) : navigate(-1))}
+      onClick={() => {
+        href ? navigate(href) : navigate(-1);
+      }}
     >
       <MdArrowBack className="h-6 w-6 text-gray-600" />
       <span className="sr-only">Back</span>

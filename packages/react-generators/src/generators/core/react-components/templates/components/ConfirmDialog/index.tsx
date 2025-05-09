@@ -2,10 +2,9 @@
 
 import * as React from 'react';
 
-import {
-  UseConfirmDialogRequestOptions,
-  useConfirmDialogState,
-} from '../../hooks/useConfirmDialog.js';
+import type { UseConfirmDialogRequestOptions } from '../../hooks/useConfirmDialog.js';
+
+import { useConfirmDialogState } from '../../hooks/useConfirmDialog.js';
 import Button from '../Button/index.js';
 import Modal from '../Modal/index.js';
 
@@ -51,7 +50,9 @@ export function ConfirmDialog(): JSX.Element {
   return (
     <Modal
       isOpen={!!confirmOptions}
-      onClose={() => setConfirmOptions(undefined)}
+      onClose={() => {
+        setConfirmOptions(undefined);
+      }}
       width="small"
     >
       <Modal.Header>{title}</Modal.Header>
