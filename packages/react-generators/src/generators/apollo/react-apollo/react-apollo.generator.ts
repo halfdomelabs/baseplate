@@ -591,15 +591,15 @@ export const reactApolloGenerator = createGenerator({
             error: GraphQLError,
             context: Record<string, unknown>,
           ): void {
-            context.reqId = error.extensions?.reqId;
-            context.code = error.extensions?.code;
-            context.statusCode = error.extensions?.statusCode;
+            context.reqId = error.extensions.reqId;
+            context.code = error.extensions.code;
+            context.statusCode = error.extensions.statusCode;
             context.path = error.path?.join('.');
             // only visible in development
-            const originalError = error.extensions?.originalError as {
+            const originalError = error.extensions.originalError as {
               message?: string;
               stack?: string;
-            };
+            } | null;
             if (typeof originalError === 'object' && originalError !== null) {
               context.originalError = originalError.message;
               const serverError = new Error(originalError.message);
@@ -620,25 +620,27 @@ export const reactApolloGenerator = createGenerator({
             }
           
             if (error instanceof ApolloError) {
-              if (error.graphQLErrors.length >= 1) {
+              if (error.graphQLErrors.length > 0) {
                 annotateGraphQLError(error.graphQLErrors[0], context);
               }
               if (error.networkError && 'result' in error.networkError) {
-                const result = error.networkError.result;
+                const { result } = error.networkError;
                 const message =
                   typeof result === 'string'
                     ? result
                     : (
-                        result.errors as {
-                          message?: string;
-                        }[]
-                      )?.[0]?.message ?? JSON.stringify(result);
+                      result.errors as
+                        | {
+                            message?: string;
+                          }[]
+                        | undefined
+                    )?.[0]?.message ?? JSON.stringify(result);
           
                 context.networkErrorResponse = message;
               }
               // it's more useful to log the current stack trace than the one from
               // ApolloError which is always the same
-              const currentStack = new Error().stack?.split('\\n');
+              const currentStack = new Error('stack').stack?.split('\\n');
               error.stack = [
                 error.stack?.split('\\n')[0],
                 currentStack

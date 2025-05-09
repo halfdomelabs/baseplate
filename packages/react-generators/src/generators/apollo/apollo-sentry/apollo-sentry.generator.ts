@@ -41,13 +41,13 @@ export const apolloSentryGenerator = createGenerator({
             scope.setFingerprint(
               [
                 '{{ default }}',
-                error.extensions?.code as string,
+                error.extensions.code as string,
                 error.path?.join('.'),
               ].filter((value): value is string => typeof value === 'string' && !!value),
             );
             if (error.path?.[0]) {
               scope.setTransactionName(String(error.path[0]));
-              scope.setTag('path', String(error.path?.join('.')));
+              scope.setTag('path', String(error.path.join('.')));
             }
           }
           `,

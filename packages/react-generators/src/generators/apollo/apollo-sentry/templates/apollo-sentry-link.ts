@@ -23,7 +23,7 @@ export const apolloSentryLink = new ApolloLink((operation, forward) => {
           type: 'query',
           category: 'graphql',
           message: `${operationType} ${operationName} [${operationDuration}ms]${
-            error ? ` (Error: ${error?.message})` : ''
+            error ? ` (Error: ${error.message})` : ''
           }`,
           level: error ? 'error' : 'info',
         });
@@ -34,7 +34,7 @@ export const apolloSentryLink = new ApolloLink((operation, forward) => {
 
     const sub = forward(operation).subscribe({
       next: (result) => {
-        logResult(result?.errors?.[0]);
+        logResult(result.errors?.[0]);
         observer.next(result);
       },
       error: (error) => {
