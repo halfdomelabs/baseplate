@@ -7,8 +7,8 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsHoistedFragment,
-  tsImportBuilder,
   tsTemplate,
+  tsTypeImportBuilder,
 } from '@halfdomelabs/core-generators';
 import { notEmpty, safeMergeAllWithOptions } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
@@ -131,7 +131,7 @@ export function getDataInputTypeBlock(
 
   let prismaDataInput = tsCodeFragment(
     `Prisma.${modelName}UncheckedCreateInput`,
-    tsImportBuilder(['Prisma']).from('@prisma/client'),
+    tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
   );
   prismaDataInput =
     operationName === 'create'

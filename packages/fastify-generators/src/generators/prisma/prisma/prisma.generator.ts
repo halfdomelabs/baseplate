@@ -254,7 +254,7 @@ export const prismaGenerator = createGenerator({
                   return tsTemplate`${prismaImports.prisma.fragment()}.${modelExport}`;
                 },
                 getModelTypeFragment: (modelName) =>
-                  TsCodeUtils.importFragment(modelName, '@prisma/client'),
+                  TsCodeUtils.typeImportFragment(modelName, '@prisma/client'),
               },
             };
           },

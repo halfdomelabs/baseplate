@@ -7,8 +7,8 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsHoistedFragment,
-  tsImportBuilder,
   tsTemplate,
+  tsTypeImportBuilder,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { notEmpty, quot } from '@halfdomelabs/utils';
@@ -417,7 +417,7 @@ export const embeddedRelationTransformerGenerator = createGenerator({
               `Prisma.${upperCaseFirst(
                 foreignModel.name,
               )}WhereUniqueInput | undefined`,
-              tsImportBuilder(['Prisma']).from('@prisma/client'),
+              tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
             );
 
             // convert primary keys to where unique

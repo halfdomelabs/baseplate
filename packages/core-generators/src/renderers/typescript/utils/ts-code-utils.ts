@@ -7,7 +7,7 @@ import type { TsImportDeclarationBuilder } from '../imports/builder.js';
 import type { TsImportDeclaration } from '../imports/types.js';
 
 import { tsCodeFragment } from '../fragments/creators.js';
-import { tsImportBuilder } from '../imports/builder.js';
+import { tsImportBuilder, tsTypeImportBuilder } from '../imports/builder.js';
 
 function formatStringWithContent(
   str: string,
@@ -122,11 +122,19 @@ export const TsCodeUtils = {
     return tsCodeFragment(name, tsImportBuilder([name]).from(importFrom));
   },
   /**
+   * Shortcut function for creating a fragment that imports a named type from a module.
+   * @param name - The name of the type.
+   * @param importFrom - The module to import from.
+   * @returns The import fragment.
+   */
+  typeImportFragment(name: string, importFrom: string): TsCodeFragment {
+    return tsCodeFragment(name, tsTypeImportBuilder([name]).from(importFrom));
+  },
+  /**
    * Shortcut function for creating a fragment that imports a default import from a module.
    * @param name - The name of the import.
    * @param importFrom - The module to import from.
    * @returns The import fragment.
-   */
   defaultImportFragment(name: string, importFrom: string): TsCodeFragment {
     return tsCodeFragment(
       name,
