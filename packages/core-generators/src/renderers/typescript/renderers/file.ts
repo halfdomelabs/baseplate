@@ -1,4 +1,4 @@
-import type { SourceFile } from 'ts-morph';
+import type { CodeBlockWriter, SourceFile } from 'ts-morph';
 
 import { Project } from 'ts-morph';
 
@@ -19,7 +19,7 @@ import {
   convertTsMorphImportDeclarationToTsImportDeclaration,
   getSideEffectImportsFromSourceFile,
   getTsMorphImportDeclarationsFromSourceFile,
-  writeGroupedImportDeclarationsWithCodeBlockWriter,
+  replaceImportDeclarationsInSourceFile,
 } from '../imports/ts-morph-operations.js';
 import { renderTsTemplateToTsCodeFragment } from './template.js';
 
@@ -71,9 +71,6 @@ function mergeImportsAndHoistedFragments(
     importSortOptions,
   );
 
-  // Remove the existing import declarations
-  for (const i of importDeclarationsFromFile) i.remove();
-
   // Combine the hoisted fragments with the positioned hoisted fragments
 
   // Note: Positioned hoisted fragments are currently limited in their functionality
@@ -99,34 +96,35 @@ function mergeImportsAndHoistedFragments(
     (f) => f.position === 'beforeImports',
   );
 
-  function writeHoistedFragments(fragments: TsHoistedFragment[]): void {
-    file.insertText(0, (writer) => {
-      for (const h of fragments) {
-        if (includeMetadata) {
-          writer.writeLine(`/* HOISTED:${h.key}:START */`);
-        }
-        writer.writeLine(h.contents);
-        if (includeMetadata) {
-          writer.writeLine(`/* HOISTED:${h.key}:END */`);
-        }
-        writer.writeLine('');
+  function writeHoistedFragments(
+    writer: CodeBlockWriter,
+    fragments: TsHoistedFragment[],
+  ): void {
+    for (const h of fragments) {
+      if (includeMetadata) {
+        writer.writeLine(`/* HOISTED:${h.key}:START */`);
       }
-    });
+      writer.writeLine(h.contents);
+      if (includeMetadata) {
+        writer.writeLine(`/* HOISTED:${h.key}:END */`);
+      }
+      writer.writeLine('');
+    }
   }
 
-  // Write the afterImports hoisted fragments to the source file
-  writeHoistedFragments(afterImportsHoistedFragments);
-
-  // Write the grouped import declarations to the source file
-  file.insertText(0, (writer) => {
-    writeGroupedImportDeclarationsWithCodeBlockWriter(
-      writer,
-      groupedImportDeclarations,
-    );
-  });
-
-  // Write the beforeImports hoisted fragments to the source file
-  writeHoistedFragments(beforeImportsHoistedFragments);
+  replaceImportDeclarationsInSourceFile(
+    file,
+    importDeclarationsFromFile,
+    groupedImportDeclarations,
+    {
+      beforeImportsWriter: (writer) => {
+        writeHoistedFragments(writer, beforeImportsHoistedFragments);
+      },
+      afterImportsWriter: (writer) => {
+        writeHoistedFragments(writer, afterImportsHoistedFragments);
+      },
+    },
+  );
 
   // Resolve any side effect imports if necessary
   if (resolveModule) {

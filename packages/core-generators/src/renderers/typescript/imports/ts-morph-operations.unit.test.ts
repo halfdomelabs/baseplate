@@ -8,6 +8,7 @@ import type { TsImportDeclaration } from './types.js';
 import {
   convertTsMorphImportDeclarationToTsImportDeclaration,
   getTsMorphImportDeclarationsFromSourceFile,
+  replaceImportDeclarationsInSourceFile,
   writeGroupedImportDeclarationsWithCodeBlockWriter,
 } from './ts-morph-operations.js';
 
@@ -382,6 +383,213 @@ describe('Import Utilities', () => {
         writeGroupedImportDeclarationsWithCodeBlockWriter(writer, imports);
       }).toThrow(
         'Cannot have an import with both namespace and named/default imports!',
+      );
+    });
+  });
+
+  describe('replaceImportDeclarationsInSourceFile', () => {
+    it('should replace imports', () => {
+      // Arrange
+      sourceFile.addImportDeclaration({
+        moduleSpecifier: 'react',
+        defaultImport: 'React',
+      });
+      sourceFile.addImportDeclaration({
+        moduleSpecifier: 'lodash',
+        namedImports: ['map', 'filter'],
+      });
+
+      const oldImportDeclarations = sourceFile.getImportDeclarations();
+      const newImportDeclarations = [
+        [
+          {
+            moduleSpecifier: 'react',
+            defaultImport: 'React',
+          },
+          {
+            moduleSpecifier: 'lodash',
+            namedImports: [{ name: 'map' }, { name: 'filter' }],
+          },
+        ],
+      ];
+
+      // Act
+      replaceImportDeclarationsInSourceFile(
+        sourceFile,
+        oldImportDeclarations,
+        newImportDeclarations,
+      );
+
+      // Assert
+      expect(sourceFile.getFullText()).toBe(
+        'import React from "react";\n' +
+          'import { map, filter } from "lodash";\n\n',
+      );
+    });
+
+    it('should preserve shebangs', () => {
+      // Arrange
+      sourceFile.replaceWithText(
+        `#!/usr/bin/env node
+
+import React from "react";
+
+const x = A();`,
+      );
+
+      const oldImportDeclarations = sourceFile.getImportDeclarations();
+      const newImportDeclarations = [
+        [
+          {
+            moduleSpecifier: 'react',
+            defaultImport: 'React',
+          },
+        ],
+      ];
+
+      // Act
+      replaceImportDeclarationsInSourceFile(
+        sourceFile,
+        oldImportDeclarations,
+        newImportDeclarations,
+      );
+
+      // Assert
+      expect(sourceFile.getFullText()).toBe(
+        `#!/usr/bin/env node
+
+import React from "react";
+
+const x = A();`,
+      );
+    });
+
+    it('should preserve shebangs with no imports', () => {
+      // Arrange
+      sourceFile.replaceWithText(
+        `#!/usr/bin/env node
+
+const x = A();`,
+      );
+
+      const oldImportDeclarations = sourceFile.getImportDeclarations();
+      const newImportDeclarations = [
+        [
+          {
+            moduleSpecifier: 'react',
+            defaultImport: 'React',
+          },
+        ],
+      ];
+
+      // Act
+      replaceImportDeclarationsInSourceFile(
+        sourceFile,
+        oldImportDeclarations,
+        newImportDeclarations,
+      );
+
+      // Assert
+      expect(sourceFile.getFullText()).toBe(
+        `#!/usr/bin/env node
+
+import React from "react";
+
+
+const x = A();`,
+      );
+    });
+
+    it('should preserve client directives', () => {
+      // Arrange
+      sourceFile.replaceWithText(
+        `"use client";
+import React from "react";
+
+const x = A();`,
+      );
+
+      const oldImportDeclarations = sourceFile.getImportDeclarations();
+      const newImportDeclarations = [
+        [
+          {
+            moduleSpecifier: 'react',
+            defaultImport: 'React',
+          },
+        ],
+      ];
+
+      // Act
+      replaceImportDeclarationsInSourceFile(
+        sourceFile,
+        oldImportDeclarations,
+        newImportDeclarations,
+      );
+
+      // Assert
+      expect(sourceFile.getFullText()).toBe(
+        '"use client";\n' + 'import React from "react";\n\nconst x = A();',
+      );
+    });
+
+    it('should handle files with no initial imports', () => {
+      // Arrange
+      sourceFile.replaceWithText('const x = 1;');
+      const oldImportDeclarations = sourceFile.getImportDeclarations();
+      const newImportDeclarations = [
+        [
+          {
+            moduleSpecifier: 'react',
+            defaultImport: 'React',
+          },
+        ],
+      ];
+
+      // Act
+      replaceImportDeclarationsInSourceFile(
+        sourceFile,
+        oldImportDeclarations,
+        newImportDeclarations,
+      );
+
+      // Assert
+      expect(sourceFile.getFullText()).toBe(
+        'import React from "react";\n\n' + 'const x = 1;',
+      );
+    });
+
+    it('should preserve leading comments', () => {
+      // Arrange
+      sourceFile.replaceWithText(
+        `import { A } from "test";
+
+// Comment on X
+const x = 1;`,
+      );
+
+      const oldImportDeclarations = sourceFile.getImportDeclarations();
+      const newImportDeclarations = [
+        [
+          {
+            moduleSpecifier: 'test',
+            namedImports: [{ name: 'A' }],
+          },
+        ],
+      ];
+
+      // Act
+      replaceImportDeclarationsInSourceFile(
+        sourceFile,
+        oldImportDeclarations,
+        newImportDeclarations,
+      );
+
+      // Assert
+      expect(sourceFile.getFullText()).toBe(
+        `import { A } from "test";
+
+// Comment on X
+const x = 1;`,
       );
     });
   });

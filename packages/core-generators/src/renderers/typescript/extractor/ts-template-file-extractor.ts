@@ -212,7 +212,14 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
       }),
     );
 
-    const processedContent = `// @ts-nocheck\n\n${organizedContents}`;
+    let processedContent = organizedContents;
+    if (organizedContents.startsWith('#!')) {
+      // shebang lines must always be the first line
+      const contentLines = organizedContents.split('\n');
+      processedContent = `${contentLines[0]}\n// @ts-nocheck\n\n${contentLines.slice(1).join('\n')}`;
+    } else {
+      processedContent = `// @ts-nocheck\n\n${organizedContents}`;
+    }
 
     await this.writeTemplateFileIfModified(file, processedContent);
 

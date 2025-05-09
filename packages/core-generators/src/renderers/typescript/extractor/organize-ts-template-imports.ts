@@ -8,10 +8,12 @@ import { Node, Project, SyntaxKind } from 'ts-morph';
 import type { TsImportDeclaration } from '../imports/index.js';
 import type { TsProjectExport } from './write-ts-project-exports.js';
 
-import { writeGroupedImportDeclarationsWithCodeBlockWriter } from '../imports/index.js';
 import { mergeTsImportDeclarations } from '../imports/merge-ts-import-declarations.js';
 import { sortImportDeclarations } from '../imports/sort-imports/sort-import-declarations.js';
-import { getTsMorphImportDeclarationsFromSourceFile } from '../imports/ts-morph-operations.js';
+import {
+  getTsMorphImportDeclarationsFromSourceFile,
+  replaceImportDeclarationsInSourceFile,
+} from '../imports/ts-morph-operations.js';
 
 // Map of project relative path to a map of import name to project export
 export type ProjectExportLookupMap = Map<string, Map<string, TsProjectExport>>;
@@ -234,9 +236,7 @@ export async function organizeTsTemplateImports(
       return importDeclarations;
     }),
   );
-  for (const importDeclaration of importDeclarations) {
-    importDeclaration.remove();
-  }
+
   const mergedImportDeclarations = mergeTsImportDeclarations(
     updatedImportDeclarations.flat(),
   );
@@ -244,12 +244,12 @@ export async function organizeTsTemplateImports(
     mergedImportDeclarations,
     {},
   );
-  sourceFile.insertText(0, (writer) => {
-    writeGroupedImportDeclarationsWithCodeBlockWriter(
-      writer,
-      sortedImportDeclarations,
-    );
-  });
+
+  replaceImportDeclarationsInSourceFile(
+    sourceFile,
+    importDeclarations,
+    sortedImportDeclarations,
+  );
 
   return {
     contents: sourceFile.getFullText(),
