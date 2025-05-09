@@ -62,9 +62,9 @@ export const FASTIFY_PACKAGES = {
   'ioredis-mock': '8.7.0',
 
   // Sentry
-  '@sentry/core': '9.10.1',
-  '@sentry/node': '9.10.1',
-  '@sentry/profiling-node': '9.10.1',
+  '@sentry/core': '9.17.0',
+  '@sentry/node': '9.17.0',
+  '@sentry/profiling-node': '9.17.0',
   '@pothos/plugin-tracing': '1.1.0',
   '@pothos/tracing-sentry': '1.1.1',
 

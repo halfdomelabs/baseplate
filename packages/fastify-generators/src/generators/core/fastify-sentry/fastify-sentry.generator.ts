@@ -20,7 +20,6 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { authContextImportsProvider } from '@src/generators/auth/index.js';
-import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
 
 import {
   configServiceImportsProvider,
@@ -54,10 +53,6 @@ const [
         tsImportBuilder(['nodeProfilingIntegration']).from(
           '@sentry/profiling-node',
         ),
-      ),
-      requestDataIntegration: tsCodeFragment(
-        `Sentry.requestDataIntegration({ include: { ip: true } })`,
-        tsImportBuilder().namespace('Sentry').from('@sentry/node'),
       ),
     }),
   }),
@@ -231,24 +226,6 @@ export const fastifySentryGenerator = createGenerator({
             );
           },
         };
-      },
-    }),
-    prisma: createGeneratorTask({
-      dependencies: {
-        prismaSchemaProvider: prismaSchemaProvider.dependency().optional(),
-        fastifySentryConfig: fastifySentryConfigProvider,
-      },
-      run({ prismaSchemaProvider, fastifySentryConfig }) {
-        if (prismaSchemaProvider) {
-          fastifySentryConfig.sentryIntegrations.set(
-            'prismaIntegration',
-            tsCodeFragment(
-              `Sentry.prismaIntegration()`,
-              tsImportBuilder().namespace('Sentry').from('@sentry/node'),
-            ),
-          );
-        }
-        return {};
       },
     }),
     auth: createGeneratorTask({

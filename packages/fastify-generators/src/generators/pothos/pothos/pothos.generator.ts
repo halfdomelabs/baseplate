@@ -300,7 +300,7 @@ export const pothosGenerator = createGenerator({
 async function writeSchemaToFile(): Promise<void> {
   // only write the schema to file if it has changed to avoid unnecessary GraphQL codegen generations
   const existingSchema = await fs
-    .readFile('./schema.graphql', 'utf-8')
+    .readFile('./schema.graphql', 'utf8')
     .catch(() => undefined);
   const newSchema = printSchema(lexicographicSortSchema(schema));
   if (existingSchema !== newSchema) {
@@ -312,7 +312,7 @@ async function writeSchemaToFile(): Promise<void> {
   }
 }
 
-if (IS_DEVELOPMENT) {
+if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
   writeSchemaToFile().catch((err) => logger.error(err));
 }`,
                 [
@@ -320,7 +320,7 @@ if (IS_DEVELOPMENT) {
                     'printSchema',
                     'lexicographicSortSchema',
                   ]).from('graphql'),
-                  tsImportBuilder().default('fs').from('fs/promises'),
+                  tsImportBuilder().default('fs').from('node:fs/promises'),
                 ],
               ),
             );
