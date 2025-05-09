@@ -178,7 +178,32 @@ export default tsEslint.config(
     plugins: { perfectionist },
     rules: {
       // Enforces a consistent sorting order for import and export statements
-      'perfectionist/sort-imports': ['error', { internalPattern: ['^@src/'] }],
+      'perfectionist/sort-imports': [
+        'error',
+        {
+          internalPattern: ['^@src/'],
+          // We use the default groups but ensure we place the side-effect imports last except for instrumentation
+          groups: [
+            'instrument',
+            'type-import',
+            ['value-builtin', 'value-external'],
+            'type-internal',
+            'value-internal',
+            ['type-parent', 'type-sibling', 'type-index'],
+            ['value-parent', 'value-sibling', 'value-index'],
+            'ts-equals-import',
+            'side-effect',
+            'unknown',
+          ],
+          customGroups: [
+            {
+              selector: 'side-effect',
+              groupName: 'instrument',
+              elementNamePattern: 'instrument(.test-helper)?(\\.js)?$',
+            },
+          ],
+        },
+      ],
       'perfectionist/sort-exports': ['error'],
       'perfectionist/sort-named-imports': ['error'],
       'perfectionist/sort-named-exports': ['error'],
