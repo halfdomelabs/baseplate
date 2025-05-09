@@ -83,7 +83,7 @@ export class PothosAuthorizeByRolesPlugin<
 
     // if a check threw a forbidden error with a message, throw that
     const forbiddenError = results.find(
-      (r) => r.status === 'rejected' && !(r.reason instanceof ForbiddenError),
+      (r) => r.status === 'rejected' && r.reason instanceof ForbiddenError,
     ) as PromiseRejectedResult | undefined;
 
     if (forbiddenError) {
