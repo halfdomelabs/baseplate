@@ -8,7 +8,7 @@ export function useLogOut(): () => void {
 
   return () => {
     logout({ logoutParams: { returnTo: globalThis.location.origin } }).catch(
-      (err) => logError(err),
+      (err: unknown) => logError(err),
     );
   };
 }

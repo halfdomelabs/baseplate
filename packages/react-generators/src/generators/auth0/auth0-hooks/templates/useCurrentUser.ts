@@ -19,11 +19,10 @@ export function useCurrentUser(): UseCurrentUserResult {
     skip: !userId,
   });
 
-  const noUserError =
-    data && data.TPL_USER === null ? new Error('No user found') : null;
+  const noUserError = !userId ? new Error('No user logged in') : null;
 
   return {
-    user: data?.TPL_USER ?? undefined,
+    user: data?.TPL_USER,
     loading,
     error: error ?? noUserError,
   };

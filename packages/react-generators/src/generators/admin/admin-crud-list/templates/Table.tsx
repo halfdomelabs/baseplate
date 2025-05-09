@@ -58,7 +58,12 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
             <Table.Cell className="space-x-4">
               <Link to={`${item.id}/show`}>Show</Link>
               <Link to={`${item.id}/edit`}>Edit</Link>
-              <LinkButton negative onClick={() => handleDelete(item)}>
+              <LinkButton
+                negative
+                onClick={() => {
+                  handleDelete(item);
+                }}
+              >
                 Delete
               </LinkButton>
             </Table.Cell>
