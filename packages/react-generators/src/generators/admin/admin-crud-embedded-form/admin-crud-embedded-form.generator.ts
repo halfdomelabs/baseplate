@@ -105,7 +105,8 @@ function getComponentProps({
     throw new Error('EmbeddedObjectTableProps is not supported');
   }
 
-  const defaultPropsImport = adminComponentsImports[defaultProps].fragment();
+  const defaultPropsImport =
+    adminComponentsImports[defaultProps].typeFragment();
   const defaultPropsExpression = tsTemplate`${defaultPropsImport}<${formDataType}>`;
   if (dataDependencies.length === 0) {
     return defaultPropsExpression;
@@ -352,8 +353,12 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                         <Table.Row key={item.id}>
                           TPL_CELLS
                           <Table.Cell className="space-x-4">
-                            <LinkButton onClick={() => edit(idx)}>Edit</LinkButton>
-                            <LinkButton negative onClick={() => remove(idx)}>
+                            <LinkButton onClick={() => {
+                              edit(idx);
+                            }}>Edit</LinkButton>
+                            <LinkButton negative onClick={() => {
+                              remove(idx);
+                            }}>
                               Remove
                             </LinkButton>
                           </Table.Cell>
@@ -399,7 +404,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                   ADMIN_ADMIN_CRUD_EMBEDDED_FORM_TS_TEMPLATES.embeddedForm,
                 destination: formPath,
                 variables: {
-                  TPL_EMBEDDED_FORM_DATA_TYPE: TsCodeUtils.importFragment(
+                  TPL_EMBEDDED_FORM_DATA_TYPE: TsCodeUtils.typeImportFragment(
                     formDataType,
                     adminCrudEdit.getSchemaImport(),
                   ),

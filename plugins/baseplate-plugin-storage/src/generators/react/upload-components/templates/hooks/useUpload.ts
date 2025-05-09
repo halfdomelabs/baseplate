@@ -115,7 +115,7 @@ export function useUpload<FileMetadata>({
         }
       };
 
-      upload().catch((err) => {
+      upload().catch((err: unknown) => {
         setIsUploading(false);
         if (abortController.signal.aborted) {
           return;

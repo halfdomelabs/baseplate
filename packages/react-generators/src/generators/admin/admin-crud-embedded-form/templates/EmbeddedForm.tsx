@@ -24,9 +24,9 @@ export function TPL_COMPONENT_NAME(
     <form
       onSubmit={(e) => {
         e.stopPropagation();
-        handleSubmit(onSubmit)(e).catch((err) =>
-          setError(logAndFormatError(err)),
-        );
+        handleSubmit(onSubmit)(e).catch((err: unknown) => {
+          setError(logAndFormatError(err));
+        });
       }}
       className="space-y-4"
     >

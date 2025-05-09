@@ -199,7 +199,7 @@ export const pothosGenerator = createGenerator({
             const schemaTypeOptionsFragment =
               TsCodeUtils.mergeFragmentsAsInterfaceContent({
                 Context:
-                  requestServiceContextImports.RequestServiceContext.fragment(),
+                  requestServiceContextImports.RequestServiceContext.typeFragment(),
                 Scalars:
                   customScalars.size > 0
                     ? TsCodeUtils.mergeFragmentsAsObject(

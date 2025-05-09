@@ -20,7 +20,7 @@ interface Props {
   className?: string;
   name?: string;
   disabled?: boolean;
-  onChange?(value: string): void;
+  onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;
 }
