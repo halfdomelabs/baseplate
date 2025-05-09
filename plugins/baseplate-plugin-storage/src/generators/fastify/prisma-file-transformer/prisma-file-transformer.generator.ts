@@ -113,7 +113,7 @@ export const prismaFileTransformerGenerator = createGenerator({
                         `createPrismaDisconnectOrConnectData(${name}Output?.data)`,
                         prismaUtilsImports.createPrismaDisconnectOrConnectData.declaration(),
                       )
-                    : `${name}Output?.data`,
+                    : `${name}Output${operationType === 'upsert' ? '' : '?'}.data`,
                 },
               ],
               isAsync: true,
