@@ -47,7 +47,7 @@ const DatePickerTextInput = forwardRef<
     placeholder?: string;
     name?: string;
   }
->(({ onChange, onClick, onBlur, name, ...rest }, ref) => (
+>(({ onChange, onBlur, name, ...rest }, ref) => (
   <TextInput
     register={
       {
@@ -143,7 +143,6 @@ ReactDatePickerInput.LabelledController =
     TFieldValues extends FieldValues = FieldValues,
     TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   >({
-    className,
     name,
     control,
     ...rest

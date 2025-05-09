@@ -81,7 +81,7 @@ function convertToImportDeclarations(
       name: e.name as string,
       alias: e.alias === e.name ? undefined : e.alias,
     }))
-    .toSorted((a, b) => a.name.localeCompare(b.name));
+    .toSorted((a, b) => (a.alias ?? a.name).localeCompare(b.alias ?? b.name));
 
   const importDeclarations: TsImportDeclaration[] = [];
   const addDeclaration = (declaration: Partial<TsImportDeclaration>): void => {

@@ -11,7 +11,7 @@ type ModalWidth = 'small' | 'base' | 'large';
 interface Props {
   className?: string;
   isOpen?: boolean;
-  onClose(): void;
+  onClose: () => void;
   children: React.ReactNode;
   width?: ModalWidth;
 }

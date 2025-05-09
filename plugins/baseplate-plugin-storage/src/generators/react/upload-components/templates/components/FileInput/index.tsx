@@ -68,7 +68,7 @@ const FileInput = function FileInput({
   const { isUploading, error, progress, uploadFile, cancelUpload } =
     useUpload<FileUploadInput>({
       getUploadParameters: async (fileToUpload) => {
-        const contentType = fileToUpload.type ?? 'application/octet-stream';
+        const contentType = fileToUpload.type;
         const { data } = await createUploadUrl({
           variables: {
             input: {
@@ -289,7 +289,7 @@ FileInput.LabelledController = function FileInputController<
   const error = get(errors, name) as FieldError | undefined;
 
   // TODO: Validate value is correct type
-  const validatedValue = (value as FileUploadInput)?.id
+  const validatedValue = (value as FileUploadInput | undefined)?.id
     ? (value as FileUploadInput)
     : undefined;
 
