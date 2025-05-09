@@ -1,4 +1,4 @@
-import { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
+import type { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
 
 export interface AppModule {
   children?: AppModule[];
@@ -8,17 +8,16 @@ export interface AppModule {
 type FlattenedAppModule = Omit<AppModule, 'children'>;
 
 export function flattenAppModule(module: AppModule): FlattenedAppModule {
-  const { children, ...rest } = module;
-  if (!children?.length) {
-    return rest;
+  const { children = [], ...rootModule } = module;
+
+  const flattenedChildren = children.map(flattenAppModule);
+
+  const result = { plugins: [...(rootModule.plugins ?? [])] };
+
+  // Merge plugins from all flattened children
+  for (const child of flattenedChildren) {
+    result.plugins.push(...(child.plugins ?? []));
   }
 
-  const flattenedChildren = children.map((child) => flattenAppModule(child));
-
-  return [module, ...flattenedChildren].reduce(
-    (prev, current) => ({
-      plugins: [...(prev.plugins ?? []), ...(current.plugins ?? [])],
-    }),
-    {},
-  );
+  return result;
 }

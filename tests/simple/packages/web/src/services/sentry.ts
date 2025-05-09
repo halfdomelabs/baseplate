@@ -18,18 +18,18 @@ function configureSentryScopeForGraphqlError(
   scope.setFingerprint(
     [
       '{{ default }}',
-      error.extensions?.code as string,
+      error.extensions.code as string,
       error.path?.join('.'),
     ].filter((value): value is string => typeof value === 'string' && !!value),
   );
   if (error.path?.[0]) {
     scope.setTransactionName(String(error.path[0]));
-    scope.setTag('path', String(error.path?.join('.')));
+    scope.setTag('path', String(error.path.join('.')));
   }
 }
 
 const SENTRY_ENABLED = !!config.VITE_SENTRY_DSN;
-const TRACE_SAMPLE_RATE = 1.0;
+const TRACE_SAMPLE_RATE = 1;
 
 if (SENTRY_ENABLED) {
   Sentry.init({

@@ -1,13 +1,10 @@
-import { performance } from 'perf_hooks';
-
-import { handleStreamOrSingleExecutionResult, Plugin } from '@envelop/core';
+import type { Plugin } from '@envelop/core';
 import type { OnExecuteDoneHookResultOnNextHookPayload } from '@envelop/types';
-import {
-  DocumentNode,
-  GraphQLError,
-  Kind,
-  OperationDefinitionNode,
-} from 'graphql';
+import type { DocumentNode, OperationDefinitionNode } from 'graphql';
+
+import { handleStreamOrSingleExecutionResult } from '@envelop/core';
+import { GraphQLError, Kind } from 'graphql';
+import { performance } from 'node:perf_hooks';
 
 import { logError } from '@src/services/error-logger.js';
 import { logger } from '@src/services/logger.js';
@@ -40,9 +37,13 @@ export const useGraphLogger = (options?: UseGraphLoggerOptions): Plugin => {
     const errors = result.errors ?? [];
 
     if (!skipLogErrors) {
-      errors.forEach((error: GraphQLError) =>
-        logError(error.originalError ?? error),
-      );
+      for (const error of errors) {
+        logError(
+          error instanceof GraphQLError
+            ? (error.originalError ?? error)
+            : error,
+        );
+      }
     }
 
     if (operationType !== 'subscription' || logSubscriptionExecution) {
@@ -51,7 +52,7 @@ export const useGraphLogger = (options?: UseGraphLoggerOptions): Plugin => {
           operationType,
           operationName: typedArgs.operationName,
           executionTime: startTime && endTime - startTime,
-          success: !errors?.length,
+          success: errors.length === 0,
         },
         `executed graphql ${operationType ?? 'query'} (${
           typedArgs.operationName || 'Anonymous Operation'
@@ -72,7 +73,9 @@ export const useGraphLogger = (options?: UseGraphLoggerOptions): Plugin => {
     onValidate() {
       return ({ result, valid }) => {
         if (!valid) {
-          result.forEach((error: Error) => logger.error(error.message));
+          for (const error of result) {
+            logger.error(error instanceof Error ? error.message : error);
+          }
         }
       };
     },
@@ -80,9 +83,9 @@ export const useGraphLogger = (options?: UseGraphLoggerOptions): Plugin => {
       const startTime = performance.now();
       return {
         onExecuteDone(payload) {
-          return handleStreamOrSingleExecutionResult(payload, (p) =>
-            logResult(p, startTime),
-          );
+          return handleStreamOrSingleExecutionResult(payload, (p) => {
+            logResult(p, startTime);
+          });
         },
       };
     },
@@ -95,9 +98,9 @@ export const useGraphLogger = (options?: UseGraphLoggerOptions): Plugin => {
       );
       return {
         onSubscribeResult(payload) {
-          return handleStreamOrSingleExecutionResult(payload, (p) =>
-            logResult(p),
-          );
+          return handleStreamOrSingleExecutionResult(payload, (p) => {
+            logResult(p);
+          });
         },
         onSubscribeError({ error }) {
           logger.error(error);

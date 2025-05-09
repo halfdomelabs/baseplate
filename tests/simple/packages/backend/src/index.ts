@@ -11,9 +11,9 @@ async function startServer(): Promise<void> {
   });
   fastify
     .listen({ port: config.SERVER_PORT, host: config.SERVER_HOST })
-    .catch((err) => {
+    .catch((err: unknown) => {
       logError(err);
     });
 }
 
-startServer().catch((err) => logError(err));
+startServer().catch((err: unknown) => logError(err));

@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
     build: { outDir: 'build' },
     plugins: [react(), svgrPlugin(), viteTsconfigPaths()],
     server: {
-      port: envVars.PORT ? parseInt(envVars.PORT, 10) : 3000,
+      port: envVars.PORT ? Number.parseInt(envVars.PORT, 10) : 3000,
       proxy: envVars.DEV_BACKEND_HOST
         ? {
             '/api': {

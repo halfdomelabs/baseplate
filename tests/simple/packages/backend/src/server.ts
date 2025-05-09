@@ -1,7 +1,9 @@
+import type { FastifyInstance, FastifyServerOptions } from 'fastify';
+
 import fastifyCookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
 import * as Sentry from '@sentry/node';
-import Fastify, { FastifyInstance, FastifyServerOptions } from 'fastify';
+import Fastify from 'fastify';
 import { nanoid } from 'nanoid';
 
 import { rootModule } from './modules/index.js';
@@ -37,10 +39,9 @@ export async function buildServer(
 
   // register app plugins
   const plugins = rootModule.plugins ?? [];
-  await plugins.reduce(
-    (promise, plugin) => promise.then(() => fastify.register(plugin)),
-    Promise.resolve(),
-  );
+  for (const plugin of plugins) {
+    await fastify.register(plugin);
+  }
 
   return fastify;
 }

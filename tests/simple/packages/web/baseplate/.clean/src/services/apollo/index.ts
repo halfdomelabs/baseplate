@@ -1,11 +1,8 @@
-import {
-  ApolloClient,
-  from,
-  HttpLink,
-  NormalizedCacheObject,
-} from '@apollo/client';
+import type { NormalizedCacheObject } from '@apollo/client';
+import type { ServerError } from '@apollo/client/link/utils';
+
+import { ApolloClient, from, HttpLink } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { ServerError } from '@apollo/client/link/utils';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLError, Kind } from 'graphql';
 
@@ -35,14 +32,14 @@ export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
     }
 
     if (graphQLErrors?.length) {
-      graphQLErrors.forEach((error) => {
+      for (const error of graphQLErrors) {
         const { message, path } = error;
         logger.error(
           `[GraphQL Error] Message: ${message}, Path: ${
             path?.join(',') ?? ''
-          }, Operation: ${operation.operationName ?? 'Anonymous'}`,
+          }, Operation: ${operation.operationName ? operation.operationName : 'Anonymous'}`,
         );
-      });
+      }
 
       // we just record the first error (usually only one) in order to avoid over-reporting
       // e.g. if a sub-resolver fails for each item in a large array
@@ -51,7 +48,7 @@ export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
     }
 
     if (networkError) {
-      if ((networkError as ServerError)?.statusCode) {
+      if ((networkError as ServerError).statusCode) {
         // report and log network errors with a status code
         // we don't care about connection errors, e.g. client doesn't have internet
         logError(networkError);

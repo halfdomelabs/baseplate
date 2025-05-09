@@ -1,6 +1,8 @@
+import type { ReactElement } from 'react';
+
 import { NotFoundCard } from '../components';
 
-function NotFoundPage(): JSX.Element {
+function NotFoundPage(): ReactElement {
   return <NotFoundCard />;
 }
 

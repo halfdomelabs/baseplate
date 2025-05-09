@@ -1,3 +1,5 @@
+import type { ReactElement } from 'react';
+
 import { Dialog, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 import { Fragment } from 'react';
@@ -7,7 +9,7 @@ type ModalWidth = 'small' | 'base' | 'large';
 interface Props {
   className?: string;
   isOpen?: boolean;
-  onClose(): void;
+  onClose: () => void;
   children: React.ReactNode;
   width?: ModalWidth;
 }
@@ -16,14 +18,18 @@ interface Props {
 
 function getModalWidthClass(width: ModalWidth): string {
   switch (width) {
-    case 'small':
+    case 'small': {
       return 'w-72 md:w-72';
-    case 'base':
+    }
+    case 'base': {
       return 'w-72 md:w-[50rem]';
-    case 'large':
+    }
+    case 'large': {
       return 'w-72 md:w-[80rem]';
-    default:
+    }
+    default: {
       throw new Error(`Unknown modal width: ${width as string}`);
+    }
   }
 }
 
@@ -33,7 +39,7 @@ function Modal({
   onClose,
   children,
   width = 'base',
-}: Props): JSX.Element {
+}: Props): ReactElement {
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -84,7 +90,7 @@ Modal.Header = function ModalHeader({
   className,
   children,
   onClose,
-}: ModalHeaderProps): JSX.Element {
+}: ModalHeaderProps): ReactElement {
   return (
     <div
       className={clsx(
@@ -125,7 +131,7 @@ interface ModalBodyProps {
 Modal.Body = function ModalBody({
   className,
   children,
-}: ModalBodyProps): JSX.Element {
+}: ModalBodyProps): ReactElement {
   return <div className={clsx('p-4', className)}>{children}</div>;
 };
 
@@ -137,7 +143,7 @@ interface ModalFooterProps {
 Modal.Footer = function ModalFooter({
   className,
   children,
-}: ModalFooterProps): JSX.Element {
+}: ModalFooterProps): ReactElement {
   return (
     <div
       className={clsx(

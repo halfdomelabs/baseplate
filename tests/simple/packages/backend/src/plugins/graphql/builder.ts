@@ -1,16 +1,18 @@
+import type PrismaTypes from '@pothos/plugin-prisma/generated';
+
 import SchemaBuilder from '@pothos/core';
 import PrismaPlugin from '@pothos/plugin-prisma';
-import type PrismaTypes from '@pothos/plugin-prisma/generated';
 import RelayPlugin from '@pothos/plugin-relay';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing';
 import { createSentryWrapper } from '@pothos/tracing-sentry';
 
+import type { RequestServiceContext } from '@src/utils/request-service-context.js';
+
 import { prisma } from '@src/services/prisma.js';
-import { RequestServiceContext } from '@src/utils/request-service-context.js';
 
 import { pothosFieldWithInputPayloadPlugin } from './FieldWithInputPayloadPlugin/index.js';
-import { pothosStripQueryMutationPlugin } from './stripQueryMutationPlugin.js';
+import { pothosStripQueryMutationPlugin } from './strip-query-mutation-plugin.js';
 
 const traceResolver = createSentryWrapper({
   includeSource: true,

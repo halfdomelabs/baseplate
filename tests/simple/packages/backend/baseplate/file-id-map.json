@@ -1,8 +1,7 @@
 {
   "@halfdomelabs/core-generators#docker/docker-compose:docker-compose": "docker/docker-compose.yml",
   "@halfdomelabs/core-generators#docker/docker-compose:docker-env": "docker/.env",
-  "@halfdomelabs/core-generators#node/eslint:eslint-config": ".eslintrc.js",
-  "@halfdomelabs/core-generators#node/eslint:eslint-ignore": ".eslintignore",
+  "@halfdomelabs/core-generators#node/eslint:eslint-config": "eslint.config.mjs",
   "@halfdomelabs/core-generators#node/node-git-ignore:gitignore": ".gitignore",
   "@halfdomelabs/core-generators#node/node:package-json": "package.json",
   "@halfdomelabs/core-generators#node/prettier:prettier-config": ".prettierrc",
@@ -38,14 +37,14 @@
   "@halfdomelabs/fastify-generators#pothos/pothos-scalar:date": "src/modules/graphql/scalars/date.ts",
   "@halfdomelabs/fastify-generators#pothos/pothos-scalar:date-time": "src/modules/graphql/scalars/date-time.ts",
   "@halfdomelabs/fastify-generators#pothos/pothos-scalar:uuid": "src/modules/graphql/scalars/uuid.ts",
-  "@halfdomelabs/fastify-generators#pothos/pothos-sentry:use-sentry": "src/plugins/graphql/useSentry.ts",
+  "@halfdomelabs/fastify-generators#pothos/pothos-sentry:use-sentry": "src/plugins/graphql/use-sentry.ts",
   "@halfdomelabs/fastify-generators#pothos/pothos-types-file:model:f114nGvsZGt9-object-type": "src/modules/blog/schema/blog-post.object-type.ts",
   "@halfdomelabs/fastify-generators#pothos/pothos-types-file:model:f114nGvsZGt9-queries": "src/modules/blog/schema/blog-post.queries.ts",
   "@halfdomelabs/fastify-generators#pothos/pothos:builder": "src/plugins/graphql/builder.ts",
   "@halfdomelabs/fastify-generators#pothos/pothos:global-types": "src/plugins/graphql/FieldWithInputPayloadPlugin/global-types.ts",
   "@halfdomelabs/fastify-generators#pothos/pothos:index": "src/plugins/graphql/FieldWithInputPayloadPlugin/index.ts",
   "@halfdomelabs/fastify-generators#pothos/pothos:schema-builder": "src/plugins/graphql/FieldWithInputPayloadPlugin/schema-builder.ts",
-  "@halfdomelabs/fastify-generators#pothos/pothos:strip-query-mutation-plugin": "src/plugins/graphql/stripQueryMutationPlugin.ts",
+  "@halfdomelabs/fastify-generators#pothos/pothos:strip-query-mutation-plugin": "src/plugins/graphql/strip-query-mutation-plugin.ts",
   "@halfdomelabs/fastify-generators#pothos/pothos:types": "src/plugins/graphql/FieldWithInputPayloadPlugin/types.ts",
   "@halfdomelabs/fastify-generators#prisma/prisma:prisma-schema": "prisma/schema.prisma",
   "@halfdomelabs/fastify-generators#prisma/prisma:seed": "src/prisma/seed.ts",
@@ -53,5 +52,5 @@
   "@halfdomelabs/fastify-generators#vitest/prisma-vitest:db-test-helper": "src/tests/helpers/db.test-helper.ts",
   "@halfdomelabs/fastify-generators#vitest/prisma-vitest:prisma-test-helper": "src/tests/helpers/prisma.test-helper.ts",
   "@halfdomelabs/fastify-generators#yoga/yoga-plugin:graphql-plugin": "src/plugins/graphql/index.ts",
-  "@halfdomelabs/fastify-generators#yoga/yoga-plugin:use-graph-logger": "src/plugins/graphql/useGraphLogger.ts"
+  "@halfdomelabs/fastify-generators#yoga/yoga-plugin:use-graph-logger": "src/plugins/graphql/use-graph-logger.ts"
 }

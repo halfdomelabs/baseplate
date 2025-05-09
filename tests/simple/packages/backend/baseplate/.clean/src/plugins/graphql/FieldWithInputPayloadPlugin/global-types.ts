@@ -1,4 +1,4 @@
-import {
+import type {
   ArgumentRef,
   FieldKind,
   FieldNullability,
@@ -10,12 +10,11 @@ import {
   TypeParam,
 } from '@pothos/core';
 
-import {
+import type { PothosFieldWithInputPayloadPlugin } from './index.js';
+import type {
   MutationWithInputPayloadOptions,
   OutputShapeFromFields,
 } from './types.js';
-
-import type { PothosFieldWithInputPayloadPlugin } from './index.js';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -59,15 +58,14 @@ declare global {
       input: InputFieldBuilder<Types, 'InputObject'>;
       payload: RootFieldBuilder<Types, unknown, 'PayloadObject'>;
       fieldWithInputPayload: <
-        InputFields extends Record<string, InputFieldRef<Types, unknown>>,
+        InputFields extends Record<string, InputFieldRef<Types>>,
         PayloadFields extends Record<
           string,
           FieldRef<Types, unknown, 'PayloadObject'>
         >,
         ResolveShape,
         ResolveReturnShape,
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        Args extends Record<string, ArgumentRef<Types, unknown>> = {},
+        Args extends Record<string, ArgumentRef<Types>> = Record<never, never>,
       >(
         options: MutationWithInputPayloadOptions<
           Types,

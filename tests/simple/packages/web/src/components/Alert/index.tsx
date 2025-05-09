@@ -1,6 +1,8 @@
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 
-import { Status, StatusType } from '@src/hooks/useStatus';
+import type { Status, StatusType } from '@src/hooks/useStatus';
 
 import AlertIcon from '../AlertIcon';
 
@@ -13,23 +15,28 @@ interface Props {
 
 function getAlertClasses(type: StatusType): string {
   switch (type) {
-    case 'error':
+    case 'error': {
       return 'text-red-700 bg-red-100 dark:bg-red-200 dark:text-red-800';
-    case 'info':
+    }
+    case 'info': {
       return 'text-blue-700 bg-blue-100 dark:bg-blue-200 dark:text-blue-800';
-    case 'success':
+    }
+    case 'success': {
       return 'text-green-700 bg-green-100 dark:bg-green-200 dark:text-green-800';
-    case 'warning':
+    }
+    case 'warning': {
       return 'text-yellow-700 bg-yellow-100 dark:bg-yellow-200 dark:text-yellow-800';
-    default:
+    }
+    default: {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new Error(`Unknown status type: ${type}`);
+    }
   }
 }
 
 // https://flowbite.com/docs/components/alerts/
 
-function Alert({ type, icon, className, children }: Props): JSX.Element {
+function Alert({ type, icon, className, children }: Props): ReactElement {
   const alertClasses = getAlertClasses(type);
   return (
     <div
@@ -53,7 +60,7 @@ interface AlertWithStatusProps extends Omit<Props, 'children' | 'type'> {
 Alert.WithStatus = function AlertWithStatus({
   status,
   ...props
-}: AlertWithStatusProps): JSX.Element | null {
+}: AlertWithStatusProps): ReactElement | null {
   if (!status) {
     return null;
   }
