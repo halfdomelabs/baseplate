@@ -72,7 +72,6 @@ if (TEST_MODE !== 'unit') {
   process.env.ORIGINAL_DATABASE_URL = process.env.DATABASE_URL;
   process.env.DATABASE_URL = testDatabaseUrl;
 
-  // eslint-disable-next-line no-console
   console.info('\\nDatabase migrations ran!');
 }
 `,
@@ -91,23 +90,7 @@ if (TEST_MODE !== 'unit') {
         const dbHelperPath = '@/src/tests/helpers/db.test-helper.ts';
         const prismaHelperPath = '@/src/tests/helpers/prisma.test-helper.ts';
 
-        const importMap = {
-          '%prisma-vitest/db': {
-            path: dbHelperPath,
-            allowedImports: ['createTestDatabase', 'destroyTestDatabase'],
-          },
-          '%prisma-vitest/prisma': {
-            path: prismaHelperPath,
-            allowedImports: ['prismaMock'],
-          },
-        };
-
         return {
-          providers: {
-            prismaVitest: {
-              getImportMap: () => importMap,
-            },
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({

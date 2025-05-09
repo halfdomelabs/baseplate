@@ -253,10 +253,8 @@ export const typescriptGenerator = createGenerator({
         const sharedRenderOptions: RenderTsCodeFileTemplateOptions = {
           importSortOptions: {
             groups: [
-              'builtin-type',
-              'builtin',
-              'external-type',
-              'external',
+              ['external-type', 'builtin-type'],
+              ['external', 'builtin'],
               'internal-type',
               'internal',
               ['parent-type', 'sibling-type', 'index-type'],
