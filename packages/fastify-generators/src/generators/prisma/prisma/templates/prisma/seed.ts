@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // @ts-nocheck
 
 import { prisma } from '../services/prisma.js';

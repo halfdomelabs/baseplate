@@ -138,6 +138,9 @@ export const prismaGenerator = createGenerator({
               typescriptFile.renderTemplateFile({
                 template: PRISMA_PRISMA_TS_TEMPLATES.seed,
                 destination: '@/src/prisma/seed.ts',
+                writeOptions: {
+                  shouldNeverOverwrite: true,
+                },
               }),
             );
 
