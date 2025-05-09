@@ -22,7 +22,7 @@ const service = createTsTemplateFile({
   name: 'service',
   projectExports: { createApolloClient: {} },
   source: { path: 'services/apollo/index.ts' },
-  variables: { TPL_CREATE_ARGS: {}, TPL_LINKS: {}, TPL_LINK_BODIES: {} },
+  variables: { TPL_CREATE_ARGS: {}, TPL_LINK_BODIES: {}, TPL_LINKS: {} },
 });
 
 export const APOLLO_REACT_APOLLO_TS_TEMPLATES = {

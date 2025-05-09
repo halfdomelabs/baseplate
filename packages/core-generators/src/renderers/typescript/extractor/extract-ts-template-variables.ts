@@ -1,3 +1,5 @@
+import { sortObjectKeys } from '@halfdomelabs/utils';
+
 import type { TsTemplateVariable } from '../templates/types.js';
 
 import { preprocessCodeForExtractionHack } from './preprocess-code-for-extraction-hack.js';
@@ -66,6 +68,6 @@ export function extractTsTemplateVariables(
 
   return {
     content: processedContent,
-    variables: discoveredVariables,
+    variables: sortObjectKeys(discoveredVariables),
   };
 }
