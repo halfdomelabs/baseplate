@@ -66,6 +66,11 @@ function tsImportDeclarationBuilder(
   };
 }
 
+/**
+ * Create a builder for creating import declarations.
+ * @param namedImports - The named imports to add.
+ * @returns The builder.
+ */
 export function tsImportBuilder(
   namedImports?: string[],
 ): TsImportDeclarationBuilder {
@@ -73,5 +78,19 @@ export function tsImportBuilder(
     namedImports: namedImports?.map((namedImport) => ({
       name: namedImport,
     })),
+  });
+}
+
+/**
+ * Create a builder for creating type-only import declarations.
+ * @param namedImports - The named imports to add.
+ * @returns The builder.
+ */
+export function tsTypeImportBuilder(
+  namedImports?: string[],
+): TsImportDeclarationBuilder {
+  return tsImportDeclarationBuilder({
+    namedImports: namedImports?.map((namedImport) => ({ name: namedImport })),
+    isTypeOnly: true,
   });
 }

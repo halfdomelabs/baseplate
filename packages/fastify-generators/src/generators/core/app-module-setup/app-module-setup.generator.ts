@@ -1,6 +1,5 @@
 import {
   projectScope,
-  tsCodeFragment,
   type TsCodeFragment,
   TsCodeUtils,
   typescriptFileProvider,
@@ -67,13 +66,19 @@ export const appModuleSetupGenerator = createGenerator({
               ),
             );
 
-            const moduleMerger = TsCodeUtils.mergeFragmentsAsObject(
-              mapValuesOfMap(moduleFields, (field, key) =>
-                tsCodeFragment(
-                  `[...(prev.${key} ?? []), ...(current.${key} ?? [])]`,
-                ),
+            const moduleInitializer = TsCodeUtils.mergeFragmentsAsObject(
+              mapValuesOfMap(
+                moduleFields,
+                (field, key) => `[...(rootModule.${key} ?? [])]`,
               ),
-              { wrapWithParenthesis: true },
+            );
+
+            const moduleMerger = TsCodeUtils.mergeFragments(
+              mapValuesOfMap(
+                moduleFields,
+                (field, key) => `result.${key}.push(...(child.${key} ?? []))`,
+              ),
+              '\n',
             );
 
             await builder.apply(
@@ -82,6 +87,7 @@ export const appModuleSetupGenerator = createGenerator({
                 destination: 'src/utils/app-modules.ts',
                 variables: {
                   TPL_MODULE_FIELDS: moduleFieldsInterface,
+                  TPL_MODULE_INITIALIZER: moduleInitializer,
                   TPL_MODULE_MERGER: moduleMerger,
                 },
               }),

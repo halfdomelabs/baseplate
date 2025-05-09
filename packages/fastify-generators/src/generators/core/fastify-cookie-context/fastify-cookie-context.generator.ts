@@ -4,6 +4,7 @@ import {
   tsCodeFragment,
   tsHoistedFragment,
   tsImportBuilder,
+  tsTypeImportBuilder,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createProviderTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -50,7 +51,7 @@ interface CookieStore {
   set(name: string, value: string, options?: CookieSerializeOptions): void;
   clear(name: string): void;
                 }`,
-                tsImportBuilder(['CookieSerializeOptions']).from(
+                tsTypeImportBuilder(['CookieSerializeOptions']).from(
                   '@fastify/cookie',
                 ),
               ),

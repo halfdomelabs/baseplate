@@ -7,6 +7,7 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
+  tsTypeImportBuilder,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -85,7 +86,7 @@ export const fastifyServerGenerator = createGenerator({
           'plugins',
           tsCodeFragment(
             '(FastifyPluginCallback | FastifyPluginAsync)',
-            tsImportBuilder([
+            tsTypeImportBuilder([
               'FastifyPluginAsync',
               'FastifyPluginCallback',
             ]).from('fastify'),
