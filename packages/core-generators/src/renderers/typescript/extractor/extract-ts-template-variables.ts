@@ -1,4 +1,4 @@
-import type { TsTemplateFileMetadata } from '../templates/types.js';
+import type { TsTemplateVariable } from '../templates/types.js';
 
 import { preprocessCodeForExtractionHack } from './preprocess-code-for-extraction-hack.js';
 
@@ -11,36 +11,37 @@ const COMMENT_VARIABLE_REGEX =
 const HOISTED_REGEX =
   /\/\* HOISTED:([A-Za-z0-9_-]+):START \*\/([\s\S]*?)\/\* HOISTED:\1:END \*\/\n?/g;
 
+interface ExtractedTemplateVariables {
+  content: string;
+  variables: Record<string, TsTemplateVariable>;
+}
+
 /**
- * Strips the variables from a Typescript template file.
+ * Extracts template variables from a Typescript template file and returns both the processed content
+ * and the discovered variables.
  * - Replaces TPL variable blocks with placeholders `TPL_VAR`.
  * - Removes HOISTED blocks.
+ * - Discovers all template variables used in the content.
  *
  * @param content - The raw file content.
- * @returns The content with variables stripped.
+ * @returns An object containing the processed content and discovered variables.
  */
-export function stripTsTemplateVariables(
-  { variables }: TsTemplateFileMetadata,
+export function extractTsTemplateVariables(
   content: string,
-): string {
+): ExtractedTemplateVariables {
   let processedContent = content;
+  const discoveredVariables: Record<string, TsTemplateVariable> = {};
 
   // Preprocess the content to handle the extraction hack
   processedContent = preprocessCodeForExtractionHack(processedContent);
 
-  const templateVariables = new Set<string>(Object.keys(variables ?? {}));
-  const processedVariables = new Set<string>();
-
-  // Replace TPL variable blocks and extract variable names
+  // Extract and process TPL variable blocks
   const processVariableBlock = (
     varName: string,
     formatName: (name: string) => string,
   ): string => {
     const fullName = `TPL_${varName}`;
-    if (!templateVariables.has(fullName)) {
-      throw new Error(`Found unknown template variable: ${fullName}`);
-    }
-    processedVariables.add(fullName);
+    discoveredVariables[fullName] = {};
     return formatName(fullName);
   };
 
@@ -60,18 +61,11 @@ export function stripTsTemplateVariables(
       processVariableBlock(varName, (name) => `/* ${name} */`),
   );
 
-  // Make sure all template variables are processed
-  const missingVariables = [...templateVariables].filter(
-    (v) => !processedVariables.has(v),
-  );
-  if (missingVariables.length > 0) {
-    throw new Error(
-      `The template is missing variables: ${missingVariables.join(', ')}`,
-    );
-  }
-
   // Remove HOISTED blocks
   processedContent = processedContent.replaceAll(HOISTED_REGEX, '');
 
-  return processedContent;
+  return {
+    content: processedContent,
+    variables: discoveredVariables,
+  };
 }

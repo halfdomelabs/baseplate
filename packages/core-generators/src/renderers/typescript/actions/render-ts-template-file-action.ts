@@ -10,7 +10,6 @@ import {
   readTemplateFileSource,
 } from '@halfdomelabs/sync';
 import { differenceSet } from '@halfdomelabs/utils';
-import { mapValues } from 'es-toolkit';
 
 import type { TsPositionedHoistedFragment } from '../fragments/types.js';
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
@@ -119,12 +118,6 @@ export function renderTsTemplateFileAction<
         generator: generatorInfo.name,
         group: template.group,
         type: TS_TEMPLATE_TYPE,
-        variables:
-          Object.keys(templateVariables).length > 0
-            ? mapValues(templateVariables, (val) => ({
-                description: val.description,
-              }))
-            : undefined,
         projectExports:
           Object.keys(template.projectExports ?? {}).length > 0
             ? template.projectExports

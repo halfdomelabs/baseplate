@@ -23,17 +23,6 @@ export const tsTemplateFileMetadataSchema =
      */
     exportGroup: CASE_VALIDATORS.KEBAB_CASE.optional(),
     /**
-     * The variables for the template.
-     */
-    variables: z
-      .record(
-        z.string(),
-        z.object({
-          description: z.string().optional(),
-        }),
-      )
-      .optional(),
-    /**
      * The exports of the file that are unique across the project.
      */
     projectExports: z
@@ -62,9 +51,7 @@ export type TsTemplateFileMetadata = z.infer<
   typeof tsTemplateFileMetadataSchema
 >;
 
-export interface TsTemplateVariable {
-  description?: string;
-}
+export interface TsTemplateVariable {}
 
 export type TsTemplateVariableMap = Record<string, TsTemplateVariable>;
 

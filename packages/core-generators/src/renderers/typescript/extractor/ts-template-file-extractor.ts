@@ -36,8 +36,8 @@ import {
   tsTemplateFileMetadataSchema,
 } from '../templates/types.js';
 import { TsCodeUtils } from '../utils/ts-code-utils.js';
+import { extractTsTemplateVariables } from './extract-ts-template-variables.js';
 import { organizeTsTemplateImports } from './organize-ts-template-imports.js';
-import { stripTsTemplateVariables } from './strip-ts-template-variables.js';
 import { writeTsProjectExports } from './write-ts-project-exports.js';
 
 interface TypescriptCodeEntry {
@@ -175,15 +175,13 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
     }
   > {
     const sourceFileContents = await this.readSourceFile(file.path);
-    const strippedContent = stripTsTemplateVariables(
-      file.metadata,
-      sourceFileContents,
-    );
+    const { content: extractedContent, variables } =
+      extractTsTemplateVariables(sourceFileContents);
 
     const { usedProjectExports, contents: organizedContents } =
       await organizeTsTemplateImports(
         file.path,
-        strippedContent,
+        extractedContent,
         importLookupContext,
       );
 
@@ -226,7 +224,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
       source: JSON.stringify({
         path: file.metadata.template,
       }),
-      variables: JSON.stringify(file.metadata.variables ?? {}),
+      variables: JSON.stringify(variables),
       projectExports: JSON.stringify(file.metadata.projectExports ?? {}),
       importMapProviders:
         usedImportProviders.length > 0

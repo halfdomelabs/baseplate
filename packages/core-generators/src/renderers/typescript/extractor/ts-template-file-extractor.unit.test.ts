@@ -76,11 +76,6 @@ const removedVar = 1;
           type: TS_TEMPLATE_TYPE,
           generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
           template: templatePath, // Path relative to templates dir
-          variables: {
-            TPL_COMPONENT_NAME: {},
-            TPL_MESSAGE: {},
-            TPL_PROP_VALUE: {},
-          },
         },
       },
       {
@@ -173,7 +168,6 @@ const removedVar = 1;
           name: 'testComponent',
           generator: 'test-package#test-generator',
           template: 'test-component.ts',
-          variables: {},
           projectExports: {
             TestComponent: { isTypeOnly: false },
             TestComponentProps: { isTypeOnly: true },
@@ -327,7 +321,6 @@ export function SecondUtil() {
           name: 'firstComponent',
           generator: firstGeneratorName,
           template: 'first-component.ts',
-          variables: {},
           projectExports: {
             FirstComponent: { isTypeOnly: false },
           },
@@ -340,7 +333,6 @@ export function SecondUtil() {
           name: 'firstUtil',
           generator: firstGeneratorName,
           template: 'first-util.ts',
-          variables: {},
           projectExports: {
             FirstUtil: { isTypeOnly: false },
           },
@@ -353,7 +345,6 @@ export function SecondUtil() {
           name: 'secondComponent',
           generator: secondGeneratorName,
           template: 'second-component.ts',
-          variables: {},
           projectExports: {
             SecondComponent: { isTypeOnly: false },
           },
@@ -366,7 +357,6 @@ export function SecondUtil() {
           name: 'secondUtil',
           generator: secondGeneratorName,
           template: 'second-util.ts',
-          variables: {},
           projectExports: {
             SecondUtil: { isTypeOnly: false },
           },
@@ -528,7 +518,6 @@ export function GroupedUtil() {
           name: 'groupedComponent',
           generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
           template: 'grouped-component.ts',
-          variables: {},
           projectExports: {
             GroupedComponent: { isTypeOnly: false },
           },
@@ -542,7 +531,6 @@ export function GroupedUtil() {
           name: 'groupedUtil',
           generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
           template: 'grouped-util.ts',
-          variables: {},
           projectExports: {
             GroupedUtil: { isTypeOnly: false },
           },
@@ -680,7 +668,6 @@ export function GroupedUtil() {
           name: 'groupedComponent',
           generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
           template: 'grouped-component.ts',
-          variables: {},
           projectExports: {
             GroupedComponent: { isTypeOnly: false },
           },
@@ -694,7 +681,6 @@ export function GroupedUtil() {
           name: 'groupedUtil',
           generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
           template: 'grouped-util.ts',
-          variables: {},
           projectExports: {
             GroupedUtil: { isTypeOnly: false },
           },
