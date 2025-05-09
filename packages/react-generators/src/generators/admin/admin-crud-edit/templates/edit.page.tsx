@@ -1,9 +1,11 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { BackButton, useToast } from '%reactComponentsImports';
 import { useNavigate, useParams } from 'react-router-dom';
 
-function TPL_COMPONENT_NAME(): JSX.Element {
+function TPL_COMPONENT_NAME(): ReactElement {
   const { id } = useParams() as { id: string };
 
   TPL_DATA_LOADER;

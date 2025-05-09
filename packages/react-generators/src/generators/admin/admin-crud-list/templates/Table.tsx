@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import {
   Alert,
   LinkButton,
@@ -16,7 +18,7 @@ interface Props {
   TPL_EXTRA_PROPS;
 }
 
-function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): JSX.Element {
+function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
   const { requestConfirm } = useConfirmDialog();
   const toast = useToast();
   async function handleDelete(item: TPL_ROW_FRAGMENT): Promise<void> {

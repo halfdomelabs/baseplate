@@ -1,6 +1,8 @@
 // @ts-nocheck
 
-function PagesRoot(): JSX.Element {
+import type { ReactElement } from 'react';
+
+function PagesRoot(): ReactElement {
   ROUTE_HEADER;
   return (
     <ROUTES_COMPONENT>

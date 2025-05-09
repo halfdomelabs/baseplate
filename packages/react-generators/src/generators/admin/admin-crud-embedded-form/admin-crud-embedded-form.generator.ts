@@ -5,6 +5,7 @@ import {
   TsCodeUtils,
   tsHoistedFragment,
   tsTemplate,
+  tsTypeImportBuilder,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -337,7 +338,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                 edit,
                 remove,
                 TPL_EXTRA_PROP_SPREAD
-              }: TPL_PROPS): JSX.Element {
+              }: TPL_PROPS): ReactElement {
               return (
                   <Table className="max-w-6xl">
                     <Table.Head>
@@ -384,6 +385,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                   [
                     reactComponentsImports.Table.declaration(),
                     reactComponentsImports.LinkButton.declaration(),
+                    tsTypeImportBuilder(['ReactElement']).from('react'),
                   ],
                 )
               : tsCodeFragment('');

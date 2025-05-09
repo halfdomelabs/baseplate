@@ -1,8 +1,10 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { ErrorableLoader } from '%reactComponentsImports';
 
-function TPL_PAGE_NAME(): JSX.Element {
+function TPL_PAGE_NAME(): ReactElement {
   TPL_DATA_LOADER;
   const [TPL_DELETE_FUNCTION] = TPL_DELETE_MUTATION({
     refetchQueries: [
