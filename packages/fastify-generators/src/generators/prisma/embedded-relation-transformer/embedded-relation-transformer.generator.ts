@@ -502,12 +502,12 @@ export const embeddedRelationTransformerGenerator = createGenerator({
 
             const requirementsList = [
               ...(needsExistingItem && operationType === 'upsert'
-                ? ['!existingItem']
+                ? ['existingItem']
                 : []),
               ...primaryKeyFields
                 .map(
                   (f) =>
-                    f.requiredInputField && `!input.${f.requiredInputField}`,
+                    f.requiredInputField && `input.${f.requiredInputField}`,
                 )
                 .filter(notEmpty),
             ];
@@ -521,7 +521,7 @@ export const embeddedRelationTransformerGenerator = createGenerator({
                   PREFIX: '',
                   VALUE:
                     requirementsList.length > 0
-                      ? tsTemplate`${requirementsList.join(' || ')} ? undefined : ${value}`
+                      ? tsTemplate`${requirementsList.join(' && ')} ? ${value} : undefined`
                       : value,
                 },
               ),

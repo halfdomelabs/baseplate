@@ -135,6 +135,7 @@ export const TsCodeUtils = {
    * @param name - The name of the import.
    * @param importFrom - The module to import from.
    * @returns The import fragment.
+   */
   defaultImportFragment(name: string, importFrom: string): TsCodeFragment {
     return tsCodeFragment(
       name,
