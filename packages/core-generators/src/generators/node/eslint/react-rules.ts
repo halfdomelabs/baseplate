@@ -6,8 +6,8 @@ export const REACT_ESLINT_RULES = tsCodeFragment(
   {
     files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
     extends: [
-      reactPlugin.configs.flat?.recommended,
-      reactPlugin.configs.flat?.['jsx-runtime'],
+      reactPlugin.configs.flat.recommended,
+      reactPlugin.configs.flat['jsx-runtime'],
       reactJsxA11yPlugin.flatConfigs.recommended,
     ],
     settings: {
