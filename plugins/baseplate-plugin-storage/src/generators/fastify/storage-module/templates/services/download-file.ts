@@ -32,11 +32,11 @@ export async function downloadFile(
     throw new ForbiddenError('You are not authorized to read this file');
   }
 
-  const adapter =
-    STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
-  if (!adapter) {
+  if (!(file.adapter in STORAGE_ADAPTERS)) {
     throw new Error(`Unknown storage adapter: ${file.adapter}`);
   }
+  const adapter =
+    STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
 
   if (!adapter.downloadFile) {
     throw new Error(
