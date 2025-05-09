@@ -36,7 +36,7 @@ function BullBoardPage(): ReactElement {
 
       form.submit();
     }
-    createPath().catch((err) => {
+    createPath().catch((err: unknown) => {
       setError(logAndFormatError(err));
     });
   }, [createBullBoardAuthCode]);

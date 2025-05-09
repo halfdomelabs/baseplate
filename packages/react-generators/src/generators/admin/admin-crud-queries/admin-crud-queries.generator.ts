@@ -110,6 +110,13 @@ export const adminCrudQueriesGenerator = createGenerator({
           );
         }
 
+        function getGeneratedTypeImport(name: string): TsCodeFragment {
+          return TsCodeUtils.typeImportFragment(
+            name,
+            reactApollo.getGeneratedFilePath(),
+          );
+        }
+
         function getHookInfo(
           hookName: string,
           fieldName: string,
@@ -170,9 +177,9 @@ export const adminCrudQueriesGenerator = createGenerator({
                 config.formFields = fields;
               },
               getRowFragmentExpression: () =>
-                getGeneratedImport(`${rowFragmentName}Fragment`),
+                getGeneratedTypeImport(`${rowFragmentName}Fragment`),
               getEditFragmentExpression: () =>
-                getGeneratedImport(`${editFragmentName}Fragment`),
+                getGeneratedTypeImport(`${editFragmentName}Fragment`),
               getListQueryHookInfo: () =>
                 getHookInfo(`use${listQueryName}Query`, listFieldName),
               getEditQueryHookInfo: () =>

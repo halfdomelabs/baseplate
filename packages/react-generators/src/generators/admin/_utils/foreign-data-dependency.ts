@@ -1,4 +1,8 @@
-import { tsCodeFragment, tsImportBuilder } from '@halfdomelabs/core-generators';
+import {
+  tsCodeFragment,
+  tsImportBuilder,
+  tsTypeImportBuilder,
+} from '@halfdomelabs/core-generators';
 import { pluralize } from 'inflection';
 
 import type { ReactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
@@ -41,7 +45,7 @@ export function createForeignDataDependency({
     propName,
     propType: tsCodeFragment(
       `${fragmentName}Fragment[]`,
-      tsImportBuilder([`${fragmentName}Fragment`]).from(
+      tsTypeImportBuilder([`${fragmentName}Fragment`]).from(
         reactApollo.getGeneratedFilePath(),
       ),
     ),

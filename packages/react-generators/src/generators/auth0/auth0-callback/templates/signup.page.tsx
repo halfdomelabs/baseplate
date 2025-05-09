@@ -14,7 +14,7 @@ function SignupPage(): ReactElement {
 
   const redirectToSignup = useCallback((): void => {
     loginWithRedirect({ authorizationParams: { screen_hint: 'signup' } }).catch(
-      (err) => {
+      (err: unknown) => {
         setError(logAndFormatError(err));
       },
     );

@@ -39,7 +39,7 @@ function Auth0CallbackPage(): ReactElement {
       .then(({ appState }: { appState?: { returnTo?: string } }) => {
         navigate(appState?.returnTo ?? '/', { replace: true });
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         setError(formatAndReportAuthError(err));
       });
   }, [handleRedirectCallback, navigate]);

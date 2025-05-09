@@ -170,6 +170,9 @@ export default tsEslint.config(
 
       // While we use CJS, we cannot use top-level await
       'unicorn/prefer-top-level-await': 'off',
+
+      // Can be too strict if you prefer to have shorter cases for negated conditions
+      'unicorn/no-negated-condition': 'off',
     },
   },
 
