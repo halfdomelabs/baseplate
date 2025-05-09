@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // @ts-nocheck
 
 import type { Worker } from 'bullmq';
@@ -35,7 +36,7 @@ try {
 
     Promise.all(workers.map((worker) => worker.close()))
       .then(() => process.exit(0))
-      .catch((err) => {
+      .catch((err: unknown) => {
         handleError(err);
       });
   };
