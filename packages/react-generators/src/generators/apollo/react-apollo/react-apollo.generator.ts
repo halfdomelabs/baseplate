@@ -380,7 +380,7 @@ export const reactApolloGenerator = createGenerator({
               );
               websocketOptions.set(
                 'retryAttempts',
-                "86400 /* effectively retry forever (1 month of retries) - there's no way of disabling retry attempts */",
+                "86_400 /* effectively retry forever (1 month of retries) - there's no way of disabling retry attempts */",
               );
               websocketOptions.set('retryWait', retryWaitTemplate);
               websocketOptions.set('shouldRetry', '() => true');
