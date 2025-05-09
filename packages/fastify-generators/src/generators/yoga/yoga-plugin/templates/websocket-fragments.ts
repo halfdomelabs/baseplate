@@ -11,7 +11,7 @@ onConnect: async (ctx) => {
     // set expiry for socket based on auth token expiry
     const tokenExpiry = sessionInfo?.expiresAt;
     if (tokenExpiry) {
-      const socket = ctx.extra.socket;
+      const { socket } = ctx.extra;
 
       const timeoutHandle = setTimeout(() => {
         try {
@@ -20,11 +20,13 @@ onConnect: async (ctx) => {
           logError(err);
         }
       }, tokenExpiry.getTime() - Date.now());
-      socket.on('close', () => clearTimeout(timeoutHandle));
+      socket.on('close', () => {
+        clearTimeout(timeoutHandle);
+      });
     }
   } catch (err) {
     // only a subset of HTTP errors are mapped
-    const httpToSocketErrorMap: Record<number, CloseCode> = {
+    const httpToSocketErrorMap: Partial<Record<number, CloseCode>> = {
       403: CloseCode.Forbidden,
       // due to implementation of graphql-ws, only Forbidden will be retried
       // https://github.com/enisdenjo/graphql-ws/blob/master/src/client.ts#L827

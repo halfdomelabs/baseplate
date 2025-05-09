@@ -67,8 +67,7 @@ declare global {
         >,
         ResolveShape,
         ResolveReturnShape,
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        Args extends Record<string, ArgumentRef<Types>> = {},
+        Args extends Record<string, ArgumentRef<Types>> = Record<never, never>,
       >(
         options: MutationWithInputPayloadOptions<
           Types,

@@ -55,8 +55,7 @@ export const useSentry: () => Plugin = () => ({
           name: transactionName,
           forceTransaction: true,
           attributes: {
-            [AttributeNames.OPERATION_NAME]:
-              (options.operationName as string) ?? undefined,
+            [AttributeNames.OPERATION_NAME]: options.operationName as string,
             [AttributeNames.SOURCE]: document,
           },
         },

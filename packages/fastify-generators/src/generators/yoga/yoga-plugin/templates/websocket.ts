@@ -79,7 +79,7 @@ export function makeHandler<
         );
 
         // catch the first thrown error and re-throw it once all clients have been notified
-        let firstErr: unknown = null;
+        let firstErr: Error | null = null;
 
         // report server errors by erroring out all clients with the same error
         for (const client of this.websocketServer.clients) {
@@ -94,7 +94,8 @@ export function makeHandler<
                   ),
             );
           } catch (err) {
-            firstErr = firstErr ?? err;
+            firstErr =
+              firstErr ?? (err instanceof Error ? err : new Error(String(err)));
           }
         }
 
@@ -127,7 +128,7 @@ export function makeHandler<
     // keep alive through ping-pong messages
     let pongWait: ReturnType<typeof setTimeout> | null = null;
     const pingInterval =
-      keepAlive > 0 && isFinite(keepAlive)
+      keepAlive > 0 && Number.isFinite(keepAlive)
         ? setInterval(() => {
             // ping pong on open sockets only
             if (socket.readyState === socket.OPEN) {
@@ -159,7 +160,11 @@ export function makeHandler<
               return;
             }
             socket.send(data, (err) => {
-              err ? reject(err) : resolve();
+              if (err) {
+                reject(err);
+              } else {
+                resolve();
+              }
             });
           }),
         close: (code, reason) => {
@@ -167,7 +172,20 @@ export function makeHandler<
         },
         onMessage: (cb) =>
           socket.on('message', (event) => {
-            cb(String(event)).catch((err) => {
+            let messageText: string;
+            if (Buffer.isBuffer(event)) {
+              messageText = event.toString('utf8');
+            } else if (event instanceof ArrayBuffer) {
+              messageText = Buffer.from(event).toString('utf8');
+            } else if (Array.isArray(event)) {
+              // Concatenate all buffers and convert to string
+              messageText = Buffer.concat(event).toString('utf8');
+            } else {
+              throw new TypeError(
+                `Unsupported data type for websocket message ${typeof event}`,
+              );
+            }
+            cb(String(messageText)).catch((err: unknown) => {
               logError(err, {
                 context:
                   'Internal error occurred during message handling. ' +
@@ -200,7 +218,7 @@ export function makeHandler<
           `Client provided the unsupported and deprecated subprotocol "${socket.protocol}" used by subscriptions-transport-ws.` +
             'Please see https://www.apollographql.com/docs/apollo-server/data/subscriptions/#switching-from-subscriptions-transport-ws.',
         );
-      closed(code, String(reason)).catch((err) => logError(err));
+      closed(code, String(reason)).catch((err: unknown) => logError(err));
     });
   };
 }

@@ -42,7 +42,7 @@ export const errorHandlerPlugin = fp(async (fastify) => {
         statusCode: error.statusCode,
         reqId: request.id,
         originalError: IS_DEVELOPMENT
-          ? { message: error?.message, stack: error?.stack }
+          ? { message: error.message, stack: error.stack }
           : undefined,
       });
     }

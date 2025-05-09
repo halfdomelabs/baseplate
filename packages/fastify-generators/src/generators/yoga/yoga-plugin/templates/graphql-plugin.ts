@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import type { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
+import type { GraphQLErrorOptions } from 'graphql';
 
 import { config } from '%configServiceImports';
 import { HttpError } from '%errorHandlerServiceImports';
@@ -44,9 +45,16 @@ export const graphqlPlugin = fp(async (fastify) => {
           return error;
         }
 
+        const sharedOptions: GraphQLErrorOptions = {
+          nodes: error.nodes,
+          source: error.source,
+          positions: error.positions,
+          path: error.path,
+        };
+
         if (originalError instanceof HttpError) {
           return new GraphQLError(originalError.message, {
-            ...error,
+            ...sharedOptions,
             extensions: {
               ...error.extensions,
               code: originalError.code,
@@ -58,7 +66,7 @@ export const graphqlPlugin = fp(async (fastify) => {
         }
 
         return new GraphQLError(message, {
-          ...error,
+          ...sharedOptions,
           extensions: {
             ...error.extensions,
             code: 'INTERNAL_SERVER_ERROR',
@@ -66,8 +74,8 @@ export const graphqlPlugin = fp(async (fastify) => {
             reqId: requestContext.get('reqInfo')?.id,
             originalError: isDev
               ? {
-                  message: originalError?.message ?? error.message,
-                  stack: originalError?.stack ?? error.stack,
+                  message: originalError.message,
+                  stack: originalError.stack,
                 }
               : undefined,
           },
