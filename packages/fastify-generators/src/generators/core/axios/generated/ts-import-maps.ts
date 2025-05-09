@@ -7,11 +7,7 @@ import {
 import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 
-const axiosImportsSchema = createTsImportMapSchema({
-  axiosClient: {},
-  getAxiosErrorInfo: {},
-  setupAxiosBetterStackTrace: {},
-});
+const axiosImportsSchema = createTsImportMapSchema({ getAxiosErrorInfo: {} });
 
 type AxiosImportsProvider = TsImportMapProviderFromSchema<
   typeof axiosImportsSchema
@@ -26,8 +22,6 @@ export function createAxiosImports(importBase: string): AxiosImportsProvider {
   }
 
   return createTsImportMap(axiosImportsSchema, {
-    axiosClient: path.join(importBase, 'axios.js'),
     getAxiosErrorInfo: path.join(importBase, 'axios.js'),
-    setupAxiosBetterStackTrace: path.join(importBase, 'axios.js'),
   });
 }

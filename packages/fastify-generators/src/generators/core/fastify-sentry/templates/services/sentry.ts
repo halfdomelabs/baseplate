@@ -9,6 +9,7 @@ import { omit } from 'es-toolkit';
 
 const SENTRY_ENABLED = !!config.SENTRY_DSN;
 
+// Sensitive headers that should not be logged to Sentry with the request
 const EXCLUDED_HEADERS = ['cookie', 'authorization'];
 
 export function isSentryEnabled(): boolean {
