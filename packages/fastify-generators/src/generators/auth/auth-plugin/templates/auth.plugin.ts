@@ -20,7 +20,7 @@ declare module '@fastify/request-context' {
   }
 }
 
-export const authPlugin = fp(async (fastify) => {
+export const authPlugin = fp((fastify, opts, done) => {
   fastify.decorateRequest('auth');
 
   fastify.addHook('onRequest', async (req, res) => {
@@ -34,4 +34,6 @@ export const authPlugin = fp(async (fastify) => {
 
     requestContext.set('userId', userSessionInfo?.userId);
   });
+
+  done();
 });
