@@ -1,10 +1,10 @@
 // @ts-nocheck
 
-import type { FastifyPluginAsync } from 'fastify';
 import type { Stripe } from 'stripe';
 
 import { config } from '%configServiceImports';
 import { BadRequestError, logError } from '%errorHandlerServiceImports';
+import fp from 'fastify-plugin';
 
 import { stripeEventService } from '../services/stripe-events.js';
 import { stripe } from '../services/stripe.js';
@@ -25,17 +25,25 @@ async function getStripeEvent(
   }
 }
 
-export const stripeWebhookPlugin: FastifyPluginAsync = async (fastify) => {
-  fastify.post('/webhooks/stripe', {
-    config: { rawBody: true },
-    handler: async (req, reply) => {
-      const signature = req.headers['stripe-signature'] ?? '';
+export const stripeWebhookPlugin = fp(
+  (fastify, opts, done) => {
+    fastify.post('/webhooks/stripe', {
+      config: { rawBody: true },
+      handler: async (req, reply) => {
+        const signature = req.headers['stripe-signature'] ?? '';
 
-      const event = await getStripeEvent(req.rawBody, signature);
+        const event = await getStripeEvent(req.rawBody, signature);
 
-      await stripeEventService.handleStripeEvent(event);
+        await stripeEventService.handleStripeEvent(event);
 
-      await reply.send({ success: true });
-    },
-  });
-};
+        await reply.send({ success: true });
+      },
+    });
+
+    done();
+  },
+  {
+    encapsulate: true,
+    name: 'stripe-webhook',
+  },
+);

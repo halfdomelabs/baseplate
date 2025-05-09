@@ -167,6 +167,9 @@ export default tsEslint.config(
 
       // Prevents returning undefined from functions which Typescript assumes is void
       'unicorn/no-useless-undefined': 'off',
+
+      // While we use CJS, we cannot use top-level await
+      'unicorn/prefer-top-level-await': 'off',
     },
   },
 

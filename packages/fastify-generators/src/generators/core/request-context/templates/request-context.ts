@@ -33,7 +33,7 @@ export const requestContextPlugin = fp(async (fastify) => {
 
   fastify.decorateRequest('reqInfo');
 
-  fastify.addHook('onRequest', async (req) => {
+  fastify.addHook('onRequest', (req, reply, done) => {
     const reqInfo = {
       id: req.id,
       url: req.url,
@@ -44,5 +44,7 @@ export const requestContextPlugin = fp(async (fastify) => {
 
     requestContext.set('reqInfo', reqInfo);
     req.reqInfo = reqInfo;
+
+    done();
   });
 });
