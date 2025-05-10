@@ -14,8 +14,6 @@ import { Dialog } from '../Dialog/Dialog';
  * https://ui.shadcn.com/docs/components/command
  */
 
-/* eslint-disable react/prop-types */
-
 const CommandRoot = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive>

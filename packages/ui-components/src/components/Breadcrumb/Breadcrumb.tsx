@@ -4,8 +4,6 @@ import { RxChevronRight, RxDotsHorizontal } from 'react-icons/rx';
 
 import { cn } from '@src/utils';
 
-/* eslint-disable react/prop-types */
-
 const BreadcrumbRoot = React.forwardRef<
   HTMLElement,
   React.ComponentPropsWithoutRef<'nav'> & {

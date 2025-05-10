@@ -66,7 +66,7 @@ const ButtonWithIcon = React.forwardRef<HTMLButtonElement, ButtonWithIconProps>(
 
 ButtonWithIcon.displayName = 'ButtonWithIcon';
 
-interface ButtonWithOnlyIconProps extends ButtonProps {
+export interface ButtonWithOnlyIconProps extends ButtonProps {
   icon: IconElement;
   title: string;
   iconClassName?: string;

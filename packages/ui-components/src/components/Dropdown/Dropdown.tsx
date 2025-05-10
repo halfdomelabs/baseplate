@@ -6,8 +6,6 @@ import { RxCheck, RxChevronRight, RxDotFilled } from 'react-icons/rx';
 
 import { cn } from '@src/utils';
 
-/* eslint-disable react/prop-types */
-
 /**
  * Displays a menu to the user — such as a set of actions or functions — triggered by a button.
  *

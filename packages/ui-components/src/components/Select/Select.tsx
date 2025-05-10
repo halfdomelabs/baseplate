@@ -13,8 +13,6 @@ import { cn } from '@src/utils';
 
 import { ScrollArea } from '../ScrollArea/ScrollArea';
 
-/* eslint-disable react/prop-types */
-
 /**
  * Select component
  *

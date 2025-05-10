@@ -2,6 +2,9 @@
   "extends": "@halfdomelabs/tools/tsconfig.vite.lib.json",
   "compilerOptions": {
     "noEmit": true,
+    "sourceMap": false,
+    "declaration": false,
+    "declarationMap": false,
     "paths": {
       "@src/*": ["./src/*"]
     }

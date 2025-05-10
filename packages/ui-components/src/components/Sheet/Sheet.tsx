@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 'use client';
 
 import * as SheetPrimitive from '@radix-ui/react-dialog';
@@ -52,7 +51,7 @@ const sheetVariants = cva(
   },
 );
 
-interface SheetContentProps
+export interface SheetContentProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {}
 

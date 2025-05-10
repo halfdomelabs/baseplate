@@ -6,8 +6,6 @@ import { MdCheck } from 'react-icons/md';
 
 import { cn } from '@src/utils';
 
-/* eslint-disable react/prop-types */
-
 /**
  * A control that allows the user to toggle between checked and not checked.
  *
