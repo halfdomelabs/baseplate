@@ -5,8 +5,6 @@ import React from 'react';
 
 import { cn } from '@src/utils';
 
-/* eslint-disable react/prop-types */
-
 /**
  * A set of layered sections of content—known as tab panels—that are displayed one at a time.
  *

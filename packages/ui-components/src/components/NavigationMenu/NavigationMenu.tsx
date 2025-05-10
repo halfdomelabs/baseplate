@@ -7,8 +7,6 @@ import { RxChevronDown } from 'react-icons/rx';
 
 import { cn } from '@src/utils';
 
-/* eslint-disable react/prop-types */
-
 /**
  * A collection of links for navigating websites.
  *

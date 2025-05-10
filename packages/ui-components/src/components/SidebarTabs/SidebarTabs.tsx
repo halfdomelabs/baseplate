@@ -5,8 +5,6 @@ import * as React from 'react';
 
 import { cn } from '@src/utils';
 
-/* eslint-disable react/prop-types */
-
 /**
  * SidebarTabs are a set of tabs aligned vertically on the left sidebar, showing their respective content panels to the right.
  *

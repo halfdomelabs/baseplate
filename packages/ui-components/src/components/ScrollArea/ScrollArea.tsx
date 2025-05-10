@@ -5,8 +5,6 @@ import * as React from 'react';
 
 import { cn } from '@src/utils';
 
-/* eslint-disable react/prop-types */
-
 /**
  * Augments native scroll functionality for custom, cross-browser styling.
  *

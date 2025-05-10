@@ -3,8 +3,6 @@ import React from 'react';
 
 import { cn } from '@src/utils';
 
-/* eslint-disable react/prop-types */
-
 /**
  * A tab-like interface that allows the user to navigate between different sections via links
  */

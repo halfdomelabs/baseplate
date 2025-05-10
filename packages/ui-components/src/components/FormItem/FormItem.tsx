@@ -7,8 +7,6 @@ import { cn } from '@src/utils';
 
 import { Label } from '../Label/Label.js';
 
-/* eslint-disable react/prop-types */
-
 interface FormItemContextValue {
   id: string;
   error?: React.ReactNode | Error;

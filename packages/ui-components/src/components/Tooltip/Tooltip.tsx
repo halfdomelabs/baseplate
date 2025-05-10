@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 'use client';
 
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
@@ -26,6 +25,7 @@ const TooltipContent = React.forwardRef<
     {...props}
   />
 ));
+
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
 export const Tooltip = Object.assign(TooltipRoot, {
