@@ -22,7 +22,7 @@ export function logError(
 
   TPL_LOGGER_ACTIONS;
 
-  if (Object.keys(context).length) {
+  if (Object.keys(context).length > 0) {
     logger.error(error, context);
   } else {
     logger.error(error);

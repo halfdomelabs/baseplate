@@ -23,12 +23,20 @@ export function useStatus(): StatusHookResult {
   return {
     status,
     setStatus,
-    clearStatus: () => setStatus(null),
-    setError: (message, code) => setStatus({ type: 'error', message, code }),
-    setWarning: (message, code) =>
-      setStatus({ type: 'warning', message, code }),
-    setSuccess: (message, code) =>
-      setStatus({ type: 'success', message, code }),
-    setInfo: (message, code) => setStatus({ type: 'info', message, code }),
+    clearStatus: () => {
+      setStatus(null);
+    },
+    setError: (message, code) => {
+      setStatus({ type: 'error', message, code });
+    },
+    setWarning: (message, code) => {
+      setStatus({ type: 'warning', message, code });
+    },
+    setSuccess: (message, code) => {
+      setStatus({ type: 'success', message, code });
+    },
+    setInfo: (message, code) => {
+      setStatus({ type: 'info', message, code });
+    },
   };
 }

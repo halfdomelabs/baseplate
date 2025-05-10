@@ -1,21 +1,22 @@
 // @ts-nocheck
 
+import type { WebsocketHandler } from '@fastify/websocket';
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { ExecutionArgs, ExecutionResult } from 'graphql';
+import type { ConnectionInitMessage, ServerOptions } from 'graphql-ws';
+import type { YogaServerInstance } from 'graphql-yoga';
+import type * as ws from 'ws';
+
 import { logError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import { createContextFromRequest } from '%requestServiceContextImports';
-import { WebsocketHandler } from '@fastify/websocket';
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { ExecutionArgs, ExecutionResult, GraphQLError } from 'graphql';
+import { GraphQLError } from 'graphql';
 import {
   CloseCode,
-  ConnectionInitMessage,
   DEPRECATED_GRAPHQL_WS_PROTOCOL,
   handleProtocols,
   makeServer,
-  ServerOptions,
 } from 'graphql-ws';
-import { YogaServerInstance } from 'graphql-yoga';
-import * as ws from 'ws';
 
 interface RootValueWithExecutor {
   execute: (args: ExecutionArgs) => Promise<ExecutionResult>;
@@ -78,7 +79,7 @@ export function makeHandler<
         );
 
         // catch the first thrown error and re-throw it once all clients have been notified
-        let firstErr: unknown = null;
+        let firstErr: Error | null = null;
 
         // report server errors by erroring out all clients with the same error
         for (const client of this.websocketServer.clients) {
@@ -93,7 +94,8 @@ export function makeHandler<
                   ),
             );
           } catch (err) {
-            firstErr = firstErr ?? err;
+            firstErr =
+              firstErr ?? (err instanceof Error ? err : new Error(String(err)));
           }
         }
 
@@ -126,7 +128,7 @@ export function makeHandler<
     // keep alive through ping-pong messages
     let pongWait: ReturnType<typeof setTimeout> | null = null;
     const pingInterval =
-      keepAlive > 0 && isFinite(keepAlive)
+      keepAlive > 0 && Number.isFinite(keepAlive)
         ? setInterval(() => {
             // ping pong on open sockets only
             if (socket.readyState === socket.OPEN) {
@@ -153,13 +155,37 @@ export function makeHandler<
         protocol: socket.protocol,
         send: (data) =>
           new Promise((resolve, reject) => {
-            if (socket.readyState !== socket.OPEN) return resolve();
-            socket.send(data, (err) => (err ? reject(err) : resolve()));
+            if (socket.readyState !== socket.OPEN) {
+              resolve();
+              return;
+            }
+            socket.send(data, (err) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve();
+              }
+            });
           }),
-        close: (code, reason) => socket.close(code, reason),
+        close: (code, reason) => {
+          socket.close(code, reason);
+        },
         onMessage: (cb) =>
           socket.on('message', (event) => {
-            cb(String(event)).catch((err) => {
+            let messageText: string;
+            if (Buffer.isBuffer(event)) {
+              messageText = event.toString('utf8');
+            } else if (event instanceof ArrayBuffer) {
+              messageText = Buffer.from(event).toString('utf8');
+            } else if (Array.isArray(event)) {
+              // Concatenate all buffers and convert to string
+              messageText = Buffer.concat(event).toString('utf8');
+            } else {
+              throw new TypeError(
+                `Unsupported data type for websocket message ${typeof event}`,
+              );
+            }
+            cb(String(messageText)).catch((err: unknown) => {
               logError(err, {
                 context:
                   'Internal error occurred during message handling. ' +
@@ -192,7 +218,7 @@ export function makeHandler<
           `Client provided the unsupported and deprecated subprotocol "${socket.protocol}" used by subscriptions-transport-ws.` +
             'Please see https://www.apollographql.com/docs/apollo-server/data/subscriptions/#switching-from-subscriptions-transport-ws.',
         );
-      closed(code, String(reason)).catch((err) => logError(err));
+      closed(code, String(reason)).catch((err: unknown) => logError(err));
     });
   };
 }
@@ -240,7 +266,7 @@ export function getGraphqlWsHandler(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const errors = validate(args.schema, args.document);
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-        if (errors.length) return errors;
+        if (errors.length > 0) return errors;
         return args;
       } catch (err) {
         logError(err);

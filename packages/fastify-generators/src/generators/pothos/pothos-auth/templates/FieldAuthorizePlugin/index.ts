@@ -1,18 +1,18 @@
 // @ts-nocheck
 
-import { ForbiddenError } from '%errorHandlerServiceImports';
-import SchemaBuilder, {
-  BasePlugin,
-  PothosOutputFieldConfig,
-  SchemaTypes,
-} from '@pothos/core';
-import { GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql';
+import type { PothosOutputFieldConfig, SchemaTypes } from '@pothos/core';
+import type { GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql';
 
-import { AuthorizeRoleRuleFunction, AuthorizeRoleRuleOption } from './types.js';
+import { ForbiddenError } from '%errorHandlerServiceImports';
+import SchemaBuilder, { BasePlugin } from '@pothos/core';
+
+import type {
+  AuthorizeRoleRuleFunction,
+  AuthorizeRoleRuleOption,
+} from './types.js';
 
 import './global-types.js';
 
-/* eslint-disable class-methods-use-this */
 export const pothosAuthorizeByRolesPlugin = 'authorizeByRoles';
 
 export class PothosAuthorizeByRolesPlugin<
@@ -26,7 +26,7 @@ export class PothosAuthorizeByRolesPlugin<
     if (
       !authorize &&
       ['Query', 'Mutation', 'Subscription'].includes(fieldConfig.parentType) &&
-      this.builder.options.authorizeByRoles?.requireOnRootFields
+      this.builder.options.authorizeByRoles.requireOnRootFields
     ) {
       throw new Error(
         `Field "${fieldConfig.parentType}.${fieldConfig.name}" is missing an "authorize" option and all root fields require authorization.`,
@@ -67,7 +67,7 @@ export class PothosAuthorizeByRolesPlugin<
     );
 
     // if any check passed, return success
-    if (results.some((r) => r.status === 'fulfilled' && r.value === true)) {
+    if (results.some((r) => r.status === 'fulfilled' && r.value)) {
       return;
     }
 
@@ -75,7 +75,7 @@ export class PothosAuthorizeByRolesPlugin<
     // the authorization rule may have been valid but failed to run
     const unexpectedError = results.find(
       (r) => r.status === 'rejected' && !(r.reason instanceof ForbiddenError),
-    ) as PromiseRejectedResult;
+    ) as PromiseRejectedResult | undefined;
 
     if (unexpectedError) {
       throw unexpectedError.reason;
@@ -83,8 +83,8 @@ export class PothosAuthorizeByRolesPlugin<
 
     // if a check threw a forbidden error with a message, throw that
     const forbiddenError = results.find(
-      (r) => r.status === 'rejected' && !(r.reason instanceof ForbiddenError),
-    ) as PromiseRejectedResult;
+      (r) => r.status === 'rejected' && r.reason instanceof ForbiddenError,
+    ) as PromiseRejectedResult | undefined;
 
     if (forbiddenError) {
       throw forbiddenError.reason;

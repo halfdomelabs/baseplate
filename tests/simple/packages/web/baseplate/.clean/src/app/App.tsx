@@ -1,3 +1,5 @@
+import type { ReactElement } from 'react';
+
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -6,7 +8,7 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 import PagesRoot from '../pages';
 import AppApolloProvider from './AppApolloProvider';
 
-function App(): JSX.Element {
+function App(): ReactElement {
   return (
     <ErrorBoundary>
       <AppApolloProvider>

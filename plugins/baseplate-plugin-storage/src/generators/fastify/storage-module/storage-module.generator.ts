@@ -8,6 +8,7 @@ import {
   TsCodeUtils,
   tsImportBuilder,
   tsTemplate,
+  tsTypeImportBuilder,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -277,7 +278,7 @@ export const storageModuleGenerator = createGenerator({
                   utilsUpload: {
                     TPL_FILE_CREATE_INPUT: tsCodeFragment(
                       `Prisma.${fileModel}CreateInput`,
-                      tsImportBuilder(['Prisma']).from('@prisma/client'),
+                      tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
                     ),
                   },
                 },
@@ -353,7 +354,7 @@ export const storageModuleGenerator = createGenerator({
                       TsCodeUtils.mergeFragmentsAsArray(categoriesMap),
                     TPL_FILE_COUNT_OUTPUT_TYPE: tsCodeFragment(
                       `Prisma.${fileModel}CountOutputType`,
-                      tsImportBuilder(['Prisma']).from('@prisma/client'),
+                      tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
                     ),
                     TPL_FILE_MODEL_TYPE: modelType,
                   },

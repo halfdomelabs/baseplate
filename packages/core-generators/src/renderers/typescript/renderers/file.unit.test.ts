@@ -65,6 +65,35 @@ describe('renderTsCodeFileTemplate', () => {
     `);
   });
 
+  it('should handle shebang lines', () => {
+    const template = {
+      name: 'test',
+      source: { contents: '#!/usr/bin/env node\nTPL_CONTENTS' },
+      variables: {
+        TPL_CONTENTS: {},
+      },
+    };
+
+    const variables = {
+      TPL_CONTENTS: tsCodeFragment('const myVar = new MyClass();', [
+        tsImportBuilder().named('MyClass').from('./my-class'),
+      ]),
+    };
+
+    const result = renderTsCodeFileTemplate({
+      templateContents: template.source.contents,
+      variables,
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      "#!/usr/bin/env node
+
+      import { MyClass } from "./my-class";
+
+      const myVar = new MyClass();"
+    `);
+  });
+
   it('should handle module resolution when provided', () => {
     const template = {
       name: 'test',

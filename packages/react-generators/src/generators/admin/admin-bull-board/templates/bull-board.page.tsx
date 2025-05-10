@@ -1,12 +1,14 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { useCreateBullBoardAuthCodeMutation } from '%generatedGraphqlImports';
 import { ErrorableLoader } from '%reactComponentsImports';
 import { config } from '%reactConfigImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { useEffect, useState } from 'react';
 
-function BullBoardPage(): JSX.Element {
+function BullBoardPage(): ReactElement {
   const [createBullBoardAuthCode] = useCreateBullBoardAuthCodeMutation();
   const [error, setError] = useState<string | null>(null);
 
@@ -28,13 +30,15 @@ function BullBoardPage(): JSX.Element {
 
       codeInput.value = code;
       codeInput.name = 'code';
-      form.appendChild(codeInput);
+      form.append(codeInput);
 
-      document.body.appendChild(form);
+      document.body.append(form);
 
       form.submit();
     }
-    createPath().catch((err) => setError(logAndFormatError(err)));
+    createPath().catch((err: unknown) => {
+      setError(logAndFormatError(err));
+    });
   }, [createBullBoardAuthCode]);
 
   return <ErrorableLoader error={error} />;

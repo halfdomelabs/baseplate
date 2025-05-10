@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { Alert, Button, useStatus } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +15,7 @@ interface Props {
   TPL_EXTRA_PROPS;
 }
 
-function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): JSX.Element {
+function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
   const { handleSubmit, control } = useForm<TPL_FORM_DATA_NAME>({
     resolver: zodResolver(TPL_EDIT_SCHEMA),
     defaultValues: initialData,

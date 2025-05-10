@@ -26,7 +26,6 @@ describe('writeTsProjectExports', () => {
           name: 'test1',
           generator: TEST_GENERATOR_NAME,
           template: 'test1.ts',
-          variables: {},
         },
       },
     ];
@@ -49,7 +48,6 @@ describe('writeTsProjectExports', () => {
           name: 'test1',
           generator: TEST_GENERATOR_NAME,
           template: 'test1.ts',
-          variables: {},
           projectExports: {
             TestExport: {},
             TypeOnlyExport: { isTypeOnly: true },
@@ -101,7 +99,6 @@ describe('writeTsProjectExports', () => {
           name: 'test1',
           generator: '@halfdomelabs/core-generators#test',
           template: 'test1.ts',
-          variables: {},
           projectExports: {
             TestExport: { isTypeOnly: false },
           },
@@ -133,7 +130,6 @@ describe('writeTsProjectExports', () => {
           name: 'test1',
           generator: 'external-generator#test',
           template: 'test1.ts',
-          variables: {},
           projectExports: {
             TestExport: { isTypeOnly: false },
           },
@@ -161,7 +157,6 @@ describe('writeTsProjectExports', () => {
           name: 'test1',
           generator: TEST_GENERATOR_NAME,
           template: 'test1.ts',
-          variables: {},
           projectExports: {
             TestExport: { isTypeOnly: false },
           },
@@ -208,7 +203,6 @@ describe('writeTsProjectExports', () => {
           name: 'test1',
           generator: TEST_GENERATOR_NAME,
           template: 'test1.ts',
-          variables: {},
           projectExports: {
             TestExport: { isTypeOnly: false },
           },
@@ -221,7 +215,6 @@ describe('writeTsProjectExports', () => {
           name: 'test2',
           generator: TEST_GENERATOR_NAME,
           template: 'test2.ts',
-          variables: {},
           projectExports: {
             TestExport: { isTypeOnly: true },
           },
@@ -248,7 +241,6 @@ describe('writeTsProjectExports', () => {
           name: 'test1',
           generator: TEST_GENERATOR_NAME,
           template: 'test1.ts',
-          variables: {},
           projectExports: {
             TestExport: { isTypeOnly: false },
           },

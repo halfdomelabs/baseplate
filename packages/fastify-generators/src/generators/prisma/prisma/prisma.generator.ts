@@ -138,6 +138,9 @@ export const prismaGenerator = createGenerator({
               typescriptFile.renderTemplateFile({
                 template: PRISMA_PRISMA_TS_TEMPLATES.seed,
                 destination: '@/src/prisma/seed.ts',
+                writeOptions: {
+                  shouldNeverOverwrite: true,
+                },
               }),
             );
 
@@ -251,7 +254,7 @@ export const prismaGenerator = createGenerator({
                   return tsTemplate`${prismaImports.prisma.fragment()}.${modelExport}`;
                 },
                 getModelTypeFragment: (modelName) =>
-                  TsCodeUtils.importFragment(modelName, '@prisma/client'),
+                  TsCodeUtils.typeImportFragment(modelName, '@prisma/client'),
               },
             };
           },

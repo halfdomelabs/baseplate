@@ -1,6 +1,6 @@
-import { prisma } from '../services/prisma.js';
+#!/usr/bin/env node
 
-/* eslint-disable no-console */
+import { prisma } from '../services/prisma.js';
 
 async function main(): Promise<void> {
   try {
@@ -22,7 +22,7 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((e) => {
+main().catch((e: unknown) => {
   console.error(e);
   process.exit(1);
 });

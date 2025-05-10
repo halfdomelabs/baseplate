@@ -16,6 +16,7 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import type {
+  RenderTsCodeFileTemplateOptions,
   RenderTsFragmentActionInput,
   RenderTsTemplateFileActionInput,
   RenderTsTemplateGroupActionInput,
@@ -249,15 +250,17 @@ export const typescriptGenerator = createGenerator({
           });
         }
 
-        const sharedRenderOptions = {
+        const sharedRenderOptions: RenderTsCodeFileTemplateOptions = {
           importSortOptions: {
             groups: [
-              'builtin',
-              'external',
+              ['external-type', 'builtin-type'],
+              ['external', 'builtin'],
+              'internal-type',
               'internal',
-              ['parent', 'sibling'],
-              'index',
-            ] as const,
+              ['parent-type', 'sibling-type', 'index-type'],
+              ['parent', 'sibling', 'index'],
+              'unknown',
+            ],
             internalPatterns,
           },
         };

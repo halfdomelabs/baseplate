@@ -39,10 +39,10 @@ export async function renderAndSendTemplate<
   data,
   to,
 }: RenderAndSendTemplateInput<TemplateKey>): Promise<void> {
-  const template = POSTMARK_TEMPLATES[templateKey];
-  if (!template) {
+  if (!(templateKey in POSTMARK_TEMPLATES)) {
     throw new Error(`No template found for key ${templateKey}`);
   }
+  const template = POSTMARK_TEMPLATES[templateKey];
 
   const validatedData = template.schema.parse(data);
 

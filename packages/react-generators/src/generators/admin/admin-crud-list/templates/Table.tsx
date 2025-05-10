@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import {
   Alert,
   LinkButton,
@@ -16,10 +18,10 @@ interface Props {
   TPL_EXTRA_PROPS;
 }
 
-function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): JSX.Element {
+function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
   const { requestConfirm } = useConfirmDialog();
   const toast = useToast();
-  async function handleDelete(item: TPL_ROW_FRAGMENT): Promise<void> {
+  function handleDelete(item: TPL_ROW_FRAGMENT): void {
     requestConfirm({
       title: 'Delete Item',
       content: `Are you sure you want to delete this item?`,
@@ -28,7 +30,7 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): JSX.Element {
           .then(() => {
             toast.success('Successfully deleted the item!');
           })
-          .catch((err) => {
+          .catch((err: unknown) => {
             toast.error(
               logAndFormatError(err, 'Sorry we could not delete the item.'),
             );
@@ -37,7 +39,7 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): JSX.Element {
     });
   }
 
-  if (!items.length) {
+  if (items.length === 0) {
     return <Alert type="info">No TPL_PLURAL_MODEL found.</Alert>;
   }
 
@@ -56,7 +58,12 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): JSX.Element {
             <Table.Cell className="space-x-4">
               <Link to={`${item.id}/show`}>Show</Link>
               <Link to={`${item.id}/edit`}>Edit</Link>
-              <LinkButton negative onClick={() => handleDelete(item)}>
+              <LinkButton
+                negative
+                onClick={() => {
+                  handleDelete(item);
+                }}
+              >
                 Delete
               </LinkButton>
             </Table.Cell>

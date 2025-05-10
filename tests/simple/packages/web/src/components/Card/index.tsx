@@ -1,3 +1,5 @@
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 
 interface Props {
@@ -6,7 +8,7 @@ interface Props {
   padding?: boolean;
 }
 
-function Card({ className, padding, children }: Props): JSX.Element {
+function Card({ className, padding, children }: Props): ReactElement {
   return (
     <div
       className={clsx(

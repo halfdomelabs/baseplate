@@ -1,12 +1,13 @@
-import fs from 'fs/promises';
+import type { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
+import type { GraphQLErrorOptions } from 'graphql';
 
 import { useDisableIntrospection } from '@envelop/disable-introspection';
 import { requestContext } from '@fastify/request-context';
 import { AltairFastify } from 'altair-fastify-plugin';
-import { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
 import fp from 'fastify-plugin';
 import { GraphQLError, lexicographicSortSchema, printSchema } from 'graphql';
 import { createYoga } from 'graphql-yoga';
+import fs from 'node:fs/promises';
 
 import { config } from '@src/services/config.js';
 import { logger } from '@src/services/logger.js';
@@ -14,8 +15,8 @@ import { HttpError } from '@src/utils/http-errors.js';
 import { createContextFromRequest } from '@src/utils/request-service-context.js';
 
 import { builder } from './builder.js';
-import { useGraphLogger } from './useGraphLogger.js';
-import { useSentry } from './useSentry.js';
+import { useGraphLogger } from './use-graph-logger.js';
+import { useSentry } from './use-sentry.js';
 
 import '@src/modules/index.js';
 
@@ -26,7 +27,7 @@ const schema = builder.toSchema();
 async function writeSchemaToFile(): Promise<void> {
   // only write the schema to file if it has changed to avoid unnecessary GraphQL codegen generations
   const existingSchema = await fs
-    .readFile('./schema.graphql', 'utf-8')
+    .readFile('./schema.graphql', 'utf8')
     .catch(() => undefined);
   const newSchema = printSchema(lexicographicSortSchema(schema));
   if (existingSchema !== newSchema) {
@@ -34,12 +35,15 @@ async function writeSchemaToFile(): Promise<void> {
   }
 
   if (process.argv.includes('--exit-after-generate-schema')) {
+    // eslint-disable-next-line unicorn/no-process-exit -- we want to exit after the schema is generated
     process.exit(0);
   }
 }
 
-if (IS_DEVELOPMENT) {
-  writeSchemaToFile().catch((err) => logger.error(err));
+if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
+  writeSchemaToFile().catch((err: unknown) => {
+    logger.error(err);
+  });
 }
 
 export const graphqlPlugin = fp(async (fastify) => {
@@ -66,9 +70,16 @@ export const graphqlPlugin = fp(async (fastify) => {
           return error;
         }
 
+        const sharedOptions: GraphQLErrorOptions = {
+          nodes: error.nodes,
+          source: error.source,
+          positions: error.positions,
+          path: error.path,
+        };
+
         if (originalError instanceof HttpError) {
           return new GraphQLError(originalError.message, {
-            ...error,
+            ...sharedOptions,
             extensions: {
               ...error.extensions,
               code: originalError.code,
@@ -80,7 +91,7 @@ export const graphqlPlugin = fp(async (fastify) => {
         }
 
         return new GraphQLError(message, {
-          ...error,
+          ...sharedOptions,
           extensions: {
             ...error.extensions,
             code: 'INTERNAL_SERVER_ERROR',
@@ -88,8 +99,8 @@ export const graphqlPlugin = fp(async (fastify) => {
             reqId: requestContext.get('reqInfo')?.id,
             originalError: isDev
               ? {
-                  message: originalError?.message ?? error.message,
-                  stack: originalError?.stack ?? error.stack,
+                  message: originalError.message,
+                  stack: originalError.stack,
                 }
               : undefined,
           },
@@ -114,11 +125,10 @@ export const graphqlPlugin = fp(async (fastify) => {
     );
 
     // Fastify replies with promises that should not be awaited (https://github.com/typescript-eslint/typescript-eslint/issues/2640)
-    /* eslint-disable @typescript-eslint/no-floating-promises */
 
-    response.headers.forEach((value, key) => {
+    for (const [key, value] of response.headers.entries()) {
       reply.header(key, value);
-    });
+    }
 
     reply.status(response.status);
     reply.send(response.body);

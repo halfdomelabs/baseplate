@@ -1,8 +1,0 @@
-/coverage
-/dist
-/lib
-/node_modules
-postcss.config.js
-src/generated/graphql.tsx
-tailwind.config.js
-vite.config.ts

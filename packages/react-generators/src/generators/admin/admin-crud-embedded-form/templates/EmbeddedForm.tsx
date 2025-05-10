@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { Alert, Button, useStatus } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,7 +11,7 @@ TPL_TABLE_COMPONENT;
 
 export function TPL_COMPONENT_NAME(
   TPL_DESTRUCTURED_PROPS: TPL_PROPS,
-): JSX.Element {
+): ReactElement {
   const { handleSubmit, control } = useForm<TPL_EMBEDDED_FORM_DATA_TYPE>({
     resolver: zodResolver(TPL_EMBEDDED_FORM_DATA_SCHEMA),
     defaultValues: initialData,
@@ -22,9 +24,9 @@ export function TPL_COMPONENT_NAME(
     <form
       onSubmit={(e) => {
         e.stopPropagation();
-        handleSubmit(onSubmit)(e).catch((err) =>
-          setError(logAndFormatError(err)),
-        );
+        handleSubmit(onSubmit)(e).catch((err: unknown) => {
+          setError(logAndFormatError(err));
+        });
       }}
       className="space-y-4"
     >

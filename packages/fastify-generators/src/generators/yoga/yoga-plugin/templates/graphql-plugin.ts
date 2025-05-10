@@ -1,12 +1,14 @@
 // @ts-nocheck
 
+import type { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
+import type { GraphQLErrorOptions } from 'graphql';
+
 import { config } from '%configServiceImports';
 import { HttpError } from '%errorHandlerServiceImports';
 import { logger } from '%loggerServiceImports';
 import { createContextFromRequest } from '%requestServiceContextImports';
 import { requestContext } from '@fastify/request-context';
 import { AltairFastify } from 'altair-fastify-plugin';
-import { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
 import fp from 'fastify-plugin';
 import { GraphQLError } from 'graphql';
 import { createYoga } from 'graphql-yoga';
@@ -43,9 +45,16 @@ export const graphqlPlugin = fp(async (fastify) => {
           return error;
         }
 
+        const sharedOptions: GraphQLErrorOptions = {
+          nodes: error.nodes,
+          source: error.source,
+          positions: error.positions,
+          path: error.path,
+        };
+
         if (originalError instanceof HttpError) {
           return new GraphQLError(originalError.message, {
-            ...error,
+            ...sharedOptions,
             extensions: {
               ...error.extensions,
               code: originalError.code,
@@ -57,7 +66,7 @@ export const graphqlPlugin = fp(async (fastify) => {
         }
 
         return new GraphQLError(message, {
-          ...error,
+          ...sharedOptions,
           extensions: {
             ...error.extensions,
             code: 'INTERNAL_SERVER_ERROR',
@@ -65,8 +74,8 @@ export const graphqlPlugin = fp(async (fastify) => {
             reqId: requestContext.get('reqInfo')?.id,
             originalError: isDev
               ? {
-                  message: originalError?.message ?? error.message,
-                  stack: originalError?.stack ?? error.stack,
+                  message: originalError.message,
+                  stack: originalError.stack,
                 }
               : undefined,
           },
@@ -87,11 +96,10 @@ export const graphqlPlugin = fp(async (fastify) => {
     );
 
     // Fastify replies with promises that should not be awaited (https://github.com/typescript-eslint/typescript-eslint/issues/2640)
-    /* eslint-disable @typescript-eslint/no-floating-promises */
 
-    response.headers.forEach((value, key) => {
+    for (const [key, value] of response.headers.entries()) {
       reply.header(key, value);
-    });
+    }
 
     reply.status(response.status);
     reply.send(response.body);

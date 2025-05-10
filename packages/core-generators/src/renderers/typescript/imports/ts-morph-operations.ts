@@ -1,4 +1,9 @@
-import type { CodeBlockWriter, ImportDeclaration, SourceFile } from 'ts-morph';
+import {
+  type CodeBlockWriter,
+  type ImportDeclaration,
+  Node,
+  type SourceFile,
+} from 'ts-morph';
 
 import type { TsImportDeclaration } from './types.js';
 
@@ -118,5 +123,78 @@ export function writeGroupedImportDeclarationsWithCodeBlockWriter(
       writeImportDeclaration(writer, importDeclaration);
     }
     writer.write('\n');
+  }
+}
+
+/**
+ * Replace import declarations in a source file preserving the leading trivia and any
+ * directives that may be present.
+ *
+ * Note: It currently does not handle comments above the first import statement and will
+ * push it below the imports.
+ *
+ * @param sourceFile - The source file to replace import declarations in
+ * @param oldImportDeclarations - The old import declarations to replace
+ * @param newImportDeclarations - The new import declarations to replace with
+ */
+export function replaceImportDeclarationsInSourceFile(
+  sourceFile: SourceFile,
+  oldImportDeclarations: ImportDeclaration[],
+  newImportDeclarations: TsImportDeclaration[][],
+  {
+    beforeImportsWriter,
+    afterImportsWriter,
+  }: {
+    beforeImportsWriter?: (writer: CodeBlockWriter) => void;
+    afterImportsWriter?: (writer: CodeBlockWriter) => void;
+  } = {},
+): void {
+  const firstLine = sourceFile.getFullText().split('\n').at(0);
+
+  // Get first non-directive node and insert after that node
+  const firstNonDirectiveNode =
+    oldImportDeclarations.at(0)?.getFullStart() === 0
+      ? undefined
+      : sourceFile.getStatements().find((node) => {
+          // look for things like "use client"
+          if (!Node.isExpressionStatement(node)) return true;
+          const children = node.forEachChildAsArray();
+          if (children.length !== 1) return true;
+          const child = children[0];
+          return !Node.isStringLiteral(child);
+        });
+  const insertionPosition = firstNonDirectiveNode?.getNonWhitespaceStart() ?? 0;
+
+  // special case shebang to remove the first line if it's a shebang
+  const firstNonDirectiveNodeHasShebang = firstNonDirectiveNode
+    ?.getFullText()
+    .startsWith('#!');
+
+  for (const importDeclaration of oldImportDeclarations) {
+    importDeclaration.remove();
+  }
+
+  sourceFile.insertText(insertionPosition, (writer) => {
+    if (beforeImportsWriter) {
+      beforeImportsWriter(writer);
+    }
+    writeGroupedImportDeclarationsWithCodeBlockWriter(
+      writer,
+      newImportDeclarations,
+    );
+    if (afterImportsWriter) {
+      afterImportsWriter(writer);
+    }
+  });
+
+  // and special case handling if the first non directive node has a shebang
+  if (firstNonDirectiveNodeHasShebang) {
+    sourceFile.replaceWithText(
+      sourceFile.getFullText().replaceAll(`${firstLine}\n`, ''),
+    );
+  }
+  // re-insert the first line if it's a shebang since ts-morph will remove it with the import
+  if (firstLine?.startsWith('#!')) {
+    sourceFile.insertText(0, `${firstLine}\n\n`);
   }
 }

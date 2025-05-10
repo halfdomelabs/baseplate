@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "composite": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "strict": true
   },
   "include": ["vite.config.ts"]
 }

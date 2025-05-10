@@ -22,12 +22,12 @@ export interface TsImportMapEntry<
   name: string;
   moduleSpecifier: string;
   isTypeOnly: IsTypeOnly;
-  declaration(
-    alias?: string,
-  ): IsTypeOnly extends true ? never : TsImportDeclaration;
-  typeDeclaration(alias?: string): TsImportDeclaration;
-  fragment(): TsCodeFragment;
-  typeFragment(): TsCodeFragment;
+  declaration: IsTypeOnly extends true
+    ? never
+    : (alias?: string) => TsImportDeclaration;
+  typeDeclaration: (alias?: string) => TsImportDeclaration;
+  fragment: IsTypeOnly extends true ? never : () => TsCodeFragment;
+  typeFragment: () => TsCodeFragment;
 }
 
 export type TsImportMap = Record<string, TsImportMapEntry>;

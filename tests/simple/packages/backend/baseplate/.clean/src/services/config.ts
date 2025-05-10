@@ -10,7 +10,7 @@ const configSchema = z.object({
   // Hostname to bind the server to
   SERVER_HOST: z.string().default('localhost'),
   // Port to bind the server to
-  SERVER_PORT: z.coerce.number().min(1).max(65535).default(3001),
+  SERVER_PORT: z.coerce.number().min(1).max(65_535).default(3001),
 });
 
 export const config = configSchema.parse(process.env);

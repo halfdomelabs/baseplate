@@ -1,10 +1,10 @@
 // @ts-nocheck
 
 import type { ServiceContext } from '%serviceContextImports';
+import type { File } from '@prisma/client';
+import type { Readable } from 'node:stream';
 
 import { ForbiddenError } from '%errorHandlerServiceImports';
-import { File } from '@prisma/client';
-import { Readable } from 'stream';
 
 import { STORAGE_ADAPTERS } from '../constants/adapters.js';
 import { FILE_CATEGORIES } from '../constants/file-categories.js';
@@ -32,11 +32,11 @@ export async function downloadFile(
     throw new ForbiddenError('You are not authorized to read this file');
   }
 
-  const adapter =
-    STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
-  if (!adapter) {
+  if (!(file.adapter in STORAGE_ADAPTERS)) {
     throw new Error(`Unknown storage adapter: ${file.adapter}`);
   }
+  const adapter =
+    STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
 
   if (!adapter.downloadFile) {
     throw new Error(

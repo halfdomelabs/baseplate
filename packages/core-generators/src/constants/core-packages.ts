@@ -3,20 +3,22 @@ export const CORE_PACKAGES = {
   typescript: '5.5.4',
 
   // Linting
-  '@typescript-eslint/eslint-plugin': '7.16.1',
-  '@typescript-eslint/parser': '7.16.1',
-  eslint: '8.57.0',
-  'eslint-plugin-jsx-a11y': '6.9.0',
-  'eslint-plugin-react': '7.34.4',
-  'eslint-plugin-react-hooks': '4.6.2',
-  'eslint-config-prettier': '9.1.0',
-  'eslint-import-resolver-typescript': '3.6.1',
-  'eslint-plugin-import': '2.29.1',
-  'eslint-plugin-vitest': '0.4.1',
+  '@eslint/js': '9.26.0',
+  '@vitest/eslint-plugin': '1.1.44',
+  eslint: '9.26.0',
+  'eslint-config-prettier': '10.1.3',
+  'eslint-import-resolver-typescript': '4.3.4',
+  'eslint-plugin-import-x': '4.11.0',
+  'eslint-plugin-jsx-a11y': '6.10.2',
+  'eslint-plugin-perfectionist': '4.12.3',
+  'eslint-plugin-react': '7.37.5',
+  'eslint-plugin-react-hooks': '5.2.0',
+  'eslint-plugin-unicorn': '59.0.1',
+  'typescript-eslint': '8.32.0',
 
   // Formatting
-  prettier: '3.3.3',
-  'prettier-plugin-packagejson': '2.5.2',
+  prettier: '3.5.3',
+  'prettier-plugin-packagejson': '2.5.11',
 
   // Testing
   vitest: '3.0.7',

@@ -1,7 +1,12 @@
-import { getDocumentString, Plugin } from '@envelop/core';
+// @ts-nocheck
+
+import type { Plugin } from '@envelop/core';
+import type { ExecutionArgs, OperationDefinitionNode } from 'graphql';
+
+import { getDocumentString } from '@envelop/core';
 import { AttributeNames } from '@pothos/tracing-sentry';
 import * as Sentry from '@sentry/node';
-import { ExecutionArgs, Kind, OperationDefinitionNode, print } from 'graphql';
+import { Kind, print } from 'graphql';
 
 interface OperationInfo {
   opName: string;
@@ -50,8 +55,7 @@ export const useSentry: () => Plugin = () => ({
           name: transactionName,
           forceTransaction: true,
           attributes: {
-            [AttributeNames.OPERATION_NAME]:
-              (options.operationName as string) ?? undefined,
+            [AttributeNames.OPERATION_NAME]: options.operationName as string,
             [AttributeNames.SOURCE]: document,
           },
         },

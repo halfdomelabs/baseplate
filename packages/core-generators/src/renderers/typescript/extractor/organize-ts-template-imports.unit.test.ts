@@ -51,6 +51,57 @@ export function capitalizeString(str: string) {
     expect(result.contents).toEqual(contents);
   });
 
+  it('should preserve client directives', async () => {
+    const mockResolver = createMockResolver();
+    const filePath = '/project-root/test.ts';
+    const contents = `"use client";
+
+import { A } from "test";
+
+export function capitalizeString(str: string) {
+    A();
+}
+`;
+
+    const context = {
+      projectExportMap: new Map(),
+      projectRoot: '/project-root',
+      generatorFiles: ['/project-root/test.ts'],
+      resolver: mockResolver,
+    };
+
+    const result = await organizeTsTemplateImports(filePath, contents, context);
+
+    // Check that the output contains the organized imports
+    expect(result.contents).toEqual(contents);
+  });
+
+  it('should not hoist comments', async () => {
+    const mockResolver = createMockResolver();
+    const filePath = '/project-root/test.ts';
+    const contents = `import { A } from "test";
+
+/**
+ * Capitalizes the first letter of a string.
+ */
+export function capitalizeString(str: string) {
+    A();
+}
+`;
+
+    const context = {
+      projectExportMap: new Map(),
+      projectRoot: '/project-root',
+      generatorFiles: ['/project-root/test.ts'],
+      resolver: mockResolver,
+    };
+
+    const result = await organizeTsTemplateImports(filePath, contents, context);
+
+    // Check that the output contains the organized imports
+    expect(result.contents).toEqual(contents);
+  });
+
   it('should organize imports and return used project exports', async () => {
     const mockResolver = createMockResolver();
     const filePath = '/project-root/test.ts';

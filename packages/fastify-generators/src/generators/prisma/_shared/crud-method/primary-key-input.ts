@@ -2,7 +2,7 @@ import type { TsHoistedFragment } from '@halfdomelabs/core-generators';
 
 import {
   tsHoistedFragment,
-  tsImportBuilder,
+  tsTypeImportBuilder,
 } from '@halfdomelabs/core-generators';
 import { quot } from '@halfdomelabs/utils';
 
@@ -118,7 +118,7 @@ export function getPrimaryKeyExpressions(
   const headerTypeBlock = tsHoistedFragment(
     `input-type:${primaryKeyInputName}`,
     `export type ${primaryKeyInputName} = Pick<${model.name}, ${idFields.map(quot).join(' | ')}>`,
-    tsImportBuilder([model.name]).from('@prisma/client'),
+    tsTypeImportBuilder([model.name]).from('@prisma/client'),
   );
 
   return {

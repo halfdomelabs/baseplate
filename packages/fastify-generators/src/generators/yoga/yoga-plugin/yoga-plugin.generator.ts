@@ -49,7 +49,7 @@ const schemaBuilder = createFieldMapSchemaBuilder((t) => ({
   envelopPlugins: t.mapFromObj<TsCodeFragment>({
     useGraphLogger: tsCodeFragment(
       'useGraphLogger()',
-      tsImportBuilder(['useGraphLogger']).from('./useGraphLogger.js'),
+      tsImportBuilder(['useGraphLogger']).from('./use-graph-logger.ts'),
     ),
     useDisableIntrospection: tsCodeFragment(
       'useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT })',
@@ -223,7 +223,7 @@ handler: httpHandler,
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template: YOGA_YOGA_PLUGIN_TS_TEMPLATES.useGraphLogger,
-                destination: 'src/plugins/graphql/useGraphLogger.ts',
+                destination: 'src/plugins/graphql/use-graph-logger.ts',
                 importMapProviders: {
                   loggerServiceImports,
                   errorHandlerServiceImports,

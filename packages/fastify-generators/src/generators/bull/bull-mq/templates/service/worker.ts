@@ -1,9 +1,11 @@
 // @ts-nocheck
 
+import type { ConnectionOptions, Processor, WorkerOptions } from 'bullmq';
+
 import { logError } from '%errorHandlerServiceImports';
 import { getRedisClient } from '%fastifyRedisImports';
 import { logger } from '%loggerServiceImports';
-import { ConnectionOptions, Processor, Worker, WorkerOptions } from 'bullmq';
+import { Worker } from 'bullmq';
 
 export function createWorker<DataType>(
   queueName: string,

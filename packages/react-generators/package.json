@@ -38,7 +38,7 @@
     "@halfdomelabs/utils": "workspace:*",
     "es-toolkit": "1.31.0",
     "inflection": "3.0.0",
-    "prettier-plugin-tailwindcss": "0.6.9",
+    "prettier-plugin-tailwindcss": "0.6.11",
     "zod": "catalog:"
   },
   "devDependencies": {

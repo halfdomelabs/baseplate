@@ -3,8 +3,8 @@
 import { DEFAULT_PUBLIC_ROLES } from '%authRolesImports';
 import { UnauthorizedError } from '%errorHandlerServiceImports';
 
-import { AuthContext } from '../types/auth-context.types.js';
-import { AuthSessionInfo } from '../types/auth-session.types.js';
+import type { AuthContext } from '../types/auth-context.types.js';
+import type { AuthSessionInfo } from '../types/auth-session.types.js';
 
 export function createAuthContextFromSessionInfo(
   session: AuthSessionInfo | undefined,
@@ -21,7 +21,7 @@ export function createAuthContextFromSessionInfo(
     },
     userId: session?.type === 'user' ? session.userId : undefined,
     userIdOrThrow: () => {
-      if (!session || session.type !== 'user') {
+      if (!session || (session.type as string) !== 'user') {
         throw new UnauthorizedError('User session is required');
       }
       return session.userId;

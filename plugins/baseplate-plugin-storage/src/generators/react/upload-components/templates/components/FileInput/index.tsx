@@ -1,5 +1,14 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+import type {
+  Control,
+  FieldError,
+  FieldPath,
+  FieldPathValue,
+  FieldValues,
+} from 'react-hook-form';
+
 import { useCreateUploadUrlMutation } from '%generatedGraphqlImports';
 import { FormError, FormLabel, LinkButton } from '%reactComponentsImports';
 import { formatError, logError } from '%reactErrorImports';
@@ -7,15 +16,7 @@ import clsx from 'clsx';
 import { useCallback } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import { useDropzone } from 'react-dropzone';
-import {
-  Control,
-  FieldError,
-  FieldPath,
-  FieldPathValue,
-  FieldValues,
-  get,
-  useController,
-} from 'react-hook-form';
+import { get, useController } from 'react-hook-form';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
 
 import { useUpload } from '../../hooks/useUpload.js';
@@ -61,13 +62,13 @@ const FileInput = function FileInput({
   placeholder,
   imagePreview,
   accept,
-}: Props): JSX.Element {
+}: Props): ReactElement {
   const [createUploadUrl] = useCreateUploadUrlMutation();
 
   const { isUploading, error, progress, uploadFile, cancelUpload } =
     useUpload<FileUploadInput>({
       getUploadParameters: async (fileToUpload) => {
-        const contentType = fileToUpload.type ?? 'application/octet-stream';
+        const contentType = fileToUpload.type;
         const { data } = await createUploadUrl({
           variables: {
             input: {
@@ -255,9 +256,8 @@ FileInput.Labelled = function FileInputLabelled({
   className,
   error,
   ...rest
-}: FileInputLabelledProps): JSX.Element {
+}: FileInputLabelledProps): ReactElement {
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <div className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <FileInput {...rest} />
@@ -281,7 +281,7 @@ FileInput.LabelledController = function FileInputController<
   control,
   name,
   ...rest
-}: FileInputControllerProps<TFieldValues, TFieldName>): JSX.Element {
+}: FileInputControllerProps<TFieldValues, TFieldName>): ReactElement {
   const {
     field: { value, onChange },
     formState: { errors },
@@ -289,15 +289,15 @@ FileInput.LabelledController = function FileInputController<
   const error = get(errors, name) as FieldError | undefined;
 
   // TODO: Validate value is correct type
-  const validatedValue = (value as FileUploadInput)?.id
+  const validatedValue = (value as FileUploadInput | undefined)?.id
     ? (value as FileUploadInput)
     : undefined;
 
   return (
     <FileInput.Labelled
-      onChange={(newValue) =>
-        onChange(newValue as FieldPathValue<TFieldValues, TFieldName>)
-      }
+      onChange={(newValue) => {
+        onChange(newValue as FieldPathValue<TFieldValues, TFieldName>);
+      }}
       value={validatedValue}
       error={error?.message}
       {...rest}

@@ -1,6 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import type { PrismaClient } from '@prisma/client';
+import type { DeepMockProxy } from 'vitest-mock-extended';
+
 import { beforeEach, vi } from 'vitest';
-import { DeepMockProxy, mockDeep, mockReset } from 'vitest-mock-extended';
+import { mockDeep, mockReset } from 'vitest-mock-extended';
 
 import { prisma } from '@src/services/prisma.js';
 
@@ -16,7 +18,6 @@ beforeEach(() => {
 
   // mock $transaction
   prismaMock.$transaction.mockImplementation((promises) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     typeof promises === 'function'
       ? promises(prismaMock)
       : Promise.all(promises),

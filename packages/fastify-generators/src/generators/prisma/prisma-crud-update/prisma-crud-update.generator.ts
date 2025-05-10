@@ -1,6 +1,9 @@
 import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import { TsCodeUtils, tsImportBuilder } from '@halfdomelabs/core-generators';
+import {
+  TsCodeUtils,
+  tsTypeImportBuilder,
+} from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { notEmpty, NUMBER_VALIDATORS } from '@halfdomelabs/utils';
 import { z } from 'zod';
@@ -132,7 +135,7 @@ export async function METHOD_NAME({ ID_ARG, data, query, EXTRA_ARGS }: UpdateSer
     },
     [
       prismaUtils.UpdateServiceInput.typeDeclaration(),
-      tsImportBuilder(['Prisma']).from('@prisma/client'),
+      tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
     ],
     {
       hoistedFragments: [typeHeaderBlock, primaryKey.headerTypeBlock].filter(

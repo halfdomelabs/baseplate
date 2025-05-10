@@ -140,7 +140,7 @@ describe('fixRefDeletions', () => {
     const refPayload = fixRefDeletions(schema, data);
 
     expect(refPayload.type).toBe('failure');
-    assert(refPayload.type === 'failure');
+    assert.ok(refPayload.type === 'failure');
 
     expect(refPayload.issues[0].ref.path.join('.')).toBe('refs.0');
     expect(refPayload.issues[0].entityId).toBe('test-id');

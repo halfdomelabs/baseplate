@@ -1,13 +1,15 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { Spinner } from '%reactComponentsImports';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 
 interface Props {
-  children: JSX.Element;
+  children: ReactElement;
 }
 
-function RequireAuth({ children }: Props): JSX.Element {
+function RequireAuth({ children }: Props): ReactElement {
   return children;
 }
 

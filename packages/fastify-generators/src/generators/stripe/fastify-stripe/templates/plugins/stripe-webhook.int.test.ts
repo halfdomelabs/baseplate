@@ -1,8 +1,9 @@
 // @ts-nocheck
 
+import type { Stripe } from 'stripe';
+
 import Fastify from 'fastify';
 import rawBodyPlugin from 'fastify-raw-body';
-import { Stripe } from 'stripe';
 import { describe, expect, it, vi } from 'vitest';
 
 import { stripeEventService } from '../services/stripe-events.js';
@@ -18,7 +19,7 @@ function createFakeWebhookEvent(data?: Partial<Stripe.Event>): Stripe.Event {
     id: 'payment-id',
     object: 'event',
     api_version: '2020-08-27',
-    created: 1642600000,
+    created: 1_642_600_000,
     livemode: false,
     pending_webhooks: 0,
     type: 'payment_intent.succeeded',
@@ -60,7 +61,6 @@ describe('stripeWebhookPlugin', () => {
 
     expect(response.statusCode).toBe(200);
 
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockedStripe.webhooks.constructEventAsync.mock.calls[0][1]).toBe(
       'signature',
     );

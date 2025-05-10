@@ -11,7 +11,7 @@ import {
 } from 'react-router-dom';
 
 const SENTRY_ENABLED = !!config.VITE_SENTRY_DSN;
-const TRACE_SAMPLE_RATE = 1.0;
+const TRACE_SAMPLE_RATE = 1;
 
 if (SENTRY_ENABLED) {
   Sentry.init({

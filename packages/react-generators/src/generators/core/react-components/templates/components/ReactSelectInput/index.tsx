@@ -1,15 +1,18 @@
 // @ts-nocheck
 
-import clsx from 'clsx';
-import {
+import type { ReactElement } from 'react';
+import type {
   Control,
   FieldPath,
   FieldPathValue,
   FieldValues,
   PathValue,
-  useController,
 } from 'react-hook-form';
-import Select, { components, GroupBase, InputProps } from 'react-select';
+import type { GroupBase, InputProps } from 'react-select';
+
+import clsx from 'clsx';
+import { useController } from 'react-hook-form';
+import Select, { components } from 'react-select';
 
 import FormError from '../FormError/index.js';
 import FormLabel from '../FormLabel/index.js';
@@ -33,7 +36,7 @@ function Input<
   OptionType = unknown,
   IsMultiType extends boolean = boolean,
   GroupType extends GroupBase<OptionType> = GroupBase<OptionType>,
->(props: InputProps<OptionType, IsMultiType, GroupType>): JSX.Element {
+>(props: InputProps<OptionType, IsMultiType, GroupType>): ReactElement {
   return <components.Input {...props} inputClassName="focus:ring-0" />;
 }
 
@@ -44,7 +47,7 @@ function ReactSelectInput<ValueType>({
   options,
   value,
   fixedPosition,
-}: Props<ValueType>): JSX.Element {
+}: Props<ValueType>): ReactElement {
   const selectedOption = options.find((option) => option.value === value);
 
   const fixedPositionProps = fixedPosition
@@ -87,7 +90,7 @@ ReactSelectInput.Labelled = function ReactSelectInputLabelled({
   className,
   error,
   ...rest
-}: ReactSelectInputLabelledProps): JSX.Element {
+}: ReactSelectInputLabelledProps): ReactElement {
   return (
     <div className={className}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -114,7 +117,6 @@ ReactSelectInput.LabelledController = function ReactSelectInputController<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
-  className,
   name,
   control,
   emptyAsNull,
@@ -122,7 +124,7 @@ ReactSelectInput.LabelledController = function ReactSelectInputController<
 }: ReactSelectInputLabelledControllerProps<
   TFieldValues,
   TFieldName
->): JSX.Element {
+>): ReactElement {
   const {
     field,
     fieldState: { error },

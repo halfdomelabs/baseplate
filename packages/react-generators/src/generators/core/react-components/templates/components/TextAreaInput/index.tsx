@@ -1,16 +1,16 @@
 // @ts-nocheck
 
-import clsx from 'clsx';
-import { TextareaHTMLAttributes } from 'react';
-import {
+import type { ReactElement, TextareaHTMLAttributes } from 'react';
+import type {
   Control,
   FieldError,
   FieldPath,
   FieldValues,
-  get,
   UseFormRegisterReturn,
-  useFormState,
 } from 'react-hook-form';
+
+import clsx from 'clsx';
+import { get, useFormState } from 'react-hook-form';
 
 import FormError from '../FormError/index.js';
 import FormLabel from '../FormLabel/index.js';
@@ -37,12 +37,16 @@ const TextAreaInput = function TextInput({
   value,
   register,
   rows,
-}: Props): JSX.Element {
+}: Props): ReactElement {
   const inputProps: TextareaHTMLAttributes<HTMLTextAreaElement> = {
     name,
     placeholder,
     disabled,
-    onChange: onChange && ((e) => onChange(e.target.value)),
+    onChange:
+      onChange &&
+      ((e) => {
+        onChange(e.target.value);
+      }),
     onBlur,
     value,
     rows,
@@ -69,9 +73,8 @@ TextAreaInput.Labelled = function TextInputLabelled({
   className,
   error,
   ...rest
-}: TextInputLabelledProps): JSX.Element {
+}: TextInputLabelledProps): ReactElement {
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <TextAreaInput {...rest} />
@@ -88,7 +91,7 @@ interface TextInputControllerProps<T extends FieldValues>
 
 TextAreaInput.LabelledController = function TextInputController<
   T extends FieldValues,
->({ control, name, ...rest }: TextInputControllerProps<T>): JSX.Element {
+>({ control, name, ...rest }: TextInputControllerProps<T>): ReactElement {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;
 

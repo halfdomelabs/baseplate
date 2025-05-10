@@ -2,11 +2,7 @@ import { createTsTemplateFile } from '@halfdomelabs/core-generators';
 
 const axios = createTsTemplateFile({
   name: 'axios',
-  projectExports: {
-    axiosClient: {},
-    getAxiosErrorInfo: {},
-    setupAxiosBetterStackTrace: {},
-  },
+  projectExports: { getAxiosErrorInfo: {} },
   source: { path: 'axios.ts' },
   variables: {},
 });

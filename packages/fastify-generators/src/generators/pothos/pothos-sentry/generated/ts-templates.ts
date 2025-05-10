@@ -3,7 +3,7 @@ import { createTsTemplateFile } from '@halfdomelabs/core-generators';
 const useSentry = createTsTemplateFile({
   name: 'use-sentry',
   projectExports: {},
-  source: { path: 'useSentry.ts' },
+  source: { path: 'use-sentry.ts' },
   variables: {},
 });
 

@@ -1,6 +1,8 @@
 // @ts-nocheck
 
-import { ApolloClient, from, NormalizedCacheObject } from '@apollo/client';
+import type { NormalizedCacheObject } from '@apollo/client';
+
+import { ApolloClient, from } from '@apollo/client';
 
 import { createApolloCache } from './cache.js';
 

@@ -64,11 +64,6 @@ describe('renderTsTemplateFileAction', () => {
       template: 'test.ts',
       generator: 'test-generator',
       type: TS_TEMPLATE_TYPE,
-      variables: {
-        TPL_GREETING: {
-          description: 'The greeting to use',
-        },
-      },
     });
   });
 

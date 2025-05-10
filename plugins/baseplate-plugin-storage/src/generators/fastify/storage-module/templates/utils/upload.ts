@@ -6,9 +6,10 @@ import { BadRequestError, ForbiddenError } from '%errorHandlerServiceImports';
 import { nanoid } from 'nanoid';
 
 import type { StorageAdapter } from '../adapters/index.js';
+import type { FileCategory } from '../constants/file-categories.js';
 
 import { STORAGE_ADAPTERS } from '../constants/adapters.js';
-import { FILE_CATEGORIES, FileCategory } from '../constants/file-categories.js';
+import { FILE_CATEGORIES } from '../constants/file-categories.js';
 import {
   getMimeTypeFromContentType,
   validateFileExtensionWithMimeType,
@@ -28,7 +29,7 @@ export interface UploadDataInput {
  *
  */
 function makeFileNameSafe(filename: string): string {
-  return filename.replace(/[^a-zA-Z0-9!\-_.*'()]/g, '_');
+  return filename.replaceAll(/[^a-zA-Z0-9!\-_.*'()]/g, '_');
 }
 
 export async function prepareUploadData(

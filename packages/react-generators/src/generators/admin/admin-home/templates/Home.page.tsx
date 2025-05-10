@@ -1,9 +1,11 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { useCurrentUser } from '%authHooksImports';
 import { ErrorableLoader } from '%reactComponentsImports';
 
-function HomePage(): JSX.Element {
+function HomePage(): ReactElement {
   const { user, error } = useCurrentUser();
 
   if (!user) {
@@ -13,7 +15,7 @@ function HomePage(): JSX.Element {
   return (
     <div className="space-y-4">
       <h1>Home</h1>
-      <p>Welcome {user.email ?? 'User'}!</p>
+      <p>Welcome {user.email}!</p>
     </div>
   );
 }

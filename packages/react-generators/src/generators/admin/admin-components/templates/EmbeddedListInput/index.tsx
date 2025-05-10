@@ -1,5 +1,14 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+import type {
+  Control,
+  DefaultValues,
+  FieldPath,
+  FieldPathValue,
+  FieldValues,
+} from 'react-hook-form';
+
 import {
   Alert,
   Button,
@@ -10,14 +19,7 @@ import {
 import clsx from 'clsx';
 import { nanoid } from 'nanoid';
 import { useMemo, useState } from 'react';
-import {
-  Control,
-  DefaultValues,
-  FieldPath,
-  FieldPathValue,
-  FieldValues,
-  useController,
-} from 'react-hook-form';
+import { useController } from 'react-hook-form';
 
 export interface EmbeddedListTableProps<InputType> {
   items: (InputType & { id: string })[];
@@ -33,8 +35,8 @@ export interface EmbeddedListFormProps<InputType> {
 interface Props<InputType> {
   className?: string;
   onChange: (value: InputType[]) => void;
-  renderTable: (tableProps: EmbeddedListTableProps<InputType>) => JSX.Element;
-  renderForm: (formProps: EmbeddedListFormProps<InputType>) => JSX.Element;
+  renderTable: (tableProps: EmbeddedListTableProps<InputType>) => ReactElement;
+  renderForm: (formProps: EmbeddedListFormProps<InputType>) => ReactElement;
   value: InputType[] | null | undefined;
   itemName?: string;
   defaultValue?: DefaultValues<InputType>;
@@ -48,7 +50,7 @@ function EmbeddedListInput<InputType>({
   value,
   itemName,
   defaultValue = {} as DefaultValues<InputType>,
-}: Props<InputType>): JSX.Element {
+}: Props<InputType>): ReactElement {
   const [valueToEdit, setValueToEdit] = useState<
     { idx?: number; data: DefaultValues<InputType> } | undefined
   >();
@@ -81,29 +83,40 @@ function EmbeddedListInput<InputType>({
     <div className={clsx('space-y-2', className)}>
       <Button
         size="small"
-        onClick={() => setValueToEdit({ data: defaultValue })}
+        onClick={() => {
+          setValueToEdit({ data: defaultValue });
+        }}
       >
         Add Item
       </Button>
-      {definedValue.length ? (
+      {definedValue.length > 0 ? (
         renderTable({
           items: valueWithIds,
-          edit: (idx) =>
+          edit: (idx) => {
             setValueToEdit({
               idx,
               data: definedValue[idx] as DefaultValues<InputType>,
-            }),
-          remove: (idx) => onChange(definedValue.filter((_, i) => i !== idx)),
+            });
+          },
+          remove: (idx) => {
+            onChange(definedValue.filter((_, i) => i !== idx));
+          },
         })
       ) : (
         <Alert type="info">No items currently</Alert>
       )}
       <Modal
         isOpen={!!valueToEdit}
-        onClose={() => setValueToEdit(undefined)}
+        onClose={() => {
+          setValueToEdit(undefined);
+        }}
         width="large"
       >
-        <Modal.Header onClose={() => setValueToEdit(undefined)}>
+        <Modal.Header
+          onClose={() => {
+            setValueToEdit(undefined);
+          }}
+        >
           Edit {itemName ?? 'Item'}
         </Modal.Header>
         <Modal.Body>
@@ -127,7 +140,7 @@ EmbeddedListInput.Labelled = function EmbeddedOneToOneInputLabelled<InputType>({
   className,
   error,
   ...rest
-}: EmbeddedListInputLabelledProps<InputType>): JSX.Element {
+}: EmbeddedListInputLabelledProps<InputType>): ReactElement {
   return (
     <div className={clsx('', className)}>
       <div className={className}>
@@ -163,14 +176,13 @@ EmbeddedListInput.LabelledController =
     FormType extends FieldValues,
     FormPath extends FieldPath<FormType>,
   >({
-    className,
     control,
     name,
     ...rest
   }: EmbeddedListInputLabelledControllerProps<
     FormType,
     FormPath
-  >): JSX.Element {
+  >): ReactElement {
     const {
       field,
       fieldState: { error },
@@ -183,9 +195,9 @@ EmbeddedListInput.LabelledController =
       <EmbeddedListInput.Labelled
         {...rest}
         error={error?.message}
-        onChange={(value) =>
-          field.onChange(value as FieldPathValue<FormType, FormPath>)
-        }
+        onChange={(value) => {
+          field.onChange(value as FieldPathValue<FormType, FormPath>);
+        }}
         value={
           field.value as (FieldPathValue<
             FormType,

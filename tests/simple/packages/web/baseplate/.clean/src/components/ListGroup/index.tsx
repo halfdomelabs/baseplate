@@ -1,3 +1,5 @@
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 
 interface Props {
@@ -7,7 +9,7 @@ interface Props {
 
 // based off https://flowbite.com/docs/components/list-group/
 
-function ListGroup({ className, children }: Props): JSX.Element {
+function ListGroup({ className, children }: Props): ReactElement {
   return (
     <ul
       className={clsx(
@@ -28,7 +30,7 @@ interface ListGroupItemProps {
 ListGroup.Item = function ListGroupItem({
   className,
   children,
-}: ListGroupItemProps): JSX.Element {
+}: ListGroupItemProps): ReactElement {
   return (
     <li
       className={clsx(

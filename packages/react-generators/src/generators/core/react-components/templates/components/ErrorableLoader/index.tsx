@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import Alert from '../Alert/index.js';
 import Spinner from '../Spinner/index.js';
 
@@ -15,7 +17,7 @@ function getErrorString(error: Error | string): string {
   return error;
 }
 
-function ErrorableLoader({ className, error }: Props): JSX.Element {
+function ErrorableLoader({ className, error }: Props): ReactElement {
   if (!error) {
     return <Spinner className={className} size="large" center />;
   }

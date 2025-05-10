@@ -1,7 +1,7 @@
 import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
-  eslintProvider,
+  eslintConfigProvider,
   nodeConfigProvider,
   nodeGitIgnoreProvider,
   projectProvider,
@@ -70,8 +70,9 @@ export const reactGenerator = createGenerator({
         '.env.production.local',
       ]);
     }),
-    eslint: createProviderTask(eslintProvider, (eslint) => {
-      eslint.getConfig().set('react', true).set('disableVitest', true);
+    eslintConfig: createProviderTask(eslintConfigProvider, (eslintConfig) => {
+      eslintConfig.react.set(true);
+      eslintConfig.disableVitest.set(true);
     }),
     defaultConfig: createProviderTask(
       reactBaseConfigProvider,
@@ -97,7 +98,7 @@ export const reactGenerator = createGenerator({
         // Add default server options
         reactConfig.viteServerOptions.mergeObj({
           port: tsCodeFragment(
-            'envVars.PORT ? parseInt(envVars.PORT, 10) : 3000',
+            'envVars.PORT ? Number.parseInt(envVars.PORT, 10) : 3000',
           ),
           watch: tsCodeFragment(
             JSON.stringify({

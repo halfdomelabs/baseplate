@@ -4,7 +4,9 @@ import type { ServiceContext } from '%serviceContextImports';
 
 import { BadRequestError } from '%errorHandlerServiceImports';
 
-import { prepareUploadData, UploadDataInput } from '../utils/upload.js';
+import type { UploadDataInput } from '../utils/upload.js';
+
+import { prepareUploadData } from '../utils/upload.js';
 
 interface UploadFileInput extends UploadDataInput {
   contents: Buffer;

@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom/client';
 
 TPL_HEADER;
 
-const rootElement = document.getElementById('root');
+const rootElement = document.querySelector('#root');
 if (!rootElement) {
   throw new Error('Failed to find the root element');
 }

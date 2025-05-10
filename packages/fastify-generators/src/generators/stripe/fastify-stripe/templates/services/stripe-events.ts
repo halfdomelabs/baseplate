@@ -1,11 +1,12 @@
 // @ts-nocheck
 
+import type Stripe from 'stripe';
+
 import { logger } from '%loggerServiceImports';
-import Stripe from 'stripe';
 
 export type StripeEventHandler = (event: Stripe.Event) => Promise<void>;
 
-const eventHandlers: Record<string, StripeEventHandler> = {};
+const eventHandlers: Partial<Record<string, StripeEventHandler>> = {};
 
 /**
  * Service that allows registering handlers from Stripe events.

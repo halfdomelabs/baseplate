@@ -1,6 +1,8 @@
 // @ts-nocheck
 
-import Fastify, { FastifyInstance, FastifyServerOptions } from 'fastify';
+import type { FastifyInstance, FastifyServerOptions } from 'fastify';
+
+import Fastify from 'fastify';
 import { nanoid } from 'nanoid';
 
 export async function buildServer(
@@ -21,10 +23,9 @@ export async function buildServer(
 
   // register app plugins
   const plugins = TPL_ROOT_MODULE.plugins ?? [];
-  await plugins.reduce(
-    (promise, plugin) => promise.then(() => fastify.register(plugin)),
-    Promise.resolve(),
-  );
+  for (const plugin of plugins) {
+    await fastify.register(plugin);
+  }
 
   return fastify;
 }

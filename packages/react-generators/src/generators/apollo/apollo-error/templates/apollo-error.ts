@@ -11,7 +11,7 @@ export function getApolloErrorCode<T extends readonly string[]>(
     return null;
   }
   const gqlError = error.graphQLErrors.find((err) =>
-    allowedCodes.includes(err.extensions?.code as string),
+    allowedCodes.includes(err.extensions.code as string),
   );
-  return (gqlError?.extensions?.code as T[number]) ?? null;
+  return (gqlError?.extensions.code as T[number] | undefined) ?? null;
 }

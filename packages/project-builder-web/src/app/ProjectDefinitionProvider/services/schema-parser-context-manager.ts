@@ -19,9 +19,7 @@ export class SchemaParserContextManager {
   }
 
   async loadSchemaParserContext(): Promise<SchemaParserContext> {
-    if (!this._pluginsMetadata) {
-      this._pluginsMetadata = await getPluginsMetadata(this.projectId);
-    }
+    this._pluginsMetadata ??= await getPluginsMetadata(this.projectId);
     resetPluginModuleSeed();
     this._schemaParserContext = await createWebSchemaParserContext(
       this.projectId,

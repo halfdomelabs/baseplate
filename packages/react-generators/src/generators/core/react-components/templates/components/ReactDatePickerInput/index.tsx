@@ -1,23 +1,24 @@
 // @ts-nocheck
 
-import { format, parseISO } from 'date-fns';
-import {
+import type {
   FocusEventHandler,
-  forwardRef,
   KeyboardEventHandler,
-  useMemo,
+  ReactElement,
 } from 'react';
-import DatePicker from 'react-datepicker';
-import {
+import type {
   ChangeHandler,
   Control,
   FieldPath,
   FieldPathValue,
   FieldValues,
   RefCallBack,
-  useController,
   UseFormRegisterReturn,
 } from 'react-hook-form';
+
+import { format, parseISO } from 'date-fns';
+import { forwardRef, useMemo } from 'react';
+import DatePicker from 'react-datepicker';
+import { useController } from 'react-hook-form';
 
 import FormError from '../FormError/index.js';
 import FormLabel from '../FormLabel/index.js';
@@ -46,7 +47,7 @@ const DatePickerTextInput = forwardRef<
     placeholder?: string;
     name?: string;
   }
->(({ onChange, onClick, onBlur, name, ...rest }, ref) => (
+>(({ onChange, onBlur, name, ...rest }, ref) => (
   <TextInput
     register={
       {
@@ -69,17 +70,17 @@ function ReactDatePickerInput({
   value,
   showTimeSelect,
   isClearable,
-}: Props): JSX.Element {
+}: Props): ReactElement {
   const selectedDate = useMemo(() => (value ? parseISO(value) : null), [value]);
   return (
     <DatePicker
       className={className}
-      onChange={(date) =>
+      onChange={(date) => {
         onChange(
           date &&
             (showTimeSelect ? date.toISOString() : format(date, 'yyyy-MM-dd')),
-        )
-      }
+        );
+      }}
       onBlur={onBlur}
       selected={selectedDate}
       customInput={<DatePickerTextInput />}
@@ -115,7 +116,7 @@ ReactDatePickerInput.Labelled = function ReactDatePickerInputLabelled({
   className,
   error,
   ...rest
-}: ReactDatePickerInputLabelledProps): JSX.Element {
+}: ReactDatePickerInputLabelledProps): ReactElement {
   return (
     <div className={className}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -142,14 +143,13 @@ ReactDatePickerInput.LabelledController =
     TFieldValues extends FieldValues = FieldValues,
     TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   >({
-    className,
     name,
     control,
     ...rest
   }: ReactDatePickerInputLabelledControllerProps<
     TFieldValues,
     TFieldName
-  >): JSX.Element {
+  >): ReactElement {
     const {
       field,
       fieldState: { error },

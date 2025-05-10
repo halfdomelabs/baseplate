@@ -13,7 +13,7 @@ function getWsUrl(): string {
     );
   }
   // handle relative API endpoint, e.g. /api/graphql
-  const { protocol, host } = window.location;
+  const { protocol, host } = globalThis.location;
   const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
   return `${wsProtocol}//${host}${config.VITE_GRAPH_API_ENDPOINT}`;
 }

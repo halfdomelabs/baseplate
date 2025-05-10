@@ -1,3 +1,5 @@
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 
 interface Props {
@@ -7,7 +9,7 @@ interface Props {
 
 // https://flowbite.com/docs/components/tables/
 
-function Table({ className, children }: Props): JSX.Element {
+function Table({ className, children }: Props): ReactElement {
   return (
     <div className={clsx('flex flex-col', className)}>
       <div className="overflow-x-auto sm:-mx-2 lg:-mx-4">
@@ -29,7 +31,7 @@ interface TableHeadProps {
 Table.Head = function TableHead({
   className,
   children,
-}: TableHeadProps): JSX.Element {
+}: TableHeadProps): ReactElement {
   return (
     <thead className={clsx('bg-gray-50 dark:bg-gray-700', className)}>
       {children}
@@ -45,7 +47,7 @@ interface TableHeadRowProps {
 Table.HeadRow = function TableHeadRow({
   className,
   children,
-}: TableHeadRowProps): JSX.Element {
+}: TableHeadRowProps): ReactElement {
   return <tr className={className}>{children}</tr>;
 };
 
@@ -57,7 +59,7 @@ interface TableHeadCellProps {
 Table.HeadCell = function TableHeadCell({
   className,
   children,
-}: TableHeadCellProps): JSX.Element {
+}: TableHeadCellProps): ReactElement {
   return (
     <th
       scope="col"
@@ -79,7 +81,7 @@ interface TableBodyProps {
 Table.Body = function TableBody({
   className,
   children,
-}: TableBodyProps): JSX.Element {
+}: TableBodyProps): ReactElement {
   return <tbody className={clsx('', className)}>{children}</tbody>;
 };
 
@@ -91,7 +93,7 @@ interface TableRowProps {
 Table.Row = function TableRow({
   className,
   children,
-}: TableRowProps): JSX.Element {
+}: TableRowProps): ReactElement {
   return (
     <tr
       className={clsx(
@@ -112,7 +114,7 @@ interface TableCellProps {
 Table.Cell = function TableCell({
   className,
   children,
-}: TableCellProps): JSX.Element {
+}: TableCellProps): ReactElement {
   return (
     <td
       className={clsx(

@@ -87,7 +87,7 @@ export const adminCrudEditGenerator = createGenerator({
         );
 
         const formDataName = `${modelName}FormData`;
-        const formDataExpression = TsCodeUtils.importFragment(
+        const formDataExpression = TsCodeUtils.typeImportFragment(
           formDataName,
           editSchemaPath,
         );

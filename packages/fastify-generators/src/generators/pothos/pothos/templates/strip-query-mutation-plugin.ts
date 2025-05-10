@@ -1,7 +1,10 @@
 // @ts-nocheck
 
-import SchemaBuilder, { BasePlugin, SchemaTypes } from '@pothos/core';
-import { GraphQLObjectType, GraphQLSchema } from 'graphql';
+import type { SchemaTypes } from '@pothos/core';
+import type { GraphQLObjectType } from 'graphql';
+
+import SchemaBuilder, { BasePlugin } from '@pothos/core';
+import { GraphQLSchema } from 'graphql';
 
 export const pothosStripQueryMutationPlugin = 'stripQueryMutation';
 

@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { Readable } from 'node:stream';
+
 import {
   DeleteObjectsCommand,
   GetObjectCommand,
@@ -8,9 +10,8 @@ import {
 } from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { Readable } from 'stream';
 
-import {
+import type {
   AdapterPresignedUploadUrlInput,
   AdapterPresignedUploadUrlPayload,
   StorageAdapter,

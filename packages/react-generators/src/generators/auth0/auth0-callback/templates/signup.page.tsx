@@ -1,18 +1,20 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { Alert, Button, Card, Spinner } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
-function SignupPage(): JSX.Element {
+function SignupPage(): ReactElement {
   const { loginWithRedirect, isAuthenticated } = useAuth0();
   const [error, setError] = useState<string | null>(null);
 
   const redirectToSignup = useCallback((): void => {
     loginWithRedirect({ authorizationParams: { screen_hint: 'signup' } }).catch(
-      (err) => {
+      (err: unknown) => {
         setError(logAndFormatError(err));
       },
     );

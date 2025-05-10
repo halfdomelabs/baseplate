@@ -27,7 +27,7 @@ export function renderTsTemplateToTsCodeFragment(
   options: RenderTsTemplateOptions = {},
 ): TsCodeFragment {
   // strip any ts-nocheck from header
-  let renderedTemplate = template.replace(/^\/\/ @ts-nocheck\n/, '');
+  let renderedTemplate = template.replace(/^\/\/ @ts-nocheck\n/m, '');
   // Replace variables with their values
   const prefix = options.prefix ?? 'TPL_';
   const includeMetadata = options.includeMetadata ?? false;
@@ -51,6 +51,10 @@ export function renderTsTemplateToTsCodeFragment(
     { key: string; value: TsTemplateFileVariableValue }
   >();
   const tsxMarkers = new Map<
+    string,
+    { key: string; value: TsTemplateFileVariableValue }
+  >();
+  const commentMarkers = new Map<
     string,
     { key: string; value: TsTemplateFileVariableValue }
   >();
@@ -89,7 +93,24 @@ export function renderTsTemplateToTsCodeFragment(
     },
   );
 
-  // --- Pass 3: Replace inline placeholders with unique markers ---
+  // --- Pass 3: Replace comment placeholders with unique markers ---
+  const commentRegex = new RegExp(`\\/\\* (${prefix}[A-Z0-9_]+) \\*\\/`, 'g');
+  renderedTemplate = renderedTemplate.replace(
+    commentRegex,
+    (match, key: string) => {
+      if (!(key in variables)) {
+        throw new Error(`Template variable not found: ${key}`);
+      }
+
+      const marker = `__COMMENT_MARKER_${commentMarkers.size}__`; // Unique marker
+      commentMarkers.set(marker, { key, value: variables[key] });
+      variableKeys.delete(key); // Mark as used
+
+      return marker; // Replace with marker
+    },
+  );
+
+  // --- Pass 4: Replace inline placeholders with unique markers ---
   // This regex ensures the TPL_ variable is not immediately followed by another valid variable character
   const inlineRegex = new RegExp(`(${prefix}[A-Z0-9_]+)([^A-Z0-9_]|$)`, 'g');
   renderedTemplate = renderedTemplate.replace(
@@ -120,7 +141,7 @@ export function renderTsTemplateToTsCodeFragment(
     );
   }
 
-  // --- Pass 4: Resolve markers ---
+  // --- Pass 5: Resolve markers ---
   // Resolve block markers
   for (const [marker, { key, leading, value }] of blockMarkers.entries()) {
     const contents = typeof value === 'string' ? value : value.contents;
@@ -137,6 +158,17 @@ export function renderTsTemplateToTsCodeFragment(
     const contents = typeof value === 'string' ? value : value.contents;
     const replacement = includeMetadata
       ? `{/* ${key}:START */}\n${contents}\n{/* ${key}:END */}`
+      : contents;
+
+    // Use replace instead of replaceAll as markers are unique
+    renderedTemplate = renderedTemplate.replace(marker, replacement);
+  }
+
+  // Resolve comment markers
+  for (const [marker, { key, value }] of commentMarkers.entries()) {
+    const contents = typeof value === 'string' ? value : value.contents;
+    const replacement = includeMetadata
+      ? `/* ${key}:COMMENT:START */\n${contents}\n/* ${key}:COMMENT:END */`
       : contents;
 
     // Use replace instead of replaceAll as markers are unique

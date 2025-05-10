@@ -10,7 +10,7 @@ import {
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createConfigProviderTaskWithInfo,
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderTask,
@@ -47,7 +47,7 @@ export interface ReactConfigEntry {
 }
 
 const [setupTask, reactConfigProvider, reactConfigValuesProvider] =
-  createConfigProviderTaskWithInfo(
+  createConfigProviderTask(
     (t) => ({
       // The config entries for the react app.
       configEntries: t.map<string, ReactConfigEntry>(),
@@ -57,15 +57,6 @@ const [setupTask, reactConfigProvider, reactConfigValuesProvider] =
     {
       prefix: 'react-config',
       configScope: projectScope,
-      // TODO: Temporary until we remove the need for the old typescript import map
-      infoFromDescriptor: () => ({
-        getImportMap: () => ({
-          '%react-config': {
-            path: '@/src/services/config',
-            allowedImports: ['config'],
-          },
-        }),
-      }),
     },
   );
 
@@ -76,7 +67,7 @@ export const reactConfigGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    setup: setupTask({}),
+    setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['zod']),
     }),

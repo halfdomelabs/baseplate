@@ -44,8 +44,7 @@ export const FASTIFY_PACKAGES = {
   ms: '2.1.3',
   '@types/redis-info': '3.0.3',
   '@types/ms': '0.7.34',
-  lodash: '4.17.21',
-  '@types/lodash': '4.17.7',
+  'es-toolkit': '1.31.0',
   uuid: '9.0.0',
   '@types/uuid': '9.0.1',
 
@@ -63,9 +62,9 @@ export const FASTIFY_PACKAGES = {
   'ioredis-mock': '8.7.0',
 
   // Sentry
-  '@sentry/core': '9.10.1',
-  '@sentry/node': '9.10.1',
-  '@sentry/profiling-node': '9.10.1',
+  '@sentry/core': '9.17.0',
+  '@sentry/node': '9.17.0',
+  '@sentry/profiling-node': '9.17.0',
   '@pothos/plugin-tracing': '1.1.0',
   '@pothos/tracing-sentry': '1.1.1',
 

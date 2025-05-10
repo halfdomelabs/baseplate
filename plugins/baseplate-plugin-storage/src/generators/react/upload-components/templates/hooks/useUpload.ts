@@ -74,9 +74,9 @@ export function useUpload<FileMetadata>({
 
         const formData = new FormData();
 
-        uploadParams.fields.forEach(({ name, value }) => {
+        for (const { name, value } of uploadParams.fields) {
           formData.append(name, value);
-        });
+        }
 
         if (
           !uploadParams.fields.some(
@@ -115,7 +115,7 @@ export function useUpload<FileMetadata>({
         }
       };
 
-      upload().catch((err) => {
+      upload().catch((err: unknown) => {
         setIsUploading(false);
         if (abortController.signal.aborted) {
           return;

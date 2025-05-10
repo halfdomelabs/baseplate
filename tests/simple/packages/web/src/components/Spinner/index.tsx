@@ -1,3 +1,5 @@
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 
@@ -13,14 +15,21 @@ function Spinner({
   size = 'medium',
   center,
   noDelay,
-}: Props): JSX.Element | null {
+}: Props): ReactElement | null {
   const [show, setShow] = useState(noDelay);
 
   useEffect(() => {
     if (noDelay) setShow(true);
 
-    const showDelayTimeout = setTimeout(() => setShow(true), noDelay ? 0 : 500);
-    return () => clearTimeout(showDelayTimeout);
+    const showDelayTimeout = setTimeout(
+      () => {
+        setShow(true);
+      },
+      noDelay ? 0 : 500,
+    );
+    return () => {
+      clearTimeout(showDelayTimeout);
+    };
   }, [noDelay]);
 
   if (!show) {

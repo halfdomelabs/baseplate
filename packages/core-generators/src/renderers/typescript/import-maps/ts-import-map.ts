@@ -38,15 +38,22 @@ export function createTsImportMap<
       const makeDeclaration = (
         alias?: string,
         isTypeOnly?: boolean,
-      ): TsImportDeclaration => ({
-        moduleSpecifier,
-        ...(name === 'default'
-          ? { defaultImport: alias ?? key }
-          : {
-              namedImports: [{ name, alias }],
-            }),
-        isTypeOnly,
-      });
+      ): TsImportDeclaration => {
+        if (value.isTypeOnly && !isTypeOnly) {
+          throw new Error(
+            `Import ${name} in ${moduleSpecifier} must be marked with type-only imports`,
+          );
+        }
+        return {
+          moduleSpecifier,
+          ...(name === 'default'
+            ? { defaultImport: alias ?? key }
+            : {
+                namedImports: [{ name, alias }],
+              }),
+          isTypeOnly,
+        };
+      };
 
       return [
         key,
@@ -54,14 +61,7 @@ export function createTsImportMap<
           name,
           moduleSpecifier,
           isTypeOnly: value.isTypeOnly,
-          declaration: (alias) => {
-            if (value.isTypeOnly) {
-              throw new Error(
-                `Type only imports cannot be marked as non-type only imports: ${name} in ${moduleSpecifier}`,
-              );
-            }
-            return makeDeclaration(alias);
-          },
+          declaration: (alias) => makeDeclaration(alias),
           typeDeclaration: (alias) => makeDeclaration(alias, true),
           fragment: () => tsCodeFragment(name, makeDeclaration()),
           typeFragment: () =>

@@ -2,7 +2,6 @@ import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import {
   createNodePackagesTask,
-  eslintProvider,
   extractPackageVersions,
   nodeProvider,
   prettierProvider,
@@ -169,7 +168,6 @@ export const pothosGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
-        eslint: eslintProvider,
         requestServiceContextImports: requestServiceContextImportsProvider,
         prettier: prettierProvider,
         appModuleImports: appModuleImportsProvider,
@@ -201,7 +199,7 @@ export const pothosGenerator = createGenerator({
             const schemaTypeOptionsFragment =
               TsCodeUtils.mergeFragmentsAsInterfaceContent({
                 Context:
-                  requestServiceContextImports.RequestServiceContext.fragment(),
+                  requestServiceContextImports.RequestServiceContext.typeFragment(),
                 Scalars:
                   customScalars.size > 0
                     ? TsCodeUtils.mergeFragmentsAsObject(
@@ -226,7 +224,7 @@ export const pothosGenerator = createGenerator({
             );
             const stripQueryMutationPluginPath = path.posix.join(
               basePath,
-              'stripQueryMutationPlugin.ts',
+              'strip-query-mutation-plugin.ts',
             );
 
             const DEFAULT_PLUGINS = {
@@ -302,7 +300,7 @@ export const pothosGenerator = createGenerator({
 async function writeSchemaToFile(): Promise<void> {
   // only write the schema to file if it has changed to avoid unnecessary GraphQL codegen generations
   const existingSchema = await fs
-    .readFile('./schema.graphql', 'utf-8')
+    .readFile('./schema.graphql', 'utf8')
     .catch(() => undefined);
   const newSchema = printSchema(lexicographicSortSchema(schema));
   if (existingSchema !== newSchema) {
@@ -310,19 +308,22 @@ async function writeSchemaToFile(): Promise<void> {
   }
 
   if (process.argv.includes('--exit-after-generate-schema')) {
+    // eslint-disable-next-line unicorn/no-process-exit -- we want to exit after the schema is generated
     process.exit(0);
   }
 }
 
-if (IS_DEVELOPMENT) {
-  writeSchemaToFile().catch((err) => logger.error(err));
+if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
+  writeSchemaToFile().catch((err: unknown) => {
+    logger.error(err);
+  });
 }`,
                 [
                   tsImportBuilder([
                     'printSchema',
                     'lexicographicSortSchema',
                   ]).from('graphql'),
-                  tsImportBuilder().default('fs').from('fs/promises'),
+                  tsImportBuilder().default('fs').from('node:fs/promises'),
                 ],
               ),
             );

@@ -5,7 +5,7 @@ import App from './app/App';
 
 import './index.css';
 
-const rootElement = document.getElementById('root');
+const rootElement = document.querySelector('#root');
 if (!rootElement) {
   throw new Error('Failed to find the root element');
 }

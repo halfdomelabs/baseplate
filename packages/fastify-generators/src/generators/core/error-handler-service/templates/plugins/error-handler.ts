@@ -12,7 +12,7 @@ const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
  * Handles errors from Fastify route handlers, sending the correct code
  * if an HttpError was thrown.
  */
-export const errorHandlerPlugin = fp(async (fastify) => {
+export const errorHandlerPlugin = fp((fastify, opts, done) => {
   fastify.setNotFoundHandler((req) => {
     throw new NotFoundError(`${req.method} ${req.url} not found`);
   });
@@ -42,9 +42,11 @@ export const errorHandlerPlugin = fp(async (fastify) => {
         statusCode: error.statusCode,
         reqId: request.id,
         originalError: IS_DEVELOPMENT
-          ? { message: error?.message, stack: error?.stack }
+          ? { message: error.message, stack: error.stack }
           : undefined,
       });
     }
   });
+
+  done();
 });

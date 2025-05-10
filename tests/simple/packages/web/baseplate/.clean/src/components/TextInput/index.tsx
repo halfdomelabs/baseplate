@@ -1,21 +1,22 @@
-import clsx from 'clsx';
-import {
+import type {
   FocusEventHandler,
   HTMLInputTypeAttribute,
   InputHTMLAttributes,
   KeyboardEventHandler,
   MouseEventHandler,
+  ReactElement,
 } from 'react';
-import {
+import type {
   Control,
   FieldError,
   FieldPath,
   FieldValues,
-  get,
   RegisterOptions,
   UseFormRegisterReturn,
-  useFormState,
 } from 'react-hook-form';
+
+import clsx from 'clsx';
+import { get, useFormState } from 'react-hook-form';
 
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
@@ -48,13 +49,17 @@ const TextInput = function TextInput({
   onKeyDown,
   value,
   register,
-}: Props): JSX.Element {
+}: Props): ReactElement {
   const inputProps: InputHTMLAttributes<HTMLInputElement> = {
     name,
     placeholder,
     disabled,
     type,
-    onChange: onChange && ((e) => onChange(e.target.value)),
+    onChange:
+      onChange &&
+      ((e) => {
+        onChange(e.target.value);
+      }),
     onBlur,
     onClick,
     onFocus,
@@ -83,9 +88,8 @@ TextInput.Labelled = function TextInputLabelled({
   className,
   error,
   ...rest
-}: TextInputLabelledProps): JSX.Element {
+}: TextInputLabelledProps): ReactElement {
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <TextInput {...rest} />
@@ -111,7 +115,7 @@ TextInput.LabelledController = function TextInputController<
   name,
   registerOptions,
   ...rest
-}: TextInputControllerProps<TFieldValues, TFieldName>): JSX.Element {
+}: TextInputControllerProps<TFieldValues, TFieldName>): ReactElement {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;
 

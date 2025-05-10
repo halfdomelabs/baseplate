@@ -7,12 +7,11 @@ import { getMainDefinition, Observable } from '@apollo/client/utilities';
 import { Kind } from 'graphql';
 
 export const apolloSentryLink = new ApolloLink((operation, forward) => {
-  operation.setContext({ startAt: new Date().getTime() });
+  operation.setContext({ startAt: Date.now() });
   return new Observable((observer) => {
     function logResult(error?: Error): void {
       try {
-        const operationDuration =
-          new Date().getTime() - operation.getContext().startAt;
+        const operationDuration = Date.now() - operation.getContext().startAt;
         const { operationName, query } = operation;
         const definition = getMainDefinition(query);
         const operationType =
@@ -24,7 +23,7 @@ export const apolloSentryLink = new ApolloLink((operation, forward) => {
           type: 'query',
           category: 'graphql',
           message: `${operationType} ${operationName} [${operationDuration}ms]${
-            error ? ` (Error: ${error?.message})` : ''
+            error ? ` (Error: ${error.message})` : ''
           }`,
           level: error ? 'error' : 'info',
         });
@@ -35,7 +34,7 @@ export const apolloSentryLink = new ApolloLink((operation, forward) => {
 
     const sub = forward(operation).subscribe({
       next: (result) => {
-        logResult(result?.errors?.[0]);
+        logResult(result.errors?.[0]);
         observer.next(result);
       },
       error: (error) => {

@@ -20,7 +20,6 @@ export default async function setup(): Promise<void> {
     process.env.ORIGINAL_DATABASE_URL = process.env.DATABASE_URL;
     process.env.DATABASE_URL = testDatabaseUrl;
 
-    // eslint-disable-next-line no-console
     console.info('\nDatabase migrations ran!');
   }
 }

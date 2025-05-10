@@ -83,8 +83,11 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
     groupName: string,
     files: TemplateFileExtractorFile<TextTemplateFileMetadata>[],
   ): Promise<TypescriptCodeEntry> {
+    const sortedFiles = files.sort((a, b) =>
+      a.metadata.name.localeCompare(b.metadata.name),
+    );
     const results = await Promise.all(
-      files.map((file) => this.extractTemplateFile(file)),
+      sortedFiles.map((file) => this.extractTemplateFile(file)),
     );
 
     const originalPaths = results.map((result) => result.originalPath);
@@ -132,12 +135,16 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
     const filesWithoutGroups = files.filter((file) => !file.metadata.group);
 
     const results = await Promise.all([
-      ...[...filesByGroups].map(([groupName, files]) =>
-        extractLimit(() => this.extractTemplateFilesForGroup(groupName, files)),
-      ),
-      ...filesWithoutGroups.map((file) =>
-        extractLimit(() => this.extractTemplateFile(file)),
-      ),
+      ...[...filesByGroups]
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([groupName, files]) =>
+          extractLimit(() =>
+            this.extractTemplateFilesForGroup(groupName, files),
+          ),
+        ),
+      ...filesWithoutGroups
+        .sort((a, b) => a.metadata.name.localeCompare(b.metadata.name))
+        .map((file) => extractLimit(() => this.extractTemplateFile(file))),
     ]);
 
     if (!generatorName.includes('#')) {

@@ -96,9 +96,7 @@ export class SyncMetadataController extends TypedEventEmitter<{
   }
 
   async getMetadata(): Promise<SyncMetadata> {
-    if (!this.syncMetadata) {
-      this.syncMetadata = await this.readSyncMetadata();
-    }
+    this.syncMetadata ??= await this.readSyncMetadata();
 
     return this.syncMetadata;
   }

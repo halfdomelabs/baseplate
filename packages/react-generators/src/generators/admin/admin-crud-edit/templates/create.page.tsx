@@ -1,9 +1,11 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { BackButton, useToast } from '%reactComponentsImports';
 import { useNavigate } from 'react-router-dom';
 
-function TPL_COMPONENT_NAME(): JSX.Element {
+function TPL_COMPONENT_NAME(): ReactElement {
   TPL_DATA_LOADER;
 
   const [TPL_MUTATION_NAME] = TPL_CREATE_MUTATION({

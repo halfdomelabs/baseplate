@@ -1,115 +1,143 @@
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
-
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createNonOverwriteableMap,
-  createProviderType,
 } from '@halfdomelabs/sync';
+import { quot } from '@halfdomelabs/utils';
 
 import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
+import { TsCodeUtils } from '@src/renderers/index.js';
+import { extractPackageVersions } from '@src/utils/extract-packages.js';
 
 import { nodeProvider } from '../node/node.generator.js';
-import { generateConfig } from './generate-config.js';
+import { typescriptFileProvider } from '../typescript/typescript.generator.js';
+import { NODE_ESLINT_TS_TEMPLATES } from './generated/ts-templates.js';
+import { REACT_ESLINT_RULES } from './react-rules.js';
+import { VITEST_ESLINT_RULES } from './vitest-rules.js';
 
-interface EslintConfig {
-  react?: boolean;
-  eslintIgnore: string[];
-  extraTsconfigProjects: string[];
-  disableVitest?: boolean;
-}
+const [setupTask, eslintConfigProvider, eslintConfigValuesProvider] =
+  createConfigProviderTask(
+    (t) => ({
+      react: t.scalar<boolean>(),
+      eslintIgnore: t.array<string>([
+        'dist',
+        'node_modules',
+        'build',
+        'src/generated/graphql.tsx',
+        'baseplate',
+      ]),
+      devDependencies: t.array<string>([
+        // allow dev dependencies for test files
+        '**/*.test-helper.{js,ts,jsx,tsx}',
+        '**/*.test.{js,ts,jsx,tsx}',
+        '**/*.bench.{js,ts,jsx,tsx}',
+        '**/tests/**/*',
+        '**/__mocks__/**/*',
+        // allow dev dependencies for config files at root level
+        '*.{js,ts,mjs,mts,cjs,cts}',
+        '.*.{js,ts,mjs,mts,cjs,cts}',
+      ]),
+      disableVitest: t.scalar<boolean>(),
+      tsDefaultProjectFiles: t.array<string>(),
+    }),
+    {
+      prefix: 'eslint',
+      configScope: projectScope,
+    },
+  );
 
-export interface EslintProvider {
-  getConfig(): NonOverwriteableMap<EslintConfig>;
-}
-
-export const eslintProvider = createProviderType<EslintProvider>('eslint');
+export { eslintConfigProvider };
 
 export const eslintGenerator = createGenerator({
   name: 'node/eslint',
   generatorFileUrl: import.meta.url,
   buildTasks: () => ({
+    setup: setupTask,
+    node: createGeneratorTask({
+      dependencies: {
+        node: nodeProvider,
+        eslintConfigValues: eslintConfigValuesProvider,
+      },
+      run({ node, eslintConfigValues: { react, disableVitest } }) {
+        node.packages.addDevPackages({
+          ...extractPackageVersions(CORE_PACKAGES, [
+            '@eslint/js',
+            'eslint',
+            'eslint-config-prettier',
+            'eslint-import-resolver-typescript',
+            'eslint-plugin-import-x',
+            'eslint-plugin-perfectionist',
+            'eslint-plugin-unicorn',
+            'typescript-eslint',
+          ]),
+          ...(react
+            ? extractPackageVersions(CORE_PACKAGES, [
+                'eslint-plugin-jsx-a11y',
+                'eslint-plugin-react',
+                'eslint-plugin-react-hooks',
+              ])
+            : {}),
+          ...(disableVitest
+            ? {}
+            : extractPackageVersions(CORE_PACKAGES, ['@vitest/eslint-plugin'])),
+        });
+        node.scripts.set('lint', 'eslint .');
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
+        eslintConfigValues: eslintConfigValuesProvider,
+        typescriptFile: typescriptFileProvider,
       },
-      exports: {
-        eslint: eslintProvider.export(projectScope),
-      },
-      run({ node }) {
-        const configMap = createNonOverwriteableMap<EslintConfig>(
-          {
-            eslintIgnore: ['/coverage', '/dist', '/lib', '/node_modules'],
-            extraTsconfigProjects: [],
-          },
-          { name: 'eslint-config', mergeArraysUniquely: true },
-        );
+      run({
+        node,
+        eslintConfigValues: {
+          react,
+          eslintIgnore,
+          tsDefaultProjectFiles,
+          disableVitest,
+          devDependencies,
+        },
+        typescriptFile,
+      }) {
+        const defaultProjectFiles = [...tsDefaultProjectFiles];
+        if (!disableVitest) {
+          defaultProjectFiles.push('vitest.config.ts');
+        }
         return {
-          providers: {
-            eslint: {
-              getConfig: () => configMap,
-            },
-          },
-          build: (builder) => {
-            // build eslint configuration
-            const config = configMap.value();
-            const eslintConfig = generateConfig({
-              react: config.react,
-              extraTsconfigProjects: config.extraTsconfigProjects,
-              disableVitest: config.disableVitest,
-            });
+          build: async (builder) => {
+            const eslintConfigPath = node.isEsm
+              ? 'eslint.config.js'
+              : 'eslint.config.mjs';
 
-            const reactPackages: Record<string, string> = config.react
-              ? {
-                  'eslint-plugin-jsx-a11y':
-                    CORE_PACKAGES['eslint-plugin-jsx-a11y'],
-                  'eslint-plugin-react': CORE_PACKAGES['eslint-plugin-react'],
-                  'eslint-plugin-react-hooks':
-                    CORE_PACKAGES['eslint-plugin-react-hooks'],
-                }
-              : {};
-
-            node.packages.addDevPackages({
-              '@typescript-eslint/eslint-plugin':
-                CORE_PACKAGES['@typescript-eslint/eslint-plugin'],
-              '@typescript-eslint/parser':
-                CORE_PACKAGES['@typescript-eslint/parser'],
-              eslint: CORE_PACKAGES.eslint,
-              ...reactPackages,
-              'eslint-config-prettier': CORE_PACKAGES['eslint-config-prettier'],
-              'eslint-import-resolver-typescript':
-                CORE_PACKAGES['eslint-import-resolver-typescript'],
-              'eslint-plugin-import': CORE_PACKAGES['eslint-plugin-import'],
-              ...(config.disableVitest
-                ? {}
-                : {
-                    'eslint-plugin-vitest':
-                      CORE_PACKAGES['eslint-plugin-vitest'],
-                  }),
-            });
-            node.scripts.set('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');
-
-            const eslintDestination = node.isEsm
-              ? '.eslintrc.cjs'
-              : '.eslintrc.js';
-
-            builder.writeFile({
-              id: 'eslint-config',
-              destination: eslintDestination,
-              contents: `module.exports = ${JSON.stringify(
-                eslintConfig,
-                null,
-                2,
-              )}`,
-            });
-
-            // generate ignore file
-            builder.writeFile({
-              id: 'eslint-ignore',
-              destination: '.eslintignore',
-              contents: `${config.eslintIgnore.toSorted().join('\n')}\n`,
-            });
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: NODE_ESLINT_TS_TEMPLATES.eslintConfig,
+                destination: eslintConfigPath,
+                variables: {
+                  TPL_DEFAULT_PROJECT_FILES:
+                    TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                      defaultProjectFiles.map(quot).toSorted(),
+                    ),
+                  TPL_DEV_DEPENDENCIES:
+                    TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                      devDependencies.map(quot).toSorted(),
+                    ),
+                  TPL_IGNORE_FILES: TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                    eslintIgnore.map(quot).toSorted(),
+                  ),
+                  TPL_EXTRA_CONFIGS: TsCodeUtils.mergeFragments(
+                    {
+                      react: react ? REACT_ESLINT_RULES : undefined,
+                      vitest: disableVitest ? undefined : VITEST_ESLINT_RULES,
+                    },
+                    '\n\n',
+                  ),
+                },
+              }),
+            );
           },
         };
       },

@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import clsx from 'clsx';
 
 interface Props {
@@ -7,7 +9,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-function FormLabel({ className, children }: Props): JSX.Element {
+function FormLabel({ className, children }: Props): ReactElement {
   return (
     <div
       className={clsx(

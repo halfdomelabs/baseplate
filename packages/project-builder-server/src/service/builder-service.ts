@@ -392,13 +392,11 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
   }
 
   public async getSchemaParserContext(): Promise<SchemaParserContext> {
-    if (!this.schemaParserContext) {
-      this.schemaParserContext = await createNodeSchemaParserContext(
-        this.directory,
-        this.logger,
-        this.builtInPlugins,
-      );
-    }
+    this.schemaParserContext ??= await createNodeSchemaParserContext(
+      this.directory,
+      this.logger,
+      this.builtInPlugins,
+    );
     return this.schemaParserContext;
   }
 

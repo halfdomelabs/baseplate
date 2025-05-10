@@ -1,8 +1,4 @@
-import {
-  eslintProvider,
-  nodeProvider,
-  projectScope,
-} from '@halfdomelabs/core-generators';
+import { nodeProvider, projectScope } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -32,15 +28,11 @@ export const fastifyScriptsGenerator = createGenerator({
       dependencies: {
         node: nodeProvider,
         fastifyOutput: fastifyOutputProvider,
-        eslint: eslintProvider,
       },
       exports: {
         fastifyScripts: fastifyScriptsProvider.export(projectScope),
       },
-      run({ node, fastifyOutput, eslint }) {
-        eslint
-          .getConfig()
-          .appendUnique('extraTsconfigProjects', ['./scripts/tsconfig.json']);
+      run({ node, fastifyOutput }) {
         node.scripts.mergeObj({
           'run:script': ['tsx', ...fastifyOutput.getNodeFlagsDev()].join(' '),
           'dev:script': [

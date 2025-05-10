@@ -1,9 +1,10 @@
+import type { ReactElement } from 'react';
+
 import * as React from 'react';
 
-import {
-  UseConfirmDialogRequestOptions,
-  useConfirmDialogState,
-} from '@src/hooks/useConfirmDialog';
+import type { UseConfirmDialogRequestOptions } from '@src/hooks/useConfirmDialog';
+
+import { useConfirmDialogState } from '@src/hooks/useConfirmDialog';
 
 import Button from '../Button';
 import Modal from '../Modal';
@@ -12,7 +13,7 @@ import Modal from '../Modal';
  * A confirm dialog that is placed at the top level of the page
  * enabling the use of the useConfirmDialog hook.
  */
-export function ConfirmDialog(): JSX.Element {
+export function ConfirmDialog(): ReactElement {
   const { confirmOptions, setConfirmOptions } = useConfirmDialogState();
 
   // We need to store the text content in a ref because the Dialog component
@@ -50,7 +51,9 @@ export function ConfirmDialog(): JSX.Element {
   return (
     <Modal
       isOpen={!!confirmOptions}
-      onClose={() => setConfirmOptions(undefined)}
+      onClose={() => {
+        setConfirmOptions(undefined);
+      }}
       width="small"
     >
       <Modal.Header>{title}</Modal.Header>

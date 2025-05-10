@@ -56,8 +56,8 @@ export const reactAuth0Generator = createGenerator({
       },
       run({ reactConfigImports, reactAppConfig }) {
         const redirectUri = callbackPath
-          ? `\`\${window.location.origin}/${callbackPath}\``
-          : 'window.location.origin';
+          ? `\`\${globalThis.location.origin}/${callbackPath}\``
+          : 'globalThis.location.origin';
 
         reactAppConfig.renderWrappers.set('react-auth0', {
           wrap: (contents) => TsCodeUtils.templateWithImports([

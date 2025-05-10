@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { ReactElement } from 'react';
+
 import { useLogOut } from '%authHooksImports';
 import { Alert, Button, Card, Spinner } from '%reactComponentsImports';
 import { logError } from '%reactErrorImports';
@@ -19,7 +21,7 @@ function formatAndReportAuthError(error: unknown): string {
   return 'Sorry, we could not log you in. Please try again.';
 }
 
-function Auth0CallbackPage(): JSX.Element {
+function Auth0CallbackPage(): ReactElement {
   const logOut = useLogOut();
   const navigate = useNavigate();
 
@@ -37,7 +39,7 @@ function Auth0CallbackPage(): JSX.Element {
       .then(({ appState }: { appState?: { returnTo?: string } }) => {
         navigate(appState?.returnTo ?? '/', { replace: true });
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         setError(formatAndReportAuthError(err));
       });
   }, [handleRedirectCallback, navigate]);

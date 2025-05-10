@@ -63,7 +63,7 @@ const fieldWithInputPayloadGroup = createTsTemplateGroup({
 const stripQueryMutationPlugin = createTsTemplateFile({
   name: 'strip-query-mutation-plugin',
   projectExports: {},
-  source: { path: 'stripQueryMutationPlugin.ts' },
+  source: { path: 'strip-query-mutation-plugin.ts' },
   variables: {},
 });
 

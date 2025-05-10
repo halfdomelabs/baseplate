@@ -1,6 +1,9 @@
 import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import { TsCodeUtils, tsImportBuilder } from '@halfdomelabs/core-generators';
+import {
+  TsCodeUtils,
+  tsTypeImportBuilder,
+} from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { NUMBER_VALIDATORS } from '@halfdomelabs/utils';
 import { z } from 'zod';
@@ -92,7 +95,7 @@ return PRISMA_MODEL.delete({ where: WHERE_CLAUSE, ...query });
     },
     [
       prismaUtils.DeleteServiceInput.typeDeclaration(),
-      tsImportBuilder(['Prisma']).from('@prisma/client'),
+      tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
     ],
     {
       hoistedFragments: primaryKey.headerTypeBlock && [

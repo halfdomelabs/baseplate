@@ -1,6 +1,5 @@
 {
-  "@halfdomelabs/core-generators#node/eslint:eslint-config": ".eslintrc.cjs",
-  "@halfdomelabs/core-generators#node/eslint:eslint-ignore": ".eslintignore",
+  "@halfdomelabs/core-generators#node/eslint:eslint-config": "eslint.config.js",
   "@halfdomelabs/core-generators#node/node-git-ignore:gitignore": ".gitignore",
   "@halfdomelabs/core-generators#node/node:package-json": "package.json",
   "@halfdomelabs/core-generators#node/prettier:prettier-config": ".prettierrc",
