@@ -5,6 +5,7 @@
  * - Validates non-private packages against their "files" array
  * - Ensures packages with changes are properly staged for publishing
  * - Optimized for PR use: parallel processing and only checks affected packages
+ * - Uses the last git tag with prefix "@halfdomelabs/project-builder-cli@" as the comparison point
  */
 
 import { promises as fs, globSync } from 'node:fs';
@@ -186,8 +187,39 @@ async function extractAndValidatePackage(
 const CHANGESET_OUTPUT_FILE = 'changeset-output.json';
 
 /**
+ * Gets the last git tag with the prefix "@halfdomelabs/project-builder-cli@"
+ * @returns The last git tag or null if none found
+ */
+async function getLastPackageTag(): Promise<string | null> {
+  try {
+    // List all tags matching the prefix, sorted by version (assuming semver)
+    const { stdout } = await execAsync(
+      'git tag --list "@halfdomelabs/project-builder-cli@*" --sort=-v:refname',
+    );
+
+    const tags = stdout.trim().split('\n').filter(Boolean);
+
+    if (tags.length === 0) {
+      console.log(
+        'No previous tags found for @halfdomelabs/project-builder-cli',
+      );
+      return null;
+    }
+
+    // Return the most recent tag (first in the list due to sorting)
+    const lastTag = tags[0];
+    console.log(`Last tag for project-builder-cli: ${lastTag}`);
+    return lastTag;
+  } catch (error) {
+    console.warn('Error getting last tag:', error);
+    return null;
+  }
+}
+
+/**
  * Gets the list of packages that will be published according to changeset
  * Checks for .changeset/*.md files first to avoid errors when no changesets exist
+ * Uses the last git tag as a comparison point if available
  * @returns Array of package names to be published
  */
 async function getPackagesToPublish(): Promise<string[]> {
@@ -203,8 +235,16 @@ async function getPackagesToPublish(): Promise<string[]> {
   }
 
   try {
-    // Run changeset status command
-    await execAsync(`pnpm changeset status --output=${CHANGESET_OUTPUT_FILE}`);
+    // Get the last tag for the specified package
+    const lastTag = await getLastPackageTag();
+
+    // Run changeset status command with --since flag if a tag was found
+    const changesetCommand = lastTag
+      ? `pnpm changeset status --since ${lastTag} --output=${CHANGESET_OUTPUT_FILE}`
+      : `pnpm changeset status --output=${CHANGESET_OUTPUT_FILE}`;
+
+    console.log(`Running: ${changesetCommand}`);
+    await execAsync(changesetCommand);
 
     // Parse the output file
     const changesetData: ChangesetStatus = JSON.parse(
