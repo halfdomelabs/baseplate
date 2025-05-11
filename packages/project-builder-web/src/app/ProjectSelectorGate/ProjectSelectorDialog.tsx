@@ -1,17 +1,9 @@
 import type React from 'react';
 
-import {
-  Button,
-  Dialog,
-  ErrorableLoader,
-  Table,
-} from '@halfdomelabs/ui-components';
-import { useEffect, useState } from 'react';
+import { Button, Dialog, Table } from '@halfdomelabs/ui-components';
 import { useNavigate } from 'react-router-dom';
 
 import { useProjects } from '@src/hooks/useProjects';
-import { getProjects } from '@src/services/api';
-import { logError } from '@src/services/error-logger';
 
 interface ProjectSelectDialogProps {
   onClose?: () => void;
@@ -22,25 +14,8 @@ export function ProjectSelectDialog({
   onClose,
   isOpen,
 }: ProjectSelectDialogProps): React.JSX.Element {
-  const { currentProjectId, setCurrentProjectId, setProjects, projects } =
-    useProjects();
-  const [error, setError] = useState<Error | null>(null);
+  const { currentProjectId, setCurrentProjectId, projects } = useProjects();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    getProjects()
-      .then((data) => {
-        setProjects(data);
-      })
-      .catch((err: unknown) => {
-        logError(err);
-        setError(err as Error);
-      });
-  }, [setProjects, isOpen]);
-
-  if (projects.length === 0) {
-    return <ErrorableLoader error={error} />;
-  }
 
   return (
     <Dialog

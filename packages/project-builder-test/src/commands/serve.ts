@@ -7,6 +7,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import {
   BuilderServiceManager,
+  DEFAULT_SERVER_PORT,
   startWebServer,
 } from '@halfdomelabs/project-builder-server';
 import fs from 'node:fs/promises';
@@ -91,7 +92,7 @@ async function serveWebsite(projectDirectory: string): Promise<void> {
   await startWebServer({
     serviceManager,
     browser: false,
-    port: 3230,
+    port: DEFAULT_SERVER_PORT,
     cliVersion,
     projectBuilderStaticDir: path.join(projectBuilderWebDir, 'dist'),
     logger: pinoLogger,

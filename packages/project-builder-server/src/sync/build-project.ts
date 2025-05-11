@@ -93,6 +93,10 @@ export interface BuildProjectOptions {
    * Abort signal to use for cancelling the sync.
    */
   abortSignal?: AbortSignal;
+  /**
+   * Whether to skip running commands.
+   */
+  skipCommands?: boolean;
 }
 
 /**
@@ -117,6 +121,7 @@ export async function buildProject({
   userConfig,
   syncMetadataController,
   abortSignal,
+  skipCommands,
 }: BuildProjectOptions): Promise<BuildProjectResult> {
   await syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
@@ -203,6 +208,7 @@ export async function buildProject({
           userConfig,
           previousPackageSyncResult: packageInfo?.result,
           abortSignal,
+          skipCommands,
         });
       } catch (err) {
         if (err instanceof CancelledSyncError) {

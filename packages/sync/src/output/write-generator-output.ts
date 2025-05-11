@@ -55,6 +55,10 @@ export interface WriteGeneratorOutputOptions {
    * Abort signal to use for cancelling the write operation.
    */
   abortSignal?: AbortSignal;
+  /**
+   * Whether to skip running commands.
+   */
+  skipCommands?: boolean;
 }
 
 /**
@@ -200,6 +204,14 @@ export async function writeGeneratorOutput(
         })),
         fileIdToRelativePathMap,
         filesWithConflicts,
+      };
+    }
+
+    if (options?.skipCommands) {
+      return {
+        filesWithConflicts,
+        failedCommands: [],
+        fileIdToRelativePathMap,
       };
     }
 

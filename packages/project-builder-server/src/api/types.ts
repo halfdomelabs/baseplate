@@ -10,4 +10,5 @@ export interface BaseplateApiContext {
   logger: Logger;
   featureFlags: FeatureFlag[];
   userConfig: BaseplateUserConfig;
+  serverPort: number;
 }

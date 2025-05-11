@@ -1,14 +1,6 @@
-import { observable } from '@trpc/server/observable';
 import { z } from 'zod';
 
-import type {
-  CommandConsoleEmittedPayload,
-  SyncCompletedPayload,
-  SyncMetadataChangedPayload,
-  SyncStartedPayload,
-} from '@src/service/builder-service.js';
-
-import { privateProcedure, router, websocketProcedure } from './trpc.js';
+import { privateProcedure, router } from './trpc.js';
 
 export const syncRouter = router({
   startSync: privateProcedure
@@ -33,20 +25,15 @@ export const syncRouter = router({
       ctx.getApi(id).cancelSync();
     }),
 
-  onConsoleEmitted: websocketProcedure
+  onConsoleEmitted: privateProcedure
     .input(z.object({ id: z.string() }))
-    .subscription(({ input: { id }, ctx }) =>
-      observable<CommandConsoleEmittedPayload>((emit) => {
-        const unsubscribe = ctx
-          .getApi(id)
-          .on('command-console-emitted', (payload) => {
-            emit.next(payload);
-          });
-        return () => {
-          unsubscribe();
-        };
-      }),
-    ),
+    .subscription(async function* ({ input: { id }, ctx, signal }) {
+      for await (const payload of ctx
+        .getApi(id)
+        .onAsync('command-console-emitted', { signal })) {
+        yield payload;
+      }
+    }),
 
   getCurrentSyncConsoleOutput: privateProcedure
     .input(z.object({ id: z.string() }))
@@ -54,50 +41,39 @@ export const syncRouter = router({
       ctx.getApi(id).getCurrentSyncConsoleOutput(),
     ),
 
-  onSyncMetadataChanged: websocketProcedure
+  onSyncMetadataChanged: privateProcedure
     .input(z.object({ id: z.string() }))
-    .subscription(({ input: { id }, ctx }) =>
-      observable<SyncMetadataChangedPayload>((emit) => {
-        const unsubscribe = ctx
-          .getApi(id)
-          .on('sync-metadata-changed', (payload) => {
-            emit.next(payload);
-          });
-        return () => {
-          unsubscribe();
-        };
-      }),
-    ),
+    .subscription(async function* ({ input: { id }, ctx, signal }) {
+      for await (const payload of ctx
+        .getApi(id)
+        .onAsync('sync-metadata-changed', { signal })) {
+        yield payload;
+      }
+    }),
 
   getSyncMetadata: privateProcedure
     .input(z.object({ id: z.string() }))
     .query(({ input: { id }, ctx }) => ctx.getApi(id).getSyncMetadata()),
 
-  onSyncStarted: websocketProcedure
+  onSyncStarted: privateProcedure
     .input(z.object({ id: z.string() }))
-    .subscription(({ input: { id }, ctx }) =>
-      observable<SyncStartedPayload>((emit) => {
-        const unsubscribe = ctx.getApi(id).on('sync-started', (payload) => {
-          emit.next(payload);
-        });
-        return () => {
-          unsubscribe();
-        };
-      }),
-    ),
+    .subscription(async function* ({ input: { id }, ctx, signal }) {
+      for await (const payload of ctx
+        .getApi(id)
+        .onAsync('sync-started', { signal })) {
+        yield payload;
+      }
+    }),
 
-  onSyncCompleted: websocketProcedure
+  onSyncCompleted: privateProcedure
     .input(z.object({ id: z.string() }))
-    .subscription(({ input: { id }, ctx }) =>
-      observable<SyncCompletedPayload>((emit) => {
-        const unsubscribe = ctx.getApi(id).on('sync-completed', (payload) => {
-          emit.next(payload);
-        });
-        return () => {
-          unsubscribe();
-        };
-      }),
-    ),
+    .subscription(async function* ({ input: { id }, ctx, signal }) {
+      for await (const payload of ctx
+        .getApi(id)
+        .onAsync('sync-completed', { signal })) {
+        yield payload;
+      }
+    }),
 
   openEditor: privateProcedure
     .input(

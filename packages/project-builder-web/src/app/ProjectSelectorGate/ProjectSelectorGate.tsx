@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 import { useProjects } from '@src/hooks/useProjects';
 import { getProjects } from '@src/services/api';
-import { logError } from '@src/services/error-logger';
+import { logAndFormatError } from '@src/services/error-formatter';
 import { setLocalStorageProjectId } from '@src/services/project-id.service';
 
 import { ProjectSelectDialog } from './ProjectSelectorDialog';
@@ -20,7 +20,7 @@ interface ProjectSelectorGateProps {
 export function ProjectSelectorGate({
   children,
 }: ProjectSelectorGateProps): React.JSX.Element {
-  const [error, setError] = useState<unknown>(null);
+  const [error, setError] = useState<string>();
   const { currentProjectId, projectsLoaded, setProjects } = useProjects();
 
   useEffect(() => {
@@ -29,8 +29,7 @@ export function ProjectSelectorGate({
         setProjects(data);
       })
       .catch((err: unknown) => {
-        logError(err);
-        setError(err);
+        setError(logAndFormatError(err, 'Failed to fetch projects.'));
       });
   }, [setProjects]);
 
@@ -38,7 +37,7 @@ export function ProjectSelectorGate({
     setLocalStorageProjectId(currentProjectId);
   }, [currentProjectId]);
 
-  if (!currentProjectId && !projectsLoaded) {
+  if (!projectsLoaded) {
     return <ErrorableLoader error={error} />;
   }
 

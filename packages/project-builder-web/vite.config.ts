@@ -39,13 +39,17 @@ export default defineConfig(({ mode }) => {
         ? {
             '/api': {
               target: envVars.DEV_BACKEND_HOST,
+              headers: {
+                origin: envVars.DEV_BACKEND_HOST,
+              },
               changeOrigin: true,
-              ws: true,
             },
             '/trpc': {
               target: envVars.DEV_BACKEND_HOST,
+              headers: {
+                origin: envVars.DEV_BACKEND_HOST,
+              },
               changeOrigin: true,
-              ws: true,
             },
           }
         : undefined,

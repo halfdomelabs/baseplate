@@ -8,8 +8,8 @@ import type { UseClientVersionResult } from '@src/hooks/useClientVersion';
 
 import { ClientVersionContext } from '@src/hooks/useClientVersion';
 import { getVersionInfo } from '@src/services/api';
-import { logError } from '@src/services/error-logger';
-import { trpcWebsocketEvents } from '@src/services/trpc';
+import { logAndFormatError } from '@src/services/error-formatter';
+import { trpcSubscriptionEvents } from '@src/services/trpc';
 
 interface ClientVersionProviderProps {
   children?: React.ReactNode;
@@ -21,16 +21,15 @@ export function ClientVersionProvider({
   const [clientVersionInfo, setClientVersionInfo] = useState<
     ClientVersionInfo | undefined
   >();
-  const [error, setError] = useState<Error | undefined>();
+  const [error, setError] = useState<string>();
 
   const fetchVersion = useCallback(() => {
     getVersionInfo()
       .then((version) => {
         setClientVersionInfo(version);
       })
-      .catch((error_: unknown) => {
-        logError(error_);
-        setError(error_ as Error);
+      .catch((error: unknown) => {
+        setError(logAndFormatError(error, 'Failed to fetch version info.'));
       });
   }, []);
 
@@ -38,7 +37,7 @@ export function ClientVersionProvider({
   useEffect(() => {
     fetchVersion();
 
-    const unsubscribe = trpcWebsocketEvents.on('open', fetchVersion);
+    const unsubscribe = trpcSubscriptionEvents.on('open', fetchVersion);
     return unsubscribe;
   }, [fetchVersion]);
 
