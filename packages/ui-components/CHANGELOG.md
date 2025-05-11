@@ -1,5 +1,14 @@
 # @halfdomelabs/ui-components
 
+## 0.5.9
+
+### Patch Changes
+
+- [#542](https://github.com/halfdomelabs/baseplate/pull/542) [`f5f8346`](https://github.com/halfdomelabs/baseplate/commit/f5f83460b46953db6a855e30ad1deb1838b63058) Thanks [@kingston](https://github.com/kingston)! - Upgrade to Typescript 5.7.3
+
+- Updated dependencies [[`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3)]:
+  - @halfdomelabs/utils@0.1.9
+
 ## 0.5.8
 
 ### Patch Changes

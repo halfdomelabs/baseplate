@@ -1,5 +1,11 @@
 # @halfdomelabs/tools
 
+## 0.5.14
+
+### Patch Changes
+
+- [#541](https://github.com/halfdomelabs/baseplate/pull/541) [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39) Thanks [@kingston](https://github.com/kingston)! - Update rules for eslint to better match new rules
+
 ## 0.5.13
 
 ### Patch Changes
