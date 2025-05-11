@@ -125,16 +125,12 @@ const FileInput = function FileInput({
   const handleRemove = (): void => {
     if (onChange) onChange(null);
     cancelUpload();
-    if (inputRef.current) {
-      inputRef.current.value = '';
-    }
+    inputRef.current.value = '';
   };
 
   const handleCancel = (): void => {
     cancelUpload();
-    if (inputRef.current) {
-      inputRef.current.value = '';
-    }
+    inputRef.current.value = '';
   };
 
   return (

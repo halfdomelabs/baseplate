@@ -5,6 +5,6 @@ export const STORAGE_PACKAGES = {
   'mime-types': '2.1.35',
   '@types/mime-types': '2.1.1',
 
-  'react-dropzone': '14.2.3',
-  'react-circular-progressbar': '2.1.0',
+  'react-dropzone': '14.3.8',
+  'react-circular-progressbar': '2.2.0',
 };

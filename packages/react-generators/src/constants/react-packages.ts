@@ -24,11 +24,11 @@ export const REACT_PACKAGES = {
   '@hookform/resolvers': '3.9.0',
   clsx: '2.1.1',
   'react-hook-form': '7.53.0',
-  'react-hot-toast': '2.4.1',
+  'react-hot-toast': '2.5.2',
   'react-icons': '5.5.0',
-  'react-select': '5.8.0',
+  'react-select': '5.10.1',
   zustand: '5.0.3',
-  'react-error-boundary': '4.0.13',
+  'react-error-boundary': '6.0.0',
 
   // Date Picker
   'react-datepicker': '4.25.0',

@@ -19,10 +19,10 @@ export function ConfirmDialog(): ReactElement {
 
   // We need to store the text content in a ref because the Dialog component
   // will transition to fade so we need to cache the text while we close.
-  const textOptionsCached = React.useRef<null | Omit<
-    UseConfirmDialogRequestOptions,
-    'onConfirm' | 'onCancel'
-  >>();
+  const textOptionsCached =
+    React.useRef<
+      Omit<UseConfirmDialogRequestOptions, 'onConfirm' | 'onCancel'>
+    >(undefined);
 
   React.useEffect(() => {
     if (confirmOptions) {
