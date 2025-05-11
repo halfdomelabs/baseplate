@@ -723,9 +723,6 @@ importers:
       anser:
         specifier: 2.3.2
         version: 2.3.2
-      axios:
-        specifier: ^1.8.3
-        version: 1.8.3
       clsx:
         specifier: 2.1.1
         version: 2.1.1
