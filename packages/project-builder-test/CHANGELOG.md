@@ -1,5 +1,19 @@
 # @halfdomelabs/project-builder-test
 
+## 0.1.16
+
+### Patch Changes
+
+- [#543](https://github.com/halfdomelabs/baseplate/pull/543) [`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3) Thanks [@kingston](https://github.com/kingston)! - Add ability to skip running commands for sync to allow more rapid E2E testing
+
+- Updated dependencies [[`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3), [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39), [`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3)]:
+  - @halfdomelabs/utils@0.1.9
+  - @halfdomelabs/sync@0.11.4
+  - @halfdomelabs/project-builder-server@0.5.16
+  - @halfdomelabs/project-builder-lib@0.9.13
+  - @halfdomelabs/project-builder-web@0.15.14
+  - @halfdomelabs/project-builder-common@0.1.25
+
 ## 0.1.15
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @halfdomelabs/core-generators
 
+## 0.11.7
+
+### Patch Changes
+
+- [#542](https://github.com/halfdomelabs/baseplate/pull/542) [`f5f8346`](https://github.com/halfdomelabs/baseplate/commit/f5f83460b46953db6a855e30ad1deb1838b63058) Thanks [@kingston](https://github.com/kingston)! - Upgrade to Typescript 5.7.3
+
+- [#541](https://github.com/halfdomelabs/baseplate/pull/541) [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39) Thanks [@kingston](https://github.com/kingston)! - Remove need to explicitly specify variables in ts templates for reverse generation
+
+- [#541](https://github.com/halfdomelabs/baseplate/pull/541) [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39) Thanks [@kingston](https://github.com/kingston)! - Support comment template variables with Typescript template system
+
+- Updated dependencies [[`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3), [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39), [`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3)]:
+  - @halfdomelabs/utils@0.1.9
+  - @halfdomelabs/sync@0.11.4
+
 ## 0.11.6
 
 ### Patch Changes

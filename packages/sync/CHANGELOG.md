@@ -1,5 +1,16 @@
 # @halfdomelabs/sync
 
+## 0.11.4
+
+### Patch Changes
+
+- [#541](https://github.com/halfdomelabs/baseplate/pull/541) [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39) Thanks [@kingston](https://github.com/kingston)! - Sort named entries using alias first and then name
+
+- [#543](https://github.com/halfdomelabs/baseplate/pull/543) [`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3) Thanks [@kingston](https://github.com/kingston)! - Add ability to skip running commands for sync to allow more rapid E2E testing
+
+- Updated dependencies [[`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3)]:
+  - @halfdomelabs/utils@0.1.9
+
 ## 0.11.3
 
 ### Patch Changes

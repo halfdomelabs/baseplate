@@ -1,5 +1,24 @@
 # @halfdomelabs/fastify-generators
 
+## 0.13.0
+
+### Minor Changes
+
+- [#541](https://github.com/halfdomelabs/baseplate/pull/541) [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39) Thanks [@kingston](https://github.com/kingston)! - Upgrade ESLint to v9 refreshing all generated code
+
+### Patch Changes
+
+- [#541](https://github.com/halfdomelabs/baseplate/pull/541) [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39) Thanks [@kingston](https://github.com/kingston)! - Remove request data integration to avoid sending PII
+
+- [#541](https://github.com/halfdomelabs/baseplate/pull/541) [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39) Thanks [@kingston](https://github.com/kingston)! - Upgrade Sentry to 9.17
+
+- [#541](https://github.com/halfdomelabs/baseplate/pull/541) [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39) Thanks [@kingston](https://github.com/kingston)! - Remove setupAxiosBetterStackTrace and axiosClient since stack traces for Axios has since been fixed
+
+- Updated dependencies [[`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3), [`f5f8346`](https://github.com/halfdomelabs/baseplate/commit/f5f83460b46953db6a855e30ad1deb1838b63058), [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39), [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39), [`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3), [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39)]:
+  - @halfdomelabs/utils@0.1.9
+  - @halfdomelabs/core-generators@0.11.7
+  - @halfdomelabs/sync@0.11.4
+
 ## 0.12.6
 
 ### Patch Changes

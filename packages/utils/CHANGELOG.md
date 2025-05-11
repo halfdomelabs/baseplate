@@ -1,5 +1,12 @@
 # @halfdomelabs/utils
 
+## 0.1.9
+
+### Patch Changes
+
+- [#543](https://github.com/halfdomelabs/baseplate/pull/543) [`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3) Thanks [@kingston](https://github.com/kingston)! - Add AbortSignal option to TypedEventEmitter and new onAsync method
+  for subscribing to events using async generators.
+
 ## 0.1.8
 
 ### Patch Changes

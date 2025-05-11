@@ -1,5 +1,20 @@
 # @halfdomelabs/react-generators
 
+## 0.11.0
+
+### Minor Changes
+
+- [#541](https://github.com/halfdomelabs/baseplate/pull/541) [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39) Thanks [@kingston](https://github.com/kingston)! - Upgrade ESLint to v9 refreshing all generated code
+
+### Patch Changes
+
+- [#541](https://github.com/halfdomelabs/baseplate/pull/541) [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39) Thanks [@kingston](https://github.com/kingston)! - Upgrade Sentry to 9.17
+
+- Updated dependencies [[`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3), [`f5f8346`](https://github.com/halfdomelabs/baseplate/commit/f5f83460b46953db6a855e30ad1deb1838b63058), [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39), [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39), [`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3), [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39)]:
+  - @halfdomelabs/utils@0.1.9
+  - @halfdomelabs/core-generators@0.11.7
+  - @halfdomelabs/sync@0.11.4
+
 ## 0.10.6
 
 ### Patch Changes
