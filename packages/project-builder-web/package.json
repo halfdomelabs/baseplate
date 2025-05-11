@@ -51,7 +51,6 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "anser": "2.3.2",
-    "axios": "^1.8.3",
     "clsx": "2.1.1",
     "culori": "^4.0.1",
     "es-toolkit": "1.31.0",
