@@ -20,7 +20,7 @@ export const REACT_PACKAGES = {
   '@tailwindcss/forms': '0.5.9',
 
   // Components
-  '@headlessui/react': '1.7.18',
+  '@headlessui/react': '2.2.2',
   '@hookform/resolvers': '3.9.0',
   clsx: '2.1.1',
   'react-hook-form': '7.53.0',
@@ -36,7 +36,7 @@ export const REACT_PACKAGES = {
   '@types/react-datepicker': '4.19.5',
 
   // GraphQL
-  '@apollo/client': '3.10.8',
+  '@apollo/client': '3.13.8',
   graphql: '16.9.0',
   'graphql-ws': '5.16.0',
   '@graphql-codegen/cli': '5.0.2',

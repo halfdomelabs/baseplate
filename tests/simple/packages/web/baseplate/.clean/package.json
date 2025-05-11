@@ -29,8 +29,8 @@
     ]
   },
   "dependencies": {
-    "@apollo/client": "3.10.8",
-    "@headlessui/react": "1.7.18",
+    "@apollo/client": "3.13.8",
+    "@headlessui/react": "2.2.2",
     "@hookform/resolvers": "3.9.0",
     "@sentry/react": "9.17.0",
     "clsx": "2.1.1",
