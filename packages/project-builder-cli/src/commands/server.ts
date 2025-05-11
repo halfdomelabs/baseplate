@@ -23,11 +23,12 @@ interface ServeCommandOptions {
   browser: boolean;
   port?: number;
   logger?: Logger;
+  skipCommands?: boolean;
 }
 
 export async function serveWebServer(
   directories: string[],
-  { browser, port, logger: overrideLogger }: ServeCommandOptions,
+  { browser, port, logger: overrideLogger, skipCommands }: ServeCommandOptions,
 ): Promise<{
   fastifyInstance: FastifyInstance;
   serviceManager: BuilderServiceManager;
@@ -54,6 +55,7 @@ export async function serveWebServer(
     cliVersion: version,
     builtInPlugins,
     userConfig,
+    skipCommands,
   });
 
   const fastifyInstance = await startWebServer({

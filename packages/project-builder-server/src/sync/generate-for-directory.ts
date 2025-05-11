@@ -45,6 +45,7 @@ interface GenerateForDirectoryOptions {
   previousPackageSyncResult: PackageSyncResult | undefined;
   operations?: GeneratorOperations;
   abortSignal?: AbortSignal;
+  skipCommands?: boolean;
 }
 
 export interface GeneratorOperations {
@@ -127,6 +128,7 @@ export async function generateForDirectory({
   previousPackageSyncResult,
   operations = defaultGeneratorOperations,
   abortSignal,
+  skipCommands,
 }: GenerateForDirectoryOptions): Promise<PackageSyncResult> {
   const { appDirectory, name, generatorBundle } = appEntry;
 
@@ -174,6 +176,7 @@ export async function generateForDirectory({
             }
           : undefined,
         abortSignal,
+        skipCommands,
       });
 
     // write metadata to the generated directory

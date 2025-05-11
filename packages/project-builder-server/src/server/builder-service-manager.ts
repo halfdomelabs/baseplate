@@ -15,6 +15,10 @@ export class BuilderServiceManager {
       cliVersion: string;
       builtInPlugins: PluginMetadataWithPaths[];
       userConfig: BaseplateUserConfig;
+      /**
+       * Whether to skip running commands for use in testing.
+       */
+      skipCommands?: boolean;
     },
   ) {
     for (const directory of this.options.initialDirectories ?? []) {
@@ -35,6 +39,7 @@ export class BuilderServiceManager {
       cliVersion: this.options.cliVersion,
       builtInPlugins: this.options.builtInPlugins,
       userConfig: this.options.userConfig,
+      skipCommands: this.options.skipCommands,
     });
     service.init();
     this.services.set(id, service);

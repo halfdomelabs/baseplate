@@ -77,6 +77,7 @@ interface ProjectBuilderServiceOptions {
   builtInPlugins: PluginMetadataWithPaths[];
   cliVersion: string;
   userConfig: BaseplateUserConfig;
+  skipCommands?: boolean;
 }
 
 export interface SyncMetadataChangedPayload {
@@ -134,12 +135,15 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   private conflictFileMonitor: ConflictFileMonitor | undefined;
 
+  private skipCommands: boolean;
+
   constructor({
     directory,
     id,
     cliVersion,
     builtInPlugins,
     userConfig,
+    skipCommands,
   }: ProjectBuilderServiceOptions) {
     super();
 
@@ -157,6 +161,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       this.directory,
       this.logger,
     );
+    this.skipCommands = skipCommands ?? false;
     this.syncMetadataController
       .getMetadata()
       .then((syncMetadata) => {
@@ -352,6 +357,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
         userConfig: this.userConfig,
         syncMetadataController: this.syncMetadataController,
         abortSignal: this.abortController.signal,
+        skipCommands: this.skipCommands,
       });
     } catch (error) {
       this.logger.error(

@@ -17,6 +17,23 @@ import { serveWebServer } from '@src/commands/server.js';
 import { DEFAULT_LOGGER_OPTIONS } from '@src/services/logger.js';
 
 /**
+ * Get a project definition that is initialized
+ */
+export function getInitializedTestProjectDefinition(): ProjectDefinition {
+  return {
+    name: 'test-project',
+    version: '0.0.1',
+    cliVersion: '0.0.1',
+    portOffset: 7000,
+    apps: [],
+    features: [],
+    models: [],
+    isInitialized: true,
+    schemaVersion: getLatestMigrationVersion(),
+  };
+}
+
+/**
  * Start the server on an available port
  */
 async function startServerOnAvailablePort(): Promise<{
@@ -37,6 +54,7 @@ async function startServerOnAvailablePort(): Promise<{
           ...DEFAULT_LOGGER_OPTIONS,
           level: 'error',
         }),
+        skipCommands: true,
       });
       return {
         fastifyInstance: server.fastifyInstance,
@@ -223,18 +241,7 @@ export const test = base.extend<
   },
   addInitializedProject: async ({ addProject }, use) => {
     await use(
-      async () =>
-        await addProject({
-          name: 'test-project',
-          version: '0.0.1',
-          cliVersion: '0.0.1',
-          portOffset: 7000,
-          apps: [],
-          features: [],
-          models: [],
-          isInitialized: true,
-          schemaVersion: getLatestMigrationVersion(),
-        }),
+      async () => await addProject(getInitializedTestProjectDefinition()),
     );
   },
 });
