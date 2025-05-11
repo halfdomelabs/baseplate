@@ -16,6 +16,9 @@ function getFormattedErrorSuffix(error: unknown): string {
         .filter(Boolean)
         .join('\n');
     }
+    if (typedError.message.includes('Failed to fetch')) {
+      return 'Could not connect to the server. Please start the server and try again.';
+    }
   }
   if (error instanceof UserVisibleError) {
     return error.message;

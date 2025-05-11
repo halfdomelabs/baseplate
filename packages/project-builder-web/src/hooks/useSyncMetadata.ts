@@ -5,10 +5,11 @@ import { useEffect } from 'react';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
+import { ProjectNotFoundError } from '@src/services/api';
 import { getSyncMetadata } from '@src/services/api/sync';
 import { IS_PREVIEW } from '@src/services/config';
 import { logAndFormatError } from '@src/services/error-formatter';
-import { trpc, trpcWebsocketEvents } from '@src/services/trpc';
+import { trpc, trpcSubscriptionEvents } from '@src/services/trpc';
 
 import { useProjects } from './useProjects';
 
@@ -52,6 +53,11 @@ export function useSyncMetadataListener(): void {
           setMetadata(metadata);
         })
         .catch((error: unknown) => {
+          if (error instanceof ProjectNotFoundError) {
+            // Ignore project not found error since the user will be given a
+            // chance to select a different project
+            return;
+          }
           toast.error(
             logAndFormatError(error, 'Failed to fetch sync metadata.'),
           );
@@ -64,7 +70,7 @@ export function useSyncMetadataListener(): void {
       return;
     }
 
-    const unsubscribeFromWebsocket = trpcWebsocketEvents.on(
+    const unsubscribeFromWebsocket = trpcSubscriptionEvents.on(
       'open',
       fetchSyncMetadata,
     );

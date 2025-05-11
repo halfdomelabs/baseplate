@@ -8,17 +8,14 @@ import { buildServer } from './server.js';
 
 export interface StartWebServerOptions extends WebServerOptions {
   browser: boolean;
-  port?: number;
 }
-
-const DEFAULT_PORT = 3230;
 
 export { BuilderServiceManager } from './builder-service-manager.js';
 
 export async function startWebServer(
   options: StartWebServerOptions,
 ): Promise<FastifyInstance> {
-  const { browser, port = DEFAULT_PORT, logger } = options;
+  const { browser, port, logger } = options;
   const server = await buildServer(options);
 
   try {

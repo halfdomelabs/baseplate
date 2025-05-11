@@ -25,6 +25,7 @@ export interface WebServerOptions {
   featureFlags: FeatureFlag[];
   serviceManager: BuilderServiceManager;
   userConfig: BaseplateUserConfig;
+  port: number;
 }
 
 export async function buildServer({
@@ -34,6 +35,7 @@ export async function buildServer({
   featureFlags,
   serviceManager,
   userConfig,
+  port,
 }: WebServerOptions): Promise<FastifyInstance> {
   const server = fastify({
     forceCloseConnections: 'idle',
@@ -63,6 +65,7 @@ export async function buildServer({
     featureFlags,
     serviceManager,
     userConfig,
+    serverPort: port,
   });
 
   if (projectBuilderStaticDir) {

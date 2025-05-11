@@ -5,6 +5,7 @@ import type { Logger } from 'pino';
 import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
 import {
   BuilderServiceManager,
+  DEFAULT_SERVER_PORT,
   startWebServer,
 } from '@halfdomelabs/project-builder-server';
 import path from 'node:path';
@@ -20,7 +21,7 @@ import { getPackageVersion } from '../utils/version.js';
 
 interface ServeCommandOptions {
   browser: boolean;
-  port: number;
+  port?: number;
   logger?: Logger;
 }
 
@@ -58,7 +59,7 @@ export async function serveWebServer(
   const fastifyInstance = await startWebServer({
     serviceManager,
     browser,
-    port,
+    port: port ?? DEFAULT_SERVER_PORT,
     cliVersion: version,
     projectBuilderStaticDir: path.join(projectBuilderWebDir, 'dist'),
     logger: overrideLogger ?? logger,

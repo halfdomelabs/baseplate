@@ -11,7 +11,6 @@ import { z } from 'zod';
 import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
 
 import { createContextBuilder } from '@src/api/context.js';
-import { getCsrfToken } from '@src/api/crsf.js';
 import { appRouter, type AppRouter } from '@src/api/index.js';
 import { pathSafeJoin } from '@src/utils/paths.js';
 
@@ -22,12 +21,11 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
   featureFlags: FeatureFlag[];
   serviceManager: BuilderServiceManager;
   userConfig: BaseplateUserConfig;
+  serverPort: number;
 }> = async function (
   fastify,
-  { cliVersion, featureFlags, serviceManager, userConfig },
+  { cliVersion, featureFlags, serviceManager, userConfig, serverPort },
 ) {
-  const csrfToken = getCsrfToken();
-
   fastify.log.info(
     `Loaded projects:\n${serviceManager
       .getServices()
@@ -37,7 +35,6 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
 
   await fastify.register(fastifyTRPCPlugin, {
     prefix: '/trpc',
-    useWSS: true,
     trpcOptions: {
       router: appRouter,
       createContext: createContextBuilder({
@@ -46,6 +43,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
         logger: fastify.log,
         featureFlags,
         userConfig,
+        serverPort,
       }),
       onError: ({ error }) => {
         fastify.log.error(error);
@@ -130,29 +128,6 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
         mime.getType(fullPath) ?? 'application/octet-stream',
       );
       return reply.send(stream);
-    },
-  });
-
-  fastify.get('/api/auth', {
-    schema: {
-      response: {
-        200: z.object({
-          csrfToken: z.string(),
-        }),
-      },
-    },
-    handler: (req, res) => {
-      // DNS rebinding attack prevention
-      const host = req.headers.host ?? '';
-      if (
-        !host.startsWith('localhost:') &&
-        host !== 'localhost' &&
-        !host.startsWith('127.0.0.1:') &&
-        host !== '127.0.0.1'
-      ) {
-        throw new Error(`Must connect from localhost`);
-      }
-      res.send({ csrfToken });
     },
   });
 

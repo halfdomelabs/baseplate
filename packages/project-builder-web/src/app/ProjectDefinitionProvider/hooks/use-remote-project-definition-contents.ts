@@ -26,6 +26,7 @@ export function useRemoteProjectDefinitionContents(): UseRemoteProjectDefinition
   useEffect(() => {
     setProjectDefinitionFilePayload(undefined);
     setError(undefined);
+
     if (!currentProjectId || !projectsLoaded) {
       setProjectDefinitionFileManager(undefined);
       return;

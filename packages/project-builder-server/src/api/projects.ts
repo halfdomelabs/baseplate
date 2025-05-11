@@ -1,9 +1,6 @@
-import { observable } from '@trpc/server/observable';
 import { z } from 'zod';
 
-import type { ProjectDefinitionFilePayload } from '@src/service/builder-service.js';
-
-import { privateProcedure, router, websocketProcedure } from './trpc.js';
+import { privateProcedure, router } from './trpc.js';
 
 export interface ProjectInfo {
   id: string;
@@ -52,20 +49,15 @@ export const projectsRouter = router({
       return { contents };
     }),
 
-  onProjectJsonChanged: websocketProcedure
+  onProjectJsonChanged: privateProcedure
     .input(z.object({ id: z.string() }))
-    .subscription(({ input: { id }, ctx }) =>
-      observable<ProjectDefinitionFilePayload>((emit) => {
-        const unsubscribe = ctx
-          .getApi(id)
-          .on('project-json-changed', (payload) => {
-            emit.next(payload);
-          });
-        return () => {
-          unsubscribe();
-        };
-      }),
-    ),
+    .subscription(async function* ({ input: { id }, ctx, signal }) {
+      for await (const payload of ctx
+        .getApi(id)
+        .onAsync('project-json-changed', { signal })) {
+        yield payload;
+      }
+    }),
 
   writeDefinition: privateProcedure
     .input(

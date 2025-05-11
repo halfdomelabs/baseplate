@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useClientVersion } from '@src/hooks/useClientVersion';
 import { getVersionInfo } from '@src/services/api';
-import { trpcWebsocketEvents } from '@src/services/trpc';
+import { trpcSubscriptionEvents } from '@src/services/trpc';
 
 import { ClientVersionProvider } from './ClientVersionProvider';
 
@@ -24,7 +24,7 @@ describe('ClientVersionProvider', () => {
 
   beforeEach(() => {
     vi.mocked(getVersionInfo).mockResolvedValue(mockVersionInfo);
-    trpcWebsocketEvents.clearListeners();
+    trpcSubscriptionEvents.clearListeners();
 
     // Mock location.reload
     Object.defineProperty(globalThis, 'location', {
@@ -93,7 +93,7 @@ describe('ClientVersionProvider', () => {
     });
 
     // Trigger websocket reconnect
-    trpcWebsocketEvents.emit('open', undefined);
+    trpcSubscriptionEvents.emit('open', undefined);
 
     await waitFor(() => {
       expect(reloadMock).toHaveBeenCalled();
@@ -104,7 +104,7 @@ describe('ClientVersionProvider', () => {
     render(<ClientVersionProvider>{mockChild}</ClientVersionProvider>);
 
     // Trigger websocket reconnect
-    trpcWebsocketEvents.emit('open', undefined);
+    trpcSubscriptionEvents.emit('open', undefined);
 
     await waitFor(() => {
       expect(reloadMock).not.toHaveBeenCalled();

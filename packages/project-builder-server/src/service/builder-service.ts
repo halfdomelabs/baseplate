@@ -265,6 +265,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       });
     }
     for (const unsubscribe of this.unsubscribeOperations) unsubscribe();
+    this.abortEventEmitter();
   }
 
   /**
