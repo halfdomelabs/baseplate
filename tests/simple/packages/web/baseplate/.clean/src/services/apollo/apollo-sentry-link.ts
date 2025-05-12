@@ -1,3 +1,5 @@
+import type { GraphQLFormattedError } from 'graphql';
+
 import { ApolloLink } from '@apollo/client';
 import { getMainDefinition, Observable } from '@apollo/client/utilities';
 import { Kind } from 'graphql';
@@ -8,7 +10,7 @@ import { logBreadcrumbToSentry } from '../sentry';
 export const apolloSentryLink = new ApolloLink((operation, forward) => {
   operation.setContext({ startAt: Date.now() });
   return new Observable((observer) => {
-    function logResult(error?: Error): void {
+    function logResult(error?: GraphQLFormattedError): void {
       try {
         const operationDuration = Date.now() - operation.getContext().startAt;
         const { operationName, query } = operation;

@@ -1,3 +1,5 @@
+import type { GraphQLFormattedError } from 'graphql';
+
 import { ApolloError } from '@apollo/client';
 import * as Sentry from '@sentry/react';
 import { GraphQLError } from 'graphql';
@@ -13,12 +15,12 @@ import { config } from './config';
 
 function configureSentryScopeForGraphqlError(
   scope: Sentry.Scope,
-  error: GraphQLError,
+  error: GraphQLError | GraphQLFormattedError,
 ): void {
   scope.setFingerprint(
     [
       '{{ default }}',
-      error.extensions.code as string,
+      error.extensions?.code as string,
       error.path?.join('.'),
     ].filter((value): value is string => typeof value === 'string' && !!value),
   );

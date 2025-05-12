@@ -1,3 +1,5 @@
+import type { GraphQLFormattedError } from 'graphql';
+
 import { ApolloError } from '@apollo/client';
 import { GraphQLError } from 'graphql';
 
@@ -5,15 +7,15 @@ import { logger } from './logger';
 import { logErrorToSentry } from './sentry';
 
 function annotateGraphQLError(
-  error: GraphQLError,
+  error: GraphQLError | GraphQLFormattedError,
   context: Record<string, unknown>,
 ): void {
-  context.reqId = error.extensions.reqId;
-  context.code = error.extensions.code;
-  context.statusCode = error.extensions.statusCode;
+  context.reqId = error.extensions?.reqId;
+  context.code = error.extensions?.code;
+  context.statusCode = error.extensions?.statusCode;
   context.path = error.path?.join('.');
   // only visible in development
-  const originalError = error.extensions.originalError as {
+  const originalError = error.extensions?.originalError as {
     message?: string;
     stack?: string;
   } | null;
