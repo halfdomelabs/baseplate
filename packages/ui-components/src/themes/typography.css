@@ -17,41 +17,33 @@
 }
 
 @utility text-style-lead {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-6);
-  color: var(--muted-foreground);
+  @apply text-muted-foreground text-xl leading-6 font-medium;
 }
 
 @utility text-style-large {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-6);
+  @apply text-lg leading-6 font-semibold;
 }
 
 @utility text-style-small {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-none);
+  @apply text-sm leading-none font-medium;
 }
 
 @utility text-style-muted {
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-5);
-  color: var(--muted-foreground);
+  @apply text-muted-foreground text-sm leading-5;
 }
 
 @utility text-style-prose {
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-6);
+  @apply text-base leading-6;
+
   & a {
-    color: var(--color-link);
-    font-weight: var(--font-weight-medium);
+    @apply text-link font-medium;
+
     &:hover {
-      text-decoration: underline;
+      @apply underline;
     }
+
     &:visited {
-      color: var(--color-link-visited);
+      @apply text-link-visited;
     }
   }
 }
