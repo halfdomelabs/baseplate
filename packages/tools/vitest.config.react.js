@@ -22,6 +22,6 @@ export default defineConfig({
     root: './src',
     mockReset: true,
     environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
+    setupFiles: ['./src/tests/setup.ts'],
   },
 });

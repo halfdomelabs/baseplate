@@ -31,5 +31,3 @@ export const storybookEslintConfig = tsEslint.config(
     ignores: ['storybook-static'],
   },
 );
-
-export default storybookEslintConfig;

@@ -2,7 +2,7 @@
 
 import tsEslint from 'typescript-eslint';
 
-import prettierConfig from './eslint-configs/prettier.js';
+import { prettierEslintConfig } from './eslint-configs/prettier.js';
 import { generateTypescriptEslintConfig } from './eslint-configs/typescript.js';
 
 /** @typedef {import('./eslint-configs/typescript.js').GenerateTypescriptEslintConfigOptions} GenerateTypescriptEslintConfigOptions */
@@ -18,7 +18,7 @@ export function generateNodeConfig(options = {}) {
         extraDefaultProjectFiles: options.extraDefaultProjectFiles || [],
       },
     ]),
-    prettierConfig,
+    prettierEslintConfig,
   );
 }
 

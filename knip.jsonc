@@ -87,9 +87,14 @@
     "packages/ui-components": {
       "entry": ["src/index.{ts,tsx}"],
       "project": "src/**/*.{ts,tsx}",
-      // mdx files - https://github.com/webpro-nl/knip/issues/494
-      "ignoreDependencies": ["@storybook/blocks"],
-      "includeEntryExports": false
+      "includeEntryExports": false,
+      "ignoreDependencies": [
+        // mdx files - https://github.com/webpro-nl/knip/issues/494
+        "@storybook/blocks",
+        // we are importing these from css
+        "@fontsource-variable/geist",
+        "@fontsource-variable/geist-mono"
+      ]
     },
     "packages/code-morph": {
       "entry": ["src/index.{ts,tsx}", "src/morphers/**/*.morpher.{ts,tsx}"],
