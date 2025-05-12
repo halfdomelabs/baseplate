@@ -11,7 +11,7 @@ import { cn } from '@src/utils';
  * https://ui.shadcn.com/docs/components/tabs
  */
 const SidebarTabsRoot = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Root>,
+  React.ComponentRef<typeof TabsPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>
 >((props, ref) => (
   <TabsPrimitive.Root
@@ -25,7 +25,7 @@ const SidebarTabsRoot = React.forwardRef<
 SidebarTabsRoot.displayName = 'SidebarTabs';
 
 const SidebarTabsList = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.List>,
+  React.ComponentRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.List
@@ -40,7 +40,7 @@ const SidebarTabsList = React.forwardRef<
 SidebarTabsList.displayName = TabsPrimitive.List.displayName;
 
 const SidebarTabsTrigger = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentRef<typeof TabsPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Trigger
@@ -57,7 +57,7 @@ const SidebarTabsTrigger = React.forwardRef<
 SidebarTabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 
 const SidebarTabsContent = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Content>,
+  React.ComponentRef<typeof TabsPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content

@@ -11,7 +11,7 @@ import { cn } from '@src/utils';
  * https://ui.shadcn.com/docs/components/scroll-area
  */
 const ScrollAreaRoot = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaPrimitive.Root>,
+  React.ComponentRef<typeof ScrollAreaPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
 >(({ className, children, onScrollCapture, ...props }, ref) => (
   <ScrollAreaPrimitive.Root
@@ -32,7 +32,7 @@ const ScrollAreaRoot = React.forwardRef<
 ScrollAreaRoot.displayName = ScrollAreaPrimitive.Root.displayName;
 
 const ScrollBar = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>,
+  React.ComponentRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>
 >(({ className, orientation = 'vertical', ...props }, ref) => (
   <ScrollAreaPrimitive.ScrollAreaScrollbar
