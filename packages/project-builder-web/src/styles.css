@@ -1,6 +1,6 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source('../src');
 
-@config '../tailwind.config.ts';
+@import '@halfdomelabs/ui-components/theme.css';
 
 @layer base {
   html,

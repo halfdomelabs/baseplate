@@ -1,11 +1,11 @@
 import { createPlatformPluginExport } from '@halfdomelabs/project-builder-lib';
 import { adminCrudInputWebSpec } from '@halfdomelabs/project-builder-lib/web';
 
-import '../../index.css';
-
 import type { AdminCrudFileInputConfig } from './types';
 
 import { AdminCrudFileInputForm } from './AdminCrudInputForm';
+
+import '../../styles.css';
 
 export default createPlatformPluginExport({
   dependencies: {

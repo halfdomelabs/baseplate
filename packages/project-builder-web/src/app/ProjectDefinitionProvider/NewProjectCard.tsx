@@ -44,7 +44,7 @@ export function NewProjectCard({
   });
 
   return (
-    <Card className="animate-in fade-in zoom-in w-80 sm:w-120">
+    <Card className="w-80 animate-in fade-in zoom-in-70 sm:w-120">
       <Card.Content className="flex flex-col space-y-4">
         <img
           className="mx-auto w-16"
@@ -53,7 +53,7 @@ export function NewProjectCard({
         />
         <div className="space-y-2">
           <h1 className="text-center">Welcome to Baseplate</h1>
-          <p className="text-style-lead text-center">
+          <p className="text-center text-style-lead">
             Let&apos;s get you set up!
           </p>
         </div>
