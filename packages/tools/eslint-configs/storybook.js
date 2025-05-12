@@ -1,7 +1,6 @@
 // @ts-check
 
 /**
- * @typedef {import('@typescript-eslint/utils/ts-eslint').FlatConfig.ConfigArray} ConfigArray
  * @typedef {import('./typescript.js').GenerateTypescriptEslintConfigOptions} GenerateTypescriptEslintConfigOptions
  */
 
@@ -20,7 +19,6 @@ export const storybookTypescriptEslintOptions = {
   ],
 };
 
-/** @type {ConfigArray} */
 export const storybookEslintConfig = tsEslint.config(
   // Storybook
   {

@@ -1,5 +1,7 @@
 // @ts-check
 
+import tsEslint from 'typescript-eslint';
+
 import { prettierEslintConfig } from './eslint-configs/prettier.js';
 import {
   reactEslintConfig,
@@ -9,20 +11,14 @@ import {
   storybookEslintConfig,
   storybookTypescriptEslintOptions,
 } from './eslint-configs/storybook.js';
-import tailwindEslintConfig, {
-  tailwindTypescriptEslintOptions,
-} from './eslint-configs/tailwind.js';
 import { generateTypescriptEslintConfig } from './eslint-configs/typescript.js';
 
-/** @type {import('@typescript-eslint/utils/ts-eslint').FlatConfig.ConfigArray} */
-export default [
+export default tsEslint.config(
   ...generateTypescriptEslintConfig([
     reactTypescriptEslintOptions,
-    tailwindTypescriptEslintOptions,
     storybookTypescriptEslintOptions,
   ]),
   ...reactEslintConfig,
-  ...tailwindEslintConfig,
   ...storybookEslintConfig,
   prettierEslintConfig,
-];
+);

@@ -1,24 +1,25 @@
 // @ts-check
 
+import tsEslint from 'typescript-eslint';
+
 import prettierConfig from './eslint-configs/prettier.js';
 import { generateTypescriptEslintConfig } from './eslint-configs/typescript.js';
 
+/** @typedef {import('./eslint-configs/typescript.js').GenerateTypescriptEslintConfigOptions} GenerateTypescriptEslintConfigOptions */
+
 /**
  * Generates a Node.js ESLint configuration with customizable options
- * @param {Object} [options] - Configuration options
- * @param {string[]} [options.extraDefaultProjectFiles] - Additional default project files
- * @returns {import('@typescript-eslint/utils/ts-eslint').FlatConfig.ConfigArray} The generated ESLint configuration
+ * @param {GenerateTypescriptEslintConfigOptions} [options] - Configuration options
  */
 export function generateNodeConfig(options = {}) {
-  return [
+  return tsEslint.config(
     ...generateTypescriptEslintConfig([
       {
         extraDefaultProjectFiles: options.extraDefaultProjectFiles || [],
       },
     ]),
     prettierConfig,
-  ];
+  );
 }
 
-/** @type {import('@typescript-eslint/utils/ts-eslint').FlatConfig.ConfigArray} */
 export default generateNodeConfig();

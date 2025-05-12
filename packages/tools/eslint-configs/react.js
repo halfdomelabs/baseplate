@@ -12,7 +12,7 @@ import tsEslint from 'typescript-eslint';
 
 /** @type {GenerateTypescriptEslintConfigOptions} */
 export const reactTypescriptEslintOptions = {
-  extraDefaultProjectFiles: ['vite.config.ts'],
+  extraDefaultProjectFiles: ['vite.config.ts', 'tailwind.config.ts'],
 };
 
 export const reactEslintConfig = tsEslint.config(

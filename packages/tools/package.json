@@ -56,7 +56,6 @@
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-storybook": "0.12.0",
-    "eslint-plugin-tailwindcss": "3.17.5",
     "eslint-plugin-unicorn": "59.0.1",
     "prettier-plugin-packagejson": "2.5.11",
     "prettier-plugin-tailwindcss": "0.6.11",
@@ -65,8 +64,6 @@
   },
   "devDependencies": {
     "@types/eslint-plugin-jsx-a11y": "6.10.0",
-    "@types/eslint-plugin-tailwindcss": "3.17.0",
-    "@typescript-eslint/utils": "8.32.0",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
