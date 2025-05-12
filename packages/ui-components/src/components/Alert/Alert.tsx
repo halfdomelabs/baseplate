@@ -1,5 +1,6 @@
+import type * as React from 'react';
+
 import { cva, type VariantProps } from 'class-variance-authority';
-import * as React from 'react';
 
 import { cn } from '@src/utils';
 
@@ -28,43 +29,47 @@ const alertVariants = cva(
  *
  * https://ui.shadcn.com/docs/components/alert
  */
-const AlertRoot = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
->(({ className, variant, ...props }, ref) => (
-  <div
-    ref={ref}
-    role="alert"
-    className={cn(alertVariants({ variant }), className)}
-    {...props}
-  />
-));
+function AlertRoot({
+  className,
+  variant,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof alertVariants>): React.ReactElement {
+  return (
+    <div
+      role="alert"
+      className={cn(alertVariants({ variant }), className)}
+      {...props}
+    />
+  );
+}
+
 AlertRoot.displayName = 'Alert';
 
-const AlertTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  // eslint-disable-next-line jsx-a11y/heading-has-content
-  <h5
-    ref={ref}
-    className={cn('mb-1 font-medium leading-none tracking-tight', className)}
-    {...props}
-  />
-));
-AlertTitle.displayName = 'AlertTitle';
+function AlertTitle({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLHeadingElement>): React.ReactElement {
+  return (
+    // eslint-disable-next-line jsx-a11y/heading-has-content
+    <h5
+      className={cn('mb-1 font-medium leading-none tracking-tight', className)}
+      {...props}
+    />
+  );
+}
 
-const AlertDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn('text-sm [&_p]:leading-relaxed', className)}
-    {...props}
-  />
-));
-AlertDescription.displayName = 'AlertDescription';
+function AlertDescription({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>): React.ReactElement {
+  return (
+    <div
+      className={cn('text-sm [&_p]:leading-relaxed', className)}
+      {...props}
+    />
+  );
+}
 
 export const Alert = Object.assign(AlertRoot, {
   Title: AlertTitle,

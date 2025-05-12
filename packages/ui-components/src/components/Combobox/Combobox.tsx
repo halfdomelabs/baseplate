@@ -33,7 +33,7 @@ interface ComboboxContextValue {
   setIsOpen: (open: boolean) => void;
   isOpen: boolean;
   inputId: string;
-  listRef: React.RefObject<HTMLDivElement>;
+  listRef: React.RefObject<HTMLDivElement | null>;
   shouldShowItem: (label: string | null) => boolean;
   disabled: boolean;
 }

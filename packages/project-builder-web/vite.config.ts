@@ -9,6 +9,10 @@ import { pluginDevServerPlugin } from './plugins/plugin-dev-server.js';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const envVars = { ...process.env, ...loadEnv(mode, process.cwd(), '') };
+  const PORT = envVars.PORT ? Number.parseInt(envVars.PORT, 10) : 3000;
+  const localhostOriginRegex = new RegExp(
+    `^(http|w)://(localhost|127.0.0.1|[::1]):${PORT}`,
+  );
 
   return {
     plugins: [
@@ -34,22 +38,39 @@ export default defineConfig(({ mode }) => {
       pluginDevServerPlugin(),
     ],
     server: {
-      port: envVars.PORT ? Number.parseInt(envVars.PORT, 10) : 3000,
+      port: PORT,
       proxy: envVars.DEV_BACKEND_HOST
         ? {
             '/api': {
               target: envVars.DEV_BACKEND_HOST,
-              headers: {
-                origin: envVars.DEV_BACKEND_HOST,
-              },
               changeOrigin: true,
+              ws: true,
             },
             '/trpc': {
               target: envVars.DEV_BACKEND_HOST,
-              headers: {
-                origin: envVars.DEV_BACKEND_HOST,
-              },
               changeOrigin: true,
+              ws: true,
+              // ensure we rewrite origin only if it comes from our site
+              configure: (proxy) => {
+                proxy.on('proxyReq', (proxyReq) => {
+                  const origin = proxyReq.getHeader('origin');
+                  if (typeof origin !== 'string') return;
+                  if (!envVars.DEV_BACKEND_HOST) return;
+
+                  if (localhostOriginRegex.test(origin)) {
+                    proxyReq.setHeader('origin', envVars.DEV_BACKEND_HOST);
+                  }
+                });
+                proxy.on('proxyReqWs', (proxyReq) => {
+                  const origin = proxyReq.getHeader('origin');
+                  if (typeof origin !== 'string') return;
+                  if (!envVars.DEV_BACKEND_HOST) return;
+
+                  if (localhostOriginRegex.test(origin)) {
+                    proxyReq.setHeader('origin', envVars.DEV_BACKEND_HOST);
+                  }
+                });
+              },
             },
           }
         : undefined,

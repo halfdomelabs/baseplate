@@ -1,7 +1,8 @@
 'use client';
 
+import type * as React from 'react';
+
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
-import * as React from 'react';
 import { MdCheck } from 'react-icons/md';
 
 import { cn } from '@src/utils';
@@ -12,25 +13,27 @@ import { cn } from '@src/utils';
  * https://ui.shadcn.com/docs/components/checkbox
  */
 
-const Checkbox = React.forwardRef<
-  React.ElementRef<typeof CheckboxPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <CheckboxPrimitive.Root
-    ref={ref}
-    className={cn(
-      'peer h-4 w-4 shrink-0 rounded border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground',
-      className,
-    )}
-    {...props}
-  >
-    <CheckboxPrimitive.Indicator
-      className={cn('flex items-center justify-center text-current')}
+function Checkbox({
+  className,
+  ...props
+}: React.ComponentPropsWithRef<
+  typeof CheckboxPrimitive.Root
+>): React.ReactElement {
+  return (
+    <CheckboxPrimitive.Root
+      className={cn(
+        'peer h-4 w-4 shrink-0 rounded border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground',
+        className,
+      )}
+      {...props}
     >
-      <MdCheck className="size-4" />
-    </CheckboxPrimitive.Indicator>
-  </CheckboxPrimitive.Root>
-));
-Checkbox.displayName = CheckboxPrimitive.Root.displayName;
+      <CheckboxPrimitive.Indicator
+        className={cn('flex items-center justify-center text-current')}
+      >
+        <MdCheck className="size-4" />
+      </CheckboxPrimitive.Indicator>
+    </CheckboxPrimitive.Root>
+  );
+}
 
 export { Checkbox };

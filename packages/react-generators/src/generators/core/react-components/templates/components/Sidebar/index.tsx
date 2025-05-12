@@ -2,7 +2,11 @@
 
 import type { ReactElement } from 'react';
 
-import { Disclosure } from '@headlessui/react';
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+} from '@headlessui/react';
 import clsx from 'clsx';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 import { Link, useMatch, useResolvedPath } from 'react-router-dom';
@@ -151,7 +155,7 @@ Sidebar.Dropdown = function SidebarDropdown({
     <Disclosure as="li" className={className}>
       {({ open }) => (
         <>
-          <Disclosure.Button className="group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+          <DisclosureButton className="group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
             {Icon ? (
               <>
                 <Icon className="h-6 w-6 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" />
@@ -167,10 +171,10 @@ Sidebar.Dropdown = function SidebarDropdown({
             ) : (
               <MdKeyboardArrowDown className="h-6 w-6" />
             )}
-          </Disclosure.Button>
-          <Disclosure.Panel as="ul" className="space-y-2 py-2">
+          </DisclosureButton>
+          <DisclosurePanel as="ul" className="space-y-2 py-2">
             {children}
-          </Disclosure.Panel>
+          </DisclosurePanel>
         </>
       )}
     </Disclosure>

@@ -48,7 +48,18 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
       onError: ({ error }) => {
         fastify.log.error(error);
       },
+      // hack since WSS options are not included
+      ...({
+        keepAlive: {
+          enabled: true,
+          // server ping message interval in milliseconds
+          pingMs: 30_000,
+          // connection is terminated if pong message is not received in this many milliseconds
+          pongWaitMs: 5000,
+        },
+      } as Record<string, unknown>),
     },
+    useWSS: true,
   } satisfies FastifyTRPCPluginOptions<AppRouter>);
 
   fastify.get('/api/plugins/:projectId/:pluginId/static/*', {

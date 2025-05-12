@@ -90,18 +90,6 @@ function ReactDatePickerInput({
       dateFormat={showTimeSelect ? 'yyyy-MM-dd HH:mm' : 'yyyy-MM-dd'}
       isClearable={isClearable}
       placeholderText="Select a date"
-      popperModifiers={[
-        {
-          name: 'arrow',
-          options: {
-            padding: ({ popper, reference }) => ({
-              // keeps the arrow always to the left, otherwise it is off centered when the input is large
-              // https://github.com/Hacker0x01/react-datepicker/issues/3176#issuecomment-1262100937
-              right: Math.min(popper.width, reference.width) - 24,
-            }),
-          },
-        },
-      ]}
     />
   );
 }

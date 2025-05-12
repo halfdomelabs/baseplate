@@ -3,12 +3,10 @@ import type React from 'react';
 
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog, Table } from '@halfdomelabs/ui-components';
-import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import type { UseDeleteReferenceDialogRequestOptions } from '@src/hooks/useDeleteReferenceDialog';
-
 import { useDeleteReferenceDialogState } from '@src/hooks/useDeleteReferenceDialog';
+import { usePrevious } from '@src/hooks/usePrevious';
 import { getEntityTypeUrl } from '@src/services/entity-type';
 
 export function RefIssueDialog(): React.JSX.Element {
@@ -18,16 +16,9 @@ export function RefIssueDialog(): React.JSX.Element {
 
   // We need to store the text content in a ref because the Dialog component
   // will transition to fade so we need to cache the text while we close.
-  const dialogOptionsCached =
-    useRef<null | UseDeleteReferenceDialogRequestOptions>();
+  const dialogOptionsCached = usePrevious(dialogOptions);
 
-  useEffect(() => {
-    if (dialogOptions) {
-      dialogOptionsCached.current = dialogOptions;
-    }
-  }, [dialogOptions]);
-
-  const { issues } = dialogOptions ?? dialogOptionsCached.current ?? {};
+  const { issues } = dialogOptions ?? dialogOptionsCached ?? {};
 
   return (
     <Dialog

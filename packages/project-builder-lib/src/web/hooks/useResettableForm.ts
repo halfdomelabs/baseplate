@@ -20,7 +20,7 @@ export function useResettableForm<
 
   const oldValues = useRef<{
     oldDefaultValues: unknown;
-  }>();
+  }>(undefined);
 
   useEffect(() => {
     if (

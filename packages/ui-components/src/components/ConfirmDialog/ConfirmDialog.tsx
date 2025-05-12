@@ -23,7 +23,7 @@ export function ConfirmDialog(): React.JSX.Element {
   const textOptionsCached = useRef<null | Omit<
     UseConfirmDialogRequestOptions,
     'onConfirm' | 'onCancel'
-  >>();
+  >>(null);
 
   useEffect(() => {
     if (confirmOptions) {

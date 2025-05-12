@@ -16,6 +16,7 @@ import {
   tsHoistedFragment,
   tsImportBuilder,
   tsTemplate,
+  tsTypeImportBuilder,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -588,15 +589,15 @@ export const reactApolloGenerator = createGenerator({
         const headerBlock = tsCodeFragment(
           `
           function annotateGraphQLError(
-            error: GraphQLError,
+            error: GraphQLError | GraphQLFormattedError,
             context: Record<string, unknown>,
           ): void {
-            context.reqId = error.extensions.reqId;
-            context.code = error.extensions.code;
-            context.statusCode = error.extensions.statusCode;
+            context.reqId = error.extensions?.reqId;
+            context.code = error.extensions?.code;
+            context.statusCode = error.extensions?.statusCode;
             context.path = error.path?.join('.');
             // only visible in development
-            const originalError = error.extensions.originalError as {
+            const originalError = error.extensions?.originalError as {
               message?: string;
               stack?: string;
             } | null;
@@ -654,6 +655,7 @@ export const reactApolloGenerator = createGenerator({
             [
               tsImportBuilder(['GraphQLError']).from('graphql'),
               tsImportBuilder(['ApolloError']).from('@apollo/client'),
+              tsTypeImportBuilder(['GraphQLFormattedError']).from('graphql'),
             ],
             {
               hoistedFragments: [

@@ -7,7 +7,7 @@ import { useRef } from 'react';
  * @param selector - The selector function to deeply memoize.
  */
 export function useDeep<S, U>(selector: (state: S) => U): (state: S) => U {
-  const prev = useRef<U>();
+  const prev = useRef<U>(undefined);
 
   return (state) => {
     const next = selector(state);

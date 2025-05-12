@@ -2,11 +2,12 @@ import type { ClientVersionInfo } from '@halfdomelabs/project-builder-server';
 import type React from 'react';
 
 import { ErrorableLoader } from '@halfdomelabs/ui-components';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { UseClientVersionResult } from '@src/hooks/useClientVersion';
 
 import { ClientVersionContext } from '@src/hooks/useClientVersion';
+import { usePrevious } from '@src/hooks/usePrevious';
 import { getVersionInfo } from '@src/services/api';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { trpcSubscriptionEvents } from '@src/services/trpc';
@@ -42,19 +43,16 @@ export function ClientVersionProvider({
   }, [fetchVersion]);
 
   // reload page when version changes
-  const previousClientVersion = useRef<string | undefined>();
+  const previousClientVersion = usePrevious(clientVersionInfo?.version);
   useEffect(() => {
     if (
       clientVersionInfo &&
-      previousClientVersion.current &&
-      previousClientVersion.current !== clientVersionInfo.version
+      previousClientVersion &&
+      previousClientVersion !== clientVersionInfo.version
     ) {
       globalThis.location.reload();
     }
-    if (clientVersionInfo) {
-      previousClientVersion.current = clientVersionInfo.version;
-    }
-  }, [clientVersionInfo]);
+  }, [clientVersionInfo, previousClientVersion]);
 
   const clientVersionResult: UseClientVersionResult | undefined = useMemo(
     () =>

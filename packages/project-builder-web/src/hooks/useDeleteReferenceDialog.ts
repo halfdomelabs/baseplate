@@ -3,7 +3,7 @@ import type { FixRefDeletionError } from '@halfdomelabs/project-builder-lib';
 import { useMemo } from 'react';
 import { create } from 'zustand';
 
-export interface UseDeleteReferenceDialogRequestOptions {
+interface UseDeleteReferenceDialogRequestOptions {
   issues: FixRefDeletionError[];
 }
 

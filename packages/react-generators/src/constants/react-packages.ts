@@ -1,12 +1,12 @@
 export const REACT_PACKAGES = {
   // React
-  react: '18.3.1',
-  'react-dom': '18.3.1',
-  'react-router-dom': '6.22.3',
+  react: '19.1.0',
+  'react-dom': '19.1.0',
+  'react-router-dom': '6.30.0',
   '@types/node': `^22.0.0`,
-  '@types/react': '18.3.8',
-  '@types/react-dom': '18.3.0',
-  '@vitejs/plugin-react': '4.3.4',
+  '@types/react': '19.1.3',
+  '@types/react-dom': '19.1.3',
+  '@vitejs/plugin-react': '4.4.1',
   vite: '6.3.5',
   'vite-plugin-svgr': '4.3.0',
   'vite-tsconfig-paths': '5.1.4',
@@ -20,23 +20,22 @@ export const REACT_PACKAGES = {
   '@tailwindcss/forms': '0.5.9',
 
   // Components
-  '@headlessui/react': '1.7.18',
+  '@headlessui/react': '2.2.2',
   '@hookform/resolvers': '3.9.0',
   clsx: '2.1.1',
   'react-hook-form': '7.53.0',
-  'react-hot-toast': '2.4.1',
+  'react-hot-toast': '2.5.2',
   'react-icons': '5.5.0',
-  'react-select': '5.8.0',
+  'react-select': '5.10.1',
   zustand: '5.0.3',
-  'react-error-boundary': '4.0.13',
+  'react-error-boundary': '6.0.0',
 
   // Date Picker
-  'react-datepicker': '4.25.0',
-  'date-fns': '3.2.0',
-  '@types/react-datepicker': '4.19.5',
+  'react-datepicker': '8.3.0',
+  'date-fns': '4.1.0',
 
   // GraphQL
-  '@apollo/client': '3.10.8',
+  '@apollo/client': '3.13.8',
   graphql: '16.9.0',
   'graphql-ws': '5.16.0',
   '@graphql-codegen/cli': '5.0.2',
@@ -51,7 +50,7 @@ export const REACT_PACKAGES = {
   '@types/use-subscription': '^1.0.0',
 
   // Auth
-  '@auth0/auth0-react': '2.2.3',
+  '@auth0/auth0-react': '2.3.0',
 
   // Validation
   zod: '3.24.1',

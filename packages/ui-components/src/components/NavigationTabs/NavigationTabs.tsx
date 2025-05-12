@@ -7,7 +7,7 @@ import { cn } from '@src/utils';
  * A tab-like interface that allows the user to navigate between different sections via links
  */
 const NavigationTabsRoot = React.forwardRef<
-  React.ElementRef<typeof NavigationMenuPrimitive.Root>,
+  React.ComponentRef<typeof NavigationMenuPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root>
 >(({ className, children, ...props }, ref) => (
   <NavigationMenuPrimitive.Root
@@ -30,7 +30,7 @@ const NavigationTabsRoot = React.forwardRef<
 NavigationTabsRoot.displayName = 'NavigationTabs';
 
 const NavigationTabsItem = React.forwardRef<
-  React.ElementRef<typeof NavigationMenuPrimitive.Item>,
+  React.ComponentRef<typeof NavigationMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Link>
 >(({ className, children, asChild, ...props }, ref) => (
   <NavigationMenuPrimitive.Item ref={ref} className={cn('flex-1', className)}>

@@ -5,11 +5,12 @@ import type { Unsubscribable } from '@trpc/server/observable';
 import { createTypedEventEmitter } from '@halfdomelabs/utils';
 import {
   createTRPCClient,
+  createWSClient,
   httpBatchLink,
-  httpSubscriptionLink,
   loggerLink,
   splitLink,
   TRPCClientError,
+  wsLink,
 } from '@trpc/client';
 import { observable } from '@trpc/server/observable';
 
@@ -87,7 +88,12 @@ export const trpcSubscriptionEvents = createTypedEventEmitter<{
   open: undefined;
 }>();
 
-const API_URL = '/trpc';
+const wsClient = createWSClient({
+  url: `${globalThis.location.origin.replace(/^http/, 'ws')}/trpc`,
+  onOpen() {
+    trpcSubscriptionEvents.emit('open', undefined);
+  },
+});
 
 /**
  * The TRPC client.
@@ -103,17 +109,14 @@ export const trpc = createTRPCClient<AppRouter>({
             op.direction === 'down' && op.result instanceof Error,
         }),
         retryLink({}),
-        httpSubscriptionLink({
-          url: API_URL,
-          eventSourceOptions: () => {
-            trpcSubscriptionEvents.emit('open', undefined);
-          },
+        wsLink({
+          client: wsClient,
         }),
       ],
       false: [
         retryLink({ maxAttempts: 5 }),
         httpBatchLink({
-          url: API_URL,
+          url: `/trpc`,
         }),
       ],
     }),
