@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import type { GraphQLFormattedError } from 'graphql';
+
 import { logError } from '%reactErrorImports';
 import { logBreadcrumbToSentry } from '%reactSentryImports';
 import { ApolloLink } from '@apollo/client';
@@ -9,7 +11,7 @@ import { Kind } from 'graphql';
 export const apolloSentryLink = new ApolloLink((operation, forward) => {
   operation.setContext({ startAt: Date.now() });
   return new Observable((observer) => {
-    function logResult(error?: Error): void {
+    function logResult(error?: GraphQLFormattedError): void {
       try {
         const operationDuration = Date.now() - operation.getContext().startAt;
         const { operationName, query } = operation;

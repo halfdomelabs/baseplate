@@ -31,9 +31,8 @@ export const REACT_PACKAGES = {
   'react-error-boundary': '6.0.0',
 
   // Date Picker
-  'react-datepicker': '4.25.0',
-  'date-fns': '3.2.0',
-  '@types/react-datepicker': '4.19.5',
+  'react-datepicker': '8.3.0',
+  'date-fns': '4.1.0',
 
   // GraphQL
   '@apollo/client': '3.13.8',
@@ -51,7 +50,7 @@ export const REACT_PACKAGES = {
   '@types/use-subscription': '^1.0.0',
 
   // Auth
-  '@auth0/auth0-react': '2.2.3',
+  '@auth0/auth0-react': '2.3.0',
 
   // Validation
   zod: '3.24.1',

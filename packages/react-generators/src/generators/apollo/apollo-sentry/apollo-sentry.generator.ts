@@ -2,6 +2,7 @@ import {
   tsCodeFragment,
   tsHoistedFragment,
   tsImportBuilder,
+  tsTypeImportBuilder,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
@@ -36,12 +37,12 @@ export const apolloSentryGenerator = createGenerator({
           `
           function configureSentryScopeForGraphqlError(
             scope: Sentry.Scope,
-            error: GraphQLError,
+            error: GraphQLError | GraphQLFormattedError,
           ): void {
             scope.setFingerprint(
               [
                 '{{ default }}',
-                error.extensions.code as string,
+                error.extensions?.code as string,
                 error.path?.join('.'),
               ].filter((value): value is string => typeof value === 'string' && !!value),
             );
@@ -51,7 +52,10 @@ export const apolloSentryGenerator = createGenerator({
             }
           }
           `,
-          tsImportBuilder(['GraphQLError']).from('graphql'),
+          [
+            tsImportBuilder(['GraphQLError']).from('graphql'),
+            tsTypeImportBuilder(['GraphQLFormattedError']).from('graphql'),
+          ],
         );
         return {
           build: () => {
