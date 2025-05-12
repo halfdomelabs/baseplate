@@ -1,6 +1,11 @@
+/**
+ * CSS styles for Storybook usage
+ */
+
 @import 'tailwindcss';
 
 @import './theme.css';
+@import './base-styles.css';
 
 :root {
   --accent: oklch(0.968 0.007 247.896);

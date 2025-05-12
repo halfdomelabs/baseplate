@@ -9,6 +9,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
+    "./base-styles.css": "./src/base-styles.css",
     "./theme.css": "./src/theme.css"
   },
   "main": "./dist/index.js",
