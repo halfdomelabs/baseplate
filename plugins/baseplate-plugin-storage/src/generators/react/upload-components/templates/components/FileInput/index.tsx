@@ -138,14 +138,14 @@ const FileInput = function FileInput({
       {(() => {
         if (value) {
           return (
-            <div className="flex h-12 w-full max-w-md items-center justify-between rounded-lg border bg-white p-4 shadow-md">
+            <div className="bg-white flex h-12 w-full max-w-md items-center justify-between rounded-lg border p-4 shadow-md">
               <div />
               <div className="flex items-center">
                 {imagePreview && value.hostedUrl && (
                   <a href={value.hostedUrl} target="_blank" rel="noreferrer">
                     <img
                       src={value.hostedUrl}
-                      className="mr-4 h-8 w-8 rounded-lg bg-gray-300 object-cover"
+                      className="bg-gray-300 mr-4 h-8 w-8 rounded-lg object-cover"
                       alt={`${value.name} upload`}
                     />
                   </a>
@@ -168,7 +168,7 @@ const FileInput = function FileInput({
               <LinkButton onClick={handleRemove}>
                 <MdOutlineClear
                   aria-label="Remove"
-                  className="h-8 w-6 text-black"
+                  className="text-black h-8 w-6"
                 />
               </LinkButton>
             </div>
