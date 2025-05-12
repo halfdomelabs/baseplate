@@ -105,7 +105,8 @@ function CommandEmpty({
 
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
 
-function CommandGroup({
+// Temporarily exporting to allow MultiCombobox typings to work
+export function CommandGroup({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<

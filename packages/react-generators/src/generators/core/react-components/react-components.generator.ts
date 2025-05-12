@@ -96,9 +96,6 @@ export const reactComponentsGenerator = createGenerator({
             'react-datepicker',
             'date-fns',
           ]),
-          dev: extractPackageVersions(REACT_PACKAGES, [
-            '@types/react-datepicker',
-          ]),
         })
       : undefined,
     main: createGeneratorTask({
