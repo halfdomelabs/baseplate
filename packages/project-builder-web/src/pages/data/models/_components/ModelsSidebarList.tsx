@@ -93,13 +93,11 @@ export function ModelsSidebarList({
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>
             {sortedModels.map((model) => (
-              <li key={model.id}>
-                <NavigationMenuItemWithLink asChild>
-                  <NavLink to={createModelEditLink(model.id)}>
-                    {model.name}
-                  </NavLink>
-                </NavigationMenuItemWithLink>
-              </li>
+              <NavigationMenuItemWithLink key={model.id} asChild>
+                <NavLink to={createModelEditLink(model.id)}>
+                  {model.name}
+                </NavLink>
+              </NavigationMenuItemWithLink>
             ))}
           </NavigationMenuList>
         </NavigationMenu>
