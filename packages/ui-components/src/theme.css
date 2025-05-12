@@ -1,3 +1,11 @@
+@import './themes/fonts.css';
+@import './themes/colors.css';
+@import './themes/typography.css';
+
+@import 'tw-animate-css';
+
+@source '.';
+
 @layer base {
   * {
     @apply border-border;

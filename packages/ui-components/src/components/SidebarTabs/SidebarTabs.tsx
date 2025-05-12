@@ -31,7 +31,7 @@ const SidebarTabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      'flex h-full w-48 flex-shrink-0 flex-col space-y-1',
+      'flex h-full w-48 shrink-0 flex-col space-y-1',
       className,
     )}
     {...props}
@@ -47,7 +47,7 @@ const SidebarTabsTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       'flex items-center px-4 py-2 text-left text-sm font-medium transition-colors',
-      'hover:bg-muted focus:bg-muted focus:outline-none',
+      'hover:bg-muted focus:bg-muted focus:outline-hidden',
       'rounded-md data-[state=active]:bg-accent data-[state=active]:text-accent-foreground',
       className,
     )}
@@ -62,7 +62,7 @@ const SidebarTabsContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
     ref={ref}
-    className={cn('flex-grow focus:outline-none', className)}
+    className={cn('grow focus:outline-hidden', className)}
     {...props}
   />
 ));

@@ -173,7 +173,7 @@ const MultiComboboxInput = React.forwardRef<
                 <Badge
                   variant="secondary"
                   key={option.value}
-                  className="flex items-center gap-1 rounded-sm px-1 font-normal"
+                  className="flex items-center gap-1 rounded-xs px-1 font-normal"
                 >
                   <div>{option.label}</div>
                   <button
@@ -315,7 +315,7 @@ const MultiComboboxItem = React.forwardRef<
     >
       <div
         className={cn(
-          'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border',
+          'mr-2 flex h-4 w-4 items-center justify-center rounded-xs border',
           isSelected ? 'opacity-100' : '[&_svg]:invisible',
         )}
       >

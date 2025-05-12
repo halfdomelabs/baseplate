@@ -53,7 +53,7 @@ const ColorPickerRoot = forwardRef(
           >
             {!hideInputColor && value && (
               <div
-                className="h-4 w-6 rounded border border-border"
+                className="h-4 w-6 rounded-sm border border-border"
                 style={{
                   backgroundColor: value,
                 }}

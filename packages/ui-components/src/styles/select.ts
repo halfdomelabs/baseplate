@@ -14,7 +14,7 @@ export const selectContentVariants = cva(
 );
 
 export const selectItemVariants = cva(
-  'relative flex w-full select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none hover:cursor-pointer aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
+  'relative flex w-full select-none items-center rounded-xs py-1.5 pl-2 pr-8 text-sm outline-hidden hover:cursor-pointer aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
   {
     variants: {
       withFocus: {

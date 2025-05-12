@@ -35,7 +35,7 @@ SidebarLayout.Sidebar = function SidebarLayoutSidebar({
   return (
     <aside
       className={cn(
-        'sticky flex-shrink-0 overflow-y-auto border-r border-border',
+        'sticky shrink-0 overflow-y-auto border-r border-border',
         {
           'w-64': width === 'sm',
           'w-72': width === 'md',

@@ -1,5 +1,4 @@
-@import '@halfdomelabs/ui-components/global.css';
-@import '@halfdomelabs/ui-components/font.css';
+@import '@halfdomelabs/ui-components/theme.css';
 
 @tailwind base;
 @tailwind components;

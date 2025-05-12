@@ -33,7 +33,7 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       inputVariants(),
-      'group flex items-center justify-between data-[placeholder]:text-muted-foreground',
+      'group flex items-center justify-between data-placeholder:text-muted-foreground',
       className,
     )}
     {...props}
@@ -80,8 +80,8 @@ const SelectContent = React.forwardRef<
               className={cn(
                 'h-full w-full rounded-[inherit] p-1',
                 position === 'popper'
-                  ? 'max-h-[min(var(--max-popper-height),var(--radix-select-content-available-height))] w-full min-w-[var(--radix-select-trigger-width)]'
-                  : 'max-h-[var(--max-popper-height)]',
+                  ? 'max-h-[min(var(--max-popper-height),var(--radix-select-content-available-height))] w-full min-w-(--radix-select-trigger-width)'
+                  : 'max-h-(--max-popper-height)',
               )}
               style={
                 {

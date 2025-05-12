@@ -24,4 +24,5 @@ catalog:
   vite-tsconfig-paths: 5.1.4
   zod: 3.24.1
 ignoredBuiltDependencies:
+  - '@tailwindcss/oxide'
   - unrs-resolver
