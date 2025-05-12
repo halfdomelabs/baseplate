@@ -5,6 +5,8 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   NavigationMenu,
+  NavigationMenuItemWithLink,
+  NavigationMenuList,
   SidebarLayout,
 } from '@halfdomelabs/ui-components';
 import { sortBy } from 'es-toolkit';
@@ -28,17 +30,15 @@ function AppsLayout(): React.JSX.Element {
           </Link>
         </div>
         <NavigationMenu orientation="vertical">
-          <NavigationMenu.List>
+          <NavigationMenuList>
             {sortedApps.map((app) => (
-              <li key={app.id}>
-                <NavigationMenu.ItemWithLink asChild>
-                  <NavLink to={`/apps/edit/${appEntityType.toUid(app.id)}`}>
-                    {app.name}
-                  </NavLink>
-                </NavigationMenu.ItemWithLink>
-              </li>
+              <NavigationMenuItemWithLink key={app.id} asChild>
+                <NavLink to={`/apps/edit/${appEntityType.toUid(app.id)}`}>
+                  {app.name}
+                </NavLink>
+              </NavigationMenuItemWithLink>
             ))}
-          </NavigationMenu.List>
+          </NavigationMenuList>
         </NavigationMenu>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content className="p-4">

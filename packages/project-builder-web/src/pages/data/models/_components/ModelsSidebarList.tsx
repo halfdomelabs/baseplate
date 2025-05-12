@@ -5,6 +5,8 @@ import {
   Button,
   InputField,
   NavigationMenu,
+  NavigationMenuItemWithLink,
+  NavigationMenuList,
   ScrollArea,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
@@ -89,17 +91,17 @@ export function ModelsSidebarList({
           </div>
         )}
         <NavigationMenu orientation="vertical">
-          <NavigationMenu.List>
+          <NavigationMenuList>
             {sortedModels.map((model) => (
               <li key={model.id}>
-                <NavigationMenu.ItemWithLink asChild size="skinny">
+                <NavigationMenuItemWithLink asChild>
                   <NavLink to={createModelEditLink(model.id)}>
                     {model.name}
                   </NavLink>
-                </NavigationMenu.ItemWithLink>
+                </NavigationMenuItemWithLink>
               </li>
             ))}
-          </NavigationMenu.List>
+          </NavigationMenuList>
         </NavigationMenu>
       </ScrollArea>
     </div>
