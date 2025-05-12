@@ -82,13 +82,13 @@ export function ThemeBuilderPage(): React.JSX.Element {
 
   return (
     <form
-      className="relative h-full max-h-full pb-[var(--action-bar-height)]"
+      className="relative h-full max-h-full pb-(--action-bar-height)"
       onSubmit={onSubmit}
     >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
-        <div className="sticky top-0 z-10 space-y-2 border-b bg-background py-6">
+        <div className="bg-background sticky top-0 z-10 space-y-2 border-b py-6">
           <h1>Theme Builder</h1>
-          <p className="max-w-3xl text-muted-foreground">
+          <p className="text-muted-foreground max-w-3xl">
             The theme of the UI is based off color variables used with{' '}
             <a
               href="https://ui.shadcn.com/docs/theming"

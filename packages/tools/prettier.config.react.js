@@ -3,6 +3,11 @@ import { fileURLToPath } from 'node:url';
 
 import basePrettierConfig from './prettier.config.node.js';
 
+/**
+ * Note: This config expects the root of the project to have a `src/styles.css` file
+ * where the Tailwind styles are defined.
+ */
+
 /** @type {import("prettier").Config} */
 export default {
   ...basePrettierConfig,

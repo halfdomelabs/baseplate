@@ -26,7 +26,7 @@ export function ThemeColorsPreview({
   return (
     <div
       className={clsx(
-        'size-full rounded-xl border border-border bg-background p-4',
+        'border-border bg-background size-full rounded-xl border p-4',
         className,
       )}
       style={colorCss}
@@ -76,7 +76,7 @@ export function ThemeColorsPreview({
           </div>
           <div>
             <PreviewSectionTitle>Buttons</PreviewSectionTitle>
-            <div className="flex flex-wrap gap-2 rounded-lg border border-border p-1">
+            <div className="border-border flex flex-wrap gap-2 rounded-lg border p-1">
               <Button type="button">Primary</Button>
               <Button variant="destructive" type="button">
                 Destructive

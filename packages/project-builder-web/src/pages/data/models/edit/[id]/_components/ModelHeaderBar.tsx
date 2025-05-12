@@ -57,7 +57,7 @@ export function ModelHeaderBar({
           </button>
         </ModelInfoEditDialog>
         {model.featureRef && (
-          <div className="text-xs text-muted-foreground">
+          <div className="text-muted-foreground text-xs">
             {FeatureUtils.getFeatureById(definition, model.featureRef)?.name}
           </div>
         )}

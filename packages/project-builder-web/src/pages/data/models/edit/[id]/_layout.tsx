@@ -43,7 +43,7 @@ export function ModelEditLayout(): React.JSX.Element {
         </NavigationTabs>
       </div>
       <div
-        className="mb-[var(--action-bar-height)] flex flex-1 overflow-y-auto"
+        className="mb-(--action-bar-height) flex flex-1 overflow-y-auto"
         style={
           {
             '--action-bar-height': '52px',

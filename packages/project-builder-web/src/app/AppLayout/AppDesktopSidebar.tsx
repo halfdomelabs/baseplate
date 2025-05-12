@@ -19,7 +19,7 @@ function SidebarNavigationIcon({
   return (
     <NavLink
       to={to}
-      className={`flex h-12 w-[50px] items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground aria-[current="page"]:hover:bg-accent`}
+      className={`text-muted-foreground hover:bg-accent hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground aria-[current="page"]:hover:bg-accent flex h-12 w-[50px] items-center justify-center rounded-lg transition-colors`}
       end={end}
     >
       <div className="flex flex-col items-center space-y-1">
@@ -32,7 +32,7 @@ function SidebarNavigationIcon({
 
 export function AppDesktopSidebar(): React.JSX.Element {
   return (
-    <nav className="flex h-full flex-col items-center justify-between px-2 pb-4 pt-2.5">
+    <nav className="flex h-full flex-col items-center justify-between px-2 pt-2.5 pb-4">
       <div className="space-y-8">
         <Link
           to="/"

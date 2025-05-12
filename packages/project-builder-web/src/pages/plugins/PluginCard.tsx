@@ -98,11 +98,11 @@ export function PluginCard({
                     plugin.id,
                     plugin.icon,
                   )}
-                  className="size-12 rounded-xl bg-muted"
+                  className="bg-muted size-12 rounded-xl"
                   alt={`${plugin.displayName} logo`}
                 />
               ) : (
-                <MdExtension className="size-12 bg-muted p-2" />
+                <MdExtension className="bg-muted size-12 p-2" />
               )}
             </div>
             <div>

@@ -57,11 +57,11 @@ export function TemplateExtractorSettingsPage(): React.JSX.Element {
 
   return (
     <form
-      className="relative h-full max-h-full pb-[var(--action-bar-height)]"
+      className="relative h-full max-h-full pb-(--action-bar-height)"
       onSubmit={onSubmit}
     >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
-        <div className="sticky top-0 border-b bg-background py-6">
+        <div className="bg-background sticky top-0 border-b py-6">
           <h1>Template Extractor</h1>
         </div>
         <SectionList>

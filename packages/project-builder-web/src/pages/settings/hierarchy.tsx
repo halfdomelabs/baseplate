@@ -59,11 +59,11 @@ function HierarchyPage(): React.JSX.Element {
   };
 
   return (
-    <div className="relative h-full max-h-full pb-[var(--action-bar-height)]">
+    <div className="relative h-full max-h-full pb-(--action-bar-height)">
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
-        <div className="sticky top-0 space-y-2 border-b bg-background py-6">
+        <div className="bg-background sticky top-0 space-y-2 border-b py-6">
           <h1>Hierarchy</h1>
-          <p className="max-w-3xl text-muted-foreground">
+          <p className="text-muted-foreground max-w-3xl">
             All business logic and features are organized in a hierarchy. The
             structure of the features in the list below is the way the folder
             structure will be created in your backend/admin applications.

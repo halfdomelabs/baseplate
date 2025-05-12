@@ -21,7 +21,7 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
         <Alert.Title>Error compiling project.</Alert.Title>
         <Alert.Description>
           {metadata.globalErrors.map((error) => (
-            <div key={error} className="whitespace-pre-wrap font-mono">
+            <div key={error} className="font-mono whitespace-pre-wrap">
               {error}
             </div>
           ))}
@@ -36,7 +36,7 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
       metadata.status === 'in-progress' ? (
       <div
         className={clsx(
-          'flex h-40 items-center justify-center text-muted-foreground',
+          'text-muted-foreground flex h-40 items-center justify-center',
           className,
         )}
       >

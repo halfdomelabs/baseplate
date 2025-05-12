@@ -55,7 +55,7 @@ export function ModelFieldsForm({
   return (
     <div className={clsx('space-y-4', className)}>
       {fieldFields.length === 0 ? (
-        <p className="pt-4 text-style-muted">Add some fields to get started</p>
+        <p className="text-style-muted pt-4">Add some fields to get started</p>
       ) : (
         <div className="flex w-full flex-col gap-2 bg-white">
           <div

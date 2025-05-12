@@ -96,7 +96,7 @@ export function ThemeColorsEditor({
               />
               {currentColor !== defaultValue && (
                 <Button.WithIcon
-                  className="absolute bottom-1 right-2"
+                  className="absolute right-2 bottom-1"
                   onClick={() => {
                     setValue(`colors.${mode}.${themeKey}`, defaultValue);
                   }}

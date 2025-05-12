@@ -19,7 +19,7 @@ export function BadgeWithTypeLabel({
   return (
     <div
       className={clsx(
-        'flex h-8 w-full items-center justify-between gap-4 rounded-md border bg-muted px-3 text-sm',
+        'bg-muted flex h-8 w-full items-center justify-between gap-4 rounded-md border px-3 text-sm',
         className,
       )}
     >

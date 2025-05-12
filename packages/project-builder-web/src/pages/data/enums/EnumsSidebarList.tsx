@@ -61,7 +61,7 @@ export function EnumsSidebarList({
             {filterQuery && (
               <Button
                 variant="ghost"
-                className="absolute right-4 top-1/2 -translate-y-1/2"
+                className="absolute top-1/2 right-4 -translate-y-1/2"
                 size="icon"
                 onClick={() => {
                   setFilterQuery('');
@@ -84,7 +84,7 @@ export function EnumsSidebarList({
         }}
       >
         {sortedEnums.length === 0 && filterQuery && (
-          <div className="py-4 text-center text-style-muted">
+          <div className="text-style-muted py-4 text-center">
             No enums found
           </div>
         )}

@@ -21,7 +21,7 @@ function SidebarNavigationIcon({
     <Sheet.Close asChild>
       <NavLink
         to={to}
-        className={`flex items-center gap-4 px-2.5 py-4 text-muted-foreground transition-colors hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground`}
+        className={`text-muted-foreground hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground flex items-center gap-4 px-2.5 py-4 transition-colors`}
         end={end}
       >
         <Icon className="size-5 transition-all group-hover:scale-110" />

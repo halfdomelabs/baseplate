@@ -22,7 +22,7 @@ function EnumEditPage(): React.JSX.Element {
     <ErrorBoundary>
       <form
         onSubmit={onSubmit}
-        className="mx-4 min-w-[700px] max-w-7xl flex-1 space-y-4 pb-4"
+        className="mx-4 max-w-7xl min-w-[700px] flex-1 space-y-4 pb-4"
       >
         <SectionList>
           <EnumGraphQLSection control={control} />
