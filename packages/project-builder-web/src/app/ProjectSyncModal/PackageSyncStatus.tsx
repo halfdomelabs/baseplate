@@ -36,7 +36,7 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
       metadata.status === 'in-progress' ? (
       <div
         className={clsx(
-          'text-muted-foreground flex h-40 items-center justify-center',
+          'flex h-40 items-center justify-center text-muted-foreground',
           className,
         )}
       >

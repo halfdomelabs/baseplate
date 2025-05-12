@@ -84,7 +84,7 @@ export function EnumsSidebarList({
         }}
       >
         {sortedEnums.length === 0 && filterQuery && (
-          <div className="text-style-muted py-4 text-center">
+          <div className="py-4 text-center text-style-muted">
             No enums found
           </div>
         )}

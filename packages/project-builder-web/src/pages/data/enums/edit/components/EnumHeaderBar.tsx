@@ -51,7 +51,7 @@ export function EnumHeaderBar({
           </button>
         </EnumInfoEditDialog>
         {enumDefinition.featureRef && (
-          <div className="text-muted-foreground text-xs">
+          <div className="text-xs text-muted-foreground">
             {
               FeatureUtils.getFeatureById(definition, enumDefinition.featureRef)
                 ?.name

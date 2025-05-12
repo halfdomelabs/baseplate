@@ -45,7 +45,7 @@ export function AppsListPage(): React.JSX.Element {
               <h3>
                 {app.name} ({app.type})
               </h3>
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 {app.packageLocation}
               </p>
             </div>

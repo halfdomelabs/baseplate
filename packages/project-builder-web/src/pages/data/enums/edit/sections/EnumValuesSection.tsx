@@ -91,7 +91,7 @@ export function EnumValuesSection({
             <div />
           </div>
           {valueFields.length === 0 ? (
-            <p className="text-style-muted pt-4">
+            <p className="pt-4 text-style-muted">
               Add some values to get started
             </p>
           ) : (

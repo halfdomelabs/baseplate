@@ -77,7 +77,7 @@ export function ModelFieldTypeInput({
         renderItemLabel={(option) => (
           <div className="flex flex-col">
             <div>{option.label}</div>
-            <div className="text-muted-foreground text-xs">
+            <div className="text-xs text-muted-foreground">
               {option.description}
             </div>
           </div>

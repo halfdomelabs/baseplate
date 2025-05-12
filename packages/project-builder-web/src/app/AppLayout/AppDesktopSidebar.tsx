@@ -19,7 +19,7 @@ function SidebarNavigationIcon({
   return (
     <NavLink
       to={to}
-      className={`text-muted-foreground hover:bg-accent hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground aria-[current="page"]:hover:bg-accent flex h-12 w-[50px] items-center justify-center rounded-lg transition-colors`}
+      className={`flex h-12 w-[50px] items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground aria-[current="page"]:hover:bg-accent`}
       end={end}
     >
       <div className="flex flex-col items-center space-y-1">

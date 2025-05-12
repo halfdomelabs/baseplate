@@ -86,9 +86,9 @@ export function ThemeBuilderPage(): React.JSX.Element {
       onSubmit={onSubmit}
     >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
-        <div className="bg-background sticky top-0 z-10 space-y-2 border-b py-6">
+        <div className="sticky top-0 z-10 space-y-2 border-b bg-background py-6">
           <h1>Theme Builder</h1>
-          <p className="text-muted-foreground max-w-3xl">
+          <p className="max-w-3xl text-muted-foreground">
             The theme of the UI is based off color variables used with{' '}
             <a
               href="https://ui.shadcn.com/docs/theming"

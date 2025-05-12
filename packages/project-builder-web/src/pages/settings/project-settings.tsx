@@ -50,7 +50,7 @@ function ProjectSettingsPage(): React.JSX.Element {
       onSubmit={onSubmit}
     >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
-        <div className="bg-background sticky top-0 border-b py-6">
+        <div className="sticky top-0 border-b bg-background py-6">
           <h1>Project settings</h1>
         </div>
         <SectionList>

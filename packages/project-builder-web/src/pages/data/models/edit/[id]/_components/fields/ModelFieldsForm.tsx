@@ -55,13 +55,13 @@ export function ModelFieldsForm({
   return (
     <div className={clsx('space-y-4', className)}>
       {fieldFields.length === 0 ? (
-        <p className="text-style-muted pt-4">Add some fields to get started</p>
+        <p className="pt-4 text-style-muted">Add some fields to get started</p>
       ) : (
-        <div className="flex w-full flex-col gap-2 bg-white">
+        <div className="bg-white flex w-full flex-col gap-2">
           <div
             className={clsx(
               gridClassNames,
-              'sticky -top-0 z-10 bg-white py-2 text-sm font-semibold',
+              'bg-white sticky -top-0 z-10 py-2 text-sm font-semibold',
               // account for handle in sortable list
               'pl-12',
             )}

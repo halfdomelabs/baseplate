@@ -118,7 +118,7 @@ export function GraphQLObjectTypeSection({
                   <Label>Exposed Fields</Label>
                   <Badge
                     variant="outline"
-                    className="text-muted-foreground mr-5 font-medium"
+                    className="mr-5 font-medium text-muted-foreground"
                   >
                     {fieldsValue.length}/{fields.length} active
                   </Badge>
@@ -191,7 +191,7 @@ export function GraphQLObjectTypeSection({
                     <Label>Exposed Local Relations</Label>
                     <Badge
                       variant="outline"
-                      className="text-muted-foreground mr-5 font-medium"
+                      className="mr-5 font-medium text-muted-foreground"
                     >
                       {localRelationsValue.length}/{localRelations.length}{' '}
                       active
@@ -259,7 +259,7 @@ export function GraphQLObjectTypeSection({
                     <Label>Exposed Foreign Relations</Label>
                     <Badge
                       variant="outline"
-                      className="text-muted-foreground mr-5 font-medium"
+                      className="mr-5 font-medium text-muted-foreground"
                     >
                       {foreignRelationsValue.length}/{foreignRelations.length}{' '}
                       active

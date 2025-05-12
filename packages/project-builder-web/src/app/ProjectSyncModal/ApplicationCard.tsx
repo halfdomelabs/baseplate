@@ -293,7 +293,7 @@ export function ApplicationCard({
     <div className={clsx('w-full rounded-md border', className)}>
       <div className="flex w-full items-center justify-between px-4 py-3">
         <span className="font-medium">{packageInfo.name}</span>
-        <div className="text-muted-foreground flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>
             {packageInfo.result?.completedAt ? (
               <TimeAgo
@@ -324,7 +324,7 @@ export function ApplicationCard({
             packageInfo.result.errors.length > 0 && (
               <div className="mt-2 space-y-1">
                 <h4 className="font-medium">Errors:</h4>
-                <ul className="text-destructive list-disc pl-5 text-sm">
+                <ul className="list-disc pl-5 text-sm text-destructive">
                   {packageInfo.result.errors.map((err, index) => (
                     <li key={index} className="font-mono whitespace-pre-wrap">
                       {err.message}
@@ -341,7 +341,7 @@ export function ApplicationCard({
             packageInfo.result.failedCommands.length > 0 && (
               <div className="mt-2 space-y-1">
                 <h4 className="font-medium">Failed Commands:</h4>
-                <ul className="text-destructive list-disc pl-5 text-sm">
+                <ul className="list-disc pl-5 text-sm text-destructive">
                   {packageInfo.result.failedCommands.map((cmd, index) => (
                     <li key={index}>
                       <code>{cmd.command}</code>

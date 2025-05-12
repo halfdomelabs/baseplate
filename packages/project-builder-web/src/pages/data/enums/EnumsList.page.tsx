@@ -6,7 +6,7 @@ import { NewEnumDialog } from './new/NewEnumDialog';
 
 function EnumsListPage(): React.JSX.Element {
   return (
-    <div className="text-style-prose max-w-4xl space-y-4 p-4">
+    <div className="max-w-4xl space-y-4 p-4 text-style-prose">
       <h1>Enums</h1>
       <p>
         Enums are a way to define a set of named values. They can be used to

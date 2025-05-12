@@ -44,7 +44,7 @@ export function AppBreadcrumbs(): React.JSX.Element {
             <Button
               variant="ghost"
               size="none"
-              className="text-muted-foreground -ml-2 h-8 px-2"
+              className="-ml-2 h-8 px-2 text-muted-foreground"
             >
               <div className="flex items-center text-sm">
                 {upperFirst(definitionContainer.definition.name)} project
@@ -66,7 +66,7 @@ export function AppBreadcrumbs(): React.JSX.Element {
                     <div>
                       <strong>{project.name}</strong>
                     </div>
-                    <div className="text-muted-foreground text-xs">
+                    <div className="text-xs text-muted-foreground">
                       {project.directory}
                     </div>
                   </div>
