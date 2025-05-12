@@ -284,7 +284,7 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
             </div>
           </div>
           <Button
-            className="absolute right-2 top-1/2 -translate-y-1/2 opacity-50"
+            className="absolute top-1/2 right-2 -translate-y-1/2 opacity-50"
             type="button"
             variant="ghost"
             size="icon"

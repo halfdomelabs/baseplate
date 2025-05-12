@@ -66,12 +66,12 @@ const ListItem = React.forwardRef<
       <a
         ref={ref}
         className={cn(
-          'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
+          'block space-y-1 rounded-md p-3 leading-none no-underline outline-hidden transition-colors select-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
           className,
         )}
         {...props}
       >
-        <div className="text-sm font-medium leading-none">{title}</div>
+        <div className="text-sm leading-none font-medium">{title}</div>
         <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
           {children}
         </p>
@@ -94,11 +94,11 @@ function NavigationMenuContainer(
               <li className="row-span-3">
                 <NavigationMenu.Link asChild>
                   <a
-                    className="flex size-full select-none flex-col justify-end rounded-md bg-linear-to-b from-muted/50 to-muted p-6 no-underline outline-hidden focus:shadow-md"
+                    className="flex size-full flex-col justify-end rounded-md bg-linear-to-b from-muted/50 to-muted p-6 no-underline outline-hidden select-none focus:shadow-md"
                     href="/"
                   >
                     <RxAngle className="size-6" />
-                    <div className="mb-2 mt-4 text-lg font-medium">
+                    <div className="mt-4 mb-2 text-lg font-medium">
                       shadcn/ui
                     </div>
                     <p className="text-sm leading-tight text-muted-foreground">

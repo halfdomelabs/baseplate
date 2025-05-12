@@ -43,7 +43,7 @@ const CardTitle = React.forwardRef<
   // eslint-disable-next-line jsx-a11y/heading-has-content
   <h3
     ref={ref}
-    className={cn('font-semibold leading-none tracking-tight', className)}
+    className={cn('leading-none font-semibold tracking-tight', className)}
     {...props}
   />
 ));

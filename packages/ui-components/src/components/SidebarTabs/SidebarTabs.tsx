@@ -30,10 +30,7 @@ const SidebarTabsList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.List
     ref={ref}
-    className={cn(
-      'flex h-full w-48 shrink-0 flex-col space-y-1',
-      className,
-    )}
+    className={cn('flex h-full w-48 shrink-0 flex-col space-y-1', className)}
     {...props}
   />
 ));
