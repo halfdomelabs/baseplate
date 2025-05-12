@@ -1,6 +1,11 @@
 import type React from 'react';
 
-import { NavigationMenu, SidebarLayout } from '@halfdomelabs/ui-components';
+import {
+  NavigationMenu,
+  NavigationMenuLink,
+  NavigationMenuList,
+  SidebarLayout,
+} from '@halfdomelabs/ui-components';
 import { NavLink, Outlet } from 'react-router-dom';
 
 import { ENABLE_TEMPLATE_EXTRACTOR } from '@src/services/config';
@@ -10,26 +15,26 @@ function SettingsLayout(): React.JSX.Element {
     <SidebarLayout className="h-full flex-1">
       <SidebarLayout.Sidebar className="space-y-4" width="sm">
         <NavigationMenu orientation="vertical">
-          <NavigationMenu.List>
-            <NavigationMenu.ItemWithLink asChild>
+          <NavigationMenuList>
+            <NavigationMenuLink asChild>
               <NavLink to={`/settings/project-settings`}>
                 Project settings
               </NavLink>
-            </NavigationMenu.ItemWithLink>
-            <NavigationMenu.ItemWithLink asChild>
+            </NavigationMenuLink>
+            <NavigationMenuLink asChild>
               <NavLink to={`/settings/hierarchy`}>Hierarchy</NavLink>
-            </NavigationMenu.ItemWithLink>
-            <NavigationMenu.ItemWithLink asChild>
+            </NavigationMenuLink>
+            <NavigationMenuLink asChild>
               <NavLink to={`/settings/theme-builder`}>Theme builder</NavLink>
-            </NavigationMenu.ItemWithLink>
+            </NavigationMenuLink>
             {ENABLE_TEMPLATE_EXTRACTOR && (
-              <NavigationMenu.ItemWithLink asChild>
+              <NavigationMenuLink asChild>
                 <NavLink to={`/settings/template-extractor`}>
                   Template extractor
                 </NavLink>
-              </NavigationMenu.ItemWithLink>
+              </NavigationMenuLink>
             )}
-          </NavigationMenu.List>
+          </NavigationMenuList>
         </NavigationMenu>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content className="h-full">

@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 
 function HomePage(): React.JSX.Element {
   return (
-    <div className="flex-1 bg-white">
-      <div className="mx-auto w-[40rem] space-y-4 p-4">
+    <div className="bg-white flex-1">
+      <div className="mx-auto w-160 space-y-4 p-4">
         <div className="space-y-2">
           <h1>Baseplate Project Builder</h1>
           <p>

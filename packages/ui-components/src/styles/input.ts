@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority';
 
 export const inputVariants = cva(
-  'w-full rounded-md py-2 pl-3 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+  'w-full rounded-md py-2 pl-3 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       height: {

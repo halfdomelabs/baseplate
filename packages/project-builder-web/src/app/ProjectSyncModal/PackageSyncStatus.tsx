@@ -21,7 +21,7 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
         <Alert.Title>Error compiling project.</Alert.Title>
         <Alert.Description>
           {metadata.globalErrors.map((error) => (
-            <div key={error} className="whitespace-pre-wrap font-mono">
+            <div key={error} className="font-mono whitespace-pre-wrap">
               {error}
             </div>
           ))}

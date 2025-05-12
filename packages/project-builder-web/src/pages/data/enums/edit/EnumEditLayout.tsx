@@ -31,7 +31,7 @@ export function EnumEditLayout(): React.JSX.Element {
       <div className="mx-4 max-w-7xl space-y-4 border-b py-4">
         <EnumHeaderBar enumDefinition={enumDefinition} />
       </div>
-      <div className="mb-[var(--action-bar-height)] flex flex-1 overflow-y-auto">
+      <div className="mb-(--action-bar-height) flex flex-1 overflow-y-auto">
         <Outlet />
       </div>
     </div>

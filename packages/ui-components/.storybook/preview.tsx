@@ -10,9 +10,9 @@ import { DARK_MODE_EVENT_NAME } from 'storybook-dark-mode';
 
 import { Toaster } from '../src/components/Toaster/Toaster';
 import CustomTheme from './CustomTheme';
-import '../src/font.css';
-import '../src/styles.css';
 import { isDarkModeEnabled, setDarkModeEnabled } from './dark-mode';
+
+import '../src/styles.css';
 
 let hasToasterRendered = false;
 

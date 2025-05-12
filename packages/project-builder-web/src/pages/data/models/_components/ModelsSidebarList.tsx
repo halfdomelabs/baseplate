@@ -5,6 +5,8 @@ import {
   Button,
   InputField,
   NavigationMenu,
+  NavigationMenuItemWithLink,
+  NavigationMenuList,
   ScrollArea,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
@@ -61,7 +63,7 @@ export function ModelsSidebarList({
             {filterQuery && (
               <Button
                 variant="ghost"
-                className="absolute right-4 top-1/2 -translate-y-1/2"
+                className="absolute top-1/2 right-4 -translate-y-1/2"
                 onClick={() => {
                   setFilterQuery('');
                 }}
@@ -89,17 +91,15 @@ export function ModelsSidebarList({
           </div>
         )}
         <NavigationMenu orientation="vertical">
-          <NavigationMenu.List>
+          <NavigationMenuList>
             {sortedModels.map((model) => (
-              <li key={model.id}>
-                <NavigationMenu.ItemWithLink asChild size="skinny">
-                  <NavLink to={createModelEditLink(model.id)}>
-                    {model.name}
-                  </NavLink>
-                </NavigationMenu.ItemWithLink>
-              </li>
+              <NavigationMenuItemWithLink key={model.id} asChild>
+                <NavLink to={createModelEditLink(model.id)}>
+                  {model.name}
+                </NavLink>
+              </NavigationMenuItemWithLink>
             ))}
-          </NavigationMenu.List>
+          </NavigationMenuList>
         </NavigationMenu>
       </ScrollArea>
     </div>

@@ -24,7 +24,7 @@ function ScrollAreaContainer(
   return (
     <ScrollArea className="h-72 w-48 rounded-md border" {...args}>
       <div className="p-4">
-        <h4 className="mb-4 text-sm font-medium leading-none">Tags</h4>
+        <h4 className="mb-4 text-sm leading-none font-medium">Tags</h4>
         {tags.map((tag, i) => (
           <>
             <div key={tag} className="text-sm">

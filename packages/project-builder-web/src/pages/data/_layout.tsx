@@ -23,7 +23,7 @@ export function DataLayout(): React.JSX.Element {
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayout.Sidebar
-        className="flex h-[calc(100vh-var(--topbar-height)-1px)] min-w-[230px] max-w-sm flex-col space-y-4"
+        className="flex h-[calc(100vh-var(--topbar-height)-1px)] max-w-sm min-w-[230px] flex-col space-y-4"
         width="auto"
         noPadding
       >

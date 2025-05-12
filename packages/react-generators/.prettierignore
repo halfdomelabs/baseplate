@@ -4,4 +4,3 @@
 /dist
 /lib
 /node_modules
-**/templates/src/index.css

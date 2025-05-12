@@ -1,11 +1,19 @@
-/**
- * CSS styles for Storybook usage
- */
+@import 'tailwindcss' source('../src');
 
-@import 'tailwindcss';
+@import '@halfdomelabs/ui-components/base-styles.css';
+@import '@halfdomelabs/ui-components/theme.css';
 
-@import './theme.css';
-@import './base-styles.css';
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100vh;
+  }
+}
+
+/*
+  Specify theme colors
+*/
 
 :root {
   --accent: oklch(0.968 0.007 247.896);

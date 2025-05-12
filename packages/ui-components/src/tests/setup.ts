@@ -1,5 +1,6 @@
 import { cleanup } from '@testing-library/react';
 import { afterEach, beforeAll } from 'vitest';
+
 import '@testing-library/jest-dom/vitest';
 
 // Workaround for lack of scrollIntoView in jsdom but required in cmdk

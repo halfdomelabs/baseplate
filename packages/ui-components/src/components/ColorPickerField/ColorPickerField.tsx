@@ -71,7 +71,7 @@ function ColorPickerFieldFn(
         >
           {value && (
             <div
-              className="h-4 w-6 rounded border border-border"
+              className="h-4 w-6 rounded-sm border border-border"
               style={{
                 backgroundColor: value,
               }}
@@ -89,7 +89,7 @@ function ColorPickerFieldFn(
           sideOffset={5}
           align="start"
           collisionPadding={{ bottom: 50 }}
-          className="space-y-2 rounded-md border border-border bg-white p-4"
+          className="bg-white space-y-2 rounded-md border border-border p-4"
         >
           <HexColorInput
             className={cn(inputVariants(), 'p-2')}

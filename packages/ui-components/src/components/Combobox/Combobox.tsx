@@ -264,7 +264,7 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
             />
           </Command.Input>
           <div
-            // the top-[1px] is a hack to prevent the text from jumping when the
+            // the top-px is a hack to prevent the text from jumping when the
             // input is focused
             className="pointer-events-none absolute inset-0 top-px pr-8"
           >
@@ -284,7 +284,7 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
             </div>
           </div>
           <Button
-            className="absolute right-2 top-1/2 -translate-y-1/2 opacity-50"
+            className="absolute top-1/2 right-2 -translate-y-1/2 opacity-50"
             type="button"
             variant="ghost"
             size="icon"
@@ -359,7 +359,7 @@ function ComboboxContent({
           <ScrollAreaPrimitive.Viewport
             className={cn(
               'h-full w-full rounded-[inherit] p-1',
-              'max-h-[min(var(--max-popover-height),var(--radix-popover-content-available-height))] w-full min-w-[var(--radix-popover-trigger-width)]',
+              'max-h-[min(var(--max-popover-height),var(--radix-popover-content-available-height))] w-full min-w-(--radix-popover-trigger-width)',
             )}
             style={
               {

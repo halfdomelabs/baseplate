@@ -24,7 +24,7 @@ export function CollapsibleRow({
   return (
     <div className={clsx('', className)}>
       {isOpen ? (
-        <div className="space-y-4 border border-gray-200">
+        <div className="border-gray-200 space-y-4 border">
           <div className="flex flex-row space-x-4">
             <Button
               variant="link"

@@ -47,7 +47,7 @@
     "@pnpm/meta-updater": "2.0.5",
     "@types/node": "catalog:",
     "check-dependency-version-consistency": "5.0.0",
-    "knip": "5.46.0",
+    "knip": "5.55.1",
     "prettier": "catalog:",
     "turbo": "2.5.0",
     "typescript": "catalog:",

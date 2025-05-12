@@ -326,7 +326,7 @@ export function ApplicationCard({
                 <h4 className="font-medium">Errors:</h4>
                 <ul className="list-disc pl-5 text-sm text-destructive">
                   {packageInfo.result.errors.map((err, index) => (
-                    <li key={index} className="whitespace-pre-wrap font-mono">
+                    <li key={index} className="font-mono whitespace-pre-wrap">
                       {err.message}
                     </li>
                   ))}

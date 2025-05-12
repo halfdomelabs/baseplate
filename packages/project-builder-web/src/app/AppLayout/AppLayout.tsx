@@ -26,7 +26,7 @@ export function AppLayout({ className }: AppLayoutProps): React.JSX.Element {
   return (
     <div
       className={clsx(
-        'flex h-screen w-full min-w-[var(--min-app-width)] flex-col bg-background',
+        'flex h-screen w-full min-w-(--min-app-width) flex-col bg-background',
         className,
       )}
       style={
@@ -38,11 +38,11 @@ export function AppLayout({ className }: AppLayoutProps): React.JSX.Element {
         } as React.CSSProperties
       }
     >
-      <aside className="fixed inset-y-0 left-0 z-10 hidden w-[var(--sidebar-width)] flex-col border-r bg-background sm:flex">
+      <aside className="fixed inset-y-0 left-0 z-10 hidden w-(--sidebar-width) flex-col border-r bg-background sm:flex">
         <AppDesktopSidebar />
       </aside>
-      <div className="flex h-full flex-col pt-[var(--topbar-height)] sm:pl-[var(--sidebar-width)]">
-        <header className="fixed inset-x-0 top-0 z-30 flex h-[var(--topbar-height)] items-center gap-4 border-b bg-background px-4 sm:left-[var(--sidebar-width)] sm:px-4">
+      <div className="flex h-full flex-col pt-(--topbar-height) sm:pl-(--sidebar-width)">
+        <header className="fixed inset-x-0 top-0 z-30 flex h-(--topbar-height) items-center gap-4 border-b bg-background px-4 sm:left-(--sidebar-width) sm:px-4">
           <Sheet>
             <Sheet.Trigger asChild>
               <Button size="icon" variant="outline" className="sm:hidden">

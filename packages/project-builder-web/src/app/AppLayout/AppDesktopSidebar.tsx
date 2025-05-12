@@ -32,7 +32,7 @@ function SidebarNavigationIcon({
 
 export function AppDesktopSidebar(): React.JSX.Element {
   return (
-    <nav className="flex h-full flex-col items-center justify-between px-2 pb-4 pt-2.5">
+    <nav className="flex h-full flex-col items-center justify-between px-2 pt-2.5 pb-4">
       <div className="space-y-8">
         <Link
           to="/"

@@ -4,7 +4,8 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 
 import { StorageConfig } from './components/StorageConfig';
-import '../../index.css';
+
+import '../../styles.css';
 
 export default createPlatformPluginExport({
   dependencies: {

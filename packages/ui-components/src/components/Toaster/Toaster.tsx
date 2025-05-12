@@ -7,8 +7,6 @@ import { buttonVariants } from '@src/styles';
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
-/* eslint tailwindcss/no-custom-classname: ["error", { whitelist: ["toaster"] }] */
-
 /**
  * A toaster component that displays toast notifications.
  *
@@ -31,7 +29,7 @@ const Toaster = ({ ...props }: ToasterProps): React.JSX.Element => (
           'group-[.toaster]:bg-warning group-[.toaster]:text-warning-foreground group-[.toaster]:border-warning',
         default: 'bg-background text-foreground',
         toast:
-          'group toast group-[.toaster]:shadow-lg p-4 rounded-lg flex items-center text-sm gap-1.5 w-[var(--width)]',
+          'group toast group-[.toaster]:shadow-lg p-4 rounded-lg flex items-center text-sm gap-1.5 w-(--width)',
         description: 'group-[.toast]:text-muted-foreground',
         actionButton: buttonVariants({
           size: 'sm',

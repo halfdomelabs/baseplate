@@ -393,12 +393,10 @@ export function generateThemeColorsFromShade(
   return result;
 }
 
-function convertHexToHsl(hex: string): string {
-  const convert = converter('hsl');
-  const hsl = convert(hex) ?? { h: 0, s: 0, l: 0 };
-  return `${Math.round(hsl.h ?? 0)} ${Math.round(hsl.s * 100)}% ${Math.round(
-    hsl.l * 100,
-  )}%`;
+function convertHexToOklch(hex: string): string {
+  const convert = converter('oklch');
+  const oklch = convert(hex) ?? { l: 0, c: 0, h: 0 };
+  return `${oklch.l.toFixed(3)} ${oklch.c.toFixed(3)} ${oklch.h?.toFixed(3) ?? '0'}`;
 }
 
 export function generateCssFromThemeConfig(
@@ -410,9 +408,9 @@ export function generateCssFromThemeConfig(
       const config = THEME_COLORS[themeColorKey];
       return [
         `--${dasherize(underscore(key))}`,
-        `${convertHexToHsl(value)}${
+        `oklch(${convertHexToOklch(value)}${
           'opacity' in config ? ` / ${config.opacity}%` : ''
-        }`,
+        })`,
       ];
     }),
   );

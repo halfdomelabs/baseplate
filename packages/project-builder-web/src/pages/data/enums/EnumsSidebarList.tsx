@@ -5,6 +5,8 @@ import {
   Button,
   InputField,
   NavigationMenu,
+  NavigationMenuItemWithLink,
+  NavigationMenuList,
   ScrollArea,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
@@ -61,7 +63,7 @@ export function EnumsSidebarList({
             {filterQuery && (
               <Button
                 variant="ghost"
-                className="absolute right-4 top-1/2 -translate-y-1/2"
+                className="absolute top-1/2 right-4 -translate-y-1/2"
                 size="icon"
                 onClick={() => {
                   setFilterQuery('');
@@ -89,17 +91,17 @@ export function EnumsSidebarList({
           </div>
         )}
         <NavigationMenu orientation="vertical">
-          <NavigationMenu.List>
+          <NavigationMenuList>
             {sortedEnums.map((enumDef) => (
               <li key={enumDef.id}>
-                <NavigationMenu.ItemWithLink asChild size="skinny">
+                <NavigationMenuItemWithLink asChild>
                   <NavLink to={createEnumEditLink(enumDef.id)}>
                     {enumDef.name}
                   </NavLink>
-                </NavigationMenu.ItemWithLink>
+                </NavigationMenuItemWithLink>
               </li>
             ))}
-          </NavigationMenu.List>
+          </NavigationMenuList>
         </NavigationMenu>
       </ScrollArea>
     </div>

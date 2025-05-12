@@ -59,7 +59,7 @@ function HierarchyPage(): React.JSX.Element {
   };
 
   return (
-    <div className="relative h-full max-h-full pb-[var(--action-bar-height)]">
+    <div className="relative h-full max-h-full pb-(--action-bar-height)">
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
         <div className="sticky top-0 space-y-2 border-b bg-background py-6">
           <h1>Hierarchy</h1>

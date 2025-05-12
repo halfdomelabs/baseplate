@@ -15,7 +15,7 @@ const ButtonGroupBase = React.forwardRef<
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
   <div
-    className={cn('inline-flex rounded-md shadow', className)}
+    className={cn('inline-flex rounded-md shadow-sm', className)}
     {...props}
     ref={ref}
   />
@@ -27,7 +27,7 @@ const ButtonGroupButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, ...props }, ref) => (
     <Button
       className={cn(
-        '[&:not(:first-child)]:rounded-l-none [&:not(:last-child)]:rounded-r-none [&:not(:last-child)]:border-r-0',
+        'not-first:rounded-l-none not-last:rounded-r-none not-last:border-r-0',
         // allow ring to show above neighbors
         'focus-visible:z-10',
         className,

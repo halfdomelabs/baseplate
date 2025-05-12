@@ -35,7 +35,7 @@ const NavigationTabsItem = React.forwardRef<
 >(({ className, children, asChild, ...props }, ref) => (
   <NavigationMenuPrimitive.Item ref={ref} className={cn('flex-1', className)}>
     <NavigationMenuPrimitive.Link
-      className="inline-flex w-full items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 aria-[current=page]:bg-background aria-[current=page]:text-foreground aria-[current=page]:shadow"
+      className="inline-flex w-full items-center justify-center rounded-md px-3 py-1 text-sm font-medium whitespace-nowrap ring-offset-background transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50 aria-[current=page]:bg-background aria-[current=page]:text-foreground aria-[current=page]:shadow-sm"
       asChild={asChild}
       {...props}
     >

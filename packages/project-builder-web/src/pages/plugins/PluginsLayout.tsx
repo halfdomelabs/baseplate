@@ -4,6 +4,9 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
   SidebarLayout,
 } from '@halfdomelabs/ui-components';
 import { notEmpty } from '@halfdomelabs/utils';
@@ -26,7 +29,7 @@ function PluginsLayout(): React.JSX.Element {
 
   return (
     <SidebarLayout className="flex-1">
-      <SidebarLayout.Sidebar className="space-y-4" width="sm">
+      <SidebarLayout.Sidebar className="flex flex-col gap-4" width="sm">
         <Link to="/plugins">
           <Button.WithIcon
             variant="secondary"
@@ -38,20 +41,20 @@ function PluginsLayout(): React.JSX.Element {
           </Button.WithIcon>
         </Link>
         <NavigationMenu orientation="vertical">
-          <NavigationMenu.List>
+          <NavigationMenuList>
             {enabledPlugins.map((plugin) => (
-              <NavigationMenu.ItemWithLink key={plugin.id} asChild>
+              <NavigationMenuLink key={plugin.id} asChild>
                 <NavLink to={`/plugins/edit/${plugin.id}`}>
                   {plugin.displayName}
                 </NavLink>
-              </NavigationMenu.ItemWithLink>
+              </NavigationMenuLink>
             ))}
             {enabledPlugins.length === 0 && (
-              <NavigationMenu.Item className="mt-4 w-full text-center opacity-80">
+              <NavigationMenuItem className="mt-4 w-full text-center opacity-80">
                 No plugins enabled
-              </NavigationMenu.Item>
+              </NavigationMenuItem>
             )}
-          </NavigationMenu.List>
+          </NavigationMenuList>
         </NavigationMenu>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content className="p-4">

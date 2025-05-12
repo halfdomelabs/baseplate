@@ -1,9 +1,5 @@
 // @ts-check
 
-/**
- * @typedef {import('@typescript-eslint/utils/ts-eslint').FlatConfig.ConfigArray} ConfigArray
- */
-
 import eslint from '@eslint/js';
 import vitest from '@vitest/eslint-plugin';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
@@ -22,7 +18,6 @@ import tsEslint from 'typescript-eslint';
 /**
  * Generates a Typescript ESLint configuration
  * @param {GenerateTypescriptEslintConfigOptions[]} [options=[]] - Configuration options
- * @returns {ConfigArray} The generated ESLint configuration
  */
 export function generateTypescriptEslintConfig(options = []) {
   const tsFileGlobs = [
@@ -204,7 +199,21 @@ export function generateTypescriptEslintConfig(options = []) {
         // Enforces a consistent sorting order for import statements
         'perfectionist/sort-imports': [
           'error',
-          { internalPattern: ['^@src/'] },
+          {
+            internalPattern: ['^@src/'],
+            // We use the default groups but ensure we place the side-effect imports last except for instrumentation
+            groups: [
+              'type-import',
+              ['value-builtin', 'value-external'],
+              'type-internal',
+              'value-internal',
+              ['type-parent', 'type-sibling', 'type-index'],
+              ['value-parent', 'value-sibling', 'value-index'],
+              'ts-equals-import',
+              'side-effect',
+              'unknown',
+            ],
+          },
         ],
         'perfectionist/sort-exports': ['error'],
         'perfectionist/sort-named-imports': ['error'],

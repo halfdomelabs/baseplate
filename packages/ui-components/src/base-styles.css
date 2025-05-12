@@ -1,0 +1,80 @@
+/**
+ * Base styles for the UI components.
+ *
+ * This file is used to import the base styles for the UI components.
+ * It is used to import the fonts and other base styles that affect the
+ * page.
+ *
+ * This is meant to be used for consumers, e.g. websites built with
+ * ui-components.
+ */
+
+/**
+ * Make sure to source classes from the ui-components package
+ */
+
+@source '.';
+
+/**
+ * Fonts
+ */
+
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+@layer base {
+  /* Used https://screenspan.net/fallback to find best fallback settings */
+  @font-face {
+    font-family: 'Arial Fallback';
+    src: local('Arial');
+    size-adjust: 102%;
+  }
+
+  @font-face {
+    font-family: 'Adjusted Courier New Fallback';
+    src: local(Courier New);
+    size-adjust: 100%;
+    ascent-override: 91%;
+    descent-override: 40%;
+    line-gap-override: normal;
+  }
+}
+
+/**
+ * Typography
+ */
+
+@layer base {
+  h1 {
+    @apply text-3xl leading-none font-semibold tracking-tight;
+  }
+
+  h2 {
+    @apply text-2xl leading-7 font-semibold tracking-tight;
+  }
+
+  h3 {
+    @apply text-xl leading-6 font-semibold tracking-tight;
+  }
+
+  p {
+    @apply leading-6;
+  }
+}
+
+/**
+ * Base styles for border and background/font colors
+ */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background font-body text-foreground antialiased;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+}
