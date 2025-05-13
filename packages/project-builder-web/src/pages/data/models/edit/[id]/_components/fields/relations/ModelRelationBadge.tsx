@@ -6,7 +6,7 @@ import type React from 'react';
 import type { Control } from 'react-hook-form';
 
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Badge } from '@halfdomelabs/ui-components';
+import { BadgeWithIcon } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { MdLink } from 'react-icons/md';
@@ -31,7 +31,7 @@ export function ModelRelationsBadge({
   const shouldShowText = !autoCollapse || isHovered;
   return (
     <ModelRelationDialog control={control} relationId={relation.id}>
-      <Badge.WithIcon
+      <BadgeWithIcon
         icon={MdLink}
         variant="secondary"
         className={clsx('max-w-[100px]', className)}
@@ -50,7 +50,7 @@ export function ModelRelationsBadge({
               ? `(${relation.references.length})`
               : ''
           }`}
-      </Badge.WithIcon>
+      </BadgeWithIcon>
     </ModelRelationDialog>
   );
 }
