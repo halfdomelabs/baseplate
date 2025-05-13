@@ -5,17 +5,14 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@src/utils';
 
 const alertVariants = cva(
-  'relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:top-4 [&>svg]:left-4 [&>svg+div]:translate-y-[-3px] [&>svg~*]:pl-7',
+  'relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border bg-background px-4 py-3 text-sm text-foreground has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current',
   {
     variants: {
       variant: {
-        default: 'bg-background text-foreground [&>svg]:text-foreground',
-        error:
-          'border-error-foreground/40 bg-error text-error-foreground dark:border-error [&>svg]:text-error-foreground',
-        success:
-          'border-success-foreground/40 bg-success text-success-foreground dark:border-success [&>svg]:text-success-foreground',
-        warning:
-          'border-warning-foreground/40 bg-warning text-warning-foreground dark:border-warning [&>svg]:text-warning-foreground',
+        default: 'surface-default',
+        error: 'surface-error',
+        success: 'surface-success',
+        warning: 'surface-warning',
       },
     },
     defaultVariants: {
@@ -29,14 +26,15 @@ const alertVariants = cva(
  *
  * https://ui.shadcn.com/docs/components/alert
  */
-function AlertRoot({
+function Alert({
   className,
   variant,
   ...props
-}: React.HTMLAttributes<HTMLDivElement> &
+}: React.ComponentProps<'div'> &
   VariantProps<typeof alertVariants>): React.ReactElement {
   return (
     <div
+      data-slot="alert"
       role="alert"
       className={cn(alertVariants({ variant }), className)}
       {...props}
@@ -44,16 +42,17 @@ function AlertRoot({
   );
 }
 
-AlertRoot.displayName = 'Alert';
-
 function AlertTitle({
   className,
   ...props
-}: React.HTMLAttributes<HTMLHeadingElement>): React.ReactElement {
+}: React.ComponentProps<'div'>): React.ReactElement {
   return (
-    // eslint-disable-next-line jsx-a11y/heading-has-content
-    <h5
-      className={cn('mb-1 leading-none font-medium tracking-tight', className)}
+    <div
+      data-slot="alert-title"
+      className={cn(
+        'col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight',
+        className,
+      )}
       {...props}
     />
   );
@@ -62,16 +61,17 @@ function AlertTitle({
 function AlertDescription({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>): React.ReactElement {
+}: React.ComponentProps<'div'>): React.ReactElement {
   return (
     <div
-      className={cn('text-sm [&_p]:leading-relaxed', className)}
+      data-slot="alert-description"
+      className={cn(
+        'col-start-2 grid justify-items-start gap-1 text-sm text-muted-foreground [&_p]:leading-relaxed',
+        className,
+      )}
       {...props}
     />
   );
 }
 
-export const Alert = Object.assign(AlertRoot, {
-  Title: AlertTitle,
-  Description: AlertDescription,
-});
+export { Alert, AlertDescription, AlertTitle };

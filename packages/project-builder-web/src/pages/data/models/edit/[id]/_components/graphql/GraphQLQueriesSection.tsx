@@ -5,6 +5,8 @@ import type { Control } from 'react-hook-form';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
+  AlertDescription,
+  AlertTitle,
   MultiSwitchField,
   SectionList,
   SwitchField,
@@ -58,10 +60,10 @@ export function GraphQLQueriesSection({
         {!isObjectTypeEnabled && (
           <Alert className="max-w-md">
             <MdInfo />
-            <Alert.Title>Object type missing</Alert.Title>
-            <Alert.Description>
+            <AlertTitle>Object type missing</AlertTitle>
+            <AlertDescription>
               Enable the object type to expose queries and mutations
-            </Alert.Description>
+            </AlertDescription>
           </Alert>
         )}
         <div className="space-y-4">

@@ -15,6 +15,8 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
   CheckboxField,
   ComboboxField,
@@ -133,8 +135,8 @@ function AuthPage(): React.JSX.Element {
 
           {pendingModelChanges?.user && (
             <Alert>
-              <Alert.Title>Model Changes</Alert.Title>
-              <Alert.Description>
+              <AlertTitle>Model Changes</AlertTitle>
+              <AlertDescription>
                 <p>
                   The selected user model will be updated to include the
                   required fields for the auth plugin. The following changes
@@ -163,13 +165,13 @@ function AuthPage(): React.JSX.Element {
                     <li>The primary key will be updated.</li>
                   )}
                 </ul>
-              </Alert.Description>
+              </AlertDescription>
             </Alert>
           )}
           {pendingModelChanges?.userRole && (
             <Alert>
-              <Alert.Title>Model Changes</Alert.Title>
-              <Alert.Description>
+              <AlertTitle>Model Changes</AlertTitle>
+              <AlertDescription>
                 <p>
                   The selected user role model will be updated to include the
                   required fields for the auth plugin. The following changes
@@ -199,7 +201,7 @@ function AuthPage(): React.JSX.Element {
                     <li>The primary key will be updated.</li>
                   )}
                 </ul>
-              </Alert.Description>
+              </AlertDescription>
             </Alert>
           )}
           <CheckboxField.Controller

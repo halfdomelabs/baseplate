@@ -11,7 +11,14 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Alert, Button, SectionList, Tabs } from '@halfdomelabs/ui-components';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  SectionList,
+  Tabs,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
@@ -106,11 +113,11 @@ export function ThemeBuilderPage(): React.JSX.Element {
           {/* TODO: check if this should be removed */}
           <Alert className="max-w-fit">
             <MdConstruction />
-            <Alert.Title>Work in Progress</Alert.Title>
-            <Alert.Description>
+            <AlertTitle>Work in Progress</AlertTitle>
+            <AlertDescription>
               This page is still a work in progress. It is not being used for
               generation at the moment.
-            </Alert.Description>
+            </AlertDescription>
           </Alert>
           <SectionList>
             <SectionList.Section>

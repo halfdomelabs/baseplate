@@ -9,6 +9,8 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
+  AlertDescription,
+  AlertTitle,
   CheckboxField,
   SectionList,
   TextareaField,
@@ -46,11 +48,11 @@ export function TemplateExtractorSettingsPage(): React.JSX.Element {
   if (!ENABLE_TEMPLATE_EXTRACTOR) {
     return (
       <Alert variant="error" className="mx-auto my-16 max-w-2xl">
-        <Alert.Title>Template Extractor is disabled</Alert.Title>
-        <Alert.Description>
+        <AlertTitle>Template Extractor is disabled</AlertTitle>
+        <AlertDescription>
           Template extractor is disabled in the environment. Please enable it
           with <code>VITE_ENABLE_TEMPLATE_EXTRACTOR=true</code> to use it.
-        </Alert.Description>
+        </AlertDescription>
       </Alert>
     );
   }

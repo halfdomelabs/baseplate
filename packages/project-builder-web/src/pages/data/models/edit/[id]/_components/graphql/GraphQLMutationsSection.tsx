@@ -5,6 +5,8 @@ import type { Control } from 'react-hook-form';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
+  AlertDescription,
+  AlertTitle,
   MultiSwitchField,
   SectionList,
   SwitchField,
@@ -70,7 +72,7 @@ export function GraphQLMutationsSection({
           !isDeleteControllerEnabled) && (
           <Alert className="max-w-md">
             <MdInfo />
-            <Alert.Title>
+            <AlertTitle>
               Service methods disabled (
               {[
                 !isCreateControllerEnabled && 'Create',
@@ -80,14 +82,14 @@ export function GraphQLMutationsSection({
                 .filter(Boolean)
                 .join(', ')}
               )
-            </Alert.Title>
-            <Alert.Description>
+            </AlertTitle>
+            <AlertDescription>
               Enable the appropriate methods on the{' '}
               <Link to="../service" className="font-semibold">
                 the service tab
               </Link>{' '}
               to expose mutations
-            </Alert.Description>
+            </AlertDescription>
           </Alert>
         )}
         <div className="space-y-4">
