@@ -40,7 +40,7 @@
   --warning-foreground: oklch(0.666 0.157 58.318);
 }
 
-html[data-theme='dark'] {
+.dark {
   --accent: oklch(0.279 0.037 260.031);
   --accent-foreground: oklch(0.968 0.007 247.896);
   --background: oklch(0.129 0.041 264.695);
