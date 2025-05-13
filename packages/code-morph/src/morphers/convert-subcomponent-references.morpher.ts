@@ -9,6 +9,7 @@ export default createTypescriptMorpher({
   name: 'convert-subcomponent-references',
   description:
     'Converts subcomponent references (e.g. Alert.Title) to standalone component references (e.g. AlertTitle)',
+  pathGlobs: ['**/*.tsx'],
   options: {
     componentName: {
       description: 'The name of the main component to look for (e.g. "Alert")',
