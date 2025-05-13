@@ -89,7 +89,7 @@
   --surface-muted: color-mix(in oklab, var(--success) 10%, transparent);
   --surface-muted-foreground: color-mix(
     in oklab,
-    var(--success-foreground) 80%,
+    var(--success-foreground) 70%,
     var(--success)
   );
 }
@@ -105,7 +105,7 @@
   --surface-muted: color-mix(in oklab, var(--warning) 10%, transparent);
   --surface-muted-foreground: color-mix(
     in oklab,
-    var(--warning-foreground) 90%,
+    var(--warning-foreground) 70%,
     var(--warning)
   );
 }
@@ -115,13 +115,13 @@
   --surface-foreground: var(--error-foreground);
   --surface-border: color-mix(
     in oklab,
-    var(--error-foreground) 80%,
+    var(--error-foreground) 40%,
     transparent
   );
   --surface-muted: color-mix(in oklab, var(--error) 10%, transparent);
   --surface-muted-foreground: color-mix(
     in oklab,
-    var(--error-foreground) 80%,
+    var(--error-foreground) 70%,
     var(--error)
   );
 }

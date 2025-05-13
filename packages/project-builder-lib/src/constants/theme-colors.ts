@@ -128,8 +128,8 @@ export const THEME_COLORS = {
   successForeground: {
     name: 'Success Foreground',
     description: 'Used for success foregrounds',
-    lightDefault: { color: 'emerald-700' },
-    darkDefault: { color: 'emerald-600' },
+    lightDefault: { color: 'emerald-950' },
+    darkDefault: { color: 'emerald-50' },
     groupKey: 'success',
     category: 'surface',
   },
@@ -144,8 +144,8 @@ export const THEME_COLORS = {
   warningForeground: {
     name: 'Warning Foreground',
     description: 'Used for warning foregrounds',
-    lightDefault: { color: 'amber-600' },
-    darkDefault: { color: 'amber-700' },
+    lightDefault: { color: 'amber-950' },
+    darkDefault: { color: 'amber-50' },
     groupKey: 'warning',
     category: 'surface',
   },
@@ -160,8 +160,8 @@ export const THEME_COLORS = {
   errorForeground: {
     name: 'Error Foreground',
     description: 'Used for error foregrounds',
-    lightDefault: { color: 'red-700' },
-    darkDefault: { color: 'red-600' },
+    lightDefault: { color: 'red-950' },
+    darkDefault: { color: 'red-50' },
     groupKey: 'error',
     category: 'surface',
   },

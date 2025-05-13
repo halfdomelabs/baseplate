@@ -94,8 +94,7 @@ export function ThemeColorsEditor({
                   if (primaryShade) {
                     return `primary-${primaryShade}`;
                   }
-                  const oklch = convertHexToOklch(color);
-                  return convertOklchToColorName(oklch);
+                  return convertOklchToColorName(color);
                 }}
                 name={`colors.${mode}.${themeKey}`}
               />

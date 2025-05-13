@@ -21,7 +21,7 @@ export interface ColorPickerFieldProps extends FieldProps {
   disabled?: boolean;
   placeholder?: string;
   onChange?: (value: string) => void;
-  formatColorName?: (color: string) => string;
+  formatColorName?: (value: string) => string;
   value?: string;
   hideText?: boolean;
   /**
@@ -100,7 +100,9 @@ function ColorPickerFieldFn(
             />
           )}
           {hideText ? null : hexValue ? (
-            <div>{formatColorName ? formatColorName(hexValue) : hexValue}</div>
+            <div>
+              {formatColorName && value ? formatColorName(value) : hexValue}
+            </div>
           ) : (
             <div className="opacity-75">{placeholder}</div>
           )}
