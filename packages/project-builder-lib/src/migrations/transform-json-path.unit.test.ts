@@ -48,6 +48,16 @@ describe('transformJsonPath', () => {
     });
   });
 
+  it('should transform all elements in an object with a double wildcard', () => {
+    const data = { items: { a: 1, b: 2, c: 3 } };
+    const result = transformJsonPath(
+      data,
+      'items.**',
+      (value) => (value as number) * 2,
+    );
+    expect(result).toEqual({ items: { a: 2, b: 4, c: 6 } });
+  });
+
   it('should return the same object if the path does not exist', () => {
     const data = { a: { b: 10 } };
     const result = transformJsonPath(data, 'a.c', (value) => value);

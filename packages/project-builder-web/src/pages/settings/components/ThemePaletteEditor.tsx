@@ -12,6 +12,8 @@ import type {
 
 import {
   COLOR_PALETTES,
+  convertHexToOklch,
+  convertOklchToHex,
   PALETTE_SHADES,
 } from '@halfdomelabs/project-builder-lib';
 import {
@@ -90,6 +92,8 @@ export function ThemePaletteEditor({
             name={`palettes.${type}.customBase`}
             label="Custom Base Color"
             placeholder="Choose a color"
+            parseColor={convertOklchToHex}
+            serializeColor={convertHexToOklch}
           />
           <Button
             variant="secondary"

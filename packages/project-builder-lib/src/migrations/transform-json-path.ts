@@ -6,14 +6,15 @@ type TransformFn<From = unknown, To = unknown> = (input: From) => To;
  * Transform a value at a specific path in a JSON object.
  *
  * @param data - The JSON object to transform.
- * @param path - The path to the value to transform, using dot notation (* matches all elements in an array).
+ * @param path - The path to the value to transform, using dot notation (* matches all elements in an array and ** matches all elements in an object).
  * @param transformFn - The transformation function to apply to the value.
  * @returns The transformed JSON object.
  */
 export function transformJsonPath(
   data: unknown,
   path: string,
-  transformFn: TransformFn,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- make it easier to use any transform functions
+  transformFn: TransformFn<any>,
 ): unknown {
   // Split the path into parts
   const pathParts = path.split('.');
@@ -41,9 +42,23 @@ export function transformJsonPath(
         );
       }
       // Navigate deeper
-      if (current === null || !(currentPart in current)) {
+      if (current === null) {
         return current;
       }
+
+      if (currentPart === '**') {
+        return Object.fromEntries(
+          Object.entries(current).map(([key, value]) => [
+            key,
+            navigateAndTransform(value, remainingParts),
+          ]),
+        );
+      }
+
+      if (!(currentPart in current)) {
+        return current;
+      }
+
       return {
         ...current,
         [currentPart]: navigateAndTransform(

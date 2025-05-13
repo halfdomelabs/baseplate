@@ -2,16 +2,19 @@ import type { ColorPaletteName, PaletteShade } from '@src/constants/colors.js';
 
 import { COLOR_PALETTES, FIXED_COLOR_MAPPINGS } from '@src/constants/colors.js';
 
+import { convertOklchToHex } from './color-conversions.js';
+
 /**
  * Convert a color name to a hex color. Can be one of the following:
  * - A fixed color name (e.g. 'white', 'black').
  * - A color palette name (e.g. 'slate-500', 'gray-300').
  * - A hex color (e.g. '#ff0000').
+ * - A OKLCH color (e.g. 'oklch(0.5 0.2 180 / 0.3)').
  *
  * @param color - The color name to convert.
- * @returns The hex color.
+ * @returns The OKLCH color.
  */
-export function convertColorNameToHex(color: string): string {
+export function convertColorNameToOklch(color: string): string {
   const fixedColorMapping = FIXED_COLOR_MAPPINGS[color];
   if (fixedColorMapping) {
     return fixedColorMapping;
@@ -47,6 +50,11 @@ function getReverseColorMapping(): Record<string, string> {
   return reverseColorMapping;
 }
 
-export function convertHexToColorName(hex: string): string {
-  return getReverseColorMapping()[hex] ?? hex;
+/**
+ * Convert an OKLCH color to a color name.
+ * @param oklch - The OKLCH color to convert.
+ * @returns The color name.
+ */
+export function convertOklchToColorName(oklch: string): string {
+  return getReverseColorMapping()[oklch] ?? convertOklchToHex(oklch);
 }

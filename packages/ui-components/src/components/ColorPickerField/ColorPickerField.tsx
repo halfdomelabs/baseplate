@@ -24,6 +24,18 @@ export interface ColorPickerFieldProps extends FieldProps {
   formatColorName?: (color: string) => string;
   value?: string;
   hideText?: boolean;
+  /**
+   * Parse a color string into a hex color.
+   * @param color - The color string to parse.
+   * @returns The hex color.
+   */
+  parseColor?: (color: string) => string;
+  /**
+   * Serialize a hex color into a color string.
+   * @param hex - The hex color to serialize.
+   * @returns The color string.
+   */
+  serializeColor?: (hex: string) => string;
 }
 
 /**
@@ -43,12 +55,22 @@ function ColorPickerFieldFn(
     description,
     hideText,
     formatColorName,
+    parseColor,
+    serializeColor,
   }: ColorPickerFieldProps,
   ref: ForwardedRef<HTMLButtonElement>,
 ): React.JSX.Element {
   const addWrapper = label ?? error ?? description;
 
   const id = useId();
+
+  const hexValue = value ? (parseColor?.(value) ?? value) : undefined;
+
+  const handleChange = (newHexValue: string): void => {
+    if (!newHexValue) return;
+    const newColorValue = serializeColor?.(newHexValue) ?? newHexValue;
+    onChange?.(newColorValue);
+  };
 
   const inputComponent = (
     <Popover.Root>
@@ -69,16 +91,16 @@ function ColorPickerFieldFn(
           ref={ref}
           disabled={disabled}
         >
-          {value && (
+          {hexValue && (
             <div
               className="h-4 w-6 rounded-sm border border-border"
               style={{
-                backgroundColor: value,
+                backgroundColor: hexValue,
               }}
             />
           )}
-          {hideText ? null : value ? (
-            <div>{formatColorName ? formatColorName(value) : value}</div>
+          {hideText ? null : hexValue ? (
+            <div>{formatColorName ? formatColorName(hexValue) : hexValue}</div>
           ) : (
             <div className="opacity-75">{placeholder}</div>
           )}
@@ -94,10 +116,10 @@ function ColorPickerFieldFn(
           <HexColorInput
             className={cn(inputVariants(), 'p-2')}
             prefixed
-            color={value}
-            onChange={onChange}
+            color={hexValue ?? ''}
+            onChange={handleChange}
           />
-          <HexColorPicker color={value} onChange={onChange} />
+          <HexColorPicker color={hexValue ?? ''} onChange={handleChange} />
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

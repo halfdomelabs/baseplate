@@ -7,6 +7,7 @@ alwaysApply: true
 - All functions (excluding one-liner arrow functions) require explicit return types
 
 ## Testing Practices
+- We use vitest for unit testing
 - Unit tests use `.unit.test.ts` suffix
 - Integration tests use `.int.test.ts` suffix
 - Colocate tests with implementation files, e.g. for `./utils.ts`, add the test to `./utils.unit.test.ts`

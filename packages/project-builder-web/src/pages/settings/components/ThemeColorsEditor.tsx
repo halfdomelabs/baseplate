@@ -3,7 +3,9 @@ import type React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
 import {
-  convertHexToColorName,
+  convertHexToOklch,
+  convertOklchToColorName,
+  convertOklchToHex,
   getDefaultThemeColorFromShade,
   THEME_COLORS,
 } from '@halfdomelabs/project-builder-lib';
@@ -77,6 +79,8 @@ export function ThemeColorsEditor({
                     </Tooltip>
                   </div>
                 }
+                parseColor={convertOklchToHex}
+                serializeColor={convertHexToOklch}
                 formatColorName={(color) => {
                   const baseShade = Object.entries(palettes.base.shades).find(
                     ([, shadeColor]) => shadeColor === color,
@@ -90,7 +94,8 @@ export function ThemeColorsEditor({
                   if (primaryShade) {
                     return `primary-${primaryShade}`;
                   }
-                  return convertHexToColorName(color);
+                  const oklch = convertHexToOklch(color);
+                  return convertOklchToColorName(oklch);
                 }}
                 name={`colors.${mode}.${themeKey}`}
               />
