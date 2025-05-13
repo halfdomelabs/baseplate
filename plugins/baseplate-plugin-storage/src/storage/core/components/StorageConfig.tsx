@@ -12,7 +12,13 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Alert, Button, ComboboxField } from '@halfdomelabs/ui-components';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  ComboboxField,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
@@ -90,8 +96,8 @@ export function StorageConfig({
       <form onSubmit={onSubmit} className={cn('max-w-4xl space-y-4')}>
         {pendingModelChanges && (
           <Alert>
-            <Alert.Title>Model Changes</Alert.Title>
-            <Alert.Description>
+            <AlertTitle>Model Changes</AlertTitle>
+            <AlertDescription>
               <p>
                 The selected file model will be updated to include the required
                 fields for the storage plugin. The following changes will be
@@ -114,7 +120,7 @@ export function StorageConfig({
                   <li>The primary key will be updated.</li>
                 )}
               </ul>
-            </Alert.Description>
+            </AlertDescription>
           </Alert>
         )}
         <div className="flex gap-4">
