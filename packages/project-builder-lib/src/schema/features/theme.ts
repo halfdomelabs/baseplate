@@ -62,7 +62,7 @@ export const THEME_COLORS = {
     description:
       'Muted backgrounds such as <TabsList />, <Skeleton /> and <Switch />, also used as background for containers on white background or vice versa',
     lightDefault: { baseShade: '100' },
-    darkDefault: { baseShade: '900' },
+    darkDefault: { baseShade: '800' },
     groupKey: 'muted',
     category: 'surface',
   },
@@ -121,8 +121,8 @@ export const THEME_COLORS = {
     name: 'Accent Foreground',
     description:
       'Used for accent foregrounds such as hover effects on <DropdownMenuItem>, <SelectItem>...',
-    lightDefault: { baseShade: '700' },
-    darkDefault: { baseShade: '100' },
+    lightDefault: { baseShade: '900' },
+    darkDefault: { baseShade: '50' },
     groupKey: 'accent',
     category: 'surface',
   },
@@ -179,8 +179,8 @@ export const THEME_COLORS = {
     name: 'Primary',
     description:
       'Primary colors for <Button /> and other active states for interactive elements such as checkbox',
-    lightDefault: { primaryShade: '700' },
-    darkDefault: { primaryShade: '600' },
+    lightDefault: { primaryShade: '900' },
+    darkDefault: { primaryShade: '950' },
     groupKey: 'primary',
     category: 'interactive',
   },
@@ -219,8 +219,8 @@ export const THEME_COLORS = {
   secondaryForeground: {
     name: 'Secondary Foreground',
     description: 'Text color for secondary button',
-    lightDefault: { baseShade: '700' },
-    darkDefault: { baseShade: '100' },
+    lightDefault: { baseShade: '900' },
+    darkDefault: { baseShade: '50' },
     groupKey: 'secondary',
     category: 'interactive',
   },
@@ -286,8 +286,8 @@ export const THEME_COLORS = {
   ring: {
     name: 'Focus Ring',
     description: 'Used for focus ring. Will be 30% opacity.',
-    lightDefault: { primaryShade: '700' }, // 30% opacity
-    darkDefault: { primaryShade: '600' }, // 30% opacity
+    lightDefault: { primaryShade: '950' }, // 30% opacity
+    darkDefault: { primaryShade: '300' }, // 30% opacity
     groupKey: 'ring',
     category: 'utility',
     opacity: 50,
