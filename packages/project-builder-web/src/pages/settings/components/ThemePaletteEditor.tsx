@@ -19,7 +19,7 @@ import {
 import {
   Button,
   ColorPickerFieldController,
-  ComboboxField,
+  ComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { capitalize } from 'inflection';
 import { useCallback } from 'react';
@@ -76,7 +76,7 @@ export function ThemePaletteEditor({
 
   return (
     <div className="flex max-w-fit flex-col gap-4">
-      <ComboboxField.Controller
+      <ComboboxFieldController
         name={`palettes.${type}.paletteName`}
         control={control}
         options={paletteOptions}

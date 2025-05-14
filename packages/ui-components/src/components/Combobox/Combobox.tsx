@@ -270,7 +270,7 @@ function ComboboxInput({
             className={cn(
               disabled ? 'opacity-50' : '',
               searchQuery ? 'hidden' : '',
-              'pointer-events-none truncate py-1 pl-3',
+              'pointer-events-none truncate py-1 pl-3 text-base md:text-sm',
             )}
           >
             {selectedLabel}
@@ -425,7 +425,7 @@ function ComboboxItem({
 }
 
 interface ComboboxActionProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect' | 'onClick'> {
+  extends Omit<React.ComponentPropsWithRef<'div'>, 'onSelect' | 'onClick'> {
   disabled?: boolean;
   value: string;
   label?: string;
@@ -437,6 +437,7 @@ function ComboboxAction({
   className,
   children,
   onClick,
+  ref,
   ...rest
 }: ComboboxActionProps): React.ReactElement {
   const itemRef = React.useRef<HTMLDivElement>(null);
@@ -447,7 +448,7 @@ function ComboboxAction({
       onSelect={onClick}
       className={cn(selectItemVariants(), className)}
       {...rest}
-      ref={itemRef}
+      ref={mergeRefs(ref, itemRef)}
     >
       {children}
     </Command.Item>

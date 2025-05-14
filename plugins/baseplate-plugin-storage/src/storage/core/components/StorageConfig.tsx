@@ -17,7 +17,7 @@ import {
   AlertDescription,
   AlertTitle,
   Button,
-  ComboboxField,
+  ComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
@@ -124,7 +124,7 @@ export function StorageConfig({
           </Alert>
         )}
         <div className="flex gap-4">
-          <ComboboxField.Controller
+          <ComboboxFieldController
             label="File Model"
             options={modelOptions}
             name="fileModelRef"
@@ -132,7 +132,7 @@ export function StorageConfig({
             className="flex-1"
             description="The model to use for file storage."
           />
-          <ComboboxField.Controller
+          <ComboboxFieldController
             label="Storage Feature Path"
             options={featureOptions}
             name="featureRef"

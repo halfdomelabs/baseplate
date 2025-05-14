@@ -4,7 +4,7 @@ import type React from 'react';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  ComboboxField,
+  ComboboxFieldController,
   Dialog,
   InputFieldController,
 } from '@halfdomelabs/ui-components';
@@ -149,7 +149,7 @@ export function FeatureForm({
             autoComplete="off"
             data-1p-ignore
           />
-          <ComboboxField.Controller
+          <ComboboxFieldController
             control={control}
             name="parentRef"
             label="Parent Feature"

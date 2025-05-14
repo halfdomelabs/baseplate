@@ -19,7 +19,7 @@ import {
   AlertTitle,
   Button,
   CheckboxFieldController,
-  ComboboxField,
+  ComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
@@ -210,25 +210,25 @@ function AuthPage(): React.JSX.Element {
             control={control}
             disabled={true}
           />
-          <ComboboxField.Controller
+          <ComboboxFieldController
             label="User Model"
             options={modelOptions}
             name="userModelRef"
             control={control}
           />
-          <ComboboxField.Controller
+          <ComboboxFieldController
             label="User Role Model"
             options={modelOptions}
             name="userRoleModelRef"
             control={control}
           />
-          <ComboboxField.Controller
+          <ComboboxFieldController
             label="Auth Feature Path"
             options={featureOptions}
             name="authFeatureRef"
             control={control}
           />
-          <ComboboxField.Controller
+          <ComboboxFieldController
             label="Accounts Feature Path"
             options={featureOptions}
             name="accountsFeatureRef"

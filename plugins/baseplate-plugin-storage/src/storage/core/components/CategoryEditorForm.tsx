@@ -4,7 +4,7 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   cn,
-  ComboboxField,
+  ComboboxFieldController,
   InputFieldController,
   MultiComboboxFieldController,
 } from '@halfdomelabs/ui-components';
@@ -62,7 +62,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
               control={control}
               name={`categories.${idx}.name`}
             />
-            <ComboboxField.Controller
+            <ComboboxFieldController
               label="Default Adapter"
               control={control}
               name={`categories.${idx}.defaultAdapterRef`}
@@ -73,7 +73,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
               control={control}
               name={`categories.${idx}.maxFileSize`}
             />
-            <ComboboxField.Controller
+            <ComboboxFieldController
               label="Used By Relation"
               control={control}
               name={`categories.${idx}.usedByRelationRef`}

@@ -14,6 +14,7 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   ComboboxField,
+  ComboboxFieldController,
   Dialog,
   InputFieldController,
   SelectFieldController,
@@ -293,7 +294,7 @@ export function ModelRelationForm({
           disabled
           label="Local Model"
         />
-        <ComboboxField.Controller
+        <ComboboxFieldController
           control={control}
           name="modelRef"
           options={foreignModelOptions}
@@ -357,13 +358,13 @@ export function ModelRelationForm({
         <div className="text-sm font-medium">Foreign Field</div>
         {relation.references.map((_, i) => (
           <React.Fragment key={i}>
-            <ComboboxField.Controller
+            <ComboboxFieldController
               disabled={!hasSelectedForeignModel}
               control={control}
               name={`references.${i}.localRef`}
               options={localFieldOptions}
             />
-            <ComboboxField.Controller
+            <ComboboxFieldController
               control={control}
               name={`references.${i}.foreignRef`}
               options={foreignFieldOptions}

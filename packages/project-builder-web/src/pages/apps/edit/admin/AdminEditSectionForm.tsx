@@ -16,7 +16,7 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  ComboboxField,
+  ComboboxFieldController,
   InputFieldController,
   SelectFieldController,
   useConfirmDialog,
@@ -155,7 +155,7 @@ function AdminEditSectionForm({
           </Button>
         )}
         <InputFieldController label="Name" control={control} name="name" />
-        <ComboboxField.Controller
+        <ComboboxFieldController
           label="Feature"
           control={control}
           options={featureOptions}
