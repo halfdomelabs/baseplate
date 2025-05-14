@@ -11,7 +11,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-  CheckboxField,
+  CheckboxFieldController,
   SectionList,
   TextareaField,
 } from '@halfdomelabs/ui-components';
@@ -72,7 +72,7 @@ export function TemplateExtractorSettingsPage(): React.JSX.Element {
               <SectionList.SectionTitle>Settings</SectionList.SectionTitle>
             </SectionList.SectionHeader>
             <SectionList.SectionContent className="flex max-w-md flex-col gap-4">
-              <CheckboxField.Controller
+              <CheckboxFieldController
                 name="writeMetadata"
                 label="Write Metadata"
                 description="Write metadata to the project to enable template extraction"

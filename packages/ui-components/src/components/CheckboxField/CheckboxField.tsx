@@ -1,14 +1,11 @@
-import type * as SwitchPrimitives from '@radix-ui/react-switch';
-import type { ForwardedRef } from 'react';
+import type { ComponentPropsWithRef } from 'react';
+import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
-
-import React from 'react';
 
 import type { FieldProps } from '@src/types/form';
 
 import { useControllerMerged } from '@src/hooks/useControllerMerged';
 import { cn } from '@src/utils';
-import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 import { Checkbox } from '../Checkbox/Checkbox';
 import {
@@ -21,7 +18,7 @@ import {
 
 export interface CheckboxFieldProps
   extends Omit<
-      React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>,
+      ComponentPropsWithRef<'button'>,
       'onCheckedChange' | 'checked' | 'onChange' | 'value'
     >,
     FieldProps {
@@ -32,20 +29,20 @@ export interface CheckboxFieldProps
 /**
  * Field with label and error states that wraps a Checkbox component.
  */
-
-const CheckboxFieldRoot = React.forwardRef<
-  HTMLButtonElement,
-  CheckboxFieldProps
->(
-  (
-    { label, description, error, onChange, value, className, ...props },
-    ref,
-  ) => (
+export function CheckboxField({
+  label,
+  description,
+  error,
+  onChange,
+  value,
+  className,
+  ...props
+}: CheckboxFieldProps): React.ReactElement {
+  return (
     <FormItem error={error} className={cn('space-y-2', className)}>
       <div className="flex flex-row items-center">
         <FormControl>
           <Checkbox
-            ref={ref}
             {...props}
             onCheckedChange={(checked) => {
               onChange?.(checked === true);
@@ -60,10 +57,8 @@ const CheckboxFieldRoot = React.forwardRef<
       </div>
       <FormMessage />
     </FormItem>
-  ),
-);
-
-CheckboxFieldRoot.displayName = 'CheckboxField';
+  );
+}
 
 export interface CheckboxFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -73,28 +68,18 @@ export interface CheckboxFieldControllerProps<
   name: TFieldName;
 }
 
-const CheckboxFieldController = genericForwardRef(
-  <
-    TFieldValues extends FieldValues = FieldValues,
-    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  >(
-    {
-      control,
-      name,
-      ...rest
-    }: CheckboxFieldControllerProps<TFieldValues, TFieldName>,
-    ref: ForwardedRef<HTMLButtonElement>,
-  ): React.JSX.Element => {
-    const {
-      field,
-      fieldState: { error },
-    } = useControllerMerged({ name, control }, rest, ref);
+export function CheckboxFieldController<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  control,
+  name,
+  ...rest
+}: CheckboxFieldControllerProps<TFieldValues, TFieldName>): React.ReactElement {
+  const {
+    field,
+    fieldState: { error },
+  } = useControllerMerged({ name, control }, rest);
 
-    return <CheckboxFieldRoot error={error?.message} {...rest} {...field} />;
-  },
-  'CheckboxFieldController',
-);
-
-export const CheckboxField = Object.assign(CheckboxFieldRoot, {
-  Controller: CheckboxFieldController,
-});
+  return <CheckboxField error={error?.message} {...rest} {...field} />;
+}

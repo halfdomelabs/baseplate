@@ -9,7 +9,7 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  CheckboxField,
+  CheckboxFieldController,
   InputField,
   MultiComboboxField,
 } from '@halfdomelabs/ui-components';
@@ -67,17 +67,17 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
           control={control}
           name="description"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Include Auth?"
           control={control}
           name="includeAuth"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Include Upload Components?"
           control={control}
           name="includeUploadComponents"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Enable Subscriptions?"
           control={control}
           name="enableSubscriptions"

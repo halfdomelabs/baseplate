@@ -8,7 +8,7 @@ import {
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  CheckboxField,
+  CheckboxFieldController,
   InputField,
   SelectField,
   Table,
@@ -134,7 +134,7 @@ function AdminCrudEmbeddedForm({
         name="type"
         options={TYPE_OPTIONS}
       />
-      <CheckboxField.Controller
+      <CheckboxFieldController
         label="Include ID Field? (useful for list types)"
         control={control}
         name="includeIdField"

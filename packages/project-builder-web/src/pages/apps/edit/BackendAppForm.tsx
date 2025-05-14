@@ -7,7 +7,11 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button, CheckboxField, InputField } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  CheckboxFieldController,
+  InputField,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 
@@ -45,32 +49,32 @@ function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
           control={control}
           name="packageLocation"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Enable Stripe?"
           control={control}
           name="enableStripe"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Enable Postmark?"
           control={control}
           name="enablePostmark"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Enable Redis?"
           control={control}
           name="enableRedis"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Enable Bull Queue?"
           control={control}
           name="enableBullQueue"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Enable GraphQL Subscriptions?"
           control={control}
           name="enableSubscriptions"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Enable Axios?"
           control={control}
           name="enableAxios"

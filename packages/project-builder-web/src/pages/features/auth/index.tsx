@@ -18,7 +18,7 @@ import {
   AlertDescription,
   AlertTitle,
   Button,
-  CheckboxField,
+  CheckboxFieldController,
   ComboboxField,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -204,7 +204,7 @@ function AuthPage(): React.JSX.Element {
               </AlertDescription>
             </Alert>
           )}
-          <CheckboxField.Controller
+          <CheckboxFieldController
             label="Use Auth0? (currently only Auth0 is supported)"
             name="useAuth0"
             control={control}
@@ -234,7 +234,7 @@ function AuthPage(): React.JSX.Element {
             name="accountsFeatureRef"
             control={control}
           />
-          <CheckboxField.Controller
+          <CheckboxFieldController
             label="Enable Password Auth?"
             name="passwordProvider"
             control={control}
