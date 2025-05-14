@@ -311,7 +311,7 @@ const MultiComboboxItem = React.forwardRef<
       }}
       className={cn(selectItemVariants(), className)}
       {...rest}
-      ref={mergeRefs([ref, itemRef])}
+      ref={mergeRefs(ref, itemRef)}
     >
       <div
         className={cn(

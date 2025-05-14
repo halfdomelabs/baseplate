@@ -15,7 +15,13 @@ import type { FieldProps } from '@src/types/form';
 
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
-import { FormItem } from '../FormItem/FormItem';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem';
 import { Textarea } from '../Textarea/Textarea';
 
 export interface TextareaFieldProps
@@ -32,8 +38,8 @@ export interface TextareaFieldProps
 const TextareaFieldRoot = React.forwardRef<HTMLDivElement, TextareaFieldProps>(
   ({ label, description, error, onChange, register, ...props }, ref) => (
     <FormItem ref={ref} error={error}>
-      {label && <FormItem.Label>{label}</FormItem.Label>}
-      <FormItem.Control>
+      <FormLabel>{label}</FormLabel>
+      <FormControl>
         <Textarea
           onChange={
             onChange &&
@@ -44,11 +50,9 @@ const TextareaFieldRoot = React.forwardRef<HTMLDivElement, TextareaFieldProps>(
           {...props}
           {...register}
         />
-      </FormItem.Control>
-      {description && (
-        <FormItem.Description>{description}</FormItem.Description>
-      )}
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      </FormControl>
+      <FormDescription>{description}</FormDescription>
+      <FormMessage />
     </FormItem>
   ),
 );

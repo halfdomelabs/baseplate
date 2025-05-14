@@ -255,7 +255,7 @@ function ComboboxInput({
           }}
           {...rest}
           aria-describedby={`${rest['aria-describedby'] ?? ''} ${selectedLabelId}`}
-          ref={mergeRefs([ref, inputRef])}
+          ref={mergeRefs(ref, inputRef)}
         >
           <input
             // allow aria-labelledby to be overridden
@@ -411,7 +411,7 @@ function ComboboxItem({
       }}
       className={cn(selectItemVariants(), className)}
       {...rest}
-      ref={mergeRefs([ref, itemRef])}
+      ref={mergeRefs(ref, itemRef)}
     >
       {children}
       <MdCheck

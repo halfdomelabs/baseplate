@@ -1,4 +1,4 @@
-import type { ForwardedRef } from 'react';
+import type React from 'react';
 import type {
   Control,
   FieldError,
@@ -8,50 +8,43 @@ import type {
   UseFormRegisterReturn,
 } from 'react-hook-form';
 
-import React from 'react';
 import { get, useFormState } from 'react-hook-form';
 
 import type { FieldProps } from '@src/types/form';
 
-import { cn } from '@src/utils';
-import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
+import { cn, mergeRefs } from '@src/utils';
 
-import { FormItem } from '../FormItem/FormItem';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem';
 import { Input } from '../Input/Input';
 
 export interface InputFieldProps
-  extends Omit<
-      React.InputHTMLAttributes<HTMLInputElement>,
-      'onChange' | 'value'
-    >,
+  extends Omit<React.ComponentPropsWithRef<'input'>, 'onChange' | 'value'>,
     FieldProps {
   onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;
-  inputClassName?: string;
 }
 
-const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
-  (
-    {
-      label,
-      description,
-      error,
-      onChange,
-      register,
-      className,
-      inputClassName,
-      ...props
-    },
-    ref,
-  ) => (
-    <FormItem
-      ref={ref}
-      error={error}
-      className={cn('flex flex-col gap-1.5', className)}
-    >
-      {label && <FormItem.Label>{label}</FormItem.Label>}
-      <FormItem.Control>
+function InputField({
+  label,
+  description,
+  error,
+  onChange,
+  register,
+  className,
+  ref,
+  ...props
+}: InputFieldProps): React.ReactElement {
+  return (
+    <FormItem error={error} className={cn('flex flex-col gap-1.5', className)}>
+      <FormLabel>{label}</FormLabel>
+      <FormControl>
         <Input
           onChange={
             onChange &&
@@ -59,19 +52,16 @@ const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
               onChange(e.target.value);
             })
           }
-          className={inputClassName}
+          ref={mergeRefs(ref, register?.ref)}
           {...props}
           {...register}
         />
-      </FormItem.Control>
-      {description && (
-        <FormItem.Description>{description}</FormItem.Description>
-      )}
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      </FormControl>
+      <FormDescription>{description}</FormDescription>
+      <FormMessage />
     </FormItem>
-  ),
-);
-InputFieldRoot.displayName = 'InputField';
+  );
+}
 
 export interface InputFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -81,34 +71,26 @@ export interface InputFieldControllerProps<
   name: TFieldName;
   registerOptions?: RegisterOptions<TFieldValues, TFieldName>;
 }
-const InputFieldController = genericForwardRef(
-  <
-    TFieldValues extends FieldValues = FieldValues,
-    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  >(
-    {
-      control,
-      name,
-      registerOptions,
-      ...rest
-    }: InputFieldControllerProps<TFieldValues, TFieldName>,
-    ref: ForwardedRef<HTMLDivElement>,
-  ): React.JSX.Element => {
-    const { errors } = useFormState({ control, name });
-    const error = get(errors, name) as FieldError | undefined;
 
-    return (
-      <InputFieldRoot
-        register={control.register(name, registerOptions)}
-        error={error?.message}
-        ref={ref}
-        {...rest}
-      />
-    );
-  },
-  'InputFieldController',
-);
+function InputFieldController<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  control,
+  name,
+  registerOptions,
+  ...rest
+}: InputFieldControllerProps<TFieldValues, TFieldName>): React.ReactElement {
+  const { errors } = useFormState({ control, name });
+  const error = get(errors, name) as FieldError | undefined;
 
-export const InputField = Object.assign(InputFieldRoot, {
-  Controller: InputFieldController,
-});
+  return (
+    <InputField
+      register={control.register(name, registerOptions)}
+      error={error?.message}
+      {...rest}
+    />
+  );
+}
+
+export { InputField, InputFieldController };

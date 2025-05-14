@@ -14,7 +14,13 @@ import { useComponentStrings } from '@src/contexts/component-strings.js';
 import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
-import { FormItem } from '../FormItem/FormItem.js';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem.js';
 import { MultiCombobox } from '../MultiCombobox/MultiCombobox.js';
 
 export interface MultiComboboxFieldProps<OptionType>
@@ -60,7 +66,7 @@ const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
 
   return (
     <FormItem error={error} className={className}>
-      {label && <FormItem.Label>{label}</FormItem.Label>}
+      <FormLabel>{label}</FormLabel>
       <MultiCombobox
         value={selectedValues}
         onChange={(value) => {
@@ -71,9 +77,9 @@ const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
         }}
         {...props}
       >
-        <FormItem.Control>
+        <FormControl>
           <MultiCombobox.Input ref={ref} placeholder={placeholder} />
-        </FormItem.Control>
+        </FormControl>
         <MultiCombobox.Content>
           {options.map((option) => {
             const val = getOptionValue(option);
@@ -93,10 +99,8 @@ const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
           </MultiCombobox.Empty>
         </MultiCombobox.Content>
       </MultiCombobox>
-      {description && (
-        <FormItem.Description>{description}</FormItem.Description>
-      )}
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      <FormDescription>{description}</FormDescription>
+      <FormMessage />
     </FormItem>
   );
 });

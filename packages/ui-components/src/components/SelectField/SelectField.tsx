@@ -11,7 +11,13 @@ import type {
 import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
-import { FormItem } from '../FormItem/FormItem.js';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem.js';
 import { Select } from '../Select/Select.js';
 
 export interface SelectFieldProps<OptionType>
@@ -50,19 +56,19 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
 
   return (
     <FormItem error={error} className={className}>
-      {label && <FormItem.Label>{label}</FormItem.Label>}
+      <FormLabel>{label}</FormLabel>
       <Select
         value={selectedValue}
         onValueChange={(val) => onChange?.(val === NULL_SENTINEL ? null : val)}
         {...props}
       >
-        <FormItem.Control>
+        <FormControl>
           <Select.Trigger ref={ref}>
             <Select.Value placeholder={placeholder}>
               {selectedOption ? getOptionLabel(selectedOption) : null}
             </Select.Value>
           </Select.Trigger>
-        </FormItem.Control>
+        </FormControl>
         <Select.Content>
           <Select.Group>
             {options.map((option) => {
@@ -79,10 +85,8 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
           </Select.Group>
         </Select.Content>
       </Select>
-      {description && (
-        <FormItem.Description>{description}</FormItem.Description>
-      )}
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      <FormDescription>{description}</FormDescription>
+      <FormMessage />
     </FormItem>
   );
 });

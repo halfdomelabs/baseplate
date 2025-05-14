@@ -14,7 +14,12 @@ import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 import { CheckboxField } from '../CheckboxField/CheckboxField.js';
-import { FormItem } from '../FormItem/FormItem.js';
+import {
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem.js';
 
 export interface MultiCheckboxFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>,
@@ -55,7 +60,7 @@ const MultiCheckboxFieldRoot = genericForwardRef(function MultiCheckboxField<
 
   return (
     <FormItem error={error} className={className}>
-      {label && <FormItem.Label>{label}</FormItem.Label>}
+      <FormLabel>{label}</FormLabel>
       <div className="flex flex-wrap gap-4" ref={ref}>
         {options.map((option) => {
           const optionValue = getOptionValue(option);
@@ -88,10 +93,8 @@ const MultiCheckboxFieldRoot = genericForwardRef(function MultiCheckboxField<
           );
         })}
       </div>
-      {description && (
-        <FormItem.Description>{description}</FormItem.Description>
-      )}
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      <FormDescription>{description}</FormDescription>
+      <FormMessage />
     </FormItem>
   );
 });

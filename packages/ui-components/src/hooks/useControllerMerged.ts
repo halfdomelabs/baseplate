@@ -36,7 +36,7 @@ export function useControllerMerged<
     ControllerRenderProps,
     'ref' | 'onChange' | 'value' | 'onBlur'
   > & {
-    ref: ForwardedRef<TRef>;
+    ref: ForwardedRef<TRef> | undefined;
     onChange: (value: TValue) => void;
     value: TValue;
     onBlur: React.FocusEventHandler<TRef>;
@@ -53,7 +53,7 @@ export function useControllerMerged<
     ...controllerReturnValue,
     field: {
       ...field,
-      ref: ref ? mergeRefs([field.ref, ref]) : field.ref,
+      ref: mergeRefs(field.ref, ref),
       onChange: (value: TValue) => {
         field.onChange(value);
         onChange?.(value);

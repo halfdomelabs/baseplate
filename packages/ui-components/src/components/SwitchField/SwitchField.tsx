@@ -10,7 +10,13 @@ import { useControllerMerged } from '@src/hooks/useControllerMerged';
 import { cn } from '@src/utils';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
-import { FormItem } from '../FormItem/FormItem';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem';
 import { Switch } from '../Switch/Switch';
 
 export interface SwitchFieldProps
@@ -30,22 +36,20 @@ const SwitchFieldRoot = React.forwardRef<HTMLButtonElement, SwitchFieldProps>(
   ) => (
     <FormItem error={error} className={cn('space-y-2', className)}>
       <div className="flex items-center gap-2">
-        <FormItem.Control>
+        <FormControl>
           <Switch
             onCheckedChange={(checked) => onChange?.(checked)}
             checked={value}
             {...props}
             ref={ref}
           />
-        </FormItem.Control>
+        </FormControl>
         <div className="space-y-0.5">
-          {label && <FormItem.Label className="block">{label}</FormItem.Label>}
-          {description && (
-            <FormItem.Description>{description}</FormItem.Description>
-          )}
+          <FormLabel className="block">{label}</FormLabel>
+          <FormDescription>{description}</FormDescription>
         </div>
       </div>
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      <FormMessage />
     </FormItem>
   ),
 );

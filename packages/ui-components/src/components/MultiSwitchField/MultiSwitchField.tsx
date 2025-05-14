@@ -14,7 +14,12 @@ import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { cn } from '@src/utils/cn.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
-import { FormItem } from '../FormItem/FormItem.js';
+import {
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem.js';
 import { SwitchField } from '../SwitchField/SwitchField.js';
 
 export interface MultiSwitchFieldProps<OptionType>
@@ -56,7 +61,7 @@ const MultiSwitchFieldRoot = genericForwardRef(function MultiSwitchField<
 
   return (
     <FormItem error={error} className={cn('space-y-3', className)}>
-      {label && <FormItem.Label>{label}</FormItem.Label>}
+      <FormLabel>{label}</FormLabel>
       <div className="flex flex-wrap gap-4" ref={ref}>
         {options.map((option) => {
           const optionValue = getOptionValue(option);
@@ -89,10 +94,8 @@ const MultiSwitchFieldRoot = genericForwardRef(function MultiSwitchField<
           );
         })}
       </div>
-      {description && (
-        <FormItem.Description>{description}</FormItem.Description>
-      )}
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      <FormDescription>{description}</FormDescription>
+      <FormMessage />
     </FormItem>
   );
 });

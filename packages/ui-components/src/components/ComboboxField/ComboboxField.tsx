@@ -21,7 +21,13 @@ import {
   ComboboxInput,
   ComboboxItem,
 } from '../Combobox/Combobox.js';
-import { FormItem } from '../FormItem/FormItem.js';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem.js';
 
 export interface ComboboxFieldProps<OptionType>
   extends Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,
@@ -66,7 +72,7 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
 
   return (
     <FormItem error={error} className={className}>
-      {label && <FormItem.Label>{label}</FormItem.Label>}
+      <FormLabel>{label}</FormLabel>
       <Combobox
         value={selectedComboboxOption}
         onChange={(value) => {
@@ -74,9 +80,9 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
         }}
         {...props}
       >
-        <FormItem.Control>
+        <FormControl>
           <ComboboxInput placeholder={placeholder} ref={ref} />
-        </FormItem.Control>
+        </FormControl>
         <ComboboxContent>
           {options.map((option) => {
             const val = getOptionValue(option);
@@ -92,10 +98,8 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
           <ComboboxEmpty>{noResultsText ?? comboboxNoResults}</ComboboxEmpty>
         </ComboboxContent>
       </Combobox>
-      {description && (
-        <FormItem.Description>{description}</FormItem.Description>
-      )}
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      <FormDescription>{description}</FormDescription>
+      <FormMessage />
     </FormItem>
   );
 });

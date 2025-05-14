@@ -13,7 +13,13 @@ import { buttonVariants, inputVariants } from '@src/styles';
 import { cn } from '@src/utils';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
-import { FormItem } from '../FormItem/FormItem';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem';
 
 export interface ColorPickerFieldProps extends FieldProps {
   className?: string;
@@ -130,15 +136,10 @@ function ColorPickerFieldFn(
   if (addWrapper) {
     return (
       <FormItem error={error} className={cn('flex gap-2', wrapperClassName)}>
-        {label && <FormItem.Label>{label}</FormItem.Label>}
-        <FormItem.Control>{inputComponent}</FormItem.Control>
-        {error ? (
-          <FormItem.Error>{error}</FormItem.Error>
-        ) : (
-          description && (
-            <FormItem.Description>{description}</FormItem.Description>
-          )
-        )}
+        <FormLabel>{label}</FormLabel>
+        <FormControl>{inputComponent}</FormControl>
+        <FormDescription>{description}</FormDescription>
+        <FormMessage />
       </FormItem>
     );
   }

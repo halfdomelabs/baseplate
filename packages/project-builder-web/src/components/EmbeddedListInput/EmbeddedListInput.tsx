@@ -7,7 +7,14 @@ import type {
   FieldValues,
 } from 'react-hook-form';
 
-import { Alert, Button, Dialog, FormItem } from '@halfdomelabs/ui-components';
+import {
+  Alert,
+  Button,
+  Dialog,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useController } from 'react-hook-form';
@@ -127,9 +134,9 @@ EmbeddedListInput.Labelled = function EmbeddedOneToOneInputLabelled<InputType>({
   return (
     <div className={clsx('', className)}>
       <FormItem className={className}>
-        {label && <FormItem.Label>{label}</FormItem.Label>}
+        {label && <FormLabel>{label}</FormLabel>}
         <EmbeddedListInput {...rest} />
-        {error && <FormItem.Error>{error}</FormItem.Error>}
+        <FormMessage>{error}</FormMessage>
       </FormItem>
     </div>
   );

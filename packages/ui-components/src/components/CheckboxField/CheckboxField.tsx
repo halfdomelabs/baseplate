@@ -11,7 +11,13 @@ import { cn } from '@src/utils';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 import { Checkbox } from '../Checkbox/Checkbox';
-import { FormItem } from '../FormItem/FormItem';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem';
 
 export interface CheckboxFieldProps
   extends Omit<
@@ -37,7 +43,7 @@ const CheckboxFieldRoot = React.forwardRef<
   ) => (
     <FormItem error={error} className={cn('space-y-2', className)}>
       <div className="flex flex-row items-center">
-        <FormItem.Control>
+        <FormControl>
           <Checkbox
             ref={ref}
             {...props}
@@ -46,21 +52,13 @@ const CheckboxFieldRoot = React.forwardRef<
             }}
             checked={value}
           />
-        </FormItem.Control>
+        </FormControl>
         <div className="space-y-0.5">
-          {label && (
-            <FormItem.Label className="cursor-pointer pl-2">
-              {label}
-            </FormItem.Label>
-          )}
-          {description && (
-            <FormItem.Description className="pl-2">
-              {description}
-            </FormItem.Description>
-          )}
+          <FormLabel className="cursor-pointer pl-2">{label}</FormLabel>
+          <FormDescription className="pl-2">{description}</FormDescription>
         </div>
       </div>
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      <FormMessage />
     </FormItem>
   ),
 );
