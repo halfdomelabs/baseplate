@@ -1,5 +1,3 @@
-import type React from 'react';
-import type { ForwardedRef } from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import * as Popover from '@radix-ui/react-popover';
@@ -11,7 +9,6 @@ import type { FieldProps } from '@src/types/form.js';
 import { useControllerMerged } from '@src/hooks/useControllerMerged';
 import { buttonVariants, inputVariants } from '@src/styles';
 import { cn } from '@src/utils';
-import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 import {
   FormControl,
@@ -42,30 +39,28 @@ export interface ColorPickerFieldProps extends FieldProps {
    * @returns The color string.
    */
   serializeColor?: (hex: string) => string;
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
 /**
  * Field with label and error states that wraps a ColorPicker component.
  */
-
-function ColorPickerFieldFn(
-  {
-    className,
-    wrapperClassName,
-    disabled,
-    placeholder,
-    onChange,
-    value,
-    label,
-    error,
-    description,
-    hideText,
-    formatColorName,
-    parseColor,
-    serializeColor,
-  }: ColorPickerFieldProps,
-  ref: ForwardedRef<HTMLButtonElement>,
-): React.JSX.Element {
+function ColorPickerField({
+  className,
+  wrapperClassName,
+  disabled,
+  placeholder,
+  onChange,
+  value,
+  label,
+  error,
+  description,
+  hideText,
+  formatColorName,
+  parseColor,
+  serializeColor,
+  ref,
+}: ColorPickerFieldProps): React.ReactElement {
   const addWrapper = label ?? error ?? description;
 
   const id = useId();
@@ -146,11 +141,6 @@ function ColorPickerFieldFn(
   return inputComponent;
 }
 
-/**
- * A color picker field.
- */
-const ColorPickerFieldRoot = genericForwardRef(ColorPickerFieldFn);
-
 export interface ColorPickerFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -159,17 +149,18 @@ export interface ColorPickerFieldControllerProps<
   name: TFieldName;
 }
 
-function ColorPickerFieldControllerFn<
+function ColorPickerFieldController<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->(
-  {
-    control,
-    name,
-    ...rest
-  }: ColorPickerFieldControllerProps<TFieldValues, TFieldName>,
-  ref: ForwardedRef<HTMLButtonElement>,
-): React.JSX.Element {
+>({
+  control,
+  name,
+  ref,
+  ...rest
+}: ColorPickerFieldControllerProps<
+  TFieldValues,
+  TFieldName
+>): React.ReactElement {
   const {
     field: fieldProps,
     fieldState: { error },
@@ -182,15 +173,7 @@ function ColorPickerFieldControllerFn<
     ref,
   );
 
-  return (
-    <ColorPickerFieldRoot error={error?.message} {...rest} {...fieldProps} />
-  );
+  return <ColorPickerField error={error?.message} {...rest} {...fieldProps} />;
 }
 
-const ColorPickerFieldController = genericForwardRef(
-  ColorPickerFieldControllerFn,
-);
-
-export const ColorPickerField = Object.assign(ColorPickerFieldRoot, {
-  Controller: ColorPickerFieldController,
-});
+export { ColorPickerField, ColorPickerFieldController };

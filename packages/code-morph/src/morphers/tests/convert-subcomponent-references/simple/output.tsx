@@ -2,8 +2,8 @@
 
 import {
   Alert,
-  AlertTitle,
   AlertDescription,
+  AlertTitle,
 } from '@halfdomelabs/ui-components';
 
 function MyComponent() {

@@ -1,4 +1,6 @@
-import { ts } from 'ts-morph';
+import type { ImportDeclaration } from 'ts-morph';
+
+import { Node, SyntaxKind } from 'ts-morph';
 import z from 'zod';
 
 import { createTypescriptMorpher } from '@src/types.js';
@@ -22,27 +24,48 @@ export default createTypescriptMorpher({
     const subcomponentReferences = new Set<string>();
 
     // First check if the component is imported
-    let isComponentImported = false;
+    let mainComponentImport: ImportDeclaration | undefined;
     for (const importDecl of sourceFile.getImportDeclarations()) {
       const namedImports = importDecl.getNamedImports();
       for (const namedImport of namedImports) {
         if (namedImport.getName() === componentName) {
-          isComponentImported = true;
+          mainComponentImport = importDecl;
           break;
         }
       }
-      if (isComponentImported) break;
+      if (mainComponentImport) break;
     }
 
-    if (!isComponentImported) {
+    if (!mainComponentImport) {
       return;
     }
 
-    // Find all property access expressions in the file
+    // Find all property access expressions and identifier references in the file
     const propertyAccessExpressions = sourceFile.getDescendantsOfKind(
-      ts.SyntaxKind.PropertyAccessExpression,
+      SyntaxKind.PropertyAccessExpression,
+    );
+    const identifierReferences = sourceFile.getDescendantsOfKind(
+      SyntaxKind.Identifier,
     );
 
+    // Check for direct usage of the main component
+    let isMainComponentUsedDirectly = false;
+    for (const identifier of identifierReferences) {
+      if (identifier.getText() === componentName) {
+        // Skip if this identifier is part of a property access expression
+        const parent = identifier.getParent();
+        if (
+          Node.isPropertyAccessExpression(parent) ||
+          Node.isImportSpecifier(parent)
+        ) {
+          continue;
+        }
+        isMainComponentUsedDirectly = true;
+        break;
+      }
+    }
+
+    // Process property access expressions
     for (const expr of propertyAccessExpressions) {
       const expression = expr.getExpression();
       if (expression.getText() === componentName) {
@@ -52,6 +75,22 @@ export default createTypescriptMorpher({
 
         // Replace the property access with the standalone component name
         expr.replaceWithText(subcomponentName);
+      }
+    }
+
+    // Remove the main component import if it's no longer used
+    if (!isMainComponentUsedDirectly) {
+      const namedImports = mainComponentImport.getNamedImports();
+      if (namedImports.length === 1) {
+        mainComponentImport.remove();
+      } else {
+        // Remove just the main component from the named imports
+        for (const namedImport of namedImports) {
+          if (namedImport.getName() === componentName) {
+            namedImport.remove();
+            break;
+          }
+        }
       }
     }
 
