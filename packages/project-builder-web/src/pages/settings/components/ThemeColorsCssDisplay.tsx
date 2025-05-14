@@ -32,7 +32,7 @@ export function ThemeColorsCssDisplay({
 ${convertRecordToCss(generateCssFromThemeConfig(colors.light))}
 }
 
-html[data-theme='dark'] {
+.dark, html[data-theme='dark'] {
 ${convertRecordToCss(generateCssFromThemeConfig(colors.dark))}
 }
     `.trim(),

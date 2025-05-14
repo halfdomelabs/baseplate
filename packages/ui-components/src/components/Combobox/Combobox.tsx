@@ -264,21 +264,13 @@ function ComboboxInput({
               : undefined)}
           />
         </Command.Input>
-        <div
-          // the top-px is a hack to prevent the text from jumping when the
-          // input is focused
-          className="pointer-events-none absolute inset-0 top-px pr-8"
-        >
+        <div className="pointer-events-none absolute inset-0 flex items-center pr-8">
           <div
             id={selectedLabelId}
             className={cn(
-              inputVariants({
-                border: 'none',
-                background: 'transparent',
-              }),
               disabled ? 'opacity-50' : '',
               searchQuery ? 'hidden' : '',
-              'pointer-events-none truncate',
+              'pointer-events-none truncate py-1 pl-3',
             )}
           >
             {selectedLabel}

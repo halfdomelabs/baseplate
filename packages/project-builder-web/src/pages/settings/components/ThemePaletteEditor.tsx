@@ -113,6 +113,8 @@ export function ThemePaletteEditor({
             control={control}
             name={`palettes.${type}.shades.${shade}`}
             label={shade}
+            parseColor={convertOklchToHex}
+            serializeColor={convertHexToOklch}
             onChange={() =>
               onShadesChange?.(getValues(`palettes.${type}.shades`))
             }

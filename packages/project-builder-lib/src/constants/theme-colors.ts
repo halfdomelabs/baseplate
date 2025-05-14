@@ -276,10 +276,9 @@ export const THEME_COLORS = {
   },
   ring: {
     name: 'Focus Ring',
-    description: 'Used for focus ring. At 30% opacity.',
-    lightDefault: { primaryShade: '950' },
-    darkDefault: { primaryShade: '300' },
-    opacity: 0.3,
+    description: 'Used for focus ring.',
+    lightDefault: { primaryShade: '400' },
+    darkDefault: { primaryShade: '500' },
     groupKey: 'ring',
     category: 'utility',
   },
