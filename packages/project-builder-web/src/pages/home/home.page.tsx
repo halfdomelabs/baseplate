@@ -1,6 +1,13 @@
 import type React from 'react';
 
-import { Button, Card } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@halfdomelabs/ui-components';
 import { Link } from 'react-router-dom';
 
 function HomePage(): React.JSX.Element {
@@ -17,47 +24,47 @@ function HomePage(): React.JSX.Element {
         </div>
         <div className="grid gap-4 md:grid-cols-1">
           <Card>
-            <Card.Header>
-              <Card.Title>Features</Card.Title>
-              <Card.Description>
+            <CardHeader>
+              <CardTitle>Features</CardTitle>
+              <CardDescription>
                 Baseplate comes with a number of features that you can enable or
                 disable, such as email and authentication.
-              </Card.Description>
-            </Card.Header>
-            <Card.Footer>
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
               <Link to="/features">
                 <Button>Configure Features</Button>
               </Link>
-            </Card.Footer>
+            </CardFooter>
           </Card>
           <Card>
-            <Card.Header>
-              <Card.Title>Models</Card.Title>
-              <Card.Description>
+            <CardHeader>
+              <CardTitle>Models</CardTitle>
+              <CardDescription>
                 Models are the core of your app. They define the data that your
                 app will store and manipulate.
-              </Card.Description>
-            </Card.Header>
-            <Card.Footer>
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
               <Link to="/models">
                 <Button>Configure Models</Button>
               </Link>
-            </Card.Footer>
+            </CardFooter>
           </Card>
           <Card>
-            <Card.Header>
-              <Card.Title>Apps & Repositories</Card.Title>
-              <Card.Description>
+            <CardHeader>
+              <CardTitle>Apps & Repositories</CardTitle>
+              <CardDescription>
                 Each app represents a separate application that can be run, e.g.
                 backend, frontend, mobile app, etc. You can also configure how
                 the apps are organized into repositories, e.g. monorepos.
-              </Card.Description>
-            </Card.Header>
-            <Card.Footer>
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
               <Link className="inline-block" to="/apps">
                 <Button>Configure Apps</Button>
               </Link>
-            </Card.Footer>
+            </CardFooter>
           </Card>
         </div>
       </div>

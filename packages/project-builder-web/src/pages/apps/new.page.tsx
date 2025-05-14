@@ -9,6 +9,7 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   Card,
+  CardContent,
   InputField,
   SelectField,
   toast,
@@ -57,7 +58,7 @@ function NewAppPage(): React.JSX.Element {
     <div className="space-y-4">
       <h1>New App</h1>
       <Card>
-        <Card.Content>
+        <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
             <InputField.Controller
               label="Name"
@@ -75,7 +76,7 @@ function NewAppPage(): React.JSX.Element {
               Create
             </Button>
           </form>
-        </Card.Content>
+        </CardContent>
       </Card>
     </div>
   );

@@ -1,7 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Button } from '../Button/Button.js';
-import { Card } from './Card.js';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from './Card.js';
 
 const meta = {
   component: Card,
@@ -16,24 +23,24 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <Card.Header>
-          <Card.Title>Card Title</Card.Title>
-          <Card.Description>Card description</Card.Description>
-        </Card.Header>
-        <Card.Content className="space-y-4">
+        <CardHeader>
+          <CardTitle>Card Title</CardTitle>
+          <CardDescription>Card description</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <p>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit.
             Consectetur quidem qui architecto placeat nihil officia veritatis
             obcaecati quod reiciendis, numquam corrupti blanditiis laboriosam
             voluptatum minima id nobis soluta nisi error.
           </p>
-        </Card.Content>
-        <Card.Footer className="justify-between space-x-4">
+        </CardContent>
+        <CardFooter className="justify-between space-x-4">
           <Button type="button" variant="secondary">
             Secondary
           </Button>
           <Button type="button">Primary</Button>
-        </Card.Footer>
+        </CardFooter>
       </>
     ),
   },

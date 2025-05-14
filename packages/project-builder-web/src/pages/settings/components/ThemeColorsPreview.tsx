@@ -3,7 +3,16 @@ import type React from 'react';
 import type { Control } from 'react-hook-form';
 
 import { generateCssFromThemeConfig } from '@halfdomelabs/project-builder-lib';
-import { Badge, Button, Card, Combobox } from '@halfdomelabs/ui-components';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Combobox,
+} from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useWatch } from 'react-hook-form';
 
@@ -32,14 +41,14 @@ export function ThemeColorsPreview({
       style={colorCss}
     >
       <Card>
-        <Card.Header>
-          <Card.Title>Color Preview</Card.Title>
-          <Card.Description>
+        <CardHeader>
+          <CardTitle>Color Preview</CardTitle>
+          <CardDescription>
             This is a preview of how your theme colors will be applied on
             various elements
-          </Card.Description>
-        </Card.Header>
-        <Card.Content className="space-y-4">
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div>
             <PreviewSectionTitle>Paragraph Text</PreviewSectionTitle>
             <p className="text-base">
@@ -95,7 +104,7 @@ export function ThemeColorsPreview({
               </Button>
             </div>
           </div>
-        </Card.Content>
+        </CardContent>
       </Card>
     </div>
   );
