@@ -70,7 +70,7 @@ function FormLabel({
 >): React.ReactElement | null {
   const { error, formItemId } = useFormField();
 
-  if (props.children === null) {
+  if (props.children === null || props.children === undefined) {
     return null;
   }
 
@@ -110,7 +110,7 @@ function FormDescription({
 }: React.ComponentProps<'p'>): React.ReactElement | null {
   const { formDescriptionId } = useFormField();
 
-  if (props.children === null) {
+  if (props.children === null || props.children === undefined) {
     return null;
   }
 
