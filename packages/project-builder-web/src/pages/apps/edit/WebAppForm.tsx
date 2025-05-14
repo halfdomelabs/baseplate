@@ -11,7 +11,7 @@ import {
   Button,
   CheckboxFieldController,
   InputFieldController,
-  MultiComboboxField,
+  MultiComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
@@ -83,7 +83,7 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
           name="enableSubscriptions"
         />
         {roleOptions && (
-          <MultiComboboxField.Controller
+          <MultiComboboxFieldController
             label="Allowed Roles?"
             control={control}
             options={roleOptions}

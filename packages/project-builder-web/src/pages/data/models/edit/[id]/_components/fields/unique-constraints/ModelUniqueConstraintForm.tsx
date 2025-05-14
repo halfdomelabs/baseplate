@@ -6,7 +6,7 @@ import { modelUniqueConstraintEntityType } from '@halfdomelabs/project-builder-l
 import {
   Button,
   Dialog,
-  MultiComboboxField,
+  MultiComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
@@ -92,7 +92,7 @@ export function ModelUniqueConstraintForm({
       }}
       id={formId}
     >
-      <MultiComboboxField.Controller
+      <MultiComboboxFieldController
         control={control}
         name="fields"
         options={fields.map((f) => ({ value: f.id, label: f.name }))}

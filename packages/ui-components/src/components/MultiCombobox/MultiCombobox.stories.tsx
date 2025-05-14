@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { MultiCombobox } from './MultiCombobox.js';
+import {
+  MultiCombobox,
+  MultiComboboxContent,
+  MultiComboboxEmpty,
+  MultiComboboxGroup,
+  MultiComboboxInput,
+  MultiComboboxItem,
+} from './MultiCombobox.js';
 
 const meta: Meta<typeof MultiCombobox> = {
   component: MultiCombobox,
@@ -15,28 +22,26 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <MultiCombobox.Input placeholder="Select your favorite fruits" />
-        <MultiCombobox.Content>
-          <MultiCombobox.Empty>No results found</MultiCombobox.Empty>
-          <MultiCombobox.Group>
-            <MultiCombobox.Item value="apple">Apple</MultiCombobox.Item>
-            <MultiCombobox.Item value="banana">Banana</MultiCombobox.Item>
-            <MultiCombobox.Item value="cherry">Cherry</MultiCombobox.Item>
-            <MultiCombobox.Item value="grape">Grape</MultiCombobox.Item>
-            <MultiCombobox.Item value="lemon">Lemon</MultiCombobox.Item>
-            <MultiCombobox.Item value="orange">Orange</MultiCombobox.Item>
-            <MultiCombobox.Item value="peach">Peach</MultiCombobox.Item>
-            <MultiCombobox.Item value="pear">Pear</MultiCombobox.Item>
-            <MultiCombobox.Item value="pineapple">Pineapple</MultiCombobox.Item>
-            <MultiCombobox.Item value="plum">Plum</MultiCombobox.Item>
-            <MultiCombobox.Item value="strawberry">
-              Strawberry
-            </MultiCombobox.Item>
-            <MultiCombobox.Item value="tomato" disabled>
+        <MultiComboboxInput placeholder="Select your favorite fruits" />
+        <MultiComboboxContent>
+          <MultiComboboxEmpty>No results found</MultiComboboxEmpty>
+          <MultiComboboxGroup>
+            <MultiComboboxItem value="apple">Apple</MultiComboboxItem>
+            <MultiComboboxItem value="banana">Banana</MultiComboboxItem>
+            <MultiComboboxItem value="cherry">Cherry</MultiComboboxItem>
+            <MultiComboboxItem value="grape">Grape</MultiComboboxItem>
+            <MultiComboboxItem value="lemon">Lemon</MultiComboboxItem>
+            <MultiComboboxItem value="orange">Orange</MultiComboboxItem>
+            <MultiComboboxItem value="peach">Peach</MultiComboboxItem>
+            <MultiComboboxItem value="pear">Pear</MultiComboboxItem>
+            <MultiComboboxItem value="pineapple">Pineapple</MultiComboboxItem>
+            <MultiComboboxItem value="plum">Plum</MultiComboboxItem>
+            <MultiComboboxItem value="strawberry">Strawberry</MultiComboboxItem>
+            <MultiComboboxItem value="tomato" disabled>
               Tomato
-            </MultiCombobox.Item>
-          </MultiCombobox.Group>
-        </MultiCombobox.Content>
+            </MultiComboboxItem>
+          </MultiComboboxGroup>
+        </MultiComboboxContent>
       </>
     ),
   },

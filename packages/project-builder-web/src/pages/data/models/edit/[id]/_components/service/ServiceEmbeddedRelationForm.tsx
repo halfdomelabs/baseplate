@@ -12,7 +12,10 @@ import {
   ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { MultiComboboxField, SelectField } from '@halfdomelabs/ui-components';
+import {
+  MultiComboboxFieldController,
+  SelectField,
+} from '@halfdomelabs/ui-components';
 import { useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
 
@@ -121,7 +124,7 @@ function ServiceEmbeddedRelationForm({
         label="Relation"
         placeholder="Select relation"
       />
-      <MultiComboboxField.Controller
+      <MultiComboboxFieldController
         control={control}
         disabled={foreignFieldOptions.length === 0}
         options={foreignFieldOptions}
@@ -129,7 +132,7 @@ function ServiceEmbeddedRelationForm({
         label="Embedded Field Names"
       />
       {foreignTransformerOptions.length > 0 && (
-        <MultiComboboxField.Controller
+        <MultiComboboxFieldController
           control={control}
           options={foreignTransformerOptions}
           name={`${prefix}.embeddedTransformerNames`}

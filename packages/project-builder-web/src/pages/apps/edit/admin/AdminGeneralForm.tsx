@@ -13,7 +13,7 @@ import {
 import {
   Button,
   InputFieldController,
-  MultiComboboxField,
+  MultiComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
@@ -67,7 +67,7 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
           name="packageLocation"
         />
         {roleOptions && (
-          <MultiComboboxField.Controller
+          <MultiComboboxFieldController
             label="Allowed Roles?"
             control={control}
             options={roleOptions}

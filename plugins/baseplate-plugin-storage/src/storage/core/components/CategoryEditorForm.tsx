@@ -6,7 +6,7 @@ import {
   cn,
   ComboboxField,
   InputFieldController,
-  MultiComboboxField,
+  MultiComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { notEmpty } from '@halfdomelabs/utils';
 import { useFieldArray, useWatch } from 'react-hook-form';
@@ -79,7 +79,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
               name={`categories.${idx}.usedByRelationRef`}
               options={foreignKeyOptions}
             />
-            <MultiComboboxField.Controller
+            <MultiComboboxFieldController
               label="Upload Roles"
               control={control}
               options={roleOptions}

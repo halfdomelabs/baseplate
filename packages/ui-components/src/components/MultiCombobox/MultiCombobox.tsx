@@ -10,7 +10,7 @@ import {
   selectContentVariants,
   selectItemVariants,
 } from '@src/styles';
-import { cn, mergeRefs } from '@src/utils';
+import { cn } from '@src/utils';
 
 import { Badge } from '../Badge/Badge';
 import { Command } from '../Command/Command';
@@ -52,12 +52,12 @@ interface MultiComboboxProps {
   disabled?: boolean;
 }
 
-function MultiComboboxRoot({
+function MultiCombobox({
   children,
   value,
   onChange,
   disabled,
-}: MultiComboboxProps): React.JSX.Element {
+}: MultiComboboxProps): React.ReactElement {
   const [selectedValues, setSelectedValues] = useControlledState(
     value,
     onChange,
@@ -127,10 +127,10 @@ interface MultiComboboxInputProps {
   placeholder?: string;
 }
 
-const MultiComboboxInput = React.forwardRef<
-  HTMLDivElement,
-  MultiComboboxInputProps
->(({ className, placeholder }, ref) => {
+function MultiComboboxInput({
+  className,
+  placeholder,
+}: MultiComboboxInputProps): React.ReactElement {
   const {
     selectedValues,
     onSelect,
@@ -165,7 +165,6 @@ const MultiComboboxInput = React.forwardRef<
         }}
         role="button"
         tabIndex={0}
-        ref={ref}
         data-cmdk-input-id={inputId}
       >
         <div className="flex flex-1 flex-wrap items-center gap-1">
@@ -214,12 +213,9 @@ const MultiComboboxInput = React.forwardRef<
       </div>
     </PopoverAnchor>
   );
-});
+}
 
-MultiComboboxInput.displayName = 'MultiComboboxInput';
-
-interface MultiComboboxContentProps
-  extends React.RefAttributes<HTMLDivElement> {
+interface MultiComboboxContentProps extends React.ComponentPropsWithRef<'div'> {
   children?: React.ReactNode;
   className?: string;
   maxHeight?: string;
@@ -232,7 +228,7 @@ function MultiComboboxContent({
   maxHeight = '320px',
   style,
   ...rest
-}: MultiComboboxContentProps): React.JSX.Element {
+}: MultiComboboxContentProps): React.ReactElement {
   const { inputId, filterId, searchQuery, setSearchQuery } =
     useMultiComboboxContext();
 
@@ -274,38 +270,31 @@ function MultiComboboxContent({
   );
 }
 
-type MultiComboboxEmptyProps = React.HTMLAttributes<HTMLDivElement>;
-
-const MultiComboboxEmpty = React.forwardRef<
-  HTMLDivElement,
-  MultiComboboxEmptyProps
->(({ className, ...props }: MultiComboboxEmptyProps, ref) => (
-  <Command.Empty
-    className={cn('p-2 text-sm', className)}
-    {...props}
-    ref={ref}
-  />
-));
-
-MultiComboboxEmpty.displayName = 'MultiComboboxEmpty';
+function MultiComboboxEmpty({
+  className,
+  ...props
+}: React.ComponentPropsWithRef<'div'>): React.ReactElement {
+  return <Command.Empty className={cn('p-2 text-sm', className)} {...props} />;
+}
 
 const MultiComboboxGroup = Command.Group;
 
 interface MultiComboboxItemProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
+  extends Omit<React.ComponentPropsWithRef<'div'>, 'onSelect'> {
   disabled?: boolean;
   value: string;
   label?: string;
 }
 
-const MultiComboboxItem = React.forwardRef<
-  HTMLDivElement,
-  MultiComboboxItemProps
->(({ value, className, label, children, ...rest }, ref) => {
+function MultiComboboxItem({
+  value,
+  className,
+  label,
+  children,
+  ...rest
+}: MultiComboboxItemProps): React.ReactElement {
   const { selectedValues, onSelect } = useMultiComboboxContext();
-
   const isSelected = selectedValues.some((v) => v.value === value);
-
   const itemRef = React.useRef<HTMLDivElement>(null);
 
   return (
@@ -316,7 +305,7 @@ const MultiComboboxItem = React.forwardRef<
       }}
       className={cn(selectItemVariants(), className)}
       {...rest}
-      ref={mergeRefs(ref, itemRef)}
+      ref={itemRef}
     >
       <div
         className={cn(
@@ -329,14 +318,13 @@ const MultiComboboxItem = React.forwardRef<
       {children}
     </Command.Item>
   );
-});
+}
 
-MultiComboboxItem.displayName = 'MultiComboboxItem';
-
-export const MultiCombobox = Object.assign(MultiComboboxRoot, {
-  Input: MultiComboboxInput,
-  Content: MultiComboboxContent,
-  Empty: MultiComboboxEmpty,
-  Group: MultiComboboxGroup,
-  Item: MultiComboboxItem,
-});
+export {
+  MultiCombobox,
+  MultiComboboxContent,
+  MultiComboboxEmpty,
+  MultiComboboxGroup,
+  MultiComboboxInput,
+  MultiComboboxItem,
+};
