@@ -16,7 +16,7 @@ import {
   ComboboxField,
   Dialog,
   InputFieldController,
-  SelectField,
+  SelectFieldController,
   toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -373,7 +373,7 @@ export function ModelRelationForm({
         ))}
       </div>
       <div className="grid grid-cols-2 gap-x-8 gap-y-2 border-t pt-4">
-        <SelectField.Controller
+        <SelectFieldController
           label="On Delete"
           control={control}
           options={[

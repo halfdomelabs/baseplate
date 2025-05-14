@@ -1,10 +1,10 @@
+import { SelectFieldController } from '@halfdomelabs/ui-components';
 import type { AdminCrudEnumInputConfig } from '@halfdomelabs/project-builder-lib';
 import type { AdminCrudInputWebFormProps } from '@halfdomelabs/project-builder-lib/web';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
 import { createAdminCrudInputWebConfig } from '@halfdomelabs/project-builder-lib/web';
-import { SelectField } from '@halfdomelabs/ui-components';
 
 function AdminCrudEnumInputForm({
   formProps,
@@ -23,7 +23,7 @@ function AdminCrudEnumInputForm({
   }>;
 
   return (
-    <SelectField.Controller
+    <SelectFieldController
       label="Enum Field"
       control={controlTyped}
       name={`${prefix}.modelFieldRef`}

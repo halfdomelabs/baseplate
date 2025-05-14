@@ -1,3 +1,4 @@
+import { SelectFieldController } from '@halfdomelabs/ui-components';
 import type { AdminCrudEmbeddedInputConfig } from '@halfdomelabs/project-builder-lib';
 import type { AdminCrudInputWebFormProps } from '@halfdomelabs/project-builder-lib/web';
 import type React from 'react';
@@ -8,7 +9,6 @@ import {
   createAdminCrudInputWebConfig,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
-import { SelectField } from '@halfdomelabs/ui-components';
 
 function AdminCrudEmbeddedInputForm({
   formProps,
@@ -32,13 +32,13 @@ function AdminCrudEmbeddedInputForm({
 
   return (
     <>
-      <SelectField.Controller
+      <SelectFieldController
         label="Relation Name"
         control={controlTyped}
         name={`${prefix}.modelRelationRef`}
         options={foreignRelationOptions}
       />
-      <SelectField.Controller
+      <SelectFieldController
         label="Embedded Form"
         control={controlTyped}
         name={`${prefix}.embeddedFormRef`}

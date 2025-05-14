@@ -5,7 +5,7 @@ import type { Control, UseFormReturn } from 'react-hook-form';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   CheckboxFieldController,
-  SelectField,
+  SelectFieldController,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useWatch } from 'react-hook-form';
@@ -53,7 +53,7 @@ function AdminCrudSectionForm({
 
   return (
     <div className={clsx('space-y-4', className)}>
-      <SelectField.Controller
+      <SelectFieldController
         label="Model"
         control={control}
         options={modelOptions}

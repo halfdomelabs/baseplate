@@ -10,7 +10,7 @@ import {
 import {
   Button,
   InputFieldController,
-  SelectField,
+  SelectFieldController,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
@@ -67,7 +67,7 @@ function FieldForm({
 
   return (
     <div className="space-y-4">
-      <SelectField.Controller
+      <SelectFieldController
         label="Type"
         control={control}
         options={fieldTypeOptions}

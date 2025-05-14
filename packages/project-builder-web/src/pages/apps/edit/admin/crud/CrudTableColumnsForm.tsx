@@ -10,7 +10,7 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   InputFieldController,
-  SelectField,
+  SelectFieldController,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
@@ -45,7 +45,7 @@ function ColumnForm({
   const type = useWatch({ control, name: `table.columns.${idx}.display.type` });
   return (
     <div className="space-y-4">
-      <SelectField.Controller
+      <SelectFieldController
         label="Type"
         control={control}
         options={displayTypeOptions}
@@ -58,7 +58,7 @@ function ColumnForm({
       />
 
       {type === 'text' && (
-        <SelectField.Controller
+        <SelectFieldController
           label="Field"
           control={control}
           name={`table.columns.${idx}.display.modelFieldRef`}
@@ -67,7 +67,7 @@ function ColumnForm({
       )}
       {type === 'foreign' && (
         <>
-          <SelectField.Controller
+          <SelectFieldController
             label="Local Relation Name"
             control={control}
             name={`table.columns.${idx}.display.localRelationRef`}

@@ -18,7 +18,7 @@ import {
   Button,
   ComboboxField,
   InputFieldController,
-  SelectField,
+  SelectFieldController,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -162,7 +162,7 @@ function AdminEditSectionForm({
           name="featureRef"
         />
         <InputFieldController label="Icon" control={control} name="icon" />
-        <SelectField.Controller
+        <SelectFieldController
           label="Type"
           control={control}
           name="type"

@@ -11,7 +11,7 @@ import {
   Card,
   CardContent,
   InputFieldController,
-  SelectField,
+  SelectFieldController,
   toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -66,7 +66,7 @@ function NewAppPage(): React.JSX.Element {
               name="name"
               description="The name of the app, such as 'backend' or 'web'"
             />
-            <SelectField.Controller
+            <SelectFieldController
               label="Type"
               control={control}
               name="type"

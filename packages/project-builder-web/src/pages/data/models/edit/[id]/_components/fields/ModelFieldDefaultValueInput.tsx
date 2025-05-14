@@ -10,7 +10,7 @@ import {
   Dropdown,
   InputField,
   InputFieldController,
-  SelectField,
+  SelectFieldController,
 } from '@halfdomelabs/ui-components';
 import { useController, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineX } from 'react-icons/hi';
@@ -47,7 +47,7 @@ export function ModelFieldDefaultValueInput({
   if (type === 'boolean') {
     return (
       <div className="flex items-center gap-1">
-        <SelectField.Controller
+        <SelectFieldController
           control={control}
           className="flex-1"
           name={`model.fields.${idx}.options.default`}

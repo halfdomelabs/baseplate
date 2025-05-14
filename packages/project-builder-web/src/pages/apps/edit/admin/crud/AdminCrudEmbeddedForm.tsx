@@ -10,7 +10,7 @@ import {
   Button,
   CheckboxFieldController,
   InputFieldController,
-  SelectField,
+  SelectFieldController,
   Table,
   toast,
 } from '@halfdomelabs/ui-components';
@@ -128,7 +128,7 @@ function AdminCrudEmbeddedForm({
       className="space-y-4"
     >
       <InputFieldController label="Name" control={control} name="name" />
-      <SelectField.Controller
+      <SelectFieldController
         label="Type"
         control={control}
         name="type"
@@ -139,7 +139,7 @@ function AdminCrudEmbeddedForm({
         control={control}
         name="includeIdField"
       />
-      <SelectField.Controller
+      <SelectFieldController
         label="Model"
         control={control}
         options={modelOptions}

@@ -14,7 +14,7 @@ import {
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   MultiComboboxFieldController,
-  SelectField,
+  SelectFieldController,
 } from '@halfdomelabs/ui-components';
 import { useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
@@ -117,7 +117,7 @@ function ServiceEmbeddedRelationForm({
 
   return (
     <div className={'space-y-4'}>
-      <SelectField.Controller
+      <SelectFieldController
         control={control}
         name={`${prefix}.foreignRelationRef`}
         options={relationOptions}
