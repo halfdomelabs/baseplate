@@ -2,7 +2,7 @@ import type { ComponentPropsWithRef } from 'react';
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import type { FieldProps } from '@src/types/form';
+import type { FormFieldProps } from '@src/types/form';
 
 import { useControllerMerged } from '@src/hooks/useControllerMerged';
 import { cn } from '@src/utils';
@@ -21,7 +21,7 @@ export interface CheckboxFieldProps
       ComponentPropsWithRef<'button'>,
       'onCheckedChange' | 'checked' | 'onChange' | 'value'
     >,
-    FieldProps {
+    FormFieldProps {
   onChange?: (value: boolean) => void;
   value?: boolean;
 }

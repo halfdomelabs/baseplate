@@ -4,7 +4,7 @@ import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import type {
   AddOptionRequiredFields,
-  FieldProps,
+  FormFieldProps,
   SelectOptionProps,
 } from '@src/types/form.js';
 
@@ -32,7 +32,7 @@ import {
 export interface ComboboxFieldProps<OptionType>
   extends Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,
     SelectOptionProps<OptionType>,
-    FieldProps {
+    FormFieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
 }

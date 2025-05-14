@@ -2,7 +2,7 @@ import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import type {
   AddOptionRequiredFields,
-  FieldProps,
+  FormFieldProps,
   SelectOptionProps,
 } from '@src/types/form.js';
 
@@ -26,7 +26,7 @@ import {
 
 export interface SelectFieldProps<OptionType>
   extends SelectOptionProps<OptionType>,
-    FieldProps {
+    FormFieldProps {
   className?: string;
 }
 

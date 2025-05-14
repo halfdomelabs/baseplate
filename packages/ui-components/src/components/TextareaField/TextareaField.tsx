@@ -11,7 +11,7 @@ import type {
 import React from 'react';
 import { get, useFormState } from 'react-hook-form';
 
-import type { FieldProps } from '@src/types/form';
+import type { FormFieldProps } from '@src/types/form';
 
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
@@ -29,7 +29,7 @@ export interface TextareaFieldProps
       React.InputHTMLAttributes<HTMLTextAreaElement>,
       'onChange' | 'value'
     >,
-    FieldProps {
+    FormFieldProps {
   onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;

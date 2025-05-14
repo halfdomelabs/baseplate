@@ -6,7 +6,7 @@ import { notEmpty } from '@halfdomelabs/utils';
 
 import type {
   AddOptionRequiredFields,
-  FieldProps,
+  FormFieldProps,
   MultiSelectOptionProps,
 } from '@src/types/form.js';
 
@@ -23,7 +23,7 @@ import {
 
 export interface MultiCheckboxFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>,
-    FieldProps {
+    FormFieldProps {
   value?: string[];
   onChange?: (value: string[]) => void;
   className?: string;

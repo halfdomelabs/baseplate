@@ -10,7 +10,7 @@ import type {
 
 import { get, useFormState } from 'react-hook-form';
 
-import type { FieldProps } from '@src/types/form';
+import type { FormFieldProps } from '@src/types/form';
 
 import { cn, mergeRefs } from '@src/utils';
 
@@ -25,7 +25,7 @@ import { Input } from '../Input/Input';
 
 export interface InputFieldProps
   extends Omit<React.ComponentPropsWithRef<'input'>, 'onChange' | 'value'>,
-    FieldProps {
+    FormFieldProps {
   onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;

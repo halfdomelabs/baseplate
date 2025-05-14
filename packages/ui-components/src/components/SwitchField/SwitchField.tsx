@@ -4,7 +4,7 @@ import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import React from 'react';
 
-import type { FieldProps } from '@src/types/form';
+import type { FormFieldProps } from '@src/types/form';
 
 import { useControllerMerged } from '@src/hooks/useControllerMerged';
 import { cn } from '@src/utils';
@@ -24,7 +24,7 @@ export interface SwitchFieldProps
       React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>,
       'onChange' | 'value' | 'onCheckedChange' | 'checked'
     >,
-    FieldProps {
+    FormFieldProps {
   onChange?: (value: boolean) => void;
   value?: boolean;
 }

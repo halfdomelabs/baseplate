@@ -6,7 +6,7 @@ import { notEmpty } from '@halfdomelabs/utils';
 
 import type {
   AddOptionRequiredFields,
-  FieldProps,
+  FormFieldProps,
   MultiSelectOptionProps,
 } from '@src/types/form.js';
 
@@ -24,7 +24,7 @@ import { SwitchField } from '../SwitchField/SwitchField.js';
 
 export interface MultiSwitchFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>,
-    FieldProps {
+    FormFieldProps {
   value?: string[];
   onChange?: (value: string[]) => void;
   className?: string;

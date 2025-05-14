@@ -5,7 +5,7 @@ import { notEmpty } from '@halfdomelabs/utils';
 
 import type {
   AddOptionRequiredFields,
-  FieldProps,
+  FormFieldProps,
   MultiSelectOptionProps,
 } from '@src/types/form.js';
 
@@ -29,7 +29,7 @@ import {
 
 export interface MultiComboboxFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>,
-    FieldProps {
+    FormFieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
   disabled?: boolean;
