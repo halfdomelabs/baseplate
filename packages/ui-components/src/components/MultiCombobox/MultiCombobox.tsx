@@ -14,7 +14,12 @@ import { cn, mergeRefs } from '@src/utils';
 
 import { Badge } from '../Badge/Badge';
 import { Command } from '../Command/Command';
-import { Popover } from '../Popover/Popover';
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+} from '../Popover/Popover';
 
 interface MultiComboboxContextValue {
   selectedValues: MultiComboboxOption[];
@@ -142,7 +147,7 @@ const MultiComboboxInput = React.forwardRef<
   };
 
   return (
-    <Popover.Anchor asChild>
+    <PopoverAnchor asChild>
       <div
         className={cn(
           inputVariants({
@@ -203,11 +208,11 @@ const MultiComboboxInput = React.forwardRef<
             </>
           )}
         </div>
-        <Popover.Trigger>
+        <PopoverTrigger>
           <RxCaretSort className="size-4" />
-        </Popover.Trigger>
+        </PopoverTrigger>
       </div>
-    </Popover.Anchor>
+    </PopoverAnchor>
   );
 });
 
@@ -232,7 +237,7 @@ function MultiComboboxContent({
     useMultiComboboxContext();
 
   return (
-    <Popover.Content
+    <PopoverContent
       align="start"
       width="none"
       padding="none"
@@ -265,7 +270,7 @@ function MultiComboboxContent({
         />
         <Command.List>{children}</Command.List>
       </Command>
-    </Popover.Content>
+    </PopoverContent>
   );
 }
 

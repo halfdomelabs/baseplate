@@ -1,6 +1,5 @@
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import * as Popover from '@radix-ui/react-popover';
 import { useId } from 'react';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 
@@ -17,6 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from '../FormItem/FormItem';
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover/Popover';
 
 export interface ColorPickerFieldProps extends FieldProps {
   className?: string;
@@ -74,8 +74,8 @@ function ColorPickerField({
   };
 
   const inputComponent = (
-    <Popover.Root>
-      <Popover.Trigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <button
           className={cn(
             buttonVariants({
@@ -108,24 +108,23 @@ function ColorPickerField({
             <div className="opacity-75">{placeholder}</div>
           )}
         </button>
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Content
-          sideOffset={5}
-          align="start"
-          collisionPadding={{ bottom: 50 }}
-          className="bg-white space-y-2 rounded-md border border-border p-4"
-        >
-          <HexColorInput
-            className={cn(inputVariants(), 'p-2')}
-            prefixed
-            color={hexValue ?? ''}
-            onChange={handleChange}
-          />
-          <HexColorPicker color={hexValue ?? ''} onChange={handleChange} />
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+      </PopoverTrigger>
+      <PopoverContent
+        sideOffset={5}
+        align="start"
+        collisionPadding={{ bottom: 50 }}
+        className="bg-white space-y-2 rounded-md border border-border p-4"
+        width="none"
+      >
+        <HexColorInput
+          className={cn(inputVariants(), 'p-2')}
+          prefixed
+          color={hexValue ?? ''}
+          onChange={handleChange}
+        />
+        <HexColorPicker color={hexValue ?? ''} onChange={handleChange} />
+      </PopoverContent>
+    </Popover>
   );
 
   if (addWrapper) {

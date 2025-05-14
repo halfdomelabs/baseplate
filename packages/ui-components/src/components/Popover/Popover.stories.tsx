@@ -4,7 +4,7 @@ import type React from 'react';
 
 import { Button, Input } from '../index.js';
 import { Label } from '../Label/Label.js';
-import { Popover } from './Popover.js';
+import { Popover, PopoverContent, PopoverTrigger } from './Popover.js';
 
 const meta = {
   component: Popover,
@@ -20,10 +20,10 @@ function PopoverContainer(
 ): React.JSX.Element {
   return (
     <Popover {...args}>
-      <Popover.Trigger asChild>
+      <PopoverTrigger asChild>
         <Button variant="outline">Open popover</Button>
-      </Popover.Trigger>
-      <Popover.Content className="w-80">
+      </PopoverTrigger>
+      <PopoverContent className="w-80">
         <div className="grid gap-4">
           <div className="space-y-2">
             <h4 className="leading-none font-medium">Dimensions</h4>
@@ -66,7 +66,7 @@ function PopoverContainer(
             </div>
           </div>
         </div>
-      </Popover.Content>
+      </PopoverContent>
     </Popover>
   );
 }

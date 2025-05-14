@@ -7,7 +7,7 @@ import { useControlledState } from '@src/hooks/useControlledState';
 import { inputVariants } from '@src/styles';
 import { cn } from '@src/utils';
 
-import { Popover } from '../Popover/Popover';
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover/Popover';
 
 export interface ColorFieldProps
   extends Omit<ComponentPropsWithRef<'button'>, 'value' | 'onChange'> {
@@ -36,7 +36,7 @@ function ColorPicker({
   const [value, setValue] = useControlledState(controlledValue, onChange);
   const inputComponent = (
     <Popover>
-      <Popover.Trigger asChild>
+      <PopoverTrigger asChild>
         <button
           className={cn(inputVariants(), 'flex items-center gap-2', className)}
           {...rest}
@@ -56,8 +56,8 @@ function ColorPicker({
             <div className="text-muted-foreground">{placeholder}</div>
           )}
         </button>
-      </Popover.Trigger>
-      <Popover.Content className="space-y-2" align="start" width="none">
+      </PopoverTrigger>
+      <PopoverContent className="space-y-2" align="start" width="none">
         <HexColorInput
           className={cn(inputVariants(), 'p-2')}
           prefixed
@@ -65,7 +65,7 @@ function ColorPicker({
           onChange={setValue}
         />
         <HexColorPicker color={value} onChange={setValue} />
-      </Popover.Content>
+      </PopoverContent>
     </Popover>
   );
 
