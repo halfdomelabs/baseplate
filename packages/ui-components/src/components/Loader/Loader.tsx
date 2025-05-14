@@ -17,14 +17,8 @@ export function Loader({ className }: LoaderProps): React.JSX.Element {
     >
       <div className="flex items-center space-x-2">
         <div className="size-3 animate-pulse rounded-full bg-muted-foreground" />
-        <div
-          className="size-3 animate-pulse rounded-full bg-muted-foreground"
-          style={{ animationDelay: '300ms' }}
-        />
-        <div
-          className="size-3 animate-pulse rounded-full bg-muted-foreground"
-          style={{ animationDelay: '600ms' }}
-        />
+        <div className="size-3 animate-pulse rounded-full bg-muted-foreground delay-300" />
+        <div className="size-3 animate-pulse rounded-full bg-muted-foreground delay-[600ms]" />
       </div>
     </div>
   );
