@@ -15,6 +15,12 @@ export interface ButtonProps
 /**
  * Displays a button or a component that looks like a button.
  *
+ * - Added ghostDestructive variant
+ * - Updated link variant to use primary color
+ * - Added linkDestructive variant
+ * - Added ability to set no size to the button
+ * - Added ability to set justify to the button
+ *
  * https://ui.shadcn.com/docs/components/button
  */
 function Button({
