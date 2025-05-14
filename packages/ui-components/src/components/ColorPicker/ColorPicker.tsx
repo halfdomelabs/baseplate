@@ -38,11 +38,7 @@ function ColorPicker({
     <Popover>
       <Popover.Trigger asChild>
         <button
-          className={cn(
-            inputVariants(),
-            'flex items-center space-x-2',
-            className,
-          )}
+          className={cn(inputVariants(), 'flex items-center gap-2', className)}
           {...rest}
           ref={ref}
         >

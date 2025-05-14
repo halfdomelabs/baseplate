@@ -8,7 +8,12 @@ import { renderWithProviders } from '@src/tests/render.test-helper';
 
 import type { ComboboxProps } from './Combobox';
 
-import { Combobox } from './Combobox';
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxInput,
+  ComboboxItem,
+} from './Combobox';
 
 const mockOptions = [
   { value: 'apple', label: 'Apple' },
@@ -30,18 +35,18 @@ const TestCombobox = ({
   options?: { value: string; label: string }[];
 }): React.JSX.Element => (
   <Combobox value={value} onChange={onChange} disabled={disabled}>
-    <Combobox.Input placeholder={placeholder} />
-    <Combobox.Content>
+    <ComboboxInput placeholder={placeholder} />
+    <ComboboxContent>
       {options.map((option) => (
-        <Combobox.Item
+        <ComboboxItem
           key={option.value}
           value={option.value}
           label={option.label}
         >
           {option.label}
-        </Combobox.Item>
+        </ComboboxItem>
       ))}
-    </Combobox.Content>
+    </ComboboxContent>
   </Combobox>
 );
 

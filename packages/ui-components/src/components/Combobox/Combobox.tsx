@@ -60,7 +60,7 @@ const DEFAULT_OPTION = { value: null, label: '' };
 /**
  * A control that allows users to select an option from a list of options and type to search.
  */
-function ComboboxRoot({
+function Combobox({
   children,
   value: controlledValue,
   onChange,
@@ -163,8 +163,6 @@ function ComboboxRoot({
   );
 }
 
-ComboboxRoot.displayName = 'ComboboxRoot';
-
 export function useComboboxContext(): ComboboxContextValue {
   const value = React.useContext(ComboboxContext);
 
@@ -178,139 +176,139 @@ export function useComboboxContext(): ComboboxContextValue {
 }
 
 interface ComboboxInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value'> {
+  extends Omit<React.ComponentPropsWithRef<'input'>, 'value'> {
   selectedLabel?: string;
 }
 
-const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
-  ({ className, placeholder, ...rest }: ComboboxInputProps, ref) => {
-    const {
-      setIsOpen,
-      isOpen,
-      inputId,
-      searchQuery,
-      setSearchQuery,
-      selectedLabel,
-      disabled,
-    } = useComboboxContext();
+function ComboboxInput({
+  className,
+  placeholder,
+  ref,
+  ...rest
+}: ComboboxInputProps): React.ReactElement {
+  const {
+    setIsOpen,
+    isOpen,
+    inputId,
+    searchQuery,
+    setSearchQuery,
+    selectedLabel,
+    disabled,
+  } = useComboboxContext();
 
-    const selectedLabelId = React.useId();
-    const inputRef = React.useRef<HTMLInputElement>(null);
+  const selectedLabelId = React.useId();
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
-    const handleKeydown: React.KeyboardEventHandler<HTMLInputElement> =
-      React.useCallback(
-        (e) => {
-          const specialKeys = ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter'];
-          if (e.key === 'Escape') {
-            setIsOpen(false);
-          } else if (specialKeys.includes(e.key)) {
-            setIsOpen(true);
-          }
-        },
-        [setIsOpen],
-      );
-
-    return (
-      <PopoverAnchor>
-        <div className="relative" data-cmdk-input-id={inputId}>
-          <Command.Input
-            asChild
-            onKeyDown={handleKeydown}
-            disabled={disabled}
-            onBlur={(e) => {
-              if (
-                e.relatedTarget &&
-                e.relatedTarget instanceof Element &&
-                e.relatedTarget.closest(`[data-combobox-content=""]`)
-              ) {
-                e.target.focus();
-              }
-            }}
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-            className={cn(
-              inputVariants({ rightPadding: 'none' }),
-              'pr-8',
-              className,
-            )}
-            placeholder={selectedLabel ? undefined : placeholder}
-            onClick={() => {
-              if (disabled) {
-                return;
-              }
-              if (!isOpen) {
-                setIsOpen(true);
-              } else if (inputRef.current) {
-                // avoid closing the combobox if the user is selecting text
-                const hasSelectedEnd =
-                  inputRef.current.selectionStart ===
-                    inputRef.current.selectionEnd &&
-                  inputRef.current.selectionEnd ===
-                    inputRef.current.value.length;
-                if (hasSelectedEnd) {
-                  setIsOpen(false);
-                }
-              }
-            }}
-            {...rest}
-            aria-describedby={`${rest['aria-describedby'] ?? ''} ${selectedLabelId}`}
-            ref={mergeRefs([ref, inputRef])}
-          >
-            <input
-              // allow aria-labelledby to be overridden
-              {...(rest['aria-labelledby']
-                ? { 'aria-labelledby': rest['aria-labelledby'] }
-                : undefined)}
-            />
-          </Command.Input>
-          <div
-            // the top-px is a hack to prevent the text from jumping when the
-            // input is focused
-            className="pointer-events-none absolute inset-0 top-px pr-8"
-          >
-            <div
-              id={selectedLabelId}
-              className={cn(
-                inputVariants({
-                  border: 'none',
-                  background: 'transparent',
-                }),
-                disabled ? 'opacity-50' : '',
-                searchQuery ? 'hidden' : '',
-                'pointer-events-none truncate',
-              )}
-            >
-              {selectedLabel}
-            </div>
-          </div>
-          <Button
-            className="absolute top-1/2 right-2 -translate-y-1/2 opacity-50"
-            type="button"
-            variant="ghost"
-            size="icon"
-            disabled={disabled}
-            aria-label={`${isOpen ? 'Close' : 'Open'} combobox`}
-            onClick={() => {
-              if (disabled) {
-                return;
-              }
-              setIsOpen(!isOpen);
-            }}
-            onKeyDown={(e) => {
-              if (!isOpen) {
-                e.stopPropagation();
-              }
-            }}
-          >
-            <RxCaretSort className="size-4" />
-          </Button>
-        </div>
-      </PopoverAnchor>
+  const handleKeydown: React.KeyboardEventHandler<HTMLInputElement> =
+    React.useCallback(
+      (e) => {
+        const specialKeys = ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter'];
+        if (e.key === 'Escape') {
+          setIsOpen(false);
+        } else if (specialKeys.includes(e.key)) {
+          setIsOpen(true);
+        }
+      },
+      [setIsOpen],
     );
-  },
-);
 
-ComboboxInput.displayName = 'ComboboxInput';
+  return (
+    <PopoverAnchor>
+      <div className="relative" data-cmdk-input-id={inputId}>
+        <Command.Input
+          asChild
+          onKeyDown={handleKeydown}
+          disabled={disabled}
+          onBlur={(e) => {
+            if (
+              e.relatedTarget &&
+              e.relatedTarget instanceof Element &&
+              e.relatedTarget.closest(`[data-combobox-content=""]`)
+            ) {
+              e.target.focus();
+            }
+          }}
+          value={searchQuery}
+          onValueChange={setSearchQuery}
+          className={cn(
+            inputVariants({ rightPadding: 'none' }),
+            'pr-8',
+            className,
+          )}
+          placeholder={selectedLabel ? undefined : placeholder}
+          onClick={() => {
+            if (disabled) {
+              return;
+            }
+            if (!isOpen) {
+              setIsOpen(true);
+            } else if (inputRef.current) {
+              // avoid closing the combobox if the user is selecting text
+              const hasSelectedEnd =
+                inputRef.current.selectionStart ===
+                  inputRef.current.selectionEnd &&
+                inputRef.current.selectionEnd === inputRef.current.value.length;
+              if (hasSelectedEnd) {
+                setIsOpen(false);
+              }
+            }
+          }}
+          {...rest}
+          aria-describedby={`${rest['aria-describedby'] ?? ''} ${selectedLabelId}`}
+          ref={mergeRefs([ref, inputRef])}
+        >
+          <input
+            // allow aria-labelledby to be overridden
+            {...(rest['aria-labelledby']
+              ? { 'aria-labelledby': rest['aria-labelledby'] }
+              : undefined)}
+          />
+        </Command.Input>
+        <div
+          // the top-px is a hack to prevent the text from jumping when the
+          // input is focused
+          className="pointer-events-none absolute inset-0 top-px pr-8"
+        >
+          <div
+            id={selectedLabelId}
+            className={cn(
+              inputVariants({
+                border: 'none',
+                background: 'transparent',
+              }),
+              disabled ? 'opacity-50' : '',
+              searchQuery ? 'hidden' : '',
+              'pointer-events-none truncate',
+            )}
+          >
+            {selectedLabel}
+          </div>
+        </div>
+        <Button
+          className="absolute top-1/2 right-2 -translate-y-1/2 opacity-50"
+          type="button"
+          variant="ghost"
+          size="icon"
+          disabled={disabled}
+          aria-label={`${isOpen ? 'Close' : 'Open'} combobox`}
+          onClick={() => {
+            if (disabled) {
+              return;
+            }
+            setIsOpen(!isOpen);
+          }}
+          onKeyDown={(e) => {
+            if (!isOpen) {
+              e.stopPropagation();
+            }
+          }}
+        >
+          <RxCaretSort className="size-4" />
+        </Button>
+      </div>
+    </PopoverAnchor>
+  );
+}
 
 interface ComboboxContentProps extends React.RefAttributes<HTMLDivElement> {
   children?: React.ReactNode;
@@ -379,62 +377,60 @@ function ComboboxContent({
 
 type ComboboxEmptyProps = React.HTMLAttributes<HTMLDivElement>;
 
-const ComboboxEmpty = React.forwardRef<HTMLDivElement, ComboboxEmptyProps>(
-  ({ className, ...props }: ComboboxEmptyProps, ref) => (
-    <Command.Empty
-      className={cn('p-2 text-sm', className)}
-      {...props}
-      ref={ref}
-    />
-  ),
-);
-
-ComboboxEmpty.displayName = 'ComboboxEmpty';
+function ComboboxEmpty({
+  className,
+  ...props
+}: ComboboxEmptyProps): React.ReactElement {
+  return <Command.Empty className={cn('p-2 text-sm', className)} {...props} />;
+}
 
 const ComboboxGroup = Command.Group;
 
 interface ComboboxItemProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
+  extends Omit<React.ComponentPropsWithRef<'div'>, 'onSelect'> {
   disabled?: boolean;
   value: string | null;
   label?: string;
 }
 
-const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
-  ({ value, className, label, children, ...rest }, ref) => {
-    const { selectedValue, onSelect, shouldShowItem } = useComboboxContext();
-    const itemRef = React.useRef<HTMLDivElement>(null);
+function ComboboxItem({
+  value,
+  className,
+  label,
+  children,
+  ref,
+  ...rest
+}: ComboboxItemProps): React.ReactElement {
+  const { selectedValue, onSelect, shouldShowItem } = useComboboxContext();
+  const itemRef = React.useRef<HTMLDivElement>(null);
 
-    const extractedLabel =
-      label ?? (typeof children === 'string' ? children.trim() : undefined);
+  const extractedLabel =
+    label ?? (typeof children === 'string' ? children.trim() : undefined);
 
-    if (!shouldShowItem(extractedLabel ?? value)) {
-      return null;
-    }
+  if (!shouldShowItem(extractedLabel ?? value)) {
+    return <></>;
+  }
 
-    return (
-      <Command.Item
-        value={value ?? ''}
-        onSelect={() => {
-          onSelect(value, extractedLabel);
-        }}
-        className={cn(selectItemVariants(), className)}
-        {...rest}
-        ref={mergeRefs([ref, itemRef])}
-      >
-        {children}
-        <MdCheck
-          className={cn(
-            selectCheckVariants(),
-            value === selectedValue ? 'opacity-100' : 'opacity-0',
-          )}
-        />
-      </Command.Item>
-    );
-  },
-);
-
-ComboboxItem.displayName = 'ComboboxItem';
+  return (
+    <Command.Item
+      value={value ?? ''}
+      onSelect={() => {
+        onSelect(value, extractedLabel);
+      }}
+      className={cn(selectItemVariants(), className)}
+      {...rest}
+      ref={mergeRefs([ref, itemRef])}
+    >
+      {children}
+      <MdCheck
+        className={cn(
+          selectCheckVariants(),
+          value === selectedValue ? 'opacity-100' : 'opacity-0',
+        )}
+      />
+    </Command.Item>
+  );
+}
 
 interface ComboboxActionProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect' | 'onClick'> {
@@ -444,33 +440,34 @@ interface ComboboxActionProps
   onClick?: () => void;
 }
 
-const ComboboxAction = React.forwardRef<HTMLDivElement, ComboboxActionProps>(
-  ({ value, className, children, onClick, ...rest }, ref) => {
-    const itemRef = React.useRef<HTMLDivElement>(null);
+function ComboboxAction({
+  value,
+  className,
+  children,
+  onClick,
+  ...rest
+}: ComboboxActionProps): React.ReactElement {
+  const itemRef = React.useRef<HTMLDivElement>(null);
 
-    return (
-      <Command.Item
-        value={value}
-        onSelect={onClick}
-        className={cn(selectItemVariants(), className)}
-        {...rest}
-        ref={mergeRefs([ref, itemRef])}
-      >
-        {children}
-      </Command.Item>
-    );
-  },
-);
+  return (
+    <Command.Item
+      value={value}
+      onSelect={onClick}
+      className={cn(selectItemVariants(), className)}
+      {...rest}
+      ref={itemRef}
+    >
+      {children}
+    </Command.Item>
+  );
+}
 
-ComboboxAction.displayName = 'ComboboxAction';
-
-/**
- * Combobox is a component that allows users to select an option from a list of options and type to search.
- */
-export const Combobox = Object.assign(ComboboxRoot, {
-  Input: ComboboxInput,
-  Content: ComboboxContent,
-  Empty: ComboboxEmpty,
-  Group: ComboboxGroup,
-  Item: ComboboxItem,
-});
+export {
+  Combobox,
+  ComboboxAction,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+};

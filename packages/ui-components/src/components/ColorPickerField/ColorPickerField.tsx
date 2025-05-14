@@ -83,7 +83,7 @@ function ColorPickerFieldFn(
               justify: 'start',
             }),
             className,
-            'flex h-8 items-center px-2',
+            'flex h-8 items-center gap-2 px-2',
             hideText ? 'justify-center' : undefined,
             disabled ? 'opacity-75' : undefined,
           )}

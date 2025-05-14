@@ -14,7 +14,13 @@ import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 import type { ComboboxProps } from '../Combobox/Combobox.js';
 
-import { Combobox } from '../Combobox/Combobox.js';
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+} from '../Combobox/Combobox.js';
 import { FormItem } from '../FormItem/FormItem.js';
 
 export interface ComboboxFieldProps<OptionType>
@@ -69,22 +75,22 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
         {...props}
       >
         <FormItem.Control>
-          <Combobox.Input placeholder={placeholder} ref={ref} />
+          <ComboboxInput placeholder={placeholder} ref={ref} />
         </FormItem.Control>
-        <Combobox.Content>
+        <ComboboxContent>
           {options.map((option) => {
             const val = getOptionValue(option);
             const label = getOptionLabel(option);
             return (
-              <Combobox.Item value={val} key={val} label={label}>
+              <ComboboxItem value={val} key={val} label={label}>
                 {renderItemLabel
                   ? renderItemLabel(option, { selected: val === value })
                   : label}
-              </Combobox.Item>
+              </ComboboxItem>
             );
           })}
-          <Combobox.Empty>{noResultsText ?? comboboxNoResults}</Combobox.Empty>
-        </Combobox.Content>
+          <ComboboxEmpty>{noResultsText ?? comboboxNoResults}</ComboboxEmpty>
+        </ComboboxContent>
       </Combobox>
       {description && (
         <FormItem.Description>{description}</FormItem.Description>
