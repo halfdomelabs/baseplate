@@ -170,7 +170,7 @@ export const THEME_COLORS = {
     name: 'Primary',
     description:
       'Primary colors for <Button /> and other active states for interactive elements such as checkbox',
-    lightDefault: { primaryShade: '900' },
+    lightDefault: { primaryShade: '800' },
     darkDefault: { primaryShade: '950' },
     groupKey: 'primary',
     category: 'interactive',

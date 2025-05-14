@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
+import { Button } from '../Button/Button.js';
 import { ButtonGroup } from './ButtonGroup.js';
 
 const meta = {
@@ -15,9 +16,9 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <ButtonGroup.Button>Add Something</ButtonGroup.Button>
-        <ButtonGroup.Button>Remove Something</ButtonGroup.Button>
-        <ButtonGroup.Button>Remove Something</ButtonGroup.Button>
+        <Button>Add Something</Button>
+        <Button>Remove Something</Button>
+        <Button>Remove Something</Button>
       </>
     ),
   },
@@ -27,16 +28,8 @@ export const Secondary: Story = {
   args: {
     children: (
       <>
-        <ButtonGroup.Button variant="secondary">
-          Add Something
-        </ButtonGroup.Button>
-        <ButtonGroup.Button variant="secondary">
-          Remove Something
-        </ButtonGroup.Button>
-        {/* <ButtonGroup.Dropdown variant="secondary">
-          <Dropdown.Item>Admin</Dropdown.Item>
-          <Dropdown.Item>User</Dropdown.Item>
-        </ButtonGroup.Dropdown> */}
+        <Button variant="secondary">Add Something</Button>
+        <Button variant="secondary">Remove Something</Button>
       </>
     ),
   },

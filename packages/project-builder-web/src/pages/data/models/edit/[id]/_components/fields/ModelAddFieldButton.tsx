@@ -6,7 +6,7 @@ import type React from 'react';
 import type { UseFieldArrayAppend, UseFormSetValue } from 'react-hook-form';
 
 import { modelScalarFieldEntityType } from '@halfdomelabs/project-builder-lib';
-import { ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
+import { Button, ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
 import { useMemo } from 'react';
 import { MdExpandMore } from 'react-icons/md';
 
@@ -94,7 +94,7 @@ export function ModelAddFieldButton({
   };
   return (
     <ButtonGroup className={className}>
-      <ButtonGroup.Button
+      <Button
         variant="secondary"
         onClick={() => {
           appendField({
@@ -106,12 +106,12 @@ export function ModelAddFieldButton({
         size="sm"
       >
         Add Field
-      </ButtonGroup.Button>
+      </Button>
       <Dropdown>
         <Dropdown.Trigger disabled={availableAutoFields.length === 0} asChild>
-          <ButtonGroup.Button variant="secondary" size="sm">
+          <Button variant="secondary" size="sm">
             <MdExpandMore />
-          </ButtonGroup.Button>
+          </Button>
         </Dropdown.Trigger>
         <Dropdown.Content>
           {availableAutoFields.map((field) => (

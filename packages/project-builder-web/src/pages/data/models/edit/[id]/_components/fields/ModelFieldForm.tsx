@@ -138,7 +138,7 @@ function ModelFieldForm({
         <ModelFieldBadges control={control} idx={idx} />
       </div>
       <div>
-        <div className="space-x-4">
+        <div className="flex items-center gap-2">
           <Dropdown>
             <Dropdown.Trigger asChild>
               <Button variant="ghost" size="icon">
