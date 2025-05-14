@@ -12,9 +12,11 @@ import { GraphQLMutationsSection } from './_components/graphql/GraphQLMutationsS
 import { GraphQLObjectTypeSection } from './_components/graphql/GraphQLObjectTypeSection';
 import { GraphQLQueriesSection } from './_components/graphql/GraphQLQueriesSection';
 
+const formSchema = modelBaseSchema.omit({ name: true, featureRef: true });
+
 function ModelEditGraphQLPage(): React.JSX.Element {
   const { form, onSubmit, defaultValues } = useModelForm({
-    schema: modelBaseSchema.omit({ name: true, featureRef: true }),
+    schema: formSchema,
   });
 
   const { control, watch, getValues, reset } = form;

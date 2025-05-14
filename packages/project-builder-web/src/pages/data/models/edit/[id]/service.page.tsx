@@ -20,9 +20,11 @@ registerEntityTypeUrl(
   `/data/models/edit/{parentUid}`,
 );
 
+const formSchema = modelBaseSchema.omit({ name: true, featureRef: true });
+
 function ModelEditServicePage(): React.JSX.Element {
   const { form, onSubmit, defaultValues } = useModelForm({
-    schema: modelBaseSchema.omit({ name: true, featureRef: true }),
+    schema: formSchema,
   });
   const { control, watch, getValues, setValue, reset } = form;
 
