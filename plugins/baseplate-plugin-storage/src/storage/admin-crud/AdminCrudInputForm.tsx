@@ -1,9 +1,8 @@
+import { SelectFieldController } from '@halfdomelabs/ui-components';
 import type { AdminCrudInputWebFormProps } from '@halfdomelabs/project-builder-lib/web';
 import type { Control } from 'react-hook-form';
 
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { SelectField } from '@halfdomelabs/ui-components';
-
 import type { FileTransformerConfig } from '../transformers/types';
 import type { AdminCrudFileInputConfig } from './types';
 
@@ -26,7 +25,7 @@ export function AdminCrudFileInputForm({
   }>;
 
   return (
-    <SelectField.Controller
+    <SelectFieldController
       label="File Transformer Name"
       control={controlTyped}
       name={`${prefix}.modelRelationRef`}

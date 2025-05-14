@@ -18,7 +18,14 @@ import {
   FormLabel,
   FormMessage,
 } from '../FormItem/FormItem.js';
-import { Select } from '../Select/Select.js';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../Select/Select.js';
 
 export interface SelectFieldProps<OptionType>
   extends SelectOptionProps<OptionType>,
@@ -63,27 +70,27 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
         {...props}
       >
         <FormControl>
-          <Select.Trigger ref={ref}>
-            <Select.Value placeholder={placeholder}>
+          <SelectTrigger ref={ref}>
+            <SelectValue placeholder={placeholder}>
               {selectedOption ? getOptionLabel(selectedOption) : null}
-            </Select.Value>
-          </Select.Trigger>
+            </SelectValue>
+          </SelectTrigger>
         </FormControl>
-        <Select.Content>
-          <Select.Group>
+        <SelectContent>
+          <SelectGroup>
             {options.map((option) => {
               const val = getOptionValue(option);
               const label = getOptionLabel(option);
               return (
-                <Select.Item value={val ?? NULL_SENTINEL} key={val}>
+                <SelectItem value={val ?? NULL_SENTINEL} key={val}>
                   {renderItemLabel
                     ? renderItemLabel(option, { selected: val === value })
                     : label}
-                </Select.Item>
+                </SelectItem>
               );
             })}
-          </Select.Group>
-        </Select.Content>
+          </SelectGroup>
+        </SelectContent>
       </Select>
       <FormDescription>{description}</FormDescription>
       <FormMessage />
