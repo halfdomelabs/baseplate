@@ -5,7 +5,7 @@ import type { Control, UseFormSetValue } from 'react-hook-form';
 import { modelEnumValueEntityType } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
-  InputField,
+  InputFieldController,
   Label,
   SectionList,
 } from '@halfdomelabs/ui-components';
@@ -42,8 +42,8 @@ export function EnumValuesSection({
     id: field.id,
     element: (
       <div className={gridClassNames}>
-        <InputField.Controller control={control} name={`values.${i}.name`} />
-        <InputField.Controller
+        <InputFieldController control={control} name={`values.${i}.name`} />
+        <InputFieldController
           control={control}
           name={`values.${i}.friendlyName`}
           onFocus={() => {

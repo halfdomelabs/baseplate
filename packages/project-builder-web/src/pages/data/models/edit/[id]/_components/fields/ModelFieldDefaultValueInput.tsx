@@ -9,6 +9,7 @@ import {
   ComboboxField,
   Dropdown,
   InputField,
+  InputFieldController,
   SelectField,
 } from '@halfdomelabs/ui-components';
 import { useController, useWatch } from 'react-hook-form';
@@ -77,7 +78,7 @@ export function ModelFieldDefaultValueInput({
   if (['string', 'int', 'float'].includes(type)) {
     return (
       <div className="flex items-center gap-1">
-        <InputField.Controller
+        <InputFieldController
           control={control}
           placeholder="NULL"
           name={`model.fields.${idx}.options.default`}
@@ -121,7 +122,7 @@ export function ModelFieldDefaultValueInput({
     }
     return (
       <div className="flex items-center gap-1">
-        <InputField.Controller
+        <InputFieldController
           control={control}
           placeholder="NULL"
           name={`model.fields.${idx}.options.default`}
@@ -182,7 +183,7 @@ export function ModelFieldDefaultValueInput({
     }
     return (
       <div className="flex items-center space-x-1">
-        <InputField.Controller
+        <InputFieldController
           placeholder="NULL"
           control={control}
           name={`model.fields.${idx}.options.default`}

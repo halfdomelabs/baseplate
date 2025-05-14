@@ -6,7 +6,7 @@ import {
   AUTH_DEFAULT_ROLES,
   authRoleEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { Button, InputField } from '@halfdomelabs/ui-components';
+import { Button, InputFieldController } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray } from 'react-hook-form';
 
@@ -30,13 +30,13 @@ function RoleEditorForm({ className, control }: Props): React.JSX.Element {
       <h3>Roles</h3>
       {fields.map((field, idx) => (
         <div key={field.id} className="space-y-4">
-          <InputField.Controller
+          <InputFieldController
             label="Name"
             disabled={isFixedRole(field.name)}
             control={control}
             name={`roles.${idx}.name`}
           />
-          <InputField.Controller
+          <InputFieldController
             label="Comment"
             control={control}
             name={`roles.${idx}.comment`}

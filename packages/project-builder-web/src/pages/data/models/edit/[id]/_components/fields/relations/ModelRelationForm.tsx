@@ -15,7 +15,7 @@ import {
   Button,
   ComboboxField,
   Dialog,
-  InputField,
+  InputFieldController,
   SelectField,
   toast,
 } from '@halfdomelabs/ui-components';
@@ -326,7 +326,7 @@ export function ModelRelationForm({
           !hasSelectedForeignModel && 'pointer-events-none opacity-50',
         )}
       >
-        <InputField.Controller
+        <InputFieldController
           control={control}
           disabled={!hasSelectedForeignModel}
           name="name"
@@ -340,7 +340,7 @@ export function ModelRelationForm({
             </span>
           }
         />
-        <InputField.Controller
+        <InputFieldController
           control={control}
           disabled={!hasSelectedForeignModel}
           name="foreignRelationName"

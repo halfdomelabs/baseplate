@@ -7,7 +7,11 @@ import {
   adminCrudInputWebSpec,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button, InputField, SelectField } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  InputFieldController,
+  SelectField,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
@@ -69,7 +73,7 @@ function FieldForm({
         options={fieldTypeOptions}
         name={`form.fields.${idx}.type`}
       />
-      <InputField.Controller
+      <InputFieldController
         label="Label"
         control={control}
         name={`form.fields.${idx}.label`}

@@ -12,7 +12,7 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  InputField,
+  InputFieldController,
   MultiComboboxField,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -60,8 +60,8 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
       <form onSubmit={onSubmit} className="space-y-4">
-        <InputField.Controller label="Name" control={control} name="name" />
-        <InputField.Controller
+        <InputFieldController label="Name" control={control} name="name" />
+        <InputFieldController
           label="Package Location (optional) e.g. packages/web"
           control={control}
           name="packageLocation"

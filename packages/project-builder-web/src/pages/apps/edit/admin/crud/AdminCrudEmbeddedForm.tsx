@@ -9,7 +9,7 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   CheckboxFieldController,
-  InputField,
+  InputFieldController,
   SelectField,
   Table,
   toast,
@@ -127,7 +127,7 @@ function AdminCrudEmbeddedForm({
       id={formId}
       className="space-y-4"
     >
-      <InputField.Controller label="Name" control={control} name="name" />
+      <InputFieldController label="Name" control={control} name="name" />
       <SelectField.Controller
         label="Type"
         control={control}

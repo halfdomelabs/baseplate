@@ -10,7 +10,7 @@ import {
 import {
   Button,
   CheckboxFieldController,
-  InputField,
+  InputFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
@@ -43,8 +43,8 @@ function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
       <form onSubmit={onSubmit} className="space-y-4">
-        <InputField.Controller label="Name" control={control} name="name" />
-        <InputField.Controller
+        <InputFieldController label="Name" control={control} name="name" />
+        <InputFieldController
           label="Package Location (optional) e.g. packages/backend"
           control={control}
           name="packageLocation"

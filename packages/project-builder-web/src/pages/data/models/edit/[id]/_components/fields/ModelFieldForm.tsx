@@ -6,7 +6,7 @@ import { modelUniqueConstraintEntityType } from '@halfdomelabs/project-builder-l
 import {
   Button,
   Dropdown,
-  InputField,
+  InputFieldController,
   SwitchField,
   toast,
 } from '@halfdomelabs/ui-components';
@@ -113,7 +113,7 @@ function ModelFieldForm({
   return (
     <div className={clsx('items-center', className)}>
       <div>
-        <InputField.Controller
+        <InputFieldController
           control={control}
           name={`model.fields.${idx}.name`}
         />

@@ -7,7 +7,7 @@ import {
   Button,
   Card,
   CardContent,
-  InputField,
+  InputFieldController,
   toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -64,14 +64,14 @@ export function NewProjectCard({
           </p>
         </div>
         <form onSubmit={onSubmit} className="flex flex-col space-y-4">
-          <InputField.Controller
+          <InputFieldController
             name="name"
             label="Project Name"
             description="Lowercase letters and dashes, e.g. my-project"
             control={control}
             placeholder="e.g. my-project"
           />
-          <InputField.Controller
+          <InputFieldController
             name="portOffset"
             label="Port Offset"
             description="Multiple of 1000, e.g. 4000. This will offset the ports used by the project, e.g. API at 4001, database at 4432, to avoid conflicts with other projects."

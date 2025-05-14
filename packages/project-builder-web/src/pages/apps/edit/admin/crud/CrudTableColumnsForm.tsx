@@ -7,7 +7,11 @@ import {
   ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, InputField, SelectField } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  InputFieldController,
+  SelectField,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
@@ -47,7 +51,7 @@ function ColumnForm({
         options={displayTypeOptions}
         name={`table.columns.${idx}.display.type`}
       />
-      <InputField.Controller
+      <InputFieldController
         label="Label"
         control={control}
         name={`table.columns.${idx}.label`}
@@ -69,12 +73,12 @@ function ColumnForm({
             name={`table.columns.${idx}.display.localRelationRef`}
             options={localRelationOptions}
           />
-          <InputField.Controller
+          <InputFieldController
             label="Label Expression (e.g. name)"
             control={control}
             name={`table.columns.${idx}.display.labelExpression`}
           />
-          <InputField.Controller
+          <InputFieldController
             label="Value Expression (e.g. id)"
             control={control}
             name={`table.columns.${idx}.display.valueExpression`}

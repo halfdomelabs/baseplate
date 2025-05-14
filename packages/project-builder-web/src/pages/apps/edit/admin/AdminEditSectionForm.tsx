@@ -17,7 +17,7 @@ import {
 import {
   Button,
   ComboboxField,
-  InputField,
+  InputFieldController,
   SelectField,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
@@ -154,14 +154,14 @@ function AdminEditSectionForm({
             Delete Section
           </Button>
         )}
-        <InputField.Controller label="Name" control={control} name="name" />
+        <InputFieldController label="Name" control={control} name="name" />
         <ComboboxField.Controller
           label="Feature"
           control={control}
           options={featureOptions}
           name="featureRef"
         />
-        <InputField.Controller label="Icon" control={control} name="icon" />
+        <InputFieldController label="Icon" control={control} name="icon" />
         <SelectField.Controller
           label="Type"
           control={control}

@@ -10,7 +10,7 @@ import {
   Button,
   Card,
   CardContent,
-  InputField,
+  InputFieldController,
   SelectField,
   toast,
 } from '@halfdomelabs/ui-components';
@@ -60,7 +60,7 @@ function NewAppPage(): React.JSX.Element {
       <Card>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
-            <InputField.Controller
+            <InputFieldController
               label="Name"
               control={control}
               name="name"

@@ -5,7 +5,7 @@ import {
   Button,
   cn,
   ComboboxField,
-  InputField,
+  InputFieldController,
   MultiComboboxField,
 } from '@halfdomelabs/ui-components';
 import { notEmpty } from '@halfdomelabs/utils';
@@ -57,7 +57,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
       {fields.map((field, idx) => (
         <div key={field.id} className={cn('space-y-4')}>
           <div className={cn('grid grid-cols-3 gap-4')}>
-            <InputField.Controller
+            <InputFieldController
               label="Name"
               control={control}
               name={`categories.${idx}.name`}
@@ -68,7 +68,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
               name={`categories.${idx}.defaultAdapterRef`}
               options={adapterOptions}
             />
-            <InputField.Controller
+            <InputFieldController
               label="Max File Size (MB)"
               control={control}
               name={`categories.${idx}.maxFileSize`}

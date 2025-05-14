@@ -6,7 +6,7 @@ import {
   Button,
   ComboboxField,
   Dialog,
-  InputField,
+  InputFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sortBy } from 'es-toolkit';
@@ -142,7 +142,7 @@ export function FeatureForm({
               {feature?.name ? 'Edit' : 'Add'} Feature
             </Dialog.Title>
           </Dialog.Header>
-          <InputField.Controller
+          <InputFieldController
             control={control}
             name="childName"
             label="Name"

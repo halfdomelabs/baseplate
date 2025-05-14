@@ -64,7 +64,9 @@ export function addOrUpdateImport(
 
     if (newImports.length > 0) {
       // Collect all import names (existing + new)
-      const allImportNames = [...existingNames, ...newImports].sort();
+      const allImportNames = [...existingNames, ...newImports].sort((a, b) =>
+        a.localeCompare(b),
+      );
 
       // Replace with sorted named imports
       existingImport.removeNamedImports();
