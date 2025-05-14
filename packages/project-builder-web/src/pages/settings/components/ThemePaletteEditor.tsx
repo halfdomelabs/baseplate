@@ -18,7 +18,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
-  ColorPickerField,
+  ColorPickerFieldController,
   ComboboxField,
 } from '@halfdomelabs/ui-components';
 import { capitalize } from 'inflection';
@@ -85,7 +85,7 @@ export function ThemePaletteEditor({
       />
       {paletteName === 'custom' && (
         <div className="flex max-w-xl items-center justify-between">
-          <ColorPickerField.Controller
+          <ColorPickerFieldController
             className="flex-1 space-x-1"
             wrapperClassName="items-center"
             control={control}
@@ -106,7 +106,7 @@ export function ThemePaletteEditor({
       )}
       <div className="flex gap-3">
         {PALETTE_SHADES.map((shade) => (
-          <ColorPickerField.Controller
+          <ColorPickerFieldController
             key={shade}
             wrapperClassName="flex flex-col items-center"
             hideText

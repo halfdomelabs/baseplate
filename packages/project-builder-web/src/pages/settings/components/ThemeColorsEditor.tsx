@@ -9,7 +9,11 @@ import {
   getDefaultThemeColorFromShade,
   THEME_COLORS,
 } from '@halfdomelabs/project-builder-lib';
-import { Button, ColorPickerField, Tooltip } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  ColorPickerFieldController,
+  Tooltip,
+} from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useWatch } from 'react-hook-form';
 import { MdInfo, MdRestartAlt } from 'react-icons/md';
@@ -52,7 +56,7 @@ export function ThemeColorsEditor({
               )}
               key={key}
             >
-              <ColorPickerField.Controller
+              <ColorPickerFieldController
                 control={control}
                 className="w-full"
                 wrapperClassName="flex-col items-start"
