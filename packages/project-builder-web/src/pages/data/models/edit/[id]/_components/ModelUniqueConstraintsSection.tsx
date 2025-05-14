@@ -71,23 +71,28 @@ export function ModelUniqueConstraintsSection({
                 control={control}
                 asChild
               >
-                <Button.WithOnlyIcon icon={MdEdit} title="Edit" />
+                <Button variant="ghost" size="icon" title="Edit">
+                  <MdEdit />
+                </Button>
               </ModelUniqueConstraintDialog>
-              <Button.WithOnlyIcon
-                icon={MdDeleteOutline}
+              <Button
+                variant="ghostDestructive"
+                size="icon"
                 title="Delete"
-                iconClassName="text-destructive"
                 onClick={() => {
                   handleDeleteConstraint(constraint.id);
                 }}
-              />
+              >
+                <MdDeleteOutline />
+              </Button>
             </RecordView.Actions>
           </RecordView>
         ))}
         <ModelUniqueConstraintDialog control={control} asChild>
-          <Button.WithIcon icon={MdAdd} variant="secondary" size="sm">
+          <Button variant="secondary" size="sm">
+            <MdAdd />
             Add Unique Constraint
-          </Button.WithIcon>
+          </Button>
         </ModelUniqueConstraintDialog>
       </SectionList.SectionContent>
     </SectionList.Section>

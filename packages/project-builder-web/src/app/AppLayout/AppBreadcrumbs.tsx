@@ -58,7 +58,7 @@ export function AppBreadcrumbs(): React.JSX.Element {
               <div className="flex items-center text-sm">
                 {upperFirst(definitionContainer.definition.name)} project
               </div>
-              <Button.Icon icon={MdKeyboardArrowDown} />
+              <MdKeyboardArrowDown />
             </Button>
           </Dropdown.Trigger>
           <Dropdown.Content>

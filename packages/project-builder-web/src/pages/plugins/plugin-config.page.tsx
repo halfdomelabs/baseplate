@@ -99,7 +99,7 @@ export function PluginConfigPage(): React.JSX.Element {
           <Dropdown>
             <Dropdown.Trigger asChild>
               <Button variant="ghost" size="icon">
-                <Button.Icon icon={HiDotsVertical} aria-label="More Actions" />
+                <HiDotsVertical aria-label="More Actions" />
               </Button>
             </Dropdown.Trigger>
             <Dropdown.Content>

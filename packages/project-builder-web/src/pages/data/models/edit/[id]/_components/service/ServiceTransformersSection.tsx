@@ -78,17 +78,22 @@ function ServiceTransformerRecord({
             asChild
             isCreate={false}
           >
-            <Button.WithOnlyIcon icon={MdEdit} title="Edit" />
+            <Button variant="ghost" size="icon" title="Edit">
+              <MdEdit />
+            </Button>
           </ServiceTransformerDialog>
         )}
-        <Button.WithOnlyIcon
-          icon={MdOutlineDelete}
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => {
             onRemove(idx);
           }}
           title="Remove"
           className="text-destructive hover:text-destructive-hover"
-        />
+        >
+          <MdOutlineDelete />
+        </Button>
       </RecordView.Actions>
     </RecordView>
   );
@@ -157,9 +162,10 @@ export function ServiceTransformersSection({
         {addableTransformers.length > 0 && (
           <Dropdown>
             <Dropdown.Trigger asChild>
-              <Button.WithIcon icon={MdAdd} variant="secondary" size="sm">
+              <Button variant="secondary" size="sm">
+                <MdAdd />
                 Add Transformer
-              </Button.WithIcon>
+              </Button>
             </Dropdown.Trigger>
             <Dropdown.Content>
               <Dropdown.Group>

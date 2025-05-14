@@ -25,10 +25,10 @@ export const Default: Story = {
         </RecordView.ItemList>
         <RecordView.Actions>
           <Button variant="ghost" size="icon" type="button">
-            <Button.Icon icon={MdEdit} />
+            <MdEdit />
           </Button>
           <Button variant="ghost" size="icon" type="button">
-            <Button.Icon icon={MdDelete} />
+            <MdDelete />
           </Button>
         </RecordView.Actions>
       </>

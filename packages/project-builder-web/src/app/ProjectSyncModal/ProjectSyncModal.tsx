@@ -85,7 +85,7 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
             size="sm"
             data-testid="sync-button"
           >
-            <Button.Icon icon={hasConflicts ? MdSyncProblem : MdSync} />
+            {hasConflicts ? <MdSyncProblem /> : <MdSync />}
             {isSyncing
               ? 'Syncing...'
               : hasConflicts

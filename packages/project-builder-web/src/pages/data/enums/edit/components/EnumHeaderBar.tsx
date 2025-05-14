@@ -78,7 +78,7 @@ export function EnumHeaderBar({
           }}
           disabled={isSavingDefinition}
         >
-          <Button.Icon icon={MdDeleteOutline} className="text-destructive" />
+          <MdDeleteOutline className="text-destructive" />
           <div className="sr-only">Delete Enum</div>
         </Button>
       </div>

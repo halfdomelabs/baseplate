@@ -75,23 +75,28 @@ export function ModelRelationsSection({
                 control={control}
                 asChild
               >
-                <Button.WithOnlyIcon icon={MdEdit} title="Edit" />
+                <Button variant="ghost" size="icon" title="Edit">
+                  <MdEdit />
+                </Button>
               </ModelRelationDialog>
-              <Button.WithOnlyIcon
-                icon={MdDeleteOutline}
+              <Button
+                variant="ghostDestructive"
+                size="icon"
                 title="Delete"
-                iconClassName="text-destructive"
                 onClick={() => {
                   handleDeleteRelation(relation.id);
                 }}
-              />
+              >
+                <MdDeleteOutline />
+              </Button>
             </RecordView.Actions>
           </RecordView>
         ))}
         <ModelRelationDialog control={control} asChild>
-          <Button.WithIcon icon={MdAdd} variant="secondary" size="sm">
+          <Button variant="secondary" size="sm">
+            <MdAdd />
             Add Relation
-          </Button.WithIcon>
+          </Button>
         </ModelRelationDialog>
       </SectionList.SectionContent>
     </SectionList.Section>

@@ -61,13 +61,14 @@ export function ThemeColorsEditor({
                     <div>{config.name}</div>
                     <Tooltip delayDuration={500}>
                       <Tooltip.Trigger asChild>
-                        <Button.WithIcon
+                        <Button
                           variant="ghost"
                           size="icon"
-                          icon={MdInfo}
                           aria-label="Color Info"
                           className="opacity-30"
-                        />
+                        >
+                          <MdInfo />
+                        </Button>
                       </Tooltip.Trigger>
                       <Tooltip.Content
                         align="start"
@@ -99,16 +100,17 @@ export function ThemeColorsEditor({
                 name={`colors.${mode}.${themeKey}`}
               />
               {currentColor !== defaultValue && (
-                <Button.WithIcon
+                <Button
                   className="absolute right-2 bottom-1"
                   onClick={() => {
                     setValue(`colors.${mode}.${themeKey}`, defaultValue);
                   }}
                   size="icon"
                   variant="ghost"
-                  icon={MdRestartAlt}
                   aria-label="Reset Color"
-                />
+                >
+                  <MdRestartAlt />
+                </Button>
               )}
             </div>
           );

@@ -47,9 +47,10 @@ export function EnumsSidebarList({
     >
       <div className="space-y-4 px-4">
         <NewEnumDialog>
-          <Button.WithIcon icon={MdAdd} variant="secondary" className="w-full">
+          <Button variant="secondary" className="w-full">
+            <MdAdd />
             New Enum
-          </Button.WithIcon>
+          </Button>
         </NewEnumDialog>
         {enums.length > 0 && (
           <div className="relative">
@@ -69,7 +70,7 @@ export function EnumsSidebarList({
                   setFilterQuery('');
                 }}
               >
-                <Button.Icon icon={MdClear} />
+                <MdClear />
               </Button>
             )}
           </div>

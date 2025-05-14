@@ -142,7 +142,7 @@ function ModelFieldForm({
           <Dropdown>
             <Dropdown.Trigger asChild>
               <Button variant="ghost" size="icon">
-                <Button.Icon icon={HiDotsVertical} />
+                <HiDotsVertical />
               </Button>
             </Dropdown.Trigger>
             <Dropdown.Content>
@@ -250,7 +250,7 @@ function ModelFieldForm({
             }}
             size="icon"
           >
-            <Button.Icon icon={MdOutlineDelete} />
+            <MdOutlineDelete />
           </Button>
         </div>
       </div>

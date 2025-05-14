@@ -57,9 +57,8 @@ export function ModelFieldDefaultValueInput({
           placeholder="NULL"
         />
         {defaultValue && (
-          <Button.WithOnlyIcon
+          <Button
             title="Reset"
-            icon={HiOutlineX}
             onClick={() => {
               setValue(`model.fields.${idx}.options.default`, '', {
                 shouldDirty: true,
@@ -67,7 +66,9 @@ export function ModelFieldDefaultValueInput({
             }}
             variant="ghost"
             size="icon"
-          />
+          >
+            <HiOutlineX />
+          </Button>
         )}
       </div>
     );
@@ -83,9 +84,8 @@ export function ModelFieldDefaultValueInput({
           className="flex-1"
         />
         {defaultValue && (
-          <Button.WithOnlyIcon
+          <Button
             title="Reset"
-            icon={HiOutlineX}
             onClick={() => {
               setValue(`model.fields.${idx}.options.default`, undefined, {
                 shouldDirty: true,
@@ -93,7 +93,9 @@ export function ModelFieldDefaultValueInput({
             }}
             variant="ghost"
             size="icon"
-          />
+          >
+            <HiOutlineX />
+          </Button>
         )}
       </div>
     );
@@ -104,15 +106,16 @@ export function ModelFieldDefaultValueInput({
       return (
         <div className="flex items-center gap-1">
           <InputField disabled value="Random UUID v4" className="flex-1" />
-          <Button.WithOnlyIcon
+          <Button
             title="Reset"
-            icon={HiOutlineX}
             onClick={() => {
               onOptionsChange({ ...optionsValue, genUuid: false });
             }}
             variant="ghost"
             size="icon"
-          />
+          >
+            <HiOutlineX />
+          </Button>
         </div>
       );
     }
@@ -126,12 +129,9 @@ export function ModelFieldDefaultValueInput({
         />
         <Dropdown>
           <Dropdown.Trigger asChild>
-            <Button.WithOnlyIcon
-              title="Options"
-              variant="ghost"
-              size="icon"
-              icon={HiDotsVertical}
-            />
+            <Button title="Options" variant="ghost" size="icon">
+              <HiDotsVertical />
+            </Button>
           </Dropdown.Trigger>
           <Dropdown.Content>
             <Dropdown.Group>
@@ -163,9 +163,8 @@ export function ModelFieldDefaultValueInput({
             value={updatedAt ? 'Last Updated' : 'Now'}
             className="flex-1"
           />
-          <Button.WithOnlyIcon
+          <Button
             title="Reset"
-            icon={HiOutlineX}
             onClick={() => {
               onOptionsChange({
                 ...optionsValue,
@@ -175,7 +174,9 @@ export function ModelFieldDefaultValueInput({
             }}
             variant="ghost"
             size="icon"
-          />
+          >
+            <HiOutlineX />
+          </Button>
         </div>
       );
     }
@@ -189,12 +190,9 @@ export function ModelFieldDefaultValueInput({
         />
         <Dropdown>
           <Dropdown.Trigger asChild>
-            <Button.WithOnlyIcon
-              title="Options"
-              variant="ghost"
-              size="icon"
-              icon={HiDotsVertical}
-            />
+            <Button title="Options" variant="ghost" size="icon">
+              <HiDotsVertical />
+            </Button>
           </Dropdown.Trigger>
           <Dropdown.Content>
             <Dropdown.Group>
@@ -248,9 +246,8 @@ export function ModelFieldDefaultValueInput({
           className="flex-1"
         />
         {optionsValue.defaultEnumValueRef && (
-          <Button.WithOnlyIcon
+          <Button
             title="Reset"
-            icon={HiOutlineX}
             onClick={() => {
               onOptionsChange({
                 ...optionsValue,
@@ -259,7 +256,9 @@ export function ModelFieldDefaultValueInput({
             }}
             variant="ghost"
             size="icon"
-          />
+          >
+            <HiOutlineX />
+          </Button>
         )}
       </div>
     );

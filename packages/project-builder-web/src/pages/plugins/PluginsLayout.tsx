@@ -31,14 +31,10 @@ function PluginsLayout(): React.JSX.Element {
     <SidebarLayout className="flex-1">
       <SidebarLayout.Sidebar className="flex flex-col gap-4" width="sm">
         <Link to="/plugins">
-          <Button.WithIcon
-            variant="secondary"
-            icon={MdAdd}
-            className="w-full"
-            size="sm"
-          >
+          <Button variant="secondary" className="w-full" size="sm">
+            <MdAdd />
             Add new plugin
-          </Button.WithIcon>
+          </Button>
         </Link>
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>

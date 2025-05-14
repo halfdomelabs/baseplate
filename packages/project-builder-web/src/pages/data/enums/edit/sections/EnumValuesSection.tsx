@@ -62,7 +62,7 @@ export function EnumValuesSection({
             removeValue(i);
           }}
         >
-          <Button.Icon icon={MdDeleteOutline} />
+          <MdDeleteOutline />
           <div className="sr-only">Delete Enum</div>
         </Button>
       </div>

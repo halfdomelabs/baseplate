@@ -66,7 +66,7 @@ export function AdminCrudEmbeddedTable({
                 Edit
               </Button>
               <Button
-                variant="destructiveLink"
+                variant="linkDestructive"
                 size="none"
                 onClick={() => {
                   remove(idx);
