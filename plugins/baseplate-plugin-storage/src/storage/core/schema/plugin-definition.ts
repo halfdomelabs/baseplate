@@ -68,3 +68,7 @@ export const storagePluginDefinitionSchema = zRefBuilder(
 export type StoragePluginDefinition = z.infer<
   typeof storagePluginDefinitionSchema
 >;
+
+export type StoragePluginDefinitionInput = z.input<
+  typeof storagePluginDefinitionSchema
+>;

@@ -1,12 +1,16 @@
 import type {
   ModelConfig,
+  ModelConfigInput,
   ModelRelationFieldConfig,
+  ModelRelationFieldConfigInput,
   ProjectDefinition,
 } from '@halfdomelabs/project-builder-lib';
 import type { Control } from 'react-hook-form';
 
 import {
   ModelFieldUtils,
+  modelForeignRelationEntityType,
+  modelLocalRelationEntityType,
   modelRelationFieldSchema,
   ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
@@ -32,7 +36,7 @@ import { useEditedModelConfig } from '@src/pages/data/models/_hooks/useEditedMod
 
 interface ModelRelationFormProps {
   className?: string;
-  control: Control<ModelConfig>;
+  control: Control<ModelConfigInput>;
   onSubmitSuccess?: () => void;
   relationId?: string;
   defaultFieldName?: string;
@@ -43,7 +47,7 @@ interface ModelRelationFormProps {
  */
 function guessModelTypeFromFieldName(
   definition: ProjectDefinition,
-  editedModel: ModelConfig,
+  editedModel: ModelConfigInput,
   fieldName: string | undefined,
 ): string | undefined {
   if (!fieldName) return;
@@ -81,8 +85,8 @@ function guessModelTypeFromFieldName(
  */
 function getRelationDefaultsFromModel(
   definition: ProjectDefinition,
-  editedModel: ModelConfig,
-  editedRelation: Partial<ModelRelationFieldConfig>,
+  editedModel: ModelConfigInput,
+  editedRelation: Partial<ModelRelationFieldConfigInput>,
   defaultFieldName?: string,
 ): Pick<
   ModelRelationFieldConfig,
@@ -175,7 +179,7 @@ export function ModelRelationForm({
       ? undefined
       : modelRelations.find((item) => item.id === relationId);
 
-  const defaultValues = useMemo((): Partial<ModelRelationFieldConfig> => {
+  const defaultValues = useMemo((): ModelRelationFieldConfigInput => {
     if (modelRelation) return modelRelation;
     const modelRef = guessModelTypeFromFieldName(
       definition,
@@ -183,6 +187,8 @@ export function ModelRelationForm({
       defaultFieldName,
     );
     return {
+      id: modelLocalRelationEntityType.generateNewId(),
+      foreignId: modelForeignRelationEntityType.generateNewId(),
       modelRef: modelRef ?? '',
       onDelete: 'Restrict',
       onUpdate: 'Restrict',
@@ -197,11 +203,10 @@ export function ModelRelationForm({
     };
   }, [modelRelation, defaultFieldName, definition, editedModel]);
 
-  const { control, handleSubmit, setError, watch, setValue } =
-    useForm<ModelRelationFieldConfig>({
-      resolver: zodResolver(modelRelationFieldSchema),
-      defaultValues,
-    });
+  const { control, handleSubmit, setError, watch, setValue } = useForm({
+    resolver: zodResolver(modelRelationFieldSchema),
+    defaultValues,
+  });
 
   const relation = watch();
 
@@ -351,7 +356,7 @@ export function ModelRelationForm({
             <span>
               Name of the relation on the foreign model, e.g.{' '}
               {camelCase(foreignModel?.name ?? 'post')}.
-              <strong>{defaultValues.foreignRelationName ?? 'user'}</strong>
+              <strong>{defaultValues.foreignRelationName || 'user'}</strong>
             </span>
           }
         />

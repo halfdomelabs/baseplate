@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
-import { zEnt, zRef, zRefBuilder } from '@src/references/index.js';
+import {
+  createDefinitionEntityNameResolver,
+  zEnt,
+  zRef,
+  zRefBuilder,
+  zRefId,
+} from '@src/references/index.js';
 import { SCALAR_FIELD_TYPES } from '@src/types/field-types.js';
 
 import { featureEntityType } from '../features/index.js';
@@ -27,7 +33,7 @@ export const modelScalarFieldSchema = zEnt(
   z.object({
     name: VALIDATORS.CAMEL_CASE_STRING,
     type: z.enum(SCALAR_FIELD_TYPES),
-    isOptional: z.boolean().optional(),
+    isOptional: z.boolean().default(false),
     options: zRefBuilder(
       z
         .object({
@@ -95,6 +101,10 @@ export const modelScalarFieldSchema = zEnt(
 
 export type ModelScalarFieldConfig = z.infer<typeof modelScalarFieldSchema>;
 
+export type ModelScalarFieldConfigInput = z.input<
+  typeof modelScalarFieldSchema
+>;
+
 export const REFERENTIAL_ACTIONS = [
   'Cascade',
   'Restrict',
@@ -105,7 +115,7 @@ export const REFERENTIAL_ACTIONS = [
 
 export const modelRelationFieldSchema = zRefBuilder(
   z.object({
-    id: z.string().default(() => modelLocalRelationEntityType.generateNewId()),
+    id: zRefId,
     foreignId: z
       .string()
       .default(() => modelForeignRelationEntityType.generateNewId()),
@@ -139,32 +149,45 @@ export const modelRelationFieldSchema = zRefBuilder(
     builder.addEntity({
       type: modelLocalRelationEntityType,
       parentPath: { context: 'model' },
-      stripIdWhenSerializing: true,
     });
     builder.addEntity({
       type: modelForeignRelationEntityType,
       idPath: 'foreignId',
       getNameResolver: (entity) => entity.foreignRelationName,
       parentPath: 'modelRef',
-      stripIdWhenSerializing: true,
     });
   },
 );
 
 export type ModelRelationFieldConfig = z.infer<typeof modelRelationFieldSchema>;
 
-export const modelUniqueConstraintSchema = z.object({
-  id: z.string().default(() => modelUniqueConstraintEntityType.generateNewId()),
-  fields: z.array(
-    z.object({
-      fieldRef: zRef(z.string().min(1), {
-        type: modelScalarFieldEntityType,
-        onDelete: 'RESTRICT',
-        parentPath: { context: 'model' },
+export type ModelRelationFieldConfigInput = z.input<
+  typeof modelRelationFieldSchema
+>;
+
+export const modelUniqueConstraintSchema = zEnt(
+  z.object({
+    fields: z.array(
+      z.object({
+        fieldRef: zRef(z.string().min(1), {
+          type: modelScalarFieldEntityType,
+          onDelete: 'RESTRICT',
+          parentPath: { context: 'model' },
+        }),
       }),
-    }),
-  ),
-});
+    ),
+  }),
+  {
+    type: modelUniqueConstraintEntityType,
+    parentPath: { context: 'model' },
+    getNameResolver(value) {
+      return createDefinitionEntityNameResolver({
+        idsToResolve: { fields: value.fields.map((f) => f.fieldRef) },
+        resolveName: (entityNames) => entityNames.fields.join('_'),
+      });
+    },
+  },
+);
 
 export type ModelUniqueConstraintConfig = z.infer<
   typeof modelUniqueConstraintSchema
@@ -258,3 +281,5 @@ export const modelSchema = zEnt(modelBaseSchema, {
 });
 
 export type ModelConfig = z.infer<typeof modelSchema>;
+
+export type ModelConfigInput = z.input<typeof modelSchema>;

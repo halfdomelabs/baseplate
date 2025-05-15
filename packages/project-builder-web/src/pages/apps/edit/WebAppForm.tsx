@@ -25,7 +25,7 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
   const { saveDefinitionWithFeedback, isSavingDefinition } =
     useProjectDefinition();
 
-  const formProps = useResettableForm<WebAppConfig>({
+  const formProps = useResettableForm({
     resolver: zodResolver(webAppSchema),
     values: appConfig,
   });

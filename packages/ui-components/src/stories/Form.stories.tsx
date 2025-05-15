@@ -61,7 +61,7 @@ function Form({
     control,
     formState: { isSubmitting },
     reset,
-  } = useForm<FormData>({
+  } = useForm({
     resolver: zodResolver(schema),
     defaultValues,
   });

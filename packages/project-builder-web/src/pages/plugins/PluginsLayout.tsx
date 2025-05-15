@@ -1,5 +1,6 @@
 import type React from 'react';
 
+import { pluginEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -23,7 +24,7 @@ function PluginsLayout(): React.JSX.Element {
   const enabledPlugins = (definition.plugins ?? [])
     .map((plugin) => {
       const pluginWithMetadata = availablePlugins.find(
-        (p) => p.metadata.id === plugin.id,
+        (p) => p.metadata.id === pluginEntityType.toUid(plugin.id),
       );
       return pluginWithMetadata?.metadata;
     })

@@ -1,5 +1,5 @@
 import type {
-  ModelConfig,
+  ModelConfigInput,
   ScalarFieldType,
 } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
@@ -15,7 +15,7 @@ import type { ScalarFieldTypeOption } from '../../../../_constants';
 import { SCALAR_FIELD_TYPE_OPTIONS } from '../../../../_constants';
 
 interface ModelFieldTypeInputProps {
-  control: Control<ModelConfig>;
+  control: Control<ModelConfigInput>;
   idx: number;
 }
 

@@ -1,4 +1,4 @@
-import type { AdminCrudSectionConfig } from '@halfdomelabs/project-builder-lib';
+import type { AdminCrudSectionConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormReturn } from 'react-hook-form';
 
@@ -12,7 +12,7 @@ import { useWatch } from 'react-hook-form';
 
 import { EmbeddedListInput } from '@src/components';
 
-import type { AdminCrudFormConfig } from './CrudFormFieldsForm';
+import type { AdminCrudFormConfigInput } from './CrudFormFieldsForm';
 import type { AdminCrudTableConfig } from './CrudTableColumnsForm';
 
 import AdminCrudEmbeddedForm, {
@@ -23,7 +23,7 @@ import CrudTableColumnsForm from './CrudTableColumnsForm';
 
 interface Props {
   className?: string;
-  formProps: UseFormReturn<AdminCrudSectionConfig>;
+  formProps: UseFormReturn<AdminCrudSectionConfigInput>;
 }
 
 function AdminCrudSectionForm({
@@ -70,7 +70,9 @@ function AdminCrudSectionForm({
       />
       <h2>Form</h2>
       <CrudFormFieldsForm
-        formProps={formProps as unknown as UseFormReturn<AdminCrudFormConfig>}
+        formProps={
+          formProps as unknown as UseFormReturn<AdminCrudFormConfigInput>
+        }
         embeddedFormOptions={embeddedFormOptions}
       />
       <h2>Embedded Forms</h2>

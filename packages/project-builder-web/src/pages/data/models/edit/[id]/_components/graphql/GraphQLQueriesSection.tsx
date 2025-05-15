@@ -1,4 +1,4 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
@@ -19,7 +19,7 @@ import { useWatch } from 'react-hook-form';
 import { MdInfo } from 'react-icons/md';
 
 interface GraphQLQueriesSectionProps {
-  control: Control<ModelConfig>;
+  control: Control<ModelConfigInput>;
 }
 
 export function GraphQLQueriesSection({

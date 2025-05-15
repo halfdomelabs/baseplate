@@ -24,7 +24,7 @@ function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
   const { saveDefinitionWithFeedback, isSavingDefinition } =
     useProjectDefinition();
 
-  const formProps = useResettableForm<BackendAppConfig>({
+  const formProps = useResettableForm({
     resolver: zodResolver(backendAppSchema),
     values: appConfig,
   });

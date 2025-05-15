@@ -1,4 +1,7 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type {
+  ModelConfig,
+  ModelConfigInput,
+} from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { UseFormGetValues, UseFormWatch } from 'react-hook-form';
 import type { StoreApi } from 'zustand';
@@ -11,9 +14,9 @@ import { createStore, useStore } from 'zustand';
 import { useDeep } from '@src/hooks/useDeep';
 
 interface ModelConfigStore {
-  model: ModelConfig;
-  setModel: (model: ModelConfig) => void;
-  getValues: UseFormGetValues<ModelConfig>;
+  model: ModelConfigInput;
+  setModel: (model: ModelConfigInput) => void;
+  getValues: UseFormGetValues<ModelConfigInput>;
 }
 
 const EditedModelContext = createContext<
@@ -27,9 +30,9 @@ export function EditedModelContextProvider({
   getValues,
 }: {
   children: React.ReactNode;
-  watch: UseFormWatch<ModelConfig>;
-  getValues: UseFormGetValues<ModelConfig>;
-  initialModel: ModelConfig;
+  watch: UseFormWatch<ModelConfigInput>;
+  getValues: UseFormGetValues<ModelConfigInput>;
+  initialModel: ModelConfigInput;
 }): React.JSX.Element {
   const { definition } = useProjectDefinition();
   const existingModel = ModelUtils.byIdOrThrow(definition, initialModel.id);
@@ -68,7 +71,7 @@ export function EditedModelContextProvider({
 }
 
 export function useEditedModelConfig<T>(
-  selector: (model: ModelConfig) => T,
+  selector: (model: ModelConfigInput) => T,
 ): T {
   const store = useContext(EditedModelContext);
   if (!store) {

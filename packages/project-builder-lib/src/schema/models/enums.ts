@@ -13,7 +13,6 @@ export const enumValueSchema = zEnt(
   {
     type: modelEnumValueEntityType,
     parentPath: { context: 'enum' },
-    stripIdWhenSerializing: true,
   },
 );
 

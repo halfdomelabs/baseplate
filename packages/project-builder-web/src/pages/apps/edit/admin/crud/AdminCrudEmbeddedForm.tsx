@@ -1,4 +1,7 @@
-import type { AdminCrudEmbeddedFormConfig } from '@halfdomelabs/project-builder-lib';
+import type {
+  AdminCrudEmbeddedFormConfig,
+  AdminCrudEmbeddedFormConfigInput,
+} from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -30,7 +33,7 @@ import type {
 
 import { logAndFormatError } from '@src/services/error-formatter';
 
-import type { AdminCrudFormConfig } from './CrudFormFieldsForm';
+import type { AdminCrudFormConfigInput } from './CrudFormFieldsForm';
 import type { AdminCrudTableConfig } from './CrudTableColumnsForm';
 
 import CrudFormFieldsForm from './CrudFormFieldsForm';
@@ -40,7 +43,7 @@ export function AdminCrudEmbeddedTable({
   items,
   edit,
   remove,
-}: EmbeddedListTableProps<AdminCrudEmbeddedFormConfig>): React.JSX.Element {
+}: EmbeddedListTableProps<AdminCrudEmbeddedFormConfigInput>): React.JSX.Element {
   const { definitionContainer } = useProjectDefinition();
   return (
     <Table className="max-w-6xl">
@@ -106,7 +109,7 @@ function AdminCrudEmbeddedForm({
     adminCrudEmbeddedFormSchema,
     pluginContainer,
   );
-  const formProps = useForm<AdminCrudEmbeddedFormConfig>({
+  const formProps = useForm<AdminCrudEmbeddedFormConfigInput>({
     resolver: zodResolver(schemaWithPlugins),
     defaultValues: initialData,
   });
@@ -160,7 +163,9 @@ function AdminCrudEmbeddedForm({
       )}
       <h2>Form</h2>
       <CrudFormFieldsForm
-        formProps={formProps as unknown as UseFormReturn<AdminCrudFormConfig>}
+        formProps={
+          formProps as unknown as UseFormReturn<AdminCrudFormConfigInput>
+        }
         embeddedFormOptions={embeddedFormOptions}
       />
       <Button type="submit" form={formId}>

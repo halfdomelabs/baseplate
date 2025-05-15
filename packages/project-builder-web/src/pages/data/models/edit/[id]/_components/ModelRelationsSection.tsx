@@ -1,4 +1,4 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
@@ -22,8 +22,8 @@ import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
 import { ModelRelationDialog } from './fields/relations/ModelRelationDialog';
 
 interface Props {
-  control: Control<ModelConfig>;
-  setValue: UseFormSetValue<ModelConfig>;
+  control: Control<ModelConfigInput>;
+  setValue: UseFormSetValue<ModelConfigInput>;
 }
 
 export function ModelRelationsSection({

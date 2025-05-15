@@ -5,13 +5,13 @@ import { useFieldArray } from 'react-hook-form';
 
 import { cn } from '@src/utils/cn';
 
-import type { StoragePluginDefinition } from '../schema/plugin-definition';
+import type { StoragePluginDefinitionInput } from '../schema/plugin-definition';
 
 import { storageAdapterEntityType } from '../schema/plugin-definition';
 
 interface Props {
   className?: string;
-  control: Control<StoragePluginDefinition>;
+  control: Control<StoragePluginDefinitionInput>;
 }
 
 function AdapterEditorForm({ className, control }: Props): React.JSX.Element {

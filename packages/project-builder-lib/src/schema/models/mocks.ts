@@ -2,6 +2,7 @@ import type {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
+  ModelScalarFieldConfigInput,
   ModelUniqueConstraintConfig,
 } from './index.js';
 
@@ -24,12 +25,13 @@ export function generateMockUniqueConstraint(
 }
 
 export function generateMockModelScalarField(
-  field?: Partial<ModelScalarFieldConfig>,
+  field?: Partial<ModelScalarFieldConfigInput>,
 ): ModelScalarFieldConfig {
   return {
     id: modelScalarFieldEntityType.generateNewId(),
     name: 'mockField',
     type: 'string',
+    isOptional: false,
     ...field,
   };
 }

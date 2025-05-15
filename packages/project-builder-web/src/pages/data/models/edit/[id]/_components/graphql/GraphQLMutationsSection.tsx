@@ -1,4 +1,4 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
@@ -22,7 +22,7 @@ import { Link } from 'react-router-dom';
 import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
 
 interface GraphQLMutationsSectionProps {
-  control: Control<ModelConfig>;
+  control: Control<ModelConfigInput>;
 }
 
 export function GraphQLMutationsSection({

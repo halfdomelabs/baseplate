@@ -1,7 +1,4 @@
-import type {
-  AdminAppConfig,
-  AdminSectionConfig,
-} from '@halfdomelabs/project-builder-lib';
+import type { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -61,7 +58,7 @@ function AdminEditSectionForm({
 
   const schemaWithPlugins = zPluginWrapper(adminSectionSchema, pluginContainer);
 
-  const formProps = useResettableForm<AdminSectionConfig>({
+  const formProps = useResettableForm({
     values: existingSection,
     defaultValues: { type: 'crud' },
     resolver: zodResolver(schemaWithPlugins),

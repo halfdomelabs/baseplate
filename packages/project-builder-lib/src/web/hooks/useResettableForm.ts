@@ -10,9 +10,10 @@ import { useProjectDefinition } from './useProjectDefinition.js';
 export function useResettableForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = unknown,
+  TTransformedValues = TFieldValues,
 >(
-  props?: UseFormProps<TFieldValues, TContext>,
-): UseFormReturn<TFieldValues, TContext> {
+  props?: UseFormProps<TFieldValues, TContext, TTransformedValues>,
+): UseFormReturn<TFieldValues, TContext, TTransformedValues> {
   const formProps = useForm(props);
   const { reset, formState } = formProps;
   const { isDirty } = formState;

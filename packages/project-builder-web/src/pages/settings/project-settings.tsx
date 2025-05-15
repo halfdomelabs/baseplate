@@ -1,5 +1,4 @@
 import type React from 'react';
-import type { z } from 'zod';
 
 import { projectDefinitionSchema } from '@halfdomelabs/project-builder-lib';
 import {
@@ -28,15 +27,13 @@ const validationSchema = projectDefinitionSchema.pick({
   packageScope: true,
 });
 
-type FormData = z.infer<typeof validationSchema>;
-
 function ProjectSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
   const defaultValues = useMemo(
     () => pick(definition, ['name', 'version', 'portOffset', 'packageScope']),
     [definition],
   );
-  const form = useResettableForm<FormData>({
+  const form = useResettableForm({
     resolver: zodResolver(validationSchema),
     defaultValues,
   });

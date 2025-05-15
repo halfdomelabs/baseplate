@@ -1,4 +1,7 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type {
+  ModelConfig,
+  ModelConfigInput,
+} from '@halfdomelabs/project-builder-lib';
 import type { UseFormReturn } from 'react-hook-form';
 import type { z } from 'zod';
 
@@ -43,6 +46,7 @@ function createNewModel(): ModelConfig {
           id: idFieldId,
           name: 'id',
           type: 'uuid',
+          isOptional: false,
           options: {
             genUuid: true,
           },
@@ -52,13 +56,15 @@ function createNewModel(): ModelConfig {
   };
 }
 
-export function useModelForm<
-  TDefinition extends Partial<ModelConfig> = ModelConfig,
->({ onSubmitSuccess, isCreate, schema }: UseModelFormOptions = {}): {
-  form: UseFormReturn<TDefinition>;
+export function useModelForm({
+  onSubmitSuccess,
+  isCreate,
+  schema,
+}: UseModelFormOptions = {}): {
+  form: UseFormReturn<ModelConfigInput>;
   onSubmit: () => Promise<void>;
   originalModel?: ModelConfig;
-  defaultValues: TDefinition;
+  defaultValues: ModelConfigInput;
 } {
   const { uid } = useParams<'uid'>();
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
@@ -210,9 +216,9 @@ export function useModelForm<
   );
 
   return {
-    form: form as unknown as UseFormReturn<TDefinition>,
+    form: form as unknown as UseFormReturn<ModelConfigInput>,
     onSubmit,
     originalModel: model,
-    defaultValues: defaultValues as TDefinition,
+    defaultValues,
   };
 }

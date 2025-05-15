@@ -23,6 +23,8 @@ export const adminSectionSchema = zRefBuilder(
 
 export type AdminSectionConfig = AdminCrudSectionConfig;
 
+export type AdminSectionConfigInput = z.input<typeof adminSectionSchema>;
+
 export const adminAppSchema = z.object({
   ...baseAppValidators,
   type: z.literal('admin'),

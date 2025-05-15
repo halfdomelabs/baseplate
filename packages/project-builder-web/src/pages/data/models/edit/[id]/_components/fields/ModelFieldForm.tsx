@@ -1,4 +1,4 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
@@ -30,8 +30,8 @@ import { ModelUniqueConstraintDialog } from './unique-constraints/ModelUniqueCon
 
 interface Props {
   className?: string;
-  control: Control<ModelConfig>;
-  setValue: UseFormSetValue<ModelConfig>;
+  control: Control<ModelConfigInput>;
+  setValue: UseFormSetValue<ModelConfigInput>;
   idx: number;
   onRemove: (idx: number) => void;
 }

@@ -1,7 +1,10 @@
 import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
-import { webConfigSpec } from '@halfdomelabs/project-builder-lib';
+import {
+  pluginEntityType,
+  webConfigSpec,
+} from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -62,7 +65,7 @@ export function PluginCard({
               p.packageName !== plugin.packageName || p.name !== plugin.name,
           ),
           {
-            id: plugin.id,
+            id: pluginEntityType.fromUid(plugin.id),
             packageName: plugin.packageName,
             name: plugin.name,
             version: plugin.version,

@@ -3,7 +3,7 @@ import type { UseFormReturn } from 'react-hook-form';
 
 import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
 import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
-import type { ModelConfig, TransformerConfig } from '@src/schema/index.js';
+import type { ModelConfigInput, TransformerConfig } from '@src/schema/index.js';
 
 import { createPluginSpec } from '@src/plugins/spec/types.js';
 
@@ -11,7 +11,7 @@ export interface ModelTransformerWebFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   formProps: UseFormReturn<any>;
   name: string;
-  originalModel: ModelConfig;
+  originalModel: ModelConfigInput;
   pluginId: string | undefined;
 }
 
@@ -26,11 +26,11 @@ export interface ModelTransformerWebConfig<
   Form?: React.ComponentType<ModelTransformerWebFormProps>;
   allowNewTransformer?: (
     projectContainer: ProjectDefinitionContainer,
-    modelConfig: ModelConfig,
+    modelConfig: ModelConfigInput,
   ) => boolean;
   getNewTransformer: (
     projectContainer: ProjectDefinitionContainer,
-    modelConfig: ModelConfig,
+    modelConfig: ModelConfigInput,
   ) => T;
   getSummary: (
     definition: T,
