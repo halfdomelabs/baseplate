@@ -1,6 +1,9 @@
+'use client';
+
+import type * as React from 'react';
+
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import React from 'react';
-import { HiXMark } from 'react-icons/hi2';
+import { MdClose } from 'react-icons/md';
 
 import { cn } from '@src/utils';
 
@@ -9,142 +12,146 @@ import { cn } from '@src/utils';
  *
  * https://ui.shadcn.com/docs/components/dialog
  */
-
-const DialogRoot = (props: DialogPrimitive.DialogProps): React.JSX.Element => (
-  <DialogPrimitive.Root {...props} />
-);
-
-const DialogTrigger = DialogPrimitive.Trigger;
-
-const DialogPortal = DialogPrimitive.Portal;
-
-const DialogClose = DialogPrimitive.Close;
-
-const DialogOverlay = React.forwardRef<
-  React.ComponentRef<typeof DialogPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay> & {
-    className?: string;
-  }
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Overlay
-    ref={ref}
-    className={cn(
-      'fixed inset-0 z-50 bg-background/80 backdrop-blur-xs data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
-      className,
-    )}
-    {...props}
-  />
-));
-DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
-
-export type DialogWidth = 'sm' | 'md' | 'lg' | 'xl' | 'none';
-
-export interface DialogContentProps
-  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
-  className?: string;
-  width?: DialogWidth;
+function Dialog({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Root>): React.ReactElement {
+  return <DialogPrimitive.Root data-slot="dialog" {...props} />;
 }
 
-const DialogContent = React.forwardRef<
-  React.ComponentRef<typeof DialogPrimitive.Content>,
-  DialogContentProps
->(({ className, children, width = 'md', ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay>
+function DialogTrigger({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Trigger>): React.ReactElement {
+  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
+}
+
+function DialogPortal({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Portal>): React.ReactElement {
+  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
+}
+
+function DialogClose({
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Close>): React.ReactElement {
+  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
+}
+
+function DialogOverlay({
+  className,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Overlay>): React.ReactElement {
+  return (
+    <DialogPrimitive.Overlay
+      data-slot="dialog-overlay"
+      className={cn(
+        'bg-black/50 fixed inset-0 z-50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+export type DialogWidth = 'sm' | 'md' | 'lg' | 'xl' | 'none';
+
+function DialogContent({
+  className,
+  children,
+  width = 'md',
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Content> & {
+  width?: DialogWidth;
+}): React.ReactElement {
+  return (
+    <DialogPortal data-slot="dialog-portal">
+      <DialogOverlay />
       <DialogPrimitive.Content
-        ref={ref}
+        data-slot="dialog-content"
         className={cn(
-          'fixed top-[50%] left-[50%] z-50 grid max-h-screen w-full translate-x-[-50%] translate-y-[-50%] gap-4 overflow-y-auto border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] data-[state=open]:zoom-in-95 sm:rounded-lg',
-          width === 'sm' && 'max-w-md',
-          width === 'md' && 'max-w-lg',
-          width === 'lg' && 'max-w-4xl',
-          width === 'xl' && 'max-w-7xl',
+          'fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+          width === 'sm' && 'sm:max-w-md',
+          width === 'md' && 'sm:max-w-lg',
+          width === 'lg' && 'sm:max-w-4xl',
+          width === 'xl' && 'sm:max-w-7xl',
           className,
         )}
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <HiXMark className="size-4" />
+        <DialogPrimitive.Close className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
+          <MdClose />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>
-    </DialogOverlay>
-  </DialogPortal>
-));
-DialogContent.displayName = DialogPrimitive.Content.displayName;
+    </DialogPortal>
+  );
+}
 
-const DialogHeader = ({
+function DialogHeader({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement> & {
-  className?: string;
-}): React.JSX.Element => (
-  <div
-    className={cn(
-      'flex flex-col space-y-1.5 text-center sm:text-left',
-      className,
-    )}
-    {...props}
-  />
-);
-DialogHeader.displayName = 'DialogHeader';
+}: React.ComponentProps<'div'>): React.ReactElement {
+  return (
+    <div
+      data-slot="dialog-header"
+      className={cn('flex flex-col gap-2 text-center sm:text-left', className)}
+      {...props}
+    />
+  );
+}
 
-const DialogFooter = ({
+function DialogFooter({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement> & {
-  className?: string;
-}): React.JSX.Element => (
-  <div
-    className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
-      className,
-    )}
-    {...props}
-  />
-);
-DialogFooter.displayName = 'DialogFooter';
+}: React.ComponentProps<'div'>): React.ReactElement {
+  return (
+    <div
+      data-slot="dialog-footer"
+      className={cn(
+        'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-const DialogTitle = React.forwardRef<
-  React.ComponentRef<typeof DialogPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title> & {
-    className?: string;
-  }
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title
-    ref={ref}
-    className={cn(
-      'text-lg leading-none font-semibold tracking-tight',
-      className,
-    )}
-    {...props}
-  />
-));
-DialogTitle.displayName = DialogPrimitive.Title.displayName;
+function DialogTitle({
+  className,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Title>): React.ReactElement {
+  return (
+    <DialogPrimitive.Title
+      data-slot="dialog-title"
+      className={cn('text-lg leading-none font-semibold', className)}
+      {...props}
+    />
+  );
+}
 
-const DialogDescription = React.forwardRef<
-  React.ComponentRef<typeof DialogPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description> & {
-    className?: string;
-  }
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Description
-    ref={ref}
-    className={cn('text-sm text-muted-foreground', className)}
-    {...props}
-  />
-));
-DialogDescription.displayName = DialogPrimitive.Description.displayName;
+function DialogDescription({
+  className,
+  ...props
+}: React.ComponentProps<
+  typeof DialogPrimitive.Description
+>): React.ReactElement {
+  return (
+    <DialogPrimitive.Description
+      data-slot="dialog-description"
+      className={cn('text-sm text-muted-foreground', className)}
+      {...props}
+    />
+  );
+}
 
-export const Dialog = Object.assign(DialogRoot, {
-  Trigger: DialogTrigger,
-  Close: DialogClose,
-  Overlay: DialogOverlay,
-  Content: DialogContent,
-  Header: DialogHeader,
-  Footer: DialogFooter,
-  Title: DialogTitle,
-  Description: DialogDescription,
-  Portal: DialogPortal,
-});
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+};

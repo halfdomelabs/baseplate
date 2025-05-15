@@ -2,7 +2,15 @@ import type { TransformerConfig } from '@halfdomelabs/project-builder-lib';
 import type { ModelTransformerWebConfig } from '@halfdomelabs/project-builder-lib/web';
 import type React from 'react';
 
-import { Dialog, useControlledState } from '@halfdomelabs/ui-components';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  useControlledState,
+} from '@halfdomelabs/ui-components';
 
 import { ServiceTransformerForm } from './ServiceTransformerForm';
 
@@ -30,19 +38,17 @@ export function ServiceTransformerDialog({
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {children && (
-        <Dialog.Trigger asChild={asChild}>{children}</Dialog.Trigger>
-      )}
-      <Dialog.Content>
-        <Dialog.Header>
-          <Dialog.Title>
+      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
             {isCreate ? 'Create' : 'Edit'} {webConfig?.label} Transformer
-          </Dialog.Title>
-          <Dialog.Description>
+          </DialogTitle>
+          <DialogDescription>
             {webConfig?.instructions ??
               'Manage the transformer for the service'}
-          </Dialog.Description>
-        </Dialog.Header>
+          </DialogDescription>
+        </DialogHeader>
         {webConfig && (
           <ServiceTransformerForm
             transformer={transformer}
@@ -54,7 +60,7 @@ export function ServiceTransformerDialog({
             isCreate={isCreate}
           />
         )}
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

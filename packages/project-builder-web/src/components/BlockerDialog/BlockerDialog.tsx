@@ -1,7 +1,15 @@
 import type React from 'react';
 
 import { useBlockerDialogState } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Dialog } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@halfdomelabs/ui-components';
 import { useCallback, useEffect, useState } from 'react';
 import { useBlocker } from 'react-router-dom';
 
@@ -116,13 +124,13 @@ export function BlockerDialog(): React.JSX.Element {
         }
       }}
     >
-      <Dialog.Content>
+      <DialogContent>
         <div className="space-y-4">
-          <Dialog.Header>
-            <Dialog.Title>{activeBlocker?.title}</Dialog.Title>
-          </Dialog.Header>
-          <Dialog.Description>{activeBlocker?.content}</Dialog.Description>
-          <Dialog.Footer>
+          <DialogHeader>
+            <DialogTitle>{activeBlocker?.title}</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>{activeBlocker?.content}</DialogDescription>
+          <DialogFooter>
             {continueWithoutSaveButton ? (
               <div className="flex w-full justify-between">
                 {continueWithoutSaveButton}
@@ -137,9 +145,9 @@ export function BlockerDialog(): React.JSX.Element {
                 {continueButton}
               </>
             )}
-          </Dialog.Footer>
+          </DialogFooter>
         </div>
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

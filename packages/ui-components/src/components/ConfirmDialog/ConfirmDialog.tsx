@@ -8,7 +8,14 @@ import { useComponentStrings } from '@src/contexts/component-strings.js';
 import { useConfirmDialogState } from '@src/hooks/useConfirmDialog.js';
 
 import { Button } from '../Button/Button.js';
-import { Dialog } from '../Dialog/Dialog.js';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../Dialog/Dialog.js';
 
 /**
  * A confirm dialog that is placed at the top level of the page
@@ -57,12 +64,12 @@ export function ConfirmDialog(): React.JSX.Element {
         setConfirmOptions(undefined);
       }}
     >
-      <Dialog.Content width="md">
-        <Dialog.Header>
-          <Dialog.Title>{title}</Dialog.Title>
-        </Dialog.Header>
-        <Dialog.Description>{content}</Dialog.Description>
-        <Dialog.Footer>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <DialogDescription>{content}</DialogDescription>
+        <DialogFooter>
           <Button
             variant="secondary"
             onClick={(e) => {
@@ -83,8 +90,8 @@ export function ConfirmDialog(): React.JSX.Element {
           >
             {buttonConfirmText}
           </Button>
-        </Dialog.Footer>
-      </Dialog.Content>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }

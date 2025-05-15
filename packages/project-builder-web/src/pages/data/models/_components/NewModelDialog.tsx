@@ -4,6 +4,13 @@ import { useBlockBeforeContinue } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
@@ -49,24 +56,24 @@ export function NewModelDialog({
         }
       }}
     >
-      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
-      <Dialog.Content>
-        <Dialog.Header>
-          <Dialog.Title>New Model</Dialog.Title>
-          <Dialog.Description>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>New Model</DialogTitle>
+          <DialogDescription>
             Models define the structure of your data.
-          </Dialog.Description>
-        </Dialog.Header>
+          </DialogDescription>
+        </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <ModelInfoForm control={control} />
-          <Dialog.Footer>
-            <Dialog.Close asChild>
+          <DialogFooter>
+            <DialogClose asChild>
               <Button variant="secondary">Cancel</Button>
-            </Dialog.Close>
+            </DialogClose>
             <Button type="submit">Create Model</Button>
-          </Dialog.Footer>
+          </DialogFooter>
         </form>
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

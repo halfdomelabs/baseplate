@@ -5,7 +5,16 @@ import type React from 'react';
 import { useState } from 'react';
 
 import { Button } from '../index.js';
-import { Dialog } from './Dialog.js';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './Dialog.js';
 
 const meta = {
   component: Dialog,
@@ -21,27 +30,27 @@ function DialogContainer(
 ): React.JSX.Element {
   return (
     <Dialog {...args}>
-      <Dialog.Trigger asChild>
+      <DialogTrigger asChild>
         <Button>Open Dialog</Button>
-      </Dialog.Trigger>
-      <Dialog.Content>
-        <Dialog.Header>
-          <Dialog.Title>Confirm delete</Dialog.Title>
-          <Dialog.Description>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Confirm delete</DialogTitle>
+          <DialogDescription>
             Are you sure you want to delete this file? This could indeed be a
             terrible idea.
-          </Dialog.Description>
-        </Dialog.Header>
+          </DialogDescription>
+        </DialogHeader>
         <p>This is the body content</p>
-        <Dialog.Footer className="flex gap-4">
-          <Dialog.Close asChild>
+        <DialogFooter className="flex gap-4">
+          <DialogClose asChild>
             <Button variant="secondary">Cancel</Button>
-          </Dialog.Close>
-          <Dialog.Close asChild>
+          </DialogClose>
+          <DialogClose asChild>
             <Button>Delete File</Button>
-          </Dialog.Close>
-        </Dialog.Footer>
-      </Dialog.Content>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }
@@ -72,24 +81,24 @@ function ControlledDialogContainer(
           setOpen(op);
         }}
       >
-        <Dialog.Content>
-          <Dialog.Header>
-            <Dialog.Title>Confirm controlled delete</Dialog.Title>
-            <Dialog.Description>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm controlled delete</DialogTitle>
+            <DialogDescription>
               Are you sure you want to delete this file? This could indeed be a
               terrible idea.
-            </Dialog.Description>
-          </Dialog.Header>
+            </DialogDescription>
+          </DialogHeader>
           <p>This is the body content</p>
-          <Dialog.Footer>
-            <Dialog.Close asChild>
+          <DialogFooter>
+            <DialogClose asChild>
               <Button variant="secondary">Cancel</Button>
-            </Dialog.Close>
-            <Dialog.Close asChild>
+            </DialogClose>
+            <DialogClose asChild>
               <Button>Delete File</Button>
-            </Dialog.Close>
-          </Dialog.Footer>
-        </Dialog.Content>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </div>
   );

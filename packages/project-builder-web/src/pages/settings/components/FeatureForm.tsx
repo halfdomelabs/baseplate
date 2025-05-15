@@ -6,6 +6,10 @@ import {
   Button,
   ComboboxFieldController,
   Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   InputFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -135,13 +139,11 @@ export function FeatureForm({
         }
       }}
     >
-      <Dialog.Content>
+      <DialogContent>
         <form className="space-y-4" onSubmit={onUpsertFeature}>
-          <Dialog.Header>
-            <Dialog.Title>
-              {feature?.name ? 'Edit' : 'Add'} Feature
-            </Dialog.Title>
-          </Dialog.Header>
+          <DialogHeader>
+            <DialogTitle>{feature?.name ? 'Edit' : 'Add'} Feature</DialogTitle>
+          </DialogHeader>
           <InputFieldController
             control={control}
             name="childName"
@@ -155,16 +157,16 @@ export function FeatureForm({
             label="Parent Feature"
             options={parentOptions}
           />
-          <Dialog.Footer>
+          <DialogFooter>
             <Button onClick={onClose} variant="secondary">
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               Save
             </Button>
-          </Dialog.Footer>
+          </DialogFooter>
         </form>
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

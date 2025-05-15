@@ -2,7 +2,15 @@ import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { Dialog, useControlledState } from '@halfdomelabs/ui-components';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  useControlledState,
+} from '@halfdomelabs/ui-components';
 
 import { ModelUniqueConstraintForm } from './ModelUniqueConstraintForm';
 
@@ -26,16 +34,14 @@ export function ModelUniqueConstraintDialog({
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {children && (
-        <Dialog.Trigger asChild={asChild}>{children}</Dialog.Trigger>
-      )}
-      <Dialog.Content>
-        <Dialog.Header>
-          <Dialog.Title>Unique Constraint</Dialog.Title>
-          <Dialog.Description>
+      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Unique Constraint</DialogTitle>
+          <DialogDescription>
             Select the fields that will be part of this unique constraint.
-          </Dialog.Description>
-        </Dialog.Header>
+          </DialogDescription>
+        </DialogHeader>
         <ModelUniqueConstraintForm
           control={control}
           onSubmitSuccess={() => {
@@ -43,7 +49,7 @@ export function ModelUniqueConstraintDialog({
           }}
           constraintId={constraintId}
         />
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

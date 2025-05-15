@@ -11,6 +11,9 @@ import {
   Alert,
   Button,
   Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   FormItem,
   FormLabel,
   FormMessage,
@@ -106,15 +109,15 @@ export function EmbeddedListInput<InputType>({
           }
         }}
       >
-        <Dialog.Content aria-describedby={undefined}>
-          <Dialog.Header>
-            <Dialog.Title>Edit {itemName ?? 'Item'}</Dialog.Title>
-          </Dialog.Header>
+        <DialogContent aria-describedby={undefined}>
+          <DialogHeader>
+            <DialogTitle>Edit {itemName ?? 'Item'}</DialogTitle>
+          </DialogHeader>
           {renderForm({
             initialData: valueToEdit?.data,
             onSubmit: handleSubmit,
           })}
-        </Dialog.Content>
+        </DialogContent>
       </Dialog>
     </div>
   );

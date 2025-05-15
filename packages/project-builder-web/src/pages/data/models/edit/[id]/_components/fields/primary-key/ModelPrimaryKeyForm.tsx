@@ -4,7 +4,8 @@ import type { Control } from 'react-hook-form';
 
 import {
   Button,
-  Dialog,
+  DialogClose,
+  DialogFooter,
   MultiComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -67,14 +68,14 @@ export function ModelPrimaryKeyForm({
         options={fields.map((f) => ({ value: f.id, label: f.name }))}
         placeholder="Select fields to use as primary keys"
       />
-      <Dialog.Footer>
-        <Dialog.Close asChild>
+      <DialogFooter>
+        <DialogClose asChild>
           <Button variant="secondary">Cancel</Button>
-        </Dialog.Close>
+        </DialogClose>
         <Button type="submit" form={formId}>
           Save
         </Button>
-      </Dialog.Footer>
+      </DialogFooter>
     </form>
   );
 }

@@ -5,7 +5,8 @@ import type { Control } from 'react-hook-form';
 import { modelUniqueConstraintEntityType } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
-  Dialog,
+  DialogClose,
+  DialogFooter,
   MultiComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -98,7 +99,7 @@ export function ModelUniqueConstraintForm({
         options={fields.map((f) => ({ value: f.id, label: f.name }))}
         placeholder="Select fields to use as primary keys"
       />
-      <Dialog.Footer>
+      <DialogFooter>
         <div className="flex w-full justify-between">
           {constraintId && (
             <Button
@@ -112,15 +113,15 @@ export function ModelUniqueConstraintForm({
             </Button>
           )}
           <div className="flex gap-4">
-            <Dialog.Close asChild>
+            <DialogClose asChild>
               <Button variant="secondary">Cancel</Button>
-            </Dialog.Close>
+            </DialogClose>
             <Button type="submit" form={formId}>
               Save
             </Button>
           </div>
         </div>
-      </Dialog.Footer>
+      </DialogFooter>
     </form>
   );
 }

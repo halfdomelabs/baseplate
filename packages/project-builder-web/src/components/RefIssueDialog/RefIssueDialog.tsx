@@ -2,7 +2,16 @@ import type { DefinitionEntity } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Dialog, Table } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Table,
+} from '@halfdomelabs/ui-components';
 import { Link } from 'react-router-dom';
 
 import { useDeleteReferenceDialogState } from '@src/hooks/useDeleteReferenceDialog';
@@ -27,14 +36,14 @@ export function RefIssueDialog(): React.JSX.Element {
         setDialogOptions(undefined);
       }}
     >
-      <Dialog.Content width="lg">
-        <Dialog.Header>
-          <Dialog.Title>Unable to delete</Dialog.Title>
-        </Dialog.Header>
-        <Dialog.Description>
+      <DialogContent width="lg">
+        <DialogHeader>
+          <DialogTitle>Unable to delete</DialogTitle>
+        </DialogHeader>
+        <DialogDescription>
           There were other references that needed to be fixed before you could
           delete this item.
-        </Dialog.Description>
+        </DialogDescription>
         <Table>
           <Table.Header>
             <Table.Row>
@@ -111,7 +120,7 @@ export function RefIssueDialog(): React.JSX.Element {
             })}
           </Table.Body>
         </Table>
-        <Dialog.Footer>
+        <DialogFooter>
           <Button
             onClick={() => {
               setDialogOptions(undefined);
@@ -119,8 +128,8 @@ export function RefIssueDialog(): React.JSX.Element {
           >
             OK
           </Button>
-        </Dialog.Footer>
-      </Dialog.Content>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }

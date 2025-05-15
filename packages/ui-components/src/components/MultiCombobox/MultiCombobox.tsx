@@ -13,7 +13,14 @@ import {
 import { cn } from '@src/utils';
 
 import { Badge } from '../Badge/Badge';
-import { Command } from '../Command/Command';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '../Command/Command';
 import {
   Popover,
   PopoverAnchor,
@@ -259,12 +266,12 @@ function MultiComboboxContent({
       data-combobox-content=""
     >
       <Command>
-        <Command.Input
+        <CommandInput
           data-cmdk-filter-id={filterId}
           value={searchQuery}
           onValueChange={setSearchQuery}
         />
-        <Command.List>{children}</Command.List>
+        <CommandList>{children}</CommandList>
       </Command>
     </PopoverContent>
   );
@@ -274,10 +281,10 @@ function MultiComboboxEmpty({
   className,
   ...props
 }: React.ComponentPropsWithRef<'div'>): React.ReactElement {
-  return <Command.Empty className={cn('p-2 text-sm', className)} {...props} />;
+  return <CommandEmpty className={cn('p-2 text-sm', className)} {...props} />;
 }
 
-const MultiComboboxGroup = Command.Group;
+const MultiComboboxGroup = CommandGroup;
 
 interface MultiComboboxItemProps
   extends Omit<React.ComponentPropsWithRef<'div'>, 'onSelect'> {
@@ -298,7 +305,7 @@ function MultiComboboxItem({
   const itemRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <Command.Item
+    <CommandItem
       onSelect={() => {
         const itemLabel = label ?? itemRef.current?.textContent ?? undefined;
         onSelect(value, itemLabel, !isSelected);
@@ -316,7 +323,7 @@ function MultiComboboxItem({
         <MdCheck className={'size-4'} />
       </div>
       {children}
-    </Command.Item>
+    </CommandItem>
   );
 }
 

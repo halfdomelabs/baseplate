@@ -1,6 +1,13 @@
 import type React from 'react';
 
-import { Button, Dialog, Table } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Table,
+} from '@halfdomelabs/ui-components';
 import { useNavigate } from 'react-router-dom';
 
 import { useProjects } from '@src/hooks/useProjects';
@@ -27,10 +34,10 @@ export function ProjectSelectDialog({
       }
       open={isOpen}
     >
-      <Dialog.Content width="lg">
-        <Dialog.Header>
-          <Dialog.Title>Pick Project</Dialog.Title>
-        </Dialog.Header>
+      <DialogContent width="lg">
+        <DialogHeader>
+          <DialogTitle>Pick Project</DialogTitle>
+        </DialogHeader>
         <Table>
           <Table.Header>
             <Table.Row>
@@ -70,7 +77,7 @@ export function ProjectSelectDialog({
             ))}
           </Table.Body>
         </Table>
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

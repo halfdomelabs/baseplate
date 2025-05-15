@@ -15,7 +15,8 @@ import {
   Button,
   ComboboxField,
   ComboboxFieldController,
-  Dialog,
+  DialogClose,
+  DialogFooter,
   InputFieldController,
   SelectFieldController,
   toast,
@@ -393,7 +394,7 @@ export function ModelRelationForm({
           description="What to do when the foreign row is deleted"
         />
       </div>
-      <Dialog.Footer>
+      <DialogFooter>
         <div className="flex w-full justify-between">
           {relationId && (
             <Button
@@ -407,9 +408,9 @@ export function ModelRelationForm({
             </Button>
           )}
           <div className="flex gap-4">
-            <Dialog.Close asChild>
+            <DialogClose asChild>
               <Button variant="secondary">Cancel</Button>
-            </Dialog.Close>
+            </DialogClose>
             <Button
               type="submit"
               form={formId}
@@ -419,7 +420,7 @@ export function ModelRelationForm({
             </Button>
           </div>
         </div>
-      </Dialog.Footer>
+      </DialogFooter>
     </form>
   );
 }
