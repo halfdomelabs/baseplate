@@ -73,16 +73,10 @@ export function generateCssFromThemeConfig(
   config: ThemeColorsConfig,
 ): Record<string, string> {
   return Object.fromEntries(
-    Object.entries(config).map(([key, value]) => {
-      const themeColorKey = key as ThemeColorKey;
-      const config = THEME_COLORS[themeColorKey];
-      // trim oklch( from the start and ) from the end
-      const trimmedValue = value.replace(/^oklch\(/, '').replace(/\)$/, '');
-      return [
-        `--${dasherize(underscore(key))}`,
-        `oklch(${trimmedValue}${'opacity' in config ? ` / ${config.opacity}%` : ''})`,
-      ];
-    }),
+    Object.entries(config).map(([key, value]) => [
+      `--${dasherize(underscore(key))}`,
+      value,
+    ]),
   );
 }
 

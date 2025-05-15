@@ -1,4 +1,3 @@
-import { SelectFieldController } from '@halfdomelabs/ui-components';
 import type { AdminCrudEmbeddedInputConfig } from '@halfdomelabs/project-builder-lib';
 import type { AdminCrudInputWebFormProps } from '@halfdomelabs/project-builder-lib/web';
 import type React from 'react';
@@ -9,6 +8,7 @@ import {
   createAdminCrudInputWebConfig,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
+import { SelectFieldController } from '@halfdomelabs/ui-components';
 
 function AdminCrudEmbeddedInputForm({
   formProps,
