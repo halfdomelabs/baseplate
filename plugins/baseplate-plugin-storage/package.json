@@ -35,11 +35,11 @@
     "@halfdomelabs/react-generators": "workspace:*",
     "@halfdomelabs/ui-components": "workspace:*",
     "@halfdomelabs/utils": "workspace:*",
-    "@hookform/resolvers": "3.9.0",
+    "@hookform/resolvers": "5.0.1",
     "inflection": "3.0.0",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-hook-form": "7.53.0",
+    "react-hook-form": "7.56.3",
     "zod": "catalog:"
   },
   "devDependencies": {

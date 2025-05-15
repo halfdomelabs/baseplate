@@ -64,6 +64,9 @@
   --color-surface-border: var(--surface-border);
   --color-surface-muted: var(--surface-muted);
   --color-surface-muted-foreground: var(--surface-muted-foreground);
+
+  --color-white: #fff;
+  --color-black: #000;
 }
 
 @utility surface-default {
