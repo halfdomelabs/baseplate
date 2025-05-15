@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from '../FormItem/FormItem';
 
-export interface CheckboxFieldProps
+interface CheckboxFieldProps
   extends Omit<
       ComponentPropsWithRef<'button'>,
       'onCheckedChange' | 'checked' | 'onChange' | 'value'
@@ -29,7 +29,7 @@ export interface CheckboxFieldProps
 /**
  * Field with label and error states that wraps a Checkbox component.
  */
-export function CheckboxField({
+function CheckboxField({
   label,
   description,
   error,
@@ -60,7 +60,7 @@ export function CheckboxField({
   );
 }
 
-export interface CheckboxFieldControllerProps<
+interface CheckboxFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends Omit<CheckboxFieldProps, 'value'> {
@@ -68,7 +68,7 @@ export interface CheckboxFieldControllerProps<
   name: TFieldName;
 }
 
-export function CheckboxFieldController<
+function CheckboxFieldController<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
@@ -83,3 +83,5 @@ export function CheckboxFieldController<
 
   return <CheckboxField error={error?.message} {...rest} {...field} />;
 }
+
+export { CheckboxField, CheckboxFieldController };
