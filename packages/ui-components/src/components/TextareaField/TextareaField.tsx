@@ -1,4 +1,4 @@
-import type { ForwardedRef } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 import type {
   Control,
   FieldError,
@@ -8,12 +8,9 @@ import type {
   UseFormRegisterReturn,
 } from 'react-hook-form';
 
-import React from 'react';
 import { get, useFormState } from 'react-hook-form';
 
 import type { FormFieldProps } from '@src/types/form';
-
-import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 import {
   FormControl,
@@ -25,19 +22,23 @@ import {
 import { Textarea } from '../Textarea/Textarea';
 
 export interface TextareaFieldProps
-  extends Omit<
-      React.InputHTMLAttributes<HTMLTextAreaElement>,
-      'onChange' | 'value'
-    >,
+  extends Omit<ComponentPropsWithRef<'textarea'>, 'onChange' | 'value'>,
     FormFieldProps {
   onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;
 }
 
-const TextareaFieldRoot = React.forwardRef<HTMLDivElement, TextareaFieldProps>(
-  ({ label, description, error, onChange, register, ...props }, ref) => (
-    <FormItem ref={ref} error={error}>
+function TextareaField({
+  label,
+  description,
+  error,
+  onChange,
+  register,
+  ...props
+}: TextareaFieldProps): React.ReactElement {
+  return (
+    <FormItem error={error}>
       <FormLabel>{label}</FormLabel>
       <FormControl>
         <Textarea
@@ -54,9 +55,8 @@ const TextareaFieldRoot = React.forwardRef<HTMLDivElement, TextareaFieldProps>(
       <FormDescription>{description}</FormDescription>
       <FormMessage />
     </FormItem>
-  ),
-);
-TextareaFieldRoot.displayName = 'TextareaField';
+  );
+}
 
 export interface TextareaFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -66,34 +66,26 @@ export interface TextareaFieldControllerProps<
   name: TFieldName;
   registerOptions?: RegisterOptions<TFieldValues, TFieldName>;
 }
-const TextareaFieldController = genericForwardRef(
-  <
-    TFieldValues extends FieldValues = FieldValues,
-    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  >(
-    {
-      control,
-      name,
-      registerOptions,
-      ...rest
-    }: TextareaFieldControllerProps<TFieldValues, TFieldName>,
-    ref: ForwardedRef<HTMLDivElement>,
-  ): React.JSX.Element => {
-    const { errors } = useFormState({ control, name });
-    const error = get(errors, name) as FieldError | undefined;
 
-    return (
-      <TextareaFieldRoot
-        register={control.register(name, registerOptions)}
-        error={error?.message}
-        ref={ref}
-        {...rest}
-      />
-    );
-  },
-  'TextareaFieldController',
-);
+function TextareaFieldController<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  control,
+  name,
+  registerOptions,
+  ...rest
+}: TextareaFieldControllerProps<TFieldValues, TFieldName>): React.ReactElement {
+  const { errors } = useFormState({ control, name });
+  const error = get(errors, name) as FieldError | undefined;
 
-export const TextareaField = Object.assign(TextareaFieldRoot, {
-  Controller: TextareaFieldController,
-});
+  return (
+    <TextareaField
+      register={control.register(name, registerOptions)}
+      error={error?.message}
+      {...rest}
+    />
+  );
+}
+
+export { TextareaField, TextareaFieldController };

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Tabs } from './Tabs.js';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './Tabs.js';
 
 const meta = {
   component: Tabs,
@@ -15,12 +15,12 @@ export const Default: Story = {
   args: {
     children: (
       <Tabs defaultValue="default">
-        <Tabs.List>
-          <Tabs.Trigger value="default">Tab 1</Tabs.Trigger>
-          <Tabs.Trigger value="not-default">Tab 2</Tabs.Trigger>
-          <Tabs.Trigger value="tertiary">Tab 3</Tabs.Trigger>
-        </Tabs.List>
-        <Tabs.Content value="default">
+        <TabsList>
+          <TabsTrigger value="default">Tab 1</TabsTrigger>
+          <TabsTrigger value="not-default">Tab 2</TabsTrigger>
+          <TabsTrigger value="tertiary">Tab 3</TabsTrigger>
+        </TabsList>
+        <TabsContent value="default">
           <h1>This is the tab 1</h1>
           <p>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit.
@@ -28,8 +28,8 @@ export const Default: Story = {
             obcaecati quod reiciendis, numquam corrupti blanditiis laboriosam
             voluptatum minima id nobis soluta nisi error.
           </p>
-        </Tabs.Content>
-        <Tabs.Content value="not-default">
+        </TabsContent>
+        <TabsContent value="not-default">
           <h1>This is the tab 2</h1>
           <p>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit.
@@ -37,8 +37,8 @@ export const Default: Story = {
             obcaecati quod reiciendis, numquam corrupti blanditiis laboriosam
             voluptatum minima id nobis soluta nisi error.
           </p>
-        </Tabs.Content>
-        <Tabs.Content value="tertiary">
+        </TabsContent>
+        <TabsContent value="tertiary">
           <h1>This is the tertiary tab</h1>
           <p>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit.
@@ -46,7 +46,7 @@ export const Default: Story = {
             obcaecati quod reiciendis, numquam corrupti blanditiis laboriosam
             voluptatum minima id nobis soluta nisi error.
           </p>
-        </Tabs.Content>
+        </TabsContent>
       </Tabs>
     ),
   },

@@ -14,6 +14,9 @@ import {
   DialogTitle,
   DialogTrigger,
   Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   toast,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
@@ -112,16 +115,16 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
             </DialogDescription>
           </DialogHeader>
           <Tabs defaultValue="packages" className="mt-4 min-w-0">
-            <Tabs.List className="grid w-full grid-cols-2">
-              <Tabs.Trigger value="packages">Packages</Tabs.Trigger>
-              <Tabs.Trigger value="console-log">Console log</Tabs.Trigger>
-            </Tabs.List>
-            <Tabs.Content value="packages" className="mt-4">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="packages">Packages</TabsTrigger>
+              <TabsTrigger value="console-log">Console log</TabsTrigger>
+            </TabsList>
+            <TabsContent value="packages" className="mt-4">
               <PackageSyncStatus />
-            </Tabs.Content>
-            <Tabs.Content value="console-log" className="mt-4">
+            </TabsContent>
+            <TabsContent value="console-log" className="mt-4">
               <Console />
-            </Tabs.Content>
+            </TabsContent>
           </Tabs>
           <DialogFooter>
             {isSyncing ? (

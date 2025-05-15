@@ -23,6 +23,9 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
   Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo, useState } from 'react';
@@ -136,11 +139,11 @@ export function ThemeBuilderPage(): React.JSX.Element {
               </SectionListSectionHeader>
               <SectionListSectionContent className="max-w-3xl">
                 <Tabs defaultValue="base">
-                  <Tabs.List>
-                    <Tabs.Trigger value="base">Base</Tabs.Trigger>
-                    <Tabs.Trigger value="primary">Primary</Tabs.Trigger>
-                  </Tabs.List>
-                  <Tabs.Content value="base">
+                  <TabsList>
+                    <TabsTrigger value="base">Base</TabsTrigger>
+                    <TabsTrigger value="primary">Primary</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="base">
                     <ThemePaletteEditor
                       control={control}
                       getValues={getValues}
@@ -148,8 +151,8 @@ export function ThemeBuilderPage(): React.JSX.Element {
                       type="base"
                       onShadesChange={handleShadesChange}
                     />
-                  </Tabs.Content>
-                  <Tabs.Content value="primary">
+                  </TabsContent>
+                  <TabsContent value="primary">
                     <ThemePaletteEditor
                       control={control}
                       getValues={getValues}
@@ -157,7 +160,7 @@ export function ThemeBuilderPage(): React.JSX.Element {
                       type="primary"
                       onShadesChange={handleShadesChange}
                     />
-                  </Tabs.Content>
+                  </TabsContent>
                 </Tabs>
               </SectionListSectionContent>
             </SectionListSection>
@@ -177,24 +180,24 @@ export function ThemeBuilderPage(): React.JSX.Element {
               </SectionListSectionHeader>
               <SectionListSectionContent className="flex flex-col gap-4">
                 <Tabs value={themeMode} onValueChange={setThemeMode}>
-                  <Tabs.List>
-                    <Tabs.Trigger value="light">Light</Tabs.Trigger>
-                    <Tabs.Trigger value="dark">Dark</Tabs.Trigger>
-                  </Tabs.List>
-                  <Tabs.Content value="light">
+                  <TabsList>
+                    <TabsTrigger value="light">Light</TabsTrigger>
+                    <TabsTrigger value="dark">Dark</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="light">
                     <ThemeColorsEditor
                       control={control}
                       setValue={setValue}
                       mode="light"
                     />
-                  </Tabs.Content>
-                  <Tabs.Content value="dark">
+                  </TabsContent>
+                  <TabsContent value="dark">
                     <ThemeColorsEditor
                       control={control}
                       setValue={setValue}
                       mode="dark"
                     />
-                  </Tabs.Content>
+                  </TabsContent>
                 </Tabs>
                 <Button
                   onClick={() => {
