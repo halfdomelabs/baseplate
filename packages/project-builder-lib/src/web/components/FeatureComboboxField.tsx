@@ -1,6 +1,6 @@
 import type { ComboboxFieldProps } from '@halfdomelabs/ui-components';
-import type { ForwardedRef } from 'react';
 import type React from 'react';
+import type { ForwardedRef } from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import {
@@ -8,7 +8,7 @@ import {
   genericForwardRef,
   useControllerMerged,
 } from '@halfdomelabs/ui-components';
-import { forwardRef, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { FeatureUtils } from '@src/definition/index.js';
 
@@ -32,10 +32,11 @@ function createCreateOption(value: string): { label: string; value: string } {
   };
 }
 
-const FeatureComboboxFieldRoot = forwardRef<
-  HTMLInputElement,
-  FeatureComboboxFieldProps
->(({ canCreate, value, ...rest }, ref) => {
+function FeatureComboboxFieldRoot({
+  canCreate,
+  value,
+  ...rest
+}: FeatureComboboxFieldProps): React.ReactElement {
   const { definition } = useProjectDefinition();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -69,10 +70,9 @@ const FeatureComboboxFieldRoot = forwardRef<
       onSearchQueryChange={setSearchQuery}
       options={featureOptions}
       value={value}
-      ref={ref}
     />
   );
-});
+}
 
 FeatureComboboxFieldRoot.displayName = 'FeatureComboboxField';
 
