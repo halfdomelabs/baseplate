@@ -1,11 +1,9 @@
 import type { ComboboxFieldProps } from '@halfdomelabs/ui-components';
 import type React from 'react';
-import type { ForwardedRef } from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import {
   ComboboxField,
-  genericForwardRef,
   useControllerMerged,
 } from '@halfdomelabs/ui-components';
 import { useMemo, useState } from 'react';
@@ -32,7 +30,7 @@ function createCreateOption(value: string): { label: string; value: string } {
   };
 }
 
-function FeatureComboboxFieldRoot({
+function FeatureComboboxField({
   canCreate,
   value,
   ...rest
@@ -74,8 +72,6 @@ function FeatureComboboxFieldRoot({
   );
 }
 
-FeatureComboboxFieldRoot.displayName = 'FeatureComboboxField';
-
 interface FeatureComboboxFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -84,36 +80,32 @@ interface FeatureComboboxFieldControllerProps<
   name: TFieldName;
 }
 
-const FeatureComboboxFieldController = genericForwardRef(
-  function FeatureComboboxFieldController<
-    TFieldValues extends FieldValues = FieldValues,
-    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  >(
-    {
-      name,
-      control,
-      ...rest
-    }: FeatureComboboxFieldControllerProps<TFieldValues, TFieldName>,
-    ref: ForwardedRef<HTMLInputElement>,
-  ): React.JSX.Element {
-    const {
-      field,
-      fieldState: { error },
-    } = useControllerMerged({ name, control }, rest, ref);
+function FeatureComboboxFieldController<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  name,
+  control,
+  ...rest
+}: FeatureComboboxFieldControllerProps<
+  TFieldValues,
+  TFieldName
+>): React.JSX.Element {
+  const {
+    field,
+    fieldState: { error },
+  } = useControllerMerged({ name, control }, rest);
 
-    const restProps = rest;
+  const restProps = rest;
 
-    return (
-      <FeatureComboboxField
-        error={error?.message}
-        {...restProps}
-        {...field}
-        value={field.value ?? null}
-      />
-    );
-  },
-);
+  return (
+    <FeatureComboboxField
+      error={error?.message}
+      {...restProps}
+      {...field}
+      value={field.value ?? null}
+    />
+  );
+}
 
-export const FeatureComboboxField = Object.assign(FeatureComboboxFieldRoot, {
-  Controller: FeatureComboboxFieldController,
-});
+export { FeatureComboboxField, FeatureComboboxFieldController };

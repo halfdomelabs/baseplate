@@ -2,7 +2,7 @@ import type { EnumConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { FeatureComboboxField } from '@halfdomelabs/project-builder-lib/web';
+import { FeatureComboboxFieldController } from '@halfdomelabs/project-builder-lib/web';
 import { InputFieldController } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 
@@ -20,7 +20,7 @@ export function EnumInfoForm({ className, control }: Props): React.JSX.Element {
         name="name"
         description="The name of the enum (PascalCase)"
       />
-      <FeatureComboboxField.Controller
+      <FeatureComboboxFieldController
         label="Feature"
         control={control}
         name="featureRef"
