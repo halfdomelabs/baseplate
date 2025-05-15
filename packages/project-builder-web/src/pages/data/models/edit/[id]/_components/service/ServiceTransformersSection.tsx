@@ -17,6 +17,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   RecordView,
+  RecordViewActions,
+  RecordViewItem,
+  RecordViewItemList,
   SectionList,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
@@ -61,17 +64,15 @@ function ServiceTransformerRecord({
   const summary = transformerConfig.getSummary(field, definitionContainer);
   return (
     <RecordView>
-      <RecordView.ItemList>
-        <RecordView.Item title="Type">
-          {transformerConfig.label}
-        </RecordView.Item>
+      <RecordViewItemList>
+        <RecordViewItem title="Type">{transformerConfig.label}</RecordViewItem>
         {summary.map((item) => (
-          <RecordView.Item key={item.label} title={item.label}>
+          <RecordViewItem key={item.label} title={item.label}>
             {item.description}
-          </RecordView.Item>
+          </RecordViewItem>
         ))}
-      </RecordView.ItemList>
-      <RecordView.Actions>
+      </RecordViewItemList>
+      <RecordViewActions>
         {transformerConfig.Form && (
           <ServiceTransformerDialog
             webConfig={transformerConfig}
@@ -98,7 +99,7 @@ function ServiceTransformerRecord({
         >
           <MdOutlineDelete />
         </Button>
-      </RecordView.Actions>
+      </RecordViewActions>
     </RecordView>
   );
 }

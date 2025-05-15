@@ -5,6 +5,9 @@ import type { Control, UseFormSetValue } from 'react-hook-form';
 import {
   Button,
   RecordView,
+  RecordViewActions,
+  RecordViewItem,
+  RecordViewItemList,
   SectionList,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
@@ -56,16 +59,16 @@ export function ModelUniqueConstraintsSection({
       <SectionList.SectionContent className="space-y-4">
         {uniqueConstraints.map((constraint) => (
           <RecordView key={constraint.id}>
-            <RecordView.ItemList>
-              <RecordView.Item title="Fields">
+            <RecordViewItemList>
+              <RecordViewItem title="Fields">
                 {constraint.fields
                   .map(
                     (field) => fieldIdsToNames[field.fieldRef] ?? '<invalid>',
                   )
                   .join(', ')}
-              </RecordView.Item>
-            </RecordView.ItemList>
-            <RecordView.Actions>
+              </RecordViewItem>
+            </RecordViewItemList>
+            <RecordViewActions>
               <ModelUniqueConstraintDialog
                 constraintId={constraint.id}
                 control={control}
@@ -85,7 +88,7 @@ export function ModelUniqueConstraintsSection({
               >
                 <MdDeleteOutline />
               </Button>
-            </RecordView.Actions>
+            </RecordViewActions>
           </RecordView>
         ))}
         <ModelUniqueConstraintDialog control={control} asChild>

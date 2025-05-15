@@ -6,6 +6,9 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   RecordView,
+  RecordViewActions,
+  RecordViewItem,
+  RecordViewItemList,
   SectionList,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
@@ -55,21 +58,21 @@ export function ModelRelationsSection({
       <SectionList.SectionContent className="space-y-4">
         {relations.map((relation) => (
           <RecordView key={relation.id}>
-            <RecordView.ItemList>
-              <RecordView.Item title="Name">{relation.name}</RecordView.Item>
-              <RecordView.Item title="Local Field">
+            <RecordViewItemList>
+              <RecordViewItem title="Name">{relation.name}</RecordViewItem>
+              <RecordViewItem title="Local Field">
                 {relation.references
                   .map((r) => fieldIdsToNames[r.localRef])
                   .join(', ')}
-              </RecordView.Item>
-              <RecordView.Item title="Foreign Model">
+              </RecordViewItem>
+              <RecordViewItem title="Foreign Model">
                 {definitionContainer.nameFromId(relation.modelRef)}
-              </RecordView.Item>
-              <RecordView.Item title="On Delete">
+              </RecordViewItem>
+              <RecordViewItem title="On Delete">
                 {relation.onDelete}
-              </RecordView.Item>
-            </RecordView.ItemList>
-            <RecordView.Actions>
+              </RecordViewItem>
+            </RecordViewItemList>
+            <RecordViewActions>
               <ModelRelationDialog
                 relationId={relation.id}
                 control={control}
@@ -89,7 +92,7 @@ export function ModelRelationsSection({
               >
                 <MdDeleteOutline />
               </Button>
-            </RecordView.Actions>
+            </RecordViewActions>
           </RecordView>
         ))}
         <ModelRelationDialog control={control} asChild>
