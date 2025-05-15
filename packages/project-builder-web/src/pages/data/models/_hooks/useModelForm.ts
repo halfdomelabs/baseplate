@@ -39,6 +39,12 @@ function createNewModel(): ModelConfig {
     id: modelEntityType.generateNewId(),
     name: '',
     featureRef: '',
+    service: {
+      create: { enabled: false },
+      update: { enabled: false },
+      delete: { enabled: false },
+      transformers: [],
+    },
     model: {
       primaryKeyFieldRefs: [idFieldId],
       fields: [
@@ -176,7 +182,12 @@ export function useModelForm({
             !service.update.enabled &&
             !service.delete.enabled
           ) {
-            updatedModel.service = undefined;
+            updatedModel.service = {
+              create: { enabled: false },
+              update: { enabled: false },
+              delete: { enabled: false },
+              transformers: [],
+            };
           }
         }
 

@@ -1,5 +1,6 @@
 import type {
   ModelConfigInput,
+  ModelScalarFieldConfig,
   ModelScalarFieldConfigInput,
 } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
@@ -110,7 +111,11 @@ export function ModelAddFieldButton({
             id: modelScalarFieldEntityType.generateNewId(),
             name: '',
             type: 'string',
-          });
+            isOptional: true,
+            options: {
+              default: '',
+            },
+          } satisfies ModelScalarFieldConfig);
         }}
         size="sm"
       >

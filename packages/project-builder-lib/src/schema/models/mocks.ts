@@ -66,6 +66,13 @@ export function generateMockModel(model?: Partial<ModelConfig>): ModelConfig {
       fields: [],
       ...model?.model,
     },
+    service: {
+      create: { enabled: false },
+      update: { enabled: false },
+      delete: { enabled: false },
+      transformers: [],
+      ...model?.service,
+    },
     ...model,
   };
 }
