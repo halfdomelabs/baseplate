@@ -5,13 +5,28 @@ import type React from 'react';
 import { useState } from 'react';
 
 import { Button } from '../Button/Button';
-import { Dropdown } from './Dropdown';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from './Dropdown';
 
 const meta = {
-  component: Dropdown,
+  component: DropdownMenu,
   tags: ['autodocs'],
   argTypes: {},
-} satisfies Meta<typeof Dropdown>;
+} satisfies Meta<typeof DropdownMenu>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -19,27 +34,27 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => (
     <div className="p-4">
-      <Dropdown>
-        <Dropdown.Trigger asChild>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
           <Button>Open</Button>
-        </Dropdown.Trigger>
-        <Dropdown.Content className="w-56">
-          <Dropdown.Group>
-            <Dropdown.Item>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
               <span>Profile</span>
-            </Dropdown.Item>
-            <Dropdown.Item>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
               <span>Billing</span>
-            </Dropdown.Item>
-            <Dropdown.Item>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
               <span>Settings</span>
-            </Dropdown.Item>
-            <Dropdown.Item>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
               <span>Keyboard shortcuts</span>
-            </Dropdown.Item>
-          </Dropdown.Group>
-        </Dropdown.Content>
-      </Dropdown>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   ),
 };
@@ -47,71 +62,71 @@ export const Default: Story = {
 export const FullExample: Story = {
   render: () => (
     <div className="p-4">
-      <Dropdown>
-        <Dropdown.Trigger asChild>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
           <Button>Open</Button>
-        </Dropdown.Trigger>
-        <Dropdown.Content className="w-56">
-          <Dropdown.Label>My Account</Dropdown.Label>
-          <Dropdown.Separator />
-          <Dropdown.Group>
-            <Dropdown.Item>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
               <span>Profile</span>
-            </Dropdown.Item>
-            <Dropdown.Item>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
               <span>Billing</span>
-            </Dropdown.Item>
-            <Dropdown.Item>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
               <span>Settings</span>
-            </Dropdown.Item>
-            <Dropdown.Item>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
               <span>Keyboard shortcuts</span>
-            </Dropdown.Item>
-          </Dropdown.Group>
-          <Dropdown.Separator />
-          <Dropdown.Group>
-            <Dropdown.Item>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
               <span>Team</span>
-            </Dropdown.Item>
-            <Dropdown.Sub>
-              <Dropdown.SubTrigger>
+            </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
                 <span>Invite users</span>
-              </Dropdown.SubTrigger>
-              <Dropdown.Portal>
-                <Dropdown.SubContent className="">
-                  <Dropdown.Item>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem>
                     <span>Email</span>
-                  </Dropdown.Item>
-                  <Dropdown.Item>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
                     <span>Message</span>
-                  </Dropdown.Item>
-                  <Dropdown.Separator />
-                  <Dropdown.Item>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
                     <span>More...</span>
-                  </Dropdown.Item>
-                </Dropdown.SubContent>
-              </Dropdown.Portal>
-            </Dropdown.Sub>
-            <Dropdown.Item>
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+            <DropdownMenuItem>
               <span>New Team</span>
-            </Dropdown.Item>
-          </Dropdown.Group>
-          <Dropdown.Separator />
-          <Dropdown.Item>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
             <span>GitHub</span>
-          </Dropdown.Item>
-          <Dropdown.Item>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
             <span>Support</span>
-          </Dropdown.Item>
-          <Dropdown.Item disabled>
+          </DropdownMenuItem>
+          <DropdownMenuItem disabled>
             <span>API</span>
-          </Dropdown.Item>
-          <Dropdown.Separator />
-          <Dropdown.Item>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
             <span>Log out</span>
-          </Dropdown.Item>
-        </Dropdown.Content>
-      </Dropdown>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   ),
 };
@@ -125,34 +140,34 @@ function DropdownWithCheckboxesExample(): React.JSX.Element {
 
   return (
     <div className="p-4">
-      <Dropdown>
-        <Dropdown.Trigger asChild>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
           <Button>Open</Button>
-        </Dropdown.Trigger>
-        <Dropdown.Content className="w-56">
-          <Dropdown.Label>Appearance</Dropdown.Label>
-          <Dropdown.Separator />
-          <Dropdown.CheckboxItem
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuCheckboxItem
             checked={showStatusBar}
             onCheckedChange={setShowStatusBar}
           >
             Status Bar
-          </Dropdown.CheckboxItem>
-          <Dropdown.CheckboxItem
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem
             checked={showActivityBar}
             onCheckedChange={setShowActivityBar}
             disabled
           >
             Activity Bar
-          </Dropdown.CheckboxItem>
-          <Dropdown.CheckboxItem
+          </DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem
             checked={showPanel}
             onCheckedChange={setShowPanel}
           >
             Panel
-          </Dropdown.CheckboxItem>
-        </Dropdown.Content>
-      </Dropdown>
+          </DropdownMenuCheckboxItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
@@ -166,20 +181,20 @@ function DropdownWithRadioGroupExample(): React.JSX.Element {
 
   return (
     <div className="p-4">
-      <Dropdown>
-        <Dropdown.Trigger asChild>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
           <Button>Open</Button>
-        </Dropdown.Trigger>
-        <Dropdown.Content className="w-56">
-          <Dropdown.Label>Panel Position</Dropdown.Label>
-          <Dropdown.Separator />
-          <Dropdown.RadioGroup value={position} onValueChange={setPosition}>
-            <Dropdown.RadioItem value="top">Top</Dropdown.RadioItem>
-            <Dropdown.RadioItem value="bottom">Bottom</Dropdown.RadioItem>
-            <Dropdown.RadioItem value="right">Right</Dropdown.RadioItem>
-          </Dropdown.RadioGroup>
-        </Dropdown.Content>
-      </Dropdown>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
+            <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="bottom">Bottom</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="right">Right</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

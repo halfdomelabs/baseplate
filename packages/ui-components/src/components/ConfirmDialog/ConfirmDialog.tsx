@@ -1,3 +1,5 @@
+'use client';
+
 import type React from 'react';
 
 import { useEffect, useRef } from 'react';
@@ -21,7 +23,7 @@ import {
  * A confirm dialog that is placed at the top level of the page
  * enabling the use of the useConfirmDialog hook.
  */
-export function ConfirmDialog(): React.JSX.Element {
+function ConfirmDialog(): React.ReactElement {
   const { confirmOptions, setConfirmOptions } = useConfirmDialogState();
   const strings = useComponentStrings();
 
@@ -95,3 +97,5 @@ export function ConfirmDialog(): React.JSX.Element {
     </Dialog>
   );
 }
+
+export { ConfirmDialog };
