@@ -14,7 +14,7 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
   Switch,
-  SwitchField,
+  SwitchFieldController,
 } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
@@ -108,7 +108,7 @@ export function GraphQLObjectTypeSection({
         </SectionListSectionHeader>
       </div>
       <SectionListSectionContent className="space-y-4">
-        <SwitchField.Controller
+        <SwitchFieldController
           control={control}
           name="graphql.objectType.enabled"
           label="Enable Object Type"

@@ -13,7 +13,7 @@ import {
   SectionListSectionDescription,
   SectionListSectionHeader,
   SectionListSectionTitle,
-  SwitchField,
+  SwitchFieldController,
 } from '@halfdomelabs/ui-components';
 import { useWatch } from 'react-hook-form';
 import { MdInfo } from 'react-icons/md';
@@ -71,7 +71,7 @@ export function GraphQLQueriesSection({
           </Alert>
         )}
         <div className="space-y-4">
-          <SwitchField.Controller
+          <SwitchFieldController
             control={control}
             name="graphql.queries.get.enabled"
             label="Get By ID Query"
@@ -89,7 +89,7 @@ export function GraphQLQueriesSection({
           )}
         </div>
         <div className="space-y-4">
-          <SwitchField.Controller
+          <SwitchFieldController
             control={control}
             name="graphql.queries.list.enabled"
             disabled={!isObjectTypeEnabled}

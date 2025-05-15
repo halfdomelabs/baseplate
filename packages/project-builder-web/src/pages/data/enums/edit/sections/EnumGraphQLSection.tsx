@@ -7,7 +7,7 @@ import {
   SectionListSectionContent,
   SectionListSectionHeader,
   SectionListSectionTitle,
-  SwitchField,
+  SwitchFieldController,
 } from '@halfdomelabs/ui-components';
 
 export function EnumGraphQLSection({
@@ -21,7 +21,7 @@ export function EnumGraphQLSection({
         <SectionListSectionTitle>GraphQL</SectionListSectionTitle>
       </SectionListSectionHeader>
       <SectionListSectionContent className="space-y-4">
-        <SwitchField.Controller
+        <SwitchFieldController
           label="Expose in GraphQL schema"
           control={control}
           name="isExposed"

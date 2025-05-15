@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  SwitchField,
+  SwitchFieldController,
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
@@ -68,7 +68,7 @@ export function NewEnumDialog({
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <EnumInfoForm control={control} />
-          <SwitchField.Controller
+          <SwitchFieldController
             label="Expose in GraphQL schema"
             control={control}
             name="isExposed"

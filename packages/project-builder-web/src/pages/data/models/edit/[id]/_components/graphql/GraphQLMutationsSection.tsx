@@ -13,7 +13,7 @@ import {
   SectionListSectionDescription,
   SectionListSectionHeader,
   SectionListSectionTitle,
-  SwitchField,
+  SwitchFieldController,
 } from '@halfdomelabs/ui-components';
 import { useWatch } from 'react-hook-form';
 import { MdInfo } from 'react-icons/md';
@@ -97,7 +97,7 @@ export function GraphQLMutationsSection({
           </Alert>
         )}
         <div className="space-y-4">
-          <SwitchField.Controller
+          <SwitchFieldController
             control={control}
             name="graphql.mutations.create.enabled"
             disabled={!isObjectTypeEnabled || !isCreateControllerEnabled}
@@ -115,7 +115,7 @@ export function GraphQLMutationsSection({
           )}
         </div>
         <div className="space-y-4">
-          <SwitchField.Controller
+          <SwitchFieldController
             control={control}
             name="graphql.mutations.update.enabled"
             label="Update Mutation"
@@ -133,7 +133,7 @@ export function GraphQLMutationsSection({
           )}
         </div>
         <div className="space-y-2">
-          <SwitchField.Controller
+          <SwitchFieldController
             control={control}
             name="graphql.mutations.delete.enabled"
             label="Delete Mutation"

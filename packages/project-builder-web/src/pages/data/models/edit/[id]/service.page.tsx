@@ -12,7 +12,7 @@ import {
   SectionListSectionDescription,
   SectionListSectionHeader,
   SectionListSectionTitle,
-  SwitchField,
+  SwitchFieldController,
 } from '@halfdomelabs/ui-components';
 
 import { FormActionBar } from '@src/components';
@@ -54,17 +54,17 @@ function ModelEditServicePage(): React.JSX.Element {
               </SectionListSectionDescription>
             </SectionListSectionHeader>
             <SectionListSectionContent className="flex gap-8">
-              <SwitchField.Controller
+              <SwitchFieldController
                 label="Create"
                 name="service.create.enabled"
                 control={control}
               />
-              <SwitchField.Controller
+              <SwitchFieldController
                 label="Update"
                 name="service.update.enabled"
                 control={control}
               />
-              <SwitchField.Controller
+              <SwitchFieldController
                 label="Delete"
                 name="service.delete.enabled"
                 control={control}

@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   InputFieldController,
-  SwitchField,
+  SwitchFieldController,
   toast,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
@@ -126,7 +126,7 @@ function ModelFieldForm({
         <ModelFieldTypeInput control={control} idx={idx} />
       </div>
       <div>
-        <SwitchField.Controller
+        <SwitchFieldController
           control={control}
           name={`model.fields.${idx}.isOptional`}
         />
