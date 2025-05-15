@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Button } from '../Button/Button.js';
-import { Tooltip } from './Tooltip.js';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './Tooltip.js';
 
 const meta = {
   component: Tooltip,
@@ -9,9 +14,9 @@ const meta = {
   argTypes: {},
   decorators: [
     (Story) => (
-      <Tooltip.Provider>
+      <TooltipProvider>
         <Story />
-      </Tooltip.Provider>
+      </TooltipProvider>
     ),
   ],
 } satisfies Meta<typeof Tooltip>;
@@ -23,12 +28,12 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <Tooltip.Trigger>
+        <TooltipTrigger>
           <Button variant="outline">Hover me</Button>
-        </Tooltip.Trigger>
-        <Tooltip.Content>
+        </TooltipTrigger>
+        <TooltipContent>
           <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
-        </Tooltip.Content>
+        </TooltipContent>
       </>
     ),
   },

@@ -15,6 +15,8 @@ import {
   TableRow,
   toast,
   Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import {
@@ -227,12 +229,12 @@ function FilesWithConflictsView({
               </TableCell>
               <TableCell>
                 <Tooltip>
-                  <Tooltip.Trigger>
+                  <TooltipTrigger>
                     <span>{getConflictTypeLabel(file.conflictType)}</span>
-                  </Tooltip.Trigger>
-                  <Tooltip.Content side="left" className="max-w-sm">
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="max-w-sm">
                     {getConflictTypeTooltip(file.conflictType)}
-                  </Tooltip.Content>
+                  </TooltipContent>
                 </Tooltip>
               </TableCell>
               <TableCell>

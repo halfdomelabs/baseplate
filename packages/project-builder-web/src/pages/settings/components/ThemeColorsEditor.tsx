@@ -13,6 +13,8 @@ import {
   Button,
   ColorPickerFieldController,
   Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useWatch } from 'react-hook-form';
@@ -64,7 +66,7 @@ export function ThemeColorsEditor({
                   <div className="flex h-6 w-full items-center gap-1">
                     <div>{config.name}</div>
                     <Tooltip delayDuration={500}>
-                      <Tooltip.Trigger asChild>
+                      <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -73,14 +75,14 @@ export function ThemeColorsEditor({
                         >
                           <MdInfo />
                         </Button>
-                      </Tooltip.Trigger>
-                      <Tooltip.Content
+                      </TooltipTrigger>
+                      <TooltipContent
                         align="start"
                         side="bottom"
                         className="max-w-[400px]"
                       >
                         <div className="font-normal">{config.description}</div>
-                      </Tooltip.Content>
+                      </TooltipContent>
                     </Tooltip>
                   </div>
                 }

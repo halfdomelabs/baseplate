@@ -1,4 +1,5 @@
 'use client';
+
 import type React from 'react';
 
 import { Toaster as Sonner } from 'sonner';
@@ -12,7 +13,7 @@ type ToasterProps = React.ComponentProps<typeof Sonner>;
  *
  * Adapted from https://ui.shadcn.com/docs/components/sonner
  */
-const Toaster = ({ ...props }: ToasterProps): React.JSX.Element => (
+const Toaster = ({ ...props }: ToasterProps): React.ReactElement => (
   <Sonner
     className="toaster group"
     position="top-center"
