@@ -11,7 +11,11 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  Dropdown,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   RecordView,
   SectionList,
   useConfirmDialog,
@@ -160,17 +164,17 @@ export function ServiceTransformersSection({
           />
         ))}
         {addableTransformers.length > 0 && (
-          <Dropdown>
-            <Dropdown.Trigger asChild>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="sm">
                 <MdAdd />
                 Add Transformer
               </Button>
-            </Dropdown.Trigger>
-            <Dropdown.Content>
-              <Dropdown.Group>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
                 {addableTransformers.map((transformer, idx) => (
-                  <Dropdown.Item
+                  <DropdownMenuItem
                     key={transformer.name}
                     onSelect={() => {
                       if (transformer.Form) {
@@ -192,11 +196,11 @@ export function ServiceTransformersSection({
                         {transformer.description}
                       </div>
                     </div>
-                  </Dropdown.Item>
+                  </DropdownMenuItem>
                 ))}
-              </Dropdown.Group>
-            </Dropdown.Content>
-          </Dropdown>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
         <ServiceTransformerDialog
           webConfig={addableTransformers[addableTransformerIdx]}

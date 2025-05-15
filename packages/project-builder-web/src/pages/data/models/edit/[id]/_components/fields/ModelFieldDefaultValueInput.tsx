@@ -7,7 +7,11 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   ComboboxField,
-  Dropdown,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   InputField,
   InputFieldController,
   SelectFieldController,
@@ -128,15 +132,15 @@ export function ModelFieldDefaultValueInput({
           name={`model.fields.${idx}.options.default`}
           className="flex-1"
         />
-        <Dropdown>
-          <Dropdown.Trigger asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button title="Options" variant="ghost" size="icon">
               <HiDotsVertical />
             </Button>
-          </Dropdown.Trigger>
-          <Dropdown.Content>
-            <Dropdown.Group>
-              <Dropdown.Item
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
+              <DropdownMenuItem
                 onSelect={() => {
                   onOptionsChange({
                     ...optionsValue,
@@ -145,10 +149,10 @@ export function ModelFieldDefaultValueInput({
                 }}
               >
                 Random UUID v4
-              </Dropdown.Item>
-            </Dropdown.Group>
-          </Dropdown.Content>
-        </Dropdown>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     );
   }
@@ -189,15 +193,15 @@ export function ModelFieldDefaultValueInput({
           name={`model.fields.${idx}.options.default`}
           className="flex-1"
         />
-        <Dropdown>
-          <Dropdown.Trigger asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button title="Options" variant="ghost" size="icon">
               <HiDotsVertical />
             </Button>
-          </Dropdown.Trigger>
-          <Dropdown.Content>
-            <Dropdown.Group>
-              <Dropdown.Item
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
+              <DropdownMenuItem
                 onSelect={() => {
                   onOptionsChange({
                     ...optionsValue,
@@ -207,8 +211,8 @@ export function ModelFieldDefaultValueInput({
                 }}
               >
                 Now
-              </Dropdown.Item>
-              <Dropdown.Item
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onSelect={() => {
                   onOptionsChange({
                     ...optionsValue,
@@ -218,10 +222,10 @@ export function ModelFieldDefaultValueInput({
                 }}
               >
                 Last Updated At
-              </Dropdown.Item>
-            </Dropdown.Group>
-          </Dropdown.Content>
-        </Dropdown>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     );
   }

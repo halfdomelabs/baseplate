@@ -9,7 +9,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
   Button,
-  Dropdown,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@halfdomelabs/ui-components';
 import { notEmpty } from '@halfdomelabs/utils';
 import { orderBy, upperFirst } from 'es-toolkit';
@@ -48,8 +52,8 @@ export function AppBreadcrumbs(): React.JSX.Element {
   return (
     <div className="flex items-center space-x-2">
       {projects.length > 1 && (
-        <Dropdown>
-          <Dropdown.Trigger asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="none"
@@ -60,11 +64,11 @@ export function AppBreadcrumbs(): React.JSX.Element {
               </div>
               <MdKeyboardArrowDown />
             </Button>
-          </Dropdown.Trigger>
-          <Dropdown.Content>
-            <Dropdown.Group>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
               {orderedProjects.map((project) => (
-                <Dropdown.Item
+                <DropdownMenuItem
                   key={project.id}
                   onSelect={() => {
                     setCurrentProjectId(project.id);
@@ -79,11 +83,11 @@ export function AppBreadcrumbs(): React.JSX.Element {
                       {project.directory}
                     </div>
                   </div>
-                </Dropdown.Item>
+                </DropdownMenuItem>
               ))}
-            </Dropdown.Group>
-          </Dropdown.Content>
-        </Dropdown>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
 
       <Breadcrumb>

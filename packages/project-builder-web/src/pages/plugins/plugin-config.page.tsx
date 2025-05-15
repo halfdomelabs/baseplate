@@ -4,7 +4,11 @@ import { PluginUtils, webConfigSpec } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  Dropdown,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { useMemo } from 'react';
@@ -96,15 +100,15 @@ export function PluginConfigPage(): React.JSX.Element {
       <div className="flex items-center justify-between">
         <h1>{metadata.displayName} Plugin</h1>
         {pluginDefinition && (
-          <Dropdown>
-            <Dropdown.Trigger asChild>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
                 <HiDotsVertical aria-label="More Actions" />
               </Button>
-            </Dropdown.Trigger>
-            <Dropdown.Content>
-              <Dropdown.Group>
-                <Dropdown.Item
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <DropdownMenuItem
                   disabled={isSavingDefinition}
                   onSelect={() => {
                     requestConfirm({
@@ -115,10 +119,10 @@ export function PluginConfigPage(): React.JSX.Element {
                   }}
                 >
                   Disable Plugin
-                </Dropdown.Item>
-              </Dropdown.Group>
-            </Dropdown.Content>
-          </Dropdown>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
       <Container
