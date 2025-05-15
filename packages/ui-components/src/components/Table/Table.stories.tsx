@@ -1,7 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Button } from '../Button/Button.js';
-import { Table } from './Table.js';
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from './Table.js';
 
 const meta = {
   component: Table,
@@ -146,36 +155,34 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <Table.Caption>A list of users.</Table.Caption>
-        <Table.Header>
-          <Table.Row>
-            <Table.Head>Name</Table.Head>
-            <Table.Head>Email</Table.Head>
-            <Table.Head>Last Login</Table.Head>
-            <Table.Head />
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
+        <TableCaption>A list of users.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Last Login</TableHead>
+            <TableHead />
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {SAMPLE_USERS.map((user) => (
-            <Table.Row key={user.id}>
-              <Table.Cell>{user.name}</Table.Cell>
-              <Table.Cell>{user.email}</Table.Cell>
-              <Table.Cell>{user.lastLogin.toLocaleDateString()}</Table.Cell>
-              <Table.Cell>
+            <TableRow key={user.id}>
+              <TableCell>{user.name}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>{user.lastLogin.toLocaleDateString()}</TableCell>
+              <TableCell>
                 <Button variant="link">Edit</Button>
-              </Table.Cell>
-            </Table.Row>
+              </TableCell>
+            </TableRow>
           ))}
-        </Table.Body>
+        </TableBody>
 
-        <Table.Footer>
-          <Table.Row>
-            <Table.Cell colSpan={3}>Total</Table.Cell>
-            <Table.Cell className="text-right">
-              {SAMPLE_USERS.length}
-            </Table.Cell>
-          </Table.Row>
-        </Table.Footer>
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={3}>Total</TableCell>
+            <TableCell className="text-right">{SAMPLE_USERS.length}</TableCell>
+          </TableRow>
+        </TableFooter>
       </>
     ),
   },

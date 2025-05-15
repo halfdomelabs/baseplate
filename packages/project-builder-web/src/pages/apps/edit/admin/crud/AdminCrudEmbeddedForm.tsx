@@ -12,6 +12,11 @@ import {
   InputFieldController,
   SelectFieldController,
   Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,23 +44,23 @@ export function AdminCrudEmbeddedTable({
   const { definitionContainer } = useProjectDefinition();
   return (
     <Table className="max-w-6xl">
-      <Table.Header>
-        <Table.Row>
-          <Table.Head>Form Name</Table.Head>
-          <Table.Head>Model Name</Table.Head>
-          <Table.Head>Type</Table.Head>
-          <Table.Head>Actions</Table.Head>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Form Name</TableHead>
+          <TableHead>Model Name</TableHead>
+          <TableHead>Type</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {items.map((item, idx) => (
-          <Table.Row key={item.id}>
-            <Table.Cell>{item.name}</Table.Cell>
-            <Table.Cell>
+          <TableRow key={item.id}>
+            <TableCell>{item.name}</TableCell>
+            <TableCell>
               {definitionContainer.nameFromId(item.modelRef)}
-            </Table.Cell>
-            <Table.Cell>{item.type}</Table.Cell>
-            <Table.Cell className="space-x-4">
+            </TableCell>
+            <TableCell>{item.type}</TableCell>
+            <TableCell className="space-x-4">
               <Button
                 variant="link"
                 size="none"
@@ -74,10 +79,10 @@ export function AdminCrudEmbeddedTable({
               >
                 Remove
               </Button>
-            </Table.Cell>
-          </Table.Row>
+            </TableCell>
+          </TableRow>
         ))}
-      </Table.Body>
+      </TableBody>
     </Table>
   );
 }

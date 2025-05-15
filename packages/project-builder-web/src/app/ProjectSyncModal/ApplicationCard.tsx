@@ -8,6 +8,11 @@ import {
   Badge,
   Button,
   Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   toast,
   Tooltip,
 } from '@halfdomelabs/ui-components';
@@ -188,19 +193,19 @@ function FilesWithConflictsView({
     <div>
       <h4 className="font-medium">Merge Conflicts</h4>
       <Table>
-        <Table.Header>
-          <Table.Row>
-            <Table.Head className="w-3/5">Name</Table.Head>
-            <Table.Head className="w-1/5">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-3/5">Name</TableHead>
+            <TableHead className="w-1/5">
               <div className="flex items-center gap-2">Type</div>
-            </Table.Head>
-            <Table.Head className="w-1/5">Actions</Table.Head>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
+            </TableHead>
+            <TableHead className="w-1/5">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {filesWithConflicts.map((file) => (
-            <Table.Row key={file.relativePath}>
-              <Table.Cell>
+            <TableRow key={file.relativePath}>
+              <TableCell>
                 {clientVersion.userConfig.sync?.editor ? (
                   <button
                     className="hover:underline"
@@ -219,8 +224,8 @@ function FilesWithConflictsView({
                     {file.generatedConflictRelativePath ?? file.relativePath}
                   </span>
                 )}
-              </Table.Cell>
-              <Table.Cell>
+              </TableCell>
+              <TableCell>
                 <Tooltip>
                   <Tooltip.Trigger>
                     <span>{getConflictTypeLabel(file.conflictType)}</span>
@@ -229,8 +234,8 @@ function FilesWithConflictsView({
                     {getConflictTypeTooltip(file.conflictType)}
                   </Tooltip.Content>
                 </Tooltip>
-              </Table.Cell>
-              <Table.Cell>
+              </TableCell>
+              <TableCell>
                 {file.conflictType === 'merge-conflict' &&
                   clientVersion.userConfig.sync?.editor && (
                     <Button
@@ -268,10 +273,10 @@ function FilesWithConflictsView({
                     </Button>
                   </div>
                 )}
-              </Table.Cell>
-            </Table.Row>
+              </TableCell>
+            </TableRow>
           ))}
-        </Table.Body>
+        </TableBody>
       </Table>
     </div>
   );

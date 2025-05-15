@@ -11,6 +11,11 @@ import {
   DialogHeader,
   DialogTitle,
   Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@halfdomelabs/ui-components';
 import { Link } from 'react-router-dom';
 
@@ -45,14 +50,14 @@ export function RefIssueDialog(): React.JSX.Element {
           delete this item.
         </DialogDescription>
         <Table>
-          <Table.Header>
-            <Table.Row>
-              <Table.Head>Entity</Table.Head>
-              <Table.Head>Path</Table.Head>
-              <Table.Head>Referenced Entity</Table.Head>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Entity</TableHead>
+              <TableHead>Path</TableHead>
+              <TableHead>Referenced Entity</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {issues?.map((issue) => {
               const entity = entities.find((e) => e.id === issue.entityId);
               const issuePath = issue.ref.path.join('.');
@@ -76,8 +81,8 @@ export function RefIssueDialog(): React.JSX.Element {
                 ? getEntityTypeUrl(definitionContainer, referenceParent)
                 : undefined;
               return (
-                <Table.Row key={issuePath}>
-                  <Table.Cell>
+                <TableRow key={issuePath}>
+                  <TableCell>
                     {referenceParent ? (
                       <div className="text-style-prose">
                         <div>
@@ -101,9 +106,9 @@ export function RefIssueDialog(): React.JSX.Element {
                     ) : (
                       <strong>Root</strong>
                     )}
-                  </Table.Cell>
-                  <Table.Cell>{pathInParent}</Table.Cell>
-                  <Table.Cell>
+                  </TableCell>
+                  <TableCell>{pathInParent}</TableCell>
+                  <TableCell>
                     {entity ? (
                       <div>
                         <div>{entity.name}</div>
@@ -114,11 +119,11 @@ export function RefIssueDialog(): React.JSX.Element {
                     ) : (
                       ''
                     )}
-                  </Table.Cell>
-                </Table.Row>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </Table.Body>
+          </TableBody>
         </Table>
         <DialogFooter>
           <Button
