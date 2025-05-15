@@ -17,6 +17,11 @@ import {
   AlertTitle,
   Button,
   SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
   Tabs,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -120,16 +125,16 @@ export function ThemeBuilderPage(): React.JSX.Element {
             </AlertDescription>
           </Alert>
           <SectionList>
-            <SectionList.Section>
-              <SectionList.SectionHeader>
-                <SectionList.SectionTitle>
+            <SectionListSection>
+              <SectionListSectionHeader>
+                <SectionListSectionTitle>
                   Theme Palettes
-                </SectionList.SectionTitle>
-                <SectionList.SectionDescription>
+                </SectionListSectionTitle>
+                <SectionListSectionDescription>
                   Pick the colors for your theme
-                </SectionList.SectionDescription>
-              </SectionList.SectionHeader>
-              <SectionList.SectionContent className="max-w-3xl">
+                </SectionListSectionDescription>
+              </SectionListSectionHeader>
+              <SectionListSectionContent className="max-w-3xl">
                 <Tabs defaultValue="base">
                   <Tabs.List>
                     <Tabs.Trigger value="base">Base</Tabs.Trigger>
@@ -154,16 +159,14 @@ export function ThemeBuilderPage(): React.JSX.Element {
                     />
                   </Tabs.Content>
                 </Tabs>
-              </SectionList.SectionContent>
-            </SectionList.Section>
-            <SectionList.Section>
-              <SectionList.SectionHeader>
-                <SectionList.SectionTitle>
-                  Theme Colors
-                </SectionList.SectionTitle>
-                <SectionList.SectionDescription>
+              </SectionListSectionContent>
+            </SectionListSection>
+            <SectionListSection>
+              <SectionListSectionHeader>
+                <SectionListSectionTitle>Theme Colors</SectionListSectionTitle>
+                <SectionListSectionDescription>
                   Pick the colors for your theme
-                </SectionList.SectionDescription>
+                </SectionListSectionDescription>
                 <div className="sticky top-44">
                   <ThemeColorsPreview
                     key={themeMode} // force rerender
@@ -171,8 +174,8 @@ export function ThemeBuilderPage(): React.JSX.Element {
                     mode={themeMode as 'light' | 'dark'}
                   />
                 </div>
-              </SectionList.SectionHeader>
-              <SectionList.SectionContent className="flex flex-col gap-4">
+              </SectionListSectionHeader>
+              <SectionListSectionContent className="flex flex-col gap-4">
                 <Tabs value={themeMode} onValueChange={setThemeMode}>
                   <Tabs.List>
                     <Tabs.Trigger value="light">Light</Tabs.Trigger>
@@ -204,19 +207,19 @@ export function ThemeBuilderPage(): React.JSX.Element {
                 >
                   Reset Colors
                 </Button>
-              </SectionList.SectionContent>
-            </SectionList.Section>
-            <SectionList.Section>
-              <SectionList.SectionHeader>
-                <SectionList.SectionTitle>CSS Preview</SectionList.SectionTitle>
-                <SectionList.SectionDescription>
+              </SectionListSectionContent>
+            </SectionListSection>
+            <SectionListSection>
+              <SectionListSectionHeader>
+                <SectionListSectionTitle>CSS Preview</SectionListSectionTitle>
+                <SectionListSectionDescription>
                   Preview the CSS for your theme
-                </SectionList.SectionDescription>
-              </SectionList.SectionHeader>
-              <SectionList.SectionContent className="flex flex-col gap-4">
+                </SectionListSectionDescription>
+              </SectionListSectionHeader>
+              <SectionListSectionContent className="flex flex-col gap-4">
                 <ThemeColorsCssDisplay control={control} />
-              </SectionList.SectionContent>
-            </SectionList.Section>
+              </SectionListSectionContent>
+            </SectionListSection>
           </SectionList>
         </div>
       </div>

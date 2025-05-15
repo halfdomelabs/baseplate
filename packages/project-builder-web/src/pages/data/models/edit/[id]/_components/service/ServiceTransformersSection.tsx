@@ -20,7 +20,11 @@ import {
   RecordViewActions,
   RecordViewItem,
   RecordViewItemList,
-  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
@@ -134,15 +138,15 @@ export function ServiceTransformersSection({
   const [addableTransformerIdx, setAddableTransformerIdx] = useState<number>(0);
 
   return (
-    <SectionList.Section className={className}>
-      <SectionList.SectionHeader>
-        <SectionList.SectionTitle>Transformers</SectionList.SectionTitle>
-        <SectionList.SectionDescription>
+    <SectionListSection className={className}>
+      <SectionListSectionHeader>
+        <SectionListSectionTitle>Transformers</SectionListSectionTitle>
+        <SectionListSectionDescription>
           Transformers are used to operate on the data from the client into the
           shape that the database ORM expects.
-        </SectionList.SectionDescription>
-      </SectionList.SectionHeader>
-      <SectionList.SectionContent className="max-w-xl space-y-4">
+        </SectionListSectionDescription>
+      </SectionListSectionHeader>
+      <SectionListSectionContent className="max-w-xl space-y-4">
         {fields.map((field, idx) => (
           <ServiceTransformerRecord
             key={field.id}
@@ -215,7 +219,7 @@ export function ServiceTransformersSection({
           onOpenChange={setIsNewTransformerDialogOpen}
           isCreate={true}
         />
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

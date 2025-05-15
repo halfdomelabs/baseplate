@@ -7,75 +7,84 @@ interface SectionListProps {
   children: React.ReactNode;
 }
 
-export function SectionList({
+/**
+ * Represents a list of sections.
+ */
+function SectionList({
   className,
   children,
-}: SectionListProps): React.JSX.Element {
+}: SectionListProps): React.ReactElement {
   return <div className={cn('divide-y', className)}>{children}</div>;
 }
 
-interface SectionListSectionProps {
+interface SectionProps {
   className?: string;
   children: React.ReactNode;
 }
 
-SectionList.Section = function SectionListSection({
-  className,
-  children,
-}: SectionListSectionProps): React.JSX.Element {
+function Section({ className, children }: SectionProps): React.ReactElement {
   return (
     <section className={cn('flex gap-8 py-6', className)}>{children}</section>
   );
-};
+}
 
-interface SectionListSectionHeaderProps {
+interface SectionHeaderProps {
   className?: string;
   children: React.ReactNode;
 }
 
-SectionList.SectionHeader = function SectionListSectionHeader({
+function SectionHeader({
   className,
   children,
-}: SectionListSectionHeaderProps): React.JSX.Element {
+}: SectionHeaderProps): React.ReactElement {
   return <div className={cn('w-[320px] space-y-2', className)}>{children}</div>;
-};
+}
 
-interface SectionListSectionTitleProps {
+interface SectionTitleProps {
   className?: string;
   children: React.ReactNode;
 }
 
-SectionList.SectionTitle = function SectionListSectionTitle({
+function SectionTitle({
   className,
   children,
-}: SectionListSectionTitleProps): React.JSX.Element {
+}: SectionTitleProps): React.ReactElement {
   return <h3 className={className}>{children}</h3>;
-};
+}
 
-interface SectionListSectionDescriptionProps {
+interface SectionDescriptionProps {
   className?: string;
   children: React.ReactNode;
 }
 
-SectionList.SectionDescription = function SectionListSectionDescription({
+function SectionDescription({
   className,
   children,
-}: SectionListSectionDescriptionProps): React.JSX.Element {
+}: SectionDescriptionProps): React.ReactElement {
   return (
     <div className={cn('text-sm text-muted-foreground', className)}>
       {children}
     </div>
   );
-};
+}
 
-interface SectionListSectionContentProps {
+interface SectionContentProps {
   className?: string;
   children: React.ReactNode;
 }
 
-SectionList.SectionContent = function SectionListSectionContent({
+function SectionContent({
   className,
   children,
-}: SectionListSectionContentProps): React.JSX.Element {
+}: SectionContentProps): React.ReactElement {
   return <div className={cn('flex-1', className)}>{children}</div>;
+}
+
+export {
+  Section,
+  SectionContent,
+  SectionDescription,
+  SectionHeader,
+  SectionList,
+  SectionTitle,
 };

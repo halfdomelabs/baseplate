@@ -14,7 +14,7 @@ import {
 } from '@src/styles';
 import { cn } from '@src/utils';
 
-import { ScrollArea } from '../ScrollArea/ScrollArea';
+import { ScrollBar } from '../ScrollArea/ScrollArea';
 
 /**
  * Select component
@@ -113,7 +113,7 @@ function SelectContent({
               {children}
             </ScrollAreaPrimitive.Viewport>
           </SelectPrimitive.Viewport>
-          <ScrollArea.ScrollBar />
+          <ScrollBar />
           <ScrollAreaPrimitive.Corner />
         </ScrollAreaPrimitive.Root>
       </SelectPrimitive.Content>

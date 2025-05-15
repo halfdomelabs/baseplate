@@ -8,7 +8,11 @@ import {
   AlertDescription,
   AlertTitle,
   MultiSwitchField,
-  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
   SwitchField,
 } from '@halfdomelabs/ui-components';
 import { useWatch } from 'react-hook-form';
@@ -47,16 +51,16 @@ export function GraphQLQueriesSection({
   });
 
   return (
-    <SectionList.Section>
+    <SectionListSection>
       <div>
-        <SectionList.SectionHeader className="sticky top-2">
-          <SectionList.SectionTitle>Queries</SectionList.SectionTitle>
-          <SectionList.SectionDescription>
+        <SectionListSectionHeader className="sticky top-2">
+          <SectionListSectionTitle>Queries</SectionListSectionTitle>
+          <SectionListSectionDescription>
             Configure the GraphQL queries that can be performed on this model.
-          </SectionList.SectionDescription>
-        </SectionList.SectionHeader>
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
       </div>
-      <SectionList.SectionContent className="space-y-8">
+      <SectionListSectionContent className="space-y-8">
         {!isObjectTypeEnabled && (
           <Alert className="max-w-md">
             <MdInfo />
@@ -102,7 +106,7 @@ export function GraphQLQueriesSection({
             />
           )}
         </div>
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

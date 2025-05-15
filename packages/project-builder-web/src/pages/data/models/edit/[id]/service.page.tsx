@@ -5,7 +5,15 @@ import {
   modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
-import { SectionList, SwitchField } from '@halfdomelabs/ui-components';
+import {
+  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
+  SwitchField,
+} from '@halfdomelabs/ui-components';
 
 import { FormActionBar } from '@src/components';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
@@ -38,14 +46,14 @@ function ModelEditServicePage(): React.JSX.Element {
     >
       <form onSubmit={onSubmit} className="w-full max-w-7xl space-y-4 p-4">
         <SectionList>
-          <SectionList.Section>
-            <SectionList.SectionHeader>
-              <SectionList.SectionTitle>Methods</SectionList.SectionTitle>
-              <SectionList.SectionDescription>
+          <SectionListSection>
+            <SectionListSectionHeader>
+              <SectionListSectionTitle>Methods</SectionListSectionTitle>
+              <SectionListSectionDescription>
                 Enable or disable which service methods will be generated
-              </SectionList.SectionDescription>
-            </SectionList.SectionHeader>
-            <SectionList.SectionContent className="flex gap-8">
+              </SectionListSectionDescription>
+            </SectionListSectionHeader>
+            <SectionListSectionContent className="flex gap-8">
               <SwitchField.Controller
                 label="Create"
                 name="service.create.enabled"
@@ -61,8 +69,8 @@ function ModelEditServicePage(): React.JSX.Element {
                 name="service.delete.enabled"
                 control={control}
               />
-            </SectionList.SectionContent>
-          </SectionList.Section>
+            </SectionListSectionContent>
+          </SectionListSection>
           <ServiceMethodFieldsSection control={control} setValue={setValue} />
           <ServiceTransformersSection formProps={form} />
         </SectionList>

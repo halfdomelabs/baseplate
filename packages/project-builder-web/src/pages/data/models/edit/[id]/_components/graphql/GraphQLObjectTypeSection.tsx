@@ -8,7 +8,11 @@ import {
   Badge,
   Button,
   Label,
-  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
   Switch,
   SwitchField,
 } from '@halfdomelabs/ui-components';
@@ -93,17 +97,17 @@ export function GraphQLObjectTypeSection({
     useState(showCollapsibleForeignRelations);
 
   return (
-    <SectionList.Section>
+    <SectionListSection>
       <div>
-        <SectionList.SectionHeader className="sticky top-2">
-          <SectionList.SectionTitle>Object Type</SectionList.SectionTitle>
-          <SectionList.SectionDescription>
+        <SectionListSectionHeader className="sticky top-2">
+          <SectionListSectionTitle>Object Type</SectionListSectionTitle>
+          <SectionListSectionDescription>
             Configure the object type that will be exposed in the GraphQL schema
             for this model.
-          </SectionList.SectionDescription>
-        </SectionList.SectionHeader>
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
       </div>
-      <SectionList.SectionContent className="space-y-4">
+      <SectionListSectionContent className="space-y-4">
         <SwitchField.Controller
           control={control}
           name="graphql.objectType.enabled"
@@ -332,7 +336,7 @@ export function GraphQLObjectTypeSection({
               ))}
           </tbody>
         </table>
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

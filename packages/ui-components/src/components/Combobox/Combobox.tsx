@@ -21,7 +21,7 @@ import {
 import { cn, mergeRefs } from '@src/utils';
 
 import { Button } from '../Button/Button';
-import { ScrollArea } from '../ScrollArea/ScrollArea';
+import { ScrollBar } from '../ScrollArea/ScrollArea';
 
 interface ComboboxContextValue {
   selectedValue: string | undefined | null;
@@ -358,7 +358,7 @@ function ComboboxContent({
           >
             <Command.List ref={listRef}>{children}</Command.List>
           </ScrollAreaPrimitive.Viewport>
-          <ScrollArea.ScrollBar />
+          <ScrollBar />
           <ScrollAreaPrimitive.Corner />
         </ScrollAreaPrimitive.Root>
       </PopoverContent>

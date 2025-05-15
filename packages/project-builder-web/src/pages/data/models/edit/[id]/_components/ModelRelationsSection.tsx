@@ -9,7 +9,11 @@ import {
   RecordViewActions,
   RecordViewItem,
   RecordViewItemList,
-  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
@@ -48,14 +52,14 @@ export function ModelRelationsSection({
   }
 
   return (
-    <SectionList.Section>
-      <SectionList.SectionHeader>
-        <SectionList.SectionTitle>Relations</SectionList.SectionTitle>
-        <SectionList.SectionDescription>
+    <SectionListSection>
+      <SectionListSectionHeader>
+        <SectionListSectionTitle>Relations</SectionListSectionTitle>
+        <SectionListSectionDescription>
           Define relations to enforce uniqueness on one or more fields.
-        </SectionList.SectionDescription>
-      </SectionList.SectionHeader>
-      <SectionList.SectionContent className="space-y-4">
+        </SectionListSectionDescription>
+      </SectionListSectionHeader>
+      <SectionListSectionContent className="space-y-4">
         {relations.map((relation) => (
           <RecordView key={relation.id}>
             <RecordViewItemList>
@@ -101,7 +105,7 @@ export function ModelRelationsSection({
             Add Relation
           </Button>
         </ModelRelationDialog>
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

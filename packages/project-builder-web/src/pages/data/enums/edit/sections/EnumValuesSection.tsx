@@ -7,7 +7,11 @@ import {
   Button,
   InputFieldController,
   Label,
-  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
@@ -70,14 +74,14 @@ export function EnumValuesSection({
   }));
 
   return (
-    <SectionList.Section>
-      <SectionList.SectionHeader>
-        <SectionList.SectionTitle>Values</SectionList.SectionTitle>
-        <SectionList.SectionDescription>
+    <SectionListSection>
+      <SectionListSectionHeader>
+        <SectionListSectionTitle>Values</SectionListSectionTitle>
+        <SectionListSectionDescription>
           Configure the allowed values for this enum.
-        </SectionList.SectionDescription>
-      </SectionList.SectionHeader>
-      <SectionList.SectionContent className="space-y-4">
+        </SectionListSectionDescription>
+      </SectionListSectionHeader>
+      <SectionListSectionContent className="space-y-4">
         <div className="space-y-2">
           <div
             className={clsx(
@@ -111,7 +115,7 @@ export function EnumValuesSection({
         >
           Add Value
         </Button>
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

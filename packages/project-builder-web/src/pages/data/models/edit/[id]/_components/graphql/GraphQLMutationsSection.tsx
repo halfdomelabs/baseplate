@@ -8,7 +8,11 @@ import {
   AlertDescription,
   AlertTitle,
   MultiSwitchField,
-  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
   SwitchField,
 } from '@halfdomelabs/ui-components';
 import { useWatch } from 'react-hook-form';
@@ -57,16 +61,16 @@ export function GraphQLMutationsSection({
   const isDeleteControllerEnabled = controllerConfig.delete?.enabled;
 
   return (
-    <SectionList.Section>
+    <SectionListSection>
       <div>
-        <SectionList.SectionHeader className="sticky top-2">
-          <SectionList.SectionTitle>Mutations</SectionList.SectionTitle>
-          <SectionList.SectionDescription>
+        <SectionListSectionHeader className="sticky top-2">
+          <SectionListSectionTitle>Mutations</SectionListSectionTitle>
+          <SectionListSectionDescription>
             Configure the GraphQL mutations that can be performed on this model.
-          </SectionList.SectionDescription>
-        </SectionList.SectionHeader>
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
       </div>
-      <SectionList.SectionContent className="space-y-8">
+      <SectionListSectionContent className="space-y-8">
         {(!isCreateControllerEnabled ||
           !isUpdateControllerEnabled ||
           !isDeleteControllerEnabled) && (
@@ -146,7 +150,7 @@ export function GraphQLMutationsSection({
             />
           )}
         </div>
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

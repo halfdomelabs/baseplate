@@ -8,7 +8,11 @@ import {
   RecordViewActions,
   RecordViewItem,
   RecordViewItemList,
-  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
@@ -49,14 +53,14 @@ export function ModelUniqueConstraintsSection({
   }
 
   return (
-    <SectionList.Section>
-      <SectionList.SectionHeader>
-        <SectionList.SectionTitle>Unique Constraints</SectionList.SectionTitle>
-        <SectionList.SectionDescription>
+    <SectionListSection>
+      <SectionListSectionHeader>
+        <SectionListSectionTitle>Unique Constraints</SectionListSectionTitle>
+        <SectionListSectionDescription>
           Define unique constraints to enforce uniqueness on one or more fields.
-        </SectionList.SectionDescription>
-      </SectionList.SectionHeader>
-      <SectionList.SectionContent className="space-y-4">
+        </SectionListSectionDescription>
+      </SectionListSectionHeader>
+      <SectionListSectionContent className="space-y-4">
         {uniqueConstraints.map((constraint) => (
           <RecordView key={constraint.id}>
             <RecordViewItemList>
@@ -97,7 +101,7 @@ export function ModelUniqueConstraintsSection({
             Add Unique Constraint
           </Button>
         </ModelUniqueConstraintDialog>
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

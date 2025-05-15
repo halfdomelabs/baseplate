@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { SectionList } from './SectionList.js';
+import {
+  Section,
+  SectionContent,
+  SectionDescription,
+  SectionHeader,
+  SectionList,
+  SectionTitle,
+} from './SectionList.js';
 
 const meta = {
   component: SectionList,
@@ -15,40 +22,36 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <SectionList.Section>
-          <SectionList.SectionHeader>
-            <SectionList.SectionTitle>
-              Subsection Title
-            </SectionList.SectionTitle>
-            <SectionList.SectionDescription>
+        <Section>
+          <SectionHeader>
+            <SectionTitle>Subsection Title</SectionTitle>
+            <SectionDescription>
               This is the description for the subsection.
-            </SectionList.SectionDescription>
-          </SectionList.SectionHeader>
-          <SectionList.SectionContent>
+            </SectionDescription>
+          </SectionHeader>
+          <SectionContent>
             <p>
               Lorem ipsum dolor sit, amet consectetur adipisicing elit.
               Consectetur quidem qui architecto placeat nihil officia veritatis
               obcaecati quod reiciendis.
             </p>
-          </SectionList.SectionContent>
-        </SectionList.Section>
-        <SectionList.Section>
-          <SectionList.SectionHeader>
-            <SectionList.SectionTitle>
-              Subsection Title
-            </SectionList.SectionTitle>
-            <SectionList.SectionDescription>
+          </SectionContent>
+        </Section>
+        <Section>
+          <SectionHeader>
+            <SectionTitle>Subsection Title</SectionTitle>
+            <SectionDescription>
               This is the description for the subsection.
-            </SectionList.SectionDescription>
-          </SectionList.SectionHeader>
-          <SectionList.SectionContent>
+            </SectionDescription>
+          </SectionHeader>
+          <SectionContent>
             <p>
               Lorem ipsum dolor sit, amet consectetur adipisicing elit.
               Consectetur quidem qui architecto placeat nihil officia veritatis
               obcaecati quod reiciendis.
             </p>
-          </SectionList.SectionContent>
-        </SectionList.Section>
+          </SectionContent>
+        </Section>
       </>
     ),
   },
