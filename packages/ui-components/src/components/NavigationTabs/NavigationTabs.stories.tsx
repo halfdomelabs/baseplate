@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { NavigationTabs } from './NavigationTabs.js';
+import { NavigationTabs, NavigationTabsItem } from './NavigationTabs.js';
 
 const meta = {
   component: NavigationTabs,
@@ -15,11 +15,11 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <NavigationTabs.Item href="#test1" active={true}>
+        <NavigationTabsItem href="#test1" active={true}>
           Tab 1
-        </NavigationTabs.Item>
-        <NavigationTabs.Item href="#test2">Tab 2</NavigationTabs.Item>
-        <NavigationTabs.Item href="#test3">Tab 3</NavigationTabs.Item>
+        </NavigationTabsItem>
+        <NavigationTabsItem href="#test2">Tab 2</NavigationTabsItem>
+        <NavigationTabsItem href="#test3">Tab 3</NavigationTabsItem>
       </>
     ),
   },

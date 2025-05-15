@@ -1,7 +1,10 @@
 import type { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
-import { NavigationTabs } from '@halfdomelabs/ui-components';
+import {
+  NavigationTabs,
+  NavigationTabsItem,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { NavLink, Route, Routes } from 'react-router-dom';
 
@@ -17,14 +20,14 @@ function AdminAppForm({ className, appConfig }: Props): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
       <NavigationTabs>
-        <NavigationTabs.Item asChild>
+        <NavigationTabsItem asChild>
           <NavLink to="" end>
             General
           </NavLink>
-        </NavigationTabs.Item>
-        <NavigationTabs.Item asChild>
+        </NavigationTabsItem>
+        <NavigationTabsItem asChild>
           <NavLink to="sections">Sections</NavLink>
-        </NavigationTabs.Item>
+        </NavigationTabsItem>
       </NavigationTabs>
       <div className="mt-4 border-t">
         <Routes>

@@ -1,7 +1,11 @@
 import type React from 'react';
 
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { NavigationTabs, SidebarLayout } from '@halfdomelabs/ui-components';
+import {
+  NavigationTabs,
+  NavigationTabsItem,
+  SidebarLayout,
+} from '@halfdomelabs/ui-components';
 import { maxBy } from 'es-toolkit';
 import { NavLink, Outlet, useMatch } from 'react-router-dom';
 
@@ -33,12 +37,12 @@ export function DataLayout(): React.JSX.Element {
         </div>
         <div className="px-4">
           <NavigationTabs className="w-full">
-            <NavigationTabs.Item asChild>
+            <NavigationTabsItem asChild>
               <NavLink to="models">Models</NavLink>
-            </NavigationTabs.Item>
-            <NavigationTabs.Item asChild>
+            </NavigationTabsItem>
+            <NavigationTabsItem asChild>
               <NavLink to="enums">Enums</NavLink>
-            </NavigationTabs.Item>
+            </NavigationTabsItem>
           </NavigationTabs>
         </div>
         {modelsActive ? <ModelsSidebarList /> : null}
