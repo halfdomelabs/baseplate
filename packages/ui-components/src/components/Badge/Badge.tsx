@@ -1,21 +1,23 @@
 import type React from 'react';
 
+import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@src/utils';
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden',
+  'inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-md border px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3',
   {
     variants: {
       variant: {
         default:
-          'border-transparent bg-primary text-primary-foreground hover:bg-primary/80',
+          'border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90',
         secondary:
-          'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80',
+          'border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90',
         destructive:
-          'border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80',
-        outline: 'text-foreground',
+          'border-transparent bg-destructive text-destructive-foreground focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90',
+        outline:
+          'text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
       },
     },
     defaultVariants: {
@@ -23,32 +25,38 @@ const badgeVariants = cva(
     },
   },
 );
-
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
-
 /**
  * Displays a badge or a component that looks like a badge.
  *
+ * -- Added BadgeWithIcon variation
+ *
  * https://ui.shadcn.com/docs/components/badge
  */
-
 function Badge({
   className,
   variant,
+  asChild = false,
   ...props
-}: BadgeProps): React.JSX.Element {
+}: React.ComponentProps<'span'> &
+  VariantProps<typeof badgeVariants> & {
+    asChild?: boolean;
+  }): React.ReactElement {
+  const Comp = asChild ? Slot : 'span';
+
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <Comp
+      data-slot="badge"
+      className={cn(badgeVariants({ variant }), className)}
+      {...props}
+    />
   );
 }
 
-export interface BadgeWithIconProps extends BadgeProps {
+export interface BadgeWithIconProps extends React.ComponentProps<typeof Badge> {
   icon?: (props: React.SVGProps<SVGSVGElement>) => React.ReactNode;
 }
 
-Badge.WithIcon = function BadgeWithIcon({
+function BadgeWithIcon({
   icon: Icon,
   className,
   children,
@@ -62,6 +70,6 @@ Badge.WithIcon = function BadgeWithIcon({
       )}
     </Badge>
   );
-};
+}
 
-export { Badge, badgeVariants };
+export { Badge, badgeVariants, BadgeWithIcon };

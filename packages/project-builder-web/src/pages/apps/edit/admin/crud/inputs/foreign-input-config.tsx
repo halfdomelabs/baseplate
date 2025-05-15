@@ -4,7 +4,10 @@ import type React from 'react';
 import type { Control } from 'react-hook-form';
 
 import { createAdminCrudInputWebConfig } from '@halfdomelabs/project-builder-lib/web';
-import { InputField, SelectField } from '@halfdomelabs/ui-components';
+import {
+  InputFieldController,
+  SelectFieldController,
+} from '@halfdomelabs/ui-components';
 
 function AdminCrudForeignInputForm({
   formProps,
@@ -23,28 +26,28 @@ function AdminCrudForeignInputForm({
 
   return (
     <>
-      <SelectField.Controller
+      <SelectFieldController
         label="Local Relation Name"
         control={controlTyped}
         name={`${prefix}.localRelationRef`}
         options={localRelationOptions}
       />
-      <InputField.Controller
+      <InputFieldController
         label="Label Expression (e.g. name)"
         control={controlTyped}
         name={`${prefix}.labelExpression`}
       />
-      <InputField.Controller
+      <InputFieldController
         label="Value Expression (e.g. id)"
         control={controlTyped}
         name={`${prefix}.valueExpression`}
       />
-      <InputField.Controller
+      <InputFieldController
         label="Default Label (optional)"
         control={controlTyped}
         name={`${prefix}.defaultLabel`}
       />
-      <InputField.Controller
+      <InputFieldController
         label="Empty Label (optional) - only if field is nullable"
         control={controlTyped}
         name={`${prefix}.nullLabel`}

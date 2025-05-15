@@ -1,7 +1,7 @@
 import type { IconElement } from '@halfdomelabs/ui-components';
 import type React from 'react';
 
-import { Sheet } from '@halfdomelabs/ui-components';
+import { SheetClose } from '@halfdomelabs/ui-components';
 import { HiCollection, HiDatabase } from 'react-icons/hi';
 import { MdApps, MdHome, MdOutlineSettings, MdWidgets } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
@@ -18,7 +18,7 @@ function SidebarNavigationIcon({
   end?: boolean;
 }): React.JSX.Element {
   return (
-    <Sheet.Close asChild>
+    <SheetClose asChild>
       <NavLink
         to={to}
         className={`flex items-center gap-4 px-2.5 py-4 text-muted-foreground transition-colors hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground`}
@@ -27,7 +27,7 @@ function SidebarNavigationIcon({
         <Icon className="size-5 transition-all group-hover:scale-110" />
         {label}
       </NavLink>
-    </Sheet.Close>
+    </SheetClose>
   );
 }
 
@@ -41,7 +41,11 @@ export function AppMobileSidebar(): React.JSX.Element {
       <div>
         <SidebarNavigationIcon to="/" icon={MdHome} label="Home" end />
         <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />
-        <SidebarNavigationIcon to="/models" icon={HiDatabase} label="Models" />
+        <SidebarNavigationIcon
+          to="/data/models"
+          icon={HiDatabase}
+          label="Models"
+        />
         <SidebarNavigationIcon
           to="/features"
           icon={HiCollection}

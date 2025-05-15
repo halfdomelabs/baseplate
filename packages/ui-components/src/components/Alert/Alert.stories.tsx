@@ -5,7 +5,7 @@ import type { IconElement } from '@src/types/react.js';
 
 import { STORYBOOK_ICON_SELECT } from '@src/stories/button-icons.js';
 
-import { Alert } from './Alert.js';
+import { Alert, AlertDescription, AlertTitle } from './Alert.js';
 
 const variants = ['default', 'error', 'success', 'warning'] as const;
 
@@ -52,8 +52,8 @@ function AlertContainer({
   return (
     <Alert className={className} variant={variant}>
       {Icon && <Icon className="size-4" />}
-      <Alert.Title>{title}</Alert.Title>
-      <Alert.Description>{description}</Alert.Description>
+      <AlertTitle>{title}</AlertTitle>
+      <AlertDescription>{description}</AlertDescription>
     </Alert>
   );
 }

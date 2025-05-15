@@ -3,7 +3,17 @@ import type React from 'react';
 
 import { appEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Dialog, ErrorDisplay } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  ErrorDisplay,
+} from '@halfdomelabs/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { NotFoundCard } from '@src/components';
@@ -51,13 +61,13 @@ function EditAppPage(): React.JSX.Element {
           <p className="text-base text-muted-foreground">{app.type} app</p>
         </div>
         <Dialog>
-          <Dialog.Trigger asChild>
+          <DialogTrigger asChild>
             <Button variant="secondary">Delete</Button>
-          </Dialog.Trigger>
-          <Dialog.Content>
-            <Dialog.Header>
-              <Dialog.Title>Delete {app.name}</Dialog.Title>
-            </Dialog.Header>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete {app.name}</DialogTitle>
+            </DialogHeader>
             <p>
               Are you sure you want to delete <strong>{app.name}</strong>?
             </p>
@@ -68,10 +78,10 @@ function EditAppPage(): React.JSX.Element {
               manually delete it afterwards if no longer needed.
             </p>
 
-            <Dialog.Footer>
-              <Dialog.Close>
+            <DialogFooter>
+              <DialogClose>
                 <Button variant="secondary">Cancel</Button>
-              </Dialog.Close>
+              </DialogClose>
               <Button
                 variant="destructive"
                 onClick={handleDelete}
@@ -79,8 +89,8 @@ function EditAppPage(): React.JSX.Element {
               >
                 Unlink App
               </Button>
-            </Dialog.Footer>
-          </Dialog.Content>
+            </DialogFooter>
+          </DialogContent>
         </Dialog>
       </div>
       <div>

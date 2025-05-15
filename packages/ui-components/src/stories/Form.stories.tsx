@@ -8,14 +8,14 @@ import { z } from 'zod';
 
 import {
   Button,
-  CheckboxField,
-  ColorPickerField,
-  ComboboxField,
-  InputField,
-  MultiComboboxField,
-  SelectField,
-  SwitchField,
-  TextareaField,
+  CheckboxFieldController,
+  ColorPickerFieldController,
+  ComboboxFieldController,
+  InputFieldController,
+  MultiComboboxFieldController,
+  SelectFieldController,
+  SwitchFieldController,
+  TextareaFieldController,
   Toaster,
 } from '../components';
 
@@ -75,13 +75,13 @@ function Form({
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <InputField.Controller name="name" label="Name" control={control} />
-      <ColorPickerField.Controller
+      <InputFieldController name="name" label="Name" control={control} />
+      <ColorPickerFieldController
         name="color"
         label="Pick a Color"
         control={control}
       />
-      <SelectField.Controller
+      <SelectFieldController
         name="category"
         label="Select Category"
         control={control}
@@ -91,22 +91,22 @@ function Form({
           { value: 'Option 3', label: 'Option 3' },
         ]}
       />
-      <CheckboxField.Controller
+      <CheckboxFieldController
         name="subscribe"
         label="Subscribe to Newsletter"
         control={control}
       />
-      <TextareaField.Controller
+      <TextareaFieldController
         name="description"
         label="Description"
         control={control}
       />
-      <SwitchField.Controller
+      <SwitchFieldController
         name="notifications"
         label="Enable Notifications"
         control={control}
       />
-      <ComboboxField.Controller
+      <ComboboxFieldController
         name="singleOption"
         label="Choose an Option"
         control={control}
@@ -116,7 +116,7 @@ function Form({
           { value: 'Option C', label: 'Option C' },
         ]}
       />
-      <MultiComboboxField.Controller
+      <MultiComboboxFieldController
         name="multiOptions"
         label="Select Multiple Options"
         control={control}

@@ -3,11 +3,19 @@ import type React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
 import {
-  convertHexToColorName,
+  convertHexToOklch,
+  convertOklchToColorName,
+  convertOklchToHex,
   getDefaultThemeColorFromShade,
   THEME_COLORS,
 } from '@halfdomelabs/project-builder-lib';
-import { Button, ColorPickerField, Tooltip } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  ColorPickerFieldController,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useWatch } from 'react-hook-form';
 import { MdInfo, MdRestartAlt } from 'react-icons/md';
@@ -50,7 +58,7 @@ export function ThemeColorsEditor({
               )}
               key={key}
             >
-              <ColorPickerField.Controller
+              <ColorPickerFieldController
                 control={control}
                 className="w-full"
                 wrapperClassName="flex-col items-start"
@@ -58,25 +66,28 @@ export function ThemeColorsEditor({
                   <div className="flex h-6 w-full items-center gap-1">
                     <div>{config.name}</div>
                     <Tooltip delayDuration={500}>
-                      <Tooltip.Trigger asChild>
-                        <Button.WithIcon
+                      <TooltipTrigger asChild>
+                        <Button
                           variant="ghost"
                           size="icon"
-                          icon={MdInfo}
                           aria-label="Color Info"
                           className="opacity-30"
-                        />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content
+                        >
+                          <MdInfo />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent
                         align="start"
                         side="bottom"
                         className="max-w-[400px]"
                       >
                         <div className="font-normal">{config.description}</div>
-                      </Tooltip.Content>
+                      </TooltipContent>
                     </Tooltip>
                   </div>
                 }
+                parseColor={convertOklchToHex}
+                serializeColor={convertHexToOklch}
                 formatColorName={(color) => {
                   const baseShade = Object.entries(palettes.base.shades).find(
                     ([, shadeColor]) => shadeColor === color,
@@ -90,21 +101,22 @@ export function ThemeColorsEditor({
                   if (primaryShade) {
                     return `primary-${primaryShade}`;
                   }
-                  return convertHexToColorName(color);
+                  return convertOklchToColorName(color);
                 }}
                 name={`colors.${mode}.${themeKey}`}
               />
               {currentColor !== defaultValue && (
-                <Button.WithIcon
+                <Button
                   className="absolute right-2 bottom-1"
                   onClick={() => {
                     setValue(`colors.${mode}.${themeKey}`, defaultValue);
                   }}
                   size="icon"
                   variant="ghost"
-                  icon={MdRestartAlt}
                   aria-label="Reset Color"
-                />
+                >
+                  <MdRestartAlt />
+                </Button>
               )}
             </div>
           );

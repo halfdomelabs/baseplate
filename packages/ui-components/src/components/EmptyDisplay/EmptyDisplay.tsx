@@ -1,3 +1,5 @@
+'use client';
+
 import type React from 'react';
 
 import { MdFormatListBulleted } from 'react-icons/md';
@@ -33,14 +35,13 @@ interface EmptyDisplayProps {
 /**
  * Displays a generic empty state with a header and subtitle.
  */
-
-export function EmptyDisplay({
+function EmptyDisplay({
   className,
   icon: Icon = MdFormatListBulleted,
   header,
   subtitle,
   actions,
-}: EmptyDisplayProps): React.JSX.Element {
+}: EmptyDisplayProps): React.ReactElement {
   const strings = useComponentStrings();
 
   return (
@@ -58,3 +59,5 @@ export function EmptyDisplay({
     </div>
   );
 }
+
+export { EmptyDisplay };

@@ -43,7 +43,7 @@ function SortableItem({ id, children }: SortableItemProps): React.JSX.Element {
         {...listeners}
       >
         <Button className="cursor-grab" variant="ghost" size="icon">
-          <Button.Icon icon={RxDragHandleHorizontal} />
+          <RxDragHandleHorizontal />
         </Button>
       </div>
       <div className="flex-1">{children}</div>

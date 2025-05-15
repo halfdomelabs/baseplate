@@ -3,7 +3,7 @@ import type { Control } from 'react-hook-form';
 
 import { PluginUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { SelectField } from '@halfdomelabs/ui-components';
+import { SelectFieldController } from '@halfdomelabs/ui-components';
 
 import type { StoragePluginDefinition } from '@src/storage/core/schema/plugin-definition';
 
@@ -36,7 +36,7 @@ export function FileTransformerForm({
 
   return (
     <div className="space-y-4">
-      <SelectField.Controller
+      <SelectFieldController
         className="w-full"
         control={controlTyped}
         label="Relation"

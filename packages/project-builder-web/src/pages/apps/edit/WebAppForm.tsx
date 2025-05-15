@@ -9,9 +9,9 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  CheckboxField,
-  InputField,
-  MultiComboboxField,
+  CheckboxFieldController,
+  InputFieldController,
+  MultiComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
@@ -51,39 +51,39 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
       <form onSubmit={onSubmit} className="space-y-4">
-        <InputField.Controller label="Name" control={control} name="name" />
-        <InputField.Controller
+        <InputFieldController label="Name" control={control} name="name" />
+        <InputFieldController
           label="Package Location (optional) e.g. packages/web"
           control={control}
           name="packageLocation"
         />
-        <InputField.Controller
+        <InputFieldController
           label="Page Title"
           control={control}
           name="title"
         />
-        <InputField.Controller
+        <InputFieldController
           label="Description Meta Tag"
           control={control}
           name="description"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Include Auth?"
           control={control}
           name="includeAuth"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Include Upload Components?"
           control={control}
           name="includeUploadComponents"
         />
-        <CheckboxField.Controller
+        <CheckboxFieldController
           label="Enable Subscriptions?"
           control={control}
           name="enableSubscriptions"
         />
         {roleOptions && (
-          <MultiComboboxField.Controller
+          <MultiComboboxFieldController
             label="Allowed Roles?"
             control={control}
             options={roleOptions}

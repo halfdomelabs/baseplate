@@ -11,7 +11,22 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Alert, Button, SectionList, Tabs } from '@halfdomelabs/ui-components';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Button,
+  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
@@ -106,29 +121,29 @@ export function ThemeBuilderPage(): React.JSX.Element {
           {/* TODO: check if this should be removed */}
           <Alert className="max-w-fit">
             <MdConstruction />
-            <Alert.Title>Work in Progress</Alert.Title>
-            <Alert.Description>
+            <AlertTitle>Work in Progress</AlertTitle>
+            <AlertDescription>
               This page is still a work in progress. It is not being used for
               generation at the moment.
-            </Alert.Description>
+            </AlertDescription>
           </Alert>
           <SectionList>
-            <SectionList.Section>
-              <SectionList.SectionHeader>
-                <SectionList.SectionTitle>
+            <SectionListSection>
+              <SectionListSectionHeader>
+                <SectionListSectionTitle>
                   Theme Palettes
-                </SectionList.SectionTitle>
-                <SectionList.SectionDescription>
+                </SectionListSectionTitle>
+                <SectionListSectionDescription>
                   Pick the colors for your theme
-                </SectionList.SectionDescription>
-              </SectionList.SectionHeader>
-              <SectionList.SectionContent className="max-w-3xl">
+                </SectionListSectionDescription>
+              </SectionListSectionHeader>
+              <SectionListSectionContent className="max-w-3xl">
                 <Tabs defaultValue="base">
-                  <Tabs.List>
-                    <Tabs.Trigger value="base">Base</Tabs.Trigger>
-                    <Tabs.Trigger value="primary">Primary</Tabs.Trigger>
-                  </Tabs.List>
-                  <Tabs.Content value="base">
+                  <TabsList>
+                    <TabsTrigger value="base">Base</TabsTrigger>
+                    <TabsTrigger value="primary">Primary</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="base">
                     <ThemePaletteEditor
                       control={control}
                       getValues={getValues}
@@ -136,8 +151,8 @@ export function ThemeBuilderPage(): React.JSX.Element {
                       type="base"
                       onShadesChange={handleShadesChange}
                     />
-                  </Tabs.Content>
-                  <Tabs.Content value="primary">
+                  </TabsContent>
+                  <TabsContent value="primary">
                     <ThemePaletteEditor
                       control={control}
                       getValues={getValues}
@@ -145,18 +160,16 @@ export function ThemeBuilderPage(): React.JSX.Element {
                       type="primary"
                       onShadesChange={handleShadesChange}
                     />
-                  </Tabs.Content>
+                  </TabsContent>
                 </Tabs>
-              </SectionList.SectionContent>
-            </SectionList.Section>
-            <SectionList.Section>
-              <SectionList.SectionHeader>
-                <SectionList.SectionTitle>
-                  Theme Colors
-                </SectionList.SectionTitle>
-                <SectionList.SectionDescription>
+              </SectionListSectionContent>
+            </SectionListSection>
+            <SectionListSection>
+              <SectionListSectionHeader>
+                <SectionListSectionTitle>Theme Colors</SectionListSectionTitle>
+                <SectionListSectionDescription>
                   Pick the colors for your theme
-                </SectionList.SectionDescription>
+                </SectionListSectionDescription>
                 <div className="sticky top-44">
                   <ThemeColorsPreview
                     key={themeMode} // force rerender
@@ -164,27 +177,27 @@ export function ThemeBuilderPage(): React.JSX.Element {
                     mode={themeMode as 'light' | 'dark'}
                   />
                 </div>
-              </SectionList.SectionHeader>
-              <SectionList.SectionContent className="flex flex-col gap-4">
+              </SectionListSectionHeader>
+              <SectionListSectionContent className="flex flex-col gap-4">
                 <Tabs value={themeMode} onValueChange={setThemeMode}>
-                  <Tabs.List>
-                    <Tabs.Trigger value="light">Light</Tabs.Trigger>
-                    <Tabs.Trigger value="dark">Dark</Tabs.Trigger>
-                  </Tabs.List>
-                  <Tabs.Content value="light">
+                  <TabsList>
+                    <TabsTrigger value="light">Light</TabsTrigger>
+                    <TabsTrigger value="dark">Dark</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="light">
                     <ThemeColorsEditor
                       control={control}
                       setValue={setValue}
                       mode="light"
                     />
-                  </Tabs.Content>
-                  <Tabs.Content value="dark">
+                  </TabsContent>
+                  <TabsContent value="dark">
                     <ThemeColorsEditor
                       control={control}
                       setValue={setValue}
                       mode="dark"
                     />
-                  </Tabs.Content>
+                  </TabsContent>
                 </Tabs>
                 <Button
                   onClick={() => {
@@ -197,19 +210,19 @@ export function ThemeBuilderPage(): React.JSX.Element {
                 >
                   Reset Colors
                 </Button>
-              </SectionList.SectionContent>
-            </SectionList.Section>
-            <SectionList.Section>
-              <SectionList.SectionHeader>
-                <SectionList.SectionTitle>CSS Preview</SectionList.SectionTitle>
-                <SectionList.SectionDescription>
+              </SectionListSectionContent>
+            </SectionListSection>
+            <SectionListSection>
+              <SectionListSectionHeader>
+                <SectionListSectionTitle>CSS Preview</SectionListSectionTitle>
+                <SectionListSectionDescription>
                   Preview the CSS for your theme
-                </SectionList.SectionDescription>
-              </SectionList.SectionHeader>
-              <SectionList.SectionContent className="flex flex-col gap-4">
+                </SectionListSectionDescription>
+              </SectionListSectionHeader>
+              <SectionListSectionContent className="flex flex-col gap-4">
                 <ThemeColorsCssDisplay control={control} />
-              </SectionList.SectionContent>
-            </SectionList.Section>
+              </SectionListSectionContent>
+            </SectionListSection>
           </SectionList>
         </div>
       </div>

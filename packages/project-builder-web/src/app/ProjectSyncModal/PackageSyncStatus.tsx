@@ -1,6 +1,10 @@
 import type React from 'react';
 
-import { Alert } from '@halfdomelabs/ui-components';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { sortBy } from 'es-toolkit';
 
@@ -18,14 +22,14 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
   if (metadata.globalErrors?.length) {
     return (
       <Alert variant="error">
-        <Alert.Title>Error compiling project.</Alert.Title>
-        <Alert.Description>
+        <AlertTitle>Error compiling project.</AlertTitle>
+        <AlertDescription>
           {metadata.globalErrors.map((error) => (
             <div key={error} className="font-mono whitespace-pre-wrap">
               {error}
             </div>
           ))}
-        </Alert.Description>
+        </AlertDescription>
       </Alert>
     );
   }
@@ -44,10 +48,10 @@ export function PackageSyncStatus({ className }: Props): React.JSX.Element {
       </div>
     ) : (
       <Alert variant="default">
-        <Alert.Title>No packages found to be synced.</Alert.Title>
-        <Alert.Description>
+        <AlertTitle>No packages found to be synced.</AlertTitle>
+        <AlertDescription>
           Sync status will appear here once packages have been added.
-        </Alert.Description>
+        </AlertDescription>
       </Alert>
     );
   }

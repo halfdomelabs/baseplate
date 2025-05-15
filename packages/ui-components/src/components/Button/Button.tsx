@@ -1,8 +1,7 @@
+import type React from 'react';
+
 import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps } from 'class-variance-authority';
-import React from 'react';
-
-import type { IconElement } from '@src/types/react';
 
 import { buttonVariants } from '@src/styles';
 import { cn } from '@src/utils';
@@ -16,82 +15,34 @@ export interface ButtonProps
 /**
  * Displays a button or a component that looks like a button.
  *
+ * - Added ghostDestructive variant
+ * - Updated link variant to use primary color
+ * - Added linkDestructive variant
+ * - Added ability to set no size to the button
+ * - Added ability to set justify to the button
+ *
  * https://ui.shadcn.com/docs/components/button
  */
-
-const ButtonBase = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    { className, variant, size, asChild = false, type = 'button', ...props },
-    ref,
-  ) => {
-    const Comp = asChild ? Slot : 'button';
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        type={type}
-        {...props}
-      />
-    );
-  },
-);
-ButtonBase.displayName = 'Button';
-
-export interface ButtonIconProps extends React.SVGAttributes<SVGElement> {
-  icon: IconElement;
-}
-
-const ButtonIcon = ({
+function Button({
   className,
-  icon: Icon,
+  variant,
+  size,
+  justify,
+  asChild = false,
   ...props
-}: ButtonIconProps): React.JSX.Element => (
-  <Icon className={cn('h-4 w-4', className)} {...props} />
-);
+}: React.ComponentProps<'button'> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+  }): React.ReactElement {
+  const Comp = asChild ? Slot : 'button';
 
-export interface ButtonWithIconProps extends ButtonProps {
-  icon: IconElement;
-  iconPosition?: 'left' | 'right';
+  return (
+    <Comp
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, justify, className }))}
+      {...props}
+    />
+  );
 }
 
-const ButtonWithIcon = React.forwardRef<HTMLButtonElement, ButtonWithIconProps>(
-  ({ children, icon, iconPosition = 'left', ...rest }, ref) => (
-    <Button ref={ref} {...rest}>
-      {iconPosition === 'left' && <ButtonIcon icon={icon} />}
-      {children}
-      {iconPosition === 'right' && <ButtonIcon icon={icon} />}
-    </Button>
-  ),
-);
-
-ButtonWithIcon.displayName = 'ButtonWithIcon';
-
-export interface ButtonWithOnlyIconProps extends ButtonProps {
-  icon: IconElement;
-  title: string;
-  iconClassName?: string;
-}
-
-const ButtonWithOnlyIcon = React.forwardRef<
-  HTMLButtonElement,
-  ButtonWithOnlyIconProps
->(({ icon, title, iconClassName, ...rest }, ref) => (
-  <Button
-    ref={ref}
-    variant="ghost"
-    size="icon"
-    aria-label={title}
-    title={title}
-    {...rest}
-  >
-    <ButtonIcon className={iconClassName} icon={icon} />
-  </Button>
-));
-
-ButtonWithOnlyIcon.displayName = 'ButtonWithOnlyIcon';
-
-export const Button = Object.assign(ButtonBase, {
-  Icon: ButtonIcon,
-  WithIcon: ButtonWithIcon,
-  WithOnlyIcon: ButtonWithOnlyIcon,
-});
+export { Button };

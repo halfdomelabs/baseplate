@@ -1,24 +1,24 @@
 import {
-  HiCog6Tooth,
-  HiHome,
-  HiOutlineChevronDown,
-  HiOutlineChevronLeft,
-  HiOutlineChevronRight,
-  HiOutlineChevronUp,
-  HiPlus,
-  HiPower,
-} from 'react-icons/hi2';
+  MdAdd,
+  MdChevronLeft,
+  MdChevronRight,
+  MdExpandLess,
+  MdExpandMore,
+  MdHome,
+  MdPowerSettingsNew,
+  MdSettings,
+} from 'react-icons/md';
 
 const ICONS = {
   None: null,
-  Down: HiOutlineChevronDown,
-  Up: HiOutlineChevronUp,
-  Right: HiOutlineChevronRight,
-  Left: HiOutlineChevronLeft,
-  Home: HiHome,
-  Settings: HiCog6Tooth,
-  Plus: HiPlus,
-  Power: HiPower,
+  Down: MdExpandMore,
+  Up: MdExpandLess,
+  Right: MdChevronRight,
+  Left: MdChevronLeft,
+  Home: MdHome,
+  Settings: MdSettings,
+  Plus: MdAdd,
+  Power: MdPowerSettingsNew,
 };
 
 export const STORYBOOK_ICON_SELECT = {

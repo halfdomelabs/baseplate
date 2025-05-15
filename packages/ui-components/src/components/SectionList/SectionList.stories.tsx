@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { SectionList } from './SectionList.js';
+import {
+  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
+} from './SectionList.js';
 
 const meta = {
   component: SectionList,
@@ -15,40 +22,36 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <SectionList.Section>
-          <SectionList.SectionHeader>
-            <SectionList.SectionTitle>
-              Subsection Title
-            </SectionList.SectionTitle>
-            <SectionList.SectionDescription>
+        <SectionListSection>
+          <SectionListSectionHeader>
+            <SectionListSectionTitle>Subsection Title</SectionListSectionTitle>
+            <SectionListSectionDescription>
               This is the description for the subsection.
-            </SectionList.SectionDescription>
-          </SectionList.SectionHeader>
-          <SectionList.SectionContent>
+            </SectionListSectionDescription>
+          </SectionListSectionHeader>
+          <SectionListSectionContent>
             <p>
               Lorem ipsum dolor sit, amet consectetur adipisicing elit.
               Consectetur quidem qui architecto placeat nihil officia veritatis
               obcaecati quod reiciendis.
             </p>
-          </SectionList.SectionContent>
-        </SectionList.Section>
-        <SectionList.Section>
-          <SectionList.SectionHeader>
-            <SectionList.SectionTitle>
-              Subsection Title
-            </SectionList.SectionTitle>
-            <SectionList.SectionDescription>
+          </SectionListSectionContent>
+        </SectionListSection>
+        <SectionListSection>
+          <SectionListSectionHeader>
+            <SectionListSectionTitle>Subsection Title</SectionListSectionTitle>
+            <SectionListSectionDescription>
               This is the description for the subsection.
-            </SectionList.SectionDescription>
-          </SectionList.SectionHeader>
-          <SectionList.SectionContent>
+            </SectionListSectionDescription>
+          </SectionListSectionHeader>
+          <SectionListSectionContent>
             <p>
               Lorem ipsum dolor sit, amet consectetur adipisicing elit.
               Consectetur quidem qui architecto placeat nihil officia veritatis
               obcaecati quod reiciendis.
             </p>
-          </SectionList.SectionContent>
-        </SectionList.Section>
+          </SectionListSectionContent>
+        </SectionListSection>
       </>
     ),
   },

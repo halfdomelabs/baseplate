@@ -5,9 +5,13 @@ import type { Control, UseFormSetValue } from 'react-hook-form';
 import { modelUniqueConstraintEntityType } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
-  Dropdown,
-  InputField,
-  SwitchField,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  InputFieldController,
+  SwitchFieldController,
   toast,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
@@ -113,7 +117,7 @@ function ModelFieldForm({
   return (
     <div className={clsx('items-center', className)}>
       <div>
-        <InputField.Controller
+        <InputFieldController
           control={control}
           name={`model.fields.${idx}.name`}
         />
@@ -122,7 +126,7 @@ function ModelFieldForm({
         <ModelFieldTypeInput control={control} idx={idx} />
       </div>
       <div>
-        <SwitchField.Controller
+        <SwitchFieldController
           control={control}
           name={`model.fields.${idx}.isOptional`}
         />
@@ -138,28 +142,28 @@ function ModelFieldForm({
         <ModelFieldBadges control={control} idx={idx} />
       </div>
       <div>
-        <div className="space-x-4">
-          <Dropdown>
-            <Dropdown.Trigger asChild>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
-                <Button.Icon icon={HiDotsVertical} />
+                <HiDotsVertical />
               </Button>
-            </Dropdown.Trigger>
-            <Dropdown.Content>
-              <Dropdown.Group>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
                 {usedRelations.length === 0 && (
-                  <Dropdown.Item
+                  <DropdownMenuItem
                     onSelect={() => {
                       setIsRelationDialogOpen(true);
                       setRelationId(undefined);
                     }}
                   >
                     Add Relation
-                  </Dropdown.Item>
+                  </DropdownMenuItem>
                 )}
                 {usedRelations.length > 0 &&
                   usedRelations.map((relation) => (
-                    <Dropdown.Item
+                    <DropdownMenuItem
                       key={relation.id}
                       onSelect={() => {
                         setIsRelationDialogOpen(true);
@@ -167,10 +171,10 @@ function ModelFieldForm({
                       }}
                     >
                       Edit Relation {usedRelations.length > 1 && relation.name}
-                    </Dropdown.Item>
+                    </DropdownMenuItem>
                   ))}
                 {!hasCompositePrimaryKey && !isPartOfPrimaryKey && (
-                  <Dropdown.Item
+                  <DropdownMenuItem
                     onSelect={() => {
                       setValue('model.primaryKeyFieldRefs', [watchedField.id], {
                         shouldDirty: true,
@@ -178,20 +182,20 @@ function ModelFieldForm({
                     }}
                   >
                     Set as Primary Key
-                  </Dropdown.Item>
+                  </DropdownMenuItem>
                 )}
                 {isPartOfPrimaryKey && (
-                  <Dropdown.Item
+                  <DropdownMenuItem
                     onSelect={() => {
                       setIsPrimaryKeyDialogOpen(true);
                     }}
                   >
                     Edit Primary Key
-                  </Dropdown.Item>
+                  </DropdownMenuItem>
                 )}
                 {ownUniqueConstraints.length === 0 &&
                   (hasCompositePrimaryKey || !isPartOfPrimaryKey) && (
-                    <Dropdown.Item
+                    <DropdownMenuItem
                       onSelect={() => {
                         setValue(
                           'model.uniqueConstraints',
@@ -207,11 +211,11 @@ function ModelFieldForm({
                       }}
                     >
                       Make Unique
-                    </Dropdown.Item>
+                    </DropdownMenuItem>
                   )}
                 {ownUniqueConstraints.length > 0 &&
                   ownUniqueConstraints.map((uc, idx) => (
-                    <Dropdown.Item
+                    <DropdownMenuItem
                       key={uc.id}
                       onSelect={() => {
                         setUniqueConstraintId(uc.id);
@@ -220,11 +224,11 @@ function ModelFieldForm({
                     >
                       Edit Unique Constraint{' '}
                       {ownUniqueConstraints.length > 1 && idx + 1}
-                    </Dropdown.Item>
+                    </DropdownMenuItem>
                   ))}
-              </Dropdown.Group>
-            </Dropdown.Content>
-          </Dropdown>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <ModelPrimaryKeyDialog
             control={control}
             open={isPrimaryKeyDialogOpen}
@@ -250,7 +254,7 @@ function ModelFieldForm({
             }}
             size="icon"
           >
-            <Button.Icon icon={MdOutlineDelete} />
+            <MdOutlineDelete />
           </Button>
         </div>
       </div>

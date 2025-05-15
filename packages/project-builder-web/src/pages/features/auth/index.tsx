@@ -15,9 +15,11 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
-  CheckboxField,
-  ComboboxField,
+  CheckboxFieldController,
+  ComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
@@ -133,8 +135,8 @@ function AuthPage(): React.JSX.Element {
 
           {pendingModelChanges?.user && (
             <Alert>
-              <Alert.Title>Model Changes</Alert.Title>
-              <Alert.Description>
+              <AlertTitle>Model Changes</AlertTitle>
+              <AlertDescription>
                 <p>
                   The selected user model will be updated to include the
                   required fields for the auth plugin. The following changes
@@ -163,13 +165,13 @@ function AuthPage(): React.JSX.Element {
                     <li>The primary key will be updated.</li>
                   )}
                 </ul>
-              </Alert.Description>
+              </AlertDescription>
             </Alert>
           )}
           {pendingModelChanges?.userRole && (
             <Alert>
-              <Alert.Title>Model Changes</Alert.Title>
-              <Alert.Description>
+              <AlertTitle>Model Changes</AlertTitle>
+              <AlertDescription>
                 <p>
                   The selected user role model will be updated to include the
                   required fields for the auth plugin. The following changes
@@ -199,40 +201,40 @@ function AuthPage(): React.JSX.Element {
                     <li>The primary key will be updated.</li>
                   )}
                 </ul>
-              </Alert.Description>
+              </AlertDescription>
             </Alert>
           )}
-          <CheckboxField.Controller
+          <CheckboxFieldController
             label="Use Auth0? (currently only Auth0 is supported)"
             name="useAuth0"
             control={control}
             disabled={true}
           />
-          <ComboboxField.Controller
+          <ComboboxFieldController
             label="User Model"
             options={modelOptions}
             name="userModelRef"
             control={control}
           />
-          <ComboboxField.Controller
+          <ComboboxFieldController
             label="User Role Model"
             options={modelOptions}
             name="userRoleModelRef"
             control={control}
           />
-          <ComboboxField.Controller
+          <ComboboxFieldController
             label="Auth Feature Path"
             options={featureOptions}
             name="authFeatureRef"
             control={control}
           />
-          <ComboboxField.Controller
+          <ComboboxFieldController
             label="Accounts Feature Path"
             options={featureOptions}
             name="accountsFeatureRef"
             control={control}
           />
-          <CheckboxField.Controller
+          <CheckboxFieldController
             label="Enable Password Auth?"
             name="passwordProvider"
             control={control}

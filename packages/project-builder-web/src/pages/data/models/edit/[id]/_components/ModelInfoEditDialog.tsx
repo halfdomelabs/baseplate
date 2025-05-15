@@ -3,6 +3,12 @@ import type React from 'react';
 import {
   Button,
   Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
@@ -44,23 +50,21 @@ export function ModelInfoEditDialog({
         }
       }}
     >
-      {children && (
-        <Dialog.Trigger asChild={asChild}>{children}</Dialog.Trigger>
-      )}
-      <Dialog.Content aria-describedby={undefined}>
+      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
+      <DialogContent aria-describedby={undefined}>
         <form onSubmit={onSubmit} className="space-y-4">
-          <Dialog.Header>
-            <Dialog.Title>Edit Model Info</Dialog.Title>
-          </Dialog.Header>
+          <DialogHeader>
+            <DialogTitle>Edit Model Info</DialogTitle>
+          </DialogHeader>
           <ModelInfoForm control={control} />
-          <Dialog.Footer>
-            <Dialog.Close asChild>
+          <DialogFooter>
+            <DialogClose asChild>
               <Button variant="secondary">Cancel</Button>
-            </Dialog.Close>
+            </DialogClose>
             <Button type="submit">Save</Button>
-          </Dialog.Footer>
+          </DialogFooter>
         </form>
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

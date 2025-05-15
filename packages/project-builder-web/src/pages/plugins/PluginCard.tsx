@@ -3,7 +3,14 @@ import type React from 'react';
 
 import { webConfigSpec } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Card } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@halfdomelabs/ui-components';
 import { MdExtension } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -87,7 +94,7 @@ export function PluginCard({
 
   return (
     <Card className={className}>
-      <Card.Header>
+      <CardHeader>
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center space-x-4">
             <div className="rounded-xl border">
@@ -106,8 +113,8 @@ export function PluginCard({
               )}
             </div>
             <div>
-              <Card.Title>{plugin.displayName}</Card.Title>
-              <Card.Description>{plugin.packageName}</Card.Description>
+              <CardTitle>{plugin.displayName}</CardTitle>
+              <CardDescription>{plugin.packageName}</CardDescription>
             </div>
           </div>
           <div>
@@ -142,12 +149,12 @@ export function PluginCard({
             })()}
           </div>
         </div>
-      </Card.Header>
-      <Card.Content>
+      </CardHeader>
+      <CardContent>
         <div className="text-sm">
           <p>{plugin.description}</p>
         </div>
-      </Card.Content>
+      </CardContent>
     </Card>
   );
 }

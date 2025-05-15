@@ -161,7 +161,7 @@ function FeatureItem({
           </div>
         </div>
       </button>
-      <Button.WithIcon
+      <Button
         className="shrink-0"
         variant="ghost"
         onClick={() => {
@@ -173,19 +173,21 @@ function FeatureItem({
           setShowFeatureForm(true);
         }}
         size="icon"
-        icon={MdAdd}
         title={`Add Sub-Feature to ${feature.name}`}
-      />
-      <Button.WithIcon
+      >
+        <MdAdd />
+      </Button>
+      <Button
         className="shrink-0"
-        variant="ghost"
+        variant="ghostDestructive"
         onClick={() => {
           handleRemoveFeature(feature);
         }}
         size="icon"
-        icon={MdDelete}
         title={`Delete ${feature.name}`}
-      />
+      >
+        <MdDelete />
+      </Button>
     </div>
   );
 }

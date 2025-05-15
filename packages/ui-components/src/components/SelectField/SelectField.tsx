@@ -1,22 +1,34 @@
-import type { ForwardedRef } from 'react';
-import type React from 'react';
+'use client';
+
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import type {
   AddOptionRequiredFields,
-  FieldProps,
+  FormFieldProps,
   SelectOptionProps,
 } from '@src/types/form.js';
 
 import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
-import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
-import { FormItem } from '../FormItem/FormItem.js';
-import { Select } from '../Select/Select.js';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem.js';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../Select/Select.js';
 
 export interface SelectFieldProps<OptionType>
   extends SelectOptionProps<OptionType>,
-    FieldProps {
+    FormFieldProps {
   className?: string;
 }
 
@@ -24,23 +36,21 @@ export interface SelectFieldProps<OptionType>
 // https://github.com/radix-ui/primitives/issues/2706
 const NULL_SENTINEL = '__NULL_VALUE__';
 
-const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
-  {
-    label,
-    description,
-    error,
-    value,
-    placeholder,
-    options,
-    renderItemLabel,
-    getOptionLabel = (val) => (val as { label: string }).label,
-    getOptionValue = (val) => (val as { value: string }).value,
-    className,
-    onChange,
-    ...props
-  }: SelectFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLButtonElement>,
-): React.JSX.Element {
+function SelectField<OptionType>({
+  label,
+  description,
+  error,
+  value,
+  placeholder,
+  options,
+  renderItemLabel,
+  getOptionLabel = (val) => (val as { label: string }).label,
+  getOptionValue = (val) => (val as { value: string }).value,
+  className,
+  onChange,
+  ...props
+}: SelectFieldProps<OptionType> &
+  AddOptionRequiredFields<OptionType>): React.ReactElement {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
 
   const selectedValue = (() => {
@@ -50,44 +60,42 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
 
   return (
     <FormItem error={error} className={className}>
-      {label && <FormItem.Label>{label}</FormItem.Label>}
+      <FormLabel>{label}</FormLabel>
       <Select
         value={selectedValue}
         onValueChange={(val) => onChange?.(val === NULL_SENTINEL ? null : val)}
         {...props}
       >
-        <FormItem.Control>
-          <Select.Trigger ref={ref}>
-            <Select.Value placeholder={placeholder}>
+        <FormControl>
+          <SelectTrigger>
+            <SelectValue placeholder={placeholder}>
               {selectedOption ? getOptionLabel(selectedOption) : null}
-            </Select.Value>
-          </Select.Trigger>
-        </FormItem.Control>
-        <Select.Content>
-          <Select.Group>
+            </SelectValue>
+          </SelectTrigger>
+        </FormControl>
+        <SelectContent>
+          <SelectGroup>
             {options.map((option) => {
               const val = getOptionValue(option);
               const label = getOptionLabel(option);
               return (
-                <Select.Item value={val ?? NULL_SENTINEL} key={val}>
+                <SelectItem value={val ?? NULL_SENTINEL} key={val}>
                   {renderItemLabel
                     ? renderItemLabel(option, { selected: val === value })
                     : label}
-                </Select.Item>
+                </SelectItem>
               );
             })}
-          </Select.Group>
-        </Select.Content>
+          </SelectGroup>
+        </SelectContent>
       </Select>
-      {description && (
-        <FormItem.Description>{description}</FormItem.Description>
-      )}
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      <FormDescription>{description}</FormDescription>
+      <FormMessage />
     </FormItem>
   );
-});
+}
 
-interface SelectFieldControllerPropsBase<
+interface SelectFieldControllerProps<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -96,36 +104,25 @@ interface SelectFieldControllerPropsBase<
   name: TFieldName;
 }
 
-type SelectFieldControllerProps<
+function SelectFieldController<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = SelectFieldControllerPropsBase<OptionType, TFieldValues, TFieldName>;
-
-const SelectFieldController = genericForwardRef(function SelectFieldController<
-  OptionType,
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->(
-  {
-    name,
-    control,
-    ...rest
-  }: SelectFieldControllerProps<OptionType, TFieldValues, TFieldName> &
-    AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLButtonElement>,
-): React.JSX.Element {
+>({
+  name,
+  control,
+  ...rest
+}: SelectFieldControllerProps<OptionType, TFieldValues, TFieldName> &
+  AddOptionRequiredFields<OptionType>): React.ReactElement {
   const {
     field,
     fieldState: { error },
-  } = useControllerMerged({ name, control }, rest, ref);
+  } = useControllerMerged({ name, control }, rest);
 
   const restProps = rest as SelectFieldProps<OptionType> &
     AddOptionRequiredFields<OptionType>;
 
-  return <SelectFieldRoot error={error?.message} {...restProps} {...field} />;
-});
+  return <SelectField error={error?.message} {...restProps} {...field} />;
+}
 
-export const SelectField = Object.assign(SelectFieldRoot, {
-  Controller: SelectFieldController,
-});
+export { SelectField, SelectFieldController };

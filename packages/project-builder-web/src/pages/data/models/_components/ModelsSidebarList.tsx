@@ -47,9 +47,10 @@ export function ModelsSidebarList({
     >
       <div className="space-y-4 px-4">
         <NewModelDialog>
-          <Button.WithIcon icon={MdAdd} variant="secondary" className="w-full">
+          <Button variant="secondary" className="w-full">
+            <MdAdd />
             New Model
-          </Button.WithIcon>
+          </Button>
         </NewModelDialog>
         {models.length > 0 && (
           <div className="relative">
@@ -69,7 +70,7 @@ export function ModelsSidebarList({
                 }}
                 size="icon"
               >
-                <Button.Icon icon={MdClear} />
+                <MdClear />
               </Button>
             )}
           </div>

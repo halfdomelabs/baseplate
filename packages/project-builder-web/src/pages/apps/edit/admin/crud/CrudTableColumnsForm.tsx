@@ -7,7 +7,11 @@ import {
   ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, InputField, SelectField } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  InputFieldController,
+  SelectFieldController,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
@@ -41,20 +45,20 @@ function ColumnForm({
   const type = useWatch({ control, name: `table.columns.${idx}.display.type` });
   return (
     <div className="space-y-4">
-      <SelectField.Controller
+      <SelectFieldController
         label="Type"
         control={control}
         options={displayTypeOptions}
         name={`table.columns.${idx}.display.type`}
       />
-      <InputField.Controller
+      <InputFieldController
         label="Label"
         control={control}
         name={`table.columns.${idx}.label`}
       />
 
       {type === 'text' && (
-        <SelectField.Controller
+        <SelectFieldController
           label="Field"
           control={control}
           name={`table.columns.${idx}.display.modelFieldRef`}
@@ -63,18 +67,18 @@ function ColumnForm({
       )}
       {type === 'foreign' && (
         <>
-          <SelectField.Controller
+          <SelectFieldController
             label="Local Relation Name"
             control={control}
             name={`table.columns.${idx}.display.localRelationRef`}
             options={localRelationOptions}
           />
-          <InputField.Controller
+          <InputFieldController
             label="Label Expression (e.g. name)"
             control={control}
             name={`table.columns.${idx}.display.labelExpression`}
           />
-          <InputField.Controller
+          <InputFieldController
             label="Value Expression (e.g. id)"
             control={control}
             name={`table.columns.${idx}.display.valueExpression`}

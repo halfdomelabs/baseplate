@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { STORYBOOK_ICON_SELECT } from '@src/stories/button-icons.js';
 
-import { Badge } from './Badge.js';
+import { BadgeWithIcon } from './Badge.js';
 
 const meta = {
   title: 'Components/BadgeWithIcon',
-  component: Badge.WithIcon,
+  component: BadgeWithIcon,
   tags: ['autodocs'],
   argTypes: {
     children: {
@@ -19,7 +19,7 @@ const meta = {
     children: 'Relation',
     icon: STORYBOOK_ICON_SELECT.mapping.Plus,
   },
-} satisfies Meta<typeof Badge.WithIcon>;
+} satisfies Meta<typeof BadgeWithIcon>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

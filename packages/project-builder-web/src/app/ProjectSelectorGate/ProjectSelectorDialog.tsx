@@ -1,6 +1,18 @@
 import type React from 'react';
 
-import { Button, Dialog, Table } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@halfdomelabs/ui-components';
 import { useNavigate } from 'react-router-dom';
 
 import { useProjects } from '@src/hooks/useProjects';
@@ -27,26 +39,26 @@ export function ProjectSelectDialog({
       }
       open={isOpen}
     >
-      <Dialog.Content width="lg">
-        <Dialog.Header>
-          <Dialog.Title>Pick Project</Dialog.Title>
-        </Dialog.Header>
+      <DialogContent width="lg">
+        <DialogHeader>
+          <DialogTitle>Pick Project</DialogTitle>
+        </DialogHeader>
         <Table>
-          <Table.Header>
-            <Table.Row>
-              <Table.Head>Name</Table.Head>
-              <Table.Head>Directory</Table.Head>
-              <Table.Head />
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Directory</TableHead>
+              <TableHead />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {projects.map((project) => (
-              <Table.Row key={project.id}>
-                <Table.Cell>
+              <TableRow key={project.id}>
+                <TableCell>
                   <strong>{project.name}</strong>
-                </Table.Cell>
-                <Table.Cell>{project.directory}</Table.Cell>
-                <Table.Cell>
+                </TableCell>
+                <TableCell>{project.directory}</TableCell>
+                <TableCell>
                   {currentProjectId === project.id ? (
                     <Button variant="link" disabled>
                       Selected
@@ -65,12 +77,12 @@ export function ProjectSelectDialog({
                       Select
                     </Button>
                   )}
-                </Table.Cell>
-              </Table.Row>
+                </TableCell>
+              </TableRow>
             ))}
-          </Table.Body>
+          </TableBody>
         </Table>
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

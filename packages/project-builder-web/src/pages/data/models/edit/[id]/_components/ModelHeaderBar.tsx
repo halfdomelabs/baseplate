@@ -79,7 +79,7 @@ export function ModelHeaderBar({
             });
           }}
         >
-          <Button.Icon icon={MdDeleteOutline} className="text-destructive" />
+          <MdDeleteOutline className="text-destructive" />
           <div className="sr-only">Delete Model</div>
         </Button>
       </div>

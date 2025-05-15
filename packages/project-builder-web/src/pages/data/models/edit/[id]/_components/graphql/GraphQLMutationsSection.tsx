@@ -5,9 +5,15 @@ import type { Control } from 'react-hook-form';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
+  AlertDescription,
+  AlertTitle,
   MultiSwitchField,
-  SectionList,
-  SwitchField,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
+  SwitchFieldController,
 } from '@halfdomelabs/ui-components';
 import { useWatch } from 'react-hook-form';
 import { MdInfo } from 'react-icons/md';
@@ -55,22 +61,22 @@ export function GraphQLMutationsSection({
   const isDeleteControllerEnabled = controllerConfig.delete?.enabled;
 
   return (
-    <SectionList.Section>
+    <SectionListSection>
       <div>
-        <SectionList.SectionHeader className="sticky top-2">
-          <SectionList.SectionTitle>Mutations</SectionList.SectionTitle>
-          <SectionList.SectionDescription>
+        <SectionListSectionHeader className="sticky top-2">
+          <SectionListSectionTitle>Mutations</SectionListSectionTitle>
+          <SectionListSectionDescription>
             Configure the GraphQL mutations that can be performed on this model.
-          </SectionList.SectionDescription>
-        </SectionList.SectionHeader>
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
       </div>
-      <SectionList.SectionContent className="space-y-8">
+      <SectionListSectionContent className="space-y-8">
         {(!isCreateControllerEnabled ||
           !isUpdateControllerEnabled ||
           !isDeleteControllerEnabled) && (
           <Alert className="max-w-md">
             <MdInfo />
-            <Alert.Title>
+            <AlertTitle>
               Service methods disabled (
               {[
                 !isCreateControllerEnabled && 'Create',
@@ -80,18 +86,18 @@ export function GraphQLMutationsSection({
                 .filter(Boolean)
                 .join(', ')}
               )
-            </Alert.Title>
-            <Alert.Description>
+            </AlertTitle>
+            <AlertDescription>
               Enable the appropriate methods on the{' '}
               <Link to="../service" className="font-semibold">
                 the service tab
               </Link>{' '}
               to expose mutations
-            </Alert.Description>
+            </AlertDescription>
           </Alert>
         )}
         <div className="space-y-4">
-          <SwitchField.Controller
+          <SwitchFieldController
             control={control}
             name="graphql.mutations.create.enabled"
             disabled={!isObjectTypeEnabled || !isCreateControllerEnabled}
@@ -109,7 +115,7 @@ export function GraphQLMutationsSection({
           )}
         </div>
         <div className="space-y-4">
-          <SwitchField.Controller
+          <SwitchFieldController
             control={control}
             name="graphql.mutations.update.enabled"
             label="Update Mutation"
@@ -127,7 +133,7 @@ export function GraphQLMutationsSection({
           )}
         </div>
         <div className="space-y-2">
-          <SwitchField.Controller
+          <SwitchFieldController
             control={control}
             name="graphql.mutations.delete.enabled"
             label="Delete Mutation"
@@ -144,7 +150,7 @@ export function GraphQLMutationsSection({
             />
           )}
         </div>
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

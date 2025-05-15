@@ -114,7 +114,7 @@ export const trpc = createTRPCClient<AppRouter>({
         }),
       ],
       false: [
-        retryLink({ maxAttempts: 5 }),
+        retryLink({ maxAttempts: 10 }),
         httpBatchLink({
           url: `/trpc`,
         }),

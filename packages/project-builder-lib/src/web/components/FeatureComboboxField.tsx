@@ -1,14 +1,12 @@
 import type { ComboboxFieldProps } from '@halfdomelabs/ui-components';
-import type { ForwardedRef } from 'react';
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import {
   ComboboxField,
-  genericForwardRef,
   useControllerMerged,
 } from '@halfdomelabs/ui-components';
-import { forwardRef, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { FeatureUtils } from '@src/definition/index.js';
 
@@ -32,10 +30,11 @@ function createCreateOption(value: string): { label: string; value: string } {
   };
 }
 
-const FeatureComboboxFieldRoot = forwardRef<
-  HTMLInputElement,
-  FeatureComboboxFieldProps
->(({ canCreate, value, ...rest }, ref) => {
+function FeatureComboboxField({
+  canCreate,
+  value,
+  ...rest
+}: FeatureComboboxFieldProps): React.ReactElement {
   const { definition } = useProjectDefinition();
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -69,12 +68,9 @@ const FeatureComboboxFieldRoot = forwardRef<
       onSearchQueryChange={setSearchQuery}
       options={featureOptions}
       value={value}
-      ref={ref}
     />
   );
-});
-
-FeatureComboboxFieldRoot.displayName = 'FeatureComboboxField';
+}
 
 interface FeatureComboboxFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -84,36 +80,32 @@ interface FeatureComboboxFieldControllerProps<
   name: TFieldName;
 }
 
-const FeatureComboboxFieldController = genericForwardRef(
-  function FeatureComboboxFieldController<
-    TFieldValues extends FieldValues = FieldValues,
-    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  >(
-    {
-      name,
-      control,
-      ...rest
-    }: FeatureComboboxFieldControllerProps<TFieldValues, TFieldName>,
-    ref: ForwardedRef<HTMLInputElement>,
-  ): React.JSX.Element {
-    const {
-      field,
-      fieldState: { error },
-    } = useControllerMerged({ name, control }, rest, ref);
+function FeatureComboboxFieldController<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  name,
+  control,
+  ...rest
+}: FeatureComboboxFieldControllerProps<
+  TFieldValues,
+  TFieldName
+>): React.JSX.Element {
+  const {
+    field,
+    fieldState: { error },
+  } = useControllerMerged({ name, control }, rest);
 
-    const restProps = rest;
+  const restProps = rest;
 
-    return (
-      <FeatureComboboxField
-        error={error?.message}
-        {...restProps}
-        {...field}
-        value={field.value ?? null}
-      />
-    );
-  },
-);
+  return (
+    <FeatureComboboxField
+      error={error?.message}
+      {...restProps}
+      {...field}
+      value={field.value ?? null}
+    />
+  );
+}
 
-export const FeatureComboboxField = Object.assign(FeatureComboboxFieldRoot, {
-  Controller: FeatureComboboxFieldController,
-});
+export { FeatureComboboxField, FeatureComboboxFieldController };

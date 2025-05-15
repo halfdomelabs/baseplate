@@ -11,9 +11,20 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  Dropdown,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   RecordView,
-  SectionList,
+  RecordViewActions,
+  RecordViewItem,
+  RecordViewItemList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
@@ -57,17 +68,15 @@ function ServiceTransformerRecord({
   const summary = transformerConfig.getSummary(field, definitionContainer);
   return (
     <RecordView>
-      <RecordView.ItemList>
-        <RecordView.Item title="Type">
-          {transformerConfig.label}
-        </RecordView.Item>
+      <RecordViewItemList>
+        <RecordViewItem title="Type">{transformerConfig.label}</RecordViewItem>
         {summary.map((item) => (
-          <RecordView.Item key={item.label} title={item.label}>
+          <RecordViewItem key={item.label} title={item.label}>
             {item.description}
-          </RecordView.Item>
+          </RecordViewItem>
         ))}
-      </RecordView.ItemList>
-      <RecordView.Actions>
+      </RecordViewItemList>
+      <RecordViewActions>
         {transformerConfig.Form && (
           <ServiceTransformerDialog
             webConfig={transformerConfig}
@@ -78,18 +87,23 @@ function ServiceTransformerRecord({
             asChild
             isCreate={false}
           >
-            <Button.WithOnlyIcon icon={MdEdit} title="Edit" />
+            <Button variant="ghost" size="icon" title="Edit">
+              <MdEdit />
+            </Button>
           </ServiceTransformerDialog>
         )}
-        <Button.WithOnlyIcon
-          icon={MdOutlineDelete}
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => {
             onRemove(idx);
           }}
           title="Remove"
           className="text-destructive hover:text-destructive-hover"
-        />
-      </RecordView.Actions>
+        >
+          <MdOutlineDelete />
+        </Button>
+      </RecordViewActions>
     </RecordView>
   );
 }
@@ -124,15 +138,15 @@ export function ServiceTransformersSection({
   const [addableTransformerIdx, setAddableTransformerIdx] = useState<number>(0);
 
   return (
-    <SectionList.Section className={className}>
-      <SectionList.SectionHeader>
-        <SectionList.SectionTitle>Transformers</SectionList.SectionTitle>
-        <SectionList.SectionDescription>
+    <SectionListSection className={className}>
+      <SectionListSectionHeader>
+        <SectionListSectionTitle>Transformers</SectionListSectionTitle>
+        <SectionListSectionDescription>
           Transformers are used to operate on the data from the client into the
           shape that the database ORM expects.
-        </SectionList.SectionDescription>
-      </SectionList.SectionHeader>
-      <SectionList.SectionContent className="max-w-xl space-y-4">
+        </SectionListSectionDescription>
+      </SectionListSectionHeader>
+      <SectionListSectionContent className="max-w-xl space-y-4">
         {fields.map((field, idx) => (
           <ServiceTransformerRecord
             key={field.id}
@@ -155,16 +169,17 @@ export function ServiceTransformersSection({
           />
         ))}
         {addableTransformers.length > 0 && (
-          <Dropdown>
-            <Dropdown.Trigger asChild>
-              <Button.WithIcon icon={MdAdd} variant="secondary" size="sm">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="sm">
+                <MdAdd />
                 Add Transformer
-              </Button.WithIcon>
-            </Dropdown.Trigger>
-            <Dropdown.Content>
-              <Dropdown.Group>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
                 {addableTransformers.map((transformer, idx) => (
-                  <Dropdown.Item
+                  <DropdownMenuItem
                     key={transformer.name}
                     onSelect={() => {
                       if (transformer.Form) {
@@ -186,11 +201,11 @@ export function ServiceTransformersSection({
                         {transformer.description}
                       </div>
                     </div>
-                  </Dropdown.Item>
+                  </DropdownMenuItem>
                 ))}
-              </Dropdown.Group>
-            </Dropdown.Content>
-          </Dropdown>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
         <ServiceTransformerDialog
           webConfig={addableTransformers[addableTransformerIdx]}
@@ -204,7 +219,7 @@ export function ServiceTransformersSection({
           onOpenChange={setIsNewTransformerDialogOpen}
           isCreate={true}
         />
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

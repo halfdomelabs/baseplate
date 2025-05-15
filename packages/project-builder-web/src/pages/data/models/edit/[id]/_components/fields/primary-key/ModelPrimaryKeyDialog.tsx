@@ -2,7 +2,15 @@ import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { Dialog, useControlledState } from '@halfdomelabs/ui-components';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  useControlledState,
+} from '@halfdomelabs/ui-components';
 
 import { ModelPrimaryKeyForm } from './ModelPrimaryKeyForm';
 
@@ -24,24 +32,22 @@ export function ModelPrimaryKeyDialog({
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {children && (
-        <Dialog.Trigger asChild={asChild}>{children}</Dialog.Trigger>
-      )}
-      <Dialog.Content>
-        <Dialog.Header>
-          <Dialog.Title>Primary Keys</Dialog.Title>
-          <Dialog.Description>
+      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Primary Keys</DialogTitle>
+          <DialogDescription>
             Select the fields that will be used as the primary key for this
             model
-          </Dialog.Description>
-        </Dialog.Header>
+          </DialogDescription>
+        </DialogHeader>
         <ModelPrimaryKeyForm
           control={control}
           onSubmitSuccess={() => {
             setIsOpen(false);
           }}
         />
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

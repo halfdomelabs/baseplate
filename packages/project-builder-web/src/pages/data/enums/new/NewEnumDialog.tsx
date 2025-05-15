@@ -4,7 +4,14 @@ import { useBlockBeforeContinue } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   Dialog,
-  SwitchField,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  SwitchFieldController,
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
@@ -51,32 +58,32 @@ export function NewEnumDialog({
         }
       }}
     >
-      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
-      <Dialog.Content>
-        <Dialog.Header>
-          <Dialog.Title>New Enum</Dialog.Title>
-          <Dialog.Description>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>New Enum</DialogTitle>
+          <DialogDescription>
             Enums are a list of values that can be used in your data models.
-          </Dialog.Description>
-        </Dialog.Header>
+          </DialogDescription>
+        </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <EnumInfoForm control={control} />
-          <SwitchField.Controller
+          <SwitchFieldController
             label="Expose in GraphQL schema"
             control={control}
             name="isExposed"
             description="Whether to expose this enum in the GraphQL schema"
           />
-          <Dialog.Footer>
-            <Dialog.Close asChild>
+          <DialogFooter>
+            <DialogClose asChild>
               <Button variant="secondary">Cancel</Button>
-            </Dialog.Close>
+            </DialogClose>
             <Button type="submit" disabled={isSavingDefinition}>
               Create Enum
             </Button>
-          </Dialog.Footer>
+          </DialogFooter>
         </form>
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

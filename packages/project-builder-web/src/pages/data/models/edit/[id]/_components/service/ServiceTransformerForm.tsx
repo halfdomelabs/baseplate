@@ -7,7 +7,7 @@ import {
   transformerSchema,
 } from '@halfdomelabs/project-builder-lib';
 import { usePluginEnhancedSchema } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Dialog } from '@halfdomelabs/ui-components';
+import { Button, DialogClose, DialogFooter } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
 import { useId } from 'react';
@@ -76,14 +76,14 @@ export function ServiceTransformerForm({
         originalModel={originalModel}
         pluginId={pluginId}
       />
-      <Dialog.Footer>
-        <Dialog.Close asChild>
+      <DialogFooter>
+        <DialogClose asChild>
           <Button variant="secondary">Cancel</Button>
-        </Dialog.Close>
+        </DialogClose>
         <Button type="submit" disabled={!isCreate && !isDirty} form={formId}>
           Save
         </Button>
-      </Dialog.Footer>
+      </DialogFooter>
     </form>
   );
 }

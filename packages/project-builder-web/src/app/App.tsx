@@ -2,7 +2,11 @@ import type { ErrorHandlerValue } from '@halfdomelabs/project-builder-lib/web';
 import type React from 'react';
 
 import { ErrorHandlerContext } from '@halfdomelabs/project-builder-lib/web';
-import { ConfirmDialog, Toaster, Tooltip } from '@halfdomelabs/ui-components';
+import {
+  ConfirmDialog,
+  Toaster,
+  TooltipProvider,
+} from '@halfdomelabs/ui-components';
 import { useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
 
@@ -26,7 +30,7 @@ function App(): React.JSX.Element {
   return (
     <ErrorBoundary>
       <ErrorHandlerContext.Provider value={errorHandler}>
-        <Tooltip.Provider>
+        <TooltipProvider>
           <ClientVersionProvider>
             <ProjectSelectorGate>
               <ProjectDefinitionProvider>
@@ -38,7 +42,7 @@ function App(): React.JSX.Element {
           <Toaster />
           <ConfirmDialog />
           <BlockerDialog />
-        </Tooltip.Provider>
+        </TooltipProvider>
       </ErrorHandlerContext.Provider>
     </ErrorBoundary>
   );

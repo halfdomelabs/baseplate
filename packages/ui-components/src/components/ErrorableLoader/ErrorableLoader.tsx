@@ -23,16 +23,18 @@ interface ErrorableLoaderProps {
 }
 
 /**
- * Displays a loader component that can also render an error message.
+ * Displays a loader component that if an error is passed, it will display an error message instead.
  */
-export function ErrorableLoader({
+function ErrorableLoader({
   className,
   error,
   header,
   actions,
-}: ErrorableLoaderProps): React.JSX.Element {
+}: ErrorableLoaderProps): React.ReactElement {
   if (!error) {
     return <Loader className={className} />;
   }
   return <ErrorDisplay header={header} error={error} actions={actions} />;
 }
+
+export { ErrorableLoader };

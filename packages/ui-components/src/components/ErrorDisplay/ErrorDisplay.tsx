@@ -26,12 +26,12 @@ interface ErrorDisplayProps {
 /**
  * Displays a generic error state with a header and error message.
  */
-export function ErrorDisplay({
+function ErrorDisplay({
   className,
   header,
   error,
   actions,
-}: ErrorDisplayProps): React.JSX.Element {
+}: ErrorDisplayProps): React.ReactElement {
   const strings = useComponentStrings();
   return (
     <div
@@ -56,3 +56,5 @@ export function ErrorDisplay({
     </div>
   );
 }
+
+export { ErrorDisplay };

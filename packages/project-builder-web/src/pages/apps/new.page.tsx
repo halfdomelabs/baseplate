@@ -9,8 +9,9 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   Card,
-  InputField,
-  SelectField,
+  CardContent,
+  InputFieldController,
+  SelectFieldController,
   toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -57,15 +58,15 @@ function NewAppPage(): React.JSX.Element {
     <div className="space-y-4">
       <h1>New App</h1>
       <Card>
-        <Card.Content>
+        <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
-            <InputField.Controller
+            <InputFieldController
               label="Name"
               control={control}
               name="name"
               description="The name of the app, such as 'backend' or 'web'"
             />
-            <SelectField.Controller
+            <SelectFieldController
               label="Type"
               control={control}
               name="type"
@@ -75,7 +76,7 @@ function NewAppPage(): React.JSX.Element {
               Create
             </Button>
           </form>
-        </Card.Content>
+        </CardContent>
       </Card>
     </div>
   );

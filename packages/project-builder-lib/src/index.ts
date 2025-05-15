@@ -10,5 +10,4 @@ export * from './schema/index.js';
 export * from './tools/index.js';
 export * from './types/field-types.js';
 export type * from './types/files.js';
-export * from './utils/colors.js';
 export * from './utils/index.js';

@@ -4,7 +4,21 @@ import {
   useBlockBeforeContinue,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Dialog, Tabs, toast } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  toast,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdSync, MdSyncProblem } from 'react-icons/md';
@@ -71,7 +85,7 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
           setIsOpen(open);
         }}
       >
-        <Dialog.Trigger asChild>
+        <DialogTrigger asChild>
           <Button
             onClick={(e) => {
               setIsOpen(true);
@@ -85,34 +99,34 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
             size="sm"
             data-testid="sync-button"
           >
-            <Button.Icon icon={hasConflicts ? MdSyncProblem : MdSync} />
+            {hasConflicts ? <MdSyncProblem /> : <MdSync />}
             {isSyncing
               ? 'Syncing...'
               : hasConflicts
                 ? 'Resolve conflicts'
                 : 'Sync'}
           </Button>
-        </Dialog.Trigger>
-        <Dialog.Content width="lg" aria-description="Sync project dialog">
-          <Dialog.Header>
-            <Dialog.Title>Sync Project</Dialog.Title>
-            <Dialog.Description>
+        </DialogTrigger>
+        <DialogContent width="lg" aria-description="Sync project dialog">
+          <DialogHeader>
+            <DialogTitle>Sync Project</DialogTitle>
+            <DialogDescription>
               Sync the project configuration to the codebase of your project.
-            </Dialog.Description>
-          </Dialog.Header>
+            </DialogDescription>
+          </DialogHeader>
           <Tabs defaultValue="packages" className="mt-4 min-w-0">
-            <Tabs.List className="grid w-full grid-cols-2">
-              <Tabs.Trigger value="packages">Packages</Tabs.Trigger>
-              <Tabs.Trigger value="console-log">Console log</Tabs.Trigger>
-            </Tabs.List>
-            <Tabs.Content value="packages" className="mt-4">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="packages">Packages</TabsTrigger>
+              <TabsTrigger value="console-log">Console log</TabsTrigger>
+            </TabsList>
+            <TabsContent value="packages" className="mt-4">
               <PackageSyncStatus />
-            </Tabs.Content>
-            <Tabs.Content value="console-log" className="mt-4">
+            </TabsContent>
+            <TabsContent value="console-log" className="mt-4">
               <Console />
-            </Tabs.Content>
+            </TabsContent>
           </Tabs>
-          <Dialog.Footer>
+          <DialogFooter>
             {isSyncing ? (
               <Button variant="destructive" onClick={cancelSyncProject}>
                 Stop
@@ -130,8 +144,8 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
             >
               Close
             </Button>
-          </Dialog.Footer>
-        </Dialog.Content>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </div>
   );

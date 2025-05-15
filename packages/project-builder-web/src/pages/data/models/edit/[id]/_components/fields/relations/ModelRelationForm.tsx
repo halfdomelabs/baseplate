@@ -14,9 +14,11 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   ComboboxField,
-  Dialog,
-  InputField,
-  SelectField,
+  ComboboxFieldController,
+  DialogClose,
+  DialogFooter,
+  InputFieldController,
+  SelectFieldController,
   toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -293,7 +295,7 @@ export function ModelRelationForm({
           disabled
           label="Local Model"
         />
-        <ComboboxField.Controller
+        <ComboboxFieldController
           control={control}
           name="modelRef"
           options={foreignModelOptions}
@@ -326,7 +328,7 @@ export function ModelRelationForm({
           !hasSelectedForeignModel && 'pointer-events-none opacity-50',
         )}
       >
-        <InputField.Controller
+        <InputFieldController
           control={control}
           disabled={!hasSelectedForeignModel}
           name="name"
@@ -340,7 +342,7 @@ export function ModelRelationForm({
             </span>
           }
         />
-        <InputField.Controller
+        <InputFieldController
           control={control}
           disabled={!hasSelectedForeignModel}
           name="foreignRelationName"
@@ -357,13 +359,13 @@ export function ModelRelationForm({
         <div className="text-sm font-medium">Foreign Field</div>
         {relation.references.map((_, i) => (
           <React.Fragment key={i}>
-            <ComboboxField.Controller
+            <ComboboxFieldController
               disabled={!hasSelectedForeignModel}
               control={control}
               name={`references.${i}.localRef`}
               options={localFieldOptions}
             />
-            <ComboboxField.Controller
+            <ComboboxFieldController
               control={control}
               name={`references.${i}.foreignRef`}
               options={foreignFieldOptions}
@@ -373,7 +375,7 @@ export function ModelRelationForm({
         ))}
       </div>
       <div className="grid grid-cols-2 gap-x-8 gap-y-2 border-t pt-4">
-        <SelectField.Controller
+        <SelectFieldController
           label="On Delete"
           control={control}
           options={[
@@ -392,7 +394,7 @@ export function ModelRelationForm({
           description="What to do when the foreign row is deleted"
         />
       </div>
-      <Dialog.Footer>
+      <DialogFooter>
         <div className="flex w-full justify-between">
           {relationId && (
             <Button
@@ -406,9 +408,9 @@ export function ModelRelationForm({
             </Button>
           )}
           <div className="flex gap-4">
-            <Dialog.Close asChild>
+            <DialogClose asChild>
               <Button variant="secondary">Cancel</Button>
-            </Dialog.Close>
+            </DialogClose>
             <Button
               type="submit"
               form={formId}
@@ -418,7 +420,7 @@ export function ModelRelationForm({
             </Button>
           </div>
         </div>
-      </Dialog.Footer>
+      </DialogFooter>
     </form>
   );
 }

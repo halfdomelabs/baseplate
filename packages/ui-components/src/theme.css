@@ -11,7 +11,7 @@
  * Colors configuration
  */
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant dark (.dark, .dark *, &:where([data-theme=dark], [data-theme=dark] *));
 
 @theme inline {
   --color-*: initial;
@@ -58,6 +58,72 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-surface-border: var(--surface-border);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-muted-foreground: var(--surface-muted-foreground);
+}
+
+@utility surface-default {
+  --surface: var(--background);
+  --surface-foreground: var(--foreground);
+  --surface-border: color-mix(in oklab, var(--foreground) 40%, transparent);
+  --surface-muted: color-mix(in oklab, var(--background) 10%, transparent);
+  --surface-muted-foreground: color-mix(
+    in oklab,
+    var(--foreground) 70%,
+    var(--background)
+  );
+}
+
+@utility surface-success {
+  --surface: var(--success);
+  --surface-foreground: var(--success-foreground);
+  --surface-border: color-mix(
+    in oklab,
+    var(--success-foreground) 40%,
+    transparent
+  );
+  --surface-muted: color-mix(in oklab, var(--success) 10%, transparent);
+  --surface-muted-foreground: color-mix(
+    in oklab,
+    var(--success-foreground) 70%,
+    var(--success)
+  );
+}
+
+@utility surface-warning {
+  --surface: var(--warning);
+  --surface-foreground: var(--warning-foreground);
+  --surface-border: color-mix(
+    in oklab,
+    var(--warning-foreground) 40%,
+    transparent
+  );
+  --surface-muted: color-mix(in oklab, var(--warning) 10%, transparent);
+  --surface-muted-foreground: color-mix(
+    in oklab,
+    var(--warning-foreground) 70%,
+    var(--warning)
+  );
+}
+
+@utility surface-error {
+  --surface: var(--error);
+  --surface-foreground: var(--error-foreground);
+  --surface-border: color-mix(
+    in oklab,
+    var(--error-foreground) 40%,
+    transparent
+  );
+  --surface-muted: color-mix(in oklab, var(--error) 10%, transparent);
+  --surface-muted-foreground: color-mix(
+    in oklab,
+    var(--error-foreground) 70%,
+    var(--error)
+  );
 }
 
 /**

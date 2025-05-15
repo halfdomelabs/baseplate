@@ -1,67 +1,86 @@
+'use client';
+
+import type * as React from 'react';
+
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import * as SelectPrimitive from '@radix-ui/react-select';
-import * as React from 'react';
-import { RxCaretSort, RxCheck } from 'react-icons/rx';
+import { MdCheck, MdUnfoldMore } from 'react-icons/md';
 
 import {
-  inputVariants,
   selectCheckVariants,
   selectContentVariants,
   selectItemVariants,
+  selectTriggerVariants,
 } from '@src/styles';
 import { cn } from '@src/utils';
 
-import { ScrollArea } from '../ScrollArea/ScrollArea';
+import { ScrollBar } from '../ScrollArea/ScrollArea';
 
 /**
  * Select component
  *
+ * - Adapted styles to make full width to match input styles
+ * - Added max height to the content
+ * - Use scroll area to make the content scrollable rather than buttons
+ *
  * https://ui.shadcn.com/docs/components/select
  */
+function Select({
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Root>): React.ReactElement {
+  return <SelectPrimitive.Root data-slot="select" {...props} />;
+}
 
-const SelectRoot = SelectPrimitive.Root;
+function SelectGroup({
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Group>): React.ReactElement {
+  return <SelectPrimitive.Group data-slot="select-group" {...props} />;
+}
 
-const SelectGroup = SelectPrimitive.Group;
+function SelectValue({
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Value>): React.ReactElement {
+  return <SelectPrimitive.Value data-slot="select-value" {...props} />;
+}
 
-const SelectValue = SelectPrimitive.Value;
-
-const SelectTrigger = React.forwardRef<
-  React.ComponentRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      inputVariants(),
-      'group flex items-center justify-between data-placeholder:text-muted-foreground',
-      className,
-    )}
-    {...props}
-  >
-    {children}
-    <SelectPrimitive.Icon asChild className="text-foreground">
-      <RxCaretSort className="size-4 opacity-50" />
-    </SelectPrimitive.Icon>
-  </SelectPrimitive.Trigger>
-));
-SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
-
+function SelectTrigger({
+  className,
+  size = 'default',
+  children,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
+  size?: 'sm' | 'default';
+}): React.ReactElement {
+  return (
+    <SelectPrimitive.Trigger
+      data-slot="select-trigger"
+      data-size={size}
+      className={cn(selectTriggerVariants(), className)}
+      {...props}
+    >
+      {children}
+      <SelectPrimitive.Icon asChild>
+        <MdUnfoldMore className="size-4 opacity-50" />
+      </SelectPrimitive.Icon>
+    </SelectPrimitive.Trigger>
+  );
+}
 interface SelectContentProps
   extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content> {
   maxHeight?: string;
 }
 
-const SelectContent = React.forwardRef<
-  React.ComponentRef<typeof SelectPrimitive.Content>,
-  SelectContentProps
->(
-  (
-    { className, children, position = 'popper', maxHeight = '320px', ...props },
-    ref,
-  ) => (
+function SelectContent({
+  className,
+  children,
+  position = 'popper',
+  maxHeight = '320px',
+  ...props
+}: SelectContentProps): React.ReactElement {
+  return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
-        ref={ref}
+        data-slot="select-content"
         className={cn(
           selectContentVariants({
             popper: position === 'popper' ? 'active' : 'none',
@@ -94,64 +113,68 @@ const SelectContent = React.forwardRef<
               {children}
             </ScrollAreaPrimitive.Viewport>
           </SelectPrimitive.Viewport>
-          <ScrollArea.ScrollBar />
+          <ScrollBar />
           <ScrollAreaPrimitive.Corner />
         </ScrollAreaPrimitive.Root>
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
-  ),
-);
-SelectContent.displayName = SelectPrimitive.Content.displayName;
+  );
+}
 
-const SelectLabel = React.forwardRef<
-  React.ComponentRef<typeof SelectPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.Label
-    ref={ref}
-    className={cn('px-2 py-1.5 text-sm font-semibold', className)}
-    {...props}
-  />
-));
-SelectLabel.displayName = SelectPrimitive.Label.displayName;
+function SelectLabel({
+  className,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Label>): React.ReactElement {
+  return (
+    <SelectPrimitive.Label
+      data-slot="select-label"
+      className={cn('px-2 py-1.5 text-xs text-muted-foreground', className)}
+      {...props}
+    />
+  );
+}
 
-const SelectItem = React.forwardRef<
-  React.ComponentRef<typeof SelectPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(({ className, children, ...props }, ref) => (
-  <SelectPrimitive.Item
-    ref={ref}
-    className={cn(selectItemVariants({ withFocus: 'highlight' }), className)}
-    {...props}
-  >
-    <span className={selectCheckVariants()}>
-      <SelectPrimitive.ItemIndicator>
-        <RxCheck className="size-4" />
-      </SelectPrimitive.ItemIndicator>
-    </span>
-    <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-  </SelectPrimitive.Item>
-));
-SelectItem.displayName = SelectPrimitive.Item.displayName;
+function SelectItem({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Item>): React.ReactElement {
+  return (
+    <SelectPrimitive.Item
+      data-slot="select-item"
+      className={cn(selectItemVariants({ withFocus: 'highlight' }), className)}
+      {...props}
+    >
+      <span className={selectCheckVariants()}>
+        <SelectPrimitive.ItemIndicator>
+          <MdCheck className="size-4" />
+        </SelectPrimitive.ItemIndicator>
+      </span>
+      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+    </SelectPrimitive.Item>
+  );
+}
 
-const SelectSeparator = React.forwardRef<
-  React.ComponentRef<typeof SelectPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
->(({ className, ...props }, ref) => (
-  <SelectPrimitive.Separator
-    ref={ref}
-    className={cn('-mx-1 my-1 h-px bg-muted', className)}
-    {...props}
-  />
-));
-SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
+function SelectSeparator({
+  className,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Separator>): React.ReactElement {
+  return (
+    <SelectPrimitive.Separator
+      data-slot="select-separator"
+      className={cn('pointer-events-none -mx-1 my-1 h-px bg-border', className)}
+      {...props}
+    />
+  );
+}
 
-export const Select = Object.assign(SelectRoot, {
-  Group: SelectGroup,
-  Value: SelectValue,
-  Trigger: SelectTrigger,
-  Content: SelectContent,
-  Label: SelectLabel,
-  Item: SelectItem,
-  Separator: SelectSeparator,
-});
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+};

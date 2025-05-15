@@ -2,7 +2,7 @@ import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { Badge } from '@halfdomelabs/ui-components';
+import { BadgeWithIcon } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { MdStar } from 'react-icons/md';
@@ -33,7 +33,7 @@ export function ModelFieldUniqueBadge({
   );
   return (
     <ModelUniqueConstraintDialog control={control} constraintId={constraintId}>
-      <Badge.WithIcon
+      <BadgeWithIcon
         variant="secondary"
         icon={MdStar}
         className={clsx('', className)}
@@ -48,7 +48,7 @@ export function ModelFieldUniqueBadge({
       >
         {shouldShowText &&
           `Unique ${fieldsLength > 1 ? `(${fieldsLength})` : ''}`}
-      </Badge.WithIcon>
+      </BadgeWithIcon>
     </ModelUniqueConstraintDialog>
   );
 }

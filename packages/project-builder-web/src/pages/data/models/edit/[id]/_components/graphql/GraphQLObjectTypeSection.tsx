@@ -8,9 +8,13 @@ import {
   Badge,
   Button,
   Label,
-  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
   Switch,
-  SwitchField,
+  SwitchFieldController,
 } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
@@ -93,18 +97,18 @@ export function GraphQLObjectTypeSection({
     useState(showCollapsibleForeignRelations);
 
   return (
-    <SectionList.Section>
+    <SectionListSection>
       <div>
-        <SectionList.SectionHeader className="sticky top-2">
-          <SectionList.SectionTitle>Object Type</SectionList.SectionTitle>
-          <SectionList.SectionDescription>
+        <SectionListSectionHeader className="sticky top-2">
+          <SectionListSectionTitle>Object Type</SectionListSectionTitle>
+          <SectionListSectionDescription>
             Configure the object type that will be exposed in the GraphQL schema
             for this model.
-          </SectionList.SectionDescription>
-        </SectionList.SectionHeader>
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
       </div>
-      <SectionList.SectionContent className="space-y-4">
-        <SwitchField.Controller
+      <SectionListSectionContent className="space-y-4">
+        <SwitchFieldController
           control={control}
           name="graphql.objectType.enabled"
           label="Enable Object Type"
@@ -123,7 +127,7 @@ export function GraphQLObjectTypeSection({
                     {fieldsValue.length}/{fields.length} active
                   </Badge>
                   {showCollapsibleFields ? (
-                    <Button.WithOnlyIcon
+                    <Button
                       onClick={() => {
                         setShouldCollapseFields(!shouldCollapseFields);
                       }}
@@ -134,12 +138,15 @@ export function GraphQLObjectTypeSection({
                           : 'Collapse fields'
                       }
                       type="button"
-                      icon={
-                        shouldCollapseFields
-                          ? HiMiniChevronDown
-                          : HiMiniChevronUp
-                      }
-                    />
+                      variant="ghost"
+                      size="icon"
+                    >
+                      {shouldCollapseFields ? (
+                        <HiMiniChevronDown />
+                      ) : (
+                        <HiMiniChevronUp />
+                      )}
+                    </Button>
                   ) : null}
                 </div>
               </th>
@@ -197,7 +204,7 @@ export function GraphQLObjectTypeSection({
                       active
                     </Badge>
                     {showCollapsibleLocalRelations ? (
-                      <Button.WithOnlyIcon
+                      <Button
                         onClick={() => {
                           setShouldCollapseLocalRelations(
                             !shouldCollapseLocalRelations,
@@ -210,12 +217,15 @@ export function GraphQLObjectTypeSection({
                             : 'Collapse fields'
                         }
                         type="button"
-                        icon={
-                          shouldCollapseLocalRelations
-                            ? HiMiniChevronDown
-                            : HiMiniChevronUp
-                        }
-                      />
+                        variant="ghost"
+                        size="icon"
+                      >
+                        {shouldCollapseLocalRelations ? (
+                          <HiMiniChevronDown />
+                        ) : (
+                          <HiMiniChevronUp />
+                        )}
+                      </Button>
                     ) : null}
                   </div>
                 </th>
@@ -265,7 +275,7 @@ export function GraphQLObjectTypeSection({
                       active
                     </Badge>
                     {showCollapsibleForeignRelations ? (
-                      <Button.WithOnlyIcon
+                      <Button
                         onClick={() => {
                           setShouldCollapseForeignRelations(
                             !shouldCollapseForeignRelations,
@@ -278,12 +288,15 @@ export function GraphQLObjectTypeSection({
                             : 'Collapse fields'
                         }
                         type="button"
-                        icon={
-                          shouldCollapseForeignRelations
-                            ? HiMiniChevronDown
-                            : HiMiniChevronUp
-                        }
-                      />
+                        variant="ghost"
+                        size="icon"
+                      >
+                        {shouldCollapseForeignRelations ? (
+                          <HiMiniChevronDown />
+                        ) : (
+                          <HiMiniChevronUp />
+                        )}
+                      </Button>
                     ) : null}
                   </div>
                 </th>
@@ -323,7 +336,7 @@ export function GraphQLObjectTypeSection({
               ))}
           </tbody>
         </table>
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

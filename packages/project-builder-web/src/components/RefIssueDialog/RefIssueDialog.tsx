@@ -2,7 +2,21 @@ import type { DefinitionEntity } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Dialog, Table } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@halfdomelabs/ui-components';
 import { Link } from 'react-router-dom';
 
 import { useDeleteReferenceDialogState } from '@src/hooks/useDeleteReferenceDialog';
@@ -27,23 +41,23 @@ export function RefIssueDialog(): React.JSX.Element {
         setDialogOptions(undefined);
       }}
     >
-      <Dialog.Content width="lg">
-        <Dialog.Header>
-          <Dialog.Title>Unable to delete</Dialog.Title>
-        </Dialog.Header>
-        <Dialog.Description>
+      <DialogContent width="lg">
+        <DialogHeader>
+          <DialogTitle>Unable to delete</DialogTitle>
+        </DialogHeader>
+        <DialogDescription>
           There were other references that needed to be fixed before you could
           delete this item.
-        </Dialog.Description>
+        </DialogDescription>
         <Table>
-          <Table.Header>
-            <Table.Row>
-              <Table.Head>Entity</Table.Head>
-              <Table.Head>Path</Table.Head>
-              <Table.Head>Referenced Entity</Table.Head>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Entity</TableHead>
+              <TableHead>Path</TableHead>
+              <TableHead>Referenced Entity</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {issues?.map((issue) => {
               const entity = entities.find((e) => e.id === issue.entityId);
               const issuePath = issue.ref.path.join('.');
@@ -67,8 +81,8 @@ export function RefIssueDialog(): React.JSX.Element {
                 ? getEntityTypeUrl(definitionContainer, referenceParent)
                 : undefined;
               return (
-                <Table.Row key={issuePath}>
-                  <Table.Cell>
+                <TableRow key={issuePath}>
+                  <TableCell>
                     {referenceParent ? (
                       <div className="text-style-prose">
                         <div>
@@ -92,9 +106,9 @@ export function RefIssueDialog(): React.JSX.Element {
                     ) : (
                       <strong>Root</strong>
                     )}
-                  </Table.Cell>
-                  <Table.Cell>{pathInParent}</Table.Cell>
-                  <Table.Cell>
+                  </TableCell>
+                  <TableCell>{pathInParent}</TableCell>
+                  <TableCell>
                     {entity ? (
                       <div>
                         <div>{entity.name}</div>
@@ -105,13 +119,13 @@ export function RefIssueDialog(): React.JSX.Element {
                     ) : (
                       ''
                     )}
-                  </Table.Cell>
-                </Table.Row>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </Table.Body>
+          </TableBody>
         </Table>
-        <Dialog.Footer>
+        <DialogFooter>
           <Button
             onClick={() => {
               setDialogOptions(undefined);
@@ -119,8 +133,8 @@ export function RefIssueDialog(): React.JSX.Element {
           >
             OK
           </Button>
-        </Dialog.Footer>
-      </Dialog.Content>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }

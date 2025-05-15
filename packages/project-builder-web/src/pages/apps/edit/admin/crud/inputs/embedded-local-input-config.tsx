@@ -4,7 +4,7 @@ import type React from 'react';
 import type { Control } from 'react-hook-form';
 
 import { createAdminCrudInputWebConfig } from '@halfdomelabs/project-builder-lib/web';
-import { SelectField } from '@halfdomelabs/ui-components';
+import { SelectFieldController } from '@halfdomelabs/ui-components';
 
 function AdminCrudEmbeddedLocalInputForm({
   formProps,
@@ -24,13 +24,13 @@ function AdminCrudEmbeddedLocalInputForm({
 
   return (
     <>
-      <SelectField.Controller
+      <SelectFieldController
         label="Relation Name"
         control={controlTyped}
         name={`${prefix}.localRelationRef`}
         options={localRelationOptions}
       />
-      <SelectField.Controller
+      <SelectFieldController
         label="Embedded Form"
         control={controlTyped}
         name={`${prefix}.embeddedFormRef`}

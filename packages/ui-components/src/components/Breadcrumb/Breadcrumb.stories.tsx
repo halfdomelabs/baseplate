@@ -1,6 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Breadcrumb } from './Breadcrumb.js';
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from './Breadcrumb.js';
 
 const meta = {
   component: Breadcrumb,
@@ -16,21 +24,21 @@ export const Default: Story = {
     children: (
       <>
         <Breadcrumb>
-          <Breadcrumb.List>
-            <Breadcrumb.Item>
-              <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
-            </Breadcrumb.Item>
-            <Breadcrumb.Separator />
-            <Breadcrumb.Ellipsis />
-            <Breadcrumb.Separator />
-            <Breadcrumb.Item>
-              <Breadcrumb.Link href="/models">Models</Breadcrumb.Link>
-            </Breadcrumb.Item>
-            <Breadcrumb.Separator />
-            <Breadcrumb.Item>
-              <Breadcrumb.Page>To Do</Breadcrumb.Page>
-            </Breadcrumb.Item>
-          </Breadcrumb.List>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbEllipsis />
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/models">Models</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>To Do</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
         </Breadcrumb>
       </>
     ),

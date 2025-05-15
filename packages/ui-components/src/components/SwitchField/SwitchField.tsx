@@ -1,56 +1,60 @@
-import type * as SwitchPrimitives from '@radix-ui/react-switch';
-import type { ForwardedRef } from 'react';
+'use client';
+
+import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import React from 'react';
-
-import type { FieldProps } from '@src/types/form';
+import type { FormFieldProps } from '@src/types/form';
 
 import { useControllerMerged } from '@src/hooks/useControllerMerged';
 import { cn } from '@src/utils';
-import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
-import { FormItem } from '../FormItem/FormItem';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem';
 import { Switch } from '../Switch/Switch';
 
 export interface SwitchFieldProps
   extends Omit<
-      React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>,
+      React.ComponentPropsWithRef<typeof Switch>,
       'onChange' | 'value' | 'onCheckedChange' | 'checked'
     >,
-    FieldProps {
+    FormFieldProps {
   onChange?: (value: boolean) => void;
   value?: boolean;
 }
 
-const SwitchFieldRoot = React.forwardRef<HTMLButtonElement, SwitchFieldProps>(
-  (
-    { label, description, error, onChange, value, className, ...props },
-    ref,
-  ) => (
+function SwitchField({
+  label,
+  description,
+  error,
+  onChange,
+  value,
+  className,
+  ...props
+}: SwitchFieldProps): React.ReactElement {
+  return (
     <FormItem error={error} className={cn('space-y-2', className)}>
       <div className="flex items-center gap-2">
-        <FormItem.Control>
+        <FormControl>
           <Switch
             onCheckedChange={(checked) => onChange?.(checked)}
             checked={value}
             {...props}
-            ref={ref}
           />
-        </FormItem.Control>
+        </FormControl>
         <div className="space-y-0.5">
-          {label && <FormItem.Label className="block">{label}</FormItem.Label>}
-          {description && (
-            <FormItem.Description>{description}</FormItem.Description>
-          )}
+          <FormLabel className="block">{label}</FormLabel>
+          <FormDescription>{description}</FormDescription>
         </div>
       </div>
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      <FormMessage />
     </FormItem>
-  ),
-);
-
-SwitchFieldRoot.displayName = 'SwitchField';
+  );
+}
 
 export interface SwitchFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -60,28 +64,20 @@ export interface SwitchFieldControllerProps<
   name: TFieldName;
 }
 
-const SwitchFieldController = genericForwardRef(
-  <
-    TFieldValues extends FieldValues = FieldValues,
-    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  >(
-    {
-      control,
-      name,
-      ...rest
-    }: SwitchFieldControllerProps<TFieldValues, TFieldName>,
-    ref: ForwardedRef<HTMLButtonElement>,
-  ): React.JSX.Element => {
-    const {
-      field,
-      fieldState: { error },
-    } = useControllerMerged({ control, name }, rest, ref);
+function SwitchFieldController<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  control,
+  name,
+  ...rest
+}: SwitchFieldControllerProps<TFieldValues, TFieldName>): React.JSX.Element {
+  const {
+    field,
+    fieldState: { error },
+  } = useControllerMerged({ control, name }, rest, rest.ref);
 
-    return <SwitchFieldRoot error={error?.message} {...rest} {...field} />;
-  },
-  'SwitchFieldController',
-);
+  return <SwitchField error={error?.message} {...rest} {...field} />;
+}
 
-export const SwitchField = Object.assign(SwitchFieldRoot, {
-  Controller: SwitchFieldController,
-});
+export { SwitchField, SwitchFieldController };

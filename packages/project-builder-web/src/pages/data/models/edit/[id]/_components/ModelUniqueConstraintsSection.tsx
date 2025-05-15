@@ -5,7 +5,14 @@ import type { Control, UseFormSetValue } from 'react-hook-form';
 import {
   Button,
   RecordView,
-  SectionList,
+  RecordViewActions,
+  RecordViewItem,
+  RecordViewItemList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
@@ -46,50 +53,55 @@ export function ModelUniqueConstraintsSection({
   }
 
   return (
-    <SectionList.Section>
-      <SectionList.SectionHeader>
-        <SectionList.SectionTitle>Unique Constraints</SectionList.SectionTitle>
-        <SectionList.SectionDescription>
+    <SectionListSection>
+      <SectionListSectionHeader>
+        <SectionListSectionTitle>Unique Constraints</SectionListSectionTitle>
+        <SectionListSectionDescription>
           Define unique constraints to enforce uniqueness on one or more fields.
-        </SectionList.SectionDescription>
-      </SectionList.SectionHeader>
-      <SectionList.SectionContent className="space-y-4">
+        </SectionListSectionDescription>
+      </SectionListSectionHeader>
+      <SectionListSectionContent className="space-y-4">
         {uniqueConstraints.map((constraint) => (
           <RecordView key={constraint.id}>
-            <RecordView.ItemList>
-              <RecordView.Item title="Fields">
+            <RecordViewItemList>
+              <RecordViewItem title="Fields">
                 {constraint.fields
                   .map(
                     (field) => fieldIdsToNames[field.fieldRef] ?? '<invalid>',
                   )
                   .join(', ')}
-              </RecordView.Item>
-            </RecordView.ItemList>
-            <RecordView.Actions>
+              </RecordViewItem>
+            </RecordViewItemList>
+            <RecordViewActions>
               <ModelUniqueConstraintDialog
                 constraintId={constraint.id}
                 control={control}
                 asChild
               >
-                <Button.WithOnlyIcon icon={MdEdit} title="Edit" />
+                <Button variant="ghost" size="icon" title="Edit">
+                  <MdEdit />
+                </Button>
               </ModelUniqueConstraintDialog>
-              <Button.WithOnlyIcon
-                icon={MdDeleteOutline}
+              <Button
+                variant="ghostDestructive"
+                size="icon"
                 title="Delete"
-                iconClassName="text-destructive"
                 onClick={() => {
                   handleDeleteConstraint(constraint.id);
                 }}
-              />
-            </RecordView.Actions>
+              >
+                <MdDeleteOutline />
+              </Button>
+            </RecordViewActions>
           </RecordView>
         ))}
         <ModelUniqueConstraintDialog control={control} asChild>
-          <Button.WithIcon icon={MdAdd} variant="secondary" size="sm">
+          <Button variant="secondary" size="sm">
+            <MdAdd />
             Add Unique Constraint
-          </Button.WithIcon>
+          </Button>
         </ModelUniqueConstraintDialog>
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

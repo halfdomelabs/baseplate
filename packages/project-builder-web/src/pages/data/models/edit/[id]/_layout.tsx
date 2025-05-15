@@ -2,7 +2,10 @@ import type React from 'react';
 
 import { modelEntityType, ModelUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { NavigationTabs } from '@halfdomelabs/ui-components';
+import {
+  NavigationTabs,
+  NavigationTabsItem,
+} from '@halfdomelabs/ui-components';
 import { NavLink, Outlet, useParams } from 'react-router-dom';
 
 import { NotFoundCard } from '@src/components';
@@ -29,17 +32,17 @@ export function ModelEditLayout(): React.JSX.Element {
       <div className="max-w-7xl space-y-4 px-4 pb-4">
         <ModelHeaderBar model={model} />
         <NavigationTabs>
-          <NavigationTabs.Item asChild>
+          <NavigationTabsItem asChild>
             <NavLink to="" end>
               Fields
             </NavLink>
-          </NavigationTabs.Item>
-          <NavigationTabs.Item asChild>
+          </NavigationTabsItem>
+          <NavigationTabsItem asChild>
             <NavLink to="service">Service</NavLink>
-          </NavigationTabs.Item>
-          <NavigationTabs.Item asChild>
+          </NavigationTabsItem>
+          <NavigationTabsItem asChild>
             <NavLink to="graphql">GraphQL</NavLink>
-          </NavigationTabs.Item>
+          </NavigationTabsItem>
         </NavigationTabs>
       </div>
       <div

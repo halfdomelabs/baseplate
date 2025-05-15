@@ -12,12 +12,14 @@ import type {
 
 import {
   COLOR_PALETTES,
+  convertHexToOklch,
+  convertOklchToHex,
   PALETTE_SHADES,
 } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
-  ColorPickerField,
-  ComboboxField,
+  ColorPickerFieldController,
+  ComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { capitalize } from 'inflection';
 import { useCallback } from 'react';
@@ -74,7 +76,7 @@ export function ThemePaletteEditor({
 
   return (
     <div className="flex max-w-fit flex-col gap-4">
-      <ComboboxField.Controller
+      <ComboboxFieldController
         name={`palettes.${type}.paletteName`}
         control={control}
         options={paletteOptions}
@@ -83,13 +85,15 @@ export function ThemePaletteEditor({
       />
       {paletteName === 'custom' && (
         <div className="flex max-w-xl items-center justify-between">
-          <ColorPickerField.Controller
+          <ColorPickerFieldController
             className="flex-1 space-x-1"
             wrapperClassName="items-center"
             control={control}
             name={`palettes.${type}.customBase`}
             label="Custom Base Color"
             placeholder="Choose a color"
+            parseColor={convertOklchToHex}
+            serializeColor={convertHexToOklch}
           />
           <Button
             variant="secondary"
@@ -102,13 +106,15 @@ export function ThemePaletteEditor({
       )}
       <div className="flex gap-3">
         {PALETTE_SHADES.map((shade) => (
-          <ColorPickerField.Controller
+          <ColorPickerFieldController
             key={shade}
             wrapperClassName="flex flex-col items-center"
             hideText
             control={control}
             name={`palettes.${type}.shades.${shade}`}
             label={shade}
+            parseColor={convertOklchToHex}
+            serializeColor={convertHexToOklch}
             onChange={() =>
               onShadesChange?.(getValues(`palettes.${type}.shades`))
             }

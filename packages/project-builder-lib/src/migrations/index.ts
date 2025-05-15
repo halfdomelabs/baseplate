@@ -6,6 +6,7 @@ import { migration006IndividualServiceControllers } from './migration-006-indivi
 import { migration007ModelGraphql } from './migration-007-model-graphql.js';
 import { migration008AnonymousPublicRole } from './migration-008-anonymous-public-role.js';
 import { migration009RenameRefs } from './migration-009-rename-refs.js';
+import { migration010HexToOklch } from './migration-010-hex-to-oklch.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -13,6 +14,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration007ModelGraphql,
   migration008AnonymousPublicRole,
   migration009RenameRefs,
+  migration010HexToOklch,
 ];
 
 export function isMigrateableProjectDefinition(

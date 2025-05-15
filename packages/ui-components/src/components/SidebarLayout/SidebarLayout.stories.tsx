@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { SidebarLayout } from './SidebarLayout.js';
+import {
+  SidebarLayout,
+  SidebarLayoutContent,
+  SidebarLayoutSidebar,
+} from './SidebarLayout.js';
 
 const meta = {
   component: SidebarLayout,
@@ -15,7 +19,7 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <SidebarLayout.Sidebar className="space-y-4">
+        <SidebarLayoutSidebar className="space-y-4">
           <h1>Sidebar</h1>
           <p>
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptates
@@ -23,8 +27,8 @@ export const Default: Story = {
             officiis quas blanditiis provident sunt ut odit commodi nisi
             quisquam unde esse dolorem!
           </p>
-        </SidebarLayout.Sidebar>
-        <SidebarLayout.Content className="space-y-4 p-4">
+        </SidebarLayoutSidebar>
+        <SidebarLayoutContent className="space-y-4 p-4">
           <h1>Content</h1>
           <p>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Maxime
@@ -32,7 +36,7 @@ export const Default: Story = {
             optio distinctio praesentium? Maiores nobis rem vitae cum quos nulla
             hic quo!
           </p>
-        </SidebarLayout.Content>
+        </SidebarLayoutContent>
       </>
     ),
   },
@@ -43,7 +47,7 @@ export const Scrollbar: Story = {
     className: 'max-h-[400px]',
     children: (
       <>
-        <SidebarLayout.Sidebar className="space-y-4">
+        <SidebarLayoutSidebar className="space-y-4">
           <h1>Sidebar</h1>
           <p>
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptates
@@ -63,8 +67,8 @@ export const Scrollbar: Story = {
             officiis quas blanditiis provident sunt ut odit commodi nisi
             quisquam unde esse dolorem!
           </p>
-        </SidebarLayout.Sidebar>
-        <SidebarLayout.Content className="space-y-4 p-4">
+        </SidebarLayoutSidebar>
+        <SidebarLayoutContent className="space-y-4 p-4">
           <h1>Content</h1>
           <p>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Maxime
@@ -90,7 +94,7 @@ export const Scrollbar: Story = {
             officiis quas blanditiis provident sunt ut odit commodi nisi
             quisquam unde esse dolorem!
           </p>
-        </SidebarLayout.Content>
+        </SidebarLayoutContent>
       </>
     ),
   },

@@ -7,9 +7,14 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   ComboboxField,
-  Dropdown,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   InputField,
-  SelectField,
+  InputFieldController,
+  SelectFieldController,
 } from '@halfdomelabs/ui-components';
 import { useController, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineX } from 'react-icons/hi';
@@ -46,7 +51,7 @@ export function ModelFieldDefaultValueInput({
   if (type === 'boolean') {
     return (
       <div className="flex items-center gap-1">
-        <SelectField.Controller
+        <SelectFieldController
           control={control}
           className="flex-1"
           name={`model.fields.${idx}.options.default`}
@@ -57,9 +62,8 @@ export function ModelFieldDefaultValueInput({
           placeholder="NULL"
         />
         {defaultValue && (
-          <Button.WithOnlyIcon
+          <Button
             title="Reset"
-            icon={HiOutlineX}
             onClick={() => {
               setValue(`model.fields.${idx}.options.default`, '', {
                 shouldDirty: true,
@@ -67,7 +71,9 @@ export function ModelFieldDefaultValueInput({
             }}
             variant="ghost"
             size="icon"
-          />
+          >
+            <HiOutlineX />
+          </Button>
         )}
       </div>
     );
@@ -76,16 +82,15 @@ export function ModelFieldDefaultValueInput({
   if (['string', 'int', 'float'].includes(type)) {
     return (
       <div className="flex items-center gap-1">
-        <InputField.Controller
+        <InputFieldController
           control={control}
           placeholder="NULL"
           name={`model.fields.${idx}.options.default`}
           className="flex-1"
         />
         {defaultValue && (
-          <Button.WithOnlyIcon
+          <Button
             title="Reset"
-            icon={HiOutlineX}
             onClick={() => {
               setValue(`model.fields.${idx}.options.default`, undefined, {
                 shouldDirty: true,
@@ -93,7 +98,9 @@ export function ModelFieldDefaultValueInput({
             }}
             variant="ghost"
             size="icon"
-          />
+          >
+            <HiOutlineX />
+          </Button>
         )}
       </div>
     );
@@ -104,38 +111,36 @@ export function ModelFieldDefaultValueInput({
       return (
         <div className="flex items-center gap-1">
           <InputField disabled value="Random UUID v4" className="flex-1" />
-          <Button.WithOnlyIcon
+          <Button
             title="Reset"
-            icon={HiOutlineX}
             onClick={() => {
               onOptionsChange({ ...optionsValue, genUuid: false });
             }}
             variant="ghost"
             size="icon"
-          />
+          >
+            <HiOutlineX />
+          </Button>
         </div>
       );
     }
     return (
       <div className="flex items-center gap-1">
-        <InputField.Controller
+        <InputFieldController
           control={control}
           placeholder="NULL"
           name={`model.fields.${idx}.options.default`}
           className="flex-1"
         />
-        <Dropdown>
-          <Dropdown.Trigger asChild>
-            <Button.WithOnlyIcon
-              title="Options"
-              variant="ghost"
-              size="icon"
-              icon={HiDotsVertical}
-            />
-          </Dropdown.Trigger>
-          <Dropdown.Content>
-            <Dropdown.Group>
-              <Dropdown.Item
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button title="Options" variant="ghost" size="icon">
+              <HiDotsVertical />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
+              <DropdownMenuItem
                 onSelect={() => {
                   onOptionsChange({
                     ...optionsValue,
@@ -144,10 +149,10 @@ export function ModelFieldDefaultValueInput({
                 }}
               >
                 Random UUID v4
-              </Dropdown.Item>
-            </Dropdown.Group>
-          </Dropdown.Content>
-        </Dropdown>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     );
   }
@@ -163,9 +168,8 @@ export function ModelFieldDefaultValueInput({
             value={updatedAt ? 'Last Updated' : 'Now'}
             className="flex-1"
           />
-          <Button.WithOnlyIcon
+          <Button
             title="Reset"
-            icon={HiOutlineX}
             onClick={() => {
               onOptionsChange({
                 ...optionsValue,
@@ -175,30 +179,29 @@ export function ModelFieldDefaultValueInput({
             }}
             variant="ghost"
             size="icon"
-          />
+          >
+            <HiOutlineX />
+          </Button>
         </div>
       );
     }
     return (
       <div className="flex items-center space-x-1">
-        <InputField.Controller
+        <InputFieldController
           placeholder="NULL"
           control={control}
           name={`model.fields.${idx}.options.default`}
           className="flex-1"
         />
-        <Dropdown>
-          <Dropdown.Trigger asChild>
-            <Button.WithOnlyIcon
-              title="Options"
-              variant="ghost"
-              size="icon"
-              icon={HiDotsVertical}
-            />
-          </Dropdown.Trigger>
-          <Dropdown.Content>
-            <Dropdown.Group>
-              <Dropdown.Item
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button title="Options" variant="ghost" size="icon">
+              <HiDotsVertical />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
+              <DropdownMenuItem
                 onSelect={() => {
                   onOptionsChange({
                     ...optionsValue,
@@ -208,8 +211,8 @@ export function ModelFieldDefaultValueInput({
                 }}
               >
                 Now
-              </Dropdown.Item>
-              <Dropdown.Item
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onSelect={() => {
                   onOptionsChange({
                     ...optionsValue,
@@ -219,10 +222,10 @@ export function ModelFieldDefaultValueInput({
                 }}
               >
                 Last Updated At
-              </Dropdown.Item>
-            </Dropdown.Group>
-          </Dropdown.Content>
-        </Dropdown>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     );
   }
@@ -248,9 +251,8 @@ export function ModelFieldDefaultValueInput({
           className="flex-1"
         />
         {optionsValue.defaultEnumValueRef && (
-          <Button.WithOnlyIcon
+          <Button
             title="Reset"
-            icon={HiOutlineX}
             onClick={() => {
               onOptionsChange({
                 ...optionsValue,
@@ -259,7 +261,9 @@ export function ModelFieldDefaultValueInput({
             }}
             variant="ghost"
             size="icon"
-          />
+          >
+            <HiOutlineX />
+          </Button>
         )}
       </div>
     );

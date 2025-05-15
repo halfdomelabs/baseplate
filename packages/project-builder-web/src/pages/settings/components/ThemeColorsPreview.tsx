@@ -3,7 +3,20 @@ import type React from 'react';
 import type { Control } from 'react-hook-form';
 
 import { generateCssFromThemeConfig } from '@halfdomelabs/project-builder-lib';
-import { Badge, Button, Card, Combobox } from '@halfdomelabs/ui-components';
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+} from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useWatch } from 'react-hook-form';
 
@@ -32,14 +45,14 @@ export function ThemeColorsPreview({
       style={colorCss}
     >
       <Card>
-        <Card.Header>
-          <Card.Title>Color Preview</Card.Title>
-          <Card.Description>
+        <CardHeader>
+          <CardTitle>Color Preview</CardTitle>
+          <CardDescription>
             This is a preview of how your theme colors will be applied on
             various elements
-          </Card.Description>
-        </Card.Header>
-        <Card.Content className="space-y-4">
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div>
             <PreviewSectionTitle>Paragraph Text</PreviewSectionTitle>
             <p className="text-base">
@@ -50,19 +63,19 @@ export function ThemeColorsPreview({
           <div>
             <PreviewSectionTitle>Combobox</PreviewSectionTitle>
             <Combobox>
-              <Combobox.Input placeholder={'Select an option'} />
-              <Combobox.Content style={colorCss}>
-                <Combobox.Item value="opt1" label="Option 1">
+              <ComboboxInput placeholder={'Select an option'} />
+              <ComboboxContent style={colorCss}>
+                <ComboboxItem value="opt1" label="Option 1">
                   Option 1
-                </Combobox.Item>
-                <Combobox.Item value="green" label="Option 2">
+                </ComboboxItem>
+                <ComboboxItem value="green" label="Option 2">
                   Option 2
-                </Combobox.Item>
-                <Combobox.Item value="blue" label="Option 3">
+                </ComboboxItem>
+                <ComboboxItem value="blue" label="Option 3">
                   Option 3
-                </Combobox.Item>
-                <Combobox.Empty>No results found</Combobox.Empty>
-              </Combobox.Content>
+                </ComboboxItem>
+                <ComboboxEmpty>No results found</ComboboxEmpty>
+              </ComboboxContent>
             </Combobox>
           </div>
           <div>
@@ -95,7 +108,7 @@ export function ThemeColorsPreview({
               </Button>
             </div>
           </div>
-        </Card.Content>
+        </CardContent>
       </Card>
     </div>
   );

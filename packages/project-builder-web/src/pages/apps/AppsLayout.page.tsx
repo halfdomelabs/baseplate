@@ -8,6 +8,8 @@ import {
   NavigationMenuItemWithLink,
   NavigationMenuList,
   SidebarLayout,
+  SidebarLayoutContent,
+  SidebarLayoutSidebar,
 } from '@halfdomelabs/ui-components';
 import { sortBy } from 'es-toolkit';
 import { Link, NavLink, Outlet } from 'react-router-dom';
@@ -20,7 +22,7 @@ function AppsLayout(): React.JSX.Element {
 
   return (
     <SidebarLayout className="flex-1">
-      <SidebarLayout.Sidebar className="space-y-4" width="sm">
+      <SidebarLayoutSidebar className="space-y-4" width="sm">
         <div className="flex items-center justify-between space-x-4">
           <Link to="/apps">
             <h2>Apps</h2>
@@ -40,10 +42,10 @@ function AppsLayout(): React.JSX.Element {
             ))}
           </NavigationMenuList>
         </NavigationMenu>
-      </SidebarLayout.Sidebar>
-      <SidebarLayout.Content className="p-4">
+      </SidebarLayoutSidebar>
+      <SidebarLayoutContent className="p-4">
         <Outlet />
-      </SidebarLayout.Content>
+      </SidebarLayoutContent>
     </SidebarLayout>
   );
 }

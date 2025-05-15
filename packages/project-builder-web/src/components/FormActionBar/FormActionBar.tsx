@@ -31,15 +31,15 @@ export const FormActionBar = ({
       >
         Reset
       </Button>
-      <Button.WithIcon
-        icon={MdOutlineSave}
+      <Button
         variant="default"
         size="sm"
         type="submit"
         disabled={formState.isSubmitting || !isDirty || disabled}
       >
+        <MdOutlineSave />
         Save
-      </Button.WithIcon>
+      </Button>
     </div>
   );
 };

@@ -7,7 +7,15 @@ import {
   modelTransformerWebSpec,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Label, SectionList, SwitchField } from '@halfdomelabs/ui-components';
+import {
+  Label,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
+  SwitchField,
+} from '@halfdomelabs/ui-components';
 import { useWatch } from 'react-hook-form';
 
 import {
@@ -53,17 +61,17 @@ export function ServiceMethodFieldsSection({
   const transformerWeb = pluginContainer.getPluginSpec(modelTransformerWebSpec);
 
   return (
-    <SectionList.Section className={className}>
-      <SectionList.SectionHeader>
-        <SectionList.SectionTitle>
+    <SectionListSection className={className}>
+      <SectionListSectionHeader>
+        <SectionListSectionTitle>
           Create / Update Fields
-        </SectionList.SectionTitle>
-        <SectionList.SectionDescription>
+        </SectionListSectionTitle>
+        <SectionListSectionDescription>
           Configure the fields that can be created or updated by the service
           method
-        </SectionList.SectionDescription>
-      </SectionList.SectionHeader>
-      <SectionList.SectionContent className="max-w-xl space-y-4">
+        </SectionListSectionDescription>
+      </SectionListSectionHeader>
+      <SectionListSectionContent className="max-w-xl space-y-4">
         <table className={tableClassName}>
           <thead>
             <tr>
@@ -187,7 +195,7 @@ export function ServiceMethodFieldsSection({
             ))}
           </tbody>
         </table>
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

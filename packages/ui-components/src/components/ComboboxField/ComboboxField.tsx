@@ -1,26 +1,38 @@
-import type { ForwardedRef } from 'react';
+'use client';
+
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import type {
   AddOptionRequiredFields,
-  FieldProps,
+  FormFieldProps,
   SelectOptionProps,
 } from '@src/types/form.js';
 
 import { useComponentStrings } from '@src/contexts/component-strings.js';
 import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
-import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 import type { ComboboxProps } from '../Combobox/Combobox.js';
 
-import { Combobox } from '../Combobox/Combobox.js';
-import { FormItem } from '../FormItem/FormItem.js';
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+} from '../Combobox/Combobox.js';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem.js';
 
 export interface ComboboxFieldProps<OptionType>
   extends Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,
     SelectOptionProps<OptionType>,
-    FieldProps {
+    FormFieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
 }
@@ -29,24 +41,22 @@ export interface ComboboxFieldProps<OptionType>
  * Field with label and error states that wraps a Combobox component.
  */
 
-const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
-  {
-    label,
-    description,
-    error,
-    value,
-    placeholder,
-    options,
-    renderItemLabel,
-    onChange,
-    getOptionLabel = (val) => (val as { label: string }).label,
-    getOptionValue = (val) => (val as { value: string | null }).value,
-    className,
-    noResultsText,
-    ...props
-  }: ComboboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLInputElement>,
-): React.JSX.Element {
+function ComboboxField<OptionType>({
+  label,
+  description,
+  error,
+  value,
+  placeholder,
+  options,
+  renderItemLabel,
+  onChange,
+  getOptionLabel = (val) => (val as { label: string }).label,
+  getOptionValue = (val) => (val as { value: string | null }).value,
+  className,
+  noResultsText,
+  ...props
+}: ComboboxFieldProps<OptionType> &
+  AddOptionRequiredFields<OptionType>): React.ReactElement {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
   const selectedComboboxOption = (() => {
     if (value === undefined) return;
@@ -60,7 +70,7 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
 
   return (
     <FormItem error={error} className={className}>
-      {label && <FormItem.Label>{label}</FormItem.Label>}
+      <FormLabel>{label}</FormLabel>
       <Combobox
         value={selectedComboboxOption}
         onChange={(value) => {
@@ -68,31 +78,29 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
         }}
         {...props}
       >
-        <FormItem.Control>
-          <Combobox.Input placeholder={placeholder} ref={ref} />
-        </FormItem.Control>
-        <Combobox.Content>
+        <FormControl>
+          <ComboboxInput placeholder={placeholder} />
+        </FormControl>
+        <ComboboxContent>
           {options.map((option) => {
             const val = getOptionValue(option);
             const label = getOptionLabel(option);
             return (
-              <Combobox.Item value={val} key={val} label={label}>
+              <ComboboxItem value={val} key={val} label={label}>
                 {renderItemLabel
                   ? renderItemLabel(option, { selected: val === value })
                   : label}
-              </Combobox.Item>
+              </ComboboxItem>
             );
           })}
-          <Combobox.Empty>{noResultsText ?? comboboxNoResults}</Combobox.Empty>
-        </Combobox.Content>
+          <ComboboxEmpty>{noResultsText ?? comboboxNoResults}</ComboboxEmpty>
+        </ComboboxContent>
       </Combobox>
-      {description && (
-        <FormItem.Description>{description}</FormItem.Description>
-      )}
-      {error && <FormItem.Error>{error}</FormItem.Error>}
+      <FormDescription>{description}</FormDescription>
+      <FormMessage />
     </FormItem>
   );
-});
+}
 
 interface ComboboxFieldControllerPropsBase<
   OptionType,
@@ -109,39 +117,32 @@ type ComboboxFieldControllerProps<
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = ComboboxFieldControllerPropsBase<OptionType, TFieldValues, TFieldName>;
 
-const ComboboxFieldController = genericForwardRef(
-  function ComboboxFieldController<
-    OptionType,
-    TFieldValues extends FieldValues = FieldValues,
-    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  >(
-    {
-      name,
-      control,
-      ...rest
-    }: ComboboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
-      AddOptionRequiredFields<OptionType>,
-    ref: ForwardedRef<HTMLInputElement>,
-  ): React.JSX.Element {
-    const {
-      field,
-      fieldState: { error },
-    } = useControllerMerged({ name, control }, rest, ref);
+function ComboboxFieldController<
+  OptionType,
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  name,
+  control,
+  ...rest
+}: ComboboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
+  AddOptionRequiredFields<OptionType>): React.ReactElement {
+  const {
+    field,
+    fieldState: { error },
+  } = useControllerMerged({ name, control }, rest);
 
-    const restProps = rest as ComboboxFieldProps<OptionType> &
-      AddOptionRequiredFields<OptionType>;
+  const restProps = rest as ComboboxFieldProps<OptionType> &
+    AddOptionRequiredFields<OptionType>;
 
-    return (
-      <ComboboxFieldRoot
-        error={error?.message}
-        {...restProps}
-        {...field}
-        value={field.value ?? null}
-      />
-    );
-  },
-);
+  return (
+    <ComboboxField
+      error={error?.message}
+      {...restProps}
+      {...field}
+      value={field.value ?? null}
+    />
+  );
+}
 
-export const ComboboxField = Object.assign(ComboboxFieldRoot, {
-  Controller: ComboboxFieldController,
-});
+export { ComboboxField, ComboboxFieldController };

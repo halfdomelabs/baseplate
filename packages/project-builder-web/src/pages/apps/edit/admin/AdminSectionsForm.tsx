@@ -7,6 +7,8 @@ import {
   NavigationMenuItemWithLink,
   NavigationMenuList,
   SidebarLayout,
+  SidebarLayoutContent,
+  SidebarLayoutSidebar,
 } from '@halfdomelabs/ui-components';
 import { sortBy } from 'es-toolkit';
 import { Link, Route, Routes } from 'react-router-dom';
@@ -32,7 +34,7 @@ function AdminSectionsForm({ className, appConfig }: Props): React.JSX.Element {
 
   return (
     <SidebarLayout className={className}>
-      <SidebarLayout.Sidebar className="space-y-4" width="sm">
+      <SidebarLayoutSidebar className="space-y-4" width="sm">
         <div className="flex items-center justify-between">
           <h2>Sections</h2>
         </div>
@@ -56,8 +58,8 @@ function AdminSectionsForm({ className, appConfig }: Props): React.JSX.Element {
             ))}
           </NavigationMenuList>
         </NavigationMenu>
-      </SidebarLayout.Sidebar>
-      <SidebarLayout.Content className="p-4">
+      </SidebarLayoutSidebar>
+      <SidebarLayoutContent className="p-4">
         <Routes>
           <Route
             path="new"
@@ -68,7 +70,7 @@ function AdminSectionsForm({ className, appConfig }: Props): React.JSX.Element {
             element={<AdminEditSectionForm appConfig={appConfig} />}
           />
         </Routes>
-      </SidebarLayout.Content>
+      </SidebarLayoutContent>
     </SidebarLayout>
   );
 }

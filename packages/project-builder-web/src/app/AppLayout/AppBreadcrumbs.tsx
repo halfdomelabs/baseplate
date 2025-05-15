@@ -1,7 +1,20 @@
 import type React from 'react';
 
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Breadcrumb, Button, Dropdown } from '@halfdomelabs/ui-components';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@halfdomelabs/ui-components';
 import { notEmpty } from '@halfdomelabs/utils';
 import { orderBy, upperFirst } from 'es-toolkit';
 import { Fragment } from 'react';
@@ -39,8 +52,8 @@ export function AppBreadcrumbs(): React.JSX.Element {
   return (
     <div className="flex items-center space-x-2">
       {projects.length > 1 && (
-        <Dropdown>
-          <Dropdown.Trigger asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="none"
@@ -49,13 +62,13 @@ export function AppBreadcrumbs(): React.JSX.Element {
               <div className="flex items-center text-sm">
                 {upperFirst(definitionContainer.definition.name)} project
               </div>
-              <Button.Icon icon={MdKeyboardArrowDown} />
+              <MdKeyboardArrowDown />
             </Button>
-          </Dropdown.Trigger>
-          <Dropdown.Content>
-            <Dropdown.Group>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuGroup>
               {orderedProjects.map((project) => (
-                <Dropdown.Item
+                <DropdownMenuItem
                   key={project.id}
                   onSelect={() => {
                     setCurrentProjectId(project.id);
@@ -70,44 +83,44 @@ export function AppBreadcrumbs(): React.JSX.Element {
                       {project.directory}
                     </div>
                   </div>
-                </Dropdown.Item>
+                </DropdownMenuItem>
               ))}
-            </Dropdown.Group>
-          </Dropdown.Content>
-        </Dropdown>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
 
       <Breadcrumb>
-        <Breadcrumb.List>
+        <BreadcrumbList>
           {projects.length <= 1 && (
             <>
-              <Breadcrumb.Item>
+              <BreadcrumbItem>
                 {upperFirst(definitionContainer.definition.name)} project
-              </Breadcrumb.Item>
-              {crumbs.length > 0 && <Breadcrumb.Separator />}
+              </BreadcrumbItem>
+              {crumbs.length > 0 && <BreadcrumbSeparator />}
             </>
           )}
           {crumbs.map((crumb, index) => (
             <Fragment key={crumb.id}>
               {index !== 0 && (
-                <Breadcrumb.Separator className="hidden sm:block" />
+                <BreadcrumbSeparator className="hidden sm:block" />
               )}
               {index === crumbs.length - 1 ? (
-                <Breadcrumb.Page>{crumb.label}</Breadcrumb.Page>
+                <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
               ) : (
-                <Breadcrumb.Item className="hidden sm:block">
+                <BreadcrumbItem className="hidden sm:block">
                   {crumb.url ? (
-                    <Breadcrumb.Link asChild>
+                    <BreadcrumbLink asChild>
                       <Link to={crumb.url}>{crumb.label}</Link>
-                    </Breadcrumb.Link>
+                    </BreadcrumbLink>
                   ) : (
                     crumb.label
                   )}
-                </Breadcrumb.Item>
+                </BreadcrumbItem>
               )}
             </Fragment>
           ))}
-        </Breadcrumb.List>
+        </BreadcrumbList>
       </Breadcrumb>
     </div>
   );

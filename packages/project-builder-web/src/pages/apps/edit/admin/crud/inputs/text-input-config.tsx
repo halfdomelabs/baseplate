@@ -4,7 +4,10 @@ import type React from 'react';
 import type { Control } from 'react-hook-form';
 
 import { createAdminCrudInputWebConfig } from '@halfdomelabs/project-builder-lib/web';
-import { InputField, SelectField } from '@halfdomelabs/ui-components';
+import {
+  InputFieldController,
+  SelectFieldController,
+} from '@halfdomelabs/ui-components';
 
 function AdminCrudTextInputForm({
   formProps,
@@ -22,13 +25,13 @@ function AdminCrudTextInputForm({
 
   return (
     <>
-      <SelectField.Controller
+      <SelectFieldController
         label="Field"
         control={controlTyped}
         name={`${prefix}.modelFieldRef`}
         options={fieldOptions}
       />
-      <InputField.Controller
+      <InputFieldController
         label="Validation (zod), e.g. z.string().min(1) (optional)"
         control={controlTyped}
         name={`${prefix}.validation`}

@@ -5,9 +5,15 @@ import type { Control } from 'react-hook-form';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
+  AlertDescription,
+  AlertTitle,
   MultiSwitchField,
-  SectionList,
-  SwitchField,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
+  SwitchFieldController,
 } from '@halfdomelabs/ui-components';
 import { useWatch } from 'react-hook-form';
 import { MdInfo } from 'react-icons/md';
@@ -45,27 +51,27 @@ export function GraphQLQueriesSection({
   });
 
   return (
-    <SectionList.Section>
+    <SectionListSection>
       <div>
-        <SectionList.SectionHeader className="sticky top-2">
-          <SectionList.SectionTitle>Queries</SectionList.SectionTitle>
-          <SectionList.SectionDescription>
+        <SectionListSectionHeader className="sticky top-2">
+          <SectionListSectionTitle>Queries</SectionListSectionTitle>
+          <SectionListSectionDescription>
             Configure the GraphQL queries that can be performed on this model.
-          </SectionList.SectionDescription>
-        </SectionList.SectionHeader>
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
       </div>
-      <SectionList.SectionContent className="space-y-8">
+      <SectionListSectionContent className="space-y-8">
         {!isObjectTypeEnabled && (
           <Alert className="max-w-md">
             <MdInfo />
-            <Alert.Title>Object type missing</Alert.Title>
-            <Alert.Description>
+            <AlertTitle>Object type missing</AlertTitle>
+            <AlertDescription>
               Enable the object type to expose queries and mutations
-            </Alert.Description>
+            </AlertDescription>
           </Alert>
         )}
         <div className="space-y-4">
-          <SwitchField.Controller
+          <SwitchFieldController
             control={control}
             name="graphql.queries.get.enabled"
             label="Get By ID Query"
@@ -83,7 +89,7 @@ export function GraphQLQueriesSection({
           )}
         </div>
         <div className="space-y-4">
-          <SwitchField.Controller
+          <SwitchFieldController
             control={control}
             name="graphql.queries.list.enabled"
             disabled={!isObjectTypeEnabled}
@@ -100,7 +106,7 @@ export function GraphQLQueriesSection({
             />
           )}
         </div>
-      </SectionList.SectionContent>
-    </SectionList.Section>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }

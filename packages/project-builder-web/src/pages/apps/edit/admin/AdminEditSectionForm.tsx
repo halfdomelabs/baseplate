@@ -16,9 +16,9 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  ComboboxField,
-  InputField,
-  SelectField,
+  ComboboxFieldController,
+  InputFieldController,
+  SelectFieldController,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -154,15 +154,15 @@ function AdminEditSectionForm({
             Delete Section
           </Button>
         )}
-        <InputField.Controller label="Name" control={control} name="name" />
-        <ComboboxField.Controller
+        <InputFieldController label="Name" control={control} name="name" />
+        <ComboboxFieldController
           label="Feature"
           control={control}
           options={featureOptions}
           name="featureRef"
         />
-        <InputField.Controller label="Icon" control={control} name="icon" />
-        <SelectField.Controller
+        <InputFieldController label="Icon" control={control} name="icon" />
+        <SelectFieldController
           label="Type"
           control={control}
           name="type"

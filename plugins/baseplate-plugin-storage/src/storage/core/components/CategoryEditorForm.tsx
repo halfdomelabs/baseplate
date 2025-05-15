@@ -4,9 +4,9 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   cn,
-  ComboboxField,
-  InputField,
-  MultiComboboxField,
+  ComboboxFieldController,
+  InputFieldController,
+  MultiComboboxFieldController,
 } from '@halfdomelabs/ui-components';
 import { notEmpty } from '@halfdomelabs/utils';
 import { useFieldArray, useWatch } from 'react-hook-form';
@@ -57,29 +57,29 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
       {fields.map((field, idx) => (
         <div key={field.id} className={cn('space-y-4')}>
           <div className={cn('grid grid-cols-3 gap-4')}>
-            <InputField.Controller
+            <InputFieldController
               label="Name"
               control={control}
               name={`categories.${idx}.name`}
             />
-            <ComboboxField.Controller
+            <ComboboxFieldController
               label="Default Adapter"
               control={control}
               name={`categories.${idx}.defaultAdapterRef`}
               options={adapterOptions}
             />
-            <InputField.Controller
+            <InputFieldController
               label="Max File Size (MB)"
               control={control}
               name={`categories.${idx}.maxFileSize`}
             />
-            <ComboboxField.Controller
+            <ComboboxFieldController
               label="Used By Relation"
               control={control}
               name={`categories.${idx}.usedByRelationRef`}
               options={foreignKeyOptions}
             />
-            <MultiComboboxField.Controller
+            <MultiComboboxFieldController
               label="Upload Roles"
               control={control}
               options={roleOptions}

@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useId, useMemo, useState } from 'react';
-import { MdCheck, MdClose } from 'react-icons/md';
-import { RxCaretSort } from 'react-icons/rx';
+import { MdCheck, MdClose, MdUnfoldMore } from 'react-icons/md';
 
 import { useControlledState } from '@src/hooks';
 import {
@@ -10,11 +9,23 @@ import {
   selectContentVariants,
   selectItemVariants,
 } from '@src/styles';
-import { cn, mergeRefs } from '@src/utils';
+import { cn } from '@src/utils';
 
 import { Badge } from '../Badge/Badge';
-import { Command } from '../Command/Command';
-import { Popover } from '../Popover/Popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '../Command/Command';
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+} from '../Popover/Popover';
 
 interface MultiComboboxContextValue {
   selectedValues: MultiComboboxOption[];
@@ -47,12 +58,12 @@ interface MultiComboboxProps {
   disabled?: boolean;
 }
 
-function MultiComboboxRoot({
+function MultiCombobox({
   children,
   value,
   onChange,
   disabled,
-}: MultiComboboxProps): React.JSX.Element {
+}: MultiComboboxProps): React.ReactElement {
   const [selectedValues, setSelectedValues] = useControlledState(
     value,
     onChange,
@@ -122,10 +133,10 @@ interface MultiComboboxInputProps {
   placeholder?: string;
 }
 
-const MultiComboboxInput = React.forwardRef<
-  HTMLDivElement,
-  MultiComboboxInputProps
->(({ className, placeholder }, ref) => {
+function MultiComboboxInput({
+  className,
+  placeholder,
+}: MultiComboboxInputProps): React.ReactElement {
   const {
     selectedValues,
     onSelect,
@@ -142,7 +153,7 @@ const MultiComboboxInput = React.forwardRef<
   };
 
   return (
-    <Popover.Anchor asChild>
+    <PopoverAnchor asChild>
       <div
         className={cn(
           inputVariants({
@@ -160,7 +171,6 @@ const MultiComboboxInput = React.forwardRef<
         }}
         role="button"
         tabIndex={0}
-        ref={ref}
         data-cmdk-input-id={inputId}
       >
         <div className="flex flex-1 flex-wrap items-center gap-1">
@@ -203,18 +213,15 @@ const MultiComboboxInput = React.forwardRef<
             </>
           )}
         </div>
-        <Popover.Trigger>
-          <RxCaretSort className="size-4" />
-        </Popover.Trigger>
+        <PopoverTrigger>
+          <MdUnfoldMore className="size-4" />
+        </PopoverTrigger>
       </div>
-    </Popover.Anchor>
+    </PopoverAnchor>
   );
-});
+}
 
-MultiComboboxInput.displayName = 'MultiComboboxInput';
-
-interface MultiComboboxContentProps
-  extends React.RefAttributes<HTMLDivElement> {
+interface MultiComboboxContentProps extends React.ComponentPropsWithRef<'div'> {
   children?: React.ReactNode;
   className?: string;
   maxHeight?: string;
@@ -227,12 +234,12 @@ function MultiComboboxContent({
   maxHeight = '320px',
   style,
   ...rest
-}: MultiComboboxContentProps): React.JSX.Element {
+}: MultiComboboxContentProps): React.ReactElement {
   const { inputId, filterId, searchQuery, setSearchQuery } =
     useMultiComboboxContext();
 
   return (
-    <Popover.Content
+    <PopoverContent
       align="start"
       width="none"
       padding="none"
@@ -258,60 +265,53 @@ function MultiComboboxContent({
       data-combobox-content=""
     >
       <Command>
-        <Command.Input
+        <CommandInput
           data-cmdk-filter-id={filterId}
           value={searchQuery}
           onValueChange={setSearchQuery}
         />
-        <Command.List>{children}</Command.List>
+        <CommandList>{children}</CommandList>
       </Command>
-    </Popover.Content>
+    </PopoverContent>
   );
 }
 
-type MultiComboboxEmptyProps = React.HTMLAttributes<HTMLDivElement>;
+function MultiComboboxEmpty({
+  className,
+  ...props
+}: React.ComponentPropsWithRef<'div'>): React.ReactElement {
+  return <CommandEmpty className={cn('p-2 text-sm', className)} {...props} />;
+}
 
-const MultiComboboxEmpty = React.forwardRef<
-  HTMLDivElement,
-  MultiComboboxEmptyProps
->(({ className, ...props }: MultiComboboxEmptyProps, ref) => (
-  <Command.Empty
-    className={cn('p-2 text-sm', className)}
-    {...props}
-    ref={ref}
-  />
-));
-
-MultiComboboxEmpty.displayName = 'MultiComboboxEmpty';
-
-const MultiComboboxGroup = Command.Group;
+const MultiComboboxGroup = CommandGroup;
 
 interface MultiComboboxItemProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
+  extends Omit<React.ComponentPropsWithRef<'div'>, 'onSelect'> {
   disabled?: boolean;
   value: string;
   label?: string;
 }
 
-const MultiComboboxItem = React.forwardRef<
-  HTMLDivElement,
-  MultiComboboxItemProps
->(({ value, className, label, children, ...rest }, ref) => {
+function MultiComboboxItem({
+  value,
+  className,
+  label,
+  children,
+  ...rest
+}: MultiComboboxItemProps): React.ReactElement {
   const { selectedValues, onSelect } = useMultiComboboxContext();
-
   const isSelected = selectedValues.some((v) => v.value === value);
-
   const itemRef = React.useRef<HTMLDivElement>(null);
 
   return (
-    <Command.Item
+    <CommandItem
       onSelect={() => {
         const itemLabel = label ?? itemRef.current?.textContent ?? undefined;
         onSelect(value, itemLabel, !isSelected);
       }}
       className={cn(selectItemVariants(), className)}
       {...rest}
-      ref={mergeRefs([ref, itemRef])}
+      ref={itemRef}
     >
       <div
         className={cn(
@@ -322,16 +322,15 @@ const MultiComboboxItem = React.forwardRef<
         <MdCheck className={'size-4'} />
       </div>
       {children}
-    </Command.Item>
+    </CommandItem>
   );
-});
+}
 
-MultiComboboxItem.displayName = 'MultiComboboxItem';
-
-export const MultiCombobox = Object.assign(MultiComboboxRoot, {
-  Input: MultiComboboxInput,
-  Content: MultiComboboxContent,
-  Empty: MultiComboboxEmpty,
-  Group: MultiComboboxGroup,
-  Item: MultiComboboxItem,
-});
+export {
+  MultiCombobox,
+  MultiComboboxContent,
+  MultiComboboxEmpty,
+  MultiComboboxGroup,
+  MultiComboboxInput,
+  MultiComboboxItem,
+};

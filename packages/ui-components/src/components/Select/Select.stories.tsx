@@ -1,6 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Select } from './Select.js';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from './Select.js';
 
 const meta: Meta<typeof Select> = {
   component: Select,
@@ -19,28 +27,28 @@ export const Default: Story = {
     children: (
       <>
         <div className="w-80">
-          <Select.Trigger>
-            <Select.Value placeholder="Select something!" />
-          </Select.Trigger>
+          <SelectTrigger>
+            <SelectValue placeholder="Select something!" />
+          </SelectTrigger>
         </div>
-        <Select.Content>
-          <Select.Group>
-            <Select.Item value="apple">Apple</Select.Item>
-            <Select.Item value="banana">Banana</Select.Item>
-            <Select.Item value="cherry">Cherry</Select.Item>
-            <Select.Item value="grape">Grape</Select.Item>
-            <Select.Item value="lemon">Lemon</Select.Item>
-            <Select.Item value="orange">Orange</Select.Item>
-            <Select.Item value="peach">Peach</Select.Item>
-            <Select.Item value="pear">Pear</Select.Item>
-            <Select.Item value="pineapple">Pineapple</Select.Item>
-            <Select.Item value="plum">Plum</Select.Item>
-            <Select.Item value="strawberry">Strawberry</Select.Item>
-            <Select.Item value="tomato" disabled>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value="apple">Apple</SelectItem>
+            <SelectItem value="banana">Banana</SelectItem>
+            <SelectItem value="cherry">Cherry</SelectItem>
+            <SelectItem value="grape">Grape</SelectItem>
+            <SelectItem value="lemon">Lemon</SelectItem>
+            <SelectItem value="orange">Orange</SelectItem>
+            <SelectItem value="peach">Peach</SelectItem>
+            <SelectItem value="pear">Pear</SelectItem>
+            <SelectItem value="pineapple">Pineapple</SelectItem>
+            <SelectItem value="plum">Plum</SelectItem>
+            <SelectItem value="strawberry">Strawberry</SelectItem>
+            <SelectItem value="tomato" disabled>
               Tomato
-            </Select.Item>
-          </Select.Group>
-        </Select.Content>
+            </SelectItem>
+          </SelectGroup>
+        </SelectContent>
       </>
     ),
   },
@@ -50,23 +58,23 @@ export const Grouped: Story = {
   args: {
     children: (
       <>
-        <Select.Trigger className="w-96">
-          <Select.Value placeholder="Select a grouped item!" />
-        </Select.Trigger>
-        <Select.Content>
-          <Select.Group>
-            <Select.Label>Group 1</Select.Label>
-            <Select.Item value="option-1">Option 1</Select.Item>
-            <Select.Item value="option-2">Option 2</Select.Item>
-            <Select.Item value="option-3">Option 3</Select.Item>
-          </Select.Group>
-          <Select.Group>
-            <Select.Label>Group 2</Select.Label>
-            <Select.Item value="option-4">Option 4</Select.Item>
-            <Select.Item value="option-5">Option 5</Select.Item>
-            <Select.Item value="option-6">Option 6</Select.Item>
-          </Select.Group>
-        </Select.Content>
+        <SelectTrigger className="w-96">
+          <SelectValue placeholder="Select a grouped item!" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Group 1</SelectLabel>
+            <SelectItem value="option-1">Option 1</SelectItem>
+            <SelectItem value="option-2">Option 2</SelectItem>
+            <SelectItem value="option-3">Option 3</SelectItem>
+          </SelectGroup>
+          <SelectGroup>
+            <SelectLabel>Group 2</SelectLabel>
+            <SelectItem value="option-4">Option 4</SelectItem>
+            <SelectItem value="option-5">Option 5</SelectItem>
+            <SelectItem value="option-6">Option 6</SelectItem>
+          </SelectGroup>
+        </SelectContent>
       </>
     ),
   },

@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Combobox } from './Combobox.js';
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+} from './Combobox.js';
 
 const meta: Meta<typeof Combobox> = {
   component: Combobox,
@@ -16,27 +23,27 @@ export const Default: Story = {
     children: (
       <>
         <div className="w-80">
-          <Combobox.Input placeholder="Select a fruit" />
+          <ComboboxInput placeholder="Select a fruit" />
         </div>
-        <Combobox.Content>
-          <Combobox.Empty>No results found</Combobox.Empty>
-          <Combobox.Group>
-            <Combobox.Item value="apple">Apple</Combobox.Item>
-            <Combobox.Item value="banana">Banana</Combobox.Item>
-            <Combobox.Item value="cherry">Cherry</Combobox.Item>
-            <Combobox.Item value="grape">Grape</Combobox.Item>
-            <Combobox.Item value="lemon">Lemon</Combobox.Item>
-            <Combobox.Item value="orange">Orange</Combobox.Item>
-            <Combobox.Item value="peach">Peach</Combobox.Item>
-            <Combobox.Item value="pear">Pear</Combobox.Item>
-            <Combobox.Item value="pineapple">Pineapple</Combobox.Item>
-            <Combobox.Item value="plum">Plum</Combobox.Item>
-            <Combobox.Item value="strawberry">Strawberry</Combobox.Item>
-            <Combobox.Item value="tomato" disabled>
+        <ComboboxContent>
+          <ComboboxEmpty>No results found</ComboboxEmpty>
+          <ComboboxGroup>
+            <ComboboxItem value="apple">Apple</ComboboxItem>
+            <ComboboxItem value="banana">Banana</ComboboxItem>
+            <ComboboxItem value="cherry">Cherry</ComboboxItem>
+            <ComboboxItem value="grape">Grape</ComboboxItem>
+            <ComboboxItem value="lemon">Lemon</ComboboxItem>
+            <ComboboxItem value="orange">Orange</ComboboxItem>
+            <ComboboxItem value="peach">Peach</ComboboxItem>
+            <ComboboxItem value="pear">Pear</ComboboxItem>
+            <ComboboxItem value="pineapple">Pineapple</ComboboxItem>
+            <ComboboxItem value="plum">Plum</ComboboxItem>
+            <ComboboxItem value="strawberry">Strawberry</ComboboxItem>
+            <ComboboxItem value="tomato" disabled>
               Tomato
-            </Combobox.Item>
-          </Combobox.Group>
-        </Combobox.Content>
+            </ComboboxItem>
+          </ComboboxGroup>
+        </ComboboxContent>
       </>
     ),
   },

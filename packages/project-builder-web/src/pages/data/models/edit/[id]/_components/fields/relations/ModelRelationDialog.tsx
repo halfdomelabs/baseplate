@@ -2,7 +2,15 @@ import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { Dialog, useControlledState } from '@halfdomelabs/ui-components';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  useControlledState,
+} from '@halfdomelabs/ui-components';
 
 import { ModelRelationForm } from './ModelRelationForm';
 
@@ -28,18 +36,16 @@ export function ModelRelationDialog({
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      {children && (
-        <Dialog.Trigger asChild={asChild}>{children}</Dialog.Trigger>
-      )}
-      <Dialog.Content width="lg">
-        <Dialog.Header>
-          <Dialog.Title>
+      {children && <DialogTrigger asChild={asChild}>{children}</DialogTrigger>}
+      <DialogContent width="lg">
+        <DialogHeader>
+          <DialogTitle>
             {relationId ? 'Edit Relation' : 'Create Relation'}
-          </Dialog.Title>
-          <Dialog.Description>
+          </DialogTitle>
+          <DialogDescription>
             Set up the relation between this model and another model
-          </Dialog.Description>
-        </Dialog.Header>
+          </DialogDescription>
+        </DialogHeader>
         <ModelRelationForm
           control={control}
           onSubmitSuccess={() => {
@@ -48,7 +54,7 @@ export function ModelRelationDialog({
           relationId={relationId}
           defaultFieldName={defaultFieldName}
         />
-      </Dialog.Content>
+      </DialogContent>
     </Dialog>
   );
 }

@@ -3,7 +3,12 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { MdDelete, MdEdit } from 'react-icons/md';
 
 import { Button } from '../Button/Button.js';
-import { RecordView } from './RecordView.js';
+import {
+  RecordView,
+  RecordViewActions,
+  RecordViewItem,
+  RecordViewItemList,
+} from './RecordView.js';
 
 const meta = {
   component: RecordView,
@@ -18,19 +23,19 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <RecordView.ItemList>
-          <RecordView.Item title="Name">John Doe</RecordView.Item>
-          <RecordView.Item title="Age">30</RecordView.Item>
-          <RecordView.Item title="Email">johndoe@example.com</RecordView.Item>
-        </RecordView.ItemList>
-        <RecordView.Actions>
+        <RecordViewItemList>
+          <RecordViewItem title="Name">John Doe</RecordViewItem>
+          <RecordViewItem title="Age">30</RecordViewItem>
+          <RecordViewItem title="Email">johndoe@example.com</RecordViewItem>
+        </RecordViewItemList>
+        <RecordViewActions>
           <Button variant="ghost" size="icon" type="button">
-            <Button.Icon icon={MdEdit} />
+            <MdEdit />
           </Button>
           <Button variant="ghost" size="icon" type="button">
-            <Button.Icon icon={MdDelete} />
+            <MdDelete />
           </Button>
-        </RecordView.Actions>
+        </RecordViewActions>
       </>
     ),
   },

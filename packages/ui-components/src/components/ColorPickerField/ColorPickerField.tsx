@@ -1,58 +1,83 @@
-import type React from 'react';
-import type { ForwardedRef } from 'react';
+'use client';
+
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import * as Popover from '@radix-ui/react-popover';
 import { useId } from 'react';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 
-import type { FieldProps } from '@src/types/form.js';
+import type { FormFieldProps } from '@src/types/form.js';
 
 import { useControllerMerged } from '@src/hooks/useControllerMerged';
 import { buttonVariants, inputVariants } from '@src/styles';
 import { cn } from '@src/utils';
-import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
-import { FormItem } from '../FormItem/FormItem';
+import {
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../FormItem/FormItem';
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover/Popover';
 
-export interface ColorPickerFieldProps extends FieldProps {
+export interface ColorPickerFieldProps extends FormFieldProps {
   className?: string;
   wrapperClassName?: string;
   disabled?: boolean;
   placeholder?: string;
   onChange?: (value: string) => void;
-  formatColorName?: (color: string) => string;
+  formatColorName?: (value: string) => string;
   value?: string;
   hideText?: boolean;
+  /**
+   * Parse a color string into a hex color.
+   * @param color - The color string to parse.
+   * @returns The hex color.
+   */
+  parseColor?: (color: string) => string;
+  /**
+   * Serialize a hex color into a color string.
+   * @param hex - The hex color to serialize.
+   * @returns The color string.
+   */
+  serializeColor?: (hex: string) => string;
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
 /**
  * Field with label and error states that wraps a ColorPicker component.
  */
-
-function ColorPickerFieldFn(
-  {
-    className,
-    wrapperClassName,
-    disabled,
-    placeholder,
-    onChange,
-    value,
-    label,
-    error,
-    description,
-    hideText,
-    formatColorName,
-  }: ColorPickerFieldProps,
-  ref: ForwardedRef<HTMLButtonElement>,
-): React.JSX.Element {
+function ColorPickerField({
+  className,
+  wrapperClassName,
+  disabled,
+  placeholder,
+  onChange,
+  value,
+  label,
+  error,
+  description,
+  hideText,
+  formatColorName,
+  parseColor,
+  serializeColor,
+  ref,
+}: ColorPickerFieldProps): React.ReactElement {
   const addWrapper = label ?? error ?? description;
 
   const id = useId();
 
+  const hexValue = value ? (parseColor?.(value) ?? value) : undefined;
+
+  const handleChange = (newHexValue: string): void => {
+    if (!newHexValue) return;
+    const newColorValue = serializeColor?.(newHexValue) ?? newHexValue;
+    onChange?.(newColorValue);
+  };
+
   const inputComponent = (
-    <Popover.Root>
-      <Popover.Trigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <button
           className={cn(
             buttonVariants({
@@ -61,7 +86,7 @@ function ColorPickerFieldFn(
               justify: 'start',
             }),
             className,
-            'flex h-8 items-center px-2',
+            'flex h-8 items-center gap-2 px-2',
             hideText ? 'justify-center' : undefined,
             disabled ? 'opacity-75' : undefined,
           )}
@@ -69,62 +94,53 @@ function ColorPickerFieldFn(
           ref={ref}
           disabled={disabled}
         >
-          {value && (
+          {hexValue && (
             <div
               className="h-4 w-6 rounded-sm border border-border"
               style={{
-                backgroundColor: value,
+                backgroundColor: hexValue,
               }}
             />
           )}
-          {hideText ? null : value ? (
-            <div>{formatColorName ? formatColorName(value) : value}</div>
+          {hideText ? null : hexValue ? (
+            <div>
+              {formatColorName && value ? formatColorName(value) : hexValue}
+            </div>
           ) : (
             <div className="opacity-75">{placeholder}</div>
           )}
         </button>
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Content
-          sideOffset={5}
-          align="start"
-          collisionPadding={{ bottom: 50 }}
-          className="bg-white space-y-2 rounded-md border border-border p-4"
-        >
-          <HexColorInput
-            className={cn(inputVariants(), 'p-2')}
-            prefixed
-            color={value}
-            onChange={onChange}
-          />
-          <HexColorPicker color={value} onChange={onChange} />
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+      </PopoverTrigger>
+      <PopoverContent
+        sideOffset={5}
+        align="start"
+        collisionPadding={{ bottom: 50 }}
+        className="bg-white space-y-2 rounded-md border border-border p-4"
+        width="none"
+      >
+        <HexColorInput
+          className={cn(inputVariants(), 'p-2')}
+          prefixed
+          color={hexValue ?? ''}
+          onChange={handleChange}
+        />
+        <HexColorPicker color={hexValue ?? ''} onChange={handleChange} />
+      </PopoverContent>
+    </Popover>
   );
 
   if (addWrapper) {
     return (
       <FormItem error={error} className={cn('flex gap-2', wrapperClassName)}>
-        {label && <FormItem.Label>{label}</FormItem.Label>}
-        <FormItem.Control>{inputComponent}</FormItem.Control>
-        {error ? (
-          <FormItem.Error>{error}</FormItem.Error>
-        ) : (
-          description && (
-            <FormItem.Description>{description}</FormItem.Description>
-          )
-        )}
+        <FormLabel>{label}</FormLabel>
+        <FormControl>{inputComponent}</FormControl>
+        <FormDescription>{description}</FormDescription>
+        <FormMessage />
       </FormItem>
     );
   }
   return inputComponent;
 }
-
-/**
- * A color picker field.
- */
-const ColorPickerFieldRoot = genericForwardRef(ColorPickerFieldFn);
 
 export interface ColorPickerFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -134,17 +150,18 @@ export interface ColorPickerFieldControllerProps<
   name: TFieldName;
 }
 
-function ColorPickerFieldControllerFn<
+function ColorPickerFieldController<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->(
-  {
-    control,
-    name,
-    ...rest
-  }: ColorPickerFieldControllerProps<TFieldValues, TFieldName>,
-  ref: ForwardedRef<HTMLButtonElement>,
-): React.JSX.Element {
+>({
+  control,
+  name,
+  ref,
+  ...rest
+}: ColorPickerFieldControllerProps<
+  TFieldValues,
+  TFieldName
+>): React.ReactElement {
   const {
     field: fieldProps,
     fieldState: { error },
@@ -157,15 +174,7 @@ function ColorPickerFieldControllerFn<
     ref,
   );
 
-  return (
-    <ColorPickerFieldRoot error={error?.message} {...rest} {...fieldProps} />
-  );
+  return <ColorPickerField error={error?.message} {...rest} {...fieldProps} />;
 }
 
-const ColorPickerFieldController = genericForwardRef(
-  ColorPickerFieldControllerFn,
-);
-
-export const ColorPickerField = Object.assign(ColorPickerFieldRoot, {
-  Controller: ColorPickerFieldController,
-});
+export { ColorPickerField, ColorPickerFieldController };

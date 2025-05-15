@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
+import { STORYBOOK_ICON_SELECT } from '@src/stories/button-icons.js';
+
 import { Button } from './Button.js';
 
 const meta = {
@@ -46,5 +48,34 @@ export const Secondary: Story = {
 export const Ghost: Story = {
   args: {
     variant: 'ghost',
+  },
+};
+
+export const WithLeftIcon: Story = {
+  args: {
+    children: (
+      <>
+        <STORYBOOK_ICON_SELECT.mapping.Plus />
+        Add Item
+      </>
+    ),
+  },
+};
+
+export const WithRightIcon: Story = {
+  args: {
+    children: (
+      <>
+        Next
+        <STORYBOOK_ICON_SELECT.mapping.Right />
+      </>
+    ),
+  },
+};
+
+export const IconOnly: Story = {
+  args: {
+    children: <STORYBOOK_ICON_SELECT.mapping.Settings />,
+    'aria-label': 'Settings',
   },
 };
