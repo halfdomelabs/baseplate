@@ -9,7 +9,7 @@ interface LoaderProps {
 /**
  * Loader component that displays a 3-dot loading animation.
  */
-export function Loader({ className }: LoaderProps): React.JSX.Element {
+function Loader({ className }: LoaderProps): React.ReactElement {
   return (
     <div
       className={cn('flex h-full items-center justify-center', className)}
@@ -23,3 +23,5 @@ export function Loader({ className }: LoaderProps): React.JSX.Element {
     </div>
   );
 }
+
+export { Loader };
