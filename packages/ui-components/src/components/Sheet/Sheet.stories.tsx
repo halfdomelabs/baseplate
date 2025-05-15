@@ -5,7 +5,16 @@ import type React from 'react';
 import { useState } from 'react';
 
 import { Button } from '../Button/Button.js';
-import { Sheet } from './Sheet.js';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from './Sheet.js';
 
 const meta = {
   component: Sheet,
@@ -21,26 +30,26 @@ function SheetContainer(
 ): React.JSX.Element {
   return (
     <Sheet {...args}>
-      <Sheet.Trigger asChild>
+      <SheetTrigger asChild>
         <Button>Open Sheet</Button>
-      </Sheet.Trigger>
-      <Sheet.Content>
-        <Sheet.Header>
-          <Sheet.Title>Edit profile</Sheet.Title>
-          <Sheet.Description>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Edit profile</SheetTitle>
+          <SheetDescription>
             Make changes to your profile here. Click save when you&apos;re done.
-          </Sheet.Description>
-        </Sheet.Header>
+          </SheetDescription>
+        </SheetHeader>
         <p className="py-4">This is the body content</p>
-        <Sheet.Footer className="flex gap-4">
-          <Sheet.Close asChild>
+        <SheetFooter className="flex gap-4">
+          <SheetClose asChild>
             <Button variant="secondary">Cancel</Button>
-          </Sheet.Close>
-          <Sheet.Close asChild>
+          </SheetClose>
+          <SheetClose asChild>
             <Button>Save Changes</Button>
-          </Sheet.Close>
-        </Sheet.Footer>
-      </Sheet.Content>
+          </SheetClose>
+        </SheetFooter>
+      </SheetContent>
     </Sheet>
   );
 }
@@ -71,17 +80,17 @@ function ControlledSheetContainer(
           setOpen(op);
         }}
       >
-        <Sheet.Content>
+        <SheetContent>
           <p>This is the body content</p>
-          <Sheet.Footer>
-            <Sheet.Close asChild>
+          <SheetFooter>
+            <SheetClose asChild>
               <Button variant="secondary">Cancel</Button>
-            </Sheet.Close>
-            <Sheet.Close asChild>
+            </SheetClose>
+            <SheetClose asChild>
               <Button>Delete File</Button>
-            </Sheet.Close>
-          </Sheet.Footer>
-        </Sheet.Content>
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
       </Sheet>
     </div>
   );

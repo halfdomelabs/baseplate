@@ -22,7 +22,10 @@ interface SectionProps {
   children: React.ReactNode;
 }
 
-function Section({ className, children }: SectionProps): React.ReactElement {
+function SectionListSection({
+  className,
+  children,
+}: SectionProps): React.ReactElement {
   return (
     <section className={cn('flex gap-8 py-6', className)}>{children}</section>
   );
@@ -33,7 +36,7 @@ interface SectionHeaderProps {
   children: React.ReactNode;
 }
 
-function SectionHeader({
+function SectionListSectionHeader({
   className,
   children,
 }: SectionHeaderProps): React.ReactElement {
@@ -45,7 +48,7 @@ interface SectionTitleProps {
   children: React.ReactNode;
 }
 
-function SectionTitle({
+function SectionListSectionTitle({
   className,
   children,
 }: SectionTitleProps): React.ReactElement {
@@ -57,7 +60,7 @@ interface SectionDescriptionProps {
   children: React.ReactNode;
 }
 
-function SectionDescription({
+function SectionListSectionDescription({
   className,
   children,
 }: SectionDescriptionProps): React.ReactElement {
@@ -73,7 +76,7 @@ interface SectionContentProps {
   children: React.ReactNode;
 }
 
-function SectionContent({
+function SectionListSectionContent({
   className,
   children,
 }: SectionContentProps): React.ReactElement {
@@ -81,10 +84,10 @@ function SectionContent({
 }
 
 export {
-  Section,
-  SectionContent,
-  SectionDescription,
-  SectionHeader,
   SectionList,
-  SectionTitle,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
 };

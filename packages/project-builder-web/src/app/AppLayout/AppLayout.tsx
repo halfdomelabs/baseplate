@@ -1,6 +1,11 @@
 import type React from 'react';
 
-import { Button, Sheet } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { MdMenu } from 'react-icons/md';
 import { Outlet } from 'react-router-dom';
@@ -44,15 +49,15 @@ export function AppLayout({ className }: AppLayoutProps): React.JSX.Element {
       <div className="flex h-full flex-col pt-(--topbar-height) sm:pl-(--sidebar-width)">
         <header className="fixed inset-x-0 top-0 z-30 flex h-(--topbar-height) items-center gap-4 border-b bg-background px-4 sm:left-(--sidebar-width) sm:px-4">
           <Sheet>
-            <Sheet.Trigger asChild>
+            <SheetTrigger asChild>
               <Button size="icon" variant="outline" className="sm:hidden">
                 <MdMenu className="size-5" />
                 <span className="sr-only">Toggle Menu</span>
               </Button>
-            </Sheet.Trigger>
-            <Sheet.Content side="left" className="max-w-xs">
+            </SheetTrigger>
+            <SheetContent side="left" className="max-w-xs">
               <AppMobileSidebar />
-            </Sheet.Content>
+            </SheetContent>
           </Sheet>
           <div className="flex w-full items-center justify-between py-3">
             <AppBreadcrumbs />
