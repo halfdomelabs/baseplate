@@ -26,7 +26,7 @@ function buildScalarField(
   field: ModelScalarFieldConfig,
   order: number,
 ): GeneratorBundle {
-  const { options = {} } = field;
+  const { options } = field;
   const { primaryKeyFieldRefs, uniqueConstraints } = model.model;
   const isId =
     primaryKeyFieldRefs.length === 1 && primaryKeyFieldRefs.includes(field.id);

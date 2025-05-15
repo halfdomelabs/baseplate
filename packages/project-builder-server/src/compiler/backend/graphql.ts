@@ -30,9 +30,9 @@ function buildObjectTypeFile(
 
   const buildQuery = queries?.get?.enabled ?? queries?.list?.enabled;
   const buildMutations =
-    mutations?.create?.enabled ??
-    mutations?.update?.enabled ??
-    mutations?.delete?.enabled;
+    mutations?.create.enabled ??
+    mutations?.update.enabled ??
+    mutations?.delete.enabled;
 
   if (!objectType?.enabled) {
     return undefined;
@@ -125,9 +125,9 @@ function buildMutationsFileForModel(
 
   const buildMutations =
     !!mutations &&
-    (!!mutations.create?.enabled ||
-      !!mutations.update?.enabled ||
-      !!mutations.delete?.enabled);
+    (!!mutations.create.enabled ||
+      !!mutations.update.enabled ||
+      !!mutations.delete.enabled);
 
   if (!buildMutations) {
     return undefined;
@@ -147,7 +147,7 @@ function buildMutationsFileForModel(
     id: `${model.id}-mutations`,
     fileName: `${kebabCase(model.name)}.mutations`,
     children: {
-      create: create?.enabled
+      create: create.enabled
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
             order: 0,
@@ -162,7 +162,7 @@ function buildMutationsFileForModel(
             },
           })
         : undefined,
-      update: update?.enabled
+      update: update.enabled
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
             order: 1,
@@ -177,7 +177,7 @@ function buildMutationsFileForModel(
             },
           })
         : undefined,
-      delete: del?.enabled
+      delete: del.enabled
         ? pothosPrismaCrudMutationGenerator({
             ...sharedMutationConfig,
             order: 2,

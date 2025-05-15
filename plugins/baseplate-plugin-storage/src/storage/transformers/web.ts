@@ -1,5 +1,5 @@
 import type {
-  ModelConfig,
+  ModelConfigInput,
   ProjectDefinition,
 } from '@halfdomelabs/project-builder-lib';
 
@@ -19,7 +19,7 @@ import '../../styles.css';
 
 function findNonTransformedFileRelations(
   definition: ProjectDefinition,
-  modelConfig: ModelConfig,
+  modelConfig: ModelConfigInput,
   pluginId: string,
 ): string[] {
   const storageDefinition = PluginUtils.configByIdOrThrow(
@@ -27,15 +27,16 @@ function findNonTransformedFileRelations(
     pluginId,
   ) as StoragePluginDefinition;
   const { transformers } = modelConfig.service ?? {};
-  const fileTransformers = (transformers?.filter(
-    (transformer) => transformer.type === 'file',
-  ) ?? []) as FileTransformerConfig[];
+  const fileTransformers = transformers?.filter(
+    (transformer): transformer is FileTransformerConfig =>
+      transformer.type === 'file',
+  );
   return (
     modelConfig.model.relations
       ?.filter(
         (relation) =>
           relation.modelRef === storageDefinition.fileModelRef &&
-          !fileTransformers.some(
+          !fileTransformers?.some(
             (transformer) => transformer.fileRelationRef === relation.id,
           ),
       )
