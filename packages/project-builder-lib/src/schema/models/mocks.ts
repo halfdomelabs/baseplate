@@ -33,6 +33,10 @@ export function generateMockModelScalarField(
     type: 'string',
     isOptional: false,
     ...field,
+    options: {
+      default: '',
+      ...field?.options,
+    },
   };
 }
 

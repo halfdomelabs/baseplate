@@ -48,6 +48,7 @@ function createNewModel(): ModelConfig {
           type: 'uuid',
           isOptional: false,
           options: {
+            default: '',
             genUuid: true,
           },
         },
@@ -146,9 +147,11 @@ export function useModelForm({
               return;
             }
           } else {
-            service.create = undefined;
+            service.create = {
+              enabled: false,
+            };
           }
-          if (service.update?.enabled) {
+          if (service.update.enabled) {
             if (
               !service.update.fields?.length &&
               !service.update.transformerNames?.length
@@ -159,12 +162,20 @@ export function useModelForm({
               return;
             }
           } else {
-            service.update = undefined;
+            service.update = {
+              enabled: false,
+            };
           }
-          if (!service.delete?.enabled) {
-            service.delete = undefined;
+          if (!service.delete.enabled) {
+            service.delete = {
+              enabled: false,
+            };
           }
-          if (!service.create && !service.update && !service.delete) {
+          if (
+            !service.create.enabled &&
+            !service.update.enabled &&
+            !service.delete.enabled
+          ) {
             updatedModel.service = undefined;
           }
         }

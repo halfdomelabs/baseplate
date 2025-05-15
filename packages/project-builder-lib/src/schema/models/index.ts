@@ -38,7 +38,7 @@ export const modelScalarFieldSchema = zEnt(
       z
         .object({
           // string options
-          default: z.string().optional(),
+          default: z.string().default(''),
           // uuid options
           genUuid: z.boolean().optional(),
           // date options
@@ -55,7 +55,7 @@ export const modelScalarFieldSchema = zEnt(
           ...val,
           ...(val.enumRef ? {} : { defaultEnumValueRef: undefined }),
         }))
-        .optional(),
+        .default({ default: '' }),
       (builder) => {
         builder.addReference({
           type: modelEnumValueEntityType,
@@ -73,7 +73,7 @@ export const modelScalarFieldSchema = zEnt(
 )
   .superRefine((arg, ctx) => {
     // check default values
-    const defaultValue = arg.options?.default;
+    const defaultValue = arg.options.default;
     const { type } = arg;
     if (!defaultValue) {
       return;
@@ -87,7 +87,7 @@ export const modelScalarFieldSchema = zEnt(
     }
   })
   .transform((value) => {
-    if (value.type !== 'enum' && value.options?.enumRef) {
+    if (value.type !== 'enum' && value.options.enumRef) {
       return {
         ...value,
         options: {
@@ -196,7 +196,7 @@ export type ModelUniqueConstraintConfig = z.infer<
 export const modelServiceSchema = z.object({
   create: z
     .object({
-      enabled: z.boolean().optional(),
+      enabled: z.boolean().default(false),
       fields: z
         .array(
           zRef(z.string(), {
@@ -216,10 +216,10 @@ export const modelServiceSchema = z.object({
         )
         .optional(),
     })
-    .optional(),
+    .default({ enabled: false }),
   update: z
     .object({
-      enabled: z.boolean().optional(),
+      enabled: z.boolean().default(false),
       fields: z
         .array(
           zRef(z.string(), {
@@ -239,19 +239,21 @@ export const modelServiceSchema = z.object({
         )
         .optional(),
     })
-    .optional(),
+    .default({ enabled: false }),
   delete: z
     .object({
-      enabled: z.boolean().optional(),
+      enabled: z.boolean().default(false),
     })
-    .optional(),
-  transformers: z.array(transformerSchema).optional(),
+    .default({
+      enabled: false,
+    }),
+  transformers: z.array(transformerSchema).default([]),
 });
 
 export type ModelServiceConfig = z.infer<typeof modelServiceSchema>;
 
 export const modelBaseSchema = z.object({
-  id: z.string().default(() => modelEntityType.generateNewId()),
+  id: zRefId,
   name: VALIDATORS.PASCAL_CASE_STRING,
   featureRef: zRef(z.string().min(1), {
     type: featureEntityType,
@@ -271,7 +273,12 @@ export const modelBaseSchema = z.object({
       .min(1),
     uniqueConstraints: z.array(modelUniqueConstraintSchema).optional(),
   }),
-  service: modelServiceSchema.optional(),
+  service: modelServiceSchema.default({
+    create: { enabled: false },
+    update: { enabled: false },
+    delete: { enabled: false },
+    transformers: [],
+  }),
   graphql: modelGraphqlSchema.optional(),
 });
 

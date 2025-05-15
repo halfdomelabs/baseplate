@@ -16,7 +16,6 @@ import {
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { useWatch } from 'react-hook-form';
 import { HiDotsVertical } from 'react-icons/hi';
 import { MdOutlineDelete } from 'react-icons/md';
 
@@ -43,15 +42,11 @@ function ModelFieldForm({
   setValue,
   onRemove,
 }: Props): React.JSX.Element {
-  const watchedField = useWatch({
-    name: `model.fields.${idx}`,
-    control,
-  });
+  const watchedField = useEditedModelConfig((model) => model.model.fields[idx]);
 
-  const watchedRelations = useWatch({
-    name: `model.relations`,
-    control,
-  });
+  const watchedRelations = useEditedModelConfig(
+    (model) => model.model.relations,
+  );
 
   const model = useEditedModelConfig((model) => model.model);
   const isPartOfPrimaryKey = model.primaryKeyFieldRefs.includes(
@@ -115,7 +110,7 @@ function ModelFieldForm({
   const [relationId, setRelationId] = useState<string | undefined>();
 
   return (
-    <div className={clsx('items-center', className)}>
+    <div className={clsx('items-start', className)}>
       <div>
         <InputFieldController
           control={control}

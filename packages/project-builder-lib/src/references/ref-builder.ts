@@ -20,12 +20,10 @@ import type {
   ReferencePath,
 } from './types.js';
 
-// TODO [>=0.9.14] Remove .optional() once things have been migrated.
-
 /**
  * Zod reference ID schema: a string with a minimum length of 1.
  */
-export const zRefId = z.string().min(1).optional();
+export const zRefId = z.string().min(1);
 
 /**
  * Determines whether the given object is a Promise.

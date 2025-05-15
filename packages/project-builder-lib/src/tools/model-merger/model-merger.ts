@@ -273,6 +273,10 @@ export function applyModelPatchInPlace(
       isOptional: false,
       ...field,
       id: previousField?.id ?? modelScalarFieldEntityType.generateNewId(),
+      options: {
+        default: '',
+        ...field.options,
+      },
     }),
   );
 

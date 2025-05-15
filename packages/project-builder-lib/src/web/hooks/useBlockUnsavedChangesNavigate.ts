@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { type Control, type FieldValues, useFormState } from 'react-hook-form';
 
-import { hasDirtyFields } from '../utils/form.js';
 import { useBlockerDialog } from './useBlockerDialog.js';
 
 export function useBlockUnsavedChangesNavigate<
@@ -20,7 +19,7 @@ export function useBlockUnsavedChangesNavigate<
   isDirtyRef.current = formState.isDirty;
 
   useBlockerDialog({
-    disableBlock: !hasDirtyFields(formState),
+    disableBlock: !formState.isDirty,
     title: 'Unsaved Changes',
     content: 'You have unsaved changes. Do you want to save your changes?',
     buttonContinueWithoutSaveText: 'Discard Changes',
