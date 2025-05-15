@@ -4,7 +4,7 @@ import type * as React from 'react';
 
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import * as SelectPrimitive from '@radix-ui/react-select';
-import { RxCaretSort, RxCheck } from 'react-icons/rx';
+import { MdCheck, MdUnfoldMore } from 'react-icons/md';
 
 import {
   selectCheckVariants,
@@ -60,7 +60,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <RxCaretSort className="size-4 opacity-50" />
+        <MdUnfoldMore className="size-4 opacity-50" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
@@ -147,7 +147,7 @@ function SelectItem({
     >
       <span className={selectCheckVariants()}>
         <SelectPrimitive.ItemIndicator>
-          <RxCheck className="size-4" />
+          <MdCheck className="size-4" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

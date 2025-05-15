@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useId, useMemo, useState } from 'react';
-import { MdCheck, MdClose } from 'react-icons/md';
-import { RxCaretSort } from 'react-icons/rx';
+import { MdCheck, MdClose, MdUnfoldMore } from 'react-icons/md';
 
 import { useControlledState } from '@src/hooks';
 import {
@@ -215,7 +214,7 @@ function MultiComboboxInput({
           )}
         </div>
         <PopoverTrigger>
-          <RxCaretSort className="size-4" />
+          <MdUnfoldMore className="size-4" />
         </PopoverTrigger>
       </div>
     </PopoverAnchor>

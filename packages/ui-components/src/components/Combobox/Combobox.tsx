@@ -9,8 +9,7 @@ import {
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import { Command } from 'cmdk';
 import * as React from 'react';
-import { MdCheck } from 'react-icons/md';
-import { RxCaretSort } from 'react-icons/rx';
+import { MdCheck, MdUnfoldMore } from 'react-icons/md';
 
 import { useControlledState } from '@src/hooks/useControlledState';
 import {
@@ -295,7 +294,7 @@ function ComboboxInput({
             }
           }}
         >
-          <RxCaretSort className="size-4" />
+          <MdUnfoldMore className="size-4" />
         </Button>
       </div>
     </PopoverAnchor>
