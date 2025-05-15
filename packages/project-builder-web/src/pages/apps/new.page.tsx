@@ -1,5 +1,4 @@
-import type {
-  AppConfig} from '@halfdomelabs/project-builder-lib';
+import type { AppConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import {

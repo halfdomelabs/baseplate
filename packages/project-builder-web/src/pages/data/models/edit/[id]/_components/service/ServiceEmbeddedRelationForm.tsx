@@ -106,7 +106,7 @@ function ServiceEmbeddedRelationForm({
       })) ?? [];
 
   const foreignTransformerOptions =
-    relation?.model.service?.transformers?.map((transformer) => ({
+    relation?.model.service.transformers.map((transformer) => ({
       label: ModelTransformerUtils.getTransformName(
         definitionContainer,
         transformer,

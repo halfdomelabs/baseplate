@@ -141,54 +141,52 @@ export function useModelForm({
 
         // clear out any service methods that are disabled
         const { service } = updatedModel;
-        if (service) {
-          if (service.create?.enabled) {
-            if (
-              !service.create.fields?.length &&
-              !service.create.transformerNames?.length
-            ) {
-              toast.error(
-                'Create method must have at least one field or transformer.',
-              );
-              return;
-            }
-          } else {
-            service.create = {
-              enabled: false,
-            };
-          }
-          if (service.update.enabled) {
-            if (
-              !service.update.fields?.length &&
-              !service.update.transformerNames?.length
-            ) {
-              toast.error(
-                'Update method must have at least one field or transformer.',
-              );
-              return;
-            }
-          } else {
-            service.update = {
-              enabled: false,
-            };
-          }
-          if (!service.delete.enabled) {
-            service.delete = {
-              enabled: false,
-            };
-          }
+        if (service.create.enabled) {
           if (
-            !service.create.enabled &&
-            !service.update.enabled &&
-            !service.delete.enabled
+            !service.create.fields?.length &&
+            !service.create.transformerNames?.length
           ) {
-            updatedModel.service = {
-              create: { enabled: false },
-              update: { enabled: false },
-              delete: { enabled: false },
-              transformers: [],
-            };
+            toast.error(
+              'Create method must have at least one field or transformer.',
+            );
+            return;
           }
+        } else {
+          service.create = {
+            enabled: false,
+          };
+        }
+        if (service.update.enabled) {
+          if (
+            !service.update.fields?.length &&
+            !service.update.transformerNames?.length
+          ) {
+            toast.error(
+              'Update method must have at least one field or transformer.',
+            );
+            return;
+          }
+        } else {
+          service.update = {
+            enabled: false,
+          };
+        }
+        if (!service.delete.enabled) {
+          service.delete = {
+            enabled: false,
+          };
+        }
+        if (
+          !service.create.enabled &&
+          !service.update.enabled &&
+          !service.delete.enabled
+        ) {
+          updatedModel.service = {
+            create: { enabled: false },
+            update: { enabled: false },
+            delete: { enabled: false },
+            transformers: [],
+          };
         }
 
         return saveDefinitionWithFeedback(

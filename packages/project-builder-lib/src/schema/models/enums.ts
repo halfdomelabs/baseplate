@@ -34,3 +34,5 @@ export const enumSchema = zEnt(enumBaseSchema, {
 });
 
 export type EnumConfig = z.infer<typeof enumSchema>;
+
+export type EnumConfigInput = z.input<typeof enumSchema>;
