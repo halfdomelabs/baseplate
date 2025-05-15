@@ -12,10 +12,10 @@ export interface SidebarLayoutProps {
 /**
  * Displays a 2 column layout with a sidebar and content.
  */
-export function SidebarLayout({
+function SidebarLayout({
   className,
   children,
-}: SidebarLayoutProps): React.JSX.Element {
+}: SidebarLayoutProps): React.ReactElement {
   return <div className={clsx('flex h-full', className)}>{children}</div>;
 }
 
@@ -26,12 +26,12 @@ interface SidebarLayoutSidebarProps {
   noPadding?: boolean;
 }
 
-SidebarLayout.Sidebar = function SidebarLayoutSidebar({
+function SidebarLayoutSidebar({
   className,
   children,
   width = 'md',
   noPadding,
-}: SidebarLayoutSidebarProps): React.JSX.Element {
+}: SidebarLayoutSidebarProps): React.ReactElement {
   return (
     <aside
       className={cn(
@@ -48,20 +48,22 @@ SidebarLayout.Sidebar = function SidebarLayoutSidebar({
       {children}
     </aside>
   );
-};
+}
 
 interface SidebarLayoutContentProps {
   className?: string;
   children: React.ReactNode;
 }
 
-SidebarLayout.Content = function SidebarLayoutContent({
+function SidebarLayoutContent({
   className,
   children,
-}: SidebarLayoutContentProps): React.JSX.Element {
+}: SidebarLayoutContentProps): React.ReactElement {
   return (
     <div className={cn('w-full flex-auto overflow-y-auto', className)}>
       {children}
     </div>
   );
-};
+}
+
+export { SidebarLayout, SidebarLayoutContent, SidebarLayoutSidebar };

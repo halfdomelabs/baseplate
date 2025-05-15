@@ -5,6 +5,8 @@ import {
   NavigationTabs,
   NavigationTabsItem,
   SidebarLayout,
+  SidebarLayoutContent,
+  SidebarLayoutSidebar,
 } from '@halfdomelabs/ui-components';
 import { maxBy } from 'es-toolkit';
 import { NavLink, Outlet, useMatch } from 'react-router-dom';
@@ -26,7 +28,7 @@ export function DataLayout(): React.JSX.Element {
 
   return (
     <SidebarLayout className="flex-1">
-      <SidebarLayout.Sidebar
+      <SidebarLayoutSidebar
         className="flex h-[calc(100vh-var(--topbar-height)-1px)] max-w-sm min-w-[230px] flex-col space-y-4"
         width="auto"
         noPadding
@@ -47,12 +49,12 @@ export function DataLayout(): React.JSX.Element {
         </div>
         {modelsActive ? <ModelsSidebarList /> : null}
         {enumsActive ? <EnumsSidebarList /> : null}
-      </SidebarLayout.Sidebar>
-      <SidebarLayout.Content className="h-[calc(100vh-var(--topbar-height)-1px)]">
+      </SidebarLayoutSidebar>
+      <SidebarLayoutContent className="h-[calc(100vh-var(--topbar-height)-1px)]">
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>
-      </SidebarLayout.Content>
+      </SidebarLayoutContent>
     </SidebarLayout>
   );
 }

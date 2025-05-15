@@ -5,6 +5,8 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   SidebarLayout,
+  SidebarLayoutContent,
+  SidebarLayoutSidebar,
 } from '@halfdomelabs/ui-components';
 import { NavLink, Outlet } from 'react-router-dom';
 
@@ -13,7 +15,7 @@ import { ENABLE_TEMPLATE_EXTRACTOR } from '@src/services/config';
 function SettingsLayout(): React.JSX.Element {
   return (
     <SidebarLayout className="h-full flex-1">
-      <SidebarLayout.Sidebar className="space-y-4" width="sm">
+      <SidebarLayoutSidebar className="space-y-4" width="sm">
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>
             <NavigationMenuLink asChild>
@@ -36,10 +38,10 @@ function SettingsLayout(): React.JSX.Element {
             )}
           </NavigationMenuList>
         </NavigationMenu>
-      </SidebarLayout.Sidebar>
-      <SidebarLayout.Content className="h-full">
+      </SidebarLayoutSidebar>
+      <SidebarLayoutContent className="h-full">
         <Outlet />
-      </SidebarLayout.Content>
+      </SidebarLayoutContent>
     </SidebarLayout>
   );
 }

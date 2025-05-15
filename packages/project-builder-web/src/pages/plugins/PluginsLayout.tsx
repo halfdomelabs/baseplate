@@ -8,6 +8,8 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   SidebarLayout,
+  SidebarLayoutContent,
+  SidebarLayoutSidebar,
 } from '@halfdomelabs/ui-components';
 import { notEmpty } from '@halfdomelabs/utils';
 import { MdAdd } from 'react-icons/md';
@@ -29,7 +31,7 @@ function PluginsLayout(): React.JSX.Element {
 
   return (
     <SidebarLayout className="flex-1">
-      <SidebarLayout.Sidebar className="flex flex-col gap-4" width="sm">
+      <SidebarLayoutSidebar className="flex flex-col gap-4" width="sm">
         <Link to="/plugins">
           <Button variant="secondary" className="w-full" size="sm">
             <MdAdd />
@@ -52,10 +54,10 @@ function PluginsLayout(): React.JSX.Element {
             )}
           </NavigationMenuList>
         </NavigationMenu>
-      </SidebarLayout.Sidebar>
-      <SidebarLayout.Content className="p-4">
+      </SidebarLayoutSidebar>
+      <SidebarLayoutContent className="p-4">
         <Outlet />
-      </SidebarLayout.Content>
+      </SidebarLayoutContent>
     </SidebarLayout>
   );
 }

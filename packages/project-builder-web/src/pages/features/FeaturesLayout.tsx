@@ -5,6 +5,8 @@ import {
   NavigationMenuItemWithLink,
   NavigationMenuList,
   SidebarLayout,
+  SidebarLayoutContent,
+  SidebarLayoutSidebar,
 } from '@halfdomelabs/ui-components';
 import { MdPeople } from 'react-icons/md';
 import { Link, NavLink, Outlet } from 'react-router-dom';
@@ -12,7 +14,7 @@ import { Link, NavLink, Outlet } from 'react-router-dom';
 function FeaturesLayout(): React.JSX.Element {
   return (
     <SidebarLayout className="flex-1">
-      <SidebarLayout.Sidebar className="flex flex-col gap-4" width="sm">
+      <SidebarLayoutSidebar className="flex flex-col gap-4" width="sm">
         <Link to="/features">
           <h2>Features</h2>
         </Link>
@@ -28,10 +30,10 @@ function FeaturesLayout(): React.JSX.Element {
             </NavigationMenuItemWithLink>
           </NavigationMenuList>
         </NavigationMenu>
-      </SidebarLayout.Sidebar>
-      <SidebarLayout.Content className="p-4">
+      </SidebarLayoutSidebar>
+      <SidebarLayoutContent className="p-4">
         <Outlet />
-      </SidebarLayout.Content>
+      </SidebarLayoutContent>
     </SidebarLayout>
   );
 }
