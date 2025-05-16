@@ -1,5 +1,4 @@
 import type React from 'react';
-import type { z } from 'zod';
 
 import { templateExtractorSchema } from '@halfdomelabs/project-builder-lib';
 import {
@@ -24,8 +23,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FormActionBar } from '@src/components';
 import { ENABLE_TEMPLATE_EXTRACTOR } from '@src/services/config';
 
-type FormData = z.infer<typeof templateExtractorSchema>;
-
 /**
  * Settings page for template extractor configuration
  *
@@ -34,7 +31,7 @@ type FormData = z.infer<typeof templateExtractorSchema>;
 export function TemplateExtractorSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
   const defaultValues = definition.templateExtractor;
-  const form = useResettableForm<FormData>({
+  const form = useResettableForm({
     resolver: zodResolver(templateExtractorSchema),
     defaultValues,
   });

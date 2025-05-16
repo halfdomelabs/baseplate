@@ -36,7 +36,7 @@ describe('deserializeSchemaWithReferences', () => {
       }),
     });
     const dataInput: z.input<typeof schema> = {
-      entity: [{ name: 'test-name' }],
+      entity: [{ id: entityType.generateNewId(), name: 'test-name' }],
       ref: 'test-name',
     };
 
@@ -63,7 +63,7 @@ describe('deserializeSchemaWithReferences', () => {
       }),
     });
     const dataInput: z.input<typeof schema> = {
-      entity: [{ name: 'test-name' }],
+      entity: [{ id: entityType.generateNewId(), name: 'test-name' }],
       nullRef: null,
       undefinedRef: undefined,
     };
@@ -88,7 +88,7 @@ describe('deserializeSchemaWithReferences', () => {
       }),
     });
     const dataInput: z.input<typeof schema> = {
-      entity: [{ name: 'test-name' }],
+      entity: [{ id: entityType.fromUid('test-id'), name: 'test-name' }],
       ref: '',
     };
 
@@ -121,9 +121,9 @@ describe('deserializeSchemaWithReferences', () => {
     });
     const dataInput: z.input<typeof schema> = {
       entity: [
-        { name: 'test-name' },
-        { name: 'test-name2' },
-        { name: 'test-name3' },
+        { id: entityType.generateNewId(), name: 'test-name' },
+        { id: entityType.generateNewId(), name: 'test-name2' },
+        { id: entityType.generateNewId(), name: 'test-name3' },
       ],
       nestedRef: {
         ref: 'test-name2',
@@ -182,13 +182,21 @@ describe('deserializeSchemaWithReferences', () => {
     const dataInput: z.input<typeof schema> = {
       models: [
         {
+          id: modelType.generateNewId(),
           name: 'todo',
-          fields: [{ name: 'title' }, { name: 'id' }],
+          fields: [
+            { id: fieldType.generateNewId(), name: 'title' },
+            { id: fieldType.generateNewId(), name: 'id' },
+          ],
           relations: [{ modelName: 'todoList', fields: ['id'] }],
         },
         {
+          id: modelType.generateNewId(),
           name: 'todoList',
-          fields: [{ name: 'title' }, { name: 'id' }],
+          fields: [
+            { id: fieldType.generateNewId(), name: 'title' },
+            { id: fieldType.generateNewId(), name: 'id' },
+          ],
           relations: [],
         },
       ],

@@ -138,7 +138,7 @@ const FileInput = function FileInput({
       {(() => {
         if (value) {
           return (
-            <div className="bg-white flex h-12 w-full max-w-md items-center justify-between rounded-lg border p-4 shadow-md">
+            <div className="flex h-12 w-full max-w-md items-center justify-between rounded-lg border bg-white p-4 shadow-md">
               <div />
               <div className="flex items-center">
                 {imagePreview && value.hostedUrl && (
@@ -168,7 +168,7 @@ const FileInput = function FileInput({
               <LinkButton onClick={handleRemove}>
                 <MdOutlineClear
                   aria-label="Remove"
-                  className="text-black h-8 w-6"
+                  className="h-8 w-6 text-black"
                 />
               </LinkButton>
             </div>

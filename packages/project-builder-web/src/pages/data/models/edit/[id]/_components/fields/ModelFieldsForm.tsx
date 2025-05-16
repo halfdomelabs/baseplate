@@ -1,4 +1,4 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type {
   Control,
@@ -16,8 +16,8 @@ import ModelFieldForm from './ModelFieldForm';
 
 interface ModelFieldsFormProps {
   className?: string;
-  control: Control<ModelConfig>;
-  setValue: UseFormSetValue<ModelConfig>;
+  control: Control<ModelConfigInput>;
+  setValue: UseFormSetValue<ModelConfigInput>;
 }
 
 export function ModelFieldsForm({
@@ -57,11 +57,11 @@ export function ModelFieldsForm({
       {fieldFields.length === 0 ? (
         <p className="pt-4 text-style-muted">Add some fields to get started</p>
       ) : (
-        <div className="bg-white flex w-full flex-col gap-2">
+        <div className="flex w-full flex-col gap-2 bg-white">
           <div
             className={clsx(
               gridClassNames,
-              'bg-white sticky -top-0 z-10 py-2 text-sm font-semibold',
+              'sticky -top-0 z-10 bg-white py-2 text-sm font-semibold',
               // account for handle in sortable list
               'pl-12',
             )}

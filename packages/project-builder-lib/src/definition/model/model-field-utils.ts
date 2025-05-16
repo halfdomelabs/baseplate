@@ -2,6 +2,7 @@ import { isEqual } from 'es-toolkit';
 
 import type {
   ModelConfig,
+  ModelConfigInput,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
   ProjectDefinition,
@@ -21,7 +22,10 @@ function isScalarUnique(model: ModelConfig, fieldId: string): boolean {
   );
 }
 
-function areScalarsUnique(model: ModelConfig, fieldIds: string[]): boolean {
+function areScalarsUnique(
+  model: ModelConfigInput,
+  fieldIds: string[],
+): boolean {
   const sortedFieldIds = [...fieldIds].sort();
   return (
     (isEqual([...model.model.primaryKeyFieldRefs].sort(), sortedFieldIds) ||

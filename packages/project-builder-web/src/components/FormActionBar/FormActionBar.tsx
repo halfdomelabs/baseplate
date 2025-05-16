@@ -16,10 +16,10 @@ export const FormActionBar = ({
   disabled,
 }: FormActionBarProps): React.JSX.Element => {
   const { formState } = form;
-  const isDirty = Object.keys(formState.dirtyFields).length > 0;
+  const { isDirty } = formState;
 
   return (
-    <div className="bg-white absolute inset-x-0 bottom-0 z-50 flex min-h-(--action-bar-height) items-center space-x-4 border-t border-border pl-4">
+    <div className="absolute inset-x-0 bottom-0 z-50 flex min-h-(--action-bar-height) items-center space-x-4 border-t border-border bg-white pl-4">
       <Button
         variant="outline"
         size="sm"

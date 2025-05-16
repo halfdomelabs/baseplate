@@ -92,7 +92,7 @@ function buildServiceForModel(
   model: ModelConfig,
 ): GeneratorBundle | undefined {
   const { service } = model;
-  if (!service) {
+  if (!ModelUtils.hasService(model)) {
     return undefined;
   }
 
@@ -103,11 +103,11 @@ function buildServiceForModel(
       $crud: prismaCrudServiceGenerator({
         modelName: model.name,
         children: {
-          transformers: service.transformers?.map((transfomer) =>
+          transformers: service.transformers.map((transfomer) =>
             buildTransformer(appBuilder, transfomer, model),
           ),
           create:
-            service.create?.fields?.length && service.create.enabled
+            service.create.fields?.length && service.create.enabled
               ? prismaCrudCreateGenerator({
                   name: 'create',
                   order: 1,
@@ -123,7 +123,7 @@ function buildServiceForModel(
                 })
               : undefined,
           update:
-            service.update?.fields?.length && service.update.enabled
+            service.update.fields?.length && service.update.enabled
               ? prismaCrudUpdateGenerator({
                   name: 'update',
                   order: 2,
@@ -138,7 +138,7 @@ function buildServiceForModel(
                   ),
                 })
               : undefined,
-          delete: service.delete?.enabled
+          delete: service.delete.enabled
             ? prismaCrudDeleteGenerator({
                 name: 'delete',
                 order: 3,
@@ -160,10 +160,10 @@ export function buildServicesForFeature(
     featureId,
   ).filter(
     (m) =>
-      !!m.service?.create?.enabled ||
-      !!m.service?.update?.enabled ||
-      !!m.service?.delete?.enabled ||
-      m.service?.transformers?.length,
+      !!m.service.create.enabled ||
+      !!m.service.update.enabled ||
+      !!m.service.delete.enabled ||
+      m.service.transformers.length > 0,
   );
   return models
     .map((model) => buildServiceForModel(appBuilder, model))

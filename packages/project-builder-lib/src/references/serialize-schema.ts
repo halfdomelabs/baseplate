@@ -1,6 +1,6 @@
 import type { TypeOf, z } from 'zod';
 
-import { get, set, unset } from 'es-toolkit/compat';
+import { get, set } from 'es-toolkit/compat';
 import { produce } from 'immer';
 
 import type { ResolvedZodRefPayload } from './types.js';
@@ -15,12 +15,6 @@ export function serializeSchemaFromRefPayload<
   const entitiesById = new Map(entities.map((e) => [e.id, e]));
 
   return produce((draftData: Record<string, unknown>) => {
-    for (const entity of entities) {
-      if (entity.stripIdWhenSerializing) {
-        unset(draftData, entity.idPath);
-      }
-    }
-
     for (const reference of references) {
       const entityId = get(draftData, reference.path) as string;
       const entity = entitiesById.get(entityId);

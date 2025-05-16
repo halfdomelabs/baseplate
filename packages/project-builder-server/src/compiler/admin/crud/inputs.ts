@@ -35,7 +35,7 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
       const fieldConfig = model.model.fields.find(
         (f) => f.id === definition.modelFieldRef,
       );
-      if (fieldConfig?.type !== 'enum' || !fieldConfig.options?.enumRef) {
+      if (fieldConfig?.type !== 'enum' || !fieldConfig.options.enumRef) {
         throw new Error(
           `Admin enum input ${definition.modelFieldRef} is not an enum`,
         );

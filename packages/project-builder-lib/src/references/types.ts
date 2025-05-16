@@ -6,6 +6,7 @@ export type ReferencePath = (string | number)[];
  * Definition of an entity type.
  */
 export class DefinitionEntityType<THasParent extends boolean = boolean> {
+  public readonly prefix: string;
   /**
    * Creates a new entity type.
    *
@@ -15,11 +16,13 @@ export class DefinitionEntityType<THasParent extends boolean = boolean> {
    */
   constructor(
     public readonly name: string,
-    public readonly prefix?: string,
+    prefix?: string,
     public readonly parentType?: THasParent extends true
       ? DefinitionEntityType
       : undefined,
-  ) {}
+  ) {
+    this.prefix = prefix ?? name.split('/').pop() ?? name;
+  }
 
   /**
    * Generates a new ID for the entity type.
@@ -27,7 +30,7 @@ export class DefinitionEntityType<THasParent extends boolean = boolean> {
    * @returns The new ID.
    */
   generateNewId(): string {
-    return `${this.prefix ?? this.name}:${randomUid()}`;
+    return `${this.prefix}:${randomUid()}`;
   }
 
   /**
@@ -42,7 +45,7 @@ export class DefinitionEntityType<THasParent extends boolean = boolean> {
     if (!uid) {
       return undefined;
     }
-    return `${this.prefix ?? this.name}:${uid}`;
+    return `${this.prefix}:${uid}`;
   }
 
   toUid(id: string): string {
@@ -50,7 +53,7 @@ export class DefinitionEntityType<THasParent extends boolean = boolean> {
   }
 
   isId(id: string): boolean {
-    return id.startsWith(`${this.prefix ?? this.name}:`);
+    return id.startsWith(`${this.prefix}:`);
   }
 }
 
@@ -82,13 +85,6 @@ export interface DefinitionEntity {
    * The path to the entity's parent in the definition.
    */
   parentPath?: ReferencePath;
-  /**
-   * Strips the ID when serializing. Use this for entities where the ID
-   * does not need to be persisted, e.g. there is no perma-link to the entity.
-   *
-   * Note: This will create a new ID every time the config is deserialized.
-   */
-  stripIdWhenSerializing?: boolean;
 }
 
 type ReferenceOnDeleteAction =

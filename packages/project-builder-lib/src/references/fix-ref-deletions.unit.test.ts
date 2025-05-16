@@ -40,8 +40,8 @@ describe('fixRefDeletions', () => {
       ),
     });
     const data: z.TypeOf<typeof schema> = {
-      entity: [{ id: 'test-id2', name: 'test-name' }],
-      refs: ['test-id'],
+      entity: [{ id: entityType.fromUid('test-id2'), name: 'test-name' }],
+      refs: [entityType.fromUid('test-id')],
     };
 
     const refPayload = fixRefDeletions(schema, data);
@@ -49,7 +49,7 @@ describe('fixRefDeletions', () => {
     expect(refPayload).toMatchObject({
       type: 'success',
       value: {
-        entity: [{ id: 'test-id2', name: 'test-name' }],
+        entity: [{ id: entityType.fromUid('test-id2'), name: 'test-name' }],
         refs: [],
       },
     });
@@ -71,8 +71,13 @@ describe('fixRefDeletions', () => {
       ),
     });
     const data: z.TypeOf<typeof schema> = {
-      entity: [{ id: 'test-id2', name: 'test-name' }],
-      refs: ['test-id', 'test-id2', 'test-id', 'test-id2'],
+      entity: [{ id: entityType.fromUid('test-id2'), name: 'test-name' }],
+      refs: [
+        entityType.fromUid('test-id'),
+        entityType.fromUid('test-id2'),
+        entityType.fromUid('test-id'),
+        entityType.fromUid('test-id2'),
+      ],
     };
 
     const refPayload = fixRefDeletions(schema, data);
@@ -80,8 +85,8 @@ describe('fixRefDeletions', () => {
     expect(refPayload).toMatchObject({
       type: 'success',
       value: {
-        entity: [{ id: 'test-id2', name: 'test-name' }],
-        refs: ['test-id2', 'test-id2'],
+        entity: [{ id: entityType.fromUid('test-id2'), name: 'test-name' }],
+        refs: [entityType.fromUid('test-id2'), entityType.fromUid('test-id2')],
       },
     });
   });
@@ -102,8 +107,8 @@ describe('fixRefDeletions', () => {
       ),
     });
     const data: z.TypeOf<typeof schema> = {
-      entity: [{ id: 'test-id2', name: 'test-name' }],
-      refs: ['test-id'],
+      entity: [{ id: entityType.fromUid('test-id2'), name: 'test-name' }],
+      refs: [entityType.fromUid('test-id')],
     };
 
     const refPayload = fixRefDeletions(schema, data);
@@ -111,7 +116,7 @@ describe('fixRefDeletions', () => {
     expect(refPayload).toMatchObject({
       type: 'success',
       value: {
-        entity: [{ id: 'test-id2', name: 'test-name' }],
+        entity: [{ id: entityType.fromUid('test-id2'), name: 'test-name' }],
         refs: [null],
       },
     });
@@ -133,8 +138,8 @@ describe('fixRefDeletions', () => {
       ),
     });
     const data: z.TypeOf<typeof schema> = {
-      entity: [{ id: 'test-id2', name: 'test-name' }],
-      refs: ['test-id'],
+      entity: [{ id: entityType.fromUid('test-id2'), name: 'test-name' }],
+      refs: [entityType.fromUid('test-id')],
     };
 
     const refPayload = fixRefDeletions(schema, data);
@@ -143,6 +148,6 @@ describe('fixRefDeletions', () => {
     assert.ok(refPayload.type === 'failure');
 
     expect(refPayload.issues[0].ref.path.join('.')).toBe('refs.0');
-    expect(refPayload.issues[0].entityId).toBe('test-id');
+    expect(refPayload.issues[0].entityId).toBe(entityType.fromUid('test-id'));
   });
 });

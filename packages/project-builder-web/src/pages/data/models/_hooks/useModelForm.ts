@@ -1,4 +1,7 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type {
+  ModelConfig,
+  ModelConfigInput,
+} from '@halfdomelabs/project-builder-lib';
 import type { UseFormReturn } from 'react-hook-form';
 import type { z } from 'zod';
 
@@ -36,6 +39,12 @@ function createNewModel(): ModelConfig {
     id: modelEntityType.generateNewId(),
     name: '',
     featureRef: '',
+    service: {
+      create: { enabled: false },
+      update: { enabled: false },
+      delete: { enabled: false },
+      transformers: [],
+    },
     model: {
       primaryKeyFieldRefs: [idFieldId],
       fields: [
@@ -43,7 +52,9 @@ function createNewModel(): ModelConfig {
           id: idFieldId,
           name: 'id',
           type: 'uuid',
+          isOptional: false,
           options: {
+            default: '',
             genUuid: true,
           },
         },
@@ -52,13 +63,15 @@ function createNewModel(): ModelConfig {
   };
 }
 
-export function useModelForm<
-  TDefinition extends Partial<ModelConfig> = ModelConfig,
->({ onSubmitSuccess, isCreate, schema }: UseModelFormOptions = {}): {
-  form: UseFormReturn<TDefinition>;
+export function useModelForm({
+  onSubmitSuccess,
+  isCreate,
+  schema,
+}: UseModelFormOptions = {}): {
+  form: UseFormReturn<ModelConfigInput>;
   onSubmit: () => Promise<void>;
   originalModel?: ModelConfig;
-  defaultValues: TDefinition;
+  defaultValues: ModelConfigInput;
 } {
   const { uid } = useParams<'uid'>();
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
@@ -83,11 +96,11 @@ export function useModelForm<
   const defaultValues = useMemo(() => {
     const modelToUse = model ?? newModel;
     return schema
-      ? (modelSchemaWithPlugins.parse(modelToUse) as ModelConfig)
+      ? (modelSchemaWithPlugins.parse(modelToUse) as ModelConfigInput)
       : modelToUse;
   }, [model, newModel, schema, modelSchemaWithPlugins]);
 
-  const form = useResettableForm<ModelConfig>({
+  const form = useResettableForm<ModelConfigInput, unknown, ModelConfig>({
     resolver: zodResolver(modelSchemaWithPlugins),
     defaultValues,
   });
@@ -128,39 +141,52 @@ export function useModelForm<
 
         // clear out any service methods that are disabled
         const { service } = updatedModel;
-        if (service) {
-          if (service.create?.enabled) {
-            if (
-              !service.create.fields?.length &&
-              !service.create.transformerNames?.length
-            ) {
-              toast.error(
-                'Create method must have at least one field or transformer.',
-              );
-              return;
-            }
-          } else {
-            service.create = undefined;
+        if (service.create.enabled) {
+          if (
+            !service.create.fields?.length &&
+            !service.create.transformerNames?.length
+          ) {
+            toast.error(
+              'Create method must have at least one field or transformer.',
+            );
+            return;
           }
-          if (service.update?.enabled) {
-            if (
-              !service.update.fields?.length &&
-              !service.update.transformerNames?.length
-            ) {
-              toast.error(
-                'Update method must have at least one field or transformer.',
-              );
-              return;
-            }
-          } else {
-            service.update = undefined;
+        } else {
+          service.create = {
+            enabled: false,
+          };
+        }
+        if (service.update.enabled) {
+          if (
+            !service.update.fields?.length &&
+            !service.update.transformerNames?.length
+          ) {
+            toast.error(
+              'Update method must have at least one field or transformer.',
+            );
+            return;
           }
-          if (!service.delete?.enabled) {
-            service.delete = undefined;
-          }
-          if (!service.create && !service.update && !service.delete) {
-            updatedModel.service = undefined;
-          }
+        } else {
+          service.update = {
+            enabled: false,
+          };
+        }
+        if (!service.delete.enabled) {
+          service.delete = {
+            enabled: false,
+          };
+        }
+        if (
+          !service.create.enabled &&
+          !service.update.enabled &&
+          !service.delete.enabled
+        ) {
+          updatedModel.service = {
+            create: { enabled: false },
+            update: { enabled: false },
+            delete: { enabled: false },
+            transformers: [],
+          };
         }
 
         return saveDefinitionWithFeedback(
@@ -210,9 +236,9 @@ export function useModelForm<
   );
 
   return {
-    form: form as unknown as UseFormReturn<TDefinition>,
+    form,
     onSubmit,
     originalModel: model,
-    defaultValues: defaultValues as TDefinition,
+    defaultValues,
   };
 }

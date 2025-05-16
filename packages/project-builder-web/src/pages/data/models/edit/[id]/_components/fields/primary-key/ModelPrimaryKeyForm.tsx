@@ -1,4 +1,4 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
@@ -18,7 +18,7 @@ import { useEditedModelConfig } from '@src/pages/data/models/_hooks/useEditedMod
 
 interface ModelPrimaryKeyFormProps {
   className?: string;
-  control: Control<ModelConfig>;
+  control: Control<ModelConfigInput>;
   onSubmitSuccess?: () => void;
 }
 

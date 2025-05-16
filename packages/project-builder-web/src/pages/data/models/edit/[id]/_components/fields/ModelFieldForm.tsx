@@ -1,4 +1,4 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
@@ -16,7 +16,6 @@ import {
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { useWatch } from 'react-hook-form';
 import { HiDotsVertical } from 'react-icons/hi';
 import { MdOutlineDelete } from 'react-icons/md';
 
@@ -30,8 +29,8 @@ import { ModelUniqueConstraintDialog } from './unique-constraints/ModelUniqueCon
 
 interface Props {
   className?: string;
-  control: Control<ModelConfig>;
-  setValue: UseFormSetValue<ModelConfig>;
+  control: Control<ModelConfigInput>;
+  setValue: UseFormSetValue<ModelConfigInput>;
   idx: number;
   onRemove: (idx: number) => void;
 }
@@ -43,15 +42,11 @@ function ModelFieldForm({
   setValue,
   onRemove,
 }: Props): React.JSX.Element {
-  const watchedField = useWatch({
-    name: `model.fields.${idx}`,
-    control,
-  });
+  const watchedField = useEditedModelConfig((model) => model.model.fields[idx]);
 
-  const watchedRelations = useWatch({
-    name: `model.relations`,
-    control,
-  });
+  const watchedRelations = useEditedModelConfig(
+    (model) => model.model.relations,
+  );
 
   const model = useEditedModelConfig((model) => model.model);
   const isPartOfPrimaryKey = model.primaryKeyFieldRefs.includes(
@@ -115,7 +110,7 @@ function ModelFieldForm({
   const [relationId, setRelationId] = useState<string | undefined>();
 
   return (
-    <div className={clsx('items-center', className)}>
+    <div className={clsx('items-start', className)}>
       <div>
         <InputFieldController
           control={control}

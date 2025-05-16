@@ -13,13 +13,12 @@ export function AdminCrudFileInputForm({
   model,
 }: AdminCrudInputWebFormProps): React.JSX.Element {
   const { definitionContainer } = useProjectDefinition();
-  const fileTransformerOptions =
-    model.service?.transformers
-      ?.filter((t): t is FileTransformerConfig => t.type === 'file')
-      .map((transformer) => ({
-        label: definitionContainer.nameFromId(transformer.fileRelationRef),
-        value: transformer.id,
-      })) ?? [];
+  const fileTransformerOptions = model.service.transformers
+    .filter((t): t is FileTransformerConfig => t.type === 'file')
+    .map((transformer) => ({
+      label: definitionContainer.nameFromId(transformer.fileRelationRef),
+      value: transformer.id,
+    }));
   const prefix = name as 'prefix';
   const controlTyped = formProps.control as Control<{
     prefix: AdminCrudFileInputConfig;

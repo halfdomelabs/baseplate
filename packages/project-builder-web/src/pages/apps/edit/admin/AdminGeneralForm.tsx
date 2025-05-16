@@ -36,7 +36,7 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
     [pluginContainer],
   );
 
-  const formProps = useResettableForm<AdminAppConfig>({
+  const formProps = useResettableForm({
     resolver: zodResolver(schemaWithPlugins),
     values: appConfig,
   });

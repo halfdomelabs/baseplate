@@ -1,4 +1,3 @@
-import type { AuthConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -35,7 +34,7 @@ function AuthPage(): React.JSX.Element {
     saveDefinitionWithFeedbackSync,
   } = useProjectDefinition();
 
-  const formProps = useResettableForm<AuthConfig>({
+  const formProps = useResettableForm({
     resolver: zodResolver(authSchema),
     defaultValues: {
       ...definition.auth,

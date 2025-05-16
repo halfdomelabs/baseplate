@@ -1,4 +1,4 @@
-import type { AdminCrudSectionConfig } from '@halfdomelabs/project-builder-lib';
+import type { AdminCrudSectionConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 
@@ -19,14 +19,14 @@ import { CollapsibleRow } from '@src/components';
 
 import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs';
 
-export type AdminCrudFormConfig = Pick<
-  AdminCrudSectionConfig,
+export type AdminCrudFormConfigInput = Pick<
+  AdminCrudSectionConfigInput,
   'form' | 'modelRef'
 >;
 
 interface Props {
   className?: string;
-  formProps: UseFormReturn<AdminCrudFormConfig>;
+  formProps: UseFormReturn<AdminCrudFormConfigInput>;
   embeddedFormOptions: { label: string; value: string }[];
 }
 
@@ -36,7 +36,7 @@ function FieldForm({
   embeddedFormOptions,
 }: {
   idx: number;
-  formProps: UseFormReturn<AdminCrudFormConfig>;
+  formProps: UseFormReturn<AdminCrudFormConfigInput>;
   embeddedFormOptions: { label: string; value: string }[];
 }): React.JSX.Element {
   const { control } = formProps;

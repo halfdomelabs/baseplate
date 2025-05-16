@@ -20,6 +20,7 @@ export interface ButtonProps
  * - Added linkDestructive variant
  * - Added ability to set no size to the button
  * - Added ability to set justify to the button
+ * - Default to type="button" if not provided
  *
  * https://ui.shadcn.com/docs/components/button
  */
@@ -29,6 +30,7 @@ function Button({
   size,
   justify,
   asChild = false,
+  type = 'button',
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
@@ -40,6 +42,7 @@ function Button({
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, justify, className }))}
+      type={type}
       {...props}
     />
   );

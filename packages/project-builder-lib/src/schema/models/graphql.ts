@@ -21,7 +21,7 @@ const roleArray = z
 export const modelGraphqlSchema = z.object({
   objectType: z
     .object({
-      enabled: z.boolean().optional(),
+      enabled: z.boolean().default(false),
       fields: z.array(
         zRef(z.string(), {
           type: modelScalarFieldEntityType,
@@ -48,7 +48,10 @@ export const modelGraphqlSchema = z.object({
         )
         .optional(),
     })
-    .optional(),
+    .default({
+      enabled: false,
+      fields: [],
+    }),
   queries: z
     .object({
       get: z
@@ -64,7 +67,16 @@ export const modelGraphqlSchema = z.object({
         })
         .optional(),
     })
-    .optional(),
+    .default({
+      get: {
+        enabled: false,
+        roles: [],
+      },
+      list: {
+        enabled: false,
+        roles: [],
+      },
+    }),
   mutations: z
     .object({
       create: z
@@ -72,21 +84,30 @@ export const modelGraphqlSchema = z.object({
           enabled: z.boolean().optional(),
           roles: roleArray,
         })
-        .optional(),
+        .default({
+          enabled: false,
+          roles: [],
+        }),
       update: z
         .object({
           enabled: z.boolean().optional(),
           roles: roleArray,
         })
-        .optional(),
+        .default({
+          enabled: false,
+          roles: [],
+        }),
       delete: z
         .object({
           enabled: z.boolean().optional(),
           roles: roleArray,
         })
-        .optional(),
+        .default({
+          enabled: false,
+          roles: [],
+        }),
     })
-    .optional(),
+    .default({}),
 });
 
 export type ModelGraphqlDefinition = z.infer<typeof modelGraphqlSchema>;

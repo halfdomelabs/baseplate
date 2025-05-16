@@ -66,7 +66,7 @@ export const adminCrudTableColumnSchema = z.object({
 
 // Embedded Crud
 export const adminCrudEmbeddedObjectSchema = z.object({
-  id: z.string().default(adminCrudEmbeddedFormEntityType.generateNewId()),
+  id: z.string().min(1),
   name: z.string().min(1),
   modelRef: zRef(z.string().min(1), {
     type: modelEntityType,
@@ -80,7 +80,7 @@ export const adminCrudEmbeddedObjectSchema = z.object({
 });
 
 export const adminCrudEmbeddedListSchema = z.object({
-  id: z.string().default(adminCrudEmbeddedFormEntityType.generateNewId()),
+  id: z.string().min(1),
   name: z.string().min(1),
   modelRef: zRef(z.string().min(1), {
     type: modelEntityType,
@@ -116,6 +116,10 @@ export type AdminCrudEmbeddedFormConfig = z.infer<
   typeof adminCrudEmbeddedFormSchema
 >;
 
+export type AdminCrudEmbeddedFormConfigInput = z.input<
+  typeof adminCrudEmbeddedFormSchema
+>;
+
 // Admin Section
 
 export const adminCrudSectionSchema = zRefBuilder(
@@ -141,3 +145,7 @@ export const adminCrudSectionSchema = zRefBuilder(
 );
 
 export type AdminCrudSectionConfig = z.infer<typeof adminCrudSectionSchema>;
+
+export type AdminCrudSectionConfigInput = z.input<
+  typeof adminCrudSectionSchema
+>;

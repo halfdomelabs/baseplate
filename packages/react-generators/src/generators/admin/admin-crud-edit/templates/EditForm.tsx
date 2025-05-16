@@ -10,13 +10,13 @@ import { useForm } from 'react-hook-form';
 
 interface Props {
   className?: string;
-  initialData?: Partial<TPL_FORM_DATA_NAME>;
+  initialData?: TPL_FORM_DATA_NAME;
   submitData: (data: TPL_FORM_DATA_NAME) => Promise<void>;
   TPL_EXTRA_PROPS;
 }
 
 function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
-  const { handleSubmit, control } = useForm<TPL_FORM_DATA_NAME>({
+  const { handleSubmit, control } = useForm({
     resolver: zodResolver(TPL_EDIT_SCHEMA),
     defaultValues: initialData,
   });

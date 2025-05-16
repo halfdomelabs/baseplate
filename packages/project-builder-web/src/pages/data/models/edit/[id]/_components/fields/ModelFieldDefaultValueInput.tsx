@@ -1,4 +1,4 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
@@ -20,8 +20,8 @@ import { useController, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineX } from 'react-icons/hi';
 
 interface ModelFieldDefaultValueInputProps {
-  control: Control<ModelConfig>;
-  setValue: UseFormSetValue<ModelConfig>;
+  control: Control<ModelConfigInput>;
+  setValue: UseFormSetValue<ModelConfigInput>;
   idx: number;
 }
 

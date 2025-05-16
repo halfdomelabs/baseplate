@@ -11,11 +11,11 @@ import {
 import { notEmpty } from '@halfdomelabs/utils';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
-import type { StoragePluginDefinition } from '../schema/plugin-definition';
+import type { StoragePluginDefinitionInput } from '../schema/plugin-definition';
 
 interface Props {
   className?: string;
-  control: Control<StoragePluginDefinition>;
+  control: Control<StoragePluginDefinitionInput>;
 }
 
 function CategoryEditorForm({ className, control }: Props): React.JSX.Element {

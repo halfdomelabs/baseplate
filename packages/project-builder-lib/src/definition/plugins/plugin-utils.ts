@@ -1,11 +1,19 @@
 import type { PluginMetadataWithPaths } from '@src/plugins/index.js';
-import type { BasePlugin, ProjectDefinition } from '@src/schema/index.js';
+
+import {
+  type BasePlugin,
+  pluginEntityType,
+  type ProjectDefinition,
+} from '@src/schema/index.js';
 
 function byId(
   projectDefinition: ProjectDefinition,
   id: string,
 ): BasePlugin | null {
-  const plugin = projectDefinition.plugins?.find((m) => m.id === id);
+  const pluginEntityId = pluginEntityType.fromUid(id);
+  const plugin = projectDefinition.plugins?.find(
+    (m) => m.id === pluginEntityId,
+  );
   return plugin ?? null;
 }
 
@@ -13,7 +21,7 @@ function byIdOrThrow(
   projectDefinition: ProjectDefinition,
   id: string,
 ): BasePlugin {
-  const plugin = projectDefinition.plugins?.find((m) => m.id === id);
+  const plugin = byId(projectDefinition, id);
   if (!plugin) {
     throw new Error(`Could not find plugin with ID ${id}`);
   }
@@ -34,15 +42,16 @@ function setPluginConfig(
   pluginConfig: unknown,
 ): void {
   const plugins = projectDefinition.plugins ?? [];
+  const pluginEntityId = pluginEntityType.fromUid(plugin.id);
 
-  projectDefinition.plugins = plugins.some((p) => p.id === plugin.id)
+  projectDefinition.plugins = plugins.some((p) => p.id === pluginEntityId)
     ? plugins.map((p) =>
-        p.id === plugin.id ? { ...p, config: pluginConfig } : p,
+        pluginEntityId === plugin.id ? { ...p, config: pluginConfig } : p,
       )
     : [
         ...plugins,
         {
-          id: plugin.id,
+          id: pluginEntityId,
           name: plugin.name,
           version: plugin.version,
           packageName: plugin.packageName,

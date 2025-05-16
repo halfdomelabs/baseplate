@@ -1,4 +1,4 @@
-import type { AuthConfig } from '@halfdomelabs/project-builder-lib';
+import type { AuthConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
@@ -12,7 +12,7 @@ import { useFieldArray } from 'react-hook-form';
 
 interface Props {
   className?: string;
-  control: Control<AuthConfig>;
+  control: Control<AuthConfigInput>;
 }
 
 function isFixedRole(name: string): boolean {

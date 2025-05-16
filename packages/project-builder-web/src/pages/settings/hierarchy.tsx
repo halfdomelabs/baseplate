@@ -179,7 +179,7 @@ function FeatureItem({
       </Button>
       <Button
         className="shrink-0"
-        variant="ghostDestructive"
+        variant="ghost"
         onClick={() => {
           handleRemoveFeature(feature);
         }}

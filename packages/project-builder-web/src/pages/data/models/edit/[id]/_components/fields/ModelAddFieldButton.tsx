@@ -1,6 +1,7 @@
 import type {
-  ModelConfig,
+  ModelConfigInput,
   ModelScalarFieldConfig,
+  ModelScalarFieldConfigInput,
 } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { UseFieldArrayAppend, UseFormSetValue } from 'react-hook-form';
@@ -21,13 +22,15 @@ import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
 
 interface ModelAddFieldButtonProps {
   className?: string;
-  appendField: UseFieldArrayAppend<ModelConfig, 'model.fields'>;
-  setValue: UseFormSetValue<ModelConfig>;
+  appendField: UseFieldArrayAppend<ModelConfigInput, 'model.fields'>;
+  setValue: UseFormSetValue<ModelConfigInput>;
 }
 
 interface AutoAddField {
   name: string;
-  fields: (Omit<ModelScalarFieldConfig, 'id'> & { isPrimaryKey?: boolean })[];
+  fields: (Omit<ModelScalarFieldConfigInput, 'id'> & {
+    isPrimaryKey?: boolean;
+  })[];
 }
 
 export function ModelAddFieldButton({
@@ -108,7 +111,11 @@ export function ModelAddFieldButton({
             id: modelScalarFieldEntityType.generateNewId(),
             name: '',
             type: 'string',
-          });
+            isOptional: true,
+            options: {
+              default: '',
+            },
+          } satisfies ModelScalarFieldConfig);
         }}
         size="sm"
       >

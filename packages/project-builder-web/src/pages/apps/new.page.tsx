@@ -23,7 +23,7 @@ function NewAppPage(): React.JSX.Element {
   const { saveDefinitionWithFeedback, isSavingDefinition } =
     useProjectDefinition();
   const navigate = useNavigate();
-  const formProps = useForm<AppConfig>({
+  const formProps = useForm({
     resolver: zodResolver(baseAppSchema),
     defaultValues: {
       id: appEntityType.generateNewId(),
@@ -43,7 +43,7 @@ function NewAppPage(): React.JSX.Element {
     saveDefinitionWithFeedback(
       (draftConfig) => {
         const newApps = [...draftConfig.apps, data];
-        draftConfig.apps = sortBy(newApps, [(app) => app.name]);
+        draftConfig.apps = sortBy(newApps, [(app) => app.name]) as AppConfig[];
       },
       {
         onSuccess: () => {

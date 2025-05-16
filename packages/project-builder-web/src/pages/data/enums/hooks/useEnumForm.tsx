@@ -1,4 +1,7 @@
-import type { EnumConfig } from '@halfdomelabs/project-builder-lib';
+import type {
+  EnumConfig,
+  EnumConfigInput,
+} from '@halfdomelabs/project-builder-lib';
 import type { UseFormReturn } from 'react-hook-form';
 import type { z } from 'zod';
 
@@ -44,9 +47,9 @@ export function useEnumForm({
   onSubmitSuccess,
   isCreate,
 }: UseEnumFormOptions = {}): {
-  form: UseFormReturn<EnumConfig>;
+  form: UseFormReturn<EnumConfigInput>;
   onSubmit: () => Promise<void>;
-  defaultValues: EnumConfig;
+  defaultValues: EnumConfigInput;
   isSavingDefinition: boolean;
 } {
   const { uid } = useParams<'uid'>();
@@ -75,7 +78,7 @@ export function useEnumForm({
       : enumToUse;
   }, [enumDefinition, newEnumDefinition, schema, enumSchemaWithPlugins]);
 
-  const form = useResettableForm({
+  const form = useResettableForm<EnumConfigInput>({
     resolver: zodResolver(enumSchemaWithPlugins),
     defaultValues,
   });

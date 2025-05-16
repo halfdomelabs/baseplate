@@ -78,3 +78,5 @@ export const authSchema = z.object({
 });
 
 export type AuthConfig = z.infer<typeof authSchema>;
+
+export type AuthConfigInput = z.input<typeof authSchema>;

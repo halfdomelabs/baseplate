@@ -19,7 +19,7 @@ function buildFileTransformerCompiler(
   return {
     name: 'file',
     compileInput(definition, { order, definitionContainer, model }) {
-      const transformer = model.service?.transformers?.find(
+      const transformer = model.service.transformers.find(
         (t): t is FileTransformerConfig =>
           t.id === definition.modelRelationRef && t.type === 'file',
       );

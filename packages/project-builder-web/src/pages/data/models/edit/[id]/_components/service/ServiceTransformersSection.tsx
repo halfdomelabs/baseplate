@@ -1,5 +1,5 @@
 import type {
-  ModelConfig,
+  ModelConfigInput,
   TransformerConfig,
 } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
@@ -38,7 +38,7 @@ import { ServiceTransformerDialog } from './ServiceTransformerDialog';
 
 interface Props {
   className?: string;
-  formProps: UseFormReturn<ModelConfig>;
+  formProps: UseFormReturn<ModelConfigInput>;
 }
 
 function ServiceTransformerRecord({
@@ -47,7 +47,7 @@ function ServiceTransformerRecord({
   onRemove,
   onUpdate,
 }: {
-  formProps: UseFormReturn<ModelConfig>;
+  formProps: UseFormReturn<ModelConfigInput>;
   idx: number;
   onUpdate: (transformer: TransformerConfig, idx: number) => void;
   onRemove: (idx: number) => void;

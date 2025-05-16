@@ -21,9 +21,9 @@ import type {
 } from './types.js';
 
 /**
- * Zod reference ID schema: an optional string with a minimum length of 1.
+ * Zod reference ID schema: a string with a minimum length of 1.
  */
-export const zRefId = z.string().min(1).optional();
+export const zRefId = z.string().min(1);
 
 /**
  * Determines whether the given object is a Promise.
@@ -106,8 +106,6 @@ interface DefinitionEntityInputBase<
   ) => DefinitionEntityNameResolver<any> | string;
   /** Optional context identifier used to register the entity's path in a shared context. */
   addContext?: string;
-  /** If true, the entity's id is removed during serialization. */
-  stripIdWhenSerializing?: boolean;
 }
 
 /**
@@ -385,9 +383,19 @@ export class ZodRefBuilder<TInput> {
     const idPath = entity.idPath
       ? this._constructPathWithoutPrefix(entity.idPath as PathInput<TInput>)
       : [...this._constructPathWithoutPrefix(entity.path), 'id'];
+
+    // TODO [>=0.9.14] Remove the fallback to generateNewId once a new version is released and manual setter
     const id =
       (get(this.data, idPath) as string | undefined) ??
       entity.type.generateNewId();
+
+    if (!get(this.data, idPath)) {
+      set(this.data as object, idPath, id);
+    }
+
+    if (!entity.type.isId(id)) {
+      throw new Error(`Invalid id: ${id} for entity ${entity.type.name}`);
+    }
 
     // Resolve the name: if getNameResolver is provided, use it to build the name resolver; otherwise,
     // use the default name resolver.
@@ -408,7 +416,6 @@ export class ZodRefBuilder<TInput> {
           entity.parentPath,
           entity.type.parentType,
         ),
-      stripIdWhenSerializing: entity.stripIdWhenSerializing,
     };
 
     this.entitiesWithNameResolver.push({
@@ -736,7 +743,7 @@ export function zEnt<
 ): ZodRef<
   z.ZodObject<
     TObject['shape'] & {
-      id: z.ZodType<string, z.ZodAnyDef, string | undefined>;
+      id: z.ZodType<string, z.ZodAnyDef, string>;
     },
     TObject['_def']['unknownKeys'],
     TObject['_def']['catchall']

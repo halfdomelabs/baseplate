@@ -34,14 +34,14 @@ describe('serializeSchema', () => {
       }),
     });
     const data: z.TypeOf<typeof schema> = {
-      entity: [{ id: 'test-id', name: 'test-name' }],
-      ref: 'test-id',
+      entity: [{ id: entityType.fromUid('test-id'), name: 'test-name' }],
+      ref: entityType.fromUid('test-id'),
     };
 
     const refPayload = serializeSchema(schema, data);
 
     expect(refPayload).toMatchObject({
-      entity: [{ id: 'test-id', name: 'test-name' }],
+      entity: [{ id: entityType.fromUid('test-id'), name: 'test-name' }],
       ref: 'test-name',
     });
   });
@@ -72,22 +72,22 @@ describe('serializeSchema', () => {
 
     const data: z.TypeOf<typeof schema> = {
       entity: [
-        { id: 'test-id1', name: 'test-name' },
-        { id: 'test-id2', name: 'test-name2' },
-        { id: 'test-id3', name: 'test-name3' },
+        { id: entityType.fromUid('test-id1'), name: 'test-name' },
+        { id: entityType.fromUid('test-id2'), name: 'test-name2' },
+        { id: entityType.fromUid('test-id3'), name: 'test-name3' },
       ],
       nestedRef: {
-        ref: 'test-id2',
+        ref: entityType.fromUid('test-id2'),
       },
-      ref: 'test-id3',
+      ref: entityType.fromUid('test-id3'),
     };
     const refPayload = serializeSchema(schema, data);
 
     expect(refPayload).toMatchObject({
       entity: [
-        { id: 'test-id1', name: 'test-name' },
-        { id: 'test-id2', name: 'test-name2' },
-        { id: 'test-id3', name: 'test-name3' },
+        { id: entityType.fromUid('test-id1'), name: 'test-name' },
+        { id: entityType.fromUid('test-id2'), name: 'test-name2' },
+        { id: entityType.fromUid('test-id3'), name: 'test-name3' },
       ],
       nestedRef: {
         ref: 'test-name2',
@@ -141,20 +141,25 @@ describe('serializeSchema', () => {
     const data: z.TypeOf<typeof schema> = {
       models: [
         {
-          id: 'model-todo',
+          id: modelType.fromUid('model-todo'),
           name: 'todo',
           fields: [
-            { id: 'todo-title', name: 'title' },
-            { id: 'todo-id', name: 'id' },
+            { id: fieldType.fromUid('todo-title'), name: 'title' },
+            { id: fieldType.fromUid('todo-id'), name: 'id' },
           ],
-          relations: [{ modelName: 'model-todoList', fields: ['todoList-id'] }],
+          relations: [
+            {
+              modelName: modelType.fromUid('model-todoList'),
+              fields: [fieldType.fromUid('todoList-id')],
+            },
+          ],
         },
         {
-          id: 'model-todoList',
+          id: modelType.fromUid('model-todoList'),
           name: 'todoList',
           fields: [
-            { id: 'todoList-title', name: 'title' },
-            { id: 'todoList-id', name: 'id' },
+            { id: fieldType.fromUid('todoList-title'), name: 'title' },
+            { id: fieldType.fromUid('todoList-id'), name: 'id' },
           ],
           relations: [],
         },
@@ -165,20 +170,20 @@ describe('serializeSchema', () => {
     expect(refPayload).toMatchObject({
       models: [
         {
-          id: 'model-todo',
+          id: modelType.fromUid('model-todo'),
           name: 'todo',
           fields: [
-            { id: 'todo-title', name: 'title' },
-            { id: 'todo-id', name: 'id' },
+            { id: fieldType.fromUid('todo-title'), name: 'title' },
+            { id: fieldType.fromUid('todo-id'), name: 'id' },
           ],
           relations: [{ modelName: 'todoList', fields: ['id'] }],
         },
         {
-          id: 'model-todoList',
+          id: modelType.fromUid('model-todoList'),
           name: 'todoList',
           fields: [
-            { id: 'todoList-title', name: 'title' },
-            { id: 'todoList-id', name: 'id' },
+            { id: fieldType.fromUid('todoList-title'), name: 'title' },
+            { id: fieldType.fromUid('todoList-id'), name: 'id' },
           ],
           relations: [],
         },

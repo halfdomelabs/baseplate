@@ -1,6 +1,6 @@
 import type {
-  ModelConfig,
-  ModelRelationFieldConfig,
+  ModelConfigInput,
+  ModelRelationFieldConfigInput,
 } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
@@ -15,8 +15,8 @@ import { ModelRelationDialog } from './ModelRelationDialog';
 
 interface ModelRelationBadgeProps {
   className?: string;
-  control: Control<ModelConfig>;
-  relation: ModelRelationFieldConfig;
+  control: Control<ModelConfigInput>;
+  relation: ModelRelationFieldConfigInput;
   autoCollapse?: boolean;
 }
 

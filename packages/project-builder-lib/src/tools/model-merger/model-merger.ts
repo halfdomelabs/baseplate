@@ -5,7 +5,7 @@ import type { ProjectDefinitionContainer } from '@src/definition/project-definit
 import type {
   ModelConfig,
   ModelRelationFieldConfig,
-  ModelScalarFieldConfig,
+  ModelScalarFieldConfigInput,
   ModelUniqueConstraintConfig,
 } from '@src/schema/index.js';
 
@@ -27,7 +27,7 @@ export interface DiffOperation<T> {
 }
 
 export type ModelScalarFieldDefinitionInput = Omit<
-  ModelScalarFieldConfig,
+  ModelScalarFieldConfigInput,
   'id'
 >;
 
@@ -270,8 +270,13 @@ export function applyModelPatchInPlace(
     patch.fields,
     (f) => f.name,
     (field, previousField) => ({
+      isOptional: false,
       ...field,
       id: previousField?.id ?? modelScalarFieldEntityType.generateNewId(),
+      options: {
+        default: '',
+        ...field.options,
+      },
     }),
   );
 

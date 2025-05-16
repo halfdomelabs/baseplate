@@ -24,7 +24,7 @@ import { useMemo } from 'react';
 
 import { cn } from '@src/utils/cn';
 
-import type { StoragePluginDefinition } from '../schema/plugin-definition';
+import type { StoragePluginDefinitionInput } from '../schema/plugin-definition';
 
 import { createStorageModels } from '../schema/models';
 import { storagePluginDefinitionSchema } from '../schema/plugin-definition';
@@ -40,9 +40,9 @@ export function StorageConfig({
     useProjectDefinition();
 
   const { control, handleSubmit, formState, watch, reset } =
-    useResettableForm<StoragePluginDefinition>({
+    useResettableForm<StoragePluginDefinitionInput>({
       resolver: zodResolver(storagePluginDefinitionSchema),
-      values: pluginMetadata?.config as StoragePluginDefinition,
+      values: pluginMetadata?.config as StoragePluginDefinitionInput,
     });
 
   const fileModelRef = watch('fileModelRef');
