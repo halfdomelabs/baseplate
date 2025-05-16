@@ -54,7 +54,7 @@ export const storagePluginDefinitionSchema = zRefBuilder(
         uploadRoles: z.array(
           zRef(z.string().min(1), {
             type: authRoleEntityType,
-            onDelete: 'RESTRICT',
+            onDelete: 'DELETE',
           }),
         ),
       }),

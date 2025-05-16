@@ -1,6 +1,10 @@
 import type React from 'react';
 
-import { PluginUtils, webConfigSpec } from '@halfdomelabs/project-builder-lib';
+import {
+  pluginEntityType,
+  PluginUtils,
+  webConfigSpec,
+} from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -77,7 +81,7 @@ export function PluginConfigPage(): React.JSX.Element {
     saveDefinitionWithFeedbackSync(
       (draft) => {
         draft.plugins = (draft.plugins ?? []).filter(
-          (p) => p.id !== metadata.id,
+          (p) => p.id !== pluginEntityType.fromUid(metadata.id),
         );
       },
       {
