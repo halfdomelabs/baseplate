@@ -6,6 +6,7 @@ import {
   userSessionTypesGenerator,
 } from '@halfdomelabs/fastify-generators';
 import {
+  adminAppEntryType,
   appCompilerSpec,
   backendAppEntryType,
   createPlatformPluginExport,
@@ -79,26 +80,49 @@ export default createPlatformPluginExport({
           pluginId,
         ) as Auth0PluginDefinition;
 
-        appCompiler.addChildrenToFeature(
-          auth.authFeatureRef,
+        appCompiler.addChildrenToFeature(auth.authFeatureRef, {
+          auth: reactAuth0Generator({
+            callbackPath: 'auth/auth0-callback',
+          }),
+          authHooks: auth0HooksGenerator({}),
+          authIdentify: authIdentifyGenerator({}),
+          auth0Apollo: auth0ApolloGenerator({}),
+          auth0Components: auth0ComponentsGenerator({}),
+          auth0Callback: reactRoutesGenerator({
+            id: 'auth',
+            name: 'auth',
+            children: {
+              auth: auth0CallbackGenerator({}),
+            },
+          }),
+        });
+      },
+    });
+    appCompiler.registerAppCompiler({
+      pluginId,
+      appType: adminAppEntryType,
+      compile: ({ projectDefinition, appCompiler }) => {
+        const auth = PluginUtils.configByIdOrThrow(
+          projectDefinition,
+          pluginId,
+        ) as Auth0PluginDefinition;
 
-          {
-            auth: reactAuth0Generator({
-              callbackPath: 'auth/auth0-callback',
-            }),
-            authHooks: auth0HooksGenerator({}),
-            authIdentify: authIdentifyGenerator({}),
-            auth0Apollo: auth0ApolloGenerator({}),
-            auth0Components: auth0ComponentsGenerator({}),
-            auth0Callback: reactRoutesGenerator({
-              id: 'auth',
-              name: 'auth',
-              children: {
-                auth: auth0CallbackGenerator({}),
-              },
-            }),
-          },
-        );
+        appCompiler.addChildrenToFeature(auth.authFeatureRef, {
+          auth: reactAuth0Generator({
+            callbackPath: 'auth/auth0-callback',
+          }),
+          authHooks: auth0HooksGenerator({}),
+          authIdentify: authIdentifyGenerator({}),
+          auth0Apollo: auth0ApolloGenerator({}),
+          auth0Components: auth0ComponentsGenerator({}),
+          auth0Callback: reactRoutesGenerator({
+            id: 'auth',
+            name: 'auth',
+            children: {
+              auth: auth0CallbackGenerator({}),
+            },
+          }),
+        });
       },
     });
 
