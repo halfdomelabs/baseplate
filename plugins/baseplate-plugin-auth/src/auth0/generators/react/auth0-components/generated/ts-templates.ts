@@ -1,6 +1,5 @@
 import { createTsTemplateFile } from '@halfdomelabs/core-generators';
-
-import { reactComponentsImportsProvider } from '../../../core/react-components/generated/ts-import-maps.js';
+import { reactComponentsImportsProvider } from '@halfdomelabs/react-generators';
 
 const requireAuth = createTsTemplateFile({
   importMapProviders: {

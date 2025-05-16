@@ -1,154 +1,46 @@
-import { isEqual } from 'es-toolkit';
-import { isMatch } from 'es-toolkit/compat';
+import type { Merge, SetOptional } from 'type-fest';
 
 import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
 import type {
   ModelConfig,
-  ModelRelationFieldConfig,
+  ModelConfigInput,
+  ModelRelationFieldConfigInput,
   ModelScalarFieldConfigInput,
-  ModelUniqueConstraintConfig,
+  ModelUniqueConstraintConfigInput,
+  ProjectDefinition,
 } from '@src/schema/index.js';
+import type { DefinitionDiffOutput } from '@src/utils/definition-diff/definition-diff.js';
 
 import { ModelUtils } from '@src/definition/index.js';
 import {
+  modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
   modelUniqueConstraintEntityType,
 } from '@src/schema/index.js';
+import {
+  applyDefinitionDiff,
+  createDefinitionDiff,
+  createDefinitionDiffConfig,
+  DefinitionDiffKeyedArrayField,
+  DefinitionDiffReplacementField,
+} from '@src/utils/definition-diff/definition-diff.js';
 
-/**
- * Diff operation type.
- */
-export interface DiffOperation<T> {
-  type: 'add' | 'update' | 'remove';
-  key: string;
-  item: T;
-}
-
-export type ModelScalarFieldDefinitionInput = Omit<
+export type ModelMergerScalarFieldInput = SetOptional<
   ModelScalarFieldConfigInput,
   'id'
 >;
 
-export type ModelRelationFieldDefinitionInput = Omit<
-  ModelRelationFieldConfig,
+export type ModelMergerRelationFieldInput = SetOptional<
+  ModelRelationFieldConfigInput,
   'id' | 'foreignId'
 >;
 
-export type ModelUniqueConstraintDefinitionInput = Omit<
-  ModelUniqueConstraintConfig,
+export type ModelMergerUniqueConstraintInput = SetOptional<
+  ModelUniqueConstraintConfigInput,
   'id'
 >;
-
-/**
- * Input for diffing model definitions.
- */
-export interface ModelDefinitionInput {
-  fields: ModelScalarFieldDefinitionInput[];
-  primaryKeyFieldRefs: string[];
-  relations?: ModelRelationFieldDefinitionInput[];
-  uniqueConstraints?: ModelUniqueConstraintDefinitionInput[];
-}
-
-/**
- * Result of diffing model definitions.
- */
-export interface ModelDiffOutput {
-  fields: DiffOperation<ModelScalarFieldDefinitionInput>[];
-  relations: DiffOperation<ModelRelationFieldDefinitionInput>[];
-  uniqueConstraints: DiffOperation<ModelUniqueConstraintDefinitionInput>[];
-  primaryKeyFieldRefs?: string[];
-}
-
-export interface ModelDiffOptions {
-  enableRemove?: boolean;
-}
-
-/**
- * Generic diff function using a provided key extractor.
- *
- * @param current - The current array of items.
- * @param desired - The desired array of items.
- * @param getKey - Function that returns a unique key for an item.
- * @param options - Diff options.
- * @returns Array of diff operations.
- */
-function diffByKey<T>(
-  current: T[],
-  desired: T[],
-  getKey: (item: T) => string,
-  options: ModelDiffOptions = {},
-): DiffOperation<T>[] {
-  const ops: DiffOperation<T>[] = [];
-
-  for (const desiredItem of desired) {
-    const key = getKey(desiredItem);
-    const currentItem = current.find((item) => getKey(item) === key);
-    if (!currentItem) {
-      ops.push({ type: 'add', key, item: desiredItem });
-      continue;
-    }
-    if (!isMatch(currentItem, desiredItem)) {
-      ops.push({ type: 'update', key, item: desiredItem });
-    }
-  }
-
-  if (options.enableRemove) {
-    for (const currentItem of current) {
-      const key = getKey(currentItem);
-      if (!desired.some((item) => getKey(item) === key)) {
-        ops.push({ type: 'remove', key, item: currentItem });
-      }
-    }
-  }
-
-  return ops;
-}
-
-/**
- * Generic patch applier for items identified by a key.
- *
- * @param current - The current array of items.
- * @param patch - Diff operations to apply.
- * @param getKey - Function that returns a unique key for an item.
- * @param assignId - Optional function to assign an ID for new items.
- * @returns Updated array after applying the patch.
- */
-function applyPatchByKey<TConfig, TInput>(
-  current: TConfig[],
-  patch: DiffOperation<TInput>[],
-  getKey: (item: TConfig) => string,
-  assignId: (item: TInput, previousItem?: TConfig) => TConfig,
-): TConfig[] {
-  const items = [...current];
-  for (const { type, key, item } of patch) {
-    const index = items.findIndex((i) => getKey(i) === key);
-    switch (type) {
-      case 'add': {
-        items.push(assignId(item));
-        break;
-      }
-      case 'update': {
-        if (index === -1) {
-          throw new Error(
-            `Cannot apply patch. Item with key "${key}" not found.`,
-          );
-        }
-        // Preserve existing id if present.
-        items[index] = assignId(item, items[index]);
-        break;
-      }
-      case 'remove': {
-        if (index !== -1) {
-          items.splice(index, 1);
-        }
-        break;
-      }
-    }
-  }
-  return items;
-}
 
 /**
  * Computes a unique key for a unique constraint by sorting its field refs.
@@ -157,172 +49,299 @@ function applyPatchByKey<TConfig, TInput>(
  * @returns A key string.
  */
 function getUniqueConstraintKey(
-  constraint: ModelUniqueConstraintDefinitionInput,
+  constraint: ModelMergerUniqueConstraintInput,
 ): string {
   const fields = constraint.fields.map((f) => f.fieldRef).sort();
   return fields.join('|');
 }
 
+export interface ModelMergerModelInput {
+  model: Merge<
+    ModelConfigInput['model'],
+    {
+      fields: ModelMergerScalarFieldInput[];
+      relations?: ModelMergerRelationFieldInput[];
+      uniqueConstraints?: ModelMergerUniqueConstraintInput[];
+    }
+  >;
+}
+
+export const modelMergerDefinitionDiffConfig =
+  createDefinitionDiffConfig<ModelMergerModelInput>({
+    'model.fields': new DefinitionDiffKeyedArrayField('fields', (f) => f.name),
+    'model.relations': new DefinitionDiffKeyedArrayField(
+      'relations',
+      (r) => r.name,
+    ),
+    'model.uniqueConstraints': new DefinitionDiffKeyedArrayField(
+      'uniqueConstraints',
+      (c) => getUniqueConstraintKey(c),
+    ),
+    'model.primaryKeyFieldRefs': new DefinitionDiffReplacementField(
+      'primaryKeyFieldRefs',
+    ),
+  });
+
+export type ModelMergerDiffOutput = DefinitionDiffOutput<
+  typeof modelMergerDefinitionDiffConfig
+>;
+
+/**
+ * Serializes a model merger model input such that all IDs are replaced with
+ * names.
+ *
+ * @param input - The model merger model input.
+ * @param definitionContainer - The definition container.
+ * @returns The serialized model merger model input.
+ */
+function serializeModelMergerModelInput(
+  input: ModelMergerModelInput,
+  definitionContainer: ProjectDefinitionContainer,
+  siblingModels: ModelConfigInput[],
+): ModelMergerModelInput {
+  const siblingModelFieldIdMap = new Map([
+    ...input.model.fields.map((f) => [f.id, f.name] as const),
+    ...siblingModels.flatMap((m) =>
+      m.model.fields.map((f) => [f.id, f.name] as const),
+    ),
+  ]);
+  const nameFromId = (id: string): string =>
+    siblingModelFieldIdMap.get(id) ?? definitionContainer.nameFromId(id);
+  return {
+    ...input,
+    model: {
+      ...input.model,
+      relations: input.model.relations?.map((r) => ({
+        ...r,
+        references: r.references.map((reference) => ({
+          ...reference,
+          localRef: nameFromId(reference.localRef),
+          foreignRef: nameFromId(reference.foreignRef),
+        })),
+      })),
+      uniqueConstraints: input.model.uniqueConstraints?.map((c) => ({
+        ...c,
+        fields: c.fields.map((f) => ({
+          ...f,
+          fieldRef: nameFromId(f.fieldRef),
+        })),
+      })),
+      primaryKeyFieldRefs: input.model.primaryKeyFieldRefs.map(nameFromId),
+    },
+  };
+}
+
+function attachIdsToModelMergerModelInput(
+  input: ModelMergerModelInput,
+): Pick<ModelConfigInput, 'model'> {
+  return {
+    ...input,
+    model: {
+      ...input.model,
+      fields: input.model.fields.map((f) => ({
+        ...f,
+        id: f.id ?? modelScalarFieldEntityType.generateNewId(),
+      })),
+      relations: input.model.relations?.map((r) => ({
+        ...r,
+        id: r.id ?? modelLocalRelationEntityType.generateNewId(),
+        foreignId:
+          r.foreignId ?? modelForeignRelationEntityType.generateNewId(),
+      })),
+      uniqueConstraints: input.model.uniqueConstraints?.map((c) => ({
+        ...c,
+        id: c.id ?? modelUniqueConstraintEntityType.generateNewId(),
+      })),
+    },
+  };
+}
+
+function deserializeModelMergerModelInput(
+  input: ModelMergerModelInput,
+  resolveForeignFieldRef: (modelId: string, fieldName: string) => string,
+): Pick<ModelConfigInput, 'model'> {
+  const inputWithIds = attachIdsToModelMergerModelInput(input);
+  const resolveLocalFieldName = (name: string): string => {
+    const field = inputWithIds.model.fields.find((f) => f.name === name);
+    if (!field) {
+      throw new Error(`Field ${name} not found`);
+    }
+    return field.id;
+  };
+  return {
+    ...inputWithIds,
+    model: {
+      ...inputWithIds.model,
+      relations: inputWithIds.model.relations?.map((relation) => ({
+        ...relation,
+        references: relation.references.map((reference) => ({
+          ...reference,
+          localRef: resolveLocalFieldName(reference.localRef),
+          foreignRef: resolveForeignFieldRef(
+            relation.modelRef,
+            reference.foreignRef,
+          ),
+        })),
+      })),
+      uniqueConstraints: inputWithIds.model.uniqueConstraints?.map(
+        (constraint) => ({
+          ...constraint,
+          fields: constraint.fields.map((field) => ({
+            ...field,
+            fieldRef: resolveLocalFieldName(field.fieldRef),
+          })),
+        }),
+      ),
+      primaryKeyFieldRefs: inputWithIds.model.primaryKeyFieldRefs.map(
+        (fieldRef) => resolveLocalFieldName(fieldRef),
+      ),
+    },
+  };
+}
+
+export function createNewModelConfigInput(
+  name: string,
+  featureRef: string,
+): ModelConfigInput {
+  return {
+    id: modelEntityType.generateNewId(),
+    name,
+    featureRef,
+    model: {
+      fields: [],
+      primaryKeyFieldRefs: [],
+    },
+  };
+}
+
+export interface PendingModelChange {
+  isNewModel: boolean;
+  id: string | undefined;
+  name: string;
+  changes: ModelMergerDiffOutput;
+}
+
+interface ModelMergerOptions {
+  defaultName: string;
+  defaultFeatureRef: string;
+  siblingModels?: ModelConfigInput[];
+}
+
 /**
  * Diff the model definition.
  *
- * @param current - The current model definition.
+ * @param current - The current model definition or a new model to be created.
  * @param desired - The desired model definition.
  * @param definitionContainer - Project definition container.
  * @param options - Diff options.
  * @returns A diff output or undefined if there are no differences.
  */
-export function diffModel(
-  current: ModelConfig['model'],
-  desired: ModelDefinitionInput,
+export function createModelMergerResult(
+  current: ModelConfigInput | undefined,
+  desired: ModelMergerModelInput,
   definitionContainer: ProjectDefinitionContainer,
-  options?: ModelDiffOptions,
-): ModelDiffOutput | undefined {
-  // Resolve relation references.
-  const resolvedRelations =
-    current.relations?.map((relation) => ({
-      ...relation,
-      references: relation.references.map((reference) => ({
-        ...reference,
-        localRef: definitionContainer.nameFromId(reference.localRef),
-        foreignRef: definitionContainer.nameFromId(reference.foreignRef),
-      })),
-    })) ?? [];
-
-  const fieldDiffs = diffByKey(
-    current.fields,
-    desired.fields,
-    (f) => f.name,
-    options,
-  );
-  const relationDiffs = diffByKey(
-    resolvedRelations,
-    desired.relations ?? [],
-    (r) => r.name,
-    options,
-  );
-  const uniqueConstraintDiffs = diffByKey(
-    (current.uniqueConstraints ?? []).map((constraint) => ({
-      ...constraint,
-      fields: constraint.fields.map((f) => ({
-        ...f,
-        fieldRef: definitionContainer.nameFromId(f.fieldRef),
-      })),
-    })),
-    desired.uniqueConstraints ?? [],
-    getUniqueConstraintKey,
-    options,
+  { defaultName, defaultFeatureRef, siblingModels = [] }: ModelMergerOptions,
+): PendingModelChange | undefined {
+  const currentModel =
+    current ?? createNewModelConfigInput(defaultName, defaultFeatureRef);
+  // resolves all the names of the current model config input
+  const resolvedCurrent = serializeModelMergerModelInput(
+    currentModel,
+    definitionContainer,
+    siblingModels,
   );
 
-  const pkDiff = isEqual(
-    current.primaryKeyFieldRefs.map((ref) =>
-      definitionContainer.nameFromId(ref),
-    ),
-    desired.primaryKeyFieldRefs,
-  )
-    ? undefined
-    : desired.primaryKeyFieldRefs;
+  const diff = createDefinitionDiff(
+    resolvedCurrent,
+    desired,
+    modelMergerDefinitionDiffConfig,
+  );
 
-  if (
-    fieldDiffs.length > 0 ||
-    relationDiffs.length > 0 ||
-    uniqueConstraintDiffs.length > 0 ||
-    pkDiff
-  ) {
-    return {
-      fields: fieldDiffs,
-      relations: relationDiffs,
-      uniqueConstraints: uniqueConstraintDiffs,
-      primaryKeyFieldRefs: pkDiff,
-    };
+  if (!diff) {
+    return undefined;
   }
-  return undefined;
+
+  return {
+    isNewModel: !current,
+    id: currentModel.id,
+    name: currentModel.name,
+    changes: diff,
+  };
 }
 
-/**
- * Applies the diff patch to the current model definition.
- *
- * @param current - The current model definition.
- * @param patch - The diff patch.
- * @param definitionContainer - Project definition container.
- */
-export function applyModelPatchInPlace(
-  current: ModelConfig['model'],
-  patch: ModelDiffOutput,
+export function applyModelMergerDiff(
+  model: ModelConfigInput,
+  diff: ModelMergerDiffOutput,
   definitionContainer: ProjectDefinitionContainer,
-): void {
-  // Resolve relation references.
-  const resolveLocalId = (name: string): string => {
-    const field = current.fields.find((f) => f.name === name);
-    return field ? field.id : name;
-  };
-  const resolveForeignId = (name: string, foreignModel: string): string => {
-    const field = ModelUtils.byIdOrThrow(
-      definitionContainer.definition,
-      foreignModel,
-    ).model.fields.find((f) => f.name === name);
-    return field ? field.id : name;
-  };
-
-  // Patch fields.
-  current.fields = applyPatchByKey(
-    current.fields,
-    patch.fields,
-    (f) => f.name,
-    (field, previousField) => ({
-      isOptional: false,
-      ...field,
-      id: previousField?.id ?? modelScalarFieldEntityType.generateNewId(),
-      options: {
-        default: '',
-        ...field.options,
+  siblingModels: ModelConfigInput[] = [],
+): ModelConfigInput {
+  const resolvedCurrent = serializeModelMergerModelInput(
+    model,
+    definitionContainer,
+    siblingModels,
+  );
+  const patchedCurrent = applyDefinitionDiff(
+    resolvedCurrent,
+    diff,
+    modelMergerDefinitionDiffConfig,
+  );
+  return {
+    ...model,
+    ...deserializeModelMergerModelInput(
+      patchedCurrent,
+      (modelId, fieldName) => {
+        const siblingModel = siblingModels.find((m) => m.id === modelId);
+        if (siblingModel) {
+          const field = siblingModel.model.fields.find(
+            (f) => f.name === fieldName,
+          );
+          if (!field) {
+            throw new Error(
+              `Field ${fieldName} not found in sibling model ${modelId}`,
+            );
+          }
+          return field.id;
+        }
+        const model = ModelUtils.byIdOrThrow(
+          definitionContainer.definition,
+          modelId,
+        );
+        const field = model.model.fields.find((f) => f.name === fieldName);
+        if (!field) {
+          throw new Error(
+            `Field ${fieldName} not found in model ${model.name}`,
+          );
+        }
+        return field.id;
       },
-    }),
-  );
+    ),
+  };
+}
 
-  // Patch relations.
-  current.relations = applyPatchByKey(
-    current.relations ?? [],
-    patch.relations,
-    (r) => r.name,
-    (relation, previousRelation) => ({
-      ...relation,
-      id: previousRelation?.id ?? modelLocalRelationEntityType.generateNewId(),
-      foreignId:
-        previousRelation?.foreignId ??
-        modelForeignRelationEntityType.generateNewId(),
-    }),
-  );
+export function applyModelMergerResultInPlace(
+  definition: ProjectDefinition,
+  result: PendingModelChange,
+  definitionContainer: ProjectDefinitionContainer,
+  { defaultName, defaultFeatureRef, siblingModels = [] }: ModelMergerOptions,
+): ModelConfigInput {
+  const model = result.id
+    ? ModelUtils.byIdOrThrow(definitionContainer.definition, result.id)
+    : createNewModelConfigInput(defaultName, defaultFeatureRef);
 
-  // Patch unique constraints.
-  current.uniqueConstraints = applyPatchByKey(
-    current.uniqueConstraints ?? [],
-    patch.uniqueConstraints,
-    getUniqueConstraintKey,
-    (constraint, previousConstraint) => ({
-      ...constraint,
-      id:
-        previousConstraint?.id ??
-        modelUniqueConstraintEntityType.generateNewId(),
-      fields: constraint.fields.map((f) => ({
-        ...f,
-        fieldRef: resolveLocalId(f.fieldRef),
-      })),
-    }),
+  const newModel = applyModelMergerDiff(
+    model,
+    result.changes,
+    definitionContainer,
+    siblingModels,
   );
-
-  if (patch.primaryKeyFieldRefs) {
-    current.primaryKeyFieldRefs = patch.primaryKeyFieldRefs.map((ref) =>
-      resolveLocalId(ref),
-    );
+  if (result.isNewModel) {
+    definition.models.push(newModel as ModelConfig);
+  } else {
+    const index = definition.models.findIndex((m) => m.id === result.id);
+    if (index === -1) {
+      throw new Error(`Model ${result.id} not found`);
+    }
+    definition.models[index] = newModel as ModelConfig;
   }
-
-  current.relations = current.relations.map((relation) => ({
-    ...relation,
-    references: relation.references.map((reference) => ({
-      ...reference,
-      localRef: resolveLocalId(reference.localRef),
-      foreignRef: resolveForeignId(reference.foreignRef, relation.modelRef),
-    })),
-  }));
+  return newModel;
 }

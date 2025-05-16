@@ -3,7 +3,10 @@ import type {
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
 
-import { webConfigSpec } from '@halfdomelabs/project-builder-lib';
+import {
+  authConfigSpec,
+  webConfigSpec,
+} from '@halfdomelabs/project-builder-lib';
 import {
   adminCrudInputWebSpec,
   modelTransformerWebSpec,
@@ -30,6 +33,7 @@ export async function createWebSchemaParserContext(
         webConfigSpec,
         modelTransformerWebSpec,
         adminCrudInputWebSpec,
+        authConfigSpec,
       ],
     },
   };

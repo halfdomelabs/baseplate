@@ -2,23 +2,20 @@ import type { WebConfigProps } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import {
-  applyModelPatchInPlace,
-  diffModel,
+  applyModelMergerResultInPlace,
+  createModelMergerResult,
+  createNewModelConfigInput,
+  modelEntityType,
   ModelUtils,
   PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
 import {
+  ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Button,
-  ComboboxFieldController,
-} from '@halfdomelabs/ui-components';
+import { Button, ComboboxFieldController } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
@@ -46,32 +43,45 @@ export function StorageConfig({
     });
 
   const fileModelRef = watch('fileModelRef');
+  const featureRef = watch('featureRef');
 
-  const pendingModelChanges = useMemo(() => {
+  const pendingModelChange = useMemo(() => {
     if (!fileModelRef) return;
 
-    const model = ModelUtils.byIdOrThrow(definition, fileModelRef);
-    const desiredModel = createStorageModels(definitionContainer);
-    return diffModel(model.model, desiredModel.file, definitionContainer);
-  }, [fileModelRef, definitionContainer, definition]);
+    const desiredModels = createStorageModels(definitionContainer);
+
+    const willCreateFileModel = modelEntityType.isId(fileModelRef);
+    const fileModel = willCreateFileModel
+      ? ModelUtils.byIdOrThrow(definition, fileModelRef)
+      : createNewModelConfigInput(fileModelRef, featureRef);
+    return createModelMergerResult(
+      fileModel,
+      desiredModels.file,
+      definitionContainer,
+      { defaultName: fileModelRef, defaultFeatureRef: featureRef },
+    );
+  }, [fileModelRef, definitionContainer, definition, featureRef]);
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
       (draftConfig) => {
-        if (pendingModelChanges) {
-          const model = ModelUtils.byIdOrThrow(draftConfig, data.fileModelRef);
-          applyModelPatchInPlace(
-            model.model,
-            pendingModelChanges,
+        if (pendingModelChange) {
+          const newModel = applyModelMergerResultInPlace(
+            draftConfig,
+            pendingModelChange,
             definitionContainer,
+            { defaultName: fileModelRef, defaultFeatureRef: featureRef },
           );
+          if (pendingModelChange.isNewModel) {
+            data.fileModelRef = newModel.id;
+          }
         }
         PluginUtils.setPluginConfig(draftConfig, metadata, data);
       },
       {
         successMessage: pluginMetadata
           ? 'Successfully saved plugin!'
-          : 'Sucessfully enabled storage plugin!',
+          : 'Successfully enabled storage plugin!',
         onSuccess: () => {
           onSave();
         },
@@ -94,35 +104,7 @@ export function StorageConfig({
   return (
     <div className="space-y-4">
       <form onSubmit={onSubmit} className={cn('max-w-4xl space-y-4')}>
-        {pendingModelChanges && (
-          <Alert>
-            <AlertTitle>Model Changes</AlertTitle>
-            <AlertDescription>
-              <p>
-                The selected file model will be updated to include the required
-                fields for the storage plugin. The following changes will be
-                applied:
-              </p>
-              <ul>
-                {pendingModelChanges.fields.length > 0 && (
-                  <li>
-                    {pendingModelChanges.fields.length} field(s) will be added
-                    or updated.
-                  </li>
-                )}
-                {pendingModelChanges.relations.length > 0 && (
-                  <li>
-                    {pendingModelChanges.relations.length} relation(s) will be
-                    added or updated.
-                  </li>
-                )}
-                {pendingModelChanges.primaryKeyFieldRefs && (
-                  <li>The primary key will be updated.</li>
-                )}
-              </ul>
-            </AlertDescription>
-          </Alert>
-        )}
+        <ModelMergerResultAlert pendingModelChanges={[pendingModelChange]} />
         <div className="flex gap-4">
           <ComboboxFieldController
             label="File Model"

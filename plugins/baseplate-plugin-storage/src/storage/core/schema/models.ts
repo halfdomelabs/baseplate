@@ -1,10 +1,11 @@
-import type {
-  ModelDefinitionInput,
-  ModelScalarFieldDefinitionInput,
-  ProjectDefinitionContainer,
+import {
+  authConfigSpec,
+  type ModelMergerModelInput,
+  type ModelMergerScalarFieldInput,
+  type ProjectDefinitionContainer,
 } from '@halfdomelabs/project-builder-lib';
 
-const FILE_MODEL_FIELDS: ModelScalarFieldDefinitionInput[] = [
+const FILE_MODEL_FIELDS: ModelMergerScalarFieldInput[] = [
   {
     name: 'id',
     type: 'uuid',
@@ -61,25 +62,33 @@ const FILE_MODEL_FIELDS: ModelScalarFieldDefinitionInput[] = [
 
 export function createStorageModels(
   projectDefinitionContainer: ProjectDefinitionContainer,
-): { file: ModelDefinitionInput } {
-  const { auth } = projectDefinitionContainer.definition;
-  if (!auth) {
-    throw new Error('Auth plugin is required for storage plugin');
+): { file: ModelMergerModelInput } {
+  const authSpec =
+    projectDefinitionContainer.pluginStore.getPluginSpec(authConfigSpec);
+  const userAccountModel = authSpec.getUserAccountModel(
+    projectDefinitionContainer.definition,
+  );
+  if (!userAccountModel) {
+    throw new Error(
+      'User account model is required for storage plugin. Please enable an auth plugin.',
+    );
   }
   return {
     file: {
-      fields: FILE_MODEL_FIELDS,
-      primaryKeyFieldRefs: ['id'],
-      relations: [
-        {
-          name: 'uploader',
-          references: [{ localRef: 'uploaderId', foreignRef: 'id' }],
-          modelRef: auth.userModelRef,
-          foreignRelationName: 'files',
-          onDelete: 'Cascade',
-          onUpdate: 'Restrict',
-        },
-      ],
+      model: {
+        fields: FILE_MODEL_FIELDS,
+        primaryKeyFieldRefs: ['id'],
+        relations: [
+          {
+            name: 'uploader',
+            references: [{ localRef: 'uploaderId', foreignRef: 'id' }],
+            modelRef: userAccountModel,
+            foreignRelationName: 'files',
+            onDelete: 'Cascade',
+            onUpdate: 'Restrict',
+          },
+        ],
+      },
     },
   };
 }

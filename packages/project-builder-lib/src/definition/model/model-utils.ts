@@ -1,3 +1,5 @@
+import { PASCAL_CASE_REGEX } from '@halfdomelabs/utils';
+
 import type {
   ModelConfig,
   ModelRelationFieldConfig,
@@ -66,6 +68,10 @@ function hasService(model: ModelConfig): boolean {
   );
 }
 
+function validateModelName(name: string): boolean {
+  return PASCAL_CASE_REGEX.test(name);
+}
+
 export const ModelUtils = {
   byId,
   byIdOrThrow,
@@ -74,4 +80,5 @@ export const ModelUtils = {
   getModelsForFeature,
   getModelIdFields,
   hasService,
+  validateModelName,
 };

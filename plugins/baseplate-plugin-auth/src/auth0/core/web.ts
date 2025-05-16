@@ -3,7 +3,7 @@ import {
   webConfigSpec,
 } from '@halfdomelabs/project-builder-lib';
 
-import { StorageConfig } from './components/storage-config';
+import { AuthDefinitionEditor } from './components/auth-definition-editor';
 
 import '../../styles.css';
 
@@ -13,7 +13,7 @@ export default createPlatformPluginExport({
   },
   exports: {},
   initialize: ({ webConfig }, { pluginId }) => {
-    webConfig.registerWebConfigComponent(pluginId, StorageConfig);
+    webConfig.registerWebConfigComponent(pluginId, AuthDefinitionEditor);
     return {};
   },
 });

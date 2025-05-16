@@ -2,7 +2,7 @@ import type { IconElement } from '@halfdomelabs/ui-components';
 import type React from 'react';
 
 import { SheetClose } from '@halfdomelabs/ui-components';
-import { HiCollection, HiDatabase } from 'react-icons/hi';
+import { HiDatabase } from 'react-icons/hi';
 import { MdApps, MdHome, MdOutlineSettings, MdWidgets } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 
@@ -45,11 +45,6 @@ export function AppMobileSidebar(): React.JSX.Element {
           to="/data/models"
           icon={HiDatabase}
           label="Models"
-        />
-        <SidebarNavigationIcon
-          to="/features"
-          icon={HiCollection}
-          label="Features"
         />
         <SidebarNavigationIcon to="/plugins" icon={MdWidgets} label="Plugins" />
         <SidebarNavigationIcon

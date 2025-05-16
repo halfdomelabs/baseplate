@@ -1,8 +1,9 @@
 import { createTsTemplateFile } from '@halfdomelabs/core-generators';
-
-import { authHooksImportsProvider } from '../../../auth/_providers/auth-hooks.js';
-import { reactComponentsImportsProvider } from '../../../core/react-components/generated/ts-import-maps.js';
-import { reactErrorImportsProvider } from '../../../core/react-error/generated/ts-import-maps.js';
+import {
+  authHooksImportsProvider,
+  reactComponentsImportsProvider,
+  reactErrorImportsProvider,
+} from '@halfdomelabs/react-generators';
 
 const auth0CallbackPage = createTsTemplateFile({
   importMapProviders: {

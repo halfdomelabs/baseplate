@@ -1,7 +1,7 @@
 import type { IconElement } from '@halfdomelabs/ui-components';
 import type React from 'react';
 
-import { HiCollection, HiDatabase } from 'react-icons/hi';
+import { HiDatabase } from 'react-icons/hi';
 import { MdApps, MdOutlineSettings, MdWidgets } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
 
@@ -47,11 +47,6 @@ export function AppDesktopSidebar(): React.JSX.Element {
         <div className="space-y-2">
           <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />
           <SidebarNavigationIcon to="/data" icon={HiDatabase} label="Data" />
-          <SidebarNavigationIcon
-            to="/features"
-            icon={HiCollection}
-            label="Features"
-          />
           <SidebarNavigationIcon
             to="/plugins"
             icon={MdWidgets}

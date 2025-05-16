@@ -25,20 +25,6 @@ function HomePage(): React.JSX.Element {
         <div className="grid gap-4 md:grid-cols-1">
           <Card>
             <CardHeader>
-              <CardTitle>Features</CardTitle>
-              <CardDescription>
-                Baseplate comes with a number of features that you can enable or
-                disable, such as email and authentication.
-              </CardDescription>
-            </CardHeader>
-            <CardFooter>
-              <Link to="/features">
-                <Button>Configure Features</Button>
-              </Link>
-            </CardFooter>
-          </Card>
-          <Card>
-            <CardHeader>
               <CardTitle>Models</CardTitle>
               <CardDescription>
                 Models are the core of your app. They define the data that your
@@ -48,6 +34,20 @@ function HomePage(): React.JSX.Element {
             <CardFooter>
               <Link to="/models">
                 <Button>Configure Models</Button>
+              </Link>
+            </CardFooter>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Plugins</CardTitle>
+              <CardDescription>
+                Baseplate comes with a number of plugins that you can enable or
+                disable, such as email and authentication.
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
+              <Link to="/plugins">
+                <Button>Configure Plugins</Button>
               </Link>
             </CardFooter>
           </Card>
