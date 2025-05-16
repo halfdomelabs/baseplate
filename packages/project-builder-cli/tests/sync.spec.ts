@@ -1,16 +1,28 @@
 import {
+  appEntityType,
+  featureEntityType,
+  modelEntityType,
+  modelScalarFieldEntityType,
+} from '@halfdomelabs/project-builder-lib';
+
+import {
   expect,
   getInitializedTestProjectDefinition,
   test,
 } from './fixtures/server-fixture.test-helper.js';
 
 test('can sync a minimal project', async ({ page, addProject }) => {
+  const modelId = modelEntityType.fromUid('test-model');
+  const featureId = featureEntityType.fromUid('test-feature');
+  const appId = appEntityType.fromUid('test-app');
+  const fieldId = modelScalarFieldEntityType.fromUid('test-field');
+
   const { makeUrl } = await addProject({
     ...getInitializedTestProjectDefinition(),
     apps: [
       {
         name: 'test-app',
-        id: 'test-app',
+        id: appId,
         type: 'backend',
         packageLocation: 'packages/backend',
       },
@@ -18,19 +30,19 @@ test('can sync a minimal project', async ({ page, addProject }) => {
     features: [
       {
         name: 'test-feature',
-        id: 'test-feature',
+        id: featureId,
       },
     ],
     models: [
       {
         name: 'TestModel',
-        id: 'test-model',
+        id: modelId,
         featureRef: 'test-feature',
         model: {
           fields: [
             {
               name: 'id',
-              id: 'id',
+              id: fieldId,
               type: 'string',
               isOptional: false,
               options: {
