@@ -2,6 +2,7 @@ import {
   authContextGenerator,
   authPluginGenerator,
   authRolesGenerator,
+  pothosAuthGenerator,
   userSessionTypesGenerator,
 } from '@halfdomelabs/fastify-generators';
 import {
@@ -60,6 +61,10 @@ export default createPlatformPluginExport({
             includeManagement: true,
           }),
           userSessionTypes: userSessionTypesGenerator({}),
+        });
+
+        appCompiler.addRootChildren({
+          pothosAuth: pothosAuthGenerator({}),
         });
       },
     });

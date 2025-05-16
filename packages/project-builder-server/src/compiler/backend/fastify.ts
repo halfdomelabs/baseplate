@@ -12,7 +12,6 @@ import {
   fastifySentryGenerator,
   fastifyServerGenerator,
   fastifyStripeGenerator,
-  pothosAuthGenerator,
   pothosGenerator,
   pothosPrismaGenerator,
   pothosScalarGenerator,
@@ -90,11 +89,6 @@ export function buildFastify(
           graphqlBundle,
         ],
         stripe: app.enableStripe ? fastifyStripeGenerator({}) : undefined,
-        ...(projectDefinition.auth
-          ? {
-              pothosAuth: pothosAuthGenerator({}),
-            }
-          : {}),
       },
       appCompiler.getRootChildren(),
     ),

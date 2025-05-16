@@ -12,18 +12,22 @@ import { auth0PluginDefinitionSchema } from './schema/plugin-definition';
 export default createPlatformPluginExport({
   dependencies: {
     config: pluginConfigSpec,
+  },
+  exports: {
     authConfig: authConfigSpec,
   },
-  exports: {},
-  initialize: ({ config, authConfig }, { pluginId }) => {
+  initialize: ({ config }, { pluginId }) => {
     config.registerSchema(pluginId, auth0PluginDefinitionSchema);
-    authConfig.registerUserAccountModelGetter(pluginId, (definition) => {
-      const pluginConfig = PluginUtils.configByIdOrThrow(
-        definition,
-        pluginId,
-      ) as Auth0PluginDefinition;
-      return pluginConfig.userAccountModelRef;
-    });
-    return {};
+    return {
+      authConfig: {
+        getUserAccountModel: (definition) => {
+          const pluginConfig = PluginUtils.configByIdOrThrow(
+            definition,
+            pluginId,
+          ) as Auth0PluginDefinition;
+          return pluginConfig.userAccountModelRef;
+        },
+      },
+    };
   },
 });

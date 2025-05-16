@@ -35,7 +35,6 @@ import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
 import type { AdminAppEntryBuilder } from '../app-entry-builder.js';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
-import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 import { compileAdminFeatures } from './sections.js';
 
 function buildNavigationLinks(
@@ -82,10 +81,7 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
                   }`,
                 })
               : undefined,
-            routes: [
-              compileAuthPages(builder),
-              ...compileAdminFeatures(builder),
-            ],
+            routes: compileAdminFeatures(builder),
           },
         }),
         reactComponents: reactComponentsGenerator({
@@ -119,7 +115,6 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
           ],
         }),
         adminComponents: adminComponentsGenerator({}),
-        ...compileAuthFeatures(builder),
         ...appCompiler.getRootChildren(),
       },
     },

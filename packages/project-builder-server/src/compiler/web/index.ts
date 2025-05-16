@@ -21,7 +21,6 @@ import {
 import { safeMergeAll } from '@halfdomelabs/utils';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
-import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 
 function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
   const { projectDefinition, appConfig, appCompiler } = builder;
@@ -41,9 +40,6 @@ function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
           reactRouter: reactRouterGenerator({
             children: {
               reactNotFoundHandler: reactNotFoundHandlerGenerator({}),
-              auth: builder.appConfig.includeAuth
-                ? compileAuthPages(builder)
-                : undefined,
             },
           }),
           reactTailwind: reactTailwindGenerator({}),
@@ -59,7 +55,6 @@ function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
           }),
           apolloError: apolloErrorGenerator({}),
         },
-        compileAuthFeatures(builder) ?? {},
         appCompiler.getRootChildren(),
       ),
     },
