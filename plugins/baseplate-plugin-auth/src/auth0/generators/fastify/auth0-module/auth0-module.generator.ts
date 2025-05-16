@@ -12,7 +12,6 @@ import {
   authRolesImportsProvider,
   configServiceImportsProvider,
   configServiceProvider,
-  FASTIFY_PACKAGES,
   fastifyServerConfigProvider,
   loggerServiceConfigProvider,
   prismaOutputProvider,
@@ -25,6 +24,8 @@ import {
   createProviderTask,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import { AUTH0_PACKAGES } from '@src/auth0/constants/packages.js';
 
 import { createAuth0ModuleImports } from './generated/ts-import-maps.js';
 import { AUTH_0_AUTH_0_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';
@@ -41,7 +42,7 @@ export const auth0ModuleGenerator = createGenerator({
   buildTasks: ({ includeManagement, userModelName }) => ({
     nodeManagementPackage: includeManagement
       ? createNodePackagesTask({
-          prod: extractPackageVersions(FASTIFY_PACKAGES, ['auth0']),
+          prod: extractPackageVersions(AUTH0_PACKAGES, ['auth0']),
         })
       : undefined,
     config: createProviderTask(configServiceProvider, (configService) => {
@@ -149,7 +150,7 @@ export const auth0ModuleGenerator = createGenerator({
       },
     }),
     nodePackages: createNodePackagesTask({
-      prod: extractPackageVersions(FASTIFY_PACKAGES, ['fastify-auth0-verify']),
+      prod: extractPackageVersions(AUTH0_PACKAGES, ['fastify-auth0-verify']),
     }),
     fastifyAuth0Plugin: createGeneratorTask({
       dependencies: {

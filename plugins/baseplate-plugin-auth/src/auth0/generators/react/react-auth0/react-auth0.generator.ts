@@ -5,7 +5,6 @@ import {
   tsImportBuilder,
 } from '@halfdomelabs/core-generators';
 import {
-  REACT_PACKAGES,
   reactAppConfigProvider,
   reactConfigImportsProvider,
   reactConfigProvider,
@@ -17,6 +16,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { AUTH0_PACKAGES } from '@src/auth0/constants/packages';
+
 const descriptorSchema = z.object({
   callbackPath: z.string().optional(),
 });
@@ -27,7 +28,7 @@ export const reactAuth0Generator = createGenerator({
   descriptorSchema,
   buildTasks: ({ callbackPath }) => ({
     nodePackages: createNodePackagesTask({
-      prod: extractPackageVersions(REACT_PACKAGES, ['@auth0/auth0-react']),
+      prod: extractPackageVersions(AUTH0_PACKAGES, ['@auth0/auth0-react']),
     }),
     reactConfig: createProviderTask(reactConfigProvider, (reactConfig) => {
       reactConfig.configEntries.mergeObj({

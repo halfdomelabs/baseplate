@@ -49,9 +49,6 @@ export const REACT_PACKAGES = {
   'use-subscription': '^1.5.1',
   '@types/use-subscription': '^1.0.0',
 
-  // Auth
-  '@auth0/auth0-react': '2.3.0',
-
   // Validation
   zod: '3.24.1',
 

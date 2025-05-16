@@ -77,8 +77,6 @@ export const FASTIFY_PACKAGES = {
 
   // Auth
   '@node-rs/argon2': '2.0.2',
-  auth0: '4.0.2',
-  'fastify-auth0-verify': '3.0.0',
 
   // Postmark
   postmark: '4.0.2',

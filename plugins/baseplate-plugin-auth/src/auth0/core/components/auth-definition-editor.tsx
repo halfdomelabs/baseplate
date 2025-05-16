@@ -23,6 +23,8 @@ import { Button } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
+import { cn } from '@src/utils/cn';
+
 import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition';
 
 import { createAuth0Models } from '../schema/models';
@@ -122,7 +124,7 @@ export function AuthDefinitionEditor({
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+    <form onSubmit={onSubmit} className={cn('flex flex-col gap-4')}>
       <ModelMergerResultAlert pendingModelChanges={[pendingModelChange]} />
       <ModelComboboxFieldController
         label="User Account Model"

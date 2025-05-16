@@ -45,7 +45,7 @@ function Auth0CallbackPage(): ReactElement {
   }, [handleRedirectCallback, navigate]);
 
   return (
-    <div className="flex h-full items-center justify-center bg-gray-100">
+    <div className="flex h-full items-center justify-center">
       {error ? (
         <Card className="space-y-4 p-4">
           <Alert type="error">{error}</Alert>

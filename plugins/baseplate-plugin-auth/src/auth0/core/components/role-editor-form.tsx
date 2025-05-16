@@ -5,8 +5,10 @@ import {
   AUTH_DEFAULT_ROLES,
   authRoleEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { Button, cn, InputFieldController } from '@halfdomelabs/ui-components';
+import { Button, InputFieldController } from '@halfdomelabs/ui-components';
 import { useFieldArray } from 'react-hook-form';
+
+import { cn } from '@src/utils/cn';
 
 import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition';
 
@@ -29,7 +31,7 @@ function RoleEditorForm({ className, control }: Props): React.JSX.Element {
     <div className={cn('space-y-4', className)}>
       <h3>Roles</h3>
       {fields.map((field, idx) => (
-        <div key={field.id} className="space-y-4">
+        <div key={field.id} className={cn('space-y-4')}>
           <InputFieldController
             label="Name"
             disabled={isFixedRole(field.name)}

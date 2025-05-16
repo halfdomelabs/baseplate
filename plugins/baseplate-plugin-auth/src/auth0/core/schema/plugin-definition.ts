@@ -7,7 +7,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { z } from 'zod';
 
-export const auth0RoleSchema = zEnt(
+const auth0RoleSchema = zEnt(
   z.object({
     name: z.string().min(1),
     comment: z.string().min(1),
@@ -15,8 +15,6 @@ export const auth0RoleSchema = zEnt(
   }),
   { type: authRoleEntityType },
 );
-
-export type AuthRoleConfig = z.infer<typeof auth0RoleSchema>;
 
 export const AUTH_DEFAULT_ROLES = [
   {
