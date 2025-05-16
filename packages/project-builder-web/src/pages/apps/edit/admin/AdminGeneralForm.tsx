@@ -3,6 +3,7 @@ import type React from 'react';
 
 import {
   adminAppSchema,
+  authConfigSpec,
   zPluginWrapper,
 } from '@halfdomelabs/project-builder-lib';
 import {
@@ -52,10 +53,13 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
-  const roleOptions = definition.auth?.roles.map((role) => ({
-    label: role.name,
-    value: role.id,
-  }));
+  const roleOptions = pluginContainer
+    .getPluginSpecOptional(authConfigSpec)
+    ?.getAuthRoles(definition)
+    .map((role) => ({
+      label: role.name,
+      value: role.id,
+    }));
 
   return (
     <div className={clsx('', className)}>

@@ -1,7 +1,10 @@
-import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
+import {
+  authConfigSpec,
+  type ModelConfigInput,
+} from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
@@ -25,20 +28,20 @@ interface GraphQLQueriesSectionProps {
 export function GraphQLQueriesSection({
   control,
 }: GraphQLQueriesSectionProps): React.JSX.Element {
-  const { definition } = useProjectDefinition();
-
-  const isAuthEnabled = !!definition.auth;
+  const { definition, pluginContainer } = useProjectDefinition();
 
   const isObjectTypeEnabled = useWatch({
     control,
     name: 'graphql.objectType.enabled',
   });
 
-  const roleOptions =
-    definition.auth?.roles.map((role) => ({
+  const roleOptions = pluginContainer
+    .getPluginSpecOptional(authConfigSpec)
+    ?.getAuthRoles(definition)
+    .map((role) => ({
       label: role.name,
       value: role.id,
-    })) ?? [];
+    }));
 
   const isGetEnabled = useWatch({
     control,
@@ -78,7 +81,7 @@ export function GraphQLQueriesSection({
             disabled={!isObjectTypeEnabled}
             description="Expose method for querying a single instance of this model by its ID, e.g. user(id: $id)."
           />
-          {isGetEnabled && isAuthEnabled && (
+          {isGetEnabled && roleOptions && (
             <MultiSwitchField.Controller
               control={control}
               name="graphql.queries.get.roles"
@@ -96,7 +99,7 @@ export function GraphQLQueriesSection({
             label="List Query"
             description="Expose method for querying a list of instances of this model, e.g. users."
           />
-          {isListEnabled && isAuthEnabled && (
+          {isListEnabled && roleOptions && (
             <MultiSwitchField.Controller
               control={control}
               name="graphql.queries.list.roles"
