@@ -96,11 +96,11 @@ export function useModelForm({
   const defaultValues = useMemo(() => {
     const modelToUse = model ?? newModel;
     return schema
-      ? (modelSchemaWithPlugins.parse(modelToUse) as ModelConfig)
+      ? (modelSchemaWithPlugins.parse(modelToUse) as ModelConfigInput)
       : modelToUse;
   }, [model, newModel, schema, modelSchemaWithPlugins]);
 
-  const form = useResettableForm<ModelConfig>({
+  const form = useResettableForm<ModelConfigInput, unknown, ModelConfig>({
     resolver: zodResolver(modelSchemaWithPlugins),
     defaultValues,
   });
@@ -236,7 +236,7 @@ export function useModelForm({
   );
 
   return {
-    form: form as unknown as UseFormReturn<ModelConfigInput>,
+    form,
     onSubmit,
     originalModel: model,
     defaultValues,

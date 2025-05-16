@@ -32,9 +32,26 @@ test('can sync a minimal project', async ({ page, addProject }) => {
               name: 'id',
               id: 'id',
               type: 'string',
+              isOptional: false,
+              options: {
+                default: '',
+                genUuid: true,
+              },
             },
           ],
           primaryKeyFieldRefs: ['id'],
+        },
+        service: {
+          create: {
+            enabled: false,
+          },
+          update: {
+            enabled: false,
+          },
+          delete: {
+            enabled: false,
+          },
+          transformers: [],
         },
       },
     ],

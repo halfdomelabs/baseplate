@@ -1,7 +1,4 @@
-import type {
-  AdminCrudEmbeddedFormConfig,
-  AdminCrudEmbeddedFormConfigInput,
-} from '@halfdomelabs/project-builder-lib';
+import type { AdminCrudEmbeddedFormConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -95,7 +92,8 @@ const TYPE_OPTIONS = [
   { label: 'List', value: 'list' },
 ];
 
-interface Props extends EmbeddedListFormProps<AdminCrudEmbeddedFormConfig> {
+interface Props
+  extends EmbeddedListFormProps<AdminCrudEmbeddedFormConfigInput> {
   embeddedFormOptions: { label: string; value: string }[];
 }
 
