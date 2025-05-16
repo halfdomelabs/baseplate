@@ -1,0 +1,4 @@
+{
+  "plugins": ["dist/storage"],
+  "webBuild": "dist/web"
+}

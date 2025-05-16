@@ -1,0 +1,8 @@
+{
+  "name": "auth0",
+  "displayName": "Auth0",
+  "icon": "icon.svg",
+  "description": "This plugin allows users to authenticate and authorize access to the application using Auth0.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"]
+}

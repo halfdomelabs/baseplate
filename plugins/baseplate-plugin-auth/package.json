@@ -1,7 +1,7 @@
 {
-  "name": "@halfdomelabs/baseplate-plugin-storage",
+  "name": "@halfdomelabs/baseplate-plugin-auth",
   "version": "5.1.0",
-  "description": "Contains the storage plugin for Baseplate",
+  "description": "Contains the auth plugin for Baseplate",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
