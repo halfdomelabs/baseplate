@@ -1278,15 +1278,9 @@ importers:
       '@halfdomelabs/ui-components':
         specifier: workspace:*
         version: link:../../packages/ui-components
-      '@halfdomelabs/utils':
-        specifier: workspace:*
-        version: link:../../packages/utils
       '@hookform/resolvers':
         specifier: 5.0.1
         version: 5.0.1(react-hook-form@7.56.3(react@19.1.0))
-      inflection:
-        specifier: 3.0.0
-        version: 3.0.0
       react:
         specifier: 'catalog:'
         version: 19.1.0
