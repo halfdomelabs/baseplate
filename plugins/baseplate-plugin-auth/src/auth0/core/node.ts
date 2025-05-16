@@ -74,13 +74,8 @@ export default createPlatformPluginExport({
     appCompiler.registerAppCompiler({
       pluginId,
       appType: webAppEntryType,
-      compile: ({ projectDefinition, appCompiler }) => {
-        const auth = PluginUtils.configByIdOrThrow(
-          projectDefinition,
-          pluginId,
-        ) as Auth0PluginDefinition;
-
-        appCompiler.addChildrenToFeature(auth.authFeatureRef, {
+      compile: ({ appCompiler }) => {
+        appCompiler.addRootChildren({
           auth: reactAuth0Generator({
             callbackPath: 'auth/auth0-callback',
           }),
@@ -101,13 +96,8 @@ export default createPlatformPluginExport({
     appCompiler.registerAppCompiler({
       pluginId,
       appType: adminAppEntryType,
-      compile: ({ projectDefinition, appCompiler }) => {
-        const auth = PluginUtils.configByIdOrThrow(
-          projectDefinition,
-          pluginId,
-        ) as Auth0PluginDefinition;
-
-        appCompiler.addChildrenToFeature(auth.authFeatureRef, {
+      compile: ({ appCompiler }) => {
+        appCompiler.addRootChildren({
           auth: reactAuth0Generator({
             callbackPath: 'auth/auth0-callback',
           }),

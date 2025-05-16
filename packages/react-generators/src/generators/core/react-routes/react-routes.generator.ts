@@ -72,6 +72,10 @@ export const reactRoutesGenerator = createGenerator({
             },
           },
           build: async (builder) => {
+            if (routes.length === 0) {
+              return;
+            }
+
             if (isPassthrough) {
               const renderedRoutes = renderRoutes(routes, layouts);
 

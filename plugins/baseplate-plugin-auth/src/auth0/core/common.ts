@@ -27,6 +27,13 @@ export default createPlatformPluginExport({
           ) as Auth0PluginDefinition;
           return pluginConfig.userAccountModelRef;
         },
+        getAuthRoles: (definition) => {
+          const pluginConfig = PluginUtils.configByIdOrThrow(
+            definition,
+            pluginId,
+          ) as Auth0PluginDefinition;
+          return pluginConfig.roles;
+        },
       },
     };
   },

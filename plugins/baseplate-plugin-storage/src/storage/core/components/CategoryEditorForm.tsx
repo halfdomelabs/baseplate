@@ -1,5 +1,6 @@
 import type { Control } from 'react-hook-form';
 
+import { authConfigSpec } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -24,7 +25,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
     name: 'categories',
   });
 
-  const { definition } = useProjectDefinition();
+  const { definition, pluginContainer } = useProjectDefinition();
 
   const fileModel = useWatch({ control, name: 'fileModelRef' });
   const adapters = useWatch({ control, name: 's3Adapters' });
@@ -45,11 +46,13 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
     )
     .filter(notEmpty);
 
-  const roleOptions =
-    definition.auth?.roles.map((role) => ({
+  const roleOptions = pluginContainer
+    .getPluginSpec(authConfigSpec)
+    .getAuthRoles(definition)
+    .map((role) => ({
       label: role.name,
       value: role.id,
-    })) ?? [];
+    }));
 
   return (
     <div className={cn('space-y-4', className)}>

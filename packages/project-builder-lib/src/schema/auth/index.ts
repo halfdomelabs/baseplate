@@ -1,23 +1,13 @@
-import { z } from 'zod';
+import { createEntityType } from '@src/references/index.js';
 
-import { zEnt, zRef } from '@src/references/index.js';
-import { featureEntityType } from '@src/schema/features/index.js';
+export const authRoleEntityType = createEntityType('role');
 
-import { modelEntityType } from '../models/index.js';
-import { authRoleEntityType } from './types.js';
-
-export * from './types.js';
-
-export const authRoleSchema = zEnt(
-  z.object({
-    name: z.string().min(1),
-    comment: z.string().min(1),
-    builtIn: z.boolean().default(false),
-  }),
-  { type: authRoleEntityType },
-);
-
-export type AuthRoleConfig = z.infer<typeof authRoleSchema>;
+export interface AuthRole {
+  id: string;
+  name: string;
+  comment: string;
+  builtIn: boolean;
+}
 
 export const AUTH_DEFAULT_ROLES = [
   {
@@ -36,47 +26,3 @@ export const AUTH_DEFAULT_ROLES = [
     builtIn: true,
   },
 ];
-
-export const authSchema = z.object({
-  userModelRef: zRef(z.string().min(1), {
-    type: modelEntityType,
-    onDelete: 'RESTRICT',
-  }),
-  userRoleModelRef: zRef(z.string().min(1), {
-    type: modelEntityType,
-    onDelete: 'RESTRICT',
-  }),
-  useAuth0: z.boolean().default(false),
-  authFeatureRef: zRef(z.string().min(1), {
-    type: featureEntityType,
-    onDelete: 'RESTRICT',
-  }),
-  accountsFeatureRef: zRef(z.string().min(1), {
-    type: featureEntityType,
-    onDelete: 'RESTRICT',
-  }),
-  passwordProvider: z.boolean().optional(),
-  roles: z.array(authRoleSchema).transform((roles) => [
-    ...AUTH_DEFAULT_ROLES.map((r) => {
-      const existingRole = roles.find((role) => role.name === r.name);
-      return existingRole
-        ? {
-            ...existingRole,
-            builtIn: true,
-          }
-        : {
-            ...r,
-            builtIn: true,
-            id: authRoleEntityType.generateNewId(),
-          };
-    }),
-    // Filter out the built-in roles
-    ...roles.filter(
-      (r) => !AUTH_DEFAULT_ROLES.map((v) => v.name).includes(r.name),
-    ),
-  ]),
-});
-
-export type AuthConfig = z.infer<typeof authSchema>;
-
-export type AuthConfigInput = z.input<typeof authSchema>;

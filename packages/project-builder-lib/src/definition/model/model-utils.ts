@@ -64,7 +64,8 @@ function hasService(model: ModelConfig): boolean {
   return (
     !!model.service.create.enabled ||
     !!model.service.update.enabled ||
-    !!model.service.delete.enabled
+    !!model.service.delete.enabled ||
+    model.service.transformers.length > 0
   );
 }
 

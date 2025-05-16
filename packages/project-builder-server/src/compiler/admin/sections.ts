@@ -68,6 +68,9 @@ function compileAdminFeatureRecursive(
     return undefined;
   }
 
+  const generatorsForFeature =
+    builder.appCompiler.getChildrenForFeature(featureId);
+
   return reactRoutesGenerator({
     id: featureId,
     name: featureName,
@@ -76,6 +79,7 @@ function compileAdminFeatureRecursive(
     children: {
       $sections: sectionDescriptors,
       $childRoutes: subDescriptors,
+      ...generatorsForFeature,
     },
   });
 }

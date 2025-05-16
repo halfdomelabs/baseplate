@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { zRef, zRefBuilder } from '@src/references/index.js';
-import { authRoleEntityType } from '@src/schema/auth/types.js';
+import { authRoleEntityType } from '@src/schema/auth/index.js';
 
 import type { AdminCrudSectionConfig } from './sections/index.js';
 

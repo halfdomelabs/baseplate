@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { zRef } from '@src/references/index.js';
-import { authRoleEntityType } from '@src/schema/auth/types.js';
+import { authRoleEntityType } from '@src/schema/auth/index.js';
 
 import { baseAppValidators } from '../base.js';
 import { createAppEntryType } from '../types.js';
