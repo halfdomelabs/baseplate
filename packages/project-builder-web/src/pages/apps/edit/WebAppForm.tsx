@@ -1,7 +1,10 @@
 import type { WebAppConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
-import { webAppSchema } from '@halfdomelabs/project-builder-lib';
+import {
+  authConfigSpec,
+  webAppSchema,
+} from '@halfdomelabs/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
@@ -31,7 +34,7 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
   });
   const { control, handleSubmit, reset } = formProps;
 
-  const { definition } = useProjectDefinition();
+  const { definition, pluginContainer } = useProjectDefinition();
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback((draftConfig) => {
@@ -43,10 +46,13 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
-  const roleOptions = definition.auth?.roles.map((role) => ({
-    label: role.name,
-    value: role.id,
-  }));
+  const roleOptions = pluginContainer
+    .getPluginSpecOptional(authConfigSpec)
+    ?.getAuthRoles(definition)
+    .map((role) => ({
+      label: role.name,
+      value: role.id,
+    }));
 
   return (
     <div className={clsx('', className)}>

@@ -15,7 +15,7 @@ import {
   pothosPrismaPrimaryKeyGenerator,
   pothosTypesFileGenerator,
 } from '@halfdomelabs/fastify-generators';
-import { ModelUtils } from '@halfdomelabs/project-builder-lib';
+import { authConfigSpec, ModelUtils } from '@halfdomelabs/project-builder-lib';
 import { notEmpty } from '@halfdomelabs/utils';
 import { kebabCase } from 'change-case';
 
@@ -76,7 +76,12 @@ function buildQueriesFileForModel(
 
   const { get, list } = queries;
 
-  const isAuthEnabled = !!appBuilder.definitionContainer.definition.auth;
+  const authConfig =
+    appBuilder.definitionContainer.pluginStore.getPluginSpecOptional(
+      authConfigSpec,
+    );
+
+  const isAuthEnabled = !!authConfig;
 
   return pothosTypesFileGenerator({
     id: `${model.id}-queries`,
@@ -135,7 +140,12 @@ function buildMutationsFileForModel(
 
   const { create, update, delete: del } = mutations;
 
-  const isAuthEnabled = !!appBuilder.definitionContainer.definition.auth;
+  const authConfig =
+    appBuilder.definitionContainer.pluginStore.getPluginSpecOptional(
+      authConfigSpec,
+    );
+
+  const isAuthEnabled = !!authConfig;
 
   const sharedMutationConfig = {
     modelName: model.name,

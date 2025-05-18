@@ -25,6 +25,7 @@
     "prettier:write": "prettier -w ."
   },
   "dependencies": {
+    "@halfdomelabs/baseplate-plugin-auth": "workspace:*",
     "@halfdomelabs/baseplate-plugin-storage": "workspace:*",
     "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/project-builder-server": "workspace:*",

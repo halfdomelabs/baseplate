@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import { zRef } from '@src/references/ref-builder.js';
 
-import { authRoleEntityType } from '../auth/types.js';
+import { authRoleEntityType } from '../auth/index.js';
 import {
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,

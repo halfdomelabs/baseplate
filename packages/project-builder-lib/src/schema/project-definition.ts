@@ -7,7 +7,6 @@ import { adminAppSchema } from './apps/admin/index.js';
 import { backendAppSchema } from './apps/backend/index.js';
 import { webAppSchema } from './apps/index.js';
 import { appEntityType } from './apps/types.js';
-import { authSchema } from './auth/index.js';
 import { featuresSchema } from './features/index.js';
 import { themeSchema } from './features/theme.js';
 import { enumSchema } from './models/enums.js';
@@ -50,7 +49,6 @@ export const projectDefinitionSchema = z.object({
   features: featuresSchema,
   models: z.array(modelSchema).default([]),
   enums: z.array(enumSchema).optional(),
-  auth: authSchema.optional(),
   isInitialized: z.boolean().default(false),
   schemaVersion: z.number(),
   theme: themeSchema.optional(),

@@ -16,4 +16,10 @@ export class PluginImplementationStore {
 
     return implementation;
   }
+
+  getPluginSpecOptional<TImplementation>(
+    spec: PluginSpec<TImplementation>,
+  ): TImplementation | undefined {
+    return this.implementations[spec.name] as TImplementation | undefined;
+  }
 }

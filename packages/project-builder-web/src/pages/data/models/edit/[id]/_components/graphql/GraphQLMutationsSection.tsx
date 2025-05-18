@@ -1,7 +1,10 @@
-import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
+import {
+  authConfigSpec,
+  type ModelConfigInput,
+} from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
@@ -28,15 +31,15 @@ interface GraphQLMutationsSectionProps {
 export function GraphQLMutationsSection({
   control,
 }: GraphQLMutationsSectionProps): React.JSX.Element {
-  const { definition } = useProjectDefinition();
+  const { definition, pluginContainer } = useProjectDefinition();
 
-  const isAuthEnabled = !!definition.auth;
-
-  const roleOptions =
-    definition.auth?.roles.map((role) => ({
+  const roleOptions = pluginContainer
+    .getPluginSpecOptional(authConfigSpec)
+    ?.getAuthRoles(definition)
+    .map((role) => ({
       label: role.name,
       value: role.id,
-    })) ?? [];
+    }));
 
   const isObjectTypeEnabled = useWatch({
     control,
@@ -104,7 +107,7 @@ export function GraphQLMutationsSection({
             label="Create Mutation"
             description="Expose the create method in the GraphQL schema, e.g. createUser(input: $input)."
           />
-          {isCreateEnabled && isAuthEnabled && (
+          {isCreateEnabled && roleOptions && (
             <MultiSwitchField.Controller
               control={control}
               name="graphql.mutations.create.roles"
@@ -122,7 +125,7 @@ export function GraphQLMutationsSection({
             disabled={!isObjectTypeEnabled || !isUpdateControllerEnabled}
             description="Expose the update method in the GraphQL schema, e.g. updateUser(id: $id, input: $input)."
           />
-          {isUpdateEnabled && isAuthEnabled && (
+          {isUpdateEnabled && roleOptions && (
             <MultiSwitchField.Controller
               control={control}
               name="graphql.mutations.update.roles"
@@ -140,7 +143,7 @@ export function GraphQLMutationsSection({
             disabled={!isObjectTypeEnabled || !isDeleteControllerEnabled}
             description="Expose the delete method in the GraphQL schema, e.g. deleteUser(id: $id)."
           />
-          {isDeleteEnabled && isAuthEnabled && (
+          {isDeleteEnabled && roleOptions && (
             <MultiSwitchField.Controller
               control={control}
               name="graphql.mutations.delete.roles"

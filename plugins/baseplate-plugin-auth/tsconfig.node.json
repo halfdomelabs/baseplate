@@ -1,0 +1,4 @@
+{
+  "extends": "@halfdomelabs/tools/tsconfig.node.script.json",
+  "include": ["vite.config.ts", "tailwind.config.ts"]
+}

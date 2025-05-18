@@ -1,0 +1,4 @@
+{
+  "plugins": ["dist/auth0"],
+  "webBuild": "dist/web"
+}

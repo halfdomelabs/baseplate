@@ -1,0 +1,15 @@
+{
+  "extends": "@halfdomelabs/tools/tsconfig.vite.lib.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "noEmit": true,
+    "paths": {
+      "@src/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["**/generators/*/*/templates/**"],
+  "tsc-alias": {
+    "resolveFullPaths": true
+  }
+}

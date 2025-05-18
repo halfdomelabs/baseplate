@@ -92,6 +92,13 @@ function ensureFeatureByNameRecursively(
   return parentRef;
 }
 
+function getFeatureByName(
+  projectDefinition: ProjectDefinition,
+  name: string,
+): FeatureConfig | undefined {
+  return projectDefinition.features.find((f) => f.name === name);
+}
+
 export const FeatureUtils = {
   getRootFeatures,
   getFeatureById,
@@ -102,4 +109,5 @@ export const FeatureUtils = {
   getFeaturePathById,
   validateFeatureName,
   ensureFeatureByNameRecursively,
+  getFeatureByName,
 };

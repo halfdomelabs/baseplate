@@ -83,7 +83,7 @@ export function PluginCard({
     saveDefinitionWithFeedbackSync(
       (draft) => {
         draft.plugins = (draft.plugins ?? []).filter(
-          (p) => p.packageName !== plugin.packageName || p.name !== plugin.name,
+          (p) => p.id !== pluginEntityType.fromUid(plugin.id),
         );
       },
       {

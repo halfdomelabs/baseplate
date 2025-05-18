@@ -6,7 +6,6 @@ import { createRouteCrumb } from '@src/types/routes';
 
 import { AppsRoutes } from './apps';
 import { DataRoutes } from './data/_routes';
-import { FeatureRoutes } from './features';
 import HomePage from './home/home.page';
 import { NotFoundRoute } from './NotFound.page';
 import { PluginRoutes } from './plugins';
@@ -34,13 +33,6 @@ export const router = createBrowserRouter([
             },
           },
           DataRoutes,
-          {
-            path: '/features/*',
-            children: FeatureRoutes,
-            handle: {
-              crumb: createRouteCrumb({ label: 'Features', url: '/features' }),
-            },
-          },
           {
             path: '/plugins/*',
             children: PluginRoutes,

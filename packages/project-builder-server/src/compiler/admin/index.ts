@@ -28,6 +28,7 @@ import {
   reactSentryGenerator,
   reactTailwindGenerator,
 } from '@halfdomelabs/react-generators';
+import { safeMerge } from '@halfdomelabs/utils';
 import { capitalize } from 'inflection';
 
 import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
@@ -35,7 +36,6 @@ import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
 import type { AdminAppEntryBuilder } from '../app-entry-builder.js';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
-import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 import { compileAdminFeatures } from './sections.js';
 
 function buildNavigationLinks(
@@ -67,26 +67,28 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
     backendApp,
   );
 
+  const rootFeatures = appCompiler.getRootChildren();
+
   return composeReactGenerators(
     {
       title: `${capitalize(projectDefinition.name)} Admin Dashboard`,
       children: {
         reactRouter: reactRouterGenerator({
-          children: {
-            reactNotFoundHandler: reactNotFoundHandlerGenerator({}),
-            admin: adminHomeGenerator({}),
-            adminRoutes: backendApp.enableBullQueue
-              ? adminBullBoardGenerator({
-                  bullBoardUrl: `http://localhost:${
-                    projectDefinition.portOffset + 1
-                  }`,
-                })
-              : undefined,
-            routes: [
-              compileAuthPages(builder),
-              ...compileAdminFeatures(builder),
-            ],
-          },
+          children: safeMerge(
+            {
+              reactNotFoundHandler: reactNotFoundHandlerGenerator({}),
+              admin: adminHomeGenerator({}),
+              adminRoutes: backendApp.enableBullQueue
+                ? adminBullBoardGenerator({
+                    bullBoardUrl: `http://localhost:${
+                      projectDefinition.portOffset + 1
+                    }`,
+                  })
+                : undefined,
+              routes: compileAdminFeatures(builder),
+            },
+            rootFeatures,
+          ),
         }),
         reactComponents: reactComponentsGenerator({
           includeDatePicker: true,
@@ -119,8 +121,6 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
           ],
         }),
         adminComponents: adminComponentsGenerator({}),
-        ...compileAuthFeatures(builder),
-        ...appCompiler.getRootChildren(),
       },
     },
     {

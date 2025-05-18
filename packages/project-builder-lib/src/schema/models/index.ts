@@ -193,6 +193,10 @@ export type ModelUniqueConstraintConfig = z.infer<
   typeof modelUniqueConstraintSchema
 >;
 
+export type ModelUniqueConstraintConfigInput = z.input<
+  typeof modelUniqueConstraintSchema
+>;
+
 export const modelServiceSchema = z.object({
   create: z
     .object({

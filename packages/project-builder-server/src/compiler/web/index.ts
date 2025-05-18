@@ -18,10 +18,10 @@ import {
   reactSentryGenerator,
   reactTailwindGenerator,
 } from '@halfdomelabs/react-generators';
-import { safeMergeAll } from '@halfdomelabs/utils';
+import { safeMerge } from '@halfdomelabs/utils';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
-import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
+import { compileWebFeatures } from './features.js';
 
 function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
   const { projectDefinition, appConfig, appCompiler } = builder;
@@ -32,36 +32,35 @@ function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
     backendApp,
   );
 
+  const rootFeatures = appCompiler.getRootChildren();
+
   return composeReactGenerators(
     {
       title: appConfig.title,
       description: appConfig.description,
-      children: safeMergeAll(
-        {
-          reactRouter: reactRouterGenerator({
-            children: {
+      children: {
+        reactRouter: reactRouterGenerator({
+          children: safeMerge(
+            {
               reactNotFoundHandler: reactNotFoundHandlerGenerator({}),
-              auth: builder.appConfig.includeAuth
-                ? compileAuthPages(builder)
-                : undefined,
+              features: compileWebFeatures(builder),
             },
-          }),
-          reactTailwind: reactTailwindGenerator({}),
-          reactSentry: reactSentryGenerator({}),
-          reactApollo: reactApolloGenerator({
-            devApiEndpoint: '/api/graphql',
-            schemaLocation: `${backendRelativePath}/schema.graphql`,
-            enableSubscriptions: appConfig.enableSubscriptions,
-            children: {
-              apolloErrorLink: apolloErrorLinkGenerator({}),
-              apolloSentry: apolloSentryGenerator({}),
-            },
-          }),
-          apolloError: apolloErrorGenerator({}),
-        },
-        compileAuthFeatures(builder) ?? {},
-        appCompiler.getRootChildren(),
-      ),
+            rootFeatures,
+          ),
+        }),
+        reactTailwind: reactTailwindGenerator({}),
+        reactSentry: reactSentryGenerator({}),
+        reactApollo: reactApolloGenerator({
+          devApiEndpoint: '/api/graphql',
+          schemaLocation: `${backendRelativePath}/schema.graphql`,
+          enableSubscriptions: appConfig.enableSubscriptions,
+          children: {
+            apolloErrorLink: apolloErrorLinkGenerator({}),
+            apolloSentry: apolloSentryGenerator({}),
+          },
+        }),
+        apolloError: apolloErrorGenerator({}),
+      },
     },
     {
       // TODO: Extract out logic

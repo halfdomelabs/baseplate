@@ -1,14 +1,7 @@
 import type { GeneratorBundle } from '@halfdomelabs/sync';
 
-import {
-  appModuleGenerator,
-  auth0ModuleGenerator,
-  authContextGenerator,
-  authPluginGenerator,
-  authRolesGenerator,
-  userSessionTypesGenerator,
-} from '@halfdomelabs/fastify-generators';
-import { FeatureUtils, ModelUtils } from '@halfdomelabs/project-builder-lib';
+import { appModuleGenerator } from '@halfdomelabs/fastify-generators';
+import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { safeMergeAll } from '@halfdomelabs/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
@@ -46,28 +39,6 @@ export function buildFeature(
         submodules: subFeatures.map((subFeature) =>
           buildFeature(subFeature.id, builder),
         ),
-        ...(projectDefinition.auth &&
-        featureId === projectDefinition.auth.authFeatureRef
-          ? {
-              authContext: authContextGenerator({}),
-              authPlugin: authPluginGenerator({}),
-              authRoles: authRolesGenerator({
-                roles: projectDefinition.auth.roles.map((r) => ({
-                  name: r.name,
-                  comment: r.comment,
-                  builtIn: r.builtIn,
-                })),
-              }),
-              auth0Module: auth0ModuleGenerator({
-                userModelName: ModelUtils.byIdOrThrow(
-                  projectDefinition,
-                  projectDefinition.auth.userModelRef,
-                ).name,
-                includeManagement: true,
-              }),
-              userSessionTypes: userSessionTypesGenerator({}),
-            }
-          : {}),
       },
       appCompiler.getChildrenForFeature(featureId),
     ),

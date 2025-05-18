@@ -1,5 +1,4 @@
 export * from './auth/index.js';
-export * from './auth0/index.js';
 export * from './bull/index.js';
 export * from './core/index.js';
 export * from './email/index.js';
