@@ -44,25 +44,38 @@ export const auth0PluginDefinitionSchema = z.object({
     onDelete: 'RESTRICT',
   }),
   // Always ensure the default roles are present at the top
-  roles: z.array(auth0RoleSchema).transform((roles) => [
-    ...AUTH_DEFAULT_ROLES.map((r) => {
-      const existingRole = roles.find((role) => role.name === r.name);
-      return existingRole
-        ? {
-            ...existingRole,
-            builtIn: true,
-          }
-        : {
-            ...r,
-            builtIn: true,
-            id: authRoleEntityType.generateNewId(),
-          };
-    }),
-    // Filter out the built-in roles
-    ...roles.filter(
-      (r) => !AUTH_DEFAULT_ROLES.map((v) => v.name).includes(r.name),
-    ),
-  ]),
+  roles: z
+    .array(auth0RoleSchema)
+    .superRefine((roles, ctx) => {
+      const dup = roles
+        .map((r) => r.name)
+        .filter((v, i, a) => a.indexOf(v) !== i);
+      if (dup.length > 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Duplicate role name(s): ${dup.join(', ')}`,
+        });
+      }
+    })
+    .transform((roles) => [
+      ...AUTH_DEFAULT_ROLES.map((r) => {
+        const existingRole = roles.find((role) => role.name === r.name);
+        return existingRole
+          ? {
+              ...existingRole,
+              builtIn: true,
+            }
+          : {
+              ...r,
+              builtIn: true,
+              id: authRoleEntityType.generateNewId(),
+            };
+      }),
+      // Filter out the built-in roles
+      ...roles.filter(
+        (r) => !AUTH_DEFAULT_ROLES.map((v) => v.name).includes(r.name),
+      ),
+    ]),
 });
 
 export type Auth0PluginDefinition = z.infer<typeof auth0PluginDefinitionSchema>;

@@ -28,7 +28,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
     plugins: [
       viteTsconfigPaths(),
       federation({
-        name: 'baseplate-plugin-storage',
+        name: 'baseplate-plugin-auth',
         filename: 'remoteEntry.js',
         exposes: viteTargets,
         shared: {

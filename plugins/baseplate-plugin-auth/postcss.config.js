@@ -3,7 +3,7 @@ export default {
   plugins: {
     '@tailwindcss/postcss': {},
     'postcss-prefixer': {
-      prefix: 'storage-',
+      prefix: 'auth-',
     },
   },
 };
