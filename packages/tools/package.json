@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/tools",
-  "version": "0.5.14",
+  "version": "0.5.15",
   "description": "Shared dev configurations for linting, formatting, and testing Baseplate projects",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {

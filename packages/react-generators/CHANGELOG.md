@@ -1,5 +1,20 @@
 # @halfdomelabs/react-generators
 
+## 0.11.1
+
+### Patch Changes
+
+- [#544](https://github.com/halfdomelabs/baseplate/pull/544) [`761e321`](https://github.com/halfdomelabs/baseplate/commit/761e32199600e40d67297d73af06f48213b48698) Thanks [@kingston](https://github.com/kingston)! - Upgrade React to v19
+
+- [#548](https://github.com/halfdomelabs/baseplate/pull/548) [`066d670`](https://github.com/halfdomelabs/baseplate/commit/066d670a7dcee3ed345d8007b3be1cf334bcff1f) Thanks [@kingston](https://github.com/kingston)! - Upgrade @hookform/resolvers to 5.0.1 and react-hook-form to 7.56.3
+
+- [#549](https://github.com/halfdomelabs/baseplate/pull/549) [`4437708`](https://github.com/halfdomelabs/baseplate/commit/4437708a9db71f749b122b7a36c34689ea3c44dc) Thanks [@kingston](https://github.com/kingston)! - Split out auth0 functionality into separate plugin
+
+- Updated dependencies []:
+  - @halfdomelabs/core-generators@0.11.7
+  - @halfdomelabs/sync@0.11.4
+  - @halfdomelabs/utils@0.1.9
+
 ## 0.11.0
 
 ### Minor Changes

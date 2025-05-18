@@ -1,5 +1,11 @@
 # @halfdomelabs/tools
 
+## 0.5.15
+
+### Patch Changes
+
+- [#546](https://github.com/halfdomelabs/baseplate/pull/546) [`bf441a1`](https://github.com/halfdomelabs/baseplate/commit/bf441a123c0a9f991951ff46ec0d69954c586ae4) Thanks [@kingston](https://github.com/kingston)! - Upgrade to Tailwind v4
+
 ## 0.5.14
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.9.14
+
+### Patch Changes
+
+- [#544](https://github.com/halfdomelabs/baseplate/pull/544) [`761e321`](https://github.com/halfdomelabs/baseplate/commit/761e32199600e40d67297d73af06f48213b48698) Thanks [@kingston](https://github.com/kingston)! - Upgrade React to v19
+
+- [#548](https://github.com/halfdomelabs/baseplate/pull/548) [`066d670`](https://github.com/halfdomelabs/baseplate/commit/066d670a7dcee3ed345d8007b3be1cf334bcff1f) Thanks [@kingston](https://github.com/kingston)! - Upgrade @hookform/resolvers to 5.0.1 and react-hook-form to 7.56.3
+
+- [#546](https://github.com/halfdomelabs/baseplate/pull/546) [`bf441a1`](https://github.com/halfdomelabs/baseplate/commit/bf441a123c0a9f991951ff46ec0d69954c586ae4) Thanks [@kingston](https://github.com/kingston)! - Upgrade to Tailwind v4
+
+- [#549](https://github.com/halfdomelabs/baseplate/pull/549) [`4437708`](https://github.com/halfdomelabs/baseplate/commit/4437708a9db71f749b122b7a36c34689ea3c44dc) Thanks [@kingston](https://github.com/kingston)! - Split out auth0 functionality into separate plugin
+
+- [#548](https://github.com/halfdomelabs/baseplate/pull/548) [`066d670`](https://github.com/halfdomelabs/baseplate/commit/066d670a7dcee3ed345d8007b3be1cf334bcff1f) Thanks [@kingston](https://github.com/kingston)! - Make IDs required for entities and use form inputs instead of form outputs
+
+- [#547](https://github.com/halfdomelabs/baseplate/pull/547) [`887e077`](https://github.com/halfdomelabs/baseplate/commit/887e0772527622f504ffc2693369ca3ffa5c33e1) Thanks [@kingston](https://github.com/kingston)! - Update ui-components to use new ShadCN styles for Tailwind v4
+
+- Updated dependencies [[`761e321`](https://github.com/halfdomelabs/baseplate/commit/761e32199600e40d67297d73af06f48213b48698), [`066d670`](https://github.com/halfdomelabs/baseplate/commit/066d670a7dcee3ed345d8007b3be1cf334bcff1f), [`bf441a1`](https://github.com/halfdomelabs/baseplate/commit/bf441a123c0a9f991951ff46ec0d69954c586ae4), [`066d670`](https://github.com/halfdomelabs/baseplate/commit/066d670a7dcee3ed345d8007b3be1cf334bcff1f), [`887e077`](https://github.com/halfdomelabs/baseplate/commit/887e0772527622f504ffc2693369ca3ffa5c33e1)]:
+  - @halfdomelabs/ui-components@0.5.10
+  - @halfdomelabs/sync@0.11.4
+  - @halfdomelabs/utils@0.1.9
+
 ## 0.9.13
 
 ### Patch Changes
