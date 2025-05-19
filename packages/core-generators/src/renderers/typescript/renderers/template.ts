@@ -15,6 +15,18 @@ export interface RenderTsTemplateOptions {
 }
 
 /**
+ * Escapes the replacement string to avoid conflicts with special replacement patterns.
+ *
+ * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_string_as_the_replacement.
+ *
+ * @param replacement - The replacement string to escape.
+ * @returns The escaped replacement string.
+ */
+function escapeReplacement(replacement: string): string {
+  return replacement.replaceAll('$', '$$$$');
+}
+
+/**
  * Render a template to a code fragment.
  * @param template - The template to render.
  * @param variables - The variables to render the template with.
@@ -150,7 +162,10 @@ export function renderTsTemplateToTsCodeFragment(
       : contents; // Note: leading whitespace is handled by the marker's position
 
     // Use replace instead of replaceAll as markers are unique
-    renderedTemplate = renderedTemplate.replace(marker, replacement);
+    renderedTemplate = renderedTemplate.replace(
+      marker,
+      escapeReplacement(replacement),
+    );
   }
 
   // Resolve TSX markers
@@ -161,7 +176,10 @@ export function renderTsTemplateToTsCodeFragment(
       : contents;
 
     // Use replace instead of replaceAll as markers are unique
-    renderedTemplate = renderedTemplate.replace(marker, replacement);
+    renderedTemplate = renderedTemplate.replace(
+      marker,
+      escapeReplacement(replacement),
+    );
   }
 
   // Resolve comment markers
@@ -172,7 +190,10 @@ export function renderTsTemplateToTsCodeFragment(
       : contents;
 
     // Use replace instead of replaceAll as markers are unique
-    renderedTemplate = renderedTemplate.replace(marker, replacement);
+    renderedTemplate = renderedTemplate.replace(
+      marker,
+      escapeReplacement(replacement),
+    );
   }
 
   // Resolve inline markers
@@ -183,7 +204,10 @@ export function renderTsTemplateToTsCodeFragment(
       : contents;
 
     // Use replace instead of replaceAll as markers are unique
-    renderedTemplate = renderedTemplate.replace(marker, replacement);
+    renderedTemplate = renderedTemplate.replace(
+      marker,
+      escapeReplacement(replacement),
+    );
   }
 
   const { imports, hoistedFragments } = flattenImportsAndHoistedFragments(

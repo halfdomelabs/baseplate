@@ -40,7 +40,6 @@ export function generateTypescriptEslintConfig(options = []) {
     'vitest.config.ts',
     ...options.flatMap((option) => option.extraDefaultProjectFiles ?? []),
   ];
-
   return tsEslint.config(
     // ESLint Configs for all files
     eslint.configs.recommended,

@@ -1,7 +1,7 @@
 ---
 description: 
-globs: 
-alwaysApply: true
+globs: packages/**,plugins/**
+alwaysApply: false
 ---
 - Use TypeScript with strict type checking enabled
 - All functions (excluding one-liner arrow functions) require explicit return types

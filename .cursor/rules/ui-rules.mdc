@@ -1,0 +1,8 @@
+---
+description: 
+globs: *.tsx,packages/project-builder-web/**,packages/ui-components/**
+alwaysApply: false
+---
+## UI
+
+- We use a rough analog of ShadCN components that can be imported from @halfdomelabs/ui-components

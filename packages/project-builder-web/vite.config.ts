@@ -1,3 +1,5 @@
+import type { ClientRequest } from 'node:http';
+
 import federation from '@originjs/vite-plugin-federation';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
@@ -11,9 +13,6 @@ import { pluginDevServerPlugin } from './plugins/plugin-dev-server.js';
 export default defineConfig(({ mode }) => {
   const envVars = { ...process.env, ...loadEnv(mode, process.cwd(), '') };
   const PORT = envVars.PORT ? Number.parseInt(envVars.PORT, 10) : 3000;
-  const localhostOriginRegex = new RegExp(
-    `^(http|w)://(localhost|127.0.0.1|[::1]):${PORT}`,
-  );
 
   return {
     plugins: [
@@ -52,26 +51,30 @@ export default defineConfig(({ mode }) => {
               target: envVars.DEV_BACKEND_HOST,
               changeOrigin: true,
               ws: true,
-              // ensure we rewrite origin only if it comes from our site
               configure: (proxy) => {
-                proxy.on('proxyReq', (proxyReq) => {
+                const rewriteOriginIfLocalhost = (
+                  proxyReq: ClientRequest,
+                ): void => {
                   const origin = proxyReq.getHeader('origin');
-                  if (typeof origin !== 'string') return;
-                  if (!envVars.DEV_BACKEND_HOST) return;
 
-                  if (localhostOriginRegex.test(origin)) {
+                  // Regex for this dev server instance URLs
+                  const devServerRegex = new RegExp(
+                    `^(http|https|ws|wss)://(localhost|127.0.0.1|\\[::1\\]):${PORT}$`,
+                  );
+
+                  // Rewrite localhost origin to match backend host only if it comes from the Vite dev server
+                  if (
+                    typeof origin === 'string' &&
+                    envVars.DEV_BACKEND_HOST &&
+                    devServerRegex.test(origin)
+                  ) {
                     proxyReq.setHeader('origin', envVars.DEV_BACKEND_HOST);
                   }
-                });
-                proxy.on('proxyReqWs', (proxyReq) => {
-                  const origin = proxyReq.getHeader('origin');
-                  if (typeof origin !== 'string') return;
-                  if (!envVars.DEV_BACKEND_HOST) return;
+                };
 
-                  if (localhostOriginRegex.test(origin)) {
-                    proxyReq.setHeader('origin', envVars.DEV_BACKEND_HOST);
-                  }
-                });
+                // Apply to both HTTP and WebSocket requests
+                proxy.on('proxyReq', rewriteOriginIfLocalhost);
+                proxy.on('proxyReqWs', rewriteOriginIfLocalhost);
               },
             },
           }

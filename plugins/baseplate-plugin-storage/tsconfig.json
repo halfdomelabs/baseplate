@@ -11,5 +11,6 @@
   "exclude": ["**/generators/*/*/templates/**"],
   "tsc-alias": {
     "resolveFullPaths": true
-  }
+  },
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

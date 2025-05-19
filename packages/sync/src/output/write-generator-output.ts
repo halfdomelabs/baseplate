@@ -21,6 +21,7 @@ import {
 import {
   FormatterError,
   prepareGeneratorFiles,
+  PrepareGeneratorFilesError,
 } from './prepare-generator-files/index.js';
 import { writeGeneratorFiles } from './write-generator-file/index.js';
 
@@ -227,9 +228,12 @@ export async function writeGeneratorOutput(
       fileIdToRelativePathMap,
     };
   } catch (error) {
-    if (error instanceof FormatterError) {
-      logger.error(`Error formatting file: ${error.message}`);
-      logger.info(`File Dump:\n${error.fileContents}`);
+    if (
+      error instanceof PrepareGeneratorFilesError &&
+      error.causes[0].cause instanceof FormatterError
+    ) {
+      const formatterError = error.causes[0].cause;
+      logger.info(`File Dump:\n${formatterError.fileContents}`);
     }
     throw error;
   }
