@@ -1,4 +1,5 @@
-import { useRef } from 'react';
+import { flattenObject } from 'es-toolkit';
+import { useEffect, useRef } from 'react';
 import { type Control, type FieldValues, useFormState } from 'react-hook-form';
 
 import { useBlockerDialog } from './useBlockerDialog.js';
@@ -17,6 +18,31 @@ export function useBlockUnsavedChangesNavigate<
   const isDirtyRef = useRef(false);
   const formState = useFormState({ control });
   isDirtyRef.current = formState.isDirty;
+
+  if (import.meta.env.DEV) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- only want to run this check in dev mode for performance/usability reasons
+    useEffect(() => {
+      if (
+        Object.keys(formState.dirtyFields).length === 0 &&
+        formState.isDirty
+      ) {
+        // a bit of a hack to figure out what the issue is but OK since we only do this in dev mode
+        const { _formValues, _defaultValues } = control;
+        const formValueKeys = Object.keys(flattenObject(_formValues));
+        const defaultValueKeys = Object.keys(flattenObject(_defaultValues));
+        const missingKeys = formValueKeys.filter(
+          (key) => !defaultValueKeys.includes(key),
+        );
+
+        throw new Error(
+          `Form is dirty but no fields are marked as dirty. This implies that there is likely a field ` +
+            `is controlled but not set in defaultValues. This can be fixed by setting the default value to the field. ` +
+            `Missing fields: ${missingKeys.join(', ')}\n` +
+            `Note: You will only see this error if you are running the app in dev mode.`,
+        );
+      }
+    }, [formState.dirtyFields, formState.isDirty, control]);
+  }
 
   useBlockerDialog({
     disableBlock: !formState.isDirty,
