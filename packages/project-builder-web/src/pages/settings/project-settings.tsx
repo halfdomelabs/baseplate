@@ -88,9 +88,6 @@ function ProjectSettingsPage(): React.JSX.Element {
                 name="packageScope"
                 description="The scope for packages in this project, e.g. my-project will result in @my-project/app-name"
                 control={control}
-                registerOptions={{
-                  setValueAs: (value: string) => value || undefined,
-                }}
               />
             </SectionListSectionContent>
           </SectionListSection>
