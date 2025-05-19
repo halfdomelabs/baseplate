@@ -1,3 +1,4 @@
+import { toast } from '@halfdomelabs/ui-components';
 import { flattenObject } from 'es-toolkit';
 import { useEffect, useRef } from 'react';
 import { type Control, type FieldValues, useFormState } from 'react-hook-form';
@@ -34,11 +35,11 @@ export function useBlockUnsavedChangesNavigate<
           (key) => !defaultValueKeys.includes(key),
         );
 
-        throw new Error(
+        toast.error(
           `Form is dirty but no fields are marked as dirty. This implies that there is likely a field ` +
             `is controlled but not set in defaultValues. This can be fixed by setting the default value to the field. ` +
-            `Missing fields: ${missingKeys.join(', ')}\n` +
-            `Note: You will only see this error if you are running the app in dev mode.`,
+            `Note: You will only see this error if you are running the app in dev mode. ` +
+            `Missing fields: ${missingKeys.join(', ')}`,
         );
       }
     }, [formState.dirtyFields, formState.isDirty, control]);
