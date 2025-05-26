@@ -56,9 +56,7 @@ export default createPlatformPluginExport({
             })),
           }),
           auth0Module: auth0ModuleGenerator({
-            userModelName: definitionContainer.nameFromId(
-              auth.userAccountModelRef,
-            ),
+            userModelName: definitionContainer.nameFromId(auth.modelRefs.user),
             includeManagement: true,
           }),
           userSessionTypes: userSessionTypesGenerator({}),

@@ -122,8 +122,6 @@ export default {
     // https://github.com/prettier/prettier/discussions/15167
     'prettier-plugin-packagejson',
     'prettier-plugin-tailwindcss',
-    // we can skip this for now because it's used minimally
-    'postcss-load-config',
     // Tailwind v4 is not recognized as a dependency by Knip
     'tailwindcss',
   ],

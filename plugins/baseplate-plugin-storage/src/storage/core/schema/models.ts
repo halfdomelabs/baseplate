@@ -1,9 +1,10 @@
-import {
-  authConfigSpec,
-  type ModelMergerModelInput,
-  type ModelMergerScalarFieldInput,
-  type ProjectDefinitionContainer,
+import type {
+  ModelMergerModelInput,
+  ModelMergerScalarFieldInput,
+  ProjectDefinitionContainer,
 } from '@halfdomelabs/project-builder-lib';
+
+import { authConfigSpec } from '@halfdomelabs/project-builder-lib';
 
 const FILE_MODEL_FIELDS: ModelMergerScalarFieldInput[] = [
   {
@@ -61,11 +62,12 @@ const FILE_MODEL_FIELDS: ModelMergerScalarFieldInput[] = [
 ];
 
 export function createStorageModels(
+  { storageFeatureRef }: { storageFeatureRef: string },
   projectDefinitionContainer: ProjectDefinitionContainer,
 ): { file: ModelMergerModelInput } {
   const authSpec =
     projectDefinitionContainer.pluginStore.getPluginSpec(authConfigSpec);
-  const userAccountModel = authSpec.getUserAccountModel(
+  const userAccountModel = authSpec.getUserModel(
     projectDefinitionContainer.definition,
   );
   if (!userAccountModel) {
@@ -75,6 +77,8 @@ export function createStorageModels(
   }
   return {
     file: {
+      name: 'File',
+      featureRef: storageFeatureRef,
       model: {
         fields: FILE_MODEL_FIELDS,
         primaryKeyFieldRefs: ['id'],

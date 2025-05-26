@@ -21,16 +21,16 @@ function AdapterEditorForm({ className, control }: Props): React.JSX.Element {
   });
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('storage:space-y-4', className)}>
       <h3>S3 Adapters</h3>
       {fields.map((field, idx) => (
-        <div key={field.id} className={cn('space-y-4')}>
+        <div key={field.id} className="storage:space-y-4">
           <InputFieldController
             label="Name"
             control={control}
             name={`s3Adapters.${idx}.name`}
           />
-          <div className={cn('flex w-full gap-4 *:flex-1')}>
+          <div className="storage:flex storage:w-full storage:gap-4 storage:*:flex-1">
             <InputFieldController
               label="AWS Bucket Name Environment Variable"
               control={control}

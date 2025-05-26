@@ -1,0 +1,8 @@
+{
+  "name": "auth",
+  "displayName": "Auth",
+  "icon": "icon.svg",
+  "description": "This plugin sets up a self-hosted auth service using email/password authentication.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"]
+}

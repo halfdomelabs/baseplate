@@ -1,0 +1,12 @@
+{
+  "exportGroups": {
+    "": {
+      "existingImportsProvider": {
+        "moduleSpecifier": "@/src/generators/auth/_providers/auth-components.js",
+        "importSchemaName": "authComponentsImportsSchema",
+        "providerName": "authComponentsImportsProvider",
+        "providerTypeName": "AuthComponentImportsProvider"
+      }
+    }
+  }
+}

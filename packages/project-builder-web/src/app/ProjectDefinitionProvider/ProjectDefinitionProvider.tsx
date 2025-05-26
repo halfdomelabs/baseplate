@@ -6,7 +6,6 @@ import type {
 import type React from 'react';
 
 import {
-  createPluginImplementationStore,
   createProjectDefinitionSchemaWithContext,
   fixRefDeletions,
   ProjectDefinitionContainer,
@@ -113,11 +112,6 @@ export function ProjectDefinitionProvider({
       }
     }
 
-    const pluginContainer = createPluginImplementationStore(
-      schemaParserContext.pluginStore,
-      definition,
-    );
-
     async function saveDefinitionWithFeedback(
       definition: ProjectDefinitionSetter,
       options: SaveDefinitionWithFeedbackOptions = {},
@@ -151,7 +145,7 @@ export function ProjectDefinitionProvider({
         void saveDefinitionWithFeedback(definition, options);
       },
       isSavingDefinition,
-      pluginContainer,
+      pluginContainer: projectDefinitionContainer.pluginStore,
       schemaParserContext,
       updatedExternally,
     };

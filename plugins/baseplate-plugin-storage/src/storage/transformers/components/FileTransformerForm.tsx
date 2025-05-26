@@ -9,6 +9,8 @@ import type { StoragePluginDefinition } from '@src/storage/core/schema/plugin-de
 
 import type { FileTransformerConfig } from '../types';
 
+import '@src/styles.css';
+
 export function FileTransformerForm({
   name,
   formProps: { control },
@@ -26,7 +28,7 @@ export function FileTransformerForm({
 
   const fileRelations =
     originalModel.model.relations?.filter(
-      (relation) => relation.modelRef === storageConfig.fileModelRef,
+      (relation) => relation.modelRef === storageConfig.modelRefs.file,
     ) ?? [];
 
   const relationOptions = fileRelations.map((relation) => ({
@@ -35,9 +37,9 @@ export function FileTransformerForm({
   }));
 
   return (
-    <div className="space-y-4">
+    <div className="storage:space-y-4">
       <SelectFieldController
-        className="w-full"
+        className="storage:w-full"
         control={controlTyped}
         label="Relation"
         name={`${prefix}.fileRelationRef`}

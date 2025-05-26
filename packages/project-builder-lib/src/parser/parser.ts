@@ -16,7 +16,7 @@ import { initializePlugins } from '@src/plugins/imports/loader.js';
 import { pluginConfigSpec, zPluginWrapper } from '@src/plugins/index.js';
 import { parseSchemaWithReferences } from '@src/references/parse-schema-with-references.js';
 import { adminCrudInputSpec, modelTransformerSpec } from '@src/schema/index.js';
-import { basePluginSchema } from '@src/schema/plugins/index.js';
+import { basePluginSchema } from '@src/schema/plugins/definition.js';
 import { projectDefinitionSchema } from '@src/schema/project-definition.js';
 
 import type { SchemaParserContext } from './types.js';

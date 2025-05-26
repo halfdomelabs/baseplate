@@ -17,11 +17,13 @@ export const storageAdapterEntityType = createEntityType(
 
 export const storagePluginDefinitionSchema = zRefBuilder(
   z.object({
-    fileModelRef: zRef(z.string(), {
-      type: modelEntityType,
-      onDelete: 'RESTRICT',
+    modelRefs: z.object({
+      file: zRef(z.string(), {
+        type: modelEntityType,
+        onDelete: 'RESTRICT',
+      }),
     }),
-    featureRef: zRef(z.string().min(1), {
+    storageFeatureRef: zRef(z.string().min(1), {
       type: featureEntityType,
       onDelete: 'RESTRICT',
     }),
@@ -61,7 +63,7 @@ export const storagePluginDefinitionSchema = zRefBuilder(
     ),
   }),
   (builder) => {
-    builder.addPathToContext('fileModelRef', modelEntityType, 'fileModel');
+    builder.addPathToContext('modelRefs.file', modelEntityType, 'fileModel');
   },
 );
 

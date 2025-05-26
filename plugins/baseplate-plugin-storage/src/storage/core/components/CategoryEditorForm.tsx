@@ -27,7 +27,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
 
   const { definition, pluginContainer } = useProjectDefinition();
 
-  const fileModel = useWatch({ control, name: 'fileModelRef' });
+  const fileModelRef = useWatch({ control, name: 'modelRefs.file' });
   const adapters = useWatch({ control, name: 's3Adapters' });
 
   const adapterOptions = adapters.map((adapter) => ({
@@ -38,7 +38,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
   const foreignKeyOptions = definition.models
     .flatMap((m) =>
       m.model.relations
-        ?.filter((r) => r.modelRef === fileModel)
+        ?.filter((r) => r.modelRef === fileModelRef)
         .map((r) => ({
           label: r.foreignRelationName,
           value: r.foreignId,
@@ -55,11 +55,11 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
     }));
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('storage:space-y-4', className)}>
       <h3>Upload Categories</h3>
       {fields.map((field, idx) => (
-        <div key={field.id} className={cn('space-y-4')}>
-          <div className={cn('grid grid-cols-3 gap-4')}>
+        <div key={field.id} className="storage:space-y-4">
+          <div className="storage:grid storage:grid-cols-3 storage:gap-4">
             <InputFieldController
               label="Name"
               control={control}

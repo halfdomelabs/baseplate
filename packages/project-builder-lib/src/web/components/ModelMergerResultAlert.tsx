@@ -5,17 +5,17 @@ import {
 } from '@halfdomelabs/ui-components';
 import { type ReactElement } from 'react';
 
-import type { PendingModelChange } from '@src/tools/index.js';
+import type { ModelMergerModelDiffResult } from '@src/tools/index.js';
 
 interface Props {
-  pendingModelChanges: (PendingModelChange | undefined)[];
+  pendingModelChanges: Record<string, ModelMergerModelDiffResult | undefined>;
 }
 
 export function ModelMergerResultAlert({
   pendingModelChanges,
 }: Props): ReactElement | null {
-  const changes = pendingModelChanges.filter(
-    (change): change is PendingModelChange => change !== undefined,
+  const changes = Object.values(pendingModelChanges).filter(
+    (change): change is ModelMergerModelDiffResult => change !== undefined,
   );
   if (changes.length === 0) {
     return null;

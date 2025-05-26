@@ -3,7 +3,11 @@ import type {
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
 
-import { runSchemaMigrations } from '@halfdomelabs/project-builder-lib';
+import {
+  createPluginImplementationStore,
+  runPluginMigrations,
+  runSchemaMigrations,
+} from '@halfdomelabs/project-builder-lib';
 import { CancelledSyncError, type Logger } from '@halfdomelabs/sync';
 import {
   enhanceErrorWithContext,
@@ -28,6 +32,7 @@ import { getPackageSyncStatusFromResult } from './utils.js';
 
 async function loadProjectJson(
   directory: string,
+  context: SchemaParserContext,
 ): Promise<{ definition: ProjectDefinition; hash: string }> {
   const projectJsonPath = path.join(
     directory,
@@ -56,7 +61,17 @@ async function loadProjectJson(
       );
     }
 
-    return { definition: migratedDefinition, hash };
+    const pluginImplementationStore = createPluginImplementationStore(
+      context.pluginStore,
+      migratedDefinition,
+    );
+
+    const definitionWithPluginMigrations = runPluginMigrations(
+      migratedDefinition,
+      pluginImplementationStore,
+    );
+
+    return { definition: definitionWithPluginMigrations, hash };
   } catch (err) {
     throw enhanceErrorWithContext(
       err,
@@ -136,7 +151,10 @@ export async function buildProject({
   }));
 
   try {
-    const { definition: projectJson } = await loadProjectJson(directory);
+    const { definition: projectJson } = await loadProjectJson(
+      directory,
+      context,
+    );
     const apps = compileApplications(projectJson, context);
 
     await syncMetadataController?.updateMetadata((metadata) => ({

@@ -1,0 +1,10 @@
+fragment CurrentUser on User {
+  id
+  email
+}
+
+query getUserById($id: Uuid!) {
+  TPL_USER_QUERY_NAME(id: $id) {
+    ...CurrentUser
+  }
+}

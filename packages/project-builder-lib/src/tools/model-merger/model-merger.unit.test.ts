@@ -18,7 +18,7 @@ import {
 } from '@src/schema/models/index.js';
 
 import type {
-  ModelMergerDiffOutput,
+  ModelMergerDefinitionDiffOutput,
   ModelMergerModelInput,
   ModelMergerRelationFieldInput,
   ModelMergerScalarFieldInput,
@@ -294,7 +294,7 @@ describe('ModelMerger', () => {
         },
       });
 
-      const diff: ModelMergerDiffOutput = {
+      const diff: ModelMergerDefinitionDiffOutput = {
         'model.fields': [
           {
             type: 'add',
@@ -342,7 +342,7 @@ describe('ModelMerger', () => {
         },
       };
 
-      const diff: ModelMergerDiffOutput = {
+      const diff: ModelMergerDefinitionDiffOutput = {
         'model.fields': [
           {
             type: 'update',
@@ -387,7 +387,7 @@ describe('ModelMerger', () => {
         },
       };
 
-      const diff: ModelMergerDiffOutput = {
+      const diff: ModelMergerDefinitionDiffOutput = {
         'model.fields': [],
         'model.relations': [
           {
@@ -445,7 +445,7 @@ describe('ModelMerger', () => {
         },
       };
 
-      const diff: ModelMergerDiffOutput = {
+      const diff: ModelMergerDefinitionDiffOutput = {
         'model.fields': [],
         'model.relations': [],
         'model.primaryKeyFieldRefs': [],

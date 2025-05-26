@@ -1,5 +1,7 @@
 import type { Merge, SetOptional } from 'type-fest';
 
+import { mapValues } from 'es-toolkit';
+
 import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
 import type {
   ModelConfig,
@@ -7,7 +9,6 @@ import type {
   ModelRelationFieldConfigInput,
   ModelScalarFieldConfigInput,
   ModelUniqueConstraintConfigInput,
-  ProjectDefinition,
 } from '@src/schema/index.js';
 import type { DefinitionDiffOutput } from '@src/utils/definition-diff/definition-diff.js';
 
@@ -32,15 +33,33 @@ export type ModelMergerScalarFieldInput = SetOptional<
   'id'
 >;
 
-export type ModelMergerRelationFieldInput = SetOptional<
+type ModelMergerRelationFieldInput = SetOptional<
   ModelRelationFieldConfigInput,
   'id' | 'foreignId'
 >;
 
-export type ModelMergerUniqueConstraintInput = SetOptional<
+type ModelMergerUniqueConstraintInput = SetOptional<
   ModelUniqueConstraintConfigInput,
   'id'
 >;
+
+/**
+ * Input for the model merger for a particular model.
+ */
+export interface ModelMergerModelInput {
+  name: string;
+  featureRef: string;
+  model: Merge<
+    ModelConfigInput['model'],
+    {
+      fields: ModelMergerScalarFieldInput[];
+      relations?: ModelMergerRelationFieldInput[];
+      uniqueConstraints?: ModelMergerUniqueConstraintInput[];
+    }
+  >;
+}
+
+export type ModelMergerModelsInput = Record<string, ModelMergerModelInput>;
 
 /**
  * Computes a unique key for a unique constraint by sorting its field refs.
@@ -53,17 +72,6 @@ function getUniqueConstraintKey(
 ): string {
   const fields = constraint.fields.map((f) => f.fieldRef).sort();
   return fields.join('|');
-}
-
-export interface ModelMergerModelInput {
-  model: Merge<
-    ModelConfigInput['model'],
-    {
-      fields: ModelMergerScalarFieldInput[];
-      relations?: ModelMergerRelationFieldInput[];
-      uniqueConstraints?: ModelMergerUniqueConstraintInput[];
-    }
-  >;
 }
 
 export const modelMergerDefinitionDiffConfig =
@@ -82,7 +90,7 @@ export const modelMergerDefinitionDiffConfig =
     ),
   });
 
-export type ModelMergerDiffOutput = DefinitionDiffOutput<
+export type ModelMergerDefinitionDiffOutput = DefinitionDiffOutput<
   typeof modelMergerDefinitionDiffConfig
 >;
 
@@ -131,9 +139,15 @@ function serializeModelMergerModelInput(
   };
 }
 
+/**
+ * Attaches IDs to the model merger model input.
+ *
+ * @param input - The model merger model input.
+ * @returns The model merger model input with IDs attached.
+ */
 function attachIdsToModelMergerModelInput(
   input: ModelMergerModelInput,
-): Pick<ModelConfigInput, 'model'> {
+): Pick<ModelConfigInput, keyof ModelMergerModelInput> {
   return {
     ...input,
     model: {
@@ -156,6 +170,13 @@ function attachIdsToModelMergerModelInput(
   };
 }
 
+/**
+ * Deserializes a model merger model input converting all names to IDs.
+ *
+ * @param input - The model merger model input.
+ * @param resolveForeignFieldRef - A function that resolves the foreign field ref.
+ * @returns The deserialized model merger model input.
+ */
 function deserializeModelMergerModelInput(
   input: ModelMergerModelInput,
   resolveForeignFieldRef: (modelId: string, fieldName: string) => string,
@@ -199,7 +220,14 @@ function deserializeModelMergerModelInput(
   };
 }
 
-export function createNewModelConfigInput(
+/**
+ * Creates a new blank model config input from a name and feature ref.
+ *
+ * @param name - The name of the model.
+ * @param featureRef - The feature ref of the model.
+ * @returns The new model config input.
+ */
+function createNewModelConfigInput(
   name: string,
   featureRef: string,
 ): ModelConfigInput {
@@ -214,16 +242,18 @@ export function createNewModelConfigInput(
   };
 }
 
-export interface PendingModelChange {
+/**
+ * Result of a model merger diff for a specific model.
+ */
+export interface ModelMergerModelDiffResult {
   isNewModel: boolean;
   id: string | undefined;
   name: string;
-  changes: ModelMergerDiffOutput;
+  featureRef: string;
+  changes: ModelMergerDefinitionDiffOutput;
 }
 
 interface ModelMergerOptions {
-  defaultName: string;
-  defaultFeatureRef: string;
   siblingModels?: ModelConfigInput[];
 }
 
@@ -240,10 +270,10 @@ export function createModelMergerResult(
   current: ModelConfigInput | undefined,
   desired: ModelMergerModelInput,
   definitionContainer: ProjectDefinitionContainer,
-  { defaultName, defaultFeatureRef, siblingModels = [] }: ModelMergerOptions,
-): PendingModelChange | undefined {
+  { siblingModels = [] }: ModelMergerOptions = {},
+): ModelMergerModelDiffResult | undefined {
   const currentModel =
-    current ?? createNewModelConfigInput(defaultName, defaultFeatureRef);
+    current ?? createNewModelConfigInput(desired.name, desired.featureRef);
   // resolves all the names of the current model config input
   const resolvedCurrent = serializeModelMergerModelInput(
     currentModel,
@@ -265,13 +295,43 @@ export function createModelMergerResult(
     isNewModel: !current,
     id: currentModel.id,
     name: currentModel.name,
+    featureRef: currentModel.featureRef,
     changes: diff,
   };
 }
 
+/**
+ * Creates a model merger result for a set of models.
+ *
+ * @param current - A map of model IDs
+ * @param desired - The desired model definition.
+ * @param definitionContainer - Project definition container.
+ * @param options - Diff options.
+ * @returns A model merger result for a set of models.
+ */
+export function createModelMergerResults<T extends ModelMergerModelsInput>(
+  current: Record<keyof T, string | undefined>,
+  desired: T,
+  definitionContainer: ProjectDefinitionContainer,
+  { siblingModels = [] }: ModelMergerOptions = {},
+): Record<keyof T, ModelMergerModelDiffResult | undefined> {
+  return mapValues(desired, (desired, key) =>
+    createModelMergerResult(
+      current[key] && modelEntityType.isId(current[key])
+        ? ModelUtils.byIdOrThrow(definitionContainer.definition, current[key])
+        : undefined,
+      desired,
+      definitionContainer,
+      {
+        siblingModels,
+      },
+    ),
+  );
+}
+
 export function applyModelMergerDiff(
   model: ModelConfigInput,
-  diff: ModelMergerDiffOutput,
+  diff: ModelMergerDefinitionDiffOutput,
   definitionContainer: ProjectDefinitionContainer,
   siblingModels: ModelConfigInput[] = [],
 ): ModelConfigInput {
@@ -319,14 +379,14 @@ export function applyModelMergerDiff(
 }
 
 export function applyModelMergerResultInPlace(
-  definition: ProjectDefinition,
-  result: PendingModelChange,
+  result: ModelMergerModelDiffResult,
   definitionContainer: ProjectDefinitionContainer,
-  { defaultName, defaultFeatureRef, siblingModels = [] }: ModelMergerOptions,
-): ModelConfigInput {
+  { siblingModels = [] }: ModelMergerOptions = {},
+): string {
+  const { definition } = definitionContainer;
   const model = result.id
     ? ModelUtils.byIdOrThrow(definitionContainer.definition, result.id)
-    : createNewModelConfigInput(defaultName, defaultFeatureRef);
+    : createNewModelConfigInput(result.name, result.featureRef);
 
   const newModel = applyModelMergerDiff(
     model,
@@ -343,5 +403,28 @@ export function applyModelMergerResultInPlace(
     }
     definition.models[index] = newModel as ModelConfig;
   }
-  return newModel;
+  return newModel.id;
+}
+
+export function createAndApplyModelMergerResults<
+  T extends ModelMergerModelsInput,
+>(
+  current: Record<keyof T, string | undefined>,
+  desired: T,
+  definitionContainer: ProjectDefinitionContainer,
+  { siblingModels = [] }: ModelMergerOptions = {},
+): Record<keyof T, string> {
+  const results = createModelMergerResults(
+    current,
+    desired,
+    definitionContainer,
+    { siblingModels },
+  );
+  return mapValues(results, (result, key) =>
+    result
+      ? applyModelMergerResultInPlace(result, definitionContainer, {
+          siblingModels,
+        })
+      : desired[key].name,
+  );
 }

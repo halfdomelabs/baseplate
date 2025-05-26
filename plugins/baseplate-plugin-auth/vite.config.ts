@@ -5,6 +5,7 @@ import {
   rewriteDistToSrc,
 } from '@halfdomelabs/project-builder-lib/plugin-tools';
 import federation from '@originjs/vite-plugin-federation';
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
@@ -45,6 +46,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
         },
       }),
       react(),
+      tailwindcss(),
     ],
   };
 });

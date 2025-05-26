@@ -73,6 +73,19 @@ function validateModelName(name: string): boolean {
   return PASCAL_CASE_REGEX.test(name);
 }
 
+/**
+ * Returns the ID of a model by name, or the name if no model is found.
+ * @param projectDefinition - The project definition.
+ * @param name - The name of the model.
+ * @returns The ID of the model, or the name if no model is found.
+ */
+function getModelIdByNameOrDefault(
+  projectDefinition: ProjectDefinition,
+  name: string,
+): string {
+  return projectDefinition.models.find((m) => m.name === name)?.id ?? name;
+}
+
 export const ModelUtils = {
   byId,
   byIdOrThrow,
@@ -82,4 +95,5 @@ export const ModelUtils = {
   getModelIdFields,
   hasService,
   validateModelName,
+  getModelIdByNameOrDefault,
 };
