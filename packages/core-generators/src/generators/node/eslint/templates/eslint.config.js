@@ -3,7 +3,7 @@
 import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
-import eslintPluginImportX from 'eslint-plugin-import-x';
+import { importX } from 'eslint-plugin-import-x';
 import perfectionist from 'eslint-plugin-perfectionist';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import tsEslint from 'typescript-eslint';
@@ -98,11 +98,8 @@ export default tsEslint.config(
   },
 
   // Import-X Configs
-  eslintPluginImportX.flatConfigs.recommended,
-  {
-    files: tsFileGlobs,
-    extends: [eslintPluginImportX.flatConfigs.typescript],
-  },
+  importX.flatConfigs.recommended,
+  importX.flatConfigs.typescript,
   {
     rules: {
       // Let Typescript handle it since it checks for unresolved imports
