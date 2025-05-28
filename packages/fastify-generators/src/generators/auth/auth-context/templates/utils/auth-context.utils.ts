@@ -21,7 +21,7 @@ export function createAuthContextFromSessionInfo(
     },
     userId: session?.type === 'user' ? session.userId : undefined,
     userIdOrThrow: () => {
-      if (!session || (session.type as string) !== 'user') {
+      if (!session || session.type !== 'user') {
         throw new UnauthorizedError('User session is required');
       }
       return session.userId;
