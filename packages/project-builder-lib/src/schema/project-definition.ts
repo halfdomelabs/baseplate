@@ -1,7 +1,7 @@
+import { CASE_VALIDATORS } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { zRefBuilder } from '@src/references/index.js';
-import { DASHED_NAME } from '@src/utils/validations.js';
 
 import { adminAppSchema } from './apps/admin/index.js';
 import { backendAppSchema } from './apps/backend/index.js';
@@ -31,10 +31,12 @@ export const appSchema = zRefBuilder(
 export type AppConfig = z.infer<typeof appSchema>;
 
 export const projectDefinitionSchema = z.object({
-  name: DASHED_NAME,
-  packageScope: DASHED_NAME.optional(),
-  version: z.string().min(1).default('0.1.0'),
-  cliVersion: z.string().nullish().default('0.2.3'),
+  name: CASE_VALIDATORS.KEBAB_CASE,
+  packageScope: z
+    .union([z.literal(''), CASE_VALIDATORS.KEBAB_CASE])
+    .default(''),
+  version: z.string().min(1),
+  cliVersion: z.string().nullish(),
   // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
   portOffset: z
     .number()

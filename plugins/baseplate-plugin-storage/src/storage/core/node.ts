@@ -30,9 +30,9 @@ export default createPlatformPluginExport({
 
         // add feature providers
         const fileModelName = definitionContainer.nameFromId(
-          storage.fileModelRef,
+          storage.modelRefs.file,
         );
-        appCompiler.addChildrenToFeature(storage.featureRef, {
+        appCompiler.addChildrenToFeature(storage.storageFeatureRef, {
           storage: storageModuleGenerator({
             fileModel: fileModelName,
             s3Adapters: storage.s3Adapters.map((a) => ({
@@ -78,7 +78,9 @@ export default createPlatformPluginExport({
 
         appCompiler.addRootChildren({
           uploadComponents: uploadComponentsGenerator({
-            fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
+            fileModelName: definitionContainer.nameFromId(
+              storage.modelRefs.file,
+            ),
           }),
         });
       },
@@ -95,7 +97,9 @@ export default createPlatformPluginExport({
 
         appCompiler.addRootChildren({
           uploadComponents: uploadComponentsGenerator({
-            fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
+            fileModelName: definitionContainer.nameFromId(
+              storage.modelRefs.file,
+            ),
           }),
         });
       },

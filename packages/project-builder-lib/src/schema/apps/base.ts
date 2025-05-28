@@ -1,12 +1,11 @@
+import { CASE_VALIDATORS } from '@halfdomelabs/utils';
 import { z } from 'zod';
-
-import { DASHED_NAME } from '@src/utils/validations.js';
 
 import { appEntityType } from './types.js';
 
 export const baseAppValidators = {
   id: z.string().default(appEntityType.generateNewId()),
-  name: DASHED_NAME,
+  name: CASE_VALIDATORS.KEBAB_CASE,
   type: z.string(),
   packageLocation: z
     .string()

@@ -9,6 +9,7 @@ import { migration009RenameRefs } from './migration-009-rename-refs.js';
 import { migration010HexToOklch } from './migration-010-hex-to-oklch.js';
 import { migration011PluginId } from './migration-011-plugin-id.js';
 import { migration012MigrateAuthConfig } from './migration-012-migrate-auth-config.js';
+
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
   migration006IndividualServiceControllers,

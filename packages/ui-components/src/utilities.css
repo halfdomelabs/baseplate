@@ -1,0 +1,99 @@
+/**
+ * Utility classes for surfaces
+ */
+
+@utility surface-default {
+  --surface: var(--background);
+  --surface-foreground: var(--foreground);
+  --surface-border: color-mix(in oklab, var(--foreground) 40%, transparent);
+  --surface-muted: color-mix(in oklab, var(--background) 10%, transparent);
+  --surface-muted-foreground: color-mix(
+    in oklab,
+    var(--foreground) 70%,
+    var(--background)
+  );
+}
+
+@utility surface-success {
+  --surface: var(--success);
+  --surface-foreground: var(--success-foreground);
+  --surface-border: color-mix(
+    in oklab,
+    var(--success-foreground) 40%,
+    transparent
+  );
+  --surface-muted: color-mix(in oklab, var(--success) 10%, transparent);
+  --surface-muted-foreground: color-mix(
+    in oklab,
+    var(--success-foreground) 70%,
+    var(--success)
+  );
+}
+
+@utility surface-warning {
+  --surface: var(--warning);
+  --surface-foreground: var(--warning-foreground);
+  --surface-border: color-mix(
+    in oklab,
+    var(--warning-foreground) 40%,
+    transparent
+  );
+  --surface-muted: color-mix(in oklab, var(--warning) 10%, transparent);
+  --surface-muted-foreground: color-mix(
+    in oklab,
+    var(--warning-foreground) 70%,
+    var(--warning)
+  );
+}
+
+@utility surface-error {
+  --surface: var(--error);
+  --surface-foreground: var(--error-foreground);
+  --surface-border: color-mix(
+    in oklab,
+    var(--error-foreground) 40%,
+    transparent
+  );
+  --surface-muted: color-mix(in oklab, var(--error) 10%, transparent);
+  --surface-muted-foreground: color-mix(
+    in oklab,
+    var(--error-foreground) 70%,
+    var(--error)
+  );
+}
+
+/**
+ * Utility classes for typography
+ */
+
+@utility text-style-lead {
+  @apply text-xl leading-6 font-medium text-muted-foreground;
+}
+
+@utility text-style-large {
+  @apply text-lg leading-6 font-semibold;
+}
+
+@utility text-style-small {
+  @apply text-sm leading-none font-medium;
+}
+
+@utility text-style-muted {
+  @apply text-sm leading-5 text-muted-foreground;
+}
+
+@utility text-style-prose {
+  @apply text-base leading-6;
+
+  & a {
+    @apply font-medium text-link;
+
+    &:hover {
+      @apply underline;
+    }
+
+    &:visited {
+      @apply text-link-visited;
+    }
+  }
+}

@@ -2,12 +2,10 @@ import type { WebConfigProps } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import {
-  applyModelMergerResultInPlace,
   authRoleEntityType,
-  createModelMergerResult,
-  createNewModelConfigInput,
+  createAndApplyModelMergerResults,
+  createModelMergerResults,
   FeatureUtils,
-  modelEntityType,
   ModelUtils,
   PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
@@ -23,18 +21,13 @@ import { Button } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
-import { cn } from '@src/utils/cn';
+import { AUTH_DEFAULT_ROLES } from '@src/roles';
 
 import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition';
 
 import { createAuth0Models } from '../schema/models';
-import {
-  AUTH_DEFAULT_ROLES,
-  auth0PluginDefinitionSchema,
-} from '../schema/plugin-definition';
+import { auth0PluginDefinitionSchema } from '../schema/plugin-definition';
 import RoleEditorForm from './role-editor-form';
-
-const USER_ACCOUNT_MODEL_NAME = 'UserAccount';
 
 export function AuthDefinitionEditor({
   definition: pluginMetadata,
@@ -48,13 +41,15 @@ export function AuthDefinitionEditor({
     if (pluginMetadata?.config) {
       return pluginMetadata.config as Auth0PluginDefinitionInput;
     }
-    const defaultModel = definition.models.find(
-      (m) => m.name === USER_ACCOUNT_MODEL_NAME,
-    );
-    const defaultFeature = FeatureUtils.getFeatureByName(definition, 'auth');
+
     return {
-      userAccountModelRef: defaultModel?.id ?? USER_ACCOUNT_MODEL_NAME,
-      authFeatureRef: defaultFeature?.id ?? 'auth',
+      modelRefs: {
+        user: ModelUtils.getModelIdByNameOrDefault(definition, 'User'),
+      },
+      authFeatureRef: FeatureUtils.getFeatureIdByNameOrDefault(
+        definition,
+        'auth',
+      ),
       roles: AUTH_DEFAULT_ROLES.map((r) => ({
         ...r,
         id: authRoleEntityType.generateNewId(),
@@ -68,25 +63,18 @@ export function AuthDefinitionEditor({
   });
   const { control, reset, handleSubmit, watch } = formProps;
 
-  const userModelRef = watch('userAccountModelRef');
-  const featureRef = watch('authFeatureRef');
+  const modelRefs = watch('modelRefs');
+  const authFeatureRef = watch('authFeatureRef');
 
-  const pendingModelChange = useMemo(() => {
-    if (!userModelRef) return;
+  const pendingModelChanges = useMemo(() => {
+    const desiredModels = createAuth0Models({ modelRefs, authFeatureRef });
 
-    const desiredModels = createAuth0Models();
-
-    const willCreateUserModel = modelEntityType.isId(userModelRef);
-    const userModel = willCreateUserModel
-      ? ModelUtils.byIdOrThrow(definition, userModelRef)
-      : createNewModelConfigInput(userModelRef, featureRef);
-    return createModelMergerResult(
-      userModel,
-      desiredModels.user,
+    return createModelMergerResults(
+      modelRefs,
+      desiredModels,
       definitionContainer,
-      { defaultName: userModelRef, defaultFeatureRef: featureRef },
     );
-  }, [userModelRef, definitionContainer, definition, featureRef]);
+  }, [definitionContainer, authFeatureRef, modelRefs]);
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
@@ -99,21 +87,21 @@ export function AuthDefinitionEditor({
           ...data,
           authFeatureRef: featureRef,
         };
-        if (pendingModelChange) {
-          const newModel = applyModelMergerResultInPlace(
-            draftConfig,
-            pendingModelChange,
-            definitionContainer,
-            { defaultName: userModelRef, defaultFeatureRef: featureRef },
-          );
-          if (pendingModelChange.isNewModel) {
-            updatedData.userAccountModelRef = newModel.id;
-          }
-        }
-        PluginUtils.setPluginConfig(draftConfig, metadata, updatedData);
+        createAndApplyModelMergerResults(
+          draftConfig,
+          updatedData.modelRefs,
+          createAuth0Models(updatedData),
+          definitionContainer,
+        );
+        PluginUtils.setPluginConfig(
+          draftConfig,
+          metadata,
+          updatedData,
+          definitionContainer.pluginStore,
+        );
       },
       {
-        successMessage: 'Successfully saved auth plugin!',
+        successMessage: 'Successfully saved Auth0 plugin!',
         onSuccess: () => {
           onSave();
         },
@@ -124,11 +112,11 @@ export function AuthDefinitionEditor({
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
-    <form onSubmit={onSubmit} className={cn('flex flex-col gap-4')}>
-      <ModelMergerResultAlert pendingModelChanges={[pendingModelChange]} />
+    <form onSubmit={onSubmit} className="auth:flex auth:flex-col auth:gap-4">
+      <ModelMergerResultAlert pendingModelChanges={pendingModelChanges} />
       <ModelComboboxFieldController
-        label="User Account Model"
-        name="userAccountModelRef"
+        label="User Model"
+        name="modelRefs.user"
         control={control}
         canCreate
       />

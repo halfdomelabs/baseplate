@@ -2,6 +2,7 @@
 
 @import '@halfdomelabs/ui-components/base-styles.css';
 @import '@halfdomelabs/ui-components/theme.css';
+@import '@halfdomelabs/ui-components/utilities.css';
 
 @layer base {
   html,

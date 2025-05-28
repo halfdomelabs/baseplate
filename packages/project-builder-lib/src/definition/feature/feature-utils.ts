@@ -99,6 +99,13 @@ function getFeatureByName(
   return projectDefinition.features.find((f) => f.name === name);
 }
 
+function getFeatureIdByNameOrDefault(
+  projectDefinition: ProjectDefinition,
+  name: string,
+): string {
+  return getFeatureByName(projectDefinition, name)?.id ?? name;
+}
+
 export const FeatureUtils = {
   getRootFeatures,
   getFeatureById,
@@ -110,4 +117,5 @@ export const FeatureUtils = {
   validateFeatureName,
   ensureFeatureByNameRecursively,
   getFeatureByName,
+  getFeatureIdByNameOrDefault,
 };

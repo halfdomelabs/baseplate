@@ -40,6 +40,7 @@ export function useSchemaParserContext(): UseSchemaParserContextResult {
         setSchemaParserContext(schemaParserContext);
       })
       .catch((err: unknown) => {
+        toast.error(logAndFormatError(err));
         setError(err);
       });
 

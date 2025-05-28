@@ -1,13 +1,11 @@
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import {
-  AUTH_DEFAULT_ROLES,
-  authRoleEntityType,
-} from '@halfdomelabs/project-builder-lib';
+import { authRoleEntityType } from '@halfdomelabs/project-builder-lib';
 import { Button, InputFieldController } from '@halfdomelabs/ui-components';
 import { useFieldArray } from 'react-hook-form';
 
+import { AUTH_DEFAULT_ROLES } from '@src/roles';
 import { cn } from '@src/utils/cn';
 
 import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition';
@@ -28,10 +26,10 @@ function RoleEditorForm({ className, control }: Props): React.JSX.Element {
   });
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('auth:space-y-4', className)}>
       <h3>Roles</h3>
       {fields.map((field, idx) => (
-        <div key={field.id} className={cn('space-y-4')}>
+        <div key={field.id} className="auth:space-y-4">
           <InputFieldController
             label="Name"
             disabled={isFixedRole(field.name)}

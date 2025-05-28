@@ -45,6 +45,19 @@ describe('renderTsTemplateToTsCodeFragment', () => {
     expect(result.contents).toEqual(`const value = ["test", 123];`);
   });
 
+  it('should handle inline variables with replacement patterns', () => {
+    const template = `const value = [TPL_VARIABLE, 123];`;
+    const variables = {
+      TPL_VARIABLE: {
+        contents: '`test$`',
+      },
+    };
+
+    const result = renderTsTemplateToTsCodeFragment(template, variables);
+
+    expect(result.contents).toEqual(`const value = [\`test$\`, 123];`);
+  });
+
   it('should handle empty inline variables followed by a comma', () => {
     const template = `const value = [TPL_VARIABLE,123];`;
     const variables = {

@@ -43,6 +43,7 @@ import type { TypescriptCompilerOptions } from './compiler-types.js';
 import { writeJsonToBuilder } from '../../../writers/index.js';
 import {
   createNodePackagesTask,
+  createNodeTask,
   nodeProvider,
 } from '../node/node.generator.js';
 
@@ -184,6 +185,9 @@ export const typescriptGenerator = createGenerator({
     setup: createGeneratorTask(setupTask),
     nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(CORE_PACKAGES, ['typescript']),
+    }),
+    node: createNodeTask((node) => {
+      node.scripts.set('typecheck', 'tsc --noEmit');
     }),
     tsconfig: createGeneratorTask({
       dependencies: {

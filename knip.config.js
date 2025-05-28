@@ -107,6 +107,13 @@ export default {
       entry: ['src/index.{ts,tsx}', 'src/node.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
     },
+    'packages/tools': {
+      project: 'src/**/*.{ts,tsx}',
+      ignoreDependencies: [
+        // automatically imported by eslint-plugin-import-x
+        'eslint-import-resolver-typescript',
+      ],
+    },
   },
   ignore: [
     'tests/**',
@@ -122,8 +129,6 @@ export default {
     // https://github.com/prettier/prettier/discussions/15167
     'prettier-plugin-packagejson',
     'prettier-plugin-tailwindcss',
-    // we can skip this for now because it's used minimally
-    'postcss-load-config',
     // Tailwind v4 is not recognized as a dependency by Knip
     'tailwindcss',
   ],

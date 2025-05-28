@@ -24,4 +24,8 @@ export interface AuthUserSessionInfo extends AuthBaseSessionInfo {
   userId: string;
 }
 
-export type AuthSessionInfo = AuthUserSessionInfo;
+export interface AuthSystemSessionInfo extends AuthBaseSessionInfo {
+  type: 'system';
+}
+
+export type AuthSessionInfo = AuthUserSessionInfo | AuthSystemSessionInfo;

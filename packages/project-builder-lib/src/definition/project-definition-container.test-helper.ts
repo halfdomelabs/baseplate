@@ -16,6 +16,7 @@ export function createTestProjectDefinition(
 ): ProjectDefinition {
   return {
     name: 'test-project',
+    packageScope: '',
     features: [],
     version: '1.0.0',
     cliVersion: '1.0.0',

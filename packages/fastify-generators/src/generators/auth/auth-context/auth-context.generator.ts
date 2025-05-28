@@ -2,6 +2,7 @@ import {
   projectScope,
   tsCodeFragment,
   TsCodeUtils,
+  tsImportBuilder,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -12,7 +13,10 @@ import {
 import { z } from 'zod';
 
 import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/generated/ts-import-maps.js';
-import { appModuleProvider } from '@src/generators/core/index.js';
+import {
+  appModuleProvider,
+  loggerServiceConfigProvider,
+} from '@src/generators/core/index.js';
 import { requestServiceContextConfigProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
 import { serviceContextConfigProvider } from '@src/generators/core/service-context/service-context.generator.js';
 
@@ -39,6 +43,22 @@ export const authContextGenerator = createGenerator({
         });
       },
     ),
+    loggerSetup: createGeneratorTask({
+      dependencies: {
+        loggerServiceConfig: loggerServiceConfigProvider,
+      },
+      run({ loggerServiceConfig }) {
+        loggerServiceConfig.mixins.set(
+          'userId',
+          tsCodeFragment(
+            "requestContext.get('userId')",
+            tsImportBuilder()
+              .named('requestContext')
+              .from('@fastify/request-context'),
+          ),
+        );
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         serviceContextConfig: serviceContextConfigProvider,

@@ -1,6 +1,24 @@
-import { AUTH_DEFAULT_ROLES, authRoleEntityType } from '@src/schema/index.js';
+import { authRoleEntityType } from '@src/schema/index.js';
 
 import { createSchemaMigration } from './types.js';
+
+const AUTH_DEFAULT_ROLES = [
+  {
+    name: 'public',
+    comment: 'All users (including unauthenticated and authenticated users)',
+    builtIn: true,
+  },
+  {
+    name: 'user',
+    comment: 'All authenticated users',
+    builtIn: true,
+  },
+  {
+    name: 'system',
+    comment: 'System processes without a user context, e.g. background jobs',
+    builtIn: true,
+  },
+];
 
 interface OldConfig {
   auth?: {

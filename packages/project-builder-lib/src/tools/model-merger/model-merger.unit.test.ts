@@ -18,7 +18,7 @@ import {
 } from '@src/schema/models/index.js';
 
 import type {
-  ModelMergerDiffOutput,
+  ModelMergerDefinitionDiffOutput,
   ModelMergerModelInput,
   ModelMergerRelationFieldInput,
   ModelMergerScalarFieldInput,
@@ -62,6 +62,8 @@ describe('ModelMerger', () => {
       };
 
       const desired: ModelMergerModelInput = {
+        name: 'TestModel',
+        featureRef: testFeature.id,
         model: {
           fields: [
             {
@@ -82,7 +84,6 @@ describe('ModelMerger', () => {
         current,
         desired,
         mockDefinitionContainer,
-        { defaultName: 'TestModel', defaultFeatureRef: testFeature.id },
       );
       expect(result).toBeDefined();
       expect(result?.changes['model.fields']).toHaveLength(1);
@@ -110,6 +111,8 @@ describe('ModelMerger', () => {
       };
 
       const desired: ModelMergerModelInput = {
+        name: 'TestModel',
+        featureRef: testFeature.id,
         model: {
           fields: [
             {
@@ -126,7 +129,6 @@ describe('ModelMerger', () => {
         current,
         desired,
         mockDefinitionContainer,
-        { defaultName: 'TestModel', defaultFeatureRef: testFeature.id },
       );
       expect(result).toBeDefined();
       expect(result?.changes['model.fields']).toHaveLength(1);
@@ -160,6 +162,8 @@ describe('ModelMerger', () => {
       };
 
       const desired: ModelMergerModelInput = {
+        name: 'TestModel',
+        featureRef: testFeature.id,
         model: {
           fields: [
             {
@@ -189,7 +193,6 @@ describe('ModelMerger', () => {
         current,
         desired,
         mockDefinitionContainer,
-        { defaultName: 'TestModel', defaultFeatureRef: testFeature.id },
       );
       expect(result).toBeDefined();
       expect(result?.changes['model.fields']).toEqual([]);
@@ -238,6 +241,8 @@ describe('ModelMerger', () => {
       };
 
       const desired: ModelMergerModelInput = {
+        name: 'TestModel',
+        featureRef: testFeature.id,
         model: {
           fields: [
             {
@@ -263,7 +268,6 @@ describe('ModelMerger', () => {
         current,
         desired,
         mockDefinitionContainer,
-        { defaultName: 'TestModel', defaultFeatureRef: testFeature.id },
       );
       expect(result).toBeDefined();
       expect(result?.changes['model.fields']).toEqual([]);
@@ -294,7 +298,7 @@ describe('ModelMerger', () => {
         },
       });
 
-      const diff: ModelMergerDiffOutput = {
+      const diff: ModelMergerDefinitionDiffOutput = {
         'model.fields': [
           {
             type: 'add',
@@ -342,7 +346,7 @@ describe('ModelMerger', () => {
         },
       };
 
-      const diff: ModelMergerDiffOutput = {
+      const diff: ModelMergerDefinitionDiffOutput = {
         'model.fields': [
           {
             type: 'update',
@@ -387,7 +391,7 @@ describe('ModelMerger', () => {
         },
       };
 
-      const diff: ModelMergerDiffOutput = {
+      const diff: ModelMergerDefinitionDiffOutput = {
         'model.fields': [],
         'model.relations': [
           {
@@ -445,7 +449,7 @@ describe('ModelMerger', () => {
         },
       };
 
-      const diff: ModelMergerDiffOutput = {
+      const diff: ModelMergerDefinitionDiffOutput = {
         'model.fields': [],
         'model.relations': [],
         'model.primaryKeyFieldRefs': [],

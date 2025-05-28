@@ -1,8 +1,10 @@
 import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
 
 import {
+  createPluginImplementationStore,
   isMigrateableProjectDefinition,
   ProjectDefinitionContainer,
+  runPluginMigrations,
   runSchemaMigrations,
   SchemaMigrationError,
 } from '@halfdomelabs/project-builder-lib';
@@ -25,9 +27,19 @@ export function parseProjectDefinitionContents(
     }
     const { migratedDefinition } = runSchemaMigrations(projectDefinition);
 
+    const pluginImplementationStore = createPluginImplementationStore(
+      schemaParserContext.pluginStore,
+      migratedDefinition,
+    );
+
+    const definitionWithPluginMigrations = runPluginMigrations(
+      migratedDefinition,
+      pluginImplementationStore,
+    );
+
     // validate config
     return ProjectDefinitionContainer.fromSerializedConfig(
-      migratedDefinition,
+      definitionWithPluginMigrations,
       schemaParserContext,
     );
   } catch (err) {

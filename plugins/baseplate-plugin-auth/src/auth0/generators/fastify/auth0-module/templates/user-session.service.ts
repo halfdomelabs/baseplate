@@ -51,10 +51,10 @@ export class Auth0UserSessionService implements UserSessionService {
     const user = await TPL_USER_MODEL.findUnique({ where: { id: userId } });
 
     // create user if one does not exist already
-    if (!email) {
-      throw new Error(`Missing email claim in JWT`);
-    }
     if (!user) {
+      if (!email) {
+        throw new Error(`Missing email claim in JWT`);
+      }
       // Use createMany to avoid race-conditions with creating the user
       await TPL_USER_MODEL.createMany({
         data: [

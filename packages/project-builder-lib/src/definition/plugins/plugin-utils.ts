@@ -1,5 +1,8 @@
-import type { PluginMetadataWithPaths } from '@src/plugins/index.js';
-
+import {
+  pluginConfigSpec,
+  type PluginImplementationStore,
+  type PluginMetadataWithPaths,
+} from '@src/plugins/index.js';
 import {
   type BasePlugin,
   pluginEntityType,
@@ -40,13 +43,20 @@ function setPluginConfig(
   projectDefinition: ProjectDefinition,
   plugin: PluginMetadataWithPaths,
   pluginConfig: unknown,
+  pluginImplementationStore: PluginImplementationStore,
 ): void {
   const plugins = projectDefinition.plugins ?? [];
   const pluginEntityId = pluginEntityType.fromUid(plugin.id);
 
+  const pluginConfigService =
+    pluginImplementationStore.getPluginSpec(pluginConfigSpec);
+  const lastMigrationVersion = pluginConfigService.getLastMigrationVersion(
+    plugin.id,
+  );
+
   projectDefinition.plugins = plugins.some((p) => p.id === pluginEntityId)
     ? plugins.map((p) =>
-        pluginEntityId === plugin.id ? { ...p, config: pluginConfig } : p,
+        pluginEntityId === p.id ? { ...p, config: pluginConfig } : p,
       )
     : [
         ...plugins,
@@ -56,6 +66,7 @@ function setPluginConfig(
           version: plugin.version,
           packageName: plugin.packageName,
           config: pluginConfig,
+          configSchemaVersion: lastMigrationVersion,
         },
       ];
 }

@@ -1,12 +1,11 @@
+import { CASE_VALIDATORS } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { createEntityType, zEnt, zRef } from '@src/references/index.js';
 
-import { VALIDATORS } from '../utils/validation.js';
-
 export const featureEntityType = createEntityType('feature');
 
-export const featureNameSchema = VALIDATORS.DASHED_NAME;
+export const featureNameSchema = CASE_VALIDATORS.KEBAB_CASE;
 
 export const featureSchema = zEnt(
   z.object({

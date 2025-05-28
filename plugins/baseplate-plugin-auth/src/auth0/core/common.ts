@@ -7,6 +7,7 @@ import {
 
 import type { Auth0PluginDefinition } from './schema/plugin-definition';
 
+import { AUTH0_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations';
 import { auth0PluginDefinitionSchema } from './schema/plugin-definition';
 
 export default createPlatformPluginExport({
@@ -18,14 +19,15 @@ export default createPlatformPluginExport({
   },
   initialize: ({ config }, { pluginId }) => {
     config.registerSchema(pluginId, auth0PluginDefinitionSchema);
+    config.registerMigrations(pluginId, AUTH0_PLUGIN_CONFIG_MIGRATIONS);
     return {
       authConfig: {
-        getUserAccountModel: (definition) => {
+        getUserModel: (definition) => {
           const pluginConfig = PluginUtils.configByIdOrThrow(
             definition,
             pluginId,
           ) as Auth0PluginDefinition;
-          return pluginConfig.userAccountModelRef;
+          return pluginConfig.modelRefs.user;
         },
         getAuthRoles: (definition) => {
           const pluginConfig = PluginUtils.configByIdOrThrow(
