@@ -38,6 +38,7 @@ export function runPluginMigrations(
           }
         }
       }
+      pluginDefinition.configSchemaVersion = lastPluginMigration.version;
     }
   });
 }
