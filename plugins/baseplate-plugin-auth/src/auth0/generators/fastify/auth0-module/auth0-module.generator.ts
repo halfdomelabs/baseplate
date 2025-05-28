@@ -13,7 +13,6 @@ import {
   configServiceImportsProvider,
   configServiceProvider,
   fastifyServerConfigProvider,
-  loggerServiceConfigProvider,
   prismaOutputProvider,
   userSessionServiceImportsProvider,
   userSessionTypesImportsProvider,
@@ -173,22 +172,6 @@ export const auth0ModuleGenerator = createGenerator({
             configServiceImports.config.declaration(),
           ),
         });
-      },
-    }),
-    loggerSetup: createGeneratorTask({
-      dependencies: {
-        loggerServiceConfig: loggerServiceConfigProvider,
-      },
-      run({ loggerServiceConfig }) {
-        loggerServiceConfig.mixins.set(
-          'userId',
-          tsCodeFragment(
-            "requestContext.get('userId')",
-            tsImportBuilder()
-              .named('requestContext')
-              .from('@fastify/request-context'),
-          ),
-        );
       },
     }),
   }),

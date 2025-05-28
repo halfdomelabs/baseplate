@@ -88,6 +88,7 @@ export function AuthDefinitionEditor({
           authFeatureRef: featureRef,
         };
         createAndApplyModelMergerResults(
+          draftConfig,
           updatedData.modelRefs,
           createAuth0Models(updatedData),
           definitionContainer,

@@ -86,6 +86,7 @@ export function StorageConfig({
           storageFeatureRef: featureRef,
         };
         createAndApplyModelMergerResults(
+          draftConfig,
           updatedData.modelRefs,
           createStorageModels(updatedData, definitionContainer),
           definitionContainer,
