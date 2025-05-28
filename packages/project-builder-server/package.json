@@ -22,7 +22,8 @@
   "files": [
     "LICENSE",
     "dist/**/*",
-    "CHANGELOG"
+    "CHANGELOG",
+    "!dist/**/*.d.ts.map"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -68,7 +69,6 @@
     "eslint": "catalog:",
     "memfs": "4.15.1",
     "prettier": "catalog:",
-    "tsc-alias": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
