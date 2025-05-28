@@ -1,1 +1,1 @@
-export const placeholder = '';
+export * from './auth/index.js';

@@ -107,6 +107,13 @@ export default {
       entry: ['src/index.{ts,tsx}', 'src/node.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
     },
+    'packages/tools': {
+      project: 'src/**/*.{ts,tsx}',
+      ignoreDependencies: [
+        // automatically imported by eslint-plugin-import-x
+        'eslint-import-resolver-typescript',
+      ],
+    },
   },
   ignore: [
     'tests/**',

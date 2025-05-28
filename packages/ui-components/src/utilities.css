@@ -67,26 +67,26 @@
  */
 
 @utility text-style-lead {
-  @apply text-muted-foreground text-xl font-medium leading-6;
+  @apply text-xl leading-6 font-medium text-muted-foreground;
 }
 
 @utility text-style-large {
-  @apply text-lg font-semibold leading-6;
+  @apply text-lg leading-6 font-semibold;
 }
 
 @utility text-style-small {
-  @apply text-sm font-medium leading-none;
+  @apply text-sm leading-none font-medium;
 }
 
 @utility text-style-muted {
-  @apply text-muted-foreground text-sm leading-5;
+  @apply text-sm leading-5 text-muted-foreground;
 }
 
 @utility text-style-prose {
   @apply text-base leading-6;
 
   & a {
-    @apply text-link font-medium;
+    @apply font-medium text-link;
 
     &:hover {
       @apply underline;

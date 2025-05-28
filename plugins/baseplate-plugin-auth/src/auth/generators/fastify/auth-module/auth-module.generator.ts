@@ -1,5 +1,4 @@
 import {
-  projectScope,
   tsCodeFragment,
   typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
@@ -12,7 +11,6 @@ import {
   errorHandlerServiceImportsProvider,
   prismaOutputProvider,
   requestServiceContextImportsProvider,
-  userSessionServiceImportsProvider,
   userSessionTypesImportsProvider,
 } from '@halfdomelabs/fastify-generators';
 import {
@@ -22,7 +20,6 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { createUserSessionServiceImports } from './generated/ts-import-maps.js';
 import { FASTIFY_AUTH_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
@@ -57,10 +54,6 @@ export const authModuleGenerator = createGenerator({
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         requestServiceContextImports: requestServiceContextImportsProvider,
       },
-      exports: {
-        userSessionServiceImports:
-          userSessionServiceImportsProvider.export(projectScope),
-      },
       run({
         typescriptFile,
         authRolesImports,
@@ -76,9 +69,6 @@ export const authModuleGenerator = createGenerator({
         return {
           providers: {
             authModule: {},
-            userSessionServiceImports: createUserSessionServiceImports(
-              `${appModule.getModuleFolder()}/services`,
-            ),
           },
           build: async (builder) => {
             await builder.apply(
