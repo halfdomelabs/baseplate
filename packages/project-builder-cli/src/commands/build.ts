@@ -2,9 +2,9 @@ import type { Command } from 'commander';
 
 import { buildProject } from '@halfdomelabs/project-builder-server';
 
-import { createSchemaParserContext } from '#src/services/schema-parser-context.js';
-import { getUserConfig } from '#src/services/user-config.js';
-import { expandPathWithTilde } from '#src/utils/path.js';
+import { createSchemaParserContext } from '@src/services/schema-parser-context.js';
+import { getUserConfig } from '@src/services/user-config.js';
+import { expandPathWithTilde } from '@src/utils/path.js';
 
 import { logger } from '../services/logger.js';
 

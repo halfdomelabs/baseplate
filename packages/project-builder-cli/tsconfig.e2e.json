@@ -2,10 +2,8 @@
   "extends": "@halfdomelabs/tools/tsconfig.node.cli.json",
   "compilerOptions": {
     "noEmit": true,
-    // we need to use paths because the auto outDir to rootDir mapping
-    // doesn't work without setting rootDir
     "paths": {
-      "#src/*": ["./src/*"]
+      "@src/*": ["./src/*"]
     }
   },
   "include": ["tests/**/*", "playwright.config.ts"]

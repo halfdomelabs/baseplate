@@ -11,7 +11,7 @@ import {
 import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
 
-import { getUserConfig } from '#src/services/user-config.js';
+import { getUserConfig } from '@src/services/user-config.js';
 
 import { getEnabledFeatureFlags } from '../services/feature-flags.js';
 import { logger } from '../services/logger.js';

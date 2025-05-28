@@ -2,9 +2,9 @@ import type { Command } from 'commander';
 
 import { runTemplateExtractorsForProject } from '@halfdomelabs/project-builder-server';
 
-import { logger } from '#src/services/logger.js';
-import { createSchemaParserContext } from '#src/services/schema-parser-context.js';
-import { expandPathWithTilde } from '#src/utils/path.js';
+import { logger } from '@src/services/logger.js';
+import { createSchemaParserContext } from '@src/services/schema-parser-context.js';
+import { expandPathWithTilde } from '@src/utils/path.js';
 
 /**
  * Runs the template extraction flow on the target directory.
