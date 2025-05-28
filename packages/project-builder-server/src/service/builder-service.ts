@@ -238,6 +238,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     const finalName = sanitizedName || 'project-name';
     return JSON.stringify({
       name: finalName,
+      version: '0.1.0',
       cliVersion: this.cliVersion,
       portOffset: 5000,
       schemaVersion: getLatestMigrationVersion(),

@@ -9,6 +9,7 @@ import type {
   ModelRelationFieldConfigInput,
   ModelScalarFieldConfigInput,
   ModelUniqueConstraintConfigInput,
+  ProjectDefinition,
 } from '@src/schema/index.js';
 import type { DefinitionDiffOutput } from '@src/utils/definition-diff/definition-diff.js';
 
@@ -247,7 +248,7 @@ function createNewModelConfigInput(
  */
 export interface ModelMergerModelDiffResult {
   isNewModel: boolean;
-  id: string | undefined;
+  id: string;
   name: string;
   featureRef: string;
   changes: ModelMergerDefinitionDiffOutput;
@@ -379,14 +380,14 @@ export function applyModelMergerDiff(
 }
 
 export function applyModelMergerResultInPlace(
+  draftConfig: ProjectDefinition,
   result: ModelMergerModelDiffResult,
   definitionContainer: ProjectDefinitionContainer,
   { siblingModels = [] }: ModelMergerOptions = {},
 ): string {
-  const { definition } = definitionContainer;
-  const model = result.id
-    ? ModelUtils.byIdOrThrow(definitionContainer.definition, result.id)
-    : createNewModelConfigInput(result.name, result.featureRef);
+  const model = result.isNewModel
+    ? createNewModelConfigInput(result.name, result.featureRef)
+    : ModelUtils.byIdOrThrow(definitionContainer.definition, result.id);
 
   const newModel = applyModelMergerDiff(
     model,
@@ -395,13 +396,13 @@ export function applyModelMergerResultInPlace(
     siblingModels,
   );
   if (result.isNewModel) {
-    definition.models.push(newModel as ModelConfig);
+    draftConfig.models.push(newModel as ModelConfig);
   } else {
-    const index = definition.models.findIndex((m) => m.id === result.id);
+    const index = draftConfig.models.findIndex((m) => m.id === result.id);
     if (index === -1) {
       throw new Error(`Model ${result.id} not found`);
     }
-    definition.models[index] = newModel as ModelConfig;
+    draftConfig.models[index] = newModel as ModelConfig;
   }
   return newModel.id;
 }
@@ -409,6 +410,7 @@ export function applyModelMergerResultInPlace(
 export function createAndApplyModelMergerResults<
   T extends ModelMergerModelsInput,
 >(
+  draftConfig: ProjectDefinition,
   current: Record<keyof T, string | undefined>,
   desired: T,
   definitionContainer: ProjectDefinitionContainer,
@@ -422,9 +424,12 @@ export function createAndApplyModelMergerResults<
   );
   return mapValues(results, (result, key) =>
     result
-      ? applyModelMergerResultInPlace(result, definitionContainer, {
-          siblingModels,
-        })
+      ? applyModelMergerResultInPlace(
+          draftConfig,
+          result,
+          definitionContainer,
+          { siblingModels },
+        )
       : desired[key].name,
   );
 }

@@ -56,7 +56,7 @@ function setPluginConfig(
 
   projectDefinition.plugins = plugins.some((p) => p.id === pluginEntityId)
     ? plugins.map((p) =>
-        pluginEntityId === plugin.id ? { ...p, config: pluginConfig } : p,
+        pluginEntityId === p.id ? { ...p, config: pluginConfig } : p,
       )
     : [
         ...plugins,
