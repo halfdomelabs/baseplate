@@ -31,6 +31,9 @@ function sortAndValidateMigrations(
   const sortedMigrations = [...migrations].sort(
     (a, b) => a.version - b.version,
   );
+  if (sortedMigrations.some((m) => m.version <= 0)) {
+    throw new Error(`Migration version must be a positive integer`);
+  }
   for (let i = 0; i < sortedMigrations.length - 1; i++) {
     if (sortedMigrations[i].version === sortedMigrations[i + 1].version) {
       throw new Error(`Migration versions must be unique`);

@@ -27,9 +27,15 @@ export function runPluginMigrations(
 
       for (const migration of pluginMigrations) {
         if (migration.version > currentSchemaVersion) {
-          pluginDefinition.config = migration.migrate(
-            pluginDefinition.config as unknown,
-          );
+          try {
+            pluginDefinition.config = migration.migrate(
+              pluginDefinition.config as unknown,
+            );
+          } catch (error) {
+            throw new Error(
+              `Error migrating plugin ${pluginDefinition.id} to version ${migration.version}: ${String(error)}`,
+            );
+          }
         }
       }
     }

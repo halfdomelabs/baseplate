@@ -32,7 +32,9 @@ export type AppConfig = z.infer<typeof appSchema>;
 
 export const projectDefinitionSchema = z.object({
   name: CASE_VALIDATORS.KEBAB_CASE,
-  packageScope: CASE_VALIDATORS.KEBAB_CASE.optional(),
+  packageScope: z
+    .union([z.literal(''), CASE_VALIDATORS.KEBAB_CASE])
+    .default(''),
   version: z.string().min(1),
   cliVersion: z.string().nullish(),
   // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
