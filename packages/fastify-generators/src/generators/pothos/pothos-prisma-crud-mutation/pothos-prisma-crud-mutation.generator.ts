@@ -13,17 +13,17 @@ import {
 import { quot, sortObjectKeys } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { serviceFileOutputProvider } from '@src/generators/core/service-file/service-file.generator.js';
+import { serviceFileOutputProvider } from '#src/generators/core/service-file/service-file.generator.js';
 import {
   pothosFieldProvider,
   pothosTypeOutputProvider,
-} from '@src/generators/pothos/_providers/index.js';
-import { lowerCaseFirst } from '@src/utils/case.js';
+} from '#src/generators/pothos/_providers/index.js';
+import { lowerCaseFirst } from '#src/utils/case.js';
 import {
   writePothosInputFieldsFromDtoFields,
   writePothosSimpleObjectFieldsFromDtoFields,
-} from '@src/writers/pothos/index.js';
-import { writeValueFromPothosArg } from '@src/writers/pothos/resolvers.js';
+} from '#src/writers/pothos/index.js';
+import { writeValueFromPothosArg } from '#src/writers/pothos/resolvers.js';
 
 import { pothosFieldScope } from '../_providers/scopes.js';
 import { createPothosPrismaObjectTypeOutputName } from '../pothos-prisma-object/pothos-prisma-object.generator.js';

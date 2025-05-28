@@ -7,7 +7,7 @@ import type {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
   ServiceOutputDtoScalarField,
-} from '@src/types/service-output.js';
+} from '#src/types/service-output.js';
 
 import type { PothosWriterOptions } from './options.js';
 

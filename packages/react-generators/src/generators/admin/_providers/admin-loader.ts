@@ -2,7 +2,7 @@ import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import { tsCodeFragment, TsCodeUtils } from '@halfdomelabs/core-generators';
 
-import type { ReactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import type { ReactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
 
 export interface DataLoader {
   loader: TsCodeFragment;

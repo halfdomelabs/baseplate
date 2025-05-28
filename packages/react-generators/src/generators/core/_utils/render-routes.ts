@@ -3,7 +3,7 @@ import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 import { TsCodeUtils, tsImportBuilder } from '@halfdomelabs/core-generators';
 import { groupBy, sortBy } from 'es-toolkit';
 
-import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
+import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';
 
 export function renderRoutes(
   routes: ReactRoute[],

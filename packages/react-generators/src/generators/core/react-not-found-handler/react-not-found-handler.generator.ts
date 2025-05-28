@@ -12,9 +12,9 @@ import {
 import { posixJoin } from '@halfdomelabs/utils/node';
 import { z } from 'zod';
 
-import type { ReactRoute } from '@src/providers/routes.js';
+import type { ReactRoute } from '#src/providers/routes.js';
 
-import { reactRoutesProvider } from '@src/providers/routes.js';
+import { reactRoutesProvider } from '#src/providers/routes.js';
 
 import { reactComponentsImportsProvider } from '../react-components/react-components.generator.js';
 import { CORE_REACT_NOT_FOUND_HANDLER_TS_TEMPLATES } from './generated/ts-templates.js';

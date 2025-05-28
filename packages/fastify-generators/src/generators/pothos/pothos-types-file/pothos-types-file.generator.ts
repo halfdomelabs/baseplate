@@ -13,7 +13,7 @@ import { NamedArrayFieldContainer } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
+import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
 
 import {
   pothosImportsProvider,

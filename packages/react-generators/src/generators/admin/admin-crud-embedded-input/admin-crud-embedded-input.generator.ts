@@ -6,7 +6,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
+import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 import { adminComponentsImportsProvider } from '../admin-components/admin-components.generator.js';

@@ -24,20 +24,20 @@ import { z } from 'zod';
 import type {
   PrismaOutputEnum,
   PrismaOutputModel,
-} from '@src/types/prisma-output.js';
-import type { ServiceOutputEnum } from '@src/types/service-output.js';
-import type { PrismaModelBlockWriter } from '@src/writers/prisma-schema/index.js';
-import type { PrismaGeneratorBlock } from '@src/writers/prisma-schema/types.js';
+} from '#src/types/prisma-output.js';
+import type { ServiceOutputEnum } from '#src/types/service-output.js';
+import type { PrismaModelBlockWriter } from '#src/writers/prisma-schema/index.js';
+import type { PrismaGeneratorBlock } from '#src/writers/prisma-schema/types.js';
 
-import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { configServiceProvider } from '@src/generators/core/config-service/config-service.generator.js';
-import { fastifyHealthCheckConfigProvider } from '@src/generators/core/fastify-health-check/fastify-health-check.generator.js';
-import { fastifyOutputProvider } from '@src/generators/core/fastify/fastify.generator.js';
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
+import { configServiceProvider } from '#src/generators/core/config-service/config-service.generator.js';
+import { fastifyHealthCheckConfigProvider } from '#src/generators/core/fastify-health-check/fastify-health-check.generator.js';
+import { fastifyOutputProvider } from '#src/generators/core/fastify/fastify.generator.js';
 import {
   createPrismaSchemaDatasourceBlock,
   createPrismaSchemaGeneratorBlock,
   PrismaSchemaFile,
-} from '@src/writers/prisma-schema/schema.js';
+} from '#src/writers/prisma-schema/schema.js';
 
 import {
   createPrismaImports,

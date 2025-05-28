@@ -1,7 +1,7 @@
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { doubleQuot } from '@src/utils/string.js';
+import { doubleQuot } from '#src/utils/string.js';
 
 import { prismaModelProvider } from '../prisma-model/prisma-model.generator.js';
 

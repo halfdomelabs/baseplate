@@ -14,7 +14,7 @@ import {
   createProviderTask,
 } from '@halfdomelabs/sync';
 
-import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 import { fastifyProvider } from '../fastify/fastify.generator.js';
 import {

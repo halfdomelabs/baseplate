@@ -9,7 +9,7 @@ import {
 import { createGenerator, createProviderTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { requestServiceContextConfigProvider } from '../request-service-context/request-service-context.generator.js';

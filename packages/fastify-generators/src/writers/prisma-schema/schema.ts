@@ -4,7 +4,7 @@ import indentString from 'indent-string';
 import type {
   PrismaOutputEnum,
   PrismaOutputModel,
-} from '@src/types/prisma-output.js';
+} from '#src/types/prisma-output.js';
 
 import type { PrismaModelBlockWriter } from './model-writer.js';
 import type {

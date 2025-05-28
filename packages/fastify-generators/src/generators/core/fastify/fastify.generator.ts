@@ -20,7 +20,7 @@ import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 import { fastifyTypescriptTask } from './setup-fastify-typescript.js';
 

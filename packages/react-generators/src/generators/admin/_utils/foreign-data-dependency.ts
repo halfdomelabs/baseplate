@@ -5,10 +5,10 @@ import {
 } from '@halfdomelabs/core-generators';
 import { pluralize } from 'inflection';
 
-import type { ReactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
+import type { ReactApolloProvider } from '#src/generators/apollo/react-apollo/react-apollo.generator.js';
 
-import { lowerCaseFirst } from '@src/utils/case.js';
-import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
+import { lowerCaseFirst } from '#src/utils/case.js';
+import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
 
 import type { AdminCrudDataDependency } from './data-loaders.js';
 

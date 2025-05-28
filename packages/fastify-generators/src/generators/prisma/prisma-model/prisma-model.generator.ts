@@ -10,9 +10,9 @@ import { z } from 'zod';
 import type {
   PrismaModelAttribute,
   PrismaModelField,
-} from '@src/writers/prisma-schema/index.js';
+} from '#src/writers/prisma-schema/index.js';
 
-import { PrismaModelBlockWriter } from '@src/writers/prisma-schema/index.js';
+import { PrismaModelBlockWriter } from '#src/writers/prisma-schema/index.js';
 
 import { prismaSchemaProvider } from '../prisma/prisma.generator.js';
 

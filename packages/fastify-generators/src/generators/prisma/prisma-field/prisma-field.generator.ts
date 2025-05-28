@@ -1,13 +1,13 @@
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import type { ScalarFieldType } from '@src/types/field-types.js';
-import type { PrismaFieldTypeConfig } from '@src/writers/prisma-schema/fields.js';
+import type { ScalarFieldType } from '#src/types/field-types.js';
+import type { PrismaFieldTypeConfig } from '#src/writers/prisma-schema/fields.js';
 
 import {
   buildPrismaScalarField,
   PRISMA_SCALAR_FIELD_TYPES,
-} from '@src/writers/prisma-schema/fields.js';
+} from '#src/writers/prisma-schema/fields.js';
 
 import { prismaModelProvider } from '../prisma-model/prisma-model.generator.js';
 

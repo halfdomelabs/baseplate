@@ -1,6 +1,6 @@
 import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import type { ServiceOutputDtoField } from '@src/types/service-output.js';
+import type { ServiceOutputDtoField } from '#src/types/service-output.js';
 
 export interface PrismaDataTransformInputField {
   type: TsCodeFragment;

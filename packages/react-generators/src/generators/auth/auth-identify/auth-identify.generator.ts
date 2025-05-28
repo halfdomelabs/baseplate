@@ -15,7 +15,7 @@ import {
 import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { reactRouterConfigProvider } from '@src/generators/core/react-router/react-router.generator.js';
+import { reactRouterConfigProvider } from '#src/generators/core/react-router/react-router.generator.js';
 
 import { authHooksImportsProvider } from '../_providers/auth-hooks.js';
 

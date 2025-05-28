@@ -13,15 +13,15 @@ import {
 import { notEmpty, safeMergeAllWithOptions } from '@halfdomelabs/utils';
 import { sortBy } from 'es-toolkit';
 
-import type { ServiceContextImportsProvider } from '@src/generators/core/service-context/service-context.generator.js';
+import type { ServiceContextImportsProvider } from '#src/generators/core/service-context/service-context.generator.js';
 import type {
   PrismaDataTransformer,
   PrismaDataTransformOutputField,
-} from '@src/providers/prisma/prisma-data-transformable.js';
-import type { PrismaOutputRelationField } from '@src/types/prisma-output.js';
-import type { ServiceOutputDto } from '@src/types/service-output.js';
+} from '#src/providers/prisma/prisma-data-transformable.js';
+import type { PrismaOutputRelationField } from '#src/types/prisma-output.js';
+import type { ServiceOutputDto } from '#src/types/service-output.js';
 
-import { upperCaseFirst } from '@src/utils/case.js';
+import { upperCaseFirst } from '#src/utils/case.js';
 
 import type { PrismaUtilsImportsProvider } from '../../prisma-utils/prisma-utils.generator.js';
 import type { PrismaOutputProvider } from '../../prisma/prisma.generator.js';
