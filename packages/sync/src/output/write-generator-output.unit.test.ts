@@ -2,10 +2,10 @@ import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createTestLogger } from '#src/tests/logger.test-helper.js';
+import { executeCommand } from '#src/utils/exec.js';
 
 import type { GeneratorOutput } from './generator-task-output.js';
 
-import { executeCommand } from '../utils/exec.js';
 import { createCodebaseReaderFromMemory } from './codebase-file-reader.js';
 import { PrepareGeneratorFilesError } from './errors.js';
 import { writeGeneratorOutput } from './write-generator-output.js';
@@ -13,7 +13,7 @@ import { writeGeneratorOutput } from './write-generator-output.js';
 vi.mock('node:fs');
 vi.mock('node:fs/promises');
 
-vi.mock('../utils/exec.js');
+vi.mock('#src/utils/exec.js');
 
 const mockedExecuteCommand = vi.mocked(executeCommand);
 
