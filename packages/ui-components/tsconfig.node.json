@@ -1,7 +1,6 @@
 {
   "extends": "@halfdomelabs/tools/tsconfig.vite.lib.json",
   "compilerOptions": {
-    "composite": true,
     "sourceMap": false,
     "declaration": false,
     "declarationMap": false

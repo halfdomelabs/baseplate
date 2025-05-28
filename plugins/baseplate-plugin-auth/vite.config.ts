@@ -4,11 +4,11 @@ import {
   getModuleFederationTargets,
   rewriteDistToSrc,
 } from '@halfdomelabs/project-builder-lib/plugin-tools';
+import { srcSubpathImportPlugin } from '@halfdomelabs/tools/src-subpath-import-plugin';
 import federation from '@originjs/vite-plugin-federation';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig(async (): Promise<UserConfig> => {
   const viteTargets = await getModuleFederationTargets(__dirname, {
@@ -27,7 +27,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
       },
     },
     plugins: [
-      viteTsconfigPaths(),
+      srcSubpathImportPlugin(import.meta.dirname),
       federation({
         name: 'baseplate-plugin-auth',
         filename: 'remoteEntry.js',

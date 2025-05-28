@@ -3,7 +3,7 @@ import {
   webConfigSpec,
 } from '@halfdomelabs/project-builder-lib';
 
-import { AuthDefinitionEditor } from './components/auth-definition-editor';
+import { AuthDefinitionEditor } from './components/auth-definition-editor.js';
 
 import '../../styles.css';
 

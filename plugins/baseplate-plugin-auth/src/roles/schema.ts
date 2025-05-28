@@ -1,7 +1,7 @@
 import { authRoleEntityType, zEnt } from '@halfdomelabs/project-builder-lib';
 import { z } from 'zod';
 
-import { AUTH_DEFAULT_ROLES } from './constants';
+import { AUTH_DEFAULT_ROLES } from './constants.js';
 
 const authRoleSchema = zEnt(
   z.object({

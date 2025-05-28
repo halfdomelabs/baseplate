@@ -24,7 +24,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { AUTH0_PACKAGES } from '@src/auth0/constants/packages.js';
+import { AUTH0_PACKAGES } from '#src/auth0/constants/packages.js';
 
 import { createAuth0ModuleImports } from './generated/ts-import-maps.js';
 import { AUTH_0_AUTH_0_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';

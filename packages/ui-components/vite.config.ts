@@ -1,9 +1,14 @@
+import { srcSubpathImportPlugin } from '@halfdomelabs/tools/src-subpath-import-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import svgrPlugin from 'vite-plugin-svgr';
-import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 // https://vitejs.dev/config/
 export default {
-  plugins: [react(), viteTsconfigPaths(), svgrPlugin(), tailwindcss()],
+  plugins: [
+    react(),
+    svgrPlugin(),
+    tailwindcss(),
+    srcSubpathImportPlugin(import.meta.dirname),
+  ],
 };

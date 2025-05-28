@@ -21,13 +21,13 @@ import { Button } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
-import { AUTH_DEFAULT_ROLES } from '@src/roles';
+import { AUTH_DEFAULT_ROLES } from '#src/roles/index.js';
 
-import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition';
+import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition.js';
 
-import { createAuth0Models } from '../schema/models';
-import { auth0PluginDefinitionSchema } from '../schema/plugin-definition';
-import RoleEditorForm from './role-editor-form';
+import { createAuth0Models } from '../schema/models.js';
+import { auth0PluginDefinitionSchema } from '../schema/plugin-definition.js';
+import RoleEditorForm from './role-editor-form.js';
 
 export function AuthDefinitionEditor({
   definition: pluginMetadata,
