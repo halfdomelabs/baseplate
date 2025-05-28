@@ -54,6 +54,7 @@ async function createTestProject(
       models: [],
       portOffset: 3000,
       schemaVersion: getLatestMigrationVersion(),
+      version: '0.1.0',
     } satisfies ProjectDefinitionInput),
   );
 }
