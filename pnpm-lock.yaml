@@ -322,9 +322,6 @@ importers:
       prettier:
         specifier: 'catalog:'
         version: 3.5.3
-      tsc-alias:
-        specifier: 'catalog:'
-        version: 1.8.10
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
@@ -383,6 +380,9 @@ importers:
       prettier:
         specifier: 'catalog:'
         version: 3.5.3
+      tsc-alias:
+        specifier: 'catalog:'
+        version: 1.8.10
       tsx:
         specifier: 'catalog:'
         version: 4.19.3
@@ -578,9 +578,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.14.1
-      concurrently:
-        specifier: 9.0.1
-        version: 9.0.1
       eslint:
         specifier: 'catalog:'
         version: 9.26.0(jiti@2.4.2)
@@ -860,9 +857,6 @@ importers:
       prettier:
         specifier: 'catalog:'
         version: 3.5.3
-      tsc-alias:
-        specifier: 'catalog:'
-        version: 1.8.10
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
@@ -1151,9 +1145,6 @@ importers:
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 4.4.1(vite@6.3.5(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.1))
-      concurrently:
-        specifier: 9.0.1
-        version: 9.0.1
       eslint:
         specifier: 'catalog:'
         version: 9.26.0(jiti@2.4.2)
@@ -1184,9 +1175,6 @@ importers:
       vite-plugin-svgr:
         specifier: 'catalog:'
         version: 4.3.0(rollup@4.40.0)(typescript@5.7.3)(vite@6.3.5(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.1))
-      vite-tsconfig-paths:
-        specifier: 'catalog:'
-        version: 5.1.4(typescript@5.7.3)(vite@6.3.5(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.1))
       vitest:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.14.1)(jiti@2.4.2)(jsdom@26.0.0)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.1)
@@ -1215,9 +1203,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.14.1
-      concurrently:
-        specifier: 9.0.1
-        version: 9.0.1
       eslint:
         specifier: 'catalog:'
         version: 9.26.0(jiti@2.4.2)
@@ -1306,18 +1291,12 @@ importers:
       tailwindcss:
         specifier: 'catalog:'
         version: 4.1.6
-      tsc-alias:
-        specifier: 'catalog:'
-        version: 1.8.10
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
       vite:
         specifier: 'catalog:'
         version: 6.3.5(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.1)
-      vite-tsconfig-paths:
-        specifier: 'catalog:'
-        version: 5.1.4(typescript@5.7.3)(vite@6.3.5(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.1))
       vitest:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.14.1)(jiti@2.4.2)(jsdom@26.0.0)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.1)
@@ -1400,18 +1379,12 @@ importers:
       tailwindcss:
         specifier: 'catalog:'
         version: 4.1.6
-      tsc-alias:
-        specifier: 'catalog:'
-        version: 1.8.10
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
       vite:
         specifier: 'catalog:'
         version: 6.3.5(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.1)
-      vite-tsconfig-paths:
-        specifier: 'catalog:'
-        version: 5.1.4(typescript@5.7.3)(vite@6.3.5(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.1))
       vitest:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.14.1)(jiti@2.4.2)(jsdom@26.0.0)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.1)

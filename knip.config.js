@@ -87,6 +87,20 @@ export default {
         '@halfdomelabs/baseplate-plugin-*',
       ],
     },
+    'packages/project-builder-lib': {
+      entry: ['src/index.{ts,tsx}'],
+      project: 'src/**/*.{ts,tsx}',
+      paths: {
+        '#src/*': ['./src/*'],
+      },
+    },
+    'packages/project-builder-server': {
+      entry: ['src/index.{ts,tsx}'],
+      project: 'src/**/*.{ts,tsx}',
+      paths: {
+        '#src/*': ['./src/*'],
+      },
+    },
     'packages/ui-components': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
@@ -95,6 +109,16 @@ export default {
         // mdx files - https://github.com/webpro-nl/knip/issues/494
         '@storybook/blocks',
       ],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
+    },
+    'packages/sync': {
+      entry: ['src/index.{ts,tsx}'],
+      project: 'src/**/*.{ts,tsx}',
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/code-morph': {
       entry: ['src/index.{ts,tsx}', 'src/morphers/**/*.morpher.{ts,tsx}'],
@@ -114,6 +138,9 @@ export default {
         'eslint-import-resolver-typescript',
       ],
     },
+  },
+  paths: {
+    '#src/*': ['./src/*'],
   },
   ignore: [
     'tests/**',

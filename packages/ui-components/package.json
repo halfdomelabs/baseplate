@@ -102,7 +102,6 @@
     "@testing-library/user-event": "14.6.1",
     "@types/node": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "concurrently": "9.0.1",
     "eslint": "catalog:",
     "jsdom": "26.0.0",
     "prettier": "catalog:",
@@ -113,7 +112,6 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-svgr": "catalog:",
-    "vite-tsconfig-paths": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {
