@@ -1,9 +1,9 @@
 import type { z } from 'zod';
 
-import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
+import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
 
-import { createPluginSpec } from '@src/plugins/spec/types.js';
-import { ZodRef } from '@src/references/ref-builder.js';
+import { createPluginSpec } from '#src/plugins/spec/types.js';
+import { ZodRef } from '#src/references/ref-builder.js';
 
 import type { ModelTransformerType } from './types.js';
 

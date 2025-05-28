@@ -1,13 +1,13 @@
 import type React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 
-import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
+import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
 import type {
   AdminCrudInputDefinition,
   ModelConfig,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 
-import { createPluginSpec } from '@src/plugins/spec/types.js';
+import { createPluginSpec } from '#src/plugins/spec/types.js';
 
 export interface AdminCrudInputWebFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

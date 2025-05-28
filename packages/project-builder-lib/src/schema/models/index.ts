@@ -6,8 +6,8 @@ import {
   zRef,
   zRefBuilder,
   zRefId,
-} from '@src/references/index.js';
-import { SCALAR_FIELD_TYPES } from '@src/types/field-types.js';
+} from '#src/references/index.js';
+import { SCALAR_FIELD_TYPES } from '#src/types/field-types.js';
 
 import { featureEntityType } from '../features/index.js';
 import { VALIDATORS } from '../utils/validation.js';

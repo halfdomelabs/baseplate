@@ -1,7 +1,7 @@
 import { CASE_VALIDATORS } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { zRefBuilder } from '@src/references/index.js';
+import { zRefBuilder } from '#src/references/index.js';
 
 import { adminAppSchema } from './apps/admin/index.js';
 import { backendAppSchema } from './apps/backend/index.js';

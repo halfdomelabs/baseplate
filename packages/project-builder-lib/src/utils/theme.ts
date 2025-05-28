@@ -3,16 +3,16 @@ import { dasherize, underscore } from 'inflection';
 import type {
   DefaultColor,
   ThemeColorKey,
-} from '@src/constants/theme-colors.js';
+} from '#src/constants/theme-colors.js';
 import type {
   PalettesConfig,
   ThemeColorsConfig,
   ThemeConfig,
-} from '@src/schema/features/theme.js';
+} from '#src/schema/features/theme.js';
 
-import { COLOR_PALETTES } from '@src/constants/colors.js';
-import { THEME_COLORS } from '@src/constants/theme-colors.js';
-import { convertColorNameToOklch } from '@src/utils/color-names.js';
+import { COLOR_PALETTES } from '#src/constants/colors.js';
+import { THEME_COLORS } from '#src/constants/theme-colors.js';
+import { convertColorNameToOklch } from '#src/utils/color-names.js';
 
 function getDefaultOklch(
   palettes: PalettesConfig,

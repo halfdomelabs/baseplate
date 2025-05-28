@@ -26,8 +26,8 @@
   "files": [
     "LICENSE",
     "dist/**/*",
-    "CHANGELOG",
-    "!dist/**/*.d.ts"
+    "!dist/**/*.d.ts",
+    "CHANGELOG"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -58,10 +58,8 @@
     "@halfdomelabs/tools": "workspace:*",
     "@types/ms": "0.7.34",
     "@types/node": "catalog:",
-    "concurrently": "9.0.1",
     "eslint": "catalog:",
     "memfs": "4.15.1",
-    "tsc-alias": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

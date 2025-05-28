@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { zRef } from '@src/references/index.js';
+import { zRef } from '#src/references/index.js';
 import {
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
-} from '@src/schema/models/index.js';
+} from '#src/schema/models/index.js';
 
 import type { AdminCrudInputType } from './types.js';
 

@@ -2,10 +2,8 @@
   "extends": "@halfdomelabs/tools/tsconfig.vite.lib.json",
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": "src",
     "noEmit": true,
-    "paths": {
-      "@src/*": ["./src/*"]
-    },
     "module": "Node16",
     "moduleResolution": "node16"
   },

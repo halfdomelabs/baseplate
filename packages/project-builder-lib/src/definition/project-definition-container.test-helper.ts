@@ -1,13 +1,13 @@
-import { getLatestMigrationVersion } from '@src/migrations/index.js';
+import { getLatestMigrationVersion } from '#src/migrations/index.js';
 import {
   PluginImplementationStore,
   zPluginWrapper,
-} from '@src/plugins/index.js';
-import { deserializeSchemaWithReferences } from '@src/references/deserialize-schema.js';
+} from '#src/plugins/index.js';
+import { deserializeSchemaWithReferences } from '#src/references/deserialize-schema.js';
 import {
   type ProjectDefinition,
   projectDefinitionSchema,
-} from '@src/schema/project-definition.js';
+} from '#src/schema/project-definition.js';
 
 import { ProjectDefinitionContainer } from './project-definition-container.js';
 

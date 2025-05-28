@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { zRef, zRefBuilder } from '@src/references/index.js';
+import { zRef, zRefBuilder } from '#src/references/index.js';
 import {
   modelEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
-} from '@src/schema/models/index.js';
+} from '#src/schema/models/index.js';
 
 import { baseAdminSectionValidators } from './base.js';
 import { adminCrudInputSchema } from './crud-form/admin-crud-input.js';

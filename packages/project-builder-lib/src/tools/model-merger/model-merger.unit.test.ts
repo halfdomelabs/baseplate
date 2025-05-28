@@ -1,21 +1,21 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type {
   ModelConfigInput,
   ModelScalarFieldConfigInput,
-} from '@src/schema/models/index.js';
+} from '#src/schema/models/index.js';
 
-import { createTestProjectDefinitionContainer } from '@src/definition/project-definition-container.test-helper.js';
+import { createTestProjectDefinitionContainer } from '#src/definition/project-definition-container.test-helper.js';
 import {
   createTestFeature,
   createTestModel,
   createTestScalarField,
-} from '@src/schema/definition.test-helper.js';
+} from '#src/schema/definition.test-helper.js';
 import {
   modelEntityType,
   modelScalarFieldEntityType,
-} from '@src/schema/models/index.js';
+} from '#src/schema/models/index.js';
 
 import type {
   ModelMergerDefinitionDiffOutput,

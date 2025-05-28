@@ -12,6 +12,11 @@
   "author": "Half Dome Labs LLC",
   "sideEffects": false,
   "type": "module",
+  "imports": {
+    "#src/*": {
+      "import": "./dist/*"
+    }
+  },
   "exports": {
     ".": "./dist/index.js",
     "./web": "./dist/web/index.js",
@@ -21,10 +26,11 @@
   "files": [
     "LICENSE",
     "dist/**/*",
+    "!dist/**/*.d.ts",
     "CHANGELOG"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && tsc-alias",
+    "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
@@ -32,9 +38,7 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "watch": "concurrently pnpm:watch:*",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
-    "watch:tsc-alias": "tsc-alias -w"
+    "watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
   },
   "dependencies": {
     "@halfdomelabs/sync": "workspace:*",
@@ -56,10 +60,8 @@
     "@types/culori": "^2.1.1",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
-    "concurrently": "9.0.1",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "tsc-alias": "catalog:",
     "type-fest": "4.41.0",
     "typescript": "catalog:",
     "vite": "catalog:",

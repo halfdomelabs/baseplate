@@ -1,6 +1,6 @@
 import { flow } from 'es-toolkit';
 
-import { convertHexToOklch } from '@src/utils/color-conversions.js';
+import { convertHexToOklch } from '#src/utils/color-conversions.js';
 
 import { transformJsonPath } from './transform-json-path.js';
 import { createSchemaMigration } from './types.js';

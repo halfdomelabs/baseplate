@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { pluginConfigSpec, zWithPlugins } from '@src/plugins/index.js';
-import { zEnt } from '@src/references/ref-builder.js';
+import { pluginConfigSpec, zWithPlugins } from '#src/plugins/index.js';
+import { zEnt } from '#src/references/ref-builder.js';
 
 import { pluginEntityType } from './entity-types.js';
 

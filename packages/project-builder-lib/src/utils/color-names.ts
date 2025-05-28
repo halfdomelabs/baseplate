@@ -1,6 +1,6 @@
-import type { ColorPaletteName, PaletteShade } from '@src/constants/colors.js';
+import type { ColorPaletteName, PaletteShade } from '#src/constants/colors.js';
 
-import { COLOR_PALETTES, FIXED_COLOR_MAPPINGS } from '@src/constants/colors.js';
+import { COLOR_PALETTES, FIXED_COLOR_MAPPINGS } from '#src/constants/colors.js';
 
 import { convertOklchToHex } from './color-conversions.js';
 

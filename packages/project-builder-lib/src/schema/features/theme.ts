@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-import type { PaletteShade } from '@src/constants/colors.js';
-import type { ThemeColorKey } from '@src/constants/theme-colors.js';
+import type { PaletteShade } from '#src/constants/colors.js';
+import type { ThemeColorKey } from '#src/constants/theme-colors.js';
 
-import { PALETTE_SHADES } from '@src/constants/colors.js';
-import { THEME_COLOR_KEYS } from '@src/constants/theme-colors.js';
+import { PALETTE_SHADES } from '#src/constants/colors.js';
+import { THEME_COLOR_KEYS } from '#src/constants/theme-colors.js';
 
 export const oklchColor = z
   .string()

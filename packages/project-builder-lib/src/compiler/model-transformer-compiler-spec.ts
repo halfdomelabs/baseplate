@@ -1,10 +1,10 @@
 import type { GeneratorBundle } from '@halfdomelabs/sync';
 
-import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
-import type { ModelConfig } from '@src/schema/index.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
+import type { ModelConfig } from '#src/schema/index.js';
 
-import { createPluginSpec } from '@src/plugins/spec/types.js';
+import { createPluginSpec } from '#src/plugins/spec/types.js';
 
 import type { TransformerConfig } from '../schema/models/transformers/types.js';
 

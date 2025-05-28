@@ -1,4 +1,4 @@
-import { authRoleEntityType } from '@src/schema/index.js';
+import { authRoleEntityType } from '#src/schema/index.js';
 
 import { createSchemaMigration } from './types.js';
 

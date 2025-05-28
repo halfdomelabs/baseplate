@@ -1,23 +1,23 @@
 import { z } from 'zod';
 
-import type { PluginWithPlatformModules } from '@src/plugins/imports/loader.js';
-import type { PluginStore } from '@src/plugins/imports/types.js';
+import type { PluginWithPlatformModules } from '#src/plugins/imports/loader.js';
+import type { PluginStore } from '#src/plugins/imports/types.js';
 import type {
   InitializedPluginSpec,
   PluginImplementationStore,
   PluginSpecImplementation,
   PluginSpecWithInitializer,
   ZodPluginWrapper,
-} from '@src/plugins/index.js';
-import type { ResolvedZodRefPayload } from '@src/references/types.js';
-import type { ProjectDefinition } from '@src/schema/project-definition.js';
+} from '#src/plugins/index.js';
+import type { ResolvedZodRefPayload } from '#src/references/types.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
-import { initializePlugins } from '@src/plugins/imports/loader.js';
-import { pluginConfigSpec, zPluginWrapper } from '@src/plugins/index.js';
-import { parseSchemaWithReferences } from '@src/references/parse-schema-with-references.js';
-import { adminCrudInputSpec, modelTransformerSpec } from '@src/schema/index.js';
-import { basePluginSchema } from '@src/schema/plugins/definition.js';
-import { projectDefinitionSchema } from '@src/schema/project-definition.js';
+import { initializePlugins } from '#src/plugins/imports/loader.js';
+import { pluginConfigSpec, zPluginWrapper } from '#src/plugins/index.js';
+import { parseSchemaWithReferences } from '#src/references/parse-schema-with-references.js';
+import { adminCrudInputSpec, modelTransformerSpec } from '#src/schema/index.js';
+import { basePluginSchema } from '#src/schema/plugins/definition.js';
+import { projectDefinitionSchema } from '#src/schema/project-definition.js';
 
 import type { SchemaParserContext } from './types.js';
 

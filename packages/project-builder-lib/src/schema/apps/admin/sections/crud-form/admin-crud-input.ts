@@ -1,4 +1,4 @@
-import { zWithPlugins } from '@src/plugins/index.js';
+import { zWithPlugins } from '#src/plugins/index.js';
 
 import { adminCrudInputSpec } from './admin-input-spec.js';
 import { baseAdminCrudInputSchema } from './types.js';

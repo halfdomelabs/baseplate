@@ -1,4 +1,4 @@
-import { zWithPlugins } from '@src/plugins/index.js';
+import { zWithPlugins } from '#src/plugins/index.js';
 
 import { modelTransformerSpec } from './model-transformer-spec.js';
 import { baseTransformerSchema } from './types.js';

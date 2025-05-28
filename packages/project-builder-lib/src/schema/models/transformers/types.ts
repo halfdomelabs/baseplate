@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 
 export const baseTransformerFields = {
   type: z.string().min(1),

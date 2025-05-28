@@ -1,8 +1,8 @@
 import type { z } from 'zod';
 
-import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
+import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
 
-import { createPluginSpec } from '@src/plugins/spec/types.js';
+import { createPluginSpec } from '#src/plugins/spec/types.js';
 
 import type { AdminCrudInputType } from './types.js';
 
