@@ -98,7 +98,7 @@ if (TEST_MODE !== 'unit') {
                 destination: dbHelperPath,
                 variables: {
                   TPL_TEST_DB: quot(
-                    `${project.getProjectName().replace('-', '_')}_test`,
+                    `${project.getProjectName().replaceAll('-', '_')}_test`,
                   ),
                 },
               }),
