@@ -17,9 +17,9 @@ import semver from 'semver';
 import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';
 
-import { NODE_VERSION, PNPM_VERSION } from '@src/constants/node.js';
-import { projectScope } from '@src/providers/scopes.js';
-import { writeJsonToBuilder } from '@src/writers/json.js';
+import { NODE_VERSION, PNPM_VERSION } from '#src/constants/node.js';
+import { projectScope } from '#src/providers/scopes.js';
+import { writeJsonToBuilder } from '#src/writers/json.js';
 
 import type { NodePackageDependencies } from './package-dependencies-container.js';
 

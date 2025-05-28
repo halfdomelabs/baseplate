@@ -1,7 +1,7 @@
 import { createTaskTestRunner } from '@halfdomelabs/sync';
 import { describe, expect, it } from 'vitest';
 
-import { NODE_VERSION, PNPM_VERSION } from '@src/constants/node.js';
+import { NODE_VERSION, PNPM_VERSION } from '#src/constants/node.js';
 
 import { nodeGenerator } from './node.generator.js';
 

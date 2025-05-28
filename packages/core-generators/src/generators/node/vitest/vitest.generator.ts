@@ -5,9 +5,9 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { CORE_PACKAGES } from '@src/constants/index.js';
-import { projectScope } from '@src/providers/scopes.js';
-import { extractPackageVersions } from '@src/utils/extract-packages.js';
+import { CORE_PACKAGES } from '#src/constants/index.js';
+import { projectScope } from '#src/providers/scopes.js';
+import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
 import { eslintConfigProvider } from '../eslint/eslint.generator.js';
 import {
@@ -25,7 +25,7 @@ import {
   type TsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-} from '@src/renderers/index.js';
+} from '#src/renderers/index.js';
 
 import { NODE_VITEST_TS_TEMPLATES } from './generated/ts-templates.js';
 

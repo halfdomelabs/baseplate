@@ -1,4 +1,4 @@
-import { createTsTemplateFile } from '@src/renderers/typescript/index.js';
+import { createTsTemplateFile } from '#src/renderers/typescript/index.js';
 
 const arrays = createTsTemplateFile({
   name: 'arrays',

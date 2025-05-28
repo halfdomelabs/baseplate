@@ -22,11 +22,11 @@ import type {
   RenderTsTemplateGroupActionInput,
   TsTemplateFile,
   TsTemplateGroup,
-} from '@src/renderers/typescript/index.js';
+} from '#src/renderers/typescript/index.js';
 
-import { CORE_PACKAGES } from '@src/constants/core-packages.js';
-import { projectScope } from '@src/providers/scopes.js';
-import { renderTsTemplateFileAction } from '@src/renderers/typescript/actions/render-ts-template-file-action.js';
+import { CORE_PACKAGES } from '#src/constants/core-packages.js';
+import { projectScope } from '#src/providers/scopes.js';
+import { renderTsTemplateFileAction } from '#src/renderers/typescript/actions/render-ts-template-file-action.js';
 import {
   extractTsTemplateFileInputsFromTemplateGroup,
   generatePathMapEntries,
@@ -35,8 +35,8 @@ import {
   pathMapEntriesToRegexes,
   renderTsFragmentAction,
   renderTsTemplateGroupAction,
-} from '@src/renderers/typescript/index.js';
-import { extractPackageVersions } from '@src/utils/extract-packages.js';
+} from '#src/renderers/typescript/index.js';
+import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
 import type { TypescriptCompilerOptions } from './compiler-types.js';
 

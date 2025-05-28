@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createTsTemplateFile,
   createTsTemplateGroup,
-} from '@src/renderers/index.js';
+} from '#src/renderers/index.js';
 
 import { createTestNodeProvider } from '../node/node.generator.js';
 import { typescriptGenerator } from './typescript.generator.js';
