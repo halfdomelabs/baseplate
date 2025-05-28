@@ -62,6 +62,8 @@ describe('ModelMerger', () => {
       };
 
       const desired: ModelMergerModelInput = {
+        name: 'TestModel',
+        featureRef: testFeature.id,
         model: {
           fields: [
             {
@@ -82,7 +84,6 @@ describe('ModelMerger', () => {
         current,
         desired,
         mockDefinitionContainer,
-        { defaultName: 'TestModel', defaultFeatureRef: testFeature.id },
       );
       expect(result).toBeDefined();
       expect(result?.changes['model.fields']).toHaveLength(1);
@@ -110,6 +111,8 @@ describe('ModelMerger', () => {
       };
 
       const desired: ModelMergerModelInput = {
+        name: 'TestModel',
+        featureRef: testFeature.id,
         model: {
           fields: [
             {
@@ -126,7 +129,6 @@ describe('ModelMerger', () => {
         current,
         desired,
         mockDefinitionContainer,
-        { defaultName: 'TestModel', defaultFeatureRef: testFeature.id },
       );
       expect(result).toBeDefined();
       expect(result?.changes['model.fields']).toHaveLength(1);
@@ -160,6 +162,8 @@ describe('ModelMerger', () => {
       };
 
       const desired: ModelMergerModelInput = {
+        name: 'TestModel',
+        featureRef: testFeature.id,
         model: {
           fields: [
             {
@@ -189,7 +193,6 @@ describe('ModelMerger', () => {
         current,
         desired,
         mockDefinitionContainer,
-        { defaultName: 'TestModel', defaultFeatureRef: testFeature.id },
       );
       expect(result).toBeDefined();
       expect(result?.changes['model.fields']).toEqual([]);
@@ -238,6 +241,8 @@ describe('ModelMerger', () => {
       };
 
       const desired: ModelMergerModelInput = {
+        name: 'TestModel',
+        featureRef: testFeature.id,
         model: {
           fields: [
             {
@@ -263,7 +268,6 @@ describe('ModelMerger', () => {
         current,
         desired,
         mockDefinitionContainer,
-        { defaultName: 'TestModel', defaultFeatureRef: testFeature.id },
       );
       expect(result).toBeDefined();
       expect(result?.changes['model.fields']).toEqual([]);

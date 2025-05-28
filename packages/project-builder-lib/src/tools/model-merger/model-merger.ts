@@ -34,12 +34,12 @@ export type ModelMergerScalarFieldInput = SetOptional<
   'id'
 >;
 
-type ModelMergerRelationFieldInput = SetOptional<
+export type ModelMergerRelationFieldInput = SetOptional<
   ModelRelationFieldConfigInput,
   'id' | 'foreignId'
 >;
 
-type ModelMergerUniqueConstraintInput = SetOptional<
+export type ModelMergerUniqueConstraintInput = SetOptional<
   ModelUniqueConstraintConfigInput,
   'id'
 >;
