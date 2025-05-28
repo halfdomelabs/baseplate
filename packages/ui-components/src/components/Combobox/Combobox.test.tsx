@@ -4,16 +4,16 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { renderWithProviders } from '@src/tests/render.test-helper';
+import { renderWithProviders } from '#src/tests/render.test-helper.js';
 
-import type { ComboboxProps } from './Combobox';
+import type { ComboboxProps } from './Combobox.js';
 
 import {
   Combobox,
   ComboboxContent,
   ComboboxInput,
   ComboboxItem,
-} from './Combobox';
+} from './Combobox.js';
 
 const mockOptions = [
   { value: 'apple', label: 'Apple' },

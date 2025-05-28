@@ -5,7 +5,7 @@ import type * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { MdClose } from 'react-icons/md';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 /**
  * A window overlaid on either the primary window or another dialog window, rendering the content underneath inert.

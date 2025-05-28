@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { cn } from '@src/utils/cn.js';
+import { cn } from '#src/utils/cn.js';
 
 /**
  * Displays a list of buttons aligned next to one another.

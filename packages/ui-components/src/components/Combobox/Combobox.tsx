@@ -11,17 +11,17 @@ import { Command } from 'cmdk';
 import * as React from 'react';
 import { MdCheck, MdUnfoldMore } from 'react-icons/md';
 
-import { useControlledState } from '@src/hooks/useControlledState';
+import { useControlledState } from '#src/hooks/useControlledState.js';
 import {
   inputVariants,
   selectCheckVariants,
   selectContentVariants,
   selectItemVariants,
-} from '@src/styles';
-import { cn, mergeRefs } from '@src/utils';
+} from '#src/styles/index.js';
+import { cn, mergeRefs } from '#src/utils/index.js';
 
-import { Button } from '../Button/Button';
-import { ScrollBar } from '../ScrollArea/ScrollArea';
+import { Button } from '../Button/Button.js';
+import { ScrollBar } from '../ScrollArea/ScrollArea.js';
 
 interface ComboboxContextValue {
   selectedValue: string | undefined | null;

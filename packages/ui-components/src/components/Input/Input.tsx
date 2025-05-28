@@ -1,7 +1,7 @@
 import type * as React from 'react';
 
-import { inputVariants } from '@src/styles';
-import { cn } from '@src/utils';
+import { inputVariants } from '#src/styles/index.js';
+import { cn } from '#src/utils/index.js';
 
 /**
  * Input component for a styled <input /> element.

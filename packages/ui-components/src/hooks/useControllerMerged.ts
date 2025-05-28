@@ -9,7 +9,7 @@ import type {
 
 import { useController } from 'react-hook-form';
 
-import { mergeRefs } from '../utils/refs';
+import { mergeRefs } from '../utils/refs.js';
 
 interface UseControllerMergedOptions<TValue, TRef> {
   onChange?: (value: TValue) => void;

@@ -5,7 +5,7 @@ import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 import { cva } from 'class-variance-authority';
 import { MdExpandMore } from 'react-icons/md';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 /**
  * A collection of links for navigating websites.

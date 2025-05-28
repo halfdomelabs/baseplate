@@ -5,11 +5,11 @@ import type { ComponentPropsWithRef } from 'react';
 
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 
-import { useControlledState } from '@src/hooks/useControlledState';
-import { inputVariants } from '@src/styles';
-import { cn } from '@src/utils';
+import { useControlledState } from '#src/hooks/useControlledState.js';
+import { inputVariants } from '#src/styles/index.js';
+import { cn } from '#src/utils/index.js';
 
-import { Popover, PopoverContent, PopoverTrigger } from '../Popover/Popover';
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover/Popover.js';
 
 export interface ColorFieldProps
   extends Omit<ComponentPropsWithRef<'button'>, 'value' | 'onChange'> {

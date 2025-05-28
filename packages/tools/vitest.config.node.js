@@ -22,14 +22,13 @@ export default defineConfig({
 });
 
 /**
- * Create a vitest config for a node project
+ * Create a vitest config for a Node.js project
  *
  * @param {string} dirname - The directory name of the project
  * @returns {import('vitest/config').UserConfig} - The vitest config
  */
 export function createNodeVitestConfig(dirname) {
   return defineConfig({
-    plugins: [tsconfigPaths()],
     test: {
       watch: false,
       root: './src',

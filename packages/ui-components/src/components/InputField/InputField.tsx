@@ -10,9 +10,9 @@ import type {
 
 import { get, useFormState } from 'react-hook-form';
 
-import type { FormFieldProps } from '@src/types/form';
+import type { FormFieldProps } from '#src/types/form.js';
 
-import { cn, mergeRefs } from '@src/utils';
+import { cn, mergeRefs } from '#src/utils/index.js';
 
 import {
   FormControl,
@@ -20,8 +20,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../FormItem/FormItem';
-import { Input } from '../Input/Input';
+} from '../FormItem/FormItem.js';
+import { Input } from '../Input/Input.js';
 
 export interface InputFieldProps
   extends Omit<React.ComponentPropsWithRef<'input'>, 'onChange' | 'value'>,

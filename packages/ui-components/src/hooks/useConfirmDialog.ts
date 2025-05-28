@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { create } from 'zustand';
 
-import type { ButtonProps } from '../components/Button/Button';
+import type { ButtonProps } from '../components/Button/Button.js';
 
 export interface UseConfirmDialogRequestOptions {
   title: string;

@@ -4,19 +4,19 @@ import type { ComponentPropsWithRef } from 'react';
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import type { FormFieldProps } from '@src/types/form';
+import type { FormFieldProps } from '#src/types/form.js';
 
-import { useControllerMerged } from '@src/hooks/useControllerMerged';
-import { cn } from '@src/utils';
+import { useControllerMerged } from '#src/hooks/useControllerMerged.js';
+import { cn } from '#src/utils/index.js';
 
-import { Checkbox } from '../Checkbox/Checkbox';
+import { Checkbox } from '../Checkbox/Checkbox.js';
 import {
   FormControl,
   FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../FormItem/FormItem';
+} from '../FormItem/FormItem.js';
 
 interface CheckboxFieldProps
   extends Omit<

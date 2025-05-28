@@ -13,9 +13,7 @@
   "sideEffects": false,
   "type": "module",
   "imports": {
-    "#src/*": {
-      "import": "./dist/*"
-    }
+    "#src/*": "./dist/*"
   },
   "exports": {
     ".": {
@@ -26,7 +24,7 @@
   "files": [
     "LICENSE",
     "dist/**/*",
-    "!dist/**/*.d.ts",
+    "!dist/**/*.d.ts.map",
     "CHANGELOG"
   ],
   "scripts": {

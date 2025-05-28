@@ -4,7 +4,7 @@ import type { ExternalToast } from 'sonner';
 
 import { toast } from 'sonner';
 
-import { Button } from '../Button/Button';
+import { Button } from '../Button/Button.js';
 
 interface ToastProps {
   message: string;
