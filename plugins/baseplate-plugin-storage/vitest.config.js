@@ -1,1 +1,3 @@
-export { default } from '@halfdomelabs/tools/vitest-node';
+import { createNodeVitestConfig } from '@halfdomelabs/tools/vitest-node';
+
+export default createNodeVitestConfig(import.meta.dirname);

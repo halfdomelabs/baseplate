@@ -28,14 +28,16 @@
     "./tsconfig.vite.lib.json": "./tsconfig.vite.lib.json",
     "./tsconfig.vite.web.json": "./tsconfig.vite.web.json",
     "./vitest-node": "./vitest.config.node.js",
-    "./vitest-react": "./vitest.config.react.js"
+    "./vitest-react": "./vitest.config.react.js",
+    "./src-subpath-import-plugin": "./src-subpath-import-plugin.js"
   },
   "files": [
     "eslint-configs/**/*.js",
     "prettier.config.*.js",
     "eslint.config.*.js",
     "tsconfig.*.json",
-    "vitest.*.js"
+    "vitest.*.js",
+    "src-subpath-import-plugin.js"
   ],
   "scripts": {
     "lint": "eslint .",

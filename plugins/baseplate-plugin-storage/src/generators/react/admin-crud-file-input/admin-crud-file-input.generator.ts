@@ -3,7 +3,7 @@ import { adminCrudInputContainerProvider } from '@halfdomelabs/react-generators'
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { uploadComponentsImportsProvider } from '../upload-components/upload-components.generator';
+import { uploadComponentsImportsProvider } from '../upload-components/upload-components.generator.js';
 
 const descriptorSchema = z.object({
   order: z.number(),

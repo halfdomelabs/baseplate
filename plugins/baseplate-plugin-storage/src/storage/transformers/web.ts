@@ -10,10 +10,10 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { modelTransformerWebSpec } from '@halfdomelabs/project-builder-lib/web';
 
-import type { StoragePluginDefinition } from '../core/schema/plugin-definition';
-import type { FileTransformerConfig } from './types';
+import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
+import type { FileTransformerConfig } from './types.js';
 
-import { FileTransformerForm } from './components/FileTransformerForm';
+import { FileTransformerForm } from './components/FileTransformerForm.js';
 
 import '../../styles.css';
 

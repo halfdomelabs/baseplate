@@ -1,6 +1,9 @@
-import path from 'node:path';
+// @ts-check
+
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
+
+import { srcSubpathImportPlugin } from './src-subpath-import-plugin.js';
 
 /**
 
@@ -35,15 +38,13 @@ export default defineConfig({
  */
 export function createReactVitestConfig(dirname) {
   return defineConfig({
+    plugins: [srcSubpathImportPlugin(dirname)],
     test: {
       watch: false,
       root: './src',
       mockReset: true,
       environment: 'jsdom',
       setupFiles: ['./src/tests/setup.ts'],
-      alias: {
-        '#src': path.resolve(dirname, './src'),
-      },
     },
   });
 }
