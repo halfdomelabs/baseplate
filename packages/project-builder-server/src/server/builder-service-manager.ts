@@ -2,9 +2,9 @@ import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib'
 
 import crypto from 'node:crypto';
 
-import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
+import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
-import { ProjectBuilderService } from '@src/service/builder-service.js';
+import { ProjectBuilderService } from '#src/service/builder-service.js';
 
 export class BuilderServiceManager {
   private services = new Map<string, ProjectBuilderService>();

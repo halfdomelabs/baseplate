@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises';
 
-import { stringifyPrettyStable } from '@src/json/stringify-pretty-stable.js';
+import { stringifyPrettyStable } from '#src/json/stringify-pretty-stable.js';
 
 /**
  * Writes a JSON file with stable pretty printing.

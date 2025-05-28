@@ -17,7 +17,7 @@ import {
 import { type GeneratorBundle, makeIdSafe } from '@halfdomelabs/sync';
 import inflection from 'inflection';
 
-import type { AppEntryBuilder } from '@src/compiler/app-entry-builder.js';
+import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
 
 import { compileAdminCrudDisplay } from './displays.js';
 import { compileAdminCrudInput } from './inputs.js';

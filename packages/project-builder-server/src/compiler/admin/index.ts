@@ -31,7 +31,7 @@ import {
 import { safeMerge } from '@halfdomelabs/utils';
 import { capitalize } from 'inflection';
 
-import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
+import { dasherizeCamel, titleizeCamel } from '#src/utils/case.js';
 
 import type { AdminAppEntryBuilder } from '../app-entry-builder.js';
 

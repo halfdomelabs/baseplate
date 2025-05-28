@@ -2,10 +2,8 @@
   "extends": "@halfdomelabs/tools/tsconfig.node.lib.json",
   "compilerOptions": {
     "outDir": "dist",
-    "noEmit": true,
-    "paths": {
-      "@src/*": ["./src/*"]
-    }
+    "rootDir": "src",
+    "noEmit": true
   },
   "include": ["src/**/*"]
 }
