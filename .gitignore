@@ -98,3 +98,5 @@ playground
 .vercel
 
 .turbo
+
+.claude/settings.local.json
