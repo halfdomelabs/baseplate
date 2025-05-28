@@ -1,4 +1,4 @@
-import type { GeneratorInfo } from '@src/generators/build-generator-entry.js';
+import type { GeneratorInfo } from '#src/generators/build-generator-entry.js';
 import type {
   GeneratorTask,
   GeneratorTaskResult,
@@ -6,16 +6,16 @@ import type {
   InferExportProviderMap,
   ProviderDependencyMap,
   ProviderExportMap,
-} from '@src/generators/generators.js';
+} from '#src/generators/generators.js';
 import type {
   PostWriteCommand,
   TemplateMetadataOptions,
-} from '@src/output/index.js';
+} from '#src/output/index.js';
 
 import {
   type GeneratorTaskOutput,
   GeneratorTaskOutputBuilder,
-} from '@src/output/generator-task-output.js';
+} from '#src/output/generator-task-output.js';
 
 interface TaskTestRunnerResult<
   ExportMap extends ProviderExportMap | undefined,

@@ -3,10 +3,10 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
-import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-output.js';
+import type { GeneratorTaskOutputBuilder } from '#src/output/generator-task-output.js';
 
-import { createGeneratorTask } from '@src/generators/index.js';
-import { createProviderExportScope } from '@src/providers/index.js';
+import { createGeneratorTask } from '#src/generators/index.js';
+import { createProviderExportScope } from '#src/providers/index.js';
 
 import { createGenerator } from './create-generator.js';
 

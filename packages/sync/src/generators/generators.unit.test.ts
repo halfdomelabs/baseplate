@@ -1,8 +1,8 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-output.js';
+import type { GeneratorTaskOutputBuilder } from '#src/output/generator-task-output.js';
 
-import { createProviderType } from '@src/providers/index.js';
+import { createProviderType } from '#src/providers/index.js';
 
 import {
   createGeneratorTask,

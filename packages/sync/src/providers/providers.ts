@@ -1,6 +1,6 @@
 import { toMerged } from 'es-toolkit';
 
-import { KEBAB_CASE_REGEX } from '@src/utils/validation.js';
+import { KEBAB_CASE_REGEX } from '#src/utils/validation.js';
 
 import type { ProviderExportScope } from './export-scopes.js';
 

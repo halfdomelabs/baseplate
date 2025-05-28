@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { ensureDir, pathExists } from '@src/utils/fs.js';
+import { ensureDir, pathExists } from '#src/utils/fs.js';
 
 import type { GeneratorFileOperationResult } from '../prepare-generator-files/types.js';
 

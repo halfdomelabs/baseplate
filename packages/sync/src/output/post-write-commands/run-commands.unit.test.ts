@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { executeCommand } from '@src/utils/exec.js';
+import { executeCommand } from '#src/utils/exec.js';
 
 import { runPostWriteCommands } from './run-commands.js';
 import { type PostWriteCommand } from './types.js';
 
 // Mock executeCommand
-vi.mock('@src/utils/exec.js', () => ({
+vi.mock('#src/utils/exec.js', () => ({
   executeCommand: vi.fn(),
 }));
 

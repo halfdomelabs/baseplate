@@ -4,7 +4,7 @@ import { handleFileNotFoundError } from '@halfdomelabs/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import type { Logger } from '@src/utils/evented-logger.js';
+import type { Logger } from '#src/utils/evented-logger.js';
 
 import type {
   TemplateFileMetadataBase,

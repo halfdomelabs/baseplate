@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-output.js';
-import type { TaskPhase } from '@src/phases/types.js';
+import type { GeneratorTaskOutputBuilder } from '#src/output/generator-task-output.js';
+import type { TaskPhase } from '#src/phases/types.js';
 
-import { POST_WRITE_COMMAND_PRIORITY } from '@src/output/post-write-commands/types.js';
+import { POST_WRITE_COMMAND_PRIORITY } from '#src/output/post-write-commands/types.js';
 
 import type {
   GeneratorEntry,

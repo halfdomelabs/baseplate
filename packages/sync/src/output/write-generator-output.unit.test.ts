@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createTestLogger } from '@src/tests/logger.test-helper.js';
+import { createTestLogger } from '#src/tests/logger.test-helper.js';
 
 import type { GeneratorOutput } from './generator-task-output.js';
 

@@ -6,7 +6,7 @@ import type {
 
 import { createFieldMap } from '@halfdomelabs/utils';
 
-import { getRunnerContext } from '@src/runner/runner-context.js';
+import { getRunnerContext } from '#src/runner/runner-context.js';
 
 /**
  * Creates a field map using the task ID as a dynamic source

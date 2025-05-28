@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { testAction } from '@src/output/builder-action-test-helpers.js';
+import { testAction } from '#src/output/builder-action-test-helpers.js';
 
 import { renderRawTemplateFileAction } from './render-raw-template-action.js';
 import { createRawTemplateFile, RAW_TEMPLATE_TYPE } from './types.js';

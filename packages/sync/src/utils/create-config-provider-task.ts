@@ -5,17 +5,17 @@ import type {
   FieldMapValues,
 } from '@halfdomelabs/utils';
 
-import type { ProviderExportScope } from '@src/providers/export-scopes.js';
+import type { ProviderExportScope } from '#src/providers/export-scopes.js';
 
 import {
   createGeneratorTask,
   type GeneratorTask,
-} from '@src/generators/generators.js';
+} from '#src/generators/generators.js';
 import {
   createProviderType,
   createReadOnlyProviderType,
   type ProviderType,
-} from '@src/providers/providers.js';
+} from '#src/providers/providers.js';
 
 import { createConfigFieldMap } from './create-config-field-map.js';
 

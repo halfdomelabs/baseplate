@@ -1,5 +1,5 @@
-import type { TaskPhase } from '@src/phases/types.js';
-import type { ProviderExportScope } from '@src/providers/index.js';
+import type { TaskPhase } from '#src/phases/types.js';
+import type { ProviderExportScope } from '#src/providers/index.js';
 
 import type { GeneratorBundle, GeneratorTask } from './generators.js';
 

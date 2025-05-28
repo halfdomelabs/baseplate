@@ -2,7 +2,7 @@ import { stringifyPrettyStable } from '@halfdomelabs/utils';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import type { FileData } from '@src/output/generator-task-output.js';
+import type { FileData } from '#src/output/generator-task-output.js';
 
 import type { TemplateFileMetadataBase } from './metadata.js';
 

@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createProviderExportScope,
   createProviderType,
-} from '@src/providers/index.js';
-import { buildTestGeneratorBundle } from '@src/runner/tests/factories.test-helper.js';
+} from '#src/providers/index.js';
+import { buildTestGeneratorBundle } from '#src/runner/tests/factories.test-helper.js';
 
 import type { GeneratorBundle, ProviderExportMap } from './generators.js';
 

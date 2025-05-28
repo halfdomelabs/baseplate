@@ -2,7 +2,7 @@ import type {
   InferProviderDependency,
   ProviderDependency,
   ProviderType,
-} from '@src/providers/providers.js';
+} from '#src/providers/providers.js';
 
 import type { GeneratorTask } from '../generators/generators.js';
 
