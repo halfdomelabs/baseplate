@@ -93,7 +93,8 @@ export function AuthDefinitionEditor({
           ...data,
           authFeatureRef: featureRef,
         };
-        createAndApplyModelMergerResults(
+        updatedData.modelRefs = createAndApplyModelMergerResults(
+          draftConfig,
           updatedData.modelRefs,
           createAuthModels(updatedData),
           definitionContainer,
@@ -120,8 +121,8 @@ export function AuthDefinitionEditor({
     <form onSubmit={onSubmit} className={cn('flex flex-col gap-4')}>
       <ModelMergerResultAlert pendingModelChanges={pendingModelChanges} />
       <ModelComboboxFieldController
-        label="User Account Model"
-        name="modelRefs.userAccount"
+        label="User Model"
+        name="modelRefs.user"
         control={control}
         canCreate
       />
@@ -132,14 +133,14 @@ export function AuthDefinitionEditor({
         canCreate
       />
       <ModelComboboxFieldController
-        label="User Account Model"
-        name="modelRefs.userAccount"
+        label="User Role Model"
+        name="modelRefs.userRole"
         control={control}
         canCreate
       />
       <ModelComboboxFieldController
-        label="User Account Model"
-        name="modelRefs.userAccount"
+        label="User Session Model"
+        name="modelRefs.userSession"
         control={control}
         canCreate
       />

@@ -2,6 +2,7 @@ import {
   authContextGenerator,
   authPluginGenerator,
   authRolesGenerator,
+  placeholderAuthServiceGenerator,
   pothosAuthGenerator,
   userSessionTypesGenerator,
 } from '@halfdomelabs/fastify-generators';
@@ -15,19 +16,10 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import {
   authIdentifyGenerator,
-  reactRoutesGenerator,
+  placeholderAuthHooksGenerator,
 } from '@halfdomelabs/react-generators';
 
 import type { AuthPluginDefinition } from './schema/plugin-definition';
-
-import {
-  authApolloGenerator,
-  authCallbackGenerator,
-  authComponentsGenerator,
-  authHooksGenerator,
-  authModuleGenerator,
-  reactAuthGenerator,
-} from '../generators';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -39,7 +31,7 @@ export default createPlatformPluginExport({
     appCompiler.registerAppCompiler({
       pluginId,
       appType: backendAppEntryType,
-      compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
+      compile: ({ projectDefinition, appCompiler }) => {
         const auth = PluginUtils.configByIdOrThrow(
           projectDefinition,
           pluginId,
@@ -55,13 +47,8 @@ export default createPlatformPluginExport({
               builtIn: r.builtIn,
             })),
           }),
-          authModule: authModuleGenerator({
-            userModelName: definitionContainer.nameFromId(
-              auth.userAccountModelRef,
-            ),
-            includeManagement: true,
-          }),
           userSessionTypes: userSessionTypesGenerator({}),
+          placeholderUserSessionService: placeholderAuthServiceGenerator({}),
         });
 
         appCompiler.addRootChildren({
@@ -76,20 +63,8 @@ export default createPlatformPluginExport({
       appType: webAppEntryType,
       compile: ({ appCompiler }) => {
         appCompiler.addRootChildren({
-          auth: reactAuthGenerator({
-            callbackPath: 'auth/auth-callback',
-          }),
-          authHooks: authHooksGenerator({}),
           authIdentify: authIdentifyGenerator({}),
-          authApollo: authApolloGenerator({}),
-          authComponents: authComponentsGenerator({}),
-          authCallback: reactRoutesGenerator({
-            id: 'auth',
-            name: 'auth',
-            children: {
-              auth: authCallbackGenerator({}),
-            },
-          }),
+          authHooks: placeholderAuthHooksGenerator({}),
         });
       },
     });
@@ -98,20 +73,8 @@ export default createPlatformPluginExport({
       appType: adminAppEntryType,
       compile: ({ appCompiler }) => {
         appCompiler.addRootChildren({
-          auth: reactAuthGenerator({
-            callbackPath: 'auth/auth-callback',
-          }),
-          authHooks: authHooksGenerator({}),
           authIdentify: authIdentifyGenerator({}),
-          authApollo: authApolloGenerator({}),
-          authComponents: authComponentsGenerator({}),
-          authCallback: reactRoutesGenerator({
-            id: 'auth',
-            name: 'auth',
-            children: {
-              auth: authCallbackGenerator({}),
-            },
-          }),
+          authHooks: placeholderAuthHooksGenerator({}),
         });
       },
     });

@@ -93,7 +93,7 @@ export function createAuthModels({
           {
             name: 'user',
             references: [{ localRef: 'userId', foreignRef: 'id' }],
-            modelRef: 'user',
+            modelRef: modelRefs.user,
             foreignRelationName: 'authProviders',
             onDelete: 'Cascade',
             onUpdate: 'Restrict',
@@ -130,7 +130,7 @@ export function createAuthModels({
           {
             name: 'user',
             references: [{ localRef: 'userId', foreignRef: 'id' }],
-            modelRef: 'user',
+            modelRef: modelRefs.user,
             foreignRelationName: 'roles',
             onDelete: 'Cascade',
             onUpdate: 'Restrict',
@@ -186,7 +186,7 @@ export function createAuthModels({
           {
             name: 'user',
             references: [{ localRef: 'userId', foreignRef: 'id' }],
-            modelRef: 'user',
+            modelRef: modelRefs.user,
             foreignRelationName: 'sessions',
             onDelete: 'Cascade',
             onUpdate: 'Restrict',

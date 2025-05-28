@@ -1,6 +1,6 @@
 {
   "exportGroups": {
-    "": {
+    "user-session-service": {
       "existingImportsProvider": {
         "moduleSpecifier": "@halfdomelabs/fastify-generators",
         "importSchemaName": "userSessionServiceImportsSchema",
