@@ -2,7 +2,7 @@ import type { SourceFile } from 'ts-morph';
 
 import { SyntaxKind } from 'ts-morph';
 
-import { createTypescriptMorpher } from '@src/types.js';
+import { createTypescriptMorpher } from '#src/types.js';
 
 export default createTypescriptMorpher({
   name: 'deprecate-create-task-builder',

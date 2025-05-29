@@ -5,14 +5,14 @@ import { program } from 'commander';
 import { globby } from 'globby';
 import path from 'node:path';
 
-import type { TypescriptMorpher } from '@src/types.js';
-import type { WorkspacePackage } from '@src/utils/find-workspace-projects.js';
+import type { TypescriptMorpher } from '#src/types.js';
+import type { WorkspacePackage } from '#src/utils/find-workspace-projects.js';
 
-import { loadMorphers } from '@src/load-morphers.js';
-import { runMorpher } from '@src/runner.js';
-import { asyncFilter } from '@src/utils/array.js';
-import { getWorkspacePackages } from '@src/utils/find-workspace-projects.js';
-import { pathExists } from '@src/utils/fs.js';
+import { loadMorphers } from '#src/load-morphers.js';
+import { runMorpher } from '#src/runner.js';
+import { asyncFilter } from '#src/utils/array.js';
+import { getWorkspacePackages } from '#src/utils/find-workspace-projects.js';
+import { pathExists } from '#src/utils/fs.js';
 
 interface Options {
   dryRun?: boolean;

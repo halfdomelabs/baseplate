@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { createTypescriptMorpher } from '@src/types.js';
+import { createTypescriptMorpher } from '#src/types.js';
 
 export default createTypescriptMorpher({
   name: 'rename-path-alias',

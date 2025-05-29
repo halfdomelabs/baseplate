@@ -12,6 +12,12 @@
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
   "type": "module",
+  "imports": {
+    "#src/*": {
+      "development": "./src/*",
+      "default": "./dist/*"
+    }
+  },
   "files": [
     "LICENSE",
     "scripts/**/*",
@@ -21,8 +27,8 @@
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "run:morpher": "tsx src/scripts/run-morpher.ts",
-    "run:script": "tsx",
+    "run:morpher": "tsx -C development src/scripts/run-morpher.ts",
+    "run:script": "tsx -C development",
     "test": "vitest",
     "typecheck": "tsc --noEmit"
   },
