@@ -13,8 +13,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { pino } from 'pino';
 
-import { serveWebServer } from '@src/commands/server.js';
-import { DEFAULT_LOGGER_OPTIONS } from '@src/services/logger.js';
+import { serveWebServer } from '#src/commands/server.js';
+import { DEFAULT_LOGGER_OPTIONS } from '#src/services/logger.js';
 
 /**
  * Get a project definition that is initialized
