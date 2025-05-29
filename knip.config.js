@@ -10,6 +10,9 @@ export default {
       entry: ['src/index.{ts,tsx}', 'src/web/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
       ignore: ['src/__mocks__/**'],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'plugins/*': {
       entry: [
@@ -25,12 +28,15 @@ export default {
         'react-dom',
         '@types/react-dom',
       ],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/fastify-generators': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
       ignoreDependencies: [
-        // Tricky bug where @tailwindcss/forms is being used by prettier-plugin-tailwindcss
+        // Tricky bug where @tailwlindcss/forms is being used by prettier-plugin-tailwindcss
         // so must be included to not bug the build
         '@tailwindcss/forms',
       ],
@@ -75,20 +81,6 @@ export default {
         '@halfdomelabs/baseplate-plugin-*',
       ],
     },
-    'packages/project-builder-lib': {
-      entry: ['src/index.{ts,tsx}'],
-      project: 'src/**/*.{ts,tsx}',
-      paths: {
-        '#src/*': ['./src/*'],
-      },
-    },
-    'packages/project-builder-server': {
-      entry: ['src/index.{ts,tsx}'],
-      project: 'src/**/*.{ts,tsx}',
-      paths: {
-        '#src/*': ['./src/*'],
-      },
-    },
     'packages/ui-components': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
@@ -117,6 +109,9 @@ export default {
     'packages/utils': {
       entry: ['src/index.{ts,tsx}', 'src/node.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/tools': {
       project: 'src/**/*.{ts,tsx}',
@@ -125,9 +120,6 @@ export default {
         'eslint-import-resolver-typescript',
       ],
     },
-  },
-  paths: {
-    '#src/*': ['./src/*'],
   },
   ignore: [
     'tests/**',

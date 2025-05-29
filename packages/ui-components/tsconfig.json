@@ -2,7 +2,9 @@
   "files": [],
   "compilerOptions": {
     "noEmit": true,
-    "strict": true
+    "strict": true,
+    "rootDir": "src",
+    "outDir": "dist"
   },
   "references": [
     { "path": "./tsconfig.node.json" },
