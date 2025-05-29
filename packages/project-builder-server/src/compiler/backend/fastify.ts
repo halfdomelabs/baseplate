@@ -54,10 +54,10 @@ export function buildFastify(
     children: safeMergeAll(
       {
         fastifyServer: fastifyServerGenerator({
-          defaultPort: projectDefinition.portOffset + 1,
+          defaultPort: projectDefinition.settings.general.portOffset + 1,
         }),
         readme: readmeGenerator({
-          projectName: `${projectDefinition.name} backend`,
+          projectName: `${projectDefinition.settings.general.name} backend`,
         }),
         sentry: fastifySentryGenerator({}),
         redis: app.enableRedis

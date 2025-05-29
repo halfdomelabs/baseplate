@@ -9,9 +9,10 @@ import type {
   FixRefDeletionResult,
   ResolvedZodRefPayload,
 } from '#src/references/index.js';
+import type { InferDefinitionSchema } from '#src/schema/creator/types.js';
 import type {
+  createProjectDefinitionSchema,
   ProjectDefinition,
-  projectDefinitionSchema,
 } from '#src/schema/index.js';
 
 import {
@@ -89,7 +90,9 @@ export class ProjectDefinitionContainer {
    */
   fixRefDeletions(
     setter: (draftConfig: ProjectDefinition) => void,
-  ): FixRefDeletionResult<typeof projectDefinitionSchema> {
+  ): FixRefDeletionResult<
+    InferDefinitionSchema<typeof createProjectDefinitionSchema>
+  > {
     const newDefinition = produce(setter)(this.definition);
     const schemaWithContext = createProjectDefinitionSchemaWithContext(
       newDefinition,

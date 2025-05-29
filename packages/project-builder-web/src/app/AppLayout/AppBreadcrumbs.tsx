@@ -49,6 +49,8 @@ export function AppBreadcrumbs(): React.JSX.Element {
 
   const orderedProjects = orderBy(projects, ['name'], ['asc']);
 
+  const projectName = definitionContainer.definition.settings.general.name;
+
   return (
     <div className="flex items-center space-x-2">
       {projects.length > 1 && (
@@ -60,7 +62,7 @@ export function AppBreadcrumbs(): React.JSX.Element {
               className="-ml-2 h-8 px-2 text-muted-foreground"
             >
               <div className="flex items-center text-sm">
-                {upperFirst(definitionContainer.definition.name)} project
+                {upperFirst(projectName)} project
               </div>
               <MdKeyboardArrowDown />
             </Button>
@@ -94,9 +96,7 @@ export function AppBreadcrumbs(): React.JSX.Element {
         <BreadcrumbList>
           {projects.length <= 1 && (
             <>
-              <BreadcrumbItem>
-                {upperFirst(definitionContainer.definition.name)} project
-              </BreadcrumbItem>
+              <BreadcrumbItem>{upperFirst(projectName)} project</BreadcrumbItem>
               {crumbs.length > 0 && <BreadcrumbSeparator />}
             </>
           )}

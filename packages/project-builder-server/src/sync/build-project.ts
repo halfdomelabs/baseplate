@@ -199,13 +199,15 @@ export async function buildProject({
         const packageInfo = metadata?.packages[app.id];
 
         const fileIdRegexWhitelist =
-          projectJson.templateExtractor?.fileIdRegexWhitelist.split('\n') ?? [];
+          projectJson.settings.templateExtractor?.fileIdRegexWhitelist.split(
+            '\n',
+          ) ?? [];
 
         newResult = await generateForDirectory({
           baseDirectory: directory,
           appEntry: app,
           logger,
-          writeTemplateMetadataOptions: projectJson.templateExtractor
+          writeTemplateMetadataOptions: projectJson.settings.templateExtractor
             ?.writeMetadata
             ? {
                 includeTemplateMetadata: true,

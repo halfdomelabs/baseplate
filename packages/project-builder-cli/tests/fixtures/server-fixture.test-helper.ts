@@ -21,11 +21,14 @@ import { DEFAULT_LOGGER_OPTIONS } from '#src/services/logger.js';
  */
 export function getInitializedTestProjectDefinition(): ProjectDefinition {
   return {
-    packageScope: 'test-project',
-    name: 'test-project',
-    version: '0.0.1',
+    settings: {
+      general: {
+        name: 'test-project',
+        packageScope: 'test-project',
+        portOffset: 9000,
+      },
+    },
     cliVersion: '0.0.1',
-    portOffset: 7000,
     apps: [],
     features: [],
     models: [],

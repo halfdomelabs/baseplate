@@ -7,8 +7,8 @@ export function getPostgresSettings(projectDefinition: ProjectDefinition): {
   };
   url: string;
 } {
-  const port = projectDefinition.portOffset + 432;
-  const password = `${projectDefinition.name}-backend-password`;
+  const port = projectDefinition.settings.general.portOffset + 432;
+  const password = `${projectDefinition.settings.general.name}-backend-password`;
   return {
     config: { port, password },
     url: `postgres://postgres:${password}@localhost:${port}/postgres?schema=public`,
@@ -22,8 +22,8 @@ export function getRedisSettings(projectDefinition: ProjectDefinition): {
   };
   url: string;
 } {
-  const port = projectDefinition.portOffset + 379;
-  const password = `${projectDefinition.name}-backend-password`;
+  const port = projectDefinition.settings.general.portOffset + 379;
+  const password = `${projectDefinition.settings.general.name}-backend-password`;
   return {
     config: { port, password },
     url: `redis://:${password}@localhost:${port}`,
