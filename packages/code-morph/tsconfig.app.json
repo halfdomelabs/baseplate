@@ -1,9 +1,0 @@
-{
-  "extends": "@halfdomelabs/tools/tsconfig.node.cli.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-    "noEmit": true
-  },
-  "include": ["src/**/*"]
-}

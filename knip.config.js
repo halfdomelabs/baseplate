@@ -103,7 +103,7 @@ export default {
       entry: ['src/index.{ts,tsx}', 'src/morphers/**/*.morpher.{ts,tsx}'],
       project: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
       paths: {
-        '@src/*': ['./src/*'],
+        '#src/*': ['./src/*'],
       },
     },
     'packages/utils': {
