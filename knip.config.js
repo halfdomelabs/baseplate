@@ -30,21 +30,9 @@ export default {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
       ignoreDependencies: [
-        // Tricky bug where @tailwlindcss/forms is being used by prettier-plugin-tailwindcss
+        // Tricky bug where @tailwindcss/forms is being used by prettier-plugin-tailwindcss
         // so must be included to not bug the build
         '@tailwindcss/forms',
-      ],
-      ignore: [
-        // For some reason, Knip doesn't recognize this file as used.
-        'src/utils/case.ts',
-      ],
-    },
-    'packages/react-generators': {
-      entry: ['src/index.{ts,tsx}'],
-      project: 'src/**/*.{ts,tsx}',
-      ignore: [
-        // For some reason, Knip doesn't recognize this file as used.
-        'src/utils/case.ts',
       ],
     },
     'packages/project-builder-web': {
@@ -104,7 +92,6 @@ export default {
     'packages/ui-components': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
-      includeEntryExports: false,
       ignoreDependencies: [
         // mdx files - https://github.com/webpro-nl/knip/issues/494
         '@storybook/blocks',
