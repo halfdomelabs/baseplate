@@ -4,7 +4,7 @@
     "tsBuildInfoFile": "./dist/tsconfig.node.tsbuildinfo",
     "moduleResolution": "bundler",
     "module": "ES2022",
-    "composite": true
+    "noEmit": true
   },
   "include": ["vite.config.ts", "plugins/**/*.ts"]
 }
