@@ -1,7 +1,8 @@
 {
   "extends": "@halfdomelabs/tools/tsconfig.node.cli.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "customConditions": ["development"]
   },
   "include": ["tests/**/*", "playwright.config.ts"]
 }

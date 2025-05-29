@@ -7,8 +7,8 @@ import { trpcSubscriptionEvents } from '#src/services/trpc.js';
 
 import { ClientVersionProvider } from './ClientVersionProvider.js';
 
-vi.mock('@src/services/api');
-vi.mock('@src/services/error-logger');
+vi.mock('#src/services/api/index.js');
+vi.mock('#src/services/error-logger.js');
 
 describe('ClientVersionProvider', () => {
   const mockVersionInfo = {
