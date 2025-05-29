@@ -1,26 +1,8 @@
 // @ts-check
 
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 import { srcSubpathImportPlugin } from './src-subpath-import-plugin.js';
-
-export default defineConfig({
-  plugins: [tsconfigPaths()],
-  test: {
-    watch: false,
-    root: './src',
-    server: {
-      deps: {
-        inline: ['globby'],
-      },
-    },
-    mockReset: true,
-    alias: {
-      '#src': './src',
-    },
-  },
-});
 
 /**
  * Create a vitest config for a Node.js project

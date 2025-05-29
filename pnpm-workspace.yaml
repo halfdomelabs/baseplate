@@ -19,7 +19,6 @@ catalog:
   vitest: 3.0.7
   '@vitejs/plugin-react': 4.4.1
   vite-plugin-svgr: 4.3.0
-  vite-tsconfig-paths: 5.1.4
   zod: 3.24.1
 ignoredBuiltDependencies:
   - '@tailwindcss/oxide'

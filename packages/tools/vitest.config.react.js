@@ -1,6 +1,5 @@
 // @ts-check
 
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 import { srcSubpathImportPlugin } from './src-subpath-import-plugin.js';
@@ -18,17 +17,6 @@ afterEach(() => {
 });
 
  */
-
-export default defineConfig({
-  plugins: [tsconfigPaths()],
-  test: {
-    watch: false,
-    root: './src',
-    mockReset: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/tests/setup.ts'],
-  },
-});
 
 /**
  * Create a vitest config for a React project

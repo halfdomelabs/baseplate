@@ -2,9 +2,9 @@
   "extends": "@halfdomelabs/tools/tsconfig.node.cli.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./dist/tsconfig.node.tsbuildinfo",
-    "noEmit": true,
     "moduleResolution": "bundler",
-    "module": "ES2022"
+    "module": "ES2022",
+    "composite": true
   },
   "include": ["vite.config.ts", "plugins/**/*.ts"]
 }

@@ -47,7 +47,14 @@ export default {
       ignore: [
         // we ignore this file because it may not always be used when there are no feature flags
         'src/hooks/useFeatureFlag.ts',
+        // weird bugs with knip :(
+        'src/services/schema-parser-context.ts',
+        'src/types/virtual-module-federation.d.ts',
+        'src/services/module-federation.ts',
       ],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/project-builder-cli': {
       entry: ['src/index.{ts,tsx}', 'tests/**/*.spec.{ts,tsx}'],
@@ -59,7 +66,7 @@ export default {
         '@halfdomelabs/project-builder-web',
       ],
       paths: {
-        '@src/*': ['./src/*'],
+        '#src/*': ['./src/*'],
       },
     },
     'packages/project-builder-test': {
@@ -72,6 +79,9 @@ export default {
         // we resolve the package by string in src/commands/serve.ts
         '@halfdomelabs/project-builder-web',
       ],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/project-builder-common': {
       entry: ['src/index.{ts,tsx}'],
