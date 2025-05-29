@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { ellipsisStringFromMiddle } from './string';
+import { ellipsisStringFromMiddle } from './string.js';
 
 describe('ellipsisStringFromMiddle', () => {
   it('returns the original string if it fits within maxLength', () => {

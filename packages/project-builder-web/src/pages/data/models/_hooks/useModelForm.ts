@@ -23,9 +23,9 @@ import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { NotFoundError } from '@src/utils/error';
+import { NotFoundError } from '#src/utils/error.js';
 
-import { createModelEditLink } from '../_utils/url';
+import { createModelEditLink } from '../_utils/url.js';
 
 interface UseModelFormOptions {
   schema?: z.ZodTypeAny;

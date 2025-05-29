@@ -31,10 +31,10 @@ import { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdAdd, MdEdit, MdOutlineDelete } from 'react-icons/md';
 
-import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '@src/pages/data/models/_constants';
-import { useEditedModelConfig } from '@src/pages/data/models/_hooks/useEditedModelConfig';
+import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '#src/pages/data/models/_constants.js';
+import { useEditedModelConfig } from '#src/pages/data/models/_hooks/useEditedModelConfig.js';
 
-import { ServiceTransformerDialog } from './ServiceTransformerDialog';
+import { ServiceTransformerDialog } from './ServiceTransformerDialog.js';
 
 interface Props {
   className?: string;

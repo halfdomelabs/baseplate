@@ -11,7 +11,7 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { createStore, useStore } from 'zustand';
 
-import { useDeep } from '@src/hooks/useDeep';
+import { useDeep } from '#src/hooks/useDeep.js';
 
 interface ModelConfigStore {
   model: ModelConfigInput;

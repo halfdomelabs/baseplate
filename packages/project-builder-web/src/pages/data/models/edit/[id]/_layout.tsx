@@ -8,9 +8,9 @@ import {
 } from '@halfdomelabs/ui-components';
 import { NavLink, Outlet, useParams } from 'react-router-dom';
 
-import { NotFoundCard } from '@src/components';
+import { NotFoundCard } from '#src/components/index.js';
 
-import { ModelHeaderBar } from './_components/ModelHeaderBar';
+import { ModelHeaderBar } from './_components/ModelHeaderBar.js';
 
 export function ModelEditLayout(): React.JSX.Element {
   const { uid } = useParams<'uid'>();

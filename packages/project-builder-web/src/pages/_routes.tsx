@@ -1,15 +1,15 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-import App from '@src/app/App';
-import { AppLayout } from '@src/app/AppLayout/AppLayout';
-import { createRouteCrumb } from '@src/types/routes';
+import App from '#src/app/App.js';
+import { AppLayout } from '#src/app/AppLayout/AppLayout.js';
+import { createRouteCrumb } from '#src/types/routes.js';
 
-import { AppsRoutes } from './apps';
-import { DataRoutes } from './data/_routes';
-import HomePage from './home/home.page';
-import { NotFoundRoute } from './NotFound.page';
-import { PluginRoutes } from './plugins';
-import { SettingsRoutes } from './settings/_routes';
+import { AppsRoutes } from './apps/index.js';
+import { DataRoutes } from './data/_routes.js';
+import HomePage from './home/home.page.js';
+import { NotFoundRoute } from './NotFound.page.js';
+import { PluginRoutes } from './plugins/index.js';
+import { SettingsRoutes } from './settings/_routes.js';
 
 export const router = createBrowserRouter([
   {

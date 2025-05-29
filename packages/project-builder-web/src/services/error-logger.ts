@@ -1,4 +1,4 @@
-import { logger } from './logger';
+import { logger } from './logger.js';
 
 /**
  * Logs an error to the appropriate receivers.

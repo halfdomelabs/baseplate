@@ -18,7 +18,7 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { UserVisibleError } from '@src/utils/error';
+import { UserVisibleError } from '#src/utils/error.js';
 
 interface FeatureFormProps {
   feature?: FeatureConfig;

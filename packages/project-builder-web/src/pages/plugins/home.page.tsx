@@ -5,11 +5,11 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { EmptyDisplay, ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 
-import { useProjects } from '@src/hooks/useProjects';
-import { IS_PREVIEW } from '@src/services/config';
-import { trpc } from '@src/services/trpc';
+import { useProjects } from '#src/hooks/useProjects.js';
+import { IS_PREVIEW } from '#src/services/config.js';
+import { trpc } from '#src/services/trpc.js';
 
-import { PluginCard } from './PluginCard';
+import { PluginCard } from './PluginCard.js';
 
 export function PluginsHomePage(): React.JSX.Element {
   const { currentProjectId } = useProjects();

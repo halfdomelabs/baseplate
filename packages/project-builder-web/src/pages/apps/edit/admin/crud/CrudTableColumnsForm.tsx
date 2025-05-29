@@ -15,7 +15,7 @@ import {
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
-import { CollapsibleRow } from '@src/components';
+import { CollapsibleRow } from '#src/components/index.js';
 
 export type AdminCrudTableConfig = Pick<
   AdminCrudSectionConfig,

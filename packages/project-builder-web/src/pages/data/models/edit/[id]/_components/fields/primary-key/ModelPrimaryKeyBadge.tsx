@@ -6,7 +6,7 @@ import { BadgeWithIcon } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { MdKey } from 'react-icons/md';
 
-import { ModelPrimaryKeyDialog } from './ModelPrimaryKeyDialog';
+import { ModelPrimaryKeyDialog } from './ModelPrimaryKeyDialog.js';
 
 interface ModelPrimaryKeyBadgeProps {
   className?: string;

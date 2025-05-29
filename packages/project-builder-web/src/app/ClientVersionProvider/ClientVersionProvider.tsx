@@ -4,13 +4,13 @@ import type React from 'react';
 import { ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { UseClientVersionResult } from '@src/hooks/useClientVersion';
+import type { UseClientVersionResult } from '#src/hooks/useClientVersion.js';
 
-import { ClientVersionContext } from '@src/hooks/useClientVersion';
-import { usePrevious } from '@src/hooks/usePrevious';
-import { getVersionInfo } from '@src/services/api';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { trpcSubscriptionEvents } from '@src/services/trpc';
+import { ClientVersionContext } from '#src/hooks/useClientVersion.js';
+import { usePrevious } from '#src/hooks/usePrevious.js';
+import { getVersionInfo } from '#src/services/api/index.js';
+import { logAndFormatError } from '#src/services/error-formatter.js';
+import { trpcSubscriptionEvents } from '#src/services/trpc.js';
 
 interface ClientVersionProviderProps {
   children?: React.ReactNode;

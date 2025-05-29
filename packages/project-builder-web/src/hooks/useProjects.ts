@@ -2,7 +2,7 @@ import type { ProjectInfo } from '@halfdomelabs/project-builder-server';
 
 import { create } from 'zustand';
 
-import { getLocalStorageProjectId } from '../services/project-id.service';
+import { getLocalStorageProjectId } from '../services/project-id.service.js';
 
 interface ProjectsStore {
   projects: ProjectInfo[];

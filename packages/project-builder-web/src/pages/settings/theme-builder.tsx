@@ -31,12 +31,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
 
-import { FormActionBar } from '@src/components';
+import { FormActionBar } from '#src/components/index.js';
 
-import { ThemeColorsCssDisplay } from './components/ThemeColorsCssDisplay';
-import { ThemeColorsEditor } from './components/ThemeColorsEditor';
-import { ThemeColorsPreview } from './components/ThemeColorsPreview';
-import { ThemePaletteEditor } from './components/ThemePaletteEditor';
+import { ThemeColorsCssDisplay } from './components/ThemeColorsCssDisplay.js';
+import { ThemeColorsEditor } from './components/ThemeColorsEditor.js';
+import { ThemeColorsPreview } from './components/ThemeColorsPreview.js';
+import { ThemePaletteEditor } from './components/ThemePaletteEditor.js';
 
 export function ThemeBuilderPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();

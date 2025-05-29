@@ -24,7 +24,7 @@ import { sortBy } from 'es-toolkit';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
+import AdminCrudSectionForm from './crud/AdminCrudSectionForm.js';
 
 interface Props {
   className?: string;

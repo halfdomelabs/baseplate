@@ -4,11 +4,11 @@ import type { Control } from 'react-hook-form';
 
 import { clsx } from 'clsx';
 
-import { useEditedModelConfig } from '@src/pages/data/models/_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '#src/pages/data/models/_hooks/useEditedModelConfig.js';
 
-import { ModelPrimaryKeyBadge } from '../primary-key/ModelPrimaryKeyBadge';
-import { ModelRelationsBadge } from '../relations/ModelRelationBadge';
-import { ModelFieldUniqueBadge } from '../unique-constraints/ModelUniqueConstraintBadge';
+import { ModelPrimaryKeyBadge } from '../primary-key/ModelPrimaryKeyBadge.js';
+import { ModelRelationsBadge } from '../relations/ModelRelationBadge.js';
+import { ModelFieldUniqueBadge } from '../unique-constraints/ModelUniqueConstraintBadge.js';
 
 interface ModelFieldBadgesProps {
   className?: string;

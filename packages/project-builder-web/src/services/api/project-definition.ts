@@ -5,9 +5,9 @@ import type {
 
 import { hashWithSHA256 } from '@halfdomelabs/utils';
 
-import { IS_PREVIEW } from '../config';
-import { trpc } from '../trpc';
-import { createProjectNotFoundHandler } from './errors';
+import { IS_PREVIEW } from '../config.js';
+import { trpc } from '../trpc.js';
+import { createProjectNotFoundHandler } from './errors.js';
 
 /**
  * Downloads a project definition file from the server.

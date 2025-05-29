@@ -4,7 +4,7 @@ import {
   downloadProjectDefinition,
   listenForProjectDefinitionChanges,
   uploadProjectDefinition,
-} from '@src/services/api';
+} from '#src/services/api/index.js';
 
 export interface ProjectDefinitionFilePayload {
   contents: string;

@@ -3,8 +3,8 @@ import type React from 'react';
 import clsx from 'clsx';
 import TimeAgo from 'react-timeago';
 
-import { useSyncMetadata } from '@src/hooks/useSyncMetadata';
-import { timeAgoFormatter } from '@src/utils/time-ago';
+import { useSyncMetadata } from '#src/hooks/useSyncMetadata.js';
+import { timeAgoFormatter } from '#src/utils/time-ago.js';
 
 interface ProjectSyncStatusProps {
   className?: string;

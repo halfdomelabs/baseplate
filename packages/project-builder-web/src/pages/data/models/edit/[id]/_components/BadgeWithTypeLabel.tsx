@@ -3,7 +3,7 @@ import type React from 'react';
 import { Badge } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 
-import { ellipsisStringFromMiddle } from '@src/utils/string';
+import { ellipsisStringFromMiddle } from '#src/utils/string.js';
 
 interface BadgeWithTypeLabelProps {
   className?: string;

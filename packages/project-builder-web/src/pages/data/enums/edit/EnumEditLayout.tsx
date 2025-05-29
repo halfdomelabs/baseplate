@@ -7,9 +7,9 @@ import {
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Outlet, useParams } from 'react-router-dom';
 
-import { NotFoundCard } from '@src/components';
+import { NotFoundCard } from '#src/components/index.js';
 
-import { EnumHeaderBar } from './components/EnumHeaderBar';
+import { EnumHeaderBar } from './components/EnumHeaderBar.js';
 
 export function EnumEditLayout(): React.JSX.Element {
   const { uid } = useParams<'uid'>();

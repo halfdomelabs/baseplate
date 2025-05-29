@@ -8,9 +8,9 @@ import {
 import clsx from 'clsx';
 import { sortBy } from 'es-toolkit';
 
-import { useSyncMetadata } from '@src/hooks/useSyncMetadata';
+import { useSyncMetadata } from '#src/hooks/useSyncMetadata.js';
 
-import { ApplicationCard } from './ApplicationCard';
+import { ApplicationCard } from './ApplicationCard.js';
 
 interface Props {
   className?: string;

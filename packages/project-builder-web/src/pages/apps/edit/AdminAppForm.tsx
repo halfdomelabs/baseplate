@@ -8,8 +8,8 @@ import {
 import clsx from 'clsx';
 import { NavLink, Route, Routes } from 'react-router-dom';
 
-import AdminGeneralForm from './admin/AdminGeneralForm';
-import AdminSectionsForm from './admin/AdminSectionsForm';
+import AdminGeneralForm from './admin/AdminGeneralForm.js';
+import AdminSectionsForm from './admin/AdminSectionsForm.js';
 
 interface Props {
   className?: string;

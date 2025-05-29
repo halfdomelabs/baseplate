@@ -15,7 +15,7 @@ import {
 } from '@halfdomelabs/ui-components';
 import { useNavigate } from 'react-router-dom';
 
-import { useProjects } from '@src/hooks/useProjects';
+import { useProjects } from '#src/hooks/useProjects.js';
 
 interface ProjectSelectDialogProps {
   onClose?: () => void;

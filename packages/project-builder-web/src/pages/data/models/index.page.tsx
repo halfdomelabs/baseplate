@@ -4,7 +4,7 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, EmptyDisplay } from '@halfdomelabs/ui-components';
 import { HiDatabase } from 'react-icons/hi';
 
-import { NewModelDialog } from './_components/NewModelDialog';
+import { NewModelDialog } from './_components/NewModelDialog.js';
 
 function ModelsIndexPage(): React.JSX.Element {
   const { definition } = useProjectDefinition();

@@ -4,7 +4,7 @@ import type { Rgb } from 'culori';
 import { PALETTE_SHADES } from '@halfdomelabs/project-builder-lib';
 import { converter, formatHex } from 'culori';
 
-import { generatePaletteNN } from './palette-neural-net';
+import { generatePaletteNN } from './palette-neural-net.js';
 
 function getPaletteKey(shade: string, component: string): string {
   return `${shade}-${component}`;

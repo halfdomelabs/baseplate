@@ -1,8 +1,8 @@
 import type { SyncMetadata } from '@halfdomelabs/project-builder-server';
 
-import { IS_PREVIEW } from '../config';
-import { trpc } from '../trpc';
-import { createProjectNotFoundHandler } from './errors';
+import { IS_PREVIEW } from '../config.js';
+import { trpc } from '../trpc.js';
+import { createProjectNotFoundHandler } from './errors.js';
 
 /**
  * Starts a sync operation for a project.

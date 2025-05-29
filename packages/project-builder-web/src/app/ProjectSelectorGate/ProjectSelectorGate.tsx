@@ -3,12 +3,12 @@ import type React from 'react';
 import { ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 
-import { useProjects } from '@src/hooks/useProjects';
-import { getProjects } from '@src/services/api';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { setLocalStorageProjectId } from '@src/services/project-id.service';
+import { useProjects } from '#src/hooks/useProjects.js';
+import { getProjects } from '#src/services/api/index.js';
+import { logAndFormatError } from '#src/services/error-formatter.js';
+import { setLocalStorageProjectId } from '#src/services/project-id.service.js';
 
-import { ProjectSelectDialog } from './ProjectSelectorDialog';
+import { ProjectSelectDialog } from './ProjectSelectorDialog.js';
 
 interface ProjectSelectorGateProps {
   children: React.ReactNode;

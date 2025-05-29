@@ -12,7 +12,7 @@ import {
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
-import { ModelRelationForm } from './ModelRelationForm';
+import { ModelRelationForm } from './ModelRelationForm.js';
 
 interface ModelRelationDialogProps {
   control: Control<ModelConfigInput>;

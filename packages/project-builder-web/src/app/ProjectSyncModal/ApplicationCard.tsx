@@ -29,11 +29,11 @@ import {
 } from 'react-icons/md';
 import TimeAgo from 'react-timeago';
 
-import { useClientVersion } from '@src/hooks/useClientVersion';
-import { useProjects } from '@src/hooks/useProjects';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { trpc } from '@src/services/trpc';
-import { timeAgoFormatter } from '@src/utils/time-ago';
+import { useClientVersion } from '#src/hooks/useClientVersion.js';
+import { useProjects } from '#src/hooks/useProjects.js';
+import { logAndFormatError } from '#src/services/error-formatter.js';
+import { trpc } from '#src/services/trpc.js';
+import { timeAgoFormatter } from '#src/utils/time-ago.js';
 
 interface Props {
   packageId: string;

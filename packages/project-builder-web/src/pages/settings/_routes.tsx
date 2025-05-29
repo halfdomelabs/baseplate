@@ -2,12 +2,12 @@ import type { RouteObject } from 'react-router-dom';
 
 import { Navigate } from 'react-router-dom';
 
-import NotFoundPage from '../NotFound.page';
-import SettingsLayout from './_layout';
-import HierarchyPage from './hierarchy';
-import ProjectSettingsPage from './project-settings';
-import { TemplateExtractorSettingsPage } from './template-extractor';
-import { ThemeBuilderPage } from './theme-builder';
+import NotFoundPage from '../NotFound.page.js';
+import SettingsLayout from './_layout.js';
+import HierarchyPage from './hierarchy.js';
+import ProjectSettingsPage from './project-settings.js';
+import { TemplateExtractorSettingsPage } from './template-extractor.js';
+import { ThemeBuilderPage } from './theme-builder.js';
 
 export const SettingsRoutes: RouteObject = {
   element: <SettingsLayout />,

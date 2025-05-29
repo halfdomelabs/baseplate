@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useClientVersion } from '@src/hooks/useClientVersion';
-import { getVersionInfo } from '@src/services/api';
-import { trpcSubscriptionEvents } from '@src/services/trpc';
+import { useClientVersion } from '#src/hooks/useClientVersion.js';
+import { getVersionInfo } from '#src/services/api/index.js';
+import { trpcSubscriptionEvents } from '#src/services/trpc.js';
 
-import { ClientVersionProvider } from './ClientVersionProvider';
+import { ClientVersionProvider } from './ClientVersionProvider.js';
 
 vi.mock('@src/services/api');
 vi.mock('@src/services/error-logger');

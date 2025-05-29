@@ -26,15 +26,15 @@ import { type Control, useForm, type UseFormReturn } from 'react-hook-form';
 import type {
   EmbeddedListFormProps,
   EmbeddedListTableProps,
-} from '@src/components';
+} from '#src/components/index.js';
 
-import { logAndFormatError } from '@src/services/error-formatter';
+import { logAndFormatError } from '#src/services/error-formatter.js';
 
-import type { AdminCrudFormConfigInput } from './CrudFormFieldsForm';
-import type { AdminCrudTableConfig } from './CrudTableColumnsForm';
+import type { AdminCrudFormConfigInput } from './CrudFormFieldsForm.js';
+import type { AdminCrudTableConfig } from './CrudTableColumnsForm.js';
 
-import CrudFormFieldsForm from './CrudFormFieldsForm';
-import CrudTableColumnsForm from './CrudTableColumnsForm';
+import CrudFormFieldsForm from './CrudFormFieldsForm.js';
+import CrudTableColumnsForm from './CrudTableColumnsForm.js';
 
 export function AdminCrudEmbeddedTable({
   items,

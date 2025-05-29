@@ -19,9 +19,9 @@ import {
 import { useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
 
-import { usePrevious } from '@src/hooks/usePrevious';
+import { usePrevious } from '#src/hooks/usePrevious.js';
 
-import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig.js';
 
 function ServiceEmbeddedRelationForm({
   formProps,
