@@ -34,13 +34,13 @@ import { quot } from '@halfdomelabs/utils';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { STORAGE_PACKAGES } from '@src/constants';
+import { STORAGE_PACKAGES } from '#src/constants/index.js';
 
 import {
   createStorageModuleImports,
   storageModuleImportsProvider,
-} from './generated/ts-import-maps';
-import { FASTIFY_STORAGE_MODULE_TS_TEMPLATES } from './generated/ts-templates';
+} from './generated/ts-import-maps.js';
+import { FASTIFY_STORAGE_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   /**
@@ -368,4 +368,4 @@ export const storageModuleGenerator = createGenerator({
   }),
 });
 
-export { storageModuleImportsProvider } from './generated/ts-import-maps';
+export { storageModuleImportsProvider } from './generated/ts-import-maps.js';

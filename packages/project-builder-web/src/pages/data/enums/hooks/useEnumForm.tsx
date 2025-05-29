@@ -22,9 +22,9 @@ import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { NotFoundError } from '@src/utils/error';
+import { NotFoundError } from '#src/utils/error.js';
 
-import { createEnumEditLink } from '../../models/_utils/url';
+import { createEnumEditLink } from '../../models/_utils/url.js';
 
 interface UseEnumFormOptions {
   schema?: z.ZodTypeAny;

@@ -1,6 +1,6 @@
 import type * as React from 'react';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 /**
  * A responsive table component.

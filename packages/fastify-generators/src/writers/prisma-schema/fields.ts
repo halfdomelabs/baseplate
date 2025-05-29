@@ -1,9 +1,9 @@
 import { snakeCase } from 'change-case';
 import { z } from 'zod';
 
-import type { ScalarFieldType } from '@src/types/field-types.js';
+import type { ScalarFieldType } from '#src/types/field-types.js';
 
-import { doubleQuot } from '@src/utils/string.js';
+import { doubleQuot } from '#src/utils/string.js';
 
 import type { PrismaModelAttribute, PrismaModelField } from './model-writer.js';
 

@@ -1,5 +1,5 @@
-import type { BuilderAction } from '@src/output/builder-action.js';
-import type { WriteFileOptions } from '@src/output/generator-task-output.js';
+import type { BuilderAction } from '#src/output/builder-action.js';
+import type { WriteFileOptions } from '#src/output/generator-task-output.js';
 
 import { readTemplateFileSourceBuffer } from '../utils/index.js';
 import {

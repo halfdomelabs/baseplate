@@ -8,7 +8,7 @@ import {
 } from '@halfdomelabs/ui-components';
 import { useMemo, useState } from 'react';
 
-import { ModelUtils } from '@src/definition/index.js';
+import { ModelUtils } from '#src/definition/index.js';
 
 import { useProjectDefinition } from '../hooks/useProjectDefinition.js';
 

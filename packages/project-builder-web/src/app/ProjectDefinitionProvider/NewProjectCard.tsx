@@ -13,7 +13,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { logAndFormatError } from '@src/services/error-formatter';
+import { logAndFormatError } from '#src/services/error-formatter.js';
 
 const schema = projectDefinitionSchema.pick({
   name: true,

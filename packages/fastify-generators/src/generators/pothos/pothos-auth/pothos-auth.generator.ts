@@ -13,8 +13,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authRolesImportsProvider } from '@src/generators/auth/index.js';
-import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
+import { authRolesImportsProvider } from '#src/generators/auth/index.js';
+import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/error-handler-service.generator.js';
 
 import {
   pothosConfigProvider,

@@ -12,7 +12,7 @@ import {
   adminCrudTextDisplayGenerator,
 } from '@halfdomelabs/react-generators';
 
-import type { AppEntryBuilder } from '@src/compiler/app-entry-builder.js';
+import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
 
 function compileAdminCrudForeignDisplay(
   builder: AppEntryBuilder<AdminAppConfig>,

@@ -5,11 +5,11 @@ import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 import { useId } from 'react';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 
-import type { FormFieldProps } from '@src/types/form.js';
+import type { FormFieldProps } from '#src/types/form.js';
 
-import { useControllerMerged } from '@src/hooks/useControllerMerged';
-import { buttonVariants, inputVariants } from '@src/styles';
-import { cn } from '@src/utils';
+import { useControllerMerged } from '#src/hooks/useControllerMerged.js';
+import { buttonVariants, inputVariants } from '#src/styles/index.js';
+import { cn } from '#src/utils/index.js';
 
 import {
   FormControl,
@@ -17,8 +17,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../FormItem/FormItem';
-import { Popover, PopoverContent, PopoverTrigger } from '../Popover/Popover';
+} from '../FormItem/FormItem.js';
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover/Popover.js';
 
 export interface ColorPickerFieldProps extends FormFieldProps {
   className?: string;

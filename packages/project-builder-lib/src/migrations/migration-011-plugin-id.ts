@@ -1,4 +1,4 @@
-import { pluginEntityType } from '@src/schema/plugins/index.js';
+import { pluginEntityType } from '#src/schema/plugins/index.js';
 
 import { transformJsonPath } from './transform-json-path.js';
 import { createSchemaMigration } from './types.js';

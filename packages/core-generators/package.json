@@ -12,6 +12,9 @@
   "author": "Half Dome Labs LLC",
   "sideEffects": false,
   "type": "module",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -26,12 +29,14 @@
   "files": [
     "LICENSE",
     "dist/**/*",
+    "!dist/**/*.d.ts.map",
+    "!dist/**/*.tsbuildinfo",
     "CHANGELOG"
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
     "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
-    "build:tsc": "tsc -p tsconfig.build.json && tsc-alias",
+    "build:tsc": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
@@ -41,8 +46,7 @@
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:templates": "pnpm build:templates --watch",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
-    "watch:tsc-alias": "tsc-alias -w"
+    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
   },
   "dependencies": {
     "@halfdomelabs/sync": "workspace:*",
@@ -68,7 +72,6 @@
     "concurrently": "9.0.1",
     "cpx2": "7.0.1",
     "eslint": "catalog:",
-    "tsc-alias": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

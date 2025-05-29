@@ -10,6 +10,9 @@ export default {
       entry: ['src/index.{ts,tsx}', 'src/web/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
       ignore: ['src/__mocks__/**'],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'plugins/*': {
       entry: [
@@ -25,6 +28,9 @@ export default {
         'react-dom',
         '@types/react-dom',
       ],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/fastify-generators': {
       entry: ['src/index.{ts,tsx}'],
@@ -34,18 +40,6 @@ export default {
         // so must be included to not bug the build
         '@tailwindcss/forms',
       ],
-      ignore: [
-        // For some reason, Knip doesn't recognize this file as used.
-        'src/utils/case.ts',
-      ],
-    },
-    'packages/react-generators': {
-      entry: ['src/index.{ts,tsx}'],
-      project: 'src/**/*.{ts,tsx}',
-      ignore: [
-        // For some reason, Knip doesn't recognize this file as used.
-        'src/utils/case.ts',
-      ],
     },
     'packages/project-builder-web': {
       entry: ['src/index.{ts,tsx}'],
@@ -53,7 +47,14 @@ export default {
       ignore: [
         // we ignore this file because it may not always be used when there are no feature flags
         'src/hooks/useFeatureFlag.ts',
+        // weird bugs with knip :(
+        'src/services/schema-parser-context.ts',
+        'src/types/virtual-module-federation.d.ts',
+        'src/services/module-federation.ts',
       ],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/project-builder-cli': {
       entry: ['src/index.{ts,tsx}', 'tests/**/*.spec.{ts,tsx}'],
@@ -65,7 +66,7 @@ export default {
         '@halfdomelabs/project-builder-web',
       ],
       paths: {
-        '@src/*': ['./src/*'],
+        '#src/*': ['./src/*'],
       },
     },
     'packages/project-builder-test': {
@@ -78,6 +79,9 @@ export default {
         // we resolve the package by string in src/commands/serve.ts
         '@halfdomelabs/project-builder-web',
       ],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/project-builder-common': {
       entry: ['src/index.{ts,tsx}'],
@@ -90,22 +94,34 @@ export default {
     'packages/ui-components': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
-      includeEntryExports: false,
       ignoreDependencies: [
         // mdx files - https://github.com/webpro-nl/knip/issues/494
         '@storybook/blocks',
       ],
+      paths: {
+        '#src/*': ['./src/*'],
+      },
+    },
+    'packages/sync': {
+      entry: ['src/index.{ts,tsx}'],
+      project: 'src/**/*.{ts,tsx}',
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/code-morph': {
       entry: ['src/index.{ts,tsx}', 'src/morphers/**/*.morpher.{ts,tsx}'],
       project: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
       paths: {
-        '@src/*': ['./src/*'],
+        '#src/*': ['./src/*'],
       },
     },
     'packages/utils': {
       entry: ['src/index.{ts,tsx}', 'src/node.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
+      paths: {
+        '#src/*': ['./src/*'],
+      },
     },
     'packages/tools': {
       project: 'src/**/*.{ts,tsx}',

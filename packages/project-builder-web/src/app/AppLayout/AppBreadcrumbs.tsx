@@ -21,9 +21,9 @@ import { Fragment } from 'react';
 import { MdKeyboardArrowDown } from 'react-icons/md';
 import { Link, useMatches, useNavigate } from 'react-router-dom';
 
-import type { RouteCrumbOrFunction } from '@src/types/routes';
+import type { RouteCrumbOrFunction } from '#src/types/routes.js';
 
-import { useProjects } from '@src/hooks/useProjects';
+import { useProjects } from '#src/hooks/useProjects.js';
 
 export function AppBreadcrumbs(): React.JSX.Element {
   const { definitionContainer } = useProjectDefinition();

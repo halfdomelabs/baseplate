@@ -1,7 +1,7 @@
 import type { ClientVersionInfo } from '@halfdomelabs/project-builder-server';
 
-import { IS_PREVIEW } from '../config';
-import { trpc } from '../trpc';
+import { IS_PREVIEW } from '../config.js';
+import { trpc } from '../trpc.js';
 
 export async function getVersionInfo(): Promise<ClientVersionInfo> {
   if (IS_PREVIEW) {

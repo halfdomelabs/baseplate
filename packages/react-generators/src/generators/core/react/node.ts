@@ -3,7 +3,7 @@ import {
   extractPackageVersions,
 } from '@halfdomelabs/core-generators';
 
-import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
 export const viteNodeTask = createNodeTask((node) => {
   node.packages.addPackages({

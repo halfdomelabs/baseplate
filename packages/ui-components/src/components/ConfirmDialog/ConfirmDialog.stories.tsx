@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import type React from 'react';
 
-import { useConfirmDialog } from '@src/hooks/useConfirmDialog.js';
+import { useConfirmDialog } from '#src/hooks/useConfirmDialog.js';
 
 import { Button } from '../index.js';
 import { ConfirmDialog } from './ConfirmDialog.js';

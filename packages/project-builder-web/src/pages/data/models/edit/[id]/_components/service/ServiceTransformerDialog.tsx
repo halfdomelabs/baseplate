@@ -12,7 +12,7 @@ import {
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
-import { ServiceTransformerForm } from './ServiceTransformerForm';
+import { ServiceTransformerForm } from './ServiceTransformerForm.js';
 
 interface ServiceTransformerDialogProps {
   children?: React.ReactNode;

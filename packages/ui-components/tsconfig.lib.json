@@ -1,0 +1,11 @@
+{
+  "extends": "@halfdomelabs/tools/tsconfig.vite.lib.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "noEmit": true,
+    "declarationMap": false,
+    "declaration": false
+  },
+  "include": ["src"]
+}

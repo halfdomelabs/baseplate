@@ -1,6 +1,6 @@
 import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
 
-import { useClientVersion } from './useClientVersion';
+import { useClientVersion } from './useClientVersion.js';
 
 /**
  * Hook to check if a feature flag is enabled

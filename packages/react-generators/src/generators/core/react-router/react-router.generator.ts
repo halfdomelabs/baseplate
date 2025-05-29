@@ -18,13 +18,13 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
+import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';
 
-import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 import {
   reactRoutesProvider,
   reactRoutesReadOnlyProvider,
-} from '@src/providers/routes.js';
+} from '#src/providers/routes.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
 import { reactAppConfigProvider } from '../react-app/react-app.generator.js';

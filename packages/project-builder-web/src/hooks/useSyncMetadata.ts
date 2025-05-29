@@ -5,13 +5,13 @@ import { useEffect } from 'react';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
-import { ProjectNotFoundError } from '@src/services/api';
-import { getSyncMetadata } from '@src/services/api/sync';
-import { IS_PREVIEW } from '@src/services/config';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { trpc, trpcSubscriptionEvents } from '@src/services/trpc';
+import { ProjectNotFoundError } from '#src/services/api/index.js';
+import { getSyncMetadata } from '#src/services/api/sync.js';
+import { IS_PREVIEW } from '#src/services/config.js';
+import { logAndFormatError } from '#src/services/error-formatter.js';
+import { trpc, trpcSubscriptionEvents } from '#src/services/trpc.js';
 
-import { useProjects } from './useProjects';
+import { useProjects } from './useProjects.js';
 
 const INITIAL_SYNC_METADATA: SyncMetadata = {
   status: 'not-started',

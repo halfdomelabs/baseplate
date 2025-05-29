@@ -18,14 +18,14 @@ import type {
   PrismaDataTransformer,
   PrismaDataTransformerOptions,
   PrismaDataTransformInputField,
-} from '@src/providers/prisma/prisma-data-transformable.js';
+} from '#src/providers/prisma/prisma-data-transformable.js';
 import type {
   PrismaOutputModel,
   PrismaOutputRelationField,
-} from '@src/types/prisma-output.js';
+} from '#src/types/prisma-output.js';
 
-import { serviceContextImportsProvider } from '@src/generators/core/service-context/service-context.generator.js';
-import { upperCaseFirst } from '@src/utils/case.js';
+import { serviceContextImportsProvider } from '#src/generators/core/service-context/service-context.generator.js';
+import { upperCaseFirst } from '#src/utils/case.js';
 
 import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method.js';
 import type { PrismaUtilsImportsProvider } from '../prisma-utils/prisma-utils.generator.js';

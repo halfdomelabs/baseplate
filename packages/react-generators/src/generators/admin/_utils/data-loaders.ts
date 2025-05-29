@@ -3,9 +3,9 @@ import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 import type {
   GraphQLFragment,
   GraphQLRoot,
-} from '@src/writers/graphql/index.js';
+} from '#src/writers/graphql/index.js';
 
-import { mergeGraphQLFragments } from '@src/writers/graphql/index.js';
+import { mergeGraphQLFragments } from '#src/writers/graphql/index.js';
 
 import type { DataLoader } from '../_providers/admin-loader.js';
 

@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import type {
   GeneratorEntry,
   GeneratorTaskEntry,
-} from '@src/generators/build-generator-entry.js';
-import type { TaskPhase } from '@src/phases/types.js';
+} from '#src/generators/build-generator-entry.js';
+import type { TaskPhase } from '#src/phases/types.js';
 
 import type { EntryDependencyMap } from './dependency-map.js';
 

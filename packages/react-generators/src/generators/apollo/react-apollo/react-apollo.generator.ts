@@ -31,14 +31,14 @@ import {
 import { notEmpty, toposortLocal } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { REACT_PACKAGES } from '@src/constants/react-packages.js';
-import { reactAppConfigProvider } from '@src/generators/core/react-app/react-app.generator.js';
+import { REACT_PACKAGES } from '#src/constants/react-packages.js';
+import { reactAppConfigProvider } from '#src/generators/core/react-app/react-app.generator.js';
 import {
   reactConfigImportsProvider,
   reactConfigProvider,
-} from '@src/generators/core/react-config/react-config.generator.js';
-import { reactErrorConfigProvider } from '@src/generators/core/react-error/react-error.generator.js';
-import { reactProxyProvider } from '@src/generators/core/react-proxy/react-proxy.generator.js';
+} from '#src/generators/core/react-config/react-config.generator.js';
+import { reactErrorConfigProvider } from '#src/generators/core/react-error/react-error.generator.js';
+import { reactProxyProvider } from '#src/generators/core/react-proxy/react-proxy.generator.js';
 
 import { APOLLO_REACT_APOLLO_TEXT_TEMPLATES } from './generated/text-templates.js';
 import {

@@ -3,7 +3,7 @@ import type {
   InferDescriptorFromGenerator,
 } from '@halfdomelabs/sync';
 
-import { fastifyVitestGenerator } from '@src/generators/vitest/index.js';
+import { fastifyVitestGenerator } from '#src/generators/vitest/index.js';
 
 import { appModuleSetupGenerator } from '../app-module-setup/app-module-setup.generator.js';
 import { appModuleGenerator } from '../app-module/app-module.generator.js';

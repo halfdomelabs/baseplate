@@ -1,6 +1,6 @@
 import pLimit from 'p-limit';
 
-import { getGenerationConcurrencyLimit } from '@src/utils/concurrency.js';
+import { getGenerationConcurrencyLimit } from '#src/utils/concurrency.js';
 
 import type { GeneratorFileOperationResult } from '../prepare-generator-files/types.js';
 

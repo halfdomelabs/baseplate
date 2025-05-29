@@ -7,9 +7,9 @@ import { fileURLToPath } from 'node:url';
 import type {
   AnyGeneratorTask,
   GeneratorBundle,
-} from '@src/generators/generators.js';
-import type { TaskPhase } from '@src/phases/types.js';
-import type { ProviderExportScope } from '@src/providers/index.js';
+} from '#src/generators/generators.js';
+import type { TaskPhase } from '#src/phases/types.js';
+import type { ProviderExportScope } from '#src/providers/index.js';
 
 /**
  * Configuration for creating a generator

@@ -5,7 +5,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { z } from 'zod';
 
-import { authRolesSchema } from '@src/roles';
+import { authRolesSchema } from '#src/roles/index.js';
 
 export const auth0PluginDefinitionSchema = z.object({
   modelRefs: z.object({

@@ -1,6 +1,6 @@
 import type { ModelMergerModelInput } from '@halfdomelabs/project-builder-lib';
 
-import type { Auth0PluginDefinition } from './plugin-definition';
+import type { Auth0PluginDefinition } from './plugin-definition.js';
 
 export function createAuth0Models({
   authFeatureRef,

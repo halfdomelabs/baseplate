@@ -1,28 +1,28 @@
 import { stringifyPrettyStable } from '@halfdomelabs/utils';
 import { produce } from 'immer';
 
-import type { SchemaParserContext } from '@src/parser/types.js';
-import type { PluginImplementationStore } from '@src/plugins/index.js';
+import type { SchemaParserContext } from '#src/parser/types.js';
+import type { PluginImplementationStore } from '#src/plugins/index.js';
 import type {
   DefinitionEntity,
   DefinitionReference,
   FixRefDeletionResult,
   ResolvedZodRefPayload,
-} from '@src/references/index.js';
+} from '#src/references/index.js';
 import type {
   ProjectDefinition,
   projectDefinitionSchema,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 
 import {
   createProjectDefinitionSchemaWithContext,
   parseProjectDefinitionWithReferences,
-} from '@src/parser/parser.js';
+} from '#src/parser/parser.js';
 import {
   deserializeSchemaWithReferences,
   fixRefDeletions,
   serializeSchemaFromRefPayload,
-} from '@src/references/index.js';
+} from '#src/references/index.js';
 
 /**
  * Container for a project definition that includes references and entities.

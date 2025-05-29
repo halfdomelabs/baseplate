@@ -1,4 +1,4 @@
-import { isTRPCClientError } from '../trpc';
+import { isTRPCClientError } from '../trpc.js';
 
 /**
  * An error that is thrown when a project is not found.

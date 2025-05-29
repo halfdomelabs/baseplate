@@ -5,9 +5,9 @@ import {
   PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
 
-import type { AuthPluginDefinition } from './schema/plugin-definition';
+import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
-import { authPluginDefinitionSchema } from './schema/plugin-definition';
+import { authPluginDefinitionSchema } from './schema/plugin-definition.js';
 
 export default createPlatformPluginExport({
   dependencies: {

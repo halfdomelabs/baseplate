@@ -2,14 +2,11 @@
   "files": [],
   "compilerOptions": {
     "noEmit": true,
-    "strict": true
+    "rootDir": "src",
+    "outDir": "dist"
   },
   "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.e2e.json"
-    }
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.e2e.json" }
   ]
 }

@@ -23,13 +23,16 @@ import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdSync, MdSyncProblem } from 'react-icons/md';
 
-import { Console } from '@src/components';
-import { useProjects } from '@src/hooks/useProjects';
-import { useSyncMetadata } from '@src/hooks/useSyncMetadata';
-import { cancelSync, startSync } from '@src/services/api';
-import { formatError, logAndFormatError } from '@src/services/error-formatter';
+import { Console } from '#src/components/index.js';
+import { useProjects } from '#src/hooks/useProjects.js';
+import { useSyncMetadata } from '#src/hooks/useSyncMetadata.js';
+import { cancelSync, startSync } from '#src/services/api/index.js';
+import {
+  formatError,
+  logAndFormatError,
+} from '#src/services/error-formatter.js';
 
-import { PackageSyncStatus } from './PackageSyncStatus';
+import { PackageSyncStatus } from './PackageSyncStatus.js';
 
 interface Props {
   className?: string;

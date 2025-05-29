@@ -1,4 +1,4 @@
-import type { ProjectDefinition } from '@src/schema/project-definition.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import type { PluginSpecImplementation } from './types.js';
 

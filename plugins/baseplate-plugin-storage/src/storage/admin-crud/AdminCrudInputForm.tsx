@@ -4,8 +4,8 @@ import type { Control } from 'react-hook-form';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { SelectFieldController } from '@halfdomelabs/ui-components';
 
-import type { FileTransformerConfig } from '../transformers/types';
-import type { AdminCrudFileInputConfig } from './types';
+import type { FileTransformerConfig } from '../transformers/types.js';
+import type { AdminCrudFileInputConfig } from './types.js';
 
 export function AdminCrudFileInputForm({
   formProps,

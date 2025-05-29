@@ -19,14 +19,14 @@ import {
 import { capitalize } from 'inflection';
 import { z } from 'zod';
 
-import { STORAGE_PACKAGES } from '@src/constants';
+import { STORAGE_PACKAGES } from '#src/constants/index.js';
 
-import { REACT_UPLOAD_COMPONENTS_TEXT_TEMPLATES } from './generated/text-templates';
+import { REACT_UPLOAD_COMPONENTS_TEXT_TEMPLATES } from './generated/text-templates.js';
 import {
   createUploadComponentsImports,
   uploadComponentsImportsProvider,
-} from './generated/ts-import-maps';
-import { REACT_UPLOAD_COMPONENTS_TS_TEMPLATES } from './generated/ts-templates';
+} from './generated/ts-import-maps.js';
+import { REACT_UPLOAD_COMPONENTS_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({
   fileModelName: z.string().min(1),
@@ -117,4 +117,4 @@ export const uploadComponentsGenerator = createGenerator({
   }),
 });
 
-export { uploadComponentsImportsProvider } from './generated/ts-import-maps';
+export { uploadComponentsImportsProvider } from './generated/ts-import-maps.js';

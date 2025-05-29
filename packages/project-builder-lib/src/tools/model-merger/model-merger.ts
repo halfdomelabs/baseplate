@@ -2,7 +2,7 @@ import type { Merge, SetOptional } from 'type-fest';
 
 import { mapValues } from 'es-toolkit';
 
-import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type {
   ModelConfig,
   ModelConfigInput,
@@ -10,24 +10,24 @@ import type {
   ModelScalarFieldConfigInput,
   ModelUniqueConstraintConfigInput,
   ProjectDefinition,
-} from '@src/schema/index.js';
-import type { DefinitionDiffOutput } from '@src/utils/definition-diff/definition-diff.js';
+} from '#src/schema/index.js';
+import type { DefinitionDiffOutput } from '#src/utils/definition-diff/definition-diff.js';
 
-import { ModelUtils } from '@src/definition/index.js';
+import { ModelUtils } from '#src/definition/index.js';
 import {
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
   modelUniqueConstraintEntityType,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 import {
   applyDefinitionDiff,
   createDefinitionDiff,
   createDefinitionDiffConfig,
   DefinitionDiffKeyedArrayField,
   DefinitionDiffReplacementField,
-} from '@src/utils/definition-diff/definition-diff.js';
+} from '#src/utils/definition-diff/definition-diff.js';
 
 export type ModelMergerScalarFieldInput = SetOptional<
   ModelScalarFieldConfigInput,

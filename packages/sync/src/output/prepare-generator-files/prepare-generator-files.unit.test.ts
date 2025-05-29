@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { createTestLogger } from '@src/tests/logger.test-helper.js';
+import { createTestLogger } from '#src/tests/logger.test-helper.js';
 
 import type { FileData } from '../generator-task-output.js';
 import type { GeneratorOutputFileWriterContext } from './types.js';

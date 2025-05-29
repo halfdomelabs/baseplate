@@ -12,7 +12,7 @@ import {
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
-import { ModelPrimaryKeyForm } from './ModelPrimaryKeyForm';
+import { ModelPrimaryKeyForm } from './ModelPrimaryKeyForm.js';
 
 interface ModelPrimaryKeyDialogProps {
   control: Control<ModelConfigInput>;

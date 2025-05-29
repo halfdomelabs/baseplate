@@ -3,8 +3,8 @@ import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
-import { lowerCaseFirst } from '@src/utils/case.js';
+import { prismaOutputProvider } from '#src/generators/prisma/prisma/prisma.generator.js';
+import { lowerCaseFirst } from '#src/utils/case.js';
 
 import { pothosEnumsFileProvider } from '../pothos-enums-file/pothos-enums-file.generator.js';
 import { pothosImportsProvider } from '../pothos/pothos.generator.js';

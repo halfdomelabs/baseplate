@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import type { BasePlugin } from '@src/schema/index.js';
+import type { BasePlugin } from '#src/schema/index.js';
 
 import type { PluginMetadataWithPaths } from '../metadata/types.js';
 import type { PluginSpecImplementation } from './types.js';

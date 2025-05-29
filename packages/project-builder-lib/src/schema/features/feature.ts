@@ -1,7 +1,7 @@
 import { CASE_VALIDATORS } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { createEntityType, zEnt, zRef } from '@src/references/index.js';
+import { createEntityType, zEnt, zRef } from '#src/references/index.js';
 
 export const featureEntityType = createEntityType('feature');
 

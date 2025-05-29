@@ -12,14 +12,23 @@
   "author": "Half Dome Labs LLC",
   "sideEffects": false,
   "type": "module",
-  "main": "dist/index.js",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "files": [
     "LICENSE",
     "dist/**/*",
+    "!dist/**/*.d.ts.map",
     "CHANGELOG"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && tsc-alias",
+    "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
@@ -27,9 +36,7 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "watch": "concurrently pnpm:watch:*",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
-    "watch:tsc-alias": "tsc-alias -w"
+    "watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
   },
   "dependencies": {
     "@halfdomelabs/utils": "workspace:*",
@@ -49,10 +56,8 @@
     "@halfdomelabs/tools": "workspace:*",
     "@types/ms": "0.7.34",
     "@types/node": "catalog:",
-    "concurrently": "9.0.1",
     "eslint": "catalog:",
     "memfs": "4.15.1",
-    "tsc-alias": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

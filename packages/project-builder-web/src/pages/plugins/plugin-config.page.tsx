@@ -19,8 +19,8 @@ import { useMemo } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import NotFoundPage from '../NotFound.page';
-import { loadPluginImplementationStoreWithNewPlugin } from './utils';
+import NotFoundPage from '../NotFound.page.js';
+import { loadPluginImplementationStoreWithNewPlugin } from './utils.js';
 
 export function PluginConfigPage(): React.JSX.Element {
   const {

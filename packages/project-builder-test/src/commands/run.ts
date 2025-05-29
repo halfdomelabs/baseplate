@@ -3,14 +3,14 @@ import type { Command } from 'commander';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { createEnvironmentHelpers } from '@src/environment/index.js';
-import { discoverTests } from '@src/runner/discover-tests.js';
-import { logger } from '@src/utils/console.js';
+import { createEnvironmentHelpers } from '#src/environment/index.js';
+import { discoverTests } from '#src/runner/discover-tests.js';
+import { logger } from '#src/utils/console.js';
 import {
   getTestProjectsDirectory,
   getTestsDirectory,
-} from '@src/utils/directories.js';
-import { waitForSignal } from '@src/utils/wait-for-signal.js';
+} from '#src/utils/directories.js';
+import { waitForSignal } from '#src/utils/wait-for-signal.js';
 
 async function runTestProject(projectName: string): Promise<void> {
   const testsDirectory = await getTestsDirectory();

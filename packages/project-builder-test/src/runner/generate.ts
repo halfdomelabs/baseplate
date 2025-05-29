@@ -6,7 +6,7 @@ import {
   createNodeSchemaParserContext,
 } from '@halfdomelabs/project-builder-server';
 
-import { logger } from '@src/utils/console.js';
+import { logger } from '#src/utils/console.js';
 
 export async function generateProject(
   projectDirectory: string,

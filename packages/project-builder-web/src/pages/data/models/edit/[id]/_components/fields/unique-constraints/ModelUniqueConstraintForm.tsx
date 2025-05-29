@@ -15,7 +15,7 @@ import { useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useEditedModelConfig } from '@src/pages/data/models/_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '#src/pages/data/models/_hooks/useEditedModelConfig.js';
 
 interface ModelUniqueConstraintFormProps {
   className?: string;

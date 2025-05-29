@@ -10,7 +10,7 @@ import {
 } from '@halfdomelabs/ui-components';
 import { NavLink, Outlet } from 'react-router-dom';
 
-import { ENABLE_TEMPLATE_EXTRACTOR } from '@src/services/config';
+import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';
 
 function SettingsLayout(): React.JSX.Element {
   return (

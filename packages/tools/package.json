@@ -28,14 +28,16 @@
     "./tsconfig.vite.lib.json": "./tsconfig.vite.lib.json",
     "./tsconfig.vite.web.json": "./tsconfig.vite.web.json",
     "./vitest-node": "./vitest.config.node.js",
-    "./vitest-react": "./vitest.config.react.js"
+    "./vitest-react": "./vitest.config.react.js",
+    "./src-subpath-import-plugin": "./src-subpath-import-plugin.js"
   },
   "files": [
     "eslint-configs/**/*.js",
     "prettier.config.*.js",
     "eslint.config.*.js",
     "tsconfig.*.json",
-    "vitest.*.js"
+    "vitest.*.js",
+    "src-subpath-import-plugin.js"
   ],
   "scripts": {
     "lint": "eslint .",
@@ -59,14 +61,14 @@
     "eslint-plugin-unicorn": "59.0.1",
     "prettier-plugin-packagejson": "2.5.11",
     "prettier-plugin-tailwindcss": "0.6.11",
-    "typescript-eslint": "8.32.0",
-    "vite-tsconfig-paths": "catalog:"
+    "typescript-eslint": "8.32.0"
   },
   "devDependencies": {
     "@types/eslint-plugin-jsx-a11y": "6.10.0",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vite": "catalog:"
   },
   "peerDependencies": {
     "eslint": "catalog:",

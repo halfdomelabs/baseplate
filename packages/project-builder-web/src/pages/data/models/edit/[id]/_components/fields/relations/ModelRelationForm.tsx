@@ -32,7 +32,7 @@ import { pluralize } from 'inflection';
 import React, { useId, useMemo } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
-import { useEditedModelConfig } from '@src/pages/data/models/_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '#src/pages/data/models/_hooks/useEditedModelConfig.js';
 
 interface ModelRelationFormProps {
   className?: string;

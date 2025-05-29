@@ -1,0 +1,10 @@
+{
+  "extends": "@halfdomelabs/tools/tsconfig.vite.web.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "outDir": "dist",
+    "rootDir": "src",
+    "incremental": true
+  },
+  "include": ["src"]
+}

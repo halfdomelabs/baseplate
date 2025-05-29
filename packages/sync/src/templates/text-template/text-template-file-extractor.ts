@@ -5,7 +5,7 @@ import { constantCase, mapValues, omit, uniq } from 'es-toolkit';
 import path from 'node:path/posix';
 import pLimit from 'p-limit';
 
-import { getGenerationConcurrencyLimit } from '@src/utils/concurrency.js';
+import { getGenerationConcurrencyLimit } from '#src/utils/concurrency.js';
 
 import type { TemplateFileExtractorFile } from '../extractor/template-file-extractor.js';
 import type { TextTemplateFile, TextTemplateFileMetadata } from './types.js';

@@ -2,15 +2,15 @@ import { projectScope } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import type { PothosWriterOptions } from '@src/writers/pothos/index.js';
+import type { PothosWriterOptions } from '#src/writers/pothos/index.js';
 
-import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input.js';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
-import { lowerCaseFirst } from '@src/utils/case.js';
+import { getPrimaryKeyDefinition } from '#src/generators/prisma/_shared/crud-method/primary-key-input.js';
+import { prismaOutputProvider } from '#src/generators/prisma/prisma/prisma.generator.js';
+import { lowerCaseFirst } from '#src/utils/case.js';
 import {
   createPothosTypeReference,
   writePothosInputDefinitionFromDtoFields,
-} from '@src/writers/pothos/index.js';
+} from '#src/writers/pothos/index.js';
 
 import { pothosTypeOutputProvider } from '../_providers/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';

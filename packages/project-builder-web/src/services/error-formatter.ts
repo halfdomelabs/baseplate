@@ -2,9 +2,9 @@ import type { AppRouter } from '@halfdomelabs/project-builder-server';
 
 import { TRPCClientError } from '@trpc/client';
 
-import { UserVisibleError } from '@src/utils/error';
+import { UserVisibleError } from '#src/utils/error.js';
 
-import { logError } from './error-logger';
+import { logError } from './error-logger.js';
 
 type TypedTRPCClientError = TRPCClientError<AppRouter>;
 

@@ -7,8 +7,8 @@ import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { reactApolloProvider } from '@src/generators/apollo/react-apollo/react-apollo.generator.js';
-import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import { reactApolloProvider } from '#src/generators/apollo/react-apollo/react-apollo.generator.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 import { createForeignDataDependency } from '../_utils/foreign-data-dependency.js';

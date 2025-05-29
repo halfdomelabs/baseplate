@@ -2,7 +2,7 @@ import type * as React from 'react';
 
 import * as SwitchPrimitive from '@radix-ui/react-switch';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 /**
  * A control that allows the user to toggle between checked and not checked.

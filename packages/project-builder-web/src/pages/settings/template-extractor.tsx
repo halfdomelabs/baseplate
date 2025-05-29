@@ -20,8 +20,8 @@ import {
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { FormActionBar } from '@src/components';
-import { ENABLE_TEMPLATE_EXTRACTOR } from '@src/services/config';
+import { FormActionBar } from '#src/components/index.js';
+import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';
 
 /**
  * Settings page for template extractor configuration

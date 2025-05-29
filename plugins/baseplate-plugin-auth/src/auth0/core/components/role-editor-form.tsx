@@ -5,10 +5,10 @@ import { authRoleEntityType } from '@halfdomelabs/project-builder-lib';
 import { Button, InputFieldController } from '@halfdomelabs/ui-components';
 import { useFieldArray } from 'react-hook-form';
 
-import { AUTH_DEFAULT_ROLES } from '@src/roles';
-import { cn } from '@src/utils/cn';
+import { AUTH_DEFAULT_ROLES } from '#src/roles/index.js';
+import { cn } from '#src/utils/cn.js';
 
-import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition';
+import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition.js';
 
 interface Props {
   className?: string;

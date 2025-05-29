@@ -10,11 +10,11 @@ import {
 import path from 'node:path';
 import { z } from 'zod';
 
-import type { ScalarFieldType } from '@src/types/field-types.js';
+import type { ScalarFieldType } from '#src/types/field-types.js';
 
-import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
-import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/error-handler-service.generator.js';
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
+import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
+import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/error-handler-service.generator.js';
 
 import {
   pothosConfigProvider,

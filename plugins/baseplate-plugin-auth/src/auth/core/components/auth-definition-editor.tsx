@@ -20,14 +20,14 @@ import { Button } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
-import { createDefaultAuthRoles } from '@src/roles';
-import { cn } from '@src/utils/cn';
+import { createDefaultAuthRoles } from '#src/roles/index.js';
+import { cn } from '#src/utils/cn.js';
 
-import type { AuthPluginDefinitionInput } from '../schema/plugin-definition';
+import type { AuthPluginDefinitionInput } from '../schema/plugin-definition.js';
 
-import { createAuthModels } from '../schema/models';
-import { authPluginDefinitionSchema } from '../schema/plugin-definition';
-import RoleEditorForm from './role-editor-form';
+import { createAuthModels } from '../schema/models.js';
+import { authPluginDefinitionSchema } from '../schema/plugin-definition.js';
+import RoleEditorForm from './role-editor-form.js';
 
 export function AuthDefinitionEditor({
   definition: pluginMetadata,

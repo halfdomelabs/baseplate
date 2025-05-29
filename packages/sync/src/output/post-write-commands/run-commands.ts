@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import ms from 'ms';
 import path from 'node:path';
 
-import type { Logger } from '@src/utils/evented-logger.js';
+import type { Logger } from '#src/utils/evented-logger.js';
 
-import { executeCommand } from '@src/utils/exec.js';
+import { executeCommand } from '#src/utils/exec.js';
 
 import { type PostWriteCommand } from './types.js';
 

@@ -10,13 +10,13 @@ import {
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { prismaOutputProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
-import { prismaToServiceOutputDto } from '@src/types/service-output.js';
-import { lowerCaseFirst } from '@src/utils/case.js';
+import { prismaOutputProvider } from '#src/generators/prisma/prisma/prisma.generator.js';
+import { prismaToServiceOutputDto } from '#src/types/service-output.js';
+import { lowerCaseFirst } from '#src/utils/case.js';
 import {
   createPothosTypeReference,
   writePothosExposeFieldFromDtoScalarField,
-} from '@src/writers/pothos/index.js';
+} from '#src/writers/pothos/index.js';
 
 import {
   pothosFieldScope,

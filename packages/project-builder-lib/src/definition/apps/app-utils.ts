@@ -2,9 +2,9 @@ import type {
   AppConfig,
   BackendAppConfig,
   ProjectDefinition,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 
-import { computeRelativePath } from '@src/utils/path.js';
+import { computeRelativePath } from '#src/utils/path.js';
 
 function byId(projectDefinition: ProjectDefinition, id: string): AppConfig {
   const config = projectDefinition.apps.find((app) => app.id === id);

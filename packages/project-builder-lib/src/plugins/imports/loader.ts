@@ -1,7 +1,7 @@
 import { toposortOrdered } from '@halfdomelabs/utils';
 import { keyBy, mapValues } from 'es-toolkit';
 
-import { stripUndefinedValues } from '@src/utils/strip.js';
+import { stripUndefinedValues } from '#src/utils/strip.js';
 
 import type { PluginSpecImplementation } from '../spec/types.js';
 import type { KeyedPluginPlatformModule } from './types.js';

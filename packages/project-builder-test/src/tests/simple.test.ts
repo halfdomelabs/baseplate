@@ -1,6 +1,6 @@
 // Simple repository with just one backend, one admin, and one web
 
-import type { ProjectBuilderTest } from '@src/types.js';
+import type { ProjectBuilderTest } from '#src/types.js';
 
 export default {
   projectDirectory: 'simple',

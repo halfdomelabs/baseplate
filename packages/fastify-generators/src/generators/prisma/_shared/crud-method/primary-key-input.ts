@@ -6,10 +6,10 @@ import {
 } from '@halfdomelabs/core-generators';
 import { quot } from '@halfdomelabs/utils';
 
-import type { PrismaOutputModel } from '@src/types/prisma-output.js';
-import type { ServiceOutputDtoField } from '@src/types/service-output.js';
+import type { PrismaOutputModel } from '#src/types/prisma-output.js';
+import type { ServiceOutputDtoField } from '#src/types/service-output.js';
 
-import { getScalarFieldTypeInfo } from '@src/types/field-types.js';
+import { getScalarFieldTypeInfo } from '#src/types/field-types.js';
 
 interface PrimaryKeyOutput {
   argumentName: string;

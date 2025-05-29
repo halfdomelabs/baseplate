@@ -2,9 +2,9 @@ import { tsCodeFragment } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import type { ReactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import type { ReactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
 
-import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 

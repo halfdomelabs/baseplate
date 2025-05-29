@@ -1,4 +1,4 @@
-import { KEBAB_CASE_WITH_SLASH_SEPARATOR_REGEX } from '@src/utils/validation.js';
+import { KEBAB_CASE_WITH_SLASH_SEPARATOR_REGEX } from '#src/utils/validation.js';
 
 /**
  * A scope for a provider export

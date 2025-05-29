@@ -1,4 +1,4 @@
-import { normalizePathToProjectPath } from '@src/utils/canonical-path.js';
+import { normalizePathToProjectPath } from '#src/utils/canonical-path.js';
 
 import type { PostWriteCommand } from './types.js';
 

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { useProjects } from '@src/hooks/useProjects';
-import { ProjectNotFoundError } from '@src/services/api';
+import { useProjects } from '#src/hooks/useProjects.js';
+import { ProjectNotFoundError } from '#src/services/api/index.js';
 
-import type { ProjectDefinitionFilePayload } from '../services/project-definition-file-manager';
+import type { ProjectDefinitionFilePayload } from '../services/project-definition-file-manager.js';
 
-import { ProjectDefinitionFileManager } from '../services/project-definition-file-manager';
+import { ProjectDefinitionFileManager } from '../services/project-definition-file-manager.js';
 
 interface UseRemoteProjectDefinitionResult {
   projectDefinitionFilePayload: ProjectDefinitionFilePayload | undefined;

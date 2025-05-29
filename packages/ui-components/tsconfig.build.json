@@ -2,9 +2,7 @@
   "extends": "@halfdomelabs/tools/tsconfig.vite.lib.json",
   "compilerOptions": {
     "outDir": "dist",
-    "paths": {
-      "@src/*": ["./src/*"]
-    }
+    "rootDir": "src"
   },
   "include": ["src"],
   "exclude": ["**/*.test.ts", "**/*.stories.ts", "**/*.stories.tsx"]

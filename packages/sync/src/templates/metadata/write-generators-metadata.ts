@@ -3,7 +3,7 @@ import { findNearestPackageJson } from '@halfdomelabs/utils/node';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import type { GeneratorEntry } from '@src/generators/build-generator-entry.js';
+import type { GeneratorEntry } from '#src/generators/build-generator-entry.js';
 
 import { GENERATOR_INFO_FILENAME } from '../constants.js';
 

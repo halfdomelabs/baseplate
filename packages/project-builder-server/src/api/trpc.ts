@@ -1,6 +1,6 @@
 import { initTRPC } from '@trpc/server';
 
-import { UserVisibleError } from '@src/utils/errors.js';
+import { UserVisibleError } from '#src/utils/errors.js';
 
 import type { Context } from './context.js';
 

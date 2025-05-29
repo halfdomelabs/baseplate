@@ -1,12 +1,12 @@
 import { createReadOnlyProviderType } from '@halfdomelabs/sync';
 import path from 'node:path/posix';
 
-import type { TsImportMapProviderFromSchema } from '@src/renderers/typescript/index.js';
+import type { TsImportMapProviderFromSchema } from '#src/renderers/typescript/index.js';
 
 import {
   createTsImportMap,
   createTsImportMapSchema,
-} from '@src/renderers/typescript/index.js';
+} from '#src/renderers/typescript/index.js';
 
 const tsUtilsImportsSchema = createTsImportMapSchema({
   capitalizeString: {},

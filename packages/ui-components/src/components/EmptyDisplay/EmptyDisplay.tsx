@@ -4,10 +4,10 @@ import type React from 'react';
 
 import { MdFormatListBulleted } from 'react-icons/md';
 
-import type { IconElement } from '@src/types/react.js';
+import type { IconElement } from '#src/types/react.js';
 
-import { useComponentStrings } from '@src/contexts/component-strings.js';
-import { cn } from '@src/utils/cn.js';
+import { useComponentStrings } from '#src/contexts/component-strings.js';
+import { cn } from '#src/utils/cn.js';
 
 interface EmptyDisplayProps {
   /**

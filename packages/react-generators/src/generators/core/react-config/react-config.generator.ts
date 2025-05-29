@@ -18,7 +18,7 @@ import {
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
 import {
   createReactConfigImports,

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { createEntityType } from '@src/references/types.js';
+import { createEntityType } from '#src/references/types.js';
 
 import { adminSectionEntityType } from '../types.js';
 

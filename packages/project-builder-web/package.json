@@ -6,13 +6,16 @@
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
   "type": "module",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
   "files": [
     "LICENSE",
     "dist/**/*",
     "CHANGELOG"
   ],
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "tsc -b && vite build",
     "clean": "rm -rf ./dist",
     "dev": "vite",
     "lint": "eslint .",
@@ -20,7 +23,7 @@
     "prettier:write": "prettier -w .",
     "serve": "vite preview",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc -b --noEmit"
   },
   "browserslist": {
     "production": [
@@ -86,7 +89,6 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-svgr": "catalog:",
-    "vite-tsconfig-paths": "catalog:",
     "vitest": "catalog:"
   },
   "engines": {

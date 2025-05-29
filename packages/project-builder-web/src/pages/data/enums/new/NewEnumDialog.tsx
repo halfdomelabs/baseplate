@@ -15,8 +15,8 @@ import {
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
-import { EnumInfoForm } from '../components/EnumInfoForm';
-import { useEnumForm } from '../hooks/useEnumForm';
+import { EnumInfoForm } from '../components/EnumInfoForm.js';
+import { useEnumForm } from '../hooks/useEnumForm.js';
 
 interface NewEnumDialogProps {
   children: React.ReactNode;

@@ -6,7 +6,7 @@ import type { ProjectDefinitionFilePayload } from '@halfdomelabs/project-builder
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { parseProjectDefinitionContents } from '../services/parse-project-definition-contents';
+import { parseProjectDefinitionContents } from '../services/parse-project-definition-contents.js';
 
 interface UseProjectDefinitionContainerInput {
   schemaParserContext: SchemaParserContext | undefined;

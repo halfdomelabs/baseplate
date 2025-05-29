@@ -18,7 +18,7 @@ import {
 import { useMemo } from 'react';
 import { MdExpandMore } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig.js';
 
 interface ModelAddFieldButtonProps {
   className?: string;

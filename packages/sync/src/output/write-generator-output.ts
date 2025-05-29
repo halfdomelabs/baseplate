@@ -1,8 +1,8 @@
 import path from 'node:path';
 
-import type { Logger } from '@src/utils/evented-logger.js';
+import type { Logger } from '#src/utils/evented-logger.js';
 
-import { CancelledSyncError } from '@src/errors.js';
+import { CancelledSyncError } from '#src/errors.js';
 
 import type { GeneratorOutput } from './generator-task-output.js';
 import type { FailedCommandInfo } from './post-write-commands/index.js';

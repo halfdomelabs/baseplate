@@ -9,7 +9,7 @@ import type {
 import { camelCase } from 'change-case';
 import { SyntaxKind } from 'ts-morph';
 
-import { createTypescriptMorpher } from '@src/types.js';
+import { createTypescriptMorpher } from '#src/types.js';
 
 export default createTypescriptMorpher({
   name: 'build-tasks-as-object',

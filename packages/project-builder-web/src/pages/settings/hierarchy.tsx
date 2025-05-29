@@ -16,9 +16,9 @@ import { useState } from 'react';
 import { FiCornerDownRight } from 'react-icons/fi';
 import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
 
-import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
+import { useDeleteReferenceDialog } from '#src/hooks/useDeleteReferenceDialog.js';
 
-import { FeatureForm } from './components/FeatureForm';
+import { FeatureForm } from './components/FeatureForm.js';
 
 function HierarchyPage(): React.JSX.Element {
   const { definitionContainer, saveDefinitionWithFeedbackSync } =

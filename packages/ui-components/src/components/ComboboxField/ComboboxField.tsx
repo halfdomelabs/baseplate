@@ -7,10 +7,10 @@ import type {
   AddOptionRequiredFields,
   FormFieldProps,
   SelectOptionProps,
-} from '@src/types/form.js';
+} from '#src/types/form.js';
 
-import { useComponentStrings } from '@src/contexts/component-strings.js';
-import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
+import { useComponentStrings } from '#src/contexts/component-strings.js';
+import { useControllerMerged } from '#src/hooks/useControllerMerged.js';
 
 import type { ComboboxProps } from '../Combobox/Combobox.js';
 

@@ -3,9 +3,9 @@ import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 import { tsTemplate } from '@halfdomelabs/core-generators';
 import { quot } from '@halfdomelabs/utils';
 
-import type { ServiceOutputDtoScalarField } from '@src/types/service-output.js';
+import type { ServiceOutputDtoScalarField } from '#src/types/service-output.js';
 
-import { upperCaseFirst } from '@src/utils/case.js';
+import { upperCaseFirst } from '#src/utils/case.js';
 
 import type { PothosWriterOptions } from './options.js';
 

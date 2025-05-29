@@ -2,7 +2,7 @@ import type React from 'react';
 
 import { Button } from '@halfdomelabs/ui-components';
 
-import { NewEnumDialog } from './new/NewEnumDialog';
+import { NewEnumDialog } from './new/NewEnumDialog.js';
 
 function EnumsListPage(): React.JSX.Element {
   return (

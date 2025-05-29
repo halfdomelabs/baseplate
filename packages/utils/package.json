@@ -12,6 +12,9 @@
   "author": "Half Dome Labs LLC",
   "sideEffects": false,
   "type": "module",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
   "exports": {
     ".": "./dist/index.js",
     "./node": "./dist/node.js"
@@ -23,16 +26,14 @@
     "CHANGELOG"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && tsc-alias",
+    "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "watch": "concurrently pnpm:watch:*",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
-    "watch:tsc-alias": "tsc-alias -w"
+    "watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
   },
   "dependencies": {
     "es-toolkit": "1.31.0",
@@ -44,11 +45,9 @@
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "catalog:",
-    "concurrently": "9.0.1",
     "eslint": "catalog:",
     "memfs": "4.15.1",
     "prettier": "catalog:",
-    "tsc-alias": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

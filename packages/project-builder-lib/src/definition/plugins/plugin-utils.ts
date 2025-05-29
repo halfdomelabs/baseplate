@@ -2,12 +2,12 @@ import {
   pluginConfigSpec,
   type PluginImplementationStore,
   type PluginMetadataWithPaths,
-} from '@src/plugins/index.js';
+} from '#src/plugins/index.js';
 import {
   type BasePlugin,
   pluginEntityType,
   type ProjectDefinition,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 
 function byId(
   projectDefinition: ProjectDefinition,

@@ -5,7 +5,7 @@ import type * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 import { Label } from '../Label/Label.js';
 

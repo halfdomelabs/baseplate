@@ -11,9 +11,9 @@ import { quot } from '@halfdomelabs/utils';
 import type {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
-} from '@src/types/service-output.js';
+} from '#src/types/service-output.js';
 
-import { lowerCaseFirst } from '@src/utils/case.js';
+import { lowerCaseFirst } from '#src/utils/case.js';
 
 import type { PothosTypeDefinitionWithVariableName } from './definitions.js';
 import type { PothosWriterOptions } from './options.js';

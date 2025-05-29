@@ -1,6 +1,6 @@
 import { notEmpty, toposort } from '@halfdomelabs/utils';
 
-import type { GeneratorOutputMetadata } from '@src/output/generator-task-output.js';
+import type { GeneratorOutputMetadata } from '#src/output/generator-task-output.js';
 
 import type { GeneratorTaskEntry } from '../generators/index.js';
 import type { EntryDependencyMap } from './dependency-map.js';

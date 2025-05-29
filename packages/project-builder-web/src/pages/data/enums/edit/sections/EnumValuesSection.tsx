@@ -17,8 +17,8 @@ import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdDeleteOutline } from 'react-icons/md';
 
-import { SortableList } from '@src/components';
-import { underscoreToTitleCase } from '@src/utils/casing';
+import { SortableList } from '#src/components/index.js';
+import { underscoreToTitleCase } from '#src/utils/casing.js';
 
 export function EnumValuesSection({
   control,

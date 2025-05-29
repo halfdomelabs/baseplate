@@ -18,8 +18,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { REACT_PACKAGES } from '@src/constants/react-packages.js';
-import { authIdentifyProvider } from '@src/generators/auth/auth-identify/auth-identify.generator.js';
+import { REACT_PACKAGES } from '#src/constants/react-packages.js';
+import { authIdentifyProvider } from '#src/generators/auth/auth-identify/auth-identify.generator.js';
 
 import {
   reactConfigImportsProvider,

@@ -1,10 +1,10 @@
-import type { PluginImplementationStore } from '@src/plugins/index.js';
+import type { PluginImplementationStore } from '#src/plugins/index.js';
 import type {
   ModelTransformerType,
   TransformerConfig,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 
-import { modelTransformerSpec } from '@src/schema/index.js';
+import { modelTransformerSpec } from '#src/schema/index.js';
 
 import type { ProjectDefinitionContainer } from '../project-definition-container.js';
 

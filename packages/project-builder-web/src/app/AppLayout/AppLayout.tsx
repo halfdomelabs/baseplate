@@ -10,13 +10,13 @@ import clsx from 'clsx';
 import { MdMenu } from 'react-icons/md';
 import { Outlet } from 'react-router-dom';
 
-import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
+import { ErrorBoundary } from '#src/components/ErrorBoundary/ErrorBoundary.js';
 
-import ProjectSyncModal from '../ProjectSyncModal/ProjectSyncModal';
-import { AppBreadcrumbs } from './AppBreadcrumbs';
-import { AppDesktopSidebar } from './AppDesktopSidebar';
-import { AppMobileSidebar } from './AppMobileSidebar';
-import { ProjectSyncStatus } from './ProjectSyncStatus';
+import ProjectSyncModal from '../ProjectSyncModal/ProjectSyncModal.js';
+import { AppBreadcrumbs } from './AppBreadcrumbs.js';
+import { AppDesktopSidebar } from './AppDesktopSidebar.js';
+import { AppMobileSidebar } from './AppMobileSidebar.js';
+import { ProjectSyncStatus } from './ProjectSyncStatus.js';
 
 interface AppLayoutProps {
   className?: string;

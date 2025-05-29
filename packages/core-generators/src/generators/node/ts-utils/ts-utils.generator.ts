@@ -4,7 +4,7 @@ import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { projectScope } from '@src/providers/scopes.js';
+import { projectScope } from '#src/providers/scopes.js';
 
 import { typescriptFileProvider } from '../typescript/typescript.generator.js';
 import {

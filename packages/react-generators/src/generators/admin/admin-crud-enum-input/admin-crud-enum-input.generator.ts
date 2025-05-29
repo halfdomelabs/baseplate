@@ -6,7 +6,7 @@ import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 

@@ -8,10 +8,10 @@ import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { NUMBER_VALIDATORS } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import type { ServiceOutputMethod } from '@src/types/service-output.js';
+import type { ServiceOutputMethod } from '#src/types/service-output.js';
 
-import { serviceFileProvider } from '@src/generators/core/service-file/service-file.generator.js';
-import { prismaToServiceOutputDto } from '@src/types/service-output.js';
+import { serviceFileProvider } from '#src/generators/core/service-file/service-file.generator.js';
+import { prismaToServiceOutputDto } from '#src/types/service-output.js';
 
 import type { PrismaUtilsImportsProvider } from '../prisma-utils/prisma-utils.generator.js';
 import type { PrismaOutputProvider } from '../prisma/prisma.generator.js';

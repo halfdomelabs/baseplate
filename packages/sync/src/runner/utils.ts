@@ -1,8 +1,8 @@
 import type {
   GeneratorEntry,
   GeneratorTaskEntry,
-} from '@src/generators/build-generator-entry.js';
-import type { TaskPhase } from '@src/phases/types.js';
+} from '#src/generators/build-generator-entry.js';
+import type { TaskPhase } from '#src/phases/types.js';
 
 /**
  * Recursively goes through generator children and extracts them into a flat list

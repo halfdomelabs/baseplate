@@ -5,7 +5,7 @@ import {
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { appModuleProvider } from '@src/generators/core/index.js';
+import { appModuleProvider } from '#src/generators/core/index.js';
 
 import { userSessionServiceImportsProvider } from '../_providers/user-session.js';
 import { userSessionTypesImportsProvider } from '../user-session-types/user-session-types.generator.js';

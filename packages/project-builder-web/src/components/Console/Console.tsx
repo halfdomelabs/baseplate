@@ -4,12 +4,12 @@ import { toast } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 
-import { useProjects } from '@src/hooks/useProjects';
-import { IS_PREVIEW } from '@src/services/config';
-import { formatError } from '@src/services/error-formatter';
-import { trpc } from '@src/services/trpc';
+import { useProjects } from '#src/hooks/useProjects.js';
+import { IS_PREVIEW } from '#src/services/config.js';
+import { formatError } from '#src/services/error-formatter.js';
+import { trpc } from '#src/services/trpc.js';
 
-import { AnsiText } from '../AnsiText/AnsiText';
+import { AnsiText } from '../AnsiText/AnsiText.js';
 
 interface Props {
   className?: string;

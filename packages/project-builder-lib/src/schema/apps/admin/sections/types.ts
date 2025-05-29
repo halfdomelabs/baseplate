@@ -1,4 +1,4 @@
-import { createEntityType } from '@src/references/index.js';
+import { createEntityType } from '#src/references/index.js';
 
 import { appEntityType } from '../../types.js';
 

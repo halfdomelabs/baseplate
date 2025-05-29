@@ -5,7 +5,7 @@ import {
   generateMockModelRelationField,
   generateMockModelScalarField,
   generateMockUniqueConstraint,
-} from '@src/schema/models/mocks.js';
+} from '#src/schema/models/mocks.js';
 
 import { ModelFieldUtils } from './model-field-utils.js';
 

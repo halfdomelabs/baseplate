@@ -1,8 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { removeEmptyAncestorDirectories } from '@src/utils/directories.js';
-import { pathExists } from '@src/utils/fs.js';
+import { removeEmptyAncestorDirectories } from '#src/utils/directories.js';
+import { pathExists } from '#src/utils/fs.js';
 
 import type { PreviousGeneratedPayload } from './prepare-generator-files/types.js';
 

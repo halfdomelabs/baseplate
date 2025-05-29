@@ -11,7 +11,7 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { UserVisibleError } from '@src/utils/errors.js';
+import { UserVisibleError } from '#src/utils/errors.js';
 
 /**
  * Finds the available plugins in the project.

@@ -17,7 +17,7 @@ import {
   SwitchFieldController,
   TextareaFieldController,
   Toaster,
-} from '../components';
+} from '../components/index.js';
 
 // Define the schema using Zod for validation
 const schema = z.object({

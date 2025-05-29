@@ -2,9 +2,9 @@ import type { z } from 'zod';
 
 import { useMemo } from 'react';
 
-import type { ZodPluginWrapper } from '@src/plugins/index.js';
+import type { ZodPluginWrapper } from '#src/plugins/index.js';
 
-import { zPluginWrapper } from '@src/plugins/index.js';
+import { zPluginWrapper } from '#src/plugins/index.js';
 
 import { useProjectDefinition } from './useProjectDefinition.js';
 

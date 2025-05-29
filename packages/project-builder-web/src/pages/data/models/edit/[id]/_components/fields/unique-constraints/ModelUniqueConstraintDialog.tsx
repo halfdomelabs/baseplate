@@ -12,7 +12,7 @@ import {
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
-import { ModelUniqueConstraintForm } from './ModelUniqueConstraintForm';
+import { ModelUniqueConstraintForm } from './ModelUniqueConstraintForm.js';
 
 interface ModelUniqueConstraintDialogProps {
   control: Control<ModelConfigInput>;

@@ -1,6 +1,6 @@
 import pLimit from 'p-limit';
 
-import { getGenerationConcurrencyLimit } from '@src/utils/concurrency.js';
+import { getGenerationConcurrencyLimit } from '#src/utils/concurrency.js';
 
 import type { FileData } from '../generator-task-output.js';
 import type {

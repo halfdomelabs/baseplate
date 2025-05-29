@@ -1,7 +1,7 @@
 import { ts } from 'ts-morph';
 import z from 'zod';
 
-import { createTypescriptMorpher } from '@src/types.js';
+import { createTypescriptMorpher } from '#src/types.js';
 
 import { insertImportDeclarationAtTop } from './utils/imports.js';
 

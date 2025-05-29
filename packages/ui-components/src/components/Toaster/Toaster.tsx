@@ -4,7 +4,7 @@ import type React from 'react';
 
 import { Toaster as Sonner } from 'sonner';
 
-import { buttonVariants } from '@src/styles';
+import { buttonVariants } from '#src/styles/index.js';
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 

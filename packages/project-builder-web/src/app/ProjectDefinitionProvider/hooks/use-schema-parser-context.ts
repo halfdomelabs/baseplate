@@ -3,10 +3,10 @@ import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
 import { toast } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 
-import { useProjects } from '@src/hooks/useProjects';
-import { logAndFormatError } from '@src/services/error-formatter';
+import { useProjects } from '#src/hooks/useProjects.js';
+import { logAndFormatError } from '#src/services/error-formatter.js';
 
-import { SchemaParserContextManager } from '../services/schema-parser-context-manager';
+import { SchemaParserContextManager } from '../services/schema-parser-context-manager.js';
 
 interface UseSchemaParserContextResult {
   schemaParserContext: SchemaParserContext | undefined;

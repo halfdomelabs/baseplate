@@ -7,7 +7,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import { quot } from '@halfdomelabs/utils';
 
-import type { ServiceOutputDtoScalarField } from '@src/types/service-output.js';
+import type { ServiceOutputDtoScalarField } from '#src/types/service-output.js';
 
 import type { PothosTypeReference, PothosWriterOptions } from './options.js';
 

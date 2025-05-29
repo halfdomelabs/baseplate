@@ -5,10 +5,10 @@ import {
 } from '@halfdomelabs/sync';
 import { quot } from '@halfdomelabs/utils';
 
-import { CORE_PACKAGES } from '@src/constants/core-packages.js';
-import { projectScope } from '@src/providers/scopes.js';
-import { TsCodeUtils } from '@src/renderers/index.js';
-import { extractPackageVersions } from '@src/utils/extract-packages.js';
+import { CORE_PACKAGES } from '#src/constants/core-packages.js';
+import { projectScope } from '#src/providers/scopes.js';
+import { TsCodeUtils } from '#src/renderers/index.js';
+import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
 import { nodeProvider } from '../node/node.generator.js';
 import { typescriptFileProvider } from '../typescript/typescript.generator.js';

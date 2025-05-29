@@ -1,15 +1,12 @@
 {
-  "extends": "@halfdomelabs/tools/tsconfig.vite.web.json",
   "compilerOptions": {
     "outDir": "dist",
-    "paths": {
-      "@src/*": ["./src/*"]
-    }
+    "rootDir": "src",
+    "noEmit": true
   },
-  "include": ["src"],
+  "files": [],
   "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.app.json" }
   ]
 }
