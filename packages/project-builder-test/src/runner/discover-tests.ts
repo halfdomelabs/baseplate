@@ -2,7 +2,7 @@ import { globby } from 'globby';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import type { ProjectBuilderTest } from '@src/types.js';
+import type { ProjectBuilderTest } from '#src/types.js';
 
 interface TestFile {
   filename: string;

@@ -5,14 +5,14 @@ import path from 'node:path';
 import ora, { oraPromise } from 'ora';
 import { DockerComposeEnvironment } from 'testcontainers';
 
-import type { SetupEnvironmentHelpers, TestRunnerContext } from '@src/types.js';
+import type { SetupEnvironmentHelpers, TestRunnerContext } from '#src/types.js';
 
-import { HandledError } from '@src/errors/handled-error.js';
-import { logger } from '@src/utils/console.js';
-import { safeKillProcessGroup } from '@src/utils/kill-process-group.js';
-import { shouldEnableOra } from '@src/utils/ora.js';
-import { isExitingProcess, onProcessExit } from '@src/utils/process.js';
-import { waitForHealthyUrl } from '@src/utils/url.js';
+import { HandledError } from '#src/errors/handled-error.js';
+import { logger } from '#src/utils/console.js';
+import { safeKillProcessGroup } from '#src/utils/kill-process-group.js';
+import { shouldEnableOra } from '#src/utils/ora.js';
+import { isExitingProcess, onProcessExit } from '#src/utils/process.js';
+import { waitForHealthyUrl } from '#src/utils/url.js';
 
 export function createEnvironmentHelpers({
   projectDirectoryPath,

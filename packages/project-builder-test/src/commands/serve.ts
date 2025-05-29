@@ -15,10 +15,10 @@ import path from 'node:path';
 import { pino } from 'pino';
 import { packageDirectory } from 'pkg-dir';
 
-import { logger } from '@src/utils/console.js';
-import { getTestProjectsDirectory } from '@src/utils/directories.js';
-import { resolveModule } from '@src/utils/resolve.js';
-import { getCliVersion } from '@src/utils/version.js';
+import { logger } from '#src/utils/console.js';
+import { getTestProjectsDirectory } from '#src/utils/directories.js';
+import { resolveModule } from '#src/utils/resolve.js';
+import { getCliVersion } from '#src/utils/version.js';
 
 async function createTestProject(
   projectName: string,

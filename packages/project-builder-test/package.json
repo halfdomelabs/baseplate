@@ -11,19 +11,25 @@
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
   "type": "module",
+  "imports": {
+    "#src/*": {
+      "development": "./src/*",
+      "default": "./dist/*"
+    }
+  },
   "files": [
     "LICENSE",
     "dist/**/*",
     "CHANGELOG"
   ],
   "scripts": {
-    "dev": "tsx watch ./src",
+    "dev": "tsx watch -C development ./src",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "start": "tsx ./src",
-    "test:e2e": "tsx ./src test",
-    "typecheck": "tsc --noEmit"
+    "start": "tsx -C development ./src",
+    "test:e2e": "tsx -C development ./src test",
+    "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
     "@halfdomelabs/project-builder-common": "workspace:*",

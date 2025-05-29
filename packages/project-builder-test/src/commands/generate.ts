@@ -2,13 +2,13 @@ import type { Command } from 'commander';
 
 import path from 'node:path';
 
-import { discoverTests } from '@src/runner/discover-tests.js';
-import { generateProject } from '@src/runner/generate.js';
-import { logger } from '@src/utils/console.js';
+import { discoverTests } from '#src/runner/discover-tests.js';
+import { generateProject } from '#src/runner/generate.js';
+import { logger } from '#src/utils/console.js';
 import {
   getTestProjectsDirectory,
   getTestsDirectory,
-} from '@src/utils/directories.js';
+} from '#src/utils/directories.js';
 
 async function generateTestProjects(filter: string): Promise<void> {
   const testsDirectory = await getTestsDirectory();
