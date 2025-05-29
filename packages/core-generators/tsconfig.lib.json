@@ -1,0 +1,10 @@
+{
+  "extends": "@halfdomelabs/tools/tsconfig.node.lib.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "noEmit": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["**/generators/*/*/templates/**"]
+}
