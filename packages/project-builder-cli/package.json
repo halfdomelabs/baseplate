@@ -38,7 +38,7 @@
     "prettier:write": "prettier -w .",
     "start": "tsx --tsconfig ./tsconfig.app.json -r dotenv/config -C development ./src",
     "test": "vitest",
-    "test:e2e": "pnpm playwright test",
+    "test:e2e": "playwright test",
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
