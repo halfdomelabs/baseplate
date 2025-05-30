@@ -17,7 +17,15 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button } from '@halfdomelabs/ui-components';
+import {
+  FormActionBar,
+  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
@@ -28,6 +36,8 @@ import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition.js'
 import { createAuth0Models } from '../schema/models.js';
 import { auth0PluginDefinitionSchema } from '../schema/plugin-definition.js';
 import RoleEditorForm from './role-editor-form.js';
+
+import '#src/styles.css';
 
 export function AuthDefinitionEditor({
   definition: pluginMetadata,
@@ -57,11 +67,11 @@ export function AuthDefinitionEditor({
     } satisfies Auth0PluginDefinitionInput;
   }, [definition, pluginMetadata?.config]);
 
-  const formProps = useResettableForm({
+  const form = useResettableForm({
     resolver: zodResolver(auth0PluginDefinitionSchema),
     defaultValues,
   });
-  const { control, reset, handleSubmit, watch } = formProps;
+  const { control, reset, handleSubmit, watch } = form;
 
   const modelRefs = watch('modelRefs');
   const authFeatureRef = watch('authFeatureRef');
@@ -112,22 +122,51 @@ export function AuthDefinitionEditor({
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
-    <form onSubmit={onSubmit} className="auth:flex auth:flex-col auth:gap-4">
-      <ModelMergerResultAlert pendingModelChanges={pendingModelChanges} />
-      <ModelComboboxFieldController
-        label="User Model"
-        name="modelRefs.user"
-        control={control}
-        canCreate
-      />
-      <FeatureComboboxFieldController
-        label="Auth Feature Path"
-        name="authFeatureRef"
-        control={control}
-        canCreate
-      />
-      <RoleEditorForm control={control} />
-      <Button type="submit">Save</Button>
+    <form
+      onSubmit={onSubmit}
+      className="max-w-6xl auth:mb-[--action-bar-height]"
+    >
+      <div className="auth:pb-16">
+        <SectionList>
+          <SectionListSection>
+            <SectionListSectionHeader>
+              <SectionListSectionTitle>
+                Auth0 Configuration
+              </SectionListSectionTitle>
+              <SectionListSectionDescription>
+                Configure your Auth0 authentication settings, user model, and
+                role definitions.
+              </SectionListSectionDescription>
+            </SectionListSectionHeader>
+            <SectionListSectionContent className="auth:space-y-6">
+              <ModelMergerResultAlert
+                pendingModelChanges={pendingModelChanges}
+              />
+
+              <div className="md:auth:grid-cols-2 auth:grid auth:grid-cols-1 auth:gap-6">
+                <ModelComboboxFieldController
+                  label="User Model"
+                  name="modelRefs.user"
+                  control={control}
+                  canCreate
+                  description="Select or create the model that will store user authentication data"
+                />
+                <FeatureComboboxFieldController
+                  label="Auth Feature Path"
+                  name="authFeatureRef"
+                  control={control}
+                  canCreate
+                  description="Specify the feature path where authentication endpoints will be generated"
+                />
+              </div>
+            </SectionListSectionContent>
+          </SectionListSection>
+
+          <RoleEditorForm control={control} />
+        </SectionList>
+      </div>
+
+      <FormActionBar form={form} />
     </form>
   );
 }

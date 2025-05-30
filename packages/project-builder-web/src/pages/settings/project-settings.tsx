@@ -7,6 +7,7 @@ import {
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
 import {
+  FormActionBar,
   InputFieldController,
   SectionList,
   SectionListSection,
@@ -15,8 +16,6 @@ import {
   SectionListSectionTitle,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-import { FormActionBar } from '#src/components/index.js';
 
 function ProjectSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();

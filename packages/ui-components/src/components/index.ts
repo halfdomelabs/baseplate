@@ -17,6 +17,7 @@ export * from './Dropdown/Dropdown.js';
 export * from './EmptyDisplay/EmptyDisplay.js';
 export * from './ErrorableLoader/ErrorableLoader.js';
 export * from './ErrorDisplay/ErrorDisplay.js';
+export * from './FormActionBar/FormActionBar.js';
 export * from './FormItem/FormItem.js';
 export * from './Input/Input.js';
 export * from './InputField/InputField.js';

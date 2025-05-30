@@ -28,6 +28,21 @@ Note: Make sure to run the commands in the sub-packages if only modifying files 
 - Order functions such that functions are placed below the variables/functions they use
 - Use kebab-case for file names
 - If a particular interface or type is not exported, change the file so it is exported
+- We use the prefer using nullish coalescing operator (`??`) ESLint rule instead of a logical or (`||`), as it is a safer operator
+
+## UI Development Guidelines
+
+- **Component Library**: Use ShadCN-based components from `@halfdomelabs/ui-components`
+  - This package contains a customized variation of ShadCN components
+  - Always prefer these components over creating custom ones
+- **Styling**: Use Tailwind CSS utilities exclusively
+  - Avoid writing custom CSS classes
+  - Use Tailwind's utility classes for all styling needs
+  - In plugins, prefix all Tailwind classes with the plugin name (e.g., `auth-`, `storage-`)
+- **Icons**: Use icons from `react-icons/md` (Material Design icons)
+  - Import icons like: `import { MdAdd, MdDelete } from 'react-icons/md'`
+  - Avoid using other icon libraries (lucide-react, heroicons, etc.)
+  - If a specific icon is not available in `react-icons/md`, consult before using alternatives
 
 ## Testing Best Practices
 
@@ -182,7 +197,7 @@ Baseplate consists of two main tiers:
   Description of the feature or change
   ```
 
-- IMPORTANT: If you have to go through more than one cycle of edits to fix linting, type, or test errors, please stop and ask for help. Often fixing errors will cause worse changes so it's better to ask for help than to continue. Feel free to ask for help at any time for any issues.
+- IMPORTANT: If you have to go through more than two cycles of edits to fix linting, type, or test errors, please stop and ask for help. Often fixing errors will cause worse changes so it's better to ask for help than to continue. Feel free to ask for help at any time for any issues.
 
 ## Baseplate Docs MCP
 

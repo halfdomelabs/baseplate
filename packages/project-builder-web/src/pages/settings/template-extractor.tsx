@@ -11,6 +11,7 @@ import {
   AlertDescription,
   AlertTitle,
   CheckboxFieldController,
+  FormActionBar,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -20,7 +21,6 @@ import {
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { FormActionBar } from '#src/components/index.js';
 import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';
 
 /**

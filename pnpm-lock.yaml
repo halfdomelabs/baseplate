@@ -1227,6 +1227,9 @@ importers:
       react-hook-form:
         specifier: 7.56.3
         version: 7.56.3(react@19.1.0)
+      react-icons:
+        specifier: 5.5.0
+        version: 5.5.0(react@19.1.0)
       zod:
         specifier: 'catalog:'
         version: 3.24.1

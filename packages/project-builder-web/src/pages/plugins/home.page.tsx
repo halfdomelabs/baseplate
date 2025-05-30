@@ -65,7 +65,7 @@ export function PluginsHomePage(): React.JSX.Element {
   );
 
   return (
-    <div className="max-w-2xl space-y-4">
+    <div className="max-w-2xl space-y-4 p-4">
       <h1>Manage Plugins</h1>
       <p>
         Plugins are a way to extend the functionality of your project, such as
