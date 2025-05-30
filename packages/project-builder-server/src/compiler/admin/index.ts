@@ -68,10 +68,11 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
   );
 
   const rootFeatures = appCompiler.getRootChildren();
+  const generalSettings = projectDefinition.settings.general;
 
   return composeReactGenerators(
     {
-      title: `${capitalize(projectDefinition.name)} Admin Dashboard`,
+      title: `${capitalize(generalSettings.name)} Admin Dashboard`,
       children: {
         reactRouter: reactRouterGenerator({
           children: safeMerge(
@@ -81,7 +82,7 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
               adminRoutes: backendApp.enableBullQueue
                 ? adminBullBoardGenerator({
                     bullBoardUrl: `http://localhost:${
-                      projectDefinition.portOffset + 1
+                      generalSettings.portOffset + 1
                     }`,
                   })
                 : undefined,
@@ -125,7 +126,7 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
     },
     {
       // TODO: Extract out logic
-      devBackendHost: `http://localhost:${projectDefinition.portOffset + 1}`,
+      devBackendHost: `http://localhost:${generalSettings.portOffset + 1}`,
     },
   );
 }
@@ -142,15 +143,17 @@ export function compileAdmin(
 
   const { projectDefinition } = appBuilder;
 
-  const packageName = projectDefinition.packageScope
-    ? `@${projectDefinition.packageScope}/${app.name}`
-    : `${projectDefinition.name}-${app.name}`;
+  const generalSettings = projectDefinition.settings.general;
+
+  const packageName = generalSettings.packageScope
+    ? `@${generalSettings.packageScope}/${app.name}`
+    : `${generalSettings.name}-${app.name}`;
 
   const nodeBundle = composeNodeGenerator({
-    name: `${projectDefinition.name}-${app.name}`,
+    name: `${generalSettings.name}-${app.name}`,
     packageName,
-    description: `Admin web app for ${projectDefinition.name}`,
-    version: projectDefinition.version,
+    description: `Admin web app for ${generalSettings.name}`,
+    version: '1.0.0',
     children: {
       admin: buildAdmin(appBuilder),
     },

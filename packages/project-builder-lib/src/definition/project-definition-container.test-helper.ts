@@ -5,8 +5,8 @@ import {
 } from '#src/plugins/index.js';
 import { deserializeSchemaWithReferences } from '#src/references/deserialize-schema.js';
 import {
+  createProjectDefinitionSchema,
   type ProjectDefinition,
-  projectDefinitionSchema,
 } from '#src/schema/project-definition.js';
 
 import { ProjectDefinitionContainer } from './project-definition-container.js';
@@ -15,12 +15,15 @@ export function createTestProjectDefinition(
   input: Partial<ProjectDefinition> = {},
 ): ProjectDefinition {
   return {
-    name: 'test-project',
-    packageScope: '',
+    settings: {
+      general: {
+        name: 'test-project',
+        packageScope: '',
+        portOffset: 3000,
+      },
+    },
     features: [],
-    version: '1.0.0',
     cliVersion: '1.0.0',
-    portOffset: 3000,
     apps: [],
     models: [],
     isInitialized: true,
@@ -36,6 +39,9 @@ export function createTestProjectDefinitionContainer(
     availablePlugins: [],
   };
   const pluginImplementationStore = new PluginImplementationStore({});
+  const projectDefinitionSchema = createProjectDefinitionSchema({
+    plugins: pluginImplementationStore,
+  });
   const schemaWithPlugins = zPluginWrapper(
     projectDefinitionSchema,
     pluginImplementationStore,

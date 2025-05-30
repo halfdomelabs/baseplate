@@ -10,14 +10,17 @@ import type {
   ZodPluginWrapper,
 } from '#src/plugins/index.js';
 import type { ResolvedZodRefPayload } from '#src/references/types.js';
-import type { ProjectDefinition } from '#src/schema/project-definition.js';
+import type {
+  ProjectDefinition,
+  ProjectDefinitionSchema,
+} from '#src/schema/project-definition.js';
 
 import { initializePlugins } from '#src/plugins/imports/loader.js';
 import { pluginConfigSpec, zPluginWrapper } from '#src/plugins/index.js';
 import { parseSchemaWithReferences } from '#src/references/parse-schema-with-references.js';
 import { adminCrudInputSpec, modelTransformerSpec } from '#src/schema/index.js';
-import { basePluginSchema } from '#src/schema/plugins/definition.js';
-import { projectDefinitionSchema } from '#src/schema/project-definition.js';
+import { basePluginDefinitionSchema } from '#src/schema/plugins/definition.js';
+import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
 
 import type { SchemaParserContext } from './types.js';
 
@@ -41,7 +44,7 @@ export function createPluginImplementationStore(
   const { availablePlugins, builtinSpecImplementations = [] } = pluginStore;
   const pluginData = z
     .object({
-      plugins: z.array(basePluginSchema).optional(),
+      plugins: z.array(basePluginDefinitionSchema).optional(),
     })
     .parse(projectDefinition);
   const { plugins = [] } = pluginData;
@@ -92,13 +95,16 @@ export function createPluginImplementationStore(
 export function createProjectDefinitionSchemaWithContext(
   projectDefinition: unknown,
   context: SchemaParserContext,
-): ZodPluginWrapper<typeof projectDefinitionSchema> {
+): ZodPluginWrapper<ProjectDefinitionSchema> {
   const { pluginStore } = context;
   const pluginImplementationStore = createPluginImplementationStore(
     pluginStore,
     projectDefinition,
   );
-  return zPluginWrapper(projectDefinitionSchema, pluginImplementationStore);
+  return zPluginWrapper(
+    createProjectDefinitionSchema({ plugins: pluginImplementationStore }),
+    pluginImplementationStore,
+  );
 }
 
 export function parseProjectDefinitionWithContext(

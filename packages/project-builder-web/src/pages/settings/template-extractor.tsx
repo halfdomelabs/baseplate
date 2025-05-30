@@ -30,7 +30,7 @@ import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';
  */
 export function TemplateExtractorSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
-  const defaultValues = definition.templateExtractor;
+  const defaultValues = definition.settings.templateExtractor;
   const form = useResettableForm({
     resolver: zodResolver(templateExtractorSchema),
     defaultValues,
@@ -40,7 +40,7 @@ export function TemplateExtractorSettingsPage(): React.JSX.Element {
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback((draftConfig) => {
-      draftConfig.templateExtractor = data;
+      draftConfig.settings.templateExtractor = data;
     }),
   );
 

@@ -1,18 +1,23 @@
-import { CASE_VALIDATORS } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
 import { zRefBuilder } from '#src/references/index.js';
+
+import type {
+  InferDefinitionInput,
+  InferDefinitionOutput,
+  InferDefinitionSchema,
+} from './creator/types.js';
 
 import { adminAppSchema } from './apps/admin/index.js';
 import { backendAppSchema } from './apps/backend/index.js';
 import { webAppSchema } from './apps/index.js';
 import { appEntityType } from './apps/types.js';
+import { definitionSchema } from './creator/schema-creator.js';
 import { featuresSchema } from './features/index.js';
-import { themeSchema } from './features/theme.js';
 import { enumSchema } from './models/enums.js';
 import { modelSchema } from './models/index.js';
 import { pluginsSchema } from './plugins/index.js';
-import { templateExtractorSchema } from './template-extractor/index.js';
+import { createSettingsSchema } from './settings.js';
 
 export const appSchema = zRefBuilder(
   z.discriminatedUnion('type', [
@@ -30,34 +35,28 @@ export const appSchema = zRefBuilder(
 
 export type AppConfig = z.infer<typeof appSchema>;
 
-export const projectDefinitionSchema = z.object({
-  name: CASE_VALIDATORS.KEBAB_CASE,
-  packageScope: z
-    .union([z.literal(''), CASE_VALIDATORS.KEBAB_CASE])
-    .default(''),
-  version: z.string().min(1),
-  cliVersion: z.string().nullish(),
-  // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
-  portOffset: z
-    .number()
-    .min(1000)
-    .max(60_000)
-    .int()
-    .refine(
-      (portOffset) => portOffset % 1000 === 0,
-      'Port offset must be a multiple of 1000, e.g. 1000, 2000, 3000, etc.',
-    ),
-  apps: z.array(appSchema).default([]),
-  features: featuresSchema,
-  models: z.array(modelSchema).default([]),
-  enums: z.array(enumSchema).optional(),
-  isInitialized: z.boolean().default(false),
-  schemaVersion: z.number(),
-  theme: themeSchema.optional(),
-  plugins: pluginsSchema.optional(),
-  templateExtractor: templateExtractorSchema.optional(),
-});
+export const createProjectDefinitionSchema = definitionSchema((ctx) =>
+  z.object({
+    cliVersion: z.string().nullish(),
+    apps: z.array(appSchema).default([]),
+    features: featuresSchema,
+    models: z.array(modelSchema).default([]),
+    enums: z.array(enumSchema).optional(),
+    isInitialized: z.boolean().default(false),
+    schemaVersion: z.number(),
+    plugins: pluginsSchema.optional(),
+    settings: createSettingsSchema(ctx),
+  }),
+);
 
-export type ProjectDefinitionInput = z.input<typeof projectDefinitionSchema>;
+export type ProjectDefinitionInput = InferDefinitionInput<
+  typeof createProjectDefinitionSchema
+>;
 
-export type ProjectDefinition = z.infer<typeof projectDefinitionSchema>;
+export type ProjectDefinition = InferDefinitionOutput<
+  typeof createProjectDefinitionSchema
+>;
+
+export type ProjectDefinitionSchema = InferDefinitionSchema<
+  typeof createProjectDefinitionSchema
+>;
