@@ -18,7 +18,7 @@ import {
   reactRoutesGenerator,
 } from '@halfdomelabs/react-generators';
 
-import type { Auth0PluginDefinition } from './schema/plugin-definition';
+import type { Auth0PluginDefinition } from './schema/plugin-definition.js';
 
 import {
   auth0ApolloGenerator,
@@ -27,7 +27,7 @@ import {
   auth0HooksGenerator,
   auth0ModuleGenerator,
   reactAuth0Generator,
-} from '../generators';
+} from '../generators/index.js';
 
 export default createPlatformPluginExport({
   dependencies: {

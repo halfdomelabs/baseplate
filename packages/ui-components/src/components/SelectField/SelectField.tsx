@@ -6,9 +6,9 @@ import type {
   AddOptionRequiredFields,
   FormFieldProps,
   SelectOptionProps,
-} from '@src/types/form.js';
+} from '#src/types/form.js';
 
-import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
+import { useControllerMerged } from '#src/hooks/useControllerMerged.js';
 
 import {
   FormControl,

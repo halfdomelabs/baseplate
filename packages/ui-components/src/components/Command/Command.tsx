@@ -5,7 +5,7 @@ import type * as React from 'react';
 import { Command as CommandPrimitive } from 'cmdk';
 import { MdSearch } from 'react-icons/md';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 import {
   Dialog,
@@ -13,7 +13,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../Dialog/Dialog';
+} from '../Dialog/Dialog.js';
 
 /**
  * Fast, composable, unstyled command menu for React.

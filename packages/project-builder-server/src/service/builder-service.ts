@@ -20,16 +20,16 @@ import { execa, parseCommandString } from 'execa';
 import { readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import type { PackageSyncInfo, SyncMetadata } from '@src/sync/index.js';
+import type { PackageSyncInfo, SyncMetadata } from '#src/sync/index.js';
 
 import {
   createNodeSchemaParserContext,
   discoverPlugins,
-} from '@src/plugins/index.js';
-import { ConflictFileMonitor } from '@src/sync/conflict-file-monitor.js';
-import { buildProject } from '@src/sync/index.js';
-import { SyncMetadataController } from '@src/sync/sync-metadata-controller.js';
-import { getPackageSyncStatusFromResult } from '@src/sync/utils.js';
+} from '#src/plugins/index.js';
+import { ConflictFileMonitor } from '#src/sync/conflict-file-monitor.js';
+import { buildProject } from '#src/sync/index.js';
+import { SyncMetadataController } from '#src/sync/sync-metadata-controller.js';
+import { getPackageSyncStatusFromResult } from '#src/sync/utils.js';
 
 import type { BaseplateUserConfig } from '../user-config/user-config-schema.js';
 
@@ -237,10 +237,13 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     const sanitizedName = starterName.replaceAll(/[^a-zA-Z0-9-]/g, '');
     const finalName = sanitizedName || 'project-name';
     return JSON.stringify({
-      name: finalName,
-      version: '0.1.0',
+      settings: {
+        general: {
+          name: finalName,
+          portOffset: 5000,
+        },
+      },
       cliVersion: this.cliVersion,
-      portOffset: 5000,
       schemaVersion: getLatestMigrationVersion(),
     } satisfies ProjectDefinitionInput);
   }

@@ -5,7 +5,7 @@ import type {
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
   ProjectDefinition,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 
 function byId(
   projectDefinition: ProjectDefinition,

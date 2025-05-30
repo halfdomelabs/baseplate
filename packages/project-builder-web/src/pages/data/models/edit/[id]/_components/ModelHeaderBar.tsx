@@ -8,7 +8,7 @@ import { clsx } from 'clsx';
 import { MdDeleteOutline, MdEdit } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
-import { ModelInfoEditDialog } from './ModelInfoEditDialog';
+import { ModelInfoEditDialog } from './ModelInfoEditDialog.js';
 
 interface ModelHeaderBarProps {
   className?: string;

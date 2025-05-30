@@ -2,7 +2,7 @@ import { handleFileNotFoundError } from '@halfdomelabs/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { fileExists } from '@src/utils/fs.js';
+import { fileExists } from '#src/utils/fs.js';
 
 /**
  * Interface for a codebase file reader

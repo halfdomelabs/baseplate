@@ -5,8 +5,8 @@ import type {
   GeneratorInfo,
   GeneratorTask,
   GeneratorTaskEntry,
-} from '@src/generators/index.js';
-import type { TemplateFileMetadataBase } from '@src/templates/metadata/index.js';
+} from '#src/generators/index.js';
+import type { TemplateFileMetadataBase } from '#src/templates/metadata/index.js';
 
 import type { BuilderAction } from './builder-action.js';
 import type { GeneratorOutputFormatter } from './formatter.js';

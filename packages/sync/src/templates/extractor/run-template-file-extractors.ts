@@ -10,7 +10,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 
-import type { Logger } from '@src/utils/evented-logger.js';
+import type { Logger } from '#src/utils/evented-logger.js';
 
 import type { TemplateFileExtractorCreator } from './template-file-extractor.js';
 

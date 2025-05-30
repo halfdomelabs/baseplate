@@ -1,4 +1,4 @@
-import type { Logger } from '@src/utils/evented-logger.js';
+import type { Logger } from '#src/utils/evented-logger.js';
 
 /**
  * Function that formats the contents of a file

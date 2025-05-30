@@ -1,9 +1,9 @@
 import React from 'react';
 
-import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import type { SchemaParserContext } from '@src/parser/types.js';
-import type { PluginImplementationStore } from '@src/plugins/index.js';
-import type { ProjectDefinition } from '@src/schema/project-definition.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+import type { SchemaParserContext } from '#src/parser/types.js';
+import type { PluginImplementationStore } from '#src/plugins/index.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 /**
  * A function that sets the project definition.

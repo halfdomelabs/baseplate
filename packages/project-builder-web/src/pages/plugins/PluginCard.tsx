@@ -17,10 +17,10 @@ import {
 import { MdExtension } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useProjects } from '@src/hooks/useProjects';
-import { getPluginStaticUrl } from '@src/services/plugins';
+import { useProjects } from '#src/hooks/useProjects.js';
+import { getPluginStaticUrl } from '#src/services/plugins.js';
 
-import { loadPluginImplementationStoreWithNewPlugin } from './utils';
+import { loadPluginImplementationStoreWithNewPlugin } from './utils.js';
 
 interface PluginCardProps {
   className?: string;

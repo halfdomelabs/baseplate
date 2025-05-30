@@ -1,6 +1,6 @@
 import { authRoleEntityType } from '@halfdomelabs/project-builder-lib';
 
-import type { AuthRoleDefinition } from './schema';
+import type { AuthRoleDefinition } from './schema.js';
 
 export const AUTH_DEFAULT_ROLES: Omit<AuthRoleDefinition, 'id'>[] = [
   {

@@ -1,5 +1,5 @@
-import type { ScalarFieldType } from '@src/types/field-types.js';
-import type { PrismaOutputModel } from '@src/types/prisma-output.js';
+import type { ScalarFieldType } from '#src/types/field-types.js';
+import type { PrismaOutputModel } from '#src/types/prisma-output.js';
 
 import type { PrismaModelBlock } from './types.js';
 

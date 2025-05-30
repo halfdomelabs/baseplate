@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { FileData } from '@src/output/generator-task-output.js';
+import type { FileData } from '#src/output/generator-task-output.js';
 
 import type { TemplateFileMetadataBase } from './metadata.js';
 

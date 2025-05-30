@@ -19,7 +19,7 @@ import {
   placeholderAuthHooksGenerator,
 } from '@halfdomelabs/react-generators';
 
-import type { AuthPluginDefinition } from './schema/plugin-definition';
+import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
 export default createPlatformPluginExport({
   dependencies: {

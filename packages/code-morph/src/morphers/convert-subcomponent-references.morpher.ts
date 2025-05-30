@@ -3,7 +3,7 @@ import type { ImportDeclaration } from 'ts-morph';
 import { Node, SyntaxKind } from 'ts-morph';
 import z from 'zod';
 
-import { createTypescriptMorpher } from '@src/types.js';
+import { createTypescriptMorpher } from '#src/types.js';
 
 import { addOrUpdateImport } from './utils/imports.js';
 

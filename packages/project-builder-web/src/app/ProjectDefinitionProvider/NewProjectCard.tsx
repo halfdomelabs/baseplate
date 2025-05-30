@@ -1,8 +1,10 @@
-import type { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
+import type {
+  GeneralSettingsInput,
+  ProjectDefinition,
+} from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
-import type { z } from 'zod';
 
-import { projectDefinitionSchema } from '@halfdomelabs/project-builder-lib';
+import { generalSettingsSchema } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
   Card,
@@ -13,18 +15,11 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { logAndFormatError } from '@src/services/error-formatter';
-
-const schema = projectDefinitionSchema.pick({
-  name: true,
-  portOffset: true,
-});
-
-type FormData = z.infer<typeof schema>;
+import { logAndFormatError } from '#src/services/error-formatter.js';
 
 interface NewProjectCardProps {
   existingProject?: ProjectDefinition;
-  saveProject: (data: FormData) => Promise<void>;
+  saveProject: (data: GeneralSettingsInput) => Promise<void>;
 }
 
 export function NewProjectCard({
@@ -35,12 +30,9 @@ export function NewProjectCard({
     control,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm<FormData>({
-    defaultValues: {
-      name: existingProject?.name,
-      portOffset: existingProject?.portOffset ?? 3000,
-    },
-    resolver: zodResolver(schema),
+  } = useForm({
+    defaultValues: existingProject?.settings.general,
+    resolver: zodResolver(generalSettingsSchema),
   });
 
   const onSubmit = handleSubmit((data) => {

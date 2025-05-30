@@ -20,9 +20,9 @@ import { useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
 import { HiMiniChevronDown, HiMiniChevronUp } from 'react-icons/hi2';
 
-import { SCALAR_FIELD_TYPE_OPTIONS } from '../../../../_constants';
-import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
-import { BadgeWithTypeLabel } from '../BadgeWithTypeLabel';
+import { SCALAR_FIELD_TYPE_OPTIONS } from '../../../../_constants.js';
+import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig.js';
+import { BadgeWithTypeLabel } from '../BadgeWithTypeLabel.js';
 
 interface GraphQLObjectTypeSectionProps {
   control: Control<ModelConfigInput>;

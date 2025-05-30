@@ -1,13 +1,13 @@
 import type { GeneratorBundle } from '@halfdomelabs/sync';
 
-import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
 import type {
   AdminCrudInputDefinition,
   ModelConfig,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 
-import { createPluginSpec } from '@src/plugins/spec/types.js';
+import { createPluginSpec } from '#src/plugins/spec/types.js';
 
 export interface AdminCrudInputCompiler<
   T extends AdminCrudInputDefinition = AdminCrudInputDefinition,

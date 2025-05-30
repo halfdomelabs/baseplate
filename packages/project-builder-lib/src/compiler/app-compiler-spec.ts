@@ -2,15 +2,15 @@ import type { GeneratorBundle } from '@halfdomelabs/sync';
 
 import { safeMerge } from '@halfdomelabs/utils';
 
-import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import type { PluginSpecImplementation } from '@src/plugins/index.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+import type { PluginSpecImplementation } from '#src/plugins/index.js';
 import type {
   AppConfig,
   AppEntryType,
   ProjectDefinition,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 
-import { createPluginSpec } from '@src/plugins/index.js';
+import { createPluginSpec } from '#src/plugins/index.js';
 
 export interface AppCompiler {
   addChildrenToFeature: (

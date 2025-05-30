@@ -2,7 +2,7 @@ import type React from 'react';
 
 import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 /**
  * A tab-like interface that allows the user to navigate between different sections via links

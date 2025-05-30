@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-output.js';
-import type { TaskPhase } from '@src/phases/types.js';
+import type { GeneratorTaskOutputBuilder } from '#src/output/generator-task-output.js';
+import type { TaskPhase } from '#src/phases/types.js';
 import type {
   InferProviderDependency,
   Provider,
@@ -9,7 +9,7 @@ import type {
   ProviderExport,
   ProviderExportScope,
   ProviderType,
-} from '@src/providers/index.js';
+} from '#src/providers/index.js';
 
 /**
  * The base required fields for a generator descriptor

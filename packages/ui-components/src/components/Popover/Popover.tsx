@@ -4,7 +4,7 @@ import type * as React from 'react';
 
 import * as PopoverPrimitive from '@radix-ui/react-popover';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 /**
  * Displays rich content in a portal, triggered by a button.

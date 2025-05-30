@@ -9,10 +9,10 @@ import type {
 import { clsx } from 'clsx';
 import { useFieldArray } from 'react-hook-form';
 
-import { SortableList } from '@src/components';
+import { SortableList } from '#src/components/index.js';
 
-import { ModelAddFieldButton } from './ModelAddFieldButton';
-import ModelFieldForm from './ModelFieldForm';
+import { ModelAddFieldButton } from './ModelAddFieldButton.js';
+import ModelFieldForm from './ModelFieldForm.js';
 
 interface ModelFieldsFormProps {
   className?: string;

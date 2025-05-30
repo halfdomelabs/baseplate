@@ -15,7 +15,7 @@ import {
 import path from 'node:path/posix';
 import { z } from 'zod';
 
-import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 import {
   configServiceImportsProvider,

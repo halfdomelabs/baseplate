@@ -1,6 +1,6 @@
 import { mapValues, mergeWith } from 'es-toolkit';
 
-import type { TaskPhase } from '@src/phases/types.js';
+import type { TaskPhase } from '#src/phases/types.js';
 
 import type {
   GeneratorEntry,

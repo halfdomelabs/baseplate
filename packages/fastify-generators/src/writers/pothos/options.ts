@@ -2,7 +2,7 @@ import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import { TsCodeUtils } from '@halfdomelabs/core-generators';
 
-import type { PothosSchemaBaseTypesProvider } from '@src/generators/index.js';
+import type { PothosSchemaBaseTypesProvider } from '#src/generators/index.js';
 
 /**
  * A reference to a Pothos type.

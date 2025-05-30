@@ -1,6 +1,6 @@
 import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
-import type { GraphQLField } from '@src/writers/graphql/index.js';
+import type { GraphQLField } from '#src/writers/graphql/index.js';
 
 import type { AdminCrudDataDependency } from './data-loaders.js';
 

@@ -6,7 +6,7 @@ import {
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { serviceContextImportsProvider } from '@src/generators/core/service-context/service-context.generator.js';
+import { serviceContextImportsProvider } from '#src/generators/core/service-context/service-context.generator.js';
 
 import { prismaImportsProvider } from '../prisma/prisma.generator.js';
 import {

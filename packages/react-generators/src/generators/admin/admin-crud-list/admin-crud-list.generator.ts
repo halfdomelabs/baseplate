@@ -12,12 +12,12 @@ import { notEmpty } from '@halfdomelabs/utils';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
 
-import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
-import { reactErrorImportsProvider } from '@src/generators/core/react-error/react-error.generator.js';
-import { reactRoutesProvider } from '@src/providers/routes.js';
-import { titleizeCamel } from '@src/utils/case.js';
-import { createRouteElement } from '@src/utils/routes.js';
-import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
+import { reactErrorImportsProvider } from '#src/generators/core/react-error/react-error.generator.js';
+import { reactRoutesProvider } from '#src/providers/routes.js';
+import { titleizeCamel } from '#src/utils/case.js';
+import { createRouteElement } from '#src/utils/routes.js';
+import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
 
 import type { AdminCrudColumn } from '../_providers/admin-crud-column-container.js';
 import type { DataLoader } from '../_providers/admin-loader.js';

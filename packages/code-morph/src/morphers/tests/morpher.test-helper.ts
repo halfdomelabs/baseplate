@@ -5,9 +5,9 @@ import prettier from 'prettier';
 import { Project } from 'ts-morph';
 import { describe, expect, test } from 'vitest';
 
-import type { TypescriptMorpher } from '@src/types.js';
+import type { TypescriptMorpher } from '#src/types.js';
 
-import { TS_MORPH_MANIPULATION_SETTINGS } from '@src/constants/ts-morph-settings.js';
+import { TS_MORPH_MANIPULATION_SETTINGS } from '#src/constants/ts-morph-settings.js';
 
 const getFileWithTsExtension = (
   directory: string,

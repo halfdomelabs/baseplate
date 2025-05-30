@@ -1,4 +1,4 @@
-import type { Logger } from '@src/utils/evented-logger.js';
+import type { Logger } from '#src/utils/evented-logger.js';
 
 export interface TestLogger extends Logger {
   getErrorOutput(): string;

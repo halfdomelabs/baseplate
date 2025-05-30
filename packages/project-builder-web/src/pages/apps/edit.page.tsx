@@ -16,11 +16,11 @@ import {
 } from '@halfdomelabs/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { NotFoundCard } from '@src/components';
+import { NotFoundCard } from '#src/components/index.js';
 
-import AdminAppForm from './edit/AdminAppForm';
-import BackendAppForm from './edit/BackendAppForm';
-import WebAppForm from './edit/WebAppForm';
+import AdminAppForm from './edit/AdminAppForm.js';
+import BackendAppForm from './edit/BackendAppForm.js';
+import WebAppForm from './edit/WebAppForm.js';
 
 function EditAppPage(): React.JSX.Element {
   const { uid } = useParams<'uid'>();
@@ -51,7 +51,7 @@ function EditAppPage(): React.JSX.Element {
     );
   };
 
-  const { packageScope } = definition;
+  const { packageScope } = definition.settings.general;
 
   return (
     <div className="space-y-4">

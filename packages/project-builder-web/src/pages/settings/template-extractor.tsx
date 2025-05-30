@@ -11,6 +11,7 @@ import {
   AlertDescription,
   AlertTitle,
   CheckboxFieldController,
+  FormActionBar,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -20,8 +21,7 @@ import {
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { FormActionBar } from '@src/components';
-import { ENABLE_TEMPLATE_EXTRACTOR } from '@src/services/config';
+import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';
 
 /**
  * Settings page for template extractor configuration
@@ -30,7 +30,7 @@ import { ENABLE_TEMPLATE_EXTRACTOR } from '@src/services/config';
  */
 export function TemplateExtractorSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
-  const defaultValues = definition.templateExtractor;
+  const defaultValues = definition.settings.templateExtractor;
   const form = useResettableForm({
     resolver: zodResolver(templateExtractorSchema),
     defaultValues,
@@ -40,7 +40,7 @@ export function TemplateExtractorSettingsPage(): React.JSX.Element {
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback((draftConfig) => {
-      draftConfig.templateExtractor = data;
+      draftConfig.settings.templateExtractor = data;
     }),
   );
 

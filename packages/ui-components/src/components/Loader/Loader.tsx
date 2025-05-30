@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 interface LoaderProps {
   className?: string;

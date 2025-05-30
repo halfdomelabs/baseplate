@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { ModuleResolutionKind, type SourceFile } from 'ts-morph';
 
-import type { MorpherContext } from '@src/types.js';
+import type { MorpherContext } from '#src/types.js';
 
 import type { ResolveModuleOptions } from './normalize-module-specifier.js';
 

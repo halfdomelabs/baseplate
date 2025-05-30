@@ -1,4 +1,4 @@
-import type { Logger } from '@src/utils/evented-logger.js';
+import type { Logger } from '#src/utils/evented-logger.js';
 
 import type { CodebaseFileReader } from '../codebase-file-reader.js';
 import type { GeneratorOutputFormatter } from '../formatter.js';

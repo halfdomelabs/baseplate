@@ -3,10 +3,10 @@ import type {
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
 
-import { getPluginsMetadata } from '@src/services/api';
-import { subscribeToViteHotReloadEvent } from '@src/services/hot-loader';
-import { resetPluginModuleSeed } from '@src/services/module-federation';
-import { createWebSchemaParserContext } from '@src/services/schema-parser-context';
+import { getPluginsMetadata } from '#src/services/api/index.js';
+import { subscribeToViteHotReloadEvent } from '#src/services/hot-loader.js';
+import { resetPluginModuleSeed } from '#src/services/module-federation.js';
+import { createWebSchemaParserContext } from '#src/services/schema-parser-context.js';
 
 export class SchemaParserContextManager {
   public readonly projectId: string;

@@ -1,28 +1,29 @@
 import { stringifyPrettyStable } from '@halfdomelabs/utils';
 import { produce } from 'immer';
 
-import type { SchemaParserContext } from '@src/parser/types.js';
-import type { PluginImplementationStore } from '@src/plugins/index.js';
+import type { SchemaParserContext } from '#src/parser/types.js';
+import type { PluginImplementationStore } from '#src/plugins/index.js';
 import type {
   DefinitionEntity,
   DefinitionReference,
   FixRefDeletionResult,
   ResolvedZodRefPayload,
-} from '@src/references/index.js';
+} from '#src/references/index.js';
+import type { InferDefinitionSchema } from '#src/schema/creator/types.js';
 import type {
+  createProjectDefinitionSchema,
   ProjectDefinition,
-  projectDefinitionSchema,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 
 import {
   createProjectDefinitionSchemaWithContext,
   parseProjectDefinitionWithReferences,
-} from '@src/parser/parser.js';
+} from '#src/parser/parser.js';
 import {
   deserializeSchemaWithReferences,
   fixRefDeletions,
   serializeSchemaFromRefPayload,
-} from '@src/references/index.js';
+} from '#src/references/index.js';
 
 /**
  * Container for a project definition that includes references and entities.
@@ -89,7 +90,9 @@ export class ProjectDefinitionContainer {
    */
   fixRefDeletions(
     setter: (draftConfig: ProjectDefinition) => void,
-  ): FixRefDeletionResult<typeof projectDefinitionSchema> {
+  ): FixRefDeletionResult<
+    InferDefinitionSchema<typeof createProjectDefinitionSchema>
+  > {
     const newDefinition = produce(setter)(this.definition);
     const schemaWithContext = createProjectDefinitionSchemaWithContext(
       newDefinition,

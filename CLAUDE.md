@@ -28,6 +28,21 @@ Note: Make sure to run the commands in the sub-packages if only modifying files 
 - Order functions such that functions are placed below the variables/functions they use
 - Use kebab-case for file names
 - If a particular interface or type is not exported, change the file so it is exported
+- We use the prefer using nullish coalescing operator (`??`) ESLint rule instead of a logical or (`||`), as it is a safer operator
+
+## UI Development Guidelines
+
+- **Component Library**: Use ShadCN-based components from `@halfdomelabs/ui-components`
+  - This package contains a customized variation of ShadCN components
+  - Always prefer these components over creating custom ones
+- **Styling**: Use Tailwind CSS utilities exclusively
+  - Avoid writing custom CSS classes
+  - Use Tailwind's utility classes for all styling needs
+  - In plugins, prefix all Tailwind classes with the plugin name (e.g., `auth-`, `storage-`)
+- **Icons**: Use icons from `react-icons/md` (Material Design icons)
+  - Import icons like: `import { MdAdd, MdDelete } from 'react-icons/md'`
+  - Avoid using other icon libraries (lucide-react, heroicons, etc.)
+  - If a specific icon is not available in `react-icons/md`, consult before using alternatives
 
 ## Testing Best Practices
 
@@ -182,4 +197,56 @@ Baseplate consists of two main tiers:
   Description of the feature or change
   ```
 
-- IMPORTANT: If you have to go through more than one cycle of edits to fix linting, type, or test errors, please stop and ask for help. Often fixing errors will cause worse changes so it's better to ask for help than to continue. Feel free to ask for help at any time for any issues.
+- IMPORTANT: If you have to go through more than two cycles of edits to fix linting, type, or test errors, please stop and ask for help. Often fixing errors will cause worse changes so it's better to ask for help than to continue. Feel free to ask for help at any time for any issues.
+
+## Baseplate Docs MCP
+
+Please interact with the baseplate-docs MCP to get the most up to date information on the project. Here are the following tips:
+
+Docs specific:
+
+- Creating Design Docs: Search for the document by id "e84a9e72-9980-41f6-bdda-296736c5ff69" for the design doc template
+- Please add a description when creating documents to describe the document and its purpose.
+- Please use Mermaid documents instead of ASCII art diagrams.
+
+Collection keys:
+
+- **baseplate-docs**: Baseplate documentation
+- **design-docs**: Design documentation
+
+Document Retrieval
+
+- get-document - Retrieve full document content by URI (format:
+  documents://collection-name/path/to/doc.md)
+- get-document-by-id - Retrieve document by its Outline ID
+- list-documents - List documents with optional filters:
+  - collectionKey - Filter by specific collection
+  - prefix - Filter by subdirectory path
+  - keywords - Space-separated keywords (ALL must match)
+
+Search Tools
+
+- search-documents - Semantic search returning full documents with
+  similarity scores
+- search-rag-documents - RAG search returning specific document
+  chunks/passages with location info
+
+Collection Management
+
+- list-collections - List all available collections
+
+Document Editing (if enabled)
+
+- edit-document - Replace entire document content
+- inline-edit - Make specific edits within a document
+- create-document - Create new document in a collection
+
+Usage Examples:
+
+- Find specific info: search-rag-documents with query "how to configure
+  authentication"
+- Browse content: List-documents with collection filter if needed
+- Read document: get-document with URI like
+  "documents://engineering/api/auth.md"
+- Quick edits: inline-edit to update specific sections
+- Major updates: edit-document to rewrite entire document

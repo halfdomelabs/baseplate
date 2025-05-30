@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { testAction } from '@src/output/builder-action-test-helpers.js';
+import { testAction } from '#src/output/builder-action-test-helpers.js';
 
 import { renderTextTemplateGroupAction } from './render-text-template-group-action.js';
 import { createTextTemplateFile, createTextTemplateGroup } from './types.js';

@@ -5,11 +5,11 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { EmptyDisplay, ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 
-import { useProjects } from '@src/hooks/useProjects';
-import { IS_PREVIEW } from '@src/services/config';
-import { trpc } from '@src/services/trpc';
+import { useProjects } from '#src/hooks/useProjects.js';
+import { IS_PREVIEW } from '#src/services/config.js';
+import { trpc } from '#src/services/trpc.js';
 
-import { PluginCard } from './PluginCard';
+import { PluginCard } from './PluginCard.js';
 
 export function PluginsHomePage(): React.JSX.Element {
   const { currentProjectId } = useProjects();
@@ -65,7 +65,7 @@ export function PluginsHomePage(): React.JSX.Element {
   );
 
   return (
-    <div className="max-w-2xl space-y-4">
+    <div className="max-w-2xl space-y-4 p-4">
       <h1>Manage Plugins</h1>
       <p>
         Plugins are a way to extend the functionality of your project, such as

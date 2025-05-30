@@ -13,7 +13,7 @@ import { singularize } from 'inflection';
 import type {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
-} from '@src/types/service-output.js';
+} from '#src/types/service-output.js';
 
 function buildNestedArgExpression(
   arg: ServiceOutputDtoNestedField,

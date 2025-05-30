@@ -2,17 +2,17 @@ import {
   pluginConfigSpec,
   type PluginImplementationStore,
   type PluginMetadataWithPaths,
-} from '@src/plugins/index.js';
+} from '#src/plugins/index.js';
 import {
-  type BasePlugin,
+  type BasePluginDefinition,
   pluginEntityType,
   type ProjectDefinition,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 
 function byId(
   projectDefinition: ProjectDefinition,
   id: string,
-): BasePlugin | null {
+): BasePluginDefinition | null {
   const pluginEntityId = pluginEntityType.fromUid(id);
   const plugin = projectDefinition.plugins?.find(
     (m) => m.id === pluginEntityId,
@@ -23,7 +23,7 @@ function byId(
 function byIdOrThrow(
   projectDefinition: ProjectDefinition,
   id: string,
-): BasePlugin {
+): BasePluginDefinition {
   const plugin = byId(projectDefinition, id);
   if (!plugin) {
     throw new Error(`Could not find plugin with ID ${id}`);

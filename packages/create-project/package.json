@@ -6,6 +6,12 @@
   "license": "MIT",
   "author": "Half Dome Labs LLC",
   "type": "module",
+  "imports": {
+    "#src/*": {
+      "development": "./src/*",
+      "default": "./dist/*"
+    }
+  },
   "bin": "./dist/create-baseplate-project.js",
   "files": [
     "LICENSE",
@@ -13,12 +19,13 @@
     "dist/**/*",
     "scripts/**/*",
     "templates/**/*",
+    "!dist/**/*.tsbuildinfo",
     "README.md"
   ],
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "dev:start": "tsx ./src/create-baseplate-project.ts",
+    "dev:start": "tsx -C development ./src/create-baseplate-project.ts",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
@@ -39,7 +46,6 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "tsc-alias": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:"
   },

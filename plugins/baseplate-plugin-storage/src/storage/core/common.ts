@@ -3,8 +3,8 @@ import {
   pluginConfigSpec,
 } from '@halfdomelabs/project-builder-lib';
 
-import { STORAGE_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations';
-import { storagePluginDefinitionSchema } from './schema/plugin-definition';
+import { STORAGE_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations.js';
+import { storagePluginDefinitionSchema } from './schema/plugin-definition.js';
 
 export default createPlatformPluginExport({
   dependencies: {

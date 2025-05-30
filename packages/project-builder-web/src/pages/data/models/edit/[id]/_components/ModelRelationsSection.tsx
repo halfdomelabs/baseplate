@@ -18,8 +18,8 @@ import {
 } from '@halfdomelabs/ui-components';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
-import { ModelRelationDialog } from './fields/relations/ModelRelationDialog';
+import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig.js';
+import { ModelRelationDialog } from './fields/relations/ModelRelationDialog.js';
 
 interface Props {
   control: Control<ModelConfigInput>;

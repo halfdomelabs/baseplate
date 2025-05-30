@@ -2,7 +2,7 @@ import type { TsCodeFragment } from '@halfdomelabs/core-generators';
 
 import { createProviderType } from '@halfdomelabs/sync';
 
-import type { GraphQLField } from '@src/writers/graphql/index.js';
+import type { GraphQLField } from '#src/writers/graphql/index.js';
 
 import type { AdminCrudDataDependency } from '../_utils/data-loaders.js';
 

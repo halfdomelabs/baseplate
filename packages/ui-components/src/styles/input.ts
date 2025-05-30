@@ -1,6 +1,6 @@
 import { cva } from 'class-variance-authority';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 export const inputVariants = cva(
   cn(

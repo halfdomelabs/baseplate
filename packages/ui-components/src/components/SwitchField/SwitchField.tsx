@@ -3,10 +3,10 @@
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import type { FormFieldProps } from '@src/types/form';
+import type { FormFieldProps } from '#src/types/form.js';
 
-import { useControllerMerged } from '@src/hooks/useControllerMerged';
-import { cn } from '@src/utils';
+import { useControllerMerged } from '#src/hooks/useControllerMerged.js';
+import { cn } from '#src/utils/index.js';
 
 import {
   FormControl,
@@ -14,8 +14,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../FormItem/FormItem';
-import { Switch } from '../Switch/Switch';
+} from '../FormItem/FormItem.js';
+import { Switch } from '../Switch/Switch.js';
 
 export interface SwitchFieldProps
   extends Omit<

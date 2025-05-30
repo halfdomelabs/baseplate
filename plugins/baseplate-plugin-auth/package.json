@@ -6,17 +6,21 @@
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
   "type": "module",
+  "imports": {
+    "#src/*": "./dist/*"
+  },
   "main": "dist/index.js",
   "files": [
     "LICENSE",
     "dist/**/*",
+    "!dist/**/*.d.ts.map",
     "CHANGELOG",
     "manifest.json"
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
     "build:static": "cpx \"src/**/{templates/**,static/**,metadata.json}\" \"dist/\" --clean",
-    "build:tsc": "tsc -p tsconfig.build.json && tsc-alias",
+    "build:tsc": "tsc -p tsconfig.build.json",
     "build:vite": "vite build",
     "clean": "rm -rf ./dist",
     "lint": "eslint .",
@@ -26,7 +30,6 @@
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
-    "watch:tsc-alias": "tsc-alias -w",
     "watch:vite": "vite build --watch"
   },
   "dependencies": {
@@ -38,6 +41,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "7.56.3",
+    "react-icons": "5.5.0",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -55,10 +59,8 @@
     "eslint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
-    "tsc-alias": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "vite-tsconfig-paths": "catalog:",
     "vitest": "catalog:"
   },
   "peerDependencies": {

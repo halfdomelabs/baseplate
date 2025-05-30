@@ -1,6 +1,6 @@
-import type { FeatureConfig, ProjectDefinition } from '@src/schema/index.js';
+import type { FeatureConfig, ProjectDefinition } from '#src/schema/index.js';
 
-import { featureEntityType, featureNameSchema } from '@src/schema/index.js';
+import { featureEntityType, featureNameSchema } from '#src/schema/index.js';
 
 function getRootFeatures(
   projectDefinition: ProjectDefinition,

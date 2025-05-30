@@ -25,7 +25,7 @@ import { capitalize } from 'inflection';
 import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
 
-import { generatePalette } from '../theme-utils/palette-generator';
+import { generatePalette } from '../theme-utils/palette-generator.js';
 
 interface ThemePaletteEditorProps {
   control: Control<ThemeConfig>;

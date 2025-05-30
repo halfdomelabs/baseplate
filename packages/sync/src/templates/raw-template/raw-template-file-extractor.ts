@@ -2,7 +2,7 @@ import { mapGroupBy } from '@halfdomelabs/utils';
 import { camelCase, constantCase } from 'change-case';
 import pLimit from 'p-limit';
 
-import { getGenerationConcurrencyLimit } from '@src/utils/concurrency.js';
+import { getGenerationConcurrencyLimit } from '#src/utils/concurrency.js';
 
 import type { TemplateFileExtractorFile } from '../extractor/template-file-extractor.js';
 import type { RawTemplateFile, RawTemplateFileMetadata } from './types.js';

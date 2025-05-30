@@ -4,7 +4,7 @@ import type React from 'react';
 
 import { useState } from 'react';
 
-import { Button } from '../Button/Button';
+import { Button } from '../Button/Button.js';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -20,7 +20,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from './Dropdown';
+} from './Dropdown.js';
 
 const meta = {
   component: DropdownMenu,

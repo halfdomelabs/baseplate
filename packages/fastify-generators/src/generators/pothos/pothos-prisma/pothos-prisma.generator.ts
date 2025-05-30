@@ -13,12 +13,12 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import {
   prismaImportsProvider,
   prismaSchemaProvider,
-} from '@src/generators/prisma/prisma/prisma.generator.js';
-import { createPrismaSchemaGeneratorBlock } from '@src/writers/prisma-schema/index.js';
+} from '#src/generators/prisma/prisma/prisma.generator.js';
+import { createPrismaSchemaGeneratorBlock } from '#src/writers/prisma-schema/index.js';
 
 import { pothosConfigProvider } from '../pothos/pothos.generator.js';
 

@@ -1,6 +1,6 @@
 import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
 
-import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
+import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import { publicProcedure, router } from './trpc.js';
 

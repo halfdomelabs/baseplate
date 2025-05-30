@@ -8,11 +8,11 @@ import {
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactErrorImportsProvider } from '@src/generators/core/index.js';
+import { reactErrorImportsProvider } from '#src/generators/core/index.js';
 import {
   reactSentryConfigProvider,
   reactSentryImportsProvider,
-} from '@src/generators/core/react-sentry/react-sentry.generator.js';
+} from '#src/generators/core/react-sentry/react-sentry.generator.js';
 
 import { apolloErrorLinkProvider } from '../apollo-error-link/apollo-error-link.generator.js';
 import { reactApolloConfigProvider } from '../react-apollo/react-apollo.generator.js';

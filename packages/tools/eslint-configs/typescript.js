@@ -192,7 +192,7 @@ export function generateTypescriptEslintConfig(options = []) {
         'perfectionist/sort-imports': [
           'error',
           {
-            internalPattern: ['^@src/'],
+            internalPattern: ['^@src/', '^#'],
             // We use the default groups but ensure we place the side-effect imports last except for instrumentation
             groups: [
               'type-import',

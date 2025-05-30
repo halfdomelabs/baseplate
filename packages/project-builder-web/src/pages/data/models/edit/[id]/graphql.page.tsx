@@ -2,15 +2,13 @@ import type React from 'react';
 
 import { modelBaseSchema } from '@halfdomelabs/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
-import { SectionList } from '@halfdomelabs/ui-components';
+import { FormActionBar, SectionList } from '@halfdomelabs/ui-components';
 
-import { FormActionBar } from '@src/components';
-
-import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig';
-import { useModelForm } from '../../_hooks/useModelForm';
-import { GraphQLMutationsSection } from './_components/graphql/GraphQLMutationsSection';
-import { GraphQLObjectTypeSection } from './_components/graphql/GraphQLObjectTypeSection';
-import { GraphQLQueriesSection } from './_components/graphql/GraphQLQueriesSection';
+import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig.js';
+import { useModelForm } from '../../_hooks/useModelForm.js';
+import { GraphQLMutationsSection } from './_components/graphql/GraphQLMutationsSection.js';
+import { GraphQLObjectTypeSection } from './_components/graphql/GraphQLObjectTypeSection.js';
+import { GraphQLQueriesSection } from './_components/graphql/GraphQLQueriesSection.js';
 
 const formSchema = modelBaseSchema.omit({ name: true, featureRef: true });
 

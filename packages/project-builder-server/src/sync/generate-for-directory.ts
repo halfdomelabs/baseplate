@@ -30,7 +30,7 @@ import { mkdir, rename, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 
-import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
+import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import type { PackageSyncResult } from './sync-metadata.js';
 

@@ -14,7 +14,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+import { appModuleProvider } from '#src/generators/core/root-module/index.js';
 
 import { authContextProvider } from '../auth-context/index.js';
 

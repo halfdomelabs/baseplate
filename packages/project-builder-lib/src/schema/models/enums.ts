@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { zEnt, zRef } from '@src/references/index.js';
+import { zEnt, zRef } from '#src/references/index.js';
 
 import { featureEntityType } from '../features/index.js';
 import { modelEnumEntityType, modelEnumValueEntityType } from './types.js';

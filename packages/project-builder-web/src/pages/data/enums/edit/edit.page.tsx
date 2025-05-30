@@ -2,13 +2,13 @@ import type React from 'react';
 
 import { enumBaseSchema } from '@halfdomelabs/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
-import { SectionList } from '@halfdomelabs/ui-components';
+import { FormActionBar, SectionList } from '@halfdomelabs/ui-components';
 
-import { ErrorBoundary, FormActionBar } from '@src/components';
+import { ErrorBoundary } from '#src/components/index.js';
 
-import { useEnumForm } from '../hooks/useEnumForm';
-import { EnumGraphQLSection } from './sections/EnumGraphQLSection';
-import { EnumValuesSection } from './sections/EnumValuesSection';
+import { useEnumForm } from '../hooks/useEnumForm.js';
+import { EnumGraphQLSection } from './sections/EnumGraphQLSection.js';
+import { EnumValuesSection } from './sections/EnumValuesSection.js';
 
 function EnumEditPage(): React.JSX.Element {
   const { form, onSubmit, isSavingDefinition } = useEnumForm({

@@ -1,4 +1,4 @@
-import { tsCodeFragment, tsImportBuilder } from '@src/renderers/index.js';
+import { tsCodeFragment, tsImportBuilder } from '#src/renderers/index.js';
 
 export const VITEST_ESLINT_RULES = tsCodeFragment(
   `  // Vitest Configs

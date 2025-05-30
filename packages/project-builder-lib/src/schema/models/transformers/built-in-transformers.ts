@@ -4,7 +4,7 @@ import {
   createDefinitionEntityNameResolver,
   zEnt,
   zRef,
-} from '@src/references/index.js';
+} from '#src/references/index.js';
 
 import {
   modelEntityType,

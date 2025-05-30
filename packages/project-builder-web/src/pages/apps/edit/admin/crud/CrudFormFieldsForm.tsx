@@ -15,9 +15,9 @@ import {
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
-import { CollapsibleRow } from '@src/components';
+import { CollapsibleRow } from '#src/components/index.js';
 
-import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs';
+import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs/index.js';
 
 export type AdminCrudFormConfigInput = Pick<
   AdminCrudSectionConfigInput,

@@ -4,7 +4,7 @@ import type * as React from 'react';
 
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 /**
  * Augments native scroll functionality for custom, cross-browser styling.

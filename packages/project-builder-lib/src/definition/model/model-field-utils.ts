@@ -6,7 +6,7 @@ import type {
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
   ProjectDefinition,
-} from '@src/schema/index.js';
+} from '#src/schema/index.js';
 
 import { ModelUtils } from './model-utils.js';
 

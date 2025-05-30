@@ -1,9 +1,9 @@
 import { mapGroupBy } from '@halfdomelabs/utils';
 import { keyBy, mapValues } from 'es-toolkit';
 
-import { sortTaskPhases } from '@src/phases/sort-task-phases.js';
-import { findDuplicates } from '@src/utils/find-duplicates.js';
-import { safeMergeMap } from '@src/utils/merge.js';
+import { sortTaskPhases } from '#src/phases/sort-task-phases.js';
+import { findDuplicates } from '#src/utils/find-duplicates.js';
+import { safeMergeMap } from '#src/utils/merge.js';
 
 import type {
   GeneratorEntry,

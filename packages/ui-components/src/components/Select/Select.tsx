@@ -11,10 +11,10 @@ import {
   selectContentVariants,
   selectItemVariants,
   selectTriggerVariants,
-} from '@src/styles';
-import { cn } from '@src/utils';
+} from '#src/styles/index.js';
+import { cn } from '#src/utils/index.js';
 
-import { ScrollBar } from '../ScrollArea/ScrollArea';
+import { ScrollBar } from '../ScrollArea/ScrollArea.js';
 
 /**
  * Select component

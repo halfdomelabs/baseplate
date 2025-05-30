@@ -3,13 +3,13 @@ import type { RouteObject } from 'react-router-dom';
 import { modelEntityType } from '@halfdomelabs/project-builder-lib';
 import { Navigate } from 'react-router-dom';
 
-import { NotFoundRoute } from '@src/pages/NotFound.page';
-import { createCrumbFromUid, createRouteCrumb } from '@src/types/routes';
+import { NotFoundRoute } from '#src/pages/NotFound.page.js';
+import { createCrumbFromUid, createRouteCrumb } from '#src/types/routes.js';
 
-import { ModelEditLayout } from './_layout';
-import ModelEditGraphQLPage from './graphql.page';
-import ModelEditModelPage from './index.page';
-import ModelEditServicePage from './service.page';
+import { ModelEditLayout } from './_layout.js';
+import ModelEditGraphQLPage from './graphql.page.js';
+import ModelEditModelPage from './index.page.js';
+import ModelEditServicePage from './service.page.js';
 
 export const ModelEditRoutes: RouteObject = {
   path: 'edit',

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import type React from 'react';
 
-import type { IconElement } from '@src/types/react.js';
+import type { IconElement } from '#src/types/react.js';
 
-import { STORYBOOK_ICON_SELECT } from '@src/stories/button-icons.js';
+import { STORYBOOK_ICON_SELECT } from '#src/stories/button-icons.js';
 
 import { Alert, AlertDescription, AlertTitle } from './Alert.js';
 

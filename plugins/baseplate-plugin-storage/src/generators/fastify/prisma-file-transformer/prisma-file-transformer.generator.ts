@@ -10,7 +10,7 @@ import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { storageModuleImportsProvider } from '../storage-module/storage-module.generator';
+import { storageModuleImportsProvider } from '../storage-module/storage-module.generator.js';
 
 const descriptorSchema = z.object({
   name: z.string(),

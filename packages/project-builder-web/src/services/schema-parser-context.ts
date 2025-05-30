@@ -9,7 +9,7 @@ import {
   modelTransformerWebSpec,
 } from '@halfdomelabs/project-builder-lib/web';
 
-import { loadPluginModule } from './module-federation';
+import { loadPluginModule } from './module-federation.js';
 
 export async function createWebSchemaParserContext(
   projectId: string,

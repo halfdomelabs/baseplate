@@ -13,7 +13,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { loggerServiceConfigProvider } from '../logger-service/logger-service.generator.js';

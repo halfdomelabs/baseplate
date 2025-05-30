@@ -12,13 +12,13 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { errorHandlerServiceImportsProvider } from '@src/generators/core/error-handler-service/generated/ts-import-maps.js';
+import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-maps.js';
 import {
   appModuleProvider,
   loggerServiceConfigProvider,
-} from '@src/generators/core/index.js';
-import { requestServiceContextConfigProvider } from '@src/generators/core/request-service-context/request-service-context.generator.js';
-import { serviceContextConfigProvider } from '@src/generators/core/service-context/service-context.generator.js';
+} from '#src/generators/core/index.js';
+import { requestServiceContextConfigProvider } from '#src/generators/core/request-service-context/request-service-context.generator.js';
+import { serviceContextConfigProvider } from '#src/generators/core/service-context/service-context.generator.js';
 
 import { authRolesImportsProvider } from '../auth-roles/generated/ts-import-maps.js';
 import {

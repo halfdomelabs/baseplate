@@ -11,7 +11,7 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import { MdLink } from 'react-icons/md';
 
-import { ModelRelationDialog } from './ModelRelationDialog';
+import { ModelRelationDialog } from './ModelRelationDialog.js';
 
 interface ModelRelationBadgeProps {
   className?: string;

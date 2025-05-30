@@ -1,8 +1,8 @@
 import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
 
-import { IS_PREVIEW } from '../config';
-import { trpc } from '../trpc';
-import { createProjectNotFoundHandler } from './errors';
+import { IS_PREVIEW } from '../config.js';
+import { trpc } from '../trpc.js';
+import { createProjectNotFoundHandler } from './errors.js';
 
 /**
  * Gets the metadata for the plugins available for a given project.

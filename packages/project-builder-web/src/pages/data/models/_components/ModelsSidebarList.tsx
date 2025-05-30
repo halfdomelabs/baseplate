@@ -15,8 +15,8 @@ import { useState } from 'react';
 import { MdAdd, MdClear } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 
-import { createModelEditLink } from '../_utils/url';
-import { NewModelDialog } from './NewModelDialog';
+import { createModelEditLink } from '../_utils/url.js';
+import { NewModelDialog } from './NewModelDialog.js';
 
 interface ModelsSidebarListProps {
   className?: string;

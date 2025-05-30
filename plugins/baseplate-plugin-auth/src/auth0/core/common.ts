@@ -5,10 +5,10 @@ import {
   PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
 
-import type { Auth0PluginDefinition } from './schema/plugin-definition';
+import type { Auth0PluginDefinition } from './schema/plugin-definition.js';
 
-import { AUTH0_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations';
-import { auth0PluginDefinitionSchema } from './schema/plugin-definition';
+import { AUTH0_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations.js';
+import { auth0PluginDefinitionSchema } from './schema/plugin-definition.js';
 
 export default createPlatformPluginExport({
   dependencies: {

@@ -15,7 +15,7 @@ import {
 import * as prettierPluginTailwindcss from 'prettier-plugin-tailwindcss';
 import { z } from 'zod';
 
-import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
 import { reactBaseConfigProvider } from '../react/react.generator.js';
 import { CORE_REACT_TAILWIND_TEXT_TEMPLATES } from './generated/text-templates.js';

@@ -4,7 +4,7 @@ import type * as React from 'react';
 
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 /**
  * A set of layered sections of content—known as tab panels—that are displayed one at a time.

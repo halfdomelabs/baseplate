@@ -3,15 +3,15 @@
 import React, { useId, useMemo, useState } from 'react';
 import { MdCheck, MdClose, MdUnfoldMore } from 'react-icons/md';
 
-import { useControlledState } from '@src/hooks';
+import { useControlledState } from '#src/hooks/index.js';
 import {
   inputVariants,
   selectContentVariants,
   selectItemVariants,
-} from '@src/styles';
-import { cn } from '@src/utils';
+} from '#src/styles/index.js';
+import { cn } from '#src/utils/index.js';
 
-import { Badge } from '../Badge/Badge';
+import { Badge } from '../Badge/Badge.js';
 import {
   Command,
   CommandEmpty,
@@ -19,13 +19,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '../Command/Command';
+} from '../Command/Command.js';
 import {
   Popover,
   PopoverAnchor,
   PopoverContent,
   PopoverTrigger,
-} from '../Popover/Popover';
+} from '../Popover/Popover.js';
 
 interface MultiComboboxContextValue {
   selectedValues: MultiComboboxOption[];

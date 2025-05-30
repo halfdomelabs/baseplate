@@ -1,9 +1,9 @@
 import { authRoleEntityType, zEnt } from '@halfdomelabs/project-builder-lib';
 import { z } from 'zod';
 
-import { AUTH_DEFAULT_ROLES } from './constants';
+import { AUTH_DEFAULT_ROLES } from './constants.js';
 
-const authRoleSchema = zEnt(
+export const authRoleSchema = zEnt(
   z.object({
     name: z.string().min(1),
     comment: z.string().min(1),
@@ -16,6 +16,8 @@ const authRoleSchema = zEnt(
  * Defines the schema for a role.
  */
 export type AuthRoleDefinition = z.infer<typeof authRoleSchema>;
+
+export type AuthRoleInput = z.input<typeof authRoleSchema>;
 
 /**
  * Defines the schema for an array of roles ensuring that there are no duplicate

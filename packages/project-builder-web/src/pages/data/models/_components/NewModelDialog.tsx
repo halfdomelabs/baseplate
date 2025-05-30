@@ -14,8 +14,8 @@ import {
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
-import { useModelForm } from '../_hooks/useModelForm';
-import { ModelInfoForm } from '../edit/[id]/_components/ModelInfoForm';
+import { useModelForm } from '../_hooks/useModelForm.js';
+import { ModelInfoForm } from '../edit/[id]/_components/ModelInfoForm.js';
 
 interface NewModelDialogProps {
   children: React.ReactNode;

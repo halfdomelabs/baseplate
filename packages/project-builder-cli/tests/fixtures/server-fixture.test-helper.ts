@@ -13,19 +13,22 @@ import os from 'node:os';
 import path from 'node:path';
 import { pino } from 'pino';
 
-import { serveWebServer } from '@src/commands/server.js';
-import { DEFAULT_LOGGER_OPTIONS } from '@src/services/logger.js';
+import { serveWebServer } from '#src/commands/server.js';
+import { DEFAULT_LOGGER_OPTIONS } from '#src/services/logger.js';
 
 /**
  * Get a project definition that is initialized
  */
 export function getInitializedTestProjectDefinition(): ProjectDefinition {
   return {
-    name: 'test-project',
-    packageScope: 'test-project',
-    version: '0.0.1',
+    settings: {
+      general: {
+        name: 'test-project',
+        packageScope: 'test-project',
+        portOffset: 9000,
+      },
+    },
     cliVersion: '0.0.1',
-    portOffset: 7000,
     apps: [],
     features: [],
     models: [],

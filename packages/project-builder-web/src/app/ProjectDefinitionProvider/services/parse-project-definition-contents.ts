@@ -10,7 +10,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { ZodError } from 'zod';
 
-import { formatZodError, UserVisibleError } from '@src/utils/error';
+import { formatZodError, UserVisibleError } from '#src/utils/error.js';
 
 export function parseProjectDefinitionContents(
   contents: string,

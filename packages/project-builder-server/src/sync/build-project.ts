@@ -20,9 +20,9 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
 
-import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
+import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
-import { compileApplications } from '@src/compiler/index.js';
+import { compileApplications } from '#src/compiler/index.js';
 
 import type { PackageSyncResult, SyncStatus } from '../sync/index.js';
 import type { SyncMetadataController } from './sync-metadata-controller.js';
@@ -199,13 +199,15 @@ export async function buildProject({
         const packageInfo = metadata?.packages[app.id];
 
         const fileIdRegexWhitelist =
-          projectJson.templateExtractor?.fileIdRegexWhitelist.split('\n') ?? [];
+          projectJson.settings.templateExtractor?.fileIdRegexWhitelist.split(
+            '\n',
+          ) ?? [];
 
         newResult = await generateForDirectory({
           baseDirectory: directory,
           appEntry: app,
           logger,
-          writeTemplateMetadataOptions: projectJson.templateExtractor
+          writeTemplateMetadataOptions: projectJson.settings.templateExtractor
             ?.writeMetadata
             ? {
                 includeTemplateMetadata: true,

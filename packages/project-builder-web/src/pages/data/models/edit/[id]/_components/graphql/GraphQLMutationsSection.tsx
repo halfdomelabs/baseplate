@@ -22,7 +22,7 @@ import { useWatch } from 'react-hook-form';
 import { MdInfo } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
-import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig.js';
 
 interface GraphQLMutationsSectionProps {
   control: Control<ModelConfigInput>;

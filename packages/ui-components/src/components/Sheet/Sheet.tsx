@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import * as SheetPrimitive from '@radix-ui/react-dialog';
 import { MdClose } from 'react-icons/md';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 /**
  * React component that overlays a sheet on top of the current page.

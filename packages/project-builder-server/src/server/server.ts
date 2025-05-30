@@ -11,7 +11,7 @@ import {
   validatorCompiler,
 } from 'fastify-type-provider-zod';
 
-import type { BaseplateUserConfig } from '@src/user-config/user-config-schema.js';
+import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import type { BuilderServiceManager } from './builder-service-manager.js';
 

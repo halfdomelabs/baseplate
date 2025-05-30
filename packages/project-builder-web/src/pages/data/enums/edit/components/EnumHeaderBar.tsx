@@ -8,7 +8,7 @@ import { clsx } from 'clsx';
 import { MdDeleteOutline, MdEdit } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
-import { EnumInfoEditDialog } from './EnumInfoEditDialog';
+import { EnumInfoEditDialog } from './EnumInfoEditDialog.js';
 
 interface EnumHeaderBarProps {
   className?: string;

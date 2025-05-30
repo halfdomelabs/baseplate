@@ -16,6 +16,8 @@ import { notEmpty } from '@halfdomelabs/utils';
 import { MdAdd } from 'react-icons/md';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 
+import { ErrorBoundary } from '#src/components/index.js';
+
 function PluginsLayout(): React.JSX.Element {
   const { definition, schemaParserContext } = useProjectDefinition();
 
@@ -56,8 +58,10 @@ function PluginsLayout(): React.JSX.Element {
           </NavigationMenuList>
         </NavigationMenu>
       </SidebarLayoutSidebar>
-      <SidebarLayoutContent className="p-4">
-        <Outlet />
+      <SidebarLayoutContent className="h-[calc(100vh-var(--topbar-height)-1px)]">
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </SidebarLayoutContent>
     </SidebarLayout>
   );

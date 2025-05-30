@@ -4,8 +4,8 @@ import type React from 'react';
 
 import { render } from '@testing-library/react';
 
-import { DEFAULT_COMPONENT_STRINGS } from '@src/constants/strings';
-import { ComponentStringsProvider } from '@src/contexts/component-strings';
+import { DEFAULT_COMPONENT_STRINGS } from '#src/constants/strings.js';
+import { ComponentStringsProvider } from '#src/contexts/component-strings.js';
 
 const UiComponentProviders = ({
   children,

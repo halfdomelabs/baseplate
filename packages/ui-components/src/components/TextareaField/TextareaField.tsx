@@ -12,7 +12,7 @@ import type {
 
 import { get, useFormState } from 'react-hook-form';
 
-import type { FormFieldProps } from '@src/types/form';
+import type { FormFieldProps } from '#src/types/form.js';
 
 import {
   FormControl,
@@ -20,8 +20,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../FormItem/FormItem';
-import { Textarea } from '../Textarea/Textarea';
+} from '../FormItem/FormItem.js';
+import { Textarea } from '../Textarea/Textarea.js';
 
 export interface TextareaFieldProps
   extends Omit<ComponentPropsWithRef<'textarea'>, 'onChange' | 'value'>,

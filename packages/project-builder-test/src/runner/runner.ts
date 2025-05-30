@@ -4,14 +4,14 @@ import type {
   ProjectBuilderTest,
   TestRunnerContext,
   TestRunnerHelpers,
-} from '@src/types.js';
+} from '#src/types.js';
 
-import { createEnvironmentHelpers } from '@src/environment/index.js';
-import { logger } from '@src/utils/console.js';
+import { createEnvironmentHelpers } from '#src/environment/index.js';
+import { logger } from '#src/utils/console.js';
 import {
   getTestProjectsDirectory,
   getTestsDirectory,
-} from '@src/utils/directories.js';
+} from '#src/utils/directories.js';
 
 import { discoverTests } from './discover-tests.js';
 import { generateProject } from './generate.js';

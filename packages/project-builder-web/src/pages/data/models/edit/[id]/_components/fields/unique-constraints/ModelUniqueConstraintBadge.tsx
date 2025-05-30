@@ -7,9 +7,9 @@ import { clsx } from 'clsx';
 import { useState } from 'react';
 import { MdStar } from 'react-icons/md';
 
-import { useEditedModelConfig } from '@src/pages/data/models/_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '#src/pages/data/models/_hooks/useEditedModelConfig.js';
 
-import { ModelUniqueConstraintDialog } from './ModelUniqueConstraintDialog';
+import { ModelUniqueConstraintDialog } from './ModelUniqueConstraintDialog.js';
 
 interface ModelFieldUniqueBadgeProps {
   className?: string;

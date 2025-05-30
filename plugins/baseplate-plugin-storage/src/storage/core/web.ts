@@ -3,7 +3,7 @@ import {
   webConfigSpec,
 } from '@halfdomelabs/project-builder-lib';
 
-import { StorageConfig } from './components/storage-config';
+import { StorageConfig } from './components/storage-config.js';
 
 import '../../styles.css';
 

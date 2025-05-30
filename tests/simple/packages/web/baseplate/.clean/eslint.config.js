@@ -1,7 +1,7 @@
 import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
-import eslintPluginImportX from 'eslint-plugin-import-x';
+import eslintPluginImportX, { importX } from 'eslint-plugin-import-x';
 import reactJsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import perfectionist from 'eslint-plugin-perfectionist';
 import reactPlugin from 'eslint-plugin-react';
@@ -114,11 +114,8 @@ export default tsEslint.config(
   },
 
   // Import-X Configs
-  eslintPluginImportX.flatConfigs.recommended,
-  {
-    files: tsFileGlobs,
-    extends: [eslintPluginImportX.flatConfigs.typescript],
-  },
+  importX.flatConfigs.recommended,
+  importX.flatConfigs.typescript,
   {
     rules: {
       // Let Typescript handle it since it checks for unresolved imports

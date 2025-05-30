@@ -13,7 +13,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { useBlocker } from 'react-router-dom';
 
-import { logError } from '@src/services/error-logger';
+import { logError } from '#src/services/error-logger.js';
 
 /**
  * A blocker dialog that is placed at the top level of the page

@@ -16,7 +16,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { AUTH0_PACKAGES } from '@src/auth0/constants/packages';
+import { AUTH0_PACKAGES } from '#src/auth0/constants/packages.js';
 
 const descriptorSchema = z.object({
   callbackPath: z.string().optional(),

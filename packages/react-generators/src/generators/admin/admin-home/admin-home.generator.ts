@@ -2,10 +2,10 @@ import { typescriptFileProvider } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authHooksImportsProvider } from '@src/generators/auth/_providers/auth-hooks.js';
-import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
-import { reactRoutesProvider } from '@src/providers/routes.js';
-import { createRouteElement } from '@src/utils/routes.js';
+import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
+import { reactRoutesProvider } from '#src/providers/routes.js';
+import { createRouteElement } from '#src/utils/routes.js';
 
 import { ADMIN_ADMIN_HOME_TS_TEMPLATES } from './generated/ts-templates.js';
 

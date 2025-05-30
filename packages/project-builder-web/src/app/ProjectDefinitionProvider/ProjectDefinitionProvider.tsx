@@ -21,17 +21,20 @@ import { produce } from 'immer';
 import { useMemo, useState } from 'react';
 import semver from 'semver';
 
-import { useClientVersion } from '@src/hooks/useClientVersion';
-import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { useProjects } from '@src/hooks/useProjects';
-import { useSyncMetadataListener } from '@src/hooks/useSyncMetadata';
-import { formatError, logAndFormatError } from '@src/services/error-formatter';
-import { RefDeleteError } from '@src/utils/error';
+import { useClientVersion } from '#src/hooks/useClientVersion.js';
+import { useDeleteReferenceDialog } from '#src/hooks/useDeleteReferenceDialog.js';
+import { useProjects } from '#src/hooks/useProjects.js';
+import { useSyncMetadataListener } from '#src/hooks/useSyncMetadata.js';
+import {
+  formatError,
+  logAndFormatError,
+} from '#src/services/error-formatter.js';
+import { RefDeleteError } from '#src/utils/error.js';
 
-import { useProjectDefinitionContainer } from './hooks/use-project-definition-container';
-import { useRemoteProjectDefinitionContents } from './hooks/use-remote-project-definition-contents';
-import { useSchemaParserContext } from './hooks/use-schema-parser-context';
-import { NewProjectCard } from './NewProjectCard';
+import { useProjectDefinitionContainer } from './hooks/use-project-definition-container.js';
+import { useRemoteProjectDefinitionContents } from './hooks/use-remote-project-definition-contents.js';
+import { useSchemaParserContext } from './hooks/use-schema-parser-context.js';
+import { NewProjectCard } from './NewProjectCard.js';
 
 interface ProjectDefinitionProviderProps {
   children?: React.ReactNode;
@@ -192,7 +195,10 @@ export function ProjectDefinitionProvider({
           existingProject={result.definition}
           saveProject={async (data) => {
             await result.saveDefinition((definition) => {
-              Object.assign(definition, data);
+              definition.settings.general = {
+                ...data,
+                packageScope: '',
+              };
               definition.isInitialized = true;
             });
           }}

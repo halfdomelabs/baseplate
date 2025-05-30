@@ -7,16 +7,16 @@ import {
   modelScalarFieldEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
-import { SectionList } from '@halfdomelabs/ui-components';
+import { FormActionBar, SectionList } from '@halfdomelabs/ui-components';
 
-import { ErrorBoundary, FormActionBar } from '@src/components';
-import { registerEntityTypeUrl } from '@src/services/entity-type';
+import { ErrorBoundary } from '#src/components/index.js';
+import { registerEntityTypeUrl } from '#src/services/entity-type.js';
 
-import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig';
-import { useModelForm } from '../../_hooks/useModelForm';
-import { ModelFieldsForm } from './_components/fields/ModelFieldsForm';
-import { ModelRelationsSection } from './_components/ModelRelationsSection';
-import { ModelUniqueConstraintsSection } from './_components/ModelUniqueConstraintsSection';
+import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig.js';
+import { useModelForm } from '../../_hooks/useModelForm.js';
+import { ModelFieldsForm } from './_components/fields/ModelFieldsForm.js';
+import { ModelRelationsSection } from './_components/ModelRelationsSection.js';
+import { ModelUniqueConstraintsSection } from './_components/ModelUniqueConstraintsSection.js';
 
 registerEntityTypeUrl(modelEntityType, `/data/models/edit/{uid}`);
 registerEntityTypeUrl(

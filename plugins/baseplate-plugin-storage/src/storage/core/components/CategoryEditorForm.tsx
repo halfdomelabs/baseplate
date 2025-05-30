@@ -12,7 +12,7 @@ import {
 import { notEmpty } from '@halfdomelabs/utils';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
-import type { StoragePluginDefinitionInput } from '../schema/plugin-definition';
+import type { StoragePluginDefinitionInput } from '../schema/plugin-definition.js';
 
 interface Props {
   className?: string;

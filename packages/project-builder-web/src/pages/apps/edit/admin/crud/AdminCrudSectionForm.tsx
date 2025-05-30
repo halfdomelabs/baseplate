@@ -10,16 +10,16 @@ import {
 import clsx from 'clsx';
 import { useWatch } from 'react-hook-form';
 
-import { EmbeddedListInput } from '@src/components';
+import { EmbeddedListInput } from '#src/components/index.js';
 
-import type { AdminCrudFormConfigInput } from './CrudFormFieldsForm';
-import type { AdminCrudTableConfig } from './CrudTableColumnsForm';
+import type { AdminCrudFormConfigInput } from './CrudFormFieldsForm.js';
+import type { AdminCrudTableConfig } from './CrudTableColumnsForm.js';
 
 import AdminCrudEmbeddedForm, {
   AdminCrudEmbeddedTable,
-} from './AdminCrudEmbeddedForm';
-import CrudFormFieldsForm from './CrudFormFieldsForm';
-import CrudTableColumnsForm from './CrudTableColumnsForm';
+} from './AdminCrudEmbeddedForm.js';
+import CrudFormFieldsForm from './CrudFormFieldsForm.js';
+import CrudTableColumnsForm from './CrudTableColumnsForm.js';
 
 interface Props {
   className?: string;

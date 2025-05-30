@@ -19,13 +19,13 @@ import { useState } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
 import { MdOutlineDelete } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
-import { ModelFieldBadges } from './badges/ModelFieldBadges';
-import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
-import { ModelFieldTypeInput } from './ModelFieldTypeInput';
-import { ModelPrimaryKeyDialog } from './primary-key/ModelPrimaryKeyDialog';
-import { ModelRelationDialog } from './relations/ModelRelationDialog';
-import { ModelUniqueConstraintDialog } from './unique-constraints/ModelUniqueConstraintDialog';
+import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig.js';
+import { ModelFieldBadges } from './badges/ModelFieldBadges.js';
+import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput.js';
+import { ModelFieldTypeInput } from './ModelFieldTypeInput.js';
+import { ModelPrimaryKeyDialog } from './primary-key/ModelPrimaryKeyDialog.js';
+import { ModelRelationDialog } from './relations/ModelRelationDialog.js';
+import { ModelUniqueConstraintDialog } from './unique-constraints/ModelUniqueConstraintDialog.js';
 
 interface Props {
   className?: string;

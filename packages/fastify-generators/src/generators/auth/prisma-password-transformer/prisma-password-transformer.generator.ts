@@ -2,7 +2,7 @@ import { tsCodeFragment } from '@halfdomelabs/core-generators';
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { prismaCrudServiceSetupProvider } from '@src/generators/prisma/prisma-crud-service/prisma-crud-service.generator.js';
+import { prismaCrudServiceSetupProvider } from '#src/generators/prisma/prisma-crud-service/prisma-crud-service.generator.js';
 
 import { passwordHasherServiceImportsProvider } from '../password-hasher-service/password-hasher-service.generator.js';
 

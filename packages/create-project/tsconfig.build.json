@@ -1,0 +1,17 @@
+{
+  "extends": "@halfdomelabs/tools/tsconfig.node.cli.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./dist/tsconfig.build.tsbuildinfo",
+    "composite": true,
+    "incremental": true,
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test-helper.ts",
+    "**/__mocks__/**/*",
+    "**/generators/*/*/templates/**"
+  ]
+}

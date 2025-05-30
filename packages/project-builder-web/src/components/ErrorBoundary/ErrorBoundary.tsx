@@ -7,9 +7,9 @@ import {
   ErrorBoundary as ReactErrorBoundary,
 } from 'react-error-boundary';
 
-import { formatError } from '@src/services/error-formatter';
-import { logError } from '@src/services/error-logger';
-import { UserVisibleError } from '@src/utils/error';
+import { formatError } from '#src/services/error-formatter.js';
+import { logError } from '#src/services/error-logger.js';
+import { UserVisibleError } from '#src/utils/error.js';
 
 interface ErrorBoundaryProps {
   children?: React.ReactNode;

@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 import type {
   GeneratorBundle,
   GeneratorTask,
-} from '@src/generators/generators.js';
+} from '#src/generators/generators.js';
 
 import type {
   GeneratorEntry,

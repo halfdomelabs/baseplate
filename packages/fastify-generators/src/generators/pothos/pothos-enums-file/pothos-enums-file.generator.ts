@@ -14,8 +14,8 @@ import { kebabCase } from 'change-case';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { appModuleProvider } from '@src/generators/core/app-module/app-module.generator.js';
-import { createPothosTypeReference } from '@src/writers/pothos/options.js';
+import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
+import { createPothosTypeReference } from '#src/writers/pothos/options.js';
 
 import { pothosConfigProvider } from '../pothos/pothos.generator.js';
 

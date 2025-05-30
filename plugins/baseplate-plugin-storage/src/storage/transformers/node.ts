@@ -6,10 +6,10 @@ import {
   PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
 
-import { prismaFileTransformerGenerator } from '@src/generators/fastify';
+import { prismaFileTransformerGenerator } from '#src/generators/fastify/index.js';
 
-import type { StoragePluginDefinition } from '../core/schema/plugin-definition';
-import type { FileTransformerConfig } from './types';
+import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
+import type { FileTransformerConfig } from './types.js';
 
 function buildFileTransformerCompiler(
   pluginId: string,

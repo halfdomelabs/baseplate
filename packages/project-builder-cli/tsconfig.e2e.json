@@ -2,8 +2,11 @@
   "extends": "@halfdomelabs/tools/tsconfig.node.cli.json",
   "compilerOptions": {
     "noEmit": true,
+    "customConditions": ["development"],
+    // Workaround for bug where playwright doesn't respect custom conditions
+    // https://github.com/microsoft/playwright/issues/33684
     "paths": {
-      "@src/*": ["./src/*"]
+      "#src/*": ["./src/*"]
     }
   },
   "include": ["tests/**/*", "playwright.config.ts"]

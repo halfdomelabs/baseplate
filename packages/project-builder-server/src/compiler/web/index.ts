@@ -64,7 +64,7 @@ function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
     },
     {
       // TODO: Extract out logic
-      devBackendHost: `http://localhost:${projectDefinition.portOffset + 1}`,
+      devBackendHost: `http://localhost:${projectDefinition.settings.general.portOffset + 1}`,
     },
   );
 }
@@ -81,15 +81,17 @@ export function compileWeb(
 
   const { projectDefinition } = appBuilder;
 
-  const packageName = projectDefinition.packageScope
-    ? `@${projectDefinition.packageScope}/${app.name}`
-    : `${projectDefinition.name}-${app.name}`;
+  const generalSettings = projectDefinition.settings.general;
+
+  const packageName = generalSettings.packageScope
+    ? `@${generalSettings.packageScope}/${app.name}`
+    : `${generalSettings.name}-${app.name}`;
 
   const nodeBundle = composeNodeGenerator({
-    name: `${projectDefinition.name}-${app.name}`,
+    name: `${generalSettings.name}-${app.name}`,
     packageName,
-    description: `Web app for ${projectDefinition.name}`,
-    version: projectDefinition.version,
+    description: `Web app for ${generalSettings.name}`,
+    version: '1.0.0',
     children: {
       react: buildReact(appBuilder),
     },

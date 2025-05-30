@@ -11,12 +11,12 @@ import { z } from 'zod';
 import type {
   PrismaDataTransformer,
   PrismaDataTransformerOptions,
-} from '@src/providers/prisma/prisma-data-transformable.js';
-import type { ServiceOutputMethod } from '@src/types/service-output.js';
+} from '#src/providers/prisma/prisma-data-transformable.js';
+import type { ServiceOutputMethod } from '#src/types/service-output.js';
 
-import { serviceContextImportsProvider } from '@src/generators/core/service-context/service-context.generator.js';
-import { serviceFileProvider } from '@src/generators/core/service-file/service-file.generator.js';
-import { prismaToServiceOutputDto } from '@src/types/service-output.js';
+import { serviceContextImportsProvider } from '#src/generators/core/service-context/service-context.generator.js';
+import { serviceFileProvider } from '#src/generators/core/service-file/service-file.generator.js';
+import { prismaToServiceOutputDto } from '#src/types/service-output.js';
 
 import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method.js';
 

@@ -1,4 +1,4 @@
-import type { ScalarFieldType } from '@src/types/field-types.js';
+import type { ScalarFieldType } from '#src/types/field-types.js';
 
 export interface PothosScalarConfig {
   name: string;

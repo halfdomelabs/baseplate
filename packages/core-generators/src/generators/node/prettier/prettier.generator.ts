@@ -20,9 +20,9 @@ import prettierPluginPackageJson from 'prettier-plugin-packagejson';
 import resolveFrom from 'resolve-from';
 import { z } from 'zod';
 
-import { CORE_PACKAGES } from '@src/constants/core-packages.js';
-import { projectScope } from '@src/providers/scopes.js';
-import { writeJsonToBuilder } from '@src/writers/json.js';
+import { CORE_PACKAGES } from '#src/constants/core-packages.js';
+import { projectScope } from '#src/providers/scopes.js';
+import { writeJsonToBuilder } from '#src/writers/json.js';
 
 import { nodeProvider } from '../node/node.generator.js';
 

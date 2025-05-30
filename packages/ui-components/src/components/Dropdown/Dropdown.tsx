@@ -5,7 +5,7 @@ import type * as React from 'react';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { MdCheck, MdChevronRight, MdCircle } from 'react-icons/md';
 
-import { cn } from '@src/utils';
+import { cn } from '#src/utils/index.js';
 
 /**
  * Displays a menu to the user — such as a set of actions or functions — triggered by a button.

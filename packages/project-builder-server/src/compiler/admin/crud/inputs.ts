@@ -26,7 +26,7 @@ import {
 } from '@halfdomelabs/react-generators';
 import { type GeneratorBundle, makeIdSafe } from '@halfdomelabs/sync';
 
-import type { AppEntryBuilder } from '@src/compiler/app-entry-builder.js';
+import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
 
 const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
   {

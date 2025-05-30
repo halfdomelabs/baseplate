@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { zRef } from '@src/references/ref-builder.js';
+import { zRef } from '#src/references/ref-builder.js';
 
 import { authRoleEntityType } from '../auth/index.js';
 import {

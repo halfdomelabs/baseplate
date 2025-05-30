@@ -19,9 +19,9 @@ import {
 } from '@halfdomelabs/ui-components';
 import { Link } from 'react-router-dom';
 
-import { useDeleteReferenceDialogState } from '@src/hooks/useDeleteReferenceDialog';
-import { usePrevious } from '@src/hooks/usePrevious';
-import { getEntityTypeUrl } from '@src/services/entity-type';
+import { useDeleteReferenceDialogState } from '#src/hooks/useDeleteReferenceDialog.js';
+import { usePrevious } from '#src/hooks/usePrevious.js';
+import { getEntityTypeUrl } from '#src/services/entity-type.js';
 
 export function RefIssueDialog(): React.JSX.Element {
   const { dialogOptions, setDialogOptions } = useDeleteReferenceDialogState();

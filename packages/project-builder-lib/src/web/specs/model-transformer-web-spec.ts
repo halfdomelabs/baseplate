@@ -1,11 +1,11 @@
 import type React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 
-import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
-import type { ModelConfigInput, TransformerConfig } from '@src/schema/index.js';
+import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
+import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
+import type { ModelConfigInput, TransformerConfig } from '#src/schema/index.js';
 
-import { createPluginSpec } from '@src/plugins/spec/types.js';
+import { createPluginSpec } from '#src/plugins/spec/types.js';
 
 export interface ModelTransformerWebFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

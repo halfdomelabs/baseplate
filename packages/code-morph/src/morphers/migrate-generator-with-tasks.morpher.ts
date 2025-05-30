@@ -4,7 +4,7 @@ import { kebabCase } from 'change-case';
 import path from 'node:path';
 import { Node, SyntaxKind } from 'ts-morph';
 
-import { createTypescriptMorpher } from '@src/types.js';
+import { createTypescriptMorpher } from '#src/types.js';
 
 /**
  * Migrates createGeneratorWithTasks to createGenerator for generators

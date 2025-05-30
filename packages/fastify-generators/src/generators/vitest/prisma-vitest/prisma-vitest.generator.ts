@@ -11,8 +11,8 @@ import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { quot } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { prismaImportsProvider } from '@src/generators/prisma/prisma/prisma.generator.js';
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
+import { prismaImportsProvider } from '#src/generators/prisma/prisma/prisma.generator.js';
 
 import {
   createPrismaVitestImports,

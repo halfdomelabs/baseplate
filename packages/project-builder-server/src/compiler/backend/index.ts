@@ -41,15 +41,17 @@ export function compileBackend(
 
   const { projectDefinition } = appBuilder;
 
-  const packageName = projectDefinition.packageScope
-    ? `@${projectDefinition.packageScope}/${app.name}`
-    : `${projectDefinition.name}-${app.name}`;
+  const generalSettings = projectDefinition.settings.general;
+
+  const packageName = generalSettings.packageScope
+    ? `@${generalSettings.packageScope}/${app.name}`
+    : `${generalSettings.name}-${app.name}`;
 
   const rootBundle = composeNodeGenerator({
-    name: `${projectDefinition.name}-${app.name}`,
+    name: `${generalSettings.name}-${app.name}`,
     packageName,
-    description: `Backend app for ${projectDefinition.name}`,
-    version: projectDefinition.version,
+    description: `Backend app for ${generalSettings.name}`,
+    version: '1.0.0',
     children: {
       docker: buildDocker(projectDefinition, app),
       fastify: buildFastify(appBuilder, app),

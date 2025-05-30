@@ -18,8 +18,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
-import { authContextImportsProvider } from '@src/generators/auth/index.js';
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
+import { authContextImportsProvider } from '#src/generators/auth/index.js';
 
 import {
   configServiceImportsProvider,

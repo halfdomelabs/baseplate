@@ -7,14 +7,14 @@ import {
 import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
+import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';
 
 import {
   reactRoutesProvider,
   reactRoutesReadOnlyProvider,
-} from '@src/providers/routes.js';
-import { dasherizeCamel, upperCaseFirst } from '@src/utils/case.js';
-import { createRouteElement } from '@src/utils/routes.js';
+} from '#src/providers/routes.js';
+import { dasherizeCamel, upperCaseFirst } from '#src/utils/case.js';
+import { createRouteElement } from '#src/utils/routes.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
 import { reactNotFoundProvider } from '../react-not-found-handler/react-not-found-handler.generator.js';

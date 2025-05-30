@@ -3,7 +3,7 @@ import type { SourceFile } from 'ts-morph';
 import path from 'node:path';
 import { SyntaxKind } from 'ts-morph';
 
-import { createTypescriptMorpher } from '@src/types.js';
+import { createTypescriptMorpher } from '#src/types.js';
 
 import { moveFile } from './utils/move-file.js';
 

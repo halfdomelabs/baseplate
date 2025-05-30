@@ -13,9 +13,9 @@ import {
 import { sortBy } from 'es-toolkit';
 import { Link, Route, Routes } from 'react-router-dom';
 
-import { registerEntityTypeUrl } from '@src/services/entity-type';
+import { registerEntityTypeUrl } from '#src/services/entity-type.js';
 
-import AdminEditSectionForm from './AdminEditSectionForm';
+import AdminEditSectionForm from './AdminEditSectionForm.js';
 
 registerEntityTypeUrl(
   adminSectionEntityType,

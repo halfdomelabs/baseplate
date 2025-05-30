@@ -1,8 +1,8 @@
 import { produce, setAutoFreeze } from 'immer';
 
-import type { ProjectDefinition } from '@src/schema/project-definition.js';
+import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
-import { pluginEntityType } from '@src/schema/plugins/entity-types.js';
+import { pluginEntityType } from '#src/schema/plugins/entity-types.js';
 
 import type { PluginImplementationStore } from '../schema/store.js';
 

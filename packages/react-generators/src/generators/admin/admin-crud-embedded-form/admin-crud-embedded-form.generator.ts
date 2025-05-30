@@ -19,11 +19,11 @@ import { posixJoin } from '@halfdomelabs/utils/node';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import type { GraphQLField } from '@src/writers/graphql/index.js';
+import type { GraphQLField } from '#src/writers/graphql/index.js';
 
-import { reactComponentsImportsProvider } from '@src/generators/core/react-components/react-components.generator.js';
-import { reactErrorImportsProvider } from '@src/generators/core/react-error/react-error.generator.js';
-import { upperCaseFirst } from '@src/utils/case.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
+import { reactErrorImportsProvider } from '#src/generators/core/react-error/react-error.generator.js';
+import { upperCaseFirst } from '#src/utils/case.js';
 
 import type { AdminCrudColumn } from '../_providers/admin-crud-column-container.js';
 import type {
