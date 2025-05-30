@@ -154,6 +154,63 @@ export class DefinitionDiffReplacementField<
   }
 }
 
+/**
+ * A field that ensures an array contains certain values.
+ * This field type only adds items, never removes them.
+ */
+export class DefinitionDiffArrayIncludesField<
+  T extends unknown[] = string[],
+> extends DefinitionDiffField<T> {
+  constructor(
+    name: string,
+    private readonly getKey?: (item: T[number]) => string,
+  ) {
+    super(name);
+  }
+
+  diff(current: T | undefined, desired: T | undefined): DefinitionDiffOperation[] {
+    const currentValue = current ?? [];
+    const desiredValue = desired ?? [];
+
+    if (!Array.isArray(currentValue) || !Array.isArray(desiredValue)) {
+      throw new TypeError('Current and desired must be arrays');
+    }
+
+    const ops: DefinitionDiffOperation[] = [];
+    const currentSet = new Set(
+      this.getKey
+        ? currentValue.map(this.getKey)
+        : currentValue,
+    );
+
+    for (const item of desiredValue) {
+      const key = this.getKey ? this.getKey(item) : String(item);
+      if (!currentSet.has(key)) {
+        ops.push({ type: 'add', key, item });
+      }
+    }
+
+    return ops;
+  }
+
+  apply(current: T | undefined, diff: DefinitionDiffOperation[]): T {
+    const currentValue = (current ?? []) as T;
+
+    if (!Array.isArray(currentValue)) {
+      throw new TypeError('Current must be array');
+    }
+
+    const items = [...currentValue] as T[number][];
+    for (const { type, item } of diff) {
+      if (type === 'add') {
+        items.push(item as T[number]);
+      }
+    }
+
+    return items as T;
+  }
+}
+
 type ConvertToTemplateString<T> = T extends number ? `${T}` : T;
 
 export type DefinitionDiffConfig<T> = Partial<{
