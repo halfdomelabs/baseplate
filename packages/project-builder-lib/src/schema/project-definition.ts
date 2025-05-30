@@ -16,7 +16,7 @@ import { definitionSchema } from './creator/schema-creator.js';
 import { featuresSchema } from './features/index.js';
 import { enumSchema } from './models/enums.js';
 import { modelSchema } from './models/index.js';
-import { createPluginsDefinitionSchema } from './plugins/index.js';
+import { pluginsSchema } from './plugins/index.js';
 import { createSettingsSchema } from './settings.js';
 
 export const appSchema = zRefBuilder(
@@ -44,7 +44,7 @@ export const createProjectDefinitionSchema = definitionSchema((ctx) =>
     enums: z.array(enumSchema).optional(),
     isInitialized: z.boolean().default(false),
     schemaVersion: z.number(),
-    plugins: createPluginsDefinitionSchema(ctx),
+    plugins: pluginsSchema.optional(),
     settings: createSettingsSchema(ctx),
   }),
 );

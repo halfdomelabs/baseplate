@@ -5,7 +5,7 @@ import { zEnt } from '#src/references/ref-builder.js';
 
 import { pluginEntityType } from './entity-types.js';
 
-export const basePluginSchema = zEnt(
+export const basePluginDefinitionSchema = zEnt(
   z.object({
     packageName: z.string(),
     name: z.string(),
@@ -18,10 +18,10 @@ export const basePluginSchema = zEnt(
   },
 );
 
-export type BasePlugin = z.infer<typeof basePluginSchema>;
+export type BasePluginDefinition = z.infer<typeof basePluginDefinitionSchema>;
 
 export const pluginWithConfigSchema = zWithPlugins((plugins, data) => {
-  const parsedBasePluginSchema = basePluginSchema.parse(data);
+  const parsedBasePluginSchema = basePluginDefinitionSchema.parse(data);
 
   const pluginId = pluginEntityType.toUid(parsedBasePluginSchema.id);
 
@@ -30,10 +30,10 @@ export const pluginWithConfigSchema = zWithPlugins((plugins, data) => {
     .getSchema(pluginId);
 
   if (!configSchema) {
-    return basePluginSchema;
+    return basePluginDefinitionSchema;
   }
 
-  return basePluginSchema.and(
+  return basePluginDefinitionSchema.and(
     z.object({
       config: configSchema,
     }),
