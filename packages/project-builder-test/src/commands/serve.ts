@@ -48,13 +48,16 @@ async function createTestProject(
   await fs.writeFile(
     path.join(projectDirectory, 'baseplate/project-definition.json'),
     JSON.stringify({
-      name: projectName,
+      settings: {
+        general: {
+          name: projectName,
+          portOffset: 3000,
+        },
+      },
       isInitialized: true,
       features: [],
       models: [],
-      portOffset: 3000,
       schemaVersion: getLatestMigrationVersion(),
-      version: '0.1.0',
     } satisfies ProjectDefinitionInput),
   );
 }

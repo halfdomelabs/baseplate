@@ -41,8 +41,8 @@ export function ThemeBuilderPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
 
   const values = useMemo(
-    () => definition.theme ?? generateDefaultTheme(),
-    [definition.theme],
+    () => definition.settings.theme ?? generateDefaultTheme(),
+    [definition.settings.theme],
   );
 
   const form = useResettableForm<ThemeConfig>({
@@ -53,7 +53,7 @@ export function ThemeBuilderPage(): React.JSX.Element {
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback((draftConfig) => {
-      draftConfig.theme = data;
+      draftConfig.settings.theme = data;
     }),
   );
 

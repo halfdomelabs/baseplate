@@ -7,6 +7,7 @@ export type ReferencePath = (string | number)[];
  */
 export class DefinitionEntityType<THasParent extends boolean = boolean> {
   public readonly prefix: string;
+
   /**
    * Creates a new entity type.
    *

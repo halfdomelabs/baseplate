@@ -51,7 +51,7 @@ function EditAppPage(): React.JSX.Element {
     );
   };
 
-  const { packageScope } = definition;
+  const { packageScope } = definition.settings.general;
 
   return (
     <div className="space-y-4">

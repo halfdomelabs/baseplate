@@ -237,10 +237,13 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     const sanitizedName = starterName.replaceAll(/[^a-zA-Z0-9-]/g, '');
     const finalName = sanitizedName || 'project-name';
     return JSON.stringify({
-      name: finalName,
-      version: '0.1.0',
+      settings: {
+        general: {
+          name: finalName,
+          portOffset: 5000,
+        },
+      },
       cliVersion: this.cliVersion,
-      portOffset: 5000,
       schemaVersion: getLatestMigrationVersion(),
     } satisfies ProjectDefinitionInput);
   }

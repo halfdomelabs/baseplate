@@ -27,11 +27,11 @@ test('can update the project name if modified externally', async ({
 
   await page.goto(makeUrl('settings/project-settings'));
   await expect(page.getByLabel('Project Name')).toHaveValue(
-    projectDefinition.name,
+    projectDefinition.settings.general.name,
   );
 
   // write project definition with new name
-  projectDefinition.name = 'new-project-name';
+  projectDefinition.settings.general.name = 'new-project-name';
   await writeProjectDefinition(projectDefinition);
 
   await expect(page.getByLabel('Project Name')).toHaveValue('new-project-name');
