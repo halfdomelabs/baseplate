@@ -28,6 +28,7 @@ Note: Make sure to run the commands in the sub-packages if only modifying files 
 - Order functions such that functions are placed below the variables/functions they use
 - Use kebab-case for file names
 - If a particular interface or type is not exported, change the file so it is exported
+- We use the prefer using nullish coalescing operator (`??`) ESLint rule instead of a logical or (`||`), as it is a safer operator
 
 ## UI Development Guidelines
 

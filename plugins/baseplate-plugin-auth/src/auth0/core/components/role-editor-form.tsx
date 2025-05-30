@@ -5,129 +5,143 @@ import { authRoleEntityType } from '@halfdomelabs/project-builder-lib';
 import {
   Badge,
   Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  InputFieldController,
+  RecordView,
+  RecordViewActions,
+  RecordViewItem,
+  RecordViewItemList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
+  useConfirmDialog,
 } from '@halfdomelabs/ui-components';
-import { useFieldArray } from 'react-hook-form';
-import { MdAdd, MdDelete } from 'react-icons/md';
+import { useState } from 'react';
+import { useFieldArray, useWatch } from 'react-hook-form';
+import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
-import { AUTH_DEFAULT_ROLES } from '#src/roles/index.js';
-import { cn } from '#src/utils/cn.js';
+import type { AuthRoleInput } from '#src/roles/index.js';
 
 import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition.js';
+
+import { RoleDialog } from './role-dialog.js';
 
 interface Props {
   className?: string;
   control: Control<Auth0PluginDefinitionInput>;
 }
 
-function isFixedRole(name: string): boolean {
-  return AUTH_DEFAULT_ROLES.some((role) => role.name === name);
-}
-
 function RoleEditorForm({ className, control }: Props): React.JSX.Element {
-  const { fields, append, remove } = useFieldArray({
+  const { requestConfirm } = useConfirmDialog();
+  const { append, update, remove } = useFieldArray({
     control,
     name: 'roles',
   });
+  const [roleToEdit, setRoleToEdit] = useState<AuthRoleInput | undefined>();
+  const [isEditing, setIsEditing] = useState(false);
+
+  const roles = useWatch({ control, name: 'roles' });
+
+  function handleSaveRole(newRole: AuthRoleInput): void {
+    const existingIndex = roles.findIndex((role) => role.id === newRole.id);
+    if (existingIndex === -1) {
+      append(newRole);
+    } else {
+      update(existingIndex, newRole);
+    }
+  }
+
+  function handleDeleteRole(roleIdx: number): void {
+    const role = roles[roleIdx];
+    requestConfirm({
+      title: 'Delete Role',
+      content: `Are you sure you want to delete the role "${role.name}"?`,
+      onConfirm: () => {
+        remove(roleIdx);
+      },
+    });
+  }
 
   return (
-    <Card className={className}>
-      <CardHeader>
-        <div className="auth:flex auth:items-center auth:justify-between">
-          <div>
-            <CardTitle>User Roles</CardTitle>
-            <CardDescription>
-              Define roles for your application. Default roles are protected and
-              cannot be removed.
-            </CardDescription>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              append({
-                id: authRoleEntityType.generateNewId(),
-                name: '',
-                comment: '',
-                builtIn: false,
-              });
-            }}
-          >
-            <MdAdd className="auth:mr-2 auth:h-4 auth:w-4" />
-            Add Role
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="auth:space-y-3">
-          {fields.map((field, idx) => {
-            const isFixed = isFixedRole(field.name);
-            return (
-              <div
-                key={field.id}
-                className={cn(
-                  'auth:rounded-lg auth:border auth:p-4',
-                  isFixed ? 'auth:bg-muted/50' : 'auth:bg-background',
-                )}
-              >
-                <div className="auth:flex auth:items-start auth:gap-4">
-                  <div className="auth:flex-1">
-                    <div className="auth:grid auth:grid-cols-1 auth:gap-4">
-                      <div className="auth:relative">
-                        <InputFieldController
-                          label="Role Name"
-                          disabled={isFixed}
-                          control={control}
-                          name={`roles.${idx}.name`}
-                          placeholder="Enter role name"
-                        />
-                        {isFixed && (
-                          <Badge
-                            variant="secondary"
-                            className="auth:absolute auth:top-0 auth:right-0"
-                          >
-                            Default
-                          </Badge>
-                        )}
-                      </div>
-                      <InputFieldController
-                        label="Description"
-                        control={control}
-                        name={`roles.${idx}.comment`}
-                        placeholder="Describe this role's purpose"
-                      />
-                    </div>
-                  </div>
-                  {!isFixed && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="auth:shrink-0"
-                      onClick={() => {
-                        remove(idx);
-                      }}
-                    >
-                      <MdDelete className="auth:h-4 auth:w-4" />
-                    </Button>
-                  )}
+    <SectionListSection className={className}>
+      <SectionListSectionHeader>
+        <SectionListSectionTitle>User Roles</SectionListSectionTitle>
+        <SectionListSectionDescription>
+          Define roles for your application. Default roles are protected and
+          cannot be removed.
+        </SectionListSectionDescription>
+      </SectionListSectionHeader>
+      <SectionListSectionContent className="auth:space-y-4">
+        {roles.map((role, roleIdx) => (
+          <RecordView key={role.id}>
+            <RecordViewItemList>
+              <RecordViewItem title="Name">
+                <div className="auth:flex auth:items-center auth:gap-2">
+                  <span>{role.name}</span>
                 </div>
-              </div>
-            );
-          })}
-          {fields.length === 0 && (
-            <div className="auth:py-8 auth:text-center auth:text-muted-foreground">
-              No roles defined yet. Click &ldquo;Add Role&rdquo; to create your
-              first role.
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+              </RecordViewItem>
+              <RecordViewItem title="Description">
+                {role.comment.trim() || (
+                  <span className="auth:text-muted-foreground">
+                    No description
+                  </span>
+                )}
+              </RecordViewItem>
+            </RecordViewItemList>
+            <RecordViewActions>
+              {role.builtIn && <Badge variant="secondary">Default Role</Badge>}
+              {!role.builtIn && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    title="Edit"
+                    onClick={() => {
+                      setRoleToEdit(role);
+                      setIsEditing(true);
+                    }}
+                  >
+                    <MdEdit />
+                  </Button>
+                  <Button
+                    variant="ghostDestructive"
+                    size="icon"
+                    title="Delete"
+                    onClick={() => {
+                      handleDeleteRole(roleIdx);
+                    }}
+                  >
+                    <MdDeleteOutline />
+                  </Button>
+                </>
+              )}
+            </RecordViewActions>
+          </RecordView>
+        ))}
+        <RoleDialog
+          open={isEditing}
+          onOpenChange={setIsEditing}
+          role={roleToEdit}
+          onSave={handleSaveRole}
+        />
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => {
+            setRoleToEdit({
+              id: authRoleEntityType.generateNewId(),
+              name: '',
+              comment: '',
+              builtIn: false,
+            });
+            setIsEditing(true);
+          }}
+        >
+          <MdAdd />
+          Add Role
+        </Button>
+      </SectionListSectionContent>
+    </SectionListSection>
   );
 }
 
