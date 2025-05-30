@@ -6,7 +6,7 @@ export interface DefinitionSchemaCreatorOptions {
   plugins: PluginImplementationStore;
 }
 
-export interface DefinitionSchemaParserContext {
+interface DefinitionSchemaParserContext {
   plugins: PluginImplementationStore;
 }
 

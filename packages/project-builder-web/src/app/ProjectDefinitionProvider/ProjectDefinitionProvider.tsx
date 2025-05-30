@@ -195,7 +195,10 @@ export function ProjectDefinitionProvider({
           existingProject={result.definition}
           saveProject={async (data) => {
             await result.saveDefinition((definition) => {
-              Object.assign(definition, data);
+              definition.settings.general = {
+                ...data,
+                packageScope: '',
+              };
               definition.isInitialized = true;
             });
           }}
