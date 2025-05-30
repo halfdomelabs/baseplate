@@ -33,7 +33,9 @@ export const Default: Story = {
   args: {},
   render: () => {
     const mockForm = {
-      reset: () => { alert('Form reset!'); },
+      reset: () => {
+        alert('Form reset!');
+      },
       formState: {
         isDirty: true,
         isSubmitting: false,
@@ -47,7 +49,9 @@ export const Clean: Story = {
   args: {},
   render: () => {
     const mockForm = {
-      reset: () => { alert('Form reset!'); },
+      reset: () => {
+        alert('Form reset!');
+      },
       formState: {
         isDirty: false,
         isSubmitting: false,
@@ -61,7 +65,9 @@ export const Submitting: Story = {
   args: {},
   render: () => {
     const mockForm = {
-      reset: () => { alert('Form reset!'); },
+      reset: () => {
+        alert('Form reset!');
+      },
       formState: {
         isDirty: true,
         isSubmitting: true,
@@ -76,7 +82,9 @@ export const Disabled: Story = {
   render: () => (
     <FormActionBar
       disabled={true}
-      onReset={() => { alert('Reset clicked!'); }}
+      onReset={() => {
+        alert('Reset clicked!');
+      }}
     />
   ),
 };
@@ -85,7 +93,9 @@ export const CustomActions: Story = {
   args: {},
   render: () => {
     const mockForm = {
-      reset: () => { alert('Form reset!'); },
+      reset: () => {
+        alert('Form reset!');
+      },
       formState: {
         isDirty: true,
         isSubmitting: false,
@@ -140,9 +150,9 @@ export const InteractiveForm: Story = {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) =>
-                { setFormData({ ...formData, name: e.target.value }); }
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, name: e.target.value });
+              }}
               placeholder="Enter your name"
             />
           </div>
@@ -152,18 +162,20 @@ export const InteractiveForm: Story = {
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) =>
-                { setFormData({ ...formData, email: e.target.value }); }
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, email: e.target.value });
+              }}
               placeholder="Enter your email"
             />
           </div>
         </div>
         <FormActionBar
-          form={{
-            reset: handleReset,
-            formState: { isDirty, isSubmitting },
-          } as unknown as UseFormReturn}
+          form={
+            {
+              reset: handleReset,
+              formState: { isDirty, isSubmitting },
+            } as unknown as UseFormReturn
+          }
         />
       </form>
     );
@@ -175,7 +187,7 @@ export const WithReactHookForm: Story = {
   render: () => {
     // This is a mock example showing how it would work with react-hook-form
     const mockForm = {
-      reset: () => { 
+      reset: () => {
         alert('Form reset!');
       },
       formState: {

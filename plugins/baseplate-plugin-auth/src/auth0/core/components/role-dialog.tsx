@@ -38,7 +38,6 @@ export function RoleDialog({
   asChild,
   children,
 }: RoleDialogProps): React.JSX.Element {
-
   const form = useForm({
     resolver: zodResolver(authRoleSchema),
     values: role,

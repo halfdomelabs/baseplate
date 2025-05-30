@@ -126,20 +126,23 @@ export function AuthDefinitionEditor({
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
-    <form onSubmit={onSubmit} className="auth:relative auth:min-h-[calc(100vh-8rem)] auth:pb-16">
+    <form
+      onSubmit={onSubmit}
+      className="auth:relative auth:min-h-[calc(100vh-8rem)] auth:pb-16"
+    >
       <div className="auth:max-w-3xl auth:space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Local Authentication Configuration</CardTitle>
             <CardDescription>
-              Configure your local authentication settings, user models, and role
-              definitions.
+              Configure your local authentication settings, user models, and
+              role definitions.
             </CardDescription>
           </CardHeader>
           <CardContent className="auth:space-y-6">
             <ModelMergerResultAlert pendingModelChanges={pendingModelChanges} />
-            
-            <div className="auth:grid auth:grid-cols-1 md:auth:grid-cols-2 auth:gap-6">
+
+            <div className="md:auth:grid-cols-2 auth:grid auth:grid-cols-1 auth:gap-6">
               <ModelComboboxFieldController
                 label="User Model"
                 name="modelRefs.user"
@@ -169,7 +172,7 @@ export function AuthDefinitionEditor({
                 description="Model for managing user sessions"
               />
             </div>
-            
+
             <div className="auth:space-y-2">
               <FeatureComboboxFieldController
                 label="Auth Feature Path"
@@ -184,7 +187,7 @@ export function AuthDefinitionEditor({
 
         <RoleEditorForm control={control} />
       </div>
-      
+
       <FormActionBar form={form} />
     </form>
   );
