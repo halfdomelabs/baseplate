@@ -23,6 +23,7 @@ interface RoleDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   role?: AuthRoleInput;
+  isNew?: boolean;
   onSave: (role: AuthRoleInput) => void;
   asChild?: boolean;
   children?: React.ReactNode;
@@ -32,11 +33,11 @@ export function RoleDialog({
   open,
   onOpenChange,
   role,
+  isNew = false,
   onSave,
   asChild,
   children,
 }: RoleDialogProps): React.JSX.Element {
-  const isEditing = role?.id !== '';
 
   const form = useForm({
     resolver: zodResolver(authRoleSchema),
@@ -64,11 +65,11 @@ export function RoleDialog({
           }}
         >
           <DialogHeader>
-            <DialogTitle>{isEditing ? 'Edit Role' : 'Add Role'}</DialogTitle>
+            <DialogTitle>{isNew ? 'Add Role' : 'Edit Role'}</DialogTitle>
             <DialogDescription>
-              {isEditing
-                ? 'Update the role details below.'
-                : 'Enter the details for the new role.'}
+              {isNew
+                ? 'Enter the details for the new role.'
+                : 'Update the role details below.'}
             </DialogDescription>
           </DialogHeader>
           <div className="auth:space-y-4 auth:py-4">
@@ -96,7 +97,7 @@ export function RoleDialog({
               Cancel
             </Button>
             <Button form={formId} type="submit">
-              {isEditing ? 'Update' : 'Add'} Role
+              {isNew ? 'Add' : 'Update'} Role
             </Button>
           </DialogFooter>
         </form>

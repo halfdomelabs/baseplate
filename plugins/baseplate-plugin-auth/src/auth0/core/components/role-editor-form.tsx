@@ -96,6 +96,7 @@ function RoleEditorForm({ className, control }: Props): React.JSX.Element {
                     variant="ghost"
                     size="icon"
                     title="Edit"
+                    aria-label="Edit role"
                     onClick={() => {
                       setRoleToEdit(role);
                       setIsEditing(true);
@@ -107,6 +108,7 @@ function RoleEditorForm({ className, control }: Props): React.JSX.Element {
                     variant="ghostDestructive"
                     size="icon"
                     title="Delete"
+                    aria-label="Delete role"
                     onClick={() => {
                       handleDeleteRole(roleIdx);
                     }}
@@ -122,6 +124,7 @@ function RoleEditorForm({ className, control }: Props): React.JSX.Element {
           open={isEditing}
           onOpenChange={setIsEditing}
           role={roleToEdit}
+          isNew={roleToEdit ? !roles.some((r) => r.id === roleToEdit.id) : true}
           onSave={handleSaveRole}
         />
         <Button
