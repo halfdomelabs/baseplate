@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import type { BasePlugin } from '#src/schema/index.js';
+import type { BasePluginDefinition } from '#src/schema/index.js';
 
 import type { PluginMetadataWithPaths } from '../metadata/types.js';
 import type { PluginSpecImplementation } from './types.js';
@@ -8,7 +8,7 @@ import type { PluginSpecImplementation } from './types.js';
 import { createPluginSpec } from './types.js';
 
 export interface WebConfigProps {
-  definition: BasePlugin | null;
+  definition: BasePluginDefinition | null;
   metadata: PluginMetadataWithPaths;
   onSave: () => void;
 }

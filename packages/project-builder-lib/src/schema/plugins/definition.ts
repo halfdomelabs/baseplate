@@ -1,11 +1,13 @@
+import { transformWithDynamicSchema } from '@halfdomelabs/utils';
 import { z } from 'zod';
 
-import { pluginConfigSpec, zWithPlugins } from '#src/plugins/index.js';
+import { pluginConfigSpec } from '#src/plugins/index.js';
 import { zEnt } from '#src/references/ref-builder.js';
 
+import { definitionSchema } from '../creator/schema-creator.js';
 import { pluginEntityType } from './entity-types.js';
 
-export const basePluginSchema = zEnt(
+export const basePluginDefinitionSchema = zEnt(
   z.object({
     packageName: z.string(),
     name: z.string(),
@@ -18,26 +20,26 @@ export const basePluginSchema = zEnt(
   },
 );
 
-export type BasePlugin = z.infer<typeof basePluginSchema>;
+export type BasePluginDefinition = z.infer<typeof basePluginDefinitionSchema>;
 
-export const pluginWithConfigSchema = zWithPlugins((plugins, data) => {
-  const parsedBasePluginSchema = basePluginSchema.parse(data);
+export const createPluginsDefinitionSchema = definitionSchema((ctx) =>
+  z
+    .array(
+      basePluginDefinitionSchema.transform(
+        transformWithDynamicSchema((data) => {
+          const pluginId = pluginEntityType.toUid(data.id);
 
-  const pluginId = pluginEntityType.toUid(parsedBasePluginSchema.id);
+          const configSchema = ctx.plugins
+            .getPluginSpec(pluginConfigSpec)
+            .getSchema(pluginId);
 
-  const configSchema = plugins
-    .getPluginSpec(pluginConfigSpec)
-    .getSchema(pluginId);
+          if (!configSchema) {
+            return undefined;
+          }
 
-  if (!configSchema) {
-    return basePluginSchema;
-  }
-
-  return basePluginSchema.and(
-    z.object({
-      config: configSchema,
-    }),
-  );
-});
-
-export const pluginsSchema = z.array(pluginWithConfigSchema);
+          return configSchema;
+        }, 'config'),
+      ),
+    )
+    .optional(),
+);
