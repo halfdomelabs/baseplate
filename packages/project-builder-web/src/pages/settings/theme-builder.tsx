@@ -16,6 +16,7 @@ import {
   AlertDescription,
   AlertTitle,
   Button,
+  FormActionBar,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -30,8 +31,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
-
-import { FormActionBar } from '#src/components/index.js';
 
 import { ThemeColorsCssDisplay } from './components/ThemeColorsCssDisplay.js';
 import { ThemeColorsEditor } from './components/ThemeColorsEditor.js';

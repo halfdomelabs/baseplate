@@ -2,9 +2,9 @@ import type React from 'react';
 
 import { enumBaseSchema } from '@halfdomelabs/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
-import { SectionList } from '@halfdomelabs/ui-components';
+import { FormActionBar, SectionList } from '@halfdomelabs/ui-components';
 
-import { ErrorBoundary, FormActionBar } from '#src/components/index.js';
+import { ErrorBoundary } from '#src/components/index.js';
 
 import { useEnumForm } from '../hooks/useEnumForm.js';
 import { EnumGraphQLSection } from './sections/EnumGraphQLSection.js';

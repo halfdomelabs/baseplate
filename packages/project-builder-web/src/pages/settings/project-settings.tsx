@@ -7,6 +7,7 @@ import {
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
 import {
+  FormActionBar,
   InputFieldController,
   SectionList,
   SectionListSection,
@@ -17,8 +18,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { pick } from 'es-toolkit';
 import { useMemo } from 'react';
-
-import { FormActionBar } from '#src/components/index.js';
 
 const validationSchema = projectDefinitionSchema.pick({
   name: true,

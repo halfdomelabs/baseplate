@@ -16,18 +16,26 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button } from '@halfdomelabs/ui-components';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  FormActionBar,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
 import { createDefaultAuthRoles } from '#src/roles/index.js';
-import { cn } from '#src/utils/cn.js';
 
 import type { AuthPluginDefinitionInput } from '../schema/plugin-definition.js';
 
 import { createAuthModels } from '../schema/models.js';
 import { authPluginDefinitionSchema } from '../schema/plugin-definition.js';
 import RoleEditorForm from './role-editor-form.js';
+
+import '#src/styles.css';
 
 export function AuthDefinitionEditor({
   definition: pluginMetadata,
@@ -63,11 +71,11 @@ export function AuthDefinitionEditor({
     } satisfies AuthPluginDefinitionInput;
   }, [definition, pluginMetadata?.config]);
 
-  const formProps = useResettableForm({
+  const form = useResettableForm({
     resolver: zodResolver(authPluginDefinitionSchema),
     defaultValues,
   });
-  const { control, reset, handleSubmit, watch } = formProps;
+  const { control, reset, handleSubmit, watch } = form;
 
   const modelRefs = watch('modelRefs');
   const authFeatureRef = watch('authFeatureRef');
@@ -118,40 +126,66 @@ export function AuthDefinitionEditor({
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
-    <form onSubmit={onSubmit} className={cn('flex flex-col gap-4')}>
-      <ModelMergerResultAlert pendingModelChanges={pendingModelChanges} />
-      <ModelComboboxFieldController
-        label="User Model"
-        name="modelRefs.user"
-        control={control}
-        canCreate
-      />
-      <ModelComboboxFieldController
-        label="User Account Model"
-        name="modelRefs.userAccount"
-        control={control}
-        canCreate
-      />
-      <ModelComboboxFieldController
-        label="User Role Model"
-        name="modelRefs.userRole"
-        control={control}
-        canCreate
-      />
-      <ModelComboboxFieldController
-        label="User Session Model"
-        name="modelRefs.userSession"
-        control={control}
-        canCreate
-      />
-      <FeatureComboboxFieldController
-        label="Auth Feature Path"
-        name="authFeatureRef"
-        control={control}
-        canCreate
-      />
-      <RoleEditorForm control={control} />
-      <Button type="submit">Save</Button>
+    <form onSubmit={onSubmit} className="auth:relative auth:min-h-[calc(100vh-8rem)] auth:pb-16">
+      <div className="auth:max-w-3xl auth:space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Local Authentication Configuration</CardTitle>
+            <CardDescription>
+              Configure your local authentication settings, user models, and role
+              definitions.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="auth:space-y-6">
+            <ModelMergerResultAlert pendingModelChanges={pendingModelChanges} />
+            
+            <div className="auth:grid auth:grid-cols-1 md:auth:grid-cols-2 auth:gap-6">
+              <ModelComboboxFieldController
+                label="User Model"
+                name="modelRefs.user"
+                control={control}
+                canCreate
+                description="The main user model for authentication"
+              />
+              <ModelComboboxFieldController
+                label="User Account Model"
+                name="modelRefs.userAccount"
+                control={control}
+                canCreate
+                description="Model for user account credentials"
+              />
+              <ModelComboboxFieldController
+                label="User Role Model"
+                name="modelRefs.userRole"
+                control={control}
+                canCreate
+                description="Model for assigning roles to users"
+              />
+              <ModelComboboxFieldController
+                label="User Session Model"
+                name="modelRefs.userSession"
+                control={control}
+                canCreate
+                description="Model for managing user sessions"
+              />
+            </div>
+            
+            <div className="auth:space-y-2">
+              <FeatureComboboxFieldController
+                label="Auth Feature Path"
+                name="authFeatureRef"
+                control={control}
+                canCreate
+                description="Specify the feature path where authentication endpoints will be generated"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <RoleEditorForm control={control} />
+      </div>
+      
+      <FormActionBar form={form} />
     </form>
   );
 }
