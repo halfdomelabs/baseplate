@@ -6,6 +6,12 @@
 
 ![release](https://github.com/halfdomelabs/baseplate/actions/workflows/changesets.yml/badge.svg) ![tests](https://github.com/halfdomelabs/baseplate/actions/workflows/test.yml/badge.svg)
 
+> **⚠️ WARNING: DEVELOPMENT VERSION**
+>
+> **This project is still very much in development and not ready for production use.** The code and configuration may introduce breaking changes at any time. While you're welcome to preview Baseplate and provide feedback, please **DO NOT use this in production applications** until we reach our alpha release.
+>
+> Use at your own risk for experimentation and development purposes only.
+
 Baseplate is a platform designed to accelerate the development of coding projects. It automatically generates the necessary code for your features, allowing you to customize the codebase to your specific needs. This way, you can focus more on the harder challenges of coding instead of basic tasks like setting up CRUD (Create, Read, Update, and Delete) APIs or configuration variables.
 
 ## Features
