@@ -2,6 +2,9 @@ import type { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   NavigationTabs,
   NavigationTabsItem,
 } from '@halfdomelabs/ui-components';
@@ -19,6 +22,14 @@ interface Props {
 function AdminAppForm({ className, appConfig }: Props): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
+      <Alert variant="warning" className="mb-4">
+        <AlertTitle>⚠️ Development Preview</AlertTitle>
+        <AlertDescription>
+          The admin app functionality will likely be fully rewritten in future
+          versions. This is provided for preview purposes only and should not be
+          relied upon for production use.
+        </AlertDescription>
+      </Alert>
       <NavigationTabs>
         <NavigationTabsItem asChild>
           <NavLink to="" end>
