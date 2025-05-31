@@ -29,7 +29,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
     plugins: [
       srcSubpathImportPlugin(import.meta.dirname),
       federation({
-        name: 'baseplate-plugin-auth',
+        name: 'plugin-storage',
         filename: 'remoteEntry.js',
         exposes: viteTargets,
         shared: {

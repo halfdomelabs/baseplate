@@ -6,14 +6,14 @@ describe('parseGeneratorName', () => {
   it('parses generator with subdirectory', () => {
     // Arrange
     const input =
-      '@baseplate-dev/baseplate-plugin-storage#fastify/prisma-file-transformer';
+      '@baseplate-dev/plugin-storage#fastify/prisma-file-transformer';
 
     // Act
     const result = parseGeneratorName(input);
 
     // Assert
     expect(result).toEqual({
-      packageName: '@baseplate-dev/baseplate-plugin-storage',
+      packageName: '@baseplate-dev/plugin-storage',
       generatorPath: 'fastify/prisma-file-transformer',
       generatorBasename: 'prisma-file-transformer',
     });

@@ -25,8 +25,8 @@
     "prettier:write": "prettier -w ."
   },
   "dependencies": {
-    "@baseplate-dev/baseplate-plugin-auth": "workspace:*",
-    "@baseplate-dev/baseplate-plugin-storage": "workspace:*",
+    "@baseplate-dev/plugin-auth": "workspace:*",
+    "@baseplate-dev/plugin-storage": "workspace:*",
     "@baseplate-dev/project-builder-lib": "workspace:*",
     "@baseplate-dev/project-builder-server": "workspace:*",
     "@baseplate-dev/sync": "workspace:*",

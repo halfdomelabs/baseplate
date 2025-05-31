@@ -12,7 +12,7 @@ import {
 import z from 'zod';
 
 export const storageAdapterEntityType = createEntityType(
-  'baseplate-plugin-storage/storage-adapter',
+  'plugin-storage/storage-adapter',
 );
 
 export const storagePluginDefinitionSchema = zRefBuilder(

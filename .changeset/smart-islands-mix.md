@@ -1,9 +1,9 @@
 ---
-'@baseplate-dev/baseplate-plugin-storage': patch
+'@baseplate-dev/plugin-storage': patch
 '@baseplate-dev/project-builder-common': patch
 '@baseplate-dev/project-builder-server': patch
 '@baseplate-dev/project-builder-test': patch
-'@baseplate-dev/baseplate-plugin-auth': patch
+'@baseplate-dev/plugin-auth': patch
 '@baseplate-dev/project-builder-cli': patch
 '@baseplate-dev/project-builder-lib': patch
 '@baseplate-dev/project-builder-web': patch

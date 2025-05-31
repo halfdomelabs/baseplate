@@ -115,8 +115,8 @@ Baseplate is organized into several core packages:
 
 ### Plugins
 
-- **plugins/baseplate-plugin-auth**: Authentication plugin (includes auth0 and local auth implementations)
-- **plugins/baseplate-plugin-storage**: Storage plugin (S3 and local file storage)
+- **plugins/plugin-auth**: Authentication plugin (includes auth0 and local auth implementations)
+- **plugins/plugin-storage**: Storage plugin (S3 and local file storage)
 
 ## Architecture Overview
 

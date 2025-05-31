@@ -45,14 +45,15 @@ export async function discoverPlugins(
     );
   });
 
-  // Look for plugins that start with baseplate-plugin- or @scope/baseplate-plugin-
+  // Look for plugins that start with baseplate-plugin- or @scope/baseplate-plugin- or @baseplate-dev/plugin-
   const pluginPackageNames = [
     ...Object.keys(packageJson.dependencies ?? {}),
     ...Object.keys(packageJson.devDependencies ?? {}),
   ].filter(
     (name) =>
       name.startsWith('baseplate-plugin-') ||
-      /^@[^/]+\/baseplate-plugin-/.exec(name),
+      !!/^@[^/]+\/baseplate-plugin-/.test(name) ||
+      name.startsWith('@baseplate-dev/plugin-'),
   );
 
   // Load all valid plugins and their metadata
