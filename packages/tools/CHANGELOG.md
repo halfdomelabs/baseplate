@@ -1,5 +1,13 @@
 # @halfdomelabs/tools
 
+## 0.5.16
+
+### Patch Changes
+
+- [#550](https://github.com/halfdomelabs/baseplate/pull/550) [`af52406`](https://github.com/halfdomelabs/baseplate/commit/af524065204d945264a75e9fb06a3d3da1a8bfc2) Thanks [@kingston](https://github.com/kingston)! - Fix up linting of vite.config.ts files
+
+- [#552](https://github.com/halfdomelabs/baseplate/pull/552) [`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616) Thanks [@kingston](https://github.com/kingston)! - Refactor to use subpath imports instead of tsconfig paths
+
 ## 0.5.15
 
 ### Patch Changes
