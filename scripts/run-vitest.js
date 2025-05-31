@@ -4,9 +4,9 @@
  * Debug helper script for running Vitest in the correct package context
  */
 
-import path from 'path';
-import fs from 'fs';
-import { spawn } from 'child_process';
+import { spawn } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Get the relative file path from the command line arguments
 const relativePath = process.argv[2];

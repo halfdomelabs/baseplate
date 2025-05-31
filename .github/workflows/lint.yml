@@ -39,3 +39,4 @@ jobs:
       - run: pnpm versions:check
       - run: pnpm knip
       - run: pnpm dedupe --check
+      - run: pnpm metadata:check

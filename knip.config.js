@@ -4,7 +4,7 @@
 export default {
   workspaces: {
     '.': {
-      entry: ['.meta-updater/main.mjs', 'scripts/*.{js,ts}'],
+      entry: ['.workspace-meta/config.ts', 'scripts/*.{js,ts}'],
     },
     'packages/*': {
       entry: ['src/index.{ts,tsx}', 'src/web/index.{ts,tsx}'],
