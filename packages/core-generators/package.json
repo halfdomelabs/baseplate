@@ -1,5 +1,5 @@
 {
-  "name": "@halfdomelabs/core-generators",
+  "name": "@baseplate-dev/core-generators",
   "version": "0.11.8",
   "description": "Core generators for Baseplate",
   "homepage": "https://www.halfdomelabs.com/",
@@ -49,8 +49,8 @@
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
   },
   "dependencies": {
-    "@halfdomelabs/sync": "workspace:*",
-    "@halfdomelabs/utils": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
     "change-case": "5.4.4",
     "es-toolkit": "1.31.0",
     "memfs": "4.15.1",
@@ -65,7 +65,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
+    "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "@types/prettier": "^2.7.3",
     "@types/semver": "^7.5.0",

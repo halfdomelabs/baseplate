@@ -1,7 +1,7 @@
 import {
   createTextTemplateFile,
   createTextTemplateGroup,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 
 const indexHtml = createTextTemplateFile({
   name: 'index-html',

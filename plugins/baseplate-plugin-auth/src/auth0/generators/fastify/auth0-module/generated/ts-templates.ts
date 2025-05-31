@@ -1,10 +1,10 @@
-import { createTsTemplateFile } from '@halfdomelabs/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
   userSessionTypesImportsProvider,
-} from '@halfdomelabs/fastify-generators';
+} from '@baseplate-dev/fastify-generators';
 
 const management = createTsTemplateFile({
   importMapProviders: { configServiceImports: configServiceImportsProvider },

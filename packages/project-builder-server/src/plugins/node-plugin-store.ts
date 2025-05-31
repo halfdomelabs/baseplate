@@ -3,14 +3,14 @@ import type {
   PluginPlatformModule,
   PluginStore,
   SchemaParserContext,
-} from '@halfdomelabs/project-builder-lib';
-import type { Logger } from '@halfdomelabs/sync';
+} from '@baseplate-dev/project-builder-lib';
+import type { Logger } from '@baseplate-dev/sync';
 
 import {
   adminCrudInputCompilerSpec,
   appCompilerSpec,
   modelTransformerCompilerSpec,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 

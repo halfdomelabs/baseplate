@@ -3,9 +3,9 @@ import type {
   PluginMetadataWithPaths,
   PluginStore,
   ProjectDefinition,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
-import { createPluginImplementationStore } from '@halfdomelabs/project-builder-lib';
+import { createPluginImplementationStore } from '@baseplate-dev/project-builder-lib';
 
 export function loadPluginImplementationStoreWithNewPlugin(
   pluginStore: PluginStore,

@@ -1,7 +1,7 @@
 import type {
   ModelConfig,
   ModelConfigInput,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import type { UseFormReturn } from 'react-hook-form';
 import type { z } from 'zod';
 
@@ -11,13 +11,13 @@ import {
   modelScalarFieldEntityType,
   modelSchema,
   ModelUtils,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import {
   usePluginEnhancedSchema,
   useProjectDefinition,
   useResettableForm,
-} from '@halfdomelabs/project-builder-lib/web';
-import { toast, useEventCallback } from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/project-builder-lib/web';
+import { toast, useEventCallback } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';

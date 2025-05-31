@@ -1,7 +1,7 @@
 import {
   createTsTemplateFile,
   createTsTemplateGroup,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 
 import { errorHandlerServiceImportsProvider } from '../../../core/error-handler-service/generated/ts-import-maps.js';
 

@@ -1,4 +1,4 @@
-import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 
 import type { PothosTypeReference } from '#src/writers/pothos/index.js';
 

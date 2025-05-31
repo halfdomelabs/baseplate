@@ -1,4 +1,4 @@
-import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
+import type { FeatureFlag } from '@baseplate-dev/project-builder-lib';
 
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 

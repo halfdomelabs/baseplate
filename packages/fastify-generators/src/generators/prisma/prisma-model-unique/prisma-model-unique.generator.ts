@@ -1,4 +1,4 @@
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { prismaModelProvider } from '../prisma-model/prisma-model.generator.js';

@@ -1,16 +1,16 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   TsCodeUtils,
   tsImportBuilder,
   tsUtilsImportsProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
-} from '@halfdomelabs/sync';
-import { quot, sortObjectKeys } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { quot, sortObjectKeys } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { serviceFileOutputProvider } from '#src/generators/core/service-file/service-file.generator.js';

@@ -1,5 +1,5 @@
-import { mapGroupBy } from '@halfdomelabs/utils';
-import { getCommonPathPrefix } from '@halfdomelabs/utils/node';
+import { mapGroupBy } from '@baseplate-dev/utils';
+import { getCommonPathPrefix } from '@baseplate-dev/utils/node';
 import { camelCase } from 'change-case';
 import { constantCase, mapValues, omit, uniq } from 'es-toolkit';
 import path from 'node:path/posix';
@@ -162,7 +162,7 @@ export class TextTemplateFileExtractor extends TemplateFileExtractor<
       [
         `import { ${uniq(results.flatMap((result) => result.imports))
           .toSorted()
-          .join(',')} } from "@halfdomelabs/sync";`,
+          .join(',')} } from "@baseplate-dev/sync";`,
         ...results.map((result) => result.codeBlock),
         `export const ${templatesVariableName} = {
           ${results.map((result) => result.exports).join(',')}

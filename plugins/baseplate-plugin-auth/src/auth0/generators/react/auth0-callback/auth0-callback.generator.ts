@@ -1,12 +1,12 @@
-import { typescriptFileProvider } from '@halfdomelabs/core-generators';
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
   authHooksImportsProvider,
   createRouteElement,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
   reactRoutesProvider,
-} from '@halfdomelabs/react-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+} from '@baseplate-dev/react-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import path from 'node:path/posix';
 import { z } from 'zod';
 

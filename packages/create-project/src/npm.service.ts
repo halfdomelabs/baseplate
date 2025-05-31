@@ -22,7 +22,7 @@ async function fetchNpmPackageVersion(
     text: 'Checking for the latest version of Baseplate CLI...',
   }).start();
   try {
-    const url = `https://registry.npmjs.org/@halfdomelabs/project-builder-cli`;
+    const url = `https://registry.npmjs.org/@baseplate-dev/project-builder-cli`;
     const headers = {
       Authorization: `Bearer ${token}`,
     };

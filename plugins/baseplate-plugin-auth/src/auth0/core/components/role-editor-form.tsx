@@ -1,7 +1,7 @@
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { authRoleEntityType } from '@halfdomelabs/project-builder-lib';
+import { authRoleEntityType } from '@baseplate-dev/project-builder-lib';
 import {
   Badge,
   Button,
@@ -15,7 +15,7 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
   useConfirmDialog,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';

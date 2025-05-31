@@ -1,4 +1,4 @@
-import { stringifyPrettyStable } from '@halfdomelabs/utils';
+import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 

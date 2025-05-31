@@ -1,6 +1,6 @@
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
-import { safeMerge } from '@halfdomelabs/utils';
+import { safeMerge } from '@baseplate-dev/utils';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { PluginSpecImplementation } from '#src/plugins/index.js';

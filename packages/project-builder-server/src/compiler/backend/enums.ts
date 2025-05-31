@@ -1,10 +1,10 @@
 import type {
   EnumConfig,
   ProjectDefinition,
-} from '@halfdomelabs/project-builder-lib';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+} from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
-import { prismaEnumGenerator } from '@halfdomelabs/fastify-generators';
+import { prismaEnumGenerator } from '@baseplate-dev/fastify-generators';
 
 function buildEnum(enumConfig: EnumConfig): GeneratorBundle {
   return prismaEnumGenerator({

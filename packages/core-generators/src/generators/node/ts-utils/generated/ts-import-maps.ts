@@ -1,4 +1,4 @@
-import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 import path from 'node:path/posix';
 
 import type { TsImportMapProviderFromSchema } from '#src/renderers/typescript/index.js';

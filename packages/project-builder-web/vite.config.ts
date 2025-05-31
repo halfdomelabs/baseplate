@@ -1,6 +1,6 @@
 import type { ClientRequest } from 'node:http';
 
-import { srcSubpathImportPlugin } from '@halfdomelabs/tools/src-subpath-import-plugin';
+import { srcSubpathImportPlugin } from '@baseplate-dev/tools/src-subpath-import-plugin';
 import federation from '@originjs/vite-plugin-federation';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
@@ -28,11 +28,11 @@ export default defineConfig(({ mode }) => {
           react: {},
           'react-dom': {},
           zod: {},
-          '@halfdomelabs/project-builder-lib': { version: '*' },
-          '@halfdomelabs/project-builder-lib/web': {
+          '@baseplate-dev/project-builder-lib': { version: '*' },
+          '@baseplate-dev/project-builder-lib/web': {
             version: '*',
           },
-          '@halfdomelabs/ui-components': { version: '*' },
+          '@baseplate-dev/ui-components': { version: '*' },
         },
       }),
       pluginDevServerPlugin(),

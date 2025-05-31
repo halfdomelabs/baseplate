@@ -1,18 +1,18 @@
 import {
   projectScope,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   authHooksImportsProvider,
   generatedGraphqlImportsProvider,
   reactApolloProvider,
   reactErrorImportsProvider,
-} from '@halfdomelabs/react-generators';
+} from '@baseplate-dev/react-generators';
 import {
   createGenerator,
   createGeneratorTask,
   renderTextTemplateFileAction,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { AUTH_0_AUTH_0_HOOKS_TEXT_TEMPLATES } from './generated/text-templates.js';

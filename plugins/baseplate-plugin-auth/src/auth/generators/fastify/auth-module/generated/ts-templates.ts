@@ -1,7 +1,7 @@
 import {
   createTsTemplateFile,
   createTsTemplateGroup,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   authContextImportsProvider,
   authRolesImportsProvider,
@@ -10,7 +10,7 @@ import {
   pothosImportsProvider,
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
-} from '@halfdomelabs/fastify-generators';
+} from '@baseplate-dev/fastify-generators';
 
 const schemaUserSessionMutations = createTsTemplateFile({
   group: 'schema',

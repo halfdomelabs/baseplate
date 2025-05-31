@@ -1,21 +1,21 @@
-import type { WebAppConfig } from '@halfdomelabs/project-builder-lib';
+import type { WebAppConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
   authConfigSpec,
   webAppSchema,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
-} from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   CheckboxFieldController,
   InputFieldController,
   MultiComboboxFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 

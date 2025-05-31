@@ -9,22 +9,22 @@ import type {
   AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
   ModelScalarFieldConfig,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import {
   adminCrudInputCompilerSpec,
   EnumUtils,
   ModelFieldUtils,
   ModelUtils,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import {
   adminCrudEmbeddedInputGenerator,
   adminCrudEnumInputGenerator,
   adminCrudForeignInputGenerator,
   adminCrudPasswordInputGenerator,
   adminCrudTextInputGenerator,
-} from '@halfdomelabs/react-generators';
-import { type GeneratorBundle, makeIdSafe } from '@halfdomelabs/sync';
+} from '@baseplate-dev/react-generators';
+import { type GeneratorBundle, makeIdSafe } from '@baseplate-dev/sync';
 
 import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
 

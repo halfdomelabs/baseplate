@@ -3,7 +3,7 @@ import {
   createPlatformPluginExport,
   pluginConfigSpec,
   PluginUtils,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 

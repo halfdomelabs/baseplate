@@ -2,8 +2,8 @@ import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-} from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 
 import { CORE_PACKAGES } from '#src/constants/core-packages.js';
 import { projectScope } from '#src/providers/scopes.js';

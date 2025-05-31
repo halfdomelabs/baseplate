@@ -2,12 +2,12 @@ import type { Command } from 'commander';
 import type { FastifyInstance } from 'fastify';
 import type { Logger } from 'pino';
 
-import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
+import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
 import {
   BuilderServiceManager,
   DEFAULT_SERVER_PORT,
   startWebServer,
-} from '@halfdomelabs/project-builder-server';
+} from '@baseplate-dev/project-builder-server';
 import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
 
@@ -34,7 +34,7 @@ export async function serveWebServer(
   serviceManager: BuilderServiceManager;
 }> {
   const projectBuilderWebDir = await packageDirectory({
-    cwd: resolveModule('@halfdomelabs/project-builder-web/package.json'),
+    cwd: resolveModule('@baseplate-dev/project-builder-web/package.json'),
   });
   const resolvedDirectories = directories.map((dir) =>
     expandPathWithTilde(dir),

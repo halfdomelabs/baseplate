@@ -1,11 +1,11 @@
 import type React from 'react';
 
-import { generalSettingsSchema } from '@halfdomelabs/project-builder-lib';
+import { generalSettingsSchema } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
-} from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   FormActionBar,
   InputFieldController,
@@ -14,7 +14,7 @@ import {
   SectionListSectionContent,
   SectionListSectionHeader,
   SectionListSectionTitle,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 function ProjectSettingsPage(): React.JSX.Element {

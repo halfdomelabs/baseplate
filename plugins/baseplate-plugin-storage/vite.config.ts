@@ -3,8 +3,8 @@ import type { UserConfig } from 'vite';
 import {
   getModuleFederationTargets,
   rewriteDistToSrc,
-} from '@halfdomelabs/project-builder-lib/plugin-tools';
-import { srcSubpathImportPlugin } from '@halfdomelabs/tools/src-subpath-import-plugin';
+} from '@baseplate-dev/project-builder-lib/plugin-tools';
+import { srcSubpathImportPlugin } from '@baseplate-dev/tools/src-subpath-import-plugin';
 import federation from '@originjs/vite-plugin-federation';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
@@ -23,7 +23,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
       minify: false,
       cssCodeSplit: false,
       rollupOptions: {
-        external: ['@halfdomelabs/project-builder-lib'],
+        external: ['@baseplate-dev/project-builder-lib'],
       },
     },
     plugins: [
@@ -36,13 +36,13 @@ export default defineConfig(async (): Promise<UserConfig> => {
           react: {},
           'react-dom': {},
           zod: {},
-          '@halfdomelabs/project-builder-lib': {
+          '@baseplate-dev/project-builder-lib': {
             version: '*',
           },
-          '@halfdomelabs/project-builder-lib/web': {
+          '@baseplate-dev/project-builder-lib/web': {
             version: '*',
           },
-          '@halfdomelabs/ui-components': { version: '*' },
+          '@baseplate-dev/ui-components': { version: '*' },
         },
       }),
       react(),

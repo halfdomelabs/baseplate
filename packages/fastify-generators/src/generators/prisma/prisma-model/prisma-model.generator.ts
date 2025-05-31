@@ -1,9 +1,9 @@
-import { projectScope } from '@halfdomelabs/core-generators';
+import { projectScope } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { snakeCase } from 'change-case';
 import { z } from 'zod';
 

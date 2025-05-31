@@ -1,11 +1,11 @@
 import type React from 'react';
 
-import { modelEntityType, ModelUtils } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { modelEntityType, ModelUtils } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   NavigationTabs,
   NavigationTabsItem,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { NavLink, Outlet, useParams } from 'react-router-dom';
 
 import { NotFoundCard } from '#src/components/index.js';

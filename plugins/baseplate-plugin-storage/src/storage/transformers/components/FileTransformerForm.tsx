@@ -1,9 +1,9 @@
-import type { ModelTransformerWebFormProps } from '@halfdomelabs/project-builder-lib/web';
+import type { ModelTransformerWebFormProps } from '@baseplate-dev/project-builder-lib/web';
 import type { Control } from 'react-hook-form';
 
-import { PluginUtils } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { SelectFieldController } from '@halfdomelabs/ui-components';
+import { PluginUtils } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import { SelectFieldController } from '@baseplate-dev/ui-components';
 
 import type { StoragePluginDefinition } from '#src/storage/core/schema/plugin-definition.js';
 

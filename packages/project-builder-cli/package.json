@@ -1,5 +1,5 @@
 {
-  "name": "@halfdomelabs/project-builder-cli",
+  "name": "@baseplate-dev/project-builder-cli",
   "version": "0.9.18",
   "description": "Full-stack CLI builder using Baseplate generators",
   "homepage": "https://www.halfdomelabs.com/",
@@ -42,11 +42,11 @@
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
-    "@halfdomelabs/project-builder-common": "workspace:*",
-    "@halfdomelabs/project-builder-lib": "workspace:*",
-    "@halfdomelabs/project-builder-server": "workspace:*",
-    "@halfdomelabs/project-builder-web": "workspace:*",
-    "@halfdomelabs/utils": "workspace:*",
+    "@baseplate-dev/project-builder-common": "workspace:*",
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/project-builder-server": "workspace:*",
+    "@baseplate-dev/project-builder-web": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
     "commander": "^12.1.0",
     "pino": "9.5.0",
     "pino-pretty": "13.0.0",
@@ -54,7 +54,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
+    "@baseplate-dev/tools": "workspace:*",
     "@playwright/test": "1.51.0",
     "@types/node": "catalog:",
     "dotenv": "^16.0.3",

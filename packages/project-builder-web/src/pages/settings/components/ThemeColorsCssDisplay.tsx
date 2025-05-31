@@ -1,9 +1,9 @@
-import type { ThemeConfig } from '@halfdomelabs/project-builder-lib';
+import type { ThemeConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { generateCssFromThemeConfig } from '@halfdomelabs/project-builder-lib';
-import { TextareaField } from '@halfdomelabs/ui-components';
+import { generateCssFromThemeConfig } from '@baseplate-dev/project-builder-lib';
+import { TextareaField } from '@baseplate-dev/ui-components';
 import { clsx } from 'clsx';
 import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';

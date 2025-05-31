@@ -1,15 +1,15 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   TsCodeUtils,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-} from '@halfdomelabs/sync';
-import { mapValuesOfMap } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { kebabCase } from 'change-case';
 import path from 'node:path';
 import { z } from 'zod';

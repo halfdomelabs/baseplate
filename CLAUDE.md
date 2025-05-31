@@ -32,7 +32,7 @@ Note: Make sure to run the commands in the sub-packages if only modifying files 
 
 ## UI Development Guidelines
 
-- **Component Library**: Use ShadCN-based components from `@halfdomelabs/ui-components`
+- **Component Library**: Use ShadCN-based components from `@baseplate-dev/ui-components`
   - This package contains a customized variation of ShadCN components
   - Always prefer these components over creating custom ones
 - **Styling**: Use Tailwind CSS utilities exclusively

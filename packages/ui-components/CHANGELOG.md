@@ -1,4 +1,4 @@
-# @halfdomelabs/ui-components
+# @baseplate-dev/ui-components
 
 ## 0.5.11
 
@@ -7,7 +7,7 @@
 - [#552](https://github.com/halfdomelabs/baseplate/pull/552) [`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616) Thanks [@kingston](https://github.com/kingston)! - Refactor to use subpath imports instead of tsconfig paths
 
 - Updated dependencies [[`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616)]:
-  - @halfdomelabs/utils@0.1.10
+  - @baseplate-dev/utils@0.1.10
 
 ## 0.5.10
 
@@ -24,7 +24,7 @@
 - [#547](https://github.com/halfdomelabs/baseplate/pull/547) [`887e077`](https://github.com/halfdomelabs/baseplate/commit/887e0772527622f504ffc2693369ca3ffa5c33e1) Thanks [@kingston](https://github.com/kingston)! - Update ui-components to use new ShadCN styles for Tailwind v4
 
 - Updated dependencies []:
-  - @halfdomelabs/utils@0.1.9
+  - @baseplate-dev/utils@0.1.9
 
 ## 0.5.9
 
@@ -33,28 +33,28 @@
 - [#542](https://github.com/halfdomelabs/baseplate/pull/542) [`f5f8346`](https://github.com/halfdomelabs/baseplate/commit/f5f83460b46953db6a855e30ad1deb1838b63058) Thanks [@kingston](https://github.com/kingston)! - Upgrade to Typescript 5.7.3
 
 - Updated dependencies [[`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3)]:
-  - @halfdomelabs/utils@0.1.9
+  - @baseplate-dev/utils@0.1.9
 
 ## 0.5.8
 
 ### Patch Changes
 
 - Updated dependencies [[`d8b98da`](https://github.com/halfdomelabs/baseplate/commit/d8b98da9e50456f1b541be1616b9a5266752540c)]:
-  - @halfdomelabs/utils@0.1.8
+  - @baseplate-dev/utils@0.1.8
 
 ## 0.5.7
 
 ### Patch Changes
 
 - Updated dependencies [[`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1)]:
-  - @halfdomelabs/utils@0.1.7
+  - @baseplate-dev/utils@0.1.7
 
 ## 0.5.6
 
 ### Patch Changes
 
 - Updated dependencies [[`25dde93`](https://github.com/halfdomelabs/baseplate/commit/25dde93545bfab47df44cd82ce64a8d4e26b7a25), [`4695cbe`](https://github.com/halfdomelabs/baseplate/commit/4695cbe9759a5743b421cfe0dd9e87c991d9e652), [`a74e788`](https://github.com/halfdomelabs/baseplate/commit/a74e788dbd2987cf0be786ce3da7095c96965350), [`85dc19e`](https://github.com/halfdomelabs/baseplate/commit/85dc19e9938db676c50cb9ccec17afe442e6c979)]:
-  - @halfdomelabs/utils@0.1.6
+  - @baseplate-dev/utils@0.1.6
 
 ## 0.5.5
 
@@ -149,7 +149,7 @@
 
 ### Patch Changes
 
-- 53fd56d: Migrate @halfdomelabs/cmdk to original cmdk version
+- 53fd56d: Migrate @baseplate-dev/cmdk to original cmdk version
 
 ## 0.4.11
 

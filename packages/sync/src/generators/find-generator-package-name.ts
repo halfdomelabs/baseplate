@@ -1,5 +1,5 @@
-import { enhanceErrorWithContext } from '@halfdomelabs/utils';
-import { findNearestPackageJson } from '@halfdomelabs/utils/node';
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
+import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import { readFile } from 'node:fs/promises';
 
 interface PackageJson {

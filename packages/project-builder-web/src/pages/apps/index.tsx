@@ -1,6 +1,6 @@
 import type { RouteObject } from 'react-router-dom';
 
-import { appEntityType } from '@halfdomelabs/project-builder-lib';
+import { appEntityType } from '@baseplate-dev/project-builder-lib';
 
 import { createCrumbFromUid } from '#src/types/routes.js';
 

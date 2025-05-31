@@ -1,4 +1,4 @@
-import { srcSubpathImportPlugin } from '@halfdomelabs/tools/src-subpath-import-plugin';
+import { srcSubpathImportPlugin } from '@baseplate-dev/tools/src-subpath-import-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import svgrPlugin from 'vite-plugin-svgr';

@@ -1,13 +1,13 @@
 import {
   projectScope,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   authComponentsImportsProvider,
   reactComponentsImportsProvider,
   reactComponentsProvider,
-} from '@halfdomelabs/react-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+} from '@baseplate-dev/react-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import path from 'node:path';
 import { z } from 'zod';
 

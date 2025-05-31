@@ -1,11 +1,11 @@
-import type { ComboboxFieldProps } from '@halfdomelabs/ui-components';
+import type { ComboboxFieldProps } from '@baseplate-dev/ui-components';
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import {
   ComboboxField,
   useControllerMerged,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useMemo, useState } from 'react';
 
 import { ModelUtils } from '#src/definition/index.js';

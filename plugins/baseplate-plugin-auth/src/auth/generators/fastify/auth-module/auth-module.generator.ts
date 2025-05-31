@@ -1,7 +1,7 @@
 import {
   tsCodeFragment,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
   authContextImportsProvider,
@@ -12,12 +12,12 @@ import {
   prismaOutputProvider,
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
-} from '@halfdomelabs/fastify-generators';
+} from '@baseplate-dev/fastify-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { FASTIFY_AUTH_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';

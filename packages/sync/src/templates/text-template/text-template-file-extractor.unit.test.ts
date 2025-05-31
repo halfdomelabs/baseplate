@@ -57,7 +57,7 @@ describe('TextTemplateFileExtractor', () => {
     expect(
       result[TemplateFileExtractorTestUtils.generatedPath('text-templates.ts')],
     ).toMatchInlineSnapshot(`
-      "import { createTextTemplateFile } from '@halfdomelabs/sync';
+      "import { createTextTemplateFile } from '@baseplate-dev/sync';
 
       const test = createTextTemplateFile({
         name: 'test',
@@ -143,7 +143,7 @@ describe('TextTemplateFileExtractor', () => {
       "import {
         createTextTemplateFile,
         createTextTemplateGroup,
-      } from '@halfdomelabs/sync';
+      } from '@baseplate-dev/sync';
 
       const file1 = createTextTemplateFile({
         name: 'file1',

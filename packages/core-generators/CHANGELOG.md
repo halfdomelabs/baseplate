@@ -1,4 +1,4 @@
-# @halfdomelabs/core-generators
+# @baseplate-dev/core-generators
 
 ## 0.11.8
 
@@ -9,8 +9,8 @@
 - [#550](https://github.com/halfdomelabs/baseplate/pull/550) [`af52406`](https://github.com/halfdomelabs/baseplate/commit/af524065204d945264a75e9fb06a3d3da1a8bfc2) Thanks [@kingston](https://github.com/kingston)! - Add typecheck script to default typescript generator
 
 - Updated dependencies [[`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616)]:
-  - @halfdomelabs/utils@0.1.10
-  - @halfdomelabs/sync@0.11.5
+  - @baseplate-dev/utils@0.1.10
+  - @baseplate-dev/sync@0.11.5
 
 ## 0.11.7
 
@@ -23,16 +23,16 @@
 - [#541](https://github.com/halfdomelabs/baseplate/pull/541) [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39) Thanks [@kingston](https://github.com/kingston)! - Support comment template variables with Typescript template system
 
 - Updated dependencies [[`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3), [`1446ebb`](https://github.com/halfdomelabs/baseplate/commit/1446ebb42c149d71f5c1974eb6e963aa8dd79f39), [`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3)]:
-  - @halfdomelabs/utils@0.1.9
-  - @halfdomelabs/sync@0.11.4
+  - @baseplate-dev/utils@0.1.9
+  - @baseplate-dev/sync@0.11.4
 
 ## 0.11.6
 
 ### Patch Changes
 
 - Updated dependencies [[`d8b98da`](https://github.com/halfdomelabs/baseplate/commit/d8b98da9e50456f1b541be1616b9a5266752540c)]:
-  - @halfdomelabs/utils@0.1.8
-  - @halfdomelabs/sync@0.11.3
+  - @baseplate-dev/utils@0.1.8
+  - @baseplate-dev/sync@0.11.3
 
 ## 0.11.5
 
@@ -45,8 +45,8 @@
 ### Patch Changes
 
 - Updated dependencies [[`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1), [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1)]:
-  - @halfdomelabs/sync@0.11.2
-  - @halfdomelabs/utils@0.1.7
+  - @baseplate-dev/sync@0.11.2
+  - @baseplate-dev/utils@0.1.7
 
 ## 0.11.3
 
@@ -59,8 +59,8 @@
 - [#516](https://github.com/halfdomelabs/baseplate/pull/516) [`85dc19e`](https://github.com/halfdomelabs/baseplate/commit/85dc19e9938db676c50cb9ccec17afe442e6c979) Thanks [@kingston](https://github.com/kingston)! - Refactor Prisma generators to use new ts templates
 
 - Updated dependencies [[`25dde93`](https://github.com/halfdomelabs/baseplate/commit/25dde93545bfab47df44cd82ce64a8d4e26b7a25), [`4695cbe`](https://github.com/halfdomelabs/baseplate/commit/4695cbe9759a5743b421cfe0dd9e87c991d9e652), [`a74e788`](https://github.com/halfdomelabs/baseplate/commit/a74e788dbd2987cf0be786ce3da7095c96965350), [`85dc19e`](https://github.com/halfdomelabs/baseplate/commit/85dc19e9938db676c50cb9ccec17afe442e6c979), [`25dde93`](https://github.com/halfdomelabs/baseplate/commit/25dde93545bfab47df44cd82ce64a8d4e26b7a25), [`a74e788`](https://github.com/halfdomelabs/baseplate/commit/a74e788dbd2987cf0be786ce3da7095c96965350), [`4695cbe`](https://github.com/halfdomelabs/baseplate/commit/4695cbe9759a5743b421cfe0dd9e87c991d9e652)]:
-  - @halfdomelabs/utils@0.1.6
-  - @halfdomelabs/sync@0.11.1
+  - @baseplate-dev/utils@0.1.6
+  - @baseplate-dev/sync@0.11.1
 
 ## 0.11.2
 
@@ -75,8 +75,8 @@
 - [#496](https://github.com/halfdomelabs/baseplate/pull/496) [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9) Thanks [@kingston](https://github.com/kingston)! - Introduce reverse generation engine for Typescript
 
 - Updated dependencies [[`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af), [`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574), [`9cee1f3`](https://github.com/halfdomelabs/baseplate/commit/9cee1f308f887e0baf06a1478c4785234f3c5aa9), [`40f5fc2`](https://github.com/halfdomelabs/baseplate/commit/40f5fc2c573669d90383e728667acaabddc397af), [`f5956dd`](https://github.com/halfdomelabs/baseplate/commit/f5956ddf8835c3e7eca0b25a20d3d4fab54fcef2), [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9)]:
-  - @halfdomelabs/sync@0.11.0
-  - @halfdomelabs/utils@0.1.5
+  - @baseplate-dev/sync@0.11.0
+  - @baseplate-dev/utils@0.1.5
 
 ## 0.11.0
 
@@ -109,8 +109,8 @@
 - [#467](https://github.com/halfdomelabs/baseplate/pull/467) [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node version to v22.14.0
 
 - Updated dependencies [[`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730), [`e1517d0`](https://github.com/halfdomelabs/baseplate/commit/e1517d099001d7215c61f5f98493dfd0acb99a03), [`014b140`](https://github.com/halfdomelabs/baseplate/commit/014b140bcdb959bd4dc34af4af1e57b9b529a9b1), [`f684e64`](https://github.com/halfdomelabs/baseplate/commit/f684e64646e026c1d60223433ffb8ba2432d1033), [`80b9a21`](https://github.com/halfdomelabs/baseplate/commit/80b9a21bf031de47988997497aea99c7e34ba5ed), [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b), [`3f9b186`](https://github.com/halfdomelabs/baseplate/commit/3f9b186b992a345fbbbd4c3ec56acc69314e07fe), [`c6caf6b`](https://github.com/halfdomelabs/baseplate/commit/c6caf6bb118b51643e67196b0a2c94973a1c8fb2), [`2f67423`](https://github.com/halfdomelabs/baseplate/commit/2f67423a1087e7779f4c7a6423d86f1f8465d1a3), [`635fb23`](https://github.com/halfdomelabs/baseplate/commit/635fb234fe6f567b1c70aa1cdb139521a14e36c1), [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1)]:
-  - @halfdomelabs/utils@0.1.4
-  - @halfdomelabs/sync@0.10.0
+  - @baseplate-dev/utils@0.1.4
+  - @baseplate-dev/sync@0.10.0
 
 ## 0.10.6
 
@@ -123,15 +123,15 @@
 ### Patch Changes
 
 - Updated dependencies [[`4785487`](https://github.com/halfdomelabs/baseplate/commit/4785487474947affa0818280cb1a75da5a3b48ba)]:
-  - @halfdomelabs/sync@0.9.2
+  - @baseplate-dev/sync@0.9.2
 
 ## 0.10.4
 
 ### Patch Changes
 
 - Updated dependencies [[`a7307cd`](https://github.com/halfdomelabs/baseplate/commit/a7307cdd2da73c9b7e02a23835eefe32ebed95d0)]:
-  - @halfdomelabs/utils@0.1.3
-  - @halfdomelabs/sync@0.9.1
+  - @baseplate-dev/utils@0.1.3
+  - @baseplate-dev/sync@0.9.1
 
 ## 0.10.3
 
@@ -156,8 +156,8 @@
 - [#428](https://github.com/halfdomelabs/baseplate/pull/428) [`5507eb7`](https://github.com/halfdomelabs/baseplate/commit/5507eb77d5413d3b87fa50988a6e4a1d58d78a14) Thanks [@kingston](https://github.com/kingston)! - Refactor output file writing and support file IDs to allow rename operations
 
 - Updated dependencies [[`5507eb7`](https://github.com/halfdomelabs/baseplate/commit/5507eb77d5413d3b87fa50988a6e4a1d58d78a14), [`5507eb7`](https://github.com/halfdomelabs/baseplate/commit/5507eb77d5413d3b87fa50988a6e4a1d58d78a14)]:
-  - @halfdomelabs/sync@0.9.0
-  - @halfdomelabs/utils@0.1.2
+  - @baseplate-dev/sync@0.9.0
+  - @baseplate-dev/utils@0.1.2
 
 ## 0.10.0
 
@@ -190,8 +190,8 @@
 - [#424](https://github.com/halfdomelabs/baseplate/pull/424) [`6a317cc`](https://github.com/halfdomelabs/baseplate/commit/6a317cc437fd53c9488067811bade99b167072f5) Thanks [@kingston](https://github.com/kingston)! - Replace lodash/ramda with es-tookit
 
 - Updated dependencies [[`71e3257`](https://github.com/halfdomelabs/baseplate/commit/71e325718e71aabffc02108ad6e97aa7f99729c9), [`48bda89`](https://github.com/halfdomelabs/baseplate/commit/48bda899b7b4158ba6ec58118edacc3b61ddb043), [`6a317cc`](https://github.com/halfdomelabs/baseplate/commit/6a317cc437fd53c9488067811bade99b167072f5), [`b18263c`](https://github.com/halfdomelabs/baseplate/commit/b18263c1a06a74c9c5456b1efb0d7171e3b747cc), [`17fc44f`](https://github.com/halfdomelabs/baseplate/commit/17fc44f3c2d232c9712ed43a27439594b41ea139), [`bc756fd`](https://github.com/halfdomelabs/baseplate/commit/bc756fd5ec6c27f0b4883ca778fbbf2bc63106ed), [`a09b91f`](https://github.com/halfdomelabs/baseplate/commit/a09b91f2d1ebd4c91653bdc2a89d03947d1b06da), [`9f34f54`](https://github.com/halfdomelabs/baseplate/commit/9f34f54d6b6c9762f5237000c83aa9959116a282), [`a09b91f`](https://github.com/halfdomelabs/baseplate/commit/a09b91f2d1ebd4c91653bdc2a89d03947d1b06da), [`62acb20`](https://github.com/halfdomelabs/baseplate/commit/62acb202ba44cf4bdbafdf5643d115c1811719ff), [`bc756fd`](https://github.com/halfdomelabs/baseplate/commit/bc756fd5ec6c27f0b4883ca778fbbf2bc63106ed), [`f0ee4e0`](https://github.com/halfdomelabs/baseplate/commit/f0ee4e07fc9d40947f319efb788f7fb596848231), [`e76c097`](https://github.com/halfdomelabs/baseplate/commit/e76c09721852d1a367ca4867f5e6abc350684b0c)]:
-  - @halfdomelabs/sync@0.8.0
-  - @halfdomelabs/utils@0.1.1
+  - @baseplate-dev/sync@0.8.0
+  - @baseplate-dev/utils@0.1.1
 
 ## 0.9.9
 
@@ -201,7 +201,7 @@
 - 354f4c9: [internal] Refactor formatter provider to become part of generator output
 - Updated dependencies [6ca94da]
 - Updated dependencies [354f4c9]
-  - @halfdomelabs/sync@0.7.12
+  - @baseplate-dev/sync@0.7.12
 
 ## 0.9.8
 
@@ -209,7 +209,7 @@
 
 - 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
 - Updated dependencies [77d9399]
-  - @halfdomelabs/sync@0.7.11
+  - @baseplate-dev/sync@0.7.11
 
 ## 0.9.7
 
@@ -217,7 +217,7 @@
 
 - 416f0941: Switch to ESM module resolution for backend (before syncing, run `pnpx migrate-esm-imports src baseplate/.clean` on your backend folder to minimize merge errors)
 - Updated dependencies [416f0941]
-  - @halfdomelabs/sync@0.7.10
+  - @baseplate-dev/sync@0.7.10
 
 ## 0.9.6
 
@@ -231,7 +231,7 @@
 - Updated dependencies [92654962]
 - Updated dependencies [92c1401f]
 - Updated dependencies [8cb0ef35]
-  - @halfdomelabs/sync@0.7.9
+  - @baseplate-dev/sync@0.7.9
 
 ## 0.9.5
 
@@ -239,7 +239,7 @@
 
 - 1835934: Update tsconfig to support Node 20 target/lib
 - Updated dependencies [f44674a]
-  - @halfdomelabs/sync@0.7.8
+  - @baseplate-dev/sync@0.7.8
 
 ## 0.9.4
 
@@ -248,7 +248,7 @@
 - 3dbb454: Allow vitest to pass even if there are no tests
 - 3dbb454: Expose prisma field descriptor
 - Updated dependencies [3dbb454]
-  - @halfdomelabs/sync@0.7.7
+  - @baseplate-dev/sync@0.7.7
 
 ## 0.9.3
 
@@ -256,7 +256,7 @@
 
 - ddbbead: Upgrade vitest to 2.0.3
 - Updated dependencies [ddbbead]
-  - @halfdomelabs/sync@0.7.6
+  - @baseplate-dev/sync@0.7.6
 
 ## 0.9.2
 
@@ -270,7 +270,7 @@
 
 - d8374b4: Upgrade tsc-alias to 1.8.10
 - Updated dependencies [d8374b4]
-  - @halfdomelabs/sync@0.7.5
+  - @baseplate-dev/sync@0.7.5
 
 ## 0.9.0
 
@@ -288,7 +288,7 @@
 - a6f01ea: Set up new plugin architecture and migrate storage plugin to new plugin architecture
 - Updated dependencies [94feb66]
 - Updated dependencies [a6f01ea]
-  - @halfdomelabs/sync@0.7.4
+  - @baseplate-dev/sync@0.7.4
 
 ## 0.8.0
 
@@ -305,14 +305,14 @@
 - 3f95dc6: Upgrade prettier to 3.2.5
 - Updated dependencies [082dfc3]
 - Updated dependencies [082dfc3]
-  - @halfdomelabs/sync@0.7.3
+  - @baseplate-dev/sync@0.7.3
 
 ## 0.7.6
 
 ### Patch Changes
 
 - 9f33a18: Switch Vite projects to use ESM instead of CJS
-  - @halfdomelabs/sync@0.7.2
+  - @baseplate-dev/sync@0.7.2
 
 ## 0.7.5
 
@@ -326,7 +326,7 @@
 
 - 922f0bf9: Upgrade prettier plugins and fix bug when prettier plugins were not present
 - 42beb73c: Upgrade local Docker Postgres to 16.2 and Redis to 7.2.4. See [Docker upgrade documentation](https://docs.hdlabs.dev/docs/guides/manual-upgrade-postgres) for upgrade instructions
-  - @halfdomelabs/sync@0.7.2
+  - @baseplate-dev/sync@0.7.2
 
 ## 0.7.3
 
@@ -336,14 +336,14 @@
 - 4c4cf8e5: Fix prettier plugins not being activated
 - 4c4cf8e5: Added sorting of package.json with prettier
 - Updated dependencies [f69fbf50]
-  - @halfdomelabs/sync@0.7.2
+  - @baseplate-dev/sync@0.7.2
 
 ## 0.7.2
 
 ### Patch Changes
 
 - Updated dependencies [114717fe]
-  - @halfdomelabs/sync@0.7.1
+  - @baseplate-dev/sync@0.7.1
 
 ## 0.7.1
 
@@ -352,7 +352,7 @@
 - 3da6a70: Upgrade to Node 20 and Typescript 5.2.2, cleaning up tsconfig setup
 - Updated dependencies [63794f7]
 - Updated dependencies [3da6a70]
-  - @halfdomelabs/sync@0.7.0
+  - @baseplate-dev/sync@0.7.0
 
 ## 0.7.0
 
@@ -369,7 +369,7 @@
 - 47d84ca: Upgrade jest, Sentry, Postmark, and Stripe integrations to latest
 - Updated dependencies [f24754d]
 - Updated dependencies [f24754d]
-  - @halfdomelabs/sync@0.6.0
+  - @baseplate-dev/sync@0.6.0
 
 ## 0.6.1
 
@@ -377,7 +377,7 @@
 
 - c4c38ec: Upgraded dependencies and remove gulp
 - Updated dependencies [c4c38ec]
-  - @halfdomelabs/sync@0.5.1
+  - @baseplate-dev/sync@0.5.1
 
 ## 0.6.0
 
@@ -389,7 +389,7 @@
 
 - 66ff670: Add ts-node back into dependencies to make ts-jest work
 - Updated dependencies [08a2746]
-  - @halfdomelabs/sync@0.5.0
+  - @baseplate-dev/sync@0.5.0
 
 ## 0.5.0
 
@@ -401,14 +401,14 @@
 
 - Updated dependencies [0027b3d]
 - Updated dependencies [ba3f678]
-  - @halfdomelabs/sync@0.4.0
+  - @baseplate-dev/sync@0.4.0
 
 ## 0.4.2
 
 ### Patch Changes
 
 - Updated dependencies [ce57ca0]
-  - @halfdomelabs/sync@0.3.3
+  - @baseplate-dev/sync@0.3.3
 
 ## 0.4.1
 
@@ -416,7 +416,7 @@
 
 - 3f45e59: Fix changeset release process to build app before releasing
 - Updated dependencies [3f45e59]
-  - @halfdomelabs/sync@0.3.2
+  - @baseplate-dev/sync@0.3.2
 
 ## 0.4.0
 
@@ -428,7 +428,7 @@
 
 - c6893a5: Add --non-interactive to yarn install to fix yarn installation failures
 - Updated dependencies [c6893a5]
-  - @halfdomelabs/sync@0.3.1
+  - @baseplate-dev/sync@0.3.1
 
 ## 0.3.0
 
@@ -442,7 +442,7 @@
 
 - Updated dependencies [dcd86ed]
 - Updated dependencies [f7cb616]
-  - @halfdomelabs/sync@0.3.0
+  - @baseplate-dev/sync@0.3.0
 
 ## 0.2.1
 
@@ -450,7 +450,7 @@
 
 - ec0218a: Upgrade tsc-alias tooling
 - Updated dependencies [ec0218a]
-  - @halfdomelabs/sync@0.2.1
+  - @baseplate-dev/sync@0.2.1
 
 ## 0.2.0
 
@@ -461,4 +461,4 @@
 ### Patch Changes
 
 - Updated dependencies [5f2d7d8]
-  - @halfdomelabs/sync@0.2.0
+  - @baseplate-dev/sync@0.2.0

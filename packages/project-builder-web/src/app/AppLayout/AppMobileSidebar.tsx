@@ -1,7 +1,7 @@
-import type { IconElement } from '@halfdomelabs/ui-components';
+import type { IconElement } from '@baseplate-dev/ui-components';
 import type React from 'react';
 
-import { SheetClose } from '@halfdomelabs/ui-components';
+import { SheetClose } from '@baseplate-dev/ui-components';
 import { HiDatabase } from 'react-icons/hi';
 import { MdApps, MdHome, MdOutlineSettings, MdWidgets } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';

@@ -5,7 +5,7 @@ import {
   tsCodeFragment,
   tsImportBuilder,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
   authContextImportsProvider,
@@ -16,12 +16,12 @@ import {
   prismaOutputProvider,
   userSessionServiceImportsProvider,
   userSessionTypesImportsProvider,
-} from '@halfdomelabs/fastify-generators';
+} from '@baseplate-dev/fastify-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { AUTH0_PACKAGES } from '#src/auth0/constants/packages.js';

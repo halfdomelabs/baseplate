@@ -3,14 +3,14 @@ import type {
   AdminCrudDisplayConfig,
   AdminCrudForeignDisplayConfig,
   AdminCrudTextDisplayConfig,
-} from '@halfdomelabs/project-builder-lib';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+} from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
-import { ModelFieldUtils, ModelUtils } from '@halfdomelabs/project-builder-lib';
+import { ModelFieldUtils, ModelUtils } from '@baseplate-dev/project-builder-lib';
 import {
   adminCrudForeignDisplayGenerator,
   adminCrudTextDisplayGenerator,
-} from '@halfdomelabs/react-generators';
+} from '@baseplate-dev/react-generators';
 
 import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
 

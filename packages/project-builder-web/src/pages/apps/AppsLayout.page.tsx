@@ -1,7 +1,7 @@
 import type React from 'react';
 
-import { appEntityType } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { appEntityType } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   NavigationMenu,
@@ -10,7 +10,7 @@ import {
   SidebarLayout,
   SidebarLayoutContent,
   SidebarLayoutSidebar,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { sortBy } from 'es-toolkit';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 

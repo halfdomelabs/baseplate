@@ -5,4 +5,4 @@ alwaysApply: false
 ---
 ## UI
 
-- We use a rough analog of ShadCN components that can be imported from @halfdomelabs/ui-components
+- We use a rough analog of ShadCN components that can be imported from @baseplate-dev/ui-components

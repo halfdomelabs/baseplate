@@ -1,10 +1,10 @@
-import type { ModelTransformerCompiler } from '@halfdomelabs/project-builder-lib';
+import type { ModelTransformerCompiler } from '@baseplate-dev/project-builder-lib';
 
 import {
   createPlatformPluginExport,
   modelTransformerCompilerSpec,
   PluginUtils,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import { prismaFileTransformerGenerator } from '#src/generators/fastify/index.js';
 

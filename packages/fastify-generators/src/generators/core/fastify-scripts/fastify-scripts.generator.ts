@@ -1,10 +1,10 @@
-import { nodeProvider, projectScope } from '@halfdomelabs/core-generators';
+import { nodeProvider, projectScope } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
   renderRawTemplateFileAction,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { fastifyOutputProvider } from '../fastify/fastify.generator.js';

@@ -1,4 +1,4 @@
-import { notEmpty, toposort } from '@halfdomelabs/utils';
+import { notEmpty, toposort } from '@baseplate-dev/utils';
 
 import type { GeneratorOutputMetadata } from '#src/output/generator-task-output.js';
 

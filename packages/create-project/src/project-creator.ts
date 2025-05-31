@@ -61,7 +61,7 @@ export async function generateBaseplateProject({
             preinstall: 'npx only-allow pnpm',
           },
           devDependencies: {
-            '@halfdomelabs/project-builder-cli': cliVersion,
+            '@baseplate-dev/project-builder-cli': cliVersion,
           },
           packageManager: 'pnpm@10.6.5',
           engines: {

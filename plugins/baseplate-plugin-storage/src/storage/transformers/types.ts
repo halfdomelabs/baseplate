@@ -5,7 +5,7 @@ import {
   modelTransformerEntityType,
   zEnt,
   zRef,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
 export const fileTransformerSchema = zEnt(

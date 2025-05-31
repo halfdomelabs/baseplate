@@ -1,4 +1,4 @@
-# @halfdomelabs/sync
+# @baseplate-dev/sync
 
 ## 0.11.5
 
@@ -7,7 +7,7 @@
 - [#552](https://github.com/halfdomelabs/baseplate/pull/552) [`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616) Thanks [@kingston](https://github.com/kingston)! - Refactor to use subpath imports instead of tsconfig paths
 
 - Updated dependencies [[`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616)]:
-  - @halfdomelabs/utils@0.1.10
+  - @baseplate-dev/utils@0.1.10
 
 ## 0.11.4
 
@@ -18,14 +18,14 @@
 - [#543](https://github.com/halfdomelabs/baseplate/pull/543) [`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3) Thanks [@kingston](https://github.com/kingston)! - Add ability to skip running commands for sync to allow more rapid E2E testing
 
 - Updated dependencies [[`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3)]:
-  - @halfdomelabs/utils@0.1.9
+  - @baseplate-dev/utils@0.1.9
 
 ## 0.11.3
 
 ### Patch Changes
 
 - Updated dependencies [[`d8b98da`](https://github.com/halfdomelabs/baseplate/commit/d8b98da9e50456f1b541be1616b9a5266752540c)]:
-  - @halfdomelabs/utils@0.1.8
+  - @baseplate-dev/utils@0.1.8
 
 ## 0.11.2
 
@@ -34,7 +34,7 @@
 - [#527](https://github.com/halfdomelabs/baseplate/pull/527) [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1) Thanks [@kingston](https://github.com/kingston)! - Add TestLogger type to exports
 
 - Updated dependencies [[`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1)]:
-  - @halfdomelabs/utils@0.1.7
+  - @baseplate-dev/utils@0.1.7
 
 ## 0.11.1
 
@@ -47,7 +47,7 @@
 - [#519](https://github.com/halfdomelabs/baseplate/pull/519) [`4695cbe`](https://github.com/halfdomelabs/baseplate/commit/4695cbe9759a5743b421cfe0dd9e87c991d9e652) Thanks [@kingston](https://github.com/kingston)! - Allow onlyIfChanged to accept canonical paths
 
 - Updated dependencies [[`25dde93`](https://github.com/halfdomelabs/baseplate/commit/25dde93545bfab47df44cd82ce64a8d4e26b7a25), [`4695cbe`](https://github.com/halfdomelabs/baseplate/commit/4695cbe9759a5743b421cfe0dd9e87c991d9e652), [`a74e788`](https://github.com/halfdomelabs/baseplate/commit/a74e788dbd2987cf0be786ce3da7095c96965350), [`85dc19e`](https://github.com/halfdomelabs/baseplate/commit/85dc19e9938db676c50cb9ccec17afe442e6c979)]:
-  - @halfdomelabs/utils@0.1.6
+  - @baseplate-dev/utils@0.1.6
 
 ## 0.11.0
 
@@ -68,7 +68,7 @@
 - [#496](https://github.com/halfdomelabs/baseplate/pull/496) [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9) Thanks [@kingston](https://github.com/kingston)! - Introduce reverse generation engine for Typescript
 
 - Updated dependencies [[`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574), [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9)]:
-  - @halfdomelabs/utils@0.1.5
+  - @baseplate-dev/utils@0.1.5
 
 ## 0.10.0
 
@@ -99,7 +99,7 @@
 - [#467](https://github.com/halfdomelabs/baseplate/pull/467) [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node version to v22.14.0
 
 - Updated dependencies [[`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730), [`e1517d0`](https://github.com/halfdomelabs/baseplate/commit/e1517d099001d7215c61f5f98493dfd0acb99a03), [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b), [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1)]:
-  - @halfdomelabs/utils@0.1.4
+  - @baseplate-dev/utils@0.1.4
 
 ## 0.9.2
 
@@ -112,7 +112,7 @@
 ### Patch Changes
 
 - Updated dependencies [[`a7307cd`](https://github.com/halfdomelabs/baseplate/commit/a7307cdd2da73c9b7e02a23835eefe32ebed95d0)]:
-  - @halfdomelabs/utils@0.1.3
+  - @baseplate-dev/utils@0.1.3
 
 ## 0.9.0
 
@@ -123,7 +123,7 @@
 ### Patch Changes
 
 - Updated dependencies [[`5507eb7`](https://github.com/halfdomelabs/baseplate/commit/5507eb77d5413d3b87fa50988a6e4a1d58d78a14)]:
-  - @halfdomelabs/utils@0.1.2
+  - @baseplate-dev/utils@0.1.2
 
 ## 0.8.0
 

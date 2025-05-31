@@ -1,4 +1,4 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   eslintConfigProvider,
@@ -10,7 +10,7 @@ import {
   TsCodeUtils,
   tsImportBuilder,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
   createGenerator,
@@ -18,7 +18,7 @@ import {
   createProviderTask,
   renderRawTemplateFileAction,
   renderTextTemplateGroupAction,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { CORE_REACT_RAW_TEMPLATES } from './generated/raw-templates.js';

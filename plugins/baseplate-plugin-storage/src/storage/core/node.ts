@@ -5,7 +5,7 @@ import {
   createPlatformPluginExport,
   PluginUtils,
   webAppEntryType,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import { storageModuleGenerator } from '#src/generators/fastify/index.js';
 import { uploadComponentsGenerator } from '#src/generators/react/upload-components/upload-components.generator.js';

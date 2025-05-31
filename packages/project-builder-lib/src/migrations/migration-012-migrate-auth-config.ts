@@ -50,7 +50,7 @@ export const migration012MigrateAuthConfig = createSchemaMigration<
       };
     }
 
-    const auth0PluginId = 'plugin:halfdomelabs_baseplate-plugin-auth_auth0';
+    const auth0PluginId = 'plugin:baseplate-dev_baseplate-plugin-auth_auth0';
 
     const auth0Config = {
       userAccountModelRef: config.auth.userModelRef,
@@ -70,7 +70,7 @@ export const migration012MigrateAuthConfig = createSchemaMigration<
       plugins.push({
         id: auth0PluginId,
         name: 'auth0',
-        packageName: '@halfdomelabs/baseplate-plugin-auth',
+        packageName: '@baseplate-dev/baseplate-plugin-auth',
         version: '0.1.0',
         config: auth0Config,
       });

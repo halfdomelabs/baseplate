@@ -1,6 +1,6 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { createProviderType } from '@halfdomelabs/sync';
+import { createProviderType } from '@baseplate-dev/sync';
 
 import type { GraphQLField } from '#src/writers/graphql/index.js';
 

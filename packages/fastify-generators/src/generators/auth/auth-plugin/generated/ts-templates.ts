@@ -1,4 +1,4 @@
-import { createTsTemplateFile } from '@halfdomelabs/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
 import { userSessionServiceImportsProvider } from '../../_providers/user-session.js';
 import { authContextImportsProvider } from '../../auth-context/generated/ts-import-maps.js';

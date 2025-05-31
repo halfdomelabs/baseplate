@@ -3,13 +3,13 @@ import {
   type TsCodeFragment,
   TsCodeUtils,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-} from '@halfdomelabs/sync';
-import { mapValuesOfMap } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import {

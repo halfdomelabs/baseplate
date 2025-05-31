@@ -1,11 +1,11 @@
-import type { AppEntry } from '@halfdomelabs/project-builder-lib';
-import type { GeneratorEntry } from '@halfdomelabs/sync';
+import type { AppEntry } from '@baseplate-dev/project-builder-lib';
+import type { GeneratorEntry } from '@baseplate-dev/sync';
 import type { MockedObject } from 'vitest';
 
 import {
   createCodebaseFileReaderFromDirectory,
   createTestLogger,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { vol } from 'memfs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

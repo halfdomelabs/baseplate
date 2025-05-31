@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { useBlockerDialogState } from '@halfdomelabs/project-builder-lib/web';
+import { useBlockerDialogState } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   Dialog,
@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useCallback, useEffect, useState } from 'react';
 import { useBlocker } from 'react-router-dom';
 

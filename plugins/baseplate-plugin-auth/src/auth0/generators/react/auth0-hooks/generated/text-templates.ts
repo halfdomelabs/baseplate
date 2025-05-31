@@ -1,4 +1,4 @@
-import { createTextTemplateFile } from '@halfdomelabs/sync';
+import { createTextTemplateFile } from '@baseplate-dev/sync';
 
 const useCurrentUserGql = createTextTemplateFile({
   name: 'use-current-user-gql',

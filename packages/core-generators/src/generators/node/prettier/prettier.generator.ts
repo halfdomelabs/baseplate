@@ -1,4 +1,4 @@
-import type { FormatFunction, NonOverwriteableMap } from '@halfdomelabs/sync';
+import type { FormatFunction, NonOverwriteableMap } from '@baseplate-dev/sync';
 import type { Plugin } from 'prettier';
 
 import {
@@ -6,12 +6,12 @@ import {
   createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
-} from '@halfdomelabs/sync';
-import { notEmpty } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { notEmpty } from '@baseplate-dev/utils';
 import {
   findNearestPackageJson,
   readJsonWithSchema,
-} from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/utils/node';
 import { uniq } from 'es-toolkit';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';

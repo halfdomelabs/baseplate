@@ -1,15 +1,15 @@
 import type { Control } from 'react-hook-form';
 
-import { authConfigSpec } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { authConfigSpec } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   cn,
   ComboboxFieldController,
   InputFieldController,
   MultiComboboxFieldController,
-} from '@halfdomelabs/ui-components';
-import { notEmpty } from '@halfdomelabs/utils';
+} from '@baseplate-dev/ui-components';
+import { notEmpty } from '@baseplate-dev/utils';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
 import type { StoragePluginDefinitionInput } from '../schema/plugin-definition.js';

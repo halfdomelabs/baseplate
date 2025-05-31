@@ -7,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { Link } from 'react-router-dom';
 
 function HomePage(): React.JSX.Element {

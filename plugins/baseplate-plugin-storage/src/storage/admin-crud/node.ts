@@ -1,11 +1,11 @@
-import type { AdminCrudInputCompiler } from '@halfdomelabs/project-builder-lib';
+import type { AdminCrudInputCompiler } from '@baseplate-dev/project-builder-lib';
 
 import {
   adminCrudInputCompilerSpec,
   createPlatformPluginExport,
   ModelFieldUtils,
   PluginUtils,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import { adminCrudFileInputGenerator } from '#src/generators/react/admin-crud-file-input/admin-crud-file-input.generator.js';
 

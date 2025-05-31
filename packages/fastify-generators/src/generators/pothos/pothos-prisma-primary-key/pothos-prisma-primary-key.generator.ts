@@ -1,5 +1,5 @@
-import { projectScope } from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { projectScope } from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import type { PothosWriterOptions } from '#src/writers/pothos/index.js';

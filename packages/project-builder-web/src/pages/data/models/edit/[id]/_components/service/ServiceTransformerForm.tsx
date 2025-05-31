@@ -1,13 +1,13 @@
-import type { TransformerConfig } from '@halfdomelabs/project-builder-lib';
-import type { ModelTransformerWebConfig } from '@halfdomelabs/project-builder-lib/web';
+import type { TransformerConfig } from '@baseplate-dev/project-builder-lib';
+import type { ModelTransformerWebConfig } from '@baseplate-dev/project-builder-lib/web';
 import type React from 'react';
 
 import {
   modelTransformerEntityType,
   transformerSchema,
-} from '@halfdomelabs/project-builder-lib';
-import { usePluginEnhancedSchema } from '@halfdomelabs/project-builder-lib/web';
-import { Button, DialogClose, DialogFooter } from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/project-builder-lib';
+import { usePluginEnhancedSchema } from '@baseplate-dev/project-builder-lib/web';
+import { Button, DialogClose, DialogFooter } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
 import { useId } from 'react';

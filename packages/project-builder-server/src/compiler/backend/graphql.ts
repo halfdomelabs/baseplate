@@ -1,8 +1,8 @@
 import type {
   EnumConfig,
   ModelConfig,
-} from '@halfdomelabs/project-builder-lib';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+} from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   pothosAuthorizeFieldGenerator,
@@ -14,9 +14,9 @@ import {
   pothosPrismaObjectGenerator,
   pothosPrismaPrimaryKeyGenerator,
   pothosTypesFileGenerator,
-} from '@halfdomelabs/fastify-generators';
-import { authConfigSpec, ModelUtils } from '@halfdomelabs/project-builder-lib';
-import { notEmpty } from '@halfdomelabs/utils';
+} from '@baseplate-dev/fastify-generators';
+import { authConfigSpec, ModelUtils } from '@baseplate-dev/project-builder-lib';
+import { notEmpty } from '@baseplate-dev/utils';
 import { kebabCase } from 'change-case';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';

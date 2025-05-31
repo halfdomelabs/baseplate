@@ -1,8 +1,8 @@
 import type React from 'react';
 
-import { enumBaseSchema } from '@halfdomelabs/project-builder-lib';
-import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
-import { FormActionBar, SectionList } from '@halfdomelabs/ui-components';
+import { enumBaseSchema } from '@baseplate-dev/project-builder-lib';
+import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
+import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
 
 import { ErrorBoundary } from '#src/components/index.js';
 

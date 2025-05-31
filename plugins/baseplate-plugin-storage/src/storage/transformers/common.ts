@@ -1,7 +1,7 @@
 import {
   createPlatformPluginExport,
   modelTransformerSpec,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import { fileTransformerSchema } from './types.js';
 

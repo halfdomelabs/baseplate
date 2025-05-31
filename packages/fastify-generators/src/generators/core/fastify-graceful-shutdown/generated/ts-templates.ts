@@ -1,4 +1,4 @@
-import { createTsTemplateFile } from '@halfdomelabs/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
 import { errorHandlerServiceImportsProvider } from '../../error-handler-service/generated/ts-import-maps.js';
 import { loggerServiceImportsProvider } from '../../logger-service/generated/ts-import-maps.js';

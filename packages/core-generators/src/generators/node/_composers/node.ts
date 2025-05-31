@@ -1,7 +1,7 @@
 import type {
   GeneratorBundle,
   InferDescriptorFromGenerator,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 
 import { eslintGenerator } from '../eslint/eslint.generator.js';
 import { nodeGitIgnoreGenerator } from '../node-git-ignore/node-git-ignore.generator.js';

@@ -5,7 +5,7 @@
  * - Validates non-private packages against their "files" array
  * - Ensures packages with changes are properly staged for publishing
  * - Optimized for PR use: parallel processing and only checks affected packages
- * - Uses the last git tag with prefix "@halfdomelabs/project-builder-cli@" as the comparison point
+ * - Uses the last git tag with prefix "@baseplate-dev/project-builder-cli@" as the comparison point
  */
 
 import { promises as fs, globSync } from 'node:fs';
@@ -187,21 +187,21 @@ async function extractAndValidatePackage(
 const CHANGESET_OUTPUT_FILE = 'changeset-output.json';
 
 /**
- * Gets the last git tag with the prefix "@halfdomelabs/project-builder-cli@"
+ * Gets the last git tag with the prefix "@baseplate-dev/project-builder-cli@"
  * @returns The last git tag or null if none found
  */
 async function getLastPackageTag(): Promise<string | null> {
   try {
     // List all tags matching the prefix, sorted by version (assuming semver)
     const { stdout } = await execAsync(
-      'git tag --list "@halfdomelabs/project-builder-cli@*" --sort=-v:refname',
+      'git tag --list "@baseplate-dev/project-builder-cli@*" --sort=-v:refname',
     );
 
     const tags = stdout.trim().split('\n').filter(Boolean);
 
     if (tags.length === 0) {
       console.log(
-        'No previous tags found for @halfdomelabs/project-builder-cli',
+        'No previous tags found for @baseplate-dev/project-builder-cli',
       );
       return null;
     }

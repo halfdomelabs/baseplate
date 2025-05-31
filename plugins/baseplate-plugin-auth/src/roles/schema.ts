@@ -1,4 +1,4 @@
-import { authRoleEntityType, zEnt } from '@halfdomelabs/project-builder-lib';
+import { authRoleEntityType, zEnt } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
 import { AUTH_DEFAULT_ROLES } from './constants.js';

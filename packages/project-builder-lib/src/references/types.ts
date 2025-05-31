@@ -1,4 +1,4 @@
-import { randomUid } from '@halfdomelabs/utils';
+import { randomUid } from '@baseplate-dev/utils';
 
 export type ReferencePath = (string | number)[];
 

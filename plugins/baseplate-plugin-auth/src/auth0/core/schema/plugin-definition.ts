@@ -2,7 +2,7 @@ import {
   featureEntityType,
   modelEntityType,
   zRef,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
 import { authRolesSchema } from '#src/roles/index.js';

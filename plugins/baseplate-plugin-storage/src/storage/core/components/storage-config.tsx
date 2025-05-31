@@ -1,4 +1,4 @@
-import type { WebConfigProps } from '@halfdomelabs/project-builder-lib';
+import type { WebConfigProps } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -7,14 +7,14 @@ import {
   FeatureUtils,
   ModelUtils,
   PluginUtils,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import {
   ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
-} from '@halfdomelabs/project-builder-lib/web';
-import { Button, ComboboxFieldController } from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/project-builder-lib/web';
+import { Button, ComboboxFieldController } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 

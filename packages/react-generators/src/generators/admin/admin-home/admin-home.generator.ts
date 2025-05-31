@@ -1,5 +1,5 @@
-import { typescriptFileProvider } from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';

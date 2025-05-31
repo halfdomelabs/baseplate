@@ -1,5 +1,5 @@
 {
-  "name": "@halfdomelabs/utils",
+  "name": "@baseplate-dev/utils",
   "version": "0.1.10",
   "description": "Shared utility functions for Baseplate",
   "homepage": "https://www.halfdomelabs.com/",
@@ -43,7 +43,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
+    "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "memfs": "4.15.1",

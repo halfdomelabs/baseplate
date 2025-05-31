@@ -1,4 +1,4 @@
-# @halfdomelabs/code-morph
+# @baseplate-dev/code-morph
 
 ## 0.3.2
 

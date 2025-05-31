@@ -1,5 +1,5 @@
 {
-  "extends": "@halfdomelabs/tools/tsconfig.node.cli.json",
+  "extends": "@baseplate-dev/tools/tsconfig.node.cli.json",
   "compilerOptions": {
     "noEmit": true
   },

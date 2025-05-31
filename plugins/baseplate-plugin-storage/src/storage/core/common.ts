@@ -1,7 +1,7 @@
 import {
   createPlatformPluginExport,
   pluginConfigSpec,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import { STORAGE_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations.js';
 import { storagePluginDefinitionSchema } from './schema/plugin-definition.js';

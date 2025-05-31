@@ -1,4 +1,4 @@
-# @halfdomelabs/tools
+# @baseplate-dev/tools
 
 ## 0.5.16
 

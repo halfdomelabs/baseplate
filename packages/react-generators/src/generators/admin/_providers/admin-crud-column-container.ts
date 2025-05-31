@@ -1,4 +1,4 @@
-import { createProviderType } from '@halfdomelabs/sync';
+import { createProviderType } from '@baseplate-dev/sync';
 
 import type { AdminCrudDisplay } from '../_utils/data-display.js';
 

@@ -1,7 +1,7 @@
 import {
   createPlatformPluginExport,
   webConfigSpec,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import { AuthDefinitionEditor } from './components/auth-definition-editor.js';
 

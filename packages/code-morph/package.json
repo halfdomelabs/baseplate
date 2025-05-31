@@ -1,5 +1,5 @@
 {
-  "name": "@halfdomelabs/code-morph",
+  "name": "@baseplate-dev/code-morph",
   "version": "0.3.2",
   "private": true,
   "description": "Simple package for running code migrations on the codebase",
@@ -45,7 +45,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
+    "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",

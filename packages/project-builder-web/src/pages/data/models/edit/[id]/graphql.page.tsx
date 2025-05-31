@@ -1,8 +1,8 @@
 import type React from 'react';
 
-import { modelBaseSchema } from '@halfdomelabs/project-builder-lib';
-import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
-import { FormActionBar, SectionList } from '@halfdomelabs/ui-components';
+import { modelBaseSchema } from '@baseplate-dev/project-builder-lib';
+import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
+import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
 
 import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig.js';
 import { useModelForm } from '../../_hooks/useModelForm.js';

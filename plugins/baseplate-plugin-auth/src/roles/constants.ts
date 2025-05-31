@@ -1,4 +1,4 @@
-import { authRoleEntityType } from '@halfdomelabs/project-builder-lib';
+import { authRoleEntityType } from '@baseplate-dev/project-builder-lib';
 
 import type { AuthRoleDefinition } from './schema.js';
 

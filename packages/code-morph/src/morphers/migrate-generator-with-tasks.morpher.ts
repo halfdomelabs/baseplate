@@ -21,7 +21,7 @@ export default createTypescriptMorpher({
     const createGeneratorWithTasksImport = importDeclarations
       .find(
         (dec) =>
-          dec.getModuleSpecifierValue() === '@halfdomelabs/sync' &&
+          dec.getModuleSpecifierValue() === '@baseplate-dev/sync' &&
           !dec.isTypeOnly(),
       )
       ?.getNamedImports()

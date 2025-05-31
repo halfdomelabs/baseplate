@@ -1,4 +1,4 @@
-import { createTsImportMap } from '@halfdomelabs/core-generators';
+import { createTsImportMap } from '@baseplate-dev/core-generators';
 import path from 'node:path/posix';
 
 import type { UserSessionServiceImportsProvider } from '../../_providers/user-session.js';

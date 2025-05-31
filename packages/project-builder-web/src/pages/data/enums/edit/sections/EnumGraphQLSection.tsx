@@ -1,4 +1,4 @@
-import type { EnumConfig } from '@halfdomelabs/project-builder-lib';
+import type { EnumConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
@@ -8,7 +8,7 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
   SwitchFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 
 export function EnumGraphQLSection({
   control,

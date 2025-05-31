@@ -1,4 +1,4 @@
-import { toposortOrdered } from '@halfdomelabs/utils';
+import { toposortOrdered } from '@baseplate-dev/utils';
 import { keyBy, mapValues } from 'es-toolkit';
 
 import { stripUndefinedValues } from '#src/utils/strip.js';

@@ -1,3 +1,3 @@
-import eslintReactConfig from '@halfdomelabs/tools/eslint-react';
+import eslintReactConfig from '@baseplate-dev/tools/eslint-react';
 
 export default [...eslintReactConfig, { ignores: ['**/templates/**'] }];

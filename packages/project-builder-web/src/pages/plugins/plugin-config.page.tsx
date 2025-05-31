@@ -4,8 +4,8 @@ import {
   pluginEntityType,
   PluginUtils,
   webConfigSpec,
-} from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   DropdownMenu,
@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   useConfirmDialog,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useMemo } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
 import { useNavigate, useParams } from 'react-router-dom';

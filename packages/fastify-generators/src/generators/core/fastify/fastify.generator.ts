@@ -1,4 +1,4 @@
-import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
+import type { InferFieldMapSchemaFromBuilder } from '@baseplate-dev/utils';
 
 import {
   createNodeTask,
@@ -7,7 +7,7 @@ import {
   nodeGitIgnoreProvider,
   nodeProvider,
   projectScope,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createConfigFieldMap,
   createGenerator,
@@ -15,8 +15,8 @@ import {
   createProviderTask,
   createProviderType,
   createReadOnlyProviderType,
-} from '@halfdomelabs/sync';
-import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { createFieldMapSchemaBuilder } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 

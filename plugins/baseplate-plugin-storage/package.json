@@ -1,5 +1,5 @@
 {
-  "name": "@halfdomelabs/baseplate-plugin-storage",
+  "name": "@baseplate-dev/baseplate-plugin-storage",
   "version": "5.1.2",
   "description": "Contains the storage plugin for Baseplate",
   "repository": "https://github.com/halfdomelabs/baseplate",
@@ -34,11 +34,11 @@
     "watch:vite": "vite build --watch"
   },
   "dependencies": {
-    "@halfdomelabs/core-generators": "workspace:*",
-    "@halfdomelabs/fastify-generators": "workspace:*",
-    "@halfdomelabs/react-generators": "workspace:*",
-    "@halfdomelabs/ui-components": "workspace:*",
-    "@halfdomelabs/utils": "workspace:*",
+    "@baseplate-dev/core-generators": "workspace:*",
+    "@baseplate-dev/fastify-generators": "workspace:*",
+    "@baseplate-dev/react-generators": "workspace:*",
+    "@baseplate-dev/ui-components": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
     "@hookform/resolvers": "5.0.1",
     "inflection": "3.0.0",
     "react": "catalog:",
@@ -47,9 +47,9 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@halfdomelabs/project-builder-lib": "workspace:*",
-    "@halfdomelabs/sync": "workspace:*",
-    "@halfdomelabs/tools": "workspace:*",
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
+    "@baseplate-dev/tools": "workspace:*",
     "@originjs/vite-plugin-federation": "1.3.6",
     "@tailwindcss/vite": "catalog:",
     "@types/node": "catalog:",
@@ -66,8 +66,8 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@halfdomelabs/project-builder-lib": "workspace:*",
-    "@halfdomelabs/sync": "workspace:*"
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*"
   },
   "engines": {
     "node": "^22.0.0"

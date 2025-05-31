@@ -1,6 +1,6 @@
 import type { Control } from 'react-hook-form';
 
-import { Button, InputFieldController } from '@halfdomelabs/ui-components';
+import { Button, InputFieldController } from '@baseplate-dev/ui-components';
 import { useFieldArray } from 'react-hook-form';
 
 import { cn } from '#src/utils/cn.js';

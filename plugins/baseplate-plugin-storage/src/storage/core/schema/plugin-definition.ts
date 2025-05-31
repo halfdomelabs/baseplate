@@ -8,7 +8,7 @@ import {
   zEnt,
   zRef,
   zRefBuilder,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import z from 'zod';
 
 export const storageAdapterEntityType = createEntityType(

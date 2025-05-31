@@ -1,7 +1,7 @@
-import type { ColorPalette } from '@halfdomelabs/project-builder-lib';
+import type { ColorPalette } from '@baseplate-dev/project-builder-lib';
 import type { Rgb } from 'culori';
 
-import { PALETTE_SHADES } from '@halfdomelabs/project-builder-lib';
+import { PALETTE_SHADES } from '@baseplate-dev/project-builder-lib';
 import { converter, formatHex } from 'culori';
 
 import { generatePaletteNN } from './palette-neural-net.js';

@@ -1,4 +1,4 @@
-import { hashWithSHA256 } from '@halfdomelabs/utils';
+import { hashWithSHA256 } from '@baseplate-dev/utils';
 
 import {
   downloadProjectDefinition,

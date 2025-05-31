@@ -1,8 +1,8 @@
-import type { BaseAppConfig } from '@halfdomelabs/project-builder-lib';
+import type { BaseAppConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { appEntityType } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { appEntityType } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   Dialog,
@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
   ErrorDisplay,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { NotFoundCard } from '#src/components/index.js';

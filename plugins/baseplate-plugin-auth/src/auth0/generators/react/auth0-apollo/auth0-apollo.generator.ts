@@ -2,9 +2,9 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-} from '@halfdomelabs/core-generators';
-import { reactApolloConfigProvider } from '@halfdomelabs/react-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+} from '@baseplate-dev/core-generators';
+import { reactApolloConfigProvider } from '@baseplate-dev/react-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});

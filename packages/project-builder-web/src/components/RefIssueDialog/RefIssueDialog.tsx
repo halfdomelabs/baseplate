@@ -1,7 +1,7 @@
-import type { DefinitionEntity } from '@halfdomelabs/project-builder-lib';
+import type { DefinitionEntity } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   Dialog,
@@ -16,7 +16,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { Link } from 'react-router-dom';
 
 import { useDeleteReferenceDialogState } from '#src/hooks/useDeleteReferenceDialog.js';

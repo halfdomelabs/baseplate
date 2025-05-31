@@ -1,11 +1,11 @@
 import {
   createTsTemplateFile,
   createTsTemplateGroup,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   generatedGraphqlImportsProvider,
   reactErrorImportsProvider,
-} from '@halfdomelabs/react-generators';
+} from '@baseplate-dev/react-generators';
 
 const useCurrentUser = createTsTemplateFile({
   group: 'hooks',

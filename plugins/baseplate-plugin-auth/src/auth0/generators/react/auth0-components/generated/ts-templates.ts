@@ -1,5 +1,5 @@
-import { createTsTemplateFile } from '@halfdomelabs/core-generators';
-import { reactComponentsImportsProvider } from '@halfdomelabs/react-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
+import { reactComponentsImportsProvider } from '@baseplate-dev/react-generators';
 
 const requireAuth = createTsTemplateFile({
   importMapProviders: {

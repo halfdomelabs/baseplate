@@ -1,6 +1,6 @@
-import { tsCodeFragment, TsCodeUtils } from '@halfdomelabs/core-generators';
-import { adminCrudInputContainerProvider } from '@halfdomelabs/react-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
+import { adminCrudInputContainerProvider } from '@baseplate-dev/react-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { uploadComponentsImportsProvider } from '../upload-components/upload-components.generator.js';

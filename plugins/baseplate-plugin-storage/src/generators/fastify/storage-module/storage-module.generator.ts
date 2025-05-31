@@ -1,4 +1,4 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   createNodePackagesTask,
@@ -10,7 +10,7 @@ import {
   tsTemplate,
   tsTypeImportBuilder,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
   configServiceImportsProvider,
@@ -24,13 +24,13 @@ import {
   prismaOutputProvider,
   prismaUtilsImportsProvider,
   serviceContextImportsProvider,
-} from '@halfdomelabs/fastify-generators';
+} from '@baseplate-dev/fastify-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-} from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import path from 'node:path';
 import { z } from 'zod';
 

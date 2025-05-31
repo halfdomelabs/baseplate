@@ -3,10 +3,10 @@ import {
   ProviderType,
   TemplateFileBase,
   templateFileMetadataBaseSchema,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { TsCodeFragment } from '../fragments/types.js';
 import { z } from 'zod';
-import { CASE_VALIDATORS } from '@halfdomelabs/utils';
+import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 
 export const TS_TEMPLATE_TYPE = 'ts';
 

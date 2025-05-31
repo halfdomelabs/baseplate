@@ -1,10 +1,10 @@
-import type { TsHoistedFragment } from '@halfdomelabs/core-generators';
+import type { TsHoistedFragment } from '@baseplate-dev/core-generators';
 
 import {
   tsHoistedFragment,
   tsTypeImportBuilder,
-} from '@halfdomelabs/core-generators';
-import { quot } from '@halfdomelabs/utils';
+} from '@baseplate-dev/core-generators';
+import { quot } from '@baseplate-dev/utils';
 
 import type { PrismaOutputModel } from '#src/types/prisma-output.js';
 import type { ServiceOutputDtoField } from '#src/types/service-output.js';

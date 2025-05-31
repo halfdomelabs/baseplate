@@ -7,7 +7,7 @@ import {
   SidebarLayout,
   SidebarLayoutContent,
   SidebarLayoutSidebar,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { NavLink, Outlet } from 'react-router-dom';
 
 import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';

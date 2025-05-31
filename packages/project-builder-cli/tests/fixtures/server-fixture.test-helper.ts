@@ -1,12 +1,12 @@
 /* eslint-disable no-empty-pattern -- required by Playwright */
-import type { BuilderServiceManager } from '@halfdomelabs/project-builder-server';
+import type { BuilderServiceManager } from '@baseplate-dev/project-builder-server';
 import type { FastifyInstance } from 'fastify';
 
 import {
   getLatestMigrationVersion,
   type ProjectDefinition,
-} from '@halfdomelabs/project-builder-lib';
-import { stringifyPrettyStable } from '@halfdomelabs/utils';
+} from '@baseplate-dev/project-builder-lib';
+import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { test as base } from '@playwright/test';
 import fs from 'node:fs/promises';
 import os from 'node:os';

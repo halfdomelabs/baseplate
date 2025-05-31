@@ -1,8 +1,8 @@
-import type { AdminCrudInputWebFormProps } from '@halfdomelabs/project-builder-lib/web';
+import type { AdminCrudInputWebFormProps } from '@baseplate-dev/project-builder-lib/web';
 import type { Control } from 'react-hook-form';
 
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { SelectFieldController } from '@halfdomelabs/ui-components';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import { SelectFieldController } from '@baseplate-dev/ui-components';
 
 import type { FileTransformerConfig } from '../transformers/types.js';
 import type { AdminCrudFileInputConfig } from './types.js';

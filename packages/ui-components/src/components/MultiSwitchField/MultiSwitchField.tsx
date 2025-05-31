@@ -2,7 +2,7 @@ import type { ForwardedRef } from 'react';
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { notEmpty } from '@halfdomelabs/utils';
+import { notEmpty } from '@baseplate-dev/utils';
 
 import type {
   AddOptionRequiredFields,

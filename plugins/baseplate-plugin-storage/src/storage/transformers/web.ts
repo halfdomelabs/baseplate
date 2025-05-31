@@ -1,14 +1,14 @@
 import type {
   ModelConfigInput,
   ProjectDefinition,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import {
   createPlatformPluginExport,
   modelTransformerEntityType,
   PluginUtils,
-} from '@halfdomelabs/project-builder-lib';
-import { modelTransformerWebSpec } from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib';
+import { modelTransformerWebSpec } from '@baseplate-dev/project-builder-lib/web';
 
 import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
 import type { FileTransformerConfig } from './types.js';

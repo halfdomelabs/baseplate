@@ -1,7 +1,7 @@
-import type { ScalarFieldType } from '@halfdomelabs/project-builder-lib';
+import type { ScalarFieldType } from '@baseplate-dev/project-builder-lib';
 
-import { modelTransformerEntityType } from '@halfdomelabs/project-builder-lib';
-import { createNewModelTransformerWebConfig } from '@halfdomelabs/project-builder-lib/web';
+import { modelTransformerEntityType } from '@baseplate-dev/project-builder-lib';
+import { createNewModelTransformerWebConfig } from '@baseplate-dev/project-builder-lib/web';
 
 import { embeddedRelationTransformerWebConfig } from './edit/[id]/_components/service/ServiceEmbeddedRelationForm.js';
 

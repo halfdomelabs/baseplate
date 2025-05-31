@@ -59,7 +59,7 @@ export function createTaskTestRunner<
   task: GeneratorTask<ExportMap, DependencyMap, OutputMap>,
   {
     taskId = 'test-task#main',
-    generatorId = '@halfdomelabs/test-runner:test-generator',
+    generatorId = '@baseplate-dev/test-runner:test-generator',
     generatorInfo = {
       name: 'test-generator',
       baseDirectory: '/',

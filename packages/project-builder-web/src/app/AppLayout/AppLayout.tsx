@@ -5,7 +5,7 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { MdMenu } from 'react-icons/md';
 import { Outlet } from 'react-router-dom';

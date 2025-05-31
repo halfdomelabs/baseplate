@@ -10,7 +10,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Button } from '@halfdomelabs/ui-components';
+import { Button } from '@baseplate-dev/ui-components';
 import { RxDragHandleHorizontal } from 'react-icons/rx';
 
 interface SortableListItem {

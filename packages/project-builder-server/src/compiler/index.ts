@@ -2,9 +2,9 @@ import type {
   AppEntry,
   BaseAppConfig,
   SchemaParserContext,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
-import { ProjectDefinitionContainer } from '@halfdomelabs/project-builder-lib';
+import { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
 import { sortBy } from 'es-toolkit';
 
 import { compileAdmin } from './admin/index.js';

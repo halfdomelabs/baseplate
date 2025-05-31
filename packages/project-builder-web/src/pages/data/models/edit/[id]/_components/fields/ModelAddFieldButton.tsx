@@ -2,11 +2,11 @@ import type {
   ModelConfigInput,
   ModelScalarFieldConfig,
   ModelScalarFieldConfigInput,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { UseFieldArrayAppend, UseFormSetValue } from 'react-hook-form';
 
-import { modelScalarFieldEntityType } from '@halfdomelabs/project-builder-lib';
+import { modelScalarFieldEntityType } from '@baseplate-dev/project-builder-lib';
 import {
   Button,
   ButtonGroup,
@@ -14,7 +14,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useMemo } from 'react';
 import { MdExpandMore } from 'react-icons/md';
 

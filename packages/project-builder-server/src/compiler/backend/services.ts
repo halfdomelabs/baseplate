@@ -3,8 +3,8 @@ import type {
   ModelConfig,
   ModelTransformerCompiler,
   TransformerConfig,
-} from '@halfdomelabs/project-builder-lib';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+} from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   embeddedRelationTransformerGenerator,
@@ -14,13 +14,13 @@ import {
   prismaCrudUpdateGenerator,
   prismaPasswordTransformerGenerator,
   serviceFileGenerator,
-} from '@halfdomelabs/fastify-generators';
+} from '@baseplate-dev/fastify-generators';
 import {
   modelTransformerCompilerSpec,
   ModelUtils,
   undefinedIfEmpty,
-} from '@halfdomelabs/project-builder-lib';
-import { notEmpty } from '@halfdomelabs/utils';
+} from '@baseplate-dev/project-builder-lib';
+import { notEmpty } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 

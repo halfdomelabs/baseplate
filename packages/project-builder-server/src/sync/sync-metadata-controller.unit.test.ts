@@ -1,6 +1,6 @@
-import type { TestLogger } from '@halfdomelabs/sync';
+import type { TestLogger } from '@baseplate-dev/sync';
 
-import { createTestLogger } from '@halfdomelabs/sync';
+import { createTestLogger } from '@baseplate-dev/sync';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {

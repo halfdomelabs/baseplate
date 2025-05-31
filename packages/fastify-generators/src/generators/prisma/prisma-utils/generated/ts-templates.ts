@@ -2,7 +2,7 @@ import {
   createTsTemplateFile,
   createTsTemplateGroup,
   tsUtilsImportsProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 
 import { serviceContextImportsProvider } from '../../../core/service-context/generated/ts-import-maps.js';
 import { prismaImportsProvider } from '../../prisma/generated/ts-import-maps.js';

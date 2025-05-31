@@ -1,4 +1,4 @@
-import { stringifyPrettyStable } from '@halfdomelabs/utils';
+import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { produce } from 'immer';
 
 import type { SchemaParserContext } from '#src/parser/types.js';

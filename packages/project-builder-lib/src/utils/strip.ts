@@ -1,4 +1,4 @@
-import type { GeneratorDescriptorChildren } from '@halfdomelabs/sync';
+import type { GeneratorDescriptorChildren } from '@baseplate-dev/sync';
 
 import { pickBy } from 'es-toolkit';
 

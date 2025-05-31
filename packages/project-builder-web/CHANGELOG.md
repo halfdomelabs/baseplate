@@ -1,4 +1,4 @@
-# @halfdomelabs/project-builder-web
+# @baseplate-dev/project-builder-web
 
 ## 0.15.16
 
@@ -7,9 +7,9 @@
 - [#552](https://github.com/halfdomelabs/baseplate/pull/552) [`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616) Thanks [@kingston](https://github.com/kingston)! - Refactor to use subpath imports instead of tsconfig paths
 
 - Updated dependencies [[`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616), [`af52406`](https://github.com/halfdomelabs/baseplate/commit/af524065204d945264a75e9fb06a3d3da1a8bfc2)]:
-  - @halfdomelabs/project-builder-lib@0.9.15
-  - @halfdomelabs/ui-components@0.5.11
-  - @halfdomelabs/utils@0.1.10
+  - @baseplate-dev/project-builder-lib@0.9.15
+  - @baseplate-dev/ui-components@0.5.11
+  - @baseplate-dev/utils@0.1.10
 
 ## 0.15.15
 
@@ -28,27 +28,27 @@
 - [#547](https://github.com/halfdomelabs/baseplate/pull/547) [`887e077`](https://github.com/halfdomelabs/baseplate/commit/887e0772527622f504ffc2693369ca3ffa5c33e1) Thanks [@kingston](https://github.com/kingston)! - Update ui-components to use new ShadCN styles for Tailwind v4
 
 - Updated dependencies [[`761e321`](https://github.com/halfdomelabs/baseplate/commit/761e32199600e40d67297d73af06f48213b48698), [`066d670`](https://github.com/halfdomelabs/baseplate/commit/066d670a7dcee3ed345d8007b3be1cf334bcff1f), [`bf441a1`](https://github.com/halfdomelabs/baseplate/commit/bf441a123c0a9f991951ff46ec0d69954c586ae4), [`4437708`](https://github.com/halfdomelabs/baseplate/commit/4437708a9db71f749b122b7a36c34689ea3c44dc), [`066d670`](https://github.com/halfdomelabs/baseplate/commit/066d670a7dcee3ed345d8007b3be1cf334bcff1f), [`887e077`](https://github.com/halfdomelabs/baseplate/commit/887e0772527622f504ffc2693369ca3ffa5c33e1)]:
-  - @halfdomelabs/project-builder-lib@0.9.14
-  - @halfdomelabs/ui-components@0.5.10
-  - @halfdomelabs/utils@0.1.9
+  - @baseplate-dev/project-builder-lib@0.9.14
+  - @baseplate-dev/ui-components@0.5.10
+  - @baseplate-dev/utils@0.1.9
 
 ## 0.15.14
 
 ### Patch Changes
 
 - Updated dependencies [[`7be3f60`](https://github.com/halfdomelabs/baseplate/commit/7be3f60197776ee29e7a7e989f9ba5cd9a8703a3), [`f5f8346`](https://github.com/halfdomelabs/baseplate/commit/f5f83460b46953db6a855e30ad1deb1838b63058)]:
-  - @halfdomelabs/utils@0.1.9
-  - @halfdomelabs/ui-components@0.5.9
-  - @halfdomelabs/project-builder-lib@0.9.13
+  - @baseplate-dev/utils@0.1.9
+  - @baseplate-dev/ui-components@0.5.9
+  - @baseplate-dev/project-builder-lib@0.9.13
 
 ## 0.15.13
 
 ### Patch Changes
 
 - Updated dependencies [[`d8b98da`](https://github.com/halfdomelabs/baseplate/commit/d8b98da9e50456f1b541be1616b9a5266752540c)]:
-  - @halfdomelabs/utils@0.1.8
-  - @halfdomelabs/project-builder-lib@0.9.12
-  - @halfdomelabs/ui-components@0.5.8
+  - @baseplate-dev/utils@0.1.8
+  - @baseplate-dev/project-builder-lib@0.9.12
+  - @baseplate-dev/ui-components@0.5.8
 
 ## 0.15.12
 
@@ -65,9 +65,9 @@
 - [#527](https://github.com/halfdomelabs/baseplate/pull/527) [`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1) Thanks [@kingston](https://github.com/kingston)! - Refactor sync metadata to more reliably handle initial states
 
 - Updated dependencies [[`7b0929c`](https://github.com/halfdomelabs/baseplate/commit/7b0929c0614651cfdfa31c83e335da130fb500e1)]:
-  - @halfdomelabs/utils@0.1.7
-  - @halfdomelabs/project-builder-lib@0.9.11
-  - @halfdomelabs/ui-components@0.5.7
+  - @baseplate-dev/utils@0.1.7
+  - @baseplate-dev/project-builder-lib@0.9.11
+  - @baseplate-dev/ui-components@0.5.7
 
 ## 0.15.10
 
@@ -76,9 +76,9 @@
 - [#520](https://github.com/halfdomelabs/baseplate/pull/520) [`4e691a0`](https://github.com/halfdomelabs/baseplate/commit/4e691a06458b3b17f44b80a113d77d551c1ec7f9) Thanks [@kingston](https://github.com/kingston)! - Refactor remaining Fastify generators + baseplate storage plugin
 
 - Updated dependencies [[`25dde93`](https://github.com/halfdomelabs/baseplate/commit/25dde93545bfab47df44cd82ce64a8d4e26b7a25), [`4695cbe`](https://github.com/halfdomelabs/baseplate/commit/4695cbe9759a5743b421cfe0dd9e87c991d9e652), [`a74e788`](https://github.com/halfdomelabs/baseplate/commit/a74e788dbd2987cf0be786ce3da7095c96965350), [`4e691a0`](https://github.com/halfdomelabs/baseplate/commit/4e691a06458b3b17f44b80a113d77d551c1ec7f9), [`85dc19e`](https://github.com/halfdomelabs/baseplate/commit/85dc19e9938db676c50cb9ccec17afe442e6c979)]:
-  - @halfdomelabs/utils@0.1.6
-  - @halfdomelabs/project-builder-lib@0.9.10
-  - @halfdomelabs/ui-components@0.5.6
+  - @baseplate-dev/utils@0.1.6
+  - @baseplate-dev/project-builder-lib@0.9.10
+  - @baseplate-dev/ui-components@0.5.6
 
 ## 0.15.9
 
@@ -95,9 +95,9 @@
 - [#511](https://github.com/halfdomelabs/baseplate/pull/511) [`6b2690b`](https://github.com/halfdomelabs/baseplate/commit/6b2690b2ddbfdfefdd63fc3ce195f86c89963fae) Thanks [@kingston](https://github.com/kingston)! - Introduce ability to view conflict files in a table and act on them accordingly
 
 - Updated dependencies [[`0220038`](https://github.com/halfdomelabs/baseplate/commit/02200385aa81242ca3a960d658262b6532357574), [`e544158`](https://github.com/halfdomelabs/baseplate/commit/e544158fabf02859b5475e75c43979cab67ff3f9)]:
-  - @halfdomelabs/project-builder-lib@0.9.9
-  - @halfdomelabs/utils@0.1.5
-  - @halfdomelabs/ui-components@0.5.5
+  - @baseplate-dev/project-builder-lib@0.9.9
+  - @baseplate-dev/utils@0.1.5
+  - @baseplate-dev/ui-components@0.5.5
 
 ## 0.15.8
 
@@ -120,9 +120,9 @@
 - [#467](https://github.com/halfdomelabs/baseplate/pull/467) [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node version to v22.14.0
 
 - Updated dependencies [[`24fed42`](https://github.com/halfdomelabs/baseplate/commit/24fed4249dfe3ef9d0df1b4cf1cf3e45173dd730), [`c4213ff`](https://github.com/halfdomelabs/baseplate/commit/c4213ff40e5b0d1d50af1b87837d79700d84b854), [`e1517d0`](https://github.com/halfdomelabs/baseplate/commit/e1517d099001d7215c61f5f98493dfd0acb99a03), [`2e9b8dd`](https://github.com/halfdomelabs/baseplate/commit/2e9b8ddd2ae7067f8c43dcb4a65f016dd22a46b5), [`73b0006`](https://github.com/halfdomelabs/baseplate/commit/73b000601ed300774f045db02d67fbcf5167cc2b), [`c6caf6b`](https://github.com/halfdomelabs/baseplate/commit/c6caf6bb118b51643e67196b0a2c94973a1c8fb2), [`7cede9b`](https://github.com/halfdomelabs/baseplate/commit/7cede9bbfb1a92fc41131b82ffc8addfa715d38c), [`ff41c01`](https://github.com/halfdomelabs/baseplate/commit/ff41c0107a22fe0c64831e19c4f79f7bbba889d1)]:
-  - @halfdomelabs/utils@0.1.4
-  - @halfdomelabs/ui-components@0.5.5
-  - @halfdomelabs/project-builder-lib@0.9.8
+  - @baseplate-dev/utils@0.1.4
+  - @baseplate-dev/ui-components@0.5.5
+  - @baseplate-dev/project-builder-lib@0.9.8
 
 ## 0.15.7
 
@@ -131,7 +131,7 @@
 - [#458](https://github.com/halfdomelabs/baseplate/pull/458) [`08c496f`](https://github.com/halfdomelabs/baseplate/commit/08c496fa98631299728c1c94525e198e1af93367) Thanks [@kingston](https://github.com/kingston)! - Bump axios to ^1.8.3
 
 - Updated dependencies [[`2810154`](https://github.com/halfdomelabs/baseplate/commit/2810154cca129832fcdd3ba1280f717b255943bc)]:
-  - @halfdomelabs/project-builder-lib@0.9.7
+  - @baseplate-dev/project-builder-lib@0.9.7
 
 ## 0.15.6
 
@@ -144,22 +144,22 @@
 - [#451](https://github.com/halfdomelabs/baseplate/pull/451) [`7cd545f`](https://github.com/halfdomelabs/baseplate/commit/7cd545f74ca67288613b2043a62f43c5269f3078) Thanks [@kingston](https://github.com/kingston)! - Persist model IDs with reloads
 
 - Updated dependencies [[`43fa1fe`](https://github.com/halfdomelabs/baseplate/commit/43fa1fe9846b97dc9e6a9df647bd8feafb06b6e4)]:
-  - @halfdomelabs/project-builder-lib@0.9.6
+  - @baseplate-dev/project-builder-lib@0.9.6
 
 ## 0.15.5
 
 ### Patch Changes
 
 - Updated dependencies []:
-  - @halfdomelabs/project-builder-lib@0.9.5
+  - @baseplate-dev/project-builder-lib@0.9.5
 
 ## 0.15.4
 
 ### Patch Changes
 
 - Updated dependencies [[`a7307cd`](https://github.com/halfdomelabs/baseplate/commit/a7307cdd2da73c9b7e02a23835eefe32ebed95d0)]:
-  - @halfdomelabs/utils@0.1.3
-  - @halfdomelabs/project-builder-lib@0.9.4
+  - @baseplate-dev/utils@0.1.3
+  - @baseplate-dev/project-builder-lib@0.9.4
 
 ## 0.15.3
 
@@ -168,8 +168,8 @@
 - [#441](https://github.com/halfdomelabs/baseplate/pull/441) [`ed229ab`](https://github.com/halfdomelabs/baseplate/commit/ed229ab6688969e3eb2230ea7caf273916e68291) Thanks [@kingston](https://github.com/kingston)! - Upgrade vitest to 3.0.7 and vite to 6.2.0
 
 - Updated dependencies [[`a6fb0d8`](https://github.com/halfdomelabs/baseplate/commit/a6fb0d86a5d74031c484eba8861d95c19a31a7b4), [`ed229ab`](https://github.com/halfdomelabs/baseplate/commit/ed229ab6688969e3eb2230ea7caf273916e68291)]:
-  - @halfdomelabs/project-builder-lib@0.9.3
-  - @halfdomelabs/ui-components@0.5.4
+  - @baseplate-dev/project-builder-lib@0.9.3
+  - @baseplate-dev/ui-components@0.5.4
 
 ## 0.15.2
 
@@ -182,15 +182,15 @@
 - [#430](https://github.com/halfdomelabs/baseplate/pull/430) [`2e5e7b4`](https://github.com/halfdomelabs/baseplate/commit/2e5e7b4b9fd1308ee06e5c83ac54fef7926685ab) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vitest to 3.0.3 and Vite to 6.0.11 (and associated dependencies)
 
 - Updated dependencies [[`3b83763`](https://github.com/halfdomelabs/baseplate/commit/3b837636d225db0bb729fad05536ad9df4dfb1d6), [`128f42b`](https://github.com/halfdomelabs/baseplate/commit/128f42b46bb697b0443e71b93a97fe766ee3d280), [`76f4247`](https://github.com/halfdomelabs/baseplate/commit/76f4247984f6eb2f786771ed07c96b3099e1a5eb), [`3b83763`](https://github.com/halfdomelabs/baseplate/commit/3b837636d225db0bb729fad05536ad9df4dfb1d6), [`3b83763`](https://github.com/halfdomelabs/baseplate/commit/3b837636d225db0bb729fad05536ad9df4dfb1d6), [`2e5e7b4`](https://github.com/halfdomelabs/baseplate/commit/2e5e7b4b9fd1308ee06e5c83ac54fef7926685ab)]:
-  - @halfdomelabs/ui-components@0.5.3
-  - @halfdomelabs/project-builder-lib@0.9.2
+  - @baseplate-dev/ui-components@0.5.3
+  - @baseplate-dev/project-builder-lib@0.9.2
 
 ## 0.15.1
 
 ### Patch Changes
 
 - Updated dependencies []:
-  - @halfdomelabs/project-builder-lib@0.9.1
+  - @baseplate-dev/project-builder-lib@0.9.1
 
 ## 0.15.0
 
@@ -215,8 +215,8 @@
 - [#388](https://github.com/halfdomelabs/baseplate/pull/388) [`4774215`](https://github.com/halfdomelabs/baseplate/commit/4774215925838ad4bfc418a4655de72733a06c5f) Thanks [@matei-s](https://github.com/matei-s)! - Redesign Models/GraphQL page
 
 - Updated dependencies [[`48bda89`](https://github.com/halfdomelabs/baseplate/commit/48bda899b7b4158ba6ec58118edacc3b61ddb043), [`70c6478`](https://github.com/halfdomelabs/baseplate/commit/70c6478dfe7a5cfe19200b838c97327cd2dc0757), [`9375d01`](https://github.com/halfdomelabs/baseplate/commit/9375d01cf35380395d4afdaa41c0bafb50bffba5), [`9f34f54`](https://github.com/halfdomelabs/baseplate/commit/9f34f54d6b6c9762f5237000c83aa9959116a282), [`f0ee4e0`](https://github.com/halfdomelabs/baseplate/commit/f0ee4e07fc9d40947f319efb788f7fb596848231), [`6a317cc`](https://github.com/halfdomelabs/baseplate/commit/6a317cc437fd53c9488067811bade99b167072f5), [`cd92861`](https://github.com/halfdomelabs/baseplate/commit/cd92861d764380264dcc7d480407edf618421e70), [`4774215`](https://github.com/halfdomelabs/baseplate/commit/4774215925838ad4bfc418a4655de72733a06c5f), [`70c6478`](https://github.com/halfdomelabs/baseplate/commit/70c6478dfe7a5cfe19200b838c97327cd2dc0757)]:
-  - @halfdomelabs/project-builder-lib@0.9.0
-  - @halfdomelabs/ui-components@0.5.2
+  - @baseplate-dev/project-builder-lib@0.9.0
+  - @baseplate-dev/ui-components@0.5.2
 
 ## 0.14.1
 
@@ -225,8 +225,8 @@
 - 6ca94da: Upgrade Zod to 3.24.1
 - Updated dependencies [6ca94da]
 - Updated dependencies [98518dd]
-  - @halfdomelabs/project-builder-lib@0.8.13
-  - @halfdomelabs/ui-components@0.5.1
+  - @baseplate-dev/project-builder-lib@0.8.13
+  - @baseplate-dev/ui-components@0.5.1
 
 ## 0.14.0
 
@@ -244,8 +244,8 @@
 - Updated dependencies [f11b044]
 - Updated dependencies [dc74c47]
 - Updated dependencies [05fbd9c]
-  - @halfdomelabs/project-builder-lib@0.8.12
-  - @halfdomelabs/ui-components@0.5.0
+  - @baseplate-dev/project-builder-lib@0.8.12
+  - @baseplate-dev/ui-components@0.5.0
 
 ## 0.13.0
 
@@ -256,7 +256,7 @@
 
 ### Patch Changes
 
-- @halfdomelabs/project-builder-lib@0.8.11
+- @baseplate-dev/project-builder-lib@0.8.11
 
 ## 0.12.2
 
@@ -298,8 +298,8 @@
 - Updated dependencies [79a6eb64]
 - Updated dependencies [8cb0ef35]
 - Updated dependencies [1bd25964]
-  - @halfdomelabs/ui-components@0.4.15
-  - @halfdomelabs/project-builder-lib@0.8.10
+  - @baseplate-dev/ui-components@0.4.15
+  - @baseplate-dev/project-builder-lib@0.8.10
 
 ## 0.12.0
 
@@ -316,8 +316,8 @@
 - Updated dependencies [ccff8f1]
 - Updated dependencies [fb031a3]
 - Updated dependencies [5f8af00]
-  - @halfdomelabs/ui-components@0.4.14
-  - @halfdomelabs/project-builder-lib@0.8.9
+  - @baseplate-dev/ui-components@0.4.14
+  - @baseplate-dev/project-builder-lib@0.8.9
 
 ## 0.11.8
 
@@ -325,8 +325,8 @@
 
 - Updated dependencies [3dbb454]
 - Updated dependencies [3dbb454]
-  - @halfdomelabs/project-builder-lib@0.8.8
-  - @halfdomelabs/ui-components@0.4.13
+  - @baseplate-dev/project-builder-lib@0.8.8
+  - @baseplate-dev/ui-components@0.4.13
 
 ## 0.11.7
 
@@ -336,30 +336,30 @@
 - b06f805: Add unsaved changes blocker to sync button and create enum button
 - Updated dependencies [53fd56d]
 - Updated dependencies [b06f805]
-  - @halfdomelabs/ui-components@0.4.12
-  - @halfdomelabs/project-builder-lib@0.8.7
+  - @baseplate-dev/ui-components@0.4.12
+  - @baseplate-dev/project-builder-lib@0.8.7
 
 ## 0.11.6
 
 ### Patch Changes
 
 - Updated dependencies [a6a6653]
-  - @halfdomelabs/project-builder-lib@0.8.6
+  - @baseplate-dev/project-builder-lib@0.8.6
 
 ## 0.11.5
 
 ### Patch Changes
 
 - Updated dependencies [ddbbead]
-  - @halfdomelabs/project-builder-lib@0.8.5
-  - @halfdomelabs/ui-components@0.4.11
+  - @baseplate-dev/project-builder-lib@0.8.5
+  - @baseplate-dev/ui-components@0.4.11
 
 ## 0.11.4
 
 ### Patch Changes
 
 - Updated dependencies [ab0b4f0]
-  - @halfdomelabs/project-builder-lib@0.8.4
+  - @baseplate-dev/project-builder-lib@0.8.4
 
 ## 0.11.3
 
@@ -367,7 +367,7 @@
 
 - 64bc313: Fix web entry target sourcing to source plugins from source folder instead of dist
 - Updated dependencies [64bc313]
-  - @halfdomelabs/project-builder-lib@0.8.3
+  - @baseplate-dev/project-builder-lib@0.8.3
 
 ## 0.11.2
 
@@ -375,15 +375,15 @@
 
 - b86ae48: Fix loading of web plugin paths
 - Updated dependencies [b86ae48]
-  - @halfdomelabs/project-builder-lib@0.8.2
+  - @baseplate-dev/project-builder-lib@0.8.2
 
 ## 0.11.1
 
 ### Patch Changes
 
 - Updated dependencies [d8374b4]
-  - @halfdomelabs/project-builder-lib@0.8.1
-  - @halfdomelabs/ui-components@0.4.10
+  - @baseplate-dev/project-builder-lib@0.8.1
+  - @baseplate-dev/ui-components@0.4.10
 
 ## 0.11.0
 
@@ -404,8 +404,8 @@
 - Updated dependencies [94feb66]
 - Updated dependencies [c0b42fc]
 - Updated dependencies [a6f01ea]
-  - @halfdomelabs/project-builder-lib@0.8.0
-  - @halfdomelabs/ui-components@0.4.9
+  - @baseplate-dev/project-builder-lib@0.8.0
+  - @baseplate-dev/ui-components@0.4.9
 
 ## 0.10.0
 
@@ -418,8 +418,8 @@
 - b4f0584: Fix a bug with the unsaved changes dialog on the new enum form.
 - Updated dependencies [6f7b930]
 - Updated dependencies [6f7b930]
-  - @halfdomelabs/project-builder-lib@0.7.6
-  - @halfdomelabs/ui-components@0.4.8
+  - @baseplate-dev/project-builder-lib@0.7.6
+  - @baseplate-dev/ui-components@0.4.8
 
 ## 0.9.3
 
@@ -431,8 +431,8 @@
 - Updated dependencies [082dfc3]
 - Updated dependencies [082dfc3]
 - Updated dependencies [925f887]
-  - @halfdomelabs/project-builder-lib@0.7.5
-  - @halfdomelabs/ui-components@0.4.7
+  - @baseplate-dev/project-builder-lib@0.7.5
+  - @baseplate-dev/ui-components@0.4.7
 
 ## 0.9.2
 
@@ -448,8 +448,8 @@
 - Updated dependencies [377b433]
 - Updated dependencies [e701e1d]
 - Updated dependencies [9cab58f]
-  - @halfdomelabs/ui-components@0.4.6
-  - @halfdomelabs/project-builder-lib@0.7.4
+  - @baseplate-dev/ui-components@0.4.6
+  - @baseplate-dev/project-builder-lib@0.7.4
 
 ## 0.9.1
 
@@ -458,7 +458,7 @@
 - 3ffb860: Switch font to Geist Sans and Geist Mono
 - Updated dependencies [3ffb860]
 - Updated dependencies [3ffb860]
-  - @halfdomelabs/ui-components@0.4.5
+  - @baseplate-dev/ui-components@0.4.5
 
 ## 0.9.0
 
@@ -474,7 +474,7 @@
 
 - 6b368f5: Rename project config to project definition
 - Updated dependencies [6b368f5]
-  - @halfdomelabs/project-builder-lib@0.7.3
+  - @baseplate-dev/project-builder-lib@0.7.3
 
 ## 0.8.4
 
@@ -485,7 +485,7 @@
 - fd51d48e: Update logo of Baseplate to latest
 - Updated dependencies [a4949e51]
 - Updated dependencies [fd51d48e]
-  - @halfdomelabs/ui-components@0.4.4
+  - @baseplate-dev/ui-components@0.4.4
 
 ## 0.8.3
 
@@ -498,8 +498,8 @@
 - Updated dependencies [4c4cf8e5]
 - Updated dependencies [f69fbf50]
 - Updated dependencies [e7f858ce]
-  - @halfdomelabs/project-builder-lib@0.7.2
-  - @halfdomelabs/ui-components@0.4.3
+  - @baseplate-dev/project-builder-lib@0.7.2
+  - @baseplate-dev/ui-components@0.4.3
 
 ## 0.8.2
 
@@ -513,7 +513,7 @@
 
 - Updated dependencies [1e30f98b]
 - Updated dependencies [1e30f98b]
-  - @halfdomelabs/project-builder-lib@0.7.1
+  - @baseplate-dev/project-builder-lib@0.7.1
 
 ## 0.8.0
 
@@ -537,8 +537,8 @@
 - Updated dependencies [8c0a2d5b]
 - Updated dependencies [af5d0c53]
 - Updated dependencies [ae358f50]
-  - @halfdomelabs/project-builder-lib@0.7.0
-  - @halfdomelabs/ui-components@0.4.2
+  - @baseplate-dev/project-builder-lib@0.7.0
+  - @baseplate-dev/ui-components@0.4.2
 
 ## 0.7.0
 
@@ -555,8 +555,8 @@
 - Updated dependencies [9d0005b]
 - Updated dependencies [3da6a70]
 - Updated dependencies [f12e2c1]
-  - @halfdomelabs/project-builder-lib@0.6.1
-  - @halfdomelabs/ui-components@0.4.1
+  - @baseplate-dev/project-builder-lib@0.6.1
+  - @baseplate-dev/ui-components@0.4.1
 
 ## 0.6.0
 
@@ -579,8 +579,8 @@
 - Updated dependencies [0275a54]
 - Updated dependencies [b43f6e6]
 - Updated dependencies [f24754d]
-  - @halfdomelabs/ui-components@0.4.0
-  - @halfdomelabs/project-builder-lib@0.6.0
+  - @baseplate-dev/ui-components@0.4.0
+  - @baseplate-dev/project-builder-lib@0.6.0
 
 ## 0.5.1
 
@@ -588,8 +588,8 @@
 
 - c4c38ec: Upgraded dependencies and remove gulp
 - Updated dependencies [c4c38ec]
-  - @halfdomelabs/project-builder-lib@0.5.1
-  - @halfdomelabs/ui-components@0.3.2
+  - @baseplate-dev/project-builder-lib@0.5.1
+  - @baseplate-dev/ui-components@0.3.2
 
 ## 0.5.0
 
@@ -603,8 +603,8 @@
 - 154eaa9: Add new tabbed interface between models/enums in UI
 - Updated dependencies [154eaa9]
 - Updated dependencies [5a4673f]
-  - @halfdomelabs/ui-components@0.3.1
-  - @halfdomelabs/project-builder-lib@0.5.0
+  - @baseplate-dev/ui-components@0.3.1
+  - @baseplate-dev/project-builder-lib@0.5.0
 
 ## 0.4.0
 
@@ -619,8 +619,8 @@
 - 8b575b8: Fix renaming references failing
 - Updated dependencies [0027b3d]
 - Updated dependencies [5f80999]
-  - @halfdomelabs/project-builder-lib@0.4.0
-  - @halfdomelabs/ui-components@0.3.0
+  - @baseplate-dev/project-builder-lib@0.4.0
+  - @baseplate-dev/ui-components@0.3.0
 
 ## 0.3.1
 
@@ -628,8 +628,8 @@
 
 - 3f45e59: Fix changeset release process to build app before releasing
 - Updated dependencies [3f45e59]
-  - @halfdomelabs/project-builder-lib@0.3.1
-  - @halfdomelabs/ui-components@0.2.1
+  - @baseplate-dev/project-builder-lib@0.3.1
+  - @baseplate-dev/ui-components@0.2.1
 
 ## 0.3.0
 
@@ -649,22 +649,22 @@
 - Updated dependencies [483215a]
 - Updated dependencies [f7cb616]
 - Updated dependencies [d8d6b89]
-  - @halfdomelabs/project-builder-lib@0.3.0
-  - @halfdomelabs/ui-components@0.2.0
+  - @baseplate-dev/project-builder-lib@0.3.0
+  - @baseplate-dev/ui-components@0.2.0
 
 ## 0.2.2
 
 ### Patch Changes
 
 - Updated dependencies [ec0218a]
-  - @halfdomelabs/project-builder-lib@0.2.2
+  - @baseplate-dev/project-builder-lib@0.2.2
 
 ## 0.2.1
 
 ### Patch Changes
 
 - Updated dependencies [37d7c50]
-  - @halfdomelabs/project-builder-lib@0.2.1
+  - @baseplate-dev/project-builder-lib@0.2.1
 
 ## 0.2.0
 
@@ -675,4 +675,4 @@
 ### Patch Changes
 
 - Updated dependencies [5f2d7d8]
-  - @halfdomelabs/project-builder-lib@0.2.0
+  - @baseplate-dev/project-builder-lib@0.2.0

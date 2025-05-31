@@ -3,7 +3,7 @@ import type {
   FieldMapSchema,
   FieldMapSchemaBuilder,
   FieldMapValues,
-} from '@halfdomelabs/utils';
+} from '@baseplate-dev/utils';
 
 import type { ProviderExportScope } from '#src/providers/export-scopes.js';
 

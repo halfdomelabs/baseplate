@@ -3,4 +3,4 @@
 @import 'tailwindcss/theme.css' layer(theme) prefix(auth);
 @import 'tailwindcss/utilities.css' layer(utilities) prefix(auth);
 
-@import '@halfdomelabs/ui-components/theme.css';
+@import '@baseplate-dev/ui-components/theme.css';

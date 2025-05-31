@@ -1,10 +1,10 @@
-import type { BuildProjectResult } from '@halfdomelabs/project-builder-server';
+import type { BuildProjectResult } from '@baseplate-dev/project-builder-server';
 
-import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
+import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
 import {
   buildProject,
   createNodeSchemaParserContext,
-} from '@halfdomelabs/project-builder-server';
+} from '@baseplate-dev/project-builder-server';
 
 import { logger } from '#src/utils/console.js';
 

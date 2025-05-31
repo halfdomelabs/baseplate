@@ -5,13 +5,13 @@ import {
   prettierProvider,
   projectScope,
   tsCodeFragment,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
   renderTextTemplateGroupAction,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import * as prettierPluginTailwindcss from 'prettier-plugin-tailwindcss';
 import { z } from 'zod';
 

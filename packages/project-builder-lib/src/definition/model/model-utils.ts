@@ -1,4 +1,4 @@
-import { PASCAL_CASE_REGEX } from '@halfdomelabs/utils';
+import { PASCAL_CASE_REGEX } from '@baseplate-dev/utils';
 
 import type {
   ModelConfig,

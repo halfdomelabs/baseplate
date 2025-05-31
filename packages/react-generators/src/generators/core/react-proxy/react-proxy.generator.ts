@@ -1,9 +1,9 @@
-import { projectScope, tsCodeFragment } from '@halfdomelabs/core-generators';
+import { projectScope, tsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { reactConfigProvider } from '../react-config/react-config.generator.js';

@@ -1,4 +1,4 @@
-import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
+import type { FeatureFlag } from '@baseplate-dev/project-builder-lib';
 import type { FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 

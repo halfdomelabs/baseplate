@@ -49,7 +49,7 @@ For information on using Baseplate with an external project, please check our [I
 
 ## Support
 
-For support, please open an [issue](https://github.com/halfdomelabs/baseplate/issues) or contact our team at support@halfdomelabs.com.
+For support, please open an [issue](https://github.com/halfdomelabs/baseplate/issues) or contact our team at support@baseplate-dev.com.
 
 ## Authors
 

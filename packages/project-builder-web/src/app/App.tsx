@@ -1,12 +1,12 @@
-import type { ErrorHandlerValue } from '@halfdomelabs/project-builder-lib/web';
+import type { ErrorHandlerValue } from '@baseplate-dev/project-builder-lib/web';
 import type React from 'react';
 
-import { ErrorHandlerContext } from '@halfdomelabs/project-builder-lib/web';
+import { ErrorHandlerContext } from '@baseplate-dev/project-builder-lib/web';
 import {
   ConfirmDialog,
   Toaster,
   TooltipProvider,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
 

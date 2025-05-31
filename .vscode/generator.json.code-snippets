@@ -19,7 +19,7 @@
       "  createGenerator,",
       "  createGeneratorTask,",
       "  createProviderType,",
-      "} from '@halfdomelabs/sync';",
+      "} from '@baseplate-dev/sync';",
       "import { z } from 'zod';",
       "",
       "import { projectScope } from './scopes';",
@@ -72,7 +72,7 @@
       "import {",
       "  createGenerator,",
       "  createGeneratorTask,",
-      "} from '@halfdomelabs/sync';",
+      "} from '@baseplate-dev/sync';",
       "import { z } from 'zod';",
       "",
       "const descriptorSchema = z.object({});",
@@ -110,7 +110,7 @@
   "Create Config Provider Task": {
     "prefix": "configProviderTask",
     "body": [
-      "import { createConfigProviderTask } from '@halfdomelabs/sync';",
+      "import { createConfigProviderTask } from '@baseplate-dev/sync';",
       "",
       "const [setupTask, ${1:name}ConfigProvider, ${1:name}ConfigValuesProvider] =",
       "  createConfigProviderTask(",

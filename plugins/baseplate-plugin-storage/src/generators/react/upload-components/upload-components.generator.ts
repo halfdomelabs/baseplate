@@ -3,19 +3,19 @@ import {
   createNodePackagesTask,
   projectScope,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   generatedGraphqlImportsProvider,
   reactApolloProvider,
   reactComponentsImportsProvider,
   reactComponentsProvider,
   reactErrorImportsProvider,
-} from '@halfdomelabs/react-generators';
+} from '@baseplate-dev/react-generators';
 import {
   createGenerator,
   createGeneratorTask,
   renderTextTemplateFileAction,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { capitalize } from 'inflection';
 import { z } from 'zod';
 

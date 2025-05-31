@@ -2,7 +2,7 @@ import type {
   TsCodeFragment,
   TsImportDeclaration,
   TsTemplateFileMetadata,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 
 import {
   createNodePackagesTask,
@@ -18,7 +18,7 @@ import {
   tsTemplate,
   tsTypeImportBuilder,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
   createGenerator,
@@ -27,8 +27,8 @@ import {
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
   renderTextTemplateFileAction,
-} from '@halfdomelabs/sync';
-import { notEmpty, toposortLocal } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { notEmpty, toposortLocal } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';

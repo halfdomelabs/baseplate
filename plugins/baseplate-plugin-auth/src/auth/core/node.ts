@@ -5,7 +5,7 @@ import {
   placeholderAuthServiceGenerator,
   pothosAuthGenerator,
   userSessionTypesGenerator,
-} from '@halfdomelabs/fastify-generators';
+} from '@baseplate-dev/fastify-generators';
 import {
   adminAppEntryType,
   appCompilerSpec,
@@ -13,11 +13,11 @@ import {
   createPlatformPluginExport,
   PluginUtils,
   webAppEntryType,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import {
   authIdentifyGenerator,
   placeholderAuthHooksGenerator,
-} from '@halfdomelabs/react-generators';
+} from '@baseplate-dev/react-generators';
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 

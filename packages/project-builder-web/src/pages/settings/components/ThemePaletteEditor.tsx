@@ -2,7 +2,7 @@ import type {
   ColorPaletteName,
   PaletteShades,
   ThemeConfig,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type {
   Control,
@@ -15,12 +15,12 @@ import {
   convertHexToOklch,
   convertOklchToHex,
   PALETTE_SHADES,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import {
   Button,
   ColorPickerFieldController,
   ComboboxFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { capitalize } from 'inflection';
 import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';

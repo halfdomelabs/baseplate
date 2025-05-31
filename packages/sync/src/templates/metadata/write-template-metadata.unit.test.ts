@@ -45,7 +45,7 @@ describe('writeTemplateMetadata', () => {
             templateMetadata: {
               name: 'user-controller',
               type: 'typescript',
-              generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
+              generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
               template: 'controllers/user-controller.ts',
               variables: ['TPL_METHODS', 'TPL_MODEL'],
             },
@@ -61,7 +61,7 @@ describe('writeTemplateMetadata', () => {
             templateMetadata: {
               name: 'product-controller',
               type: 'typescript',
-              generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
+              generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
               template: 'controllers/product-controller.ts',
               variables: ['TPL_METHODS', 'TPL_MODEL'],
             },
@@ -77,7 +77,7 @@ describe('writeTemplateMetadata', () => {
             templateMetadata: {
               name: 'user-model',
               type: 'typescript',
-              generator: '@halfdomelabs/fastify-generators/prisma/model',
+              generator: '@baseplate-dev/fastify-generators/prisma/model',
               template: 'models/user-model.ts',
               variables: ['TPL_MODEL_NAME'],
             },
@@ -93,7 +93,7 @@ describe('writeTemplateMetadata', () => {
             templateMetadata: {
               name: 'readme',
               type: 'text',
-              generator: '@halfdomelabs/fastify-generators/core/readme',
+              generator: '@baseplate-dev/fastify-generators/core/readme',
               template: 'README.md',
               variables: [{ name: 'TPL_PROJECT_NAME', value: 'my-project' }],
             },
@@ -132,14 +132,14 @@ describe('writeTemplateMetadata', () => {
       'user-controller.ts': {
         name: 'user-controller',
         type: 'typescript',
-        generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
+        generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
         template: 'controllers/user-controller.ts',
         variables: ['TPL_METHODS', 'TPL_MODEL'],
       },
       'product-controller.ts': {
         name: 'product-controller',
         type: 'typescript',
-        generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
+        generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
         template: 'controllers/product-controller.ts',
         variables: ['TPL_METHODS', 'TPL_MODEL'],
       },
@@ -150,7 +150,7 @@ describe('writeTemplateMetadata', () => {
       'user-model.ts': {
         name: 'user-model',
         type: 'typescript',
-        generator: '@halfdomelabs/fastify-generators/prisma/model',
+        generator: '@baseplate-dev/fastify-generators/prisma/model',
         template: 'models/user-model.ts',
         variables: ['TPL_MODEL_NAME'],
       },
@@ -161,7 +161,7 @@ describe('writeTemplateMetadata', () => {
       'README.md': {
         name: 'readme',
         type: 'text',
-        generator: '@halfdomelabs/fastify-generators/core/readme',
+        generator: '@baseplate-dev/fastify-generators/core/readme',
         template: 'README.md',
         variables: [{ name: 'TPL_PROJECT_NAME', value: 'my-project' }],
       },
@@ -179,7 +179,7 @@ describe('writeTemplateMetadata', () => {
             templateMetadata: {
               name: 'user-controller',
               type: 'typescript',
-              generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
+              generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
               template: 'controllers/user-controller.ts',
               variables: ['TPL_METHODS', 'TPL_MODEL'],
             },
@@ -213,7 +213,7 @@ describe('writeTemplateMetadata', () => {
       'user-controller.ts': {
         name: 'user-controller',
         type: 'typescript',
-        generator: '@halfdomelabs/fastify-generators/prisma/crud-file',
+        generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
         template: 'controllers/user-controller.ts',
         variables: ['TPL_METHODS', 'TPL_MODEL'],
       },

@@ -1,4 +1,4 @@
-import type { PluginConfigMigration } from '@halfdomelabs/project-builder-lib';
+import type { PluginConfigMigration } from '@baseplate-dev/project-builder-lib';
 
 export const AUTH0_PLUGIN_CONFIG_MIGRATIONS: PluginConfigMigration[] = [
   {

@@ -1,8 +1,8 @@
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { authRoleEntityType } from '@halfdomelabs/project-builder-lib';
-import { Button, InputFieldController } from '@halfdomelabs/ui-components';
+import { authRoleEntityType } from '@baseplate-dev/project-builder-lib';
+import { Button, InputFieldController } from '@baseplate-dev/ui-components';
 import { useFieldArray } from 'react-hook-form';
 
 import { AUTH_DEFAULT_ROLES } from '#src/roles/index.js';

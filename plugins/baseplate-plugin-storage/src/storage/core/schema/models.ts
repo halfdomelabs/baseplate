@@ -2,9 +2,9 @@ import type {
   ModelMergerModelInput,
   ModelMergerScalarFieldInput,
   ProjectDefinitionContainer,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
-import { authConfigSpec } from '@halfdomelabs/project-builder-lib';
+import { authConfigSpec } from '@baseplate-dev/project-builder-lib';
 
 const FILE_MODEL_FIELDS: ModelMergerScalarFieldInput[] = [
   {

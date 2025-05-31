@@ -1,4 +1,4 @@
-import type { ClientVersionInfo } from '@halfdomelabs/project-builder-server';
+import type { ClientVersionInfo } from '@baseplate-dev/project-builder-server';
 
 import { IS_PREVIEW } from '../config.js';
 import { trpc } from '../trpc.js';

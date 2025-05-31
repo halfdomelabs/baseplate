@@ -1,19 +1,19 @@
 import type {
   TemplateFileExtractorContext,
   TemplateFileExtractorFile,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 
 import {
   getGenerationConcurrencyLimit,
   parseGeneratorName,
   TemplateFileExtractor,
-} from '@halfdomelabs/sync';
-import { mapGroupBy, mapKeyBy, quot } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { mapGroupBy, mapKeyBy, quot } from '@baseplate-dev/utils';
 import {
   getCommonPathPrefix,
   handleFileNotFoundError,
   readJsonWithSchema,
-} from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/utils/node';
 import { camelCase, constantCase, sortBy, uniq } from 'es-toolkit';
 import path from 'node:path';
 import { ResolverFactory } from 'oxc-resolver';
@@ -161,9 +161,9 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
   }
 
   protected getTypescriptRendererImport(generatorName: string): string {
-    return generatorName.startsWith('@halfdomelabs/core-generators#')
+    return generatorName.startsWith('@baseplate-dev/core-generators#')
       ? '@src/renderers/typescript/index.js'
-      : '@halfdomelabs/core-generators';
+      : '@baseplate-dev/core-generators';
   }
 
   protected async extractTemplateFile(

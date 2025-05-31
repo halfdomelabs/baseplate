@@ -1,4 +1,4 @@
-import type { GeneratorOutputMetadata } from '@halfdomelabs/sync';
+import type { GeneratorOutputMetadata } from '@baseplate-dev/sync';
 
 import fs from 'node:fs/promises';
 import path from 'node:path';

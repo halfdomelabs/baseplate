@@ -1,6 +1,6 @@
 import type { RouteObject } from 'react-router-dom';
 
-import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
+import { modelEnumEntityType } from '@baseplate-dev/project-builder-lib';
 
 import { NotFoundRoute } from '#src/pages/NotFound.page.js';
 import { createCrumbFromUid } from '#src/types/routes.js';

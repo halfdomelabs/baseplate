@@ -2,7 +2,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { type ReactElement } from 'react';
 
 import type { ModelMergerModelDiffResult } from '#src/tools/index.js';

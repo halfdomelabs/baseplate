@@ -1,17 +1,17 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   TsCodeUtils,
   tsImportBuilder,
   tsTemplate,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-} from '@halfdomelabs/sync';
-import { notEmpty } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { notEmpty } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { dasherize, underscore } from 'inflection';
 import { z } from 'zod';

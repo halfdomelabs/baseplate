@@ -1,7 +1,7 @@
 import type {
   PluginMetadataWithPaths,
   SchemaParserContext,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import { getPluginsMetadata } from '#src/services/api/index.js';
 import { subscribeToViteHotReloadEvent } from '#src/services/hot-loader.js';

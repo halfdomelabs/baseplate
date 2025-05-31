@@ -1,4 +1,4 @@
-import type { ModelMergerModelInput } from '@halfdomelabs/project-builder-lib';
+import type { ModelMergerModelInput } from '@baseplate-dev/project-builder-lib';
 
 import type { Auth0PluginDefinition } from './plugin-definition.js';
 

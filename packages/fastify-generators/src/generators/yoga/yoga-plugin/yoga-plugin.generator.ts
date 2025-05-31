@@ -1,8 +1,8 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import type {
   FieldMapValues,
   InferFieldMapSchemaFromBuilder,
-} from '@halfdomelabs/utils';
+} from '@baseplate-dev/utils';
 
 import {
   createNodePackagesTask,
@@ -13,15 +13,15 @@ import {
   TsCodeUtils,
   tsImportBuilder,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createConfigFieldMap,
   createGenerator,
   createGeneratorTask,
   createProviderType,
   createReadOnlyProviderType,
-} from '@halfdomelabs/sync';
-import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { createFieldMapSchemaBuilder } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/index.js';

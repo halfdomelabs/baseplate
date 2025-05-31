@@ -1,4 +1,4 @@
-# @halfdomelabs/utils
+# @baseplate-dev/utils
 
 ## 0.1.10
 

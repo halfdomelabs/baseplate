@@ -1,7 +1,7 @@
 import {
   modelEntityType,
   modelEnumEntityType,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 export function createModelEditLink(modelId: string): string {
   const uid = modelEntityType.isId(modelId)

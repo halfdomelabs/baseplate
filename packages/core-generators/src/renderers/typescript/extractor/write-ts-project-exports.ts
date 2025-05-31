@@ -1,9 +1,9 @@
 import {
   parseGeneratorName,
   type TemplateFileExtractorFile,
-} from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
-import { getCommonPathPrefix } from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
+import { getCommonPathPrefix } from '@baseplate-dev/utils/node';
 import { camelCase, pascalCase } from 'change-case';
 import { sortBy } from 'es-toolkit';
 import path from 'node:path';
@@ -50,7 +50,7 @@ export interface TsProjectExport {
    */
   providerPath: string;
   /**
-   * The package name of the import, e.g. @halfdomelabs/core-generators
+   * The package name of the import, e.g. @baseplate-dev/core-generators
    */
   providerPackage: string;
 }
@@ -183,11 +183,11 @@ export function writeTsProjectExports(
   }
 
   const isLocalImport = generatorName.startsWith(
-    '@halfdomelabs/core-generators#',
+    '@baseplate-dev/core-generators#',
   );
   const tsImports = isLocalImport
     ? '@src/renderers/typescript/index.js'
-    : '@halfdomelabs/core-generators';
+    : '@baseplate-dev/core-generators';
 
   const commonPathPrefix = getCommonPathPrefix(
     projectExports.map((projectExport) => projectExport.filePath),
@@ -224,7 +224,7 @@ export function writeTsProjectExports(
   `;
 
   const importsProviderFragment = TsCodeUtils.templateWithImports(
-    tsImportBuilder(['createReadOnlyProviderType']).from('@halfdomelabs/sync'),
+    tsImportBuilder(['createReadOnlyProviderType']).from('@baseplate-dev/sync'),
   )`
     export const ${providerNameVar} = createReadOnlyProviderType<${providerTypeVarName}>(
       ${quot(providerName)},

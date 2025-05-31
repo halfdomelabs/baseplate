@@ -1,9 +1,9 @@
-import { createTsTemplateFile } from '@halfdomelabs/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import {
   generatedGraphqlImportsProvider,
   reactComponentsImportsProvider,
   reactErrorImportsProvider,
-} from '@halfdomelabs/react-generators';
+} from '@baseplate-dev/react-generators';
 
 const fileInputComponent = createTsTemplateFile({
   importMapProviders: {

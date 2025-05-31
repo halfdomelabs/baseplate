@@ -1,12 +1,12 @@
 import type {
   ModelConfigInput,
   ModelRelationFieldConfigInput,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { BadgeWithIcon } from '@halfdomelabs/ui-components';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import { BadgeWithIcon } from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { MdLink } from 'react-icons/md';

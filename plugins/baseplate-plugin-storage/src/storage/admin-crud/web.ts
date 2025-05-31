@@ -1,5 +1,5 @@
-import { createPlatformPluginExport } from '@halfdomelabs/project-builder-lib';
-import { adminCrudInputWebSpec } from '@halfdomelabs/project-builder-lib/web';
+import { createPlatformPluginExport } from '@baseplate-dev/project-builder-lib';
+import { adminCrudInputWebSpec } from '@baseplate-dev/project-builder-lib/web';
 
 import type { AdminCrudFileInputConfig } from './types.js';
 

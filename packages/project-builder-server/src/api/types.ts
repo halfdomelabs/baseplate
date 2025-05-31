@@ -1,5 +1,5 @@
-import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
-import type { Logger } from '@halfdomelabs/sync';
+import type { FeatureFlag } from '@baseplate-dev/project-builder-lib';
+import type { Logger } from '@baseplate-dev/sync';
 
 import type { BuilderServiceManager } from '#src/server/builder-service-manager.js';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';

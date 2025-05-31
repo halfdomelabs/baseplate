@@ -6,14 +6,14 @@ describe('parseGeneratorName', () => {
   it('parses generator with subdirectory', () => {
     // Arrange
     const input =
-      '@halfdomelabs/baseplate-plugin-storage#fastify/prisma-file-transformer';
+      '@baseplate-dev/baseplate-plugin-storage#fastify/prisma-file-transformer';
 
     // Act
     const result = parseGeneratorName(input);
 
     // Assert
     expect(result).toEqual({
-      packageName: '@halfdomelabs/baseplate-plugin-storage',
+      packageName: '@baseplate-dev/baseplate-plugin-storage',
       generatorPath: 'fastify/prisma-file-transformer',
       generatorBasename: 'prisma-file-transformer',
     });
@@ -21,14 +21,14 @@ describe('parseGeneratorName', () => {
 
   it('parses generator without subdirectory', () => {
     // Arrange
-    const input = '@halfdomelabs/core-generators#node';
+    const input = '@baseplate-dev/core-generators#node';
 
     // Act
     const result = parseGeneratorName(input);
 
     // Assert
     expect(result).toEqual({
-      packageName: '@halfdomelabs/core-generators',
+      packageName: '@baseplate-dev/core-generators',
       generatorPath: 'node',
       generatorBasename: 'node',
     });
@@ -36,11 +36,11 @@ describe('parseGeneratorName', () => {
 
   it('throws on invalid input', () => {
     // Arrange
-    const input = '@halfdomelabs/core-generators';
+    const input = '@baseplate-dev/core-generators';
 
     // Act / Assert
     expect(() => parseGeneratorName(input)).toThrowError(
-      'Invalid generator name: @halfdomelabs/core-generators. Should be of form "package#group/name"',
+      'Invalid generator name: @baseplate-dev/core-generators. Should be of form "package#group/name"',
     );
   });
 });
