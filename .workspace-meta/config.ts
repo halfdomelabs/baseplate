@@ -8,8 +8,7 @@ export default defineWorkspaceMetaConfig({
   formatter: prettierFormatter,
   plugins: [
     ensurePackageJson((packageJson) => {
-      packageJson.author = packageJson.author ?? 'Your Name';
-      packageJson.license = 'UNLICENSED';
+      packageJson.author = 'Half Dome Labs LLC';
 
       return packageJson;
     }),
