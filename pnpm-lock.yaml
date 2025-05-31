@@ -65,49 +65,28 @@ importers:
       '@changesets/cli':
         specifier: 2.28.1
         version: 2.28.1
-      '@halfdomelabs/tools':
-        specifier: workspace:*
-        version: link:packages/tools
-      '@inquirer/prompts':
-        specifier: 7.2.1
-        version: 7.2.1(@types/node@22.14.1)
-      chalk:
-        specifier: 5.3.0
-        version: 5.3.0
-      commander:
-        specifier: ^12.1.0
-        version: 12.1.0
-      diff:
-        specifier: ^7.0.0
-        version: 7.0.0
-      eslint:
-        specifier: 'catalog:'
-        version: 9.26.0(jiti@2.4.2)
-      glob:
-        specifier: ^11.0.0
-        version: 11.0.0
-      prettier:
-        specifier: 'catalog:'
-        version: 3.5.3
-      yaml:
-        specifier: 2.7.0
-        version: 2.7.0
     devDependencies:
       '@changesets/changelog-github':
         specifier: 0.5.1
         version: 0.5.1(encoding@0.1.13)
-      '@types/diff':
-        specifier: ^6.0.0
-        version: 6.0.0
+      '@halfdomelabs/tools':
+        specifier: workspace:*
+        version: link:packages/tools
       '@types/node':
         specifier: 'catalog:'
         version: 22.14.1
       check-dependency-version-consistency:
         specifier: 5.0.0
         version: 5.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.26.0(jiti@2.4.2)
       knip:
         specifier: 5.59.0
         version: 5.59.0(@types/node@22.14.1)(typescript@5.7.3)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.5.3
       turbo:
         specifier: 2.5.0
         version: 2.5.0
@@ -116,7 +95,7 @@ importers:
         version: 5.7.3
       vitest:
         specifier: 'catalog:'
-        version: 3.0.7(@types/node@22.14.1)(jiti@2.4.2)(jsdom@26.0.0)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.0)
+        version: 3.0.7(@types/node@22.14.1)(jiti@2.4.2)(jsdom@26.0.0)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.7.1)
       workspace-meta:
         specifier: 0.1.2
         version: 0.1.2(@types/node@22.14.1)
@@ -3392,9 +3371,6 @@ packages:
   '@types/culori@2.1.1':
     resolution: {integrity: sha512-NzLYD0vNHLxTdPp8+RlvGbR2NfOZkwxcYGFwxNtm+WH2NuUNV8785zv1h0sulFQ5aFQ9n/jNDUuJeo3Bh7+oFA==}
 
-  '@types/diff@6.0.0':
-    resolution: {integrity: sha512-dhVCYGv3ZSbzmQaBSagrv1WJ6rXCdkyTcDyoNu1MD8JohI7pR7k8wdZEm+mvdxRKXyHVwckFzWU1vJc+Z29MlA==}
-
   '@types/docker-modem@3.0.6':
     resolution: {integrity: sha512-yKpAGEuKRSS8wwx0joknWxsmLha78wNMe9R2S3UNsVOkZded8UqOrV8KoeDXoXsjndxwyF3eIhyClGbO1SEhEg==}
 
@@ -4327,10 +4303,6 @@ packages:
 
   detect-node-es@1.1.0:
     resolution: {integrity: sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==}
-
-  diff@7.0.0:
-    resolution: {integrity: sha512-PJWHUb1RFevKCwaFA9RlG5tCd+FO5iRh9A8HEtkmBH2Li03iJriB6m6JIN4rGz3K3JLawI7/veA1xzRKP6ISBw==}
-    engines: {node: '>=0.3.1'}
 
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
@@ -9364,8 +9336,6 @@ snapshots:
 
   '@types/culori@2.1.1': {}
 
-  '@types/diff@6.0.0': {}
-
   '@types/docker-modem@3.0.6':
     dependencies:
       '@types/node': 22.14.1
@@ -10336,8 +10306,6 @@ snapshots:
   detect-newline@4.0.1: {}
 
   detect-node-es@1.1.0: {}
-
-  diff@7.0.0: {}
 
   dir-glob@3.0.1:
     dependencies:

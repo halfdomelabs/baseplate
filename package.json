@@ -17,9 +17,9 @@
     "lint": "turbo run lint --continue",
     "lint:affected": "turbo run lint --affected --continue",
     "lint:only": "pnpm run -r lint",
-    "metadata:check": "node --experimental-strip-types ./scripts/metadata/index.ts check",
-    "metadata:generate": "node --experimental-strip-types ./scripts/metadata/index.ts generate",
-    "metadata:sync": "node --experimental-strip-types ./scripts/metadata/index.ts sync",
+    "metadata:check": "workspace-meta check",
+    "metadata:generate": "workspace-meta generate",
+    "metadata:sync": "workspace-meta sync",
     "precheck": "turbo run lint prettier:check typecheck --output-logs=errors-only --affected --continue && pnpm run knip",
     "prettier:check": "turbo run prettier:check --continue",
     "prettier:check:affected": "turbo run prettier:check --affected --continue",
@@ -40,21 +40,14 @@
     "watch": "turbo run watch --concurrency 20"
   },
   "dependencies": {
-    "@changesets/cli": "2.28.1",
-    "@halfdomelabs/tools": "workspace:*",
-    "@inquirer/prompts": "7.2.1",
-    "chalk": "5.3.0",
-    "commander": "^12.1.0",
-    "diff": "^7.0.0",
-    "eslint": "catalog:",
-    "glob": "^11.0.0",
-    "prettier": "catalog:",
-    "yaml": "2.7.0"
+    "@changesets/cli": "2.28.1"
   },
   "devDependencies": {
     "@changesets/changelog-github": "0.5.1",
+    "@halfdomelabs/tools": "workspace:*",
     "@types/node": "catalog:",
     "check-dependency-version-consistency": "5.0.0",
+    "eslint": "catalog:",
     "knip": "5.59.0",
     "prettier": "catalog:",
     "turbo": "2.5.0",
