@@ -25,8 +25,9 @@ function AdminAppForm({ className, appConfig }: Props): React.JSX.Element {
       <Alert variant="warning" className="mb-4">
         <AlertTitle>⚠️ Development Preview</AlertTitle>
         <AlertDescription>
-          The admin app functionality will likely be fully rewritten in future versions. 
-          This is provided for preview purposes only and should not be relied upon for production use.
+          The admin app functionality will likely be fully rewritten in future
+          versions. This is provided for preview purposes only and should not be
+          relied upon for production use.
         </AlertDescription>
       </Alert>
       <NavigationTabs>
