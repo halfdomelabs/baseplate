@@ -2,6 +2,7 @@ import type { DragEndEvent } from '@dnd-kit/core';
 import type { ReactNode } from 'react';
 import type React from 'react';
 
+import { Button } from '@baseplate-dev/ui-components';
 import { closestCenter, DndContext } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
@@ -10,7 +11,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Button } from '@baseplate-dev/ui-components';
 import { RxDragHandleHorizontal } from 'react-icons/rx';
 
 interface SortableListItem {
