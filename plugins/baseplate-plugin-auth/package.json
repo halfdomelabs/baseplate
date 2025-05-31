@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/baseplate-plugin-auth",
-  "version": "5.1.2",
+  "version": "0.1.0",
   "description": "Contains the auth plugin for Baseplate",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "SEE LICENSE IN LICENSE",

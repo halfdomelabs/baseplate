@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-common",
-  "version": "0.1.27",
+  "version": "0.1.0",
   "description": "Holds common packages for plugins and generators",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {

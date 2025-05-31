@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-server",
-  "version": "0.5.18",
+  "version": "0.1.0",
   "description": "Server for Project Builder using Baseplate generators",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
@@ -36,15 +36,15 @@
     "watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
   },
   "dependencies": {
-    "@fastify/helmet": "13.0.0",
-    "@fastify/static": "8.0.3",
-    "@fastify/websocket": "11.0.1",
     "@baseplate-dev/core-generators": "workspace:*",
     "@baseplate-dev/fastify-generators": "workspace:*",
     "@baseplate-dev/project-builder-lib": "workspace:*",
     "@baseplate-dev/react-generators": "workspace:*",
     "@baseplate-dev/sync": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
+    "@fastify/helmet": "13.0.0",
+    "@fastify/static": "8.0.3",
+    "@fastify/websocket": "11.0.1",
     "@trpc/server": "^11.1.2",
     "chalk": "5.3.0",
     "change-case": "5.4.4",
