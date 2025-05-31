@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/create-project",
-  "version": "0.2.17",
+  "version": "0.2.18",
   "description": "CLI starter kit for creating a new Baseplate project",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MIT",

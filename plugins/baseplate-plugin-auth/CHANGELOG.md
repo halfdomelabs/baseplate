@@ -1,5 +1,19 @@
 # @halfdomelabs/baseplate-plugin-auth
 
+## 5.1.2
+
+### Patch Changes
+
+- [#552](https://github.com/halfdomelabs/baseplate/pull/552) [`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616) Thanks [@kingston](https://github.com/kingston)! - Refactor to use subpath imports instead of tsconfig paths
+
+- Updated dependencies [[`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616), [`af52406`](https://github.com/halfdomelabs/baseplate/commit/af524065204d945264a75e9fb06a3d3da1a8bfc2), [`af52406`](https://github.com/halfdomelabs/baseplate/commit/af524065204d945264a75e9fb06a3d3da1a8bfc2)]:
+  - @halfdomelabs/project-builder-lib@0.9.15
+  - @halfdomelabs/fastify-generators@0.13.1
+  - @halfdomelabs/react-generators@0.11.2
+  - @halfdomelabs/core-generators@0.11.8
+  - @halfdomelabs/ui-components@0.5.11
+  - @halfdomelabs/sync@0.11.5
+
 ## 5.1.1
 
 ### Patch Changes

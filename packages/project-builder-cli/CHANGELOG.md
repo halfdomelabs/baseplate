@@ -1,5 +1,18 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.9.18
+
+### Patch Changes
+
+- [#552](https://github.com/halfdomelabs/baseplate/pull/552) [`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616) Thanks [@kingston](https://github.com/kingston)! - Refactor to use subpath imports instead of tsconfig paths
+
+- Updated dependencies [[`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616), [`af52406`](https://github.com/halfdomelabs/baseplate/commit/af524065204d945264a75e9fb06a3d3da1a8bfc2)]:
+  - @halfdomelabs/project-builder-server@0.5.18
+  - @halfdomelabs/project-builder-lib@0.9.15
+  - @halfdomelabs/project-builder-web@0.15.16
+  - @halfdomelabs/utils@0.1.10
+  - @halfdomelabs/project-builder-common@0.1.27
+
 ## 0.9.17
 
 ### Patch Changes

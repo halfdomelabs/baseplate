@@ -1,5 +1,14 @@
 # @halfdomelabs/sync
 
+## 0.11.5
+
+### Patch Changes
+
+- [#552](https://github.com/halfdomelabs/baseplate/pull/552) [`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616) Thanks [@kingston](https://github.com/kingston)! - Refactor to use subpath imports instead of tsconfig paths
+
+- Updated dependencies [[`fe87aa3`](https://github.com/halfdomelabs/baseplate/commit/fe87aa3275037b8dc42283a3fff0d6f335321616)]:
+  - @halfdomelabs/utils@0.1.10
+
 ## 0.11.4
 
 ### Patch Changes

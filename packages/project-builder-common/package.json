@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/project-builder-common",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "description": "Holds common packages for plugins and generators",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
