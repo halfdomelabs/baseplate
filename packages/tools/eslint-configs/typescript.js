@@ -33,6 +33,7 @@ export function generateTypescriptEslintConfig(options = []) {
     // allow dev dependencies for config files at root level
     '*.{js,ts}',
     '.*.{js,ts}',
+    '.workspace-meta/**/*',
     ...options.flatMap((option) => option.extraDevDependencies ?? []),
   ];
   const defaultProjectFiles = [
