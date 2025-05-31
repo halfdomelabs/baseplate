@@ -3,7 +3,7 @@
   "version": "0.2.17",
   "description": "CLI starter kit for creating a new Baseplate project",
   "repository": "https://github.com/halfdomelabs/baseplate",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
   "type": "module",
   "imports": {
