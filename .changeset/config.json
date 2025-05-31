@@ -7,7 +7,7 @@
   "commit": false,
   "fixed": [["@baseplate-dev/*", "!@baseplate-dev/baseplate-plugin-*"]],
   "linked": [],
-  "access": "restricted",
+  "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": []

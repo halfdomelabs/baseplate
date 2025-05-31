@@ -27,6 +27,13 @@ export default defineWorkspaceMetaConfig({
       packageJson.author = 'Half Dome Labs LLC';
       packageJson.license = 'SEE LICENSE IN LICENSE';
 
+      if (!packageJson.private) {
+        packageJson.publishConfig = {
+          access: 'public',
+          provenance: true,
+        } as { access: 'public' };
+      }
+
       return packageJson;
     }),
   ],
