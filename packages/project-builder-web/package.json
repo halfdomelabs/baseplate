@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-web",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Web interface for constructing project builder JSON",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "SEE LICENSE IN LICENSE",
