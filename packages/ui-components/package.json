@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/ui-components",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shared UI component library",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "SEE LICENSE IN LICENSE",
