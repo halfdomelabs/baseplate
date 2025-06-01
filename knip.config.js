@@ -88,7 +88,7 @@ export default {
       project: 'src/**/*.{ts,tsx}',
       ignoreDependencies: [
         // we load the plugins dynamically from the package.json
-        '@baseplate-dev/baseplate-plugin-*',
+        '@baseplate-dev/plugin-*',
       ],
     },
     'packages/ui-components': {

@@ -5,7 +5,7 @@
     { "repo": "halfdomelabs/baseplate" }
   ],
   "commit": false,
-  "fixed": [["@baseplate-dev/*", "!@baseplate-dev/baseplate-plugin-*"]],
+  "fixed": [["@baseplate-dev/*", "!@baseplate-dev/plugin-*"]],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
