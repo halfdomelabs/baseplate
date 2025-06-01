@@ -7,7 +7,11 @@ import {
   transformerSchema,
 } from '@baseplate-dev/project-builder-lib';
 import { usePluginEnhancedSchema } from '@baseplate-dev/project-builder-lib/web';
-import { Button, DialogClose, DialogFooter } from '@baseplate-dev/ui-components';
+import {
+  Button,
+  DialogClose,
+  DialogFooter,
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
 import { useId } from 'react';

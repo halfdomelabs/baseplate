@@ -1,6 +1,9 @@
 import type React from 'react';
 
-import { modelEntityType, ModelUtils } from '@baseplate-dev/project-builder-lib';
+import {
+  modelEntityType,
+  ModelUtils,
+} from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   NavigationTabs,

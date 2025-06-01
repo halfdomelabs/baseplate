@@ -13,7 +13,10 @@ import {
   prismaModelUniqueGenerator,
   prismaRelationFieldGenerator,
 } from '@baseplate-dev/fastify-generators';
-import { ModelFieldUtils, ModelUtils } from '@baseplate-dev/project-builder-lib';
+import {
+  ModelFieldUtils,
+  ModelUtils,
+} from '@baseplate-dev/project-builder-lib';
 
 import type {
   AppEntryBuilder,

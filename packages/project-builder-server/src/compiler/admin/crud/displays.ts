@@ -6,7 +6,10 @@ import type {
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
-import { ModelFieldUtils, ModelUtils } from '@baseplate-dev/project-builder-lib';
+import {
+  ModelFieldUtils,
+  ModelUtils,
+} from '@baseplate-dev/project-builder-lib';
 import {
   adminCrudForeignDisplayGenerator,
   adminCrudTextDisplayGenerator,

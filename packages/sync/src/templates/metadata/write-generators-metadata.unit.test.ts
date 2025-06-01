@@ -31,7 +31,9 @@ describe('writeGeneratorsMetadata', () => {
     });
 
     // Mock findNearestPackageJson to return a package.json path
-    const { findNearestPackageJson } = await import('@baseplate-dev/utils/node');
+    const { findNearestPackageJson } = await import(
+      '@baseplate-dev/utils/node'
+    );
     (findNearestPackageJson as ReturnType<typeof vi.fn>).mockResolvedValue(
       '/test/generator/package.json',
     );
@@ -68,7 +70,9 @@ describe('writeGeneratorsMetadata', () => {
     });
 
     // Mock findNearestPackageJson to return package.json paths
-    const { findNearestPackageJson } = await import('@baseplate-dev/utils/node');
+    const { findNearestPackageJson } = await import(
+      '@baseplate-dev/utils/node'
+    );
     (findNearestPackageJson as ReturnType<typeof vi.fn>).mockImplementation(
       ({ cwd }: { cwd: string }) => {
         if (cwd === '/test/generator/dist/test') {
