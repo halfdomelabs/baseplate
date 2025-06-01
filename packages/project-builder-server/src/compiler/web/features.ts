@@ -1,9 +1,9 @@
-import type { WebAppConfig } from '@halfdomelabs/project-builder-lib';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+import type { WebAppConfig } from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
-import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
-import { reactRoutesGenerator } from '@halfdomelabs/react-generators';
-import { notEmpty, safeMerge } from '@halfdomelabs/utils';
+import { FeatureUtils } from '@baseplate-dev/project-builder-lib';
+import { reactRoutesGenerator } from '@baseplate-dev/react-generators';
+import { notEmpty, safeMerge } from '@baseplate-dev/utils';
 
 import type { AppEntryBuilder } from '../app-entry-builder.js';
 

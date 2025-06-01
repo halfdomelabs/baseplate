@@ -1,4 +1,4 @@
-import type { AppEntry } from '@halfdomelabs/project-builder-lib';
+import type { AppEntry } from '@baseplate-dev/project-builder-lib';
 import type {
   FileWithConflict,
   GeneratorEntry,
@@ -6,7 +6,7 @@ import type {
   Logger,
   PreviousGeneratedPayload,
   TemplateMetadataOptions,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 
 import {
   buildGeneratorEntry,
@@ -17,14 +17,14 @@ import {
   writeGeneratorOutput,
   writeGeneratorsMetadata,
   writeTemplateMetadata,
-} from '@halfdomelabs/sync';
-import { enhanceErrorWithContext, randomUid } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { enhanceErrorWithContext, randomUid } from '@baseplate-dev/utils';
 import {
   dirExists,
   handleFileNotFoundError,
   readJsonWithSchema,
   writeJson,
-} from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/utils/node';
 import chalk from 'chalk';
 import { mkdir, rename, rm } from 'node:fs/promises';
 import path from 'node:path';

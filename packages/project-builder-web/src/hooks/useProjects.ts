@@ -1,4 +1,4 @@
-import type { ProjectInfo } from '@halfdomelabs/project-builder-server';
+import type { ProjectInfo } from '@baseplate-dev/project-builder-server';
 
 import { create } from 'zustand';
 

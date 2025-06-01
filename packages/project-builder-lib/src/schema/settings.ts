@@ -1,4 +1,4 @@
-import { CASE_VALIDATORS } from '@halfdomelabs/utils';
+import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { definitionSchema } from './creator/schema-creator.js';
@@ -11,7 +11,7 @@ export const generalSettingsSchema = z.object({
    */
   name: CASE_VALIDATORS.KEBAB_CASE,
   /**
-   * The package scope of the project if any e.g. halfdomelabs for @halfdomelabs/package-name.
+   * The package scope of the project if any e.g. halfdomelabs for @baseplate-dev/package-name.
    */
   packageScope: z
     .union([z.literal(''), CASE_VALIDATORS.KEBAB_CASE])

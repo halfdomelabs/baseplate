@@ -1,6 +1,6 @@
 {
-  "name": "@halfdomelabs/fastify-generators",
-  "version": "0.13.1",
+  "name": "@baseplate-dev/fastify-generators",
+  "version": "0.1.0",
   "description": "Fastify generators for Baseplate",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
@@ -37,9 +37,9 @@
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
   },
   "dependencies": {
-    "@halfdomelabs/core-generators": "workspace:*",
-    "@halfdomelabs/sync": "workspace:*",
-    "@halfdomelabs/utils": "workspace:*",
+    "@baseplate-dev/core-generators": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
     "@prisma/internals": "6.5.0",
     "change-case": "5.4.4",
     "es-toolkit": "1.31.0",
@@ -48,7 +48,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
+    "@baseplate-dev/tools": "workspace:*",
     "@tailwindcss/forms": "0.5.9",
     "concurrently": "9.0.1",
     "cpx2": "7.0.1",
@@ -63,6 +63,7 @@
     "extends": "../../package.json"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public",
+    "provenance": true
   }
 }

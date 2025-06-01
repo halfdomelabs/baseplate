@@ -1,4 +1,4 @@
-import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 
 export interface ProjectProvider {
   getProjectName(): string;

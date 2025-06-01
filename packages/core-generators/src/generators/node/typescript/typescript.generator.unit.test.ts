@@ -1,4 +1,4 @@
-import { createTaskTestRunner, testAction } from '@halfdomelabs/sync';
+import { createTaskTestRunner, testAction } from '@baseplate-dev/sync';
 import { describe, expect, it } from 'vitest';
 
 import {

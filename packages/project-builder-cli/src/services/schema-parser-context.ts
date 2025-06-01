@@ -1,7 +1,7 @@
-import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
+import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 
-import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
-import { createNodeSchemaParserContext } from '@halfdomelabs/project-builder-server';
+import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
+import { createNodeSchemaParserContext } from '@baseplate-dev/project-builder-server';
 
 import { logger } from './logger.js';
 

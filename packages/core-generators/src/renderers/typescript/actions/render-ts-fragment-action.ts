@@ -1,4 +1,4 @@
-import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
+import type { BuilderAction, WriteFileOptions } from '@baseplate-dev/sync';
 
 import type { TsCodeFragment } from '../fragments/types.js';
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';

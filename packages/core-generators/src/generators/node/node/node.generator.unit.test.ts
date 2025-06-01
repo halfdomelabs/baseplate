@@ -1,4 +1,4 @@
-import { createTaskTestRunner } from '@halfdomelabs/sync';
+import { createTaskTestRunner } from '@baseplate-dev/sync';
 import { describe, expect, it } from 'vitest';
 
 import { NODE_VERSION, PNPM_VERSION } from '#src/constants/node.js';

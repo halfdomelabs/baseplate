@@ -1,7 +1,7 @@
 import type {
   GeneratorBundle,
   InferDescriptorFromGenerator,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 
 import { reactAppGenerator } from '../react-app/react-app.generator.js';
 import { reactComponentsGenerator } from '../react-components/react-components.generator.js';

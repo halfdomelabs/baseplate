@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { useBlockBeforeContinue } from '@halfdomelabs/project-builder-lib/web';
+import { useBlockBeforeContinue } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   Dialog,
@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
   useControlledState,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 
 import { useModelForm } from '../_hooks/useModelForm.js';
 import { ModelInfoForm } from '../edit/[id]/_components/ModelInfoForm.js';

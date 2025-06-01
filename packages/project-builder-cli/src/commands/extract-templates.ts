@@ -1,6 +1,6 @@
 import type { Command } from 'commander';
 
-import { runTemplateExtractorsForProject } from '@halfdomelabs/project-builder-server';
+import { runTemplateExtractorsForProject } from '@baseplate-dev/project-builder-server';
 
 import { logger } from '#src/services/logger.js';
 import { createSchemaParserContext } from '#src/services/schema-parser-context.js';

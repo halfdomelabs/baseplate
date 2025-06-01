@@ -1,11 +1,11 @@
-import { projectScope } from '@halfdomelabs/core-generators';
+import { projectScope } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
   createReadOnlyProviderType,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import type { PrismaDataTransformerFactory } from '#src/providers/prisma/prisma-data-transformable.js';

@@ -1,4 +1,4 @@
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 
 import { pothosFieldProvider } from '#src/generators/pothos/_providers/pothos-field.js';
 

@@ -1,13 +1,13 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { projectScope, TsCodeUtils } from '@halfdomelabs/core-generators';
+import { projectScope, TsCodeUtils } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
   createProviderType,
-} from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/prisma.generator.js';

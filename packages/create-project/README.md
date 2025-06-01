@@ -11,7 +11,7 @@ The Create Baseplate package provides a straightforward method for initiating a 
 To start a new Baseplate project, execute the following command in your terminal:
 
 ```bash
-pnpm dlx @halfdomelabs/create-project [directory]
+pnpm dlx @baseplate-dev/create-project [directory]
 ```
 
 This command will set up a new Baseplate project in the specified directory. If no directory name is provided, the project will be established in the current directory. After the project setup is complete, navigate to the project directory to begin development on your new Baseplate application using `pnpm baseplate serve`.

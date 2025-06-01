@@ -1,21 +1,21 @@
-import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
-import type { Logger, TemplateFileExtractorCreator } from '@halfdomelabs/sync';
+import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
+import type { Logger, TemplateFileExtractorCreator } from '@baseplate-dev/sync';
 
-import { TsTemplateFileExtractor } from '@halfdomelabs/core-generators';
+import { TsTemplateFileExtractor } from '@baseplate-dev/core-generators';
 import {
   RawTemplateFileExtractor,
   runTemplateFileExtractors,
   TextTemplateFileExtractor,
-} from '@halfdomelabs/sync';
-import { findNearestPackageJson } from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/sync';
+import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import { globby } from 'globby';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const GENERATOR_PACKAGES = [
-  '@halfdomelabs/core-generators',
-  '@halfdomelabs/fastify-generators',
-  '@halfdomelabs/react-generators',
+  '@baseplate-dev/core-generators',
+  '@baseplate-dev/fastify-generators',
+  '@baseplate-dev/react-generators',
 ];
 
 const TEMPLATE_FILE_EXTRACTOR_CREATORS: TemplateFileExtractorCreator[] = [

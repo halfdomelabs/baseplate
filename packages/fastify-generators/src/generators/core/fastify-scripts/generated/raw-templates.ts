@@ -1,4 +1,4 @@
-import { createRawTemplateFile } from '@halfdomelabs/sync';
+import { createRawTemplateFile } from '@baseplate-dev/sync';
 
 const tsconfig = createRawTemplateFile({
   name: 'tsconfig',

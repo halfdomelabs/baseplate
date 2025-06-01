@@ -1,6 +1,6 @@
 {
-  "name": "@halfdomelabs/project-builder-test",
-  "version": "0.1.18",
+  "name": "@baseplate-dev/project-builder-test",
+  "version": "0.1.0",
   "private": true,
   "description": "Automated E2E testing for the project builder projects",
   "repository": {
@@ -32,12 +32,12 @@
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
-    "@halfdomelabs/project-builder-common": "workspace:*",
-    "@halfdomelabs/project-builder-lib": "workspace:*",
-    "@halfdomelabs/project-builder-server": "workspace:*",
-    "@halfdomelabs/project-builder-web": "workspace:*",
-    "@halfdomelabs/sync": "workspace:*",
-    "@halfdomelabs/utils": "workspace:*",
+    "@baseplate-dev/project-builder-common": "workspace:*",
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/project-builder-server": "workspace:*",
+    "@baseplate-dev/project-builder-web": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
     "commander": "^12.1.0",
     "execa": "9.3.0",
     "globby": "^14.0.2",
@@ -48,7 +48,7 @@
     "testcontainers": "10.23.0"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
+    "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",

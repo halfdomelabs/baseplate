@@ -1,0 +1,12 @@
+{
+  "exportGroups": {
+    "user-session-service": {
+      "existingImportsProvider": {
+        "moduleSpecifier": "@baseplate-dev/fastify-generators",
+        "importSchemaName": "userSessionServiceImportsSchema",
+        "providerName": "userSessionServiceImportsProvider",
+        "providerTypeName": "UserSessionServiceImportsProvider"
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import type { Command } from 'commander';
 
-import { buildProject } from '@halfdomelabs/project-builder-server';
+import { buildProject } from '@baseplate-dev/project-builder-server';
 
 import { createSchemaParserContext } from '#src/services/schema-parser-context.js';
 import { getUserConfig } from '#src/services/user-config.js';

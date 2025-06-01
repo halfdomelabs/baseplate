@@ -1,8 +1,8 @@
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
-import { appModuleGenerator } from '@halfdomelabs/fastify-generators';
-import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
-import { safeMergeAll } from '@halfdomelabs/utils';
+import { appModuleGenerator } from '@baseplate-dev/fastify-generators';
+import { FeatureUtils } from '@baseplate-dev/project-builder-lib';
+import { safeMergeAll } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 

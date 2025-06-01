@@ -8,12 +8,12 @@ All CSS classes used in `className` attributes within plugin components MUST be 
 
 ### Examples:
 
-**For baseplate-plugin-auth:**
+**For plugin-auth:**
 
 - Use: `auth:flex`, `auth:space-y-4`, `auth:bg-muted`
 - Don't use: `flex`, `space-y-4`, `bg-muted`
 
-**For baseplate-plugin-storage:**
+**For plugin-storage:**
 
 - Use: `storage:grid`, `storage:p-4`, `storage:text-center`
 - Don't use: `grid`, `p-4`, `text-center`

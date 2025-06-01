@@ -1,5 +1,5 @@
 {
-  "extends": "@halfdomelabs/tools/tsconfig.vite.lib.json",
+  "extends": "@baseplate-dev/tools/tsconfig.vite.lib.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",

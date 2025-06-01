@@ -1,8 +1,8 @@
 import type {
   ProjectDefinitionContainer,
   SchemaParserContext,
-} from '@halfdomelabs/project-builder-lib';
-import type { ProjectDefinitionFilePayload } from '@halfdomelabs/project-builder-server';
+} from '@baseplate-dev/project-builder-lib';
+import type { ProjectDefinitionFilePayload } from '@baseplate-dev/project-builder-server';
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 

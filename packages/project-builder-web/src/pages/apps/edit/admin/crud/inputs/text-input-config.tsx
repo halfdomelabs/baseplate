@@ -1,13 +1,13 @@
-import type { AdminCrudTextInputConfig } from '@halfdomelabs/project-builder-lib';
-import type { AdminCrudInputWebFormProps } from '@halfdomelabs/project-builder-lib/web';
+import type { AdminCrudTextInputConfig } from '@baseplate-dev/project-builder-lib';
+import type { AdminCrudInputWebFormProps } from '@baseplate-dev/project-builder-lib/web';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { createAdminCrudInputWebConfig } from '@halfdomelabs/project-builder-lib/web';
+import { createAdminCrudInputWebConfig } from '@baseplate-dev/project-builder-lib/web';
 import {
   InputFieldController,
   SelectFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 
 function AdminCrudTextInputForm({
   formProps,

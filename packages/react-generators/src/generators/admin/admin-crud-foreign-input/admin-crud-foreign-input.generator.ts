@@ -2,9 +2,9 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsTemplate,
-} from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
+} from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { reactApolloProvider } from '#src/generators/apollo/react-apollo/react-apollo.generator.js';

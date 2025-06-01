@@ -1,6 +1,6 @@
 // src/git-merge-driver.ts
 
-import { enhanceErrorWithContext } from '@halfdomelabs/utils';
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { execa, ExecaError, parseCommandString } from 'execa';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';

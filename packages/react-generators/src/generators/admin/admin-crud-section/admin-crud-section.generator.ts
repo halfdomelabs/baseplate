@@ -2,7 +2,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderExportScope,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});

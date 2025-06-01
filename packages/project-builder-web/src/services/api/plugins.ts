@@ -1,4 +1,4 @@
-import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 
 import { IS_PREVIEW } from '../config.js';
 import { trpc } from '../trpc.js';

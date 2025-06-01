@@ -12,7 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useNavigate } from 'react-router-dom';
 
 import { useProjects } from '#src/hooks/useProjects.js';

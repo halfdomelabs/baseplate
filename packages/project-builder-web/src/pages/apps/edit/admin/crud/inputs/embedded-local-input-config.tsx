@@ -1,10 +1,10 @@
-import type { AdminCrudEmbeddedLocalInputConfig } from '@halfdomelabs/project-builder-lib';
-import type { AdminCrudInputWebFormProps } from '@halfdomelabs/project-builder-lib/web';
+import type { AdminCrudEmbeddedLocalInputConfig } from '@baseplate-dev/project-builder-lib';
+import type { AdminCrudInputWebFormProps } from '@baseplate-dev/project-builder-lib/web';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { createAdminCrudInputWebConfig } from '@halfdomelabs/project-builder-lib/web';
-import { SelectFieldController } from '@halfdomelabs/ui-components';
+import { createAdminCrudInputWebConfig } from '@baseplate-dev/project-builder-lib/web';
+import { SelectFieldController } from '@baseplate-dev/ui-components';
 
 function AdminCrudEmbeddedLocalInputForm({
   formProps,

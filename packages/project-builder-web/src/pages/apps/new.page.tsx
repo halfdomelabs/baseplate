@@ -1,11 +1,11 @@
-import type { AppConfig } from '@halfdomelabs/project-builder-lib';
+import type { AppConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
   appEntityType,
   baseAppSchema,
-} from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   Card,
@@ -13,7 +13,7 @@ import {
   InputFieldController,
   SelectFieldController,
   toast,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sortBy } from 'es-toolkit';
 import { useForm } from 'react-hook-form';

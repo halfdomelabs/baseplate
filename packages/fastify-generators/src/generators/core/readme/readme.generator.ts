@@ -1,9 +1,9 @@
-import { projectProvider } from '@halfdomelabs/core-generators';
+import { projectProvider } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   renderTextTemplateFileAction,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { CORE_README_TEXT_TEMPLATES } from './generated/text-templates.js';

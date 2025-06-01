@@ -1,11 +1,11 @@
-import type { BaseplateUserConfig } from '@halfdomelabs/project-builder-server';
+import type { BaseplateUserConfig } from '@baseplate-dev/project-builder-server';
 
-import { userConfigSchema } from '@halfdomelabs/project-builder-server';
+import { userConfigSchema } from '@baseplate-dev/project-builder-server';
 import {
   handleFileNotFoundError,
   readJsonWithSchema,
   writeStablePrettyJson,
-} from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/utils/node';
 import { mkdir } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';

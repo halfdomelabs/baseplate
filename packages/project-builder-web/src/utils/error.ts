@@ -1,4 +1,4 @@
-import type { FixRefDeletionError } from '@halfdomelabs/project-builder-lib';
+import type { FixRefDeletionError } from '@baseplate-dev/project-builder-lib';
 import type { ZodError } from 'zod';
 
 export class UserVisibleError extends Error {

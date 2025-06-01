@@ -1,21 +1,21 @@
 ---
-'@halfdomelabs/baseplate-plugin-storage': patch
-'@halfdomelabs/project-builder-common': patch
-'@halfdomelabs/project-builder-server': patch
-'@halfdomelabs/project-builder-test': patch
-'@halfdomelabs/baseplate-plugin-auth': patch
-'@halfdomelabs/project-builder-cli': patch
-'@halfdomelabs/project-builder-lib': patch
-'@halfdomelabs/project-builder-web': patch
-'@halfdomelabs/fastify-generators': patch
-'@halfdomelabs/react-generators': patch
-'@halfdomelabs/core-generators': patch
-'@halfdomelabs/create-project': patch
-'@halfdomelabs/ui-components': patch
-'@halfdomelabs/code-morph': patch
-'@halfdomelabs/tools': patch
-'@halfdomelabs/utils': patch
-'@halfdomelabs/sync': patch
+'@baseplate-dev/plugin-storage': patch
+'@baseplate-dev/project-builder-common': patch
+'@baseplate-dev/project-builder-server': patch
+'@baseplate-dev/project-builder-test': patch
+'@baseplate-dev/plugin-auth': patch
+'@baseplate-dev/project-builder-cli': patch
+'@baseplate-dev/project-builder-lib': patch
+'@baseplate-dev/project-builder-web': patch
+'@baseplate-dev/fastify-generators': patch
+'@baseplate-dev/react-generators': patch
+'@baseplate-dev/core-generators': patch
+'@baseplate-dev/create-project': patch
+'@baseplate-dev/ui-components': patch
+'@baseplate-dev/code-morph': patch
+'@baseplate-dev/tools': patch
+'@baseplate-dev/utils': patch
+'@baseplate-dev/sync': patch
 ---
 
 Update LICENSE to modified MPL-2.0 license

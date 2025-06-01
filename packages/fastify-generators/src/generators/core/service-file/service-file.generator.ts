@@ -1,22 +1,22 @@
 import type {
   TsCodeFragment,
   TsImportDeclaration,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 
 import {
   mergeFragmentsWithHoistedFragmentsPresorted,
   projectScope,
   tsImportBuilder,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
   createReadOnlyProviderType,
-} from '@halfdomelabs/sync';
-import { NamedArrayFieldContainer } from '@halfdomelabs/utils';
-import { posixJoin } from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/sync';
+import { NamedArrayFieldContainer } from '@baseplate-dev/utils';
+import { posixJoin } from '@baseplate-dev/utils/node';
 import { kebabCase } from 'change-case';
 import path from 'node:path';
 import { z } from 'zod';

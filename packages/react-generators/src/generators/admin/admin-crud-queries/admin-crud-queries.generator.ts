@@ -1,11 +1,11 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { TsCodeUtils } from '@halfdomelabs/core-generators';
+import { TsCodeUtils } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { pluralize } from 'inflection';
 import path from 'node:path';
 import { z } from 'zod';

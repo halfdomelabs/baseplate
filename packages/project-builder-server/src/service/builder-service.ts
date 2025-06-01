@@ -2,18 +2,18 @@ import type {
   PluginMetadataWithPaths,
   ProjectDefinitionInput,
   SchemaParserContext,
-} from '@halfdomelabs/project-builder-lib';
-import type { EventedLogger } from '@halfdomelabs/sync';
+} from '@baseplate-dev/project-builder-lib';
+import type { EventedLogger } from '@baseplate-dev/sync';
 import type { FSWatcher } from 'chokidar';
 
-import { getLatestMigrationVersion } from '@halfdomelabs/project-builder-lib';
-import { createEventedLogger } from '@halfdomelabs/sync';
-import { hashWithSHA256, TypedEventEmitter } from '@halfdomelabs/utils';
+import { getLatestMigrationVersion } from '@baseplate-dev/project-builder-lib';
+import { createEventedLogger } from '@baseplate-dev/sync';
+import { hashWithSHA256, TypedEventEmitter } from '@baseplate-dev/utils';
 import {
   ensureDir,
   fileExists,
   handleFileNotFoundError,
-} from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/utils/node';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
 import { execa, parseCommandString } from 'execa';

@@ -1,7 +1,7 @@
 import type {
   GeneratorBundle,
   InferDescriptorFromGenerator,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 
 import { fastifyVitestGenerator } from '#src/generators/vitest/index.js';
 

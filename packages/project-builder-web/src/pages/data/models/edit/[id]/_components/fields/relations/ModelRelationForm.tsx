@@ -4,7 +4,7 @@ import type {
   ModelRelationFieldConfig,
   ModelRelationFieldConfigInput,
   ProjectDefinition,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import type { Control } from 'react-hook-form';
 
 import {
@@ -13,8 +13,8 @@ import {
   modelLocalRelationEntityType,
   modelRelationFieldSchema,
   ModelUtils,
-} from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   ComboboxField,
@@ -24,7 +24,7 @@ import {
   InputFieldController,
   SelectFieldController,
   toast,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
 import { camelCase } from 'es-toolkit';

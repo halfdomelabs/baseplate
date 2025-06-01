@@ -1,4 +1,4 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import type { formatSchema } from '@prisma/internals';
 
 import {
@@ -10,14 +10,14 @@ import {
   TsCodeUtils,
   tsTemplate,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
   createReadOnlyProviderType,
   POST_WRITE_COMMAND_PRIORITY,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { createRequire } from 'node:module';
 import { z } from 'zod';
 

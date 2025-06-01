@@ -1,7 +1,7 @@
 import {
   createTsTemplateFile,
   createTsTemplateGroup,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 
 import { configServiceImportsProvider } from '../../config-service/generated/ts-import-maps.js';
 import { loggerServiceImportsProvider } from '../../logger-service/generated/ts-import-maps.js';

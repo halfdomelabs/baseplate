@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { useBlockBeforeContinue } from '@halfdomelabs/project-builder-lib/web';
+import { useBlockBeforeContinue } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   Dialog,
@@ -13,7 +13,7 @@ import {
   DialogTrigger,
   SwitchFieldController,
   useControlledState,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 
 import { EnumInfoForm } from '../components/EnumInfoForm.js';
 import { useEnumForm } from '../hooks/useEnumForm.js';

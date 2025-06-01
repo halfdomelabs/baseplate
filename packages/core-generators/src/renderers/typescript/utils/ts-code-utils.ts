@@ -1,4 +1,4 @@
-import { quot } from '@halfdomelabs/utils';
+import { quot } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 
 import type { TsCodeFragmentOptions } from '../fragments/creators.js';

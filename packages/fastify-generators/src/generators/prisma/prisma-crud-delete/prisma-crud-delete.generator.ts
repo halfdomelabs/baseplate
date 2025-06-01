@@ -1,11 +1,11 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   TsCodeUtils,
   tsTypeImportBuilder,
-} from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
-import { NUMBER_VALIDATORS } from '@halfdomelabs/utils';
+} from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { NUMBER_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import type { ServiceOutputMethod } from '#src/types/service-output.js';

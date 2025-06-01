@@ -1,12 +1,12 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { TsCodeUtils, tsTemplate } from '@halfdomelabs/core-generators';
+import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createNonOverwriteableMap,
-} from '@halfdomelabs/sync';
-import { quot, sortObjectKeys } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { quot, sortObjectKeys } from '@baseplate-dev/utils';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
 

@@ -32,7 +32,7 @@ Note: Make sure to run the commands in the sub-packages if only modifying files 
 
 ## UI Development Guidelines
 
-- **Component Library**: Use ShadCN-based components from `@halfdomelabs/ui-components`
+- **Component Library**: Use ShadCN-based components from `@baseplate-dev/ui-components`
   - This package contains a customized variation of ShadCN components
   - Always prefer these components over creating custom ones
 - **Styling**: Use Tailwind CSS utilities exclusively
@@ -115,8 +115,8 @@ Baseplate is organized into several core packages:
 
 ### Plugins
 
-- **plugins/baseplate-plugin-auth**: Authentication plugin (includes auth0 and local auth implementations)
-- **plugins/baseplate-plugin-storage**: Storage plugin (S3 and local file storage)
+- **plugins/plugin-auth**: Authentication plugin (includes auth0 and local auth implementations)
+- **plugins/plugin-storage**: Storage plugin (S3 and local file storage)
 
 ## Architecture Overview
 

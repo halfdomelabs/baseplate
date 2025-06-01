@@ -16,7 +16,7 @@ export default createTypescriptMorpher({
     // Find and remove createTaskConfigBuilder from imports
     const syncImport = importDeclarations.find(
       (dec) =>
-        dec.getModuleSpecifierValue() === '@halfdomelabs/sync' &&
+        dec.getModuleSpecifierValue() === '@baseplate-dev/sync' &&
         !dec.isTypeOnly(),
     );
 

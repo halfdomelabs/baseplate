@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { Alert } from '@halfdomelabs/ui-components';
+import { Alert } from '@baseplate-dev/ui-components';
 
 function MyComponent() {
   return (

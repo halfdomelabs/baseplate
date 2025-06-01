@@ -1,8 +1,8 @@
-import type { EmbeddedRelationTransformerConfig } from '@halfdomelabs/project-builder-lib';
+import type { EmbeddedRelationTransformerConfig } from '@baseplate-dev/project-builder-lib';
 import type {
   ModelTransformerWebConfig,
   ModelTransformerWebFormProps,
-} from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib/web';
 import type React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 
@@ -10,12 +10,12 @@ import {
   modelTransformerEntityType,
   ModelTransformerUtils,
   ModelUtils,
-} from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   MultiComboboxFieldController,
   SelectFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
 

@@ -1,9 +1,9 @@
 import type {
   ProjectDefinitionFilePayload,
   ProjectDefinitionFileWriteResult,
-} from '@halfdomelabs/project-builder-server';
+} from '@baseplate-dev/project-builder-server';
 
-import { hashWithSHA256 } from '@halfdomelabs/utils';
+import { hashWithSHA256 } from '@baseplate-dev/utils';
 
 import { IS_PREVIEW } from '../config.js';
 import { trpc } from '../trpc.js';

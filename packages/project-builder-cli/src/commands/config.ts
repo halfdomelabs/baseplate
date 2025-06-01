@@ -1,7 +1,7 @@
 import type { Command } from 'commander';
 
-import { userConfigSchema } from '@halfdomelabs/project-builder-server';
-import { stringifyPrettyStable } from '@halfdomelabs/utils';
+import { userConfigSchema } from '@baseplate-dev/project-builder-server';
+import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { ZodError } from 'zod';
 
 import { getUserConfig, writeUserConfig } from '../services/user-config.js';

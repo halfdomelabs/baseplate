@@ -1,17 +1,17 @@
 import type {
   FeatureConfig,
   ProjectDefinition,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { featureEntityType } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { featureEntityType } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   buttonVariants,
   cn,
   useConfirmDialog,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useState } from 'react';
 import { FiCornerDownRight } from 'react-icons/fi';
 import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';

@@ -2,8 +2,8 @@ import {
   projectScope,
   tsUtilsImportsProvider,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+} from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/service-context.generator.js';

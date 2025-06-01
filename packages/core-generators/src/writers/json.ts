@@ -1,7 +1,7 @@
 import type {
   GeneratorTaskOutputBuilder,
   WriteFileOptions,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 
 interface WriteJsonToBuilderOptions extends WriteFileOptions {
   /**

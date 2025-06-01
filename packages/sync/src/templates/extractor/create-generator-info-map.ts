@@ -1,7 +1,7 @@
 import {
   handleFileNotFoundError,
   readJsonWithSchema,
-} from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/utils/node';
 import path from 'node:path';
 import { z } from 'zod';
 

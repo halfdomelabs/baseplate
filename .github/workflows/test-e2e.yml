@@ -34,7 +34,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile --filter @halfdomelabs/project-builder-test... --filter @halfdomelabs/project-builder-cli... --filter @halfdomelabs/root
+        run: pnpm install --frozen-lockfile --filter @baseplate-dev/project-builder-test... --filter @baseplate-dev/project-builder-cli... --filter @baseplate-dev/root
 
       - name: Get Playwright version
         id: get-playwright-version

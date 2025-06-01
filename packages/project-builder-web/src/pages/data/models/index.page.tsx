@@ -1,7 +1,7 @@
 import type React from 'react';
 
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, EmptyDisplay } from '@halfdomelabs/ui-components';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import { Button, EmptyDisplay } from '@baseplate-dev/ui-components';
 import { HiDatabase } from 'react-icons/hi';
 
 import { NewModelDialog } from './_components/NewModelDialog.js';

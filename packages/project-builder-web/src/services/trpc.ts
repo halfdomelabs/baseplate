@@ -1,8 +1,8 @@
-import type { AppRouter } from '@halfdomelabs/project-builder-server';
+import type { AppRouter } from '@baseplate-dev/project-builder-server';
 import type { TRPCLink } from '@trpc/client';
 import type { Unsubscribable } from '@trpc/server/observable';
 
-import { createTypedEventEmitter } from '@halfdomelabs/utils';
+import { createTypedEventEmitter } from '@baseplate-dev/utils';
 import {
   createTRPCClient,
   createWSClient,

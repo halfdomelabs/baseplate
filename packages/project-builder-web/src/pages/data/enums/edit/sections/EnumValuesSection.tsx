@@ -1,8 +1,8 @@
-import type { EnumConfig } from '@halfdomelabs/project-builder-lib';
+import type { EnumConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
-import { modelEnumValueEntityType } from '@halfdomelabs/project-builder-lib';
+import { modelEnumValueEntityType } from '@baseplate-dev/project-builder-lib';
 import {
   Button,
   InputFieldController,
@@ -12,7 +12,7 @@ import {
   SectionListSectionDescription,
   SectionListSectionHeader,
   SectionListSectionTitle,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdDeleteOutline } from 'react-icons/md';

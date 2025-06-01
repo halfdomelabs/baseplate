@@ -1,9 +1,9 @@
-import type { Logger } from '@halfdomelabs/sync';
+import type { Logger } from '@baseplate-dev/sync';
 
 import {
   enhanceErrorWithContext,
   TypedEventEmitter,
-} from '@halfdomelabs/utils';
+} from '@baseplate-dev/utils';
 import { watch } from 'chokidar';
 import { isEqual, throttle } from 'es-toolkit';
 import path from 'node:path';

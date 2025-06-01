@@ -1,7 +1,7 @@
-import type { FeatureConfig } from '@halfdomelabs/project-builder-lib';
+import type { FeatureConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   ComboboxFieldController,
@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   InputFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sortBy } from 'es-toolkit';
 import { useEffect, useMemo } from 'react';

@@ -1,15 +1,15 @@
 import type { Command } from 'commander';
 
-import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
+import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
 import {
   getLatestMigrationVersion,
   type ProjectDefinitionInput,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import {
   BuilderServiceManager,
   DEFAULT_SERVER_PORT,
   startWebServer,
-} from '@halfdomelabs/project-builder-server';
+} from '@baseplate-dev/project-builder-server';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pino } from 'pino';
@@ -30,7 +30,7 @@ async function createTestProject(
     path.join(projectDirectory, 'package.json'),
     JSON.stringify(
       {
-        name: `@halfdomelabs/test-${projectName}`,
+        name: `@baseplate-dev/test-${projectName}`,
         version: '0.1.0',
         private: true,
         description: 'A Baseplate test project',
@@ -64,7 +64,7 @@ async function createTestProject(
 
 async function serveWebsite(projectDirectory: string): Promise<void> {
   const projectBuilderWebDir = await packageDirectory({
-    cwd: resolveModule('@halfdomelabs/project-builder-web/package.json'),
+    cwd: resolveModule('@baseplate-dev/project-builder-web/package.json'),
   });
   const builtInPlugins = await getDefaultPlugins(logger);
 

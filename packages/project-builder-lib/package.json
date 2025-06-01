@@ -1,6 +1,6 @@
 {
-  "name": "@halfdomelabs/project-builder-lib",
-  "version": "0.9.15",
+  "name": "@baseplate-dev/project-builder-lib",
+  "version": "0.1.0",
   "description": "Library for Project Builder using Baseplate generators",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
@@ -39,9 +39,9 @@
     "watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
   },
   "dependencies": {
-    "@halfdomelabs/sync": "workspace:*",
-    "@halfdomelabs/ui-components": "workspace:*",
-    "@halfdomelabs/utils": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
+    "@baseplate-dev/ui-components": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
     "culori": "^4.0.1",
     "es-toolkit": "1.31.0",
     "globby": "^14.0.2",
@@ -53,8 +53,8 @@
     "zustand": "5.0.3"
   },
   "devDependencies": {
+    "@baseplate-dev/tools": "workspace:*",
     "@faker-js/faker": "9.8.0",
-    "@halfdomelabs/tools": "workspace:*",
     "@types/culori": "^2.1.1",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
@@ -72,6 +72,7 @@
     "extends": "../../package.json"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public",
+    "provenance": true
   }
 }

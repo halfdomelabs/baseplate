@@ -1,6 +1,0 @@
-@layer theme, base, components, utilities;
-
-@import 'tailwindcss/theme.css' layer(theme) prefix(storage);
-@import 'tailwindcss/utilities.css' layer(utilities) prefix(storage);
-
-@import '@halfdomelabs/ui-components/theme.css';

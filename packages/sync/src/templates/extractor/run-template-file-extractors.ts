@@ -1,8 +1,8 @@
-import { mapGroupBy } from '@halfdomelabs/utils';
+import { mapGroupBy } from '@baseplate-dev/utils';
 import {
   handleFileNotFoundError,
   readJsonWithSchema,
-} from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/utils/node';
 import { omit, orderBy, uniqBy } from 'es-toolkit';
 import { globby } from 'globby';
 import fsAdapter from 'node:fs';

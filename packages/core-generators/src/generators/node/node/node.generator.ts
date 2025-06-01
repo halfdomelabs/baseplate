@@ -1,8 +1,8 @@
-import type { AnyGeneratorTask, TaskRunContext } from '@halfdomelabs/sync';
+import type { AnyGeneratorTask, TaskRunContext } from '@baseplate-dev/sync';
 import type {
   FieldMap,
   InferFieldMapSchemaFromBuilder,
-} from '@halfdomelabs/utils';
+} from '@baseplate-dev/utils';
 
 import {
   createConfigFieldMap,
@@ -11,8 +11,8 @@ import {
   createGeneratorTask,
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
-} from '@halfdomelabs/sync';
-import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { createFieldMapSchemaBuilder } from '@baseplate-dev/utils';
 import semver from 'semver';
 import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';

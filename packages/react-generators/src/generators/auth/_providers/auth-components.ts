@@ -1,8 +1,8 @@
 import {
   createTsImportMapSchema,
   type TsImportMapProviderFromSchema,
-} from '@halfdomelabs/core-generators';
-import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+} from '@baseplate-dev/core-generators';
+import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 
 export const authComponentsImportsSchema = createTsImportMapSchema({
   RequireAuth: { name: 'default' },

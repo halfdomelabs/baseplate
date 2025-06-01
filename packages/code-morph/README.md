@@ -1,6 +1,6 @@
 # Code Morph CLI
 
-`@halfdomelabs/code-morph` is a CLI tool designed to simplify TypeScript code migrations across the Baseplate monorepo by leveraging `ts-morph`. It allows developers to write and execute custom transformations (morphers) on the codebase.
+`@baseplate-dev/code-morph` is a CLI tool designed to simplify TypeScript code migrations across the Baseplate monorepo by leveraging `ts-morph`. It allows developers to write and execute custom transformations (morphers) on the codebase.
 
 ## Features
 

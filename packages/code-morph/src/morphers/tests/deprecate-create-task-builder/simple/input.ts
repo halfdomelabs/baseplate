@@ -1,17 +1,17 @@
 // @ts-nocheck
 
-import type { ImportMapper } from '@halfdomelabs/core-generators';
+import type { ImportMapper } from '@baseplate-dev/core-generators';
 
 import {
   makeImportAndFilePath,
   projectScope,
   typescriptProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createProviderType,
   createTaskConfigBuilder,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { appModuleProvider } from '#src/generators/core/root-module/index.js';

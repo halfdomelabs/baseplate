@@ -1,4 +1,4 @@
-import { testAction } from '@halfdomelabs/sync';
+import { testAction } from '@baseplate-dev/sync';
 import { describe, expect, it } from 'vitest';
 
 import { tsCodeFragment } from '../fragments/creators.js';

@@ -1,7 +1,7 @@
-import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
-import type { Logger } from '@halfdomelabs/sync';
+import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
+import type { Logger } from '@baseplate-dev/sync';
 
-import { loadPluginsInPackage } from '@halfdomelabs/project-builder-lib/plugin-tools';
+import { loadPluginsInPackage } from '@baseplate-dev/project-builder-lib/plugin-tools';
 import { vol } from 'memfs';
 import { createRequire } from 'node:module';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -10,7 +10,7 @@ import { discoverPlugins } from './plugin-discovery.js';
 
 // Mock the required modules
 vi.mock('node:fs/promises');
-vi.mock('@halfdomelabs/project-builder-lib/plugin-tools', () => ({
+vi.mock('@baseplate-dev/project-builder-lib/plugin-tools', () => ({
   loadPluginsInPackage: vi.fn(),
 }));
 vi.mock('node:module', () => ({

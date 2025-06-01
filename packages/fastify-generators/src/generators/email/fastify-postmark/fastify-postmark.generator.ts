@@ -5,13 +5,13 @@ import {
   tsCodeFragment,
   tsImportBuilder,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
   createProviderType,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';

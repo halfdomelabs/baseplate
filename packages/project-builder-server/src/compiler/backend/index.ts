@@ -3,15 +3,15 @@ import type {
   BackendAppConfig,
   ProjectDefinition,
   ProjectDefinitionContainer,
-} from '@halfdomelabs/project-builder-lib';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+} from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   composeNodeGenerator,
   dockerComposeGenerator,
   vitestGenerator,
-} from '@halfdomelabs/core-generators';
-import { backendAppEntryType } from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/core-generators';
+import { backendAppEntryType } from '@baseplate-dev/project-builder-lib';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
 import { buildFastify } from './fastify.js';

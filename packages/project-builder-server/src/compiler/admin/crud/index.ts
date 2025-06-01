@@ -2,9 +2,9 @@ import type {
   AdminAppConfig,
   AdminCrudEmbeddedFormConfig,
   AdminCrudSectionConfig,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
-import { ModelUtils } from '@halfdomelabs/project-builder-lib';
+import { ModelUtils } from '@baseplate-dev/project-builder-lib';
 import {
   adminCrudColumnGenerator,
   adminCrudEditGenerator,
@@ -13,8 +13,8 @@ import {
   adminCrudQueriesGenerator,
   adminCrudSectionGenerator,
   reactRoutesGenerator,
-} from '@halfdomelabs/react-generators';
-import { type GeneratorBundle, makeIdSafe } from '@halfdomelabs/sync';
+} from '@baseplate-dev/react-generators';
+import { type GeneratorBundle, makeIdSafe } from '@baseplate-dev/sync';
 import inflection from 'inflection';
 
 import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';

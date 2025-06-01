@@ -1,6 +1,6 @@
 {
-  "name": "@halfdomelabs/project-builder-common",
-  "version": "0.1.27",
+  "name": "@baseplate-dev/project-builder-common",
+  "version": "0.1.0",
   "description": "Holds common packages for plugins and generators",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
@@ -25,16 +25,16 @@
     "prettier:write": "prettier -w ."
   },
   "dependencies": {
-    "@halfdomelabs/baseplate-plugin-auth": "workspace:*",
-    "@halfdomelabs/baseplate-plugin-storage": "workspace:*",
-    "@halfdomelabs/project-builder-lib": "workspace:*",
-    "@halfdomelabs/project-builder-server": "workspace:*",
-    "@halfdomelabs/sync": "workspace:*",
+    "@baseplate-dev/plugin-auth": "workspace:*",
+    "@baseplate-dev/plugin-storage": "workspace:*",
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/project-builder-server": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
     "eslint": "catalog:",
     "prettier": "catalog:"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*"
+    "@baseplate-dev/tools": "workspace:*"
   },
   "engines": {
     "node": "^22.0.0"
@@ -43,6 +43,7 @@
     "extends": "../../package.json"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public",
+    "provenance": true
   }
 }

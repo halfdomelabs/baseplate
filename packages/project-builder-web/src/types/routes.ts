@@ -1,7 +1,7 @@
 import type {
   DefinitionEntityType,
   ProjectDefinitionContainer,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 type RouteCrumb = string | { label: string; url?: string };
 

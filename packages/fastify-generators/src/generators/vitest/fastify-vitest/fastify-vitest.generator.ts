@@ -3,8 +3,8 @@ import {
   tsCodeFragment,
   tsImportBuilder,
   vitestConfigProvider,
-} from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+} from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});

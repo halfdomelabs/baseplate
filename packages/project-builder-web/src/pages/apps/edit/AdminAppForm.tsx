@@ -1,4 +1,4 @@
-import type { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
+import type { AdminAppConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -7,7 +7,7 @@ import {
   AlertTitle,
   NavigationTabs,
   NavigationTabsItem,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { NavLink, Route, Routes } from 'react-router-dom';
 

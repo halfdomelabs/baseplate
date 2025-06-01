@@ -3,7 +3,7 @@ import {
   type FieldMapSchema,
   type FieldMapSchemaBuilder,
   type FieldMapValues,
-} from '@halfdomelabs/utils';
+} from '@baseplate-dev/utils';
 
 import type { GeneratorTask } from '#src/generators/generators.js';
 import type { ProviderExportScope } from '#src/providers/export-scopes.js';

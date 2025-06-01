@@ -1,4 +1,4 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   createNodePackagesTask,
@@ -9,12 +9,12 @@ import {
   TsCodeUtils,
   tsImportBuilder,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import path from 'node:path';
 import { z } from 'zod';
 

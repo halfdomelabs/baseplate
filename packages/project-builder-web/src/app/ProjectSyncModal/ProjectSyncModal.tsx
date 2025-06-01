@@ -3,7 +3,7 @@ import type React from 'react';
 import {
   useBlockBeforeContinue,
   useProjectDefinition,
-} from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   Dialog,
@@ -18,7 +18,7 @@ import {
   TabsList,
   TabsTrigger,
   toast,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdSync, MdSyncProblem } from 'react-icons/md';

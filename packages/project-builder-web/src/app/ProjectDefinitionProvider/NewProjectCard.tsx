@@ -1,17 +1,17 @@
 import type {
   GeneralSettingsInput,
   ProjectDefinition,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { generalSettingsSchema } from '@halfdomelabs/project-builder-lib';
+import { generalSettingsSchema } from '@baseplate-dev/project-builder-lib';
 import {
   Button,
   Card,
   CardContent,
   InputFieldController,
   toast,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 

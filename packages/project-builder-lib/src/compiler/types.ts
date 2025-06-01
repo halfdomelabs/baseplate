@@ -1,4 +1,4 @@
 export type {
   BaseGeneratorDescriptor,
   DescriptorWithChildren,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';

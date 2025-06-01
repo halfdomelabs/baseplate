@@ -2,7 +2,7 @@ import {
   createTsTemplateFile,
   createTsTemplateGroup,
   tsUtilsImportsProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 
 const builder = createTsTemplateFile({
   name: 'builder',

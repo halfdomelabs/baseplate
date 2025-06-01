@@ -1,13 +1,13 @@
 import type {
   ModelConfig,
   ModelConfigInput,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { UseFormGetValues, UseFormWatch } from 'react-hook-form';
 import type { StoreApi } from 'zustand';
 
-import { ModelUtils } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { ModelUtils } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { createStore, useStore } from 'zustand';
 

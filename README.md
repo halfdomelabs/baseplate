@@ -9,22 +9,46 @@
 > **⚠️ WARNING: DEVELOPMENT VERSION**
 >
 > **This project is still very much in development and not ready for production use.** The code and configuration may introduce breaking changes at any time. While you're welcome to preview Baseplate and provide feedback, please **DO NOT use this in production applications** until we reach our alpha release.
->
 > Use at your own risk for experimentation and development purposes only.
 
 Baseplate is a platform designed to accelerate the development of coding projects. It automatically generates the necessary code for your features, allowing you to customize the codebase to your specific needs. This way, you can focus more on the harder challenges of coding instead of basic tasks like setting up CRUD (Create, Read, Update, and Delete) APIs or configuration variables.
+
+For comprehensive information, visit the official site: [https://www.baseplate.dev/](https://www.baseplate.dev/), or dive into the documentation: [https://docs.baseplate.dev/getting-started](https://docs.baseplate.dev/getting-started).
 
 ## Features
 
 Currently, Baseplate focuses on backend and administrative UIs, capable of generating:
 
-- **Node.JS Backend:** This includes a server with CRUD endpoints backed by GraphQL, Prisma, and a Postgres database.
+- **Node.js Backend:** A server with CRUD endpoints backed by GraphQL, Prisma, and a PostgreSQL database.
+- **Web App:** A boilerplate React app compiled with Vite that includes authentication capabilities and communicates with backend APIs.
+- **Admin App:** A React app featuring an admin layout and simple CRUD operations, such as viewing a list of users.
 
-- **Web App:** This is a boilerplate React app compiled with Vite that includes authentication capabilities and communicates with backend APIs.
+## Quickstart
 
-- **Admin App:** This is a React app that features an admin layout and simple CRUD operations, like viewing a list of users.
+Follow these steps to create and run a new Baseplate project:
 
-## Installation
+1. **Create a new project**
+   Run the following command to scaffold a Baseplate project in a directory named `my-app`. Directory names must use lowercase letters, numbers, and dashes.
+
+   ```bash
+   pnpm dlx @baseplate-dev/create-project my-app
+   ```
+
+   If you omit `my-app`, the project will be created in the current directory.
+
+2. **Start the Baseplate project builder**
+   In a terminal window:
+
+   ```bash
+   cd my-app
+   pnpm baseplate serve
+   ```
+
+   The builder’s web UI and backend server will start (default port: `3230`). You can now open the web interface in your browser to configure and synchronize your project.
+
+## Development
+
+If you want to work on Baseplate itself (the generator platform), clone and build the repository:
 
 ```bash
 git clone https://github.com/halfdomelabs/baseplate.git
@@ -33,29 +57,26 @@ pnpm install
 pnpm build
 ```
 
-## Usage
-
-To start using Baseplate, run the following command in your terminal:
+Once installed, you can start the builder locally:
 
 ```bash
-pnpm serve
+pnpm dev:serve
 ```
 
-The server will start on localhost:3230 (or your chosen port).
-
-## Usage by other developers
-
-For information on using Baseplate with an external project, please check our [Introduction to Baseplate Notion](https://www.notion.so/hdlabs/Introduction-to-Baseplate-60881365bb564d308ba144a8352c6efc).
+The server will run on `localhost:3230` (or the port you specify).
 
 ## Support
 
-For support, please open an [issue](https://github.com/halfdomelabs/baseplate/issues) or contact our team at support@halfdomelabs.com.
+If you encounter any issues or have questions, please:
+
+- Open an [issue](https://github.com/halfdomelabs/baseplate/issues) on GitHub.
+- Contact our team at [support@halfdomelabs.com](mailto:support@halfdomelabs.com).
 
 ## Authors
 
 Baseplate is made possible by these great [contributors](https://github.com/halfdomelabs/baseplate/graphs/contributors).
 
-# License
+## License
 
 Baseplate is licensed under the [Mozilla Public License 2.0 (MPL-2.0)](LICENSE).
 

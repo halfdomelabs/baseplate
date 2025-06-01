@@ -1,5 +1,5 @@
-import { tsCodeFragment, TsCodeUtils } from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';

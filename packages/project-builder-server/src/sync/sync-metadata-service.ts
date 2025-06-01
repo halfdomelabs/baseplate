@@ -2,7 +2,7 @@ import {
   handleFileNotFoundError,
   readJsonWithSchema,
   writeStablePrettyJson,
-} from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/utils/node';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 

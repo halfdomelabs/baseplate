@@ -1,6 +1,6 @@
 import type { FieldValues, UseFormProps, UseFormReturn } from 'react-hook-form';
 
-import { toast } from '@halfdomelabs/ui-components';
+import { toast } from '@baseplate-dev/ui-components';
 import { isEqual } from 'es-toolkit';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';

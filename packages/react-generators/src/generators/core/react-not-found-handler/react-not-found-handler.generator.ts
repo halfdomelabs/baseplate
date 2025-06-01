@@ -3,13 +3,13 @@ import {
   tsCodeFragment,
   tsImportBuilder,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-} from '@halfdomelabs/sync';
-import { posixJoin } from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/sync';
+import { posixJoin } from '@baseplate-dev/utils/node';
 import { z } from 'zod';
 
 import type { ReactRoute } from '#src/providers/routes.js';

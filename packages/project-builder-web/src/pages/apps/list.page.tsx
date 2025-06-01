@@ -1,8 +1,8 @@
 import type React from 'react';
 
-import { appEntityType } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Card, EmptyDisplay } from '@halfdomelabs/ui-components';
+import { appEntityType } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import { Button, Card, EmptyDisplay } from '@baseplate-dev/ui-components';
 import { sortBy } from 'es-toolkit';
 import { MdApps } from 'react-icons/md';
 import { Link } from 'react-router-dom';

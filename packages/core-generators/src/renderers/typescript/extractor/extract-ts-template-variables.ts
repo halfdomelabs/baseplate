@@ -1,4 +1,4 @@
-import { sortObjectKeys } from '@halfdomelabs/utils';
+import { sortObjectKeys } from '@baseplate-dev/utils';
 
 import type { TsTemplateVariable } from '../templates/types.js';
 
