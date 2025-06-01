@@ -187,7 +187,7 @@ Baseplate consists of two main tiers:
 - If a particular interface or type is not exported, change the file so it is exported
 - Keep tests simple and focused and try to extract repeated logic into helper functions
 - Apply a reasonable number of tests
-- If you are adding a new feature, please also add a new Changeset for it in the `.changeset/` directory of the form (keeping things to patch changes for now):
+- If you are adding a new feature or changing an existing feature, please also add a new Changeset for it in the `.changeset/` directory of the form (keeping things to patch changes for now):
 
   ```markdown
   ---

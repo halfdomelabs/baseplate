@@ -7,12 +7,10 @@ import ora from 'ora';
 export async function generateBaseplateProject({
   packageName,
   directory,
-  npmToken,
   cliVersion,
 }: {
   packageName: string;
   directory: string;
-  npmToken: string;
   cliVersion: string;
 }): Promise<void> {
   let spinner = ora({
@@ -78,20 +76,14 @@ export async function generateBaseplateProject({
     );
 
     await copyFile('.gitignore', '.gitignore');
-    await copyFile('.pnpmfile.cjs', '.pnpmfile.cjs');
-    await copyFile('.template.npmrc', '.template.npmrc');
-    await copyFile('scripts/setup-npmrc.cjs', 'scripts/setup-npmrc.cjs');
+    await copyFile('.template.npmrc', '.npmrc');
     await copyFile('README.md', 'README.md');
-
-    await writeFile('.env', `NPM_TOKEN=${npmToken}\n`);
 
     spinner.succeed();
 
     spinner = ora({
       text: 'Installing dependencies...',
     }).start();
-
-    await execa({ cwd: directory })`node .pnpmfile.cjs --silent`;
 
     await execa({ cwd: directory })`pnpm install`;
 
