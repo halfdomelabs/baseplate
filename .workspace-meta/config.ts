@@ -24,6 +24,23 @@ const IGNORED_PACKAGES = new Set([
   '@baseplate-dev/root',
 ]);
 
+interface TsconfigBuild {
+  compilerOptions:
+    | {
+        tsBuildInfoFile?: string;
+        composite?: boolean;
+        incremental?: boolean;
+        rootDir?: string;
+        outDir?: string;
+      }
+    | undefined;
+  references:
+    | {
+        path: string;
+      }[]
+    | undefined;
+}
+
 export default defineWorkspaceMetaConfig({
   includeRootPackage: true,
   formatter: (content, filename) => {
@@ -106,24 +123,9 @@ export default defineWorkspaceMetaConfig({
         return;
       }
 
-      const parsedTsconfig = JSON.parse(tsconfigBuild) as {
-        compilerOptions:
-          | {
-              tsBuildInfoFile?: string;
-              composite?: boolean;
-              incremental?: boolean;
-              rootDir?: string;
-              outDir?: string;
-            }
-          | undefined;
-        references:
-          | {
-              path: string;
-            }[]
-          | undefined;
-      };
+      const parsedTsconfig = JSON.parse(tsconfigBuild) as TsconfigBuild;
 
-      const targetConfig = {
+      const targetConfig: TsconfigBuild = {
         compilerOptions: {
           tsBuildInfoFile: './dist/tsconfig.build.tsbuildinfo',
           composite: true,
@@ -135,7 +137,7 @@ export default defineWorkspaceMetaConfig({
       };
 
       if (isRootPackage) {
-        targetConfig.compilerOptions = {};
+        targetConfig.compilerOptions = undefined;
       }
 
       if (
@@ -147,7 +149,9 @@ export default defineWorkspaceMetaConfig({
 
       parsedTsconfig.references = targetConfig.references;
       parsedTsconfig.compilerOptions ??= {};
-      merge(parsedTsconfig.compilerOptions, targetConfig.compilerOptions);
+      if (targetConfig.compilerOptions) {
+        merge(parsedTsconfig.compilerOptions, targetConfig.compilerOptions);
+      }
 
       await ctx.writeFile(
         'tsconfig.build.json',
