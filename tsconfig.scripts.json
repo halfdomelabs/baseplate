@@ -1,0 +1,7 @@
+{
+  "extends": "@baseplate-dev/tools/tsconfig.node.cli.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["scripts/**/*", ".workspace-meta/**/*"]
+}
