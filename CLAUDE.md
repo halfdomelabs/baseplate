@@ -83,6 +83,20 @@ beforeEach(() => {
 afterEach(() => {
   vol.reset();
 });
+
+test('should do something', () => {
+  // Arrange
+  vol.fromJSON({
+    'test-file.txt': 'test content',
+  })
+
+  // Act
+  ...
+
+  // Assert
+  const files = vol.toJSON();
+  expect(files['test-file.txt']).toBe('test content');
+});
 ```
 
 ## Repository Structure

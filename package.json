@@ -42,8 +42,7 @@
     "watch": "turbo run watch --concurrency 20"
   },
   "lint-staged": {
-    "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|toml|html|svg|yml|yaml|json)": "prettier --write",
-    "*.(js|ts|tsx|jsx)": "eslint --fix"
+    "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|toml|html|svg|yml|yaml|json)": "prettier --write"
   },
   "dependencies": {
     "@changesets/cli": "2.28.1"

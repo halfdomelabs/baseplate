@@ -1,8 +1,9 @@
 import chalk from 'chalk';
-import { execa } from 'execa';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import ora from 'ora';
+
+import { exec } from './exec.js';
 
 export async function generateBaseplateProject({
   packageName,
@@ -13,7 +14,7 @@ export async function generateBaseplateProject({
   directory: string;
   cliVersion: string;
 }): Promise<void> {
-  let spinner = ora({
+  const spinner = ora({
     text: 'Creating project files...',
   }).start();
   try {
@@ -81,13 +82,7 @@ export async function generateBaseplateProject({
 
     spinner.succeed();
 
-    spinner = ora({
-      text: 'Installing dependencies...',
-    }).start();
-
-    await execa({ cwd: directory })`pnpm install`;
-
-    spinner.succeed();
+    await exec('pnpm install', directory);
 
     const relativePath = path.relative(process.cwd(), directory);
 

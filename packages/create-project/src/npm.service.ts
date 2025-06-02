@@ -14,7 +14,7 @@ export async function getLatestCliVersion(): Promise<string> {
   }).start();
   try {
     const url = `https://registry.npmjs.org/@baseplate-dev/project-builder-cli`;
-    
+
     const response = await axios.get<NpmPackageInfo>(url);
     if (!response.data.name) {
       throw new Error('Invalid response from NPM registry');

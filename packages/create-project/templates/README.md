@@ -10,7 +10,6 @@ To begin using the project, you will need to set up your local environment. Foll
 
 Before you start, ensure you have `pnpm` installed on your system. If you do not have `pnpm` installed, you can learn how to install it by visiting [pnpm installation guide](https://pnpm.io/installation).
 
-
 ### Installation
 
 To install the necessary dependencies for your project, run the following command in the root directory of your project:

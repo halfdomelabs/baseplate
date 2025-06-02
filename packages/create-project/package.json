@@ -31,6 +31,7 @@
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "start": "node ./dist/create-baseplate-project.js",
+    "test": "vitest",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -46,9 +47,11 @@
     "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "memfs": "4.15.1",
     "prettier": "catalog:",
     "tsx": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": "^22.0.0"
