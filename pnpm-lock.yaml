@@ -235,9 +235,6 @@ importers:
       '@baseplate-dev/utils':
         specifier: workspace:*
         version: link:../utils
-      '@inquirer/prompts':
-        specifier: 7.2.1
-        version: 7.2.1(@types/node@22.14.1)
       axios:
         specifier: ^1.8.3
         version: 1.8.3
