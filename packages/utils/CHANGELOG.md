@@ -1,5 +1,11 @@
 # @baseplate-dev/utils
 
+## 0.1.2
+
+### Patch Changes
+
+- [#560](https://github.com/halfdomelabs/baseplate/pull/560) [`7e38ae9`](https://github.com/halfdomelabs/baseplate/commit/7e38ae9102c7c8ea958d2dab94e76be848d1c1a8) Thanks [@kingston](https://github.com/kingston)! - Add README files to all packages and plugins explaining their purpose within the Baseplate monorepo.
+
 ## 0.1.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/tools",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Shared dev configurations for linting, formatting, and testing Baseplate projects",
   "homepage": "https://www.baseplate.dev",
   "repository": {
