@@ -8,5 +8,16 @@
     "outDir": "dist"
   },
   "include": ["src/**/*"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test-helper.ts"]
+  "exclude": ["src/**/*.test.ts", "src/**/*.test-helper.ts"],
+  "references": [
+    {
+      "path": "../project-builder-lib/tsconfig.build.json"
+    },
+    {
+      "path": "../project-builder-server/tsconfig.build.json"
+    },
+    {
+      "path": "../utils/tsconfig.build.json"
+    }
+  ]
 }

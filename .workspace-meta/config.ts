@@ -1,6 +1,6 @@
 import type { PackageJson } from 'workspace-meta';
 
-import { merge } from 'es-toolkit';
+import { isEqual, merge } from 'es-toolkit';
 import { isMatch } from 'es-toolkit/compat';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -17,6 +17,9 @@ function getProjectJsonDependencyKeys(packageJson: PackageJson): string[] {
     ...Object.keys(packageJson.devDependencies ?? {}),
   ];
 }
+
+// False positives for the Typescript project references
+const IGNORED_PACKAGES = new Set(['@baseplate-dev/project-builder-web']);
 
 export default defineWorkspaceMetaConfig({
   formatter: (content, filename) => {
@@ -63,6 +66,7 @@ export default defineWorkspaceMetaConfig({
         : getProjectJsonDependencyKeys(ctx.packageJson);
 
       const interProjectDependencies = projectDependencyNames
+        .filter((name) => !IGNORED_PACKAGES.has(name))
         .map((name) => {
           const packageInfo = ctx.workspacePackages.find(
             (p) => p.name === name,
@@ -123,7 +127,10 @@ export default defineWorkspaceMetaConfig({
         references: projectReferences,
       };
 
-      if (isMatch(parsedTsconfig, targetConfig)) {
+      if (
+        isMatch(parsedTsconfig.compilerOptions, targetConfig.compilerOptions) &&
+        isEqual(parsedTsconfig.references, targetConfig.references)
+      ) {
         return;
       }
 

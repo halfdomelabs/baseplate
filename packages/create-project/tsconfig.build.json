@@ -13,5 +13,10 @@
     "src/**/*.test-helper.ts",
     "**/__mocks__/**/*",
     "**/generators/*/*/templates/**"
+  ],
+  "references": [
+    {
+      "path": "../utils/tsconfig.build.json"
+    }
   ]
 }
