@@ -2,8 +2,9 @@
   "name": "@baseplate-dev/create-project",
   "version": "0.1.1",
   "description": "CLI starter kit for creating a new Baseplate project",
+  "homepage": "https://www.baseplate.dev",
   "repository": "https://github.com/halfdomelabs/baseplate",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
   "type": "module",
   "imports": {

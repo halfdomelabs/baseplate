@@ -2,13 +2,13 @@
   "name": "@baseplate-dev/sync",
   "version": "0.1.1",
   "description": "Library for syncing Baseplate descriptions",
-  "homepage": "https://www.halfdomelabs.com/",
+  "homepage": "https://www.baseplate.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/sync"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
   "sideEffects": false,
   "type": "module",
