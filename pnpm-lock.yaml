@@ -102,8 +102,8 @@ importers:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.14.1)(jiti@2.4.2)(jsdom@26.0.0)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.8.0)
       workspace-meta:
-        specifier: 0.1.2
-        version: 0.1.2(@types/node@22.14.1)
+        specifier: 0.1.3
+        version: 0.1.3(@types/node@22.14.1)
 
   packages/code-morph:
     dependencies:
@@ -10929,10 +10929,10 @@ packages:
       }
     engines: { node: '>=0.10.0' }
 
-  workspace-meta@0.1.2:
+  workspace-meta@0.1.3:
     resolution:
       {
-        integrity: sha512-LbWyNnIo4p+3T3w4U72UwNGC+jTl+3p6Z86UEHOPAh17R69VL/HD8jSON5iYIbajTtXX+AEK6rQ1U85Slfe0ZQ==,
+        integrity: sha512-XwWdA3Ka/gIk857DGOQUVgkUTNRqs4L2kheqH7K6r6hu5R/065hcziydS45YSByQ/ODfbl6dqmggMMWwTHsS5Q==,
       }
     engines: { node: '>=20.0.0', pnpm: '>=10.0.0' }
     hasBin: true
@@ -17390,7 +17390,7 @@ snapshots:
 
   word-wrap@1.2.5: {}
 
-  workspace-meta@0.1.2(@types/node@22.14.1):
+  workspace-meta@0.1.3(@types/node@22.14.1):
     dependencies:
       '@inquirer/prompts': 7.5.3(@types/node@22.14.1)
       chalk: 5.4.1
