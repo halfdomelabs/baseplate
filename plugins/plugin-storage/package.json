@@ -2,8 +2,9 @@
   "name": "@baseplate-dev/plugin-storage",
   "version": "0.1.1",
   "description": "Contains the storage plugin for Baseplate",
+  "homepage": "https://www.baseplate.dev",
   "repository": "https://github.com/halfdomelabs/baseplate",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
   "type": "module",
   "imports": {

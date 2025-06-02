@@ -2,13 +2,13 @@
   "name": "@baseplate-dev/project-builder-common",
   "version": "0.1.1",
   "description": "Holds common packages for plugins and generators",
-  "homepage": "https://www.halfdomelabs.com/",
+  "homepage": "https://www.baseplate.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/project-builder-common"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
   "type": "module",
   "exports": {

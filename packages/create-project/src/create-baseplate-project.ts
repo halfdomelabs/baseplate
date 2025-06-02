@@ -5,7 +5,7 @@ import { program } from 'commander';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { getNpmTokenAndVersion } from './npm.service.js';
+import { getLatestCliVersion } from './npm.service.js';
 import { generateBaseplateProject } from './project-creator.js';
 import { getPackageVersion } from './version.js';
 
@@ -63,18 +63,11 @@ async function runMain(): Promise<void> {
     );
   }
 
-  console.info(
-    chalk.yellow(
-      'Please enter your NPM token for Baseplate. While Baseplate is in private beta, an NPM token is required to access the Baseplate package. This will be stored in the .env file in your project directory.\n',
-    ),
-  );
-
-  const { npmToken, cliVersion } = await getNpmTokenAndVersion();
+  const cliVersion = await getLatestCliVersion();
 
   await generateBaseplateProject({
     packageName,
     directory: resolvedDirectory,
-    npmToken,
     cliVersion,
   });
 }

@@ -25,7 +25,8 @@ export default defineWorkspaceMetaConfig({
     ),
     ensurePackageJson((packageJson) => {
       packageJson.author = 'Half Dome Labs LLC';
-      packageJson.license = 'SEE LICENSE IN LICENSE';
+      packageJson.license = 'MPL-2.0';
+      packageJson.homepage = 'https://www.baseplate.dev';
 
       if (!packageJson.private) {
         packageJson.publishConfig = {

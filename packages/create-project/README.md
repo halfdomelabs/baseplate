@@ -2,9 +2,9 @@
 
 The Create Baseplate package provides a straightforward method for initiating a new Baseplate project, automatically generating all necessary files within your project directory. Baseplate is a full-stack application generator, laying the groundwork for scalable and maintainable development.
 
-## Private Beta Notice
-
-**Important**: The Baseplate project is currently undergoing a private beta phase and is not yet available to the public. Access is available to authorized beta testers and internal team members. If you're interested in participating in the beta program, please reach out to us at [Half Dome Labs](https://halfdomelabs.com/contact) for more details.
+> **⚠️ WARNING: PRE-RELEASE VERSION**
+>
+> This project is still in early development. While it's now open source and available for experimentation, it's not yet ready for production use. The API and features may change significantly before the stable release.
 
 ## Creating a Project
 
