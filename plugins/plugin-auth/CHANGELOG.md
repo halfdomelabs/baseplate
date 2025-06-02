@@ -1,5 +1,19 @@
 # @baseplate-dev/plugin-auth
 
+## 0.1.2
+
+### Patch Changes
+
+- [#560](https://github.com/halfdomelabs/baseplate/pull/560) [`7e38ae9`](https://github.com/halfdomelabs/baseplate/commit/7e38ae9102c7c8ea958d2dab94e76be848d1c1a8) Thanks [@kingston](https://github.com/kingston)! - Add README files to all packages and plugins explaining their purpose within the Baseplate monorepo.
+
+- Updated dependencies [[`7e38ae9`](https://github.com/halfdomelabs/baseplate/commit/7e38ae9102c7c8ea958d2dab94e76be848d1c1a8)]:
+  - @baseplate-dev/project-builder-lib@0.1.2
+  - @baseplate-dev/ui-components@0.1.2
+  - @baseplate-dev/sync@0.1.2
+  - @baseplate-dev/core-generators@0.1.2
+  - @baseplate-dev/react-generators@0.1.2
+  - @baseplate-dev/fastify-generators@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
