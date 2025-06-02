@@ -28,10 +28,10 @@
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "watch:vite": "vite build --watch"
   },
   "dependencies": {

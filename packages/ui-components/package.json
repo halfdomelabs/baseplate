@@ -37,8 +37,8 @@
     "prettier:write": "prettier -w .",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit",
-    "watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
+    "typecheck": "tsc --noEmit"
   },
   "browserslist": {
     "production": [

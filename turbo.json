@@ -42,6 +42,10 @@
     "watch": {
       "persistent": true,
       "cache": false
+    },
+    "//#watch:tsc:root": {
+      "persistent": true,
+      "cache": false
     }
   }
 }

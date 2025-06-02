@@ -31,10 +31,10 @@
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
-    "watch:templates": "pnpm build:templates --watch",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
+    "watch:templates": "pnpm build:templates --watch"
   },
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",

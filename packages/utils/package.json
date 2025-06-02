@@ -32,8 +32,8 @@
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "test": "vitest",
-    "typecheck": "tsc --noEmit",
-    "watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "es-toolkit": "1.31.0",

@@ -40,9 +40,8 @@
     "typecheck": "turbo run typecheck --affected",
     "versions:check": "check-dependency-version-consistency .",
     "versions:fix": "check-dependency-version-consistency . --fix",
-    "watch": "",
-    "watch:tsc": "tsc -b tsconfig.build.json --preserveWatchOutput -w",
-    "watch:turbo": "turbo run watch --concurrency 20"
+    "watch": "turbo run watch:tsc:root watch --concurrency 20",
+    "watch:tsc:root": "tsc -b tsconfig.build.json --preserveWatchOutput -w"
   },
   "lint-staged": {
     "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|toml|html|svg|yml|yaml|json)": "prettier --write"

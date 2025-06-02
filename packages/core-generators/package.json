@@ -43,10 +43,9 @@
     "prettier:write": "prettier -w .",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
-    "watch": "concurrently pnpm:watch:*",
-    "watch:templates": "pnpm build:templates --watch",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
+    "watch": "pnpm build:templates --watch"
   },
   "dependencies": {
     "@baseplate-dev/sync": "workspace:*",
