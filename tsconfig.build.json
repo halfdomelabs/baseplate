@@ -1,26 +1,42 @@
 {
   "files": [],
   "references": [
-    // Core packages first
-    { "path": "./packages/utils/tsconfig.build.json" },
-    { "path": "./packages/sync/tsconfig.build.json" },
-    { "path": "./packages/core-generators/tsconfig.build.json" },
-    { "path": "./packages/react-generators/tsconfig.build.json" },
-    { "path": "./packages/fastify-generators/tsconfig.build.json" },
-
-    // Project builder packages
-    { "path": "./packages/project-builder-lib/tsconfig.build.json" },
-    { "path": "./packages/project-builder-server/tsconfig.build.json" },
-    { "path": "./packages/project-builder-cli/tsconfig.build.json" },
-
-    // UI components
-    { "path": "./packages/ui-components/tsconfig.build.json" },
-
-    // Other packages
-    { "path": "./packages/create-project/tsconfig.build.json" },
-
-    // Plugins
-    { "path": "./plugins/plugin-auth/tsconfig.build.json" },
-    { "path": "./plugins/plugin-storage/tsconfig.build.json" }
-  ]
+    {
+      "path": "./packages/core-generators/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/create-project/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/fastify-generators/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/project-builder-cli/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/project-builder-lib/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/project-builder-server/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/react-generators/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/sync/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/ui-components/tsconfig.build.json"
+    },
+    {
+      "path": "./packages/utils/tsconfig.build.json"
+    },
+    {
+      "path": "./plugins/plugin-auth/tsconfig.build.json"
+    },
+    {
+      "path": "./plugins/plugin-storage/tsconfig.build.json"
+    }
+  ],
+  "compilerOptions": {}
 }

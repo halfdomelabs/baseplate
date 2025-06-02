@@ -1,7 +1,8 @@
 {
   "name": "@baseplate-dev/root",
   "private": true,
-  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://www.baseplate.dev",
+  "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
   "type": "module",
   "scripts": {
@@ -39,7 +40,9 @@
     "typecheck": "turbo run typecheck --affected",
     "versions:check": "check-dependency-version-consistency .",
     "versions:fix": "check-dependency-version-consistency . --fix",
-    "watch": "turbo run watch --concurrency 20"
+    "watch": "",
+    "watch:tsc": "tsc -b tsconfig.build.json --preserveWatchOutput -w",
+    "watch:turbo": "turbo run watch --concurrency 20"
   },
   "lint-staged": {
     "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|toml|html|svg|yml|yaml|json)": "prettier --write"
@@ -61,7 +64,7 @@
     "turbo": "2.5.0",
     "typescript": "catalog:",
     "vitest": "catalog:",
-    "workspace-meta": "0.1.3"
+    "workspace-meta": "0.1.4"
   },
   "packageManager": "pnpm@10.6.5",
   "engines": {

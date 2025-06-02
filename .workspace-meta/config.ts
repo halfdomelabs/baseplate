@@ -19,9 +19,13 @@ function getProjectJsonDependencyKeys(packageJson: PackageJson): string[] {
 }
 
 // False positives for the Typescript project references
-const IGNORED_PACKAGES = new Set(['@baseplate-dev/project-builder-web']);
+const IGNORED_PACKAGES = new Set([
+  '@baseplate-dev/project-builder-web',
+  '@baseplate-dev/root',
+]);
 
 export default defineWorkspaceMetaConfig({
+  includeRootPackage: true,
   formatter: (content, filename) => {
     if (filename.endsWith('LICENSE')) {
       return content;
@@ -81,10 +85,13 @@ export default defineWorkspaceMetaConfig({
             ) &&
             Object.keys(packageInfo.packageJson.scripts ?? {}).includes('build')
           ) {
-            return path.join(
+            const relativePath = path.join(
               path.relative(ctx.packagePath, packageInfo.path),
               'tsconfig.build.json',
             );
+            return relativePath.startsWith('.')
+              ? relativePath
+              : `./${relativePath}`;
           }
         })
         .filter((name) => name !== undefined)
@@ -126,6 +133,10 @@ export default defineWorkspaceMetaConfig({
         },
         references: projectReferences,
       };
+
+      if (isRootPackage) {
+        targetConfig.compilerOptions = {};
+      }
 
       if (
         isMatch(parsedTsconfig.compilerOptions, targetConfig.compilerOptions) &&
