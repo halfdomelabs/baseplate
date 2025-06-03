@@ -12,10 +12,12 @@
   },
   "main": "dist/index.js",
   "files": [
+    "README.md",
     "LICENSE",
+    "CHANGELOG",
     "dist/**/*",
     "!dist/**/*.d.ts.map",
-    "CHANGELOG",
+    "!dist/**/*.tsbuildinfo",
     "manifest.json"
   ],
   "scripts": {
@@ -27,10 +29,10 @@
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "watch:vite": "vite build --watch"
   },
   "dependencies": {
@@ -56,7 +58,7 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "concurrently": "9.0.1",
-    "cpx2": "7.0.1",
+    "cpx2": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",

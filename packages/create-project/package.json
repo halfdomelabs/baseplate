@@ -13,15 +13,16 @@
       "default": "./dist/*"
     }
   },
-  "bin": "./dist/create-baseplate-project.js",
+  "bin": "./bin/create-baseplate-project.js",
   "files": [
+    "README.md",
     "LICENSE",
     "CHANGELOG",
     "dist/**/*",
-    "scripts/**/*",
-    "templates/**/*",
+    "!dist/**/*.d.ts.map",
     "!dist/**/*.tsbuildinfo",
-    "README.md"
+    "templates/**/*",
+    "bin/**/*"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

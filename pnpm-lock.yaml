@@ -24,6 +24,9 @@ catalogs:
     '@vitejs/plugin-react':
       specifier: 4.4.1
       version: 4.4.1
+    cpx2:
+      specifier: 8.0.0
+      version: 8.0.0
     eslint:
       specifier: 9.26.0
       version: 9.26.0
@@ -77,6 +80,9 @@ importers:
       check-dependency-version-consistency:
         specifier: 5.0.0
         version: 5.0.0
+      es-toolkit:
+        specifier: 1.31.0
+        version: 1.31.0
       eslint:
         specifier: 'catalog:'
         version: 9.26.0(jiti@2.4.2)
@@ -102,8 +108,8 @@ importers:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.14.1)(jiti@2.4.2)(jsdom@26.0.0)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.8.0)
       workspace-meta:
-        specifier: 0.1.2
-        version: 0.1.2(@types/node@22.14.1)
+        specifier: 0.1.4
+        version: 0.1.4(@types/node@22.14.1)
 
   packages/code-morph:
     dependencies:
@@ -218,8 +224,8 @@ importers:
         specifier: 9.0.1
         version: 9.0.1
       cpx2:
-        specifier: 7.0.1
-        version: 7.0.1
+        specifier: 'catalog:'
+        version: 8.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.26.0(jiti@2.4.2)
@@ -316,8 +322,8 @@ importers:
         specifier: 9.0.1
         version: 9.0.1
       cpx2:
-        specifier: 7.0.1
-        version: 7.0.1
+        specifier: 'catalog:'
+        version: 8.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.26.0(jiti@2.4.2)
@@ -845,8 +851,8 @@ importers:
         specifier: 9.0.1
         version: 9.0.1
       cpx2:
-        specifier: 7.0.1
-        version: 7.0.1
+        specifier: 'catalog:'
+        version: 8.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.26.0(jiti@2.4.2)
@@ -1138,6 +1144,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 4.4.1(vite@6.3.5(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.19.3)(yaml@2.8.0))
+      cpx2:
+        specifier: 'catalog:'
+        version: 8.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.26.0(jiti@2.4.2)
@@ -1276,8 +1285,8 @@ importers:
         specifier: 9.0.1
         version: 9.0.1
       cpx2:
-        specifier: 7.0.1
-        version: 7.0.1
+        specifier: 'catalog:'
+        version: 8.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.26.0(jiti@2.4.2)
@@ -1364,8 +1373,8 @@ importers:
         specifier: 9.0.1
         version: 9.0.1
       cpx2:
-        specifier: 7.0.1
-        version: 7.0.1
+        specifier: 'catalog:'
+        version: 8.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.26.0(jiti@2.4.2)
@@ -5732,12 +5741,12 @@ packages:
       }
     engines: { node: '>=10.0.0' }
 
-  cpx2@7.0.1:
+  cpx2@8.0.0:
     resolution:
       {
-        integrity: sha512-ZgK/DRvPFM5ATZ5DQ5UzY6ajkBrI/p9Uc7VyLHc7b4OSFeBO4yOQz/GEmccc4Om6capGYlY4K1XX+BtYQiPPIA==,
+        integrity: sha512-RxD9jrSVNSOmfcbiPlr3XnKbUKH9K1w2HCv0skczUKhsZTueiDBecxuaSAKQkYSLQaGVA4ZQJZlTj5hVNNEvKg==,
       }
-    engines: { node: '>=18', npm: '>=10' }
+    engines: { node: ^20.0.0 || >=22.0.0, npm: '>=10' }
     hasBin: true
 
   crc-32@1.2.2:
@@ -7235,6 +7244,13 @@ packages:
       }
     engines: { node: '>= 4' }
 
+  ignore@6.0.2:
+    resolution:
+      {
+        integrity: sha512-InwqeHHN2XpumIkMvpl/DCJVrAHgCsG5+cn1XlnLWGwtZBm8QJfSusItfrwx81CTp5agNZqpKU2J/ccC5nGT4A==,
+      }
+    engines: { node: '>= 4' }
+
   immer@10.1.1:
     resolution:
       {
@@ -8653,12 +8669,12 @@ packages:
       }
     engines: { node: '>=6' }
 
-  p-map@6.0.0:
+  p-map@7.0.3:
     resolution:
       {
-        integrity: sha512-T8BatKGY+k5rU+Q/GTYgrEf2r4xRMevAN5mtXc2aPc4rS1j3s+vWTaO2Wag94neXuCAUAs8cxBL9EeB5EA6diw==,
+        integrity: sha512-VkndIv2fIB99swvQoA65bm+fsmt6UNdGeIB0oxBs+WhAhdh08QA04JXpI7rbB9r08/nkbysKoya9rtDERYOYMA==,
       }
-    engines: { node: '>=16' }
+    engines: { node: '>=18' }
 
   p-try@2.2.0:
     resolution:
@@ -10168,16 +10184,16 @@ packages:
       }
     engines: { node: '>=6' }
 
-  tar-fs@2.1.2:
+  tar-fs@2.1.3:
     resolution:
       {
-        integrity: sha512-EsaAXwxmx8UB7FRKqeozqEPop69DXcmYwTQwXvyAPF352HJsPdkVhvTaDPYqfNgruveJIJy3TA2l+2zj8LJIJA==,
+        integrity: sha512-090nwYJDmlhwFwEW3QQl+vaNnxsO2yVsd45eTKRBzSzu+hlb1w2K9inVq5b0ngXuLVqQ4ApvsUHHnu/zQNkWAg==,
       }
 
-  tar-fs@3.0.8:
+  tar-fs@3.0.9:
     resolution:
       {
-        integrity: sha512-ZoROL70jptorGAlgAYiLoBLItEKw/fUxg9BSYK/dF/GAGYFJOJJJMvjPAKDJraCXFwadD456FCuvLWgfhMsPwg==,
+        integrity: sha512-XF4w9Xp+ZQgifKakjZYmFdkLoSWd34VGKcsTCwlNWM7QG3ZbaxnTsaBwnjFZqHRf/rROxaR8rXnbtwdvaDI+lA==,
       }
 
   tar-stream@2.2.0:
@@ -10929,10 +10945,10 @@ packages:
       }
     engines: { node: '>=0.10.0' }
 
-  workspace-meta@0.1.2:
+  workspace-meta@0.1.4:
     resolution:
       {
-        integrity: sha512-LbWyNnIo4p+3T3w4U72UwNGC+jTl+3p6Z86UEHOPAh17R69VL/HD8jSON5iYIbajTtXX+AEK6rQ1U85Slfe0ZQ==,
+        integrity: sha512-3yUsIrHsXFD1kbuyr2ZkoEPL98ovkBDAHqpruBpp6wPXwV1vsF+ZyepqLy6Xev9SewyQN6q3+r9/w3UgvMyg+Q==,
       }
     engines: { node: '>=20.0.0', pnpm: '>=10.0.0' }
     hasBin: true
@@ -14007,17 +14023,17 @@ snapshots:
       nan: 2.22.2
     optional: true
 
-  cpx2@7.0.1:
+  cpx2@8.0.0:
     dependencies:
       debounce: 2.0.0
       debug: 4.4.1
       duplexer: 0.1.2
       fs-extra: 11.3.0
-      glob: 10.4.5
+      glob: 11.0.0
       glob2base: 0.0.12
-      ignore: 5.3.2
-      minimatch: 9.0.5
-      p-map: 6.0.0
+      ignore: 6.0.2
+      minimatch: 10.0.1
+      p-map: 7.0.3
       resolve: 1.22.10
       safe-buffer: 5.2.1
       shell-quote: 1.8.2
@@ -14157,7 +14173,7 @@ snapshots:
       '@grpc/proto-loader': 0.7.13
       docker-modem: 5.0.6
       protobufjs: 7.4.0
-      tar-fs: 2.1.2
+      tar-fs: 2.1.3
       uuid: 10.0.0
     transitivePeerDependencies:
       - supports-color
@@ -15084,6 +15100,8 @@ snapshots:
 
   ignore@5.3.2: {}
 
+  ignore@6.0.2: {}
+
   immer@10.1.1: {}
 
   import-fresh@3.3.1:
@@ -15864,7 +15882,7 @@ snapshots:
 
   p-map@2.1.0: {}
 
-  p-map@6.0.0: {}
+  p-map@7.0.3: {}
 
   p-try@2.2.0: {}
 
@@ -16797,14 +16815,14 @@ snapshots:
 
   tapable@2.2.1: {}
 
-  tar-fs@2.1.2:
+  tar-fs@2.1.3:
     dependencies:
       chownr: 1.1.4
       mkdirp-classic: 0.5.3
       pump: 3.0.2
       tar-stream: 2.2.0
 
-  tar-fs@3.0.8:
+  tar-fs@3.0.9:
     dependencies:
       pump: 3.0.2
       tar-stream: 3.1.7
@@ -16853,7 +16871,7 @@ snapshots:
       proper-lockfile: 4.1.2
       properties-reader: 2.3.0
       ssh-remote-port-forward: 1.0.4
-      tar-fs: 3.0.8
+      tar-fs: 3.0.9
       tmp: 0.2.3
       undici: 5.29.0
     transitivePeerDependencies:
@@ -17390,7 +17408,7 @@ snapshots:
 
   word-wrap@1.2.5: {}
 
-  workspace-meta@0.1.2(@types/node@22.14.1):
+  workspace-meta@0.1.4(@types/node@22.14.1):
     dependencies:
       '@inquirer/prompts': 7.5.3(@types/node@22.14.1)
       chalk: 5.4.1

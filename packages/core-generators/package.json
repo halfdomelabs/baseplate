@@ -27,11 +27,12 @@
   },
   "main": "dist/index.js",
   "files": [
+    "README.md",
     "LICENSE",
+    "CHANGELOG",
     "dist/**/*",
     "!dist/**/*.d.ts.map",
-    "!dist/**/*.tsbuildinfo",
-    "CHANGELOG"
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
@@ -43,10 +44,9 @@
     "prettier:write": "prettier -w .",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
-    "watch": "concurrently pnpm:watch:*",
-    "watch:templates": "pnpm build:templates --watch",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
+    "watch": "pnpm build:templates --watch"
   },
   "dependencies": {
     "@baseplate-dev/sync": "workspace:*",
@@ -70,7 +70,7 @@
     "@types/prettier": "^2.7.3",
     "@types/semver": "^7.5.0",
     "concurrently": "9.0.1",
-    "cpx2": "7.0.1",
+    "cpx2": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

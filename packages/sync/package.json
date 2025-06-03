@@ -22,10 +22,12 @@
     }
   },
   "files": [
+    "README.md",
     "LICENSE",
+    "CHANGELOG",
     "dist/**/*",
     "!dist/**/*.d.ts.map",
-    "CHANGELOG"
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -35,8 +37,8 @@
     "prettier:write": "prettier -w .",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit",
-    "watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@baseplate-dev/utils": "workspace:*",

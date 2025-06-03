@@ -3,9 +3,9 @@
   "tasks": {
     "build": {
       "inputs": ["$TURBO_DEFAULT$", "!README.md", "!*.stories.tsx"],
-      "outputs": ["dist/**", "tailwind.config.js"]
+      "outputs": ["dist/**"]
     },
-    "build:storybook": {
+    "storybook:build": {
       "outputs": ["storybook-static/**"]
     }
   }

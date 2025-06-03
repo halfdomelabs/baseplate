@@ -20,10 +20,12 @@
   },
   "main": "dist/index.js",
   "files": [
+    "README.md",
     "LICENSE",
-    "dist/**/*",
     "CHANGELOG",
-    "!dist/**/*.d.ts.map"
+    "dist/**/*",
+    "!dist/**/*.d.ts.map",
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -32,8 +34,8 @@
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "test": "vitest",
-    "typecheck": "tsc --noEmit",
-    "watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",

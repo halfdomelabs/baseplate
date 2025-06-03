@@ -19,24 +19,27 @@
   },
   "main": "dist/index.js",
   "bin": {
-    "baseplate": "./scripts/baseplate.js"
+    "baseplate": "./bin/baseplate.js"
   },
   "files": [
+    "README.md",
     "LICENSE",
     "CHANGELOG",
     "dist/**/*",
-    "scripts/**/*"
+    "!dist/**/*.d.ts.map",
+    "!dist/**/*.tsbuildinfo",
+    "bin/**/*"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "dev": "tsx watch --tsconfig ./tsconfig.app.json --exclude /**/node_modules/** -r dotenv/config -C development ./src",
+    "dev": "tsx watch --tsconfig ./tsconfig.app.json --exclude /**/node_modules/** -r dotenv/config -C development ./src/cli.ts",
     "dev:serve": "pnpm dev serve",
     "extract:templates": "pnpm start extract-templates",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "start": "tsx --tsconfig ./tsconfig.app.json -r dotenv/config -C development ./src",
+    "start": "tsx --tsconfig ./tsconfig.app.json -r dotenv/config -C development ./src/cli.ts",
     "test": "vitest",
     "test:e2e": "playwright test",
     "typecheck": "tsc -b --noEmit"

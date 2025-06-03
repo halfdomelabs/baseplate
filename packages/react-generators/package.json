@@ -17,10 +17,12 @@
   },
   "main": "dist/index.js",
   "files": [
+    "README.md",
     "LICENSE",
+    "CHANGELOG",
     "dist/**/*",
     "!dist/**/*.d.ts.map",
-    "CHANGELOG"
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
@@ -30,10 +32,9 @@
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
-    "watch": "concurrently pnpm:watch:*",
-    "watch:templates": "pnpm build:templates --watch",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
+    "watch": "pnpm build:templates --watch"
   },
   "dependencies": {
     "@baseplate-dev/core-generators": "workspace:*",
@@ -48,7 +49,7 @@
     "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "concurrently": "9.0.1",
-    "cpx2": "7.0.1",
+    "cpx2": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
