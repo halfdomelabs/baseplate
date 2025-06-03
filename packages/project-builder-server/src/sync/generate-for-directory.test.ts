@@ -661,44 +661,16 @@ describe('generateForDirectory with migration', () => {
       },
     );
 
-    await generateForDirectory({
-      baseDirectory,
-      appEntry: testAppEntry,
-      logger: testLogger,
-      userConfig: defaultUserConfig,
-      previousPackageSyncResult: undefined,
-      operations: mockOperations,
-    });
-
-    expect(
-      vol.existsSync(
-        path.join(projectDirectory, 'baseplate/generated/existing_new.txt'),
-      ),
-    ).toBe(true);
-    // The rename will succeed and overwrite the existing generated directory
-    // So .clean should be gone
-    expect(
-      vol.existsSync(
-        path.join(projectDirectory, 'baseplate/.clean/original_old.txt'),
-      ),
-    ).toBe(false);
-
-    // The existing_new.txt file should have been overwritten by the migration
-    // and then restored by the mock writeGeneratorOutput
-    expect(
-      vol.existsSync(
-        path.join(projectDirectory, 'baseplate/generated/existing_new.txt'),
-      ),
-    ).toBe(true);
-    expect(
-      vol.existsSync(
-        path.join(projectDirectory, 'baseplate/generated/output_file.txt'),
-      ),
-    ).toBe(true);
-    // Since rename succeeds, there should be no warning about failed migration
-    expect(testLogger.getInfoOutput()).toContain(
-      'Migrating legacy .clean directory',
-    );
+    await expect(
+      generateForDirectory({
+        baseDirectory,
+        appEntry: testAppEntry,
+        logger: testLogger,
+        userConfig: defaultUserConfig,
+        previousPackageSyncResult: undefined,
+        operations: mockOperations,
+      }),
+    ).rejects.toThrow('New generated directory already exists');
   });
 
   it('should not attempt migration if neither directory exists', async () => {
