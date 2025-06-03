@@ -1,5 +1,16 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.1.4
+
+### Patch Changes
+
+- [#568](https://github.com/halfdomelabs/baseplate/pull/568) [`06b4faf`](https://github.com/halfdomelabs/baseplate/commit/06b4fafaf3d2ed848d959a9911b9bfa26702d4a3) Thanks [@kingston](https://github.com/kingston)! - Enable the import-x/consistent-type-specifier-style rule to clean up type imports
+
+- Updated dependencies [[`06b4faf`](https://github.com/halfdomelabs/baseplate/commit/06b4fafaf3d2ed848d959a9911b9bfa26702d4a3)]:
+  - @baseplate-dev/ui-components@0.1.4
+  - @baseplate-dev/utils@0.1.4
+  - @baseplate-dev/sync@0.1.4
+
 ## 0.1.3
 
 ### Patch Changes
