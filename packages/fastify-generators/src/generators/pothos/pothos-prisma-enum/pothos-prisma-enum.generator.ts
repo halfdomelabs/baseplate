@@ -1,6 +1,6 @@
-import { TsCodeUtils, tsTemplate } from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
-import { quot } from '@halfdomelabs/utils';
+import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { prismaOutputProvider } from '#src/generators/prisma/prisma/prisma.generator.js';

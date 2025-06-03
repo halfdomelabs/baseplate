@@ -1,10 +1,10 @@
 import {
   projectScope,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
-import { stringifyPrettyStable } from '@halfdomelabs/utils';
-import { posixJoin } from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { stringifyPrettyStable } from '@baseplate-dev/utils';
+import { posixJoin } from '@baseplate-dev/utils/node';
 import path from 'node:path';
 import { z } from 'zod';
 

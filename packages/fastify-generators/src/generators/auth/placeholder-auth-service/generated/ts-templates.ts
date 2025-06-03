@@ -1,4 +1,4 @@
-import { createTsTemplateFile } from '@halfdomelabs/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
 import { userSessionTypesImportsProvider } from '../../user-session-types/user-session-types.generator.js';
 

@@ -1,4 +1,4 @@
-import { notEmpty, toposortOrdered } from '@halfdomelabs/utils';
+import { notEmpty, toposortOrdered } from '@baseplate-dev/utils';
 
 interface OrderRule {
   comesBefore?: string | string[];

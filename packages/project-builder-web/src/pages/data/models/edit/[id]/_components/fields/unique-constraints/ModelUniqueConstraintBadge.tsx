@@ -1,8 +1,8 @@
-import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { BadgeWithIcon } from '@halfdomelabs/ui-components';
+import { BadgeWithIcon } from '@baseplate-dev/ui-components';
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { MdStar } from 'react-icons/md';

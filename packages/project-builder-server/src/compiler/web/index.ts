@@ -2,11 +2,11 @@ import type {
   AppEntry,
   ProjectDefinitionContainer,
   WebAppConfig,
-} from '@halfdomelabs/project-builder-lib';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+} from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
-import { composeNodeGenerator } from '@halfdomelabs/core-generators';
-import { AppUtils, webAppEntryType } from '@halfdomelabs/project-builder-lib';
+import { composeNodeGenerator } from '@baseplate-dev/core-generators';
+import { AppUtils, webAppEntryType } from '@baseplate-dev/project-builder-lib';
 import {
   apolloErrorGenerator,
   apolloErrorLinkGenerator,
@@ -17,8 +17,8 @@ import {
   reactRouterGenerator,
   reactSentryGenerator,
   reactTailwindGenerator,
-} from '@halfdomelabs/react-generators';
-import { safeMerge } from '@halfdomelabs/utils';
+} from '@baseplate-dev/react-generators';
+import { safeMerge } from '@baseplate-dev/utils';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
 import { compileWebFeatures } from './features.js';

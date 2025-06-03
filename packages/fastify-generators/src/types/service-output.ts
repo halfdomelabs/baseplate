@@ -1,6 +1,6 @@
 // standard typings of service output
 
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import type { ScalarFieldType } from './field-types.js';
 import type {

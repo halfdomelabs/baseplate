@@ -4,12 +4,12 @@ import {
   tsHoistedFragment,
   tsImportBuilder,
   tsTypeImportBuilder,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createReadOnlyProviderType,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/react-error.generator.js';

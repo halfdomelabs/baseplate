@@ -1,7 +1,7 @@
-import type { ClientVersionInfo } from '@halfdomelabs/project-builder-server';
+import type { ClientVersionInfo } from '@baseplate-dev/project-builder-server';
 import type React from 'react';
 
-import { ErrorableLoader } from '@halfdomelabs/ui-components';
+import { ErrorableLoader } from '@baseplate-dev/ui-components';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { UseClientVersionResult } from '#src/hooks/useClientVersion.js';

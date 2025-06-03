@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { Button } from '@halfdomelabs/ui-components';
+import { Button } from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
 

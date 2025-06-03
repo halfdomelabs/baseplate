@@ -1,5 +1,5 @@
 {
-  "extends": "@halfdomelabs/tools/tsconfig.node.lib.json",
+  "extends": "@baseplate-dev/tools/tsconfig.node.lib.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./dist/tsconfig.build.tsbuildinfo",
     "composite": true,
@@ -13,5 +13,16 @@
     "src/**/*.test-helper.ts",
     "**/__mocks__/**/*",
     "**/generators/*/*/templates/**"
+  ],
+  "references": [
+    {
+      "path": "../core-generators/tsconfig.build.json"
+    },
+    {
+      "path": "../sync/tsconfig.build.json"
+    },
+    {
+      "path": "../utils/tsconfig.build.json"
+    }
   ]
 }

@@ -4,7 +4,7 @@
 export default {
   workspaces: {
     '.': {
-      entry: ['.meta-updater/main.mjs', 'scripts/*.{js,ts}'],
+      entry: ['.workspace-meta/config.ts', 'scripts/*.{js,ts}'],
     },
     'packages/*': {
       entry: ['src/index.{ts,tsx}', 'src/web/index.{ts,tsx}'],
@@ -63,7 +63,7 @@ export default {
         // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
         'pino-pretty',
         // we resolve the package by string in src/server.ts
-        '@halfdomelabs/project-builder-web',
+        '@baseplate-dev/project-builder-web',
       ],
       paths: {
         '#src/*': ['./src/*'],
@@ -77,7 +77,7 @@ export default {
         // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
         'pino-pretty',
         // we resolve the package by string in src/commands/serve.ts
-        '@halfdomelabs/project-builder-web',
+        '@baseplate-dev/project-builder-web',
       ],
       paths: {
         '#src/*': ['./src/*'],
@@ -88,7 +88,7 @@ export default {
       project: 'src/**/*.{ts,tsx}',
       ignoreDependencies: [
         // we load the plugins dynamically from the package.json
-        '@halfdomelabs/baseplate-plugin-*',
+        '@baseplate-dev/plugin-*',
       ],
     },
     'packages/ui-components': {

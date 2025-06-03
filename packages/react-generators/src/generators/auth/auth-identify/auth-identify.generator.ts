@@ -1,18 +1,18 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
-import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+import type { InferFieldMapSchemaFromBuilder } from '@baseplate-dev/utils';
 
 import {
   projectScope,
   TsCodeUtils,
   tsImportBuilder,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createConfigFieldMap,
   createGenerator,
   createGeneratorTask,
   createProviderType,
-} from '@halfdomelabs/sync';
-import { createFieldMapSchemaBuilder } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { createFieldMapSchemaBuilder } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { reactRouterConfigProvider } from '#src/generators/core/react-router/react-router.generator.js';

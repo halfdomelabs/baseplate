@@ -1,6 +1,6 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { TsCodeUtils, tsImportBuilder } from '@halfdomelabs/core-generators';
+import { TsCodeUtils, tsImportBuilder } from '@baseplate-dev/core-generators';
 import { groupBy, sortBy } from 'es-toolkit';
 
 import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';

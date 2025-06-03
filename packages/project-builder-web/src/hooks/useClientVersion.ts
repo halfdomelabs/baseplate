@@ -1,5 +1,5 @@
-import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
-import type { BaseplateUserConfig } from '@halfdomelabs/project-builder-server';
+import type { FeatureFlag } from '@baseplate-dev/project-builder-lib';
+import type { BaseplateUserConfig } from '@baseplate-dev/project-builder-server';
 
 import React from 'react';
 

@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { Badge } from '@halfdomelabs/ui-components';
+import { Badge } from '@baseplate-dev/ui-components';
 import { clsx } from 'clsx';
 
 import { ellipsisStringFromMiddle } from '#src/utils/string.js';

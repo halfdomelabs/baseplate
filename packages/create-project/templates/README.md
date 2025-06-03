@@ -10,19 +10,6 @@ To begin using the project, you will need to set up your local environment. Foll
 
 Before you start, ensure you have `pnpm` installed on your system. If you do not have `pnpm` installed, you can learn how to install it by visiting [pnpm installation guide](https://pnpm.io/installation).
 
-### Environment Setup
-
-For this project, you will need to set up environment variables that the application requires to function properly. One essential variable is `NPM_TOKEN`, which is used for accessing private npm packages. If you set this project up with the project creator, you should have already been asked for this token. Otherwise, to set this up:
-
-1. Create a `.env` file in the root directory of your project.
-2. Add the following line to the `.env` file:
-
-```bash
-NPM_TOKEN=<your-npm-token>
-```
-
-You can obtain the NPM token from your engineering manager.
-
 ### Installation
 
 To install the necessary dependencies for your project, run the following command in the root directory of your project:

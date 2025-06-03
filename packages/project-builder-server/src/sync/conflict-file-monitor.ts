@@ -1,8 +1,8 @@
-import type { Logger } from '@halfdomelabs/sync';
+import type { Logger } from '@baseplate-dev/sync';
 import type { ChokidarOptions } from 'chokidar';
 
-import { differenceSet } from '@halfdomelabs/utils';
-import { fileExists, handleFileNotFoundError } from '@halfdomelabs/utils/node';
+import { differenceSet } from '@baseplate-dev/utils';
+import { fileExists, handleFileNotFoundError } from '@baseplate-dev/utils/node';
 import { watch } from 'chokidar';
 import { produce } from 'immer';
 import { readFile } from 'node:fs/promises';

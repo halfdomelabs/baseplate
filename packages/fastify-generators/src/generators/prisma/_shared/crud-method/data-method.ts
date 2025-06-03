@@ -1,7 +1,7 @@
 import type {
   TsCodeFragment,
   TsHoistedFragment,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 
 import {
   tsCodeFragment,
@@ -9,8 +9,8 @@ import {
   tsHoistedFragment,
   tsTemplate,
   tsTypeImportBuilder,
-} from '@halfdomelabs/core-generators';
-import { notEmpty, safeMergeAllWithOptions } from '@halfdomelabs/utils';
+} from '@baseplate-dev/core-generators';
+import { notEmpty, safeMergeAllWithOptions } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 
 import type { ServiceContextImportsProvider } from '#src/generators/core/service-context/service-context.generator.js';

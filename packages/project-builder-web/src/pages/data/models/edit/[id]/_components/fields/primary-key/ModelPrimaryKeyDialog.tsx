@@ -1,4 +1,4 @@
-import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
   useControlledState,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 
 import { ModelPrimaryKeyForm } from './ModelPrimaryKeyForm.js';
 

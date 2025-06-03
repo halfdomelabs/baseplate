@@ -1,4 +1,4 @@
-import type { SyncMetadata } from '@halfdomelabs/project-builder-server';
+import type { SyncMetadata } from '@baseplate-dev/project-builder-server';
 
 import { IS_PREVIEW } from '../config.js';
 import { trpc } from '../trpc.js';

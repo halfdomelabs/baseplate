@@ -1,12 +1,12 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   tsCodeFragment,
   TsCodeUtils,
   tsHoistedFragment,
   tsTemplate,
-} from '@halfdomelabs/core-generators';
-import { quot } from '@halfdomelabs/utils';
+} from '@baseplate-dev/core-generators';
+import { quot } from '@baseplate-dev/utils';
 
 import type {
   ServiceOutputDtoField,

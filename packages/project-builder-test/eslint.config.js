@@ -1,1 +1,1 @@
-export { default } from '@halfdomelabs/tools/eslint-node';
+export { default } from '@baseplate-dev/tools/eslint-node';

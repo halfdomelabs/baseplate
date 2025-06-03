@@ -1,4 +1,4 @@
 {
-  "extends": "@halfdomelabs/tools/tsconfig.node.lib.json",
+  "extends": "@baseplate-dev/tools/tsconfig.node.lib.json",
   "include": ["index.d.ts", "index.js"]
 }

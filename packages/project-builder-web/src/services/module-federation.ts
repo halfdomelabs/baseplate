@@ -2,7 +2,7 @@ import type {
   KeyedPluginPlatformModule,
   PluginMetadataWithPaths,
   PluginPlatformModule,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import {
   __federation_method_getRemote,

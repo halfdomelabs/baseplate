@@ -1,13 +1,13 @@
 import type React from 'react';
 
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   NavigationTabs,
   NavigationTabsItem,
   SidebarLayout,
   SidebarLayoutContent,
   SidebarLayoutSidebar,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { maxBy } from 'es-toolkit';
 import { NavLink, Outlet, useMatch } from 'react-router-dom';
 

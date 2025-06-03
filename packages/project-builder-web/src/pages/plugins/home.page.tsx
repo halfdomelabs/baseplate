@@ -1,8 +1,8 @@
-import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { EmptyDisplay, ErrorableLoader } from '@halfdomelabs/ui-components';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import { EmptyDisplay, ErrorableLoader } from '@baseplate-dev/ui-components';
 import { useEffect, useState } from 'react';
 
 import { useProjects } from '#src/hooks/useProjects.js';
@@ -65,7 +65,7 @@ export function PluginsHomePage(): React.JSX.Element {
   );
 
   return (
-    <div className="max-w-2xl space-y-4">
+    <div className="max-w-2xl space-y-4 p-4">
       <h1>Manage Plugins</h1>
       <p>
         Plugins are a way to extend the functionality of your project, such as

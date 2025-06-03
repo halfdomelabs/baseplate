@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { InputFieldController } from '@halfdomelabs/ui-components';
+import { InputFieldController } from '@baseplate-dev/ui-components';
 
 function MyComponent() {
   return <InputFieldController name="hi" />;

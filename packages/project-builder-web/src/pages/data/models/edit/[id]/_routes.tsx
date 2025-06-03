@@ -1,6 +1,6 @@
 import type { RouteObject } from 'react-router-dom';
 
-import { modelEntityType } from '@halfdomelabs/project-builder-lib';
+import { modelEntityType } from '@baseplate-dev/project-builder-lib';
 import { Navigate } from 'react-router-dom';
 
 import { NotFoundRoute } from '#src/pages/NotFound.page.js';

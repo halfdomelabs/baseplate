@@ -5,11 +5,11 @@ import {
   modelEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
-} from '@halfdomelabs/project-builder-lib';
-import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
-import { SectionList } from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/project-builder-lib';
+import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
+import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
 
-import { ErrorBoundary, FormActionBar } from '#src/components/index.js';
+import { ErrorBoundary } from '#src/components/index.js';
 import { registerEntityTypeUrl } from '#src/services/entity-type.js';
 
 import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig.js';

@@ -1,5 +1,5 @@
 {
-  "extends": "@halfdomelabs/tools/tsconfig.node.lib.json",
+  "extends": "@baseplate-dev/tools/tsconfig.node.lib.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tsbuildinfo",
     "rootDir": "src",

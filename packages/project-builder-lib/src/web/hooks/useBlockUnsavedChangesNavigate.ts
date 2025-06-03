@@ -1,4 +1,4 @@
-import { toast } from '@halfdomelabs/ui-components';
+import { toast } from '@baseplate-dev/ui-components';
 import { flattenObject } from 'es-toolkit';
 import { useEffect, useRef } from 'react';
 import { type Control, type FieldValues, useFormState } from 'react-hook-form';

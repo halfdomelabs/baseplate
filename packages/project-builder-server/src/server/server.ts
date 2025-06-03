@@ -1,4 +1,4 @@
-import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
+import type { FeatureFlag } from '@baseplate-dev/project-builder-lib';
 import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import type { Logger } from 'pino';
 

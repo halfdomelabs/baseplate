@@ -1,20 +1,20 @@
 import type {
   ProjectDefinition,
   SchemaParserContext,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import {
   createPluginImplementationStore,
   runPluginMigrations,
   runSchemaMigrations,
-} from '@halfdomelabs/project-builder-lib';
-import { CancelledSyncError, type Logger } from '@halfdomelabs/sync';
+} from '@baseplate-dev/project-builder-lib';
+import { CancelledSyncError, type Logger } from '@baseplate-dev/sync';
 import {
   enhanceErrorWithContext,
   hashWithSHA256,
   stringifyPrettyStable,
-} from '@halfdomelabs/utils';
-import { fileExists } from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/utils';
+import { fileExists } from '@baseplate-dev/utils/node';
 import { mapValues } from 'es-toolkit';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';

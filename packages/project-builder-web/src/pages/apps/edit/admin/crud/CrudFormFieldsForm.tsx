@@ -1,17 +1,17 @@
-import type { AdminCrudSectionConfigInput } from '@halfdomelabs/project-builder-lib';
+import type { AdminCrudSectionConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 
-import { ModelUtils } from '@halfdomelabs/project-builder-lib';
+import { ModelUtils } from '@baseplate-dev/project-builder-lib';
 import {
   adminCrudInputWebSpec,
   useProjectDefinition,
-} from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   InputFieldController,
   SelectFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
 

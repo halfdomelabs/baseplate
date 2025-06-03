@@ -1,6 +1,6 @@
-import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
+import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 
-import { toast } from '@halfdomelabs/ui-components';
+import { toast } from '@baseplate-dev/ui-components';
 import { useEffect, useState } from 'react';
 
 import { useProjects } from '#src/hooks/useProjects.js';

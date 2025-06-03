@@ -3,8 +3,8 @@ import type React from 'react';
 import {
   EnumUtils,
   modelEnumEntityType,
-} from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import { Outlet, useParams } from 'react-router-dom';
 
 import { NotFoundCard } from '#src/components/index.js';

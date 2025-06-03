@@ -1,14 +1,14 @@
 {
-  "name": "@halfdomelabs/core-generators",
-  "version": "0.11.7",
+  "name": "@baseplate-dev/core-generators",
+  "version": "0.1.2",
   "description": "Core generators for Baseplate",
-  "homepage": "https://www.halfdomelabs.com/",
+  "homepage": "https://www.baseplate.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/code-generators"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
   "sideEffects": false,
   "type": "module",
@@ -27,11 +27,12 @@
   },
   "main": "dist/index.js",
   "files": [
+    "README.md",
     "LICENSE",
+    "CHANGELOG",
     "dist/**/*",
     "!dist/**/*.d.ts.map",
-    "!dist/**/*.tsbuildinfo",
-    "CHANGELOG"
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
@@ -43,14 +44,13 @@
     "prettier:write": "prettier -w .",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
-    "watch": "concurrently pnpm:watch:*",
-    "watch:templates": "pnpm build:templates --watch",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
+    "watch": "pnpm build:templates --watch"
   },
   "dependencies": {
-    "@halfdomelabs/sync": "workspace:*",
-    "@halfdomelabs/utils": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
     "change-case": "5.4.4",
     "es-toolkit": "1.31.0",
     "memfs": "4.15.1",
@@ -65,12 +65,12 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
+    "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "@types/prettier": "^2.7.3",
     "@types/semver": "^7.5.0",
     "concurrently": "9.0.1",
-    "cpx2": "7.0.1",
+    "cpx2": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
@@ -82,6 +82,7 @@
     "extends": "../../package.json"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public",
+    "provenance": true
   }
 }

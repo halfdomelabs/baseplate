@@ -1,13 +1,13 @@
 import type {
   PluginMetadataWithPaths,
   SchemaParserContext,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
-import { webConfigSpec } from '@halfdomelabs/project-builder-lib';
+import { webConfigSpec } from '@baseplate-dev/project-builder-lib';
 import {
   adminCrudInputWebSpec,
   modelTransformerWebSpec,
-} from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib/web';
 
 import { loadPluginModule } from './module-federation.js';
 

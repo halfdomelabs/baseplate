@@ -1,4 +1,4 @@
-import { CASE_VALIDATORS } from '@halfdomelabs/utils';
+import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { appEntityType } from './types.js';

@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { Button, ErrorDisplay } from '@halfdomelabs/ui-components';
+import { Button, ErrorDisplay } from '@baseplate-dev/ui-components';
 import { useContext } from 'react';
 import {
   ErrorBoundaryContext,

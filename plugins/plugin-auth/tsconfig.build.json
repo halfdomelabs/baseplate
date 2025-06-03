@@ -1,0 +1,37 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "tsBuildInfoFile": "./dist/tsconfig.build.tsbuildinfo",
+    "composite": true,
+    "incremental": true,
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test-helper.ts",
+    "**/__mocks__/**/*",
+    "**/generators/*/*/templates/**"
+  ],
+  "references": [
+    {
+      "path": "../../packages/core-generators/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/fastify-generators/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/project-builder-lib/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/react-generators/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/sync/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/ui-components/tsconfig.build.json"
+    }
+  ]
+}

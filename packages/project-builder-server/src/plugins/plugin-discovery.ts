@@ -1,12 +1,12 @@
-import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
-import type { Logger } from '@halfdomelabs/sync';
+import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
+import type { Logger } from '@baseplate-dev/sync';
 
-import { loadPluginsInPackage } from '@halfdomelabs/project-builder-lib/plugin-tools';
-import { notEmpty } from '@halfdomelabs/utils';
+import { loadPluginsInPackage } from '@baseplate-dev/project-builder-lib/plugin-tools';
+import { notEmpty } from '@baseplate-dev/utils';
 import {
   findNearestPackageJson,
   readJsonWithSchema,
-} from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/utils/node';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { z } from 'zod';
@@ -27,7 +27,7 @@ export async function discoverPlugins(
   if (!packageJsonPath) {
     throw new UserVisibleError(
       'Could not find root package.json file for the Baseplate project',
-      'Make sure the project-definition.json file is inside a valid Node package with @halfdomelabs/project-builder-cli.',
+      'Make sure the project-definition.json file is inside a valid Node package with @baseplate-dev/project-builder-cli.',
     );
   }
 
@@ -45,14 +45,15 @@ export async function discoverPlugins(
     );
   });
 
-  // Look for plugins that start with baseplate-plugin- or @scope/baseplate-plugin-
+  // Look for plugins that start with baseplate-plugin- or @scope/baseplate-plugin- or @baseplate-dev/plugin-
   const pluginPackageNames = [
     ...Object.keys(packageJson.dependencies ?? {}),
     ...Object.keys(packageJson.devDependencies ?? {}),
   ].filter(
     (name) =>
       name.startsWith('baseplate-plugin-') ||
-      /^@[^/]+\/baseplate-plugin-/.exec(name),
+      !!/^@[^/]+\/baseplate-plugin-/.test(name) ||
+      name.startsWith('@baseplate-dev/plugin-'),
   );
 
   // Load all valid plugins and their metadata

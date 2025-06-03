@@ -1,9 +1,17 @@
 {
-  "extends": "@halfdomelabs/tools/tsconfig.vite.lib.json",
+  "extends": "@baseplate-dev/tools/tsconfig.vite.lib.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "tsBuildInfoFile": "./dist/tsconfig.build.tsbuildinfo",
+    "composite": true,
+    "incremental": true
   },
   "include": ["src"],
-  "exclude": ["**/*.test.ts", "**/*.stories.ts", "**/*.stories.tsx"]
+  "exclude": ["**/*.test.ts", "**/*.stories.ts", "**/*.stories.tsx"],
+  "references": [
+    {
+      "path": "../utils/tsconfig.build.json"
+    }
+  ]
 }

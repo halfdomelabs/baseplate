@@ -1,4 +1,4 @@
-import { createProviderExportScope } from '@halfdomelabs/sync';
+import { createProviderExportScope } from '@baseplate-dev/sync';
 
 export const projectScope = createProviderExportScope(
   'core/project',

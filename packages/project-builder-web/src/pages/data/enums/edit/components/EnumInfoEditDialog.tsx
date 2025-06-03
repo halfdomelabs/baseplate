@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
   useControlledState,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 
 import { EnumInfoForm } from '../../components/EnumInfoForm.js';
 import { useEnumForm } from '../../hooks/useEnumForm.js';

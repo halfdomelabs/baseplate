@@ -1,21 +1,20 @@
 import chalk from 'chalk';
-import { execa } from 'execa';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import ora from 'ora';
 
+import { exec } from './exec.js';
+
 export async function generateBaseplateProject({
   packageName,
   directory,
-  npmToken,
   cliVersion,
 }: {
   packageName: string;
   directory: string;
-  npmToken: string;
   cliVersion: string;
 }): Promise<void> {
-  let spinner = ora({
+  const spinner = ora({
     text: 'Creating project files...',
   }).start();
   try {
@@ -61,7 +60,7 @@ export async function generateBaseplateProject({
             preinstall: 'npx only-allow pnpm',
           },
           devDependencies: {
-            '@halfdomelabs/project-builder-cli': cliVersion,
+            '@baseplate-dev/project-builder-cli': cliVersion,
           },
           packageManager: 'pnpm@10.6.5',
           engines: {
@@ -78,24 +77,12 @@ export async function generateBaseplateProject({
     );
 
     await copyFile('.gitignore', '.gitignore');
-    await copyFile('.pnpmfile.cjs', '.pnpmfile.cjs');
-    await copyFile('.template.npmrc', '.template.npmrc');
-    await copyFile('scripts/setup-npmrc.cjs', 'scripts/setup-npmrc.cjs');
+    await copyFile('.template.npmrc', '.npmrc');
     await copyFile('README.md', 'README.md');
 
-    await writeFile('.env', `NPM_TOKEN=${npmToken}\n`);
-
     spinner.succeed();
 
-    spinner = ora({
-      text: 'Installing dependencies...',
-    }).start();
-
-    await execa({ cwd: directory })`node .pnpmfile.cjs --silent`;
-
-    await execa({ cwd: directory })`pnpm install`;
-
-    spinner.succeed();
+    await exec('pnpm install', directory);
 
     const relativePath = path.relative(process.cwd(), directory);
 

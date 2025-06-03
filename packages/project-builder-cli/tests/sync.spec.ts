@@ -3,7 +3,7 @@ import {
   featureEntityType,
   modelEntityType,
   modelScalarFieldEntityType,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 import {
   expect,

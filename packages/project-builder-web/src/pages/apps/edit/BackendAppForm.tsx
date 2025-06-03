@@ -1,17 +1,17 @@
-import type { BackendAppConfig } from '@halfdomelabs/project-builder-lib';
+import type { BackendAppConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { backendAppSchema } from '@halfdomelabs/project-builder-lib';
+import { backendAppSchema } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
-} from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   CheckboxFieldController,
   InputFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 

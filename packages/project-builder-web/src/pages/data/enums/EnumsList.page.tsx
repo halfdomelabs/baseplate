@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { Button } from '@halfdomelabs/ui-components';
+import { Button } from '@baseplate-dev/ui-components';
 
 import { NewEnumDialog } from './new/NewEnumDialog.js';
 

@@ -1,5 +1,5 @@
-import type { BackendAppConfig } from '@halfdomelabs/project-builder-lib';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+import type { BackendAppConfig } from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   appModuleGenerator,
@@ -21,9 +21,9 @@ import {
   prismaVitestGenerator,
   readmeGenerator,
   yogaPluginGenerator,
-} from '@halfdomelabs/fastify-generators';
-import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
-import { safeMergeAll } from '@halfdomelabs/utils';
+} from '@baseplate-dev/fastify-generators';
+import { FeatureUtils } from '@baseplate-dev/project-builder-lib';
+import { safeMergeAll } from '@baseplate-dev/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 

@@ -1,7 +1,7 @@
 import {
   createNodeTask,
   extractPackageVersions,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 

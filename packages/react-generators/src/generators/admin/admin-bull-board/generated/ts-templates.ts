@@ -1,4 +1,4 @@
-import { createTsTemplateFile } from '@halfdomelabs/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
 import { generatedGraphqlImportsProvider } from '../../../apollo/react-apollo/generated/ts-import-maps.js';
 import { reactComponentsImportsProvider } from '../../../core/react-components/generated/ts-import-maps.js';

@@ -1,8 +1,8 @@
-import type { ThemeConfig } from '@halfdomelabs/project-builder-lib';
+import type { ThemeConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { generateCssFromThemeConfig } from '@halfdomelabs/project-builder-lib';
+import { generateCssFromThemeConfig } from '@baseplate-dev/project-builder-lib';
 import {
   Badge,
   Button,
@@ -16,7 +16,7 @@ import {
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { clsx } from 'clsx';
 import { useWatch } from 'react-hook-form';
 

@@ -1,7 +1,7 @@
-import type { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
+import type { AdminAppConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { adminSectionEntityType } from '@halfdomelabs/project-builder-lib';
+import { adminSectionEntityType } from '@baseplate-dev/project-builder-lib';
 import {
   NavigationMenu,
   NavigationMenuItemWithLink,
@@ -9,7 +9,7 @@ import {
   SidebarLayout,
   SidebarLayoutContent,
   SidebarLayoutSidebar,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { sortBy } from 'es-toolkit';
 import { Link, Route, Routes } from 'react-router-dom';
 

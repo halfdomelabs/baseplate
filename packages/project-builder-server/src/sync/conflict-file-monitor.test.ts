@@ -1,6 +1,6 @@
-import type { Logger } from '@halfdomelabs/sync';
+import type { Logger } from '@baseplate-dev/sync';
 
-import { createTestLogger } from '@halfdomelabs/sync';
+import { createTestLogger } from '@baseplate-dev/sync';
 import { vol } from 'memfs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

@@ -1,4 +1,4 @@
-import { createTsTemplateFile } from '@halfdomelabs/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
 import { errorHandlerServiceImportsProvider } from '../../../core/error-handler-service/generated/ts-import-maps.js';
 import { pothosImportsProvider } from '../../pothos/generated/ts-import-maps.js';

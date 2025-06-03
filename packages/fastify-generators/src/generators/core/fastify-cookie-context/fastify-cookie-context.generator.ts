@@ -5,8 +5,8 @@ import {
   tsHoistedFragment,
   tsImportBuilder,
   tsTypeImportBuilder,
-} from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderTask } from '@halfdomelabs/sync';
+} from '@baseplate-dev/core-generators';
+import { createGenerator, createProviderTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';

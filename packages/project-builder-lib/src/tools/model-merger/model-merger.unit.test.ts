@@ -6,7 +6,7 @@ import type {
   ModelScalarFieldConfigInput,
 } from '#src/schema/models/index.js';
 
-import { createTestProjectDefinitionContainer } from '#src/definition/project-definition-container.test-helper.js';
+import { createTestProjectDefinitionContainer } from '#src/definition/project-definition-container.test-utils.js';
 import {
   createTestFeature,
   createTestModel,

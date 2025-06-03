@@ -1,10 +1,10 @@
-import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
+import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generators';
 
 import {
   createTsImportMap,
   createTsImportMapSchema,
-} from '@halfdomelabs/core-generators';
-import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+} from '@baseplate-dev/core-generators';
+import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 import path from 'node:path/posix';
 
 const reactConfigImportsSchema = createTsImportMapSchema({ config: {} });

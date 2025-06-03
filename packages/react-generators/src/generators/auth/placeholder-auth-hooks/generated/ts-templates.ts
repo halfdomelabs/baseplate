@@ -1,7 +1,7 @@
 import {
   createTsTemplateFile,
   createTsTemplateGroup,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 
 const useCurrentUser = createTsTemplateFile({
   group: 'hooks',

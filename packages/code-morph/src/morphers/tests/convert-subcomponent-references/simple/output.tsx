@@ -4,7 +4,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 
 function MyComponent() {
   return (

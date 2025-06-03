@@ -1,4 +1,4 @@
-import type { AppRouter } from '@halfdomelabs/project-builder-server';
+import type { AppRouter } from '@baseplate-dev/project-builder-server';
 
 import { TRPCClientError } from '@trpc/client';
 

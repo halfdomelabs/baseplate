@@ -1,6 +1,6 @@
-import type { SyncMetadata } from '@halfdomelabs/project-builder-server';
+import type { SyncMetadata } from '@baseplate-dev/project-builder-server';
 
-import { toast } from '@halfdomelabs/ui-components';
+import { toast } from '@baseplate-dev/ui-components';
 import { useEffect } from 'react';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';

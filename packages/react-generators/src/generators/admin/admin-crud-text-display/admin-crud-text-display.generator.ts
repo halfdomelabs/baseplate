@@ -1,5 +1,5 @@
-import { tsCodeFragment } from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { tsCodeFragment } from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { adminCrudDisplayContainerProvider } from '../_providers/admin-crud-display-container.js';

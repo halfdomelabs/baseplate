@@ -1,4 +1,4 @@
-import { createTsTemplateFile } from '@halfdomelabs/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
 const safeLocalStorage = createTsTemplateFile({
   name: 'safe-local-storage',

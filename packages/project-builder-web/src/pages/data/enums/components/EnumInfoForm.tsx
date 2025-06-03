@@ -1,9 +1,9 @@
-import type { EnumConfig } from '@halfdomelabs/project-builder-lib';
+import type { EnumConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { FeatureComboboxFieldController } from '@halfdomelabs/project-builder-lib/web';
-import { InputFieldController } from '@halfdomelabs/ui-components';
+import { FeatureComboboxFieldController } from '@baseplate-dev/project-builder-lib/web';
+import { InputFieldController } from '@baseplate-dev/ui-components';
 import { clsx } from 'clsx';
 
 interface Props {

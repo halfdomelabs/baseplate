@@ -1,6 +1,6 @@
 import type { TypeOf, z } from 'zod';
 
-import { toposort } from '@halfdomelabs/utils';
+import { toposort } from '@baseplate-dev/utils';
 import { groupBy, keyBy, uniq } from 'es-toolkit';
 import { get, set } from 'es-toolkit/compat';
 

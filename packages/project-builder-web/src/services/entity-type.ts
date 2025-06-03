@@ -2,7 +2,7 @@ import type {
   DefinitionEntity,
   DefinitionEntityType,
   ProjectDefinitionContainer,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 
 const entityTypeToUrlMap: Record<string, string> = {};
 

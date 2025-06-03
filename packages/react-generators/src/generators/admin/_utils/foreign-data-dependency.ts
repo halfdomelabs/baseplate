@@ -2,7 +2,7 @@ import {
   tsCodeFragment,
   tsImportBuilder,
   tsTypeImportBuilder,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import { pluralize } from 'inflection';
 
 import type { ReactApolloProvider } from '#src/generators/apollo/react-apollo/react-apollo.generator.js';

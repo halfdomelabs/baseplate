@@ -2,21 +2,21 @@ import type {
   ProjectDefinitionSetter,
   SaveDefinitionWithFeedbackOptions,
   UseProjectDefinitionResult,
-} from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib/web';
 import type React from 'react';
 
 import {
   createProjectDefinitionSchemaWithContext,
   fixRefDeletions,
   ProjectDefinitionContainer,
-} from '@halfdomelabs/project-builder-lib';
-import { ProjectDefinitionContext } from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib';
+import { ProjectDefinitionContext } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   ErrorableLoader,
   ErrorDisplay,
   toast,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { produce } from 'immer';
 import { useMemo, useState } from 'react';
 import semver from 'semver';

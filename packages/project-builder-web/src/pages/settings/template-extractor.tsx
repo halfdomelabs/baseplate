@@ -1,26 +1,26 @@
 import type React from 'react';
 
-import { templateExtractorSchema } from '@halfdomelabs/project-builder-lib';
+import { templateExtractorSchema } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
-} from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   Alert,
   AlertDescription,
   AlertTitle,
   CheckboxFieldController,
+  FormActionBar,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
   SectionListSectionHeader,
   SectionListSectionTitle,
   TextareaFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { FormActionBar } from '#src/components/index.js';
 import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';
 
 /**

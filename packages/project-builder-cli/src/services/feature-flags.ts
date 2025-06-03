@@ -1,6 +1,6 @@
-import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
+import type { FeatureFlag } from '@baseplate-dev/project-builder-lib';
 
-import { AVAILABLE_FLAGS } from '@halfdomelabs/project-builder-lib';
+import { AVAILABLE_FLAGS } from '@baseplate-dev/project-builder-lib';
 
 /**
  * Feature flags allow you to enable / disable features in development via environment

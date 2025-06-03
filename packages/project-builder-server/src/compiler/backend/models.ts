@@ -3,8 +3,8 @@ import type {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
-} from '@halfdomelabs/project-builder-lib';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+} from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   prismaFieldGenerator,
@@ -12,8 +12,11 @@ import {
   prismaModelIdGenerator,
   prismaModelUniqueGenerator,
   prismaRelationFieldGenerator,
-} from '@halfdomelabs/fastify-generators';
-import { ModelFieldUtils, ModelUtils } from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/fastify-generators';
+import {
+  ModelFieldUtils,
+  ModelUtils,
+} from '@baseplate-dev/project-builder-lib';
 
 import type {
   AppEntryBuilder,

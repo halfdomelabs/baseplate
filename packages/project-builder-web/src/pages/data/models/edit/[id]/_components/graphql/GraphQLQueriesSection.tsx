@@ -4,8 +4,8 @@ import type { Control } from 'react-hook-form';
 import {
   authConfigSpec,
   type ModelConfigInput,
-} from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Alert,
   AlertDescription,
@@ -17,7 +17,7 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
   SwitchFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useWatch } from 'react-hook-form';
 import { MdInfo } from 'react-icons/md';
 

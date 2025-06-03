@@ -1,21 +1,22 @@
-import type { ThemeConfig } from '@halfdomelabs/project-builder-lib';
+import type { ThemeConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
   generateDefaultTheme,
   generateThemeColorsFromShade,
   themeSchema,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
-} from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   Alert,
   AlertDescription,
   AlertTitle,
   Button,
+  FormActionBar,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -26,12 +27,10 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
-
-import { FormActionBar } from '#src/components/index.js';
 
 import { ThemeColorsCssDisplay } from './components/ThemeColorsCssDisplay.js';
 import { ThemeColorsEditor } from './components/ThemeColorsEditor.js';

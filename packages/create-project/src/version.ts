@@ -1,4 +1,4 @@
-import { findNearestPackageJson } from '@halfdomelabs/utils/node';
+import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import { promises as fs } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 

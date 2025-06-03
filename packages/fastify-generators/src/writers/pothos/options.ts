@@ -1,6 +1,6 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { TsCodeUtils } from '@halfdomelabs/core-generators';
+import { TsCodeUtils } from '@baseplate-dev/core-generators';
 
 import type { PothosSchemaBaseTypesProvider } from '#src/generators/index.js';
 

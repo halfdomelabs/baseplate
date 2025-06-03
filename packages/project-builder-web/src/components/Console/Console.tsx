@@ -1,6 +1,6 @@
 import type { UIEventHandler } from 'react';
 
-import { toast } from '@halfdomelabs/ui-components';
+import { toast } from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 

@@ -1,11 +1,11 @@
-import type { AdminCrudEmbeddedFormConfigInput } from '@halfdomelabs/project-builder-lib';
+import type { AdminCrudEmbeddedFormConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
   adminCrudEmbeddedFormSchema,
   zPluginWrapper,
-} from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   CheckboxFieldController,
@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
   toast,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { type Control, useForm, type UseFormReturn } from 'react-hook-form';

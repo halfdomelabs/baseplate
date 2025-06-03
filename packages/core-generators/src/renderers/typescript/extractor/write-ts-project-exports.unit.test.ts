@@ -1,4 +1,4 @@
-import type { TemplateFileExtractorFile } from '@halfdomelabs/sync';
+import type { TemplateFileExtractorFile } from '@baseplate-dev/sync';
 
 import { describe, expect, it } from 'vitest';
 
@@ -97,7 +97,7 @@ describe('writeTsProjectExports', () => {
         metadata: {
           type: 'ts',
           name: 'test1',
-          generator: '@halfdomelabs/core-generators#test',
+          generator: '@baseplate-dev/core-generators#test',
           template: 'test1.ts',
           projectExports: {
             TestExport: { isTypeOnly: false },
@@ -108,7 +108,7 @@ describe('writeTsProjectExports', () => {
 
     const result = writeTsProjectExports(
       files,
-      '@halfdomelabs/core-generators#test',
+      '@baseplate-dev/core-generators#test',
       {
         importMapFilePath: TEST_IMPORT_MAP_PATH,
         packagePath: TEST_GENERATOR_PACKAGE_PATH,
@@ -118,7 +118,7 @@ describe('writeTsProjectExports', () => {
     const imports =
       result.importsFileFragment?.imports?.map((m) => m.moduleSpecifier) ?? [];
     expect(imports).toContain('@src/renderers/typescript/index.js');
-    expect(imports).not.toContain('@halfdomelabs/core-generators');
+    expect(imports).not.toContain('@baseplate-dev/core-generators');
   });
 
   it('should handle external imports for non-core-generators', () => {
@@ -144,7 +144,7 @@ describe('writeTsProjectExports', () => {
 
     const imports =
       result.importsFileFragment?.imports?.map((m) => m.moduleSpecifier) ?? [];
-    expect(imports).toContain('@halfdomelabs/core-generators');
+    expect(imports).toContain('@baseplate-dev/core-generators');
     expect(imports).not.toContain('@src/renderers/typescript/index.ts');
   });
 

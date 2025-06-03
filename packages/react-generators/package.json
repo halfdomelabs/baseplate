@@ -1,14 +1,14 @@
 {
-  "name": "@halfdomelabs/react-generators",
-  "version": "0.11.1",
+  "name": "@baseplate-dev/react-generators",
+  "version": "0.1.2",
   "description": "React Generators for Baseplate",
-  "homepage": "https://www.halfdomelabs.com/",
+  "homepage": "https://www.baseplate.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/react-generators"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
   "sideEffects": false,
   "type": "module",
@@ -17,10 +17,12 @@
   },
   "main": "dist/index.js",
   "files": [
+    "README.md",
     "LICENSE",
+    "CHANGELOG",
     "dist/**/*",
     "!dist/**/*.d.ts.map",
-    "CHANGELOG"
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
@@ -30,25 +32,24 @@
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
+    "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "typecheck": "tsc --noEmit",
-    "watch": "concurrently pnpm:watch:*",
-    "watch:templates": "pnpm build:templates --watch",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w"
+    "watch": "pnpm build:templates --watch"
   },
   "dependencies": {
-    "@halfdomelabs/core-generators": "workspace:*",
-    "@halfdomelabs/sync": "workspace:*",
-    "@halfdomelabs/utils": "workspace:*",
+    "@baseplate-dev/core-generators": "workspace:*",
+    "@baseplate-dev/sync": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
     "es-toolkit": "1.31.0",
     "inflection": "3.0.0",
     "prettier-plugin-tailwindcss": "0.6.11",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
+    "@baseplate-dev/tools": "workspace:*",
     "@types/node": "catalog:",
     "concurrently": "9.0.1",
-    "cpx2": "7.0.1",
+    "cpx2": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"
@@ -60,6 +61,7 @@
     "extends": "../../package.json"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public",
+    "provenance": true
   }
 }

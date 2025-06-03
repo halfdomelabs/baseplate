@@ -2,7 +2,7 @@ import type {
   BuilderAction,
   GeneratorInfo,
   InferProviderType,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 
 import {
   createConfigProviderTask,
@@ -10,8 +10,8 @@ import {
   createGeneratorTask,
   createProviderType,
   normalizePathToProjectPath,
-} from '@halfdomelabs/sync';
-import { safeMergeAll } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { safeMergeAll } from '@baseplate-dev/utils';
 import path from 'node:path';
 import { z } from 'zod';
 

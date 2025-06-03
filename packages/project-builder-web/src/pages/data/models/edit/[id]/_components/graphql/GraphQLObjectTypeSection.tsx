@@ -1,9 +1,9 @@
-import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { ModelUtils } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { ModelUtils } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Badge,
   Button,
@@ -15,7 +15,7 @@ import {
   SectionListSectionTitle,
   Switch,
   SwitchFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
 import { HiMiniChevronDown, HiMiniChevronUp } from 'react-icons/hi2';

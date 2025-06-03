@@ -1,4 +1,4 @@
-import type { FixRefDeletionError } from '@halfdomelabs/project-builder-lib';
+import type { FixRefDeletionError } from '@baseplate-dev/project-builder-lib';
 
 import { useMemo } from 'react';
 import { create } from 'zustand';

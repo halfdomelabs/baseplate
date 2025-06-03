@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createTestLogger } from '#src/tests/logger.test-helper.js';
+import { createTestLogger } from '#src/tests/logger.test-utils.js';
 
 import type {
   TemplateFileExtractorContext,

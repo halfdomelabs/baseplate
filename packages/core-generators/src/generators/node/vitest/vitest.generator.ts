@@ -2,7 +2,7 @@ import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { CORE_PACKAGES } from '#src/constants/index.js';
@@ -18,7 +18,7 @@ import { typescriptFileProvider } from '../typescript/typescript.generator.js';
 
 const descriptorSchema = z.object({});
 
-import { stringifyPrettyStable } from '@halfdomelabs/utils';
+import { stringifyPrettyStable } from '@baseplate-dev/utils';
 
 import {
   tsCodeFragment,
@@ -91,7 +91,7 @@ export const vitestGenerator = createGenerator({
                   },
                   writeOptions: {
                     alternateFullIds: [
-                      '@halfdomelabs/core-generators#node/vitest:src/tests/scripts/globalSetup.ts',
+                      '@baseplate-dev/core-generators#node/vitest:src/tests/scripts/globalSetup.ts',
                     ],
                   },
                 }),

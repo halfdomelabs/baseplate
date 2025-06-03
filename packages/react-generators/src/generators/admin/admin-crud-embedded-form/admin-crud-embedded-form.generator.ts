@@ -1,4 +1,4 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   tsCodeFragment,
@@ -7,15 +7,15 @@ import {
   tsTemplate,
   tsTypeImportBuilder,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
   createReadOnlyProviderType,
-} from '@halfdomelabs/sync';
-import { notEmpty } from '@halfdomelabs/utils';
-import { posixJoin } from '@halfdomelabs/utils/node';
+} from '@baseplate-dev/sync';
+import { notEmpty } from '@baseplate-dev/utils';
+import { posixJoin } from '@baseplate-dev/utils/node';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 

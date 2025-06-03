@@ -1,12 +1,12 @@
-import type { AdminCrudSectionConfigInput } from '@halfdomelabs/project-builder-lib';
+import type { AdminCrudSectionConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormReturn } from 'react-hook-form';
 
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   CheckboxFieldController,
   SelectFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useWatch } from 'react-hook-form';
 

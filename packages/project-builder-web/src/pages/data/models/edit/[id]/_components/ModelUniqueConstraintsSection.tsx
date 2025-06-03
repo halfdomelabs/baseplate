@@ -1,4 +1,4 @@
-import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
@@ -14,7 +14,7 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
   useConfirmDialog,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
 import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig.js';

@@ -1,8 +1,8 @@
-import type { ModelConfigInput } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 
-import { modelUniqueConstraintEntityType } from '@halfdomelabs/project-builder-lib';
+import { modelUniqueConstraintEntityType } from '@baseplate-dev/project-builder-lib';
 import {
   Button,
   DropdownMenu,
@@ -13,7 +13,7 @@ import {
   InputFieldController,
   SwitchFieldController,
   toast,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';

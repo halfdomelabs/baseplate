@@ -5,7 +5,7 @@ import {
   createGeneratorTask,
   createProviderType,
   writeFormattedAction,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { projectScope } from '#src/providers/scopes.js';

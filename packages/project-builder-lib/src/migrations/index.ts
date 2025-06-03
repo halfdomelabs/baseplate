@@ -10,6 +10,7 @@ import { migration010HexToOklch } from './migration-010-hex-to-oklch.js';
 import { migration011PluginId } from './migration-011-plugin-id.js';
 import { migration012MigrateAuthConfig } from './migration-012-migrate-auth-config.js';
 import { migration013MoveGeneralSettings } from './migration-013-move-general-settings.js';
+import { migration014MigratePluginIds } from './migration-014-migrate-plugin-ids.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -21,6 +22,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration011PluginId,
   migration012MigrateAuthConfig,
   migration013MoveGeneralSettings,
+  migration014MigratePluginIds,
 ];
 
 export function isMigrateableProjectDefinition(

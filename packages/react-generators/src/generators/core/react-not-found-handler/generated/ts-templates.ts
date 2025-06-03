@@ -1,4 +1,4 @@
-import { createTsTemplateFile } from '@halfdomelabs/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
 import { reactComponentsImportsProvider } from '../../react-components/generated/ts-import-maps.js';
 

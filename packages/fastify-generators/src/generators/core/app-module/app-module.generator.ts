@@ -1,5 +1,5 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
-import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+import type { InferFieldMapSchemaFromBuilder } from '@baseplate-dev/utils';
 
 import {
   featureScope,
@@ -8,18 +8,18 @@ import {
   TsCodeUtils,
   tsImportBuilder,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createConfigFieldMap,
   createGenerator,
   createGeneratorTask,
   createProviderType,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import {
   createFieldMapSchemaBuilder,
   mapValuesOfMap,
   quot,
-} from '@halfdomelabs/utils';
+} from '@baseplate-dev/utils';
 import { camelCase, kebabCase } from 'change-case';
 import { z } from 'zod';
 

@@ -3,9 +3,10 @@ import type React from 'react';
 import {
   modelBaseSchema,
   modelTransformerEntityType,
-} from '@halfdomelabs/project-builder-lib';
-import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib';
+import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
 import {
+  FormActionBar,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -13,9 +14,8 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
   SwitchFieldController,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 
-import { FormActionBar } from '#src/components/index.js';
 import { registerEntityTypeUrl } from '#src/services/entity-type.js';
 
 import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig.js';

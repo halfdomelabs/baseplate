@@ -1,12 +1,12 @@
 import {
   nodeProvider,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import path from 'node:path';
 import { z } from 'zod';
 

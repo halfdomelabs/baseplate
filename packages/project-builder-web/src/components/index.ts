@@ -4,7 +4,6 @@ export * from './CollapsibleRow/CollapsibleRow.js';
 export * from './Console/Console.js';
 export * from './EmbeddedListInput/EmbeddedListInput.js';
 export * from './ErrorBoundary/ErrorBoundary.js';
-export * from './FormActionBar/FormActionBar.js';
 export * from './NotFoundCard/NotFoundCard.js';
 export * from './RefIssueDialog/RefIssueDialog.js';
 export * from './SortableList/SortableList.js';

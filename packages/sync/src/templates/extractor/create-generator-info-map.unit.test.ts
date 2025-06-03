@@ -9,7 +9,7 @@ vi.mock('node:fs/promises');
 describe('createGeneratorPathMap', () => {
   const outputDirectory = '/test/output';
   const generatorPackageMap = new Map([
-    ['@halfdomelabs/fastify-generators', '/test/packages/fastify-generators'],
+    ['@baseplate-dev/fastify-generators', '/test/packages/fastify-generators'],
   ]);
 
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('createGeneratorPathMap', () => {
   it('should create a map of generator names to paths', async () => {
     // Setup generator info file
     const generatorInfo = {
-      '@halfdomelabs/fastify-generators#core/readme':
+      '@baseplate-dev/fastify-generators#core/readme':
         'src/generators/core/readme',
     };
     vol.fromJSON({
@@ -39,9 +39,9 @@ describe('createGeneratorPathMap', () => {
     expect(result).toEqual(
       new Map([
         [
-          '@halfdomelabs/fastify-generators#core/readme',
+          '@baseplate-dev/fastify-generators#core/readme',
           {
-            name: '@halfdomelabs/fastify-generators#core/readme',
+            name: '@baseplate-dev/fastify-generators#core/readme',
             baseDirectory:
               '/test/packages/fastify-generators/src/generators/core/readme',
             packagePath: '/test/packages/fastify-generators',

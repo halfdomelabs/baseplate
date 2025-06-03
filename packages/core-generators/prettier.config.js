@@ -1,1 +1,1 @@
-export { default } from '@halfdomelabs/tools/prettier-node';
+export { default } from '@baseplate-dev/tools/prettier-node';

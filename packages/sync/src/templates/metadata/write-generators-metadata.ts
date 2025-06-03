@@ -1,5 +1,5 @@
-import { stringifyPrettyStable } from '@halfdomelabs/utils';
-import { findNearestPackageJson } from '@halfdomelabs/utils/node';
+import { stringifyPrettyStable } from '@baseplate-dev/utils';
+import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 

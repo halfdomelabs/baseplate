@@ -1,4 +1,4 @@
-import { mapGroupBy } from '@halfdomelabs/utils';
+import { mapGroupBy } from '@baseplate-dev/utils';
 import { camelCase, constantCase } from 'change-case';
 import pLimit from 'p-limit';
 
@@ -62,7 +62,7 @@ export class RawTemplateFileExtractor extends TemplateFileExtractor<
       generatorName,
       'raw-templates.ts',
       [
-        'import { createRawTemplateFile } from "@halfdomelabs/sync";',
+        'import { createRawTemplateFile } from "@baseplate-dev/sync";',
         ...results.map((result) => result.typescriptCodeBlock),
         `export const ${templatesVariableName} = {
           ${results.map((result) => result.typescriptExports).join(',')}

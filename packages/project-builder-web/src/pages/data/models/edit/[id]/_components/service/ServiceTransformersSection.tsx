@@ -1,14 +1,14 @@
 import type {
   ModelConfigInput,
   TransformerConfig,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 
 import {
   modelTransformerWebSpec,
   useProjectDefinition,
-} from '@halfdomelabs/project-builder-lib/web';
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   DropdownMenu,
@@ -26,7 +26,7 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
   useConfirmDialog,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdAdd, MdEdit, MdOutlineDelete } from 'react-icons/md';

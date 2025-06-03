@@ -1,4 +1,4 @@
-import { createProviderType, testAction } from '@halfdomelabs/sync';
+import { createProviderType, testAction } from '@baseplate-dev/sync';
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

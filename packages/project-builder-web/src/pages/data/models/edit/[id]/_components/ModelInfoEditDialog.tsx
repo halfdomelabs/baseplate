@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
   useControlledState,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 
 import { useModelForm } from '#src/pages/data/models/_hooks/useModelForm.js';
 

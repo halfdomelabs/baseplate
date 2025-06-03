@@ -1,4 +1,4 @@
-import { mapGroupBy } from '@halfdomelabs/utils';
+import { mapGroupBy } from '@baseplate-dev/utils';
 import { uniqBy } from 'es-toolkit';
 
 import type { TsImportDeclaration } from './types.js';

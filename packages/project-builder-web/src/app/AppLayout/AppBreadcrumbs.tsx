@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,8 +14,8 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@halfdomelabs/ui-components';
-import { notEmpty } from '@halfdomelabs/utils';
+} from '@baseplate-dev/ui-components';
+import { notEmpty } from '@baseplate-dev/utils';
 import { orderBy, upperFirst } from 'es-toolkit';
 import { Fragment } from 'react';
 import { MdKeyboardArrowDown } from 'react-icons/md';

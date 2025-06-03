@@ -15,6 +15,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      id-token: write
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -26,7 +27,7 @@ jobs:
           node-version-file: package.json
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
-          scope: '@halfdomelabs'
+          scope: '@baseplate-dev'
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 

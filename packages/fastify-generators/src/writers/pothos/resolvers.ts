@@ -1,13 +1,13 @@
 import type {
   TsCodeFragment,
   TsUtilsImportsProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 
 import {
   tsCodeFragment,
   TsCodeUtils,
   tsTemplate,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import { singularize } from 'inflection';
 
 import type {

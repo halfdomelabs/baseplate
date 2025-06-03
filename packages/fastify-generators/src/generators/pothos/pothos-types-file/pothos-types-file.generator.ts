@@ -1,15 +1,15 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   mergeFragmentsWithHoistedFragmentsPresorted,
   typescriptFileProvider,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-} from '@halfdomelabs/sync';
-import { NamedArrayFieldContainer } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { NamedArrayFieldContainer } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 

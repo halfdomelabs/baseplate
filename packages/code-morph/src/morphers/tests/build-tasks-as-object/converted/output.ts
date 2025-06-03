@@ -1,7 +1,7 @@
 // @ts-nocheck
 
-import type { AnyGeneratorTask, TaskRunContext } from '@halfdomelabs/sync';
-import type { InferFieldMapSchemaFromBuilder } from '@halfdomelabs/utils';
+import type { AnyGeneratorTask, TaskRunContext } from '@baseplate-dev/sync';
+import type { InferFieldMapSchemaFromBuilder } from '@baseplate-dev/utils';
 
 import {
   createConfigProviderTask,
@@ -9,11 +9,11 @@ import {
   createGeneratorTask,
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 import {
   createFieldMap,
   createFieldMapSchemaBuilder,
-} from '@halfdomelabs/utils';
+} from '@baseplate-dev/utils';
 import semver from 'semver';
 import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';

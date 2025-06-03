@@ -1,4 +1,4 @@
-import { enhanceErrorWithContext } from '@halfdomelabs/utils';
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import path from 'node:path';
 
 import type { BuilderAction } from '#src/output/builder-action.js';

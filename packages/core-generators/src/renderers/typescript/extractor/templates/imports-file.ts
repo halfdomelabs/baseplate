@@ -1,5 +1,5 @@
 export const IMPORTS_FILE_TEMPLATE = `
-import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 
 import type { TsImportMapProviderFromSchema } from 'TPL_TS_IMPORTS';
 

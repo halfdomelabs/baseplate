@@ -1,4 +1,4 @@
-import { toposortLocal } from '@halfdomelabs/utils';
+import { toposortLocal } from '@baseplate-dev/utils';
 import { isEqual, keyBy, uniqWith } from 'es-toolkit';
 
 import type { TsImportDeclaration } from '../imports/types.js';

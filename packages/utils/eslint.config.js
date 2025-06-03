@@ -1,3 +1,3 @@
-import eslintNode from '@halfdomelabs/tools/eslint-node';
+import eslintNode from '@baseplate-dev/tools/eslint-node';
 
 export default [...eslintNode];

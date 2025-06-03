@@ -1,6 +1,6 @@
 import type { ResolverFactory } from 'oxc-resolver';
 
-import { TemplateFileExtractorTestUtils } from '@halfdomelabs/sync';
+import { TemplateFileExtractorTestUtils } from '@baseplate-dev/sync';
 import { vol } from 'memfs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -127,7 +127,7 @@ const removedVar = 1;
     // 2. Check the generated definition file content
     expect(result[generatedDefinitionPath]).toBeDefined();
     expect(result[generatedDefinitionPath]).toMatchInlineSnapshot(`
-      "import { createTsTemplateFile } from '@halfdomelabs/core-generators';
+      "import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
       const myComponentTemplate = createTsTemplateFile({
         name: 'myComponentTemplate',
@@ -212,13 +212,13 @@ const removedVar = 1;
 
     // Snapshot the imports file for detailed verification
     expect(result[generatedImportsPath]).toMatchInlineSnapshot(`
-      "import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
+      "import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generators';
 
       import {
         createTsImportMap,
         createTsImportMapSchema,
-      } from '@halfdomelabs/core-generators';
-      import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+      } from '@baseplate-dev/core-generators';
+      import { createReadOnlyProviderType } from '@baseplate-dev/sync';
       import path from 'node:path/posix';
 
       const testGeneratorImportsSchema = createTsImportMapSchema({
@@ -389,13 +389,13 @@ export function SecondUtil() {
     expect(result[secondGeneratorImportsPath]).toContain('SecondUtil');
 
     expect(result[firstGeneratorImportsPath]).toMatchInlineSnapshot(`
-      "import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
+      "import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generators';
 
       import {
         createTsImportMap,
         createTsImportMapSchema,
-      } from '@halfdomelabs/core-generators';
-      import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+      } from '@baseplate-dev/core-generators';
+      import { createReadOnlyProviderType } from '@baseplate-dev/sync';
       import path from 'node:path/posix';
 
       const testGeneratorImportsSchema = createTsImportMapSchema({
@@ -560,13 +560,13 @@ export function GroupedUtil() {
 
     // Snapshot the imports file for detailed verification
     expect(result[generatedImportsPath]).toMatchInlineSnapshot(`
-      "import type { TsImportMapProviderFromSchema } from '@halfdomelabs/core-generators';
+      "import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generators';
 
       import {
         createTsImportMap,
         createTsImportMapSchema,
-      } from '@halfdomelabs/core-generators';
-      import { createReadOnlyProviderType } from '@halfdomelabs/sync';
+      } from '@baseplate-dev/core-generators';
+      import { createReadOnlyProviderType } from '@baseplate-dev/sync';
       import path from 'node:path/posix';
 
       const componentsImportsSchema = createTsImportMapSchema({

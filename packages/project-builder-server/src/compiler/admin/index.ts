@@ -2,16 +2,16 @@ import type {
   AdminAppConfig,
   AppEntry,
   ProjectDefinitionContainer,
-} from '@halfdomelabs/project-builder-lib';
-import type { AdminLayoutLinkItem } from '@halfdomelabs/react-generators';
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+} from '@baseplate-dev/project-builder-lib';
+import type { AdminLayoutLinkItem } from '@baseplate-dev/react-generators';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
-import { composeNodeGenerator } from '@halfdomelabs/core-generators';
+import { composeNodeGenerator } from '@baseplate-dev/core-generators';
 import {
   adminAppEntryType,
   AppUtils,
   FeatureUtils,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import {
   adminBullBoardGenerator,
   adminComponentsGenerator,
@@ -27,8 +27,8 @@ import {
   reactRouterGenerator,
   reactSentryGenerator,
   reactTailwindGenerator,
-} from '@halfdomelabs/react-generators';
-import { safeMerge } from '@halfdomelabs/utils';
+} from '@baseplate-dev/react-generators';
+import { safeMerge } from '@baseplate-dev/utils';
 import { capitalize } from 'inflection';
 
 import { dasherizeCamel, titleizeCamel } from '#src/utils/case.js';

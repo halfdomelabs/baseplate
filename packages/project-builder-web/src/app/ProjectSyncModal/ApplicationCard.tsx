@@ -1,7 +1,7 @@
 import type {
   FileWithConflict,
   PackageSyncInfo,
-} from '@halfdomelabs/project-builder-server';
+} from '@baseplate-dev/project-builder-server';
 import type React from 'react';
 
 import {
@@ -17,7 +17,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import {
   MdCancel,

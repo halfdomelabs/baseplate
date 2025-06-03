@@ -1,5 +1,5 @@
-import { tsCodeFragment } from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
+import { tsCodeFragment } from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { prismaCrudServiceSetupProvider } from '#src/generators/prisma/prisma-crud-service/prisma-crud-service.generator.js';

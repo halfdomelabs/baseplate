@@ -1,14 +1,14 @@
 {
-  "name": "@halfdomelabs/project-builder-cli",
-  "version": "0.9.17",
+  "name": "@baseplate-dev/project-builder-cli",
+  "version": "0.1.2",
   "description": "Full-stack CLI builder using Baseplate generators",
-  "homepage": "https://www.halfdomelabs.com/",
+  "homepage": "https://www.baseplate.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
     "directory": "packages/project-builder-cli"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MPL-2.0",
   "author": "Half Dome Labs LLC",
   "type": "module",
   "imports": {
@@ -19,34 +19,37 @@
   },
   "main": "dist/index.js",
   "bin": {
-    "baseplate": "./scripts/baseplate.js"
+    "baseplate": "./bin/baseplate.js"
   },
   "files": [
+    "README.md",
     "LICENSE",
     "CHANGELOG",
     "dist/**/*",
-    "scripts/**/*"
+    "!dist/**/*.d.ts.map",
+    "!dist/**/*.tsbuildinfo",
+    "bin/**/*"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "dev": "tsx watch --tsconfig ./tsconfig.app.json --exclude /**/node_modules/** -r dotenv/config -C development ./src",
+    "dev": "tsx watch --tsconfig ./tsconfig.app.json --exclude /**/node_modules/** -r dotenv/config -C development ./src/cli.ts",
     "dev:serve": "pnpm dev serve",
     "extract:templates": "pnpm start extract-templates",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "start": "tsx --tsconfig ./tsconfig.app.json -r dotenv/config -C development ./src",
+    "start": "tsx --tsconfig ./tsconfig.app.json -r dotenv/config -C development ./src/cli.ts",
     "test": "vitest",
     "test:e2e": "playwright test",
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
-    "@halfdomelabs/project-builder-common": "workspace:*",
-    "@halfdomelabs/project-builder-lib": "workspace:*",
-    "@halfdomelabs/project-builder-server": "workspace:*",
-    "@halfdomelabs/project-builder-web": "workspace:*",
-    "@halfdomelabs/utils": "workspace:*",
+    "@baseplate-dev/project-builder-common": "workspace:*",
+    "@baseplate-dev/project-builder-lib": "workspace:*",
+    "@baseplate-dev/project-builder-server": "workspace:*",
+    "@baseplate-dev/project-builder-web": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
     "commander": "^12.1.0",
     "pino": "9.5.0",
     "pino-pretty": "13.0.0",
@@ -54,7 +57,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
+    "@baseplate-dev/tools": "workspace:*",
     "@playwright/test": "1.51.0",
     "@types/node": "catalog:",
     "dotenv": "^16.0.3",
@@ -72,6 +75,7 @@
     "extends": "../../package.json"
   },
   "publishConfig": {
-    "access": "restricted"
+    "access": "public",
+    "provenance": true
   }
 }

@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   InputField,
@@ -8,7 +8,7 @@ import {
   NavigationMenuItemWithLink,
   NavigationMenuList,
   ScrollArea,
-} from '@halfdomelabs/ui-components';
+} from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
 import { sortBy } from 'es-toolkit';
 import { useState } from 'react';

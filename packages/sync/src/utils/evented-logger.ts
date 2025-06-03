@@ -1,4 +1,4 @@
-import { createTypedEventEmitter } from '@halfdomelabs/utils';
+import { createTypedEventEmitter } from '@baseplate-dev/utils';
 
 export interface Logger {
   error(message: unknown): void;

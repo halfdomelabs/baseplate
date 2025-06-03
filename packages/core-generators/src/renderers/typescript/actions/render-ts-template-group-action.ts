@@ -3,8 +3,8 @@ import {
   normalizePathToProjectPath,
   type ProviderType,
   type WriteFileOptions,
-} from '@halfdomelabs/sync';
-import { enhanceErrorWithContext } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { mapValues } from 'es-toolkit';
 import path from 'node:path';
 

@@ -1,4 +1,4 @@
-import type { GeneratorBundle } from '@halfdomelabs/sync';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 export interface AppEntry {
   id: string;

@@ -1,4 +1,4 @@
-import { createTsImportMap } from '@halfdomelabs/core-generators';
+import { createTsImportMap } from '@baseplate-dev/core-generators';
 import path from 'node:path/posix';
 
 import type { AuthHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';

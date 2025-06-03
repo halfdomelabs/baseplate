@@ -1,7 +1,7 @@
 import type {
   TsCodeFragment,
   TsHoistedFragment,
-} from '@halfdomelabs/core-generators';
+} from '@baseplate-dev/core-generators';
 
 import {
   tsCodeFragment,
@@ -9,9 +9,9 @@ import {
   tsHoistedFragment,
   tsTemplate,
   tsTypeImportBuilder,
-} from '@halfdomelabs/core-generators';
-import { createGenerator, createGeneratorTask } from '@halfdomelabs/sync';
-import { notEmpty, quot } from '@halfdomelabs/utils';
+} from '@baseplate-dev/core-generators';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { notEmpty, quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import type {

@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import { handleFileNotFoundError } from '@halfdomelabs/utils/node';
+import { handleFileNotFoundError } from '@baseplate-dev/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 

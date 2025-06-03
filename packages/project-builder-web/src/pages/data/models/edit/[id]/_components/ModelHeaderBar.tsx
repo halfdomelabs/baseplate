@@ -1,9 +1,9 @@
-import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, useConfirmDialog } from '@halfdomelabs/ui-components';
+import { FeatureUtils } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import { Button, useConfirmDialog } from '@baseplate-dev/ui-components';
 import { clsx } from 'clsx';
 import { MdDeleteOutline, MdEdit } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';

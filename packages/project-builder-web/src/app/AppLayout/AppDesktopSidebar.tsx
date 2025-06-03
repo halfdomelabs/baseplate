@@ -1,4 +1,4 @@
-import type { IconElement } from '@halfdomelabs/ui-components';
+import type { IconElement } from '@baseplate-dev/ui-components';
 import type React from 'react';
 
 import { HiDatabase } from 'react-icons/hi';

@@ -1,13 +1,13 @@
 import type {
   ModelConfigInput,
   ScalarFieldType,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { SCALAR_FIELD_TYPES } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { ComboboxField } from '@halfdomelabs/ui-components';
+import { SCALAR_FIELD_TYPES } from '@baseplate-dev/project-builder-lib';
+import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import { ComboboxField } from '@baseplate-dev/ui-components';
 import { useController } from 'react-hook-form';
 
 import type { ScalarFieldTypeOption } from '../../../../_constants.js';

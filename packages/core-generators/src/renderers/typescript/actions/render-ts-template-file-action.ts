@@ -3,13 +3,13 @@ import type {
   GeneratorInfo,
   Provider,
   WriteFileOptions,
-} from '@halfdomelabs/sync';
+} from '@baseplate-dev/sync';
 
 import {
   normalizePathToProjectPath,
   readTemplateFileSource,
-} from '@halfdomelabs/sync';
-import { differenceSet } from '@halfdomelabs/utils';
+} from '@baseplate-dev/sync';
+import { differenceSet } from '@baseplate-dev/utils';
 
 import type { TsPositionedHoistedFragment } from '../fragments/types.js';
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';

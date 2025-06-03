@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { ErrorableLoader } from '@halfdomelabs/ui-components';
+import { ErrorableLoader } from '@baseplate-dev/ui-components';
 import { useEffect, useState } from 'react';
 
 import { useProjects } from '#src/hooks/useProjects.js';

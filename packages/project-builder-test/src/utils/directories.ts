@@ -1,4 +1,4 @@
-import { findNearestPackageJson } from '@halfdomelabs/utils/node';
+import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import path from 'node:path';
 
 export async function getTestsDirectory(): Promise<string> {

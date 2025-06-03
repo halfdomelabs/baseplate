@@ -1,4 +1,4 @@
-import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
+import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 
 import {
   createPluginImplementationStore,
@@ -7,7 +7,7 @@ import {
   runPluginMigrations,
   runSchemaMigrations,
   SchemaMigrationError,
-} from '@halfdomelabs/project-builder-lib';
+} from '@baseplate-dev/project-builder-lib';
 import { ZodError } from 'zod';
 
 import { formatZodError, UserVisibleError } from '#src/utils/error.js';

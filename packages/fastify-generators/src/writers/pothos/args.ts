@@ -1,7 +1,7 @@
-import type { TsCodeFragment } from '@halfdomelabs/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { TsCodeUtils, tsTemplate } from '@halfdomelabs/core-generators';
-import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
+import { TsCodeUtils, tsTemplate } from '@baseplate-dev/core-generators';
+import { safeMergeAllWithOptions } from '@baseplate-dev/utils';
 
 import type {
   ServiceOutputDtoField,

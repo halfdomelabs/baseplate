@@ -96,7 +96,7 @@ export default createTypescriptMorpher({
 
     // Add imports for all the subcomponents we found
     if (subcomponentReferences.size > 0) {
-      addOrUpdateImport(sourceFile, '@halfdomelabs/ui-components', [
+      addOrUpdateImport(sourceFile, '@baseplate-dev/ui-components', [
         ...subcomponentReferences,
       ]);
     }
