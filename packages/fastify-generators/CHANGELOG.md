@@ -1,5 +1,16 @@
 # @baseplate-dev/fastify-generators
 
+## 0.1.3
+
+### Patch Changes
+
+- [#562](https://github.com/halfdomelabs/baseplate/pull/562) [`30fdf49`](https://github.com/halfdomelabs/baseplate/commit/30fdf4988de244c30d13c93b7761587d4c1413ad) Thanks [@kingston](https://github.com/kingston)! - Switch to Typescript project references for building/watching project
+
+- Updated dependencies [[`30fdf49`](https://github.com/halfdomelabs/baseplate/commit/30fdf4988de244c30d13c93b7761587d4c1413ad)]:
+  - @baseplate-dev/core-generators@0.1.3
+  - @baseplate-dev/utils@0.1.3
+  - @baseplate-dev/sync@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes
