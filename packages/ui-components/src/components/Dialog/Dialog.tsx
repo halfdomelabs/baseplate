@@ -10,6 +10,10 @@ import { cn } from '#src/utils/index.js';
 /**
  * A window overlaid on either the primary window or another dialog window, rendering the content underneath inert.
  *
+ * ShadCN changes:
+ * - Added custom width property to specify the width of the dialog.
+ * - Added max-h-[90vh] overflow-y-auto to ensure the dialog is scrollable.
+ *
  * https://ui.shadcn.com/docs/components/dialog
  */
 function Dialog({
@@ -68,6 +72,7 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           'fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+          'max-h-[90vh] overflow-y-auto', // ensure the dialog is scrollable
           width === 'sm' && 'sm:max-w-md',
           width === 'md' && 'sm:max-w-lg',
           width === 'lg' && 'sm:max-w-4xl',
