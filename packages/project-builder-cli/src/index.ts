@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { program } from 'commander';
 
 import { addBuildCommand } from './commands/build.js';
@@ -7,10 +5,13 @@ import { addConfigCommand } from './commands/config.js';
 import { addExtractTemplatesCommand } from './commands/extract-templates.js';
 import { addServeCommand } from './commands/server.js';
 import { getEnabledFeatureFlags } from './services/feature-flags.js';
-import { logger } from './services/logger.js';
 import { getPackageVersion } from './utils/version.js';
 
-async function runMain(): Promise<void> {
+/**
+ * This is the entry point for the CLI. It is used to parse the command line
+ * arguments and execute the appropriate command.
+ */
+export async function runCli(): Promise<void> {
   const version = await getPackageVersion();
   const enabledFlags = getEnabledFeatureFlags();
 
@@ -25,10 +26,4 @@ async function runMain(): Promise<void> {
   addConfigCommand(program);
 
   await program.parseAsync(process.argv);
-}
-
-try {
-  await runMain();
-} catch (err) {
-  logger.error(err);
 }
