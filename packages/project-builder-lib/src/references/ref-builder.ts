@@ -384,7 +384,7 @@ export class ZodRefBuilder<TInput> {
       ? this._constructPathWithoutPrefix(entity.idPath as PathInput<TInput>)
       : [...this._constructPathWithoutPrefix(entity.path), 'id'];
 
-    // TODO [>=0.9.16] Remove the fallback to generateNewId once a new version is released and manual setter
+    // TODO [>=0.2.0] Remove the fallback to generateNewId once we've released a new major verison.
     const id =
       (get(this.data, idPath) as string | undefined) ??
       entity.type.generateNewId();
