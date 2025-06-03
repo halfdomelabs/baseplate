@@ -48,7 +48,7 @@ describe('generateForDirectory', () => {
       '/test-base/test-app/package.json': JSON.stringify({
         name: 'test-app',
       }),
-      '/test-base/test-app/baseplate/.clean/file1.txt': 'original content',
+      '/test-base/test-app/baseplate/generated/file1.txt': 'original content',
       '/test-base/test-app/baseplate/file-id-map.json': JSON.stringify({
         file1: 'file1.txt',
       }),
@@ -160,7 +160,7 @@ describe('generateForDirectory', () => {
       '/test-base/test-app/package.json': JSON.stringify({
         name: 'test-app',
       }),
-      '/test-base/test-app/baseplate/.clean/conflict.txt': 'original content',
+      '/test-base/test-app/baseplate/generated/conflict.txt': 'original content',
       '/test-base/test-app/baseplate/file-id-map.json': JSON.stringify({
         file1: 'conflict.txt',
       }),
@@ -272,7 +272,7 @@ describe('generateForDirectory', () => {
       '/test-base/test-app/package.json': JSON.stringify({
         name: 'test-app',
       }),
-      '/test-base/test-app/baseplate/.clean/file1.txt': 'original content',
+      '/test-base/test-app/baseplate/generated/file1.txt': 'original content',
       '/test-base/test-app/baseplate/file-id-map.json': JSON.stringify({
         file1: 'file1.txt',
       }),
@@ -344,7 +344,360 @@ describe('generateForDirectory', () => {
     });
 
     expect(
-      vol.readFileSync('/test-base/test-app/baseplate/.clean/file1.txt'),
+      vol.readFileSync('/test-base/test-app/baseplate/generated/file1.txt'),
     ).toEqual(Buffer.from('new content'));
+  });
+});
+
+describe('generateForDirectory with migration', () => {
+  beforeEach(() => {
+    vol.reset();
+    vi.clearAllMocks();
+  });
+
+  const createMockOperations = (): MockedObject<GeneratorOperations> => ({
+    buildGeneratorEntry: vi.fn(),
+    executeGeneratorEntry: vi.fn(),
+    getPreviousGeneratedPayload: vi.fn(),
+    writeGeneratorOutput: vi.fn(),
+    writeMetadata: vi.fn().mockResolvedValue(undefined),
+    writeGeneratorSteps: vi.fn().mockResolvedValue(undefined),
+  });
+
+  const testAppEntry: AppEntry = {
+    id: 'test-app-id',
+    name: 'test-app',
+    appDirectory: 'test-app',
+    generatorBundle: {
+      name: 'test-generator',
+      directory: '/test',
+      tasks: {},
+      children: {},
+      scopes: [],
+    },
+  };
+
+  const baseDirectory = '/test-base';
+  const projectDirectory = path.join(baseDirectory, testAppEntry.appDirectory);
+  const defaultUserConfig = { sync: { writeGeneratorStepsJson: false } };
+
+  it('should migrate .clean directory if only .clean exists', async () => {
+    const testLogger = createTestLogger();
+    const mockOperations = createMockOperations();
+
+    const testFs = {
+      [path.join(projectDirectory, 'baseplate/.clean/original.txt')]:
+        'old content',
+      [path.join(projectDirectory, 'baseplate/file-id-map.json')]:
+        JSON.stringify({ 'original.txt': 'original.txt' }),
+    };
+    vol.fromJSON(testFs, '/');
+
+    mockOperations.buildGeneratorEntry.mockResolvedValue(mockGeneratorEntry);
+    mockOperations.executeGeneratorEntry.mockResolvedValue({
+      files: new Map([
+        [
+          'output_file.txt',
+          { contents: Buffer.from('final output'), id: 'output_file.txt' },
+        ],
+      ]),
+      postWriteCommands: [],
+      globalFormatters: [],
+      metadata: {
+        generatorProviderRelationships: [],
+        generatorTaskEntries: [],
+      },
+    });
+
+    // getPreviousGeneratedPayload is called AFTER migration
+    mockOperations.getPreviousGeneratedPayload.mockResolvedValue({
+      fileReader: createCodebaseFileReaderFromDirectory(
+        path.join(projectDirectory, 'baseplate/generated'),
+      ),
+      fileIdToRelativePathMap: new Map([['original.txt', 'original.txt']]),
+    });
+
+    mockOperations.writeGeneratorOutput.mockImplementation(
+      async (_output, _outputDir, { generatedContentsDirectory }) => {
+        if (generatedContentsDirectory) {
+          await vol.promises.writeFile(
+            path.join(generatedContentsDirectory, 'output_file.txt'),
+            'final output',
+          );
+        }
+        return {
+          fileIdToRelativePathMap: new Map([
+            ['output_file.txt', 'output_file.txt'],
+          ]),
+          filesWithConflicts: [],
+          failedCommands: [],
+        };
+      },
+    );
+
+    await generateForDirectory({
+      baseDirectory,
+      appEntry: testAppEntry,
+      logger: testLogger,
+      userConfig: defaultUserConfig,
+      previousPackageSyncResult: undefined,
+      operations: mockOperations,
+    });
+
+    expect(
+      vol.existsSync(path.join(projectDirectory, 'baseplate/.clean')),
+    ).toBe(false);
+    expect(
+      vol.existsSync(
+        path.join(projectDirectory, 'baseplate/generated/original.txt'),
+      ),
+    ).toBe(true);
+    expect(
+      vol.existsSync(
+        path.join(projectDirectory, 'baseplate/generated/output_file.txt'),
+      ),
+    ).toBe(true);
+    expect(testLogger.getInfoOutput()).toContain(
+      'Migrating legacy .clean directory to baseplate/generated...',
+    );
+  });
+
+  it('should not migrate if only generated directory exists', async () => {
+    const testLogger = createTestLogger();
+    const mockOperations = createMockOperations();
+
+    const testFs = {
+      [path.join(projectDirectory, 'baseplate/generated/existing.txt')]:
+        'new content',
+      [path.join(projectDirectory, 'baseplate/file-id-map.json')]:
+        JSON.stringify({ 'existing.txt': 'existing.txt' }),
+    };
+    vol.fromJSON(testFs, '/');
+
+    mockOperations.buildGeneratorEntry.mockResolvedValue(mockGeneratorEntry);
+    mockOperations.executeGeneratorEntry.mockResolvedValue({
+      files: new Map([
+        [
+          'output_file.txt',
+          { contents: Buffer.from('final output'), id: 'output_file.txt' },
+        ],
+      ]),
+      postWriteCommands: [],
+      globalFormatters: [],
+      metadata: {
+        generatorProviderRelationships: [],
+        generatorTaskEntries: [],
+      },
+    });
+    mockOperations.getPreviousGeneratedPayload.mockResolvedValue({
+      fileReader: createCodebaseFileReaderFromDirectory(
+        path.join(projectDirectory, 'baseplate/generated'),
+      ),
+      fileIdToRelativePathMap: new Map([['existing.txt', 'existing.txt']]),
+    });
+    mockOperations.writeGeneratorOutput.mockImplementation(
+      async (_output, _outputDir, { generatedContentsDirectory }) => {
+        if (generatedContentsDirectory) {
+          await vol.promises.writeFile(
+            path.join(generatedContentsDirectory, 'output_file.txt'),
+            'final output',
+          );
+        }
+        return {
+          fileIdToRelativePathMap: new Map([
+            ['output_file.txt', 'output_file.txt'],
+          ]),
+          filesWithConflicts: [],
+          failedCommands: [],
+        };
+      },
+    );
+
+    await generateForDirectory({
+      baseDirectory,
+      appEntry: testAppEntry,
+      logger: testLogger,
+      userConfig: defaultUserConfig,
+      previousPackageSyncResult: undefined,
+      operations: mockOperations,
+    });
+
+    expect(
+      vol.existsSync(path.join(projectDirectory, 'baseplate/.clean')),
+    ).toBe(false);
+    expect(
+      vol.existsSync(
+        path.join(projectDirectory, 'baseplate/generated/existing.txt'),
+      ),
+    ).toBe(true);
+    expect(
+      vol.existsSync(
+        path.join(projectDirectory, 'baseplate/generated/output_file.txt'),
+      ),
+    ).toBe(true);
+    expect(testLogger.getInfoOutput()).not.toContain(
+      'Migrating legacy .clean directory',
+    );
+  });
+
+  it('should attempt migration and warn if both .clean and generated exist', async () => {
+    const testLogger = createTestLogger();
+    const mockOperations = createMockOperations();
+
+    const testFs = {
+      [path.join(projectDirectory, 'baseplate/.clean/original_old.txt')]:
+        'old content',
+      [path.join(projectDirectory, 'baseplate/generated/existing_new.txt')]:
+        'new content',
+      [path.join(projectDirectory, 'baseplate/file-id-map.json')]:
+        JSON.stringify({ 'existing_new.txt': 'existing_new.txt' }),
+    };
+    vol.fromJSON(testFs, '/');
+
+    mockOperations.buildGeneratorEntry.mockResolvedValue(mockGeneratorEntry);
+    mockOperations.executeGeneratorEntry.mockResolvedValue({
+      files: new Map([
+        [
+          'output_file.txt',
+          { contents: Buffer.from('final output'), id: 'output_file.txt' },
+        ],
+      ]),
+      postWriteCommands: [],
+      globalFormatters: [],
+      metadata: {
+        generatorProviderRelationships: [],
+        generatorTaskEntries: [],
+      },
+    });
+    // getPreviousGeneratedPayload will be called with the new dir because it exists
+    mockOperations.getPreviousGeneratedPayload.mockResolvedValue({
+      fileReader: createCodebaseFileReaderFromDirectory(
+        path.join(projectDirectory, 'baseplate/generated'),
+      ),
+      fileIdToRelativePathMap: new Map([
+        ['existing_new.txt', 'existing_new.txt'],
+      ]),
+    });
+    mockOperations.writeGeneratorOutput.mockImplementation(
+      async (_output, _outputDir, { generatedContentsDirectory }) => {
+        if (generatedContentsDirectory) {
+          // Simulate writing a new file, existing_new.txt would be handled by merge logic (not tested here)
+          await vol.promises.writeFile(
+            path.join(generatedContentsDirectory, 'output_file.txt'),
+            'final output',
+          );
+        }
+        return {
+          fileIdToRelativePathMap: new Map([
+            ['output_file.txt', 'output_file.txt'],
+            // if existing_new.txt was part of output, it'd be here too
+          ]),
+          filesWithConflicts: [],
+          failedCommands: [],
+        };
+      },
+    );
+
+    await generateForDirectory({
+      baseDirectory,
+      appEntry: testAppEntry,
+      logger: testLogger,
+      userConfig: defaultUserConfig,
+      previousPackageSyncResult: undefined,
+      operations: mockOperations,
+    });
+
+    expect(
+      vol.existsSync(
+        path.join(projectDirectory, 'baseplate/generated/existing_new.txt'),
+      ),
+    ).toBe(true);
+    // .clean should still exist because rename would fail as 'generated' already exists
+    expect(
+      vol.existsSync(
+        path.join(projectDirectory, 'baseplate/.clean/original_old.txt'),
+      ),
+    ).toBe(true);
+    // original_old.txt should not have been moved to the generated directory
+    expect(
+      vol.existsSync(
+        path.join(projectDirectory, 'baseplate/generated/original_old.txt'),
+      ),
+    ).toBe(false);
+    expect(
+      vol.existsSync(
+        path.join(projectDirectory, 'baseplate/generated/output_file.txt'),
+      ),
+    ).toBe(true);
+    expect(testLogger.getWarnOutput()).toContain(
+      'Failed to migrate .clean directory',
+    );
+  });
+
+  it('should not attempt migration if neither directory exists', async () => {
+    const testLogger = createTestLogger();
+    const mockOperations = createMockOperations();
+
+    const testFs = {
+      [path.join(projectDirectory, 'someotherfile.txt')]: 'content',
+      // No file-id-map.json, as no previous generated dir
+    };
+    vol.fromJSON(testFs, '/');
+
+    mockOperations.buildGeneratorEntry.mockResolvedValue(mockGeneratorEntry);
+    mockOperations.executeGeneratorEntry.mockResolvedValue({
+      files: new Map([
+        [
+          'output_file.txt',
+          { contents: Buffer.from('final output'), id: 'output_file.txt' },
+        ],
+      ]),
+      postWriteCommands: [],
+      globalFormatters: [],
+      metadata: {
+        generatorProviderRelationships: [],
+        generatorTaskEntries: [],
+      },
+    });
+    // getPreviousGeneratedPayload is called, but will return undefined
+    mockOperations.getPreviousGeneratedPayload.mockResolvedValue(undefined);
+    mockOperations.writeGeneratorOutput.mockImplementation(
+      async (_output, _outputDir, { generatedContentsDirectory }) => {
+        if (generatedContentsDirectory) {
+          await vol.promises.writeFile(
+            path.join(generatedContentsDirectory, 'output_file.txt'),
+            'final output',
+          );
+        }
+        return {
+          fileIdToRelativePathMap: new Map([
+            ['output_file.txt', 'output_file.txt'],
+          ]),
+          filesWithConflicts: [],
+          failedCommands: [],
+        };
+      },
+    );
+
+    await generateForDirectory({
+      baseDirectory,
+      appEntry: testAppEntry,
+      logger: testLogger,
+      userConfig: defaultUserConfig,
+      previousPackageSyncResult: undefined,
+      operations: mockOperations,
+    });
+
+    expect(
+      vol.existsSync(path.join(projectDirectory, 'baseplate/.clean')),
+    ).toBe(false);
+    expect(
+      vol.existsSync(
+        path.join(projectDirectory, 'baseplate/generated/output_file.txt'),
+      ),
+    ).toBe(true); // Normal generation occurred
+    expect(testLogger.getInfoOutput()).not.toContain(
+      'Migrating legacy .clean directory',
+    );
   });
 });
