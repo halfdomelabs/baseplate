@@ -1,5 +1,18 @@
 # @baseplate-dev/project-builder-cli
 
+## 0.1.3
+
+### Patch Changes
+
+- [#562](https://github.com/halfdomelabs/baseplate/pull/562) [`30fdf49`](https://github.com/halfdomelabs/baseplate/commit/30fdf4988de244c30d13c93b7761587d4c1413ad) Thanks [@kingston](https://github.com/kingston)! - Switch to Typescript project references for building/watching project
+
+- Updated dependencies [[`8631cfe`](https://github.com/halfdomelabs/baseplate/commit/8631cfec32f1e5286d6d1ab0eb0e858461672545), [`30fdf49`](https://github.com/halfdomelabs/baseplate/commit/30fdf4988de244c30d13c93b7761587d4c1413ad)]:
+  - @baseplate-dev/project-builder-lib@0.1.3
+  - @baseplate-dev/project-builder-web@0.1.3
+  - @baseplate-dev/project-builder-server@0.1.3
+  - @baseplate-dev/utils@0.1.3
+  - @baseplate-dev/project-builder-common@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes

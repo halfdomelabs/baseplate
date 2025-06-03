@@ -1,5 +1,21 @@
 # @baseplate-dev/plugin-auth
 
+## 0.1.3
+
+### Patch Changes
+
+- [#564](https://github.com/halfdomelabs/baseplate/pull/564) [`8631cfe`](https://github.com/halfdomelabs/baseplate/commit/8631cfec32f1e5286d6d1ab0eb0e858461672545) Thanks [@kingston](https://github.com/kingston)! - Add support for merging GraphQL object type requierments from Auth/Storage plugins
+
+- [#562](https://github.com/halfdomelabs/baseplate/pull/562) [`30fdf49`](https://github.com/halfdomelabs/baseplate/commit/30fdf4988de244c30d13c93b7761587d4c1413ad) Thanks [@kingston](https://github.com/kingston)! - Switch to Typescript project references for building/watching project
+
+- Updated dependencies [[`8631cfe`](https://github.com/halfdomelabs/baseplate/commit/8631cfec32f1e5286d6d1ab0eb0e858461672545), [`30fdf49`](https://github.com/halfdomelabs/baseplate/commit/30fdf4988de244c30d13c93b7761587d4c1413ad)]:
+  - @baseplate-dev/project-builder-lib@0.1.3
+  - @baseplate-dev/fastify-generators@0.1.3
+  - @baseplate-dev/react-generators@0.1.3
+  - @baseplate-dev/core-generators@0.1.3
+  - @baseplate-dev/ui-components@0.1.3
+  - @baseplate-dev/sync@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes
