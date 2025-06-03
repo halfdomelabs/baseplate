@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - [#562](https://github.com/halfdomelabs/baseplate/pull/562) [`30fdf49`](https://github.com/halfdomelabs/baseplate/commit/30fdf4988de244c30d13c93b7761587d4c1413ad) Thanks [@kingston](https://github.com/kingston)! - Switch to Typescript project references for building/watching project
+- [#566](https://github.com/halfdomelabs/baseplate/pull/566)[`6e853b5`](https://github.com/halfdomelabs/baseplate/commit/6e853b5765ea0830904cd132274f49872a61b3f8) Thanks [@kingston](https://github.com/kingston)! - Move the clean folder from `baseplate/.clean` to `baseplate/generated`
 
 - Updated dependencies [[`8631cfe`](https://github.com/halfdomelabs/baseplate/commit/8631cfec32f1e5286d6d1ab0eb0e858461672545), [`30fdf49`](https://github.com/halfdomelabs/baseplate/commit/30fdf4988de244c30d13c93b7761587d4c1413ad)]:
   - @baseplate-dev/project-builder-lib@0.1.3
