@@ -13,32 +13,34 @@
   },
   "exports": {
     ".": "./dist/index.js",
-    "./base-styles.css": "./src/base-styles.css",
-    "./theme.css": "./src/theme.css",
-    "./utilities.css": "./src/utilities.css"
+    "./base-styles.css": "./dist/base-styles.css",
+    "./theme.css": "./dist/theme.css",
+    "./utilities.css": "./dist/utilities.css"
   },
   "main": "./dist/index.js",
   "files": [
+    "README.md",
     "LICENSE",
-    "dist/**/*",
     "CHANGELOG",
-    "tailwind.config.ts",
-    "./src/theme.css",
-    "!dist/**/*.d.ts.map"
+    "dist/**/*",
+    "!dist/**/*.d.ts.map",
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
-    "build": "pnpm build:lib",
-    "build:lib": "tsc -p tsconfig.build.json",
-    "build:storybook": "storybook build",
+    "build": "pnpm build:tsc && pnpm build:css",
+    "build:css": "cpx \"src/**/*.css\" dist --clean",
+    "build:tsc": "tsc -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
-    "dev:storybook": "storybook dev -p 6006",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
+    "storybook:build": "storybook build",
+    "storybook:dev": "storybook dev -p 6006",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "watch": "pnpm build:css --watch"
   },
   "browserslist": {
     "production": [
@@ -103,6 +105,7 @@
     "@testing-library/user-event": "14.6.1",
     "@types/node": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "cpx2": "catalog:",
     "eslint": "catalog:",
     "jsdom": "26.0.0",
     "prettier": "catalog:",
