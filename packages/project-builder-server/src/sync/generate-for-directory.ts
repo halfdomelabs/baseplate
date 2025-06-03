@@ -100,7 +100,10 @@ async function getPreviousGeneratedFileIdMap(
   }
 }
 
-async function migrateCleanDirectory(projectDirectory: string, logger: Logger): Promise<void> {
+async function migrateCleanDirectory(
+  projectDirectory: string,
+  logger: Logger,
+): Promise<void> {
   const oldDirectory = path.join(projectDirectory, 'baseplate/.clean');
   // Use the new GENERATED_DIRECTORY constant here
   const newDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
@@ -114,8 +117,10 @@ async function migrateCleanDirectory(projectDirectory: string, logger: Logger): 
     await mkdir(path.dirname(newDirectory), { recursive: true });
 
     // Rename directory
-    await rename(oldDirectory, newDirectory).catch((err) => {
-      logger.warn(`Failed to migrate .clean directory: ${err.message}`);
+    await rename(oldDirectory, newDirectory).catch((err: unknown) => {
+      logger.warn(
+        `Failed to migrate .clean directory: ${err instanceof Error ? err.message : String(err)}`,
+      );
       // Consider if further error handling is needed, e.g., if newDirectory already exists.
       // For now, this matches the issue's snippet.
     });
@@ -125,7 +130,10 @@ async function migrateCleanDirectory(projectDirectory: string, logger: Logger): 
 async function getPreviousGeneratedPayload(
   projectDirectory: string,
 ): Promise<PreviousGeneratedPayload | undefined> {
-  const newGeneratedDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
+  const newGeneratedDirectory = path.join(
+    projectDirectory,
+    GENERATED_DIRECTORY,
+  );
   const oldGeneratedDirectory = path.join(projectDirectory, 'baseplate/.clean');
 
   const newDirectoryExists = await dirExists(newGeneratedDirectory);
@@ -146,7 +154,9 @@ async function getPreviousGeneratedPayload(
   const fileIdMap = await getPreviousGeneratedFileIdMap(projectDirectory);
 
   return {
-    fileReader: createCodebaseFileReaderFromDirectory(currentGeneratedDirectoryPath),
+    fileReader: createCodebaseFileReaderFromDirectory(
+      currentGeneratedDirectoryPath,
+    ),
     fileIdToRelativePathMap: fileIdMap,
   };
 }

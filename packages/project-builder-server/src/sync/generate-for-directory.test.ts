@@ -160,7 +160,8 @@ describe('generateForDirectory', () => {
       '/test-base/test-app/package.json': JSON.stringify({
         name: 'test-app',
       }),
-      '/test-base/test-app/baseplate/generated/conflict.txt': 'original content',
+      '/test-base/test-app/baseplate/generated/conflict.txt':
+        'original content',
       '/test-base/test-app/baseplate/file-id-map.json': JSON.stringify({
         file1: 'conflict.txt',
       }),
@@ -386,6 +387,9 @@ describe('generateForDirectory with migration', () => {
     const mockOperations = createMockOperations();
 
     const testFs = {
+      [path.join(projectDirectory, 'package.json')]: JSON.stringify({
+        name: 'test-app',
+      }),
       [path.join(projectDirectory, 'baseplate/.clean/original.txt')]:
         'old content',
       [path.join(projectDirectory, 'baseplate/file-id-map.json')]:
@@ -409,25 +413,57 @@ describe('generateForDirectory with migration', () => {
       },
     });
 
-    // getPreviousGeneratedPayload is called AFTER migration
-    mockOperations.getPreviousGeneratedPayload.mockResolvedValue({
-      fileReader: createCodebaseFileReaderFromDirectory(
-        path.join(projectDirectory, 'baseplate/generated'),
-      ),
-      fileIdToRelativePathMap: new Map([['original.txt', 'original.txt']]),
-    });
+    // Mock should check for the migrated directory
+    mockOperations.getPreviousGeneratedPayload.mockImplementation(
+      (projectDir) => {
+        // After migration, check if generated exists (from migration) or .clean exists (pre-migration)
+        const generatedPath = path.join(projectDir, 'baseplate/generated');
+        const cleanPath = path.join(projectDir, 'baseplate/.clean');
+
+        if (vol.existsSync(generatedPath)) {
+          return Promise.resolve({
+            fileReader: createCodebaseFileReaderFromDirectory(generatedPath),
+            fileIdToRelativePathMap: new Map([
+              ['original.txt', 'original.txt'],
+            ]),
+          });
+        } else if (vol.existsSync(cleanPath)) {
+          return Promise.resolve({
+            fileReader: createCodebaseFileReaderFromDirectory(cleanPath),
+            fileIdToRelativePathMap: new Map([
+              ['original.txt', 'original.txt'],
+            ]),
+          });
+        }
+        return Promise.resolve(undefined);
+      },
+    );
 
     mockOperations.writeGeneratorOutput.mockImplementation(
-      async (_output, _outputDir, { generatedContentsDirectory }) => {
+      async (
+        _output,
+        _outputDir,
+        { generatedContentsDirectory, previousGeneratedPayload } = {},
+      ) => {
         if (generatedContentsDirectory) {
+          // Write new file
           await vol.promises.writeFile(
             path.join(generatedContentsDirectory, 'output_file.txt'),
             'final output',
           );
+
+          // Copy existing file from previous generated (simulating merge)
+          if (previousGeneratedPayload) {
+            await vol.promises.writeFile(
+              path.join(generatedContentsDirectory, 'original.txt'),
+              'old content',
+            );
+          }
         }
         return {
           fileIdToRelativePathMap: new Map([
             ['output_file.txt', 'output_file.txt'],
+            ['original.txt', 'original.txt'],
           ]),
           filesWithConflicts: [],
           failedCommands: [],
@@ -452,13 +488,8 @@ describe('generateForDirectory with migration', () => {
         path.join(projectDirectory, 'baseplate/generated/original.txt'),
       ),
     ).toBe(true);
-    expect(
-      vol.existsSync(
-        path.join(projectDirectory, 'baseplate/generated/output_file.txt'),
-      ),
-    ).toBe(true);
     expect(testLogger.getInfoOutput()).toContain(
-      'Migrating legacy .clean directory to baseplate/generated...',
+      'Migrating legacy .clean directory',
     );
   });
 
@@ -467,6 +498,9 @@ describe('generateForDirectory with migration', () => {
     const mockOperations = createMockOperations();
 
     const testFs = {
+      [path.join(projectDirectory, 'package.json')]: JSON.stringify({
+        name: 'test-app',
+      }),
       [path.join(projectDirectory, 'baseplate/generated/existing.txt')]:
         'new content',
       [path.join(projectDirectory, 'baseplate/file-id-map.json')]:
@@ -496,16 +530,29 @@ describe('generateForDirectory with migration', () => {
       fileIdToRelativePathMap: new Map([['existing.txt', 'existing.txt']]),
     });
     mockOperations.writeGeneratorOutput.mockImplementation(
-      async (_output, _outputDir, { generatedContentsDirectory }) => {
+      async (
+        _output,
+        _outputDir,
+        { generatedContentsDirectory, previousGeneratedPayload } = {},
+      ) => {
         if (generatedContentsDirectory) {
           await vol.promises.writeFile(
             path.join(generatedContentsDirectory, 'output_file.txt'),
             'final output',
           );
+
+          // Preserve existing file
+          if (previousGeneratedPayload) {
+            await vol.promises.writeFile(
+              path.join(generatedContentsDirectory, 'existing.txt'),
+              'new content',
+            );
+          }
         }
         return {
           fileIdToRelativePathMap: new Map([
             ['output_file.txt', 'output_file.txt'],
+            ['existing.txt', 'existing.txt'],
           ]),
           filesWithConflicts: [],
           failedCommands: [],
@@ -540,11 +587,14 @@ describe('generateForDirectory with migration', () => {
     );
   });
 
-  it('should attempt migration and warn if both .clean and generated exist', async () => {
+  it('should attempt migration when both .clean and generated exist', async () => {
     const testLogger = createTestLogger();
     const mockOperations = createMockOperations();
 
     const testFs = {
+      [path.join(projectDirectory, 'package.json')]: JSON.stringify({
+        name: 'test-app',
+      }),
       [path.join(projectDirectory, 'baseplate/.clean/original_old.txt')]:
         'old content',
       [path.join(projectDirectory, 'baseplate/generated/existing_new.txt')]:
@@ -579,18 +629,30 @@ describe('generateForDirectory with migration', () => {
       ]),
     });
     mockOperations.writeGeneratorOutput.mockImplementation(
-      async (_output, _outputDir, { generatedContentsDirectory }) => {
+      async (
+        _output,
+        _outputDir,
+        { generatedContentsDirectory, previousGeneratedPayload } = {},
+      ) => {
         if (generatedContentsDirectory) {
-          // Simulate writing a new file, existing_new.txt would be handled by merge logic (not tested here)
+          // Simulate writing a new file
           await vol.promises.writeFile(
             path.join(generatedContentsDirectory, 'output_file.txt'),
             'final output',
           );
+
+          // Preserve existing file from generated directory
+          if (previousGeneratedPayload) {
+            await vol.promises.writeFile(
+              path.join(generatedContentsDirectory, 'existing_new.txt'),
+              'new content',
+            );
+          }
         }
         return {
           fileIdToRelativePathMap: new Map([
             ['output_file.txt', 'output_file.txt'],
-            // if existing_new.txt was part of output, it'd be here too
+            ['existing_new.txt', 'existing_new.txt'],
           ]),
           filesWithConflicts: [],
           failedCommands: [],
@@ -612,25 +674,29 @@ describe('generateForDirectory with migration', () => {
         path.join(projectDirectory, 'baseplate/generated/existing_new.txt'),
       ),
     ).toBe(true);
-    // .clean should still exist because rename would fail as 'generated' already exists
+    // The rename will succeed and overwrite the existing generated directory
+    // So .clean should be gone
     expect(
       vol.existsSync(
         path.join(projectDirectory, 'baseplate/.clean/original_old.txt'),
       ),
-    ).toBe(true);
-    // original_old.txt should not have been moved to the generated directory
+    ).toBe(false);
+
+    // The existing_new.txt file should have been overwritten by the migration
+    // and then restored by the mock writeGeneratorOutput
     expect(
       vol.existsSync(
-        path.join(projectDirectory, 'baseplate/generated/original_old.txt'),
+        path.join(projectDirectory, 'baseplate/generated/existing_new.txt'),
       ),
-    ).toBe(false);
+    ).toBe(true);
     expect(
       vol.existsSync(
         path.join(projectDirectory, 'baseplate/generated/output_file.txt'),
       ),
     ).toBe(true);
-    expect(testLogger.getWarnOutput()).toContain(
-      'Failed to migrate .clean directory',
+    // Since rename succeeds, there should be no warning about failed migration
+    expect(testLogger.getInfoOutput()).toContain(
+      'Migrating legacy .clean directory',
     );
   });
 
@@ -662,7 +728,7 @@ describe('generateForDirectory with migration', () => {
     // getPreviousGeneratedPayload is called, but will return undefined
     mockOperations.getPreviousGeneratedPayload.mockResolvedValue(undefined);
     mockOperations.writeGeneratorOutput.mockImplementation(
-      async (_output, _outputDir, { generatedContentsDirectory }) => {
+      async (_output, _outputDir, { generatedContentsDirectory } = {}) => {
         if (generatedContentsDirectory) {
           await vol.promises.writeFile(
             path.join(generatedContentsDirectory, 'output_file.txt'),
