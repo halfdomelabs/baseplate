@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-test",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "Automated E2E testing for the project builder projects",
   "homepage": "https://www.baseplate.dev",

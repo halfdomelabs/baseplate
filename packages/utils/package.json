@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/utils",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Shared utility functions for Baseplate",
   "homepage": "https://www.baseplate.dev",
   "repository": {

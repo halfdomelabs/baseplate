@@ -1,5 +1,11 @@
 # @baseplate-dev/tools
 
+## 0.1.3
+
+### Patch Changes
+
+- [#564](https://github.com/halfdomelabs/baseplate/pull/564) [`8631cfe`](https://github.com/halfdomelabs/baseplate/commit/8631cfec32f1e5286d6d1ab0eb0e858461672545) Thanks [@kingston](https://github.com/kingston)! - Add support for model merging the GraphQL object type
+
 ## 0.1.2
 
 ### Patch Changes
