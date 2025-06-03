@@ -6,6 +6,7 @@ import type { ProjectDefinitionContainer } from '#src/definition/project-definit
 import type {
   ModelConfig,
   ModelConfigInput,
+  ModelGraphqlInput,
   ModelRelationFieldConfigInput,
   ModelScalarFieldConfigInput,
   ModelUniqueConstraintConfigInput,
@@ -25,6 +26,7 @@ import {
   applyDefinitionDiff,
   createDefinitionDiff,
   createDefinitionDiffConfig,
+  DefinitionDiffArrayIncludesField,
   DefinitionDiffKeyedArrayField,
   DefinitionDiffReplacementField,
 } from '#src/utils/definition-diff/definition-diff.js';
@@ -58,6 +60,7 @@ export interface ModelMergerModelInput {
       uniqueConstraints?: ModelMergerUniqueConstraintInput[];
     }
   >;
+  graphql?: Pick<ModelGraphqlInput, 'objectType'>;
 }
 
 export type ModelMergerModelsInput = Record<string, ModelMergerModelInput>;
@@ -89,6 +92,18 @@ export const modelMergerDefinitionDiffConfig =
     'model.primaryKeyFieldRefs': new DefinitionDiffReplacementField(
       'primaryKeyFieldRefs',
     ),
+    'graphql.objectType.enabled': new DefinitionDiffReplacementField(
+      'graphql.objectType.enabled',
+    ),
+    'graphql.objectType.fields': new DefinitionDiffArrayIncludesField(
+      'graphql.objectType.fields',
+    ),
+    'graphql.objectType.localRelations': new DefinitionDiffArrayIncludesField(
+      'graphql.objectType.localRelations',
+    ),
+    'graphql.objectType.foreignRelations': new DefinitionDiffArrayIncludesField(
+      'graphql.objectType.foreignRelations',
+    ),
   });
 
 export type ModelMergerDefinitionDiffOutput = DefinitionDiffOutput<
@@ -104,7 +119,7 @@ export type ModelMergerDefinitionDiffOutput = DefinitionDiffOutput<
  * @returns The serialized model merger model input.
  */
 function serializeModelMergerModelInput(
-  input: ModelMergerModelInput,
+  input: ModelConfigInput,
   definitionContainer: ProjectDefinitionContainer,
   siblingModels: ModelConfigInput[],
 ): ModelMergerModelInput {
@@ -114,8 +129,24 @@ function serializeModelMergerModelInput(
       m.model.fields.map((f) => [f.id, f.name] as const),
     ),
   ]);
-  const nameFromId = (id: string): string =>
+  const siblingModelRelationIdMap = new Map([
+    ...(input.model.relations ?? []).map((r) => [r.id, r.name] as const),
+    ...siblingModels.flatMap((m) =>
+      (m.model.relations ?? []).map((r) => [r.id, r.name] as const),
+    ),
+    ...(input.model.relations ?? []).map(
+      (r) => [r.foreignId, r.foreignRelationName] as const,
+    ),
+    ...siblingModels.flatMap((m) =>
+      (m.model.relations ?? []).map(
+        (r) => [r.foreignId, r.foreignRelationName] as const,
+      ),
+    ),
+  ]);
+  const fieldNameFromId = (id: string): string =>
     siblingModelFieldIdMap.get(id) ?? definitionContainer.nameFromId(id);
+  const relationNameFromId = (id: string): string =>
+    siblingModelRelationIdMap.get(id) ?? definitionContainer.nameFromId(id);
   return {
     ...input,
     model: {
@@ -124,18 +155,29 @@ function serializeModelMergerModelInput(
         ...r,
         references: r.references.map((reference) => ({
           ...reference,
-          localRef: nameFromId(reference.localRef),
-          foreignRef: nameFromId(reference.foreignRef),
+          localRef: fieldNameFromId(reference.localRef),
+          foreignRef: fieldNameFromId(reference.foreignRef),
         })),
       })),
       uniqueConstraints: input.model.uniqueConstraints?.map((c) => ({
         ...c,
         fields: c.fields.map((f) => ({
           ...f,
-          fieldRef: nameFromId(f.fieldRef),
+          fieldRef: fieldNameFromId(f.fieldRef),
         })),
       })),
-      primaryKeyFieldRefs: input.model.primaryKeyFieldRefs.map(nameFromId),
+      primaryKeyFieldRefs: input.model.primaryKeyFieldRefs.map(fieldNameFromId),
+    },
+    graphql: {
+      ...input.graphql,
+      objectType: {
+        ...input.graphql?.objectType,
+        fields: input.graphql?.objectType?.fields.map(fieldNameFromId) ?? [],
+        localRelations:
+          input.graphql?.objectType?.localRelations?.map(relationNameFromId),
+        foreignRelations:
+          input.graphql?.objectType?.foreignRelations?.map(relationNameFromId),
+      },
     },
   };
 }
@@ -181,7 +223,8 @@ function attachIdsToModelMergerModelInput(
 function deserializeModelMergerModelInput(
   input: ModelMergerModelInput,
   resolveForeignFieldRef: (modelId: string, fieldName: string) => string,
-): Pick<ModelConfigInput, 'model'> {
+  resolveForeignRelationRef: (relationName: string) => string,
+): Pick<ModelConfigInput, 'model' | 'graphql'> {
   const inputWithIds = attachIdsToModelMergerModelInput(input);
   const resolveLocalFieldName = (name: string): string => {
     const field = inputWithIds.model.fields.find((f) => f.name === name);
@@ -189,6 +232,13 @@ function deserializeModelMergerModelInput(
       throw new Error(`Field ${name} not found`);
     }
     return field.id;
+  };
+  const resolveLocalRelationName = (name: string): string => {
+    const relation = inputWithIds.model.relations?.find((r) => r.name === name);
+    if (!relation) {
+      throw new Error(`Relation ${name} not found`);
+    }
+    return relation.id;
   };
   return {
     ...inputWithIds,
@@ -217,6 +267,24 @@ function deserializeModelMergerModelInput(
       primaryKeyFieldRefs: inputWithIds.model.primaryKeyFieldRefs.map(
         (fieldRef) => resolveLocalFieldName(fieldRef),
       ),
+    },
+    graphql: {
+      ...inputWithIds.graphql,
+      objectType: {
+        ...inputWithIds.graphql?.objectType,
+        fields:
+          inputWithIds.graphql?.objectType?.fields.map((fieldRef) =>
+            resolveLocalFieldName(fieldRef),
+          ) ?? [],
+        localRelations:
+          inputWithIds.graphql?.objectType?.localRelations?.map((relationRef) =>
+            resolveLocalRelationName(relationRef),
+          ) ?? [],
+        foreignRelations:
+          inputWithIds.graphql?.objectType?.foreignRelations?.map(
+            (relationRef) => resolveForeignRelationRef(relationRef),
+          ) ?? [],
+      },
     },
   };
 }
@@ -374,6 +442,37 @@ export function applyModelMergerDiff(
           );
         }
         return field.id;
+      },
+      (relationName) => {
+        // Search sibling model first
+        let relationId: string | undefined;
+        for (const siblingModel of siblingModels) {
+          const relation = siblingModel.model.relations?.find(
+            (r) => r.foreignRelationName === relationName,
+          );
+          if (relation) {
+            relationId = relation.foreignId;
+            break;
+          }
+        }
+
+        if (relationId) {
+          return relationId;
+        }
+
+        const relations = ModelUtils.getRelationsToModel(
+          definitionContainer.definition,
+          model.id,
+        );
+        const relation = relations.find(
+          (r) => r.relation.foreignRelationName === relationName,
+        );
+        if (!relation) {
+          throw new Error(
+            `Relation ${relationName} not found in model ${model.name}`,
+          );
+        }
+        return relation.relation.foreignId;
       },
     ),
   };
