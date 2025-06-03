@@ -1,4 +1,4 @@
-import { mapValues } from 'es-toolkit';
+import { isEqual, mapValues } from 'es-toolkit';
 import { describe, expect, it } from 'vitest';
 
 import type {
@@ -20,6 +20,8 @@ import {
 } from '#src/schema/definition.test-helper.js';
 import {
   modelEntityType,
+  modelForeignRelationEntityType,
+  modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '#src/schema/models/index.js';
 
@@ -58,12 +60,13 @@ function applyModelMergerDiffToProjectDefinition<
   newDefinition: ProjectDefinition;
   newIds: Record<keyof T, string>;
   serializedDefinition: ProjectDefinition;
+  hasChanges: boolean;
 } {
   const definitionContainer = createTestProjectDefinitionContainer({
     features: [testFeature],
     models: Object.values(existingModels).filter((x) => x !== undefined),
   });
-  const draftDefinition = definitionContainer.definition;
+  const draftDefinition = structuredClone(definitionContainer.definition);
 
   const newIds = createAndApplyModelMergerResults(
     draftDefinition,
@@ -81,6 +84,7 @@ function applyModelMergerDiffToProjectDefinition<
     serializedDefinition: serializeSchemaFromRefPayload(
       newDefinitionContainer.refPayload,
     ),
+    hasChanges: !isEqual(draftDefinition, newDefinitionContainer.definition),
   };
 }
 
@@ -528,7 +532,7 @@ describe('GraphQL support', () => {
         },
         graphql: {
           objectType: {
-            enabled: true,
+            enabled: false,
             fields: ['id'],
           },
         },
@@ -642,15 +646,186 @@ describe('GraphQL support', () => {
       },
     } satisfies ModelMergerModelsInput;
 
-    const { serializedDefinition } = applyModelMergerDiffToProjectDefinition(
+    const { hasChanges } = applyModelMergerDiffToProjectDefinition(
       current,
       desired,
     );
     // Should have no changes since our custom field only adds, never removes
-    expect(serializedDefinition.models[0].graphql?.objectType.fields).toEqual([
+    expect(hasChanges).toBe(false);
+  });
+
+  it('should handle GraphQL relations correctly', () => {
+    const authorModel: ModelConfigInput = {
+      id: modelEntityType.generateNewId(),
+      name: 'Author',
+      featureRef: testFeature.name,
+      model: {
+        fields: [
+          {
+            id: modelScalarFieldEntityType.generateNewId(),
+            name: 'id',
+            type: 'uuid',
+            options: { genUuid: true, default: 'uuid_generate_v4()' },
+            isOptional: false,
+          },
+          {
+            id: modelScalarFieldEntityType.generateNewId(),
+            name: 'name',
+            type: 'string',
+            options: { default: '' },
+            isOptional: false,
+          },
+        ],
+        primaryKeyFieldRefs: ['id'],
+      },
+    };
+
+    const postModel: ModelConfigInput = {
+      id: modelEntityType.generateNewId(),
+      name: 'Post',
+      featureRef: testFeature.name,
+      model: {
+        fields: [
+          {
+            id: modelScalarFieldEntityType.generateNewId(),
+            name: 'id',
+            type: 'uuid',
+            options: { genUuid: true, default: 'uuid_generate_v4()' },
+            isOptional: false,
+          },
+          {
+            id: modelScalarFieldEntityType.generateNewId(),
+            name: 'title',
+            type: 'string',
+            options: { default: '' },
+            isOptional: false,
+          },
+        ],
+        relations: [
+          {
+            id: modelLocalRelationEntityType.generateNewId(),
+            foreignId: modelForeignRelationEntityType.generateNewId(),
+            name: 'author',
+            modelRef: authorModel.name,
+            references: [
+              {
+                localRef: 'id',
+                foreignRef: 'id',
+              },
+            ],
+            foreignRelationName: 'posts',
+            onDelete: 'Cascade',
+            onUpdate: 'Cascade',
+          },
+        ],
+        primaryKeyFieldRefs: ['id'],
+      },
+    };
+
+    const current = {
+      Author: authorModel,
+      Post: postModel,
+    } satisfies Record<string, ModelConfigInput>;
+
+    const desired = {
+      Author: {
+        name: 'Author',
+        featureRef: testFeature.id,
+        model: {
+          fields: [
+            {
+              name: 'id',
+              type: 'uuid',
+              options: { genUuid: true, default: 'uuid_generate_v4()' },
+              isOptional: false,
+            },
+            {
+              name: 'name',
+              type: 'string',
+              options: { default: '' },
+              isOptional: false,
+            },
+          ],
+          primaryKeyFieldRefs: ['id'],
+        },
+        graphql: {
+          objectType: {
+            enabled: true,
+            fields: ['id', 'name'],
+            foreignRelations: ['posts'],
+          },
+        },
+      },
+      Post: {
+        name: 'Post',
+        featureRef: testFeature.id,
+        model: {
+          fields: [
+            {
+              name: 'id',
+              type: 'uuid',
+              options: { genUuid: true, default: 'uuid_generate_v4()' },
+              isOptional: false,
+            },
+            {
+              name: 'title',
+              type: 'string',
+              options: { default: '' },
+              isOptional: false,
+            },
+          ],
+          relations: [
+            {
+              name: 'author',
+              modelRef: authorModel.id,
+              references: [
+                {
+                  localRef: 'id',
+                  foreignRef: 'id',
+                },
+              ],
+              foreignRelationName: 'posts',
+              onDelete: 'Cascade',
+              onUpdate: 'Cascade',
+            },
+          ],
+          primaryKeyFieldRefs: ['id'],
+        },
+        graphql: {
+          objectType: {
+            enabled: true,
+            fields: ['id', 'title'],
+            localRelations: ['author'],
+          },
+        },
+      },
+    } satisfies ModelMergerModelsInput;
+
+    const { serializedDefinition } = applyModelMergerDiffToProjectDefinition(
+      current,
+      desired,
+    );
+
+    const authorModelResult = serializedDefinition.models.find(
+      (m) => m.name === 'Author',
+    );
+    const postModelResult = serializedDefinition.models.find(
+      (m) => m.name === 'Post',
+    );
+
+    expect(authorModelResult?.graphql?.objectType.fields).toEqual([
       'id',
       'name',
-      'email',
+    ]);
+    expect(authorModelResult?.graphql?.objectType.foreignRelations).toEqual([
+      'posts',
+    ]);
+    expect(postModelResult?.graphql?.objectType.fields).toEqual([
+      'id',
+      'title',
+    ]);
+    expect(postModelResult?.graphql?.objectType.localRelations).toEqual([
+      'author',
     ]);
   });
 });

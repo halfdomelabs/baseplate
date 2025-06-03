@@ -24,6 +24,12 @@ abstract class DefinitionDiffField<T = unknown> {
   abstract diff(current: T, desired: T): DefinitionDiffOperation[];
 
   abstract apply(current: T, diff: DefinitionDiffOperation[]): T;
+
+  /**
+   * Returns the verb to be used in the UI to describe the action e.g. created or added.
+   * @param isNew Whether the item is new.
+   */
+  abstract getActionVerb(isNew: boolean): string;
 }
 
 interface DefinitionDiffKeyedArrayFieldOptions {
@@ -133,6 +139,10 @@ export class DefinitionDiffKeyedArrayField<
     }
     return items as T;
   }
+
+  getActionVerb(isNew: boolean): string {
+    return isNew ? 'created' : 'added or updated';
+  }
 }
 
 /**
@@ -142,6 +152,9 @@ export class DefinitionDiffReplacementField<
   T = unknown,
 > extends DefinitionDiffField<T> {
   diff(current: T, desired: T): DefinitionDiffOperation[] {
+    if (desired === undefined) {
+      return [];
+    }
     if (!isMatch(current, desired)) {
       return [{ type: 'update', key: '*', item: desired }];
     }
@@ -151,6 +164,10 @@ export class DefinitionDiffReplacementField<
   apply(current: T, diff: DefinitionDiffOperation[]): T {
     if (diff.length === 0) return current;
     return diff[0].item as T;
+  }
+
+  getActionVerb(isNew: boolean): string {
+    return isNew ? 'set' : 'replaced';
   }
 }
 
@@ -168,7 +185,10 @@ export class DefinitionDiffArrayIncludesField<
     super(name);
   }
 
-  diff(current: T | undefined, desired: T | undefined): DefinitionDiffOperation[] {
+  diff(
+    current: T | undefined,
+    desired: T | undefined,
+  ): DefinitionDiffOperation[] {
     const currentValue = current ?? [];
     const desiredValue = desired ?? [];
 
@@ -178,9 +198,7 @@ export class DefinitionDiffArrayIncludesField<
 
     const ops: DefinitionDiffOperation[] = [];
     const currentSet = new Set(
-      this.getKey
-        ? currentValue.map(this.getKey)
-        : currentValue,
+      this.getKey ? currentValue.map(this.getKey) : currentValue,
     );
 
     for (const item of desiredValue) {
@@ -208,6 +226,10 @@ export class DefinitionDiffArrayIncludesField<
     }
 
     return items as T;
+  }
+
+  getActionVerb(isNew: boolean): string {
+    return isNew ? 'created' : 'added';
   }
 }
 

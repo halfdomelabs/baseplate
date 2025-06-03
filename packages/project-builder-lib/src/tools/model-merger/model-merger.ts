@@ -86,23 +86,23 @@ export const modelMergerDefinitionDiffConfig =
       (r) => r.name,
     ),
     'model.uniqueConstraints': new DefinitionDiffKeyedArrayField(
-      'uniqueConstraints',
+      'unique constraints',
       (c) => getUniqueConstraintKey(c),
     ),
     'model.primaryKeyFieldRefs': new DefinitionDiffReplacementField(
-      'primaryKeyFieldRefs',
+      'primary key fields',
     ),
     'graphql.objectType.enabled': new DefinitionDiffReplacementField(
-      'graphql.objectType.enabled',
+      'GraphQL object type enabled',
     ),
     'graphql.objectType.fields': new DefinitionDiffArrayIncludesField(
-      'graphql.objectType.fields',
+      'GraphQL object type fields',
     ),
     'graphql.objectType.localRelations': new DefinitionDiffArrayIncludesField(
-      'graphql.objectType.localRelations',
+      'GraphQL object type local relations',
     ),
     'graphql.objectType.foreignRelations': new DefinitionDiffArrayIncludesField(
-      'graphql.objectType.foreignRelations',
+      'GraphQL object type foreign relations',
     ),
   });
 

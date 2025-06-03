@@ -145,6 +145,17 @@ describe('DefinitionDiffReplacementField', () => {
     expect(diff).toHaveLength(0);
   });
 
+  it('should not detect changes when desired value does not exist', () => {
+    const field = new DefinitionDiffReplacementField<boolean | undefined>(
+      'value',
+    );
+    const current = true;
+    const desired: boolean | undefined = undefined;
+
+    const diff = field.diff(current, desired);
+    expect(diff).toHaveLength(0);
+  });
+
   it('should apply diffs correctly', () => {
     const field = new DefinitionDiffReplacementField<TestSettings>('value');
     const current: TestSettings = { theme: 'light' };
@@ -367,7 +378,7 @@ describe('DefinitionDiffArrayIncludesField', () => {
     it('should handle undefined current value', () => {
       const field = new DefinitionDiffArrayIncludesField<string[]>('roles');
       const diff = field.diff(undefined, ['admin']);
-      
+
       expect(diff).toHaveLength(1);
       expect(diff[0]).toEqual({
         type: 'add',
@@ -379,7 +390,7 @@ describe('DefinitionDiffArrayIncludesField', () => {
     it('should handle undefined desired value', () => {
       const field = new DefinitionDiffArrayIncludesField<string[]>('roles');
       const diff = field.diff(['admin'], undefined);
-      
+
       expect(diff).toHaveLength(0);
     });
   });

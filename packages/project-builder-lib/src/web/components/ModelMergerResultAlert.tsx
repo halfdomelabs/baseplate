@@ -3,9 +3,13 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@baseplate-dev/ui-components';
+import { capitalize } from 'es-toolkit';
 import { type ReactElement } from 'react';
 
-import type { ModelMergerModelDiffResult } from '#src/tools/index.js';
+import {
+  modelMergerDefinitionDiffConfig,
+  type ModelMergerModelDiffResult,
+} from '#src/tools/index.js';
 
 interface Props {
   pendingModelChanges: Record<string, ModelMergerModelDiffResult | undefined>;
@@ -43,46 +47,32 @@ export function ModelMergerResultAlert({
               )}
 
               <ul className="list-disc pl-4 space-y-1">
-                {change.changes['model.fields']?.length ? (
-                  <li>
-                    <span className="font-medium">
-                      {change.changes['model.fields'].length}
-                    </span>{' '}
-                    field(s) will be
-                    {change.isNewModel ? ' created' : ' added or updated'}
-                  </li>
-                ) : undefined}
+                {Object.entries(change.changes).map(([key, value]) => {
+                  const field =
+                    modelMergerDefinitionDiffConfig[
+                      key as keyof typeof modelMergerDefinitionDiffConfig
+                    ];
 
-                {change.changes['model.relations']?.length ? (
-                  <li>
-                    <span className="font-medium">
-                      {change.changes['model.relations'].length}
-                    </span>{' '}
-                    relation(s) will be
-                    {change.isNewModel ? ' created' : ' added or updated'}
-                  </li>
-                ) : undefined}
+                  if (!field) {
+                    return null;
+                  }
 
-                {change.changes['model.uniqueConstraints']?.length ? (
-                  <li>
-                    <span className="font-medium">
-                      {change.changes['model.uniqueConstraints'].length}
-                    </span>{' '}
-                    unique constraint(s) will be{' '}
-                    {change.isNewModel ? 'created' : 'added or updated'}
-                  </li>
-                ) : undefined}
-
-                {change.changes['model.primaryKeyFieldRefs']?.length ? (
-                  <li>
-                    Primary key will be {change.isNewModel ? 'set' : 'updated'}{' '}
-                    with{' '}
-                    <span className="font-medium">
-                      {change.changes['model.primaryKeyFieldRefs'].length}
-                    </span>{' '}
-                    field(s)
-                  </li>
-                ) : undefined}
+                  if (value?.length) {
+                    return (
+                      <li key={key}>
+                        {value.length === 1 ? (
+                          capitalize(field.name)
+                        ) : (
+                          <>
+                            <span className="font-medium">{value.length}</span>{' '}
+                            {field.name}(s)
+                          </>
+                        )}{' '}
+                        will be {field.getActionVerb(change.isNewModel)}
+                      </li>
+                    );
+                  }
+                })}
               </ul>
             </div>
           </AlertDescription>
