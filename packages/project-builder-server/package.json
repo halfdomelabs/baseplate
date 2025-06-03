@@ -20,10 +20,12 @@
   },
   "main": "dist/index.js",
   "files": [
+    "README.md",
     "LICENSE",
-    "dist/**/*",
     "CHANGELOG",
-    "!dist/**/*.d.ts.map"
+    "dist/**/*",
+    "!dist/**/*.d.ts.map",
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

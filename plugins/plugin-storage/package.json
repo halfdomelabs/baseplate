@@ -13,10 +13,12 @@
   },
   "main": "dist/index.js",
   "files": [
+    "README.md",
     "LICENSE",
+    "CHANGELOG",
     "dist/**/*",
     "!dist/**/*.d.ts.map",
-    "CHANGELOG",
+    "!dist/**/*.tsbuildinfo",
     "manifest.json"
   ],
   "scripts": {
@@ -58,7 +60,7 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "concurrently": "9.0.1",
-    "cpx2": "7.0.1",
+    "cpx2": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",

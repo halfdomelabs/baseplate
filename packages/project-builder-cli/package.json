@@ -22,10 +22,13 @@
     "baseplate": "./bin/baseplate.js"
   },
   "files": [
+    "README.md",
     "LICENSE",
     "CHANGELOG",
     "dist/**/*",
-    "scripts/**/*"
+    "!dist/**/*.d.ts.map",
+    "!dist/**/*.tsbuildinfo",
+    "bin/**/*"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

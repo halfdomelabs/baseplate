@@ -8,7 +8,6 @@
   "scripts": {
     "build": "turbo run build",
     "build:affected": "turbo run build --affected",
-    "build:storybook": "turbo run build:storybook --filter=@baseplate-dev/ui-components",
     "changesets:check": "node --experimental-strip-types ./scripts/check-changesets.ts",
     "clean": "turbo run clean",
     "dev:serve": "pnpm --filter @baseplate-dev/project-builder-cli dev:serve",
@@ -31,6 +30,7 @@
     "release": "pnpm build && pnpm changeset publish",
     "run:morpher": "pnpm --filter @baseplate-dev/code-morph run:morpher",
     "serve": "turbo run @baseplate-dev/project-builder-cli:start serve",
+    "storybook:build": "turbo run storybook:build --filter=@baseplate-dev/ui-components",
     "test": "turbo run test --continue",
     "test:affected": "turbo run test --affected --continue",
     "test:e2e": "turbo run test:e2e --continue",

@@ -18,6 +18,10 @@ function getProjectJsonDependencyKeys(packageJson: PackageJson): string[] {
   ];
 }
 
+function isPluginPackage(packageJson: PackageJson): boolean {
+  return packageJson.name?.startsWith('@baseplate-dev/plugin-') ?? false;
+}
+
 // False positives for the Typescript project references
 const IGNORED_PACKAGES = new Set([
   '@baseplate-dev/project-builder-web',
@@ -68,6 +72,32 @@ export default defineWorkspaceMetaConfig({
           access: 'public',
           provenance: true,
         } as { access: 'public' };
+
+        if (packageJson.scripts?.build) {
+          const hasTemplatesFolder =
+            packageJson.files?.includes('templates/**/*');
+          packageJson.files = [
+            'README.md',
+            'LICENSE',
+            'CHANGELOG',
+            'dist/**/*',
+            '!dist/**/*.d.ts.map',
+            '!dist/**/*.tsbuildinfo',
+          ];
+
+          // If we have a templates directory, make sure we keep it
+          if (hasTemplatesFolder) {
+            packageJson.files.push('templates/**/*');
+          }
+
+          // If we have a bin, make sure we add it
+          if (packageJson.bin) {
+            packageJson.files.push('bin/**/*');
+          }
+
+          if (isPluginPackage(packageJson))
+            packageJson.files.push('manifest.json');
+        }
       }
 
       return packageJson;

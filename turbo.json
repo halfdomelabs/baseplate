@@ -8,7 +8,7 @@
       "outputs": ["build/**", "dist/**", ".next/**", "!.next/cache/**"],
       "outputLogs": "errors-only"
     },
-    "build:storybook": {
+    "storybook:build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "!README.md"],
       "outputs": [".storybook-static/**"]
