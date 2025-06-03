@@ -110,4 +110,6 @@ export const modelGraphqlSchema = z.object({
     .default({}),
 });
 
+export type ModelGraphqlInput = z.input<typeof modelGraphqlSchema>;
+
 export type ModelGraphqlDefinition = z.infer<typeof modelGraphqlSchema>;

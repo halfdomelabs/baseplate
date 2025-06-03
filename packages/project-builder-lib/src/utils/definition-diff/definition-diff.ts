@@ -24,6 +24,12 @@ abstract class DefinitionDiffField<T = unknown> {
   abstract diff(current: T, desired: T): DefinitionDiffOperation[];
 
   abstract apply(current: T, diff: DefinitionDiffOperation[]): T;
+
+  /**
+   * Returns the verb to be used in the UI to describe the action e.g. created or added.
+   * @param isNew Whether the item is new.
+   */
+  abstract getActionVerb(isNew: boolean): string;
 }
 
 interface DefinitionDiffKeyedArrayFieldOptions {
@@ -133,6 +139,10 @@ export class DefinitionDiffKeyedArrayField<
     }
     return items as T;
   }
+
+  getActionVerb(isNew: boolean): string {
+    return isNew ? 'created' : 'added or updated';
+  }
 }
 
 /**
@@ -142,6 +152,9 @@ export class DefinitionDiffReplacementField<
   T = unknown,
 > extends DefinitionDiffField<T> {
   diff(current: T, desired: T): DefinitionDiffOperation[] {
+    if (desired === undefined) {
+      return [];
+    }
     if (!isMatch(current, desired)) {
       return [{ type: 'update', key: '*', item: desired }];
     }
@@ -151,6 +164,72 @@ export class DefinitionDiffReplacementField<
   apply(current: T, diff: DefinitionDiffOperation[]): T {
     if (diff.length === 0) return current;
     return diff[0].item as T;
+  }
+
+  getActionVerb(isNew: boolean): string {
+    return isNew ? 'set' : 'replaced';
+  }
+}
+
+/**
+ * A field that ensures an array contains certain values.
+ * This field type only adds items, never removes them.
+ */
+export class DefinitionDiffArrayIncludesField<
+  T extends unknown[] = string[],
+> extends DefinitionDiffField<T> {
+  constructor(
+    name: string,
+    private readonly getKey?: (item: T[number]) => string,
+  ) {
+    super(name);
+  }
+
+  diff(
+    current: T | undefined,
+    desired: T | undefined,
+  ): DefinitionDiffOperation[] {
+    const currentValue = current ?? [];
+    const desiredValue = desired ?? [];
+
+    if (!Array.isArray(currentValue) || !Array.isArray(desiredValue)) {
+      throw new TypeError('Current and desired must be arrays');
+    }
+
+    const ops: DefinitionDiffOperation[] = [];
+    const currentSet = new Set(
+      this.getKey ? currentValue.map(this.getKey) : currentValue,
+    );
+
+    for (const item of desiredValue) {
+      const key = this.getKey ? this.getKey(item) : String(item);
+      if (!currentSet.has(key)) {
+        ops.push({ type: 'add', key, item });
+      }
+    }
+
+    return ops;
+  }
+
+  apply(current: T | undefined, diff: DefinitionDiffOperation[]): T {
+    const currentValue = (current ?? []) as T;
+
+    if (!Array.isArray(currentValue)) {
+      throw new TypeError('Current must be array');
+    }
+
+    const items = [...currentValue] as T[number][];
+    for (const { type, item } of diff) {
+      if (type === 'add') {
+        items.push(item as T[number]);
+      }
+    }
+
+    return items as T;
+  }
+
+  getActionVerb(isNew: boolean): string {
+    return isNew ? 'created' : 'added';
   }
 }
 

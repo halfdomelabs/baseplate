@@ -80,10 +80,6 @@ beforeEach(() => {
   vol.reset();
 });
 
-afterEach(() => {
-  vol.reset();
-});
-
 test('should do something', () => {
   // Arrange
   vol.fromJSON({

@@ -1,13 +1,15 @@
+import type {
+  ProjectDefinition,
+  ProjectDefinitionInput,
+} from '#src/schema/project-definition.js';
+
 import { getLatestMigrationVersion } from '#src/migrations/index.js';
 import {
   PluginImplementationStore,
   zPluginWrapper,
 } from '#src/plugins/index.js';
 import { deserializeSchemaWithReferences } from '#src/references/deserialize-schema.js';
-import {
-  createProjectDefinitionSchema,
-  type ProjectDefinition,
-} from '#src/schema/project-definition.js';
+import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
 
 import { ProjectDefinitionContainer } from './project-definition-container.js';
 
@@ -32,8 +34,17 @@ export function createTestProjectDefinition(
   };
 }
 
+export function createTestProjectDefinitionInput(
+  input: Partial<ProjectDefinitionInput> = {},
+): ProjectDefinitionInput {
+  return {
+    ...createTestProjectDefinition(),
+    ...input,
+  };
+}
+
 export function createTestProjectDefinitionContainer(
-  input: Partial<ProjectDefinition> = {},
+  input: Partial<ProjectDefinitionInput> = {},
 ): ProjectDefinitionContainer {
   const pluginStore = {
     availablePlugins: [],
@@ -48,7 +59,7 @@ export function createTestProjectDefinitionContainer(
   );
   const resolvedRefPayload = deserializeSchemaWithReferences(
     schemaWithPlugins,
-    createTestProjectDefinition(input),
+    createTestProjectDefinitionInput(input),
   );
   return new ProjectDefinitionContainer(
     resolvedRefPayload,
