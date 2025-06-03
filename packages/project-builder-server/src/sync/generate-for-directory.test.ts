@@ -350,6 +350,7 @@ describe('generateForDirectory', () => {
   });
 });
 
+// TODO [>=0.2.0] Remove this once we've released a new major version.
 describe('generateForDirectory with migration', () => {
   beforeEach(() => {
     vol.reset();

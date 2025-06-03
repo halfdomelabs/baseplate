@@ -100,15 +100,16 @@ async function getPreviousGeneratedFileIdMap(
   }
 }
 
+// TODO [>=0.2.0] Remove this once we've released a new major version.
 async function migrateCleanDirectory(
   projectDirectory: string,
   logger: Logger,
 ): Promise<void> {
   const oldDirectory = path.join(projectDirectory, 'baseplate/.clean');
-  // Use the new GENERATED_DIRECTORY constant here
   const newDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
 
   const oldDirectoryExists = await dirExists(oldDirectory);
+  const newDirectoryExists = await dirExists(newDirectory);
 
   if (oldDirectoryExists) {
     logger.info(`Migrating legacy .clean directory to ${newDirectory}...`);
@@ -116,13 +117,17 @@ async function migrateCleanDirectory(
     // Create parent directory if it doesn't exist
     await mkdir(path.dirname(newDirectory), { recursive: true });
 
+    if (newDirectoryExists) {
+      throw new Error(
+        `New generated directory already exists: ${newDirectory}. Please remove either baseplate.clean or baseplate/generated.`,
+      );
+    }
+
     // Rename directory
     await rename(oldDirectory, newDirectory).catch((err: unknown) => {
-      logger.warn(
+      throw new Error(
         `Failed to migrate .clean directory: ${err instanceof Error ? err.message : String(err)}`,
       );
-      // Consider if further error handling is needed, e.g., if newDirectory already exists.
-      // For now, this matches the issue's snippet.
     });
   }
 }
@@ -130,33 +135,18 @@ async function migrateCleanDirectory(
 async function getPreviousGeneratedPayload(
   projectDirectory: string,
 ): Promise<PreviousGeneratedPayload | undefined> {
-  const newGeneratedDirectory = path.join(
-    projectDirectory,
-    GENERATED_DIRECTORY,
-  );
-  const oldGeneratedDirectory = path.join(projectDirectory, 'baseplate/.clean');
+  const generatedDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
 
-  const newDirectoryExists = await dirExists(newGeneratedDirectory);
-  const oldDirectoryExists = await dirExists(oldGeneratedDirectory);
+  const generatedDirectoryExists = await dirExists(generatedDirectory);
 
-  let currentGeneratedDirectoryPath: string | undefined;
-
-  if (newDirectoryExists) {
-    currentGeneratedDirectoryPath = newGeneratedDirectory;
-  } else if (oldDirectoryExists) {
-    currentGeneratedDirectoryPath = oldGeneratedDirectory;
-  }
-
-  if (!currentGeneratedDirectoryPath) {
+  if (!generatedDirectoryExists) {
     return undefined;
   }
 
   const fileIdMap = await getPreviousGeneratedFileIdMap(projectDirectory);
 
   return {
-    fileReader: createCodebaseFileReaderFromDirectory(
-      currentGeneratedDirectoryPath,
-    ),
+    fileReader: createCodebaseFileReaderFromDirectory(generatedDirectory),
     fileIdToRelativePathMap: fileIdMap,
   };
 }
