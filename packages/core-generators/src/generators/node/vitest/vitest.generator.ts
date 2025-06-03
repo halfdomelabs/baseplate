@@ -20,9 +20,10 @@ const descriptorSchema = z.object({});
 
 import { stringifyPrettyStable } from '@baseplate-dev/utils';
 
+import type { TsCodeFragment } from '#src/renderers/index.js';
+
 import {
   tsCodeFragment,
-  type TsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
 } from '#src/renderers/index.js';

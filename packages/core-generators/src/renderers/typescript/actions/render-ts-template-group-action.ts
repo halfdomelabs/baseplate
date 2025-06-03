@@ -1,9 +1,10 @@
-import {
-  type BuilderAction,
-  normalizePathToProjectPath,
-  type ProviderType,
-  type WriteFileOptions,
+import type {
+  BuilderAction,
+  ProviderType,
+  WriteFileOptions,
 } from '@baseplate-dev/sync';
+
+import { normalizePathToProjectPath } from '@baseplate-dev/sync';
 import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { mapValues } from 'es-toolkit';
 import path from 'node:path';

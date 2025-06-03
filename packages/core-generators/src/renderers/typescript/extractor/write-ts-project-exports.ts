@@ -1,7 +1,6 @@
-import {
-  parseGeneratorName,
-  type TemplateFileExtractorFile,
-} from '@baseplate-dev/sync';
+import type { TemplateFileExtractorFile } from '@baseplate-dev/sync';
+
+import { parseGeneratorName } from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
 import { getCommonPathPrefix } from '@baseplate-dev/utils/node';
 import { camelCase, pascalCase } from 'change-case';

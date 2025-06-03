@@ -1,5 +1,7 @@
+import type { SourceFile } from 'ts-morph';
+
 import path from 'node:path';
-import { ModuleResolutionKind, type SourceFile } from 'ts-morph';
+import { ModuleResolutionKind } from 'ts-morph';
 
 import type { MorpherContext } from '#src/types.js';
 

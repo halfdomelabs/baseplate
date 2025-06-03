@@ -6,7 +6,7 @@ import type { Logger } from '#src/utils/evented-logger.js';
 
 import { executeCommand } from '#src/utils/exec.js';
 
-import { type PostWriteCommand } from './types.js';
+import type { PostWriteCommand } from './types.js';
 
 const COMMAND_TIMEOUT_MILLIS = ms('5m');
 

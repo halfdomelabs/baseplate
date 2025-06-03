@@ -1,10 +1,8 @@
+import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import {
-  authConfigSpec,
-  type ModelConfigInput,
-} from '@baseplate-dev/project-builder-lib';
+import { authConfigSpec } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Alert,

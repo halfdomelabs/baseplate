@@ -1,13 +1,14 @@
-import {
-  pluginConfigSpec,
-  type PluginImplementationStore,
-  type PluginMetadataWithPaths,
+import type {
+  PluginImplementationStore,
+  PluginMetadataWithPaths,
 } from '#src/plugins/index.js';
-import {
-  type BasePluginDefinition,
-  pluginEntityType,
-  type ProjectDefinition,
+import type {
+  BasePluginDefinition,
+  ProjectDefinition,
 } from '#src/schema/index.js';
+
+import { pluginConfigSpec } from '#src/plugins/index.js';
+import { pluginEntityType } from '#src/schema/index.js';
 
 function byId(
   projectDefinition: ProjectDefinition,

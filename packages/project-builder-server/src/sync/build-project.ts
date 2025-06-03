@@ -2,13 +2,14 @@ import type {
   ProjectDefinition,
   SchemaParserContext,
 } from '@baseplate-dev/project-builder-lib';
+import type { Logger } from '@baseplate-dev/sync';
 
 import {
   createPluginImplementationStore,
   runPluginMigrations,
   runSchemaMigrations,
 } from '@baseplate-dev/project-builder-lib';
-import { CancelledSyncError, type Logger } from '@baseplate-dev/sync';
+import { CancelledSyncError } from '@baseplate-dev/sync';
 import {
   enhanceErrorWithContext,
   hashWithSHA256,

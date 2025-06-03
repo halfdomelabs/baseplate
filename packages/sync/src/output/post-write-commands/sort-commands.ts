@@ -1,6 +1,8 @@
 import { sortBy } from 'es-toolkit';
 
-import { POST_WRITE_COMMAND_PRIORITY, type PostWriteCommand } from './types.js';
+import type { PostWriteCommand } from './types.js';
+
+import { POST_WRITE_COMMAND_PRIORITY } from './types.js';
 
 /**
  * Sort post-write commands by priority

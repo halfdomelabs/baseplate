@@ -1,15 +1,15 @@
+import type { ReactElement } from 'react';
+
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from '@baseplate-dev/ui-components';
 import { capitalize } from 'es-toolkit';
-import { type ReactElement } from 'react';
 
-import {
-  modelMergerDefinitionDiffConfig,
-  type ModelMergerModelDiffResult,
-} from '#src/tools/index.js';
+import type { ModelMergerModelDiffResult } from '#src/tools/index.js';
+
+import { modelMergerDefinitionDiffConfig } from '#src/tools/index.js';
 
 interface Props {
   pendingModelChanges: Record<string, ModelMergerModelDiffResult | undefined>;

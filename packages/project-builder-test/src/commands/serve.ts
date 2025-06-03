@@ -1,10 +1,8 @@
+import type { ProjectDefinitionInput } from '@baseplate-dev/project-builder-lib';
 import type { Command } from 'commander';
 
 import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
-import {
-  getLatestMigrationVersion,
-  type ProjectDefinitionInput,
-} from '@baseplate-dev/project-builder-lib';
+import { getLatestMigrationVersion } from '@baseplate-dev/project-builder-lib';
 import {
   BuilderServiceManager,
   DEFAULT_SERVER_PORT,

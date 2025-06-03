@@ -8,16 +8,14 @@ import { watch } from 'chokidar';
 import { isEqual, throttle } from 'es-toolkit';
 import path from 'node:path';
 
+import type { PackageSyncInfo, SyncMetadata } from './sync-metadata.js';
+
 import {
   readSyncMetadata,
   SYNC_METADATA_PATH,
   writeSyncMetadata,
 } from './sync-metadata-service.js';
-import {
-  INITIAL_SYNC_METADATA,
-  type PackageSyncInfo,
-  type SyncMetadata,
-} from './sync-metadata.js';
+import { INITIAL_SYNC_METADATA } from './sync-metadata.js';
 
 /**
  * Controller for getting updates about the latest sync metadata.

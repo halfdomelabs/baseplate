@@ -1,5 +1,7 @@
+import type { RefinementCtx, ZodInvalidTypeIssue } from 'zod';
+
 import { describe, expect, it, vi } from 'vitest';
-import { type RefinementCtx, z, type ZodInvalidTypeIssue } from 'zod';
+import { z } from 'zod';
 
 import { transformWithDynamicSchema } from './transform-with-dynamic-schema.js';
 

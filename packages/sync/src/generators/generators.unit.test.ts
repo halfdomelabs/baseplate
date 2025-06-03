@@ -4,12 +4,13 @@ import type { GeneratorTaskOutputBuilder } from '#src/output/generator-task-outp
 
 import { createProviderType } from '#src/providers/index.js';
 
-import {
-  createGeneratorTask,
-  type InferDependencyProviderMap,
-  type InferExportProviderMap,
-  type ProviderExportMap,
+import type {
+  InferDependencyProviderMap,
+  InferExportProviderMap,
+  ProviderExportMap,
 } from './generators.js';
+
+import { createGeneratorTask } from './generators.js';
 
 describe('generators type definitions', () => {
   it('should correctly infer provider maps from export and dependency maps', () => {

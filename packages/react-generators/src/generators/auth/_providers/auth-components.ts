@@ -1,7 +1,6 @@
-import {
-  createTsImportMapSchema,
-  type TsImportMapProviderFromSchema,
-} from '@baseplate-dev/core-generators';
+import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generators';
+
+import { createTsImportMapSchema } from '@baseplate-dev/core-generators';
 import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 
 export const authComponentsImportsSchema = createTsImportMapSchema({

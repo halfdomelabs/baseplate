@@ -1,5 +1,7 @@
+import type { z } from 'zod';
+
 import fs from 'node:fs/promises';
-import { type z, ZodError } from 'zod';
+import { ZodError } from 'zod';
 
 /**
  * Reads a file, parses its content as JSON, and validates it against a Zod schema.

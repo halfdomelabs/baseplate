@@ -1,6 +1,7 @@
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+
 import {
   projectScope,
-  type TsCodeFragment,
   TsCodeUtils,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
