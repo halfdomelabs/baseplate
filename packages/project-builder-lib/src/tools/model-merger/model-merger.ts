@@ -465,7 +465,9 @@ export function applyModelMergerDiff(
           model.id,
         );
         const relation = relations.find(
-          (r) => r.relation.foreignRelationName === relationName,
+          (r) =>
+            r.relation.foreignRelationName === relationName &&
+            r.relation.modelRef === model.id,
         );
         if (!relation) {
           throw new Error(
