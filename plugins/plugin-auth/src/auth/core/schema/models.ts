@@ -44,6 +44,17 @@ export function createAuthModels({
           },
         ],
         primaryKeyFieldRefs: ['id'],
+        uniqueConstraints: [
+          {
+            fields: [{ fieldRef: 'email' }],
+          },
+        ],
+      },
+      graphql: {
+        objectType: {
+          enabled: true,
+          fields: ['id', 'email'],
+        },
       },
     },
     userAccount: {

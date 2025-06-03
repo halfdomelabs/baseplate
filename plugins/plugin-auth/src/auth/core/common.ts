@@ -9,6 +9,9 @@ import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
 import { authPluginDefinitionSchema } from './schema/plugin-definition.js';
 
+// necessary for Typescript to infer the return type of the initialize function
+export type { PluginPlatformModule } from '@baseplate-dev/project-builder-lib';
+
 export default createPlatformPluginExport({
   dependencies: {
     config: pluginConfigSpec,

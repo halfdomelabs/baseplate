@@ -44,7 +44,8 @@ export function pluginDevServerPlugin(): Plugin {
     .filter(
       (file) =>
         fs.statSync(path.join(pluginPackageLocation, file)).isDirectory() &&
-        fs.existsSync(path.join(pluginPackageLocation, file, 'dist', 'web')),
+        fs.existsSync(path.join(pluginPackageLocation, file, 'dist', 'web')) &&
+        fs.existsSync(path.join(pluginPackageLocation, file, 'package.json')),
     )
     .map((file) => {
       const pluginLocation = path.join(pluginPackageLocation, file);
