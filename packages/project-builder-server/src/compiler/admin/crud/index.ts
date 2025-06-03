@@ -3,6 +3,7 @@ import type {
   AdminCrudEmbeddedFormConfig,
   AdminCrudSectionConfig,
 } from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import { ModelUtils } from '@baseplate-dev/project-builder-lib';
 import {
@@ -14,7 +15,7 @@ import {
   adminCrudSectionGenerator,
   reactRoutesGenerator,
 } from '@baseplate-dev/react-generators';
-import { type GeneratorBundle, makeIdSafe } from '@baseplate-dev/sync';
+import { makeIdSafe } from '@baseplate-dev/sync';
 import inflection from 'inflection';
 
 import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';

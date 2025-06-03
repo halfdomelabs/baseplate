@@ -1,18 +1,19 @@
-import {
-  createFieldMap,
-  type FieldMapSchema,
-  type FieldMapSchemaBuilder,
-  type FieldMapValues,
+import type {
+  FieldMapSchema,
+  FieldMapSchemaBuilder,
+  FieldMapValues,
 } from '@baseplate-dev/utils';
+
+import { createFieldMap } from '@baseplate-dev/utils';
 
 import type { GeneratorTask } from '#src/generators/generators.js';
 import type { ProviderExportScope } from '#src/providers/export-scopes.js';
+import type { ProviderType } from '#src/providers/providers.js';
 
 import { createGeneratorTask } from '#src/generators/generators.js';
 import {
   createProviderType,
   createReadOnlyProviderType,
-  type ProviderType,
 } from '#src/providers/providers.js';
 
 /**

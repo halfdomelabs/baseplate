@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
+import type { PostWriteCommand } from './types.js';
+
 import { sortPostWriteCommands } from './sort-commands.js';
-import { type PostWriteCommand } from './types.js';
 
 describe('sortPostWriteCommands', () => {
   it('should sort commands by priority', () => {

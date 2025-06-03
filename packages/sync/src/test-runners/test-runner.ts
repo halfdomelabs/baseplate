@@ -7,15 +7,13 @@ import type {
   ProviderDependencyMap,
   ProviderExportMap,
 } from '#src/generators/generators.js';
+import type { GeneratorTaskOutput } from '#src/output/generator-task-output.js';
 import type {
   PostWriteCommand,
   TemplateMetadataOptions,
 } from '#src/output/index.js';
 
-import {
-  type GeneratorTaskOutput,
-  GeneratorTaskOutputBuilder,
-} from '#src/output/generator-task-output.js';
+import { GeneratorTaskOutputBuilder } from '#src/output/generator-task-output.js';
 
 interface TaskTestRunnerResult<
   ExportMap extends ProviderExportMap | undefined,

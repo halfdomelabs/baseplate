@@ -1,9 +1,6 @@
-import {
-  format,
-  type Options,
-  resolveConfig,
-  resolveConfigFile,
-} from 'prettier';
+import type { Options } from 'prettier';
+
+import { format, resolveConfig, resolveConfigFile } from 'prettier';
 
 const ALLOWED_EXTENSIONS = new Set([
   'ts',

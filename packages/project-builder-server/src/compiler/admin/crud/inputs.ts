@@ -10,6 +10,7 @@ import type {
   AdminCrudTextInputConfig,
   ModelScalarFieldConfig,
 } from '@baseplate-dev/project-builder-lib';
+import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   adminCrudInputCompilerSpec,
@@ -24,7 +25,7 @@ import {
   adminCrudPasswordInputGenerator,
   adminCrudTextInputGenerator,
 } from '@baseplate-dev/react-generators';
-import { type GeneratorBundle, makeIdSafe } from '@baseplate-dev/sync';
+import { makeIdSafe } from '@baseplate-dev/sync';
 
 import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
 

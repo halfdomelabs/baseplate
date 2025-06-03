@@ -1,5 +1,6 @@
 import type { AdminCrudEmbeddedFormConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
+import type { Control, UseFormReturn } from 'react-hook-form';
 
 import {
   adminCrudEmbeddedFormSchema,
@@ -21,7 +22,7 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
-import { type Control, useForm, type UseFormReturn } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import type {
   EmbeddedListFormProps,

@@ -1,4 +1,6 @@
-import { type RefinementCtx, z, type ZodTypeAny } from 'zod';
+import type { RefinementCtx, ZodTypeAny } from 'zod';
+
+import { z } from 'zod';
 
 /**
  * Transforms a value using a dynamic schema and forwards any issues to transform context.

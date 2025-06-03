@@ -5,16 +5,14 @@ import type {
   FieldMapValues,
 } from '@baseplate-dev/utils';
 
+import type { GeneratorTask } from '#src/generators/generators.js';
 import type { ProviderExportScope } from '#src/providers/export-scopes.js';
+import type { ProviderType } from '#src/providers/providers.js';
 
-import {
-  createGeneratorTask,
-  type GeneratorTask,
-} from '#src/generators/generators.js';
+import { createGeneratorTask } from '#src/generators/generators.js';
 import {
   createProviderType,
   createReadOnlyProviderType,
-  type ProviderType,
 } from '#src/providers/providers.js';
 
 import { createConfigFieldMap } from './create-config-field-map.js';

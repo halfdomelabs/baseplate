@@ -1,9 +1,10 @@
-import {
-  type ImportDeclarationStructure,
-  Node,
-  type OptionalKind,
-  type SourceFile,
+import type {
+  ImportDeclarationStructure,
+  OptionalKind,
+  SourceFile,
 } from 'ts-morph';
+
+import { Node } from 'ts-morph';
 
 /**
  * Add an import declaration to a source file to the first line after comments.

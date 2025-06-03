@@ -1,9 +1,6 @@
-import {
-  type CodeBlockWriter,
-  type ImportDeclaration,
-  Node,
-  type SourceFile,
-} from 'ts-morph';
+import type { CodeBlockWriter, ImportDeclaration, SourceFile } from 'ts-morph';
+
+import { Node } from 'ts-morph';
 
 import type { TsImportDeclaration } from './types.js';
 

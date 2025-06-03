@@ -1,7 +1,9 @@
+import type { Control, FieldValues } from 'react-hook-form';
+
 import { toast } from '@baseplate-dev/ui-components';
 import { flattenObject } from 'es-toolkit';
 import { useEffect, useRef } from 'react';
-import { type Control, type FieldValues, useFormState } from 'react-hook-form';
+import { useFormState } from 'react-hook-form';
 
 import { useBlockerDialog } from './useBlockerDialog.js';
 

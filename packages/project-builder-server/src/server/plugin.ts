@@ -8,10 +8,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 
+import type { AppRouter } from '#src/api/index.js';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import { createContextBuilder } from '#src/api/context.js';
-import { appRouter, type AppRouter } from '#src/api/index.js';
+import { appRouter } from '#src/api/index.js';
 import { pathSafeJoin } from '#src/utils/paths.js';
 
 import type { BuilderServiceManager } from './builder-service-manager.js';

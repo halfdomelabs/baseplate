@@ -3,6 +3,8 @@ import type { TestLogger } from '@baseplate-dev/sync';
 import { createTestLogger } from '@baseplate-dev/sync';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { PackageSyncInfo, SyncMetadata } from './sync-metadata.js';
+
 import {
   emitMockFsWatcherEvent,
   getMockFsWatchedFiles,
@@ -14,11 +16,7 @@ import {
   readSyncMetadata,
   writeSyncMetadata,
 } from './sync-metadata-service.js';
-import {
-  INITIAL_SYNC_METADATA,
-  type PackageSyncInfo,
-  type SyncMetadata,
-} from './sync-metadata.js';
+import { INITIAL_SYNC_METADATA } from './sync-metadata.js';
 
 vi.mock('./sync-metadata-service.js');
 vi.mock('chokidar', () => ({

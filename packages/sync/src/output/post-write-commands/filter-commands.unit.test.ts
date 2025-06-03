@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
+import type { PostWriteCommand } from './types.js';
+
 import { filterPostWriteCommands } from './filter-commands.js';
-import { type PostWriteCommand } from './types.js';
 
 describe('filterPostWriteCommands', () => {
   it('should include commands without onlyIfChanged option', () => {

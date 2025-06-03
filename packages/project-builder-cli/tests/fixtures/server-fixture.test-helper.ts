@@ -1,11 +1,9 @@
 /* eslint-disable no-empty-pattern -- required by Playwright */
+import type { ProjectDefinition } from '@baseplate-dev/project-builder-lib';
 import type { BuilderServiceManager } from '@baseplate-dev/project-builder-server';
 import type { FastifyInstance } from 'fastify';
 
-import {
-  getLatestMigrationVersion,
-  type ProjectDefinition,
-} from '@baseplate-dev/project-builder-lib';
+import { getLatestMigrationVersion } from '@baseplate-dev/project-builder-lib';
 import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { test as base } from '@playwright/test';
 import fs from 'node:fs/promises';

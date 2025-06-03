@@ -138,6 +138,12 @@ export function generateTypescriptEslintConfig(options = []) {
 
         // Disallow import relative packages (e.g., `import '../other-package/foo'`)
         'import-x/no-relative-packages': 'error',
+
+        // Use top-level type imports
+        'import-x/consistent-type-specifier-style': [
+          'error',
+          'prefer-top-level',
+        ],
       },
       languageOptions: {
         ecmaVersion: 2022,

@@ -1,8 +1,6 @@
-import {
-  IndentationText,
-  type ManipulationSettings,
-  QuoteKind,
-} from 'ts-morph';
+import type { ManipulationSettings } from 'ts-morph';
+
+import { IndentationText, QuoteKind } from 'ts-morph';
 
 export const TS_MORPH_MANIPULATION_SETTINGS: Partial<ManipulationSettings> = {
   indentationText: IndentationText.TwoSpaces,
