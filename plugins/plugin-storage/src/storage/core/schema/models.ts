@@ -93,6 +93,12 @@ export function createStorageModels(
           },
         ],
       },
+      graphql: {
+        objectType: {
+          enabled: true,
+          fields: ['id', 'name'],
+        },
+      },
     },
   };
 }
