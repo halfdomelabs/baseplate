@@ -5,8 +5,9 @@ import path from 'node:path';
 
 import { parseGeneratorName } from '#src/utils/parse-generator-name.js';
 
+import type { ExtractorConfig } from './index.js';
+
 import {
-  type ExtractorConfig,
   extractorConfigSchema,
   extractorProvidersConfigSchema,
 } from './index.js';
