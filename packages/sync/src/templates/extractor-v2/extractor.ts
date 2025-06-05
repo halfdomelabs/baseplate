@@ -1,6 +1,4 @@
-import { sortObjectKeys, stringifyPrettyCompact } from '@baseplate-dev/utils';
 import { groupBy } from 'es-toolkit';
-import path from 'node:path';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
@@ -16,6 +14,7 @@ import { TemplateExtractorApi } from './runner/template-extractor-api.js';
 import { TemplateExtractorContext } from './runner/template-extractor-context.js';
 import { TemplateExtractorFileContainer } from './runner/template-extractor-file-container.js';
 import { groupTemplateFilesByType } from './utils/group-template-files-by-type.js';
+import { updateExtractorTemplateEntries } from './utils/update-extractor-template-entries.js';
 
 /**
  * Run the template file extractors on a target output directory
@@ -94,41 +93,8 @@ export async function runTemplateFileExtractors(
 
   await runHooks('afterExtract');
 
-  // Group metadata entries by generator
-  const metadataEntriesByGenerator = groupBy(
-    metadataEntries,
-    (e) => e.generator,
-  );
-
-  for (const [generator, entries] of Object.entries(
-    metadataEntriesByGenerator,
-  )) {
-    const generatorConfig = configLookup.getExtractorConfig(generator);
-    if (!generatorConfig) {
-      throw new Error(`No config found for generator: ${generator}`);
-    }
-
-    // Upsert template entries into the generators.json file
-    const { name, templates, extractors, ...rest } = generatorConfig.config;
-    const newConfig = {
-      name,
-      extractors,
-      templates: sortObjectKeys({
-        ...templates,
-        ...Object.fromEntries(
-          entries.map((e) => [e.templatesPath, e.metadata]),
-        ),
-      }),
-      ...rest,
-    };
-
-    // Write the new config to the generators.json file and update the cache
-    fileContainer.writeFile(
-      path.join(generatorConfig.generatorDirectory, 'generators.json'),
-      stringifyPrettyCompact(newConfig),
-    );
-    configLookup.setExtractorConfig(generator, newConfig);
-  }
+  // Update extractor configurations with new template entries
+  updateExtractorTemplateEntries(metadataEntries, configLookup, fileContainer);
 
   // Group metadata entries by type
   const metadataEntriesByType = groupBy(
@@ -148,4 +114,8 @@ export async function runTemplateFileExtractors(
   }
 
   await runHooks('afterWrite');
+
+  // Commit the file changes once all the extractors and plugins have written their files
+
+  await fileContainer.commit();
 }

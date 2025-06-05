@@ -2,7 +2,7 @@ import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 /**
- * Schema for a single template configuration
+ * Schema for a single template configuration in the extractor.json file
  */
 export const templateConfigSchema = z
   .object({
@@ -36,11 +36,11 @@ export const extractorConfigSchema = z.object({
 });
 
 /**
- * Type for extractor configuration
- */
-export type ExtractorConfig = z.infer<typeof extractorConfigSchema>;
-
-/**
  * Type for a single template configuration
  */
 export type TemplateConfig = z.infer<typeof templateConfigSchema>;
+
+/**
+ * Type for extractor configuration
+ */
+export type ExtractorConfig = z.infer<typeof extractorConfigSchema>;

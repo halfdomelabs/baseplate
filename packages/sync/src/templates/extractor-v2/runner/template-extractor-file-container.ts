@@ -42,4 +42,12 @@ export class TemplateExtractorFileContainer {
       await this.commitFile(filePath, contents);
     }
   }
+
+  /**
+   * Get the files map for testing purposes.
+   * @internal
+   */
+  getFiles(): ReadonlyMap<string, string | Buffer> {
+    return this.files;
+  }
 }
