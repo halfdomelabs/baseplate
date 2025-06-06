@@ -40,7 +40,7 @@ export function groupTemplateFilesByType(
       duplicateNameErrors.push(
         ...duplicateNames.map(
           (f) =>
-            `Duplicate name "${f.metadata.name}" in generator "${f.metadata.generator}" at: ${f.path}`,
+            `Duplicate name "${f.metadata.name}" in generator "${f.metadata.generator}" at: ${f.absolutePath}`,
         ),
       );
     }

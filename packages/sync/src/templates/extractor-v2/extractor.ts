@@ -75,9 +75,9 @@ export async function runTemplateFileExtractors(
     }
 
     const parsedFiles = files.map((f) => {
-      const { path, metadata } = f;
+      const { absolutePath: path, metadata } = f;
       return {
-        path,
+        absolutePath: path,
         metadata: extractor.outputTemplateMetadataSchema
           ? extractor.outputTemplateMetadataSchema.parse(metadata)
           : metadata,

@@ -8,7 +8,7 @@ describe('groupTemplateFilesByType', () => {
   const createMockEntry = (
     overrides: Partial<TemplateMetadataFileEntry> = {},
   ): TemplateMetadataFileEntry => ({
-    path: '/project/test.ts',
+    absolutePath: '/project/test.ts',
     metadata: {
       name: 'test-template',
       type: 'ts',
@@ -60,7 +60,7 @@ describe('groupTemplateFilesByType', () => {
 
     const files: TemplateMetadataFileEntry[] = [
       createMockEntry({
-        path: '/project/old.ts',
+        absolutePath: '/project/old.ts',
         modifiedTime: oldDate,
         metadata: {
           name: 'old-file',
@@ -70,7 +70,7 @@ describe('groupTemplateFilesByType', () => {
         },
       }),
       createMockEntry({
-        path: '/project/new.ts',
+        absolutePath: '/project/new.ts',
         modifiedTime: newDate,
         metadata: {
           name: 'new-file',
@@ -93,7 +93,7 @@ describe('groupTemplateFilesByType', () => {
 
     const files: TemplateMetadataFileEntry[] = [
       createMockEntry({
-        path: '/project/v1/test.ts',
+        absolutePath: '/project/v1/test.ts',
         modifiedTime: oldDate,
         metadata: {
           name: 'test-template',
@@ -103,7 +103,7 @@ describe('groupTemplateFilesByType', () => {
         },
       }),
       createMockEntry({
-        path: '/project/v2/test.ts',
+        absolutePath: '/project/v2/test.ts',
         modifiedTime: newDate,
         metadata: {
           name: 'test-template',
@@ -117,13 +117,13 @@ describe('groupTemplateFilesByType', () => {
     const result = groupTemplateFilesByType(files);
 
     expect(result.ts).toHaveLength(1);
-    expect(result.ts[0].path).toBe('/project/v2/test.ts');
+    expect(result.ts[0].absolutePath).toBe('/project/v2/test.ts');
   });
 
   it('should throw error for duplicate names within the same generator', () => {
     const files: TemplateMetadataFileEntry[] = [
       createMockEntry({
-        path: '/project/file1.ts',
+        absolutePath: '/project/file1.ts',
         metadata: {
           name: 'duplicate-name',
           type: 'ts',
@@ -132,7 +132,7 @@ describe('groupTemplateFilesByType', () => {
         },
       }),
       createMockEntry({
-        path: '/project/file2.ts',
+        absolutePath: '/project/file2.ts',
         metadata: {
           name: 'duplicate-name',
           type: 'ts',
@@ -189,7 +189,7 @@ describe('groupTemplateFilesByType', () => {
   it('should throw error for multiple duplicate names across different types', () => {
     const files: TemplateMetadataFileEntry[] = [
       createMockEntry({
-        path: '/project/dup1.ts',
+        absolutePath: '/project/dup1.ts',
         metadata: {
           name: 'dup-ts',
           type: 'ts',
@@ -198,7 +198,7 @@ describe('groupTemplateFilesByType', () => {
         },
       }),
       createMockEntry({
-        path: '/project/dup2.ts',
+        absolutePath: '/project/dup2.ts',
         metadata: {
           name: 'dup-ts',
           type: 'ts',
@@ -207,7 +207,7 @@ describe('groupTemplateFilesByType', () => {
         },
       }),
       createMockEntry({
-        path: '/project/dup1.txt',
+        absolutePath: '/project/dup1.txt',
         metadata: {
           name: 'dup-text',
           type: 'text',
@@ -216,7 +216,7 @@ describe('groupTemplateFilesByType', () => {
         },
       }),
       createMockEntry({
-        path: '/project/dup2.txt',
+        absolutePath: '/project/dup2.txt',
         metadata: {
           name: 'dup-text',
           type: 'text',

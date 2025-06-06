@@ -14,7 +14,7 @@ import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
 import { templateFileMetadataBaseSchema } from './metadata.js';
 
 export interface TemplateMetadataFileEntry {
-  path: string;
+  absolutePath: string;
   metadata: TemplateFileMetadataBase;
   modifiedTime: Date;
 }
@@ -57,7 +57,7 @@ export async function readTemplateMetadataFiles(
               );
             }
             return {
-              path: filePath,
+              absolutePath: filePath,
               metadata,
               modifiedTime,
             };
