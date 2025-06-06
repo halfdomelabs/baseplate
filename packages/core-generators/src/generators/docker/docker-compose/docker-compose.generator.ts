@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import type { DockerComposeOutput } from './types.js';
 
-import { packageProvider } from '../../../providers/index.js';
+import { packageInfoProvider } from '../../../providers/index.js';
 import { generatePostgresDockerCompose } from './postgres.js';
 import { generateRedisDockerCompose } from './redis.js';
 
@@ -32,11 +32,11 @@ export const dockerComposeGenerator = createGenerator({
   buildTasks: (descriptor) => ({
     main: createGeneratorTask({
       dependencies: {
-        project: packageProvider,
+        packageInfo: packageInfoProvider,
       },
-      run({ project }) {
+      run({ packageInfo }) {
         const {
-          projectName = project.getPackageName(),
+          projectName = packageInfo.getPackageName(),
           dockerFolder,
           postgres,
           redis,

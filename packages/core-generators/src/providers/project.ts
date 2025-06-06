@@ -11,5 +11,5 @@ export interface PackageProvider {
   getPackageRoot(): string;
 }
 
-export const packageProvider =
+export const packageInfoProvider =
   createReadOnlyProviderType<PackageProvider>('package');

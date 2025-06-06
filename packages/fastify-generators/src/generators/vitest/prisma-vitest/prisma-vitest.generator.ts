@@ -1,7 +1,7 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  packageProvider,
+  packageInfoProvider,
   projectScope,
   tsCodeFragment,
   typescriptFileProvider,
@@ -84,9 +84,9 @@ if (TEST_MODE !== 'unit') {
       dependencies: {
         typescriptFile: typescriptFileProvider,
         prismaImports: prismaImportsProvider,
-        project: packageProvider,
+        packageInfo: packageInfoProvider,
       },
-      run({ project, typescriptFile, prismaImports }) {
+      run({ packageInfo, typescriptFile, prismaImports }) {
         const dbHelperPath = '@/src/tests/helpers/db.test-helper.ts';
         const prismaHelperPath = '@/src/tests/helpers/prisma.test-helper.ts';
 
@@ -98,7 +98,7 @@ if (TEST_MODE !== 'unit') {
                 destination: dbHelperPath,
                 variables: {
                   TPL_TEST_DB: quot(
-                    `${project.getPackageName().replaceAll('-', '_')}_test`,
+                    `${packageInfo.getPackageName().replaceAll('-', '_')}_test`,
                   ),
                 },
               }),
