@@ -20,9 +20,9 @@ export interface TemplateFileExtractorSourceFile<
     TemplateFileMetadataBase = TemplateFileMetadataBase,
 > {
   /**
-   * The path of the file.
+   * The absolute path of the source file.
    */
-  path: string;
+  absolutePath: string;
   /**
    * The metadata for the file.
    */
@@ -42,7 +42,7 @@ export interface TemplateFileExtractorMetadataEntry<
   /**
    * The relative path of the file in the templates/ folder.
    */
-  templatesPath: string;
+  generatorTemplatePath: string;
   /**
    * The metadata for the file.
    */

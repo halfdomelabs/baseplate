@@ -40,7 +40,7 @@ export async function runTemplateFileExtractors(
     plugins: new Map(),
   });
   const fileContainer = new TemplateExtractorFileContainer();
-  const { hooks, pluginMap } = initializeTemplateExtractorPlugins({
+  const { hooks, pluginMap } = await initializeTemplateExtractorPlugins({
     templateExtractors: templateFileExtractors,
     context: initializerContext,
     fileContainer,

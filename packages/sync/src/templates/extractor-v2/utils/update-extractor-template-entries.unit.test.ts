@@ -48,7 +48,7 @@ describe('updateExtractorTemplateEntries', () => {
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
         generator: '@test/package1#test-generator',
-        templatesPath: 'new-template-1',
+        generatorTemplatePath: 'new-template-1',
         metadata: {
           name: 'new-template-1',
           type: 'ts',
@@ -57,7 +57,7 @@ describe('updateExtractorTemplateEntries', () => {
       },
       {
         generator: '@test/package1#test-generator',
-        templatesPath: 'new-template-2',
+        generatorTemplatePath: 'new-template-2',
         metadata: {
           name: 'new-template-2',
           type: 'ts',
@@ -150,7 +150,7 @@ describe('updateExtractorTemplateEntries', () => {
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
         generator: '@test/package1#generator-1',
-        templatesPath: 'new-ts-template',
+        generatorTemplatePath: 'new-ts-template',
         metadata: {
           name: 'new-ts-template',
           type: 'ts',
@@ -158,7 +158,7 @@ describe('updateExtractorTemplateEntries', () => {
       },
       {
         generator: '@test/package2#generator-2',
-        templatesPath: 'new-js-template',
+        generatorTemplatePath: 'new-js-template',
         metadata: {
           name: 'new-js-template',
           type: 'js',
@@ -224,7 +224,7 @@ describe('updateExtractorTemplateEntries', () => {
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
         generator: '@test/package1#test-generator',
-        templatesPath: 'existing-template',
+        generatorTemplatePath: 'existing-template',
         metadata: {
           name: 'existing-template',
           type: 'ts',
@@ -276,7 +276,7 @@ describe('updateExtractorTemplateEntries', () => {
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
         generator: '@test/package1#test-generator',
-        templatesPath: 'new-template',
+        generatorTemplatePath: 'new-template',
         metadata: {
           name: 'new-template',
           type: 'ts',

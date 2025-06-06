@@ -51,7 +51,7 @@ export interface TemplateExtractorPlugin<
     context: TemplateExtractorContext<TPluginDependencies>;
     fileContainer: TemplateExtractorFileContainer;
     api: TemplateExtractorPluginApi;
-  }): TInstance;
+  }): TInstance | Promise<TInstance>;
 }
 
 export function createTemplateExtractorPlugin<

@@ -45,7 +45,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     writeTemplateFiles: vi.fn(),
   });
 
-  it('should initialize plugins with no dependencies', () => {
+  it('should initialize plugins with no dependencies', async () => {
     const pluginA = createMockPlugin('pluginA', [], { data: 'A' });
     const pluginB = createMockPlugin('pluginB', [], { data: 'B' });
 
@@ -53,7 +53,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     const context = createMockContext();
     const fileContainer = createMockFileContainer();
 
-    const result = initializeTemplateExtractorPlugins({
+    const result = await initializeTemplateExtractorPlugins({
       templateExtractors: [extractor],
       context,
       fileContainer,
@@ -66,7 +66,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     expect(result.hooks.afterWrite).toEqual([]);
   });
 
-  it('should initialize plugins in dependency order', () => {
+  it('should initialize plugins in dependency order', async () => {
     const pluginA = createMockPlugin('pluginA', [], { data: 'A' });
     const pluginB = createMockPlugin('pluginB', [pluginA], { data: 'B' });
     const pluginC = createMockPlugin('pluginC', [pluginB], { data: 'C' });
@@ -93,7 +93,7 @@ describe('initializeTemplateExtractorPlugins', () => {
       return { data: 'C' };
     });
 
-    const result = initializeTemplateExtractorPlugins({
+    const result = await initializeTemplateExtractorPlugins({
       templateExtractors: [extractor],
       context,
       fileContainer,
@@ -103,7 +103,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     expect(initOrder).toEqual(['pluginA', 'pluginB', 'pluginC']);
   });
 
-  it('should extract plugins recursively from nested dependencies', () => {
+  it('should extract plugins recursively from nested dependencies', async () => {
     const pluginA = createMockPlugin('pluginA', [], { data: 'A' });
     const pluginB = createMockPlugin('pluginB', [pluginA], { data: 'B' });
     const pluginC = createMockPlugin('pluginC', [], { data: 'C' });
@@ -113,7 +113,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     const context = createMockContext();
     const fileContainer = createMockFileContainer();
 
-    const result = initializeTemplateExtractorPlugins({
+    const result = await initializeTemplateExtractorPlugins({
       templateExtractors: [extractor],
       context,
       fileContainer,
@@ -125,7 +125,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     expect(result.pluginMap.has('pluginC')).toBe(true);
   });
 
-  it('should handle multiple extractors with overlapping plugins', () => {
+  it('should handle multiple extractors with overlapping plugins', async () => {
     const pluginA = createMockPlugin('pluginA', [], { data: 'A' });
     const pluginB = createMockPlugin('pluginB', [], { data: 'B' });
 
@@ -134,7 +134,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     const context = createMockContext();
     const fileContainer = createMockFileContainer();
 
-    const result = initializeTemplateExtractorPlugins({
+    const result = await initializeTemplateExtractorPlugins({
       templateExtractors: [extractor1, extractor2],
       context,
       fileContainer,
@@ -143,7 +143,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     expect(result.pluginMap.size).toBe(2);
   });
 
-  it('should populate context plugins map as plugins are initialized', () => {
+  it('should populate context plugins map as plugins are initialized', async () => {
     const pluginA = createMockPlugin('pluginA', [], { data: 'A' });
     const pluginB = createMockPlugin('pluginB', [pluginA], { data: 'B' });
 
@@ -164,7 +164,7 @@ describe('initializeTemplateExtractorPlugins', () => {
       },
     );
 
-    const result = initializeTemplateExtractorPlugins({
+    const result = await initializeTemplateExtractorPlugins({
       templateExtractors: [extractor],
       context,
       fileContainer,
@@ -176,12 +176,12 @@ describe('initializeTemplateExtractorPlugins', () => {
     expect(context.plugins.has('pluginB')).toBe(true);
   });
 
-  it('should handle empty plugin list', () => {
+  it('should handle empty plugin list', async () => {
     const extractor = createMockExtractor('extractor', []);
     const context = createMockContext();
     const fileContainer = createMockFileContainer();
 
-    const result = initializeTemplateExtractorPlugins({
+    const result = await initializeTemplateExtractorPlugins({
       templateExtractors: [extractor],
       context,
       fileContainer,
@@ -190,7 +190,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     expect(result.pluginMap.size).toBe(0);
   });
 
-  it('should collect hooks from plugins', () => {
+  it('should collect hooks from plugins', async () => {
     const afterExtractHook = vi.fn();
     const afterWriteHook = vi.fn();
 
@@ -212,7 +212,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     const context = createMockContext();
     const fileContainer = createMockFileContainer();
 
-    const result = initializeTemplateExtractorPlugins({
+    const result = await initializeTemplateExtractorPlugins({
       templateExtractors: [extractor],
       context,
       fileContainer,
@@ -222,5 +222,51 @@ describe('initializeTemplateExtractorPlugins', () => {
     expect(result.hooks.afterWrite).toHaveLength(1);
     expect(result.hooks.afterExtract[0]).toBe(afterExtractHook);
     expect(result.hooks.afterWrite[0]).toBe(afterWriteHook);
+  });
+
+  it('should handle async getInstance methods', async () => {
+    const pluginA = createMockPlugin('pluginA', [], { data: 'A' });
+    const pluginB = createMockPlugin('pluginB', [pluginA], { data: 'B' });
+
+    // Make pluginA async
+    pluginA.getInstance = vi.fn(async () => {
+      // Simulate async work
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      return { data: 'A', isAsync: true };
+    });
+
+    // Make pluginB async too
+    pluginB.getInstance = vi.fn(
+      async (options: {
+        context: TemplateExtractorContext;
+        fileContainer: TemplateExtractorFileContainer;
+        api: TemplateExtractorPluginApi;
+      }) => {
+        // Verify pluginA is available even though it was async
+        expect(options.context.plugins.has('pluginA')).toBe(true);
+        await new Promise((resolve) => setTimeout(resolve, 1));
+        return { data: 'B', isAsync: true };
+      },
+    );
+
+    const extractor = createMockExtractor('extractor', [pluginB]);
+    const context = createMockContext();
+    const fileContainer = createMockFileContainer();
+
+    const result = await initializeTemplateExtractorPlugins({
+      templateExtractors: [extractor],
+      context,
+      fileContainer,
+    });
+
+    expect(result.pluginMap.size).toBe(2);
+    expect(result.pluginMap.get('pluginA')).toEqual({
+      data: 'A',
+      isAsync: true,
+    });
+    expect(result.pluginMap.get('pluginB')).toEqual({
+      data: 'B',
+      isAsync: true,
+    });
   });
 });

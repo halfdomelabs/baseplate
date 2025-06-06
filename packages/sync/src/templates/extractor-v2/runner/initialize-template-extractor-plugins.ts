@@ -31,11 +31,11 @@ interface InitializeTemplateExtractorPluginsResult {
  * @param input - The input object containing template extractors, context, and fileContainer
  * @returns An object containing the plugin map and collected hooks
  */
-export function initializeTemplateExtractorPlugins({
+export async function initializeTemplateExtractorPlugins({
   templateExtractors,
   context,
   fileContainer,
-}: InitializeTemplateExtractorPluginsInput): InitializeTemplateExtractorPluginsResult {
+}: InitializeTemplateExtractorPluginsInput): Promise<InitializeTemplateExtractorPluginsResult> {
   // Step 1: Extract all plugins from template extractors recursively
   const allPlugins = extractPluginsRecursively(templateExtractors);
 
@@ -62,7 +62,7 @@ export function initializeTemplateExtractorPlugins({
     const pluginApi = createPluginApi(allHooks);
 
     // Initialize the plugin
-    const pluginInstance = plugin.getInstance({
+    const pluginInstance = await plugin.getInstance({
       context: pluginContext,
       fileContainer,
       api: pluginApi,

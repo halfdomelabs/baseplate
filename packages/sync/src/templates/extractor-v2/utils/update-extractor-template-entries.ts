@@ -42,7 +42,7 @@ export function updateExtractorTemplateEntries(
       templates: sortObjectKeys({
         ...templates,
         ...Object.fromEntries(
-          entries.map((e) => [e.templatesPath, e.metadata]),
+          entries.map((e) => [e.generatorTemplatePath, e.metadata]),
         ),
       }),
       ...rest,
