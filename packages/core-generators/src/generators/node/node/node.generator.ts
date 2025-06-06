@@ -23,7 +23,7 @@ import { writeJsonToBuilder } from '#src/writers/json.js';
 
 import type { NodePackageDependencies } from './package-dependencies-container.js';
 
-import { projectProvider } from '../../../providers/index.js';
+import { packageProvider } from '../../../providers/index.js';
 import { createNodePackageDependenciesContainer } from './package-dependencies-container.js';
 
 const descriptorSchema = z.object({
@@ -134,9 +134,9 @@ export const nodeGenerator = createGenerator({
   buildTasks: (descriptor) => ({
     config: createGeneratorTask(configTask),
     project: createGeneratorTask({
-      outputs: { project: projectProvider.export(projectScope) },
+      outputs: { project: packageProvider.export(projectScope) },
       run: () => ({
-        build: () => ({ project: { getProjectName: () => descriptor.name } }),
+        build: () => ({ project: { getPackageName: () => descriptor.name } }),
       }),
     }),
     main: createGeneratorTask({

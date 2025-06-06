@@ -1,4 +1,4 @@
-import { projectProvider } from '@baseplate-dev/core-generators';
+import { packageProvider } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -19,10 +19,10 @@ export const readmeGenerator = createGenerator({
   buildTasks: (descriptor) => ({
     main: createGeneratorTask({
       dependencies: {
-        project: projectProvider,
+        project: packageProvider,
       },
       run({ project }) {
-        const projectName = descriptor.projectName ?? project.getProjectName();
+        const projectName = descriptor.projectName ?? project.getPackageName();
 
         return {
           build: async (builder) => {

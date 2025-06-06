@@ -14,7 +14,7 @@ describe('nodeGenerator', () => {
     it('returns the project name', async () => {
       const runner = createTaskTestRunner(nodeBundle.tasks.project);
       const result = await runner.run({});
-      expect(result.outputs.project.getProjectName()).toBe('node-project');
+      expect(result.outputs.project.getPackageName()).toBe('node-project');
     });
   });
 
