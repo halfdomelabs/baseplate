@@ -16,17 +16,17 @@ export class TemplateExtractorContext<
   constructor({
     configLookup,
     logger,
-    baseDirectory,
+    outputDirectory,
     plugins,
   }: {
     configLookup: TemplateExtractorConfigLookup;
     logger: Logger;
-    baseDirectory: string;
+    outputDirectory: string;
     plugins: Map<string, unknown>;
   }) {
     this.configLookup = configLookup;
     this.logger = logger;
-    this.baseDirectory = baseDirectory;
+    this.outputDirectory = outputDirectory;
     this.plugins = plugins;
   }
 
@@ -53,9 +53,9 @@ export class TemplateExtractorContext<
   logger: Logger;
 
   /**
-   * The base directory of the package.
+   * The output directory of the package.
    */
-  baseDirectory: string;
+  outputDirectory: string;
 
   /**
    * The plugins available to the context.

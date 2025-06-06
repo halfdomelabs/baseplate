@@ -36,7 +36,7 @@ export async function runTemplateFileExtractors(
   const initializerContext = new TemplateExtractorContext({
     configLookup,
     logger,
-    baseDirectory: outputDirectory,
+    outputDirectory,
     plugins: new Map(),
   });
   const fileContainer = new TemplateExtractorFileContainer();
@@ -56,7 +56,7 @@ export async function runTemplateFileExtractors(
   const context = new TemplateExtractorContext({
     configLookup,
     logger,
-    baseDirectory: outputDirectory,
+    outputDirectory,
     plugins: pluginMap,
   });
 

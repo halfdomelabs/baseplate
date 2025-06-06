@@ -94,13 +94,15 @@ export interface TemplateFileExtractor<
    * @param context - The context for the extractor.
    */
   extractTemplateMetadataEntries(
-    files: TemplateFileExtractorSourceFile<
-      z.infer<TGeneratorTemplateMetadata>
-    >[],
+    files: TemplateFileExtractorSourceFile<z.infer<TOutputTemplateMetadata>>[],
     context: TemplateExtractorContext<TPluginDependencies>,
-  ): Promise<
-    TemplateFileExtractorMetadataEntry<z.infer<TGeneratorTemplateMetadata>>[]
-  >;
+  ):
+    | Promise<
+        TemplateFileExtractorMetadataEntry<
+          z.infer<TGeneratorTemplateMetadata>
+        >[]
+      >
+    | TemplateFileExtractorMetadataEntry<z.infer<TGeneratorTemplateMetadata>>[];
 
   /**
    * Writes the metadata entries for the given files.

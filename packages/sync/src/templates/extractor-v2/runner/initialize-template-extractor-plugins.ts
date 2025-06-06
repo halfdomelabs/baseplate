@@ -54,7 +54,7 @@ export function initializeTemplateExtractorPlugins({
     const pluginContext = new TemplateExtractorContext({
       configLookup: context.configLookup,
       logger: context.logger,
-      baseDirectory: context.baseDirectory,
+      outputDirectory: context.outputDirectory,
       plugins: initializedPlugins,
     });
 

@@ -1,5 +1,7 @@
 import fs from 'node:fs/promises';
 
+import { formatGeneratedTemplateContents } from '#src/templates/utils/formatter.js';
+
 /**
  * A container for files that are generated
  */
@@ -23,10 +25,15 @@ export class TemplateExtractorFileContainer {
     filePath: string,
     contents: string | Buffer,
   ): Promise<void> {
+    // format the file contents
+    const formattedContents =
+      typeof contents === 'string'
+        ? await formatGeneratedTemplateContents(contents, filePath)
+        : contents;
     // only commit file if it has changed
-    const contentsBuffer = Buffer.isBuffer(contents)
-      ? contents
-      : Buffer.from(contents);
+    const contentsBuffer = Buffer.isBuffer(formattedContents)
+      ? formattedContents
+      : Buffer.from(formattedContents);
     const existingContents = await fs.readFile(filePath);
     if (existingContents.equals(contentsBuffer)) {
       return;

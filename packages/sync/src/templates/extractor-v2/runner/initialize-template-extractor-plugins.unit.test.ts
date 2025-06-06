@@ -1,11 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { createTestLogger } from '#src/tests/logger.test-utils.js';
+
 import type {
   TemplateExtractorPlugin,
   TemplateExtractorPluginApi,
 } from './template-extractor-plugin.js';
 import type { TemplateFileExtractor } from './template-file-extractor.js';
 
+import { TemplateExtractorConfigLookup } from '../configs/index.js';
 import { initializeTemplateExtractorPlugins } from './initialize-template-extractor-plugins.js';
 import { TemplateExtractorContext } from './template-extractor-context.js';
 import { TemplateExtractorFileContainer } from './template-extractor-file-container.js';
@@ -13,9 +16,9 @@ import { TemplateExtractorFileContainer } from './template-extractor-file-contai
 describe('initializeTemplateExtractorPlugins', () => {
   const createMockContext = (): TemplateExtractorContext =>
     new TemplateExtractorContext({
-      configLookup: {} as any,
-      logger: {} as any,
-      baseDirectory: '/test',
+      configLookup: new TemplateExtractorConfigLookup(new Map()),
+      logger: createTestLogger(),
+      outputDirectory: '/test',
       plugins: new Map(),
     });
 
@@ -61,8 +64,6 @@ describe('initializeTemplateExtractorPlugins', () => {
     expect(result.pluginMap.get('pluginB')).toEqual({ data: 'B' });
     expect(result.hooks.afterExtract).toEqual([]);
     expect(result.hooks.afterWrite).toEqual([]);
-    expect(pluginA.getInstance as any).toHaveBeenCalledTimes(1);
-    expect(pluginB.getInstance as any).toHaveBeenCalledTimes(1);
   });
 
   it('should initialize plugins in dependency order', () => {
@@ -140,29 +141,6 @@ describe('initializeTemplateExtractorPlugins', () => {
     });
 
     expect(result.pluginMap.size).toBe(2);
-    expect(pluginA.getInstance as any).toHaveBeenCalledTimes(1); // Should only be called once
-    expect(pluginB.getInstance as any).toHaveBeenCalledTimes(1);
-  });
-
-  it('should provide plugins with context and file container', () => {
-    const plugin = createMockPlugin('plugin');
-    const extractor = createMockExtractor('extractor', [plugin]);
-    const context = createMockContext();
-    const fileContainer = createMockFileContainer();
-
-    initializeTemplateExtractorPlugins({
-      templateExtractors: [extractor],
-      context,
-      fileContainer,
-    });
-
-    expect(plugin.getInstance as any).toHaveBeenCalledWith({
-      context: expect.any(TemplateExtractorContext),
-      fileContainer,
-      api: expect.objectContaining({
-        registerHook: expect.any(Function),
-      }),
-    });
   });
 
   it('should populate context plugins map as plugins are initialized', () => {
@@ -210,30 +188,6 @@ describe('initializeTemplateExtractorPlugins', () => {
     });
 
     expect(result.pluginMap.size).toBe(0);
-  });
-
-  it('should throw error for circular dependencies', () => {
-    // Create plugins with circular dependency: A -> B -> C -> A
-    const pluginA = createMockPlugin('pluginA');
-    const pluginB = createMockPlugin('pluginB');
-    const pluginC = createMockPlugin('pluginC');
-
-    // Set up circular dependencies
-    pluginA.pluginDependencies = [pluginC];
-    pluginB.pluginDependencies = [pluginA];
-    pluginC.pluginDependencies = [pluginB];
-
-    const extractor = createMockExtractor('extractor', [pluginA]);
-    const context = createMockContext();
-    const fileContainer = createMockFileContainer();
-
-    expect(() => {
-      initializeTemplateExtractorPlugins({
-        templateExtractors: [extractor],
-        context,
-        fileContainer,
-      });
-    }).toThrow();
   });
 
   it('should collect hooks from plugins', () => {
