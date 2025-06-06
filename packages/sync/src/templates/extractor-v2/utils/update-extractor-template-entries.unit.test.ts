@@ -302,6 +302,187 @@ describe('updateExtractorTemplateEntries', () => {
     });
   });
 
+  it('should dedupe templates by name when same name exists with different path', async () => {
+    // Arrange
+    const originalConfig: ExtractorConfig = {
+      name: 'test-generator',
+      templates: {
+        'old-path/my-template': {
+          name: 'my-template',
+          type: 'ts',
+          description: 'Original template at old path',
+        },
+        'other-template': {
+          name: 'other-template',
+          type: 'js',
+          description: 'Should be preserved',
+        },
+      },
+      extractors: {},
+    };
+
+    vol.fromJSON({
+      '/packages/package1/generators/test/extractor.json':
+        JSON.stringify(originalConfig),
+    });
+
+    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
+    await configLookup.initialize();
+
+    const fileContainer = new TemplateExtractorFileContainer();
+
+    const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
+      {
+        generator: '@test/package1#test-generator',
+        generatorTemplatePath: 'new-path/my-template',
+        metadata: {
+          name: 'my-template',
+          type: 'ts',
+          description: 'Updated template at new path',
+        },
+      },
+    ];
+
+    // Act
+    updateExtractorTemplateEntries(
+      metadataEntries,
+      configLookup,
+      fileContainer,
+    );
+
+    // Assert
+    const updatedConfig = configLookup.getExtractorConfig(
+      '@test/package1#test-generator',
+    );
+
+    // Should only have 2 templates: the new one and the preserved one
+    expect(Object.keys(updatedConfig?.config.templates ?? {})).toEqual([
+      'new-path/my-template',
+      'other-template',
+    ]);
+
+    // The old template with same name should be removed
+    expect(updatedConfig?.config.templates).not.toHaveProperty(
+      'old-path/my-template',
+    );
+
+    // The new template should be present with updated content
+    expect(updatedConfig?.config.templates['new-path/my-template']).toEqual({
+      name: 'my-template',
+      type: 'ts',
+      description: 'Updated template at new path',
+    });
+
+    // The other template should be preserved
+    expect(updatedConfig?.config.templates['other-template']).toEqual({
+      name: 'other-template',
+      type: 'js',
+      description: 'Should be preserved',
+    });
+  });
+
+  it('should handle multiple templates with same names being replaced', async () => {
+    // Arrange
+    const originalConfig: ExtractorConfig = {
+      name: 'test-generator',
+      templates: {
+        'old-path/template-a': {
+          name: 'template-a',
+          type: 'ts',
+          description: 'Old template A',
+        },
+        'old-path/template-b': {
+          name: 'template-b',
+          type: 'js',
+          description: 'Old template B',
+        },
+        'keep-me': {
+          name: 'keep-me',
+          type: 'ts',
+          description: 'Should be kept',
+        },
+      },
+      extractors: {},
+    };
+
+    vol.fromJSON({
+      '/packages/package1/generators/test/extractor.json':
+        JSON.stringify(originalConfig),
+    });
+
+    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
+    await configLookup.initialize();
+
+    const fileContainer = new TemplateExtractorFileContainer();
+
+    const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
+      {
+        generator: '@test/package1#test-generator',
+        generatorTemplatePath: 'new-path/template-a',
+        metadata: {
+          name: 'template-a',
+          type: 'ts',
+          description: 'New template A',
+        },
+      },
+      {
+        generator: '@test/package1#test-generator',
+        generatorTemplatePath: 'new-path/template-b',
+        metadata: {
+          name: 'template-b',
+          type: 'js',
+          description: 'New template B',
+        },
+      },
+    ];
+
+    // Act
+    updateExtractorTemplateEntries(
+      metadataEntries,
+      configLookup,
+      fileContainer,
+    );
+
+    // Assert
+    const updatedConfig = configLookup.getExtractorConfig(
+      '@test/package1#test-generator',
+    );
+
+    // Should have 3 templates: 2 new ones and 1 preserved
+    expect(Object.keys(updatedConfig?.config.templates ?? {})).toEqual([
+      'keep-me',
+      'new-path/template-a',
+      'new-path/template-b',
+    ]);
+
+    // Old templates should be removed
+    expect(updatedConfig?.config.templates).not.toHaveProperty(
+      'old-path/template-a',
+    );
+    expect(updatedConfig?.config.templates).not.toHaveProperty(
+      'old-path/template-b',
+    );
+
+    // New templates should be present
+    expect(updatedConfig?.config.templates['new-path/template-a']).toEqual({
+      name: 'template-a',
+      type: 'ts',
+      description: 'New template A',
+    });
+    expect(updatedConfig?.config.templates['new-path/template-b']).toEqual({
+      name: 'template-b',
+      type: 'js',
+      description: 'New template B',
+    });
+
+    // Existing template with different name should be preserved
+    expect(updatedConfig?.config.templates['keep-me']).toEqual({
+      name: 'keep-me',
+      type: 'ts',
+      description: 'Should be kept',
+    });
+  });
+
   it('should handle empty metadata entries array', async () => {
     // Arrange
     const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);

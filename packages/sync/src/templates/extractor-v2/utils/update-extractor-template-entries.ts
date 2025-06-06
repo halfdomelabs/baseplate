@@ -36,14 +36,28 @@ export function updateExtractorTemplateEntries(
 
     // Upsert template entries into the generators.json file
     const { name, templates, extractors, ...rest } = generatorConfig.config;
+
+    // Create a map of new templates to add
+    const newTemplates = Object.fromEntries(
+      entries.map((e) => [e.generatorTemplatePath, e.metadata]),
+    );
+
+    // Remove any existing templates that have the same name as new templates
+    // This prevents duplicates when template names match but paths differ
+    const newTemplateNames = new Set(entries.map((e) => e.metadata.name));
+
+    const filteredExistingTemplates = Object.fromEntries(
+      Object.entries(templates).filter(
+        ([, templateConfig]) => !newTemplateNames.has(templateConfig.name),
+      ),
+    );
+
     const newConfig = {
       name,
       extractors,
       templates: sortObjectKeys({
-        ...templates,
-        ...Object.fromEntries(
-          entries.map((e) => [e.generatorTemplatePath, e.metadata]),
-        ),
+        ...filteredExistingTemplates,
+        ...newTemplates,
       }),
       ...rest,
     };
