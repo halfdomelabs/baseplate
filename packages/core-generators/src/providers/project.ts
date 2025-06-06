@@ -1,8 +1,15 @@
 import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 
-export interface ProjectProvider {
-  getProjectName(): string;
+export interface PackageProvider {
+  /**
+   * Get the name of the project.
+   */
+  getPackageName(): string;
+  /**
+   * Get the canonical path to the root of the package.
+   */
+  getPackageRoot(): string;
 }
 
-export const projectProvider =
-  createReadOnlyProviderType<ProjectProvider>('project');
+export const packageProvider =
+  createReadOnlyProviderType<PackageProvider>('package');
