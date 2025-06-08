@@ -50,9 +50,13 @@ describe('renderRawTemplateFileAction', () => {
     expect(file?.contents).toEqual(Buffer.from('test content'));
     expect(file?.options?.templateMetadata).toEqual({
       name: 'test',
-      template: 'test.txt',
+      template: '',
       generator: 'test-generator',
       type: RAW_TEMPLATE_TYPE,
+      fileOptions: {
+        kind: 'instance',
+        generatorTemplatePath: 'test.txt',
+      },
     });
   });
 
