@@ -63,6 +63,8 @@ describe('updateExtractorTemplateEntries', () => {
       {
         generator: '@test/package1#test-generator',
         generatorTemplatePath: 'new-template-1',
+        sourceAbsolutePath:
+          '/packages/package1/generators/test/templates/new-template-1.ts',
         metadata: {
           name: 'new-template-1',
           type: 'ts',
@@ -72,6 +74,8 @@ describe('updateExtractorTemplateEntries', () => {
       {
         generator: '@test/package1#test-generator',
         generatorTemplatePath: 'new-template-2',
+        sourceAbsolutePath:
+          '/packages/package1/generators/test/templates/new-template-2.ts',
         metadata: {
           name: 'new-template-2',
           type: 'ts',
@@ -159,6 +163,8 @@ describe('updateExtractorTemplateEntries', () => {
       {
         generator: '@test/package1#generator-1',
         generatorTemplatePath: 'new-ts-template',
+        sourceAbsolutePath:
+          '/packages/package1/generators/gen1/templates/new-ts-template.ts',
         metadata: {
           name: 'new-ts-template',
           type: 'ts',
@@ -167,6 +173,8 @@ describe('updateExtractorTemplateEntries', () => {
       {
         generator: '@test/package2#generator-2',
         generatorTemplatePath: 'new-js-template',
+        sourceAbsolutePath:
+          '/packages/package2/generators/gen2/templates/new-js-template.ts',
         metadata: {
           name: 'new-js-template',
           type: 'js',
@@ -227,6 +235,8 @@ describe('updateExtractorTemplateEntries', () => {
       {
         generator: '@test/package1#test-generator',
         generatorTemplatePath: 'existing-template',
+        sourceAbsolutePath:
+          '/packages/package1/generators/test/templates/existing-template.ts',
         metadata: {
           name: 'existing-template',
           type: 'ts',
@@ -273,6 +283,8 @@ describe('updateExtractorTemplateEntries', () => {
       {
         generator: '@test/package1#test-generator',
         generatorTemplatePath: 'new-template',
+        sourceAbsolutePath:
+          '/packages/package1/generators/test/templates/new-template.ts',
         metadata: {
           name: 'new-template',
           type: 'ts',
@@ -325,6 +337,8 @@ describe('updateExtractorTemplateEntries', () => {
       {
         generator: '@test/package1#test-generator',
         generatorTemplatePath: 'new-path/my-template',
+        sourceAbsolutePath:
+          '/packages/package1/generators/test/templates/new-path/my-template.ts',
         metadata: {
           name: 'my-template',
           type: 'ts',
@@ -403,6 +417,8 @@ describe('updateExtractorTemplateEntries', () => {
       {
         generator: '@test/package1#test-generator',
         generatorTemplatePath: 'new-path/template-a',
+        sourceAbsolutePath:
+          '/packages/package1/generators/test/templates/new-path/template-a.ts',
         metadata: {
           name: 'template-a',
           type: 'ts',
@@ -412,6 +428,8 @@ describe('updateExtractorTemplateEntries', () => {
       {
         generator: '@test/package1#test-generator',
         generatorTemplatePath: 'new-path/template-b',
+        sourceAbsolutePath:
+          '/packages/package1/generators/test/templates/new-path/template-b.ts',
         metadata: {
           name: 'template-b',
           type: 'js',
