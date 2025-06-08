@@ -44,6 +44,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     pluginDependencies: plugins,
     extractTemplateMetadataEntries: vi.fn(),
     writeTemplateFiles: vi.fn(),
+    writeGeneratedFiles: vi.fn(),
   });
 
   it('should initialize plugins with no dependencies', async () => {

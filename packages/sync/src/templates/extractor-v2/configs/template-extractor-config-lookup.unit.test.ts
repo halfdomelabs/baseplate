@@ -1,5 +1,6 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { z } from 'zod';
 
 import type { ExtractorConfig } from './index.js';
 
@@ -74,8 +75,8 @@ describe('TemplateExtractorConfigLookup', () => {
     expect(result?.config).toEqual(providerConfig['test.ts']['test-provider']);
     expect(result?.packageName).toBe('@test/package1');
     expect(result?.packagePath).toBe('/packages/package1');
-    expect(result?.providerFilePath).toBe(
-      '/packages/package1/providers/test.ts',
+    expect(result?.packagePathSpecifier).toBe(
+      '@test/package1:providers/test.ts',
     );
   });
 
@@ -102,7 +103,12 @@ describe('TemplateExtractorConfigLookup', () => {
     await lookup.initialize();
 
     // Act
-    const results = lookup.getProviderConfigsByType('ts-imports');
+    const results = lookup.getProviderConfigsByType(
+      'ts-imports',
+      z.object({
+        type: z.literal('ts-imports'),
+      }),
+    );
 
     // Assert
     expect(results).toHaveLength(2);
@@ -132,9 +138,12 @@ describe('TemplateExtractorConfigLookup', () => {
     expect(() => lookup.getProviderConfigByName('test:provider')).toThrow(
       'TemplateExtractorConfigLookup must be initialized before use',
     );
-    expect(() => lookup.getProviderConfigsByType('test')).toThrow(
-      'TemplateExtractorConfigLookup must be initialized before use',
-    );
+    expect(() =>
+      lookup.getProviderConfigsByType(
+        'test',
+        z.object({ type: z.literal('test') }),
+      ),
+    ).toThrow('TemplateExtractorConfigLookup must be initialized before use');
   });
 
   it('should only initialize once', async () => {
