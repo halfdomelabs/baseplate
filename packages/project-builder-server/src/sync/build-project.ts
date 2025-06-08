@@ -214,7 +214,7 @@ export async function buildProject({
                 includeTemplateMetadata: true,
                 shouldGenerateMetadata: (context) => {
                   // always write metadata for files without a manual ID
-                  if (!context.hasManualId) return true;
+                  if (!context.isInstance) return true;
                   return fileIdRegexWhitelist
                     .filter((x) => x.trim() !== '')
                     .some((pattern) => {

@@ -1,5 +1,4 @@
 import type { TemplateExtractorContext } from './template-extractor-context.js';
-import type { TemplateExtractorFileContainer } from './template-extractor-file-container.js';
 
 /**
  * The dependencies that are required by a plugin.
@@ -49,7 +48,6 @@ export interface TemplateExtractorPlugin<
   pluginDependencies?: TPluginDependencies;
   getInstance(options: {
     context: TemplateExtractorContext<TPluginDependencies>;
-    fileContainer: TemplateExtractorFileContainer;
     api: TemplateExtractorPluginApi;
   }): TInstance | Promise<TInstance>;
 }

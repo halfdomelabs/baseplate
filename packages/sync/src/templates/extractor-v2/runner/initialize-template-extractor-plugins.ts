@@ -1,6 +1,5 @@
 import { toposort } from '@baseplate-dev/utils';
 
-import type { TemplateExtractorFileContainer } from './template-extractor-file-container.js';
 import type {
   TemplateExtractorPlugin,
   TemplateExtractorPluginApi,
@@ -13,7 +12,6 @@ import { TemplateExtractorContext } from './template-extractor-context.js';
 interface InitializeTemplateExtractorPluginsInput {
   templateExtractors: TemplateFileExtractor[];
   context: TemplateExtractorContext;
-  fileContainer: TemplateExtractorFileContainer;
 }
 
 interface InitializeTemplateExtractorPluginsResult {
@@ -28,13 +26,12 @@ interface InitializeTemplateExtractorPluginsResult {
  * Initializes template extractor plugins by extracting all plugins from template extractors,
  * sorting them by dependencies using topological sort, and initializing them in correct order.
  *
- * @param input - The input object containing template extractors, context, and fileContainer
+ * @param input - The input object containing template extractors and context
  * @returns An object containing the plugin map and collected hooks
  */
 export async function initializeTemplateExtractorPlugins({
   templateExtractors,
   context,
-  fileContainer,
 }: InitializeTemplateExtractorPluginsInput): Promise<InitializeTemplateExtractorPluginsResult> {
   // Step 1: Extract all plugins from template extractors recursively
   const allPlugins = extractPluginsRecursively(templateExtractors);
@@ -56,6 +53,7 @@ export async function initializeTemplateExtractorPlugins({
       logger: context.logger,
       outputDirectory: context.outputDirectory,
       plugins: initializedPlugins,
+      fileContainer: context.fileContainer,
     });
 
     // Create plugin API with hooks support
@@ -64,7 +62,6 @@ export async function initializeTemplateExtractorPlugins({
     // Initialize the plugin
     const pluginInstance = await plugin.getInstance({
       context: pluginContext,
-      fileContainer,
       api: pluginApi,
     });
 

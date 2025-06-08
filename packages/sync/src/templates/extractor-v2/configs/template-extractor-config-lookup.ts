@@ -1,3 +1,5 @@
+import type { z } from 'zod';
+
 import { readJsonWithSchema } from '@baseplate-dev/utils/node';
 import { globby } from 'globby';
 import fsAdapter from 'node:fs';
@@ -168,6 +170,31 @@ export class TemplateExtractorConfigLookup {
   ): TemplateExtractorGeneratorEntry | undefined {
     this.checkInitialized();
     return this.extractorConfigCache.get(generatorName);
+  }
+
+  getExtractorConfigOrThrow(
+    generatorName: string,
+  ): TemplateExtractorGeneratorEntry {
+    const config = this.getExtractorConfig(generatorName);
+    if (!config) {
+      throw new Error(`Generator ${generatorName} not found`);
+    }
+    return config;
+  }
+
+  getTemplatesForGenerator<T extends z.ZodTypeAny>(
+    generatorName: string,
+    generatorTemplateMetadataSchema: T,
+    templateType: z.infer<T>['type'],
+  ): { path: string; config: z.infer<T> }[] {
+    const config = this.getExtractorConfigOrThrow(generatorName);
+    const { templates } = config.config;
+    return Object.entries(templates)
+      .filter(([, template]) => template.type === templateType)
+      .map(([path, template]) => ({
+        path,
+        config: generatorTemplateMetadataSchema.parse(template) as z.infer<T>,
+      }));
   }
 
   /**

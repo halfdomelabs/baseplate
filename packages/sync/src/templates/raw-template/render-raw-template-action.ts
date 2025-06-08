@@ -31,7 +31,7 @@ export function renderRawTemplateFileAction({
           fileId: id ?? template.name,
           filePath: destination,
           generatorName: builder.generatorInfo.name,
-          hasManualId: !!id,
+          isInstance: !!id,
         });
 
       const templateMetadata: RawTemplateFileMetadata | undefined =

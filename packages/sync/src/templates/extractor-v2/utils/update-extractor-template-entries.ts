@@ -2,8 +2,7 @@ import { sortObjectKeys, stringifyPrettyCompact } from '@baseplate-dev/utils';
 import { groupBy } from 'es-toolkit';
 import path from 'node:path';
 
-import type { TemplateExtractorConfigLookup } from '../configs/template-extractor-config-lookup.js';
-import type { TemplateExtractorFileContainer } from '../runner/template-extractor-file-container.js';
+import type { TemplateExtractorContext } from '../runner/template-extractor-context.js';
 import type { TemplateFileExtractorMetadataEntry } from '../runner/template-file-extractor.js';
 
 /**
@@ -11,14 +10,12 @@ import type { TemplateFileExtractorMetadataEntry } from '../runner/template-file
  * entries by generator and upserting them into the respective generators.json files.
  *
  * @param metadataEntries - Array of template file extractor metadata entries
- * @param configLookup - Configuration lookup service for finding generator configs
- * @param fileContainer - File container for writing updated configurations
+ * @param context - Template extractor context containing config lookup and file container
  * @throws Error if no config is found for a generator
  */
 export function updateExtractorTemplateEntries(
   metadataEntries: TemplateFileExtractorMetadataEntry[],
-  configLookup: TemplateExtractorConfigLookup,
-  fileContainer: TemplateExtractorFileContainer,
+  context: TemplateExtractorContext,
 ): void {
   // Group metadata entries by generator
   const metadataEntriesByGenerator = groupBy(
@@ -29,7 +26,7 @@ export function updateExtractorTemplateEntries(
   for (const [generator, entries] of Object.entries(
     metadataEntriesByGenerator,
   )) {
-    const generatorConfig = configLookup.getExtractorConfig(generator);
+    const generatorConfig = context.configLookup.getExtractorConfig(generator);
     if (!generatorConfig) {
       throw new Error(`No config found for generator: ${generator}`);
     }
@@ -63,10 +60,10 @@ export function updateExtractorTemplateEntries(
     };
 
     // Write the new config to the generators.json file and update the cache
-    fileContainer.writeFile(
+    context.fileContainer.writeFile(
       path.join(generatorConfig.generatorDirectory, 'generators.json'),
       stringifyPrettyCompact(newConfig),
     );
-    configLookup.setExtractorConfig(generator, newConfig);
+    context.configLookup.setExtractorConfig(generator, newConfig);
   }
 }

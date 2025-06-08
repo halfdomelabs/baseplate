@@ -1,10 +1,13 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { createTestLogger } from '#src/tests/logger.test-utils.js';
+
 import type { ExtractorConfig, TemplateConfig } from '../configs/index.js';
 import type { TemplateFileExtractorMetadataEntry } from '../runner/template-file-extractor.js';
 
 import { TemplateExtractorConfigLookup } from '../configs/template-extractor-config-lookup.js';
+import { TemplateExtractorContext } from '../runner/template-extractor-context.js';
 import { TemplateExtractorFileContainer } from '../runner/template-extractor-file-container.js';
 import { updateExtractorTemplateEntries } from './update-extractor-template-entries.js';
 
@@ -16,6 +19,19 @@ describe('updateExtractorTemplateEntries', () => {
     ['@test/package1', '/packages/package1'],
     ['@test/package2', '/packages/package2'],
   ]);
+
+  const createMockContext = async (
+    configLookup: TemplateExtractorConfigLookup,
+  ): Promise<TemplateExtractorContext> => {
+    await configLookup.initialize();
+    return new TemplateExtractorContext({
+      configLookup,
+      logger: createTestLogger(),
+      outputDirectory: '/test',
+      plugins: new Map(),
+      fileContainer: new TemplateExtractorFileContainer(),
+    });
+  };
 
   beforeEach(() => {
     vol.reset();
@@ -41,9 +57,7 @@ describe('updateExtractorTemplateEntries', () => {
     });
 
     const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
-    await configLookup.initialize();
-
-    const fileContainer = new TemplateExtractorFileContainer();
+    const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
@@ -67,14 +81,10 @@ describe('updateExtractorTemplateEntries', () => {
     ];
 
     // Act
-    updateExtractorTemplateEntries(
-      metadataEntries,
-      configLookup,
-      fileContainer,
-    );
+    updateExtractorTemplateEntries(metadataEntries, context);
 
     // Assert
-    const updatedConfig = configLookup.getExtractorConfig(
+    const updatedConfig = context.configLookup.getExtractorConfig(
       '@test/package1#test-generator',
     );
     expect(updatedConfig?.config.templates).toEqual({
@@ -96,7 +106,7 @@ describe('updateExtractorTemplateEntries', () => {
     });
 
     // Verify the file was written to the container
-    const files = fileContainer.getFiles();
+    const files = context.fileContainer.getFiles();
     const generatorJsonPath =
       '/packages/package1/generators/test/generators.json';
     expect(files.has(generatorJsonPath)).toBe(true);
@@ -143,9 +153,7 @@ describe('updateExtractorTemplateEntries', () => {
     });
 
     const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
-    await configLookup.initialize();
-
-    const fileContainer = new TemplateExtractorFileContainer();
+    const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
@@ -167,17 +175,13 @@ describe('updateExtractorTemplateEntries', () => {
     ];
 
     // Act
-    updateExtractorTemplateEntries(
-      metadataEntries,
-      configLookup,
-      fileContainer,
-    );
+    updateExtractorTemplateEntries(metadataEntries, context);
 
     // Assert
-    const updatedConfig1 = configLookup.getExtractorConfig(
+    const updatedConfig1 = context.configLookup.getExtractorConfig(
       '@test/package1#generator-1',
     );
-    const updatedConfig2 = configLookup.getExtractorConfig(
+    const updatedConfig2 = context.configLookup.getExtractorConfig(
       '@test/package2#generator-2',
     );
 
@@ -188,7 +192,7 @@ describe('updateExtractorTemplateEntries', () => {
     expect(updatedConfig2?.config.templates).toHaveProperty('new-js-template');
 
     // Verify files were written
-    const files = fileContainer.getFiles();
+    const files = context.fileContainer.getFiles();
     expect(
       files.has('/packages/package1/generators/gen1/generators.json'),
     ).toBe(true);
@@ -217,9 +221,7 @@ describe('updateExtractorTemplateEntries', () => {
     });
 
     const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
-    await configLookup.initialize();
-
-    const fileContainer = new TemplateExtractorFileContainer();
+    const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
@@ -234,14 +236,10 @@ describe('updateExtractorTemplateEntries', () => {
     ];
 
     // Act
-    updateExtractorTemplateEntries(
-      metadataEntries,
-      configLookup,
-      fileContainer,
-    );
+    updateExtractorTemplateEntries(metadataEntries, context);
 
     // Assert
-    const updatedConfig = configLookup.getExtractorConfig(
+    const updatedConfig = context.configLookup.getExtractorConfig(
       '@test/package1#test-generator',
     );
     expect(updatedConfig?.config.templates['existing-template']).toEqual({
@@ -269,9 +267,7 @@ describe('updateExtractorTemplateEntries', () => {
     });
 
     const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
-    await configLookup.initialize();
-
-    const fileContainer = new TemplateExtractorFileContainer();
+    const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
@@ -285,14 +281,10 @@ describe('updateExtractorTemplateEntries', () => {
     ];
 
     // Act
-    updateExtractorTemplateEntries(
-      metadataEntries,
-      configLookup,
-      fileContainer,
-    );
+    updateExtractorTemplateEntries(metadataEntries, context);
 
     // Assert
-    const updatedConfig = configLookup.getExtractorConfig(
+    const updatedConfig = context.configLookup.getExtractorConfig(
       '@test/package1#test-generator',
     );
     expect(updatedConfig?.config.extractors).toEqual({
@@ -327,9 +319,7 @@ describe('updateExtractorTemplateEntries', () => {
     });
 
     const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
-    await configLookup.initialize();
-
-    const fileContainer = new TemplateExtractorFileContainer();
+    const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
@@ -344,14 +334,10 @@ describe('updateExtractorTemplateEntries', () => {
     ];
 
     // Act
-    updateExtractorTemplateEntries(
-      metadataEntries,
-      configLookup,
-      fileContainer,
-    );
+    updateExtractorTemplateEntries(metadataEntries, context);
 
     // Assert
-    const updatedConfig = configLookup.getExtractorConfig(
+    const updatedConfig = context.configLookup.getExtractorConfig(
       '@test/package1#test-generator',
     );
 
@@ -411,9 +397,7 @@ describe('updateExtractorTemplateEntries', () => {
     });
 
     const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
-    await configLookup.initialize();
-
-    const fileContainer = new TemplateExtractorFileContainer();
+    const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
@@ -437,14 +421,10 @@ describe('updateExtractorTemplateEntries', () => {
     ];
 
     // Act
-    updateExtractorTemplateEntries(
-      metadataEntries,
-      configLookup,
-      fileContainer,
-    );
+    updateExtractorTemplateEntries(metadataEntries, context);
 
     // Assert
-    const updatedConfig = configLookup.getExtractorConfig(
+    const updatedConfig = context.configLookup.getExtractorConfig(
       '@test/package1#test-generator',
     );
 
@@ -486,17 +466,15 @@ describe('updateExtractorTemplateEntries', () => {
   it('should handle empty metadata entries array', async () => {
     // Arrange
     const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
-    await configLookup.initialize();
-
-    const fileContainer = new TemplateExtractorFileContainer();
+    const context = await createMockContext(configLookup);
 
     // Act & Assert - should not throw
     expect(() => {
-      updateExtractorTemplateEntries([], configLookup, fileContainer);
+      updateExtractorTemplateEntries([], context);
     }).not.toThrow();
 
     // No files should be written
-    const files = fileContainer.getFiles();
+    const files = context.fileContainer.getFiles();
     expect(files.size).toBe(0);
   });
 });

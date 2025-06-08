@@ -18,6 +18,7 @@ import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';
 
 import { NODE_VERSION, PNPM_VERSION } from '#src/constants/node.js';
+import { pathRootsProvider } from '#src/generators/metadata/index.js';
 import { projectScope } from '#src/providers/scopes.js';
 import { writeJsonToBuilder } from '#src/writers/json.js';
 
@@ -133,16 +134,30 @@ export const nodeGenerator = createGenerator({
   scopes: [projectScope],
   buildTasks: (descriptor) => ({
     config: createGeneratorTask(configTask),
-    package: createGeneratorTask({
+    packageInfo: createGeneratorTask({
       outputs: { package: packageInfoProvider.export(projectScope) },
       run: () => ({
         build: () => ({
           package: {
             getPackageName: () => descriptor.name,
             getPackageRoot: () => '@',
+            getPackageSrcPath: () => '@/src',
           },
         }),
       }),
+    }),
+    pathRoots: createGeneratorTask({
+      dependencies: {
+        pathRoots: pathRootsProvider,
+        packageInfo: packageInfoProvider,
+      },
+      run({ pathRoots, packageInfo }) {
+        pathRoots.registerPathRoot(
+          'package-root',
+          packageInfo.getPackageRoot(),
+        );
+        pathRoots.registerPathRoot('src-root', packageInfo.getPackageSrcPath());
+      },
     }),
     main: createGeneratorTask({
       dependencies: {

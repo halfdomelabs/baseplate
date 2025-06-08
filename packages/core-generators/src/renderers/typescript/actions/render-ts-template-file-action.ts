@@ -130,7 +130,7 @@ export function renderTsTemplateFileAction<
           fileId: id ?? template.name,
           filePath: normalizePathToProjectPath(destination),
           generatorName: generatorInfo.name,
-          hasManualId: !!id,
+          isInstance: !!id,
         });
 
       const renderedTemplate = renderTsCodeFileTemplate({

@@ -44,6 +44,10 @@ export interface TemplateFileExtractorMetadataEntry<
    */
   generatorTemplatePath: string;
   /**
+   * Absolute path of the source file.
+   */
+  sourceAbsolutePath: string;
+  /**
    * The metadata for the file.
    */
   metadata: TGeneratorTemplateMetadata;
@@ -105,10 +109,12 @@ export interface TemplateFileExtractor<
     | TemplateFileExtractorMetadataEntry<z.infer<TGeneratorTemplateMetadata>>[];
 
   /**
-   * Writes the metadata entries for the given files.
+   * Writes the files in the metadata entries to the generator's templates directory converting
+   * any written templates to their templatized form.
    *
    * @param metadataEntries - The metadata entries to write.
    * @param context - The context for the extractor.
+   * @param api - The API for the extractor.
    */
   writeTemplateFiles(
     metadataEntries: TemplateFileExtractorMetadataEntry<
@@ -117,6 +123,20 @@ export interface TemplateFileExtractor<
     context: TemplateExtractorContext<TPluginDependencies>,
     api: TemplateExtractorApi,
   ): Promise<void>;
+
+  /**
+   * Writes the files in the metadata entries to the generator's generated directory creating
+   * the necessary typed template files.
+   *
+   * @param generatorNames - The names of the generators to write.
+   * @param context - The context for the extractor.
+   * @param api - The API for the extractor.
+   */
+  writeGeneratedFiles(
+    generatorNames: string[],
+    context: TemplateExtractorContext<TPluginDependencies>,
+    api: TemplateExtractorApi,
+  ): Promise<void> | void;
 }
 
 /**

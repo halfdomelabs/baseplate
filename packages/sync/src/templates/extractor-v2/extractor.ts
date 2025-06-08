@@ -1,4 +1,4 @@
-import { groupBy } from 'es-toolkit';
+import { groupBy, uniq } from 'es-toolkit';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
@@ -33,17 +33,17 @@ export async function runTemplateFileExtractors(
   await configLookup.initialize();
 
   // Initialize plugins
+  const fileContainer = new TemplateExtractorFileContainer();
   const initializerContext = new TemplateExtractorContext({
     configLookup,
     logger,
     outputDirectory,
     plugins: new Map(),
+    fileContainer,
   });
-  const fileContainer = new TemplateExtractorFileContainer();
   const { hooks, pluginMap } = await initializeTemplateExtractorPlugins({
     templateExtractors: templateFileExtractors,
     context: initializerContext,
-    fileContainer,
   });
 
   async function runHooks(hook: 'afterExtract' | 'afterWrite'): Promise<void> {
@@ -58,6 +58,7 @@ export async function runTemplateFileExtractors(
     logger,
     outputDirectory,
     plugins: pluginMap,
+    fileContainer,
   });
 
   const templateMetadataFiles =
@@ -94,7 +95,7 @@ export async function runTemplateFileExtractors(
   await runHooks('afterExtract');
 
   // Update extractor configurations with new template entries
-  updateExtractorTemplateEntries(metadataEntries, configLookup, fileContainer);
+  updateExtractorTemplateEntries(metadataEntries, context);
 
   // Group metadata entries by type
   const metadataEntriesByType = groupBy(
@@ -108,9 +109,12 @@ export async function runTemplateFileExtractors(
       throw new Error(`No extractor found for template type: ${type}`);
     }
 
-    const api = new TemplateExtractorApi(context, fileContainer, type);
+    const api = new TemplateExtractorApi(context, type);
 
     await extractor.writeTemplateFiles(entries, context, api);
+
+    const generatorNames = uniq(entries.map((e) => e.generator));
+    await extractor.writeGeneratedFiles(generatorNames, context, api);
   }
 
   await runHooks('afterWrite');

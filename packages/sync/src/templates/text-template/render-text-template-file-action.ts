@@ -60,7 +60,7 @@ export function renderTextTemplateFileAction<
           fileId: id ?? template.name,
           filePath: destination,
           generatorName: builder.generatorInfo.name,
-          hasManualId: !!id,
+          isInstance: !!id,
         });
 
       const templateVariables = template.variables as Record<

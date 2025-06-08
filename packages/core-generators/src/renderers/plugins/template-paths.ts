@@ -1,0 +1,124 @@
+import { toCanonicalPath } from '@baseplate-dev/sync';
+import { createTemplateExtractorPlugin } from '@baseplate-dev/sync/extractor-v2';
+import {
+  handleFileNotFoundError,
+  posixJoin,
+  readJsonWithSchema,
+} from '@baseplate-dev/utils/node';
+import path from 'node:path';
+import { z } from 'zod';
+
+import { templateExtractorBarrelImportPlugin } from './barrel-import.js';
+
+export interface TemplatePathRoot {
+  canonicalPath: string;
+  pathRootName: string;
+}
+
+// Key is the canonical path and value is the path root name
+const templatePathRootSchema = z.record(z.string(), z.string());
+
+export const TEMPLATE_PATHS_METADATA_FILE = '.paths-metadata.json';
+
+/**
+ * Gets the template path from a path root relative path by stripping the brackets and -root from the path.
+ *
+ * @param pathRootRelativePath - The path root relative path. (e.g. `{feature-root}/services/test.ts`)
+ * @returns The template path. (e.g. `feature/services/[file].ts`)
+ */
+function getTemplatePathFromPathRootRelativePath(
+  pathRootRelativePath: string,
+): string {
+  return pathRootRelativePath
+    .replaceAll(/-root(?=})/g, '')
+    .replaceAll(/[{}]/g, '');
+}
+
+/**
+ * The template paths plugin is used to enable templates to get assigned a path
+ * relative to their nearest path root, e.g. the feature folder or package root.
+ *
+ * To support such behavior, it is necessary to use the path-metadata generator
+ * which writes a .paths-metadata.json to the output directory.
+ */
+export const templatePathsPlugin = createTemplateExtractorPlugin({
+  name: 'template-paths',
+  pluginDependencies: [templateExtractorBarrelImportPlugin],
+  getInstance: async ({ context }) => {
+    const templatePathRoots = await discoverTemplatePathRoots(
+      context.outputDirectory,
+    );
+
+    /**
+     * Gets the path of a singleton template file relative to the closest file path root.
+     *
+     * @param absolutePath - The absolute path of the template file.
+     * @returns The relative path of the template file to the closest file path root.
+     */
+    function getPathRootRelativePath(absolutePath: string): string {
+      const outputRelativePath = path.relative(
+        context.outputDirectory,
+        absolutePath,
+      );
+      return getTemplatePathFromRelativePath(
+        outputRelativePath,
+        templatePathRoots,
+      );
+    }
+
+    return {
+      getPathRootRelativePath,
+      getTemplatePathFromPathRootRelativePath,
+    };
+  },
+});
+
+/**
+ * Discovers the template path roots from the paths-metadata.json file.
+ *
+ * @param outputDirectory - The output directory of the project.
+ * @returns The template path roots from longest to shortest.
+ */
+export async function discoverTemplatePathRoots(
+  outputDirectory: string,
+): Promise<TemplatePathRoot[]> {
+  const pathsMetadataFile = path.join(
+    outputDirectory,
+    TEMPLATE_PATHS_METADATA_FILE,
+  );
+  const pathsMetadataContents = await readJsonWithSchema(
+    pathsMetadataFile,
+    templatePathRootSchema,
+  ).catch(handleFileNotFoundError);
+  if (!pathsMetadataContents) return [];
+  return Object.entries(pathsMetadataContents)
+    .map(([canonicalPath, pathRootName]) => ({
+      pathRootName,
+      canonicalPath,
+    }))
+    .sort((a, b) => b.canonicalPath.length - a.canonicalPath.length);
+}
+
+/**
+ * Gets the template path from a relative path.
+ *
+ * @param outputRelativePath - The output relative path.
+ * @param templatePathRoots - The template path roots.
+ * @returns The template path.
+ */
+export function getTemplatePathFromRelativePath(
+  outputRelativePath: string,
+  templatePathRoots: TemplatePathRoot[],
+): string {
+  const canonicalPath = toCanonicalPath(outputRelativePath);
+  const templatePathRoot = templatePathRoots.find((templatePathRoot) =>
+    `${canonicalPath}/`.startsWith(`${templatePathRoot.canonicalPath}/`),
+  );
+  if (!templatePathRoot) {
+    return canonicalPath;
+  }
+  return posixJoin(
+    `{${templatePathRoot.pathRootName}}`,
+    path.posix.relative(templatePathRoot.canonicalPath, canonicalPath),
+  );
+}
