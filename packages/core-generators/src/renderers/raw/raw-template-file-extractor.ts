@@ -3,7 +3,7 @@ import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
 import { camelCase } from 'change-case';
 import pLimit from 'p-limit';
 
-import { templatePathsPlugin } from '../plugins/template-paths.js';
+import { templatePathsPlugin } from '../plugins/template-paths/template-paths.plugin.js';
 import { typedTemplatesFilePlugin } from '../plugins/typed-templates-file.js';
 import { TsCodeUtils, tsImportBuilder } from '../typescript/index.js';
 import { resolvePackagePathSpecifier } from '../utils/package-path-specifier.js';
@@ -68,6 +68,7 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
     );
   },
   writeGeneratedFiles: (generatorNames, context) => {
+    const templatePathsPlugin = context.getPlugin('template-paths');
     const typedTemplatesPlugin = context.getPlugin('typed-templates-file');
 
     for (const generatorName of generatorNames) {
@@ -100,6 +101,14 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
           exportName,
           fragment,
         });
+
+        if (config.pathRootRelativePath) {
+          templatePathsPlugin.registerTemplatePathEntry(
+            generatorName,
+            config.name,
+            config.pathRootRelativePath,
+          );
+        }
       }
     }
   },

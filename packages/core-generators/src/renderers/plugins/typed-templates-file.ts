@@ -1,11 +1,11 @@
 import { createTemplateExtractorPlugin } from '@baseplate-dev/sync/extractor-v2';
 import { posixJoin } from '@baseplate-dev/utils/node';
-import { constantCase } from 'change-case';
 
 import type { TsCodeFragment } from '../typescript/index.js';
 
 import { renderTsCodeFileTemplate, TsCodeUtils } from '../typescript/index.js';
-import { templatePathsPlugin } from './template-paths.js';
+import { getGeneratedTemplateConstantName } from '../utils/index.js';
+import { templatePathsPlugin } from './template-paths/template-paths.plugin.js';
 
 export const TYPED_TEMPLATES_FILE_PATH = 'generated/typed-templates.ts';
 
@@ -53,7 +53,10 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
           variables: {
             TEMPLATE_FRAGMENTS: templatesFragment,
             TEMPLATE_EXPORTS: `{ ${templateExports.join(', ')} }`,
-            TEMPLATE_NAME: `${constantCase(generatorName.split('#')[1])}_TEMPLATES`,
+            TEMPLATE_NAME: getGeneratedTemplateConstantName(
+              generatorName,
+              'TEMPLATES',
+            ),
           },
         });
         const generatorPath =

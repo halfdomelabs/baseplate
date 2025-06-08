@@ -3,11 +3,13 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { stringifyPrettyStable } from '@baseplate-dev/utils';
+import { stringifyPrettyCompact } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import type { TemplatePathRoot } from '#src/renderers/plugins/template-paths/template-paths.plugin.js';
+
 import { projectScope } from '#src/providers/scopes.js';
-import { TEMPLATE_PATHS_METADATA_FILE } from '#src/renderers/plugins/template-paths.js';
+import { TEMPLATE_PATHS_METADATA_FILE } from '#src/renderers/plugins/template-paths/template-paths.plugin.js';
 
 const descriptorSchema = z.object({});
 
@@ -39,17 +41,22 @@ export const pathRootsGenerator = createGenerator({
       },
       dependencies: {},
       run() {
-        const pathRoots: Record<string, string> = {};
+        const pathRoots: TemplatePathRoot[] = [];
         return {
           providers: {
             pathRoots: {
               registerPathRoot(pathRootName, outputRelativePath) {
-                if (pathRoots[outputRelativePath]) {
+                if (
+                  pathRoots.some((p) => p.canonicalPath === outputRelativePath)
+                ) {
                   throw new Error(
                     `Path root ${outputRelativePath} already registered`,
                   );
                 }
-                pathRoots[outputRelativePath] = pathRootName;
+                pathRoots.push({
+                  canonicalPath: outputRelativePath,
+                  pathRootName,
+                });
               },
             },
           },
@@ -60,7 +67,7 @@ export const pathRootsGenerator = createGenerator({
             builder.writeFile({
               id: 'path-roots',
               destination: TEMPLATE_PATHS_METADATA_FILE,
-              contents: stringifyPrettyStable(pathRoots),
+              contents: stringifyPrettyCompact(pathRoots),
             });
           },
         };

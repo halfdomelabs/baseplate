@@ -1,6 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
+  pathRootsProvider,
   TsCodeUtils,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -39,18 +40,22 @@ export const reactRoutesGenerator = createGenerator({
         reactRoutes: reactRoutesProvider.dependency().parentScopeOnly(),
         typescriptFile: typescriptFileProvider,
         reactNotFound: reactNotFoundProvider.dependency().optional(),
+        pathRoots: pathRootsProvider.dependency(),
       },
       exports: {
         reactRoutes: reactRoutesProvider.export(),
         reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(),
       },
-      run({ reactRoutes, typescriptFile, reactNotFound }) {
+      run({ reactRoutes, typescriptFile, reactNotFound, pathRoots }) {
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];
 
         const pathName = dasherizeCamel(name);
 
         const directoryBase = `${reactRoutes.getDirectoryBase()}/${pathName}`;
+
+        // Register routes-root path root
+        pathRoots.registerPathRoot('routes-root', directoryBase);
 
         return {
           providers: {

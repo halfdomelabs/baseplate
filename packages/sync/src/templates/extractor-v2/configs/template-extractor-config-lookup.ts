@@ -3,7 +3,7 @@ import type { z } from 'zod';
 import { readJsonWithSchema } from '@baseplate-dev/utils/node';
 import { globby } from 'globby';
 import fsAdapter from 'node:fs';
-import path from 'node:path';
+import path from 'node:path/posix';
 
 import type { ExtractorConfig } from './index.js';
 
@@ -19,9 +19,12 @@ export interface TemplateExtractorGeneratorEntry {
   packagePath: string;
 }
 
-export interface TemplateExtractorProviderEntry {
-  config: Record<string, unknown>;
-  providerFilePath: string;
+export interface TemplateExtractorProviderEntry<
+  TConfig = Record<string, unknown>,
+> {
+  config: TConfig;
+  packagePathSpecifier: string;
+  providerName: string;
   packageName: string;
   packagePath: string;
 }
@@ -80,9 +83,14 @@ export class TemplateExtractorConfigLookup {
 
     for (const [fileName, providers] of Object.entries(config)) {
       for (const [providerName, providerConfig] of Object.entries(providers)) {
+        const relativePath = path.join(
+          path.relative(packagePath, providerDirectory),
+          fileName,
+        );
         this.providersConfigCache.set(`${packageName}:${providerName}`, {
           config: providerConfig,
-          providerFilePath: path.join(providerDirectory, fileName),
+          packagePathSpecifier: `${packageName}:${relativePath}`,
+          providerName,
           packageName,
           packagePath,
         });
@@ -217,12 +225,21 @@ export class TemplateExtractorConfigLookup {
   /**
    * Get provider configs by type
    */
-  getProviderConfigsByType(type: string): TemplateExtractorProviderEntry[] {
+  getProviderConfigsByType<T extends z.ZodTypeAny>(
+    type: z.infer<T>['type'],
+    providerConfigSchema: T,
+  ): TemplateExtractorProviderEntry<z.infer<T>>[] {
     this.checkInitialized();
 
-    return [...this.providersConfigCache.values()].filter(
-      (cached) => cached.config.type === type,
-    );
+    return [...this.providersConfigCache.values()]
+      .filter((cached) => cached.config.type === type)
+      .map((cached) => {
+        const parsed = providerConfigSchema.parse(cached.config) as z.infer<T>;
+        return {
+          ...cached,
+          config: parsed,
+        };
+      });
   }
 
   /**

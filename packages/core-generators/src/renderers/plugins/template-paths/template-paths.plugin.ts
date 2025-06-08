@@ -5,10 +5,12 @@ import {
   posixJoin,
   readJsonWithSchema,
 } from '@baseplate-dev/utils/node';
+import { camelCase } from 'change-case';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { templateExtractorBarrelImportPlugin } from './barrel-import.js';
+import { templateExtractorBarrelImportPlugin } from '../barrel-import.js';
+import { writePathMapFile } from './paths-file.js';
 
 export interface TemplatePathRoot {
   canonicalPath: string;
@@ -16,23 +18,12 @@ export interface TemplatePathRoot {
 }
 
 // Key is the canonical path and value is the path root name
-const templatePathRootSchema = z.record(z.string(), z.string());
+const templatePathRootSchema = z.object({
+  canonicalPath: z.string(),
+  pathRootName: z.string(),
+});
 
 export const TEMPLATE_PATHS_METADATA_FILE = '.paths-metadata.json';
-
-/**
- * Gets the template path from a path root relative path by stripping the brackets and -root from the path.
- *
- * @param pathRootRelativePath - The path root relative path. (e.g. `{feature-root}/services/test.ts`)
- * @returns The template path. (e.g. `feature/services/[file].ts`)
- */
-function getTemplatePathFromPathRootRelativePath(
-  pathRootRelativePath: string,
-): string {
-  return pathRootRelativePath
-    .replaceAll(/-root(?=})/g, '')
-    .replaceAll(/[{}]/g, '');
-}
 
 /**
  * The template paths plugin is used to enable templates to get assigned a path
@@ -44,10 +35,23 @@ function getTemplatePathFromPathRootRelativePath(
 export const templatePathsPlugin = createTemplateExtractorPlugin({
   name: 'template-paths',
   pluginDependencies: [templateExtractorBarrelImportPlugin],
-  getInstance: async ({ context }) => {
+  getInstance: async ({ context, api }) => {
     const templatePathRoots = await discoverTemplatePathRoots(
       context.outputDirectory,
     );
+    // Key: Generator name, Value: Map of template name to path root relative path
+    const pathMapByGenerator = new Map<string, Map<string, string>>();
+
+    function registerTemplatePathEntry(
+      generatorName: string,
+      templateName: string,
+      pathRootRelativePath: string,
+    ): void {
+      const pathMap =
+        pathMapByGenerator.get(generatorName) ?? new Map<string, string>();
+      pathMap.set(camelCase(templateName), pathRootRelativePath);
+      pathMapByGenerator.set(generatorName, pathMap);
+    }
 
     /**
      * Gets the path of a singleton template file relative to the closest file path root.
@@ -66,12 +70,33 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
       );
     }
 
+    api.registerHook('afterWrite', () => {
+      for (const [generatorName, pathMap] of pathMapByGenerator) {
+        writePathMapFile(generatorName, pathMap, context);
+      }
+    });
+
     return {
       getPathRootRelativePath,
       getTemplatePathFromPathRootRelativePath,
+      registerTemplatePathEntry,
     };
   },
 });
+
+/**
+ * Gets the template path from a path root relative path by stripping the brackets and -root from the path.
+ *
+ * @param pathRootRelativePath - The path root relative path. (e.g. `{feature-root}/services/test.ts`)
+ * @returns The template path. (e.g. `feature/services/[file].ts`)
+ */
+function getTemplatePathFromPathRootRelativePath(
+  pathRootRelativePath: string,
+): string {
+  return pathRootRelativePath
+    .replaceAll(/-root(?=})/g, '')
+    .replaceAll(/[{}]/g, '');
+}
 
 /**
  * Discovers the template path roots from the paths-metadata.json file.
@@ -88,15 +113,12 @@ export async function discoverTemplatePathRoots(
   );
   const pathsMetadataContents = await readJsonWithSchema(
     pathsMetadataFile,
-    templatePathRootSchema,
+    z.array(templatePathRootSchema),
   ).catch(handleFileNotFoundError);
   if (!pathsMetadataContents) return [];
-  return Object.entries(pathsMetadataContents)
-    .map(([canonicalPath, pathRootName]) => ({
-      pathRootName,
-      canonicalPath,
-    }))
-    .sort((a, b) => b.canonicalPath.length - a.canonicalPath.length);
+  return pathsMetadataContents.sort(
+    (a, b) => b.canonicalPath.length - a.canonicalPath.length,
+  );
 }
 
 /**
