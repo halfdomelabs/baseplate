@@ -150,7 +150,7 @@ export function renderTextTemplateFileAction<
         'path' in template.source
           ? {
               name: template.name,
-              template: template.source.path,
+              template: '',
               generator: builder.generatorInfo.name,
               group: template.group,
               type: TEXT_TEMPLATE_TYPE,
