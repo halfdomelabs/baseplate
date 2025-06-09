@@ -1,5 +1,6 @@
 import { handleFileNotFoundError } from '@baseplate-dev/utils/node';
 import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import { formatGeneratedTemplateContents } from '#src/templates/utils/formatter.js';
 
@@ -8,6 +9,8 @@ import { formatGeneratedTemplateContents } from '#src/templates/utils/formatter.
  */
 export class TemplateExtractorFileContainer {
   private files = new Map<string, string | Buffer>();
+
+  constructor(private readonly packageDirectories: string[]) {}
 
   /**
    * Writes a file to the container.
@@ -19,7 +22,13 @@ export class TemplateExtractorFileContainer {
     if (this.files.has(filePath)) {
       throw new Error(`File already written: ${filePath}`);
     }
-    this.files.set(filePath, contents);
+    const resolvedPath = path.resolve(filePath);
+    if (!this.packageDirectories.some((dir) => resolvedPath.startsWith(dir))) {
+      throw new Error(
+        `Cannot write file outside of package directories: ${resolvedPath}. Package directories: ${this.packageDirectories.join(', ')}`,
+      );
+    }
+    this.files.set(resolvedPath, contents);
   }
 
   private async commitFile(
@@ -41,6 +50,7 @@ export class TemplateExtractorFileContainer {
     if (existingContents?.equals(contentsBuffer)) {
       return;
     }
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, contentsBuffer);
   }
 

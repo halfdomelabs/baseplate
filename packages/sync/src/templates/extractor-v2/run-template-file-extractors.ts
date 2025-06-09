@@ -10,12 +10,17 @@ import type {
 
 import { readTemplateMetadataFiles } from '../metadata/read-template-metadata-files.js';
 import { TemplateExtractorConfigLookup } from './configs/template-extractor-config-lookup.js';
+import { tryCreateExtractorJson } from './configs/try-create-extractor-json.js';
 import { initializeTemplateExtractorPlugins } from './runner/initialize-template-extractor-plugins.js';
 import { TemplateExtractorApi } from './runner/template-extractor-api.js';
 import { TemplateExtractorContext } from './runner/template-extractor-context.js';
 import { TemplateExtractorFileContainer } from './runner/template-extractor-file-container.js';
 import { groupTemplateFilesByType } from './utils/group-template-files-by-type.js';
 import { updateExtractorTemplateEntries } from './utils/update-extractor-template-entries.js';
+
+export interface RunTemplateFileExtractorsOptions {
+  autoGenerateExtractor?: boolean;
+}
 
 /**
  * Run the template file extractors on a target output directory
@@ -29,12 +34,41 @@ export async function runTemplateFileExtractors(
   outputDirectory: string,
   generatorPackageMap: Map<string, string>,
   logger: Logger,
+  options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
+  const templateMetadataFiles =
+    await readTemplateMetadataFiles(outputDirectory);
+
   const configLookup = new TemplateExtractorConfigLookup(generatorPackageMap);
   await configLookup.initialize();
 
+  if (options?.autoGenerateExtractor) {
+    // TODO [2025-06-10]: Remove this filter once we've migrated from v1 to v2
+    const generatorNames = templateMetadataFiles
+      .filter((m) => 'fileOptions' in m.metadata)
+      .map((m) => m.metadata.generator);
+    const missingGeneratorNames = generatorNames.filter(
+      (name) => !configLookup.getExtractorConfig(name),
+    );
+    if (missingGeneratorNames.length > 0) {
+      logger.info(
+        `Auto-generating extractor.json files for ${missingGeneratorNames.length} generators: ${missingGeneratorNames.join(', ')}`,
+      );
+      for (const generatorName of missingGeneratorNames) {
+        await tryCreateExtractorJson({
+          packageMap: generatorPackageMap,
+          generatorName,
+        });
+      }
+      // Re-initialize the config lookup to pick up the new extractor.json files
+      await configLookup.initialize();
+    }
+  }
+
   // Initialize plugins
-  const fileContainer = new TemplateExtractorFileContainer();
+  const fileContainer = new TemplateExtractorFileContainer([
+    ...generatorPackageMap.values(),
+  ]);
   const initializerContext = new TemplateExtractorContext({
     configLookup,
     logger,
@@ -61,9 +95,6 @@ export async function runTemplateFileExtractors(
     plugins: pluginMap,
     fileContainer,
   });
-
-  const templateMetadataFiles =
-    await readTemplateMetadataFiles(outputDirectory);
 
   // Group files by type and validate uniqueness (throws on duplicates)
   const filesByType = groupTemplateFilesByType(

@@ -29,7 +29,9 @@ describe('updateExtractorTemplateEntries', () => {
       logger: createTestLogger(),
       outputDirectory: '/test',
       plugins: new Map(),
-      fileContainer: new TemplateExtractorFileContainer(),
+      fileContainer: new TemplateExtractorFileContainer([
+        ...mockPackageMap.values(),
+      ]),
     });
   };
 

@@ -37,9 +37,10 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
       // By default, singleton templates have the path like `feature-root/services/[file].ts`
       const generatorTemplatePath =
         metadata.fileOptions.generatorTemplatePath ??
-        templatePathPlugin.getTemplatePathFromPathRootRelativePath(
-          absolutePath,
-        );
+        (pathRootRelativePath &&
+          templatePathPlugin.getTemplatePathFromPathRootRelativePath(
+            pathRootRelativePath,
+          ));
 
       if (!generatorTemplatePath) {
         throw new Error(

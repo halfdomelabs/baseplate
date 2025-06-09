@@ -145,10 +145,6 @@ export class TemplateExtractorConfigLookup {
    * Initialize the lookup service by indexing all packages in the package map
    */
   async initialize(): Promise<void> {
-    if (this.initialized) {
-      return;
-    }
-
     const errors: Error[] = [];
     await Promise.all(
       [...this.packageMap.keys()].map(async (name) => {

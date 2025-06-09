@@ -1,7 +1,11 @@
 import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
+import type { RunTemplateFileExtractorsOptions } from '@baseplate-dev/sync/extractor-v2';
 
-import { RawTemplateFileExtractor } from '@baseplate-dev/core-generators';
+import {
+  RawTemplateFileExtractor,
+  TextTemplateFileExtractor,
+} from '@baseplate-dev/core-generators';
 import { runTemplateFileExtractors } from '@baseplate-dev/sync/extractor-v2';
 import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import path from 'node:path';
@@ -15,7 +19,10 @@ const GENERATOR_PACKAGES = [
   '@baseplate-dev/react-generators',
 ];
 
-const TEMPLATE_EXTRACTORS = [RawTemplateFileExtractor];
+const TEMPLATE_EXTRACTORS = [
+  RawTemplateFileExtractor,
+  TextTemplateFileExtractor,
+];
 
 async function buildGeneratorPackageMap(
   context: SchemaParserContext,
@@ -55,6 +62,7 @@ export async function runTemplateExtractorsForProjectV2(
   app: string,
   context: SchemaParserContext,
   logger: Logger,
+  options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
   const syncMetadata = await readSyncMetadata(directory);
 
@@ -89,6 +97,7 @@ export async function runTemplateExtractorsForProjectV2(
     appDirectories[0],
     generatorPackageMap,
     logger,
+    options,
   );
   logger.info('Template extraction complete!');
 }
