@@ -62,8 +62,8 @@ describe('tryCreateExtractorJson', () => {
         packageMap,
         generatorName,
       }),
-    ).rejects.toThrow(
-      'No generator file found matching pattern: auth/login.generator.ts',
+    ).rejects.toThrowError(
+      /No generator file found matching pattern: auth\/login\/login\.generator\.ts/,
     );
   });
 
@@ -88,8 +88,8 @@ describe('tryCreateExtractorJson', () => {
         packageMap,
         generatorName,
       }),
-    ).rejects.toThrow(
-      'Multiple generator files found matching pattern: auth/login.generator.ts',
+    ).rejects.toThrowError(
+      /Multiple generator files found matching pattern: auth\/login\/login\.generator\.ts/,
     );
   });
 

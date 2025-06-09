@@ -56,9 +56,13 @@ describe('renderTextTemplateFileAction', () => {
     expect(file?.contents).toEqual('Hello John, welcome to Baseplate!');
     expect(file?.options?.templateMetadata).toEqual({
       name: 'test',
-      template: 'test.txt',
+      template: '',
       generator: 'test-generator',
+      group: undefined,
       type: TEXT_TEMPLATE_TYPE,
+      fileOptions: {
+        kind: 'singleton',
+      },
       variables: {
         TPL_NAME: {
           description: 'The name to greet',
