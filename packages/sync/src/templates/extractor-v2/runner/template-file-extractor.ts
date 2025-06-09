@@ -139,6 +139,11 @@ export interface TemplateFileExtractor<
   ): Promise<void> | void;
 }
 
+export type AnyTemplateFileExtractor = TemplateFileExtractor<
+  z.ZodSchema,
+  z.ZodSchema
+>;
+
 /**
  * Creates a typed TemplateFileExtractor.
  */

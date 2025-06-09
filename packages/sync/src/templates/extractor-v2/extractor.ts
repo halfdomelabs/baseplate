@@ -2,8 +2,9 @@ import { groupBy, uniq } from 'es-toolkit';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
+import type { TemplateFileMetadataBase } from '../metadata/metadata.js';
 import type {
-  TemplateFileExtractor,
+  AnyTemplateFileExtractor,
   TemplateFileExtractorMetadataEntry,
 } from './runner/template-file-extractor.js';
 
@@ -24,7 +25,7 @@ import { updateExtractorTemplateEntries } from './utils/update-extractor-templat
  * @param generatorPackageMap - The map of package names with generators to package paths
  */
 export async function runTemplateFileExtractors(
-  templateFileExtractors: TemplateFileExtractor[],
+  templateFileExtractors: AnyTemplateFileExtractor[],
   outputDirectory: string,
   generatorPackageMap: Map<string, string>,
   logger: Logger,
@@ -80,7 +81,9 @@ export async function runTemplateFileExtractors(
       return {
         absolutePath: path,
         metadata: extractor.outputTemplateMetadataSchema
-          ? extractor.outputTemplateMetadataSchema.parse(metadata)
+          ? (extractor.outputTemplateMetadataSchema.parse(
+              metadata,
+            ) as TemplateFileMetadataBase)
           : metadata,
       };
     });
