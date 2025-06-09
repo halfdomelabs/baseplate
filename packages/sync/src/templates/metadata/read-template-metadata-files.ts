@@ -29,11 +29,13 @@ export async function readTemplateMetadataFiles(
   outputDirectory: string,
 ): Promise<TemplateMetadataFileEntry[]> {
   const templateMetadataFiles = await globby(
-    path.join(outputDirectory, '**', TEMPLATE_METADATA_FILENAME),
+    path.join('**', TEMPLATE_METADATA_FILENAME),
     {
       absolute: true,
       onlyFiles: true,
       fs: fsAdapter,
+      gitignore: true,
+      cwd: outputDirectory,
     },
   );
 

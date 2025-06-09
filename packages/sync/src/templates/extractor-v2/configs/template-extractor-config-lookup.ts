@@ -121,6 +121,7 @@ export class TemplateExtractorConfigLookup {
           absolute: true,
           onlyFiles: true,
           fs: fsAdapter,
+          gitignore: true,
         },
       );
 

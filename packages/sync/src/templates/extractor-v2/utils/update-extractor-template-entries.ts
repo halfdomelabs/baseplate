@@ -7,7 +7,7 @@ import type { TemplateFileExtractorMetadataEntry } from '../runner/template-file
 
 /**
  * Updates extractor configurations with new template entries by grouping metadata
- * entries by generator and upserting them into the respective generators.json files.
+ * entries by generator and upserting them into the respective extractor.json files.
  *
  * @param metadataEntries - Array of template file extractor metadata entries
  * @param context - Template extractor context containing config lookup and file container
@@ -28,10 +28,10 @@ export function updateExtractorTemplateEntries(
   )) {
     const generatorConfig = context.configLookup.getExtractorConfig(generator);
     if (!generatorConfig) {
-      throw new Error(`No config found for generator: ${generator}`);
+      throw new Error(`No 'extractor.json' found for generator: ${generator}`);
     }
 
-    // Upsert template entries into the generators.json file
+    // Upsert template entries into the extractor.json file
     const { name, templates, extractors, ...rest } = generatorConfig.config;
 
     // Create a map of new templates to add
@@ -59,9 +59,9 @@ export function updateExtractorTemplateEntries(
       ...rest,
     };
 
-    // Write the new config to the generators.json file and update the cache
+    // Write the new config to the extractor.json file and update the cache
     context.fileContainer.writeFile(
-      path.join(generatorConfig.generatorDirectory, 'generators.json'),
+      path.join(generatorConfig.generatorDirectory, 'extractor.json'),
       stringifyPrettyCompact(newConfig),
     );
     context.configLookup.setExtractorConfig(generator, newConfig);

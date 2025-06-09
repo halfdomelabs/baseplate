@@ -1,0 +1,14 @@
+{
+  "name": "core/fastify-scripts",
+  "templates": {
+    "tsconfig.tpl.json": {
+      "name": "tsconfig",
+      "type": "raw",
+      "fileOptions": {
+        "kind": "singleton",
+        "generatorTemplatePath": "tsconfig.tpl.json"
+      },
+      "pathRootRelativePath": "{package-root}/scripts/tsconfig.json"
+    }
+  }
+}

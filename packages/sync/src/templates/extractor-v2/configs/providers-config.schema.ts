@@ -9,8 +9,12 @@ import { z } from 'zod';
  *   "feature.ts": {
  *     "featuresProvider": {
  *       "type": "path",
- *       "pathKey": "feature-root",
- *       "method": "getFeatureRoot"
+ *       "pathRoots": [
+ *         {
+ *           "name": "feature-root",
+ *           "method": "featureRoot"
+ *         }
+ *       ]
  *     }
  *   }
  * }

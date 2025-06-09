@@ -51,6 +51,8 @@ export async function runTemplateFileExtractors(
       absolute: true,
       onlyFiles: true,
       fs: fsAdapter,
+      gitignore: true,
+      cwd: outputDirectory,
     },
   );
 

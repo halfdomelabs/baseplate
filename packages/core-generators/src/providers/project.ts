@@ -1,6 +1,6 @@
 import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 
-export interface PackageProvider {
+export interface PackageInfoProvider {
   /**
    * Get the name of the project.
    */
@@ -16,4 +16,4 @@ export interface PackageProvider {
 }
 
 export const packageInfoProvider =
-  createReadOnlyProviderType<PackageProvider>('package');
+  createReadOnlyProviderType<PackageInfoProvider>('package');

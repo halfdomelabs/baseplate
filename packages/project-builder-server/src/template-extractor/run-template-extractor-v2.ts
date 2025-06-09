@@ -15,6 +15,8 @@ const GENERATOR_PACKAGES = [
   '@baseplate-dev/react-generators',
 ];
 
+const TEMPLATE_EXTRACTORS = [RawTemplateFileExtractor];
+
 async function buildGeneratorPackageMap(
   context: SchemaParserContext,
 ): Promise<Map<string, string>> {
@@ -72,17 +74,21 @@ export async function runTemplateExtractorsForProjectV2(
     }...`,
   );
   const appDirectories = Object.values(syncMetadata.packages)
-    .filter((packageInfo) => app.includes(packageInfo.name))
+    .filter((packageInfo) => packageInfo.name.includes(app))
     .map((packageInfo) => packageInfo.path);
+  if (appDirectories.length === 0) {
+    throw new Error(`No app directories found for ${app}`);
+  }
   if (appDirectories.length > 1) {
     throw new Error(
       `Found multiple app directories for ${app}: ${appDirectories.join(', ')}`,
     );
   }
   await runTemplateFileExtractors(
-    [RawTemplateFileExtractor],
+    TEMPLATE_EXTRACTORS,
     appDirectories[0],
     generatorPackageMap,
     logger,
   );
+  logger.info('Template extraction complete!');
 }

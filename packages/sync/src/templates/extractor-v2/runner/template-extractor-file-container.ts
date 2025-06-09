@@ -1,3 +1,4 @@
+import { handleFileNotFoundError } from '@baseplate-dev/utils/node';
 import fs from 'node:fs/promises';
 
 import { formatGeneratedTemplateContents } from '#src/templates/utils/formatter.js';
@@ -34,8 +35,10 @@ export class TemplateExtractorFileContainer {
     const contentsBuffer = Buffer.isBuffer(formattedContents)
       ? formattedContents
       : Buffer.from(formattedContents);
-    const existingContents = await fs.readFile(filePath);
-    if (existingContents.equals(contentsBuffer)) {
+    const existingContents = await fs
+      .readFile(filePath)
+      .catch(handleFileNotFoundError);
+    if (existingContents?.equals(contentsBuffer)) {
       return;
     }
     await fs.writeFile(filePath, contentsBuffer);

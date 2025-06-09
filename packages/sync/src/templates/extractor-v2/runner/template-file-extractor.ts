@@ -30,7 +30,7 @@ export interface TemplateFileExtractorSourceFile<
 }
 
 /**
- * A metadata entry that will be added to the `generators.json` file.
+ * A metadata entry that will be added to the `extractor.json` file.
  */
 export interface TemplateFileExtractorMetadataEntry<
   TGeneratorTemplateMetadata extends TemplateConfig = TemplateConfig,
@@ -59,7 +59,7 @@ export interface TemplateFileExtractorMetadataEntry<
  *
  * It is responsible for:
  * - Extracting metadata from source files
- * - Writing metadata to the `generators.json` file
+ * - Writing metadata to the `extractor.json` file
  * - Writing template files to the package
  */
 export interface TemplateFileExtractor<
@@ -75,7 +75,7 @@ export interface TemplateFileExtractor<
    */
   name: string;
   /**
-   * The schema for the metadata for a template in the `generators.json` file.
+   * The schema for the metadata for a template in the `extractor.json` file.
    */
   generatorTemplateMetadataSchema?: TGeneratorTemplateMetadata;
   /**
@@ -83,7 +83,7 @@ export interface TemplateFileExtractor<
    */
   outputTemplateMetadataSchema?: TOutputTemplateMetadata;
   /**
-   * The schema for the config for the extractor in the `generators.json` file.
+   * The schema for the config for the extractor in the `extractor.json` file.
    */
   extractorConfigSchema?: TExtractorConfig;
   /**

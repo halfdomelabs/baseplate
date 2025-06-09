@@ -30,8 +30,12 @@ export async function readTemplateFileSourceBuffer(
   source: TemplateFileSource,
 ): Promise<Buffer> {
   if ('path' in source) {
+    // TODO[2025-06-10]: Remove once we've migrated to v2 of template system
+    const templatePath = path.isAbsolute(source.path)
+      ? source.path
+      : path.join(generatorBaseDirectory, 'templates', source.path);
     const fileContents = await fs
-      .readFile(path.join(generatorBaseDirectory, 'templates', source.path))
+      .readFile(templatePath)
       .catch(handleFileNotFoundError);
     if (!fileContents) {
       throw new Error(

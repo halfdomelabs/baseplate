@@ -13,6 +13,7 @@ import {
   tsTemplate,
 } from '#src/renderers/typescript/index.js';
 import {
+  getGeneratedTemplateConstantName,
   getGeneratedTemplateExportName,
   getGeneratedTemplateInterfaceName,
   getGeneratedTemplateProviderName,
@@ -24,13 +25,18 @@ const GENERATED_PATHS_FILE_NAME = 'generated/template-paths.ts';
 const GENERATED_PATHS_TEMPLATE = `
 import { createProviderType, createGeneratorTask } from '@baseplate-dev/sync';
 
-export interface PATHS_TYPE_NAME {
-  PATHS_CONTENTS;
+export interface TPL_PATHS_TYPE_NAME {
+  TPL_PATHS_CONTENTS;
 }
 
-export const PATHS_PROVIDER_EXPORT = createProviderType<PATHS_TYPE_NAME>('PATHS_PROVIDER_NAME');
+const TPL_PATHS_PROVIDER_EXPORT = createProviderType<TPL_PATHS_TYPE_NAME>('TPL_PATHS_PROVIDER_NAME');
 
-export const PATHS_TASK_NAME = createGeneratorTask(PATHS_GENERATOR_TASK);
+const TPL_PATHS_TASK_NAME = createGeneratorTask(TPL_PATHS_GENERATOR_TASK);
+
+export const TPL_PATHS_EXPORT_NAME = {
+  provider: TPL_PATHS_PROVIDER_EXPORT,
+  task: TPL_PATHS_TASK_NAME,
+}
 `;
 
 const PATH_ROOT_REGEX = /^{([^}]+)}/;
@@ -153,17 +159,22 @@ function createPathsTask(
   );
 
   const pathsContents = TsCodeUtils.mergeFragmentsAsObject(
-    mapValuesOfMap(pathMap, (pathRootRelativePath) =>
-      pathRootRelativePath.replace(PATH_ROOT_REGEX, (pathRootName) => {
-        const pathRootVariableName = pathRootLookup[pathRootName];
-        if (!pathRootVariableName) {
-          throw new Error(
-            `Path root ${pathRootName} not found in path root lookup`,
-          );
-        }
-        return pathRootVariableName;
-      }),
-    ),
+    mapValuesOfMap(pathMap, (pathRootRelativePath) => {
+      const resolvedPath = pathRootRelativePath.replace(
+        PATH_ROOT_REGEX,
+        (pathRootPlaceholder) => {
+          const pathRootName = pathRootPlaceholder.slice(1, -1);
+          const pathRootVariableName = pathRootLookup[pathRootName];
+          if (!pathRootVariableName) {
+            throw new Error(
+              `Path root ${pathRootName} not found in path root lookup. Ensure it is registered with the providers.json file.`,
+            );
+          }
+          return `$\{${pathRootVariableName}}`;
+        },
+      );
+      return `\`${resolvedPath}\``;
+    }),
   );
 
   const run = tsTemplate`
@@ -175,8 +186,6 @@ function createPathsTask(
         ${providerExportName}: ${pathsContents}
       }
     }
-
-    return paths;
   }
   `;
 
@@ -212,17 +221,21 @@ export function writePathMapFile(
   const pathMapContents = renderTsCodeFileTemplate({
     templateContents: GENERATED_PATHS_TEMPLATE,
     variables: {
-      PATHS_TYPE_NAME: interfaceName,
-      PATHS_CONTENTS: [...pathMap]
+      TPL_PATHS_TYPE_NAME: interfaceName,
+      TPL_PATHS_CONTENTS: [...pathMap]
         .map(([templateName]) => `'${templateName}': string`)
         .join(',\n'),
-      PATHS_PROVIDER_EXPORT: providerExportName,
-      PATHS_PROVIDER_NAME: getGeneratedTemplateProviderName(
+      TPL_PATHS_PROVIDER_EXPORT: providerExportName,
+      TPL_PATHS_PROVIDER_NAME: getGeneratedTemplateProviderName(
         generatorName,
         'paths',
       ),
-      PATHS_GENERATOR_TASK_NAME: taskName,
-      PATHS_GENERATOR_TASK: taskFragment,
+      TPL_PATHS_TASK_NAME: taskName,
+      TPL_PATHS_GENERATOR_TASK: taskFragment,
+      TPL_PATHS_EXPORT_NAME: getGeneratedTemplateConstantName(
+        generatorName,
+        'paths',
+      ),
     },
   });
 

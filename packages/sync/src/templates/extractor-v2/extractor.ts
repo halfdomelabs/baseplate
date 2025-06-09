@@ -66,7 +66,10 @@ export async function runTemplateFileExtractors(
     await readTemplateMetadataFiles(outputDirectory);
 
   // Group files by type and validate uniqueness (throws on duplicates)
-  const filesByType = groupTemplateFilesByType(templateMetadataFiles);
+  const filesByType = groupTemplateFilesByType(
+    // TODO [2025-06-10]: Remove this filter once we've migrated from v1 to v2
+    templateMetadataFiles.filter((f) => 'fileOptions' in f.metadata),
+  );
 
   // Get the metadata entries for each file
   const metadataEntries: TemplateFileExtractorMetadataEntry[] = [];

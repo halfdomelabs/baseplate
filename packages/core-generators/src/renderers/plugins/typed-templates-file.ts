@@ -15,9 +15,9 @@ export interface TemplateExtractorTypedTemplate {
 }
 
 const TS_TEMPLATE = `
-TEMPLATE_FRAGMENTS;
+TPL_TEMPLATE_FRAGMENTS;
 
-export const EXPORT_NAME = TEMPLATE_EXPORTS;
+export const TPL_EXPORT_NAME = TPL_TEMPLATE_EXPORTS;
 `;
 
 /**
@@ -51,9 +51,9 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
         const templateFileContents = renderTsCodeFileTemplate({
           templateContents: TS_TEMPLATE,
           variables: {
-            TEMPLATE_FRAGMENTS: templatesFragment,
-            TEMPLATE_EXPORTS: `{ ${templateExports.join(', ')} }`,
-            TEMPLATE_NAME: getGeneratedTemplateConstantName(
+            TPL_TEMPLATE_FRAGMENTS: templatesFragment,
+            TPL_TEMPLATE_EXPORTS: `{ ${templateExports.join(', ')} }`,
+            TPL_EXPORT_NAME: getGeneratedTemplateConstantName(
               generatorName,
               'TEMPLATES',
             ),

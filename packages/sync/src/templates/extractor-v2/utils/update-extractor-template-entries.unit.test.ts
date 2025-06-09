@@ -112,7 +112,7 @@ describe('updateExtractorTemplateEntries', () => {
     // Verify the file was written to the container
     const files = context.fileContainer.getFiles();
     const generatorJsonPath =
-      '/packages/package1/generators/test/generators.json';
+      '/packages/package1/generators/test/extractor.json';
     expect(files.has(generatorJsonPath)).toBe(true);
 
     const writtenContent = files.get(generatorJsonPath);
@@ -201,12 +201,12 @@ describe('updateExtractorTemplateEntries', () => {
 
     // Verify files were written
     const files = context.fileContainer.getFiles();
-    expect(
-      files.has('/packages/package1/generators/gen1/generators.json'),
-    ).toBe(true);
-    expect(
-      files.has('/packages/package2/generators/gen2/generators.json'),
-    ).toBe(true);
+    expect(files.has('/packages/package1/generators/gen1/extractor.json')).toBe(
+      true,
+    );
+    expect(files.has('/packages/package2/generators/gen2/extractor.json')).toBe(
+      true,
+    );
   });
 
   it('should overwrite existing template entries with same path', async () => {

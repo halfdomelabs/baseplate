@@ -24,11 +24,16 @@ export const extractorConfigSchema = z.object({
   /**
    * Name of the generator, e.g. auth/auth-module
    */
-  name: CASE_VALIDATORS.KEBAB_CASE,
+  name: z
+    .string()
+    .regex(
+      /^[a-z0-9-/]+$/,
+      'must be a valid generator basename e.g. core/fastify-scripts',
+    ),
   /**
    * Template map keyed by the file location in the templates/ folder
    */
-  templates: z.record(templateConfigSchema),
+  templates: z.record(templateConfigSchema).default({}),
   /**
    * Configuration for each extractor keyed by extractor type
    */
