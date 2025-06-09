@@ -24,7 +24,7 @@ describe('initializeTemplateExtractorPlugins', () => {
     });
 
   const createMockFileContainer = (): TemplateExtractorFileContainer =>
-    new TemplateExtractorFileContainer();
+    new TemplateExtractorFileContainer([]);
 
   const createMockPlugin = (
     name: string,

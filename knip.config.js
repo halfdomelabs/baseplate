@@ -136,6 +136,7 @@ export default {
     '**/templates/**',
     '**/morphers/tests/**',
     '**/string-merge-algorithms/tests/**',
+    '**/generated/**',
   ],
   ignoreBinaries: ['only-allow'],
   ignoreDependencies: [
