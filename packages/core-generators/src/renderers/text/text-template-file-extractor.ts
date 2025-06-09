@@ -6,10 +6,10 @@ import pLimit from 'p-limit';
 
 import type { TextTemplateFileVariableWithValue } from './types.js';
 
-import { templatePathsPlugin } from '../plugins/template-paths/template-paths.plugin.js';
-import { typedTemplatesFilePlugin } from '../plugins/typed-templates-file.js';
+import { templatePathsPlugin } from '../templates/plugins/template-paths/template-paths.plugin.js';
+import { typedTemplatesFilePlugin } from '../templates/plugins/typed-templates-file.js';
+import { resolvePackagePathSpecifier } from '../templates/utils/package-path-specifier.js';
 import { TsCodeUtils, tsImportBuilder } from '../typescript/index.js';
-import { resolvePackagePathSpecifier } from '../utils/package-path-specifier.js';
 import {
   textTemplateGeneratorTemplateMetadataSchema,
   textTemplateOutputTemplateMetadataSchema,

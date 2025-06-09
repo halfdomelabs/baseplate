@@ -1,9 +1,12 @@
 import { createTemplateExtractorPlugin } from '@baseplate-dev/sync/extractor-v2';
 import { posixJoin } from '@baseplate-dev/utils/node';
 
-import type { TsCodeFragment } from '../typescript/index.js';
+import type { TsCodeFragment } from '../../typescript/index.js';
 
-import { renderTsCodeFileTemplate, TsCodeUtils } from '../typescript/index.js';
+import {
+  renderTsCodeFileTemplate,
+  TsCodeUtils,
+} from '../../typescript/index.js';
 import { getGeneratedTemplateConstantName } from '../utils/index.js';
 import { templatePathsPlugin } from './template-paths/template-paths.plugin.js';
 

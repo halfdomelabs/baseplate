@@ -18,7 +18,7 @@ import {
   getGeneratedTemplateInterfaceName,
   getGeneratedTemplateProviderName,
   resolvePackagePathSpecifier,
-} from '#src/renderers/utils/index.js';
+} from '#src/renderers/templates/utils/index.js';
 
 const GENERATED_PATHS_FILE_NAME = 'generated/template-paths.ts';
 
