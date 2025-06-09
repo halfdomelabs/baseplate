@@ -4,7 +4,24 @@ interface ParsedPackagePathSpecifier {
 }
 
 function parsePackagePathSpecifier(spec: string): ParsedPackagePathSpecifier {
+  if (!spec || typeof spec !== 'string') {
+    throw new Error('Package path specifier must be a non-empty string');
+  }
+
+  if (!spec.includes(':')) {
+    throw new Error(
+      `Invalid package path specifier: "${spec}". Expected format: "package-name:file-path"`,
+    );
+  }
+
   const [packageName, filePath] = spec.split(':', 2);
+
+  if (!packageName || !filePath) {
+    throw new Error(
+      `Invalid package path specifier: "${spec}". Both package name and file path are required`,
+    );
+  }
+
   return { packageName, filePath };
 }
 

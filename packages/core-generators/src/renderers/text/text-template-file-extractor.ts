@@ -62,7 +62,7 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
       };
     });
   },
-  writeTemplateFiles: async (files, context, api) => {
+  writeTemplateFiles: async (files, _context, api) => {
     await Promise.all(
       files.map((file) =>
         limit(async () => {
@@ -74,9 +74,17 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
 
           // replace variable values with template string
           let templateContents = contents;
-          for (const [key, variableWithValue] of Object.entries(
-            metadata.variables ?? {},
-          )) {
+
+          // Sort variables by descending length of their values to prevent overlapping replacements
+          const sortedVariables = Object.entries(metadata.variables ?? {}).sort(
+            ([, a], [, b]) => {
+              const aValue = (a as TextTemplateFileVariableWithValue).value;
+              const bValue = (b as TextTemplateFileVariableWithValue).value;
+              return bValue.length - aValue.length;
+            },
+          );
+
+          for (const [key, variableWithValue] of sortedVariables) {
             // variableWithValue has the 'value' property, we need to remove it for the variable definition
             const { value } =
               variableWithValue as TextTemplateFileVariableWithValue;
