@@ -13,8 +13,6 @@ export const TEXT_TEMPLATE_TYPE = 'text';
 const textTemplateFileVariableSchema = z.object({
   // The description of the variable.
   description: z.string().optional(),
-  // Whether the variable is an identifier so we check for non-alphanumeric characters around
-  isIdentifier: z.boolean().optional(),
 });
 
 export const textTemplateGeneratorTemplateMetadataSchema =
@@ -27,6 +25,10 @@ export const textTemplateGeneratorTemplateMetadataSchema =
      * The path of the template relative to the closest file path root.
      */
     pathRootRelativePath: z.string().optional(),
+    /**
+     * The group to assign the template to when generating the typed templates.
+     */
+    group: z.string().optional(),
     /**
      * The variables for the template.
      */
@@ -43,6 +45,10 @@ export const textTemplateOutputTemplateMetadataSchema =
      * The options for the template file
      */
     fileOptions: templateFileOptionsSchema,
+    /**
+     * The group to assign the template to when generating the typed templates.
+     */
+    group: z.string().optional(),
     /**
      * The variables for the template with their values.
      */
@@ -111,28 +117,4 @@ export type InferTextTemplateVariablesFromTemplate<T extends TextTemplateFile> =
     [K in keyof T['variables']]: string;
   };
 
-interface TextTemplateGroupEntry {
-  destination: string;
-  template: TextTemplateFile;
-}
-
-/**
- * A group of text template files.
- */
-export interface TextTemplateGroup<
-  T extends Record<string, TextTemplateGroupEntry> = Record<
-    string,
-    TextTemplateGroupEntry
-  >,
-> {
-  /**
-   * The templates in the group.
-   */
-  templates: T;
-}
-
-export function createTextTemplateGroup<
-  T extends Record<string, TextTemplateGroupEntry>,
->(group: TextTemplateGroup<T>): TextTemplateGroup<T> {
-  return group;
-}
+export type TextTemplateGroup = Record<string, TextTemplateFile>;
