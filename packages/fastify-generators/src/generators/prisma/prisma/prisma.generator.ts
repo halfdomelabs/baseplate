@@ -4,7 +4,7 @@ import type { formatSchema } from '@prisma/internals';
 import {
   extractPackageVersions,
   nodeProvider,
-  projectProvider,
+  packageInfoProvider,
   projectScope,
   tsCodeFragment,
   TsCodeUtils,
@@ -101,12 +101,12 @@ export const prismaGenerator = createGenerator({
     configService: createGeneratorTask({
       dependencies: {
         configService: configServiceProvider,
-        project: projectProvider,
+        packageInfo: packageInfoProvider,
       },
-      run({ configService, project }) {
+      run({ configService, packageInfo }) {
         const defaultDatabaseUrl =
           descriptor.defaultDatabaseUrl ??
-          `postgres://postgres:${project.getProjectName()}-password@localhost:${
+          `postgres://postgres:${packageInfo.getPackageName()}-password@localhost:${
             descriptor.defaultPort
           }/postgres?schema=public`;
 

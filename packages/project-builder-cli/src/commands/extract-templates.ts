@@ -1,6 +1,6 @@
 import type { Command } from 'commander';
 
-import { runTemplateExtractorsForProject } from '@baseplate-dev/project-builder-server';
+import { runTemplateExtractorsForProjectV2 } from '@baseplate-dev/project-builder-server';
 
 import { logger } from '#src/services/logger.js';
 import { createSchemaParserContext } from '#src/services/schema-parser-context.js';
@@ -17,14 +17,28 @@ export function addExtractTemplatesCommand(program: Command): void {
     .description(
       'Extracts templates from the specified directory and saves them to the templates directory',
     )
-    .action(async (directory: string, app: string) => {
-      const resolvedDirectory = expandPathWithTilde(directory);
-      const context = await createSchemaParserContext(resolvedDirectory);
-      await runTemplateExtractorsForProject(
-        resolvedDirectory,
-        app,
-        context,
-        logger,
-      );
-    });
+    .option(
+      '--auto-generate-extractor',
+      'Auto-generate extractor.json files',
+      true,
+    )
+    .action(
+      async (
+        directory: string,
+        app: string,
+        options: { autoGenerateExtractor?: boolean },
+      ) => {
+        const resolvedDirectory = expandPathWithTilde(directory);
+        const context = await createSchemaParserContext(resolvedDirectory);
+        await runTemplateExtractorsForProjectV2(
+          resolvedDirectory,
+          app,
+          context,
+          logger,
+          {
+            autoGenerateExtractor: options.autoGenerateExtractor,
+          },
+        );
+      },
+    );
 }

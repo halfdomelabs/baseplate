@@ -29,6 +29,7 @@ Note: Make sure to run the commands in the sub-packages if only modifying files 
 - Use kebab-case for file names
 - If a particular interface or type is not exported, change the file so it is exported
 - We use the prefer using nullish coalescing operator (`??`) ESLint rule instead of a logical or (`||`), as it is a safer operator
+- Prefer barrel exports e.g. export \* from './foo.js' instead of individual named exports
 
 ## UI Development Guidelines
 
@@ -93,6 +94,15 @@ test('should do something', () => {
   const files = vol.toJSON();
   expect(files['test-file.txt']).toBe('test content');
 });
+```
+
+If using globby, make sure we pass the mocked fs adapter:
+
+```typescript
+import { globby } from 'globby';
+import fsAdapter from 'node:fs';
+
+const files = await globby(['**/*.ts'], { fs: fsAdapter });
 ```
 
 ## Repository Structure

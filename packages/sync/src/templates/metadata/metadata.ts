@@ -1,22 +1,24 @@
+import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 export const templateFileMetadataBaseSchema = z.object({
   /**
-   * The type of the file.
+   * The name of the template (must be unique within a generator).
+   */
+  name: CASE_VALIDATORS.KEBAB_CASE,
+  /**
+   * The template extractor type e.g. ts or raw.
    */
   type: z.string(),
   /**
-   * The name of the template (must be unique within a generator).
-   */
-  name: z.string().regex(/^[a-z\-0-9]+$/, 'must be kebab case'),
-  /**
    * The name of the generator that created the file.
    */
-  generator: z.string(),
+  generator: z.string().min(1),
+  // TODO[2025-06-10]: Remove once we have finished migration to extractor v2
   /**
-   * The path of the template that was used to create the file relative to the generator's template directory.
+   * The path of the template that was used to create the file.
    */
-  template: z.string(),
+  template: z.string().default(''),
 });
 
 export type TemplateFileMetadataBase = z.infer<

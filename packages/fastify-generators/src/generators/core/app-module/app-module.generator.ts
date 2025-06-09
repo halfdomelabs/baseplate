@@ -3,6 +3,7 @@ import type { InferFieldMapSchemaFromBuilder } from '@baseplate-dev/utils';
 
 import {
   featureScope,
+  pathRootsProvider,
   projectScope,
   tsCodeFragment,
   TsCodeUtils,
@@ -72,6 +73,7 @@ export const appModuleGenerator = createGenerator({
   buildTasks: ({ id, name, isRoot }) => ({
     main: createGeneratorTask({
       dependencies: {
+        pathRoots: pathRootsProvider,
         typescriptFile: typescriptFileProvider,
         appModuleConfigValues: appModuleConfigValuesProvider,
         appModuleSetupImports: appModuleSetupImportsProvider,
@@ -92,6 +94,7 @@ export const appModuleGenerator = createGenerator({
         appModule,
         appModuleConfigValues,
         appModuleSetupImports,
+        pathRoots,
       }) {
         const appModuleConfig = createConfigFieldMap(appModuleConfigSchema);
         const parentFolder = appModule?.getModuleFolder();
@@ -105,6 +108,8 @@ export const appModuleGenerator = createGenerator({
           ? '@/src/modules'
           : `${parentFolder}/${kebabCase(name)}`;
         const modulePath = `${moduleFolder}/index.ts`;
+
+        pathRoots.registerPathRoot('module-root', moduleFolder);
 
         if (appModule) {
           appModule.moduleFields.set(

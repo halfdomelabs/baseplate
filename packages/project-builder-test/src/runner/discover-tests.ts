@@ -15,6 +15,7 @@ export async function discoverTests(
 ): Promise<TestFile[]> {
   const testFiles = await globby('**.test.ts', {
     cwd: testDirectory,
+    gitignore: true,
   });
 
   const matchingTestFiles = testFiles.filter(

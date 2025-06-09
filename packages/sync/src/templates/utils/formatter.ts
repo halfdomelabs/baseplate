@@ -1,16 +1,11 @@
 import type { Options } from 'prettier';
 
-import { format, resolveConfig, resolveConfigFile } from 'prettier';
-
-const ALLOWED_EXTENSIONS = new Set([
-  'ts',
-  'tsx',
-  'js',
-  'jsx',
-  'css',
-  'json',
-  'md',
-]);
+import {
+  format,
+  getFileInfo,
+  resolveConfig,
+  resolveConfigFile,
+} from 'prettier';
 
 const prettierConfigs: { path: string; config: Options }[] = [];
 
@@ -55,10 +50,10 @@ export async function formatGeneratedTemplateContents(
   filePath: string,
 ): Promise<string> {
   const extension = filePath.split('.').pop();
-  if (!extension || !ALLOWED_EXTENSIONS.has(extension)) {
+  const fileInfo = await getFileInfo(filePath);
+  if (!extension || fileInfo.inferredParser === null) {
     return contents;
   }
-
   const config = await getPrettierConfig(filePath);
   return format(contents, { ...config, filepath: filePath });
 }

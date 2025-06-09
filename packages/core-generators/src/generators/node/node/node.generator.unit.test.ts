@@ -6,15 +6,15 @@ import { NODE_VERSION, PNPM_VERSION } from '#src/constants/node.js';
 import { nodeGenerator } from './node.generator.js';
 
 describe('nodeGenerator', () => {
-  describe('projectTask', () => {
+  describe('packageInfoTask', () => {
     const nodeBundle = nodeGenerator({
       name: 'node-project',
     });
 
     it('returns the project name', async () => {
-      const runner = createTaskTestRunner(nodeBundle.tasks.project);
+      const runner = createTaskTestRunner(nodeBundle.tasks.packageInfo);
       const result = await runner.run({});
-      expect(result.outputs.project.getProjectName()).toBe('node-project');
+      expect(result.outputs.package.getPackageName()).toBe('node-project');
     });
   });
 

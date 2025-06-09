@@ -4,7 +4,7 @@ import {
   eslintConfigProvider,
   nodeConfigProvider,
   nodeGitIgnoreProvider,
-  projectProvider,
+  packageInfoProvider,
   projectScope,
   tsCodeFragment,
   TsCodeUtils,
@@ -111,12 +111,12 @@ export const reactGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
-        project: projectProvider,
+        packageInfo: packageInfoProvider,
         reactConfigValues: reactConfigValuesProvider,
       },
       run({
         typescriptFile,
-        project,
+        packageInfo,
         reactConfigValues: {
           appFragment,
           headerFragments,
@@ -140,7 +140,7 @@ export const reactGenerator = createGenerator({
                 baseDirectory: '',
                 variables: {
                   readme: {
-                    TPL_PROJECT_NAME: project.getProjectName(),
+                    TPL_PROJECT_NAME: packageInfo.getPackageName(),
                   },
                   indexHtml: {
                     TPL_TITLE: descriptor.title,

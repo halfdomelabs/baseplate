@@ -1,0 +1,17 @@
+{
+  "project.ts": {
+    "packageInfoProvider": {
+      "type": "path",
+      "pathRoots": [
+        {
+          "name": "package-root",
+          "method": "getPackageRoot"
+        },
+        {
+          "name": "src-root",
+          "method": "getPackageSrcPath"
+        }
+      ]
+    }
+  }
+}

@@ -65,8 +65,8 @@ export async function runTemplateExtractorsForProject(
 ): Promise<void> {
   // find all .generator-info.json files in the project
   const generatorInfoFiles = await globby(
-    path.join(directory, '**', '.generator-info.json'),
-    { onlyFiles: true, absolute: true },
+    path.join('**', '.generator-info.json'),
+    { onlyFiles: true, absolute: true, gitignore: true, cwd: directory },
   );
   const generatorPackageMap = await buildGeneratorPackageMap(context);
   logger.info(
