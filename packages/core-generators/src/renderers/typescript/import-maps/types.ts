@@ -6,6 +6,8 @@ export interface TsImportMapSchemaEntry<
 > {
   /**
    * The name of the import (if not the key of the entry).
+   *
+   * TODO[2025-06-10]: Rename this to exportedName
    */
   name?: string;
   /**

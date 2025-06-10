@@ -109,10 +109,18 @@ export interface TemplateFileExtractor<
   extractTemplateMetadataEntries(
     files: TemplateFileExtractorSourceFile<z.infer<TOutputTemplateMetadata>>[],
     context: TemplateExtractorContext<TPluginDependencies>,
-  ): TemplateFileExtractorMetadataEntry<
-    z.infer<TGeneratorTemplateMetadata>,
-    TExtractionContext
-  >[];
+    api: TemplateExtractorApi,
+  ):
+    | TemplateFileExtractorMetadataEntry<
+        z.infer<TGeneratorTemplateMetadata>,
+        TExtractionContext
+      >[]
+    | Promise<
+        TemplateFileExtractorMetadataEntry<
+          z.infer<TGeneratorTemplateMetadata>,
+          TExtractionContext
+        >[]
+      >;
 
   /**
    * Writes the template files to the generator's templates directory.

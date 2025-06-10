@@ -17,7 +17,8 @@ import { TemplateExtractorApi } from './runner/template-extractor-api.js';
 import { TemplateExtractorContext } from './runner/template-extractor-context.js';
 import { TemplateExtractorFileContainer } from './runner/template-extractor-file-container.js';
 import { groupTemplateFilesByType } from './utils/group-template-files-by-type.js';
-import { updateExtractorTemplateEntries } from './utils/update-extractor-template-entries.js';
+import { mergeExtractorTemplateEntries } from './utils/merge-extractor-template-entries.js';
+import { writeExtractorTemplateJsons } from './utils/write-extractor-template-jsons.js';
 
 export interface RunTemplateFileExtractorsOptions {
   autoGenerateExtractor?: boolean;
@@ -29,18 +30,25 @@ export interface RunTemplateFileExtractorsOptions {
  * @param extractors - The template file extractors to run
  * @param outputDirectories - The output directories to run the extractors on
  * @param generatorPackageMap - The map of package names with generators to package paths
+ * @param logger - The logger to use
+ * @param fileIdMap - The map of file ids to file paths (used to link generated files to their templates)
+ * @param options - The options to use
  */
 export async function runTemplateFileExtractors(
   templateFileExtractors: AnyTemplateFileExtractor[],
   outputDirectory: string,
   generatorPackageMap: Map<string, string>,
   logger: Logger,
+  fileIdMap: Map<string, string>,
   options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
   const templateMetadataFiles =
     await readTemplateMetadataFiles(outputDirectory);
 
-  const configLookup = new TemplateExtractorConfigLookup(generatorPackageMap);
+  const configLookup = new TemplateExtractorConfigLookup(
+    generatorPackageMap,
+    fileIdMap,
+  );
   await configLookup.initialize();
 
   if (options?.autoGenerateExtractor) {
@@ -124,7 +132,7 @@ export async function runTemplateFileExtractors(
     });
     const api = new TemplateExtractorApi(context, type);
 
-    const newEntries = await extractor.extractTemplateFiles(
+    const newEntries = await extractor.extractTemplateMetadataEntries(
       parsedFiles,
       context,
       api,
@@ -134,8 +142,8 @@ export async function runTemplateFileExtractors(
 
   await runHooks('afterExtract');
 
-  // Update extractor configurations with new template entries
-  updateExtractorTemplateEntries(metadataEntries, context);
+  // Merge template entries into extractor configurations
+  mergeExtractorTemplateEntries(metadataEntries, context);
 
   // Group metadata entries by type
   const metadataEntriesByType = groupBy(
@@ -151,13 +159,18 @@ export async function runTemplateFileExtractors(
 
     const api = new TemplateExtractorApi(context, type);
 
+    await extractor.writeTemplateFiles(entries, context, api);
+
     const generatorNames = uniq(entries.map((e) => e.generator));
     await extractor.writeGeneratedFiles(generatorNames, context, api);
   }
 
+  // Write extractor.json files before afterWrite hook so writeTemplateFiles can update extractor config
+  const generatorNames = uniq(metadataEntries.map((e) => e.generator));
+  writeExtractorTemplateJsons(generatorNames, context);
+
   await runHooks('afterWrite');
 
   // Commit the file changes once all the extractors and plugins have written their files
-
   await fileContainer.commit();
 }

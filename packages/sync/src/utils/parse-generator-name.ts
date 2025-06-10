@@ -5,15 +5,15 @@ const generatorNameRegex = /^([^#]+)#([^/]+\/)?([^#]+)$/;
  */
 interface ParsedGeneratorName {
   /**
-   * The package name.
+   * The package name e.g. `@baseplate-dev/core-generators`
    */
   packageName: string;
   /**
-   * The full path of the generator.
+   * The full path of the generator e.g. `core/node`
    */
   generatorPath: string;
   /**
-   * The basename of the generator.
+   * The basename of the generator, e.g. `node`
    */
   generatorBasename: string;
 }

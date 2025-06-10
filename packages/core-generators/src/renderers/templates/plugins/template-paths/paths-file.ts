@@ -20,7 +20,12 @@ import {
   resolvePackagePathSpecifier,
 } from '#src/renderers/templates/utils/index.js';
 
-const GENERATED_PATHS_FILE_NAME = 'generated/template-paths.ts';
+export const GENERATED_PATHS_FILE_NAME = 'template-paths.ts';
+
+const GENERATED_PATHS_FILE_PATH = posixJoin(
+  'generated',
+  GENERATED_PATHS_FILE_NAME,
+);
 
 const GENERATED_PATHS_TEMPLATE = `
 import { createProviderType, createGeneratorTask } from '@baseplate-dev/sync';
@@ -64,6 +69,7 @@ interface PathsFileExportNames {
   interfaceName: string;
   providerExportName: string;
   taskName: string;
+  rootExportName: string;
 }
 
 export function getPathsFileExportNames(
@@ -73,6 +79,7 @@ export function getPathsFileExportNames(
     interfaceName: getGeneratedTemplateInterfaceName(generatorName, 'paths'),
     providerExportName: getGeneratedTemplateExportName(generatorName, 'paths'),
     taskName: getGeneratedTemplateExportName(generatorName, 'paths-task'),
+    rootExportName: getGeneratedTemplateConstantName(generatorName, 'paths'),
   };
 }
 
@@ -205,7 +212,7 @@ export function writePathMapFile(
     context.configLookup.getExtractorConfigOrThrow(generatorName);
   const pathMapPath = posixJoin(
     extractorConfig.generatorDirectory,
-    GENERATED_PATHS_FILE_NAME,
+    GENERATED_PATHS_FILE_PATH,
   );
 
   const fileExportNames = getPathsFileExportNames(generatorName);
@@ -232,10 +239,7 @@ export function writePathMapFile(
       ),
       TPL_PATHS_TASK_NAME: taskName,
       TPL_PATHS_GENERATOR_TASK: taskFragment,
-      TPL_PATHS_EXPORT_NAME: getGeneratedTemplateConstantName(
-        generatorName,
-        'paths',
-      ),
+      TPL_PATHS_EXPORT_NAME: fileExportNames.rootExportName,
     },
   });
 

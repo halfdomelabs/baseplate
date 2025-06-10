@@ -1,19 +1,26 @@
 import { getGenerationConcurrencyLimit } from '@baseplate-dev/sync';
 import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
-import { camelCase } from 'change-case';
+import { groupBy } from 'es-toolkit';
+import path from 'node:path';
 import pLimit from 'p-limit';
+
+import type { WriteTsTemplateFileContext } from './render-ts-template-file.js';
 
 import { templatePathsPlugin } from '../../templates/plugins/template-paths/template-paths.plugin.js';
 import { typedTemplatesFilePlugin } from '../../templates/plugins/typed-templates-file.js';
-import { resolvePackagePathSpecifier } from '../../templates/utils/package-path-specifier.js';
-import { tsImportBuilder } from '../imports/builder.js';
 import {
   TS_TEMPLATE_TYPE,
   tsTemplateGeneratorTemplateMetadataSchema,
   tsTemplateOutputTemplateMetadataSchema,
 } from '../templates/types.js';
-import { TsCodeUtils } from '../utils/ts-code-utils.js';
-import { extractTsTemplateVariables } from './extract-ts-template-variables.js';
+import { buildTsProjectExportMap } from './build-ts-project-export-map.js';
+import { getResolverFactory } from './get-resolver-factory.js';
+import {
+  GENERATED_IMPORT_PROVIDERS_PATH,
+  renderTsImportProviders,
+} from './render-ts-import-providers.js';
+import { renderTsTemplateFile } from './render-ts-template-file.js';
+import { renderTsTypedTemplates } from './render-ts-typed-templates.js';
 
 const limit = pLimit(getGenerationConcurrencyLimit());
 
@@ -22,66 +29,88 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
   pluginDependencies: [templatePathsPlugin, typedTemplatesFilePlugin],
   outputTemplateMetadataSchema: tsTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: tsTemplateGeneratorTemplateMetadataSchema,
-  extractTemplateFiles: async (files, context, api) => {
+  extractTemplateMetadataEntries: (files, context) => {
     const templatePathPlugin = context.getPlugin('template-paths');
-    return Promise.all(
-      files.map(({ metadata, absolutePath }) =>
-        limit(async () => {
-          const { pathRootRelativePath, generatorTemplatePath } =
-            templatePathPlugin.resolveTemplatePaths(
-              metadata.fileOptions,
-              absolutePath,
-              metadata.name,
-              metadata.generator,
-            );
+    return files.map(({ metadata, absolutePath }) => {
+      try {
+        const { pathRootRelativePath, generatorTemplatePath } =
+          templatePathPlugin.resolveTemplatePaths(
+            metadata.fileOptions,
+            absolutePath,
+            metadata.name,
+            metadata.generator,
+          );
 
-          // Skip extraction for project exports only files
-          if (!metadata.projectExportsOnly) {
-            const contents = await api.readOutputFile(absolutePath);
-            // Extract template variables from TypeScript content
-            const { content: extractedContent } =
-              extractTsTemplateVariables(contents);
+        return {
+          generator: metadata.generator,
+          generatorTemplatePath,
+          sourceAbsolutePath: absolutePath,
+          metadata: {
+            ...metadata,
+            pathRootRelativePath,
+          },
+        };
+      } catch (error) {
+        throw new Error(
+          `Error resolving template paths for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+          { cause: error },
+        );
+      }
+    });
+  },
+  writeTemplateFiles: async (files, context, api) => {
+    // Gather all the imports from the entry metadata
+    const projectExportMap = buildTsProjectExportMap(context);
 
-            // TODO: Integrate import organization logic here when available
-            // The v1 system uses organizeTsTemplateImports but requires:
-            // - ProjectExportLookupMap
-            // - ResolverFactory
-            // - Project root and generator files context
-            // For now, just add ts-nocheck to prevent TypeScript errors
-            let processedContent = extractedContent;
-            if (extractedContent.startsWith('#!')) {
-              // shebang lines must always be the first line
-              const contentLines = extractedContent.split('\n');
-              processedContent = `${contentLines[0]}\n// @ts-nocheck\n\n${contentLines.slice(1).join('\n')}`;
-            } else {
-              processedContent = `// @ts-nocheck\n\n${extractedContent}`;
-            }
+    const filesByGenerator = groupBy(files, (f) => f.generator);
 
-            api.writeTemplateFile(
-              metadata.generator,
-              generatorTemplatePath,
-              processedContent,
-            );
-          }
+    await Promise.all(
+      Object.entries(filesByGenerator).map(async ([generatorName, files]) => {
+        const writeContext: WriteTsTemplateFileContext = {
+          generatorName,
+          projectExportMap,
+          outputDirectory: context.outputDirectory,
+          internalOutputRelativePaths: files.map((f) =>
+            path.relative(context.outputDirectory, f.sourceAbsolutePath),
+          ),
+          resolver: getResolverFactory(context.outputDirectory),
+        };
 
-          return {
-            generator: metadata.generator,
-            generatorTemplatePath,
-            metadata: {
-              name: metadata.name,
-              type: metadata.type,
-              fileOptions: metadata.fileOptions,
-              group: metadata.group,
-              projectExports: metadata.projectExports,
-              projectExportsOnly: metadata.projectExportsOnly,
-              pathRootRelativePath,
-            },
-          };
-        }),
-      ),
+        await Promise.all(
+          files.map((file) =>
+            limit(async () => {
+              if (file.metadata.projectExportsOnly) return;
+
+              const contents = await api.readOutputFile(
+                file.sourceAbsolutePath,
+              );
+              const result = await renderTsTemplateFile(
+                file.sourceAbsolutePath,
+                contents,
+                writeContext,
+              );
+              api.writeTemplateFile(
+                file.generator,
+                file.generatorTemplatePath,
+                result.contents,
+              );
+              // update the extractor config with the new variables and import providers
+              context.configLookup.updateExtractorTemplateConfig(
+                file.generator,
+                {
+                  ...file.metadata,
+                  variables: result.variables,
+                  importProviders: result.importProviders,
+                },
+              );
+              return result;
+            }),
+          ),
+        );
+      }),
     );
   },
-  writeGeneratedFiles: (generatorNames, context) => {
+  writeGeneratedFiles: (generatorNames, context, api) => {
     const templatePathsPlugin = context.getPlugin('template-paths');
     const typedTemplatesPlugin = context.getPlugin('typed-templates-file');
 
@@ -94,37 +123,16 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
         TS_TEMPLATE_TYPE,
       );
 
-      for (const { path, config } of templates) {
-        // Skip project exports only files for now
-        if (config.projectExportsOnly) {
-          continue;
-        }
+      // Add the typed templates to the typed templates plugin
+      const typedTemplates = renderTsTypedTemplates(templates, {
+        generatorPackageName: generatorConfig.packageName,
+      });
+      for (const typedTemplate of typedTemplates) {
+        typedTemplatesPlugin.addTemplate(generatorName, typedTemplate);
+      }
 
-        const exportName = camelCase(config.name);
-        const fragment = TsCodeUtils.templateWithImports([
-          tsImportBuilder(['createTsTemplateFile']).from(
-            resolvePackagePathSpecifier(
-              '@baseplate-dev/core-generators:src/renderers/typescript/templates/types.ts',
-              generatorConfig.packageName,
-            ),
-          ),
-          tsImportBuilder().default('path').from('node:path'),
-        ])`const ${exportName} = createTsTemplateFile({
-          name: '${config.name}',
-          source: {
-            path: path.join(import.meta.dirname, '../templates/${path}'),
-          },
-          variables: ${JSON.stringify(config.variables ?? {})},
-          prefix: ${config.prefix ? `'${config.prefix}'` : 'undefined'},
-          projectExports: ${JSON.stringify(config.projectExports ?? {})},
-          importMapProviders: ${JSON.stringify(config.importMapProviders ?? {})},
-        });`;
-
-        typedTemplatesPlugin.addTemplate(generatorName, {
-          exportName,
-          fragment,
-        });
-
+      // Add the path root relative paths to the template paths plugin
+      for (const { config } of templates) {
         if (config.pathRootRelativePath) {
           templatePathsPlugin.registerTemplatePathEntry(
             generatorName,
@@ -132,6 +140,25 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
             config.pathRootRelativePath,
           );
         }
+      }
+
+      // Render the import providers
+      const pathsRootExportName =
+        templatePathsPlugin.getPathsRootExportName(generatorName);
+      const importProviders = renderTsImportProviders(
+        generatorName,
+        templates,
+        {
+          generatorPackageName: generatorConfig.packageName,
+          pathsRootExportName,
+        },
+      );
+      if (importProviders) {
+        api.writeTemplateFile(
+          generatorName,
+          GENERATED_IMPORT_PROVIDERS_PATH,
+          importProviders,
+        );
       }
     }
   },

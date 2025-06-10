@@ -11,6 +11,7 @@ import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { getPreviousGeneratedFileIdMap } from '#src/sync/file-id-map.js';
 import { readSyncMetadata } from '#src/sync/sync-metadata-service.js';
 
 const GENERATOR_PACKAGES = [
@@ -92,11 +93,13 @@ export async function runTemplateExtractorsForProjectV2(
       `Found multiple app directories for ${app}: ${appDirectories.join(', ')}`,
     );
   }
+  const fileIdMap = await getPreviousGeneratedFileIdMap(appDirectories[0]);
   await runTemplateFileExtractors(
     TEMPLATE_EXTRACTORS,
     appDirectories[0],
     generatorPackageMap,
     logger,
+    fileIdMap,
     options,
   );
   logger.info('Template extraction complete!');

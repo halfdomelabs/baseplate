@@ -1,19 +1,19 @@
-import { sortObjectKeys, stringifyPrettyCompact } from '@baseplate-dev/utils';
+import { sortObjectKeys } from '@baseplate-dev/utils';
 import { groupBy } from 'es-toolkit';
-import path from 'node:path';
 
 import type { TemplateExtractorContext } from '../runner/template-extractor-context.js';
 import type { TemplateFileExtractorMetadataEntry } from '../runner/template-file-extractor.js';
 
 /**
- * Updates extractor configurations with new template entries by grouping metadata
- * entries by generator and upserting them into the respective extractor.json files.
+ * Merges template entries into extractor configurations by grouping metadata
+ * entries by generator and upserting them into the respective config objects.
+ * This function only updates the in-memory configurations and does not write files.
  *
  * @param metadataEntries - Array of template file extractor metadata entries
- * @param context - Template extractor context containing config lookup and file container
+ * @param context - Template extractor context containing config lookup
  * @throws Error if no config is found for a generator
  */
-export function updateExtractorTemplateEntries(
+export function mergeExtractorTemplateEntries(
   metadataEntries: TemplateFileExtractorMetadataEntry[],
   context: TemplateExtractorContext,
 ): void {
@@ -59,11 +59,7 @@ export function updateExtractorTemplateEntries(
       ...rest,
     };
 
-    // Write the new config to the extractor.json file and update the cache
-    context.fileContainer.writeFile(
-      path.join(generatorConfig.generatorDirectory, 'extractor.json'),
-      stringifyPrettyCompact(newConfig),
-    );
+    // Update the in-memory config cache
     context.configLookup.setExtractorConfig(generator, newConfig);
   }
 }

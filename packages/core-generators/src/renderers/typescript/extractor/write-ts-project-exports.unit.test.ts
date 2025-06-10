@@ -27,6 +27,7 @@ describe('writeTsProjectExports', () => {
             name: 'test1',
             generator: TEST_GENERATOR_NAME,
             template: 'test1.ts',
+            fileOptions: { kind: 'singleton' },
           },
         },
       ];
@@ -55,6 +56,7 @@ describe('writeTsProjectExports', () => {
               TypeOnlyExport: { isTypeOnly: true },
               TestDefaultExport: { exportName: 'default' },
             },
+            fileOptions: { kind: 'singleton' },
           },
         },
       ];
@@ -105,6 +107,7 @@ describe('writeTsProjectExports', () => {
             projectExports: {
               TestExport: { isTypeOnly: false },
             },
+            fileOptions: { kind: 'singleton' },
           },
         },
       ];
@@ -137,6 +140,7 @@ describe('writeTsProjectExports', () => {
             projectExports: {
               TestExport: { isTypeOnly: false },
             },
+            fileOptions: { kind: 'singleton' },
           },
         },
       ];
@@ -165,6 +169,7 @@ describe('writeTsProjectExports', () => {
             projectExports: {
               TestExport: { isTypeOnly: false },
             },
+            fileOptions: { kind: 'singleton' },
           },
         },
       ];
@@ -212,6 +217,7 @@ describe('writeTsProjectExports', () => {
             projectExports: {
               TestExport: { isTypeOnly: false },
             },
+            fileOptions: { kind: 'singleton' },
           },
         },
         {
@@ -224,6 +230,7 @@ describe('writeTsProjectExports', () => {
             projectExports: {
               TestExport: { isTypeOnly: true },
             },
+            fileOptions: { kind: 'singleton' },
           },
         },
       ];
@@ -251,6 +258,7 @@ describe('writeTsProjectExports', () => {
             projectExports: {
               TestExport: { isTypeOnly: false },
             },
+            fileOptions: { kind: 'singleton' },
           },
         },
       ];

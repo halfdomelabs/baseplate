@@ -1,5 +1,8 @@
 import { toCanonicalPath } from '@baseplate-dev/sync';
-import { createTemplateExtractorPlugin } from '@baseplate-dev/sync/extractor-v2';
+import {
+  createTemplateExtractorPlugin,
+  TemplateExtractorPluginInstance,
+} from '@baseplate-dev/sync/extractor-v2';
 import {
   handleFileNotFoundError,
   posixJoin,
@@ -10,8 +13,9 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import { templateExtractorBarrelImportPlugin } from '../barrel-import.js';
-import { writePathMapFile } from './paths-file.js';
+import { getPathsFileExportNames, writePathMapFile } from './paths-file.js';
 import { TemplateFileOptions } from '#src/renderers/schemas/template-file-options.js';
+import { TsCodeFragment } from '#src/renderers/typescript/index.js';
 
 export interface TemplatePathRoot {
   canonicalPath: string;
@@ -109,6 +113,11 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
       return { pathRootRelativePath, generatorTemplatePath };
     }
 
+    function getPathsRootExportName(generatorName: string): string {
+      const fileExportNames = getPathsFileExportNames(generatorName);
+      return fileExportNames.rootExportName;
+    }
+
     api.registerHook('afterWrite', () => {
       for (const [generatorName, pathMap] of pathMapByGenerator) {
         writePathMapFile(generatorName, pathMap, context);
@@ -120,6 +129,7 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
       getTemplatePathFromPathRootRelativePath,
       registerTemplatePathEntry,
       resolveTemplatePaths,
+      getPathsRootExportName,
     };
   },
 });
@@ -184,3 +194,7 @@ export function getTemplatePathFromRelativePath(
     path.posix.relative(templatePathRoot.canonicalPath, canonicalPath),
   );
 }
+
+export type TemplatePathsPluginInstance = TemplateExtractorPluginInstance<
+  typeof templatePathsPlugin
+>;

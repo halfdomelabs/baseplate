@@ -18,22 +18,20 @@ import {
   writeGeneratorsMetadata,
   writeTemplateMetadata,
 } from '@baseplate-dev/sync';
-import { enhanceErrorWithContext, randomUid } from '@baseplate-dev/utils';
-import {
-  dirExists,
-  handleFileNotFoundError,
-  readJsonWithSchema,
-  writeJson,
-} from '@baseplate-dev/utils/node';
+import { randomUid } from '@baseplate-dev/utils';
+import { dirExists } from '@baseplate-dev/utils/node';
 import chalk from 'chalk';
 import { mkdir, rename, rm } from 'node:fs/promises';
 import path from 'node:path';
-import { z } from 'zod';
 
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import type { PackageSyncResult } from './sync-metadata.js';
 
+import {
+  getPreviousGeneratedFileIdMap,
+  writeGeneratedFileIdMap,
+} from './file-id-map.js';
 import { writeGeneratorSteps } from './generator-steps-writer.js';
 
 interface GenerateForDirectoryOptions {
@@ -75,30 +73,6 @@ const defaultGeneratorOperations: GeneratorOperations = {
 };
 
 const GENERATED_DIRECTORY = 'baseplate/generated';
-const FILE_ID_MAP_PATH = 'baseplate/file-id-map.json';
-
-async function getPreviousGeneratedFileIdMap(
-  projectDirectory: string,
-): Promise<Map<string, string>> {
-  const generatedFileIdMapPath = path.join(projectDirectory, FILE_ID_MAP_PATH);
-  try {
-    const fileIdMap = await readJsonWithSchema(
-      generatedFileIdMapPath,
-      z.record(z.string(), z.string()),
-    ).catch(handleFileNotFoundError);
-
-    if (!fileIdMap) {
-      return new Map();
-    }
-
-    return new Map(Object.entries(fileIdMap));
-  } catch (err) {
-    throw enhanceErrorWithContext(
-      err,
-      `Failed to get previous generated file id map (${generatedFileIdMapPath})`,
-    );
-  }
-}
 
 // TODO [>=0.2.0] Remove this once we've released a new major version.
 async function migrateCleanDirectory(
@@ -227,12 +201,7 @@ export async function generateForDirectory({
     await rename(generatedTemporaryDirectory, generatedDirectory);
 
     // Write file ID map
-    const fileIdMap = Object.fromEntries(
-      [...fileIdToRelativePathMap.entries()].sort(([a], [b]) =>
-        a.localeCompare(b),
-      ),
-    );
-    await writeJson(path.join(projectDirectory, FILE_ID_MAP_PATH), fileIdMap);
+    await writeGeneratedFileIdMap(projectDirectory, fileIdToRelativePathMap);
 
     // Write generator steps
     if (userConfig.sync?.writeGeneratorStepsJson && output.metadata) {

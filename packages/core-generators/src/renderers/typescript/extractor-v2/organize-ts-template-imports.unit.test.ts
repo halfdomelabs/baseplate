@@ -2,6 +2,8 @@ import type { ResolverFactory } from 'oxc-resolver';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import type { TsProjectExport } from './build-ts-project-export-map.js';
+
 import { organizeTsTemplateImports } from './organize-ts-template-imports.js';
 
 function createMockResolver(): ResolverFactory {
@@ -16,6 +18,18 @@ function createMockResolver(): ResolverFactory {
       })),
     sync: vi.fn(),
   } as unknown as ResolverFactory;
+}
+
+function createProjectExport(
+  tsProjectExport: Partial<TsProjectExport> &
+    Pick<TsProjectExport, 'name' | 'outputRelativePath'>,
+): TsProjectExport {
+  return {
+    placeholderModuleSpecifier: '%testImports',
+    providerPackagePathSpecifier: 'test-package:test-imports',
+    providerImportName: 'testImportsProvider',
+    ...tsProjectExport,
+  };
 }
 
 beforeEach(() => {
@@ -40,8 +54,8 @@ export function capitalizeString(str: string) {
 
     const context = {
       projectExportMap: new Map(),
-      projectRoot: '/project-root',
-      generatorFiles: ['/project-root/test.ts'],
+      outputDirectory: '/project-root',
+      internalOutputRelativePaths: ['/project-root/test.ts'],
       resolver: mockResolver,
     };
 
@@ -65,8 +79,8 @@ export function capitalizeString(str: string) {
 
     const context = {
       projectExportMap: new Map(),
-      projectRoot: '/project-root',
-      generatorFiles: ['/project-root/test.ts'],
+      outputDirectory: '/project-root',
+      internalOutputRelativePaths: ['/project-root/test.ts'],
       resolver: mockResolver,
     };
 
@@ -91,8 +105,8 @@ export function capitalizeString(str: string) {
 
     const context = {
       projectExportMap: new Map(),
-      projectRoot: '/project-root',
-      generatorFiles: ['/project-root/test.ts'],
+      outputDirectory: '/project-root',
+      internalOutputRelativePaths: ['/project-root/test.ts'],
       resolver: mockResolver,
     };
 
@@ -122,32 +136,19 @@ export function test() {
 }
 `;
 
-    const sharedExportData = {
-      importSource: '%testImports',
-      providerImportName: 'testImportsProvider',
-      providerPath: '/generator-root/generated/imports.ts',
-      providerPackage: 'test-package',
-    };
-
-    const projectExportA = {
+    const projectExportA = createProjectExport({
       name: 'A',
-      filePath: '/project-root/module1.ts',
-      isTypeOnly: false,
-      ...sharedExportData,
-    };
-    const projectExportB = {
+      outputRelativePath: '/project-root/module1.ts',
+    });
+    const projectExportB = createProjectExport({
       name: 'B',
-      filePath: '/project-root/module1.ts',
-      isTypeOnly: false,
-      ...sharedExportData,
-    };
-    const projectExportC = {
+      outputRelativePath: '/project-root/module1.ts',
+    });
+    const projectExportC = createProjectExport({
       name: 'F',
-      filePath: '/project-root/default-module.ts',
-      isTypeOnly: false,
-      exportName: 'default',
-      ...sharedExportData,
-    };
+      outputRelativePath: '/project-root/default-module.ts',
+      exportedName: 'default',
+    });
 
     const projectExportMap = new Map([
       [
@@ -165,8 +166,8 @@ export function test() {
 
     const context = {
       projectExportMap,
-      projectRoot: '/project-root',
-      generatorFiles: ['/project-root/module2.ts'],
+      outputDirectory: '/project-root',
+      internalOutputRelativePaths: ['/project-root/module2.ts'],
       resolver: mockResolver,
     };
 
@@ -198,8 +199,8 @@ Module.A;
 
     const context = {
       projectExportMap: new Map(),
-      projectRoot: '/project-root',
-      generatorFiles: [],
+      outputDirectory: '/project-root',
+      internalOutputRelativePaths: [],
       resolver: mockResolver,
     };
 
@@ -219,8 +220,8 @@ console.log(A);
 
     const context = {
       projectExportMap: new Map(),
-      projectRoot: '/project-root',
-      generatorFiles: [],
+      outputDirectory: '/project-root',
+      internalOutputRelativePaths: [],
       resolver: mockResolver,
     };
 

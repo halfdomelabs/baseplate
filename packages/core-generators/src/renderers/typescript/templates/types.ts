@@ -14,6 +14,32 @@ export const TS_TEMPLATE_TYPE = 'ts';
 
 const tsTemplateFileVariableSchema = z.object({});
 
+const tsTemplateFileImportProviderSchema = z.object({
+  importName: z.string(),
+  packagePathSpecifier: z.string(),
+});
+
+export type TsTemplateFileImportProvider = z.infer<
+  typeof tsTemplateFileImportProviderSchema
+>;
+
+const tsTemplateFileProjectExportSchema = z.object({
+  /**
+   * Whether the export is a type only export.
+   */
+  isTypeOnly: z.boolean().optional(),
+  /**
+   * The exported name of the export within the file. Use 'default' for default exports.
+   *
+   * TODO[2025-06-10]: Rename this to exportedName
+   */
+  exportName: z.string().optional(),
+});
+
+export type TsTemplateFileProjectExport = z.infer<
+  typeof tsTemplateFileProjectExportSchema
+>;
+
 export const tsTemplateGeneratorTemplateMetadataSchema =
   templateConfigSchema.extend({
     /**
@@ -37,19 +63,13 @@ export const tsTemplateGeneratorTemplateMetadataSchema =
      * The exports of the file that are unique across the project.
      */
     projectExports: z
-      .record(
-        z.string(),
-        z.object({
-          /**
-           * Whether the export is a type only export.
-           */
-          isTypeOnly: z.boolean().optional(),
-          /**
-           * The exported name of the export within the file. Use 'default' for default exports.
-           */
-          exportName: z.string().optional(),
-        }),
-      )
+      .record(z.string(), tsTemplateFileProjectExportSchema)
+      .optional(),
+    /**
+     * The import providers that will be used to resolve imports for the template.
+     */
+    importMapProviders: z
+      .record(z.string(), tsTemplateFileImportProviderSchema)
       .optional(),
     /**
      * Whether the template is only exporting types and we should not attempt to extract
@@ -65,11 +85,11 @@ export const tsTemplateGeneratorTemplateMetadataSchema =
      * @default 'TPL_'
      */
     prefix: z.string().optional(),
-    /**
-     * Import map providers that will be used to resolve imports for the template.
-     */
-    importMapProviders: z.record(z.string(), z.any()).optional(),
   });
+
+export type TsGeneratorTemplateMetadata = z.infer<
+  typeof tsTemplateGeneratorTemplateMetadataSchema
+>;
 
 export const tsTemplateOutputTemplateMetadataSchema =
   templateFileMetadataBaseSchema.extend({
@@ -91,19 +111,7 @@ export const tsTemplateOutputTemplateMetadataSchema =
      * The exports of the file that are unique across the project.
      */
     projectExports: z
-      .record(
-        z.string(),
-        z.object({
-          /**
-           * Whether the export is a type only export.
-           */
-          isTypeOnly: z.boolean().optional(),
-          /**
-           * The exported name of the export within the file. Use 'default' for default exports.
-           */
-          exportName: z.string().optional(),
-        }),
-      )
+      .record(z.string(), tsTemplateFileProjectExportSchema)
       .optional(),
     /**
      * Whether the template is only providing exports and we should not attempt to extract

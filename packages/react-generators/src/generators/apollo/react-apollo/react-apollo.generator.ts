@@ -570,6 +570,7 @@ export const reactApolloGenerator = createGenerator({
                 projectExports: {
                   '*': {},
                 },
+                fileOptions: { kind: 'singleton' },
               } satisfies TsTemplateOutputTemplateMetadata,
             });
 

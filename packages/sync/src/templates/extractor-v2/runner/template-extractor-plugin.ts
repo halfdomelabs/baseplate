@@ -64,3 +64,7 @@ export function createTemplateExtractorPlugin<
 ): TemplateExtractorPlugin<TName, TInstance, TPluginDependencies> {
   return input;
 }
+
+export type TemplateExtractorPluginInstance<
+  TPlugin extends TemplateExtractorPlugin,
+> = Awaited<ReturnType<TPlugin['getInstance']>>;

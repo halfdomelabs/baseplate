@@ -16,7 +16,7 @@ import { TemplateExtractorFileContainer } from './template-extractor-file-contai
 describe('initializeTemplateExtractorPlugins', () => {
   const createMockContext = (): TemplateExtractorContext =>
     new TemplateExtractorContext({
-      configLookup: new TemplateExtractorConfigLookup(new Map()),
+      configLookup: new TemplateExtractorConfigLookup(new Map(), new Map()),
       logger: createTestLogger(),
       outputDirectory: '/test',
       plugins: new Map(),
