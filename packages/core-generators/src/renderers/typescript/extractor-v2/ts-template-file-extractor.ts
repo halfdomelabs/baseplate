@@ -52,7 +52,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
         };
       } catch (error) {
         throw new Error(
-          `Error resolving template paths for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+          `Error extracting template metadata for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
           { cause: error },
         );
       }

@@ -341,12 +341,16 @@ export class TemplateExtractorConfigLookup {
 
     const { templates } = existingEntry.config;
 
-    if (!(config.name in templates)) {
+    const templateKey = Object.keys(templates).find(
+      (key) => templates[key].name === config.name,
+    );
+
+    if (!templateKey) {
       throw new Error(
         `Template ${config.name} not found in generator ${generatorName}`,
       );
     }
 
-    templates[config.name] = config;
+    templates[templateKey] = config;
   }
 }
