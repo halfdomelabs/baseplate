@@ -6,6 +6,7 @@ import {
   RawTemplateFileExtractor,
   TextTemplateFileExtractor,
 } from '@baseplate-dev/core-generators';
+import { TsTemplateFileExtractor } from '@baseplate-dev/core-generators/extractor-v2';
 import { runTemplateFileExtractors } from '@baseplate-dev/sync/extractor-v2';
 import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import path from 'node:path';
@@ -23,6 +24,7 @@ const GENERATOR_PACKAGES = [
 const TEMPLATE_EXTRACTORS = [
   RawTemplateFileExtractor,
   TextTemplateFileExtractor,
+  TsTemplateFileExtractor,
 ];
 
 async function buildGeneratorPackageMap(
