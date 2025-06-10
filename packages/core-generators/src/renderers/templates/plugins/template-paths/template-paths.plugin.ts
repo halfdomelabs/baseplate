@@ -11,6 +11,7 @@ import { z } from 'zod';
 
 import { templateExtractorBarrelImportPlugin } from '../barrel-import.js';
 import { writePathMapFile } from './paths-file.js';
+import { TemplateFileOptions } from '#src/renderers/schemas/template-file-options.js';
 
 export interface TemplatePathRoot {
   canonicalPath: string;
@@ -70,6 +71,44 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
       );
     }
 
+    /**
+     * Resolves template paths for a given file based on its file options.
+     *
+     * @param fileOptions - The file options containing template path configuration.
+     * @param absolutePath - The absolute path of the template file.
+     * @param templateName - The name of the template (for error messages).
+     * @param generatorName - The name of the generator (for error messages).
+     * @returns An object containing the pathRootRelativePath and generatorTemplatePath.
+     */
+    function resolveTemplatePaths(
+      fileOptions: TemplateFileOptions,
+      absolutePath: string,
+      templateName: string,
+      generatorName: string,
+    ): {
+      pathRootRelativePath: string | undefined;
+      generatorTemplatePath: string;
+    } {
+      const pathRootRelativePath =
+        fileOptions.kind === 'singleton'
+          ? getPathRootRelativePath(absolutePath)
+          : undefined;
+
+      // By default, singleton templates have the path like `feature-root/services/[file].ts`
+      const generatorTemplatePath =
+        fileOptions.generatorTemplatePath ??
+        (pathRootRelativePath &&
+          getTemplatePathFromPathRootRelativePath(pathRootRelativePath));
+
+      if (!generatorTemplatePath) {
+        throw new Error(
+          `Template path is required for ${templateName} in ${generatorName}`,
+        );
+      }
+
+      return { pathRootRelativePath, generatorTemplatePath };
+    }
+
     api.registerHook('afterWrite', () => {
       for (const [generatorName, pathMap] of pathMapByGenerator) {
         writePathMapFile(generatorName, pathMap, context);
@@ -80,6 +119,7 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
       getPathRootRelativePath,
       getTemplatePathFromPathRootRelativePath,
       registerTemplatePathEntry,
+      resolveTemplatePaths,
     };
   },
 });

@@ -26,24 +26,13 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
       files.map(({ metadata, absolutePath }) =>
         limit(async () => {
           try {
-            const pathRootRelativePath =
-              metadata.fileOptions.kind === 'singleton'
-                ? templatePathPlugin.getPathRootRelativePath(absolutePath)
-                : undefined;
-
-            // By default, singleton templates have the path like `feature-root/services/[file].ts`
-            const generatorTemplatePath =
-              metadata.fileOptions.generatorTemplatePath ??
-              (pathRootRelativePath &&
-                templatePathPlugin.getTemplatePathFromPathRootRelativePath(
-                  pathRootRelativePath,
-                ));
-
-            if (!generatorTemplatePath) {
-              throw new Error(
-                `Template path is required for ${metadata.name} in ${metadata.generator}`,
+            const { pathRootRelativePath, generatorTemplatePath } =
+              templatePathPlugin.resolveTemplatePaths(
+                metadata.fileOptions,
+                absolutePath,
+                metadata.name,
+                metadata.generator,
               );
-            }
 
             const contents = await api.readOutputFile(absolutePath);
             api.writeTemplateFile(

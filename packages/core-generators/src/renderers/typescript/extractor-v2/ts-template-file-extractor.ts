@@ -29,44 +29,20 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
   generatorTemplateMetadataSchema: tsTemplateGeneratorTemplateMetadataSchema,
   extractTemplateFiles: async (files, context, api) => {
     const templatePathPlugin = context.getPlugin('template-paths');
-    const metadataEntries = await Promise.all(
+    return Promise.all(
       files.map(({ metadata, absolutePath }) =>
-        limit(
-          async (): Promise<
-            | TemplateFileExtractorMetadataEntry<TsTemplateOutputTemplateMetadata>
-            | undefined
-          > => {
-            const pathRootRelativePath =
-              metadata.fileOptions.kind === 'singleton'
-                ? templatePathPlugin.getPathRootRelativePath(absolutePath)
-                : undefined;
+        limit(async () => {
+          const { pathRootRelativePath, generatorTemplatePath } =
+            templatePathPlugin.resolveTemplatePaths(
+              metadata.fileOptions,
+              absolutePath,
+              metadata.name,
+              metadata.generator,
+            );
 
-            // By default, singleton templates have the path like `feature-root/services/[file].ts`
-            const generatorTemplatePath =
-              metadata.fileOptions.generatorTemplatePath ??
-              (pathRootRelativePath &&
-                templatePathPlugin.getTemplatePathFromPathRootRelativePath(
-                  pathRootRelativePath,
-                ));
-
-            if (!generatorTemplatePath) {
-              throw new Error(
-                `Template path is required for ${metadata.name} in ${metadata.generator}`,
-              );
-            }
-
+          // Skip extraction for project exports only files
+          if (!metadata.projectExportsOnly) {
             const contents = await api.readOutputFile(absolutePath);
-
-            // Skip extraction for project exports only files
-            if (metadata.projectExportsOnly) {
-              api.writeTemplateFile(
-                metadata.generator,
-                generatorTemplatePath,
-                contents,
-              );
-              return;
-            }
-
             // Extract template variables from TypeScript content
             const { content: extractedContent } =
               extractTsTemplateVariables(contents);
@@ -91,26 +67,24 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
               generatorTemplatePath,
               processedContent,
             );
+          }
 
-            return {
-              generator: metadata.generator,
-              generatorTemplatePath,
-              sourceAbsolutePath: absolutePath,
-              metadata: {
-                name: metadata.name,
-                type: metadata.type,
-                fileOptions: metadata.fileOptions,
-                group: metadata.group,
-                projectExports: metadata.projectExports,
-                projectExportsOnly: metadata.projectExportsOnly,
-                pathRootRelativePath,
-              },
-            };
-          },
-        ),
+          return {
+            generator: metadata.generator,
+            generatorTemplatePath,
+            metadata: {
+              name: metadata.name,
+              type: metadata.type,
+              fileOptions: metadata.fileOptions,
+              group: metadata.group,
+              projectExports: metadata.projectExports,
+              projectExportsOnly: metadata.projectExportsOnly,
+              pathRootRelativePath,
+            },
+          };
+        }),
       ),
     );
-    return metadataEntries.filter((entry) => entry !== undefined);
   },
   writeGeneratedFiles: (generatorNames, context) => {
     const templatePathsPlugin = context.getPlugin('template-paths');
