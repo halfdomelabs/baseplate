@@ -39,7 +39,7 @@ export function resolvePackagePathSpecifier(
 ): string {
   const parsed = parsePackagePathSpecifier(packagePathSpecifier);
   if (parsed.packageName === importingPackage) {
-    return `#${parsed.filePath}`;
+    return `#${parsed.filePath.replace(/\.(t|j)sx?$/, '.js')}`;
   }
   // Return the package name directly if importing from another package.
   return parsed.packageName;

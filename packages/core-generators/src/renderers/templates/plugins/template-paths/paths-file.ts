@@ -241,6 +241,11 @@ export function writePathMapFile(
       TPL_PATHS_GENERATOR_TASK: taskFragment,
       TPL_PATHS_EXPORT_NAME: fileExportNames.rootExportName,
     },
+    options: {
+      importSortOptions: {
+        internalPatterns: [/^#src/],
+      },
+    },
   });
 
   context.fileContainer.writeFile(pathMapPath, pathMapContents);

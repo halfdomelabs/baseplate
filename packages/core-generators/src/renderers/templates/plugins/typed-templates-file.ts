@@ -61,6 +61,11 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
               'TEMPLATES',
             ),
           },
+          options: {
+            importSortOptions: {
+              internalPatterns: [/^#src/],
+            },
+          },
         });
         const generatorPath =
           context.configLookup.getExtractorConfigOrThrow(

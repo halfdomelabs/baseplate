@@ -22,8 +22,7 @@ import { renderTsCodeFileTemplate } from '../renderers/file.js';
 import { TsCodeUtils, tsTemplate } from '../utils/ts-code-utils.js';
 import { getDefaultImportProviderNames } from './default-import-providers.js';
 
-export const GENERATED_IMPORT_PROVIDERS_PATH =
-  'generated/ts-import-providers.ts';
+export const GENERATED_IMPORT_PROVIDERS_FILE_NAME = 'ts-import-providers.ts';
 
 interface RenderTsImportProvidersContext {
   generatorPackageName: string;
@@ -55,7 +54,7 @@ function renderDefaultTsImportProviders(
   );
   `;
 
-  const tsImportMapProviderFromSchema = TsCodeUtils.importFragment(
+  const tsImportMapProviderFromSchema = TsCodeUtils.typeImportFragment(
     'TsImportMapProviderFromSchema',
     typescriptRendererIndex,
   );
@@ -85,9 +84,18 @@ function renderDefaultTsImportProviders(
 function renderTsImportProviderTask(
   generatorName: string,
   templates: TemplateExtractorTemplateEntry<TsGeneratorTemplateMetadata>[],
+  importSchemaName: string,
   importsProvider: TsCodeFragment,
-  { pathsRootExportName }: RenderTsImportProvidersContext,
+  { generatorPackageName, pathsRootExportName }: RenderTsImportProvidersContext,
 ): TsCodeFragment {
+  const typescriptRendererIndex = resolvePackagePathSpecifier(
+    `@baseplate-dev/core-generators:src/renderers/typescript/index.ts`,
+    generatorPackageName,
+  );
+  const projectScopeSpecifier = resolvePackagePathSpecifier(
+    `@baseplate-dev/core-generators:src/providers/index.ts`,
+    generatorPackageName,
+  );
   const importsTaskName = getGeneratedTemplateExportName(
     generatorName,
     'imports-task',
@@ -97,7 +105,7 @@ function renderTsImportProviderTask(
     templates.flatMap((template) =>
       Object.keys(template.config.projectExports ?? {}).map((name) => [
         name,
-        `pathMap.${camelCase(template.config.name)}`,
+        `paths.${camelCase(template.config.name)}`,
       ]),
     ),
   );
@@ -106,24 +114,26 @@ function renderTsImportProviderTask(
 
   const pathsProvider = TsCodeUtils.templateWithImports(
     tsImportBuilder([pathsRootExportName]).from(
-      `./${GENERATED_PATHS_FILE_NAME}`,
+      `./${GENERATED_PATHS_FILE_NAME.replace(/\.(t|j)sx?$/, '.js')}`,
     ),
   )`${pathsRootExportName}.provider`;
 
   const importsTaskFragment = TsCodeUtils.templateWithImports([
     tsImportBuilder(['createGeneratorTask']).from('@baseplate-dev/sync'),
+    tsImportBuilder(['createTsImportMap']).from(typescriptRendererIndex),
+    tsImportBuilder(['projectScope']).from(projectScopeSpecifier),
   ])`
     export const ${importsTaskName} = createGeneratorTask({
       dependencies: {
         paths: ${pathsProvider},
       },
       exports: {
-        imports: ${importsProvider}.export(),
+        imports: ${importsProvider}.export(projectScope),
       },
       run({ paths }) {
         return {
           providers: {
-            imports: ${importMap},
+            imports: createTsImportMap(${importSchemaName}, ${importMap}),
           },
         };
       },
@@ -184,7 +194,8 @@ export function renderTsImportProviders(
   const importsTaskFragment = renderTsImportProviderTask(
     generatorName,
     templates,
-    defaultTsImportProvidersFragment,
+    importProviderNames.providerSchemaName,
+    tsTemplate`${importProviderNames.providerExportName}`,
     context,
   );
 
@@ -198,5 +209,10 @@ export function renderTsImportProviders(
     variables: { TPL_CONTENTS: mergedFragment },
     importMapProviders: {},
     positionedHoistedFragments: [],
+    options: {
+      importSortOptions: {
+        internalPatterns: [/^#src/],
+      },
+    },
   });
 }

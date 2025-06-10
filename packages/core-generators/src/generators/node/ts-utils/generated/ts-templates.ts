@@ -5,6 +5,7 @@ const arrays = createTsTemplateFile({
   projectExports: { notEmpty: {} },
   source: { path: 'arrays.ts' },
   variables: {},
+  fileOptions: { kind: 'singleton' },
 });
 
 const normalizeTypes = createTsTemplateFile({
@@ -12,6 +13,7 @@ const normalizeTypes = createTsTemplateFile({
   projectExports: { NormalizeTypes: { isTypeOnly: true } },
   source: { path: 'normalize-types.ts' },
   variables: {},
+  fileOptions: { kind: 'singleton' },
 });
 
 const nulls = createTsTemplateFile({
@@ -19,6 +21,7 @@ const nulls = createTsTemplateFile({
   projectExports: { restrictObjectNulls: {} },
   source: { path: 'nulls.ts' },
   variables: {},
+  fileOptions: { kind: 'singleton' },
 });
 
 const string = createTsTemplateFile({
@@ -26,6 +29,7 @@ const string = createTsTemplateFile({
   projectExports: { capitalizeString: {} },
   source: { path: 'string.ts' },
   variables: {},
+  fileOptions: { kind: 'singleton' },
 });
 
 export const NODE_TS_UTILS_TS_TEMPLATES = {

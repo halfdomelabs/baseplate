@@ -5,7 +5,7 @@ import {
   tsTemplateGeneratorTemplateMetadataSchema,
 } from '../templates/types.js';
 import { getDefaultImportProviderNames } from './default-import-providers.js';
-import { GENERATED_IMPORT_PROVIDERS_PATH } from './render-ts-import-providers.js';
+import { GENERATED_IMPORT_PROVIDERS_FILE_NAME } from './render-ts-import-providers.js';
 
 /**
  * A project export that represents a single export from a generator.
@@ -72,7 +72,7 @@ export function buildTsProjectExportMap(
     // Figure out the default import provider
     const importProviderNames = getDefaultImportProviderNames(generatorName);
 
-    const defaultImportsProviderPackagePathSpecifier = `${packageName}:${generatorDirectory}/${GENERATED_IMPORT_PROVIDERS_PATH}`;
+    const defaultImportsProviderPackagePathSpecifier = `${packageName}:${generatorDirectory}/${GENERATED_IMPORT_PROVIDERS_FILE_NAME}`;
 
     for (const [, template] of Object.entries(templates)) {
       // skip non-singleton templates

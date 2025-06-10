@@ -17,7 +17,7 @@ import {
 import { buildTsProjectExportMap } from './build-ts-project-export-map.js';
 import { getResolverFactory } from './get-resolver-factory.js';
 import {
-  GENERATED_IMPORT_PROVIDERS_PATH,
+  GENERATED_IMPORT_PROVIDERS_FILE_NAME,
   renderTsImportProviders,
 } from './render-ts-import-providers.js';
 import { renderTsTemplateFile } from './render-ts-template-file.js';
@@ -155,9 +155,9 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
         },
       );
       if (importProviders) {
-        api.writeTemplateFile(
+        api.writeGeneratedFile(
           generatorName,
-          GENERATED_IMPORT_PROVIDERS_PATH,
+          GENERATED_IMPORT_PROVIDERS_FILE_NAME,
           importProviders,
         );
       }
