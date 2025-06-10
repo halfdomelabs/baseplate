@@ -19,41 +19,51 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
   pluginDependencies: [templatePathsPlugin, typedTemplatesFilePlugin],
   outputTemplateMetadataSchema: rawTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: rawTemplateGeneratorTemplateMetadataSchema,
-  extractTemplateFiles: (files, context, api) => {
+  extractTemplateMetadataEntries: (files, context) => {
     const templatePathPlugin = context.getPlugin('template-paths');
+    return files.map(({ metadata, absolutePath }) => {
+      try {
+        const { pathRootRelativePath, generatorTemplatePath } =
+          templatePathPlugin.resolveTemplatePaths(
+            metadata.fileOptions,
+            absolutePath,
+            metadata.name,
+            metadata.generator,
+          );
 
-    return Promise.all(
-      files.map(({ metadata, absolutePath }) =>
+        return {
+          generator: metadata.generator,
+          generatorTemplatePath,
+          sourceAbsolutePath: absolutePath,
+          metadata: {
+            name: metadata.name,
+            type: metadata.type,
+            fileOptions: metadata.fileOptions,
+            pathRootRelativePath,
+          },
+        };
+      } catch (error) {
+        throw new Error(
+          `Error extracting template metadata for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+          { cause: error },
+        );
+      }
+    });
+  },
+  writeTemplateFiles: async (files, _context, api) => {
+    await Promise.all(
+      files.map((file) =>
         limit(async () => {
           try {
-            const { pathRootRelativePath, generatorTemplatePath } =
-              templatePathPlugin.resolveTemplatePaths(
-                metadata.fileOptions,
-                absolutePath,
-                metadata.name,
-                metadata.generator,
-              );
-
-            const contents = await api.readOutputFile(absolutePath);
+            const contents = await api.readOutputFile(file.sourceAbsolutePath);
             api.writeTemplateFile(
-              metadata.generator,
-              generatorTemplatePath,
+              file.generator,
+              file.generatorTemplatePath,
               contents,
             );
-
-            return {
-              generator: metadata.generator,
-              generatorTemplatePath,
-              metadata: {
-                name: metadata.name,
-                type: metadata.type,
-                fileOptions: metadata.fileOptions,
-                pathRootRelativePath,
-              },
-            };
           } catch (error) {
             throw new Error(
-              `Error extracting template file at ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+              `Error writing template file for ${file.sourceAbsolutePath}: ${error instanceof Error ? error.message : String(error)}`,
               { cause: error },
             );
           }

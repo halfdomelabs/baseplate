@@ -42,7 +42,8 @@ describe('initializeTemplateExtractorPlugins', () => {
   ): TemplateFileExtractor => ({
     name,
     pluginDependencies: plugins,
-    extractTemplateFiles: vi.fn(),
+    extractTemplateMetadataEntries: vi.fn(),
+    writeTemplateFiles: vi.fn(),
     writeGeneratedFiles: vi.fn(),
   });
 

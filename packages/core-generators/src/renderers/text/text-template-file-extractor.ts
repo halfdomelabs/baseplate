@@ -1,7 +1,7 @@
 import { getGenerationConcurrencyLimit } from '@baseplate-dev/sync';
 import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
 import { camelCase } from 'change-case';
-import { mapValues } from 'es-toolkit';
+import { mapValues, omit } from 'es-toolkit';
 import pLimit from 'p-limit';
 
 import type { TextTemplateFileVariableWithValue } from './types.js';
@@ -23,49 +23,64 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
   pluginDependencies: [templatePathsPlugin, typedTemplatesFilePlugin],
   outputTemplateMetadataSchema: textTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: textTemplateGeneratorTemplateMetadataSchema,
-  extractTemplateFiles: (files, context, api) => {
+  extractTemplateMetadataEntries: (files, context) => {
     const templatePathPlugin = context.getPlugin('template-paths');
+    return files.map(({ metadata, absolutePath }) => {
+      try {
+        const { pathRootRelativePath, generatorTemplatePath } =
+          templatePathPlugin.resolveTemplatePaths(
+            metadata.fileOptions,
+            absolutePath,
+            metadata.name,
+            metadata.generator,
+          );
 
-    return Promise.all(
-      files.map(({ metadata, absolutePath }) =>
+        return {
+          generator: metadata.generator,
+          generatorTemplatePath,
+          sourceAbsolutePath: absolutePath,
+          metadata: {
+            name: metadata.name,
+            type: metadata.type,
+            fileOptions: metadata.fileOptions,
+            pathRootRelativePath,
+            variables: mapValues(metadata.variables ?? {}, (variable) =>
+              omit(variable, ['value']),
+            ),
+          },
+          extractionContext: {
+            variables: metadata.variables ?? {},
+          },
+        };
+      } catch (error) {
+        throw new Error(
+          `Error extracting template metadata for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+          { cause: error },
+        );
+      }
+    });
+  },
+  writeTemplateFiles: async (files, _context, api) => {
+    await Promise.all(
+      files.map((file) =>
         limit(async () => {
           try {
-            const { pathRootRelativePath, generatorTemplatePath } =
-              templatePathPlugin.resolveTemplatePaths(
-                metadata.fileOptions,
-                absolutePath,
-                metadata.name,
-                metadata.generator,
-              );
-
-            const contents = await api.readOutputFile(absolutePath);
+            const contents = await api.readOutputFile(file.sourceAbsolutePath);
 
             const templateContents = extractTemplateVariables(
               contents,
-              metadata.variables,
-              absolutePath,
+              file.extractionContext?.variables ?? {},
+              file.sourceAbsolutePath,
             );
 
             api.writeTemplateFile(
-              metadata.generator,
-              generatorTemplatePath,
+              file.generator,
+              file.generatorTemplatePath,
               templateContents,
             );
-
-            return {
-              generator: metadata.generator,
-              generatorTemplatePath,
-              metadata: {
-                name: metadata.name,
-                type: metadata.type,
-                fileOptions: metadata.fileOptions,
-                pathRootRelativePath,
-                variables: metadata.variables,
-              },
-            };
           } catch (error) {
             throw new Error(
-              `Error extracting template file at ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+              `Error writing template file for ${file.sourceAbsolutePath}: ${error instanceof Error ? error.message : String(error)}`,
               { cause: error },
             );
           }
