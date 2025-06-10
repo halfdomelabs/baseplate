@@ -8,7 +8,10 @@ import { TsCodeFragment } from '../fragments/types.js';
 import { z } from 'zod';
 import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { templateConfigSchema } from '@baseplate-dev/sync/extractor-v2';
-import { templateFileOptionsSchema } from '#src/renderers/schemas/template-file-options.js';
+import {
+  TemplateFileOptions,
+  templateFileOptionsSchema,
+} from '#src/renderers/schemas/template-file-options.js';
 
 export const TS_TEMPLATE_TYPE = 'ts';
 
@@ -158,6 +161,10 @@ export interface TsTemplateFile<
     string,
     { isTypeOnly?: boolean; exportName?: string }
   >;
+  /**
+   * The options for the template file
+   */
+  fileOptions?: TemplateFileOptions;
 }
 
 export type TsTemplateFileVariableValue = TsCodeFragment | string;

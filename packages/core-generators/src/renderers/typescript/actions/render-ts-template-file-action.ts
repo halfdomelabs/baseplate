@@ -122,14 +122,24 @@ export function renderTsTemplateFileAction<
           Object.keys(template.projectExports ?? {}).length > 0
             ? template.projectExports
             : undefined,
+        // TODO[2025-06-11]: Remove casting once we've migrated all TS templates.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        fileOptions: template.fileOptions!,
       };
+
+      if (template.fileOptions?.kind === 'instance' && !id) {
+        throw new Error('Instance template must have an id');
+      }
+
+      const fileId = id ?? template.name;
 
       const shouldIncludeMetadata =
         builder.metadataOptions.includeTemplateMetadata &&
         builder.metadataOptions.shouldGenerateMetadata({
-          fileId: id ?? template.name,
+          fileId,
           filePath: normalizePathToProjectPath(destination),
           generatorName: generatorInfo.name,
+          // TODO[2025-06-11]: Turn this into a file options === 'kind'
           isInstance: !!id,
         });
 
