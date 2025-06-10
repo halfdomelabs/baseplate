@@ -1,9 +1,12 @@
-import { nodeProvider, projectScope } from '@baseplate-dev/core-generators';
+import {
+  nodeProvider,
+  projectScope,
+  renderRawTemplateFileAction,
+} from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  renderRawTemplateFileAction,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 

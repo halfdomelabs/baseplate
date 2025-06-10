@@ -187,7 +187,7 @@ export function getTemplatePathFromRelativePath(
     `${canonicalPath}/`.startsWith(`${templatePathRoot.canonicalPath}/`),
   );
   if (!templatePathRoot) {
-    return canonicalPath;
+    throw new Error(`Could not find template path root for ${canonicalPath}`);
   }
   return posixJoin(
     `{${templatePathRoot.pathRootName}}`,

@@ -1,5 +1,6 @@
 import { getGenerationConcurrencyLimit } from '@baseplate-dev/sync';
 import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { groupBy } from 'es-toolkit';
 import path from 'node:path';
 import pLimit from 'p-limit';
@@ -51,9 +52,9 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
           },
         };
       } catch (error) {
-        throw new Error(
-          `Error extracting template metadata for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
-          { cause: error },
+        throw enhanceErrorWithContext(
+          error,
+          `Error extracting template metadata for ${absolutePath}`,
         );
       }
     });

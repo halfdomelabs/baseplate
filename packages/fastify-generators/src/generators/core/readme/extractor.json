@@ -6,12 +6,7 @@
       "type": "text",
       "fileOptions": { "kind": "singleton" },
       "pathRootRelativePath": "{package-root}/README.md",
-      "variables": {
-        "TPL_PROJECT": {
-          "description": "Name of the project",
-          "value": "todoer backend"
-        }
-      }
+      "variables": { "TPL_PROJECT": { "description": "Name of the project" } }
     }
   }
 }

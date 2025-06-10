@@ -167,7 +167,8 @@ export async function organizeTsTemplateImports(
         return [importDeclaration];
       }
       // Don't modify imports for files in the generator
-      if (internalOutputRelativePaths.includes(resolvedPath)) {
+      const relativeOutputPath = path.relative(outputDirectory, resolvedPath);
+      if (internalOutputRelativePaths.includes(relativeOutputPath)) {
         const relativeImportPath = path
           .relative(path.dirname(filePath), resolvedPath)
           .replace(/\.(t|j)sx?$/, '.js');
