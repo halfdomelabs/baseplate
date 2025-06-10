@@ -1,6 +1,6 @@
 import { sortObjectKeys } from '@baseplate-dev/utils';
 
-import type { TsTemplateVariable } from '../templates/types.js';
+import type { TsTemplateFileVariable } from '../templates/types.js';
 
 import { preprocessCodeForExtractionHack } from './preprocess-code-for-extraction-hack.js';
 
@@ -15,7 +15,7 @@ const HOISTED_REGEX =
 
 interface ExtractedTemplateVariables {
   content: string;
-  variables: Record<string, TsTemplateVariable>;
+  variables: Record<string, TsTemplateFileVariable>;
 }
 
 /**
@@ -32,7 +32,7 @@ export function extractTsTemplateVariables(
   content: string,
 ): ExtractedTemplateVariables {
   let processedContent = content;
-  const discoveredVariables: Record<string, TsTemplateVariable> = {};
+  const discoveredVariables: Record<string, TsTemplateFileVariable> = {};
 
   // Preprocess the content to handle the extraction hack
   processedContent = preprocessCodeForExtractionHack(processedContent);

@@ -21,7 +21,7 @@ import pLimit from 'p-limit';
 import { z } from 'zod';
 
 import type { TsCodeFragment } from '../fragments/types.js';
-import type { TsTemplateFileMetadata } from '../templates/types.js';
+import type { TsTemplateOutputTemplateMetadata } from '../templates/types.js';
 import type {
   ProjectExportLookupMap,
   TsTemplateImportLookupContext,
@@ -33,7 +33,7 @@ import { tsImportBuilder } from '../imports/builder.js';
 import { renderTsCodeFileTemplate } from '../renderers/file.js';
 import {
   TS_TEMPLATE_TYPE,
-  tsTemplateFileMetadataSchema,
+  tsTemplateOutputTemplateMetadataSchema,
 } from '../templates/types.js';
 import { TsCodeUtils } from '../utils/ts-code-utils.js';
 import { extractTsTemplateVariables } from './extract-ts-template-variables.js';
@@ -102,10 +102,10 @@ const generatorOptionsSchema = z.object({
 type GeneratorOptions = z.infer<typeof generatorOptionsSchema>;
 
 export class TsTemplateFileExtractor extends TemplateFileExtractor<
-  typeof tsTemplateFileMetadataSchema
+  typeof tsTemplateOutputTemplateMetadataSchema
 > {
   public name = TS_TEMPLATE_TYPE;
-  public metadataSchema = tsTemplateFileMetadataSchema;
+  public metadataSchema = tsTemplateOutputTemplateMetadataSchema;
 
   protected pathResolver: ResolverFactory;
 
@@ -167,7 +167,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
   }
 
   protected async extractTemplateFile(
-    file: TemplateFileExtractorFile<TsTemplateFileMetadata>,
+    file: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>,
     importLookupContext: TsTemplateImportLookupContext,
   ): Promise<
     TypescriptCodeEntry & {
@@ -260,7 +260,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
   protected async extractTemplateFilesForGroup(
     generatorName: string,
     groupName: string,
-    files: TemplateFileExtractorFile<TsTemplateFileMetadata>[],
+    files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[],
     lookupContext: TsTemplateImportLookupContext,
   ): Promise<TypescriptCodeEntry> {
     const results = await Promise.all(
@@ -309,7 +309,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
 
   protected async extractTemplateFilesForGenerator(
     generatorName: string,
-    files: TemplateFileExtractorFile<TsTemplateFileMetadata>[],
+    files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[],
     projectExportMap: ProjectExportLookupMap,
   ): Promise<void> {
     const extractLimit = pLimit(getGenerationConcurrencyLimit());
@@ -392,7 +392,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
    */
   protected async generateImportFileForGenerator(
     generatorName: string,
-    files: TemplateFileExtractorFile<TsTemplateFileMetadata>[],
+    files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[],
   ): Promise<TsProjectExport[]> {
     const importMapsPath = path.join(
       this.getGeneratorBaseDirectory(generatorName),
@@ -455,7 +455,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
   }
 
   async extractTemplateFiles(
-    files: TemplateFileExtractorFile<TsTemplateFileMetadata>[],
+    files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[],
   ): Promise<void> {
     const filesByGenerator = mapGroupBy(
       files,

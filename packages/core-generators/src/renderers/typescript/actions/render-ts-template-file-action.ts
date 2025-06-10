@@ -17,8 +17,8 @@ import type {
   InferImportMapProvidersFromProviderTypeMap,
   InferTsTemplateVariablesFromMap,
   TsTemplateFile,
-  TsTemplateFileMetadata,
-  TsTemplateVariable,
+  TsTemplateFileVariable,
+  TsTemplateOutputTemplateMetadata,
 } from '../templates/types.js';
 
 import { renderTsCodeFileTemplate } from '../renderers/file.js';
@@ -92,7 +92,7 @@ export function renderTsTemplateFileAction<
       // make sure variables and template variables match keys
       const templateVariables = template.variables as Record<
         string,
-        TsTemplateVariable
+        TsTemplateFileVariable
       >;
       const templateKeySet = new Set(Object.keys(templateVariables));
       const providedKeySet = new Set(Object.keys(variableValues));
@@ -109,7 +109,7 @@ export function renderTsTemplateFileAction<
         );
       }
 
-      const templateMetadata: TsTemplateFileMetadata | undefined = {
+      const templateMetadata: TsTemplateOutputTemplateMetadata | undefined = {
         name: template.name,
         template:
           'path' in template.source

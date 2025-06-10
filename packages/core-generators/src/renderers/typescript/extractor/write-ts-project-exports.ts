@@ -8,7 +8,7 @@ import { sortBy } from 'es-toolkit';
 import path from 'node:path';
 
 import type { TsCodeFragment } from '../fragments/types.js';
-import type { TsTemplateFileMetadata } from '../templates/types.js';
+import type { TsTemplateOutputTemplateMetadata } from '../templates/types.js';
 
 import { tsCodeFragment } from '../fragments/creators.js';
 import { tsImportBuilder } from '../imports/builder.js';
@@ -104,7 +104,7 @@ interface WriteTsProjectExportsOptions {
  * @returns The import map file contents and the project exports.
  */
 export function writeTsProjectExports(
-  files: TemplateFileExtractorFile<TsTemplateFileMetadata>[],
+  files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[],
   generatorName: string,
   {
     importMapFilePath,

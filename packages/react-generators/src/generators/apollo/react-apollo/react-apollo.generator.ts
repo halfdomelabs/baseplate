@@ -1,7 +1,7 @@
 import type {
   TsCodeFragment,
   TsImportDeclaration,
-  TsTemplateFileMetadata,
+  TsTemplateOutputTemplateMetadata,
 } from '@baseplate-dev/core-generators';
 
 import {
@@ -570,7 +570,7 @@ export const reactApolloGenerator = createGenerator({
                 projectExports: {
                   '*': {},
                 },
-              } satisfies TsTemplateFileMetadata,
+              } satisfies TsTemplateOutputTemplateMetadata,
             });
 
             builder.addPostWriteCommand('pnpm generate', {
