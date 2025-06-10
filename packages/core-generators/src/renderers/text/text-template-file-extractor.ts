@@ -66,7 +66,6 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
             return {
               generator: metadata.generator,
               generatorTemplatePath,
-              sourceAbsolutePath: absolutePath,
               metadata: {
                 name: metadata.name,
                 type: metadata.type,

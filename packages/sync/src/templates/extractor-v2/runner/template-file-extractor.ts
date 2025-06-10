@@ -44,10 +44,6 @@ export interface TemplateFileExtractorMetadataEntry<
    */
   generatorTemplatePath: string;
   /**
-   * Absolute path of the source file.
-   */
-  sourceAbsolutePath: string;
-  /**
    * The metadata for the file.
    */
   metadata: TGeneratorTemplateMetadata;

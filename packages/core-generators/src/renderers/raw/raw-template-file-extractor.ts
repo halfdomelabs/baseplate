@@ -55,7 +55,6 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
             return {
               generator: metadata.generator,
               generatorTemplatePath,
-              sourceAbsolutePath: absolutePath,
               metadata: {
                 name: metadata.name,
                 type: metadata.type,
