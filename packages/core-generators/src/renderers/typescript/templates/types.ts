@@ -75,6 +75,10 @@ export const tsTemplateOutputTemplateMetadataSchema =
   templateFileMetadataBaseSchema.extend({
     type: z.literal(TS_TEMPLATE_TYPE),
     /**
+     * The options for the template file
+     */
+    fileOptions: templateFileOptionsSchema,
+    /**
      * The group of templates that this template belongs to.
      */
     group: CASE_VALIDATORS.KEBAB_CASE.optional(),
@@ -102,7 +106,7 @@ export const tsTemplateOutputTemplateMetadataSchema =
       )
       .optional(),
     /**
-     * Whether the template is only exporting types and we should not attempt to extract
+     * Whether the template is only providing exports and we should not attempt to extract
      * the contents of the template.
      */
     projectExportsOnly: z.boolean().optional(),

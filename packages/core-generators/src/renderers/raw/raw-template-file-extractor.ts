@@ -19,51 +19,56 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
   pluginDependencies: [templatePathsPlugin, typedTemplatesFilePlugin],
   outputTemplateMetadataSchema: rawTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: rawTemplateGeneratorTemplateMetadataSchema,
-  extractTemplateMetadataEntries: (files, context) => {
+  extractTemplateFiles: (files, context, api) => {
     const templatePathPlugin = context.getPlugin('template-paths');
-    return files.map(({ metadata, absolutePath }) => {
-      const pathRootRelativePath =
-        metadata.fileOptions.kind === 'singleton'
-          ? templatePathPlugin.getPathRootRelativePath(absolutePath)
-          : undefined;
 
-      // By default, singleton templates have the path like `feature-root/services/[file].ts`
-      const generatorTemplatePath =
-        metadata.fileOptions.generatorTemplatePath ??
-        (pathRootRelativePath &&
-          templatePathPlugin.getTemplatePathFromPathRootRelativePath(
-            pathRootRelativePath,
-          ));
-
-      if (!generatorTemplatePath) {
-        throw new Error(
-          `Template path is required for ${metadata.name} in ${metadata.generator}`,
-        );
-      }
-
-      return {
-        generator: metadata.generator,
-        generatorTemplatePath,
-        sourceAbsolutePath: absolutePath,
-        metadata: {
-          name: metadata.name,
-          type: metadata.type,
-          fileOptions: metadata.fileOptions,
-          pathRootRelativePath,
-        },
-      };
-    });
-  },
-  writeTemplateFiles: async (files, context, api) => {
-    await Promise.all(
-      files.map((file) =>
+    return Promise.all(
+      files.map(({ metadata, absolutePath }) =>
         limit(async () => {
-          const contents = await api.readOutputFile(file.sourceAbsolutePath);
-          api.writeTemplateFile(
-            file.generator,
-            file.generatorTemplatePath,
-            contents,
-          );
+          try {
+            const pathRootRelativePath =
+              metadata.fileOptions.kind === 'singleton'
+                ? templatePathPlugin.getPathRootRelativePath(absolutePath)
+                : undefined;
+
+            // By default, singleton templates have the path like `feature-root/services/[file].ts`
+            const generatorTemplatePath =
+              metadata.fileOptions.generatorTemplatePath ??
+              (pathRootRelativePath &&
+                templatePathPlugin.getTemplatePathFromPathRootRelativePath(
+                  pathRootRelativePath,
+                ));
+
+            if (!generatorTemplatePath) {
+              throw new Error(
+                `Template path is required for ${metadata.name} in ${metadata.generator}`,
+              );
+            }
+
+            const contents = await api.readOutputFile(absolutePath);
+            api.writeTemplateFile(
+              metadata.generator,
+              generatorTemplatePath,
+              contents,
+            );
+
+            return {
+              generator: metadata.generator,
+              generatorTemplatePath,
+              sourceAbsolutePath: absolutePath,
+              metadata: {
+                name: metadata.name,
+                type: metadata.type,
+                fileOptions: metadata.fileOptions,
+                pathRootRelativePath,
+              },
+            };
+          } catch (error) {
+            throw new Error(
+              `Error extracting template file at ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+              { cause: error },
+            );
+          }
         }),
       ),
     );

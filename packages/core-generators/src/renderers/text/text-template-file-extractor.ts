@@ -14,10 +14,7 @@ import {
   textTemplateGeneratorTemplateMetadataSchema,
   textTemplateOutputTemplateMetadataSchema,
 } from './types.js';
-import {
-  getTextTemplateDelimiters,
-  getTextTemplateVariableRegExp,
-} from './utils.js';
+import { extractTemplateVariables } from './utils.js';
 
 const limit = pLimit(getGenerationConcurrencyLimit());
 
@@ -26,86 +23,64 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
   pluginDependencies: [templatePathsPlugin, typedTemplatesFilePlugin],
   outputTemplateMetadataSchema: textTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: textTemplateGeneratorTemplateMetadataSchema,
-  extractTemplateMetadataEntries: (files, context) => {
+  extractTemplateFiles: (files, context, api) => {
     const templatePathPlugin = context.getPlugin('template-paths');
-    return files.map(({ metadata, absolutePath }) => {
-      const pathRootRelativePath =
-        metadata.fileOptions.kind === 'singleton'
-          ? templatePathPlugin.getPathRootRelativePath(absolutePath)
-          : undefined;
 
-      // By default, singleton templates have the path like `feature-root/services/[file].ts`
-      const generatorTemplatePath =
-        metadata.fileOptions.generatorTemplatePath ??
-        (pathRootRelativePath &&
-          templatePathPlugin.getTemplatePathFromPathRootRelativePath(
-            pathRootRelativePath,
-          ));
-
-      if (!generatorTemplatePath) {
-        throw new Error(
-          `Template path is required for ${metadata.name} in ${metadata.generator}`,
-        );
-      }
-
-      return {
-        generator: metadata.generator,
-        generatorTemplatePath,
-        sourceAbsolutePath: absolutePath,
-        metadata: {
-          name: metadata.name,
-          type: metadata.type,
-          fileOptions: metadata.fileOptions,
-          pathRootRelativePath,
-          variables: metadata.variables,
-        },
-      };
-    });
-  },
-  writeTemplateFiles: async (files, _context, api) => {
-    await Promise.all(
-      files.map((file) =>
+    return Promise.all(
+      files.map(({ metadata, absolutePath }) =>
         limit(async () => {
-          const contents = await api.readOutputFile(file.sourceAbsolutePath);
-          const { metadata } = file;
-          const { start, end } = getTextTemplateDelimiters(
-            file.sourceAbsolutePath,
-          );
+          try {
+            const pathRootRelativePath =
+              metadata.fileOptions.kind === 'singleton'
+                ? templatePathPlugin.getPathRootRelativePath(absolutePath)
+                : undefined;
 
-          // replace variable values with template string
-          let templateContents = contents;
+            // By default, singleton templates have the path like `feature-root/services/[file].ts`
+            const generatorTemplatePath =
+              metadata.fileOptions.generatorTemplatePath ??
+              (pathRootRelativePath &&
+                templatePathPlugin.getTemplatePathFromPathRootRelativePath(
+                  pathRootRelativePath,
+                ));
 
-          // Sort variables by descending length of their values to prevent overlapping replacements
-          const sortedVariables = Object.entries(metadata.variables ?? {}).sort(
-            ([, a], [, b]) => {
-              const aValue = (a as TextTemplateFileVariableWithValue).value;
-              const bValue = (b as TextTemplateFileVariableWithValue).value;
-              return bValue.length - aValue.length;
-            },
-          );
-
-          for (const [key, variableWithValue] of sortedVariables) {
-            // variableWithValue has the 'value' property, we need to remove it for the variable definition
-            const { value } =
-              variableWithValue as TextTemplateFileVariableWithValue;
-            const variableRegex = getTextTemplateVariableRegExp(value);
-            const newTemplateContents = templateContents.replaceAll(
-              variableRegex,
-              `${start}${key}${end}`,
-            );
-            if (newTemplateContents === templateContents) {
+            if (!generatorTemplatePath) {
               throw new Error(
-                `Variable ${key} with value ${value} not found in template ${file.sourceAbsolutePath}`,
+                `Template path is required for ${metadata.name} in ${metadata.generator}`,
               );
             }
-            templateContents = newTemplateContents;
-          }
 
-          api.writeTemplateFile(
-            file.generator,
-            file.generatorTemplatePath,
-            templateContents,
-          );
+            const contents = await api.readOutputFile(absolutePath);
+
+            const templateContents = extractTemplateVariables(
+              contents,
+              metadata.variables,
+              absolutePath,
+            );
+
+            api.writeTemplateFile(
+              metadata.generator,
+              generatorTemplatePath,
+              templateContents,
+            );
+
+            return {
+              generator: metadata.generator,
+              generatorTemplatePath,
+              sourceAbsolutePath: absolutePath,
+              metadata: {
+                name: metadata.name,
+                type: metadata.type,
+                fileOptions: metadata.fileOptions,
+                pathRootRelativePath,
+                variables: metadata.variables,
+              },
+            };
+          } catch (error) {
+            throw new Error(
+              `Error extracting template file at ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+              { cause: error },
+            );
+          }
         }),
       ),
     );

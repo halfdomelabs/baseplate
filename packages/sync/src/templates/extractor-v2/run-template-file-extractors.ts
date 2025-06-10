@@ -3,6 +3,7 @@ import { groupBy, uniq } from 'es-toolkit';
 import type { Logger } from '#src/utils/evented-logger.js';
 
 import type { TemplateFileMetadataBase } from '../metadata/metadata.js';
+import type { TemplateExtractorHook } from './runner/template-extractor-plugin.js';
 import type {
   AnyTemplateFileExtractor,
   TemplateFileExtractorMetadataEntry,
@@ -81,8 +82,8 @@ export async function runTemplateFileExtractors(
     context: initializerContext,
   });
 
-  async function runHooks(hook: 'afterExtract' | 'afterWrite'): Promise<void> {
-    for (const hookFn of hooks[hook]) {
+  async function runHooks(hook: TemplateExtractorHook): Promise<void> {
+    for (const hookFn of hooks[hook].toReversed()) {
       await hookFn();
     }
   }
@@ -121,10 +122,12 @@ export async function runTemplateFileExtractors(
           : metadata,
       };
     });
+    const api = new TemplateExtractorApi(context, type);
 
-    const newEntries = await extractor.extractTemplateMetadataEntries(
+    const newEntries = await extractor.extractTemplateFiles(
       parsedFiles,
       context,
+      api,
     );
     metadataEntries.push(...newEntries);
   }
@@ -147,8 +150,6 @@ export async function runTemplateFileExtractors(
     }
 
     const api = new TemplateExtractorApi(context, type);
-
-    await extractor.writeTemplateFiles(entries, context, api);
 
     const generatorNames = uniq(entries.map((e) => e.generator));
     await extractor.writeGeneratedFiles(generatorNames, context, api);

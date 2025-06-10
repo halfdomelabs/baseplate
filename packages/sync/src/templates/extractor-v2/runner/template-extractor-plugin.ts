@@ -22,10 +22,13 @@ export type InferTemplateExtractorPluginDependency<
 /**
  * The hooks that are available to plugins.
  *
- * - `afterExtract` - Called after the template extractor has extracted all the metadata from the output.
- * - `afterWrite` - Called after the template extractor has written all files. (called in reverse order of dependencies so dependencies will run after)
+ * - `afterExtract` - Called after the template extractor has written the template files and extracted the metadata.
+ * - `afterWrite` - Called after the template extractor has written generated typed template files.
+ *
+ * Note: Hooks are executed in reverse dependency order so if plugin A depends on B,
+ * B will run after A.
  */
-type TemplateExtractorHook = 'afterExtract' | 'afterWrite';
+export type TemplateExtractorHook = 'afterExtract' | 'afterWrite';
 
 export interface TemplateExtractorPluginApi {
   registerHook(

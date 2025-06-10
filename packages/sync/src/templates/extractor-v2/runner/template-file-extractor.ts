@@ -92,14 +92,18 @@ export interface TemplateFileExtractor<
   pluginDependencies?: TPluginDependencies;
 
   /**
-   * Extracts the metadata entries for the given files.
+   * Extracts the metadata entries for the given files and writes the template files to the generator's templates directory.
    *
    * @param files - The files to extract metadata from.
    * @param context - The context for the extractor.
+   * @param api - The API for reading and writing files.
+   *
+   * @returns The metadata entries for the given files.
    */
-  extractTemplateMetadataEntries(
+  extractTemplateFiles(
     files: TemplateFileExtractorSourceFile<z.infer<TOutputTemplateMetadata>>[],
     context: TemplateExtractorContext<TPluginDependencies>,
+    api: TemplateExtractorApi,
   ):
     | Promise<
         TemplateFileExtractorMetadataEntry<
@@ -107,22 +111,6 @@ export interface TemplateFileExtractor<
         >[]
       >
     | TemplateFileExtractorMetadataEntry<z.infer<TGeneratorTemplateMetadata>>[];
-
-  /**
-   * Writes the files in the metadata entries to the generator's templates directory converting
-   * any written templates to their templatized form.
-   *
-   * @param metadataEntries - The metadata entries to write.
-   * @param context - The context for the extractor.
-   * @param api - The API for the extractor.
-   */
-  writeTemplateFiles(
-    metadataEntries: TemplateFileExtractorMetadataEntry<
-      z.infer<TGeneratorTemplateMetadata>
-    >[],
-    context: TemplateExtractorContext<TPluginDependencies>,
-    api: TemplateExtractorApi,
-  ): Promise<void>;
 
   /**
    * Writes the files in the metadata entries to the generator's generated directory creating
