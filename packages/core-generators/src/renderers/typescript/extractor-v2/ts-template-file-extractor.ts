@@ -1,23 +1,18 @@
-import type { TemplateMetadataFileEntry } from '@baseplate-dev/sync';
-import type { TemplateFileExtractorMetadataEntry } from '@baseplate-dev/sync/extractor-v2';
-
 import { getGenerationConcurrencyLimit } from '@baseplate-dev/sync';
 import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
 import { camelCase } from 'change-case';
-import { mapValues } from 'es-toolkit';
 import pLimit from 'p-limit';
-
-import type { TsTemplateOutputTemplateMetadata } from '../templates/types.js';
 
 import { templatePathsPlugin } from '../../templates/plugins/template-paths/template-paths.plugin.js';
 import { typedTemplatesFilePlugin } from '../../templates/plugins/typed-templates-file.js';
 import { resolvePackagePathSpecifier } from '../../templates/utils/package-path-specifier.js';
-import { tsImportBuilder } from '../index.js';
+import { tsImportBuilder } from '../imports/builder.js';
 import {
   TS_TEMPLATE_TYPE,
   tsTemplateGeneratorTemplateMetadataSchema,
   tsTemplateOutputTemplateMetadataSchema,
 } from '../templates/types.js';
+import { TsCodeUtils } from '../utils/ts-code-utils.js';
 import { extractTsTemplateVariables } from './extract-ts-template-variables.js';
 
 const limit = pLimit(getGenerationConcurrencyLimit());
@@ -119,13 +114,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
           source: {
             path: path.join(import.meta.dirname, '../templates/${path}'),
           },
-          variables: ${JSON.stringify(
-            mapValues(config.variables ?? {}, (variable) => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              const { value: _, ...variableWithoutValue } = variable;
-              return variableWithoutValue;
-            }),
-          )},
+          variables: ${JSON.stringify(config.variables ?? {})},
           prefix: ${config.prefix ? `'${config.prefix}'` : 'undefined'},
           projectExports: ${JSON.stringify(config.projectExports ?? {})},
           importMapProviders: ${JSON.stringify(config.importMapProviders ?? {})},
