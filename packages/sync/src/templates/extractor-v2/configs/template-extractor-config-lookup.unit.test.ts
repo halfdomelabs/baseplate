@@ -428,4 +428,163 @@ describe('TemplateExtractorConfigLookup', () => {
       );
     });
   });
+
+  describe('updateExtractorTemplateConfig', () => {
+    it('should update existing template config', async () => {
+      // Arrange
+      const originalConfig = {
+        name: 'test-extractor',
+        templates: {
+          'test-template': {
+            name: 'test-template',
+            type: 'ts',
+            schema: {
+              type: 'object',
+              properties: {
+                oldProp: { type: 'string' },
+              },
+            },
+          },
+        },
+        extractors: {},
+      };
+
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(originalConfig),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const updatedTemplate = {
+        name: 'test-template',
+        type: 'ts',
+        schema: {
+          type: 'object',
+          properties: {
+            newProp: { type: 'number' },
+          },
+        },
+      };
+
+      // Act
+      lookup.updateExtractorTemplateConfig(
+        '@test/package1#test-extractor',
+        updatedTemplate,
+      );
+
+      // Assert
+      const config = lookup.getExtractorConfig('@test/package1#test-extractor');
+      expect(config?.config.templates['test-template']).toEqual(
+        updatedTemplate,
+      );
+    });
+
+    it('should throw error if template not found', async () => {
+      // Arrange
+      const config = {
+        name: 'test-extractor',
+        templates: {
+          'existing-template': {
+            name: 'existing-template',
+            type: 'ts',
+            schema: { type: 'object' },
+          },
+        },
+        extractors: {},
+      };
+
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(config),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const nonExistentTemplate = {
+        name: 'non-existent-template',
+        type: 'ts',
+        schema: { type: 'object' },
+      };
+
+      // Act & Assert
+      expect(() => {
+        lookup.updateExtractorTemplateConfig(
+          '@test/package1#test-extractor',
+          nonExistentTemplate,
+        );
+      }).toThrow(
+        'Template non-existent-template not found in generator @test/package1#test-extractor',
+      );
+    });
+
+    it('should throw error if generator not found', async () => {
+      // Arrange
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const template = {
+        name: 'test-template',
+        type: 'ts',
+        schema: { type: 'object' },
+      };
+
+      // Act & Assert
+      expect(() => {
+        lookup.updateExtractorTemplateConfig(
+          '@test/package1#non-existent',
+          template,
+        );
+      }).toThrow('Generator @test/package1#non-existent not found');
+    });
+  });
+
+  describe('getOutputRelativePathForTemplate', () => {
+    it('should return relative path for existing template', async () => {
+      // Arrange
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      // Act
+      const path = lookup.getOutputRelativePathForTemplate(
+        '@test/package1#existing-extractor',
+        'src/file.ts',
+      );
+
+      // Assert
+      expect(path).toBe('123');
+    });
+
+    it('should return undefined for non-existent template', async () => {
+      // Arrange
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      // Act
+      const path = lookup.getOutputRelativePathForTemplate(
+        '@test/package1#existing-extractor',
+        'non-existent.ts',
+      );
+
+      // Assert
+      expect(path).toBeUndefined();
+    });
+  });
 });
