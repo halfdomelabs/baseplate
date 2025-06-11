@@ -27,7 +27,7 @@ export type TsUtilsImportsProvider = TsImportMapProviderFromSchema<
 export const tsUtilsImportsProvider =
   createReadOnlyProviderType<TsUtilsImportsProvider>('ts-utils-imports');
 
-export const nodeTsUtilsImportsTask = createGeneratorTask({
+const nodeTsUtilsImportsTask = createGeneratorTask({
   dependencies: {
     paths: NODE_TS_UTILS_PATHS.provider,
   },
@@ -47,3 +47,7 @@ export const nodeTsUtilsImportsTask = createGeneratorTask({
     };
   },
 });
+
+export const NODE_TS_UTILS_IMPORTS = {
+  task: nodeTsUtilsImportsTask,
+};

@@ -1,5 +1,6 @@
 import type { TemplateExtractorContext } from '@baseplate-dev/sync/extractor-v2';
 
+import { TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY } from '@baseplate-dev/sync/extractor-v2';
 import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { posixJoin } from '@baseplate-dev/utils/node';
 import { camelCase } from 'change-case';
@@ -23,7 +24,7 @@ import {
 export const GENERATED_PATHS_FILE_NAME = 'template-paths.ts';
 
 const GENERATED_PATHS_FILE_PATH = posixJoin(
-  'generated',
+  TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
   GENERATED_PATHS_FILE_NAME,
 );
 
@@ -207,7 +208,7 @@ export function writePathMapFile(
   generatorName: string,
   pathMap: Map<string, string>,
   context: TemplateExtractorContext,
-): void {
+): { exportName: string } {
   const extractorConfig =
     context.configLookup.getExtractorConfigOrThrow(generatorName);
   const pathMapPath = posixJoin(
@@ -249,4 +250,8 @@ export function writePathMapFile(
   });
 
   context.fileContainer.writeFile(pathMapPath, pathMapContents);
+
+  return {
+    exportName: fileExportNames.rootExportName,
+  };
 }

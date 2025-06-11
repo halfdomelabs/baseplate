@@ -13,8 +13,14 @@ import { z } from 'zod';
 
 import type { TemplateFileOptions } from '#src/renderers/schemas/template-file-options.js';
 
+import { normalizeTsPathToJsPath } from '#src/utils/ts-paths.js';
+
 import { templateExtractorBarrelExportPlugin } from '../barrel-export.js';
-import { getPathsFileExportNames, writePathMapFile } from './paths-file.js';
+import {
+  GENERATED_PATHS_FILE_NAME,
+  getPathsFileExportNames,
+  writePathMapFile,
+} from './paths-file.js';
 
 export interface TemplatePathRoot {
   canonicalPath: string;
@@ -45,6 +51,9 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
   name: 'template-paths',
   pluginDependencies: [templateExtractorBarrelExportPlugin],
   getInstance: async ({ context, api }) => {
+    const barrelExportPlugin = context.getPlugin(
+      templateExtractorBarrelExportPlugin.name,
+    );
     const templatePathRoots = await discoverTemplatePathRoots(
       context.outputDirectory,
     );
@@ -119,7 +128,16 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
 
     api.registerHook('afterWrite', () => {
       for (const [generatorName, pathMap] of pathMapByGenerator) {
-        writePathMapFile(generatorName, pathMap, context);
+        const { exportName } = writePathMapFile(
+          generatorName,
+          pathMap,
+          context,
+        );
+        barrelExportPlugin.addGeneratedBarrelExport(generatorName, {
+          moduleSpecifier: `./${normalizeTsPathToJsPath(GENERATED_PATHS_FILE_NAME)}`,
+          namedExport: exportName,
+          name: 'paths',
+        });
       }
     });
 

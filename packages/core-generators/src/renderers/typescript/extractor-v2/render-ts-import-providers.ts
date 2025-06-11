@@ -4,9 +4,13 @@ import { quot } from '@baseplate-dev/utils';
 import { camelCase } from 'change-case';
 import { mapValues } from 'es-toolkit';
 
-import type { TemplateExtractorBarrelExport } from '#src/renderers/extractor/index.js';
+import type {
+  TemplateExtractorBarrelExport,
+  TemplateExtractorGeneratedBarrelExport,
+} from '#src/renderers/extractor/index.js';
 
 import {
+  getGeneratedTemplateConstantName,
   getGeneratedTemplateExportName,
   resolvePackagePathSpecifier,
 } from '#src/renderers/extractor/index.js';
@@ -90,7 +94,7 @@ function renderTsImportProviderTask(
   importSchemaName: string,
   importsProvider: TsCodeFragment,
   { generatorPackageName, pathsRootExportName }: RenderTsImportProvidersContext,
-): TsCodeFragment {
+): { fragment: TsCodeFragment; exportName: string } {
   const typescriptRendererIndex = resolvePackagePathSpecifier(
     `@baseplate-dev/core-generators:src/renderers/typescript/index.ts`,
     generatorPackageName,
@@ -126,7 +130,7 @@ function renderTsImportProviderTask(
     tsImportBuilder(['createTsImportMap']).from(typescriptRendererIndex),
     tsImportBuilder(['projectScope']).from(projectScopeSpecifier),
   ])`
-    export const ${importsTaskName} = createGeneratorTask({
+    const ${importsTaskName} = createGeneratorTask({
       dependencies: {
         paths: ${pathsProvider},
       },
@@ -143,7 +147,10 @@ function renderTsImportProviderTask(
     });
   `;
 
-  return importsTaskFragment;
+  return {
+    fragment: importsTaskFragment,
+    exportName: importsTaskName,
+  };
 }
 
 /**
@@ -157,7 +164,11 @@ export function renderTsImportProviders(
   templates: TemplateExtractorTemplateEntry<TsGeneratorTemplateMetadata>[],
   context: RenderTsImportProvidersContext,
 ):
-  | { contents: string; barrelExports: TemplateExtractorBarrelExport[] }
+  | {
+      contents: string;
+      barrelExports: TemplateExtractorBarrelExport[];
+      generatorBarrelExports: TemplateExtractorGeneratedBarrelExport[];
+    }
   | undefined {
   const importProviderNames = getDefaultImportProviderNames(generatorName);
 
@@ -204,8 +215,21 @@ export function renderTsImportProviders(
     context,
   );
 
+  const generatedExportName = getGeneratedTemplateConstantName(
+    generatorName,
+    'imports',
+  );
+
+  const barrelExportFragment = `export const ${generatedExportName} = {
+    task: ${importsTaskFragment.exportName},
+  };`;
+
   const mergedFragment = TsCodeUtils.mergeFragmentsPresorted(
-    [defaultTsImportProvidersFragment, importsTaskFragment],
+    [
+      defaultTsImportProvidersFragment,
+      importsTaskFragment.fragment,
+      barrelExportFragment,
+    ],
     '\n\n',
   );
 
@@ -236,6 +260,15 @@ export function renderTsImportProviders(
         )}`,
         namedExports: [importProviderNames.providerTypeName],
         isTypeOnly: true,
+      },
+    ],
+    generatorBarrelExports: [
+      {
+        moduleSpecifier: `./${normalizeTsPathToJsPath(
+          GENERATED_IMPORT_PROVIDERS_FILE_NAME,
+        )}`,
+        namedExport: generatedExportName,
+        name: 'imports',
       },
     ],
   };

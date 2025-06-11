@@ -171,6 +171,12 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
         for (const barrelExport of importProviders.barrelExports) {
           barrelExportPlugin.addBarrelExport(generatorName, barrelExport);
         }
+        for (const barrelExport of importProviders.generatorBarrelExports) {
+          barrelExportPlugin.addGeneratedBarrelExport(
+            generatorName,
+            barrelExport,
+          );
+        }
       }
     }
   },

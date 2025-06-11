@@ -23,7 +23,7 @@ export const configServiceImportsProvider =
     'config-service-imports',
   );
 
-export const coreConfigServiceImportsTask = createGeneratorTask({
+const coreConfigServiceImportsTask = createGeneratorTask({
   dependencies: {
     paths: CORE_CONFIG_SERVICE_PATHS.provider,
   },
@@ -40,3 +40,7 @@ export const coreConfigServiceImportsTask = createGeneratorTask({
     };
   },
 });
+
+export const CORE_CONFIG_SERVICE_IMPORTS = {
+  task: coreConfigServiceImportsTask,
+};

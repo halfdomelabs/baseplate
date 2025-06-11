@@ -23,7 +23,7 @@ export const loggerServiceImportsProvider =
     'logger-service-imports',
   );
 
-export const coreLoggerServiceImportsTask = createGeneratorTask({
+const coreLoggerServiceImportsTask = createGeneratorTask({
   dependencies: {
     paths: CORE_LOGGER_SERVICE_PATHS.provider,
   },
@@ -40,3 +40,7 @@ export const coreLoggerServiceImportsTask = createGeneratorTask({
     };
   },
 });
+
+export const CORE_LOGGER_SERVICE_IMPORTS = {
+  task: coreLoggerServiceImportsTask,
+};

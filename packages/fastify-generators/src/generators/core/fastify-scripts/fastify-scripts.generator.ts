@@ -11,8 +11,7 @@ import {
 import { z } from 'zod';
 
 import { fastifyOutputProvider } from '../fastify/fastify.generator.js';
-import { CORE_FASTIFY_SCRIPTS_PATHS } from './generated/template-paths.js';
-import { CORE_FASTIFY_SCRIPTS_TEMPLATES } from './generated/typed-templates.js';
+import { CORE_FASTIFY_SCRIPTS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -28,12 +27,12 @@ export const fastifyScriptsGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    paths: CORE_FASTIFY_SCRIPTS_PATHS.task,
+    paths: CORE_FASTIFY_SCRIPTS_GENERATED.paths.task,
     main: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
         fastifyOutput: fastifyOutputProvider,
-        paths: CORE_FASTIFY_SCRIPTS_PATHS.provider,
+        paths: CORE_FASTIFY_SCRIPTS_GENERATED.paths.provider,
       },
       exports: {
         fastifyScripts: fastifyScriptsProvider.export(projectScope),
@@ -57,7 +56,7 @@ export const fastifyScriptsGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               renderRawTemplateFileAction({
-                template: CORE_FASTIFY_SCRIPTS_TEMPLATES.tsconfig,
+                template: CORE_FASTIFY_SCRIPTS_GENERATED.templates.tsconfig,
                 destination: paths.tsconfig,
               }),
             );

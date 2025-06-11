@@ -22,9 +22,7 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 import { fastifyProvider } from '../fastify/fastify.generator.js';
-import { CORE_CONFIG_SERVICE_PATHS } from './generated/template-paths.js';
-import { coreConfigServiceImportsTask } from './generated/ts-import-providers.js';
-import { CORE_CONFIG_SERVICE_TEMPLATES } from './generated/typed-templates.js';
+import { CORE_CONFIG_SERVICE_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -83,8 +81,8 @@ export const configServiceGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    paths: CORE_CONFIG_SERVICE_PATHS.task,
-    imports: coreConfigServiceImportsTask,
+    paths: CORE_CONFIG_SERVICE_GENERATED.paths.task,
+    imports: CORE_CONFIG_SERVICE_GENERATED.imports.task,
     // add the dotenv config to the fastify config
     fastify: createProviderTask(fastifyProvider, (fastify) => {
       fastify.nodeFlags.set('dotenv', {
@@ -111,7 +109,7 @@ export const configServiceGenerator = createGenerator({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         configServiceConfigValues: configServiceConfigValuesProvider,
-        paths: CORE_CONFIG_SERVICE_PATHS.provider,
+        paths: CORE_CONFIG_SERVICE_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
@@ -133,7 +131,7 @@ export const configServiceGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_CONFIG_SERVICE_TEMPLATES.config,
+                template: CORE_CONFIG_SERVICE_GENERATED.templates.config,
                 destination: paths.config,
                 variables: {
                   TPL_CONFIG_SCHEMA: TsCodeUtils.templateWithImports(

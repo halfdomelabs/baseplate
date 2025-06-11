@@ -32,7 +32,7 @@ export const errorHandlerServiceImportsProvider =
     'error-handler-service-imports',
   );
 
-export const coreErrorHandlerServiceImportsTask = createGeneratorTask({
+const coreErrorHandlerServiceImportsTask = createGeneratorTask({
   dependencies: {
     paths: CORE_ERROR_HANDLER_SERVICE_PATHS.provider,
   },
@@ -56,3 +56,7 @@ export const coreErrorHandlerServiceImportsTask = createGeneratorTask({
     };
   },
 });
+
+export const CORE_ERROR_HANDLER_SERVICE_IMPORTS = {
+  task: coreErrorHandlerServiceImportsTask,
+};
