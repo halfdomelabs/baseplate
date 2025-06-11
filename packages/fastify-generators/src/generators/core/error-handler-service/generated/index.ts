@@ -1,0 +1,5 @@
+import { CORE_ERROR_HANDLER_SERVICE_TEMPLATES } from './typed-templates.js';
+
+export const CORE_ERROR_HANDLER_SERVICE_GENERATED = {
+  templates: CORE_ERROR_HANDLER_SERVICE_TEMPLATES,
+};

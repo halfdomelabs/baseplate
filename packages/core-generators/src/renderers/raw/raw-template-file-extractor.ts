@@ -3,9 +3,9 @@ import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
 import { camelCase } from 'change-case';
 import pLimit from 'p-limit';
 
-import { templatePathsPlugin } from '../templates/plugins/template-paths/template-paths.plugin.js';
-import { typedTemplatesFilePlugin } from '../templates/plugins/typed-templates-file.js';
-import { resolvePackagePathSpecifier } from '../templates/utils/package-path-specifier.js';
+import { templatePathsPlugin } from '../extractor/plugins/template-paths/template-paths.plugin.js';
+import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-file.js';
+import { resolvePackagePathSpecifier } from '../extractor/utils/package-path-specifier.js';
 import { TsCodeUtils, tsImportBuilder } from '../typescript/index.js';
 import {
   rawTemplateGeneratorTemplateMetadataSchema,

@@ -1,5 +1,10 @@
-import { createTemplateExtractorPlugin } from '@baseplate-dev/sync/extractor-v2';
+import {
+  createTemplateExtractorPlugin,
+  TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
+} from '@baseplate-dev/sync/extractor-v2';
 import { posixJoin } from '@baseplate-dev/utils/node';
+
+import { normalizeTsPathToJsPath } from '#src/utils/ts-paths.js';
 
 import type { TsCodeFragment } from '../../typescript/index.js';
 
@@ -8,9 +13,15 @@ import {
   TsCodeUtils,
 } from '../../typescript/index.js';
 import { getGeneratedTemplateConstantName } from '../utils/index.js';
+import { templateExtractorBarrelExportPlugin } from './barrel-export.js';
 import { templatePathsPlugin } from './template-paths/template-paths.plugin.js';
 
-export const TYPED_TEMPLATES_FILE_PATH = 'generated/typed-templates.ts';
+export const TYPED_TEMPLATES_FILE_NAME = 'typed-templates.ts';
+
+export const TYPED_TEMPLATES_FILE_PATH = posixJoin(
+  TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
+  TYPED_TEMPLATES_FILE_NAME,
+);
 
 export interface TemplateExtractorTypedTemplate {
   fragment: TsCodeFragment;
@@ -29,8 +40,14 @@ export const TPL_EXPORT_NAME = TPL_TEMPLATE_EXPORTS;
  */
 export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
   name: 'typed-templates-file',
-  pluginDependencies: [templatePathsPlugin],
+  pluginDependencies: [
+    templatePathsPlugin,
+    templateExtractorBarrelExportPlugin,
+  ],
   getInstance: ({ context, api }) => {
+    const barrelExportPlugin = context.getPlugin(
+      templateExtractorBarrelExportPlugin.name,
+    );
     const generatorTemplates = new Map<
       string,
       TemplateExtractorTypedTemplate[]
@@ -52,15 +69,16 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
           new Map(templates.map((t) => [t.exportName, t.fragment])),
           '\n\n',
         );
+        const exportName = getGeneratedTemplateConstantName(
+          generatorName,
+          'TEMPLATES',
+        );
         const templateFileContents = renderTsCodeFileTemplate({
           templateContents: TS_TEMPLATE,
           variables: {
             TPL_TEMPLATE_FRAGMENTS: templatesFragment,
             TPL_TEMPLATE_EXPORTS: `{ ${templateExports.join(', ')} }`,
-            TPL_EXPORT_NAME: getGeneratedTemplateConstantName(
-              generatorName,
-              'TEMPLATES',
-            ),
+            TPL_EXPORT_NAME: exportName,
           },
           options: {
             importSortOptions: {
@@ -80,6 +98,12 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
           typedTemplatesPath,
           templateFileContents,
         );
+
+        barrelExportPlugin.addGeneratedBarrelExport(generatorName, {
+          moduleSpecifier: `./${normalizeTsPathToJsPath(TYPED_TEMPLATES_FILE_NAME)}`,
+          namedExport: exportName,
+          name: 'templates',
+        });
       }
     });
 

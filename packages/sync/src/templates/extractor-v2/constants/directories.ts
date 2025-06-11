@@ -1,0 +1,2 @@
+export const TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY = 'generated';
+export const TEMPLATE_EXTRACTOR_TEMPLATES_DIRECTORY = 'templates';

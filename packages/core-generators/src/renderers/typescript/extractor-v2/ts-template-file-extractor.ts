@@ -5,13 +5,13 @@ import { groupBy } from 'es-toolkit';
 import path from 'node:path';
 import pLimit from 'p-limit';
 
-import { templateExtractorBarrelExportPlugin } from '#src/renderers/templates/index.js';
+import { templateExtractorBarrelExportPlugin } from '#src/renderers/extractor/index.js';
 
 import type { TsGeneratorTemplateMetadata } from '../templates/types.js';
 import type { WriteTsTemplateFileContext } from './render-ts-template-file.js';
 
-import { templatePathsPlugin } from '../../templates/plugins/template-paths/template-paths.plugin.js';
-import { typedTemplatesFilePlugin } from '../../templates/plugins/typed-templates-file.js';
+import { templatePathsPlugin } from '../../extractor/plugins/template-paths/template-paths.plugin.js';
+import { typedTemplatesFilePlugin } from '../../extractor/plugins/typed-templates-file.js';
 import {
   TS_TEMPLATE_TYPE,
   tsTemplateGeneratorTemplateMetadataSchema,

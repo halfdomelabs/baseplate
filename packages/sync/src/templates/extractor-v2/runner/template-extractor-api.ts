@@ -5,6 +5,11 @@ import path from 'node:path';
 import type { TemplateExtractorGeneratorEntry } from '../configs/index.js';
 import type { TemplateExtractorContext } from './template-extractor-context.js';
 
+import {
+  TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
+  TEMPLATE_EXTRACTOR_TEMPLATES_DIRECTORY,
+} from '../constants/directories.js';
+
 /**
  * The API for the template extractor with helper functions for writing files.
  */
@@ -72,7 +77,7 @@ export class TemplateExtractorApi {
     const generatorDirectory = this.getGeneratorDirectory(generatorName);
     const absolutePath = path.join(
       generatorDirectory,
-      'templates',
+      TEMPLATE_EXTRACTOR_TEMPLATES_DIRECTORY,
       generatorTemplatePath,
     );
 
@@ -94,7 +99,7 @@ export class TemplateExtractorApi {
     const generatorDirectory = this.getGeneratorDirectory(generatorName);
     const absolutePath = path.join(
       generatorDirectory,
-      'generated',
+      TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
       relativePath,
     );
     this.context.fileContainer.writeFile(absolutePath, contents);

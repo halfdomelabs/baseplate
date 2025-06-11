@@ -4,13 +4,13 @@ import { quot } from '@baseplate-dev/utils';
 import { camelCase } from 'change-case';
 import { mapValues } from 'es-toolkit';
 
-import type { TemplateExtractorBarrelExport } from '#src/renderers/templates/index.js';
+import type { TemplateExtractorBarrelExport } from '#src/renderers/extractor/index.js';
 
 import {
   getGeneratedTemplateExportName,
   resolvePackagePathSpecifier,
-} from '#src/renderers/templates/index.js';
-import { GENERATED_PATHS_FILE_NAME } from '#src/renderers/templates/plugins/template-paths/paths-file.js';
+} from '#src/renderers/extractor/index.js';
+import { GENERATED_PATHS_FILE_NAME } from '#src/renderers/extractor/plugins/template-paths/paths-file.js';
 import { normalizeTsPathToJsPath } from '#src/utils/index.js';
 
 import type { TsCodeFragment } from '../fragments/types.js';

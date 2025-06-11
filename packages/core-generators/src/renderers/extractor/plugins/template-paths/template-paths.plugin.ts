@@ -1,8 +1,7 @@
+import type { TemplateExtractorPluginInstance } from '@baseplate-dev/sync/extractor-v2';
+
 import { toCanonicalPath } from '@baseplate-dev/sync';
-import {
-  createTemplateExtractorPlugin,
-  TemplateExtractorPluginInstance,
-} from '@baseplate-dev/sync/extractor-v2';
+import { createTemplateExtractorPlugin } from '@baseplate-dev/sync/extractor-v2';
 import {
   handleFileNotFoundError,
   posixJoin,
@@ -12,10 +11,10 @@ import { camelCase } from 'change-case';
 import path from 'node:path';
 import { z } from 'zod';
 
+import type { TemplateFileOptions } from '#src/renderers/schemas/template-file-options.js';
+
 import { templateExtractorBarrelExportPlugin } from '../barrel-export.js';
 import { getPathsFileExportNames, writePathMapFile } from './paths-file.js';
-import { TemplateFileOptions } from '#src/renderers/schemas/template-file-options.js';
-import { TsCodeFragment } from '#src/renderers/typescript/index.js';
 
 export interface TemplatePathRoot {
   canonicalPath: string;
@@ -27,6 +26,11 @@ const templatePathRootSchema = z.object({
   canonicalPath: z.string(),
   pathRootName: z.string(),
 });
+
+function getPathsRootExportName(generatorName: string): string {
+  const fileExportNames = getPathsFileExportNames(generatorName);
+  return fileExportNames.rootExportName;
+}
 
 export const TEMPLATE_PATHS_METADATA_FILE = '.paths-metadata.json';
 
@@ -111,11 +115,6 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
       }
 
       return { pathRootRelativePath, generatorTemplatePath };
-    }
-
-    function getPathsRootExportName(generatorName: string): string {
-      const fileExportNames = getPathsFileExportNames(generatorName);
-      return fileExportNames.rootExportName;
     }
 
     api.registerHook('afterWrite', () => {

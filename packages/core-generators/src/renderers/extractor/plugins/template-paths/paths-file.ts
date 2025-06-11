@@ -8,17 +8,17 @@ import { z } from 'zod';
 import type { TsCodeFragment } from '#src/renderers/typescript/index.js';
 
 import {
-  renderTsCodeFileTemplate,
-  TsCodeUtils,
-  tsTemplate,
-} from '#src/renderers/typescript/index.js';
-import {
   getGeneratedTemplateConstantName,
   getGeneratedTemplateExportName,
   getGeneratedTemplateInterfaceName,
   getGeneratedTemplateProviderName,
   resolvePackagePathSpecifier,
-} from '#src/renderers/templates/utils/index.js';
+} from '#src/renderers/extractor/utils/index.js';
+import {
+  renderTsCodeFileTemplate,
+  TsCodeUtils,
+  tsTemplate,
+} from '#src/renderers/typescript/index.js';
 
 export const GENERATED_PATHS_FILE_NAME = 'template-paths.ts';
 

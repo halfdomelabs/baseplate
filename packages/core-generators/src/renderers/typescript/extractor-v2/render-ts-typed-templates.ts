@@ -4,9 +4,9 @@ import { quot } from '@baseplate-dev/utils';
 import { camelCase } from 'change-case';
 import { groupBy } from 'es-toolkit';
 
-import type { TemplateExtractorTypedTemplate } from '#src/renderers/templates/plugins/typed-templates-file.js';
+import type { TemplateExtractorTypedTemplate } from '#src/renderers/extractor/plugins/typed-templates-file.js';
 
-import { resolvePackagePathSpecifier } from '#src/renderers/templates/utils/package-path-specifier.js';
+import { resolvePackagePathSpecifier } from '#src/renderers/extractor/utils/package-path-specifier.js';
 
 import type { TsGeneratorTemplateMetadata } from '../templates/types.js';
 
