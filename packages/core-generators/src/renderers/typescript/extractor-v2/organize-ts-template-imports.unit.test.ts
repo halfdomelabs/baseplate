@@ -138,36 +138,33 @@ export function test() {
 
     const projectExportA = createProjectExport({
       name: 'A',
-      outputRelativePath: '/project-root/module1.ts',
+      outputRelativePath: 'module1.ts',
     });
     const projectExportB = createProjectExport({
       name: 'B',
-      outputRelativePath: '/project-root/module1.ts',
+      outputRelativePath: 'module1.ts',
     });
     const projectExportC = createProjectExport({
       name: 'F',
-      outputRelativePath: '/project-root/default-module.ts',
+      outputRelativePath: 'default-module.ts',
       exportedName: 'default',
     });
 
     const projectExportMap = new Map([
       [
-        '/project-root/module1.ts',
+        'module1.ts',
         new Map([
           ['A', projectExportA],
           ['B', projectExportB],
         ]),
       ],
-      [
-        '/project-root/default-module.ts',
-        new Map([['default', projectExportC]]),
-      ],
+      ['default-module.ts', new Map([['default', projectExportC]])],
     ]);
 
     const context = {
       projectExportMap,
       outputDirectory: '/project-root',
-      internalOutputRelativePaths: ['/project-root/module2.ts'],
+      internalOutputRelativePaths: ['module2.ts'],
       resolver: mockResolver,
     };
 

@@ -1,5 +1,3 @@
-import type { TemplateExtractorPluginInstance } from '@baseplate-dev/sync/extractor-v2';
-
 import { toCanonicalPath } from '@baseplate-dev/sync';
 import { createTemplateExtractorPlugin } from '@baseplate-dev/sync/extractor-v2';
 import {
@@ -171,7 +169,7 @@ function getTemplatePathFromPathRootRelativePath(
  * @param outputDirectory - The output directory of the project.
  * @returns The template path roots from longest to shortest.
  */
-export async function discoverTemplatePathRoots(
+async function discoverTemplatePathRoots(
   outputDirectory: string,
 ): Promise<TemplatePathRoot[]> {
   const pathsMetadataFile = path.join(
@@ -195,7 +193,7 @@ export async function discoverTemplatePathRoots(
  * @param templatePathRoots - The template path roots.
  * @returns The template path.
  */
-export function getTemplatePathFromRelativePath(
+function getTemplatePathFromRelativePath(
   outputRelativePath: string,
   templatePathRoots: TemplatePathRoot[],
 ): string {
@@ -211,7 +209,3 @@ export function getTemplatePathFromRelativePath(
     path.posix.relative(templatePathRoot.canonicalPath, canonicalPath),
   );
 }
-
-export type TemplatePathsPluginInstance = TemplateExtractorPluginInstance<
-  typeof templatePathsPlugin
->;

@@ -14,7 +14,7 @@ export const templateFileMetadataBaseSchema = z.object({
    * The name of the generator that created the file.
    */
   generator: z.string().min(1),
-  // TODO[2025-06-10]: Remove once we have finished migration to extractor v2
+  // TODO[2025-06-12]: Remove once we have finished migration to extractor v2
   /**
    * The path of the template that was used to create the file.
    */

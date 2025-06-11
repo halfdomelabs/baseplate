@@ -16,9 +16,9 @@ import { getGeneratedTemplateConstantName } from '../utils/index.js';
 import { templateExtractorBarrelExportPlugin } from './barrel-export.js';
 import { templatePathsPlugin } from './template-paths/template-paths.plugin.js';
 
-export const TYPED_TEMPLATES_FILE_NAME = 'typed-templates.ts';
+const TYPED_TEMPLATES_FILE_NAME = 'typed-templates.ts';
 
-export const TYPED_TEMPLATES_FILE_PATH = posixJoin(
+const TYPED_TEMPLATES_FILE_PATH = posixJoin(
   TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
   TYPED_TEMPLATES_FILE_NAME,
 );

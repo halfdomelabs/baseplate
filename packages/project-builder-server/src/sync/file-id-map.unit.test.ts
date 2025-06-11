@@ -1,4 +1,5 @@
 import { vol } from 'memfs';
+import assert from 'node:assert';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -58,13 +59,12 @@ describe('file-id-map', () => {
       const fileKey = Object.keys(files).find((key) =>
         key.endsWith('test-project/baseplate/file-id-map.json'),
       );
-      expect(fileKey).toBeDefined();
 
-      const fileContent = files[fileKey!];
-      const writtenContent = JSON.parse(fileContent as string) as Record<
-        string,
-        string
-      >;
+      assert.ok(fileKey);
+
+      const fileContent = files[fileKey];
+      assert.ok(fileContent);
+      const writtenContent = JSON.parse(fileContent) as Record<string, string>;
       expect(writtenContent).toEqual({
         file1: 'path/to/file1.ts',
         file2: 'path/to/file2.ts',
