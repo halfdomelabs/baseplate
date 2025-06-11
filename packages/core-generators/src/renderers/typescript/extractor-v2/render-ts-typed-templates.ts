@@ -25,6 +25,7 @@ function renderTsTypedTemplate(
   const exportName = camelCase(metadata.name);
   const createOptions = TsCodeUtils.mergeFragmentsAsObject({
     name: quot(metadata.name),
+    group: metadata.group ? quot(metadata.group) : undefined,
     source: TsCodeUtils.templateWithImports([
       tsImportBuilder().default('path').from('node:path'),
     ])`{

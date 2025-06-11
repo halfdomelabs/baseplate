@@ -33,6 +33,7 @@ const errorLogger = createTsTemplateFile({
 
 const httpErrors = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'utils',
   importMapProviders: {},
   name: 'http-errors',
   projectExports: {
@@ -54,6 +55,7 @@ const httpErrors = createTsTemplateFile({
 
 const zod = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'utils',
   importMapProviders: {},
   name: 'zod',
   projectExports: { handleZodRequestValidationError: {} },
