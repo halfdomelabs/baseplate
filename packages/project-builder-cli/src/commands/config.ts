@@ -1,6 +1,5 @@
 import type { Command } from 'commander';
 
-import { userConfigSchema } from '@baseplate-dev/project-builder-server';
 import { stringifyPrettyStable } from '@baseplate-dev/utils';
 import { ZodError } from 'zod';
 
@@ -41,6 +40,10 @@ export function addConfigCommand(program: Command): void {
       'Set a configuration value e.g. "config set sync.editor vscode"',
     )
     .action(async (path: string, value: string) => {
+      const { userConfigSchema } = await import(
+        '@baseplate-dev/project-builder-server'
+      );
+
       const currentConfig = await getUserConfig();
       const parsedValue =
         value === 'true' ? true : value === 'false' ? false : value;

@@ -1,6 +1,5 @@
 import type { BaseplateUserConfig } from '@baseplate-dev/project-builder-server';
 
-import { userConfigSchema } from '@baseplate-dev/project-builder-server';
 import {
   handleFileNotFoundError,
   readJsonWithSchema,
@@ -21,6 +20,9 @@ function getConfigPath(): string {
  * @returns The user config for the project builder.
  */
 export async function getUserConfig(): Promise<BaseplateUserConfig> {
+  const { userConfigSchema } = await import(
+    '@baseplate-dev/project-builder-server'
+  );
   const configPath = getConfigPath();
   const config = await readJsonWithSchema(configPath, userConfigSchema).catch(
     handleFileNotFoundError,

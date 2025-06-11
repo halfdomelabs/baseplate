@@ -1,7 +1,5 @@
 import type { Command } from 'commander';
 
-import { runTemplateExtractorsForProjectV2 } from '@baseplate-dev/project-builder-server';
-
 import { logger } from '#src/services/logger.js';
 import { createSchemaParserContext } from '#src/services/schema-parser-context.js';
 import { expandPathWithTilde } from '#src/utils/path.js';
@@ -28,6 +26,9 @@ export function addExtractTemplatesCommand(program: Command): void {
         app: string,
         options: { autoGenerateExtractor?: boolean },
       ) => {
+        const { runTemplateExtractorsForProjectV2 } = await import(
+          '@baseplate-dev/project-builder-server'
+        );
         const resolvedDirectory = expandPathWithTilde(directory);
         const context = await createSchemaParserContext(resolvedDirectory);
         await runTemplateExtractorsForProjectV2(

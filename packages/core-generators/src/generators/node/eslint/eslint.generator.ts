@@ -16,6 +16,8 @@ import { NODE_ESLINT_GENERATED } from './generated/index.js';
 import { REACT_ESLINT_RULES } from './react-rules.js';
 import { VITEST_ESLINT_RULES } from './vitest-rules.js';
 
+throw new Error('Not implemented');
+
 const [setupTask, eslintConfigProvider, eslintConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
