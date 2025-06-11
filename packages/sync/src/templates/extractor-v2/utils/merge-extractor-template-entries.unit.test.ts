@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createTestLogger } from '#src/tests/logger.test-utils.js';
 
-import type { ExtractorConfig, TemplateConfig } from '../configs/index.js';
+import type { ExtractorConfig } from '../configs/index.js';
 import type { TemplateFileExtractorMetadataEntry } from '../runner/template-file-extractor.js';
 
 import { TemplateExtractorConfigLookup } from '../configs/template-extractor-config-lookup.js';

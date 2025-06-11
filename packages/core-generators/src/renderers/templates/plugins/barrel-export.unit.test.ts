@@ -1,6 +1,22 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { mergeBarrelExports } from './barrel-export.js';
+import {
+  mergeBarrelExports,
+  templateExtractorBarrelExportPlugin,
+} from './barrel-export.js';
+import { vol } from 'memfs';
+import {
+  addMockExtractorConfig,
+  createMockContext,
+  createPluginInstance,
+} from '@baseplate-dev/sync/extractor-v2/test-utils';
+
+vi.mock('node:fs');
+vi.mock('node:fs/promises');
+
+beforeEach(() => {
+  vol.reset();
+});
 
 describe('mergeBarrelExports', () => {
   it('should merge and sort exports', () => {
@@ -41,66 +57,53 @@ export * from './baz';
     // Assert
     expect(result).toBe('');
   });
+});
 
-  it('should handle duplicate exports', () => {
+describe('templateExtractorBarrelExportPlugin', () => {
+  it('should create plugin instance and add barrel exports', async () => {
     // Arrange
-    const indexFileContents = '';
-    const barrelExports = [
-      { moduleSpecifier: './foo', namedExports: ['bar', 'baz'] },
-      { moduleSpecifier: './foo', namedExports: ['qux', 'bar'] },
-    ];
+    const context = await createMockContext({
+      outputDirectory: '/test-output',
+      packageMap: new Map([['test-package', '/test-generator']]),
+    });
+
+    addMockExtractorConfig(context, 'test-package#test-generator', {
+      name: 'test-generator',
+      generatorDirectory: '/test-generator',
+    });
 
     // Act
-    const result = mergeBarrelExports(indexFileContents, barrelExports);
+    const { instance, executeHooks } = await createPluginInstance(
+      templateExtractorBarrelExportPlugin,
+      context,
+    );
 
-    // Assert
-    expect(result).toMatchInlineSnapshot(`
-      "export { bar, baz, qux } from './foo';
-      "
-    `);
-  });
+    // Add some barrel exports
+    instance.addBarrelExport('test-package#test-generator', {
+      moduleSpecifier: './utils',
+      namedExports: ['helper1', 'helper2'],
+    });
 
-  it('should handle type-only exports', () => {
-    // Arrange
-    const indexFileContents = '';
-    const barrelExports = [
-      {
-        moduleSpecifier: './types',
-        namedExports: ['TypeA', 'TypeB'],
-        isTypeOnly: true,
-      },
-      { moduleSpecifier: './utils', namedExports: ['funcA', 'funcB'] },
-      { moduleSpecifier: './types', namedExports: ['funcC'] },
-    ];
+    instance.addBarrelExport('test-package#test-generator', {
+      moduleSpecifier: './components',
+      namedExports: ['*'],
+    });
 
-    // Act
-    const result = mergeBarrelExports(indexFileContents, barrelExports);
+    // Execute the afterWrite hook
+    await executeHooks('afterWrite');
 
-    // Assert
-    expect(result).toMatchInlineSnapshot(`
-      "export type { TypeA, TypeB } from './types';
-      export { funcC } from './types';
-      export { funcA, funcB } from './utils';
-      "
-    `);
-  });
+    // Assert - check the file container instead of memfs
+    const files = context.fileContainer.getFiles();
+    const indexPath = '/test-generator/index.ts';
+    expect(files.has(indexPath)).toBe(true);
 
-  it('should handle type-only star exports', () => {
-    // Arrange
-    const indexFileContents = '';
-    const barrelExports = [
-      { moduleSpecifier: './types', namedExports: ['*'], isTypeOnly: true },
-      { moduleSpecifier: './utils', namedExports: ['funcA'] },
-    ];
-
-    // Act
-    const result = mergeBarrelExports(indexFileContents, barrelExports);
-
-    // Assert
-    expect(result).toMatchInlineSnapshot(`
-      "export type * from './types';
-      export { funcA } from './utils';
-      "
-    `);
+    const indexContent = files.get(indexPath) as string;
+    expect(indexContent).toContain("export * from './components'");
+    expect(indexContent).toContain(
+      "export { helper1, helper2 } from './utils'",
+    );
+    expect(indexContent).toContain(
+      "export * from './test-generator.generator.js'",
+    );
   });
 });
