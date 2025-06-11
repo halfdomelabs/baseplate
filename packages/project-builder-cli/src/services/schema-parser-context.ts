@@ -14,7 +14,7 @@ export async function createSchemaParserContext(
 ): Promise<SchemaParserContext> {
   // dynamically import to avoid loading the server package unnecessarily
   const { createNodeSchemaParserContext } = await import(
-    '@baseplate-dev/project-builder-server'
+    '@baseplate-dev/project-builder-server/plugins'
   );
   const builtInPlugins = await getDefaultPlugins(logger);
   return createNodeSchemaParserContext(directory, logger, builtInPlugins);

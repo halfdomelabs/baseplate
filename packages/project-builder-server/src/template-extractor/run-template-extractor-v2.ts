@@ -1,17 +1,18 @@
-import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
+import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 import type { RunTemplateFileExtractorsOptions } from '@baseplate-dev/sync/extractor-v2';
 
+import { TsTemplateFileExtractor } from '@baseplate-dev/core-generators/extractor-v2';
 import {
   RawTemplateFileExtractor,
   TextTemplateFileExtractor,
-} from '@baseplate-dev/core-generators';
-import { TsTemplateFileExtractor } from '@baseplate-dev/core-generators/extractor-v2';
+} from '@baseplate-dev/core-generators/renderers';
 import { runTemplateFileExtractors } from '@baseplate-dev/sync/extractor-v2';
 import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { discoverPlugins } from '#src/plugins/plugin-discovery.js';
 import { getPreviousGeneratedFileIdMap } from '#src/sync/file-id-map.js';
 import { readSyncMetadata } from '#src/sync/sync-metadata-service.js';
 
@@ -28,21 +29,19 @@ const TEMPLATE_EXTRACTORS = [
 ];
 
 async function buildGeneratorPackageMap(
-  context: SchemaParserContext,
+  availablePlugins: PluginMetadataWithPaths[],
 ): Promise<Map<string, string>> {
   const generatorPackageMap = new Map<string, string>();
-  for (const plugin of context.pluginStore.availablePlugins) {
+  for (const plugin of availablePlugins) {
     const nearestPackageJsonPath = await findNearestPackageJson({
-      cwd: plugin.metadata.pluginDirectory,
+      cwd: plugin.pluginDirectory,
       stopAtNodeModules: true,
     });
     if (!nearestPackageJsonPath) {
-      throw new Error(
-        `Could not find package.json for ${plugin.metadata.packageName}`,
-      );
+      throw new Error(`Could not find package.json for ${plugin.packageName}`);
     }
     generatorPackageMap.set(
-      plugin.metadata.packageName,
+      plugin.packageName,
       path.dirname(nearestPackageJsonPath),
     );
   }
@@ -63,10 +62,10 @@ async function buildGeneratorPackageMap(
 export async function runTemplateExtractorsForProjectV2(
   directory: string,
   app: string,
-  context: SchemaParserContext,
   logger: Logger,
   options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
+  const availablePlugins = await discoverPlugins(directory, logger);
   const syncMetadata = await readSyncMetadata(directory);
 
   if (
@@ -78,7 +77,7 @@ export async function runTemplateExtractorsForProjectV2(
     );
   }
 
-  const generatorPackageMap = await buildGeneratorPackageMap(context);
+  const generatorPackageMap = await buildGeneratorPackageMap(availablePlugins);
   logger.info(
     `Running template extractors for ${directory}${
       app ? ` for app ${app}` : ''
