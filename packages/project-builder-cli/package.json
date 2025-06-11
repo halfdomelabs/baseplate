@@ -39,6 +39,7 @@
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
+    "project:generate": "pnpm start generate",
     "start": "tsx --tsconfig ./tsconfig.app.json -r dotenv/config -C development ./src/cli.ts",
     "test": "vitest",
     "test:e2e": "playwright test",

@@ -12,7 +12,7 @@ import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
 import { nodeProvider } from '../node/node.generator.js';
 import { typescriptFileProvider } from '../typescript/typescript.generator.js';
-import { NODE_ESLINT_TS_TEMPLATES } from './generated/ts-templates.js';
+import { NODE_ESLINT_GENERATED } from './generated/index.js';
 import { REACT_ESLINT_RULES } from './react-rules.js';
 import { VITEST_ESLINT_RULES } from './vitest-rules.js';
 
@@ -53,6 +53,7 @@ export const eslintGenerator = createGenerator({
   name: 'node/eslint',
   generatorFileUrl: import.meta.url,
   buildTasks: () => ({
+    paths: NODE_ESLINT_GENERATED.paths.task,
     setup: setupTask,
     node: createGeneratorTask({
       dependencies: {
@@ -87,12 +88,11 @@ export const eslintGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        node: nodeProvider,
         eslintConfigValues: eslintConfigValuesProvider,
         typescriptFile: typescriptFileProvider,
+        paths: NODE_ESLINT_GENERATED.paths.provider,
       },
       run({
-        node,
         eslintConfigValues: {
           react,
           eslintIgnore,
@@ -101,6 +101,7 @@ export const eslintGenerator = createGenerator({
           devDependencies,
         },
         typescriptFile,
+        paths,
       }) {
         const defaultProjectFiles = [...tsDefaultProjectFiles];
         if (!disableVitest) {
@@ -108,14 +109,10 @@ export const eslintGenerator = createGenerator({
         }
         return {
           build: async (builder) => {
-            const eslintConfigPath = node.isEsm
-              ? 'eslint.config.js'
-              : 'eslint.config.mjs';
-
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: NODE_ESLINT_TS_TEMPLATES.eslintConfig,
-                destination: eslintConfigPath,
+                template: NODE_ESLINT_GENERATED.templates.eslintConfig,
+                destination: paths.eslintConfig,
                 variables: {
                   TPL_DEFAULT_PROJECT_FILES:
                     TsCodeUtils.mergeFragmentsAsArrayPresorted(
