@@ -44,15 +44,17 @@ export type RawTemplateOutputTemplateMetadata = z.infer<
 /**
  * A template for a raw file with no replacements.
  */
-export interface RawTemplateFile extends TemplateFileBase {
-  fileOptions: TemplateFileOptions;
+export interface RawTemplateFile<
+  TFileOptions extends TemplateFileOptions = TemplateFileOptions,
+> extends TemplateFileBase {
+  fileOptions: TFileOptions;
 }
 
 /**
  * Create a raw template file
  */
-export function createRawTemplateFile(
-  templateFile: RawTemplateFile,
-): RawTemplateFile {
+export function createRawTemplateFile<TFileOptions extends TemplateFileOptions>(
+  templateFile: RawTemplateFile<TFileOptions>,
+): RawTemplateFile<TFileOptions> {
   return templateFile;
 }

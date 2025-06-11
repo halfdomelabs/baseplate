@@ -1,23 +1,20 @@
 import { getGenerationConcurrencyLimit } from '@baseplate-dev/sync';
 import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
 import { camelCase } from 'change-case';
-import { mapValues } from 'es-toolkit';
+import { mapValues, omit } from 'es-toolkit';
 import pLimit from 'p-limit';
 
 import type { TextTemplateFileVariableWithValue } from './types.js';
 
-import { templatePathsPlugin } from '../templates/plugins/template-paths/template-paths.plugin.js';
-import { typedTemplatesFilePlugin } from '../templates/plugins/typed-templates-file.js';
-import { resolvePackagePathSpecifier } from '../templates/utils/package-path-specifier.js';
+import { templatePathsPlugin } from '../extractor/plugins/template-paths/template-paths.plugin.js';
+import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-file.js';
+import { resolvePackagePathSpecifier } from '../extractor/utils/package-path-specifier.js';
 import { TsCodeUtils, tsImportBuilder } from '../typescript/index.js';
 import {
   textTemplateGeneratorTemplateMetadataSchema,
   textTemplateOutputTemplateMetadataSchema,
 } from './types.js';
-import {
-  getTextTemplateDelimiters,
-  getTextTemplateVariableRegExp,
-} from './utils.js';
+import { extractTemplateVariables } from './utils.js';
 
 const limit = pLimit(getGenerationConcurrencyLimit());
 
@@ -29,83 +26,64 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
   extractTemplateMetadataEntries: (files, context) => {
     const templatePathPlugin = context.getPlugin('template-paths');
     return files.map(({ metadata, absolutePath }) => {
-      const pathRootRelativePath =
-        metadata.fileOptions.kind === 'singleton'
-          ? templatePathPlugin.getPathRootRelativePath(absolutePath)
-          : undefined;
+      try {
+        const { pathRootRelativePath, generatorTemplatePath } =
+          templatePathPlugin.resolveTemplatePaths(
+            metadata.fileOptions,
+            absolutePath,
+            metadata.name,
+            metadata.generator,
+          );
 
-      // By default, singleton templates have the path like `feature-root/services/[file].ts`
-      const generatorTemplatePath =
-        metadata.fileOptions.generatorTemplatePath ??
-        (pathRootRelativePath &&
-          templatePathPlugin.getTemplatePathFromPathRootRelativePath(
+        return {
+          generator: metadata.generator,
+          generatorTemplatePath,
+          sourceAbsolutePath: absolutePath,
+          metadata: {
+            name: metadata.name,
+            type: metadata.type,
+            fileOptions: metadata.fileOptions,
             pathRootRelativePath,
-          ));
-
-      if (!generatorTemplatePath) {
+            variables: mapValues(metadata.variables ?? {}, (variable) =>
+              omit(variable, ['value']),
+            ),
+          },
+          extractionContext: {
+            variables: metadata.variables ?? {},
+          },
+        };
+      } catch (error) {
         throw new Error(
-          `Template path is required for ${metadata.name} in ${metadata.generator}`,
+          `Error extracting template metadata for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+          { cause: error },
         );
       }
-
-      return {
-        generator: metadata.generator,
-        generatorTemplatePath,
-        sourceAbsolutePath: absolutePath,
-        metadata: {
-          name: metadata.name,
-          type: metadata.type,
-          fileOptions: metadata.fileOptions,
-          pathRootRelativePath,
-          variables: metadata.variables,
-        },
-      };
     });
   },
   writeTemplateFiles: async (files, _context, api) => {
     await Promise.all(
       files.map((file) =>
         limit(async () => {
-          const contents = await api.readOutputFile(file.sourceAbsolutePath);
-          const { metadata } = file;
-          const { start, end } = getTextTemplateDelimiters(
-            file.sourceAbsolutePath,
-          );
+          try {
+            const contents = await api.readOutputFile(file.sourceAbsolutePath);
 
-          // replace variable values with template string
-          let templateContents = contents;
-
-          // Sort variables by descending length of their values to prevent overlapping replacements
-          const sortedVariables = Object.entries(metadata.variables ?? {}).sort(
-            ([, a], [, b]) => {
-              const aValue = (a as TextTemplateFileVariableWithValue).value;
-              const bValue = (b as TextTemplateFileVariableWithValue).value;
-              return bValue.length - aValue.length;
-            },
-          );
-
-          for (const [key, variableWithValue] of sortedVariables) {
-            // variableWithValue has the 'value' property, we need to remove it for the variable definition
-            const { value } =
-              variableWithValue as TextTemplateFileVariableWithValue;
-            const variableRegex = getTextTemplateVariableRegExp(value);
-            const newTemplateContents = templateContents.replaceAll(
-              variableRegex,
-              `${start}${key}${end}`,
+            const templateContents = extractTemplateVariables(
+              contents,
+              file.extractionContext?.variables ?? {},
+              file.sourceAbsolutePath,
             );
-            if (newTemplateContents === templateContents) {
-              throw new Error(
-                `Variable ${key} with value ${value} not found in template ${file.sourceAbsolutePath}`,
-              );
-            }
-            templateContents = newTemplateContents;
-          }
 
-          api.writeTemplateFile(
-            file.generator,
-            file.generatorTemplatePath,
-            templateContents,
-          );
+            api.writeTemplateFile(
+              file.generator,
+              file.generatorTemplatePath,
+              templateContents,
+            );
+          } catch (error) {
+            throw new Error(
+              `Error writing template file for ${file.sourceAbsolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+              { cause: error },
+            );
+          }
         }),
       ),
     );

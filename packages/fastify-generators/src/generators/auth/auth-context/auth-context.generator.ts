@@ -12,7 +12,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-maps.js';
+import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import {
   appModuleProvider,
   loggerServiceConfigProvider,

@@ -17,11 +17,7 @@ import {
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 import { fastifyProvider } from '../fastify/fastify.generator.js';
-import {
-  createLoggerServiceImports,
-  loggerServiceImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_LOGGER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_LOGGER_SERVICE_GENERATED } from './generated/index.js';
 
 const [
   setupTask,
@@ -51,24 +47,15 @@ export const loggerServiceGenerator = createGenerator({
     fastify: createProviderTask(fastifyProvider, (fastify) => {
       fastify.devOutputFormatter.set('pino-pretty -t');
     }),
-    imports: createGeneratorTask({
-      exports: {
-        loggerServiceImports: loggerServiceImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            loggerServiceImports: createLoggerServiceImports('@/src/services'),
-          },
-        };
-      },
-    }),
+    paths: CORE_LOGGER_SERVICE_GENERATED.paths.task,
+    imports: CORE_LOGGER_SERVICE_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
+        paths: CORE_LOGGER_SERVICE_GENERATED.paths.provider,
         typescriptFile: typescriptFileProvider,
         loggerServiceConfigValues: loggerServiceConfigValuesProvider,
       },
-      run({ typescriptFile, loggerServiceConfigValues: { mixins } }) {
+      run({ typescriptFile, loggerServiceConfigValues: { mixins }, paths }) {
         return {
           build: async (builder) => {
             const loggerOptions: Record<string, TsCodeFragment | string> = {};
@@ -89,14 +76,14 @@ export const loggerServiceGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_LOGGER_SERVICE_TS_TEMPLATES.logger,
+                template: CORE_LOGGER_SERVICE_GENERATED.templates.logger,
                 variables: {
                   TPL_LOGGER_OPTIONS:
                     Object.keys(loggerOptions).length > 0
                       ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
                       : '',
                 },
-                destination: 'src/services/logger.ts',
+                destination: paths.logger,
               }),
             );
           },
@@ -105,5 +92,3 @@ export const loggerServiceGenerator = createGenerator({
     }),
   }),
 });
-
-export { loggerServiceImportsProvider } from './generated/ts-import-maps.js';

@@ -9,7 +9,7 @@ import {
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { errorHandlerServiceConfigProvider } from '../error-handler-service/error-handler-service.generator.js';
+import { errorHandlerServiceConfigProvider } from '../error-handler-service/index.js';
 import {
   axiosImportsProvider,
   createAxiosImports,

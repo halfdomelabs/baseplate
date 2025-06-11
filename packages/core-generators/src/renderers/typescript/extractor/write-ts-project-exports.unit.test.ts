@@ -2,7 +2,7 @@ import type { TemplateFileExtractorFile } from '@baseplate-dev/sync';
 
 import { describe, expect, it } from 'vitest';
 
-import type { TsTemplateFileMetadata } from '../templates/types.js';
+import type { TsTemplateOutputTemplateMetadata } from '../templates/types.js';
 
 import { writeTsProjectExports } from './write-ts-project-exports.js';
 
@@ -18,17 +18,19 @@ const EXPORT_METADATA_COMMON = {
 
 describe('writeTsProjectExports', () => {
   it('should handle empty project exports', () => {
-    const files: TemplateFileExtractorFile<TsTemplateFileMetadata>[] = [
-      {
-        path: '/test/path/file1.ts',
-        metadata: {
-          type: 'ts',
-          name: 'test1',
-          generator: TEST_GENERATOR_NAME,
-          template: 'test1.ts',
+    const files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[] =
+      [
+        {
+          path: '/test/path/file1.ts',
+          metadata: {
+            type: 'ts',
+            name: 'test1',
+            generator: TEST_GENERATOR_NAME,
+            template: 'test1.ts',
+            fileOptions: { kind: 'singleton' },
+          },
         },
-      },
-    ];
+      ];
 
     const result = writeTsProjectExports(files, TEST_GENERATOR_NAME, {
       importMapFilePath: TEST_IMPORT_MAP_PATH,
@@ -40,22 +42,24 @@ describe('writeTsProjectExports', () => {
   });
 
   it('should process project exports correctly', () => {
-    const files: TemplateFileExtractorFile<TsTemplateFileMetadata>[] = [
-      {
-        path: '/test/path/file1.ts',
-        metadata: {
-          type: 'ts',
-          name: 'test1',
-          generator: TEST_GENERATOR_NAME,
-          template: 'test1.ts',
-          projectExports: {
-            TestExport: {},
-            TypeOnlyExport: { isTypeOnly: true },
-            TestDefaultExport: { exportName: 'default' },
+    const files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[] =
+      [
+        {
+          path: '/test/path/file1.ts',
+          metadata: {
+            type: 'ts',
+            name: 'test1',
+            generator: TEST_GENERATOR_NAME,
+            template: 'test1.ts',
+            projectExports: {
+              TestExport: {},
+              TypeOnlyExport: { isTypeOnly: true },
+              TestDefaultExport: { exportName: 'default' },
+            },
+            fileOptions: { kind: 'singleton' },
           },
         },
-      },
-    ];
+      ];
 
     const result = writeTsProjectExports(files, TEST_GENERATOR_NAME, {
       importMapFilePath: TEST_IMPORT_MAP_PATH,
@@ -91,20 +95,22 @@ describe('writeTsProjectExports', () => {
   });
 
   it('should handle local imports for core-generators', () => {
-    const files: TemplateFileExtractorFile<TsTemplateFileMetadata>[] = [
-      {
-        path: '/test/path/file1.ts',
-        metadata: {
-          type: 'ts',
-          name: 'test1',
-          generator: '@baseplate-dev/core-generators#test',
-          template: 'test1.ts',
-          projectExports: {
-            TestExport: { isTypeOnly: false },
+    const files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[] =
+      [
+        {
+          path: '/test/path/file1.ts',
+          metadata: {
+            type: 'ts',
+            name: 'test1',
+            generator: '@baseplate-dev/core-generators#test',
+            template: 'test1.ts',
+            projectExports: {
+              TestExport: { isTypeOnly: false },
+            },
+            fileOptions: { kind: 'singleton' },
           },
         },
-      },
-    ];
+      ];
 
     const result = writeTsProjectExports(
       files,
@@ -122,20 +128,22 @@ describe('writeTsProjectExports', () => {
   });
 
   it('should handle external imports for non-core-generators', () => {
-    const files: TemplateFileExtractorFile<TsTemplateFileMetadata>[] = [
-      {
-        path: '/test/path/file1.ts',
-        metadata: {
-          type: 'ts',
-          name: 'test1',
-          generator: 'external-generator#test',
-          template: 'test1.ts',
-          projectExports: {
-            TestExport: { isTypeOnly: false },
+    const files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[] =
+      [
+        {
+          path: '/test/path/file1.ts',
+          metadata: {
+            type: 'ts',
+            name: 'test1',
+            generator: 'external-generator#test',
+            template: 'test1.ts',
+            projectExports: {
+              TestExport: { isTypeOnly: false },
+            },
+            fileOptions: { kind: 'singleton' },
           },
         },
-      },
-    ];
+      ];
 
     const result = writeTsProjectExports(files, 'external-generator#test', {
       importMapFilePath: TEST_IMPORT_MAP_PATH,
@@ -149,20 +157,22 @@ describe('writeTsProjectExports', () => {
   });
 
   it('should use existing imports provider when specified', () => {
-    const files: TemplateFileExtractorFile<TsTemplateFileMetadata>[] = [
-      {
-        path: '/test/path/file1.ts',
-        metadata: {
-          type: 'ts',
-          name: 'test1',
-          generator: TEST_GENERATOR_NAME,
-          template: 'test1.ts',
-          projectExports: {
-            TestExport: { isTypeOnly: false },
+    const files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[] =
+      [
+        {
+          path: '/test/path/file1.ts',
+          metadata: {
+            type: 'ts',
+            name: 'test1',
+            generator: TEST_GENERATOR_NAME,
+            template: 'test1.ts',
+            projectExports: {
+              TestExport: { isTypeOnly: false },
+            },
+            fileOptions: { kind: 'singleton' },
           },
         },
-      },
-    ];
+      ];
 
     const existingImportsProvider = {
       moduleSpecifier: '@/test/existing-imports',
@@ -195,32 +205,35 @@ describe('writeTsProjectExports', () => {
   });
 
   it('should throw error for duplicate exports', () => {
-    const files: TemplateFileExtractorFile<TsTemplateFileMetadata>[] = [
-      {
-        path: '/test/path/file1.ts',
-        metadata: {
-          type: 'ts',
-          name: 'test1',
-          generator: TEST_GENERATOR_NAME,
-          template: 'test1.ts',
-          projectExports: {
-            TestExport: { isTypeOnly: false },
+    const files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[] =
+      [
+        {
+          path: '/test/path/file1.ts',
+          metadata: {
+            type: 'ts',
+            name: 'test1',
+            generator: TEST_GENERATOR_NAME,
+            template: 'test1.ts',
+            projectExports: {
+              TestExport: { isTypeOnly: false },
+            },
+            fileOptions: { kind: 'singleton' },
           },
         },
-      },
-      {
-        path: '/test/path/file2.ts',
-        metadata: {
-          type: 'ts',
-          name: 'test2',
-          generator: TEST_GENERATOR_NAME,
-          template: 'test2.ts',
-          projectExports: {
-            TestExport: { isTypeOnly: true },
+        {
+          path: '/test/path/file2.ts',
+          metadata: {
+            type: 'ts',
+            name: 'test2',
+            generator: TEST_GENERATOR_NAME,
+            template: 'test2.ts',
+            projectExports: {
+              TestExport: { isTypeOnly: true },
+            },
+            fileOptions: { kind: 'singleton' },
           },
         },
-      },
-    ];
+      ];
 
     expect(() =>
       writeTsProjectExports(files, TEST_GENERATOR_NAME, {
@@ -233,20 +246,22 @@ describe('writeTsProjectExports', () => {
   });
 
   it('should generate correct path mappings', () => {
-    const files: TemplateFileExtractorFile<TsTemplateFileMetadata>[] = [
-      {
-        path: '/test/path/file1.ts',
-        metadata: {
-          type: 'ts',
-          name: 'test1',
-          generator: TEST_GENERATOR_NAME,
-          template: 'test1.ts',
-          projectExports: {
-            TestExport: { isTypeOnly: false },
+    const files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[] =
+      [
+        {
+          path: '/test/path/file1.ts',
+          metadata: {
+            type: 'ts',
+            name: 'test1',
+            generator: TEST_GENERATOR_NAME,
+            template: 'test1.ts',
+            projectExports: {
+              TestExport: { isTypeOnly: false },
+            },
+            fileOptions: { kind: 'singleton' },
           },
         },
-      },
-    ];
+      ];
 
     const result = writeTsProjectExports(files, TEST_GENERATOR_NAME, {
       importMapFilePath: TEST_IMPORT_MAP_PATH,

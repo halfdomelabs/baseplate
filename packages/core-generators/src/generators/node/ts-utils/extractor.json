@@ -1,0 +1,49 @@
+{
+  "name": "node/ts-utils",
+  "templates": {
+    "src/utils/arrays.ts": {
+      "name": "arrays",
+      "type": "ts",
+      "generator": "@baseplate-dev/core-generators#node/ts-utils",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": { "notEmpty": {} },
+      "pathRootRelativePath": "{src-root}/utils/arrays.ts",
+      "variables": {},
+      "importMapProviders": {}
+    },
+    "src/utils/normalize-types.ts": {
+      "name": "normalize-types",
+      "type": "ts",
+      "generator": "@baseplate-dev/core-generators#node/ts-utils",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": { "NormalizeTypes": { "isTypeOnly": true } },
+      "pathRootRelativePath": "{src-root}/utils/normalize-types.ts",
+      "variables": {},
+      "importMapProviders": {}
+    },
+    "src/utils/nulls.ts": {
+      "name": "nulls",
+      "type": "ts",
+      "generator": "@baseplate-dev/core-generators#node/ts-utils",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": { "restrictObjectNulls": {} },
+      "pathRootRelativePath": "{src-root}/utils/nulls.ts",
+      "variables": {},
+      "importMapProviders": {}
+    },
+    "src/utils/string.ts": {
+      "name": "string",
+      "type": "ts",
+      "generator": "@baseplate-dev/core-generators#node/ts-utils",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": { "capitalizeString": {} },
+      "pathRootRelativePath": "{src-root}/utils/string.ts",
+      "variables": {},
+      "importMapProviders": {}
+    }
+  }
+}

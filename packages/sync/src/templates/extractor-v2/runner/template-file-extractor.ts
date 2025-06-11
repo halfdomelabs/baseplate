@@ -34,6 +34,7 @@ export interface TemplateFileExtractorSourceFile<
  */
 export interface TemplateFileExtractorMetadataEntry<
   TGeneratorTemplateMetadata extends TemplateConfig = TemplateConfig,
+  TExtractionContext = unknown,
 > {
   /**
    * The name of the generator.
@@ -44,13 +45,18 @@ export interface TemplateFileExtractorMetadataEntry<
    */
   generatorTemplatePath: string;
   /**
-   * Absolute path of the source file.
+   * The absolute path of the source file.
    */
   sourceAbsolutePath: string;
   /**
    * The metadata for the file.
    */
   metadata: TGeneratorTemplateMetadata;
+  /**
+   * Temporary extraction context data needed for writeTemplateFiles.
+   * This data is not persisted to the extractor.json file.
+   */
+  extractionContext?: TExtractionContext;
 }
 
 /**
@@ -69,6 +75,7 @@ export interface TemplateFileExtractor<
   TExtractorConfig extends z.ZodSchema = z.ZodUnknown,
   TPluginDependencies extends
     TemplateExtractorPluginDependencies = TemplateExtractorPluginDependencies,
+  TExtractionContext = unknown,
 > {
   /**
    * The name of the extractor.
@@ -96,33 +103,40 @@ export interface TemplateFileExtractor<
    *
    * @param files - The files to extract metadata from.
    * @param context - The context for the extractor.
+   *
+   * @returns The metadata entries for the given files.
    */
   extractTemplateMetadataEntries(
     files: TemplateFileExtractorSourceFile<z.infer<TOutputTemplateMetadata>>[],
     context: TemplateExtractorContext<TPluginDependencies>,
+    api: TemplateExtractorApi,
   ):
+    | TemplateFileExtractorMetadataEntry<
+        z.infer<TGeneratorTemplateMetadata>,
+        TExtractionContext
+      >[]
     | Promise<
         TemplateFileExtractorMetadataEntry<
-          z.infer<TGeneratorTemplateMetadata>
+          z.infer<TGeneratorTemplateMetadata>,
+          TExtractionContext
         >[]
-      >
-    | TemplateFileExtractorMetadataEntry<z.infer<TGeneratorTemplateMetadata>>[];
+      >;
 
   /**
-   * Writes the files in the metadata entries to the generator's templates directory converting
-   * any written templates to their templatized form.
+   * Writes the template files to the generator's templates directory.
    *
-   * @param metadataEntries - The metadata entries to write.
+   * @param files - The metadata entries for the files to write.
    * @param context - The context for the extractor.
-   * @param api - The API for the extractor.
+   * @param api - The API for reading and writing files.
    */
   writeTemplateFiles(
-    metadataEntries: TemplateFileExtractorMetadataEntry<
-      z.infer<TGeneratorTemplateMetadata>
+    files: TemplateFileExtractorMetadataEntry<
+      z.infer<TGeneratorTemplateMetadata>,
+      TExtractionContext
     >[],
     context: TemplateExtractorContext<TPluginDependencies>,
     api: TemplateExtractorApi,
-  ): Promise<void>;
+  ): Promise<void> | void;
 
   /**
    * Writes the files in the metadata entries to the generator's generated directory creating
@@ -154,18 +168,21 @@ export function createTemplateFileExtractor<
   TExtractorConfig extends z.ZodSchema = z.ZodUnknown,
   TPluginDependencies extends
     TemplateExtractorPluginDependencies = TemplateExtractorPluginDependencies,
+  TExtractionContext = unknown,
 >(
   input: TemplateFileExtractor<
     TGeneratorTemplateMetadata,
     TOutputTemplateMetadata,
     TExtractorConfig,
-    TPluginDependencies
+    TPluginDependencies,
+    TExtractionContext
   >,
 ): TemplateFileExtractor<
   TGeneratorTemplateMetadata,
   TOutputTemplateMetadata,
   TExtractorConfig,
-  TPluginDependencies
+  TPluginDependencies,
+  TExtractionContext
 > {
   return input;
 }

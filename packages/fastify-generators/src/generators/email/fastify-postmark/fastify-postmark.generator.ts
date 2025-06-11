@@ -18,7 +18,7 @@ import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import {
   configServiceImportsProvider,
   configServiceProvider,
-} from '#src/generators/core/config-service/config-service.generator.js';
+} from '#src/generators/core/config-service/index.js';
 
 import { EMAIL_FASTIFY_POSTMARK_TS_TEMPLATES } from './generated/ts-templates.js';
 

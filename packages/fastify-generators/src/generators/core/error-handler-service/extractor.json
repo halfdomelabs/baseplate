@@ -1,0 +1,67 @@
+{
+  "name": "core/error-handler-service",
+  "templates": {
+    "src/plugins/error-handler.ts": {
+      "name": "error-handler-plugin",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/plugins/error-handler.ts",
+      "variables": {},
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/services/error-logger.ts": {
+      "name": "error-logger",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": { "logError": {} },
+      "pathRootRelativePath": "{src-root}/services/error-logger.ts",
+      "variables": { "TPL_CONTEXT_ACTIONS": {}, "TPL_LOGGER_ACTIONS": {} },
+      "importMapProviders": {
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/utils/http-errors.ts": {
+      "name": "http-errors",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "utils",
+      "projectExports": {
+        "BadRequestError": {},
+        "ForbiddenError": {},
+        "HttpError": {},
+        "InternalServerError": {},
+        "NotFoundError": {},
+        "UnauthorizedError": {}
+      },
+      "pathRootRelativePath": "{src-root}/utils/http-errors.ts",
+      "variables": {},
+      "importMapProviders": {}
+    },
+    "src/utils/zod.ts": {
+      "name": "zod",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "utils",
+      "projectExports": { "handleZodRequestValidationError": {} },
+      "pathRootRelativePath": "{src-root}/utils/zod.ts",
+      "variables": {},
+      "importMapProviders": {}
+    }
+  }
+}

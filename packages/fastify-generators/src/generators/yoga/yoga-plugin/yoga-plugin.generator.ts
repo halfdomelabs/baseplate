@@ -29,11 +29,11 @@ import {
   authContextImportsProvider,
   userSessionServiceImportsProvider,
 } from '#src/generators/auth/index.js';
-import { configServiceImportsProvider } from '#src/generators/core/config-service/config-service.generator.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/error-handler-service.generator.js';
+import { configServiceImportsProvider } from '#src/generators/core/config-service/index.js';
+import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/fastify-redis.generator.js';
 import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/fastify-server.generator.js';
-import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/logger-service.generator.js';
+import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/index.js';
 import { requestServiceContextImportsProvider } from '#src/generators/core/request-service-context/request-service-context.generator.js';
 
 import { YOGA_YOGA_PLUGIN_TS_TEMPLATES } from './generated/ts-templates.js';

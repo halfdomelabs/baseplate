@@ -18,7 +18,7 @@ interface RenderRawTemplateFileActionInputBase<
 }
 
 type RenderRawTemplateFileActionInput<TTemplateFile extends RawTemplateFile> =
-  RenderRawTemplateFileActionInputBase<RawTemplateFile> &
+  RenderRawTemplateFileActionInputBase<TTemplateFile> &
     (TTemplateFile['fileOptions']['kind'] extends 'singleton'
       ? { id?: undefined }
       : { id: string });

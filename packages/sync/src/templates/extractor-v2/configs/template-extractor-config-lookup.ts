@@ -5,12 +5,13 @@ import { globby } from 'globby';
 import fsAdapter from 'node:fs';
 import path from 'node:path/posix';
 
-import type { ExtractorConfig } from './index.js';
+import type {
+  ExtractorConfig,
+  TemplateConfig,
+} from './extractor-config.schema.js';
 
-import {
-  extractorConfigSchema,
-  extractorProvidersConfigSchema,
-} from './index.js';
+import { extractorConfigSchema } from './extractor-config.schema.js';
+import { extractorProvidersConfigSchema } from './providers-config.schema.js';
 
 export interface TemplateExtractorGeneratorEntry {
   config: ExtractorConfig;
@@ -29,6 +30,13 @@ export interface TemplateExtractorProviderEntry<
   packagePath: string;
 }
 
+export interface TemplateExtractorTemplateEntry<
+  TConfig = Record<string, unknown>,
+> {
+  config: TConfig;
+  path: string;
+}
+
 /**
  * Config lookup service for finding and caching extractor.json and providers.json files
  */
@@ -44,7 +52,10 @@ export class TemplateExtractorConfigLookup {
   private indexedPackages = new Set<string>();
   private initialized = false;
 
-  constructor(private readonly packageMap: Map<string, string>) {}
+  constructor(
+    private readonly packageMap: Map<string, string>,
+    private readonly fileIdMap: Map<string, string>,
+  ) {}
 
   private checkInitialized(): void {
     if (!this.initialized) {
@@ -99,10 +110,6 @@ export class TemplateExtractorConfigLookup {
   }
 
   private async indexPackage(packageName: string): Promise<void> {
-    if (this.indexedPackages.has(packageName)) {
-      return;
-    }
-
     const packagePath = this.packageMap.get(packageName);
     if (!packagePath) {
       throw new Error(
@@ -191,7 +198,7 @@ export class TemplateExtractorConfigLookup {
     generatorName: string,
     generatorTemplateMetadataSchema: T,
     templateType: z.infer<T>['type'],
-  ): { path: string; config: z.infer<T> }[] {
+  ): TemplateExtractorTemplateEntry<z.infer<T>>[] {
     const config = this.getExtractorConfigOrThrow(generatorName);
     const { templates } = config.config;
     return Object.entries(templates)
@@ -200,6 +207,58 @@ export class TemplateExtractorConfigLookup {
         path,
         config: generatorTemplateMetadataSchema.parse(template) as z.infer<T>,
       }));
+  }
+
+  getGeneratorConfigsForExtractorType<
+    TTemplateMetadata extends z.ZodTypeAny,
+    TGeneratorConfig extends z.ZodTypeAny = z.ZodNever,
+  >(
+    templateType: z.infer<TTemplateMetadata>['type'],
+    templateMetadataSchema: TTemplateMetadata,
+    generatorConfigSchema?: TGeneratorConfig,
+  ): {
+    generatorName: string;
+    generatorDirectory: string;
+    packageName: string;
+    packagePath: string;
+    templates: Record<string, z.infer<TTemplateMetadata>>;
+    config: z.infer<TGeneratorConfig>;
+  }[] {
+    return [...this.extractorConfigCache.entries()].map(
+      ([generatorName, config]) => {
+        const generatorConfig = generatorConfigSchema
+          ? (generatorConfigSchema.parse(
+              config.config,
+            ) as z.infer<TGeneratorConfig>)
+          : undefined;
+        const templates = Object.fromEntries(
+          Object.entries(config.config.templates)
+            .filter(([, template]) => template.type === templateType)
+            .map(([path, template]) => {
+              const metadata = templateMetadataSchema.parse(
+                template,
+              ) as z.infer<TTemplateMetadata>;
+              return [path, metadata];
+            }),
+        );
+        return {
+          generatorName,
+          generatorDirectory: config.generatorDirectory,
+          packageName: config.packageName,
+          packagePath: config.packagePath,
+          templates,
+          config: generatorConfig,
+        };
+      },
+    );
+  }
+
+  getOutputRelativePathForTemplate(
+    generatorName: string,
+    templateName: string,
+  ): string | undefined {
+    const fileId = `${generatorName}:${templateName}`;
+    return this.fileIdMap.get(fileId);
   }
 
   /**
@@ -258,5 +317,36 @@ export class TemplateExtractorConfigLookup {
       packageName: existingEntry.packageName,
       packagePath: existingEntry.packagePath,
     });
+  }
+
+  /**
+   * Update the template config for a generator
+   * @param generatorName - The name of the generator
+   * @param config - The template config to update
+   */
+  updateExtractorTemplateConfig(
+    generatorName: string,
+    config: TemplateConfig,
+  ): void {
+    this.checkInitialized();
+
+    const existingEntry = this.extractorConfigCache.get(generatorName);
+    if (!existingEntry) {
+      throw new Error(`Generator ${generatorName} not found`);
+    }
+
+    const { templates } = existingEntry.config;
+
+    const templateKey = Object.keys(templates).find(
+      (key) => templates[key].name === config.name,
+    );
+
+    if (!templateKey) {
+      throw new Error(
+        `Template ${config.name} not found in generator ${generatorName}`,
+      );
+    }
+
+    templates[templateKey] = config;
   }
 }

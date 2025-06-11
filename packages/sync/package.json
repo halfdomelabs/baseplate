@@ -23,6 +23,10 @@
     "./extractor-v2": {
       "types": "./dist/templates/extractor-v2/index.d.ts",
       "import": "./dist/templates/extractor-v2/index.js"
+    },
+    "./extractor-v2/test-utils": {
+      "types": "./dist/templates/extractor-v2/test-utils/index.d.ts",
+      "import": "./dist/templates/extractor-v2/test-utils/index.js"
     }
   },
   "files": [

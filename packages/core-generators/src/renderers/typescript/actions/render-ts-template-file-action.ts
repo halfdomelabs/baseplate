@@ -10,6 +10,7 @@ import {
   readTemplateFileSource,
 } from '@baseplate-dev/sync';
 import { differenceSet } from '@baseplate-dev/utils';
+import path from 'node:path';
 
 import type { TsPositionedHoistedFragment } from '../fragments/types.js';
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
@@ -17,8 +18,8 @@ import type {
   InferImportMapProvidersFromProviderTypeMap,
   InferTsTemplateVariablesFromMap,
   TsTemplateFile,
-  TsTemplateFileMetadata,
-  TsTemplateVariable,
+  TsTemplateFileVariable,
+  TsTemplateOutputTemplateMetadata,
 } from '../templates/types.js';
 
 import { renderTsCodeFileTemplate } from '../renderers/file.js';
@@ -92,7 +93,7 @@ export function renderTsTemplateFileAction<
       // make sure variables and template variables match keys
       const templateVariables = template.variables as Record<
         string,
-        TsTemplateVariable
+        TsTemplateFileVariable
       >;
       const templateKeySet = new Set(Object.keys(templateVariables));
       const providedKeySet = new Set(Object.keys(variableValues));
@@ -109,11 +110,14 @@ export function renderTsTemplateFileAction<
         );
       }
 
-      const templateMetadata: TsTemplateFileMetadata | undefined = {
+      const templateMetadata: TsTemplateOutputTemplateMetadata | undefined = {
         name: template.name,
         template:
           'path' in template.source
-            ? template.source.path
+            ? // TODO[2025-06-11]: Remove this once we've migrated all TS templates.
+              path.isAbsolute(template.source.path)
+              ? ''
+              : template.source.path
             : 'content-only-template',
         generator: generatorInfo.name,
         group: template.group,
@@ -122,14 +126,24 @@ export function renderTsTemplateFileAction<
           Object.keys(template.projectExports ?? {}).length > 0
             ? template.projectExports
             : undefined,
+        // TODO[2025-06-11]: Remove casting once we've migrated all TS templates.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        fileOptions: template.fileOptions!,
       };
+
+      if (template.fileOptions?.kind === 'instance' && !id) {
+        throw new Error('Instance template must have an id');
+      }
+
+      const fileId = id ?? template.name;
 
       const shouldIncludeMetadata =
         builder.metadataOptions.includeTemplateMetadata &&
         builder.metadataOptions.shouldGenerateMetadata({
-          fileId: id ?? template.name,
+          fileId,
           filePath: normalizePathToProjectPath(destination),
           generatorName: generatorInfo.name,
+          // TODO[2025-06-11]: Turn this into a file options === 'kind'
           isInstance: !!id,
         });
 

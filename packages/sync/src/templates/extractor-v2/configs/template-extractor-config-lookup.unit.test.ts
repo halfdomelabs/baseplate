@@ -14,6 +14,10 @@ describe('TemplateExtractorConfigLookup', () => {
     ['@test/package1', '/packages/package1'],
     ['@test/package2', '/packages/package2'],
   ]);
+  const mockFileIdMap = new Map([
+    ['@test/package1#existing-extractor:src/file.ts', '123'],
+    ['@test/package1#existing-extractor:src/file2.ts', '456'],
+  ]);
 
   beforeEach(() => {
     vol.reset();
@@ -31,7 +35,10 @@ describe('TemplateExtractorConfigLookup', () => {
         JSON.stringify(extractorConfig),
     });
 
-    const lookup = new TemplateExtractorConfigLookup(mockPackageMap);
+    const lookup = new TemplateExtractorConfigLookup(
+      mockPackageMap,
+      mockFileIdMap,
+    );
     await lookup.initialize();
 
     // Act
@@ -62,7 +69,10 @@ describe('TemplateExtractorConfigLookup', () => {
         JSON.stringify(providerConfig),
     });
 
-    const lookup = new TemplateExtractorConfigLookup(mockPackageMap);
+    const lookup = new TemplateExtractorConfigLookup(
+      mockPackageMap,
+      mockFileIdMap,
+    );
     await lookup.initialize();
 
     // Act
@@ -99,7 +109,10 @@ describe('TemplateExtractorConfigLookup', () => {
         JSON.stringify(providerConfig),
     });
 
-    const lookup = new TemplateExtractorConfigLookup(mockPackageMap);
+    const lookup = new TemplateExtractorConfigLookup(
+      mockPackageMap,
+      mockFileIdMap,
+    );
     await lookup.initialize();
 
     // Act
@@ -118,7 +131,10 @@ describe('TemplateExtractorConfigLookup', () => {
 
   it('should throw error for invalid provider name format', async () => {
     // Arrange
-    const lookup = new TemplateExtractorConfigLookup(mockPackageMap);
+    const lookup = new TemplateExtractorConfigLookup(
+      mockPackageMap,
+      mockFileIdMap,
+    );
     await lookup.initialize();
 
     // Act & Assert
@@ -129,7 +145,10 @@ describe('TemplateExtractorConfigLookup', () => {
 
   it('should throw error when accessing configs before initialization', () => {
     // Arrange
-    const lookup = new TemplateExtractorConfigLookup(mockPackageMap);
+    const lookup = new TemplateExtractorConfigLookup(
+      mockPackageMap,
+      mockFileIdMap,
+    );
 
     // Act & Assert
     expect(() => lookup.getExtractorConfig('test')).toThrow(
@@ -148,7 +167,10 @@ describe('TemplateExtractorConfigLookup', () => {
 
   it('should only initialize once', async () => {
     // Arrange
-    const lookup = new TemplateExtractorConfigLookup(mockPackageMap);
+    const lookup = new TemplateExtractorConfigLookup(
+      mockPackageMap,
+      mockFileIdMap,
+    );
     await lookup.initialize();
 
     // Act & Assert
@@ -168,7 +190,10 @@ describe('TemplateExtractorConfigLookup', () => {
         ),
       });
 
-      const lookup = new TemplateExtractorConfigLookup(mockPackageMap);
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
       await lookup.initialize();
 
       // Verify the original config exists
@@ -237,7 +262,10 @@ describe('TemplateExtractorConfigLookup', () => {
           JSON.stringify(originalConfig),
       });
 
-      const lookup = new TemplateExtractorConfigLookup(mockPackageMap);
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
       await lookup.initialize();
 
       // Verify original config exists
@@ -286,7 +314,10 @@ describe('TemplateExtractorConfigLookup', () => {
 
     it('should throw error if not initialized', () => {
       // Arrange
-      const lookup = new TemplateExtractorConfigLookup(mockPackageMap);
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
 
       const config: ExtractorConfig = {
         name: 'test-extractor',
@@ -317,7 +348,10 @@ describe('TemplateExtractorConfigLookup', () => {
         }),
       });
 
-      const lookup = new TemplateExtractorConfigLookup(mockPackageMap);
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
       await lookup.initialize();
 
       const configA: ExtractorConfig = {
@@ -374,7 +408,10 @@ describe('TemplateExtractorConfigLookup', () => {
         ),
       });
 
-      const lookup = new TemplateExtractorConfigLookup(mockPackageMap);
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
       await lookup.initialize();
 
       const config: ExtractorConfig = {
@@ -389,6 +426,165 @@ describe('TemplateExtractorConfigLookup', () => {
       }).toThrow(
         'Cannot update extractor config for @test/package1#non-existent: generator not found in cache. Please ensure the generator exists before updating.',
       );
+    });
+  });
+
+  describe('updateExtractorTemplateConfig', () => {
+    it('should update existing template config', async () => {
+      // Arrange
+      const originalConfig = {
+        name: 'test-extractor',
+        templates: {
+          'test-template': {
+            name: 'test-template',
+            type: 'ts',
+            schema: {
+              type: 'object',
+              properties: {
+                oldProp: { type: 'string' },
+              },
+            },
+          },
+        },
+        extractors: {},
+      };
+
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(originalConfig),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const updatedTemplate = {
+        name: 'test-template',
+        type: 'ts',
+        schema: {
+          type: 'object',
+          properties: {
+            newProp: { type: 'number' },
+          },
+        },
+      };
+
+      // Act
+      lookup.updateExtractorTemplateConfig(
+        '@test/package1#test-extractor',
+        updatedTemplate,
+      );
+
+      // Assert
+      const config = lookup.getExtractorConfig('@test/package1#test-extractor');
+      expect(config?.config.templates['test-template']).toEqual(
+        updatedTemplate,
+      );
+    });
+
+    it('should throw error if template not found', async () => {
+      // Arrange
+      const config = {
+        name: 'test-extractor',
+        templates: {
+          'existing-template': {
+            name: 'existing-template',
+            type: 'ts',
+            schema: { type: 'object' },
+          },
+        },
+        extractors: {},
+      };
+
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(config),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const nonExistentTemplate = {
+        name: 'non-existent-template',
+        type: 'ts',
+        schema: { type: 'object' },
+      };
+
+      // Act & Assert
+      expect(() => {
+        lookup.updateExtractorTemplateConfig(
+          '@test/package1#test-extractor',
+          nonExistentTemplate,
+        );
+      }).toThrow(
+        'Template non-existent-template not found in generator @test/package1#test-extractor',
+      );
+    });
+
+    it('should throw error if generator not found', async () => {
+      // Arrange
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const template = {
+        name: 'test-template',
+        type: 'ts',
+        schema: { type: 'object' },
+      };
+
+      // Act & Assert
+      expect(() => {
+        lookup.updateExtractorTemplateConfig(
+          '@test/package1#non-existent',
+          template,
+        );
+      }).toThrow('Generator @test/package1#non-existent not found');
+    });
+  });
+
+  describe('getOutputRelativePathForTemplate', () => {
+    it('should return relative path for existing template', async () => {
+      // Arrange
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      // Act
+      const path = lookup.getOutputRelativePathForTemplate(
+        '@test/package1#existing-extractor',
+        'src/file.ts',
+      );
+
+      // Assert
+      expect(path).toBe('123');
+    });
+
+    it('should return undefined for non-existent template', async () => {
+      // Arrange
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      // Act
+      const path = lookup.getOutputRelativePathForTemplate(
+        '@test/package1#existing-extractor',
+        'non-existent.ts',
+      );
+
+      // Assert
+      expect(path).toBeUndefined();
     });
   });
 });

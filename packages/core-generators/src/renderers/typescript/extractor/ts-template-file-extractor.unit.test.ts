@@ -76,6 +76,7 @@ const removedVar = 1;
           type: TS_TEMPLATE_TYPE,
           generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
           template: templatePath, // Path relative to templates dir
+          fileOptions: { kind: 'singleton' },
         },
       },
       {
@@ -86,6 +87,7 @@ const removedVar = 1;
           generator: TemplateFileExtractorTestUtils.TEST_GENERATOR_NAME,
           template: templatePath,
           projectExportsOnly: true,
+          fileOptions: { kind: 'singleton' },
         },
       },
     ]);
@@ -173,6 +175,7 @@ const removedVar = 1;
             TestComponentProps: { isTypeOnly: true },
             TestDefaultExport: { exportName: 'default' },
           },
+          fileOptions: { kind: 'singleton' },
         },
       },
     ]);
@@ -324,6 +327,7 @@ export function SecondUtil() {
           projectExports: {
             FirstComponent: { isTypeOnly: false },
           },
+          fileOptions: { kind: 'singleton' },
         },
       },
       {
@@ -336,6 +340,7 @@ export function SecondUtil() {
           projectExports: {
             FirstUtil: { isTypeOnly: false },
           },
+          fileOptions: { kind: 'singleton' },
         },
       },
       {
@@ -348,6 +353,7 @@ export function SecondUtil() {
           projectExports: {
             SecondComponent: { isTypeOnly: false },
           },
+          fileOptions: { kind: 'singleton' },
         },
       },
       {
@@ -360,6 +366,7 @@ export function SecondUtil() {
           projectExports: {
             SecondUtil: { isTypeOnly: false },
           },
+          fileOptions: { kind: 'singleton' },
         },
       },
     ]);
@@ -522,6 +529,7 @@ export function GroupedUtil() {
             GroupedComponent: { isTypeOnly: false },
           },
           exportGroup: 'components',
+          fileOptions: { kind: 'singleton' },
         },
       },
       {
@@ -535,6 +543,7 @@ export function GroupedUtil() {
             GroupedUtil: { isTypeOnly: false },
           },
           exportGroup: 'utils',
+          fileOptions: { kind: 'singleton' },
         },
       },
     ]);
@@ -672,6 +681,7 @@ export function GroupedUtil() {
             GroupedComponent: { isTypeOnly: false },
           },
           exportGroup: 'components',
+          fileOptions: { kind: 'singleton' },
         },
       },
       {
@@ -685,6 +695,7 @@ export function GroupedUtil() {
             GroupedUtil: { isTypeOnly: false },
           },
           exportGroup: 'utils',
+          fileOptions: { kind: 'singleton' },
         },
       },
     ]);

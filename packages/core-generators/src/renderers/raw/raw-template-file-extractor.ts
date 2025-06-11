@@ -3,9 +3,9 @@ import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
 import { camelCase } from 'change-case';
 import pLimit from 'p-limit';
 
-import { templatePathsPlugin } from '../templates/plugins/template-paths/template-paths.plugin.js';
-import { typedTemplatesFilePlugin } from '../templates/plugins/typed-templates-file.js';
-import { resolvePackagePathSpecifier } from '../templates/utils/package-path-specifier.js';
+import { templatePathsPlugin } from '../extractor/plugins/template-paths/template-paths.plugin.js';
+import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-file.js';
+import { resolvePackagePathSpecifier } from '../extractor/utils/package-path-specifier.js';
 import { TsCodeUtils, tsImportBuilder } from '../typescript/index.js';
 import {
   rawTemplateGeneratorTemplateMetadataSchema,
@@ -22,48 +22,51 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
   extractTemplateMetadataEntries: (files, context) => {
     const templatePathPlugin = context.getPlugin('template-paths');
     return files.map(({ metadata, absolutePath }) => {
-      const pathRootRelativePath =
-        metadata.fileOptions.kind === 'singleton'
-          ? templatePathPlugin.getPathRootRelativePath(absolutePath)
-          : undefined;
+      try {
+        const { pathRootRelativePath, generatorTemplatePath } =
+          templatePathPlugin.resolveTemplatePaths(
+            metadata.fileOptions,
+            absolutePath,
+            metadata.name,
+            metadata.generator,
+          );
 
-      // By default, singleton templates have the path like `feature-root/services/[file].ts`
-      const generatorTemplatePath =
-        metadata.fileOptions.generatorTemplatePath ??
-        (pathRootRelativePath &&
-          templatePathPlugin.getTemplatePathFromPathRootRelativePath(
+        return {
+          generator: metadata.generator,
+          generatorTemplatePath,
+          sourceAbsolutePath: absolutePath,
+          metadata: {
+            name: metadata.name,
+            type: metadata.type,
+            fileOptions: metadata.fileOptions,
             pathRootRelativePath,
-          ));
-
-      if (!generatorTemplatePath) {
+          },
+        };
+      } catch (error) {
         throw new Error(
-          `Template path is required for ${metadata.name} in ${metadata.generator}`,
+          `Error extracting template metadata for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+          { cause: error },
         );
       }
-
-      return {
-        generator: metadata.generator,
-        generatorTemplatePath,
-        sourceAbsolutePath: absolutePath,
-        metadata: {
-          name: metadata.name,
-          type: metadata.type,
-          fileOptions: metadata.fileOptions,
-          pathRootRelativePath,
-        },
-      };
     });
   },
-  writeTemplateFiles: async (files, context, api) => {
+  writeTemplateFiles: async (files, _context, api) => {
     await Promise.all(
       files.map((file) =>
         limit(async () => {
-          const contents = await api.readOutputFile(file.sourceAbsolutePath);
-          api.writeTemplateFile(
-            file.generator,
-            file.generatorTemplatePath,
-            contents,
-          );
+          try {
+            const contents = await api.readOutputFile(file.sourceAbsolutePath);
+            api.writeTemplateFile(
+              file.generator,
+              file.generatorTemplatePath,
+              contents,
+            );
+          } catch (error) {
+            throw new Error(
+              `Error writing template file for ${file.sourceAbsolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+              { cause: error },
+            );
+          }
         }),
       ),
     );

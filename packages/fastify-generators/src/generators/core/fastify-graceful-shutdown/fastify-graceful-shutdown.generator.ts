@@ -5,9 +5,9 @@ import {
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { errorHandlerServiceImportsProvider } from '../error-handler-service/generated/ts-import-maps.js';
+import { errorHandlerServiceImportsProvider } from '../error-handler-service/generated/ts-import-providers.js';
 import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
-import { loggerServiceImportsProvider } from '../logger-service/logger-service.generator.js';
+import { loggerServiceImportsProvider } from '../logger-service/index.js';
 import { CORE_FASTIFY_GRACEFUL_SHUTDOWN_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({

@@ -14,7 +14,7 @@ import {
 import { z } from 'zod';
 
 import { authRolesImportsProvider } from '#src/generators/auth/index.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/error-handler-service.generator.js';
+import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 
 import {
   pothosConfigProvider,

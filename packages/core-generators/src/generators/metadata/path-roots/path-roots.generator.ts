@@ -6,10 +6,10 @@ import {
 import { stringifyPrettyCompact } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import type { TemplatePathRoot } from '#src/renderers/templates/plugins/template-paths/template-paths.plugin.js';
+import type { TemplatePathRoot } from '#src/renderers/extractor/plugins/template-paths/template-paths.plugin.js';
 
 import { projectScope } from '#src/providers/scopes.js';
-import { TEMPLATE_PATHS_METADATA_FILE } from '#src/renderers/templates/plugins/template-paths/template-paths.plugin.js';
+import { TEMPLATE_PATHS_METADATA_FILE } from '#src/renderers/extractor/plugins/template-paths/template-paths.plugin.js';
 
 const descriptorSchema = z.object({});
 

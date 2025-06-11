@@ -1,0 +1,16 @@
+{
+  "name": "core/config-service",
+  "templates": {
+    "src/services/config.ts": {
+      "name": "config",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/config-service",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": { "config": {} },
+      "pathRootRelativePath": "{src-root}/services/config.ts",
+      "variables": { "TPL_CONFIG_SCHEMA": {} },
+      "importMapProviders": {}
+    }
+  }
+}
