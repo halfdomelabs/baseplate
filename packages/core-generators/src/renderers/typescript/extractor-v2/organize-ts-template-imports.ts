@@ -188,10 +188,10 @@ export async function organizeTsTemplateImports(
         );
       }
       // look up the corresponding import in the project exports
-      const pathExports = projectExportMap.get(resolvedPath);
+      const pathExports = projectExportMap.get(relativeOutputPath);
       if (!pathExports) {
         throw new Error(
-          `Import ${resolvedPath} in ${filePath} is not found in the project exports.`,
+          `Import ${relativeOutputPath} in ${filePath} is not found in the project exports.`,
         );
       }
       const importDeclarations: TsImportDeclaration[] = [];

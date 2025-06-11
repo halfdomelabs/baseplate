@@ -4,6 +4,7 @@ import { createTsTemplateFile } from '#src/renderers/typescript/templates/types.
 
 const arrays = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
   name: 'arrays',
   projectExports: { notEmpty: {} },
   source: {
@@ -11,8 +12,10 @@ const arrays = createTsTemplateFile({
   },
   variables: {},
 });
+
 const normalizeTypes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
   name: 'normalize-types',
   projectExports: { NormalizeTypes: { isTypeOnly: true } },
   source: {
@@ -23,8 +26,10 @@ const normalizeTypes = createTsTemplateFile({
   },
   variables: {},
 });
+
 const nulls = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
   name: 'nulls',
   projectExports: { restrictObjectNulls: {} },
   source: {
@@ -32,8 +37,10 @@ const nulls = createTsTemplateFile({
   },
   variables: {},
 });
+
 const string = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
   name: 'string',
   projectExports: { capitalizeString: {} },
   source: {

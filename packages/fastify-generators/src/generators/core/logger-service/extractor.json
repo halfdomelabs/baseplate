@@ -5,12 +5,12 @@
       "name": "logger",
       "type": "ts",
       "generator": "@baseplate-dev/fastify-generators#core/logger-service",
-      "template": "logger.ts",
+      "template": "",
       "fileOptions": { "kind": "singleton" },
       "projectExports": { "logger": {} },
       "pathRootRelativePath": "{src-root}/services/logger.ts",
       "variables": { "TPL_LOGGER_OPTIONS": {} },
-      "importProviders": {}
+      "importMapProviders": {}
     }
   }
 }

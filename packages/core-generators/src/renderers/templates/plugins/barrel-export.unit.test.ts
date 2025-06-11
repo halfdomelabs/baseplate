@@ -22,8 +22,8 @@ export * from './baz';
 
     // Assert
     expect(result).toMatchInlineSnapshot(`
-      "export * from './baz';
-      export { quux, qux } from './bar';
+      "export { quux, qux } from './bar';
+      export * from './baz';
       export { baz } from './foo';
       "
     `);

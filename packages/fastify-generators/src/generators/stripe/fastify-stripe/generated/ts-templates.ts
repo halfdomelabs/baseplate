@@ -4,7 +4,7 @@ import {
 } from '@baseplate-dev/core-generators';
 
 import { configServiceImportsProvider } from '../../../core/config-service/generated/ts-import-providers.js';
-import { errorHandlerServiceImportsProvider } from '../../../core/error-handler-service/generated/ts-import-maps.js';
+import { errorHandlerServiceImportsProvider } from '../../../core/error-handler-service/generated/ts-import-providers.js';
 import { loggerServiceImportsProvider } from '../../../core/logger-service/generated/ts-import-providers.js';
 
 const pluginsWebhook = createTsTemplateFile({

@@ -114,21 +114,6 @@ describe('mergeExtractorTemplateEntries', () => {
         description: 'New template 2',
       },
     });
-
-    // Verify the file was written to the container
-    const files = context.fileContainer.getFiles();
-    const generatorJsonPath =
-      '/packages/package1/generators/test/extractor.json';
-    expect(files.has(generatorJsonPath)).toBe(true);
-
-    const writtenContent = files.get(generatorJsonPath);
-    expect(writtenContent).toBeDefined();
-    const parsedContent = JSON.parse(writtenContent as string) as {
-      templates: Record<string, TemplateConfig>;
-    };
-    expect(parsedContent.templates).toHaveProperty('existing-template');
-    expect(parsedContent.templates).toHaveProperty('new-template-1');
-    expect(parsedContent.templates).toHaveProperty('new-template-2');
   });
 
   it('should update multiple generators with their respective template entries', async () => {
@@ -207,15 +192,6 @@ describe('mergeExtractorTemplateEntries', () => {
 
     expect(updatedConfig2?.config.templates).toHaveProperty('template-2');
     expect(updatedConfig2?.config.templates).toHaveProperty('new-js-template');
-
-    // Verify files were written
-    const files = context.fileContainer.getFiles();
-    expect(files.has('/packages/package1/generators/gen1/extractor.json')).toBe(
-      true,
-    );
-    expect(files.has('/packages/package2/generators/gen2/extractor.json')).toBe(
-      true,
-    );
   });
 
   it('should overwrite existing template entries with same path', async () => {

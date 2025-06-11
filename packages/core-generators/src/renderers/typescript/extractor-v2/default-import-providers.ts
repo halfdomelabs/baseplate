@@ -39,7 +39,7 @@ export function getDefaultImportProviderNames(
   const providerExportName = `${camelCase(generatorBasename)}ImportsProvider`;
   const providerSchemaName = `${camelCase(generatorBasename)}ImportsSchema`;
   const providerName = `${kebabCase(generatorBasename)}-imports`;
-  const placeholderModuleSpecifier = `%${providerName}`;
+  const placeholderModuleSpecifier = `%${camelCase(generatorBasename)}Imports`;
 
   return {
     providerTypeName,

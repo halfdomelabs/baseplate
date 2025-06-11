@@ -40,6 +40,11 @@ describe('file-id-map', () => {
 
   describe('writeGeneratedFileIdMap', () => {
     it('should write sorted file ID map to JSON file', async () => {
+      // Create the directory structure
+      vol.fromJSON({
+        'test-project/baseplate/': null,
+      });
+
       const fileIdMap = new Map([
         ['file2', 'path/to/file2.ts'],
         ['file1', 'path/to/file1.ts'],
@@ -49,9 +54,14 @@ describe('file-id-map', () => {
       await writeGeneratedFileIdMap('test-project', fileIdMap);
 
       const files = vol.toJSON();
-      const fileContent = files['test-project/baseplate/file-id-map.json'];
+      // The file path is absolute, so we need to find it in the volume
+      const fileKey = Object.keys(files).find((key) =>
+        key.endsWith('test-project/baseplate/file-id-map.json'),
+      );
+      expect(fileKey).toBeDefined();
 
-      const writtenContent = JSON.parse(fileContent ?? '') as Record<
+      const fileContent = files[fileKey!];
+      const writtenContent = JSON.parse(fileContent as string) as Record<
         string,
         string
       >;

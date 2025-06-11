@@ -1,5 +1,7 @@
 import type { TemplateExtractorContext } from '@baseplate-dev/sync/extractor-v2';
 
+import path from 'node:path';
+
 import {
   TS_TEMPLATE_TYPE,
   tsTemplateGeneratorTemplateMetadataSchema,
@@ -66,13 +68,22 @@ export function buildTsProjectExportMap(
   const projectExportMap: TsProjectExportMap = new Map();
 
   for (const generatorConfig of generatorConfigs) {
-    const { generatorName, generatorDirectory, packageName, templates } =
-      generatorConfig;
+    const {
+      generatorName,
+      generatorDirectory,
+      packageName,
+      templates,
+      packagePath,
+    } = generatorConfig;
 
     // Figure out the default import provider
     const importProviderNames = getDefaultImportProviderNames(generatorName);
 
-    const defaultImportsProviderPackagePathSpecifier = `${packageName}:${generatorDirectory}/${GENERATED_IMPORT_PROVIDERS_FILE_NAME}`;
+    const relativeGeneratorDirectory = path.relative(
+      packagePath,
+      generatorDirectory,
+    );
+    const defaultImportsProviderPackagePathSpecifier = `${packageName}:${relativeGeneratorDirectory}/generated/${GENERATED_IMPORT_PROVIDERS_FILE_NAME}`;
 
     for (const [, template] of Object.entries(templates)) {
       // skip non-singleton templates

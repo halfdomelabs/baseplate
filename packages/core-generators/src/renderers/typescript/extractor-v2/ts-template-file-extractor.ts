@@ -7,6 +7,7 @@ import pLimit from 'p-limit';
 
 import { templateExtractorBarrelExportPlugin } from '#src/renderers/templates/index.js';
 
+import type { TsGeneratorTemplateMetadata } from '../templates/types.js';
 import type { WriteTsTemplateFileContext } from './render-ts-template-file.js';
 
 import { templatePathsPlugin } from '../../templates/plugins/template-paths/template-paths.plugin.js';
@@ -107,8 +108,8 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
                 {
                   ...file.metadata,
                   variables: result.variables,
-                  importProviders: result.importProviders,
-                },
+                  importMapProviders: result.importProviders,
+                } as TsGeneratorTemplateMetadata,
               );
               return result;
             }),

@@ -50,6 +50,7 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
         const templateExports = templates.map((t) => t.exportName);
         const templatesFragment = TsCodeUtils.mergeFragments(
           new Map(templates.map((t) => [t.exportName, t.fragment])),
+          '\n\n',
         );
         const templateFileContents = renderTsCodeFileTemplate({
           templateContents: TS_TEMPLATE,

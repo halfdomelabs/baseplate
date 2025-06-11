@@ -2,7 +2,7 @@ import type { TemplateExtractorTemplateEntry } from '@baseplate-dev/sync/extract
 
 import { quot } from '@baseplate-dev/utils';
 import { camelCase } from 'change-case';
-import { groupBy, mapValues } from 'es-toolkit';
+import { groupBy } from 'es-toolkit';
 
 import type { TemplateExtractorTypedTemplate } from '#src/renderers/templates/plugins/typed-templates-file.js';
 
@@ -36,13 +36,18 @@ function renderTsTypedTemplate(
     importMapProviders:
       metadata.importMapProviders &&
       TsCodeUtils.mergeFragmentsAsObject(
-        mapValues(metadata.importMapProviders, (importMapProvider) =>
-          TsCodeUtils.importFragment(
-            importMapProvider.importName,
-            resolvePackagePathSpecifier(
-              importMapProvider.packagePathSpecifier,
-              generatorPackageName,
-            ),
+        Object.fromEntries(
+          Object.entries(metadata.importMapProviders).map(
+            ([key, importMapProvider]) => [
+              key.replace(/Provider$/, ''),
+              TsCodeUtils.importFragment(
+                importMapProvider.importName,
+                resolvePackagePathSpecifier(
+                  importMapProvider.packagePathSpecifier,
+                  generatorPackageName,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -73,17 +78,17 @@ function renderTsTypedTemplateGroup(
   const exportName = camelCase(groupName);
 
   return {
-    fragment: TsCodeUtils.mergeFragmentsPresorted([
-      ...renderedTemplates.map(({ fragment }) => fragment),
-      tsTemplate`export const ${exportName} = ${TsCodeUtils.mergeFragmentsAsObject(
-        Object.fromEntries(
-          renderedTemplates.map(({ fragment, exportName }) => [
-            exportName,
-            fragment,
-          ]),
-        ),
-      )}`,
-    ]),
+    fragment: TsCodeUtils.mergeFragmentsPresorted(
+      [
+        ...renderedTemplates.map(({ fragment }) => fragment),
+        tsTemplate`export const ${exportName} = ${TsCodeUtils.mergeFragmentsAsObject(
+          Object.fromEntries(
+            renderedTemplates.map(({ exportName }) => [exportName, exportName]),
+          ),
+        )}`,
+      ],
+      '\n\n',
+    ),
     exportName,
   };
 }

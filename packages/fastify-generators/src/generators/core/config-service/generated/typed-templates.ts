@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const config = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
   name: 'config',
   projectExports: { config: {} },
   source: {

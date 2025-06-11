@@ -10,7 +10,7 @@
       "projectExports": { "notEmpty": {} },
       "pathRootRelativePath": "{src-root}/utils/arrays.ts",
       "variables": {},
-      "importProviders": {}
+      "importMapProviders": {}
     },
     "src/utils/normalize-types.ts": {
       "name": "normalize-types",
@@ -21,7 +21,7 @@
       "projectExports": { "NormalizeTypes": { "isTypeOnly": true } },
       "pathRootRelativePath": "{src-root}/utils/normalize-types.ts",
       "variables": {},
-      "importProviders": {}
+      "importMapProviders": {}
     },
     "src/utils/nulls.ts": {
       "name": "nulls",
@@ -32,7 +32,7 @@
       "projectExports": { "restrictObjectNulls": {} },
       "pathRootRelativePath": "{src-root}/utils/nulls.ts",
       "variables": {},
-      "importProviders": {}
+      "importMapProviders": {}
     },
     "src/utils/string.ts": {
       "name": "string",
@@ -43,7 +43,7 @@
       "projectExports": { "capitalizeString": {} },
       "pathRootRelativePath": "{src-root}/utils/string.ts",
       "variables": {},
-      "importProviders": {}
+      "importMapProviders": {}
     }
   }
 }

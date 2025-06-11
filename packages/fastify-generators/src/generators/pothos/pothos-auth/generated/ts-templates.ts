@@ -3,7 +3,7 @@ import {
   createTsTemplateGroup,
 } from '@baseplate-dev/core-generators';
 
-import { errorHandlerServiceImportsProvider } from '../../../core/error-handler-service/generated/ts-import-maps.js';
+import { errorHandlerServiceImportsProvider } from '../../../core/error-handler-service/generated/ts-import-providers.js';
 
 const globalTypes = createTsTemplateFile({
   group: 'field-authorize-plugin',

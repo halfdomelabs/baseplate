@@ -17,11 +17,12 @@ import { z } from 'zod';
 import { configServiceImportsProvider } from '../config-service/index.js';
 import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { loggerServiceImportsProvider } from '../logger-service/index.js';
+import { CORE_ERROR_HANDLER_SERVICE_PATHS } from './generated/template-paths.js';
 import {
-  createErrorHandlerServiceImports,
+  coreErrorHandlerServiceImportsTask,
   errorHandlerServiceImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
+} from './generated/ts-import-providers.js';
+import { CORE_ERROR_HANDLER_SERVICE_TEMPLATES } from './generated/typed-templates.js';
 
 const descriptorSchema = z.object({});
 
@@ -46,38 +47,29 @@ export const errorHandlerServiceGenerator = createGenerator({
   descriptorSchema,
 
   buildTasks: () => ({
-    imports: createGeneratorTask({
-      exports: {
-        errorHandlerServiceImports:
-          errorHandlerServiceImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            errorHandlerServiceImports:
-              createErrorHandlerServiceImports('@/src'),
-          },
-        };
-      },
-    }),
+    paths: CORE_ERROR_HANDLER_SERVICE_PATHS.task,
+    imports: coreErrorHandlerServiceImportsTask,
     fastifyPlugin: createGeneratorTask({
       dependencies: {
         fastifyServerConfig: fastifyServerConfigProvider,
         typescriptFile: typescriptFileProvider,
         configServiceImports: configServiceImportsProvider,
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+        paths: CORE_ERROR_HANDLER_SERVICE_PATHS.provider,
       },
       run({
         fastifyServerConfig,
         typescriptFile,
         configServiceImports,
         errorHandlerServiceImports,
+        paths,
       }) {
-        const errorPluginPath = '@/src/plugins/error-handler.ts';
         fastifyServerConfig.plugins.set('errorHandlerPlugin', {
           plugin: tsCodeFragment(
             'errorHandlerPlugin',
-            tsImportBuilder(['errorHandlerPlugin']).from(errorPluginPath),
+            tsImportBuilder(['errorHandlerPlugin']).from(
+              paths.errorHandlerPlugin,
+            ),
           ),
           orderPriority: 'EARLY',
         });
@@ -91,8 +83,8 @@ export const errorHandlerServiceGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template:
-                  CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.errorHandlerPlugin,
-                destination: errorPluginPath,
+                  CORE_ERROR_HANDLER_SERVICE_TEMPLATES.errorHandlerPlugin,
+                destination: paths.errorHandlerPlugin,
                 variables: {},
                 importMapProviders: {
                   configServiceImports,
@@ -110,18 +102,20 @@ export const errorHandlerServiceGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
         errorHandlerServiceConfigValues:
           errorHandlerServiceConfigValuesProvider,
+        paths: CORE_ERROR_HANDLER_SERVICE_PATHS.provider,
       },
       run({
         loggerServiceImports,
         typescriptFile,
         errorHandlerServiceConfigValues: { contextActions, loggerActions },
+        paths,
       }) {
         return {
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.errorLogger,
-                destination: '@/src/services/error-logger.ts',
+                template: CORE_ERROR_HANDLER_SERVICE_TEMPLATES.errorLogger,
+                destination: paths.errorLogger,
                 importMapProviders: { loggerServiceImports },
                 variables: {
                   TPL_CONTEXT_ACTIONS: TsCodeUtils.mergeFragments(
@@ -142,14 +136,15 @@ export const errorHandlerServiceGenerator = createGenerator({
     utils: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        paths: CORE_ERROR_HANDLER_SERVICE_PATHS.provider,
       },
-      run({ typescriptFile }) {
+      run({ typescriptFile, paths }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: CORE_ERROR_HANDLER_SERVICE_TS_TEMPLATES.utilsGroup,
-                baseDirectory: '@/src/utils',
+              typescriptFile.renderTemplateGroupV2({
+                group: CORE_ERROR_HANDLER_SERVICE_TEMPLATES.utils,
+                paths,
               }),
             );
           },
@@ -158,5 +153,3 @@ export const errorHandlerServiceGenerator = createGenerator({
     }),
   }),
 });
-
-export { errorHandlerServiceImportsProvider } from './generated/ts-import-maps.js';

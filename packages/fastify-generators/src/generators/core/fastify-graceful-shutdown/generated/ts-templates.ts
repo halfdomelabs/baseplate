@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { errorHandlerServiceImportsProvider } from '../../error-handler-service/generated/ts-import-maps.js';
+import { errorHandlerServiceImportsProvider } from '../../error-handler-service/generated/ts-import-providers.js';
 import { loggerServiceImportsProvider } from '../../logger-service/generated/ts-import-providers.js';
 
 const gracefulShutdown = createTsTemplateFile({

@@ -20,7 +20,7 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/error-handler-service.generator.js';
+import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/fastify-redis.generator.js';
 import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/fastify-server.generator.js';
 import {

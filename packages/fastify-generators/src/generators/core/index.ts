@@ -3,7 +3,7 @@ export * from './app-module-setup/app-module-setup.generator.js';
 export * from './app-module/app-module.generator.js';
 export * from './axios/axios.generator.js';
 export * from './config-service/index.js';
-export * from './error-handler-service/error-handler-service.generator.js';
+export * from './error-handler-service/index.js';
 export * from './fastify-cookie-context/fastify-cookie-context.generator.js';
 export * from './fastify-graceful-shutdown/fastify-graceful-shutdown.generator.js';
 export * from './fastify-health-check/fastify-health-check.generator.js';

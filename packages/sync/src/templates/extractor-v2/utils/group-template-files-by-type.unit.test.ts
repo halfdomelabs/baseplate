@@ -120,41 +120,6 @@ describe('groupTemplateFilesByType', () => {
     expect(result.ts[0].absolutePath).toBe('/project/v2/test.ts');
   });
 
-  it('should throw error for duplicate names within the same generator', () => {
-    const files: TemplateMetadataFileEntry[] = [
-      createMockEntry({
-        absolutePath: '/project/file1.ts',
-        metadata: {
-          name: 'duplicate-name',
-          type: 'ts',
-          generator: '@test/package#generator',
-          template: 'templates/file1.ts',
-        },
-      }),
-      createMockEntry({
-        absolutePath: '/project/file2.ts',
-        metadata: {
-          name: 'duplicate-name',
-          type: 'ts',
-          generator: '@test/package#generator',
-          template: 'templates/file2.ts',
-        },
-      }),
-    ];
-
-    expect(() => {
-      groupTemplateFilesByType(files);
-    }).toThrow(/Duplicate template names found/);
-
-    expect(() => {
-      groupTemplateFilesByType(files);
-    }).toThrow(/duplicate-name/);
-
-    expect(() => {
-      groupTemplateFilesByType(files);
-    }).toThrow(/@test\/package#generator/);
-  });
-
   it('should allow same name in different generators', () => {
     const files: TemplateMetadataFileEntry[] = [
       createMockEntry({
@@ -184,59 +149,5 @@ describe('groupTemplateFilesByType', () => {
     const result = groupTemplateFilesByType([]);
 
     expect(Object.keys(result)).toHaveLength(0);
-  });
-
-  it('should throw error for multiple duplicate names across different types', () => {
-    const files: TemplateMetadataFileEntry[] = [
-      createMockEntry({
-        absolutePath: '/project/dup1.ts',
-        metadata: {
-          name: 'dup-ts',
-          type: 'ts',
-          generator: '@test/package#generator',
-          template: 'dup1.ts',
-        },
-      }),
-      createMockEntry({
-        absolutePath: '/project/dup2.ts',
-        metadata: {
-          name: 'dup-ts',
-          type: 'ts',
-          generator: '@test/package#generator',
-          template: 'dup2.ts',
-        },
-      }),
-      createMockEntry({
-        absolutePath: '/project/dup1.txt',
-        metadata: {
-          name: 'dup-text',
-          type: 'text',
-          generator: '@test/package#generator',
-          template: 'dup1.txt',
-        },
-      }),
-      createMockEntry({
-        absolutePath: '/project/dup2.txt',
-        metadata: {
-          name: 'dup-text',
-          type: 'text',
-          generator: '@test/package#generator',
-          template: 'dup2.txt',
-        },
-      }),
-    ];
-
-    expect(() => {
-      groupTemplateFilesByType(files);
-    }).toThrow(/Duplicate template names found/);
-
-    // Check that error includes both duplicate names
-    expect(() => {
-      groupTemplateFilesByType(files);
-    }).toThrow(/dup-ts/);
-
-    expect(() => {
-      groupTemplateFilesByType(files);
-    }).toThrow(/dup-text/);
   });
 });

@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const logger = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
   name: 'logger',
   projectExports: { logger: {} },
   source: {
