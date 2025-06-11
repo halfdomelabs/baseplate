@@ -19,7 +19,7 @@ import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import { fastifyProvider } from '../fastify/fastify.generator.js';
 import { CORE_LOGGER_SERVICE_PATHS } from './generated/template-paths.js';
 import { coreLoggerServiceImportsTask } from './generated/ts-import-providers.js';
-import { CORE_LOGGER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_LOGGER_SERVICE_TEMPLATES } from './generated/typed-templates.js';
 
 const [
   setupTask,
@@ -57,7 +57,7 @@ export const loggerServiceGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
         loggerServiceConfigValues: loggerServiceConfigValuesProvider,
       },
-      run({ typescriptFile, loggerServiceConfigValues: { mixins } }) {
+      run({ typescriptFile, loggerServiceConfigValues: { mixins }, paths }) {
         return {
           build: async (builder) => {
             const loggerOptions: Record<string, TsCodeFragment | string> = {};
@@ -78,14 +78,14 @@ export const loggerServiceGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_LOGGER_SERVICE_TS_TEMPLATES.logger,
+                template: CORE_LOGGER_SERVICE_TEMPLATES.logger,
                 variables: {
                   TPL_LOGGER_OPTIONS:
                     Object.keys(loggerOptions).length > 0
                       ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
                       : '',
                 },
-                destination: 'src/services/logger.ts',
+                destination: paths.logger,
               }),
             );
           },
