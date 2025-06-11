@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { mergeBarrelExports } from './barrel-import.js';
+import { mergeBarrelExports } from './barrel-export.js';
 
 describe('mergeBarrelExports', () => {
   it('should merge and sort exports', () => {

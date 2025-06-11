@@ -52,7 +52,7 @@ export async function runTemplateFileExtractors(
   await configLookup.initialize();
 
   if (options?.autoGenerateExtractor) {
-    // TODO [2025-06-10]: Remove this filter once we've migrated from v1 to v2
+    // TODO [2025-06-11]: Remove this filter once we've migrated from v1 to v2
     const generatorNames = templateMetadataFiles
       .filter((m) => 'fileOptions' in m.metadata)
       .map((m) => m.metadata.generator);
@@ -107,7 +107,7 @@ export async function runTemplateFileExtractors(
 
   // Group files by type and validate uniqueness (throws on duplicates)
   const filesByType = groupTemplateFilesByType(
-    // TODO [2025-06-10]: Remove this filter once we've migrated from v1 to v2
+    // TODO [2025-06-11]: Remove this filter once we've migrated from v1 to v2
     templateMetadataFiles.filter((f) => 'fileOptions' in f.metadata),
   );
 

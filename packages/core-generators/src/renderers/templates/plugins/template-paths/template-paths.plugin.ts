@@ -12,7 +12,7 @@ import { camelCase } from 'change-case';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { templateExtractorBarrelImportPlugin } from '../barrel-import.js';
+import { templateExtractorBarrelExportPlugin } from '../barrel-export.js';
 import { getPathsFileExportNames, writePathMapFile } from './paths-file.js';
 import { TemplateFileOptions } from '#src/renderers/schemas/template-file-options.js';
 import { TsCodeFragment } from '#src/renderers/typescript/index.js';
@@ -39,7 +39,7 @@ export const TEMPLATE_PATHS_METADATA_FILE = '.paths-metadata.json';
  */
 export const templatePathsPlugin = createTemplateExtractorPlugin({
   name: 'template-paths',
-  pluginDependencies: [templateExtractorBarrelImportPlugin],
+  pluginDependencies: [templateExtractorBarrelExportPlugin],
   getInstance: async ({ context, api }) => {
     const templatePathRoots = await discoverTemplatePathRoots(
       context.outputDirectory,

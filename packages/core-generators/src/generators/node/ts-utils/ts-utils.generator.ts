@@ -39,6 +39,3 @@ export const tsUtilsGenerator = createGenerator({
     }),
   }),
 });
-
-export { tsUtilsImportsProvider } from './generated/ts-import-providers.js';
-export type { TsUtilsImportsProvider } from './generated/ts-import-providers.js';

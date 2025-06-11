@@ -5,6 +5,8 @@ import { groupBy } from 'es-toolkit';
 import path from 'node:path';
 import pLimit from 'p-limit';
 
+import { templateExtractorBarrelExportPlugin } from '#src/renderers/templates/index.js';
+
 import type { WriteTsTemplateFileContext } from './render-ts-template-file.js';
 
 import { templatePathsPlugin } from '../../templates/plugins/template-paths/template-paths.plugin.js';
@@ -27,7 +29,11 @@ const limit = pLimit(getGenerationConcurrencyLimit());
 
 export const TsTemplateFileExtractor = createTemplateFileExtractor({
   name: TS_TEMPLATE_TYPE,
-  pluginDependencies: [templatePathsPlugin, typedTemplatesFilePlugin],
+  pluginDependencies: [
+    templatePathsPlugin,
+    typedTemplatesFilePlugin,
+    templateExtractorBarrelExportPlugin,
+  ],
   outputTemplateMetadataSchema: tsTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: tsTemplateGeneratorTemplateMetadataSchema,
   extractTemplateMetadataEntries: (files, context) => {
@@ -114,6 +120,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
   writeGeneratedFiles: (generatorNames, context, api) => {
     const templatePathsPlugin = context.getPlugin('template-paths');
     const typedTemplatesPlugin = context.getPlugin('typed-templates-file');
+    const barrelExportPlugin = context.getPlugin('barrel-export');
 
     for (const generatorName of generatorNames) {
       const generatorConfig =
@@ -158,8 +165,11 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
         api.writeGeneratedFile(
           generatorName,
           GENERATED_IMPORT_PROVIDERS_FILE_NAME,
-          importProviders,
+          importProviders.contents,
         );
+        for (const barrelExport of importProviders.barrelExports) {
+          barrelExportPlugin.addBarrelExport(generatorName, barrelExport);
+        }
       }
     }
   },

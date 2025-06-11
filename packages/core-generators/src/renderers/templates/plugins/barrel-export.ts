@@ -1,17 +1,19 @@
+import { parseGeneratorName } from '@baseplate-dev/sync';
 import { createTemplateExtractorPlugin } from '@baseplate-dev/sync/extractor-v2';
+import { handleFileNotFoundError } from '@baseplate-dev/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { Project, QuoteKind } from 'ts-morph';
 
-interface BarrelExport {
+export interface TemplateExtractorBarrelExport {
   moduleSpecifier: string;
   namedExports: string[];
   isTypeOnly?: boolean;
 }
 
 export function mergeBarrelExports(
-  indexFileContents: string,
-  barrelExports: BarrelExport[],
+  indexFileContents: string | undefined,
+  barrelExports: TemplateExtractorBarrelExport[],
 ): string {
   const project = new Project({
     useInMemoryFileSystem: true,
@@ -19,7 +21,10 @@ export function mergeBarrelExports(
       quoteKind: QuoteKind.Single,
     },
   });
-  const sourceFile = project.createSourceFile('index.ts', indexFileContents);
+  const sourceFile = project.createSourceFile(
+    'index.ts',
+    indexFileContents ?? '',
+  );
 
   // Remove all existing export statements
   for (const decl of sourceFile.getExportDeclarations()) {
@@ -57,20 +62,8 @@ export function mergeBarrelExports(
     }
   }
 
-  // Sort module specifiers, putting * exports first
-  const sortedModuleSpecifiers = [...exportsByModuleAndType.keys()].sort(
-    (a, b) => {
-      const aHasStar = exportsByModuleAndType.get(a)?.starExport !== undefined;
-      const bHasStar = exportsByModuleAndType.get(b)?.starExport !== undefined;
-
-      // If one has star export and the other doesn't, prioritize the one with star
-      if (aHasStar && !bHasStar) return -1;
-      if (!aHasStar && bHasStar) return 1;
-
-      // Otherwise, sort alphabetically
-      return a.localeCompare(b);
-    },
-  );
+  // Sort module specifiers
+  const sortedModuleSpecifiers = [...exportsByModuleAndType.keys()].sort();
 
   // Add exports back in sorted order
   for (const moduleSpecifier of sortedModuleSpecifiers) {
@@ -119,9 +112,9 @@ export function mergeBarrelExports(
   return sourceFile.getFullText();
 }
 
-export const templateExtractorBarrelImportPlugin =
+export const templateExtractorBarrelExportPlugin =
   createTemplateExtractorPlugin({
-    name: 'barrel-import',
+    name: 'barrel-export',
     getInstance: ({ context, api }) => {
       const { fileContainer } = context;
       const barrelExportMap = new Map<
@@ -135,35 +128,39 @@ export const templateExtractorBarrelImportPlugin =
 
       function addBarrelExport(
         generatorName: string,
-        moduleSpecifier: string,
-        namedExports: string[],
-        isTypeOnly?: boolean,
+        barrelExport: TemplateExtractorBarrelExport,
       ): void {
         const barrelExports = barrelExportMap.get(generatorName) ?? [];
-        barrelExports.push({
-          moduleSpecifier,
-          namedExports,
-          isTypeOnly,
-        });
+        barrelExports.push(barrelExport);
         barrelExportMap.set(generatorName, barrelExports);
       }
 
       // Merge the barrel exports into the barrel file
       api.registerHook('afterWrite', async () => {
         for (const [generatorName, barrelExports] of barrelExportMap) {
+          const parsedGeneratorName = parseGeneratorName(generatorName);
           const extractorConfig =
             context.configLookup.getExtractorConfig(generatorName);
           if (!extractorConfig) {
             throw new Error(`Extractor config not found: ${generatorName}`);
           }
-          const indexFileContents = await fs.readFile(
-            path.join(extractorConfig.generatorDirectory, 'index.ts'),
-            'utf8',
-          );
-          const updatedContents = mergeBarrelExports(
-            indexFileContents,
-            barrelExports,
-          );
+          if (barrelExports.length === 0) {
+            continue;
+          }
+          const indexFileContents = await fs
+            .readFile(
+              path.join(extractorConfig.generatorDirectory, 'index.ts'),
+              'utf8',
+            )
+            .catch(handleFileNotFoundError);
+          const updatedContents = mergeBarrelExports(indexFileContents, [
+            ...barrelExports,
+            // always export the generator file
+            {
+              moduleSpecifier: `./${parsedGeneratorName.generatorBasename}.generator.js`,
+              namedExports: ['*'],
+            },
+          ]);
           fileContainer.writeFile(
             path.join(extractorConfig.generatorDirectory, 'index.ts'),
             updatedContents,

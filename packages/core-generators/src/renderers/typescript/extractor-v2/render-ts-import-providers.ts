@@ -4,11 +4,14 @@ import { quot } from '@baseplate-dev/utils';
 import { camelCase } from 'change-case';
 import { mapValues } from 'es-toolkit';
 
+import type { TemplateExtractorBarrelExport } from '#src/renderers/templates/index.js';
+
 import {
   getGeneratedTemplateExportName,
   resolvePackagePathSpecifier,
 } from '#src/renderers/templates/index.js';
 import { GENERATED_PATHS_FILE_NAME } from '#src/renderers/templates/plugins/template-paths/paths-file.js';
+import { normalizeTsPathToJsPath } from '#src/utils/index.js';
 
 import type { TsCodeFragment } from '../fragments/types.js';
 import type {
@@ -153,7 +156,9 @@ export function renderTsImportProviders(
   generatorName: string,
   templates: TemplateExtractorTemplateEntry<TsGeneratorTemplateMetadata>[],
   context: RenderTsImportProvidersContext,
-): string | undefined {
+):
+  | { contents: string; barrelExports: TemplateExtractorBarrelExport[] }
+  | undefined {
   const importProviderNames = getDefaultImportProviderNames(generatorName);
 
   const projectExportArray = templates.flatMap((template) =>
@@ -204,7 +209,7 @@ export function renderTsImportProviders(
     '\n\n',
   );
 
-  return renderTsCodeFileTemplate({
+  const contents = renderTsCodeFileTemplate({
     templateContents: 'TPL_CONTENTS',
     variables: { TPL_CONTENTS: mergedFragment },
     importMapProviders: {},
@@ -215,4 +220,23 @@ export function renderTsImportProviders(
       },
     },
   });
+
+  return {
+    contents,
+    barrelExports: [
+      {
+        moduleSpecifier: `./generated/${normalizeTsPathToJsPath(
+          GENERATED_IMPORT_PROVIDERS_FILE_NAME,
+        )}`,
+        namedExports: [importProviderNames.providerExportName],
+      },
+      {
+        moduleSpecifier: `./generated/${normalizeTsPathToJsPath(
+          GENERATED_IMPORT_PROVIDERS_FILE_NAME,
+        )}`,
+        namedExports: [importProviderNames.providerTypeName],
+        isTypeOnly: true,
+      },
+    ],
+  };
 }

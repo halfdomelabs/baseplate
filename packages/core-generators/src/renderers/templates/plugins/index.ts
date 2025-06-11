@@ -1,4 +1,4 @@
-export * from './barrel-import.js';
+export * from './barrel-export.js';
 export {
   TEMPLATE_PATHS_METADATA_FILE,
   templatePathsPlugin,
