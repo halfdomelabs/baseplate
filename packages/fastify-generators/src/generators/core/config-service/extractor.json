@@ -5,7 +5,7 @@
       "name": "config",
       "type": "ts",
       "generator": "@baseplate-dev/fastify-generators#core/config-service",
-      "template": "config.ts",
+      "template": "",
       "fileOptions": { "kind": "singleton" },
       "projectExports": { "config": {} },
       "pathRootRelativePath": "{src-root}/services/config.ts",

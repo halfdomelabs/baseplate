@@ -5,7 +5,7 @@ import {
 
 import { errorHandlerServiceImportsProvider } from '../../../core/error-handler-service/generated/ts-import-maps.js';
 import { fastifyRedisImportsProvider } from '../../../core/fastify-redis/generated/ts-import-maps.js';
-import { loggerServiceImportsProvider } from '../../../core/logger-service/generated/ts-import-maps.js';
+import { loggerServiceImportsProvider } from '../../../core/logger-service/generated/ts-import-providers.js';
 
 const scriptsRunWorkers = createTsTemplateFile({
   group: 'scripts',

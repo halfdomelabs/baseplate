@@ -4,7 +4,7 @@ import {
 } from '@baseplate-dev/core-generators';
 
 import { configServiceImportsProvider } from '../../config-service/generated/ts-import-providers.js';
-import { loggerServiceImportsProvider } from '../../logger-service/generated/ts-import-maps.js';
+import { loggerServiceImportsProvider } from '../../logger-service/generated/ts-import-providers.js';
 
 const errorHandlerPlugin = createTsTemplateFile({
   importMapProviders: { configServiceImports: configServiceImportsProvider },

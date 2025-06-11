@@ -12,7 +12,7 @@ export * from './fastify-scripts/fastify-scripts.generator.js';
 export * from './fastify-sentry/fastify-sentry.generator.js';
 export * from './fastify-server/fastify-server.generator.js';
 export * from './fastify/fastify.generator.js';
-export * from './logger-service/logger-service.generator.js';
+export * from './logger-service/index.js';
 export * from './readme/readme.generator.js';
 export * from './request-context/request-context.generator.js';
 export * from './request-service-context/request-service-context.generator.js';

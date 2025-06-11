@@ -15,7 +15,7 @@ import { fastifyHealthCheckGenerator } from '../fastify-health-check/fastify-hea
 import { fastifyScriptsGenerator } from '../fastify-scripts/fastify-scripts.generator.js';
 import { fastifyServerGenerator } from '../fastify-server/fastify-server.generator.js';
 import { fastifyGenerator } from '../fastify/fastify.generator.js';
-import { loggerServiceGenerator } from '../logger-service/logger-service.generator.js';
+import { loggerServiceGenerator } from '../logger-service/index.js';
 import { requestContextGenerator } from '../request-context/request-context.generator.js';
 import { requestServiceContextGenerator } from '../request-service-context/request-service-context.generator.js';
 import { serviceContextGenerator } from '../service-context/service-context.generator.js';

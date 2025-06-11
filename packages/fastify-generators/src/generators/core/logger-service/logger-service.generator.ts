@@ -17,10 +17,8 @@ import {
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 import { fastifyProvider } from '../fastify/fastify.generator.js';
-import {
-  createLoggerServiceImports,
-  loggerServiceImportsProvider,
-} from './generated/ts-import-maps.js';
+import { CORE_LOGGER_SERVICE_PATHS } from './generated/template-paths.js';
+import { coreLoggerServiceImportsTask } from './generated/ts-import-providers.js';
 import { CORE_LOGGER_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const [
@@ -51,20 +49,11 @@ export const loggerServiceGenerator = createGenerator({
     fastify: createProviderTask(fastifyProvider, (fastify) => {
       fastify.devOutputFormatter.set('pino-pretty -t');
     }),
-    imports: createGeneratorTask({
-      exports: {
-        loggerServiceImports: loggerServiceImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            loggerServiceImports: createLoggerServiceImports('@/src/services'),
-          },
-        };
-      },
-    }),
+    paths: CORE_LOGGER_SERVICE_PATHS.task,
+    imports: coreLoggerServiceImportsTask,
     main: createGeneratorTask({
       dependencies: {
+        paths: CORE_LOGGER_SERVICE_PATHS.provider,
         typescriptFile: typescriptFileProvider,
         loggerServiceConfigValues: loggerServiceConfigValuesProvider,
       },
@@ -105,5 +94,3 @@ export const loggerServiceGenerator = createGenerator({
     }),
   }),
 });
-
-export { loggerServiceImportsProvider } from './generated/ts-import-maps.js';

@@ -6,7 +6,7 @@ import {
 import { configServiceImportsProvider } from '../../../core/config-service/generated/ts-import-providers.js';
 import { errorHandlerServiceImportsProvider } from '../../../core/error-handler-service/generated/ts-import-maps.js';
 import { fastifyRedisImportsProvider } from '../../../core/fastify-redis/generated/ts-import-maps.js';
-import { loggerServiceImportsProvider } from '../../../core/logger-service/generated/ts-import-maps.js';
+import { loggerServiceImportsProvider } from '../../../core/logger-service/generated/ts-import-providers.js';
 import { requestServiceContextImportsProvider } from '../../../core/request-service-context/generated/ts-import-maps.js';
 
 const graphqlPlugin = createTsTemplateFile({
