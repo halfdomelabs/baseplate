@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { configServiceImportsProvider } from '../../config-service/generated/ts-import-maps.js';
+import { configServiceImportsProvider } from '../../config-service/generated/ts-import-providers.js';
 import { errorHandlerServiceImportsProvider } from '../../error-handler-service/generated/ts-import-maps.js';
 
 const instrument = createTsTemplateFile({

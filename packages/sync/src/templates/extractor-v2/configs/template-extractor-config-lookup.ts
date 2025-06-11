@@ -110,10 +110,6 @@ export class TemplateExtractorConfigLookup {
   }
 
   private async indexPackage(packageName: string): Promise<void> {
-    if (this.indexedPackages.has(packageName)) {
-      return;
-    }
-
     const packagePath = this.packageMap.get(packageName);
     if (!packagePath) {
       throw new Error(

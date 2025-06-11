@@ -20,7 +20,7 @@ import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import {
   configServiceImportsProvider,
   configServiceProvider,
-} from '../config-service/config-service.generator.js';
+} from '../config-service/index.js';
 import { fastifyHealthCheckConfigProvider } from '../fastify-health-check/fastify-health-check.generator.js';
 import {
   createFastifyRedisImports,

@@ -29,7 +29,7 @@ import {
   authContextImportsProvider,
   userSessionServiceImportsProvider,
 } from '#src/generators/auth/index.js';
-import { configServiceImportsProvider } from '#src/generators/core/config-service/config-service.generator.js';
+import { configServiceImportsProvider } from '#src/generators/core/config-service/index.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/error-handler-service.generator.js';
 import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/fastify-redis.generator.js';
 import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/fastify-server.generator.js';

@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { configServiceImportsProvider } from '../../../core/config-service/generated/ts-import-maps.js';
+import { configServiceImportsProvider } from '../../../core/config-service/generated/ts-import-providers.js';
 
 const postmark = createTsTemplateFile({
   importMapProviders: { configServiceImports: configServiceImportsProvider },

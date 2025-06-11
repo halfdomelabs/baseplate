@@ -14,7 +14,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { configServiceImportsProvider } from '../config-service/config-service.generator.js';
+import { configServiceImportsProvider } from '../config-service/index.js';
 import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
 import { loggerServiceImportsProvider } from '../logger-service/logger-service.generator.js';
 import {

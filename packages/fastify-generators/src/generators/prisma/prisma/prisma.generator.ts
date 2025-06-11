@@ -30,7 +30,7 @@ import type { PrismaModelBlockWriter } from '#src/writers/prisma-schema/index.js
 import type { PrismaGeneratorBlock } from '#src/writers/prisma-schema/types.js';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { configServiceProvider } from '#src/generators/core/config-service/config-service.generator.js';
+import { configServiceProvider } from '#src/generators/core/config-service/index.js';
 import { fastifyHealthCheckConfigProvider } from '#src/generators/core/fastify-health-check/fastify-health-check.generator.js';
 import { fastifyOutputProvider } from '#src/generators/core/fastify/fastify.generator.js';
 import {

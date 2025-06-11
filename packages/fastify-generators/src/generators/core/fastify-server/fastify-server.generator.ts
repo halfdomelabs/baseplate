@@ -26,7 +26,7 @@ import { appModuleImportsProvider } from '../app-module/app-module.generator.js'
 import {
   configServiceImportsProvider,
   configServiceProvider,
-} from '../config-service/config-service.generator.js';
+} from '../config-service/index.js';
 import { loggerServiceImportsProvider } from '../logger-service/logger-service.generator.js';
 import { CORE_FASTIFY_SERVER_TS_TEMPLATES } from './generated/ts-templates.js';
 

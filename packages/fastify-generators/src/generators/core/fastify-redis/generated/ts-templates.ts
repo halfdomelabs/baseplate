@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { configServiceImportsProvider } from '../../config-service/generated/ts-import-maps.js';
+import { configServiceImportsProvider } from '../../config-service/generated/ts-import-providers.js';
 
 const mockRedis = createTsTemplateFile({
   name: 'mock-redis',

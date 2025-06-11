@@ -17,7 +17,7 @@ import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import {
   configServiceImportsProvider,
   configServiceProvider,
-} from '#src/generators/core/config-service/config-service.generator.js';
+} from '#src/generators/core/config-service/index.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/error-handler-service.generator.js';
 import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/fastify-server.generator.js';
 import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/logger-service.generator.js';

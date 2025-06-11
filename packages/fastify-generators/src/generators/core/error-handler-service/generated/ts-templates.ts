@@ -3,7 +3,7 @@ import {
   createTsTemplateGroup,
 } from '@baseplate-dev/core-generators';
 
-import { configServiceImportsProvider } from '../../config-service/generated/ts-import-maps.js';
+import { configServiceImportsProvider } from '../../config-service/generated/ts-import-providers.js';
 import { loggerServiceImportsProvider } from '../../logger-service/generated/ts-import-maps.js';
 
 const errorHandlerPlugin = createTsTemplateFile({

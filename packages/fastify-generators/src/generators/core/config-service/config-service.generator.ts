@@ -22,11 +22,9 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 import { fastifyProvider } from '../fastify/fastify.generator.js';
-import {
-  configServiceImportsProvider,
-  createConfigServiceImports,
-} from './generated/ts-import-maps.js';
-import { CORE_CONFIG_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_CONFIG_SERVICE_PATHS } from './generated/template-paths.js';
+import { coreConfigServiceImportsTask } from './generated/ts-import-providers.js';
+import { CORE_CONFIG_SERVICE_TEMPLATES } from './generated/typed-templates.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -85,6 +83,8 @@ export const configServiceGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: CORE_CONFIG_SERVICE_PATHS.task,
+    imports: coreConfigServiceImportsTask,
     // add the dotenv config to the fastify config
     fastify: createProviderTask(fastifyProvider, (fastify) => {
       fastify.nodeFlags.set('dotenv', {
@@ -106,25 +106,18 @@ export const configServiceGenerator = createGenerator({
       },
     ),
     setup: setupTask,
-    imports: createGeneratorTask({
-      exports: {
-        configServiceImports: configServiceImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            configServiceImports: createConfigServiceImports('@/src/services'),
-          },
-        };
-      },
-    }),
     // create the config service
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         configServiceConfigValues: configServiceConfigValuesProvider,
+        paths: CORE_CONFIG_SERVICE_PATHS.provider,
       },
-      run({ typescriptFile, configServiceConfigValues: { configFields } }) {
+      run({
+        typescriptFile,
+        configServiceConfigValues: { configFields },
+        paths,
+      }) {
         return {
           build: async (builder) => {
             const sortedConfigEntries = sortBy(
@@ -140,8 +133,8 @@ export const configServiceGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_CONFIG_SERVICE_TS_TEMPLATES.config,
-                destination: 'src/services/config.ts',
+                template: CORE_CONFIG_SERVICE_TEMPLATES.config,
+                destination: paths.config,
                 variables: {
                   TPL_CONFIG_SCHEMA: TsCodeUtils.templateWithImports(
                     tsImportBuilder(['z']).from('zod'),
@@ -190,5 +183,3 @@ export const configServiceGenerator = createGenerator({
     }),
   }),
 });
-
-export { configServiceImportsProvider } from './generated/ts-import-maps.js';
