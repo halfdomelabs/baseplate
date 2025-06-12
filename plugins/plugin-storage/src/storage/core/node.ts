@@ -8,7 +8,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 
 import { storageModuleGenerator } from '#src/generators/fastify/index.js';
-import { uploadComponentsGenerator } from '#src/generators/react/upload-components/upload-components.generator.js';
+import { uploadComponentsGenerator } from '#src/generators/react/upload-components/index.js';
 
 import type { StoragePluginDefinition } from './schema/plugin-definition.js';
 

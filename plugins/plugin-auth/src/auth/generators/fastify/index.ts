@@ -1,1 +1,1 @@
-export * from './auth-module/auth-module.generator.js';
+export * from './auth-module/index.js';

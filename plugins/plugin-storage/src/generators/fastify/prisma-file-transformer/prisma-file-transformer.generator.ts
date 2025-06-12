@@ -10,7 +10,7 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import { storageModuleImportsProvider } from '../storage-module/storage-module.generator.js';
+import { storageModuleImportsProvider } from '../storage-module/index.js';
 
 const descriptorSchema = z.object({
   name: z.string(),
