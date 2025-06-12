@@ -1,0 +1,13 @@
+{
+  "app-module.generator.ts": {
+    "appModuleProvider": {
+      "type": "path",
+      "pathRoots": [
+        {
+          "name": "module-root",
+          "method": "getModuleFolder"
+        }
+      ]
+    }
+  }
+}
