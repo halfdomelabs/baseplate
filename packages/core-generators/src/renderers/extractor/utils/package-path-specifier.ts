@@ -3,6 +3,12 @@ interface ParsedPackagePathSpecifier {
   filePath: string;
 }
 
+/**
+ * Parse a package path specifier into a package name and file path.
+ *
+ * @param spec - The package path specifier in the format "package-name:file-path"
+ * @returns The parsed package name and file path
+ */
 function parsePackagePathSpecifier(spec: string): ParsedPackagePathSpecifier {
   if (!spec || typeof spec !== 'string') {
     throw new Error('Package path specifier must be a non-empty string');

@@ -17,6 +17,7 @@ import {
   tsTemplateGeneratorTemplateMetadataSchema,
   tsTemplateOutputTemplateMetadataSchema,
 } from '../templates/types.js';
+import { buildExternalImportProvidersMap } from './build-external-import-providers-map.js';
 import { buildTsProjectExportMap } from './build-ts-project-export-map.js';
 import { getResolverFactory } from './get-resolver-factory.js';
 import {
@@ -25,6 +26,7 @@ import {
 } from './render-ts-import-providers.js';
 import { renderTsTemplateFile } from './render-ts-template-file.js';
 import { renderTsTypedTemplates } from './render-ts-typed-templates.js';
+import { tsExtractorConfigSchema } from './ts-extractor-config.schema.js';
 
 const limit = pLimit(getGenerationConcurrencyLimit());
 
@@ -122,6 +124,9 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
     const templatePathsPlugin = context.getPlugin('template-paths');
     const typedTemplatesPlugin = context.getPlugin('typed-templates-file');
     const barrelExportPlugin = context.getPlugin('barrel-export');
+    const externalImportProvidersMap = buildExternalImportProvidersMap(
+      context.configLookup,
+    );
 
     for (const generatorName of generatorNames) {
       const generatorConfig =
@@ -154,13 +159,24 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
       // Render the import providers
       const pathsRootExportName =
         templatePathsPlugin.getPathsRootExportName(generatorName);
+
+      // Get the TypeScript extractor configuration
+      const tsExtractorConfig =
+        context.configLookup.getExtractorConfigForGenerator(
+          generatorName,
+          'ts',
+          tsExtractorConfigSchema,
+        );
+
       const importProviders = renderTsImportProviders(
         generatorName,
         templates,
         {
           generatorPackageName: generatorConfig.packageName,
           pathsRootExportName,
+          externalImportProvidersMap,
         },
+        tsExtractorConfig,
       );
       if (importProviders) {
         api.writeGeneratedFile(

@@ -31,13 +31,11 @@ const nodeTsUtilsImportsTask = createGeneratorTask({
   dependencies: {
     paths: NODE_TS_UTILS_PATHS.provider,
   },
-  exports: {
-    imports: tsUtilsImportsProvider.export(projectScope),
-  },
+  exports: { tsUtilsImports: tsUtilsImportsProvider.export(projectScope) },
   run({ paths }) {
     return {
       providers: {
-        imports: createTsImportMap(tsUtilsImportsSchema, {
+        tsUtilsImports: createTsImportMap(tsUtilsImportsSchema, {
           capitalizeString: paths.string,
           NormalizeTypes: paths.normalizeTypes,
           notEmpty: paths.arrays,
