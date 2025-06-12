@@ -11,12 +11,11 @@ import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createProviderTask,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { fastifyServerConfigProvider } from '../fastify-server/index.js';
-import { CORE_FASTIFY_HEALTH_CHECK_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_FASTIFY_HEALTH_CHECK_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -36,40 +35,45 @@ const [
 
 export { fastifyHealthCheckConfigProvider };
 
-const healthCheckPluginPath = '@/src/plugins/health-check.ts';
-
 export const fastifyHealthCheckGenerator = createGenerator({
   name: 'core/fastify-health-check',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
     setup: setupTask,
-    fastifyServerConfig: createProviderTask(
-      fastifyServerConfigProvider,
-      (fastifyServerConfig) => {
+    paths: CORE_FASTIFY_HEALTH_CHECK_GENERATED.paths.task,
+    fastifyServerConfig: createGeneratorTask({
+      dependencies: {
+        fastifyServerConfig: fastifyServerConfigProvider,
+        paths: CORE_FASTIFY_HEALTH_CHECK_GENERATED.paths.provider,
+      },
+      run({ fastifyServerConfig, paths }) {
         fastifyServerConfig.plugins.set('healthCheckPlugin', {
           plugin: tsCodeFragment(
             'healthCheckPlugin',
-            tsImportBuilder(['healthCheckPlugin']).from(healthCheckPluginPath),
+            tsImportBuilder(['healthCheckPlugin']).from(paths.healthCheck),
           ),
         });
       },
-    ),
+    }),
     main: createGeneratorTask({
       dependencies: {
         fastifyHealthCheckConfigValues: fastifyHealthCheckConfigValuesProvider,
         typescriptFile: typescriptFileProvider,
+        paths: CORE_FASTIFY_HEALTH_CHECK_GENERATED.paths.provider,
       },
       run({
         fastifyHealthCheckConfigValues: { healthChecks },
         typescriptFile,
+        paths,
       }) {
         return {
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_FASTIFY_HEALTH_CHECK_TS_TEMPLATES.healthCheck,
-                destination: healthCheckPluginPath,
+                template:
+                  CORE_FASTIFY_HEALTH_CHECK_GENERATED.templates.healthCheck,
+                destination: paths.healthCheck,
                 variables: {
                   TPL_HEALTH_CHECKS:
                     healthChecks.size > 0

@@ -28,7 +28,7 @@ import {
   configServiceProvider,
 } from '../config-service/index.js';
 import { loggerServiceImportsProvider } from '../logger-service/index.js';
-import { CORE_FASTIFY_SERVER_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_FASTIFY_SERVER_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   defaultPort: z.number().default(7001),
@@ -76,6 +76,7 @@ export const fastifyServerGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: (descriptor) => ({
+    paths: CORE_FASTIFY_SERVER_GENERATED.paths.task,
     setupTask,
     appModuleConfig: createGeneratorTask({
       dependencies: {
@@ -123,6 +124,7 @@ export const fastifyServerGenerator = createGenerator({
         appModuleImports: appModuleImportsProvider,
         typescriptFile: typescriptFileProvider,
         fastifyServerConfigValues: fastifyServerConfigValuesProvider,
+        paths: CORE_FASTIFY_SERVER_GENERATED.paths.provider,
       },
       run({
         loggerServiceImports,
@@ -130,6 +132,7 @@ export const fastifyServerGenerator = createGenerator({
         appModuleImports,
         typescriptFile,
         fastifyServerConfigValues,
+        paths,
       }) {
         const {
           plugins,
@@ -150,8 +153,8 @@ export const fastifyServerGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_FASTIFY_SERVER_TS_TEMPLATES.index,
-                destination: '@/src/index.ts',
+                template: CORE_FASTIFY_SERVER_GENERATED.templates.index,
+                destination: paths.index,
                 variables: {
                   TPL_LOG_ERROR: TsCodeUtils.template`${errorHandlerFunction}(err)`,
                 },
@@ -181,8 +184,8 @@ export const fastifyServerGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_FASTIFY_SERVER_TS_TEMPLATES.server,
-                destination: '@/src/server.ts',
+                template: CORE_FASTIFY_SERVER_GENERATED.templates.server,
+                destination: paths.server,
                 variables: {
                   TPL_ROOT_MODULE: appModuleImports.getModuleFragment(),
                   TPL_PRE_PLUGIN_FRAGMENTS:
