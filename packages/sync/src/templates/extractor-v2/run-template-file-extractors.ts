@@ -2,6 +2,8 @@ import { groupBy, uniq } from 'es-toolkit';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
+import { parseGeneratorName } from '#src/utils/parse-generator-name.js';
+
 import type { TemplateFileMetadataBase } from '../metadata/metadata.js';
 import type { TemplateMetadataFileEntry } from '../metadata/read-template-metadata-files.js';
 import type { TemplateExtractorHook } from './runner/template-extractor-plugin.js';
@@ -29,7 +31,8 @@ const GENERATOR_WHITELIST = new Set(['@baseplate-dev/core-generators']);
 
 // TODO [2025-06-12]: Remove this filter once we've migrated from v1 to v2
 function isV2TemplateMetadataFile(file: TemplateMetadataFileEntry): boolean {
-  if (GENERATOR_WHITELIST.has(file.metadata.generator)) {
+  const parsedGenerator = parseGeneratorName(file.metadata.generator);
+  if (GENERATOR_WHITELIST.has(parsedGenerator.packageName)) {
     return true;
   }
   return 'fileOptions' in file.metadata;
