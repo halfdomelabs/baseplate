@@ -3,6 +3,7 @@ import { groupBy, uniq } from 'es-toolkit';
 import type { Logger } from '#src/utils/evented-logger.js';
 
 import type { TemplateFileMetadataBase } from '../metadata/metadata.js';
+import type { TemplateMetadataFileEntry } from '../metadata/read-template-metadata-files.js';
 import type { TemplateExtractorHook } from './runner/template-extractor-plugin.js';
 import type {
   AnyTemplateFileExtractor,
@@ -22,6 +23,11 @@ import { writeExtractorTemplateJsons } from './utils/write-extractor-template-js
 
 export interface RunTemplateFileExtractorsOptions {
   autoGenerateExtractor?: boolean;
+}
+
+// TODO [2025-06-12]: Remove this filter once we've migrated from v1 to v2
+function isV2TemplateMetadataFile(file: TemplateMetadataFileEntry): boolean {
+  return 'fileOptions' in file.metadata;
 }
 
 /**
@@ -52,9 +58,9 @@ export async function runTemplateFileExtractors(
   await configLookup.initialize();
 
   if (options?.autoGenerateExtractor) {
-    // TODO [2025-06-11]: Remove this filter once we've migrated from v1 to v2
+    // TODO [2025-06-12]: Remove this filter once we've migrated from v1 to v2
     const generatorNames = templateMetadataFiles
-      .filter((m) => 'fileOptions' in m.metadata)
+      .filter(isV2TemplateMetadataFile)
       .map((m) => m.metadata.generator);
     const missingGeneratorNames = generatorNames.filter(
       (name) => !configLookup.getExtractorConfig(name),
@@ -107,8 +113,8 @@ export async function runTemplateFileExtractors(
 
   // Group files by type and validate uniqueness (throws on duplicates)
   const filesByType = groupTemplateFilesByType(
-    // TODO [2025-06-11]: Remove this filter once we've migrated from v1 to v2
-    templateMetadataFiles.filter((f) => 'fileOptions' in f.metadata),
+    // TODO [2025-06-12]: Remove this filter once we've migrated from v1 to v2
+    templateMetadataFiles.filter(isV2TemplateMetadataFile),
   );
 
   // Get the metadata entries for each file
