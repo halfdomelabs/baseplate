@@ -18,6 +18,7 @@ import {
 import {
   renderTsCodeFileTemplate,
   TsCodeUtils,
+  tsImportBuilder,
   tsTemplate,
 } from '#src/renderers/typescript/index.js';
 
@@ -29,7 +30,7 @@ const GENERATED_PATHS_FILE_PATH = posixJoin(
 );
 
 const GENERATED_PATHS_TEMPLATE = `
-import { createProviderType, createGeneratorTask } from '@baseplate-dev/sync';
+import { createProviderType } from '@baseplate-dev/sync';
 
 export interface TPL_PATHS_TYPE_NAME {
   TPL_PATHS_CONTENTS;
@@ -237,7 +238,11 @@ export function writePathMapFile(
         'paths',
       ),
       TPL_PATHS_TASK_DECLARATION: taskFragment
-        ? tsTemplate`const ${taskName} = createGeneratorTask(${taskFragment});`
+        ? TsCodeUtils.templateWithImports([
+            tsImportBuilder(['createGeneratorTask']).from(
+              '@baseplate-dev/sync',
+            ),
+          ])`const ${taskName} = createGeneratorTask(${taskFragment});`
         : '',
       TPL_PATHS_TASK_EXPORT: taskFragment ? `task: ${taskName},` : '',
       TPL_PATHS_EXPORT_NAME: fileExportNames.rootExportName,

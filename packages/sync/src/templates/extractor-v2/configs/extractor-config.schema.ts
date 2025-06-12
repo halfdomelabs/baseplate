@@ -41,7 +41,7 @@ export const extractorConfigSchema = z.object({
   /**
    * Plugin-specific configuration keyed by plugin name
    */
-  pluginConfig: z.record(z.string(), z.object({}).passthrough()).optional(),
+  plugins: z.record(z.string(), z.object({}).passthrough()).optional(),
 });
 
 /**

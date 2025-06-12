@@ -6,6 +6,7 @@ import {
 import { quot } from '@baseplate-dev/utils';
 
 import { CORE_PACKAGES } from '#src/constants/core-packages.js';
+import { packageInfoProvider } from '#src/providers/project.js';
 import { projectScope } from '#src/providers/scopes.js';
 import { TsCodeUtils } from '#src/renderers/index.js';
 import { extractPackageVersions } from '#src/utils/extract-packages.js';
@@ -53,7 +54,27 @@ export const eslintGenerator = createGenerator({
   name: 'node/eslint',
   generatorFileUrl: import.meta.url,
   buildTasks: () => ({
-    paths: NODE_ESLINT_GENERATED.paths.task,
+    paths: createGeneratorTask({
+      dependencies: {
+        node: nodeProvider,
+        packageInfo: packageInfoProvider,
+      },
+      exports: {
+        paths: NODE_ESLINT_GENERATED.paths.provider.export(),
+      },
+      run: ({ node, packageInfo }) => {
+        const packageRoot = packageInfo.getPackageRoot();
+        return {
+          providers: {
+            paths: {
+              eslintConfig: `${packageRoot}/${
+                node.isEsm ? 'eslint.config.js' : 'eslint.config.mjs'
+              }`,
+            },
+          },
+        };
+      },
+    }),
     setup: setupTask,
     node: createGeneratorTask({
       dependencies: {

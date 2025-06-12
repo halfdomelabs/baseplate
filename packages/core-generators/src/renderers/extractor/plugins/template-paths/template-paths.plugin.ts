@@ -113,7 +113,8 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
     } {
       const pathRootRelativePath =
         fileOptions.kind === 'singleton'
-          ? getPathRootRelativePath(absolutePath)
+          ? (fileOptions.pathRootRelativePath ??
+            getPathRootRelativePath(absolutePath))
           : undefined;
 
       // By default, singleton templates have the path like `feature-root/services/[file].ts`

@@ -1,3 +1,30 @@
 {
-  "name": "node/vitest"
+  "name": "node/vitest",
+  "templates": {
+    "src/tests/scripts/global-setup.ts": {
+      "name": "global-setup",
+      "type": "ts",
+      "generator": "@baseplate-dev/core-generators#node/vitest",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/tests/scripts/global-setup.ts",
+      "variables": { "TPL_OPERATIONS": {} },
+      "importMapProviders": {}
+    },
+    "vitest.config.ts": {
+      "name": "vitest-config",
+      "type": "ts",
+      "generator": "@baseplate-dev/core-generators#node/vitest",
+      "template": "",
+      "fileOptions": {
+        "kind": "singleton",
+        "generatorTemplatePath": "vitest.config.ts",
+        "pathRootRelativePath": "{package-root}/vitest.config.ts"
+      },
+      "pathRootRelativePath": "{package-root}/vitest.config.ts",
+      "variables": { "TPL_CONFIG": {} },
+      "importMapProviders": {}
+    }
+  },
+  "plugins": { "template-paths": { "skipTaskGeneration": true } }
 }

@@ -595,7 +595,7 @@ describe('TemplateExtractorConfigLookup', () => {
         name: 'test-generator',
         templates: {},
         extractors: {},
-        pluginConfig: {
+        plugins: {
           'test-plugin': {
             enabled: true,
             apiKey: 'test-key',
@@ -650,7 +650,7 @@ describe('TemplateExtractorConfigLookup', () => {
         name: 'test-generator',
         templates: {},
         extractors: {},
-        pluginConfig: {
+        plugins: {
           'other-plugin': {
             enabled: false,
           },
@@ -688,7 +688,7 @@ describe('TemplateExtractorConfigLookup', () => {
         name: 'test-generator',
         templates: {},
         extractors: {},
-        pluginConfig: {
+        plugins: {
           'auth-plugin': {
             provider: 'auth0',
             enabled: true,
@@ -747,7 +747,7 @@ describe('TemplateExtractorConfigLookup', () => {
         name: 'test-generator',
         templates: {},
         extractors: {},
-        pluginConfig: {
+        plugins: {
           'auth-plugin': {
             provider: 'auth0',
             enabled: 'invalid-boolean', // This should fail validation

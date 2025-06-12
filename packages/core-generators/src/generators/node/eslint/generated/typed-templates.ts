@@ -3,7 +3,11 @@ import path from 'node:path';
 import { createTsTemplateFile } from '#src/renderers/typescript/templates/types.js';
 
 const eslintConfig = createTsTemplateFile({
-  fileOptions: { kind: 'singleton', generatorTemplatePath: 'eslint.config.js' },
+  fileOptions: {
+    kind: 'singleton',
+    generatorTemplatePath: 'eslint.config.js',
+    pathRootRelativePath: '{package-root}/eslint.config.js',
+  },
   importMapProviders: {},
   name: 'eslint-config',
   source: {

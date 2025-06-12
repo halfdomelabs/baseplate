@@ -365,15 +365,15 @@ export class TemplateExtractorConfigLookup {
     this.checkInitialized();
 
     const config = this.getExtractorConfig(generatorName);
-    if (!config?.config.pluginConfig) {
+    if (!config?.config.plugins) {
       return undefined;
     }
 
-    if (!(pluginName in config.config.pluginConfig)) {
+    if (!(pluginName in config.config.plugins)) {
       return undefined;
     }
 
-    const pluginConfig = config.config.pluginConfig[pluginName];
+    const pluginConfig = config.config.plugins[pluginName];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- pluginConfig is validated by the schema
     return schema.parse(pluginConfig) as z.infer<T>;
