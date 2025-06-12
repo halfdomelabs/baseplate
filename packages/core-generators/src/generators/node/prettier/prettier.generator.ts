@@ -24,7 +24,7 @@ import { CORE_PACKAGES } from '#src/constants/core-packages.js';
 import { projectScope } from '#src/providers/scopes.js';
 import { writeJsonToBuilder } from '#src/writers/json.js';
 
-import { nodeProvider } from '../node/node.generator.js';
+import { nodeProvider } from '../node/index.js';
 
 const descriptorSchema = z.object({
   tabWidth: z.number().default(2),

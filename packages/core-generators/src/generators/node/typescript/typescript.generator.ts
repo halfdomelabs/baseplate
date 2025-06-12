@@ -47,7 +47,7 @@ import {
   createNodePackagesTask,
   createNodeTask,
   nodeProvider,
-} from '../node/node.generator.js';
+} from '../node/index.js';
 
 const typescriptGeneratorDescriptorSchema = z.object({});
 

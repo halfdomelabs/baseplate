@@ -10,8 +10,8 @@ import { projectScope } from '#src/providers/scopes.js';
 import { TsCodeUtils } from '#src/renderers/index.js';
 import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
-import { nodeProvider } from '../node/node.generator.js';
-import { typescriptFileProvider } from '../typescript/typescript.generator.js';
+import { nodeProvider } from '../node/index.js';
+import { typescriptFileProvider } from '../typescript/index.js';
 import { NODE_ESLINT_GENERATED } from './generated/index.js';
 import { REACT_ESLINT_RULES } from './react-rules.js';
 import { VITEST_ESLINT_RULES } from './vitest-rules.js';

@@ -9,12 +9,9 @@ import { CORE_PACKAGES } from '#src/constants/index.js';
 import { projectScope } from '#src/providers/scopes.js';
 import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
-import { eslintConfigProvider } from '../eslint/eslint.generator.js';
-import {
-  createNodePackagesTask,
-  nodeProvider,
-} from '../node/node.generator.js';
-import { typescriptFileProvider } from '../typescript/typescript.generator.js';
+import { eslintConfigProvider } from '../eslint/index.js';
+import { createNodePackagesTask, nodeProvider } from '../node/index.js';
+import { typescriptFileProvider } from '../typescript/index.js';
 
 const descriptorSchema = z.object({});
 
