@@ -5,7 +5,7 @@ import { pothosFieldProvider } from '#src/generators/pothos/_providers/pothos-fi
 import {
   pothosAuthorizeConfigSchema,
   pothosAuthProvider,
-} from '../pothos-auth/pothos-auth.generator.js';
+} from '../pothos-auth/index.js';
 
 const descriptorSchema = pothosAuthorizeConfigSchema;
 

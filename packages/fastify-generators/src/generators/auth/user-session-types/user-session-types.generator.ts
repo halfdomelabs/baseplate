@@ -6,9 +6,9 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
+import { appModuleProvider } from '#src/generators/core/app-module/index.js';
 
-import { authContextImportsProvider } from '../auth-context/auth-context.generator.js';
+import { authContextImportsProvider } from '../auth-context/index.js';
 import {
   createUserSessionTypesImports,
   userSessionTypesImportsProvider,

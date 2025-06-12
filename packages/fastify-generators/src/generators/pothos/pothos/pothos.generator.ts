@@ -31,10 +31,10 @@ import type {
 } from '#src/writers/pothos/index.js';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { appModuleImportsProvider } from '#src/generators/core/app-module/app-module.generator.js';
-import { fastifyOutputProvider } from '#src/generators/core/fastify/fastify.generator.js';
-import { requestServiceContextImportsProvider } from '#src/generators/core/request-service-context/request-service-context.generator.js';
-import { yogaPluginConfigProvider } from '#src/generators/yoga/yoga-plugin/yoga-plugin.generator.js';
+import { appModuleImportsProvider } from '#src/generators/core/app-module/index.js';
+import { fastifyOutputProvider } from '#src/generators/core/fastify/index.js';
+import { requestServiceContextImportsProvider } from '#src/generators/core/request-service-context/index.js';
+import { yogaPluginConfigProvider } from '#src/generators/yoga/yoga-plugin/index.js';
 import { INBUILT_POTHOS_SCALARS } from '#src/writers/pothos/index.js';
 
 import {

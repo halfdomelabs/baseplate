@@ -10,7 +10,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { fastifyOutputProvider } from '../fastify/fastify.generator.js';
+import { fastifyOutputProvider } from '../fastify/index.js';
 import { CORE_FASTIFY_SCRIPTS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});

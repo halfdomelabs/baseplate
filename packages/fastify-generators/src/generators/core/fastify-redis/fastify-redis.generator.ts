@@ -21,7 +21,7 @@ import {
   configServiceImportsProvider,
   configServiceProvider,
 } from '../config-service/index.js';
-import { fastifyHealthCheckConfigProvider } from '../fastify-health-check/fastify-health-check.generator.js';
+import { fastifyHealthCheckConfigProvider } from '../fastify-health-check/index.js';
 import {
   createFastifyRedisImports,
   fastifyRedisImportsProvider,

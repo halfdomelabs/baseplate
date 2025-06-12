@@ -17,10 +17,10 @@ import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import {
   prismaImportsProvider,
   prismaSchemaProvider,
-} from '#src/generators/prisma/prisma/prisma.generator.js';
+} from '#src/generators/prisma/prisma/index.js';
 import { createPrismaSchemaGeneratorBlock } from '#src/writers/prisma-schema/index.js';
 
-import { pothosConfigProvider } from '../pothos/pothos.generator.js';
+import { pothosConfigProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({});
 

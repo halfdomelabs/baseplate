@@ -13,13 +13,13 @@ import { z } from 'zod';
 import type { ScalarFieldType } from '#src/types/field-types.js';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
+import { appModuleProvider } from '#src/generators/core/app-module/index.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 
 import {
   pothosConfigProvider,
   pothosImportsProvider,
-} from '../pothos/pothos.generator.js';
+} from '../pothos/index.js';
 import { POTHOS_POTHOS_SCALAR_TS_TEMPLATES } from './generated/ts-templates.js';
 
 type ScalarTemplateKey = keyof typeof POTHOS_POTHOS_SCALAR_TS_TEMPLATES;

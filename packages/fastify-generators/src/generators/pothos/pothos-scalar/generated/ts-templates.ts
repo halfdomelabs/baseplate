@@ -1,7 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
 import { errorHandlerServiceImportsProvider } from '../../../core/error-handler-service/generated/ts-import-providers.js';
-import { pothosImportsProvider } from '../../pothos/generated/ts-import-maps.js';
+import { pothosImportsProvider } from '../../pothos/index.js';
 
 const date = createTsTemplateFile({
   importMapProviders: {

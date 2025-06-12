@@ -23,7 +23,7 @@ import { z } from 'zod';
 
 import type { ServiceOutputMethod } from '#src/types/service-output.js';
 
-import { appModuleProvider } from '../app-module/app-module.generator.js';
+import { appModuleProvider } from '../app-module/index.js';
 
 const descriptorSchema = z.object({
   /**

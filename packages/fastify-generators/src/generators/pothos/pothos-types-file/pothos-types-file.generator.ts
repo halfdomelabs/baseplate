@@ -13,12 +13,12 @@ import { NamedArrayFieldContainer } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
+import { appModuleProvider } from '#src/generators/core/app-module/index.js';
 
 import {
   pothosImportsProvider,
   pothosSchemaProvider,
-} from '../pothos/pothos.generator.js';
+} from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   /**

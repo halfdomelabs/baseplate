@@ -4,7 +4,7 @@ import {
 } from '@baseplate-dev/core-generators';
 
 import { errorHandlerServiceImportsProvider } from '../../../core/error-handler-service/generated/ts-import-providers.js';
-import { authRolesImportsProvider } from '../../auth-roles/generated/ts-import-maps.js';
+import { authRolesImportsProvider } from '../../auth-roles/index.js';
 
 const authContextTypes = createTsTemplateFile({
   group: 'main',

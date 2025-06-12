@@ -15,7 +15,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/index.js';
 import { CORE_FASTIFY_HEALTH_CHECK_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});

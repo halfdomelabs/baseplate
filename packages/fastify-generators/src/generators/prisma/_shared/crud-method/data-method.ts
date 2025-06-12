@@ -13,7 +13,7 @@ import {
 import { notEmpty, safeMergeAllWithOptions } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 
-import type { ServiceContextImportsProvider } from '#src/generators/core/service-context/service-context.generator.js';
+import type { ServiceContextImportsProvider } from '#src/generators/core/service-context/index.js';
 import type {
   PrismaDataTransformer,
   PrismaDataTransformOutputField,
@@ -23,8 +23,8 @@ import type { ServiceOutputDto } from '#src/types/service-output.js';
 
 import { upperCaseFirst } from '#src/utils/case.js';
 
-import type { PrismaUtilsImportsProvider } from '../../prisma-utils/prisma-utils.generator.js';
-import type { PrismaOutputProvider } from '../../prisma/prisma.generator.js';
+import type { PrismaUtilsImportsProvider } from '../../prisma-utils/index.js';
+import type { PrismaOutputProvider } from '../../prisma/index.js';
 
 export interface PrismaDataMethodOptions {
   name: string;

@@ -29,8 +29,8 @@ import {
   errorHandlerServiceConfigProvider,
   errorHandlerServiceImportsProvider,
 } from '../error-handler-service/index.js';
-import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
-import { fastifyProvider } from '../fastify/fastify.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/index.js';
+import { fastifyProvider } from '../fastify/index.js';
 import {
   createFastifySentryImports,
   fastifySentryImportsProvider,

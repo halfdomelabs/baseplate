@@ -13,8 +13,8 @@ import {
 import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import { requestContextImportsProvider } from '../request-context/request-context.generator.js';
-import { serviceContextImportsProvider } from '../service-context/service-context.generator.js';
+import { requestContextImportsProvider } from '../request-context/index.js';
+import { serviceContextImportsProvider } from '../service-context/index.js';
 import {
   createRequestServiceContextImports,
   requestServiceContextImportsProvider,

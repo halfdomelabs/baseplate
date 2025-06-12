@@ -11,8 +11,8 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
-import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
-import { requestServiceContextConfigProvider } from '../request-service-context/request-service-context.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/index.js';
+import { requestServiceContextConfigProvider } from '../request-service-context/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

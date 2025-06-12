@@ -1,7 +1,7 @@
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { prismaModelProvider } from '../prisma-model/prisma-model.generator.js';
+import { prismaModelProvider } from '../prisma-model/index.js';
 
 const descriptorSchema = z.object({
   fields: z.array(z.string().min(1)),

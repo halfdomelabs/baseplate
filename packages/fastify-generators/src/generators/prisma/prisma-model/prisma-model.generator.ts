@@ -14,7 +14,7 @@ import type {
 
 import { PrismaModelBlockWriter } from '#src/writers/prisma-schema/index.js';
 
-import { prismaSchemaProvider } from '../prisma/prisma.generator.js';
+import { prismaSchemaProvider } from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

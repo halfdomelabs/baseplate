@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { serviceContextImportsProvider } from '../../service-context/generated/ts-import-maps.js';
+import { serviceContextImportsProvider } from '../../service-context/index.js';
 
 const requestServiceContext = createTsTemplateFile({
   importMapProviders: { serviceContextImports: serviceContextImportsProvider },

@@ -19,14 +19,14 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
+import { appModuleProvider } from '#src/generators/core/app-module/index.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
-import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/fastify-redis.generator.js';
-import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/fastify-server.generator.js';
+import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/index.js';
+import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/index.js';
 import {
   pothosImportsProvider,
   pothosSchemaProvider,
-} from '#src/generators/pothos/pothos/pothos.generator.js';
+} from '#src/generators/pothos/pothos/index.js';
 
 import { BULL_FASTIFY_BULL_BOARD_TS_TEMPLATES } from './generated/ts-templates.js';
 

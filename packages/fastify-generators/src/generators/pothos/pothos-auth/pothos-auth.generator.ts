@@ -16,10 +16,7 @@ import { z } from 'zod';
 import { authRolesImportsProvider } from '#src/generators/auth/index.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 
-import {
-  pothosConfigProvider,
-  pothosSchemaProvider,
-} from '../pothos/pothos.generator.js';
+import { pothosConfigProvider, pothosSchemaProvider } from '../pothos/index.js';
 import { POTHOS_POTHOS_AUTH_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({

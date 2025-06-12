@@ -6,9 +6,9 @@ import {
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { serviceContextImportsProvider } from '#src/generators/core/service-context/service-context.generator.js';
+import { serviceContextImportsProvider } from '#src/generators/core/service-context/index.js';
 
-import { prismaImportsProvider } from '../prisma/prisma.generator.js';
+import { prismaImportsProvider } from '../prisma/index.js';
 import {
   createPrismaUtilsImports,
   prismaUtilsImportsProvider,

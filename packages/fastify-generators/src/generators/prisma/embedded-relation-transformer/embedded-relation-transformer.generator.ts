@@ -24,12 +24,12 @@ import type {
   PrismaOutputRelationField,
 } from '#src/types/prisma-output.js';
 
-import { serviceContextImportsProvider } from '#src/generators/core/service-context/service-context.generator.js';
+import { serviceContextImportsProvider } from '#src/generators/core/service-context/index.js';
 import { upperCaseFirst } from '#src/utils/case.js';
 
 import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method.js';
-import type { PrismaUtilsImportsProvider } from '../prisma-utils/prisma-utils.generator.js';
-import type { PrismaOutputProvider } from '../prisma/prisma.generator.js';
+import type { PrismaUtilsImportsProvider } from '../prisma-utils/index.js';
+import type { PrismaOutputProvider } from '../prisma/index.js';
 
 import {
   getDataInputTypeBlock,
@@ -39,9 +39,9 @@ import {
 import {
   prismaCrudServiceProvider,
   prismaCrudServiceSetupProvider,
-} from '../prisma-crud-service/prisma-crud-service.generator.js';
-import { prismaUtilsImportsProvider } from '../prisma-utils/prisma-utils.generator.js';
-import { prismaOutputProvider } from '../prisma/prisma.generator.js';
+} from '../prisma-crud-service/index.js';
+import { prismaUtilsImportsProvider } from '../prisma-utils/index.js';
+import { prismaOutputProvider } from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

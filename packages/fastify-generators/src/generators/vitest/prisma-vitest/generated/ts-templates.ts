@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { prismaImportsProvider } from '../../../prisma/prisma/generated/ts-import-maps.js';
+import { prismaImportsProvider } from '../../../prisma/prisma/index.js';
 
 const dbTestHelper = createTsTemplateFile({
   name: 'db-test-helper',

@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { appModuleSetupImportsProvider } from '../../app-module-setup/generated/ts-import-maps.js';
+import { appModuleSetupImportsProvider } from '../../app-module-setup/index.js';
 
 const index = createTsTemplateFile({
   importMapProviders: { appModuleSetupImports: appModuleSetupImportsProvider },

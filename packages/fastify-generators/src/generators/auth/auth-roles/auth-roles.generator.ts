@@ -8,7 +8,7 @@ import { posixJoin } from '@baseplate-dev/utils/node';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
+import { appModuleProvider } from '#src/generators/core/app-module/index.js';
 
 import {
   authRolesImportsProvider,

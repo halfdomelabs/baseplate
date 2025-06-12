@@ -4,8 +4,8 @@ import {
   tsUtilsImportsProvider,
 } from '@baseplate-dev/core-generators';
 
-import { serviceContextImportsProvider } from '../../../core/service-context/generated/ts-import-maps.js';
-import { prismaImportsProvider } from '../../prisma/generated/ts-import-maps.js';
+import { serviceContextImportsProvider } from '../../../core/service-context/index.js';
+import { prismaImportsProvider } from '../../prisma/index.js';
 
 const crudServiceTypes = createTsTemplateFile({
   group: 'utils',

@@ -19,7 +19,7 @@ import {
   configServiceProvider,
 } from '#src/generators/core/config-service/index.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
-import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/index.js';
 import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/index.js';
 
 import {

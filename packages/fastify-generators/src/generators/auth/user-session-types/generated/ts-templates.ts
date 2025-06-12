@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { authContextImportsProvider } from '../../auth-context/generated/ts-import-maps.js';
+import { authContextImportsProvider } from '../../auth-context/index.js';
 
 const userSessionTypes = createTsTemplateFile({
   importMapProviders: { authContextImports: authContextImportsProvider },

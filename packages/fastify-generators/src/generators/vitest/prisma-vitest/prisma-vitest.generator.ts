@@ -12,7 +12,7 @@ import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { prismaImportsProvider } from '#src/generators/prisma/prisma/prisma.generator.js';
+import { prismaImportsProvider } from '#src/generators/prisma/prisma/index.js';
 
 import {
   createPrismaVitestImports,

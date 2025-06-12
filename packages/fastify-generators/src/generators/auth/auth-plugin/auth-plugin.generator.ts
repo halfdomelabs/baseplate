@@ -10,11 +10,11 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
+import { appModuleProvider } from '#src/generators/core/app-module/index.js';
 
 import { userSessionServiceImportsProvider } from '../_providers/index.js';
-import { authContextImportsProvider } from '../auth-context/auth-context.generator.js';
-import { userSessionTypesImportsProvider } from '../user-session-types/user-session-types.generator.js';
+import { authContextImportsProvider } from '../auth-context/index.js';
+import { userSessionTypesImportsProvider } from '../user-session-types/index.js';
 import { AUTH_AUTH_PLUGIN_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});

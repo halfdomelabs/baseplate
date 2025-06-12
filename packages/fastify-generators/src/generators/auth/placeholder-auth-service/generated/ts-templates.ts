@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { userSessionTypesImportsProvider } from '../../user-session-types/user-session-types.generator.js';
+import { userSessionTypesImportsProvider } from '../../user-session-types/index.js';
 
 const userSessionService = createTsTemplateFile({
   importMapProviders: {

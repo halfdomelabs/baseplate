@@ -31,8 +31,8 @@ import type { PrismaGeneratorBlock } from '#src/writers/prisma-schema/types.js';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import { configServiceProvider } from '#src/generators/core/config-service/index.js';
-import { fastifyHealthCheckConfigProvider } from '#src/generators/core/fastify-health-check/fastify-health-check.generator.js';
-import { fastifyOutputProvider } from '#src/generators/core/fastify/fastify.generator.js';
+import { fastifyHealthCheckConfigProvider } from '#src/generators/core/fastify-health-check/index.js';
+import { fastifyOutputProvider } from '#src/generators/core/fastify/index.js';
 import {
   createPrismaSchemaDatasourceBlock,
   createPrismaSchemaGeneratorBlock,

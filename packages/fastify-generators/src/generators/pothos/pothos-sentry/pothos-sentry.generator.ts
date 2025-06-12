@@ -10,10 +10,10 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { fastifySentryConfigProvider } from '#src/generators/core/fastify-sentry/fastify-sentry.generator.js';
-import { yogaPluginConfigProvider } from '#src/generators/yoga/yoga-plugin/yoga-plugin.generator.js';
+import { fastifySentryConfigProvider } from '#src/generators/core/fastify-sentry/index.js';
+import { yogaPluginConfigProvider } from '#src/generators/yoga/yoga-plugin/index.js';
 
-import { pothosConfigProvider } from '../pothos/pothos.generator.js';
+import { pothosConfigProvider } from '../pothos/index.js';
 import { POTHOS_POTHOS_SENTRY_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});

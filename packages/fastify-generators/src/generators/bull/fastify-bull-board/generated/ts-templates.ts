@@ -4,8 +4,8 @@ import {
 } from '@baseplate-dev/core-generators';
 
 import { errorHandlerServiceImportsProvider } from '../../../core/error-handler-service/generated/ts-import-providers.js';
-import { fastifyRedisImportsProvider } from '../../../core/fastify-redis/generated/ts-import-maps.js';
-import { pothosImportsProvider } from '../../../pothos/pothos/generated/ts-import-maps.js';
+import { fastifyRedisImportsProvider } from '../../../core/fastify-redis/index.js';
+import { pothosImportsProvider } from '../../../pothos/pothos/index.js';
 
 const index = createTsTemplateFile({
   group: 'module',

@@ -99,3 +99,5 @@ export const appModuleSetupGenerator = createGenerator({
     }),
   }),
 });
+
+export { appModuleSetupImportsProvider } from './generated/ts-import-maps.js';
