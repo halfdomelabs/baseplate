@@ -1,3 +1,38 @@
 {
-  "name": "core/fastify-server"
+  "name": "core/fastify-server",
+  "templates": {
+    "src/index.ts": {
+      "name": "index",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/fastify-server",
+      "template": "index.ts",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/index.ts",
+      "variables": { "TPL_LOG_ERROR": {} },
+      "importMapProviders": {
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        },
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/server.ts": {
+      "name": "server",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/fastify-server",
+      "template": "server.ts",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/server.ts",
+      "variables": {
+        "TPL_PLUGINS": {},
+        "TPL_PRE_PLUGIN_FRAGMENTS": {},
+        "TPL_ROOT_MODULE": {}
+      },
+      "importMapProviders": {}
+    }
+  }
 }

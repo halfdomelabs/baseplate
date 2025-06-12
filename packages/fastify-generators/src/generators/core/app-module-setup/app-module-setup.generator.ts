@@ -13,11 +13,7 @@ import {
 import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import {
-  appModuleSetupImportsProvider,
-  createAppModuleSetupImports,
-} from './generated/ts-import-maps.js';
-import { CORE_APP_MODULE_SETUP_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_APP_MODULE_SETUP_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -44,21 +40,17 @@ export const appModuleSetupGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: CORE_APP_MODULE_SETUP_GENERATED.paths.task,
+    imports: CORE_APP_MODULE_SETUP_GENERATED.imports.task,
     setupTask,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         appModuleConfigValues: appModuleConfigValuesProvider,
+        paths: CORE_APP_MODULE_SETUP_GENERATED.paths.provider,
       },
-      exports: {
-        appModuleSetupImports:
-          appModuleSetupImportsProvider.export(projectScope),
-      },
-      run({ typescriptFile, appModuleConfigValues: { moduleFields } }) {
+      run({ typescriptFile, appModuleConfigValues: { moduleFields }, paths }) {
         return {
-          providers: {
-            appModuleSetupImports: createAppModuleSetupImports('@/src/utils'),
-          },
           build: async (builder) => {
             const moduleFieldsInterface = TsCodeUtils.mergeFragments(
               mapValuesOfMap(
@@ -84,8 +76,8 @@ export const appModuleSetupGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_APP_MODULE_SETUP_TS_TEMPLATES.appModules,
-                destination: 'src/utils/app-modules.ts',
+                template: CORE_APP_MODULE_SETUP_GENERATED.templates.appModules,
+                destination: paths.appModules,
                 variables: {
                   TPL_MODULE_FIELDS: moduleFieldsInterface,
                   TPL_MODULE_INITIALIZER: moduleInitializer,
@@ -99,5 +91,3 @@ export const appModuleSetupGenerator = createGenerator({
     }),
   }),
 });
-
-export { appModuleSetupImportsProvider } from './generated/ts-import-maps.js';

@@ -1,3 +1,48 @@
 {
-  "name": "core/fastify-sentry"
+  "name": "core/fastify-sentry",
+  "templates": {
+    "src/instrument.ts": {
+      "name": "instrument",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
+      "template": "instrument.ts",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/instrument.ts",
+      "variables": { "TPL_INTEGRATIONS": {} },
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/services/sentry.ts": {
+      "name": "sentry",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
+      "template": "services/sentry.ts",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": {
+        "isSentryEnabled": {},
+        "logErrorToSentry": {},
+        "registerSentryEventProcessor": {},
+        "shouldLogToSentry": {}
+      },
+      "pathRootRelativePath": "{src-root}/services/sentry.ts",
+      "variables": {
+        "TPL_LOG_TO_SENTRY_CONDITIONS": {},
+        "TPL_SCOPE_CONFIGURATION": {}
+      },
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      }
+    }
+  }
 }

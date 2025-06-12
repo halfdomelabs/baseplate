@@ -2,7 +2,6 @@ import {
   CORE_PACKAGES,
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
   tsTemplate,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -10,11 +9,8 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { errorHandlerServiceConfigProvider } from '../error-handler-service/index.js';
-import {
-  axiosImportsProvider,
-  createAxiosImports,
-} from './generated/ts-import-maps.js';
-import { CORE_AXIOS_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_AXIOS_GENERATED } from './generated/index.js';
+import { axiosImportsProvider } from './generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({});
 
@@ -23,39 +19,25 @@ export const axiosGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: CORE_AXIOS_GENERATED.paths.task,
+    imports: CORE_AXIOS_GENERATED.imports.task,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(CORE_PACKAGES, ['axios']),
-    }),
-    axiosImports: createGeneratorTask({
-      exports: {
-        axiosImports: axiosImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            axiosImports: createAxiosImports('@/src/services'),
-          },
-        };
-      },
     }),
     main: createGeneratorTask({
       dependencies: {
         errorHandlerServiceConfig: errorHandlerServiceConfigProvider,
         typescriptFile: typescriptFileProvider,
         axiosImports: axiosImportsProvider,
+        paths: CORE_AXIOS_GENERATED.paths.provider,
       },
-      run({ errorHandlerServiceConfig, typescriptFile, axiosImports }) {
-        const axiosFilePath = '@/src/services/axios.ts';
-
+      run({ errorHandlerServiceConfig, typescriptFile, axiosImports, paths }) {
         return {
-          providers: {
-            axiosImports: createAxiosImports('@/src/services'),
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_AXIOS_TS_TEMPLATES.axios,
-                destination: axiosFilePath,
+                template: CORE_AXIOS_GENERATED.templates.axios,
+                destination: paths.axios,
               }),
             );
 
@@ -71,5 +53,3 @@ export const axiosGenerator = createGenerator({
     }),
   }),
 });
-
-export { axiosImportsProvider } from './generated/ts-import-maps.js';

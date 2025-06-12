@@ -1,3 +1,20 @@
 {
-  "name": "core/app-module-setup"
+  "name": "core/app-module-setup",
+  "templates": {
+    "src/utils/app-modules.ts": {
+      "name": "app-modules",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/app-module-setup",
+      "template": "app-modules.ts",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": { "flattenAppModule": {} },
+      "pathRootRelativePath": "{src-root}/utils/app-modules.ts",
+      "variables": {
+        "TPL_MODULE_FIELDS": {},
+        "TPL_MODULE_INITIALIZER": {},
+        "TPL_MODULE_MERGER": {}
+      },
+      "importMapProviders": {}
+    }
+  }
 }

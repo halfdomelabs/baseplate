@@ -14,11 +14,7 @@ import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import {
-  createServiceContextImports,
-  serviceContextImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_SERVICE_CONTEXT_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_SERVICE_CONTEXT_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -73,25 +69,21 @@ export const serviceContextGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: CORE_SERVICE_CONTEXT_GENERATED.paths.task,
+    imports: CORE_SERVICE_CONTEXT_GENERATED.imports.task,
     setup: setupTask,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         serviceContextConfigValues: serviceContextConfigValuesProvider,
+        paths: CORE_SERVICE_CONTEXT_GENERATED.paths.provider,
       },
-      exports: {
-        serviceContextImports:
-          serviceContextImportsProvider.export(projectScope),
-      },
-      run({ typescriptFile, serviceContextConfigValues: { contextFields } }) {
-        const serviceContextPath = '@/src/utils/service-context.ts';
-        const testHelperPath =
-          '@/src/tests/helpers/service-context.test-helper.ts';
-
+      run({
+        typescriptFile,
+        serviceContextConfigValues: { contextFields },
+        paths,
+      }) {
         return {
-          providers: {
-            serviceContextImports: createServiceContextImports('@/src'),
-          },
           build: async (builder) => {
             const orderedContextArgs = sortBy(
               [...contextFields.entries()],
@@ -133,8 +125,9 @@ export const serviceContextGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_SERVICE_CONTEXT_TS_TEMPLATES.serviceContext,
-                destination: serviceContextPath,
+                template:
+                  CORE_SERVICE_CONTEXT_GENERATED.templates.serviceContext,
+                destination: paths.serviceContext,
                 variables: {
                   TPL_CONTEXT_INTERFACE: contextInterface,
                   TPL_CONTEXT_OBJECT: contextObject,
@@ -159,8 +152,8 @@ export const serviceContextGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_SERVICE_CONTEXT_TS_TEMPLATES.testHelper,
-                destination: testHelperPath,
+                template: CORE_SERVICE_CONTEXT_GENERATED.templates.testHelper,
+                destination: paths.testHelper,
                 variables: {
                   TPL_CREATE_TEST_ARGS:
                     orderedContextArgs.length === 0
@@ -176,6 +169,3 @@ export const serviceContextGenerator = createGenerator({
     }),
   }),
 });
-
-export { serviceContextImportsProvider } from './generated/ts-import-maps.js';
-export type { ServiceContextImportsProvider } from './generated/ts-import-maps.js';

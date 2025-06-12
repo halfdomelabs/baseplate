@@ -43,6 +43,9 @@ function isV2TemplateMetadataFile(file: TemplateMetadataFileEntry): boolean {
   if (GENERATOR_WHITELIST.has(parsedGenerator.packageName)) {
     return true;
   }
+  if (file.metadata.generator.includes('core/')) {
+    return true;
+  }
   return 'fileOptions' in file.metadata;
 }
 

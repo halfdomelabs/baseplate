@@ -24,8 +24,10 @@ import {
 import { camelCase, kebabCase } from 'change-case';
 import { z } from 'zod';
 
-import { appModuleConfigValuesProvider } from '../app-module-setup/index.js';
-import { appModuleSetupImportsProvider } from '../app-module-setup/index.js';
+import {
+  appModuleConfigValuesProvider,
+  appModuleSetupImportsProvider,
+} from '../app-module-setup/index.js';
 import { CORE_APP_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const appModuleConfigSchema = createFieldMapSchemaBuilder((t) => ({

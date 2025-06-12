@@ -1,3 +1,16 @@
 {
-  "name": "core/request-context"
+  "name": "core/request-context",
+  "templates": {
+    "src/plugins/request-context.ts": {
+      "name": "request-context",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/request-context",
+      "template": "request-context.ts",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": { "RequestInfo": { "isTypeOnly": true } },
+      "pathRootRelativePath": "{src-root}/plugins/request-context.ts",
+      "variables": {},
+      "importMapProviders": {}
+    }
+  }
 }

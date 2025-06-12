@@ -1,3 +1,34 @@
 {
-  "name": "core/service-context"
+  "name": "core/service-context",
+  "templates": {
+    "src/tests/helpers/service-context.test-helper.ts": {
+      "name": "test-helper",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/service-context",
+      "template": "service-context.test-helper.ts",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": { "createTestServiceContext": {} },
+      "pathRootRelativePath": "{src-root}/tests/helpers/service-context.test-helper.ts",
+      "variables": { "TPL_CREATE_TEST_ARGS": {}, "TPL_CREATE_TEST_OBJECT": {} },
+      "importMapProviders": {}
+    },
+    "src/utils/service-context.ts": {
+      "name": "service-context",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/service-context",
+      "template": "service-context.ts",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": {
+        "ServiceContext": { "isTypeOnly": true },
+        "createServiceContext": {}
+      },
+      "pathRootRelativePath": "{src-root}/utils/service-context.ts",
+      "variables": {
+        "TPL_CONTEXT_INTERFACE": {},
+        "TPL_CONTEXT_OBJECT": {},
+        "TPL_CREATE_CONTEXT_ARGS": {}
+      },
+      "importMapProviders": {}
+    }
+  }
 }

@@ -1,3 +1,15 @@
 {
-  "name": "core/fastify-health-check"
+  "name": "core/fastify-health-check",
+  "templates": {
+    "src/plugins/health-check.ts": {
+      "name": "health-check",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#core/fastify-health-check",
+      "template": "health-check.ts",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/plugins/health-check.ts",
+      "variables": { "TPL_HEALTH_CHECKS": {} },
+      "importMapProviders": {}
+    }
+  }
 }

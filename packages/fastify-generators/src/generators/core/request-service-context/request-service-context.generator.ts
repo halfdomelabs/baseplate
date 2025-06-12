@@ -15,11 +15,7 @@ import { z } from 'zod';
 
 import { requestContextImportsProvider } from '../request-context/index.js';
 import { serviceContextImportsProvider } from '../service-context/index.js';
-import {
-  createRequestServiceContextImports,
-  requestServiceContextImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_REQUEST_SERVICE_CONTEXT_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_REQUEST_SERVICE_CONTEXT_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -59,6 +55,8 @@ export const requestServiceContextGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: CORE_REQUEST_SERVICE_CONTEXT_GENERATED.paths.task,
+    imports: CORE_REQUEST_SERVICE_CONTEXT_GENERATED.imports.task,
     setup: setupTask,
     main: createGeneratorTask({
       dependencies: {
@@ -67,10 +65,7 @@ export const requestServiceContextGenerator = createGenerator({
         serviceContextImports: serviceContextImportsProvider,
         requestServiceContextSetupValues:
           requestServiceContextConfigValuesProvider,
-      },
-      exports: {
-        requestServiceContextImports:
-          requestServiceContextImportsProvider.export(projectScope),
+        paths: CORE_REQUEST_SERVICE_CONTEXT_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
@@ -80,20 +75,14 @@ export const requestServiceContextGenerator = createGenerator({
           contextFields,
           contextPassthroughs,
         },
+        paths,
       }) {
         contextFields.set('reqInfo', {
           type: requestContextImports.RequestInfo.typeFragment(),
           creator: (req) => `${req}.reqInfo`,
         });
 
-        const requestServiceContextPath =
-          '@/src/utils/request-service-context.ts';
-
         return {
-          providers: {
-            requestServiceContextImports:
-              createRequestServiceContextImports('@/src/utils'),
-          },
           build: async (builder) => {
             const contextCreator = TsCodeUtils.mergeFragmentsAsObject(
               {
@@ -123,8 +112,9 @@ export const requestServiceContextGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template:
-                  CORE_REQUEST_SERVICE_CONTEXT_TS_TEMPLATES.requestServiceContext,
-                destination: requestServiceContextPath,
+                  CORE_REQUEST_SERVICE_CONTEXT_GENERATED.templates
+                    .requestServiceContext,
+                destination: paths.requestServiceContext,
                 variables: {
                   TPL_CONTEXT_FIELDS:
                     TsCodeUtils.mergeFragmentsAsInterfaceContent(
@@ -148,5 +138,3 @@ export const requestServiceContextGenerator = createGenerator({
     }),
   }),
 });
-
-export { requestServiceContextImportsProvider } from './generated/ts-import-maps.js';
