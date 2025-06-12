@@ -349,4 +349,33 @@ export class TemplateExtractorConfigLookup {
 
     templates[templateKey] = config;
   }
+
+  /**
+   * Get plugin configuration for a specific generator
+   * @param generatorName - The name of the generator
+   * @param pluginName - The name of the plugin
+   * @param schema - Zod schema to validate and parse the plugin configuration
+   * @returns The parsed plugin configuration or undefined if not found
+   */
+  getPluginConfigForGenerator<T extends z.ZodTypeAny>(
+    generatorName: string,
+    pluginName: string,
+    schema: T,
+  ): z.infer<T> | undefined {
+    this.checkInitialized();
+
+    const config = this.getExtractorConfig(generatorName);
+    if (!config?.config.pluginConfig) {
+      return undefined;
+    }
+
+    if (!(pluginName in config.config.pluginConfig)) {
+      return undefined;
+    }
+
+    const pluginConfig = config.config.pluginConfig[pluginName];
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- pluginConfig is validated by the schema
+    return schema.parse(pluginConfig) as z.infer<T>;
+  }
 }

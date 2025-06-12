@@ -587,4 +587,197 @@ describe('TemplateExtractorConfigLookup', () => {
       expect(path).toBeUndefined();
     });
   });
+
+  describe('getPluginConfigForGenerator', () => {
+    it('should return plugin config when available', async () => {
+      // Arrange
+      const extractorConfig = {
+        name: 'test-generator',
+        templates: {},
+        extractors: {},
+        pluginConfig: {
+          'test-plugin': {
+            enabled: true,
+            apiKey: 'test-key',
+            settings: {
+              timeout: 5000,
+            },
+          },
+          'another-plugin': {
+            mode: 'development',
+          },
+        },
+      };
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(extractorConfig),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const testPluginSchema = z.object({
+        enabled: z.boolean(),
+        apiKey: z.string(),
+        settings: z.object({
+          timeout: z.number(),
+        }),
+      });
+
+      // Act
+      const result = lookup.getPluginConfigForGenerator(
+        '@test/package1#test-generator',
+        'test-plugin',
+        testPluginSchema,
+      );
+
+      // Assert
+      expect(result).toEqual({
+        enabled: true,
+        apiKey: 'test-key',
+        settings: {
+          timeout: 5000,
+        },
+      });
+    });
+
+    it('should return undefined when plugin config does not exist', async () => {
+      // Arrange
+      const extractorConfig = {
+        name: 'test-generator',
+        templates: {},
+        extractors: {},
+        pluginConfig: {
+          'other-plugin': {
+            enabled: false,
+          },
+        },
+      };
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(extractorConfig),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const schema = z.object({
+        enabled: z.boolean(),
+      });
+
+      // Act
+      const result = lookup.getPluginConfigForGenerator(
+        '@test/package1#test-generator',
+        'non-existent-plugin',
+        schema,
+      );
+
+      // Assert
+      expect(result).toBeUndefined();
+    });
+
+    it('should validate and parse plugin config with schema', async () => {
+      // Arrange
+      const extractorConfig = {
+        name: 'test-generator',
+        templates: {},
+        extractors: {},
+        pluginConfig: {
+          'auth-plugin': {
+            provider: 'auth0',
+            enabled: true,
+            settings: {
+              domain: 'example.auth0.com',
+              clientId: 'test-client-id',
+            },
+          },
+        },
+      };
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(extractorConfig),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const authPluginSchema = z.object({
+        provider: z.string(),
+        enabled: z.boolean(),
+        settings: z.object({
+          domain: z.string(),
+          clientId: z.string(),
+        }),
+      });
+
+      // Act
+      const result = lookup.getPluginConfigForGenerator(
+        '@test/package1#test-generator',
+        'auth-plugin',
+        authPluginSchema,
+      );
+
+      // Assert
+      expect(result).toEqual({
+        provider: 'auth0',
+        enabled: true,
+        settings: {
+          domain: 'example.auth0.com',
+          clientId: 'test-client-id',
+        },
+      });
+      // Verify TypeScript typing - this should be properly typed
+      expect(result?.provider).toBe('auth0');
+      expect(result?.enabled).toBe(true);
+      expect(result?.settings.domain).toBe('example.auth0.com');
+    });
+
+    it('should throw validation error for invalid plugin config', async () => {
+      // Arrange
+      const extractorConfig = {
+        name: 'test-generator',
+        templates: {},
+        extractors: {},
+        pluginConfig: {
+          'auth-plugin': {
+            provider: 'auth0',
+            enabled: 'invalid-boolean', // This should fail validation
+          },
+        },
+      };
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(extractorConfig),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const authPluginSchema = z.object({
+        provider: z.string(),
+        enabled: z.boolean(),
+      });
+
+      // Act & Assert
+      expect(() =>
+        lookup.getPluginConfigForGenerator(
+          '@test/package1#test-generator',
+          'auth-plugin',
+          authPluginSchema,
+        ),
+      ).toThrow();
+    });
+  });
 });
