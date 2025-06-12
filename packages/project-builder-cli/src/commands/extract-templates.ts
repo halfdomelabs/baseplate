@@ -19,11 +19,19 @@ export function addExtractTemplatesCommand(program: Command): void {
       'Auto-generate extractor.json files',
       true,
     )
+    .option(
+      '--skip-clean',
+      'Skip cleaning the output directories (templates and generated)',
+      false,
+    )
     .action(
       async (
         directory: string,
         app: string,
-        options: { autoGenerateExtractor?: boolean },
+        options: {
+          autoGenerateExtractor?: boolean;
+          skipClean?: boolean;
+        },
       ) => {
         const { runTemplateExtractorsForProjectV2 } = await import(
           '@baseplate-dev/project-builder-server/template-extractor'
@@ -35,6 +43,7 @@ export function addExtractTemplatesCommand(program: Command): void {
           logger,
           {
             autoGenerateExtractor: options.autoGenerateExtractor,
+            skipClean: options.skipClean,
           },
         );
       },

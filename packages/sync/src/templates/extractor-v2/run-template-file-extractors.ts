@@ -19,12 +19,20 @@ import { initializeTemplateExtractorPlugins } from './runner/initialize-template
 import { TemplateExtractorApi } from './runner/template-extractor-api.js';
 import { TemplateExtractorContext } from './runner/template-extractor-context.js';
 import { TemplateExtractorFileContainer } from './runner/template-extractor-file-container.js';
+import { cleanupUnusedTemplateFiles } from './utils/cleanup-unused-template-files.js';
 import { groupTemplateFilesByType } from './utils/group-template-files-by-type.js';
 import { mergeExtractorTemplateEntries } from './utils/merge-extractor-template-entries.js';
 import { writeExtractorTemplateJsons } from './utils/write-extractor-template-jsons.js';
 
 export interface RunTemplateFileExtractorsOptions {
+  /**
+   * Whether to auto-generate extractor.json files for generators that don't have one.
+   */
   autoGenerateExtractor?: boolean;
+  /**
+   * Whether to skip cleaning the output directories (templates and generated).
+   */
+  skipClean?: boolean;
 }
 
 const GENERATOR_WHITELIST = new Set(['@baseplate-dev/core-generators']);
@@ -187,4 +195,8 @@ export async function runTemplateFileExtractors(
 
   // Commit the file changes once all the extractors and plugins have written their files
   await fileContainer.commit();
+
+  if (!options?.skipClean) {
+    await cleanupUnusedTemplateFiles(generatorNames, context);
+  }
 }

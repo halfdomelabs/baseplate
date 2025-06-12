@@ -22,16 +22,13 @@ export async function createMockContext(
 ): Promise<TemplateExtractorContext> {
   const {
     outputDirectory = '/test-output',
-    packageMap = new Map(),
-    fileIdMap = new Map(),
+    packageMap = new Map<string, string>(),
+    fileIdMap = new Map<string, string>(),
     plugins = new Map(),
     logger = createTestLogger(),
   } = options;
 
-  const configLookup = new TemplateExtractorConfigLookup(
-    packageMap as Map<string, string>,
-    fileIdMap as Map<string, string>,
-  );
+  const configLookup = new TemplateExtractorConfigLookup(packageMap, fileIdMap);
   const fileContainer = new TemplateExtractorFileContainer([
     ...packageMap.values(),
   ] as string[]);
