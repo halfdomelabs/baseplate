@@ -38,6 +38,13 @@ function getPathsRootExportName(generatorName: string): string {
 
 export const TEMPLATE_PATHS_METADATA_FILE = '.paths-metadata.json';
 
+const templatePathsPluginConfigSchema = z.object({
+  /**
+   * Whether to skip generating the paths task.
+   */
+  skipTaskGeneration: z.boolean().default(false),
+});
+
 /**
  * The template paths plugin is used to enable templates to get assigned a path
  * relative to their nearest path root, e.g. the feature folder or package root.
@@ -126,10 +133,16 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
 
     api.registerHook('afterWrite', () => {
       for (const [generatorName, pathMap] of pathMapByGenerator) {
+        const config = context.configLookup.getPluginConfigForGenerator(
+          generatorName,
+          templatePathsPlugin.name,
+          templatePathsPluginConfigSchema,
+        );
         const { exportName } = writePathMapFile(
           generatorName,
           pathMap,
           context,
+          { skipTaskGeneration: config?.skipTaskGeneration },
         );
         barrelExportPlugin.addGeneratedBarrelExport(generatorName, {
           moduleSpecifier: `./${normalizeTsPathToJsPath(GENERATED_PATHS_FILE_NAME)}`,
