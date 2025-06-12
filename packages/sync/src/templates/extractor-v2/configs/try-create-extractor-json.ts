@@ -32,10 +32,7 @@ export async function tryCreateExtractorJson(
   const { generatorPath, generatorBasename, packageName } = parsedGenerator;
 
   // Search for generator files matching the pattern
-  const searchPattern = path.join(
-    '**',
-    `${generatorPath}/${generatorBasename}.generator.ts`,
-  );
+  const searchPattern = path.join('**', `/${generatorBasename}.generator.ts`);
 
   const packagePath = packageMap.get(packageName);
 

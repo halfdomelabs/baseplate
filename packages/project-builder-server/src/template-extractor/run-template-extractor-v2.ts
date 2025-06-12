@@ -62,6 +62,7 @@ async function buildGeneratorPackageMap(
 export async function runTemplateExtractorsForProjectV2(
   directory: string,
   app: string,
+  defaultPlugins: PluginMetadataWithPaths[],
   logger: Logger,
   options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
@@ -77,7 +78,10 @@ export async function runTemplateExtractorsForProjectV2(
     );
   }
 
-  const generatorPackageMap = await buildGeneratorPackageMap(availablePlugins);
+  const generatorPackageMap = await buildGeneratorPackageMap([
+    ...defaultPlugins,
+    ...availablePlugins,
+  ]);
   logger.info(
     `Running template extractors for ${directory}${
       app ? ` for app ${app}` : ''

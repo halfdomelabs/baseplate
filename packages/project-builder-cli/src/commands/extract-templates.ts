@@ -1,5 +1,7 @@
 import type { Command } from 'commander';
 
+import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
+
 import { logger } from '#src/services/logger.js';
 import { expandPathWithTilde } from '#src/utils/path.js';
 
@@ -37,9 +39,11 @@ export function addExtractTemplatesCommand(program: Command): void {
           '@baseplate-dev/project-builder-server/template-extractor'
         );
         const resolvedDirectory = expandPathWithTilde(directory);
+        const defaultPlugins = await getDefaultPlugins(logger);
         await runTemplateExtractorsForProjectV2(
           resolvedDirectory,
           app,
+          defaultPlugins,
           logger,
           {
             autoGenerateExtractor: options.autoGenerateExtractor,

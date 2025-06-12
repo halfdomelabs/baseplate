@@ -35,15 +35,16 @@ export interface RunTemplateFileExtractorsOptions {
   skipClean?: boolean;
 }
 
-const GENERATOR_WHITELIST = new Set(['@baseplate-dev/core-generators']);
+const GENERATOR_WHITELIST = new Set([
+  '@baseplate-dev/core-generators',
+  '@baseplate-dev/fastify-generators',
+  '@baseplate-dev/plugin-auth',
+]);
 
 // TODO [2025-06-12]: Remove this filter once we've migrated from v1 to v2
 function isV2TemplateMetadataFile(file: TemplateMetadataFileEntry): boolean {
   const parsedGenerator = parseGeneratorName(file.metadata.generator);
   if (GENERATOR_WHITELIST.has(parsedGenerator.packageName)) {
-    return true;
-  }
-  if (file.metadata.generator.includes('core/')) {
     return true;
   }
   return 'fileOptions' in file.metadata;
