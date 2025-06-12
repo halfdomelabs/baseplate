@@ -16,7 +16,7 @@ import {
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
-import { reactBaseConfigProvider } from '../react/react.generator.js';
+import { reactBaseConfigProvider } from '../react/index.js';
 import { CORE_REACT_APP_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});

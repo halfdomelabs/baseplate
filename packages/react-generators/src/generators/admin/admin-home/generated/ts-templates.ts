@@ -1,7 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
 import { authHooksImportsProvider } from '../../../auth/_providers/auth-hooks.js';
-import { reactComponentsImportsProvider } from '../../../core/react-components/generated/ts-import-maps.js';
+import { reactComponentsImportsProvider } from '../../../core/react-components/index.js';
 
 const home = createTsTemplateFile({
   importMapProviders: {

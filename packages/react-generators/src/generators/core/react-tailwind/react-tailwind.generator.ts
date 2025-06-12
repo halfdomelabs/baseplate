@@ -17,7 +17,7 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
-import { reactBaseConfigProvider } from '../react/react.generator.js';
+import { reactBaseConfigProvider } from '../react/index.js';
 import { CORE_REACT_TAILWIND_TEXT_TEMPLATES } from './generated/text-templates.js';
 
 const descriptorSchema = z.object({

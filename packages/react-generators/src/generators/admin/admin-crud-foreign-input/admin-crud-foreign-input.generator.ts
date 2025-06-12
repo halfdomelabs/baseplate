@@ -7,8 +7,8 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import { reactApolloProvider } from '#src/generators/apollo/react-apollo/react-apollo.generator.js';
-import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
+import { reactApolloProvider } from '#src/generators/apollo/react-apollo/index.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 import { createForeignDataDependency } from '../_utils/foreign-data-dependency.js';

@@ -16,7 +16,7 @@ import type {
   GraphQLRoot,
 } from '#src/writers/graphql/index.js';
 
-import { reactApolloProvider } from '#src/generators/apollo/react-apollo/react-apollo.generator.js';
+import { reactApolloProvider } from '#src/generators/apollo/react-apollo/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import {
@@ -26,7 +26,7 @@ import {
   renderGraphQLRoot,
 } from '#src/writers/graphql/index.js';
 
-import { adminCrudSectionScope } from '../admin-crud-section/admin-crud-section.generator.js';
+import { adminCrudSectionScope } from '../admin-crud-section/index.js';
 
 const descriptorSchema = z.object({
   modelId: z.string(),

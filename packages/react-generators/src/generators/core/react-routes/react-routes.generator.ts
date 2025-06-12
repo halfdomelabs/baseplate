@@ -18,7 +18,7 @@ import { dasherizeCamel, upperCaseFirst } from '#src/utils/case.js';
 import { createRouteElement } from '#src/utils/routes.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
-import { reactNotFoundProvider } from '../react-not-found-handler/react-not-found-handler.generator.js';
+import { reactNotFoundProvider } from '../react-not-found-handler/index.js';
 import { CORE_REACT_ROUTES_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({

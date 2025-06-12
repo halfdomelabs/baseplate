@@ -16,7 +16,7 @@ import type { ReactRoute } from '#src/providers/routes.js';
 
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
-import { reactComponentsImportsProvider } from '../react-components/react-components.generator.js';
+import { reactComponentsImportsProvider } from '../react-components/index.js';
 import { CORE_REACT_NOT_FOUND_HANDLER_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({

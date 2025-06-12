@@ -27,7 +27,7 @@ import {
 } from '#src/providers/routes.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
-import { reactAppConfigProvider } from '../react-app/react-app.generator.js';
+import { reactAppConfigProvider } from '../react-app/index.js';
 import { CORE_REACT_ROUTER_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});

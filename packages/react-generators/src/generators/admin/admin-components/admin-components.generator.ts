@@ -11,7 +11,7 @@ import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 import {
   reactComponentsImportsProvider,
   reactComponentsProvider,
-} from '#src/generators/core/react-components/react-components.generator.js';
+} from '#src/generators/core/react-components/index.js';
 
 import {
   adminComponentsImportsProvider,

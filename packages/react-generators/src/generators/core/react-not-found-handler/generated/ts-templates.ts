@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { reactComponentsImportsProvider } from '../../react-components/generated/ts-import-maps.js';
+import { reactComponentsImportsProvider } from '../../react-components/index.js';
 
 const notFoundPage = createTsTemplateFile({
   importMapProviders: {

@@ -12,10 +12,10 @@ import { reactErrorImportsProvider } from '#src/generators/core/index.js';
 import {
   reactSentryConfigProvider,
   reactSentryImportsProvider,
-} from '#src/generators/core/react-sentry/react-sentry.generator.js';
+} from '#src/generators/core/react-sentry/index.js';
 
-import { apolloErrorLinkProvider } from '../apollo-error-link/apollo-error-link.generator.js';
-import { reactApolloConfigProvider } from '../react-apollo/react-apollo.generator.js';
+import { apolloErrorLinkProvider } from '../apollo-error-link/index.js';
+import { reactApolloConfigProvider } from '../react-apollo/index.js';
 import { APOLLO_APOLLO_SENTRY_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});

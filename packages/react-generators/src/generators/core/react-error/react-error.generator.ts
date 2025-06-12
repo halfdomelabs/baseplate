@@ -12,7 +12,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { reactLoggerImportsProvider } from '../react-logger/react-logger.generator.js';
+import { reactLoggerImportsProvider } from '../react-logger/index.js';
 import {
   createReactErrorImports,
   reactErrorImportsProvider,

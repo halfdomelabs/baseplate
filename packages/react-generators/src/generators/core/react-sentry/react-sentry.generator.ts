@@ -19,14 +19,14 @@ import {
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
-import { authIdentifyProvider } from '#src/generators/auth/auth-identify/auth-identify.generator.js';
+import { authIdentifyProvider } from '#src/generators/auth/auth-identify/index.js';
 
 import {
   reactConfigImportsProvider,
   reactConfigProvider,
-} from '../react-config/react-config.generator.js';
-import { reactErrorConfigProvider } from '../react-error/react-error.generator.js';
-import { reactRouterConfigProvider } from '../react-router/react-router.generator.js';
+} from '../react-config/index.js';
+import { reactErrorConfigProvider } from '../react-error/index.js';
+import { reactRouterConfigProvider } from '../react-router/index.js';
 import {
   createReactSentryImports,
   reactSentryImportsProvider,

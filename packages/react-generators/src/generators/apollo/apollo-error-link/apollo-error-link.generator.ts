@@ -12,10 +12,10 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { reactErrorImportsProvider } from '#src/generators/core/react-error/react-error.generator.js';
-import { reactLoggerImportsProvider } from '#src/generators/core/react-logger/react-logger.generator.js';
+import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
+import { reactLoggerImportsProvider } from '#src/generators/core/react-logger/index.js';
 
-import { reactApolloConfigProvider } from '../react-apollo/react-apollo.generator.js';
+import { reactApolloConfigProvider } from '../react-apollo/index.js';
 
 const descriptorSchema = z.object({});
 

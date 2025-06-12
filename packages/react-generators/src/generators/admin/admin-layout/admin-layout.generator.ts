@@ -16,8 +16,8 @@ import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-h
 import {
   reactComponentsImportsProvider,
   reactComponentsProvider,
-} from '#src/generators/core/react-components/react-components.generator.js';
-import { reactTailwindProvider } from '#src/generators/core/react-tailwind/react-tailwind.generator.js';
+} from '#src/generators/core/react-components/index.js';
+import { reactTailwindProvider } from '#src/generators/core/react-tailwind/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
 import { ADMIN_ADMIN_LAYOUT_TS_TEMPLATES } from './generated/ts-templates.js';

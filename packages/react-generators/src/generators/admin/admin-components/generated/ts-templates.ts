@@ -3,7 +3,7 @@ import {
   createTsTemplateGroup,
 } from '@baseplate-dev/core-generators';
 
-import { reactComponentsImportsProvider } from '../../../core/react-components/generated/ts-import-maps.js';
+import { reactComponentsImportsProvider } from '../../../core/react-components/index.js';
 
 const descriptionList = createTsTemplateFile({
   group: 'components',

@@ -14,9 +14,9 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
-import { reactAppConfigProvider } from '../react-app/react-app.generator.js';
-import { reactComponentsImportsProvider } from '../react-components/react-components.generator.js';
-import { reactErrorImportsProvider } from '../react-error/react-error.generator.js';
+import { reactAppConfigProvider } from '../react-app/index.js';
+import { reactComponentsImportsProvider } from '../react-components/index.js';
+import { reactErrorImportsProvider } from '../react-error/index.js';
 import { CORE_REACT_ERROR_BOUNDARY_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});

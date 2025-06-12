@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { reactConfigImportsProvider } from '../../react-config/generated/ts-import-maps.js';
+import { reactConfigImportsProvider } from '../../react-config/index.js';
 
 const sentry = createTsTemplateFile({
   importMapProviders: { reactConfigImports: reactConfigImportsProvider },

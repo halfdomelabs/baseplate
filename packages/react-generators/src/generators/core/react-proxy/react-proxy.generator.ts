@@ -6,8 +6,8 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { reactConfigProvider } from '../react-config/react-config.generator.js';
-import { reactBaseConfigProvider } from '../react/react.generator.js';
+import { reactConfigProvider } from '../react-config/index.js';
+import { reactBaseConfigProvider } from '../react/index.js';
 
 const descriptorSchema = z.object({
   devBackendHost: z.string().min(1),

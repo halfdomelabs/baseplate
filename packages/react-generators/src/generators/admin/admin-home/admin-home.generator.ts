@@ -3,7 +3,7 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
-import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { createRouteElement } from '#src/utils/routes.js';
 

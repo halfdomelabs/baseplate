@@ -14,13 +14,13 @@ import { z } from 'zod';
 import {
   generatedGraphqlImportsProvider,
   reactApolloProvider,
-} from '#src/generators/apollo/react-apollo/react-apollo.generator.js';
-import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
+} from '#src/generators/apollo/react-apollo/index.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
 import {
   reactConfigImportsProvider,
   reactConfigProvider,
-} from '#src/generators/core/react-config/react-config.generator.js';
-import { reactErrorImportsProvider } from '#src/generators/core/react-error/react-error.generator.js';
+} from '#src/generators/core/react-config/index.js';
+import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
 import { ADMIN_ADMIN_BULL_BOARD_TEXT_TEMPLATES } from './generated/text-templates.js';

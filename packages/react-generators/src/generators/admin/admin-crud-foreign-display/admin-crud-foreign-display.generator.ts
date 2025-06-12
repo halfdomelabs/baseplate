@@ -6,7 +6,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { reactApolloProvider } from '#src/generators/apollo/react-apollo/react-apollo.generator.js';
+import { reactApolloProvider } from '#src/generators/apollo/react-apollo/index.js';
 
 import { adminCrudDisplayContainerProvider } from '../_providers/admin-crud-display-container.js';
 import { createForeignDataDependency } from '../_utils/foreign-data-dependency.js';

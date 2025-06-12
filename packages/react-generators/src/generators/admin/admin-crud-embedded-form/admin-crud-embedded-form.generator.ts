@@ -21,8 +21,8 @@ import { z } from 'zod';
 
 import type { GraphQLField } from '#src/writers/graphql/index.js';
 
-import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
-import { reactErrorImportsProvider } from '#src/generators/core/react-error/react-error.generator.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
+import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
 import { upperCaseFirst } from '#src/utils/case.js';
 
 import type { AdminCrudColumn } from '../_providers/admin-crud-column-container.js';
@@ -31,7 +31,7 @@ import type {
   AdminCrudInputValidation,
 } from '../_providers/admin-crud-input-container.js';
 import type { AdminCrudDataDependency } from '../_utils/data-loaders.js';
-import type { AdminComponentsImportsProvider } from '../admin-components/admin-components.generator.js';
+import type { AdminComponentsImportsProvider } from '../admin-components/index.js';
 
 import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-column-container.js';
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
@@ -39,9 +39,9 @@ import {
   getPassthroughExtraProps,
   mergeAdminCrudDataDependencies,
 } from '../_utils/data-loaders.js';
-import { adminComponentsImportsProvider } from '../admin-components/admin-components.generator.js';
-import { adminCrudEditProvider } from '../admin-crud-edit/admin-crud-edit.generator.js';
-import { adminCrudSectionScope } from '../admin-crud-section/admin-crud-section.generator.js';
+import { adminComponentsImportsProvider } from '../admin-components/index.js';
+import { adminCrudEditProvider } from '../admin-crud-edit/index.js';
+import { adminCrudSectionScope } from '../admin-crud-section/index.js';
 import { ADMIN_ADMIN_CRUD_EMBEDDED_FORM_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({

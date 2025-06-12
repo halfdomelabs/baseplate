@@ -1,9 +1,9 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { generatedGraphqlImportsProvider } from '../../../apollo/react-apollo/generated/ts-import-maps.js';
-import { reactComponentsImportsProvider } from '../../../core/react-components/generated/ts-import-maps.js';
-import { reactConfigImportsProvider } from '../../../core/react-config/generated/ts-import-maps.js';
-import { reactErrorImportsProvider } from '../../../core/react-error/generated/ts-import-maps.js';
+import { generatedGraphqlImportsProvider } from '../../../apollo/react-apollo/index.js';
+import { reactComponentsImportsProvider } from '../../../core/react-components/index.js';
+import { reactConfigImportsProvider } from '../../../core/react-config/index.js';
+import { reactErrorImportsProvider } from '../../../core/react-error/index.js';
 
 const bullBoardPage = createTsTemplateFile({
   importMapProviders: {

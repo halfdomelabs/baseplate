@@ -1,6 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { reactLoggerImportsProvider } from '../../react-logger/generated/ts-import-maps.js';
+import { reactLoggerImportsProvider } from '../../react-logger/index.js';
 
 const errorFormatter = createTsTemplateFile({
   name: 'error-formatter',

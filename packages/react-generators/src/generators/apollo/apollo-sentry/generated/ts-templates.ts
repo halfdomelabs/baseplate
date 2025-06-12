@@ -1,7 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { reactErrorImportsProvider } from '../../../core/react-error/generated/ts-import-maps.js';
-import { reactSentryImportsProvider } from '../../../core/react-sentry/generated/ts-import-maps.js';
+import { reactErrorImportsProvider } from '../../../core/react-error/index.js';
+import { reactSentryImportsProvider } from '../../../core/react-sentry/index.js';
 
 const apolloSentryLink = createTsTemplateFile({
   importMapProviders: {

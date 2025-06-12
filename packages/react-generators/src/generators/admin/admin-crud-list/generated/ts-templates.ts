@@ -1,7 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 
-import { reactComponentsImportsProvider } from '../../../core/react-components/generated/ts-import-maps.js';
-import { reactErrorImportsProvider } from '../../../core/react-error/generated/ts-import-maps.js';
+import { reactComponentsImportsProvider } from '../../../core/react-components/index.js';
+import { reactErrorImportsProvider } from '../../../core/react-error/index.js';
 
 const listPage = createTsTemplateFile({
   importMapProviders: {
