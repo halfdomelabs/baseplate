@@ -62,6 +62,7 @@
     "knip": "5.59.0",
     "lint-staged": "16.1.0",
     "prettier": "catalog:",
+    "tsx": "catalog:",
     "turbo": "2.5.0",
     "typescript": "catalog:",
     "vitest": "catalog:",
