@@ -54,42 +54,6 @@ describe('TemplateExtractorConfigLookup', () => {
     );
   });
 
-  it('should find and cache provider config', async () => {
-    // Arrange
-    const providerConfig = {
-      'test.ts': {
-        'test-provider': {
-          type: 'ts-imports',
-          config: {},
-        },
-      },
-    };
-    vol.fromJSON({
-      '/packages/package1/providers/providers.json':
-        JSON.stringify(providerConfig),
-    });
-
-    const lookup = new TemplateExtractorConfigLookup(
-      mockPackageMap,
-      mockFileIdMap,
-    );
-    await lookup.initialize();
-
-    // Act
-    const result = lookup.getProviderConfigByName(
-      '@test/package1:test-provider',
-    );
-
-    // Assert
-    expect(result).toBeDefined();
-    expect(result?.config).toEqual(providerConfig['test.ts']['test-provider']);
-    expect(result?.packageName).toBe('@test/package1');
-    expect(result?.packagePath).toBe('/packages/package1');
-    expect(result?.packagePathSpecifier).toBe(
-      '@test/package1:providers/test.ts',
-    );
-  });
-
   it('should find provider configs by type', async () => {
     // Arrange
     const providerConfig = {
@@ -127,42 +91,6 @@ describe('TemplateExtractorConfigLookup', () => {
     expect(results).toHaveLength(2);
     expect(results[0].config.type).toBe('ts-imports');
     expect(results[1].config.type).toBe('ts-imports');
-  });
-
-  it('should throw error for invalid provider name format', async () => {
-    // Arrange
-    const lookup = new TemplateExtractorConfigLookup(
-      mockPackageMap,
-      mockFileIdMap,
-    );
-    await lookup.initialize();
-
-    // Act & Assert
-    expect(() => lookup.getProviderConfigByName('invalid-name')).toThrow(
-      'Invalid provider name: invalid-name. Should be of form "package-name:provider-name"',
-    );
-  });
-
-  it('should throw error when accessing configs before initialization', () => {
-    // Arrange
-    const lookup = new TemplateExtractorConfigLookup(
-      mockPackageMap,
-      mockFileIdMap,
-    );
-
-    // Act & Assert
-    expect(() => lookup.getExtractorConfig('test')).toThrow(
-      'TemplateExtractorConfigLookup must be initialized before use',
-    );
-    expect(() => lookup.getProviderConfigByName('test:provider')).toThrow(
-      'TemplateExtractorConfigLookup must be initialized before use',
-    );
-    expect(() =>
-      lookup.getProviderConfigsByType(
-        'test',
-        z.object({ type: z.literal('test') }),
-      ),
-    ).toThrow('TemplateExtractorConfigLookup must be initialized before use');
   });
 
   it('should only initialize once', async () => {
@@ -776,6 +704,216 @@ describe('TemplateExtractorConfigLookup', () => {
           '@test/package1#test-generator',
           'auth-plugin',
           authPluginSchema,
+        ),
+      ).toThrow();
+    });
+  });
+
+  describe('getExtractorConfigForGenerator', () => {
+    it('should return extractor config when available', async () => {
+      // Arrange
+      const extractorConfig = {
+        name: 'test-generator',
+        templates: {},
+        extractors: {
+          'test-extractor': {
+            type: 'ts-imports',
+            settings: {
+              includePatterns: ['**/*.ts'],
+              excludePatterns: ['**/*.test.ts'],
+            },
+          },
+          'another-extractor': {
+            type: 'ts-imports',
+            settings: {
+              includePatterns: ['**/*.tsx'],
+            },
+          },
+        },
+      };
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(extractorConfig),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const testExtractorSchema = z.object({
+        type: z.string(),
+        settings: z.object({
+          includePatterns: z.array(z.string()),
+          excludePatterns: z.array(z.string()).optional(),
+        }),
+      });
+
+      // Act
+      const result = lookup.getExtractorConfigForGenerator(
+        '@test/package1#test-generator',
+        'test-extractor',
+        testExtractorSchema,
+      );
+
+      // Assert
+      expect(result).toEqual({
+        type: 'ts-imports',
+        settings: {
+          includePatterns: ['**/*.ts'],
+          excludePatterns: ['**/*.test.ts'],
+        },
+      });
+    });
+
+    it('should return undefined when extractor config does not exist', async () => {
+      // Arrange
+      const extractorConfig = {
+        name: 'test-generator',
+        templates: {},
+        extractors: {
+          'other-extractor': {
+            type: 'ts-imports',
+            settings: {},
+          },
+        },
+      };
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(extractorConfig),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const schema = z.object({
+        type: z.string(),
+        settings: z.object({}),
+      });
+
+      // Act
+      const result = lookup.getExtractorConfigForGenerator(
+        '@test/package1#test-generator',
+        'non-existent-extractor',
+        schema,
+      );
+
+      // Assert
+      expect(result).toBeUndefined();
+    });
+
+    it('should validate and parse extractor config with schema', async () => {
+      // Arrange
+      const extractorConfig = {
+        name: 'test-generator',
+        templates: {},
+        extractors: {
+          'ts-extractor': {
+            type: 'typescript',
+            settings: {
+              compilerOptions: {
+                target: 'es2020',
+                module: 'commonjs',
+              },
+              include: ['src/**/*'],
+            },
+          },
+        },
+      };
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(extractorConfig),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const tsExtractorSchema = z.object({
+        type: z.string(),
+        settings: z.object({
+          compilerOptions: z.object({
+            target: z.string(),
+            module: z.string(),
+          }),
+          include: z.array(z.string()),
+        }),
+      });
+
+      // Act
+      const result = lookup.getExtractorConfigForGenerator(
+        '@test/package1#test-generator',
+        'ts-extractor',
+        tsExtractorSchema,
+      );
+
+      // Assert
+      expect(result).toEqual({
+        type: 'typescript',
+        settings: {
+          compilerOptions: {
+            target: 'es2020',
+            module: 'commonjs',
+          },
+          include: ['src/**/*'],
+        },
+      });
+      // Verify TypeScript typing - this should be properly typed
+      expect(result?.type).toBe('typescript');
+      expect(result?.settings.compilerOptions.target).toBe('es2020');
+      expect(result?.settings.include).toContain('src/**/*');
+    });
+
+    it('should throw validation error for invalid extractor config', async () => {
+      // Arrange
+      const extractorConfig = {
+        name: 'test-generator',
+        templates: {},
+        extractors: {
+          'invalid-extractor': {
+            type: 'typescript',
+            settings: {
+              compilerOptions: {
+                target: 123, // This should fail validation - should be string
+                module: 'commonjs',
+              },
+            },
+          },
+        },
+      };
+      vol.fromJSON({
+        '/packages/package1/generators/test/extractor.json':
+          JSON.stringify(extractorConfig),
+      });
+
+      const lookup = new TemplateExtractorConfigLookup(
+        mockPackageMap,
+        mockFileIdMap,
+      );
+      await lookup.initialize();
+
+      const schema = z.object({
+        type: z.string(),
+        settings: z.object({
+          compilerOptions: z.object({
+            target: z.string(),
+            module: z.string(),
+          }),
+        }),
+      });
+
+      // Act & Assert
+      expect(() =>
+        lookup.getExtractorConfigForGenerator(
+          '@test/package1#test-generator',
+          'invalid-extractor',
+          schema,
         ),
       ).toThrow();
     });

@@ -262,23 +262,6 @@ export class TemplateExtractorConfigLookup {
   }
 
   /**
-   * Get providers config by the fully-qualified provider name (format: package-name:provider-name)
-   */
-  getProviderConfigByName(
-    providerName: string,
-  ): TemplateExtractorProviderEntry | undefined {
-    this.checkInitialized();
-
-    if (!providerName.includes(':')) {
-      throw new Error(
-        `Invalid provider name: ${providerName}. Should be of form "package-name:provider-name"`,
-      );
-    }
-
-    return this.providersConfigCache.get(providerName);
-  }
-
-  /**
    * Get provider configs by type
    */
   getProviderConfigsByType<T extends z.ZodTypeAny>(
@@ -377,5 +360,34 @@ export class TemplateExtractorConfigLookup {
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- pluginConfig is validated by the schema
     return schema.parse(pluginConfig) as z.infer<T>;
+  }
+
+  /**
+   * Get extractor configuration for a specific generator
+   * @param generatorName - The name of the generator
+   * @param extractorType - The type of extractor
+   * @param schema - Zod schema to validate and parse the extractor configuration
+   * @returns The parsed extractor configuration or undefined if not found
+   */
+  getExtractorConfigForGenerator<T extends z.ZodTypeAny>(
+    generatorName: string,
+    extractorType: string,
+    schema: T,
+  ): z.infer<T> | undefined {
+    this.checkInitialized();
+
+    const config = this.getExtractorConfig(generatorName);
+    if (!config?.config.extractors) {
+      return undefined;
+    }
+
+    if (!(extractorType in config.config.extractors)) {
+      return undefined;
+    }
+
+    const extractorConfig = config.config.extractors[extractorType];
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- extractorConfig is validated by the schema
+    return schema.parse(extractorConfig) as z.infer<T>;
   }
 }
