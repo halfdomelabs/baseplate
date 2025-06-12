@@ -1,0 +1,12 @@
+{
+  "user-session.ts": {
+    "userSessionServiceImportsProvider": {
+      "type": "ts-imports",
+      "providerExport": "userSessionServiceImportsProvider",
+      "schemaExport": "userSessionServiceImportsSchema",
+      "projectExports": {
+        "userSessionService": {}
+      }
+    }
+  }
+}
