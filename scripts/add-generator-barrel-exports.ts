@@ -103,7 +103,8 @@ async function main(): Promise<void> {
 
     updatedContent = updatedContent.replaceAll(
       generatedImportPattern,
-      (_, prefix, pathPart, _generatedPart, suffix) => {
+      (originalMatch, prefix, pathPart, _generatedPart, suffix) => {
+        if (pathPart === '.') return originalMatch;
         // Check if this path corresponds to a generator directory
         const importDir = path.dirname(tsFile);
         const resolvedPath = path.resolve(importDir, pathPart);
@@ -120,7 +121,7 @@ async function main(): Promise<void> {
           return `${prefix}${pathPart}/index.js${suffix}`;
         }
 
-        return _;
+        return originalMatch;
       },
     );
 
