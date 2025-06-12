@@ -25,8 +25,13 @@ export interface RunTemplateFileExtractorsOptions {
   autoGenerateExtractor?: boolean;
 }
 
+const GENERATOR_WHITELIST = new Set(['@baseplate-dev/core-generators']);
+
 // TODO [2025-06-12]: Remove this filter once we've migrated from v1 to v2
 function isV2TemplateMetadataFile(file: TemplateMetadataFileEntry): boolean {
+  if (GENERATOR_WHITELIST.has(file.metadata.generator)) {
+    return true;
+  }
   return 'fileOptions' in file.metadata;
 }
 
