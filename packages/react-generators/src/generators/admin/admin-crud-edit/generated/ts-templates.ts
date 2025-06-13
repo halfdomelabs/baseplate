@@ -51,6 +51,7 @@ const editPage = createTsTemplateFile({
   name: 'edit-page',
   projectExports: {},
   source: { path: 'edit.page.tsx' },
+  fileOptions: { kind: 'instance', generatorTemplatePath: 'edit.page.tsx' },
   variables: {
     TPL_COMPONENT_NAME: {},
     TPL_DATA_GATE: {},
@@ -67,6 +68,7 @@ const schema = createTsTemplateFile({
   name: 'schema',
   projectExports: {},
   source: { path: 'schema.ts' },
+  fileOptions: { kind: 'instance', generatorTemplatePath: 'schema.ts' },
   variables: {
     TPL_FORM_DATA_NAME: {},
     TPL_SCHEMA_NAME: {},
