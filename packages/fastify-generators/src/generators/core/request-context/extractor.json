@@ -5,7 +5,7 @@
       "name": "request-context",
       "type": "ts",
       "generator": "@baseplate-dev/fastify-generators#core/request-context",
-      "template": "request-context.ts",
+      "template": "",
       "fileOptions": { "kind": "singleton" },
       "projectExports": { "RequestInfo": { "isTypeOnly": true } },
       "pathRootRelativePath": "{src-root}/plugins/request-context.ts",

@@ -5,7 +5,7 @@
       "name": "health-check",
       "type": "ts",
       "generator": "@baseplate-dev/fastify-generators#core/fastify-health-check",
-      "template": "health-check.ts",
+      "template": "",
       "fileOptions": { "kind": "singleton" },
       "pathRootRelativePath": "{src-root}/plugins/health-check.ts",
       "variables": { "TPL_HEALTH_CHECKS": {} },

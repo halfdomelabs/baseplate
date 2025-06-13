@@ -1,5 +1,4 @@
 import {
-  projectScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -13,19 +12,13 @@ import {
 import { z } from 'zod';
 
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
-import {
-  appModuleProvider,
-  loggerServiceConfigProvider,
-} from '#src/generators/core/index.js';
+import { loggerServiceConfigProvider } from '#src/generators/core/index.js';
 import { requestServiceContextConfigProvider } from '#src/generators/core/request-service-context/index.js';
 import { serviceContextConfigProvider } from '#src/generators/core/service-context/index.js';
 
 import { authRolesImportsProvider } from '../auth-roles/index.js';
-import {
-  authContextImportsProvider,
-  createAuthContextImports,
-} from './generated/ts-import-maps.js';
-import { AUTH_AUTH_CONTEXT_TS_TEMPLATES } from './generated/ts-templates.js';
+import { AUTH_AUTH_CONTEXT_GENERATED } from './generated/index.js';
+import { authContextImportsProvider } from './generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({});
 
@@ -34,6 +27,8 @@ export const authContextGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: AUTH_AUTH_CONTEXT_GENERATED.paths.task,
+    imports: AUTH_AUTH_CONTEXT_GENERATED.imports.task,
     requestServiceContextConfig: createProviderTask(
       requestServiceContextConfigProvider,
       (requestServiceContextConfig) => {
@@ -63,33 +58,25 @@ export const authContextGenerator = createGenerator({
       dependencies: {
         serviceContextConfig: serviceContextConfigProvider,
         authRolesImports: authRolesImportsProvider,
-        appModule: appModuleProvider,
         typescriptFile: typescriptFileProvider,
+        authContextImports: authContextImportsProvider,
+        paths: AUTH_AUTH_CONTEXT_GENERATED.paths.provider,
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-      },
-      exports: {
-        authContextImports: authContextImportsProvider.export(projectScope),
       },
       run({
         serviceContextConfig,
-        appModule,
         typescriptFile,
+        authContextImports,
+        paths,
         errorHandlerServiceImports,
         authRolesImports,
       }) {
-        const authContextImports = createAuthContextImports(
-          appModule.getModuleFolder(),
-        );
-
         return {
-          providers: {
-            authContextImports,
-          },
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: AUTH_AUTH_CONTEXT_TS_TEMPLATES.mainGroup,
-                baseDirectory: appModule.getModuleFolder(),
+              typescriptFile.renderTemplateGroupV2({
+                group: AUTH_AUTH_CONTEXT_GENERATED.templates.mainGroup,
+                paths,
                 importMapProviders: {
                   authRolesImports,
                   errorHandlerServiceImports,
@@ -115,4 +102,4 @@ export const authContextGenerator = createGenerator({
   }),
 });
 
-export { authContextImportsProvider } from './generated/ts-import-maps.js';
+// Re-export provider is now handled by the new imports system

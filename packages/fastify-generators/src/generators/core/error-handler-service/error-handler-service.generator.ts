@@ -141,7 +141,8 @@ export const errorHandlerServiceGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateGroupV2({
-                group: CORE_ERROR_HANDLER_SERVICE_GENERATED.templates.utils,
+                group:
+                  CORE_ERROR_HANDLER_SERVICE_GENERATED.templates.utilsGroup,
                 paths,
               }),
             );

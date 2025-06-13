@@ -1,5 +1,6 @@
 {
   "name": "node/eslint",
+  "plugins": { "template-paths": { "skipTaskGeneration": true } },
   "templates": {
     "eslint.config.js": {
       "name": "eslint-config",
@@ -20,6 +21,5 @@
       },
       "importMapProviders": {}
     }
-  },
-  "plugins": { "template-paths": { "skipTaskGeneration": true } }
+  }
 }

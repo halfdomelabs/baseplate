@@ -20,7 +20,6 @@ import { TemplateExtractorApi } from './runner/template-extractor-api.js';
 import { TemplateExtractorContext } from './runner/template-extractor-context.js';
 import { TemplateExtractorFileContainer } from './runner/template-extractor-file-container.js';
 import { cleanupUnusedTemplateFiles } from './utils/cleanup-unused-template-files.js';
-import { groupTemplateFilesByType } from './utils/group-template-files-by-type.js';
 import { mergeExtractorTemplateEntries } from './utils/merge-extractor-template-entries.js';
 import { writeExtractorTemplateJsons } from './utils/write-extractor-template-jsons.js';
 
@@ -41,7 +40,7 @@ const GENERATOR_WHITELIST = new Set([
   '@baseplate-dev/plugin-auth',
 ]);
 
-// TODO [2025-06-12]: Remove this filter once we've migrated from v1 to v2
+// TODO [2025-06-13]: Remove this filter once we've migrated from v1 to v2
 function isV2TemplateMetadataFile(file: TemplateMetadataFileEntry): boolean {
   const parsedGenerator = parseGeneratorName(file.metadata.generator);
   if (GENERATOR_WHITELIST.has(parsedGenerator.packageName)) {
@@ -78,7 +77,7 @@ export async function runTemplateFileExtractors(
   await configLookup.initialize();
 
   if (options?.autoGenerateExtractor) {
-    // TODO [2025-06-12]: Remove this filter once we've migrated from v1 to v2
+    // TODO [2025-06-13]: Remove this filter once we've migrated from v1 to v2
     const generatorNames = templateMetadataFiles
       .filter(isV2TemplateMetadataFile)
       .map((m) => m.metadata.generator);
@@ -132,9 +131,10 @@ export async function runTemplateFileExtractors(
   });
 
   // Group files by type and validate uniqueness (throws on duplicates)
-  const filesByType = groupTemplateFilesByType(
-    // TODO [2025-06-12]: Remove this filter once we've migrated from v1 to v2
+  const filesByType = groupBy(
+    // TODO [2025-06-13]: Remove this filter once we've migrated from v1 to v2
     templateMetadataFiles.filter(isV2TemplateMetadataFile),
+    (f) => f.metadata.type,
   );
 
   // Get the metadata entries for each file
@@ -146,7 +146,7 @@ export async function runTemplateFileExtractors(
     }
 
     const parsedFiles = files.map((f) => {
-      const { absolutePath: path, metadata } = f;
+      const { absolutePath: path, metadata, modifiedTime } = f;
       return {
         absolutePath: path,
         metadata: extractor.outputTemplateMetadataSchema
@@ -154,6 +154,7 @@ export async function runTemplateFileExtractors(
               metadata,
             ) as TemplateFileMetadataBase)
           : metadata,
+        modifiedTime,
       };
     });
     const api = new TemplateExtractorApi(context, type);

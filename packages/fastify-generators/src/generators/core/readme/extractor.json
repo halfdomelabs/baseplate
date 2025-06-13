@@ -2,10 +2,10 @@
   "name": "core/readme",
   "templates": {
     "package/README.md": {
-      "name": "readme",
-      "type": "text",
       "fileOptions": { "kind": "singleton" },
+      "name": "readme",
       "pathRootRelativePath": "{package-root}/README.md",
+      "type": "text",
       "variables": { "TPL_PROJECT": { "description": "Name of the project" } }
     }
   }

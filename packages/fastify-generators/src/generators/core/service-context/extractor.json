@@ -5,7 +5,7 @@
       "name": "test-helper",
       "type": "ts",
       "generator": "@baseplate-dev/fastify-generators#core/service-context",
-      "template": "service-context.test-helper.ts",
+      "template": "",
       "fileOptions": { "kind": "singleton" },
       "projectExports": { "createTestServiceContext": {} },
       "pathRootRelativePath": "{src-root}/tests/helpers/service-context.test-helper.ts",
@@ -16,7 +16,7 @@
       "name": "service-context",
       "type": "ts",
       "generator": "@baseplate-dev/fastify-generators#core/service-context",
-      "template": "service-context.ts",
+      "template": "",
       "fileOptions": { "kind": "singleton" },
       "projectExports": {
         "ServiceContext": { "isTypeOnly": true },

@@ -27,6 +27,10 @@ export interface TemplateFileExtractorSourceFile<
    * The metadata for the file.
    */
   metadata: TOutputTemplateMetadata;
+  /**
+   * The modified time of the file.
+   */
+  modifiedTime: Date;
 }
 
 /**
@@ -100,6 +104,8 @@ export interface TemplateFileExtractor<
 
   /**
    * Extracts the metadata entries for the given files.
+   *
+   * Note: Duplicate templates may exist so make sure you deduplicate the templates appropriately.
    *
    * @param files - The files to extract metadata from.
    * @param context - The context for the extractor.

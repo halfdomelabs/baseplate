@@ -1,3 +1,21 @@
 {
-  "name": "auth/auth-roles"
+  "name": "auth/auth-roles",
+  "templates": {
+    "module/constants/auth-roles.constants.ts": {
+      "name": "auth-roles",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#auth/auth-roles",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": {
+        "AuthRole": { "isTypeOnly": true },
+        "DEFAULT_PUBLIC_ROLES": {},
+        "DEFAULT_USER_ROLES": {},
+        "RoleConfig": { "isTypeOnly": true }
+      },
+      "pathRootRelativePath": "{module-root}/constants/auth-roles.constants.ts",
+      "variables": { "TPL_AUTH_ROLES": {} },
+      "importMapProviders": {}
+    }
+  }
 }

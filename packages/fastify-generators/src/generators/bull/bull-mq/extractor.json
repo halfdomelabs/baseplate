@@ -1,3 +1,123 @@
 {
-  "name": "bull/bull-mq"
+  "name": "bull/bull-mq",
+  "templates": {
+    "package/scripts/run-workers.ts": {
+      "name": "scripts-run-workers",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "scripts",
+      "pathRootRelativePath": "{package-root}/scripts/run-workers.ts",
+      "variables": { "TPL_WORKERS": {} },
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "package/scripts/synchronize-repeat-jobs.ts": {
+      "name": "scripts-synchronize-repeat-jobs",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "scripts",
+      "pathRootRelativePath": "{package-root}/scripts/synchronize-repeat-jobs.ts",
+      "variables": { "TPL_REPEAT_JOBS": {} },
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/services/bull/index.ts": {
+      "name": "service-index",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "service",
+      "projectExports": {
+        "ManagedRepeatableJobConfig": { "isTypeOnly": true },
+        "ManagedRepeatableJobsConfig": { "isTypeOnly": true },
+        "createWorker": {},
+        "getOrCreateManagedQueue": {},
+        "synchronizeRepeatableJobs": {}
+      },
+      "pathRootRelativePath": "{src-root}/services/bull/index.ts",
+      "variables": {},
+      "importMapProviders": {}
+    },
+    "src/services/bull/queue.ts": {
+      "name": "service-queue",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "service",
+      "pathRootRelativePath": "{src-root}/services/bull/queue.ts",
+      "variables": {},
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "fastifyRedisImportsProvider": {
+          "importName": "fastifyRedisImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/fastify-redis/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/services/bull/repeatable.ts": {
+      "name": "service-repeatable",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "service",
+      "pathRootRelativePath": "{src-root}/services/bull/repeatable.ts",
+      "variables": {},
+      "importMapProviders": {
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        },
+        "fastifyRedisImportsProvider": {
+          "importName": "fastifyRedisImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/fastify-redis/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/services/bull/worker.ts": {
+      "name": "service-worker",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "service",
+      "pathRootRelativePath": "{src-root}/services/bull/worker.ts",
+      "variables": {},
+      "importMapProviders": {
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        },
+        "fastifyRedisImportsProvider": {
+          "importName": "fastifyRedisImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/fastify-redis/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        }
+      }
+    }
+  }
 }

@@ -1,5 +1,6 @@
 {
   "name": "node/vitest",
+  "plugins": { "template-paths": { "skipTaskGeneration": true } },
   "templates": {
     "src/tests/scripts/global-setup.ts": {
       "name": "global-setup",
@@ -25,6 +26,5 @@
       "variables": { "TPL_CONFIG": {} },
       "importMapProviders": {}
     }
-  },
-  "plugins": { "template-paths": { "skipTaskGeneration": true } }
+  }
 }

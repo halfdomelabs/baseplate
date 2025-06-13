@@ -5,7 +5,7 @@
       "name": "axios",
       "type": "ts",
       "generator": "@baseplate-dev/fastify-generators#core/axios",
-      "template": "axios.ts",
+      "template": "",
       "fileOptions": { "kind": "singleton" },
       "projectExports": { "getAxiosErrorInfo": {} },
       "pathRootRelativePath": "{src-root}/services/axios.ts",

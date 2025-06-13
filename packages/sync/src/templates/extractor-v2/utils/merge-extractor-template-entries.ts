@@ -1,4 +1,4 @@
-import { sortObjectKeys } from '@baseplate-dev/utils';
+import { sortKeysRecursive } from '@baseplate-dev/utils';
 import { groupBy } from 'es-toolkit';
 
 import type { TemplateExtractorContext } from '../runner/template-extractor-context.js';
@@ -32,7 +32,8 @@ export function mergeExtractorTemplateEntries(
     }
 
     // Upsert template entries into the extractor.json file
-    const { name, templates, extractors, ...rest } = generatorConfig.config;
+    const { name, templates, extractors, plugins, ...rest } =
+      generatorConfig.config;
 
     // Create a map of new templates to add
     const newTemplates = Object.fromEntries(
@@ -51,12 +52,13 @@ export function mergeExtractorTemplateEntries(
 
     const newConfig = {
       name,
-      extractors,
-      templates: sortObjectKeys({
+      extractors: sortKeysRecursive(extractors),
+      plugins: sortKeysRecursive(plugins),
+      templates: sortKeysRecursive({
         ...filteredExistingTemplates,
         ...newTemplates,
       }),
-      ...rest,
+      ...sortKeysRecursive(rest),
     };
 
     // Update the in-memory config cache

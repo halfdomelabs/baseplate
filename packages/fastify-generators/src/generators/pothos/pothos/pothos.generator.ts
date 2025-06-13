@@ -20,7 +20,6 @@ import {
   createReadOnlyProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@baseplate-dev/sync';
-import path from 'node:path';
 import { z } from 'zod';
 
 import type { ScalarFieldType } from '#src/types/field-types.js';
@@ -37,11 +36,7 @@ import { requestServiceContextImportsProvider } from '#src/generators/core/reque
 import { yogaPluginConfigProvider } from '#src/generators/yoga/yoga-plugin/index.js';
 import { INBUILT_POTHOS_SCALARS } from '#src/writers/pothos/index.js';
 
-import {
-  createPothosImports,
-  pothosImportsProvider,
-} from './generated/ts-import-maps.js';
-import { POTHOS_POTHOS_TS_TEMPLATES } from './generated/ts-templates.js';
+import { POTHOS_POTHOS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -91,25 +86,13 @@ const pothosSchemaOutputProvider = createReadOnlyProviderType<{
   schemaFiles: string[];
 }>('pothos-schema-output');
 
-const basePath = '@/src/plugins/graphql';
-
 export const pothosGenerator = createGenerator({
   name: 'pothos/pothos',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    imports: createGeneratorTask({
-      exports: {
-        pothosImports: pothosImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            pothosImports: createPothosImports(basePath),
-          },
-        };
-      },
-    }),
+    paths: POTHOS_POTHOS_GENERATED.paths.task,
+    imports: POTHOS_POTHOS_GENERATED.imports.task,
     setup: setupTask,
     schema: createGeneratorTask({
       dependencies: {
@@ -168,6 +151,7 @@ export const pothosGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        paths: POTHOS_POTHOS_GENERATED.paths.provider,
         requestServiceContextImports: requestServiceContextImportsProvider,
         prettier: prettierProvider,
         appModuleImports: appModuleImportsProvider,
@@ -178,6 +162,7 @@ export const pothosGenerator = createGenerator({
       },
       run({
         typescriptFile,
+        paths,
         requestServiceContextImports,
         prettier,
         appModuleImports,
@@ -218,23 +203,14 @@ export const pothosGenerator = createGenerator({
                 ...Object.fromEntries(schemaTypeOptions),
               });
 
-            const fieldWithInputPayloadPluginPath = path.posix.join(
-              basePath,
-              'FieldWithInputPayloadPlugin/index.ts',
-            );
-            const stripQueryMutationPluginPath = path.posix.join(
-              basePath,
-              'strip-query-mutation-plugin.ts',
-            );
-
             const DEFAULT_PLUGINS = {
               pothosFieldWithInputPayloadPlugin: TsCodeUtils.importFragment(
                 'pothosFieldWithInputPayloadPlugin',
-                fieldWithInputPayloadPluginPath,
+                paths.fieldWithInputPlugin,
               ),
               pothosStripQueryMutationPlugin: TsCodeUtils.importFragment(
                 'pothosStripQueryMutationPlugin',
-                stripQueryMutationPluginPath,
+                paths.stripQueryMutationPlugin,
               ),
               simpleObjectsPlugin: tsCodeFragment(
                 `SimpleObjectsPlugin`,
@@ -264,12 +240,10 @@ export const pothosGenerator = createGenerator({
               ...Object.fromEntries(schemaBuilderOptions),
             });
 
-            const builderPath = path.posix.join(basePath, 'builder.ts');
-
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: POTHOS_POTHOS_TS_TEMPLATES.builder,
-                destination: builderPath,
+                template: POTHOS_POTHOS_GENERATED.templates.builder,
+                destination: paths.builder,
                 variables: {
                   TPL_SCHEMA_TYPE_OPTIONS: schemaTypeOptionsFragment,
                   TPL_SCHEMA_BUILDER_OPTIONS: schemaOptionsFragment,
@@ -283,7 +257,7 @@ export const pothosGenerator = createGenerator({
 
             const schemaExpression = tsCodeFragment(
               `builder.toSchema()`,
-              tsImportBuilder(['builder']).from(builderPath),
+              tsImportBuilder(['builder']).from(paths.builder),
             );
 
             yogaPluginConfig.schema.set(schemaExpression);
@@ -329,11 +303,10 @@ if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: POTHOS_POTHOS_TS_TEMPLATES.fieldWithInputPayloadGroup,
-                baseDirectory: path.posix.dirname(
-                  fieldWithInputPayloadPluginPath,
-                ),
+              typescriptFile.renderTemplateGroupV2({
+                group:
+                  POTHOS_POTHOS_GENERATED.templates.fieldWithInputPayloadGroup,
+                paths,
                 importMapProviders: {
                   tsUtilsImports,
                 },
@@ -342,8 +315,9 @@ if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: POTHOS_POTHOS_TS_TEMPLATES.stripQueryMutationPlugin,
-                destination: stripQueryMutationPluginPath,
+                template:
+                  POTHOS_POTHOS_GENERATED.templates.stripQueryMutationPlugin,
+                destination: paths.stripQueryMutationPlugin,
               }),
             );
 
@@ -352,7 +326,7 @@ if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
               onlyIfChanged: [
                 ...schemaFiles,
                 'src/plugins/graphql/index.ts',
-                builderPath,
+                paths.builder,
               ],
             });
           },
@@ -378,5 +352,3 @@ if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
     }),
   }),
 });
-
-export { pothosImportsProvider } from './generated/ts-import-maps.js';

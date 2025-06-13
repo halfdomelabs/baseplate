@@ -1,3 +1,52 @@
 {
-  "name": "auth0/auth0-module"
+  "name": "auth0/auth0-module",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/fastify-generators:userSessionServiceImportsProvider"
+      ],
+      "skipDefaultImportMap": true
+    }
+  },
+  "templates": {
+    "module/services/management.ts": {
+      "name": "management",
+      "type": "ts",
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{module-root}/services/management.ts",
+      "variables": {},
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "module/services/user-session.service.ts": {
+      "name": "user-session-service",
+      "type": "ts",
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": { "userSessionService": {} },
+      "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
+      "variables": { "TPL_USER_MODEL": {} },
+      "importMapProviders": {
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        },
+        "authContextImportsProvider": {
+          "importName": "authContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-context/generated/ts-import-providers.ts"
+        },
+        "userSessionTypesImportsProvider": {
+          "importName": "userSessionTypesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/user-session-types/generated/ts-import-providers.ts"
+        }
+      }
+    }
+  }
 }

@@ -5,7 +5,7 @@
       "name": "request-service-context",
       "type": "ts",
       "generator": "@baseplate-dev/fastify-generators#core/request-service-context",
-      "template": "request-service-context.ts",
+      "template": "",
       "fileOptions": { "kind": "singleton" },
       "projectExports": {
         "RequestServiceContext": { "isTypeOnly": true },

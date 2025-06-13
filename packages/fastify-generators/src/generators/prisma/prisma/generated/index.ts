@@ -1,0 +1,9 @@
+import { PRISMA_PRISMA_PATHS } from './template-paths.js';
+import { PRISMA_PRISMA_IMPORTS } from './ts-import-providers.js';
+import { PRISMA_PRISMA_TEMPLATES } from './typed-templates.js';
+
+export const PRISMA_PRISMA_GENERATED = {
+  imports: PRISMA_PRISMA_IMPORTS,
+  paths: PRISMA_PRISMA_PATHS,
+  templates: PRISMA_PRISMA_TEMPLATES,
+};

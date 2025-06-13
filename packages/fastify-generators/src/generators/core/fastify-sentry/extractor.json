@@ -5,7 +5,7 @@
       "name": "instrument",
       "type": "ts",
       "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
-      "template": "instrument.ts",
+      "template": "",
       "fileOptions": { "kind": "singleton" },
       "pathRootRelativePath": "{src-root}/instrument.ts",
       "variables": { "TPL_INTEGRATIONS": {} },
@@ -20,7 +20,7 @@
       "name": "sentry",
       "type": "ts",
       "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
-      "template": "services/sentry.ts",
+      "template": "",
       "fileOptions": { "kind": "singleton" },
       "projectExports": {
         "isSentryEnabled": {},

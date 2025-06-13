@@ -17,7 +17,7 @@ import { authRolesImportsProvider } from '#src/generators/auth/index.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 
 import { pothosConfigProvider, pothosSchemaProvider } from '../pothos/index.js';
-import { POTHOS_POTHOS_AUTH_TS_TEMPLATES } from './generated/ts-templates.js';
+import { POTHOS_POTHOS_AUTH_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   requireOnRootFields: z.boolean().default(true),
@@ -46,6 +46,7 @@ export const pothosAuthGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ requireOnRootFields }) => ({
+    paths: POTHOS_POTHOS_AUTH_GENERATED.paths.task,
     pothosConfig: createGeneratorTask({
       dependencies: {
         pothosConfig: pothosConfigProvider,
@@ -79,15 +80,17 @@ export const pothosAuthGenerator = createGenerator({
         pothosSchema: pothosSchemaProvider,
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         typescriptFile: typescriptFileProvider,
+        paths: POTHOS_POTHOS_AUTH_GENERATED.paths.provider,
       },
-      run({ errorHandlerServiceImports, typescriptFile, pothosSchema }) {
+      run({ errorHandlerServiceImports, typescriptFile, pothosSchema, paths }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
+              typescriptFile.renderTemplateGroupV2({
                 group:
-                  POTHOS_POTHOS_AUTH_TS_TEMPLATES.fieldAuthorizePluginGroup,
-                baseDirectory: '@/src/plugins/graphql/FieldAuthorizePlugin',
+                  POTHOS_POTHOS_AUTH_GENERATED.templates
+                    .fieldAuthorizePluginGroup,
+                paths,
                 importMapProviders: {
                   errorHandlerServiceImports,
                 },

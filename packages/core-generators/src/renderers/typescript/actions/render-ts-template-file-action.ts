@@ -114,7 +114,7 @@ export function renderTsTemplateFileAction<
         name: template.name,
         template:
           'path' in template.source
-            ? // TODO[2025-06-12]: Remove this once we've migrated all TS templates.
+            ? // TODO[2025-06-13]: Remove this once we've migrated all TS templates.
               path.isAbsolute(template.source.path)
               ? ''
               : template.source.path
@@ -126,7 +126,7 @@ export function renderTsTemplateFileAction<
           Object.keys(template.projectExports ?? {}).length > 0
             ? template.projectExports
             : undefined,
-        // TODO[2025-06-12]: Remove casting once we've migrated all TS templates.
+        // TODO[2025-06-13]: Remove casting once we've migrated all TS templates.
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         fileOptions: template.fileOptions!,
       };
@@ -143,7 +143,7 @@ export function renderTsTemplateFileAction<
           fileId,
           filePath: normalizePathToProjectPath(destination),
           generatorName: generatorInfo.name,
-          // TODO[2025-06-12]: Turn this into a file options === 'kind'
+          // TODO[2025-06-13]: Turn this into a file options === 'kind'
           isInstance: !!id,
         });
 

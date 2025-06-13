@@ -28,7 +28,10 @@ import type {
 import { CORE_PACKAGES } from '#src/constants/core-packages.js';
 import { projectScope } from '#src/providers/scopes.js';
 import { renderTsTemplateFileAction } from '#src/renderers/typescript/actions/render-ts-template-file-action.js';
-import { renderTsTemplateGroupAction as renderTsTemplateGroupActionV2 } from '#src/renderers/typescript/extractor-v2/render-ts-template-group-action.js';
+import {
+  extractTsTemplateFileInputsFromTemplateGroup as extractTsTemplateFileInputsFromTemplateGroupV2,
+  renderTsTemplateGroupAction as renderTsTemplateGroupActionV2,
+} from '#src/renderers/typescript/extractor-v2/render-ts-template-group-action.js';
 import {
   extractTsTemplateFileInputsFromTemplateGroup,
   generatePathMapEntries,
@@ -93,6 +96,21 @@ export interface TypescriptFileProvider {
    */
   addLazyTemplateGroup<T extends TsTemplateGroup = TsTemplateGroup>(
     payload: RenderTsTemplateGroupActionInput<T> & {
+      generatorInfo: GeneratorInfo;
+    },
+    options?: Omit<LazyTemplateFileEntry, 'payload'>,
+  ): void;
+  /**
+   * Adds a lazy template group whose files will be written only if
+   * another template depends on it.
+   *
+   * @param payload - The payload for the template group
+   * @returns The action for the template group
+   */
+  addLazyTemplateGroupV2<
+    T extends Record<string, TsTemplateFile> = Record<string, TsTemplateFile>,
+  >(
+    payload: RenderTsTemplateGroupActionInputV2<T> & {
       generatorInfo: GeneratorInfo;
     },
     options?: Omit<LazyTemplateFileEntry, 'payload'>,
@@ -313,6 +331,20 @@ export const typescriptGenerator = createGenerator({
                 // break out files of the group
                 const files =
                   extractTsTemplateFileInputsFromTemplateGroup(payload);
+                for (const file of files) {
+                  lazyTemplates.add({
+                    payload: {
+                      ...file,
+                      generatorInfo: payload.generatorInfo,
+                    },
+                    ...options,
+                  });
+                }
+              },
+              addLazyTemplateGroupV2(payload, options) {
+                // break out files of the group
+                const files =
+                  extractTsTemplateFileInputsFromTemplateGroupV2(payload);
                 for (const file of files) {
                   lazyTemplates.add({
                     payload: {

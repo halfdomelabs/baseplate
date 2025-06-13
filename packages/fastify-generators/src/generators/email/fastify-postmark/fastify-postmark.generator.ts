@@ -20,7 +20,7 @@ import {
   configServiceProvider,
 } from '#src/generators/core/config-service/index.js';
 
-import { EMAIL_FASTIFY_POSTMARK_TS_TEMPLATES } from './generated/ts-templates.js';
+import { EMAIL_FASTIFY_POSTMARK_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -45,16 +45,17 @@ export const fastifyPostmarkGenerator = createGenerator({
         exampleValue: 'POSTMARK_API_TOKEN',
       });
     }),
+    paths: EMAIL_FASTIFY_POSTMARK_GENERATED.paths.task,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         configServiceImports: configServiceImportsProvider,
+        paths: EMAIL_FASTIFY_POSTMARK_GENERATED.paths.provider,
       },
       exports: {
         fastifyPostmark: fastifyPostmarkProvider.export(projectScope),
       },
-      run({ typescriptFile, configServiceImports }) {
-        const postmarkPath = '@/src/services/postmark.ts';
+      run({ typescriptFile, configServiceImports, paths }) {
         return {
           providers: {
             fastifyPostmark: {},
@@ -62,8 +63,8 @@ export const fastifyPostmarkGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: EMAIL_FASTIFY_POSTMARK_TS_TEMPLATES.postmark,
-                destination: postmarkPath,
+                template: EMAIL_FASTIFY_POSTMARK_GENERATED.templates.postmark,
+                destination: paths.postmark,
                 importMapProviders: {
                   configServiceImports,
                 },

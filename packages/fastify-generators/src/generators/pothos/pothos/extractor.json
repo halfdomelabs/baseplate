@@ -1,3 +1,79 @@
 {
-  "name": "pothos/pothos"
+  "name": "pothos/pothos",
+  "templates": {
+    "src/plugins/graphql/builder.ts": {
+      "name": "builder",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "projectExports": { "builder": {} },
+      "pathRootRelativePath": "{src-root}/plugins/graphql/builder.ts",
+      "variables": {
+        "TPL_SCHEMA_BUILDER_OPTIONS": {},
+        "TPL_SCHEMA_TYPE_OPTIONS": {},
+        "TPL_SUBSCRIPTION_TYPE": {}
+      },
+      "importMapProviders": {}
+    },
+    "src/plugins/graphql/FieldWithInputPayloadPlugin/global-types.ts": {
+      "name": "field-with-input-global-types",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "field-with-input-payload",
+      "pathRootRelativePath": "{src-root}/plugins/graphql/FieldWithInputPayloadPlugin/global-types.ts",
+      "variables": {},
+      "importMapProviders": {}
+    },
+    "src/plugins/graphql/FieldWithInputPayloadPlugin/index.ts": {
+      "name": "field-with-input-plugin",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "field-with-input-payload",
+      "pathRootRelativePath": "{src-root}/plugins/graphql/FieldWithInputPayloadPlugin/index.ts",
+      "variables": {},
+      "importMapProviders": {}
+    },
+    "src/plugins/graphql/FieldWithInputPayloadPlugin/schema-builder.ts": {
+      "name": "field-with-input-schema-builder",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "field-with-input-payload",
+      "pathRootRelativePath": "{src-root}/plugins/graphql/FieldWithInputPayloadPlugin/schema-builder.ts",
+      "variables": {},
+      "importMapProviders": {
+        "tsUtilsImportsProvider": {
+          "importName": "tsUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/core-generators:src/generators/node/ts-utils/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/plugins/graphql/FieldWithInputPayloadPlugin/types.ts": {
+      "name": "field-with-input-types",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "field-with-input-payload",
+      "pathRootRelativePath": "{src-root}/plugins/graphql/FieldWithInputPayloadPlugin/types.ts",
+      "variables": {},
+      "importMapProviders": {}
+    },
+    "src/plugins/graphql/strip-query-mutation-plugin.ts": {
+      "name": "strip-query-mutation-plugin",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/plugins/graphql/strip-query-mutation-plugin.ts",
+      "variables": {},
+      "importMapProviders": {}
+    }
+  }
 }

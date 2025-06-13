@@ -1,3 +1,121 @@
 {
-  "name": "prisma/prisma-utils"
+  "name": "prisma/prisma-utils",
+  "templates": {
+    "src/utils/crud-service-types.ts": {
+      "name": "crud-service-types",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "utils",
+      "projectExports": {
+        "CreateServiceInput": { "isTypeOnly": true },
+        "DeleteServiceInput": { "isTypeOnly": true },
+        "UpdateServiceInput": { "isTypeOnly": true }
+      },
+      "pathRootRelativePath": "{src-root}/utils/crud-service-types.ts",
+      "variables": {},
+      "importMapProviders": {
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/utils/data-pipes.ts": {
+      "name": "data-pipes",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "utils",
+      "projectExports": {
+        "DataPipeOutput": { "isTypeOnly": true },
+        "applyDataPipeOutput": {},
+        "applyDataPipeOutputToOperations": {},
+        "applyDataPipeOutputWithoutOperation": {},
+        "mergePipeOperations": {}
+      },
+      "pathRootRelativePath": "{src-root}/utils/data-pipes.ts",
+      "variables": {},
+      "importMapProviders": {
+        "tsUtilsImportsProvider": {
+          "importName": "tsUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/core-generators:src/generators/node/ts-utils/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/utils/embedded-pipes/embedded-one-to-many.ts": {
+      "name": "embedded-one-to-many",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "utils",
+      "projectExports": {
+        "createOneToManyCreateData": {},
+        "createOneToManyUpsertData": {}
+      },
+      "pathRootRelativePath": "{src-root}/utils/embedded-pipes/embedded-one-to-many.ts",
+      "variables": {},
+      "importMapProviders": {
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        },
+        "tsUtilsImportsProvider": {
+          "importName": "tsUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/core-generators:src/generators/node/ts-utils/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/utils/embedded-pipes/embedded-one-to-one.ts": {
+      "name": "embedded-one-to-one",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "utils",
+      "projectExports": {
+        "createOneToOneCreateData": {},
+        "createOneToOneUpsertData": {}
+      },
+      "pathRootRelativePath": "{src-root}/utils/embedded-pipes/embedded-one-to-one.ts",
+      "variables": {},
+      "importMapProviders": {
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/utils/embedded-pipes/embedded-types.ts": {
+      "name": "embedded-types",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "utils",
+      "projectExports": { "UpsertPayload": { "isTypeOnly": true } },
+      "pathRootRelativePath": "{src-root}/utils/embedded-pipes/embedded-types.ts",
+      "variables": {},
+      "importMapProviders": {}
+    },
+    "src/utils/prisma-relations.ts": {
+      "name": "prisma-relations",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "utils",
+      "projectExports": { "createPrismaDisconnectOrConnectData": {} },
+      "pathRootRelativePath": "{src-root}/utils/prisma-relations.ts",
+      "variables": {},
+      "importMapProviders": {}
+    }
+  }
 }

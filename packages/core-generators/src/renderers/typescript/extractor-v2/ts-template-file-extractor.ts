@@ -6,6 +6,7 @@ import path from 'node:path';
 import pLimit from 'p-limit';
 
 import { templateExtractorBarrelExportPlugin } from '#src/renderers/extractor/index.js';
+import { deduplicateTemplateFileExtractorSourceFiles } from '#src/renderers/extractor/utils/deduplicate-templates.js';
 
 import type { TsGeneratorTemplateMetadata } from '../templates/types.js';
 import type { WriteTsTemplateFileContext } from './render-ts-template-file.js';
@@ -40,8 +41,10 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
   outputTemplateMetadataSchema: tsTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: tsTemplateGeneratorTemplateMetadataSchema,
   extractTemplateMetadataEntries: (files, context) => {
+    const deduplicatedFiles =
+      deduplicateTemplateFileExtractorSourceFiles(files);
     const templatePathPlugin = context.getPlugin('template-paths');
-    return files.map(({ metadata, absolutePath }) => {
+    return deduplicatedFiles.map(({ metadata, absolutePath }) => {
       try {
         const { pathRootRelativePath, generatorTemplatePath } =
           templatePathPlugin.resolveTemplatePaths(
@@ -70,7 +73,13 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
   },
   writeTemplateFiles: async (files, context, api) => {
     // Gather all the imports from the entry metadata
-    const projectExportMap = buildTsProjectExportMap(context);
+    const externalImportProvidersMap = buildExternalImportProvidersMap(
+      context.configLookup,
+    );
+    const projectExportMap = buildTsProjectExportMap(
+      context,
+      externalImportProvidersMap,
+    );
 
     const filesByGenerator = groupBy(files, (f) => f.generator);
 

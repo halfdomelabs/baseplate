@@ -36,7 +36,7 @@ import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server
 import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/index.js';
 import { requestServiceContextImportsProvider } from '#src/generators/core/request-service-context/index.js';
 
-import { YOGA_YOGA_PLUGIN_TS_TEMPLATES } from './generated/ts-templates.js';
+import { YOGA_YOGA_PLUGIN_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   enableSubscriptions: z.boolean().optional(),
@@ -95,6 +95,7 @@ export const yogaPluginGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ enableSubscriptions }) => ({
+    paths: YOGA_YOGA_PLUGIN_GENERATED.paths.task,
     setup: createGeneratorTask({
       exports: {
         yogaPluginConfig: yogaPluginConfigProvider.export(projectScope),
@@ -152,6 +153,7 @@ export const yogaPluginGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        paths: YOGA_YOGA_PLUGIN_GENERATED.paths.provider,
         configServiceImports: configServiceImportsProvider,
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         requestServiceContextImports: requestServiceContextImportsProvider,
@@ -160,6 +162,7 @@ export const yogaPluginGenerator = createGenerator({
       },
       run({
         typescriptFile,
+        paths,
         configServiceImports,
         requestServiceContextImports,
         loggerServiceImports,
@@ -194,8 +197,8 @@ handler: httpHandler,
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: YOGA_YOGA_PLUGIN_TS_TEMPLATES.graphqlPlugin,
-                destination: '@/src/plugins/graphql/index.ts',
+                template: YOGA_YOGA_PLUGIN_GENERATED.templates.graphqlPlugin,
+                destination: paths.graphqlPlugin,
                 variables: {
                   TPL_SCHEMA: config.schema,
                   TPL_ENVELOP_PLUGINS: TsCodeUtils.mergeFragmentsAsArray(
@@ -222,8 +225,8 @@ handler: httpHandler,
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: YOGA_YOGA_PLUGIN_TS_TEMPLATES.useGraphLogger,
-                destination: 'src/plugins/graphql/use-graph-logger.ts',
+                template: YOGA_YOGA_PLUGIN_GENERATED.templates.useGraphLogger,
+                destination: paths.useGraphLogger,
                 importMapProviders: {
                   loggerServiceImports,
                   errorHandlerServiceImports,
@@ -265,6 +268,7 @@ handler: httpHandler,
             dependencies: {
               node: nodeProvider,
               typescriptFile: typescriptFileProvider,
+              paths: YOGA_YOGA_PLUGIN_GENERATED.paths.provider,
               fastifyRedisImports: fastifyRedisImportsProvider,
               authContextImports: authContextImportsProvider
                 .dependency()
@@ -280,6 +284,7 @@ handler: httpHandler,
             run({
               node,
               typescriptFile,
+              paths,
               fastifyRedisImports,
               authContextImports,
               errorHandlerServiceImports,
@@ -325,9 +330,10 @@ handler: httpHandler,
                       : undefined;
 
                   await builder.apply(
-                    typescriptFile.renderTemplateGroup({
-                      group: YOGA_YOGA_PLUGIN_TS_TEMPLATES.subscriptionsGroup,
-                      baseDirectory: '@/src/plugins/graphql',
+                    typescriptFile.renderTemplateGroupV2({
+                      group:
+                        YOGA_YOGA_PLUGIN_GENERATED.templates.subscriptionsGroup,
+                      paths,
                       variables: {
                         pubsub: {
                           // Placeholder args for now

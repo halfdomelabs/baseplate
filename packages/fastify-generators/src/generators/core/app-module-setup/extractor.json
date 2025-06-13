@@ -5,7 +5,7 @@
       "name": "app-modules",
       "type": "ts",
       "generator": "@baseplate-dev/fastify-generators#core/app-module-setup",
-      "template": "app-modules.ts",
+      "template": "",
       "fileOptions": { "kind": "singleton" },
       "projectExports": { "flattenAppModule": {} },
       "pathRootRelativePath": "{src-root}/utils/app-modules.ts",

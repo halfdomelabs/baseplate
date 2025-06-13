@@ -1,19 +1,9 @@
-import {
-  projectScope,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
-import path from 'node:path';
 import { z } from 'zod';
 
-import { appModuleProvider } from '#src/generators/core/app-module/index.js';
-
 import { authContextImportsProvider } from '../auth-context/index.js';
-import {
-  createUserSessionTypesImports,
-  userSessionTypesImportsProvider,
-} from './generated/ts-import-maps.js';
-import { AUTH_USER_SESSION_TYPES_TS_TEMPLATES } from './generated/ts-templates.js';
+import { AUTH_USER_SESSION_TYPES_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -22,32 +12,22 @@ export const userSessionTypesGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: AUTH_USER_SESSION_TYPES_GENERATED.paths.task,
+    imports: AUTH_USER_SESSION_TYPES_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
-        appModule: appModuleProvider,
         typescriptFile: typescriptFileProvider,
+        paths: AUTH_USER_SESSION_TYPES_GENERATED.paths.provider,
         authContextImports: authContextImportsProvider,
       },
-      exports: {
-        userSessionTypesImports:
-          userSessionTypesImportsProvider.export(projectScope),
-      },
-      run({ appModule, typescriptFile, authContextImports }) {
-        const userSessionTypesFile = path.join(
-          appModule.getModuleFolder(),
-          'types/user-session.types.ts',
-        );
+      run({ typescriptFile, paths, authContextImports }) {
         return {
-          providers: {
-            userSessionTypesImports: createUserSessionTypesImports(
-              path.dirname(userSessionTypesFile),
-            ),
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: AUTH_USER_SESSION_TYPES_TS_TEMPLATES.userSessionTypes,
-                destination: userSessionTypesFile,
+                template:
+                  AUTH_USER_SESSION_TYPES_GENERATED.templates.userSessionTypes,
+                destination: paths.userSessionTypes,
                 importMapProviders: {
                   authContextImports,
                 },
@@ -59,5 +39,3 @@ export const userSessionTypesGenerator = createGenerator({
     }),
   }),
 });
-
-export { userSessionTypesImportsProvider } from './generated/ts-import-maps.js';

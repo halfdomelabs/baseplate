@@ -30,7 +30,7 @@ export async function readTemplateFileSourceBuffer(
   source: TemplateFileSource,
 ): Promise<Buffer> {
   if ('path' in source) {
-    // TODO[2025-06-12]: Remove once we've migrated to v2 of template system
+    // TODO[2025-06-13]: Remove once we've migrated to v2 of template system
     const templatePath = path.isAbsolute(source.path)
       ? source.path
       : path.join(generatorBaseDirectory, 'templates', source.path);

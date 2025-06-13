@@ -8,6 +8,7 @@ import type { TextTemplateFileVariableWithValue } from './types.js';
 
 import { templatePathsPlugin } from '../extractor/plugins/template-paths/template-paths.plugin.js';
 import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-file.js';
+import { deduplicateTemplateFileExtractorSourceFiles } from '../extractor/utils/deduplicate-templates.js';
 import { resolvePackagePathSpecifier } from '../extractor/utils/package-path-specifier.js';
 import { TsCodeUtils, tsImportBuilder } from '../typescript/index.js';
 import {
@@ -24,8 +25,10 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
   outputTemplateMetadataSchema: textTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: textTemplateGeneratorTemplateMetadataSchema,
   extractTemplateMetadataEntries: (files, context) => {
+    const deduplicatedFiles =
+      deduplicateTemplateFileExtractorSourceFiles(files);
     const templatePathPlugin = context.getPlugin('template-paths');
-    return files.map(({ metadata, absolutePath }) => {
+    return deduplicatedFiles.map(({ metadata, absolutePath }) => {
       try {
         const { pathRootRelativePath, generatorTemplatePath } =
           templatePathPlugin.resolveTemplatePaths(

@@ -1,3 +1,28 @@
 {
-  "name": "auth/auth-plugin"
+  "name": "auth/auth-plugin",
+  "templates": {
+    "module/plugins/auth.plugin.ts": {
+      "name": "auth-plugin",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#auth/auth-plugin",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{module-root}/plugins/auth.plugin.ts",
+      "variables": {},
+      "importMapProviders": {
+        "userSessionTypesImportsProvider": {
+          "importName": "userSessionTypesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/user-session-types/generated/ts-import-providers.ts"
+        },
+        "authContextImportsProvider": {
+          "importName": "authContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-context/generated/ts-import-providers.ts"
+        },
+        "userSessionServiceImportsProvider": {
+          "importName": "userSessionServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/_providers/user-session.ts"
+        }
+      }
+    }
+  }
 }

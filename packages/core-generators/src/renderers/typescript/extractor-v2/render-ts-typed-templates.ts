@@ -76,7 +76,7 @@ function renderTsTypedTemplateGroup(
   const renderedTemplates = templates
     .map(({ path, config }) => renderTsTypedTemplate(path, config, context))
     .toSorted((a, b) => a.exportName.localeCompare(b.exportName));
-  const exportName = camelCase(groupName);
+  const exportName = `${camelCase(groupName)}Group`;
 
   return {
     fragment: TsCodeUtils.mergeFragmentsPresorted(

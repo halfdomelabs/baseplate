@@ -1,5 +1,4 @@
 import {
-  projectScope,
   tsUtilsImportsProvider,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -9,11 +8,7 @@ import { z } from 'zod';
 import { serviceContextImportsProvider } from '#src/generators/core/service-context/index.js';
 
 import { prismaImportsProvider } from '../prisma/index.js';
-import {
-  createPrismaUtilsImports,
-  prismaUtilsImportsProvider,
-} from './generated/ts-import-maps.js';
-import { PRISMA_PRISMA_UTILS_TS_TEMPLATES } from './generated/ts-templates.js';
+import { PRISMA_PRISMA_UTILS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -22,37 +17,29 @@ export const prismaUtilsGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    imports: createGeneratorTask({
-      exports: {
-        prismaUtilsImports: prismaUtilsImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            prismaUtilsImports: createPrismaUtilsImports('@/src/utils'),
-          },
-        };
-      },
-    }),
+    paths: PRISMA_PRISMA_UTILS_GENERATED.paths.task,
+    imports: PRISMA_PRISMA_UTILS_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         serviceContextImports: serviceContextImportsProvider,
         tsUtilsImports: tsUtilsImportsProvider,
         prismaImports: prismaImportsProvider,
+        paths: PRISMA_PRISMA_UTILS_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
         serviceContextImports,
         tsUtilsImports,
         prismaImports,
+        paths,
       }) {
         return {
           build: (builder) => {
-            typescriptFile.addLazyTemplateGroup({
-              group: PRISMA_PRISMA_UTILS_TS_TEMPLATES.utilsGroup,
-              baseDirectory: '@/src/utils',
+            typescriptFile.addLazyTemplateGroupV2({
+              group: PRISMA_PRISMA_UTILS_GENERATED.templates.utilsGroup,
               generatorInfo: builder.generatorInfo,
+              paths,
               importMapProviders: {
                 serviceContextImports,
                 tsUtilsImports,
@@ -65,6 +52,3 @@ export const prismaUtilsGenerator = createGenerator({
     }),
   }),
 });
-
-export { prismaUtilsImportsProvider } from './generated/ts-import-maps.js';
-export type { PrismaUtilsImportsProvider } from './generated/ts-import-maps.js';

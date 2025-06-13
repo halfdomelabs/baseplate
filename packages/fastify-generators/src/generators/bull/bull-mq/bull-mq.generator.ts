@@ -2,7 +2,6 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   nodeProvider,
-  projectScope,
   tsCodeFragment,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -15,11 +14,7 @@ import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/
 import { fastifyOutputProvider } from '#src/generators/core/fastify/index.js';
 import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/index.js';
 
-import {
-  bullMqImportsProvider,
-  createBullMqImports,
-} from './generated/ts-import-maps.js';
-import { BULL_BULL_MQ_TS_TEMPLATES } from './generated/ts-templates.js';
+import { BULL_BULL_MQ_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -28,6 +23,8 @@ export const bullMqGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: BULL_BULL_MQ_GENERATED.paths.task,
+    imports: BULL_BULL_MQ_GENERATED.imports.task,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['bullmq']),
     }),
@@ -59,26 +56,21 @@ export const bullMqGenerator = createGenerator({
         loggerServiceImports: loggerServiceImportsProvider,
         fastifyRedisImports: fastifyRedisImportsProvider,
         typescriptFile: typescriptFileProvider,
-      },
-      exports: {
-        bullMqImports: bullMqImportsProvider.export(projectScope),
+        paths: BULL_BULL_MQ_GENERATED.paths.provider,
       },
       run({
         errorHandlerServiceImports,
         loggerServiceImports,
         fastifyRedisImports,
         typescriptFile,
+        paths,
       }) {
-        const bullServiceBase = '@/src/services/bull';
         return {
-          providers: {
-            bullMqImports: createBullMqImports(bullServiceBase),
-          },
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: BULL_BULL_MQ_TS_TEMPLATES.scriptsGroup,
-                baseDirectory: '@/scripts',
+              typescriptFile.renderTemplateGroupV2({
+                group: BULL_BULL_MQ_GENERATED.templates.scriptsGroup,
+                paths,
                 importMapProviders: {
                   errorHandlerServiceImports,
                   loggerServiceImports,
@@ -95,9 +87,9 @@ export const bullMqGenerator = createGenerator({
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: BULL_BULL_MQ_TS_TEMPLATES.serviceGroup,
-                baseDirectory: bullServiceBase,
+              typescriptFile.renderTemplateGroupV2({
+                group: BULL_BULL_MQ_GENERATED.templates.serviceGroup,
+                paths,
                 importMapProviders: {
                   fastifyRedisImports,
                   errorHandlerServiceImports,

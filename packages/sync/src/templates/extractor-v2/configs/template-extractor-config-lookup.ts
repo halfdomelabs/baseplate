@@ -228,7 +228,7 @@ export class TemplateExtractorConfigLookup {
       ([generatorName, config]) => {
         const generatorConfig = generatorConfigSchema
           ? (generatorConfigSchema.parse(
-              config.config,
+              config.config.extractors?.[templateType],
             ) as z.infer<TGeneratorConfig>)
           : undefined;
         const templates = Object.fromEntries(

@@ -1,3 +1,73 @@
 {
-  "name": "stripe/fastify-stripe"
+  "name": "stripe/fastify-stripe",
+  "templates": {
+    "src/plugins/stripe-webhook.int.test.ts": {
+      "name": "plugins-webhook-test",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "plugins",
+      "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.int.test.ts",
+      "variables": {},
+      "importMapProviders": {}
+    },
+    "src/plugins/stripe-webhook.ts": {
+      "name": "plugins-webhook",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "plugins",
+      "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.ts",
+      "variables": {},
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/services/stripe-events.ts": {
+      "name": "service-events",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "services",
+      "projectExports": {
+        "StripeEventHandler": { "isTypeOnly": true },
+        "stripeEventService": {}
+      },
+      "pathRootRelativePath": "{src-root}/services/stripe-events.ts",
+      "variables": {},
+      "importMapProviders": {
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "src/services/stripe.ts": {
+      "name": "service",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "services",
+      "projectExports": { "stripe": {} },
+      "pathRootRelativePath": "{src-root}/services/stripe.ts",
+      "variables": {},
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      }
+    }
+  }
 }

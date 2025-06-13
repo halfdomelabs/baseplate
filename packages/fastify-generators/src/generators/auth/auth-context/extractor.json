@@ -1,3 +1,68 @@
 {
-  "name": "auth/auth-context"
+  "name": "auth/auth-context",
+  "templates": {
+    "module/types/auth-context.types.ts": {
+      "name": "auth-context-types",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#auth/auth-context",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "projectExports": { "AuthContext": { "isTypeOnly": true } },
+      "pathRootRelativePath": "{module-root}/types/auth-context.types.ts",
+      "variables": {},
+      "importMapProviders": {
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "module/types/auth-session.types.ts": {
+      "name": "auth-session-types",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#auth/auth-context",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "projectExports": {
+        "AuthSessionInfo": { "isTypeOnly": true },
+        "AuthUserSessionInfo": { "isTypeOnly": true },
+        "InvalidSessionError": {}
+      },
+      "pathRootRelativePath": "{module-root}/types/auth-session.types.ts",
+      "variables": {},
+      "importMapProviders": {
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        }
+      }
+    },
+    "module/utils/auth-context.utils.ts": {
+      "name": "auth-context-utils",
+      "type": "ts",
+      "generator": "@baseplate-dev/fastify-generators#auth/auth-context",
+      "template": "",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "projectExports": { "createAuthContextFromSessionInfo": {} },
+      "pathRootRelativePath": "{module-root}/utils/auth-context.utils.ts",
+      "variables": {},
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        }
+      }
+    }
+  }
 }
