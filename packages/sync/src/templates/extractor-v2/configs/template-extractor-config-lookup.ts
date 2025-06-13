@@ -10,6 +10,7 @@ import type {
   TemplateConfig,
 } from './extractor-config.schema.js';
 
+import { sortExtractorConfigTemplateKeys } from '../utils/sort-extractor-config-keys.js';
 import { extractorConfigSchema } from './extractor-config.schema.js';
 import { extractorProvidersConfigSchema } from './providers-config.schema.js';
 
@@ -330,7 +331,7 @@ export class TemplateExtractorConfigLookup {
       );
     }
 
-    templates[templateKey] = config;
+    templates[templateKey] = sortExtractorConfigTemplateKeys(config);
   }
 
   /**

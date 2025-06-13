@@ -4,46 +4,46 @@
     "src/utils/arrays.ts": {
       "name": "arrays",
       "type": "ts",
-      "generator": "@baseplate-dev/core-generators#node/ts-utils",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": { "notEmpty": {} },
+      "generator": "@baseplate-dev/core-generators#node/ts-utils",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/arrays.ts",
-      "variables": {},
-      "importMapProviders": {}
+      "projectExports": { "notEmpty": {} },
+      "template": "",
+      "variables": {}
     },
     "src/utils/normalize-types.ts": {
       "name": "normalize-types",
       "type": "ts",
-      "generator": "@baseplate-dev/core-generators#node/ts-utils",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": { "NormalizeTypes": { "isTypeOnly": true } },
+      "generator": "@baseplate-dev/core-generators#node/ts-utils",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/normalize-types.ts",
-      "variables": {},
-      "importMapProviders": {}
+      "projectExports": { "NormalizeTypes": { "isTypeOnly": true } },
+      "template": "",
+      "variables": {}
     },
     "src/utils/nulls.ts": {
       "name": "nulls",
       "type": "ts",
-      "generator": "@baseplate-dev/core-generators#node/ts-utils",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": { "restrictObjectNulls": {} },
+      "generator": "@baseplate-dev/core-generators#node/ts-utils",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/nulls.ts",
-      "variables": {},
-      "importMapProviders": {}
+      "projectExports": { "restrictObjectNulls": {} },
+      "template": "",
+      "variables": {}
     },
     "src/utils/string.ts": {
       "name": "string",
       "type": "ts",
-      "generator": "@baseplate-dev/core-generators#node/ts-utils",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": { "capitalizeString": {} },
+      "generator": "@baseplate-dev/core-generators#node/ts-utils",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/string.ts",
-      "variables": {},
-      "importMapProviders": {}
+      "projectExports": { "capitalizeString": {} },
+      "template": "",
+      "variables": {}
     }
   }
 }

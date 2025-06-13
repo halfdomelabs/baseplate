@@ -4,21 +4,21 @@
     "module/types/user-session.types.ts": {
       "name": "user-session-types",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#auth/user-session-types",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": {
-        "UserSessionPayload": { "isTypeOnly": true },
-        "UserSessionService": { "isTypeOnly": true }
-      },
-      "pathRootRelativePath": "{module-root}/types/user-session.types.ts",
-      "variables": {},
+      "generator": "@baseplate-dev/fastify-generators#auth/user-session-types",
       "importMapProviders": {
         "authContextImportsProvider": {
           "importName": "authContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-context/generated/ts-import-providers.ts"
         }
-      }
+      },
+      "pathRootRelativePath": "{module-root}/types/user-session.types.ts",
+      "projectExports": {
+        "UserSessionPayload": { "isTypeOnly": true },
+        "UserSessionService": { "isTypeOnly": true }
+      },
+      "template": "",
+      "variables": {}
     }
   }
 }

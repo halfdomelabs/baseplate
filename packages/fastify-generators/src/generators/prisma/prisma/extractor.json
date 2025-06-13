@@ -4,23 +4,23 @@
     "src/prisma/seed.ts": {
       "name": "seed",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/prisma/seed.ts",
-      "variables": {},
-      "importMapProviders": {}
+      "template": "",
+      "variables": {}
     },
     "src/services/prisma.ts": {
       "name": "service",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": { "prisma": {} },
+      "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/prisma.ts",
-      "variables": {},
-      "importMapProviders": {}
+      "projectExports": { "prisma": {} },
+      "template": "",
+      "variables": {}
     }
   }
 }

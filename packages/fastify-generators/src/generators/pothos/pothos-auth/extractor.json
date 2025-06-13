@@ -4,40 +4,40 @@
     "src/plugins/graphql/FieldAuthorizePlugin/global-types.ts": {
       "name": "field-authorize-global-types",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
       "group": "field-authorize-plugin",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/global-types.ts",
-      "variables": {},
-      "importMapProviders": {}
+      "template": "",
+      "variables": {}
     },
     "src/plugins/graphql/FieldAuthorizePlugin/index.ts": {
       "name": "field-authorize-plugin",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
       "group": "field-authorize-plugin",
-      "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/index.ts",
-      "variables": {},
       "importMapProviders": {
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
         }
-      }
+      },
+      "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/index.ts",
+      "template": "",
+      "variables": {}
     },
     "src/plugins/graphql/FieldAuthorizePlugin/types.ts": {
       "name": "field-authorize-types",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
       "group": "field-authorize-plugin",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/types.ts",
-      "variables": {},
-      "importMapProviders": {}
+      "template": "",
+      "variables": {}
     }
   }
 }

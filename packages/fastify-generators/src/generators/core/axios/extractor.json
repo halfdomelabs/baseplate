@@ -4,13 +4,13 @@
     "src/services/axios.ts": {
       "name": "axios",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#core/axios",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": { "getAxiosErrorInfo": {} },
+      "generator": "@baseplate-dev/fastify-generators#core/axios",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/axios.ts",
-      "variables": {},
-      "importMapProviders": {}
+      "projectExports": { "getAxiosErrorInfo": {} },
+      "template": "",
+      "variables": {}
     }
   }
 }

@@ -12,41 +12,41 @@
     "module/services/management.ts": {
       "name": "management",
       "type": "ts",
-      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{module-root}/services/management.ts",
-      "variables": {},
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
       "importMapProviders": {
         "configServiceImportsProvider": {
           "importName": "configServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
         }
-      }
+      },
+      "pathRootRelativePath": "{module-root}/services/management.ts",
+      "template": "",
+      "variables": {}
     },
     "module/services/user-session.service.ts": {
       "name": "user-session-service",
       "type": "ts",
-      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": { "userSessionService": {} },
-      "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
-      "variables": { "TPL_USER_MODEL": {} },
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
       "importMapProviders": {
-        "authRolesImportsProvider": {
-          "importName": "authRolesImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
-        },
         "authContextImportsProvider": {
           "importName": "authContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-context/generated/ts-import-providers.ts"
+        },
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
         },
         "userSessionTypesImportsProvider": {
           "importName": "userSessionTypesImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/user-session-types/generated/ts-import-providers.ts"
         }
-      }
+      },
+      "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
+      "projectExports": { "userSessionService": {} },
+      "template": "",
+      "variables": { "TPL_USER_MODEL": {} }
     }
   }
 }

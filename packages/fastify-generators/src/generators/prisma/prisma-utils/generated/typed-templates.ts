@@ -35,10 +35,10 @@ const dataPipes = createTsTemplateFile({
   },
   name: 'data-pipes',
   projectExports: {
-    DataPipeOutput: { isTypeOnly: true },
     applyDataPipeOutput: {},
     applyDataPipeOutputToOperations: {},
     applyDataPipeOutputWithoutOperation: {},
+    DataPipeOutput: { isTypeOnly: true },
     mergePipeOperations: {},
   },
   source: {

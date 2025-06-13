@@ -5,26 +5,26 @@
     "src/tests/scripts/global-setup.ts": {
       "name": "global-setup",
       "type": "ts",
-      "generator": "@baseplate-dev/core-generators#node/vitest",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/core-generators#node/vitest",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/tests/scripts/global-setup.ts",
-      "variables": { "TPL_OPERATIONS": {} },
-      "importMapProviders": {}
+      "template": "",
+      "variables": { "TPL_OPERATIONS": {} }
     },
     "vitest.config.ts": {
       "name": "vitest-config",
       "type": "ts",
-      "generator": "@baseplate-dev/core-generators#node/vitest",
-      "template": "",
       "fileOptions": {
-        "kind": "singleton",
         "generatorTemplatePath": "vitest.config.ts",
+        "kind": "singleton",
         "pathRootRelativePath": "{package-root}/vitest.config.ts"
       },
+      "generator": "@baseplate-dev/core-generators#node/vitest",
+      "importMapProviders": {},
       "pathRootRelativePath": "{package-root}/vitest.config.ts",
-      "variables": { "TPL_CONFIG": {} },
-      "importMapProviders": {}
+      "template": "",
+      "variables": { "TPL_CONFIG": {} }
     }
   }
 }

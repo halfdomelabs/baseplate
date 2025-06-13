@@ -4,12 +4,12 @@
     "src/plugins/graphql/use-sentry.ts": {
       "name": "use-sentry",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-sentry",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-sentry",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/graphql/use-sentry.ts",
-      "variables": {},
-      "importMapProviders": {}
+      "template": "",
+      "variables": {}
     }
   }
 }

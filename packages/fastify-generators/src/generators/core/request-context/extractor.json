@@ -4,13 +4,13 @@
     "src/plugins/request-context.ts": {
       "name": "request-context",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#core/request-context",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": { "RequestInfo": { "isTypeOnly": true } },
+      "generator": "@baseplate-dev/fastify-generators#core/request-context",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/request-context.ts",
-      "variables": {},
-      "importMapProviders": {}
+      "projectExports": { "RequestInfo": { "isTypeOnly": true } },
+      "template": "",
+      "variables": {}
     }
   }
 }

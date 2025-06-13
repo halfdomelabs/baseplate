@@ -4,12 +4,12 @@
     "src/plugins/health-check.ts": {
       "name": "health-check",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#core/fastify-health-check",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#core/fastify-health-check",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/health-check.ts",
-      "variables": { "TPL_HEALTH_CHECKS": {} },
-      "importMapProviders": {}
+      "template": "",
+      "variables": { "TPL_HEALTH_CHECKS": {} }
     }
   }
 }

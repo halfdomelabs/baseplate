@@ -4,22 +4,22 @@
     "index.ts": {
       "name": "index",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#core/app-module",
-      "template": "",
       "fileOptions": {
-        "kind": "instance",
-        "generatorTemplatePath": "index.ts"
+        "generatorTemplatePath": "index.ts",
+        "kind": "instance"
       },
-      "variables": {
-        "TPL_IMPORTS": {},
-        "TPL_MODULE_CONTENTS": {},
-        "TPL_MODULE_NAME": {}
-      },
+      "generator": "@baseplate-dev/fastify-generators#core/app-module",
       "importMapProviders": {
         "appModuleSetupImportsProvider": {
           "importName": "appModuleSetupImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-module-setup/generated/ts-import-providers.ts"
         }
+      },
+      "template": "",
+      "variables": {
+        "TPL_IMPORTS": {},
+        "TPL_MODULE_CONTENTS": {},
+        "TPL_MODULE_NAME": {}
       }
     }
   }

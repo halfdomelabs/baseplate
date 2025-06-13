@@ -1,8 +1,9 @@
-import { sortKeysRecursive } from '@baseplate-dev/utils';
 import { groupBy } from 'es-toolkit';
 
 import type { TemplateExtractorContext } from '../runner/template-extractor-context.js';
 import type { TemplateFileExtractorMetadataEntry } from '../runner/template-file-extractor.js';
+
+import { sortExtractorConfigKeys } from './sort-extractor-config-keys.js';
 
 /**
  * Merges template entries into extractor configurations by grouping metadata
@@ -32,8 +33,7 @@ export function mergeExtractorTemplateEntries(
     }
 
     // Upsert template entries into the extractor.json file
-    const { name, templates, extractors, plugins, ...rest } =
-      generatorConfig.config;
+    const { templates } = generatorConfig.config;
 
     // Create a map of new templates to add
     const newTemplates = Object.fromEntries(
@@ -50,16 +50,13 @@ export function mergeExtractorTemplateEntries(
       ),
     );
 
-    const newConfig = {
-      name,
-      extractors: sortKeysRecursive(extractors),
-      plugins: sortKeysRecursive(plugins),
-      templates: sortKeysRecursive({
+    const newConfig = sortExtractorConfigKeys({
+      ...generatorConfig.config,
+      templates: {
         ...filteredExistingTemplates,
         ...newTemplates,
-      }),
-      ...sortKeysRecursive(rest),
-    };
+      },
+    });
 
     // Update the in-memory config cache
     context.configLookup.setExtractorConfig(generator, newConfig);

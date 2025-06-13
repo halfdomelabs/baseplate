@@ -46,10 +46,10 @@ const serviceIndex = createTsTemplateFile({
   importMapProviders: {},
   name: 'service-index',
   projectExports: {
-    ManagedRepeatableJobConfig: { isTypeOnly: true },
-    ManagedRepeatableJobsConfig: { isTypeOnly: true },
     createWorker: {},
     getOrCreateManagedQueue: {},
+    ManagedRepeatableJobConfig: { isTypeOnly: true },
+    ManagedRepeatableJobsConfig: { isTypeOnly: true },
     synchronizeRepeatableJobs: {},
   },
   source: {

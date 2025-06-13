@@ -4,13 +4,13 @@
     "src/services/config.ts": {
       "name": "config",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#core/config-service",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": { "config": {} },
+      "generator": "@baseplate-dev/fastify-generators#core/config-service",
+      "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/config.ts",
-      "variables": { "TPL_CONFIG_SCHEMA": {} },
-      "importMapProviders": {}
+      "projectExports": { "config": {} },
+      "template": "",
+      "variables": { "TPL_CONFIG_SCHEMA": {} }
     }
   }
 }

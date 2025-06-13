@@ -4,9 +4,10 @@
     "src/tests/helpers/db.test-helper.ts": {
       "name": "db-test-helper",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/tests/helpers/db.test-helper.ts",
       "projectExports": {
         "createTestDatabase": {},
         "createTestDatabaseFromTemplate": {},
@@ -14,25 +15,24 @@
         "getTestPrisma": {},
         "replaceDatabase": {}
       },
-      "pathRootRelativePath": "{src-root}/tests/helpers/db.test-helper.ts",
-      "variables": { "TPL_TEST_DB": {} },
-      "importMapProviders": {}
+      "template": "",
+      "variables": { "TPL_TEST_DB": {} }
     },
     "src/tests/helpers/prisma.test-helper.ts": {
       "name": "prisma-test-helper",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": { "prismaMock": {} },
-      "pathRootRelativePath": "{src-root}/tests/helpers/prisma.test-helper.ts",
-      "variables": { "TPL_PRISMA_PATH": {} },
+      "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
       "importMapProviders": {
         "prismaImportsProvider": {
           "importName": "prismaImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
         }
-      }
+      },
+      "pathRootRelativePath": "{src-root}/tests/helpers/prisma.test-helper.ts",
+      "projectExports": { "prismaMock": {} },
+      "template": "",
+      "variables": { "TPL_PRISMA_PATH": {} }
     }
   }
 }

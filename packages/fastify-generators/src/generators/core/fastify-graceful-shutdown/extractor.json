@@ -4,21 +4,21 @@
     "src/plugins/graceful-shutdown.ts": {
       "name": "graceful-shutdown",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#core/fastify-graceful-shutdown",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{src-root}/plugins/graceful-shutdown.ts",
-      "variables": {},
+      "generator": "@baseplate-dev/fastify-generators#core/fastify-graceful-shutdown",
       "importMapProviders": {
-        "loggerServiceImportsProvider": {
-          "importName": "loggerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
-        },
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
         }
-      }
+      },
+      "pathRootRelativePath": "{src-root}/plugins/graceful-shutdown.ts",
+      "template": "",
+      "variables": {}
     }
   }
 }

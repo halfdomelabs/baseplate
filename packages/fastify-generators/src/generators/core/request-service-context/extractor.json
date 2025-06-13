@@ -4,24 +4,24 @@
     "src/utils/request-service-context.ts": {
       "name": "request-service-context",
       "type": "ts",
-      "generator": "@baseplate-dev/fastify-generators#core/request-service-context",
-      "template": "",
       "fileOptions": { "kind": "singleton" },
-      "projectExports": {
-        "RequestServiceContext": { "isTypeOnly": true },
-        "createContextFromRequest": {}
-      },
-      "pathRootRelativePath": "{src-root}/utils/request-service-context.ts",
-      "variables": {
-        "TPL_CONTEXT_BODY": {},
-        "TPL_CONTEXT_CREATOR": {},
-        "TPL_CONTEXT_FIELDS": {}
-      },
+      "generator": "@baseplate-dev/fastify-generators#core/request-service-context",
       "importMapProviders": {
         "serviceContextImportsProvider": {
           "importName": "serviceContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
         }
+      },
+      "pathRootRelativePath": "{src-root}/utils/request-service-context.ts",
+      "projectExports": {
+        "createContextFromRequest": {},
+        "RequestServiceContext": { "isTypeOnly": true }
+      },
+      "template": "",
+      "variables": {
+        "TPL_CONTEXT_BODY": {},
+        "TPL_CONTEXT_CREATOR": {},
+        "TPL_CONTEXT_FIELDS": {}
       }
     }
   }

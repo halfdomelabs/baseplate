@@ -6,8 +6,8 @@ const serviceContext = createTsTemplateFile({
   importMapProviders: {},
   name: 'service-context',
   projectExports: {
-    ServiceContext: { isTypeOnly: true },
     createServiceContext: {},
+    ServiceContext: { isTypeOnly: true },
   },
   source: {
     path: path.join(
