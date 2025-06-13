@@ -26,7 +26,7 @@ const descriptorSchema = z.object({
 });
 
 export const authModuleGenerator = createGenerator({
-  name: 'auth/auth-module',
+  name: 'fastify/auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ userSessionModelName }) => ({

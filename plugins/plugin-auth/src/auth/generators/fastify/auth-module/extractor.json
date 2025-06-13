@@ -1,5 +1,13 @@
 {
   "name": "fastify/auth-module",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/fastify-generators:userSessionServiceImportsProvider"
+      ],
+      "skipDefaultImportMap": true
+    }
+  },
   "templates": {
     "module/constants/user-session.constants.ts": {
       "name": "user-session-constants",
