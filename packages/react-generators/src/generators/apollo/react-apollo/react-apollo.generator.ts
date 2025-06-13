@@ -556,7 +556,7 @@ export const reactApolloGenerator = createGenerator({
 
             // generated/graphql.tsx
             builder.writeFile({
-              id: 'generated/graphql.tsx',
+              id: 'graphql',
               destination: '@/src/generated/graphql.tsx',
               contents: '',
               options: { skipWriting: true },

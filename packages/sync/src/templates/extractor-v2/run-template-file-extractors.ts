@@ -38,6 +38,8 @@ const GENERATOR_WHITELIST = new Set([
   '@baseplate-dev/core-generators',
   '@baseplate-dev/fastify-generators',
   '@baseplate-dev/react-generators',
+  '@baseplate-dev/plugin-auth',
+  '@baseplate-dev/plugin-storage',
 ]);
 
 // TODO [2025-06-13]: Remove this filter once we've migrated from v1 to v2
