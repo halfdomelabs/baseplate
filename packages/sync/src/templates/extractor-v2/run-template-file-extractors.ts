@@ -37,8 +37,7 @@ export interface RunTemplateFileExtractorsOptions {
 const GENERATOR_WHITELIST = new Set([
   '@baseplate-dev/core-generators',
   '@baseplate-dev/fastify-generators',
-  '@baseplate-dev/plugin-auth',
-  '@baseplate-dev/plugin-storage',
+  '@baseplate-dev/react-generators',
 ]);
 
 // TODO [2025-06-13]: Remove this filter once we've migrated from v1 to v2
