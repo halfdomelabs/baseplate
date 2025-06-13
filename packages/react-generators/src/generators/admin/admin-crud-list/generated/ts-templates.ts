@@ -10,6 +10,7 @@ const listPage = createTsTemplateFile({
   name: 'list-page',
   projectExports: {},
   source: { path: 'index.page.tsx' },
+  fileOptions: { kind: 'instance', generatorTemplatePath: 'index.page.tsx' },
   variables: {
     TPL_CREATE_BUTTON: {},
     TPL_DATA_LOADER: {},
@@ -33,6 +34,7 @@ const table = createTsTemplateFile({
   name: 'table',
   projectExports: {},
   source: { path: 'Table.tsx' },
+  fileOptions: { kind: 'instance', generatorTemplatePath: 'Table.tsx' },
   variables: {
     TPL_CELLS: {},
     TPL_COMPONENT_NAME: {},

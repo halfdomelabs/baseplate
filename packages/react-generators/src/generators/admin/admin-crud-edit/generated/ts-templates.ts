@@ -10,6 +10,7 @@ const createPage = createTsTemplateFile({
   name: 'create-page',
   projectExports: {},
   source: { path: 'create.page.tsx' },
+  fileOptions: { kind: 'instance', generatorTemplatePath: 'create.page.tsx' },
   variables: {
     TPL_COMPONENT_NAME: {},
     TPL_CREATE_MUTATION: {},
@@ -31,6 +32,7 @@ const editForm = createTsTemplateFile({
   name: 'edit-form',
   projectExports: {},
   source: { path: 'EditForm.tsx' },
+  fileOptions: { kind: 'instance', generatorTemplatePath: 'EditForm.tsx' },
   variables: {
     TPL_COMPONENT_NAME: {},
     TPL_DESTRUCTURED_PROPS: {},

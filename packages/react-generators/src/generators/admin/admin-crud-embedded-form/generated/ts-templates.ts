@@ -11,6 +11,7 @@ const embeddedForm = createTsTemplateFile({
   name: 'embedded-form',
   projectExports: {},
   source: { path: 'EmbeddedForm.tsx' },
+  fileOptions: { kind: 'instance', generatorTemplatePath: 'EmbeddedForm.tsx' },
   variables: {
     TPL_COMPONENT_NAME: {},
     TPL_DESTRUCTURED_PROPS: {},
