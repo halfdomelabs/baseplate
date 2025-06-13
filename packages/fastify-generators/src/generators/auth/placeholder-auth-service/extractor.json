@@ -28,10 +28,6 @@
       "projectExports": { "userSessionService": {} },
       "template": "user-session.service.ts",
       "variables": {}
-    },
-    "websocket-fragments.ts": {
-      "name": "websocket-fragments",
-      "type": "ts-snippets"
     }
   }
 }

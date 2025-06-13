@@ -92,6 +92,10 @@
       "pathRootRelativePath": "{src-root}/plugins/graphql/websocket.ts",
       "template": "",
       "variables": { "TPL_ON_CONNECT": {} }
+    },
+    "websocket-fragments.ts": {
+      "name": "websocket-fragments",
+      "type": "ts-snippets"
     }
   }
 }
