@@ -1,15 +1,9 @@
-import {
-  projectScope,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { appModuleProvider } from '#src/generators/core/index.js';
-
-import { userSessionServiceImportsProvider } from '../_providers/user-session.js';
 import { userSessionTypesImportsProvider } from '../user-session-types/index.js';
-import { createPlaceholderAuthServiceImports } from './generated/ts-import-maps.js';
+import { AUTH_PLACEHOLDER_AUTH_SERVICE_GENERATED } from './generated/index.js';
 import { AUTH_PLACEHOLDER_AUTH_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
@@ -24,30 +18,22 @@ export const placeholderAuthServiceGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: AUTH_PLACEHOLDER_AUTH_SERVICE_GENERATED.paths.task,
+    imports: AUTH_PLACEHOLDER_AUTH_SERVICE_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         userSessionTypesImports: userSessionTypesImportsProvider,
         typescriptFile: typescriptFileProvider,
-        appModule: appModuleProvider,
+        paths: AUTH_PLACEHOLDER_AUTH_SERVICE_GENERATED.paths.provider,
       },
-      exports: {
-        userSessionServiceImports:
-          userSessionServiceImportsProvider.export(projectScope),
-      },
-      run({ userSessionTypesImports, typescriptFile, appModule }) {
-        const userSessionServicePath = `${appModule.getModuleFolder()}/services/user-session.service.ts`;
+      run({ userSessionTypesImports, typescriptFile, paths }) {
         return {
-          providers: {
-            userSessionServiceImports: createPlaceholderAuthServiceImports(
-              `${appModule.getModuleFolder()}/services`,
-            ),
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template:
                   AUTH_PLACEHOLDER_AUTH_SERVICE_TS_TEMPLATES.userSessionService,
-                destination: userSessionServicePath,
+                destination: paths.userSessionService,
                 variables: {},
                 importMapProviders: {
                   userSessionTypesImports,
