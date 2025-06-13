@@ -1,3 +1,293 @@
 {
-  "name": "fastify/storage-module"
+  "name": "fastify/storage-module",
+  "templates": {
+    "module/adapters/index.ts": {
+      "name": "adapters-index",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "adapters",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/adapters/index.ts",
+      "template": "adapters/index.ts",
+      "variables": {}
+    },
+    "module/adapters/s3.ts": {
+      "name": "adapters-s-3",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "adapters",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/adapters/s3.ts",
+      "template": "adapters/s3.ts",
+      "variables": {}
+    },
+    "module/adapters/types.ts": {
+      "name": "adapters-types",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "adapters",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/adapters/types.ts",
+      "template": "adapters/types.ts",
+      "variables": {}
+    },
+    "module/adapters/url.ts": {
+      "name": "adapters-url",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "adapters",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/adapters/url.ts",
+      "template": "adapters/url.ts",
+      "variables": {}
+    },
+    "module/constants/adapters.ts": {
+      "name": "constants-adapters",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "constants",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/constants/adapters.ts",
+      "template": "constants/adapters.ts",
+      "variables": { "TPL_ADAPTERS": {} }
+    },
+    "module/constants/file-categories.ts": {
+      "name": "constants-file-categories",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "constants",
+      "importMapProviders": {
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/constants/file-categories.ts",
+      "template": "constants/file-categories.ts",
+      "variables": {
+        "TPL_FILE_CATEGORIES": {},
+        "TPL_FILE_COUNT_OUTPUT_TYPE": {},
+        "TPL_FILE_MODEL_TYPE": {}
+      }
+    },
+    "module/schema/file-upload.input-type.ts": {
+      "name": "schema-file-upload-input-type",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "schema",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/file-upload.input-type.ts",
+      "template": "schema/file-upload.input-type.ts",
+      "variables": {}
+    },
+    "module/schema/hosted-url.field.ts": {
+      "name": "schema-hosted-url-field",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "schema",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/hosted-url.field.ts",
+      "template": "schema/hosted-url.field.ts",
+      "variables": { "TPL_FILE_OBJECT_TYPE": {} }
+    },
+    "module/schema/presigned.mutations.ts": {
+      "name": "schema-presigned-mutations",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "schema",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/presigned.mutations.ts",
+      "template": "schema/presigned.mutations.ts",
+      "variables": { "TPL_FILE_OBJECT_TYPE": {} }
+    },
+    "module/services/create-presigned-download-url.ts": {
+      "name": "services-create-presigned-download-url",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "services",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/create-presigned-download-url.ts",
+      "projectExports": { "createPresignedDownloadUrl": {} },
+      "template": "services/create-presigned-download-url.ts",
+      "variables": { "TPL_FILE_MODEL": {} }
+    },
+    "module/services/create-presigned-upload-url.ts": {
+      "name": "services-create-presigned-upload-url",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "services",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/create-presigned-upload-url.ts",
+      "projectExports": {
+        "createPresignedUploadUrl": {},
+        "CreatePresignedUploadUrlPayload": { "isTypeOnly": true }
+      },
+      "template": "services/create-presigned-upload-url.ts",
+      "variables": { "TPL_FILE_MODEL": {}, "TPL_FILE_MODEL_TYPE": {} }
+    },
+    "module/services/download-file.ts": {
+      "name": "services-download-file",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "services",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/download-file.ts",
+      "projectExports": { "downloadFile": {} },
+      "template": "services/download-file.ts",
+      "variables": { "TPL_FILE_MODEL": {} }
+    },
+    "module/services/upload-file.ts": {
+      "name": "services-upload-file",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "services",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/upload-file.ts",
+      "projectExports": { "uploadFile": {} },
+      "template": "services/upload-file.ts",
+      "variables": { "TPL_FILE_MODEL": {}, "TPL_FILE_MODEL_TYPE": {} }
+    },
+    "module/services/validate-upload-input.ts": {
+      "name": "services-validate-upload-input",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "services",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaUtilsImportsProvider": {
+          "importName": "prismaUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma-utils/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/validate-upload-input.ts",
+      "projectExports": {
+        "FileUploadInput": { "isTypeOnly": true },
+        "validateFileUploadInput": {}
+      },
+      "template": "services/validate-upload-input.ts",
+      "variables": { "TPL_FILE_MODEL": {} }
+    },
+    "module/utils/mime.ts": {
+      "name": "utils-mime",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "utils",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/utils/mime.ts",
+      "projectExports": {
+        "getMimeTypeFromContentType": {},
+        "validateFileExtensionWithMimeType": {}
+      },
+      "template": "utils/mime.ts",
+      "variables": {}
+    },
+    "module/utils/mime.unit.test.ts": {
+      "name": "utils-mime-unit-test",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "utils",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/utils/mime.unit.test.ts",
+      "template": "utils/mime.unit.test.ts",
+      "variables": {}
+    },
+    "module/utils/upload.ts": {
+      "name": "utils-upload",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "utils",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "serviceContextImportsProvider": {
+          "importName": "serviceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/utils/upload.ts",
+      "projectExports": {
+        "prepareUploadData": {},
+        "UploadDataInput": { "isTypeOnly": true }
+      },
+      "template": "utils/upload.ts",
+      "variables": { "TPL_FILE_CREATE_INPUT": {} }
+    }
+  }
 }
