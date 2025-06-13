@@ -5,6 +5,7 @@ const index = createTsTemplateFile({
   projectExports: {},
   source: { path: 'routes.tsx' },
   variables: { TPL_ROUTES: {}, TPL_ROUTES_NAME: {}, TPL_ROUTE_HEADER: {} },
+  fileOptions: { kind: 'instance', generatorTemplatePath: 'routes.tsx' },
 });
 
 export const CORE_REACT_ROUTES_TS_TEMPLATES = { index };
