@@ -2,9 +2,9 @@ import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
+import { authContextImportsProvider } from '../auth-context/index.js';
 import { userSessionTypesImportsProvider } from '../user-session-types/index.js';
 import { AUTH_PLACEHOLDER_AUTH_SERVICE_GENERATED } from './generated/index.js';
-import { AUTH_PLACEHOLDER_AUTH_SERVICE_TS_TEMPLATES } from './generated/ts-templates.js';
 
 const descriptorSchema = z.object({});
 
@@ -25,18 +25,26 @@ export const placeholderAuthServiceGenerator = createGenerator({
         userSessionTypesImports: userSessionTypesImportsProvider,
         typescriptFile: typescriptFileProvider,
         paths: AUTH_PLACEHOLDER_AUTH_SERVICE_GENERATED.paths.provider,
+        authContextImports: authContextImportsProvider,
       },
-      run({ userSessionTypesImports, typescriptFile, paths }) {
+      run({
+        userSessionTypesImports,
+        typescriptFile,
+        paths,
+        authContextImports,
+      }) {
         return {
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template:
-                  AUTH_PLACEHOLDER_AUTH_SERVICE_TS_TEMPLATES.userSessionService,
+                  AUTH_PLACEHOLDER_AUTH_SERVICE_GENERATED.templates
+                    .userSessionService,
                 destination: paths.userSessionService,
                 variables: {},
                 importMapProviders: {
                   userSessionTypesImports,
+                  authContextImports,
                 },
               }),
             );
