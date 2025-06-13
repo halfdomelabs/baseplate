@@ -32,7 +32,7 @@ export default createPlatformPluginExport({
     appCompiler.registerAppCompiler({
       pluginId,
       appType: backendAppEntryType,
-      compile: ({ projectDefinition, appCompiler }) => {
+      compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
         const auth = PluginUtils.configByIdOrThrow(
           projectDefinition,
           pluginId,
@@ -50,7 +50,9 @@ export default createPlatformPluginExport({
           }),
           userSessionTypes: userSessionTypesGenerator({}),
           authModule: authModuleGenerator({
-            userSessionModelName: auth.modelRefs.userSession,
+            userSessionModelName: definitionContainer.nameFromId(
+              auth.modelRefs.userSession,
+            ),
           }),
         });
 

@@ -17,7 +17,7 @@
       "group": "constants",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/constants/user-session.constants.ts",
-      "template": "user-session.constants.ts",
+      "template": "",
       "variables": {}
     },
     "module/services/user-session.service.ts": {
@@ -53,7 +53,7 @@
       },
       "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
       "projectExports": { "userSessionService": {} },
-      "template": "user-session.service.ts",
+      "template": "",
       "variables": { "TPL_PRISMA_USER_SESSION": {} }
     },
     "module/utils/cookie-signer.ts": {
@@ -64,7 +64,7 @@
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/utils/cookie-signer.ts",
-      "template": "cookie-signer.ts",
+      "template": "",
       "variables": {}
     },
     "module/utils/session-cookie.ts": {
@@ -80,7 +80,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/utils/session-cookie.ts",
-      "template": "session-cookie.ts",
+      "template": "",
       "variables": {}
     },
     "module/utils/verify-request-origin.ts": {
@@ -91,7 +91,7 @@
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/utils/verify-request-origin.ts",
-      "template": "verify-request-origin.ts",
+      "template": "",
       "variables": {}
     }
   }

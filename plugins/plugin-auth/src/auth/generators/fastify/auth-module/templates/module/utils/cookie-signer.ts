@@ -3,6 +3,12 @@
 import * as crypto from 'node:crypto';
 
 /**
+ * Cookie signing utilities
+ * Based on node-cookie-signature by TJ Holowaychuk
+ * Source: https://github.com/tj/node-cookie-signature
+ */
+
+/**
  * Sign the given `val` with `secret` using HMAC-SHA256.
  *
  * @param val - The value to sign.
