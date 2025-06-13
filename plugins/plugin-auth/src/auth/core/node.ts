@@ -2,7 +2,6 @@ import {
   authContextGenerator,
   authPluginGenerator,
   authRolesGenerator,
-  placeholderAuthServiceGenerator,
   pothosAuthGenerator,
   userSessionTypesGenerator,
 } from '@baseplate-dev/fastify-generators';
@@ -20,6 +19,8 @@ import {
 } from '@baseplate-dev/react-generators';
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
+
+import { authModuleGenerator } from '../generators/index.js';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -48,7 +49,9 @@ export default createPlatformPluginExport({
             })),
           }),
           userSessionTypes: userSessionTypesGenerator({}),
-          placeholderUserSessionService: placeholderAuthServiceGenerator({}),
+          authModule: authModuleGenerator({
+            userSessionModelName: auth.modelRefs.userSession,
+          }),
         });
 
         appCompiler.addRootChildren({

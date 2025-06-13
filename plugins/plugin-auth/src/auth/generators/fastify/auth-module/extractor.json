@@ -1,0 +1,90 @@
+{
+  "name": "fastify/auth-module",
+  "templates": {
+    "module/constants/user-session.constants.ts": {
+      "name": "user-session-constants",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#fastify/auth-module",
+      "group": "constants",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/constants/user-session.constants.ts",
+      "template": "user-session.constants.ts",
+      "variables": {}
+    },
+    "module/services/user-session.service.ts": {
+      "name": "user-session-service",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#fastify/auth-module",
+      "importMapProviders": {
+        "authContextImportsProvider": {
+          "importName": "authContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-context/generated/ts-import-providers.ts"
+        },
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        },
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "requestServiceContextImportsProvider": {
+          "importName": "requestServiceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/request-service-context/generated/ts-import-providers.ts"
+        },
+        "userSessionTypesImportsProvider": {
+          "importName": "userSessionTypesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/user-session-types/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
+      "projectExports": { "userSessionService": {} },
+      "template": "user-session.service.ts",
+      "variables": { "TPL_PRISMA_USER_SESSION": {} }
+    },
+    "module/utils/cookie-signer.ts": {
+      "name": "cookie-signer",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#fastify/auth-module",
+      "group": "utils",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/utils/cookie-signer.ts",
+      "template": "cookie-signer.ts",
+      "variables": {}
+    },
+    "module/utils/session-cookie.ts": {
+      "name": "session-cookie",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#fastify/auth-module",
+      "group": "utils",
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/utils/session-cookie.ts",
+      "template": "session-cookie.ts",
+      "variables": {}
+    },
+    "module/utils/verify-request-origin.ts": {
+      "name": "verify-request-origin",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#fastify/auth-module",
+      "group": "utils",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/utils/verify-request-origin.ts",
+      "template": "verify-request-origin.ts",
+      "variables": {}
+    }
+  }
+}
