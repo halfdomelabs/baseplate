@@ -42,7 +42,7 @@ import {
 import { adminComponentsImportsProvider } from '../admin-components/index.js';
 import { adminCrudEditProvider } from '../admin-crud-edit/index.js';
 import { adminCrudSectionScope } from '../admin-crud-section/index.js';
-import { ADMIN_ADMIN_CRUD_EMBEDDED_FORM_TS_TEMPLATES } from './generated/ts-templates.js';
+import { ADMIN_ADMIN_CRUD_EMBEDDED_FORM_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   id: z.string(),
@@ -401,7 +401,8 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
               typescriptFile.renderTemplateFile({
                 id: `embedded-form-${id}`,
                 template:
-                  ADMIN_ADMIN_CRUD_EMBEDDED_FORM_TS_TEMPLATES.embeddedForm,
+                  ADMIN_ADMIN_CRUD_EMBEDDED_FORM_GENERATED.templates
+                    .embeddedForm,
                 destination: formPath,
                 variables: {
                   TPL_EMBEDDED_FORM_DATA_TYPE: TsCodeUtils.typeImportFragment(

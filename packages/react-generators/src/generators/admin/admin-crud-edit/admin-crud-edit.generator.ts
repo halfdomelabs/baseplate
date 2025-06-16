@@ -30,7 +30,7 @@ import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-
 import { printDataLoaders } from '../_providers/admin-loader.js';
 import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
 import { adminCrudQueriesProvider } from '../admin-crud-queries/index.js';
-import { ADMIN_ADMIN_CRUD_EDIT_TS_TEMPLATES } from './generated/ts-templates.js';
+import { ADMIN_ADMIN_CRUD_EDIT_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   modelId: z.string(),
@@ -156,7 +156,7 @@ export const adminCrudEditGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 id: `edit-schema-${modelId}`,
-                template: ADMIN_ADMIN_CRUD_EDIT_TS_TEMPLATES.schema,
+                template: ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.schema,
                 destination: editSchemaPath,
                 variables: {
                   TPL_SCHEMA_NAME: editSchemaName,
@@ -174,7 +174,7 @@ export const adminCrudEditGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 id: `edit-form-${modelId}`,
-                template: ADMIN_ADMIN_CRUD_EDIT_TS_TEMPLATES.editForm,
+                template: ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.editForm,
                 destination: editFormComponentPath,
                 variables: {
                   TPL_COMPONENT_NAME: editFormComponentName,
@@ -235,7 +235,8 @@ export const adminCrudEditGenerator = createGenerator({
               await builder.apply(
                 typescriptFile.renderTemplateFile({
                   id: `create-${modelId}`,
-                  template: ADMIN_ADMIN_CRUD_EDIT_TS_TEMPLATES.createPage,
+                  template:
+                    ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.createPage,
                   destination: createPagePath,
                   variables: {
                     TPL_COMPONENT_NAME: createPageName,
@@ -292,7 +293,7 @@ export const adminCrudEditGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 id: `edit-${modelId}`,
-                template: ADMIN_ADMIN_CRUD_EDIT_TS_TEMPLATES.editPage,
+                template: ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.editPage,
                 destination: editPagePath,
                 variables: {
                   TPL_COMPONENT_NAME: editPageName,

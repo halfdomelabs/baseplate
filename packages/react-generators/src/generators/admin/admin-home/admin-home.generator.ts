@@ -7,7 +7,7 @@ import { reactComponentsImportsProvider } from '#src/generators/core/react-compo
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { createRouteElement } from '#src/utils/routes.js';
 
-import { ADMIN_ADMIN_HOME_TS_TEMPLATES } from './generated/ts-templates.js';
+import { ADMIN_ADMIN_HOME_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -16,24 +16,25 @@ export const adminHomeGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: ADMIN_ADMIN_HOME_GENERATED.paths.task,
     main: createGeneratorTask({
       dependencies: {
         reactComponentsImports: reactComponentsImportsProvider,
         authHooksImports: authHooksImportsProvider,
         typescriptFile: typescriptFileProvider,
         reactRoutes: reactRoutesProvider,
+        paths: ADMIN_ADMIN_HOME_GENERATED.paths.provider,
       },
       run({
         authHooksImports,
         reactComponentsImports,
         reactRoutes,
         typescriptFile,
+        paths,
       }) {
-        const pagePath = `${reactRoutes.getDirectoryBase()}/Home/index.tsx`;
-
         reactRoutes.registerRoute({
           index: true,
-          element: createRouteElement('Home', pagePath),
+          element: createRouteElement('Home', paths.home),
           layoutKey: 'admin',
         });
 
@@ -41,8 +42,8 @@ export const adminHomeGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: ADMIN_ADMIN_HOME_TS_TEMPLATES.home,
-                destination: pagePath,
+                template: ADMIN_ADMIN_HOME_GENERATED.templates.home,
+                destination: paths.home,
                 importMapProviders: {
                   authHooksImports,
                   reactComponentsImports,
