@@ -9,7 +9,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/error-formatter.ts",
       "projectExports": { "formatError": {}, "logAndFormatError": {} },
-      "template": "error-formatter.ts",
+      "template": "",
       "variables": { "TPL_ERROR_FORMATTERS": {} }
     },
     "src/services/error-logger.ts": {
@@ -25,7 +25,7 @@
       },
       "pathRootRelativePath": "{src-root}/services/error-logger.ts",
       "projectExports": { "logError": {} },
-      "template": "error-logger.ts",
+      "template": "",
       "variables": { "TPL_CONTEXT_ACTIONS": {}, "TPL_LOGGER_ACTIONS": {} }
     }
   }

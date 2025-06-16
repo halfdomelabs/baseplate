@@ -8,7 +8,7 @@
       "generator": "@baseplate-dev/react-generators#core/react-router",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/pages/index.tsx",
-      "template": "index.tsx",
+      "template": "",
       "variables": { "TPL_RENDER_HEADER": {}, "TPL_ROUTES": {} }
     }
   }

@@ -9,7 +9,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/logger.ts",
       "projectExports": { "logger": {} },
-      "template": "logger.ts",
+      "template": "",
       "variables": {}
     }
   }

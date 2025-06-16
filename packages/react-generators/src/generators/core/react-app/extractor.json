@@ -8,7 +8,7 @@
       "generator": "@baseplate-dev/react-generators#core/react-app",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/app/App.tsx",
-      "template": "App.tsx",
+      "template": "",
       "variables": { "TPL_RENDER_ROOT": {} }
     }
   }

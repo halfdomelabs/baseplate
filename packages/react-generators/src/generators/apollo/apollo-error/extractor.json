@@ -9,7 +9,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/apollo-error.ts",
       "projectExports": { "getApolloErrorCode": {} },
-      "template": "apollo-error.ts",
+      "template": "",
       "variables": {}
     }
   }

@@ -10,7 +10,7 @@
       },
       "generator": "@baseplate-dev/react-generators#core/react-routes",
       "importMapProviders": {},
-      "template": "routes.tsx",
+      "template": "",
       "variables": {
         "TPL_ROUTE_HEADER": {},
         "TPL_ROUTES": {},

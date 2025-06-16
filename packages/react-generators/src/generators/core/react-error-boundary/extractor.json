@@ -17,7 +17,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/components/ErrorBoundary/index.tsx",
-      "template": "error-boundary.tsx",
+      "template": "",
       "variables": {}
     }
   }

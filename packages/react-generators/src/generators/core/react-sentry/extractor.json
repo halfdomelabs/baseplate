@@ -14,7 +14,7 @@
       },
       "pathRootRelativePath": "{src-root}/services/sentry.ts",
       "projectExports": { "logBreadcrumbToSentry": {}, "logErrorToSentry": {} },
-      "template": "sentry.ts",
+      "template": "",
       "variables": { "TPL_SENTRY_SCOPE_ACTIONS": {} }
     }
   }
