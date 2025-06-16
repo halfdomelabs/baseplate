@@ -11,6 +11,7 @@ import {
   extractPackageVersions,
   prettierProvider,
   projectScope,
+  renderTextTemplateFileAction,
   tsCodeFragment,
   TsCodeUtils,
   tsHoistedFragment,
@@ -26,7 +27,6 @@ import {
   createProviderTask,
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
-  renderTextTemplateFileAction,
 } from '@baseplate-dev/sync';
 import { notEmpty, toposortLocal } from '@baseplate-dev/utils';
 import { z } from 'zod';
@@ -40,14 +40,7 @@ import {
 import { reactErrorConfigProvider } from '#src/generators/core/react-error/index.js';
 import { reactProxyProvider } from '#src/generators/core/react-proxy/index.js';
 
-import { APOLLO_REACT_APOLLO_TEXT_TEMPLATES } from './generated/text-templates.js';
-import {
-  createGeneratedGraphqlImports,
-  createReactApolloImports,
-  generatedGraphqlImportsProvider,
-  reactApolloImportsProvider,
-} from './generated/ts-import-maps.js';
-import { APOLLO_REACT_APOLLO_TS_TEMPLATES } from './generated/ts-templates.js';
+import { APOLLO_REACT_APOLLO_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   /**
@@ -181,13 +174,13 @@ export interface ReactApolloProvider {
 export const reactApolloProvider =
   createProviderType<ReactApolloProvider>('react-apollo');
 
-const appApolloProviderPath = '@/src/app/AppApolloProvider.tsx';
-
 export const reactApolloGenerator = createGenerator({
   name: 'apollo/react-apollo',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ devApiEndpoint, schemaLocation, enableSubscriptions }) => ({
+    paths: APOLLO_REACT_APOLLO_GENERATED.paths.task,
+    imports: APOLLO_REACT_APOLLO_GENERATED.imports.task,
     setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
@@ -242,43 +235,29 @@ export const reactApolloGenerator = createGenerator({
         });
       }
     }),
-    reactApolloImports: createGeneratorTask({
-      exports: {
-        reactApolloImports: reactApolloImportsProvider.export(projectScope),
-        generatedGraphqlImports:
-          generatedGraphqlImportsProvider.export(projectScope),
+    reactAppConfig: createGeneratorTask({
+      dependencies: {
+        paths: APOLLO_REACT_APOLLO_GENERATED.paths.provider,
+        reactAppConfig: reactAppConfigProvider,
       },
-      run() {
-        return {
-          providers: {
-            reactApolloImports: createReactApolloImports(
-              '@/src/services/apollo',
-            ),
-            generatedGraphqlImports:
-              createGeneratedGraphqlImports('@/src/generated'),
-          },
-        };
-      },
-    }),
-    reactAppConfig: createProviderTask(
-      reactAppConfigProvider,
-      (reactAppConfig) => {
+      run({ paths, reactAppConfig }) {
         reactAppConfig.renderWrappers.set('react-apollo', {
           wrap: (contents) =>
             TsCodeUtils.templateWithImports(
               tsImportBuilder()
                 .default('AppApolloProvider')
-                .from(appApolloProviderPath),
+                .from(paths.appApolloProvider),
             )`<AppApolloProvider>${contents}</AppApolloProvider>`,
           type: 'data',
         });
       },
-    ),
+    }),
     main: createGeneratorTask({
       dependencies: {
         reactConfigImports: reactConfigImportsProvider,
         typescriptFile: typescriptFileProvider,
         reactApolloConfigValues: reactApolloConfigValuesProvider,
+        paths: APOLLO_REACT_APOLLO_GENERATED.paths.provider,
       },
       exports: {
         reactApollo: reactApolloProvider.export(projectScope),
@@ -291,11 +270,9 @@ export const reactApolloGenerator = createGenerator({
           apolloLinks,
           websocketOptions,
         },
+        paths,
       }) {
         const gqlFiles: string[] = [];
-
-        const cachePath = '@/src/services/apollo/cache.ts';
-        const clientPath = '@/src/services/apollo/index.ts';
 
         return {
           providers: {
@@ -304,7 +281,7 @@ export const reactApolloGenerator = createGenerator({
                 gqlFiles.push(filePath);
               },
               getGeneratedFilePath() {
-                return '@/src/generated/graphql';
+                return paths.graphql;
               },
             },
           },
@@ -464,8 +441,8 @@ export const reactApolloGenerator = createGenerator({
             // services/apollo/index.ts
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: APOLLO_REACT_APOLLO_TS_TEMPLATES.service,
-                destination: clientPath,
+                template: APOLLO_REACT_APOLLO_GENERATED.templates.service,
+                destination: paths.service,
                 variables: {
                   TPL_CREATE_ARGS:
                     createApolloClientArguments.length === 0
@@ -510,15 +487,15 @@ export const reactApolloGenerator = createGenerator({
             // services/apollo/cache.ts
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: APOLLO_REACT_APOLLO_TS_TEMPLATES.cache,
-                destination: cachePath,
+                template: APOLLO_REACT_APOLLO_GENERATED.templates.cache,
+                destination: paths.cache,
               }),
             );
 
             // codegen.yml
             await builder.apply(
               renderTextTemplateFileAction({
-                template: APOLLO_REACT_APOLLO_TEXT_TEMPLATES.codegenYml,
+                template: APOLLO_REACT_APOLLO_GENERATED.templates.codegenYml,
                 destination: 'codegen.yml',
                 variables: {
                   TPL_SCHEMA_LOCATION: schemaLocation,
@@ -529,8 +506,9 @@ export const reactApolloGenerator = createGenerator({
             // app/AppApolloProvider.tsx
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: APOLLO_REACT_APOLLO_TS_TEMPLATES.appApolloProvider,
-                destination: appApolloProviderPath,
+                template:
+                  APOLLO_REACT_APOLLO_GENERATED.templates.appApolloProvider,
+                destination: paths.appApolloProvider,
                 variables: {
                   TPL_RENDER_BODY: TsCodeUtils.mergeFragmentsPresorted(
                     createApolloClientArguments.map(
