@@ -32,7 +32,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/pages/bull-board/index.tsx",
-      "template": "bull-board.page.tsx",
+      "template": "",
       "variables": {}
     }
   }

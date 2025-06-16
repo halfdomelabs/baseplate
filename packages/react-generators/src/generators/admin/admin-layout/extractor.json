@@ -17,7 +17,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/components/AdminLayout/index.tsx",
-      "template": "AdminLayout.tsx",
+      "template": "",
       "variables": { "TPL_SIDEBAR_LINKS": {} }
     }
   }

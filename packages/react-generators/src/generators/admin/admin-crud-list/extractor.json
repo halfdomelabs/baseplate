@@ -15,7 +15,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "template": "index.page.tsx",
+      "template": "",
       "variables": {
         "TPL_CREATE_BUTTON": {},
         "TPL_DATA_LOADER": {},
@@ -48,7 +48,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
-      "template": "Table.tsx",
+      "template": "",
       "variables": {
         "TPL_CELLS": {},
         "TPL_COMPONENT_NAME": {},

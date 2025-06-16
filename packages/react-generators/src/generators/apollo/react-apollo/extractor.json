@@ -24,7 +24,7 @@
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/app/AppApolloProvider.tsx",
-      "template": "app/AppApolloProvider.tsx",
+      "template": "",
       "variables": {
         "TPL_CREATE_ARGS": {},
         "TPL_MEMO_DEPENDENCIES": {},
@@ -50,7 +50,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/apollo/cache.ts",
       "projectExports": { "createApolloCache": {} },
-      "template": "services/apollo/cache.ts",
+      "template": "",
       "variables": {}
     },
     "src/services/apollo/index.ts": {
@@ -61,7 +61,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/apollo/index.ts",
       "projectExports": { "createApolloClient": {} },
-      "template": "services/apollo/index.ts",
+      "template": "",
       "variables": {
         "TPL_CREATE_ARGS": {},
         "TPL_LINK_BODIES": {},
