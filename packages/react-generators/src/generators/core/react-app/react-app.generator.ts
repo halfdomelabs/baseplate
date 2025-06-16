@@ -17,7 +17,7 @@ import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
 import { reactBaseConfigProvider } from '../react/index.js';
-import { CORE_REACT_APP_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_REACT_APP_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -58,14 +58,13 @@ const [setupTask, reactAppConfigProvider, reactAppConfigValuesProvider] =
 
 export { reactAppConfigProvider };
 
-const appPath = '@/src/app/App.tsx';
-
 export const reactAppGenerator = createGenerator({
   name: 'core/react-app',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
     setup: setupTask,
+    paths: CORE_REACT_APP_GENERATED.paths.task,
     reactBaseConfig: createProviderTask(
       reactBaseConfigProvider,
       (reactBaseConfig) => {
@@ -81,6 +80,7 @@ export const reactAppGenerator = createGenerator({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         reactAppConfigValues: reactAppConfigValuesProvider,
+        paths: CORE_REACT_APP_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
@@ -90,6 +90,7 @@ export const reactAppGenerator = createGenerator({
           renderSiblings,
           renderRoot,
         },
+        paths,
       }) {
         return {
           build: async (builder) => {
@@ -120,8 +121,8 @@ export const reactAppGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_APP_TS_TEMPLATES.app,
-                destination: appPath,
+                template: CORE_REACT_APP_GENERATED.templates.app,
+                destination: paths.app,
                 variables: {
                   TPL_RENDER_ROOT: rootWithWrappers,
                 },

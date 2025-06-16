@@ -4,8 +4,8 @@ import { createTsTemplateFile } from '#src/renderers/typescript/templates/types.
 
 const eslintConfig = createTsTemplateFile({
   fileOptions: {
-    kind: 'singleton',
     generatorTemplatePath: 'eslint.config.js',
+    kind: 'singleton',
     pathRootRelativePath: '{package-root}/eslint.config.js',
   },
   importMapProviders: {},

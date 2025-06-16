@@ -1,3 +1,73 @@
 {
-  "name": "apollo/react-apollo"
+  "name": "apollo/react-apollo",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/react-generators:generatedGraphqlImportsProvider"
+      ]
+    }
+  },
+  "templates": {
+    "package/codegen.yml": {
+      "name": "codegen-yml",
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{package-root}/codegen.yml",
+      "variables": {
+        "TPL_SCHEMA_LOCATION": { "description": "Location of the schema" }
+      }
+    },
+    "src/app/AppApolloProvider.tsx": {
+      "name": "app-apollo-provider",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/app/AppApolloProvider.tsx",
+      "template": "app/AppApolloProvider.tsx",
+      "variables": {
+        "TPL_CREATE_ARGS": {},
+        "TPL_MEMO_DEPENDENCIES": {},
+        "TPL_RENDER_BODY": {}
+      }
+    },
+    "src/generated/graphql.tsx": {
+      "name": "graphql",
+      "type": "ts",
+      "exportGroup": "generated-graphql",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "pathRootRelativePath": "{src-root}/generated/graphql.tsx",
+      "projectExports": { "*": {} },
+      "projectExportsOnly": true,
+      "template": ""
+    },
+    "src/services/apollo/cache.ts": {
+      "name": "cache",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/services/apollo/cache.ts",
+      "projectExports": { "createApolloCache": {} },
+      "template": "services/apollo/cache.ts",
+      "variables": {}
+    },
+    "src/services/apollo/index.ts": {
+      "name": "service",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/services/apollo/index.ts",
+      "projectExports": { "createApolloClient": {} },
+      "template": "services/apollo/index.ts",
+      "variables": {
+        "TPL_CREATE_ARGS": {},
+        "TPL_LINK_BODIES": {},
+        "TPL_LINKS": {}
+      }
+    },
+    "websocket-links.ts": { "name": "websocket-links", "type": "ts-snippet" }
+  }
 }

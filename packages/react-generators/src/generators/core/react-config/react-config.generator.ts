@@ -20,11 +20,7 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
-import {
-  createReactConfigImports,
-  reactConfigImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_REACT_CONFIG_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_REACT_CONFIG_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -71,6 +67,8 @@ export const reactConfigGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['zod']),
     }),
+    paths: CORE_REACT_CONFIG_GENERATED.paths.task,
+    imports: CORE_REACT_CONFIG_GENERATED.imports.task,
     setupDefaultConfigEntries: createProviderTask(
       reactConfigProvider,
       (reactConfig) => {
@@ -88,18 +86,14 @@ export const reactConfigGenerator = createGenerator({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         reactConfigValues: reactConfigValuesProvider,
-      },
-      exports: {
-        reactConfigImports: reactConfigImportsProvider.export(projectScope),
+        paths: CORE_REACT_CONFIG_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
         reactConfigValues: { configEntries, additionalDevEnvVars },
+        paths,
       }) {
         return {
-          providers: {
-            reactConfigImports: createReactConfigImports('@/src/services'),
-          },
           build: async (builder) => {
             const sortedConfigEntries = sortBy(
               [...configEntries],
@@ -113,8 +107,8 @@ export const reactConfigGenerator = createGenerator({
             );
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_CONFIG_TS_TEMPLATES.config,
-                destination: 'src/services/config.ts',
+                template: CORE_REACT_CONFIG_GENERATED.templates.config,
+                destination: paths.config,
                 variables: {
                   TPL_CONFIG_SCHEMA: TsCodeUtils.template`{
                   ${TsCodeUtils.mergeFragmentsPresorted(sortedConfigFields, '\n')}
@@ -148,5 +142,3 @@ export const reactConfigGenerator = createGenerator({
     }),
   }),
 });
-
-export { reactConfigImportsProvider } from './generated/ts-import-maps.js';

@@ -1,0 +1,26 @@
+{
+  "auth-hooks.ts": {
+    "authHooksImportsProvider": {
+      "type": "ts-imports",
+      "providerExport": "authHooksImportsProvider",
+      "schemaExport": "authHooksImportsSchema",
+      "projectExports": {
+        "SessionData": { "isTypeOnly": true },
+        "useCurrentUser": {},
+        "useLogOut": {},
+        "useRequiredUserId": {},
+        "useSession": {}
+      }
+    }
+  },
+  "auth-components.ts": {
+    "authComponentsImportsProvider": {
+      "type": "ts-imports",
+      "providerExport": "authComponentsImportsProvider",
+      "schemaExport": "authComponentsImportsSchema",
+      "projectExports": {
+        "RequireAuth": { "name": "default" }
+      }
+    }
+  }
+}

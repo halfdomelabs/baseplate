@@ -670,8 +670,3 @@ export const reactApolloGenerator = createGenerator({
     }),
   }),
 });
-
-export {
-  generatedGraphqlImportsProvider,
-  reactApolloImportsProvider,
-} from './generated/ts-import-maps.js';

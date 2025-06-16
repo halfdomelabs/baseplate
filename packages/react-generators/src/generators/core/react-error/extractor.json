@@ -1,3 +1,32 @@
 {
-  "name": "core/react-error"
+  "name": "core/react-error",
+  "templates": {
+    "src/services/error-formatter.ts": {
+      "name": "error-formatter",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-error",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/services/error-formatter.ts",
+      "projectExports": { "formatError": {}, "logAndFormatError": {} },
+      "template": "error-formatter.ts",
+      "variables": { "TPL_ERROR_FORMATTERS": {} }
+    },
+    "src/services/error-logger.ts": {
+      "name": "error-logger",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-error",
+      "importMapProviders": {
+        "reactLoggerImportsProvider": {
+          "importName": "reactLoggerImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-logger/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/services/error-logger.ts",
+      "projectExports": { "logError": {} },
+      "template": "error-logger.ts",
+      "variables": { "TPL_CONTEXT_ACTIONS": {}, "TPL_LOGGER_ACTIONS": {} }
+    }
+  }
 }

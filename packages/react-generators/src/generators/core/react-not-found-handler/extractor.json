@@ -1,3 +1,20 @@
 {
-  "name": "core/react-not-found-handler"
+  "name": "core/react-not-found-handler",
+  "templates": {
+    "src/pages/NotFound.page.tsx": {
+      "name": "not-found-page",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-not-found-handler",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/pages/NotFound.page.tsx",
+      "template": "NotFound.page.tsx",
+      "variables": {}
+    }
+  }
 }

@@ -42,7 +42,7 @@ const GENERATOR_WHITELIST = new Set([
   '@baseplate-dev/plugin-storage',
 ]);
 
-// TODO [2025-06-13]: Remove this filter once we've migrated from v1 to v2
+// TODO [2025-06-17]: Remove this filter once we've migrated from v1 to v2
 function isV2TemplateMetadataFile(file: TemplateMetadataFileEntry): boolean {
   const parsedGenerator = parseGeneratorName(file.metadata.generator);
   if (GENERATOR_WHITELIST.has(parsedGenerator.packageName)) {
@@ -79,7 +79,7 @@ export async function runTemplateFileExtractors(
   await configLookup.initialize();
 
   if (options?.autoGenerateExtractor) {
-    // TODO [2025-06-13]: Remove this filter once we've migrated from v1 to v2
+    // TODO [2025-06-17]: Remove this filter once we've migrated from v1 to v2
     const generatorNames = templateMetadataFiles
       .filter(isV2TemplateMetadataFile)
       .map((m) => m.metadata.generator);
@@ -134,7 +134,7 @@ export async function runTemplateFileExtractors(
 
   // Group files by type and validate uniqueness (throws on duplicates)
   const filesByType = groupBy(
-    // TODO [2025-06-13]: Remove this filter once we've migrated from v1 to v2
+    // TODO [2025-06-17]: Remove this filter once we've migrated from v1 to v2
     templateMetadataFiles.filter(isV2TemplateMetadataFile),
     (f) => f.metadata.type,
   );

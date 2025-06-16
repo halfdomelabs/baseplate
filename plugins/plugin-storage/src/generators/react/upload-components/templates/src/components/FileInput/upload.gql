@@ -1,0 +1,19 @@
+fragment FileInput on TPL_FILE_TYPE {
+  id
+  name
+  hostedUrl
+}
+
+mutation CreateUploadUrl($input: CreatePresignedUploadUrlInput!) {
+  createPresignedUploadUrl(input: $input) {
+    url
+    fields {
+      name
+      value
+    }
+    method
+    file {
+      ...FileInput
+    }
+  }
+}

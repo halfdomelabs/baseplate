@@ -1,15 +1,8 @@
-import {
-  projectScope,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import {
-  apolloErrorImportsProvider,
-  createApolloErrorImports,
-} from './generated/ts-import-maps.js';
-import { APOLLO_APOLLO_ERROR_TS_TEMPLATES } from './generated/ts-templates.js';
+import { APOLLO_APOLLO_ERROR_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -18,25 +11,20 @@ export const apolloErrorGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: APOLLO_APOLLO_ERROR_GENERATED.paths.task,
+    imports: APOLLO_APOLLO_ERROR_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        paths: APOLLO_APOLLO_ERROR_GENERATED.paths.provider,
       },
-      exports: {
-        apolloErrorImports: apolloErrorImportsProvider.export(projectScope),
-      },
-      run({ typescriptFile }) {
-        const utilPath = '@/src/utils/apollo-error.ts';
-
+      run({ typescriptFile, paths }) {
         return {
-          providers: {
-            apolloErrorImports: createApolloErrorImports('@/src/utils'),
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: APOLLO_APOLLO_ERROR_TS_TEMPLATES.apolloError,
-                destination: utilPath,
+                template: APOLLO_APOLLO_ERROR_GENERATED.templates.apolloError,
+                destination: paths.apolloError,
               }),
             );
           },
@@ -45,5 +33,3 @@ export const apolloErrorGenerator = createGenerator({
     }),
   }),
 });
-
-export { apolloErrorImportsProvider } from './generated/ts-import-maps.js';

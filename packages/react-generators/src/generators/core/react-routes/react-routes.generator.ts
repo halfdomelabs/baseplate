@@ -19,7 +19,7 @@ import { createRouteElement } from '#src/utils/routes.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
 import { reactNotFoundProvider } from '../react-not-found-handler/index.js';
-import { CORE_REACT_ROUTES_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_REACT_ROUTES_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   id: z.string().min(1),
@@ -110,7 +110,7 @@ export const reactRoutesGenerator = createGenerator({
               await builder.apply(
                 typescriptFile.renderTemplateFile({
                   id: `route-${id}`,
-                  template: CORE_REACT_ROUTES_TS_TEMPLATES.index,
+                  template: CORE_REACT_ROUTES_GENERATED.templates.index,
                   destination: `${directoryBase}/index.tsx`,
                   variables: {
                     TPL_ROUTE_HEADER: TsCodeUtils.mergeFragments(

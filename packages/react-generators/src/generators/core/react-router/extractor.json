@@ -1,3 +1,15 @@
 {
-  "name": "core/react-router"
+  "name": "core/react-router",
+  "templates": {
+    "src/pages/index.tsx": {
+      "name": "index",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-router",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/pages/index.tsx",
+      "template": "index.tsx",
+      "variables": { "TPL_RENDER_HEADER": {}, "TPL_ROUTES": {} }
+    }
+  }
 }

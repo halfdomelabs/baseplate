@@ -41,9 +41,9 @@ export * from './baz';
 
     // Assert
     expect(result).toMatchInlineSnapshot(`
-      "export { quux, qux } from './bar';
+      "export { bar, quux, qux } from './bar';
       export * from './baz';
-      export { baz } from './foo';
+      export { baz, foo } from './foo';
       "
     `);
   });
@@ -59,6 +59,48 @@ export * from './baz';
 
     // Assert
     expect(result).toBe('');
+  });
+
+  it('should merge existing exports with new exports', () => {
+    // Arrange
+    const indexFileContents = `
+export { foo } from './foo';
+export { bar } from './bar';
+export type { SomeType } from './types';
+`;
+
+    const barrelExports = [
+      { moduleSpecifier: './bar', namedExports: ['qux'] },
+      { moduleSpecifier: './new-module', namedExports: ['newExport'] },
+    ];
+
+    // Act
+    const result = mergeBarrelExports(indexFileContents, barrelExports);
+
+    // Assert
+    // Should include both old and new exports
+    expect(result).toContain("export { bar, qux } from './bar';");
+    expect(result).toContain("export { foo } from './foo';");
+    expect(result).toContain("export { newExport } from './new-module';");
+    expect(result).toContain("export type { SomeType } from './types';");
+  });
+
+  it('should handle duplicate exports by keeping both', () => {
+    // Arrange
+    const indexFileContents = `
+export { foo, bar } from './module';
+`;
+
+    const barrelExports = [
+      { moduleSpecifier: './module', namedExports: ['baz', 'bar'] },
+    ];
+
+    // Act
+    const result = mergeBarrelExports(indexFileContents, barrelExports);
+
+    // Assert
+    // Should merge named exports from same module
+    expect(result).toContain("export { bar, baz, foo } from './module';");
   });
 });
 

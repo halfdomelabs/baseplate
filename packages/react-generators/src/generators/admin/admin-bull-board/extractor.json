@@ -1,3 +1,39 @@
 {
-  "name": "admin/admin-bull-board"
+  "name": "admin/admin-bull-board",
+  "templates": {
+    "src/pages/bull-board/bull-board.gql": {
+      "name": "bull-board",
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/pages/bull-board/bull-board.gql",
+      "variables": {}
+    },
+    "src/pages/bull-board/index.tsx": {
+      "name": "bull-board-page",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#admin/admin-bull-board",
+      "importMapProviders": {
+        "generatedGraphqlImportsProvider": {
+          "importName": "generatedGraphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactConfigImportsProvider": {
+          "importName": "reactConfigImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-config/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/pages/bull-board/index.tsx",
+      "template": "bull-board.page.tsx",
+      "variables": {}
+    }
+  }
 }

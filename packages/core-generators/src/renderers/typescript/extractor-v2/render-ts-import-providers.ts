@@ -94,7 +94,12 @@ function renderDefaultTsImportProviders(
 function renderCombinedImportProviderTask(
   generatorName: string,
   templates: TemplateExtractorTemplateEntry<TsGeneratorTemplateMetadata>[],
-  defaultImportProviderNames: TsImportProviderNames | undefined,
+  defaultImportProviderConfig:
+    | {
+        importProviderNames: TsImportProviderNames;
+        projectExports: Record<string, TsTemplateFileProjectExport>;
+      }
+    | undefined,
   externalImportProviders: ExternalImportProviderEntry[],
   { generatorPackageName, pathsRootExportName }: RenderTsImportProvidersContext,
 ): { fragment: TsCodeFragment; exportName: string } {
@@ -138,19 +143,28 @@ function renderCombinedImportProviderTask(
     ),
   );
 
-  if (defaultImportProviderNames) {
-    const exportKey = defaultImportProviderNames.providerExportName.replace(
+  if (defaultImportProviderConfig) {
+    const { importProviderNames, projectExports } = defaultImportProviderConfig;
+    const exportKey = importProviderNames.providerExportName.replace(
       /Provider$/,
       '',
     );
     importProviderExports.set(
       exportKey,
-      tsTemplate`${defaultImportProviderNames.providerExportName}.export(${projectScope})`,
+      tsTemplate`${importProviderNames.providerExportName}.export(${projectScope})`,
     );
     importProviderPathMap.set(
       exportKey,
-      tsTemplate`${createTsImportMap}(${defaultImportProviderNames.providerSchemaName}, ${TsCodeUtils.mergeFragmentsAsObject(
-        projectExportsMap,
+      tsTemplate`${createTsImportMap}(${importProviderNames.providerSchemaName}, ${TsCodeUtils.mergeFragmentsAsObject(
+        mapValues(projectExports, (projectExport, key) => {
+          const path = projectExportsMap.get(key);
+          if (!path) {
+            throw new Error(
+              `Project export ${key} not found in project exports map`,
+            );
+          }
+          return path;
+        }),
       )})`,
     );
   }
@@ -293,22 +307,41 @@ export function renderTsImportProviders(
     );
   }
 
-  const projectExports = Object.fromEntries(
-    projectExportArray.map(({ name, projectExport }) => [name, projectExport]),
-  );
-
   const fragments: TsCodeFragment[] = [];
   const barrelExports: TemplateExtractorBarrelExport[] = [];
 
   // Render default import providers if not skipped and has project exports
   let defaultImportProviderFragment: TsCodeFragment | undefined;
+
+  const defaultProjectExports = Object.fromEntries(
+    projectExportArray
+      .filter(
+        ({ name }) =>
+          !externalImportProviders.some(
+            (provider) => name in provider.projectExports,
+          ),
+      )
+      .map(({ name, projectExport }) => [name, projectExport]),
+  );
+
+  if (
+    extractorConfig?.skipDefaultImportMap &&
+    Object.keys(defaultProjectExports).length > 0
+  ) {
+    throw new Error(
+      `Generator ${generatorName} has project exports (${Object.keys(
+        defaultProjectExports,
+      ).join(', ')}) but skipDefaultImportMap is true`,
+    );
+  }
+
   if (
     !extractorConfig?.skipDefaultImportMap &&
-    Object.keys(projectExports).length > 0
+    Object.keys(defaultProjectExports).length > 0
   ) {
     defaultImportProviderFragment = renderDefaultTsImportProviders(
       importProviderNames,
-      projectExports,
+      defaultProjectExports,
       context,
     );
 
@@ -336,7 +369,12 @@ export function renderTsImportProviders(
   const importsTaskFragment = renderCombinedImportProviderTask(
     generatorName,
     templates,
-    defaultImportProviderFragment ? importProviderNames : undefined,
+    defaultImportProviderFragment
+      ? {
+          importProviderNames,
+          projectExports: defaultProjectExports,
+        }
+      : undefined,
     externalImportProviders,
     context,
   );

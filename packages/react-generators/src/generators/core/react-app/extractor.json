@@ -1,3 +1,15 @@
 {
-  "name": "core/react-app"
+  "name": "core/react-app",
+  "templates": {
+    "src/app/App.tsx": {
+      "name": "app",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-app",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/app/App.tsx",
+      "template": "App.tsx",
+      "variables": { "TPL_RENDER_ROOT": {} }
+    }
+  }
 }

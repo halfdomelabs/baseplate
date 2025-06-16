@@ -58,7 +58,9 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
       files.map((file) =>
         limit(async () => {
           try {
-            const contents = await api.readOutputFile(file.sourceAbsolutePath);
+            const contents = await api.readOutputFileBuffer(
+              file.sourceAbsolutePath,
+            );
             api.writeTemplateFile(
               file.generator,
               file.generatorTemplatePath,

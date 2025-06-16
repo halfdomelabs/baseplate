@@ -117,7 +117,7 @@ export function buildTsProjectExportMap(
         return {
           packagePathSpecifier: importProvider.packagePathSpecifier,
           providerExportName: importProvider.providerExportName,
-          // TODO[2025-06-13]: Standardize this function
+          // TODO[2025-06-16]: Standardize this function
           placeholderModuleSpecifier: `%${importProvider.providerExportName.replace(
             /Provider$/,
             '',

@@ -8,6 +8,7 @@ import {
   parseGeneratorName,
   TemplateFileExtractor,
 } from '@baseplate-dev/sync';
+import { TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY } from '@baseplate-dev/sync/extractor-v2';
 import { mapGroupBy, mapKeyBy, quot } from '@baseplate-dev/utils';
 import {
   getCommonPathPrefix,
@@ -201,7 +202,7 @@ export class TsTemplateFileExtractor extends TemplateFileExtractor<
               path.relative(
                 path.join(
                   this.getGeneratorBaseDirectory(generatorName),
-                  'generated',
+                  TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
                 ),
                 projectExport.providerPath.replace(/\.ts$/, '.js'),
               ),

@@ -11,16 +11,13 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
+import { pascalCase } from 'es-toolkit';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
 import { reactAppConfigProvider } from '../react-app/index.js';
-import {
-  createReactComponentsImports,
-  reactComponentsImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_REACT_COMPONENTS_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_REACT_COMPONENTS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   includeDatePicker: z.boolean().optional(),
@@ -29,33 +26,6 @@ const descriptorSchema = z.object({
 export interface ReactComponentEntry {
   name: string;
 }
-
-const REACT_COMPONENTS: ReactComponentEntry[] = [
-  { name: 'Alert' },
-  { name: 'AlertIcon' },
-  { name: 'BackButton' },
-  { name: 'Button' },
-  { name: 'ButtonGroup' },
-  { name: 'Card' },
-  { name: 'CheckedInput' },
-  { name: 'ConfirmDialog' },
-  { name: 'ErrorDisplay' },
-  { name: 'ErrorableLoader' },
-  { name: 'FormError' },
-  { name: 'FormLabel' },
-  { name: 'LinkButton' },
-  { name: 'ListGroup' },
-  { name: 'Modal' },
-  { name: 'NotFoundCard' },
-  { name: 'ReactSelectInput' },
-  { name: 'SelectInput' },
-  { name: 'Sidebar' },
-  { name: 'Spinner' },
-  { name: 'Table' },
-  { name: 'TextAreaInput' },
-  { name: 'TextInput' },
-  { name: 'Toast' },
-];
 
 export interface ReactComponentsProvider {
   /**
@@ -90,6 +60,8 @@ export const reactComponentsGenerator = createGenerator({
         'zustand',
       ]),
     }),
+    paths: CORE_REACT_COMPONENTS_GENERATED.paths.task,
+    imports: CORE_REACT_COMPONENTS_GENERATED.imports.task,
     datePickerPackages: includeDatePicker
       ? createNodePackagesTask({
           prod: extractPackageVersions(REACT_PACKAGES, [
@@ -102,14 +74,15 @@ export const reactComponentsGenerator = createGenerator({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         reactAppConfig: reactAppConfigProvider,
+        paths: CORE_REACT_COMPONENTS_GENERATED.paths.provider,
       },
       exports: {
         reactComponents: reactComponentsProvider.export(projectScope),
-        reactComponentsImports:
-          reactComponentsImportsProvider.export(projectScope),
       },
-      run({ typescriptFile, reactAppConfig }) {
-        const coreReactComponents = [...REACT_COMPONENTS];
+      run({ typescriptFile, reactAppConfig, paths }) {
+        const coreReactComponents = Object.keys(
+          CORE_REACT_COMPONENTS_GENERATED.templates.componentsGroup,
+        ).map((name) => ({ name: pascalCase(name) }));
 
         if (includeDatePicker) {
           coreReactComponents.push({ name: 'ReactDatePickerInput' });
@@ -131,9 +104,7 @@ export const reactComponentsGenerator = createGenerator({
           'react-components',
           tsCodeFragment(
             '<ConfirmDialog />',
-            tsImportBuilder(['ConfirmDialog']).from(
-              '@/src/components/index.js',
-            ),
+            tsImportBuilder(['ConfirmDialog']).from(paths.index),
           ),
         );
 
@@ -143,19 +114,20 @@ export const reactComponentsGenerator = createGenerator({
               registerComponent: (entry) => allReactComponents.push(entry),
               getComponentsFolder: () => `@/src/components`,
             },
-            reactComponentsImports: createReactComponentsImports('@/src'),
           },
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: CORE_REACT_COMPONENTS_TS_TEMPLATES.componentsGroup,
-                baseDirectory: '@/src/components',
+              typescriptFile.renderTemplateGroupV2({
+                group:
+                  CORE_REACT_COMPONENTS_GENERATED.templates.componentsGroup,
+                paths,
               }),
             );
+
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: CORE_REACT_COMPONENTS_TS_TEMPLATES.hooksGroup,
-                baseDirectory: '@/src/hooks',
+              typescriptFile.renderTemplateGroupV2({
+                group: CORE_REACT_COMPONENTS_GENERATED.templates.hooksGroup,
+                paths,
               }),
             );
 
@@ -163,8 +135,9 @@ export const reactComponentsGenerator = createGenerator({
               await builder.apply(
                 typescriptFile.renderTemplateFile({
                   template:
-                    CORE_REACT_COMPONENTS_TS_TEMPLATES.reactDatePickerInput,
-                  destination: `src/components/ReactDatePickerInput/index.tsx`,
+                    CORE_REACT_COMPONENTS_GENERATED.templates
+                      .reactDatePickerInput,
+                  destination: paths.reactDatePickerInput,
                 }),
               );
             }
@@ -178,8 +151,8 @@ export const reactComponentsGenerator = createGenerator({
               .join('\n');
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_COMPONENTS_TS_TEMPLATES.index,
-                destination: `src/components/index.ts`,
+                template: CORE_REACT_COMPONENTS_GENERATED.templates.index,
+                destination: paths.index,
                 variables: {
                   TPL_EXPORTS: componentIndex,
                 },
@@ -191,8 +164,3 @@ export const reactComponentsGenerator = createGenerator({
     }),
   }),
 });
-
-export {
-  reactComponentsImportsProvider,
-  type ReactComponentsImportsProvider,
-} from './generated/ts-import-maps.js';

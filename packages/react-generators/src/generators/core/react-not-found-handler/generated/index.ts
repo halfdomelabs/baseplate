@@ -1,0 +1,7 @@
+import { CORE_REACT_NOT_FOUND_HANDLER_PATHS } from './template-paths.js';
+import { CORE_REACT_NOT_FOUND_HANDLER_TEMPLATES } from './typed-templates.js';
+
+export const CORE_REACT_NOT_FOUND_HANDLER_GENERATED = {
+  paths: CORE_REACT_NOT_FOUND_HANDLER_PATHS,
+  templates: CORE_REACT_NOT_FOUND_HANDLER_TEMPLATES,
+};

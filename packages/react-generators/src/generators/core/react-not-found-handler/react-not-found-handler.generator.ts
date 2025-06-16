@@ -9,7 +9,6 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { posixJoin } from '@baseplate-dev/utils/node';
 import { z } from 'zod';
 
 import type { ReactRoute } from '#src/providers/routes.js';
@@ -17,7 +16,7 @@ import type { ReactRoute } from '#src/providers/routes.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
 import { reactComponentsImportsProvider } from '../react-components/index.js';
-import { CORE_REACT_NOT_FOUND_HANDLER_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_REACT_NOT_FOUND_HANDLER_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   layoutKey: z.string().optional(),
@@ -35,26 +34,23 @@ export const reactNotFoundHandlerGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ layoutKey }) => ({
+    paths: CORE_REACT_NOT_FOUND_HANDLER_GENERATED.paths.task,
     main: createGeneratorTask({
       dependencies: {
         reactRoutes: reactRoutesProvider,
         reactComponentsImports: reactComponentsImportsProvider,
         typescriptFile: typescriptFileProvider,
+        paths: CORE_REACT_NOT_FOUND_HANDLER_GENERATED.paths.provider,
       },
       exports: {
         reactNotFound: reactNotFoundProvider.export(projectScope),
       },
-      run({ reactRoutes, reactComponentsImports, typescriptFile }) {
-        const notFoundPagePath = posixJoin(
-          reactRoutes.getDirectoryBase(),
-          'NotFound.page.tsx',
-        );
-
+      run({ reactRoutes, reactComponentsImports, typescriptFile, paths }) {
         const notFoundRoute = {
           path: '*',
           element: tsCodeFragment(
             `<NotFoundPage />`,
-            tsImportBuilder().default('NotFoundPage').from(notFoundPagePath),
+            tsImportBuilder().default('NotFoundPage').from(paths.notFoundPage),
           ),
         };
 
@@ -72,8 +68,8 @@ export const reactNotFoundHandlerGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template:
-                  CORE_REACT_NOT_FOUND_HANDLER_TS_TEMPLATES.notFoundPage,
-                destination: notFoundPagePath,
+                  CORE_REACT_NOT_FOUND_HANDLER_GENERATED.templates.notFoundPage,
+                destination: paths.notFoundPage,
                 importMapProviders: {
                   reactComponentsImports,
                 },

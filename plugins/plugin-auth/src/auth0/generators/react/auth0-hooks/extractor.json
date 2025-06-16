@@ -1,3 +1,83 @@
 {
-  "name": "auth0/auth0-hooks"
+  "name": "auth0/auth0-hooks",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/react-generators:authHooksImportsProvider"
+      ],
+      "skipDefaultImportMap": true
+    }
+  },
+  "templates": {
+    "src/hooks/useCurrentUser.gql": {
+      "name": "use-current-user-gql",
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/hooks/useCurrentUser.gql",
+      "variables": {
+        "TPL_USER_QUERY_NAME": { "description": "The name of the user query" }
+      }
+    },
+    "src/hooks/useCurrentUser.ts": {
+      "name": "use-current-user",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
+      "group": "hooks",
+      "importMapProviders": {
+        "generatedGraphqlImportsProvider": {
+          "importName": "generatedGraphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/hooks/useCurrentUser.ts",
+      "projectExports": { "useCurrentUser": {} },
+      "template": "useCurrentUser.ts",
+      "variables": { "TPL_USER": {} }
+    },
+    "src/hooks/useLogOut.ts": {
+      "name": "use-log-out",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
+      "group": "hooks",
+      "importMapProviders": {
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/hooks/useLogOut.ts",
+      "projectExports": { "useLogOut": {} },
+      "template": "useLogOut.ts",
+      "variables": {}
+    },
+    "src/hooks/useRequiredUserId.ts": {
+      "name": "use-required-user-id",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/useRequiredUserId.ts",
+      "projectExports": { "useRequiredUserId": {} },
+      "template": "useRequiredUserId.ts",
+      "variables": {}
+    },
+    "src/hooks/useSession.ts": {
+      "name": "use-session",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/useSession.ts",
+      "projectExports": {
+        "SessionData": { "isTypeOnly": true },
+        "useSession": {}
+      },
+      "template": "useSession.ts",
+      "variables": {}
+    }
+  }
 }

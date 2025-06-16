@@ -1,3 +1,24 @@
 {
-  "name": "admin/admin-home"
+  "name": "admin/admin-home",
+  "templates": {
+    "src/pages/Home/index.tsx": {
+      "name": "home",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#admin/admin-home",
+      "importMapProviders": {
+        "authHooksImportsProvider": {
+          "importName": "authHooksImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-hooks.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/pages/Home/index.tsx",
+      "template": "Home.page.tsx",
+      "variables": {}
+    }
+  }
 }

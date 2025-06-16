@@ -1,6 +1,6 @@
 import type { TemplateExtractorTemplateEntry } from '@baseplate-dev/sync/extractor-v2';
 
-import { quot } from '@baseplate-dev/utils';
+import { quot, sortObjectKeys } from '@baseplate-dev/utils';
 import { camelCase } from 'change-case';
 import { groupBy } from 'es-toolkit';
 
@@ -31,9 +31,9 @@ function renderTsTypedTemplate(
     ])`{
       path: path.join(import.meta.dirname, '../templates/${templatePath}'),
     }`,
-    fileOptions: JSON.stringify(metadata.fileOptions),
+    fileOptions: JSON.stringify(sortObjectKeys(metadata.fileOptions)),
     projectExports: JSON.stringify(metadata.projectExports),
-    variables: JSON.stringify(metadata.variables),
+    variables: JSON.stringify(sortObjectKeys(metadata.variables ?? {})),
     importMapProviders:
       metadata.importMapProviders &&
       TsCodeUtils.mergeFragmentsAsObject(

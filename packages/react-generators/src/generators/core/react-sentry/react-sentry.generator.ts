@@ -27,11 +27,7 @@ import {
 } from '../react-config/index.js';
 import { reactErrorConfigProvider } from '../react-error/index.js';
 import { reactRouterConfigProvider } from '../react-router/index.js';
-import {
-  createReactSentryImports,
-  reactSentryImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_REACT_SENTRY_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_REACT_SENTRY_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -48,8 +44,6 @@ const [setupTask, reactSentryConfigProvider, reactSentryConfigValuesProvider] =
 
 export { reactSentryConfigProvider };
 
-const sentryPath = '@/src/services/sentry.ts';
-
 export const reactSentryGenerator = createGenerator({
   name: 'core/react-sentry',
   generatorFileUrl: import.meta.url,
@@ -59,6 +53,8 @@ export const reactSentryGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['@sentry/react']),
     }),
+    paths: CORE_REACT_SENTRY_GENERATED.paths.task,
+    imports: CORE_REACT_SENTRY_GENERATED.imports.task,
     reactError: createProviderTask(
       reactErrorConfigProvider,
       (reactErrorConfig) => {
@@ -80,9 +76,12 @@ export const reactSentryGenerator = createGenerator({
         devDefaultValue: '',
       });
     }),
-    authIdentify: createProviderTask(
-      authIdentifyProvider.dependency().optional(),
-      (authIdentify) => {
+    authIdentify: createGeneratorTask({
+      dependencies: {
+        authIdentify: authIdentifyProvider.dependency().optional(),
+        paths: CORE_REACT_SENTRY_GENERATED.paths.provider,
+      },
+      run({ authIdentify, paths }) {
         if (authIdentify) {
           authIdentify.identifyFragments.set(
             'identify-sentry-user',
@@ -90,22 +89,10 @@ export const reactSentryGenerator = createGenerator({
               `identifySentryUser({
       id: userId,
     });`,
-              tsImportBuilder(['identifySentryUser']).from(sentryPath),
+              tsImportBuilder(['identifySentryUser']).from(paths.sentry),
             ),
           );
         }
-      },
-    ),
-    imports: createGeneratorTask({
-      exports: {
-        reactSentryImports: reactSentryImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            reactSentryImports: createReactSentryImports('@/src/services'),
-          },
-        };
       },
     }),
     main: createGeneratorTask({
@@ -113,18 +100,20 @@ export const reactSentryGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
         reactConfigImports: reactConfigImportsProvider,
         reactSentryConfigValues: reactSentryConfigValuesProvider,
+        paths: CORE_REACT_SENTRY_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
         reactConfigImports,
         reactSentryConfigValues: { sentryScopeActions },
+        paths,
       }) {
         return {
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_SENTRY_TS_TEMPLATES.sentry,
-                destination: sentryPath,
+                template: CORE_REACT_SENTRY_GENERATED.templates.sentry,
+                destination: paths.sentry,
                 importMapProviders: {
                   reactConfigImports,
                 },
@@ -162,5 +151,3 @@ export const reactSentryGenerator = createGenerator({
     }),
   }),
 });
-
-export { reactSentryImportsProvider } from './generated/ts-import-maps.js';

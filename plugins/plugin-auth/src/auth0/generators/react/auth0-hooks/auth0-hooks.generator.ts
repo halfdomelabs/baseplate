@@ -1,9 +1,5 @@
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
-  projectScope,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
-import {
-  authHooksImportsProvider,
   generatedGraphqlImportsProvider,
   reactApolloProvider,
   reactErrorImportsProvider,
@@ -15,9 +11,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { AUTH_0_AUTH_0_HOOKS_TEXT_TEMPLATES } from './generated/text-templates.js';
-import { createAuth0HooksImports } from './generated/ts-import-maps.js';
-import { AUTH_0_AUTH_0_HOOKS_TS_TEMPLATES } from './generated/ts-templates.js';
+import { AUTH0_AUTH0_HOOKS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   userQueryName: z.string().default('user'),
@@ -28,37 +22,29 @@ export const auth0HooksGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ userQueryName }) => ({
-    authHooksImports: createGeneratorTask({
-      exports: {
-        authHooksImports: authHooksImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            authHooksImports: createAuth0HooksImports('@/src/hooks'),
-          },
-        };
-      },
-    }),
+    paths: AUTH0_AUTH0_HOOKS_GENERATED.paths.task,
+    imports: AUTH0_AUTH0_HOOKS_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         reactApollo: reactApolloProvider,
         reactErrorImports: reactErrorImportsProvider,
         generatedGraphqlImports: generatedGraphqlImportsProvider,
+        paths: AUTH0_AUTH0_HOOKS_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
         reactErrorImports,
         generatedGraphqlImports,
         reactApollo,
+        paths,
       }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: AUTH_0_AUTH_0_HOOKS_TS_TEMPLATES.hooksGroup,
-                baseDirectory: '@/src/hooks',
+              typescriptFile.renderTemplateGroupV2({
+                group: AUTH0_AUTH0_HOOKS_GENERATED.templates.hooksGroup,
+                paths,
                 variables: {
                   useCurrentUser: {
                     TPL_USER: userQueryName,
@@ -73,15 +59,16 @@ export const auth0HooksGenerator = createGenerator({
 
             await builder.apply(
               renderTextTemplateFileAction({
-                template: AUTH_0_AUTH_0_HOOKS_TEXT_TEMPLATES.useCurrentUserGql,
-                destination: '@/src/hooks/useCurrentUser.gql',
+                template:
+                  AUTH0_AUTH0_HOOKS_GENERATED.templates.useCurrentUserGql,
+                destination: paths.useCurrentUserGql,
                 variables: {
                   TPL_USER_QUERY_NAME: userQueryName,
                 },
               }),
             );
 
-            reactApollo.registerGqlFile(`@/src/hooks/useCurrentUser.gql`);
+            reactApollo.registerGqlFile(paths.useCurrentUserGql);
           },
         };
       },

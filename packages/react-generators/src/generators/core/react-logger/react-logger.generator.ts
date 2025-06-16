@@ -1,7 +1,6 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
@@ -9,11 +8,7 @@ import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
-import {
-  createReactLoggerImports,
-  reactLoggerImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_REACT_LOGGER_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_REACT_LOGGER_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -25,23 +20,20 @@ export const reactLoggerGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['loglevel']),
     }),
+    paths: CORE_REACT_LOGGER_GENERATED.paths.task,
+    imports: CORE_REACT_LOGGER_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        paths: CORE_REACT_LOGGER_GENERATED.paths.provider,
       },
-      exports: {
-        reactLoggerImports: reactLoggerImportsProvider.export(projectScope),
-      },
-      run({ typescriptFile }) {
+      run({ typescriptFile, paths }) {
         return {
-          providers: {
-            reactLoggerImports: createReactLoggerImports('@/src/services'),
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_LOGGER_TS_TEMPLATES.logger,
-                destination: '@/src/services/logger.ts',
+                template: CORE_REACT_LOGGER_GENERATED.templates.logger,
+                destination: paths.logger,
               }),
             );
           },
@@ -50,5 +42,3 @@ export const reactLoggerGenerator = createGenerator({
     }),
   }),
 });
-
-export { reactLoggerImportsProvider } from './generated/ts-import-maps.js';

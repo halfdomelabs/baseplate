@@ -62,7 +62,7 @@ interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
       sourceDirectory: string,
     ) => string;
   };
-  // TODO[2025-06-13]: Remove once we've converted all TS
+  // TODO[2025-06-16]: Remove once we've converted all TS
   /**
    * Called when a template file is rendered
    * @param canonicalPath - The canonical path to the template file

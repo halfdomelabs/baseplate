@@ -1,3 +1,47 @@
 {
-  "name": "react/upload-components"
+  "name": "react/upload-components",
+  "templates": {
+    "src/components/FileInput/index.tsx": {
+      "name": "file-input-component",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#react/upload-components",
+      "importMapProviders": {
+        "generatedGraphqlImportsProvider": {
+          "importName": "generatedGraphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/components/FileInput/index.tsx",
+      "projectExports": { "FileInput": { "exportName": "default" } },
+      "template": "components/FileInput/index.tsx",
+      "variables": {}
+    },
+    "src/components/FileInput/upload.gql": {
+      "name": "file-input-upload-gql",
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/components/FileInput/upload.gql",
+      "variables": { "TPL_FILE_TYPE": {} }
+    },
+    "src/hooks/useUpload.ts": {
+      "name": "hooks-use-upload",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#react/upload-components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/useUpload.ts",
+      "projectExports": { "useUpload": {} },
+      "template": "hooks/useUpload.ts",
+      "variables": {}
+    }
+  }
 }

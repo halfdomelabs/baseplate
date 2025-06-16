@@ -6,6 +6,8 @@ import {
   nodeGitIgnoreProvider,
   packageInfoProvider,
   projectScope,
+  renderRawTemplateFileAction,
+  renderTextTemplateGroupAction,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -16,14 +18,10 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-  renderRawTemplateFileAction,
-  renderTextTemplateGroupAction,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { CORE_REACT_RAW_TEMPLATES } from './generated/raw-templates.js';
-import { CORE_REACT_TEXT_TEMPLATES } from './generated/text-templates.js';
-import { CORE_REACT_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_REACT_GENERATED } from './generated/index.js';
 import { viteNodeTask } from './node.js';
 
 const descriptorSchema = z.object({
@@ -53,6 +51,7 @@ export const reactGenerator = createGenerator({
   descriptorSchema,
   buildTasks: (descriptor) => ({
     setup: setupTask,
+    paths: CORE_REACT_GENERATED.paths.task,
     setupNode: createProviderTask(nodeConfigProvider, (nodeConfig) => {
       nodeConfig.isEsm.set(true);
     }),
@@ -113,6 +112,7 @@ export const reactGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
         packageInfo: packageInfoProvider,
         reactConfigValues: reactConfigValuesProvider,
+        paths: CORE_REACT_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
@@ -123,21 +123,22 @@ export const reactGenerator = createGenerator({
           vitePlugins,
           viteServerOptions,
         },
+        paths,
       }) {
         return {
           build: async (builder) => {
             await builder.apply(
               renderRawTemplateFileAction({
-                template: CORE_REACT_RAW_TEMPLATES.favicon,
-                destination: 'public/favicon.ico',
+                template: CORE_REACT_GENERATED.templates.favicon,
+                destination: paths.favicon,
               }),
             );
 
             // render README and index.html
             await builder.apply(
               renderTextTemplateGroupAction({
-                group: CORE_REACT_TEXT_TEMPLATES.staticGroup,
-                baseDirectory: '',
+                group: CORE_REACT_GENERATED.templates.staticGroup,
+                paths,
                 variables: {
                   readme: {
                     TPL_PROJECT_NAME: packageInfo.getPackageName(),
@@ -152,8 +153,8 @@ export const reactGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_TS_TEMPLATES.index,
-                destination: 'src/index.tsx',
+                template: CORE_REACT_GENERATED.templates.index,
+                destination: paths.index,
                 variables: {
                   TPL_APP: appFragment ?? '<div />',
                   TPL_HEADER: TsCodeUtils.mergeFragments(
@@ -166,8 +167,8 @@ export const reactGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_TS_TEMPLATES.viteConfig,
-                destination: 'vite.config.ts',
+                template: CORE_REACT_GENERATED.templates.viteConfig,
+                destination: paths.viteConfig,
                 variables: {
                   TPL_CONFIG: TsCodeUtils.mergeFragmentsAsObject({
                     plugins: TsCodeUtils.mergeFragmentsAsArray(vitePlugins),
