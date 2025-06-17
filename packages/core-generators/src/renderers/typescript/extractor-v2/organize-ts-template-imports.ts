@@ -120,13 +120,14 @@ export async function organizeTsTemplateImports(
   // this if we can't use collectUsedIdentifierNames.
 
   const usedIdentifierNames = collectUsedIdentifierNames(sourceFile);
+
   const isNodeUsed = (node: Node | undefined): node is Node => {
     if (!node) {
       return false;
     }
     const name =
       (Node.isImportSpecifier(node)
-        ? node.getAliasNode()?.getText()
+        ? (node.getAliasNode()?.getText() ?? node.getName())
         : undefined) ?? node.getText();
     return usedIdentifierNames.has(name);
   };
