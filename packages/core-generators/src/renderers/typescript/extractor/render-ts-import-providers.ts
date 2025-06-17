@@ -18,6 +18,7 @@ import { GENERATED_PATHS_FILE_NAME } from '#src/renderers/extractor/plugins/temp
 import { normalizeTsPathToJsPath } from '#src/utils/index.js';
 
 import type { TsCodeFragment } from '../fragments/types.js';
+import type { TsImportMapSchemaEntry } from '../import-maps/types.js';
 import type {
   TsGeneratorTemplateMetadata,
   TsTemplateFileProjectExport,
@@ -57,8 +58,8 @@ function renderDefaultTsImportProviders(
       mapValues(projectExports, (projectExport) =>
         JSON.stringify({
           isTypeOnly: projectExport.isTypeOnly ? true : undefined,
-          name: projectExport.exportName ?? undefined,
-        }),
+          exportedAs: projectExport.exportName ?? undefined,
+        } as TsImportMapSchemaEntry),
       ),
     )}
   );

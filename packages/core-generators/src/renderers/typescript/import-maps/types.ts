@@ -5,11 +5,11 @@ export interface TsImportMapSchemaEntry<
   IsTypeOnly extends boolean | undefined = boolean | undefined,
 > {
   /**
-   * The name of the import (if not the key of the entry).
+   * The name this symbol is exported as from the module. Use `default` for default exports.
    *
-   * TODO[2025-06-18]: Rename this to exportedName
+   * Defaults to the key of the entry.
    */
-  name?: string;
+  exportedAs?: string;
   /**
    * If the import can only be type only.
    */

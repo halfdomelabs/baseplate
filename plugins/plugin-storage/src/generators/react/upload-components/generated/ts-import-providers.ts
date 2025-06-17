@@ -13,7 +13,7 @@ import {
 import { REACT_UPLOAD_COMPONENTS_PATHS } from './template-paths.js';
 
 const uploadComponentsImportsSchema = createTsImportMapSchema({
-  FileInput: { name: 'default' },
+  FileInput: { exportedAs: 'default' },
   useUpload: {},
 });
 
