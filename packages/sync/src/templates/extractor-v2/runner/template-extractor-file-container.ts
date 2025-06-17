@@ -1,3 +1,4 @@
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { handleFileNotFoundError } from '@baseplate-dev/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -38,7 +39,16 @@ export class TemplateExtractorFileContainer {
     // format the file contents
     const formattedContents =
       typeof contents === 'string'
-        ? await formatGeneratedTemplateContents(contents, filePath)
+        ? await formatGeneratedTemplateContents(contents, filePath).catch(
+            (err: unknown) => {
+              console.debug('File dump:');
+              console.debug(contents);
+              throw enhanceErrorWithContext(
+                err,
+                `Failed to format template contents for ${filePath}`,
+              );
+            },
+          )
         : contents;
     // only commit file if it has changed
     const contentsBuffer = Buffer.isBuffer(formattedContents)

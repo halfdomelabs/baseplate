@@ -17,8 +17,8 @@ const globalSetup = createTsTemplateFile({
 
 const vitestConfig = createTsTemplateFile({
   fileOptions: {
-    kind: 'singleton',
     generatorTemplatePath: 'vitest.config.ts',
+    kind: 'singleton',
     pathRootRelativePath: '{package-root}/vitest.config.ts',
   },
   importMapProviders: {},
