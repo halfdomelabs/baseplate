@@ -62,12 +62,6 @@ interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
       sourceDirectory: string,
     ) => string;
   };
-  // TODO[2025-06-18]: Remove once we've converted all TS
-  /**
-   * Called when a template file is rendered
-   * @param canonicalPath - The canonical path to the template file
-   */
-  onRenderTemplateFile?: (canonicalPath: string) => void;
 }
 
 export type RenderTsTemplateGroupActionInput<
@@ -152,7 +146,6 @@ export function renderTsTemplateGroupAction<
       for (const fileActionInput of fileActionInputs) {
         try {
           await builder.apply(renderTsTemplateFileAction(fileActionInput));
-          input.onRenderTemplateFile?.(fileActionInput.destination);
         } catch (error) {
           throw enhanceErrorWithContext(
             error,
