@@ -32,11 +32,11 @@ const tsTemplateFileProjectExportSchema = z.object({
    */
   isTypeOnly: z.boolean().optional(),
   /**
-   * The exported name of the export within the file. Use 'default' for default exports.
+   * The name this symbol is exported as from the module. Use `default` for default exports.
    *
-   * TODO[2025-06-10]: Rename this to exportedName
+   * Defaults to the key of the entry.
    */
-  exportName: z.string().optional(),
+  exportedAs: z.string().optional(),
 });
 
 export type TsTemplateFileProjectExport = z.infer<
@@ -159,7 +159,7 @@ export interface TsTemplateFile<
    */
   projectExports?: Record<
     string,
-    { isTypeOnly?: boolean; exportName?: string }
+    { isTypeOnly?: boolean; exportedAs?: string }
   >;
   /**
    * The options for the template file

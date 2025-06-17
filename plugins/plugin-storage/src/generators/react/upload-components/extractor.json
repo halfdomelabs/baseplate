@@ -21,7 +21,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/components/FileInput/index.tsx",
-      "projectExports": { "FileInput": { "exportName": "default" } },
+      "projectExports": { "FileInput": { "exportedAs": "default" } },
       "variables": {}
     },
     "src/components/FileInput/upload.gql": {

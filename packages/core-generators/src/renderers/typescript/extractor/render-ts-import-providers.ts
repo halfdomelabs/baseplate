@@ -58,7 +58,7 @@ function renderDefaultTsImportProviders(
       mapValues(projectExports, (projectExport) =>
         JSON.stringify({
           isTypeOnly: projectExport.isTypeOnly ? true : undefined,
-          exportedAs: projectExport.exportName ?? undefined,
+          exportedAs: projectExport.exportedAs ?? undefined,
         } as TsImportMapSchemaEntry),
       ),
     )}

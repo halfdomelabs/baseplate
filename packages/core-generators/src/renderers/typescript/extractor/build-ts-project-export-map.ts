@@ -157,9 +157,9 @@ export function buildTsProjectExportMap(
       )) {
         const importProvider = getImportProvider(name);
 
-        templateProjectExportsMap.set(projectExport.exportName ?? name, {
+        templateProjectExportsMap.set(projectExport.exportedAs ?? name, {
           name,
-          exportedName: projectExport.exportName,
+          exportedName: projectExport.exportedAs,
           outputRelativePath,
           placeholderModuleSpecifier: importProvider.placeholderModuleSpecifier,
           providerPackagePathSpecifier: importProvider.packagePathSpecifier,

@@ -8,7 +8,7 @@ const descriptionList = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'description-list',
-  projectExports: { DescriptionList: { exportName: 'default' } },
+  projectExports: { DescriptionList: { exportedAs: 'default' } },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -27,7 +27,7 @@ const embeddedListInput = createTsTemplateFile({
   name: 'embedded-list-input',
   projectExports: {
     EmbeddedListFormProps: { isTypeOnly: true },
-    EmbeddedListInput: { exportName: 'default' },
+    EmbeddedListInput: { exportedAs: 'default' },
     EmbeddedListTableProps: { isTypeOnly: true },
   },
   source: {
@@ -48,7 +48,7 @@ const embeddedObjectInput = createTsTemplateFile({
   name: 'embedded-object-input',
   projectExports: {
     EmbeddedObjectFormProps: { isTypeOnly: true },
-    EmbeddedObjectInput: { exportName: 'default' },
+    EmbeddedObjectInput: { exportedAs: 'default' },
   },
   source: {
     path: path.join(
