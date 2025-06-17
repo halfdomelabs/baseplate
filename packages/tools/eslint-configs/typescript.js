@@ -144,9 +144,6 @@ export function generateTypescriptEslintConfig(options = []) {
           'error',
           'prefer-top-level',
         ],
-
-        // Avoid cyclical imports
-        'import-x/no-cycle': ['error', { maxDepth: 4 }],
       },
       languageOptions: {
         ecmaVersion: 2022,
