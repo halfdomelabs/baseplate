@@ -43,7 +43,7 @@ export const adminComponentsGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group:
                   ADMIN_ADMIN_COMPONENTS_GENERATED.templates.componentsGroup,
                 paths,

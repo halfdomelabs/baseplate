@@ -36,7 +36,7 @@ export const prismaUtilsGenerator = createGenerator({
       }) {
         return {
           build: (builder) => {
-            typescriptFile.addLazyTemplateGroupV2({
+            typescriptFile.addLazyTemplateGroup({
               group: PRISMA_PRISMA_UTILS_GENERATED.templates.utilsGroup,
               generatorInfo: builder.generatorInfo,
               paths,

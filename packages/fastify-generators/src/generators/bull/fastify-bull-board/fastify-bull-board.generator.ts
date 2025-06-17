@@ -99,7 +99,7 @@ export const fastifyBullBoardGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: BULL_FASTIFY_BULL_BOARD_GENERATED.templates.moduleGroup,
                 paths,
                 importMapProviders: {

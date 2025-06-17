@@ -163,7 +163,7 @@ describe('typescriptGenerator', () => {
           node: nodeProvider,
         },
         async ({ typescriptFile }) => {
-          const action = typescriptFile.renderTemplateGroupV2({
+          const action = typescriptFile.renderTemplateGroup({
             group: testTemplateGroup,
             paths: {
               'test-utils': 'helpers.ts',

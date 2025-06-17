@@ -183,7 +183,7 @@ export const storageModuleGenerator = createGenerator({
           build: async (builder) => {
             // Copy adapters
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: FASTIFY_STORAGE_MODULE_GENERATED.templates.adaptersGroup,
                 paths,
               }),
@@ -202,7 +202,7 @@ export const storageModuleGenerator = createGenerator({
             }
 
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: FASTIFY_STORAGE_MODULE_GENERATED.templates.schemaGroup,
                 paths,
                 importMapProviders: {
@@ -224,7 +224,7 @@ export const storageModuleGenerator = createGenerator({
             const modelType = prismaOutput.getModelTypeFragment(fileModel);
 
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: FASTIFY_STORAGE_MODULE_GENERATED.templates.servicesGroup,
                 paths,
                 importMapProviders: {
@@ -256,7 +256,7 @@ export const storageModuleGenerator = createGenerator({
 
             // Copy utils
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: FASTIFY_STORAGE_MODULE_GENERATED.templates.utilsGroup,
                 paths,
                 importMapProviders: {
@@ -327,7 +327,7 @@ export const storageModuleGenerator = createGenerator({
             }
 
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group:
                   FASTIFY_STORAGE_MODULE_GENERATED.templates.constantsGroup,
                 paths,

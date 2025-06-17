@@ -42,7 +42,7 @@ export const auth0HooksGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: AUTH0_AUTH0_HOOKS_GENERATED.templates.hooksGroup,
                 paths,
                 variables: {

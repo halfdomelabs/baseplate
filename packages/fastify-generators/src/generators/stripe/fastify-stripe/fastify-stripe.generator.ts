@@ -92,7 +92,7 @@ export const fastifyStripeGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: STRIPE_FASTIFY_STRIPE_GENERATED.templates.pluginsGroup,
                 paths,
                 importMapProviders: {
@@ -102,7 +102,7 @@ export const fastifyStripeGenerator = createGenerator({
               }),
             );
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: STRIPE_FASTIFY_STRIPE_GENERATED.templates.servicesGroup,
                 paths,
                 importMapProviders: {

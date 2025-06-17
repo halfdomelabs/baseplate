@@ -91,7 +91,7 @@ export interface TypescriptFileProvider {
    * @param payload - The payload for the template group
    * @returns The action for the template group
    */
-  addLazyTemplateGroupV2<T extends TsTemplateGroup = TsTemplateGroup>(
+  addLazyTemplateGroup<T extends TsTemplateGroup = TsTemplateGroup>(
     payload: RenderTsTemplateGroupActionInputV2<T> & {
       generatorInfo: GeneratorInfo;
     },
@@ -115,7 +115,7 @@ export interface TypescriptFileProvider {
    * @param payload - The payload for the template group
    * @returns The action for the template group
    */
-  renderTemplateGroupV2<
+  renderTemplateGroup<
     T extends Record<string, TsTemplateFile> = Record<string, TsTemplateFile>,
   >(
     payload: RenderTsTemplateGroupActionInputV2<T>,
@@ -300,7 +300,7 @@ export const typescriptGenerator = createGenerator({
                   ...options,
                 });
               },
-              addLazyTemplateGroupV2(payload, options) {
+              addLazyTemplateGroup(payload, options) {
                 // break out files of the group
                 const files =
                   extractTsTemplateFileInputsFromTemplateGroupV2(payload);
@@ -329,7 +329,7 @@ export const typescriptGenerator = createGenerator({
                 });
               },
               renderTemplateFile,
-              renderTemplateGroupV2: (payload) =>
+              renderTemplateGroup: (payload) =>
                 renderTsTemplateGroupActionV2({
                   ...payload,
                   renderOptions: {

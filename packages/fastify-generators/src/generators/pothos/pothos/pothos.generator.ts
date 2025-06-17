@@ -303,7 +303,7 @@ if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group:
                   POTHOS_POTHOS_GENERATED.templates.fieldWithInputPayloadGroup,
                 paths,

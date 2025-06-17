@@ -117,7 +117,7 @@ export const reactComponentsGenerator = createGenerator({
           },
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group:
                   CORE_REACT_COMPONENTS_GENERATED.templates.componentsGroup,
                 paths,
@@ -125,7 +125,7 @@ export const reactComponentsGenerator = createGenerator({
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: CORE_REACT_COMPONENTS_GENERATED.templates.hooksGroup,
                 paths,
               }),
