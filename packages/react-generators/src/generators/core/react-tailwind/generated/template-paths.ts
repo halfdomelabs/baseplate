@@ -3,8 +3,8 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface CoreReactTailwindPaths {
   postcssConfig: string;
-  tailwindConfig: string;
   indexCss: string;
+  tailwindConfig: string;
 }
 
 const coreReactTailwindPaths = createProviderType<CoreReactTailwindPaths>(
