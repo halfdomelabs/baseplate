@@ -9,15 +9,15 @@ import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { mapValues } from 'es-toolkit';
 import path from 'node:path';
 
-import type { RenderTsTemplateFileActionInput } from '../actions/render-ts-template-file-action.js';
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
 import type {
   InferImportMapProvidersFromProviderTypeMap,
   InferTsTemplateVariablesFromMap,
   TsTemplateFile,
 } from '../templates/types.js';
+import type { RenderTsTemplateFileActionInput } from './render-ts-template-file-action.js';
 
-import { renderTsTemplateFileAction } from '../actions/render-ts-template-file-action.js';
+import { renderTsTemplateFileAction } from './render-ts-template-file-action.js';
 
 type TsTemplateGroup = Record<string, TsTemplateFile>;
 

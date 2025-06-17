@@ -166,8 +166,8 @@ describe('typescriptGenerator', () => {
           const action = typescriptFile.renderTemplateGroup({
             group: testTemplateGroup,
             paths: {
-              'test-utils': 'helpers.ts',
-              'test-utils-2': 'helpers2.ts',
+              'test-utils': '@/src/utils/helpers.ts',
+              'test-utils-2': '@/src/utils/helpers2.ts',
             },
           });
 

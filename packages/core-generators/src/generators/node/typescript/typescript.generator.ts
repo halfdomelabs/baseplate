@@ -15,7 +15,7 @@ import { safeMergeAll } from '@baseplate-dev/utils';
 import path from 'node:path';
 import { z } from 'zod';
 
-import type { RenderTsTemplateGroupActionInput as RenderTsTemplateGroupActionInputV2 } from '#src/renderers/typescript/extractor-v2/render-ts-template-group-action.js';
+import type { RenderTsTemplateGroupActionInput as RenderTsTemplateGroupActionInputV2 } from '#src/renderers/typescript/actions/render-ts-template-group-action.js';
 import type {
   RenderTsCodeFileTemplateOptions,
   RenderTsFragmentActionInput,
@@ -28,15 +28,13 @@ import { CORE_PACKAGES } from '#src/constants/core-packages.js';
 import { projectScope } from '#src/providers/scopes.js';
 import { renderTsTemplateFileAction } from '#src/renderers/typescript/actions/render-ts-template-file-action.js';
 import {
-  extractTsTemplateFileInputsFromTemplateGroup as extractTsTemplateFileInputsFromTemplateGroupV2,
-  renderTsTemplateGroupAction as renderTsTemplateGroupActionV2,
-} from '#src/renderers/typescript/extractor-v2/render-ts-template-group-action.js';
-import {
+  extractTsTemplateFileInputsFromTemplateGroup,
   generatePathMapEntries,
   getProjectRelativePathFromModuleSpecifier,
   normalizeModuleSpecifier,
   pathMapEntriesToRegexes,
   renderTsFragmentAction,
+  renderTsTemplateGroupAction,
 } from '#src/renderers/typescript/index.js';
 import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
@@ -303,7 +301,7 @@ export const typescriptGenerator = createGenerator({
               addLazyTemplateGroup(payload, options) {
                 // break out files of the group
                 const files =
-                  extractTsTemplateFileInputsFromTemplateGroupV2(payload);
+                  extractTsTemplateFileInputsFromTemplateGroup(payload);
                 for (const file of files) {
                   lazyTemplates.add({
                     payload: {
@@ -330,7 +328,7 @@ export const typescriptGenerator = createGenerator({
               },
               renderTemplateFile,
               renderTemplateGroup: (payload) =>
-                renderTsTemplateGroupActionV2({
+                renderTsTemplateGroupAction({
                   ...payload,
                   renderOptions: {
                     resolveModule(moduleSpecifier, sourceDirectory) {
