@@ -4,7 +4,7 @@ import path from 'node:path';
 import { appModuleSetupImportsProvider } from '#src/generators/core/app-module-setup/generated/ts-import-providers.js';
 
 const index = createTsTemplateFile({
-  fileOptions: { kind: 'instance', generatorTemplatePath: 'index.ts' },
+  fileOptions: { generatorTemplatePath: 'index.ts', kind: 'instance' },
   importMapProviders: { appModuleSetupImports: appModuleSetupImportsProvider },
   name: 'index',
   source: {
