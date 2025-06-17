@@ -21,11 +21,11 @@
         }
       }
     },
-    "tailwind.tpl.config.js": {
+    "tailwind-tpl.config.js": {
       "name": "tailwind-config",
       "type": "text",
       "fileOptions": {
-        "generatorTemplatePath": "tailwind.tpl.config.js",
+        "generatorTemplatePath": "tailwind-tpl.config.js",
         "kind": "singleton"
       },
       "group": "main",
