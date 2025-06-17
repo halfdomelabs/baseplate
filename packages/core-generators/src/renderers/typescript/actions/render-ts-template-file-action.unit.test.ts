@@ -34,6 +34,7 @@ describe('renderTsTemplateFileAction', () => {
         variables: {
           TPL_GREETING: { description: 'The greeting to use' },
         },
+        fileOptions: { kind: 'singleton' },
       }),
       id: 'test-id',
       destination: 'output/test.ts',
@@ -77,6 +78,7 @@ describe('renderTsTemplateFileAction', () => {
         variables: {
           TPL_GREETING: { description: 'The greeting to use' },
         },
+        fileOptions: { kind: 'singleton' },
       }),
       id: 'test-id',
       destination: 'output/test.ts',
@@ -109,6 +111,7 @@ describe('renderTsTemplateFileAction', () => {
           TPL_GREETING: { description: 'The greeting to use' },
           TPL_NAME: { description: 'The name to greet' },
         },
+        fileOptions: { kind: 'singleton' },
       }),
       id: 'test-id',
       destination: 'output/test.ts',
@@ -129,11 +132,11 @@ describe('renderTsTemplateFileAction', () => {
 
   it('should handle multiple import maps in template file action', async () => {
     const importMapSchema1 = createTsImportMapSchema({
-      Test1: { name: 'Test1' },
+      Test1: { exportedAs: 'Test1' },
     });
 
     const importMapSchema2 = createTsImportMapSchema({
-      Test2: { name: 'Test2' },
+      Test2: { exportedAs: 'Test2' },
     });
 
     const importMap1 = createTsImportMap(importMapSchema1, {
@@ -164,6 +167,7 @@ describe('renderTsTemplateFileAction', () => {
           testImport1: createProviderType('test-import-1'),
           testImport2: createProviderType('test-import-2'),
         },
+        fileOptions: { kind: 'singleton' },
       }),
       id: 'test-id',
       destination: 'output/test.ts',

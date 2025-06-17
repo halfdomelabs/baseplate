@@ -34,6 +34,7 @@ describe('renderTsTemplateGroupAction', () => {
           variables: {
             TPL_GREETING: { description: 'The greeting to use' },
           },
+          fileOptions: { kind: 'singleton' },
         }),
         name: createTsTemplateFile({
           name: 'name',
@@ -41,6 +42,7 @@ describe('renderTsTemplateGroupAction', () => {
           variables: {
             TPL_NAME: { description: 'The name to use' },
           },
+          fileOptions: { kind: 'singleton' },
         }),
       },
       paths: {
@@ -100,7 +102,7 @@ describe('renderTsTemplateGroupAction', () => {
   it('should handle templates with import map providers', async () => {
     // Arrange
     const importMapSchema = createTsImportMapSchema({
-      TestClass: { name: 'TestClass' },
+      TestClass: { exportedAs: 'TestClass' },
     });
 
     const importMap = createTsImportMap(importMapSchema, {
@@ -121,6 +123,7 @@ describe('renderTsTemplateGroupAction', () => {
           importMapProviders: {
             testImport: createProviderType('test-import'),
           },
+          fileOptions: { kind: 'singleton' },
         }),
       },
       paths: {
@@ -154,6 +157,7 @@ describe('renderTsTemplateGroupAction', () => {
             contents: 'const content = "static content";',
           },
           variables: {},
+          fileOptions: { kind: 'singleton' },
         }),
       },
       paths: {
@@ -183,6 +187,7 @@ describe('renderTsTemplateGroupAction', () => {
           name: 'test',
           source: { path: 'test.ts' },
           variables: {},
+          fileOptions: { kind: 'singleton' },
         }),
       },
       paths: {
@@ -219,6 +224,7 @@ describe('renderTsTemplateGroupAction', () => {
             contents: 'import { Test } from "./relative";',
           },
           variables: {},
+          fileOptions: { kind: 'singleton' },
         }),
       },
       paths: {
@@ -253,6 +259,7 @@ describe('renderTsTemplateGroupAction', () => {
             contents: 'const staticValue = "unchanged";',
           },
           variables: {},
+          fileOptions: { kind: 'singleton' },
         }),
       },
       paths: {
@@ -281,6 +288,7 @@ describe('renderTsTemplateGroupAction', () => {
           name: 'file',
           source: { path: 'file.ts' },
           variables: {},
+          fileOptions: { kind: 'singleton' },
         }),
         content: createTsTemplateFile({
           name: 'content',
@@ -288,6 +296,7 @@ describe('renderTsTemplateGroupAction', () => {
             contents: 'const fromContent = "content";',
           },
           variables: {},
+          fileOptions: { kind: 'singleton' },
         }),
         withVariables: createTsTemplateFile({
           name: 'withVariables',
@@ -297,6 +306,7 @@ describe('renderTsTemplateGroupAction', () => {
           variables: {
             TPL_VALUE: { description: 'A value' },
           },
+          fileOptions: { kind: 'singleton' },
         }),
       },
       paths: {

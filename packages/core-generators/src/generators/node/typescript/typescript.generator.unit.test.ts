@@ -28,12 +28,14 @@ describe('typescriptGenerator', () => {
       name: 'test-template',
       source: { contents: 'export const helper = () => {};' },
       variables: {},
+      fileOptions: { kind: 'singleton' },
     });
 
     const testTemplateFile2 = createTsTemplateFile({
       name: 'test-template-2',
       source: { contents: 'export const helper2 = () => {};' },
       variables: {},
+      fileOptions: { kind: 'singleton' },
     });
 
     const testTemplateGroup = {
@@ -88,6 +90,7 @@ describe('typescriptGenerator', () => {
             name: 'utils-template',
             source: { contents: 'export const helper = () => {};' },
             variables: {},
+            fileOptions: { kind: 'singleton' },
           });
 
           const dependencyTemplateFile = createTsTemplateFile({
@@ -97,6 +100,7 @@ describe('typescriptGenerator', () => {
                 'import { helper } from "@/src/utils/helpers.ts"; console.log(helper());',
             },
             variables: {},
+            fileOptions: { kind: 'singleton' },
           });
 
           await testAction(
