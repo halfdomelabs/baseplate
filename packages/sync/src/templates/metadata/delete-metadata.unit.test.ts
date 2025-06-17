@@ -18,7 +18,6 @@ describe('deleteMetadataFiles', () => {
     // Initialize the virtual file system with test files
     vol.fromJSON({
       [testDirectory]: null,
-      [`${testDirectory}/${GENERATOR_INFO_FILENAME}`]: '{}',
       [`${testDirectory}/src/controllers/${TEMPLATE_METADATA_FILENAME}`]: '{}',
       [`${testDirectory}/src/models/${TEMPLATE_METADATA_FILENAME}`]: '{}',
       [`${testDirectory}/src/controllers/user-controller.ts`]: '// some code',
