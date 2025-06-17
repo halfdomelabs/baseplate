@@ -82,10 +82,7 @@ export function renderTsTemplateFileAction<
   return {
     execute: async (builder) => {
       const generatorInfo = providedGeneratorInfo ?? builder.generatorInfo;
-      const templateContents = await readTemplateFileSource(
-        generatorInfo.baseDirectory,
-        template.source,
-      );
+      const templateContents = await readTemplateFileSource(template.source);
       const prefix = template.prefix ?? 'TPL_';
       const variableValues = variables ?? {};
 
@@ -121,7 +118,7 @@ export function renderTsTemplateFileAction<
         fileOptions: template.fileOptions,
       };
 
-      if (template.fileOptions?.kind === 'instance' && !id) {
+      if (template.fileOptions.kind === 'instance' && !id) {
         throw new Error('Instance template must have an id');
       }
 
@@ -133,8 +130,7 @@ export function renderTsTemplateFileAction<
           fileId,
           filePath: normalizePathToProjectPath(destination),
           generatorName: generatorInfo.name,
-          // TODO[2025-06-18]: Turn this into a file options === 'kind'
-          isInstance: !!id,
+          isInstance: template.fileOptions.kind === 'instance',
         });
 
       const renderedTemplate = renderTsCodeFileTemplate({

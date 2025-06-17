@@ -33,10 +33,7 @@ export function renderRawTemplateFileAction<
 }: RenderRawTemplateFileActionInput<TTemplateFile>): BuilderAction {
   return {
     execute: async (builder) => {
-      const source = await readTemplateFileSourceBuffer(
-        builder.generatorInfo.baseDirectory,
-        template.source,
-      );
+      const source = await readTemplateFileSourceBuffer(template.source);
 
       if (template.fileOptions.kind === 'instance' && !id) {
         throw new Error('Instance template must have an id');
