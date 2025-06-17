@@ -64,7 +64,7 @@ const PACKAGE_REGEX =
 /**
  * Converts an NPM package name to its corresponding @types package name.
  */
-export function toTypesPackageName(pkgName: string): string | undefined {
+function toTypesPackageName(pkgName: string): string | undefined {
   if (!PACKAGE_REGEX.test(pkgName)) {
     return undefined;
   }

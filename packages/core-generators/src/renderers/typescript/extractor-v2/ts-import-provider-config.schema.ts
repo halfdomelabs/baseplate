@@ -33,10 +33,3 @@ export const tsImportProviderConfigSchema = z.object({
    */
   projectExports: z.record(z.string(), z.object({}).passthrough()),
 });
-
-/**
- * Type for ts-imports provider configuration
- */
-export type TsImportProviderConfig = z.infer<
-  typeof tsImportProviderConfigSchema
->;
