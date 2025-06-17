@@ -56,7 +56,6 @@ export function renderRawTemplateFileAction<
       const templateMetadata: RawTemplateOutputTemplateMetadata | undefined =
         'path' in template.source
           ? {
-              template: '', // deprecated
               generator: builder.generatorInfo.name,
               type: RAW_TEMPLATE_TYPE,
               name: template.name,

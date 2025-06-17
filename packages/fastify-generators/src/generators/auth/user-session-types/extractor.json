@@ -17,7 +17,6 @@
         "UserSessionPayload": { "isTypeOnly": true },
         "UserSessionService": { "isTypeOnly": true }
       },
-      "template": "",
       "variables": {}
     }
   }

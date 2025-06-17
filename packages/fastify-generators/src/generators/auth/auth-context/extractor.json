@@ -15,7 +15,6 @@
       },
       "pathRootRelativePath": "{module-root}/types/auth-context.types.ts",
       "projectExports": { "AuthContext": { "isTypeOnly": true } },
-      "template": "",
       "variables": {}
     },
     "module/types/auth-session.types.ts": {
@@ -40,7 +39,6 @@
         "AuthUserSessionInfo": { "isTypeOnly": true },
         "InvalidSessionError": {}
       },
-      "template": "",
       "variables": {}
     },
     "module/utils/auth-context.utils.ts": {
@@ -61,7 +59,6 @@
       },
       "pathRootRelativePath": "{module-root}/utils/auth-context.utils.ts",
       "projectExports": { "createAuthContextFromSessionInfo": {} },
-      "template": "",
       "variables": {}
     }
   }

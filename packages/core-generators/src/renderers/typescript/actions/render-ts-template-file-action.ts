@@ -10,7 +10,6 @@ import {
   readTemplateFileSource,
 } from '@baseplate-dev/sync';
 import { differenceSet } from '@baseplate-dev/utils';
-import path from 'node:path';
 
 import type { TsPositionedHoistedFragment } from '../fragments/types.js';
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
@@ -112,13 +111,6 @@ export function renderTsTemplateFileAction<
 
       const templateMetadata: TsTemplateOutputTemplateMetadata | undefined = {
         name: template.name,
-        template:
-          'path' in template.source
-            ? // TODO[2025-06-18]: Remove this once we've migrated all TS templates.
-              path.isAbsolute(template.source.path)
-              ? ''
-              : template.source.path
-            : 'content-only-template',
         generator: generatorInfo.name,
         group: template.group,
         type: TS_TEMPLATE_TYPE,

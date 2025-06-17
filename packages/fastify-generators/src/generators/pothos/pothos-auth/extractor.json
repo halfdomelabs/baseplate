@@ -9,7 +9,6 @@
       "group": "field-authorize-plugin",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/global-types.ts",
-      "template": "",
       "variables": {}
     },
     "src/plugins/graphql/FieldAuthorizePlugin/index.ts": {
@@ -25,7 +24,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/index.ts",
-      "template": "",
       "variables": {}
     },
     "src/plugins/graphql/FieldAuthorizePlugin/types.ts": {
@@ -36,7 +34,6 @@
       "group": "field-authorize-plugin",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/types.ts",
-      "template": "",
       "variables": {}
     }
   }

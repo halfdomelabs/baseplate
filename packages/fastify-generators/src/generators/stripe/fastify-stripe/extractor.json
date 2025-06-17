@@ -9,7 +9,6 @@
       "group": "plugins",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.int.test.ts",
-      "template": "",
       "variables": {}
     },
     "src/plugins/stripe-webhook.ts": {
@@ -29,7 +28,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.ts",
-      "template": "",
       "variables": {}
     },
     "src/services/stripe-events.ts": {
@@ -49,7 +47,6 @@
         "StripeEventHandler": { "isTypeOnly": true },
         "stripeEventService": {}
       },
-      "template": "",
       "variables": {}
     },
     "src/services/stripe.ts": {
@@ -66,7 +63,6 @@
       },
       "pathRootRelativePath": "{src-root}/services/stripe.ts",
       "projectExports": { "stripe": {} },
-      "template": "",
       "variables": {}
     }
   }

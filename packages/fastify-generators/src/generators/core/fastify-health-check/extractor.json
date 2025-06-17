@@ -8,7 +8,6 @@
       "generator": "@baseplate-dev/fastify-generators#core/fastify-health-check",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/health-check.ts",
-      "template": "",
       "variables": { "TPL_HEALTH_CHECKS": {} }
     }
   }

@@ -18,7 +18,6 @@
         }
       },
       "pathRootRelativePath": "{package-root}/scripts/run-workers.ts",
-      "template": "",
       "variables": { "TPL_WORKERS": {} }
     },
     "package/scripts/synchronize-repeat-jobs.ts": {
@@ -34,7 +33,6 @@
         }
       },
       "pathRootRelativePath": "{package-root}/scripts/synchronize-repeat-jobs.ts",
-      "template": "",
       "variables": { "TPL_REPEAT_JOBS": {} }
     },
     "src/services/bull/index.ts": {
@@ -52,7 +50,6 @@
         "ManagedRepeatableJobsConfig": { "isTypeOnly": true },
         "synchronizeRepeatableJobs": {}
       },
-      "template": "",
       "variables": {}
     },
     "src/services/bull/queue.ts": {
@@ -72,7 +69,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/bull/queue.ts",
-      "template": "",
       "variables": {}
     },
     "src/services/bull/repeatable.ts": {
@@ -92,7 +88,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/bull/repeatable.ts",
-      "template": "",
       "variables": {}
     },
     "src/services/bull/worker.ts": {
@@ -116,7 +111,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/bull/worker.ts",
-      "template": "",
       "variables": {}
     }
   }

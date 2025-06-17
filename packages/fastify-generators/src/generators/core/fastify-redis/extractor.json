@@ -14,7 +14,6 @@
       },
       "pathRootRelativePath": "{src-root}/services/redis.ts",
       "projectExports": { "createRedisClient": {}, "getRedisClient": {} },
-      "template": "",
       "variables": {}
     },
     "src/tests/scripts/mock-redis.ts": {
@@ -24,7 +23,6 @@
       "generator": "@baseplate-dev/fastify-generators#core/fastify-redis",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/tests/scripts/mock-redis.ts",
-      "template": "",
       "variables": {}
     }
   }

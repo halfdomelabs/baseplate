@@ -32,7 +32,6 @@
       },
       "pathRootRelativePath": "{src-root}/hooks/useCurrentUser.ts",
       "projectExports": { "useCurrentUser": {} },
-      "template": "",
       "variables": { "TPL_USER": {} }
     },
     "src/hooks/useLogOut.ts": {
@@ -49,7 +48,6 @@
       },
       "pathRootRelativePath": "{src-root}/hooks/useLogOut.ts",
       "projectExports": { "useLogOut": {} },
-      "template": "",
       "variables": {}
     },
     "src/hooks/useRequiredUserId.ts": {
@@ -61,7 +59,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/useRequiredUserId.ts",
       "projectExports": { "useRequiredUserId": {} },
-      "template": "",
       "variables": {}
     },
     "src/hooks/useSession.ts": {
@@ -76,7 +73,6 @@
         "SessionData": { "isTypeOnly": true },
         "useSession": {}
       },
-      "template": "",
       "variables": {}
     }
   }

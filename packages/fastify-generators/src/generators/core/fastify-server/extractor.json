@@ -17,7 +17,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/index.ts",
-      "template": "",
       "variables": { "TPL_LOG_ERROR": {} }
     },
     "src/server.ts": {
@@ -27,7 +26,6 @@
       "generator": "@baseplate-dev/fastify-generators#core/fastify-server",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/server.ts",
-      "template": "",
       "variables": {
         "TPL_PLUGINS": {},
         "TPL_PRE_PLUGIN_FRAGMENTS": {},

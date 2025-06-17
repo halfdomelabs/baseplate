@@ -9,7 +9,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/app-modules.ts",
       "projectExports": { "flattenAppModule": {} },
-      "template": "",
       "variables": {
         "TPL_MODULE_FIELDS": {},
         "TPL_MODULE_INITIALIZER": {},

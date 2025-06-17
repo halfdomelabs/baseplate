@@ -17,7 +17,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/apollo/apollo-sentry-link.ts",
-      "template": "",
       "variables": {}
     }
   }

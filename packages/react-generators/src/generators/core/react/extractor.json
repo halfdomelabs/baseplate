@@ -35,7 +35,6 @@
       "generator": "@baseplate-dev/react-generators#core/react",
       "importMapProviders": {},
       "pathRootRelativePath": "{package-root}/vite.config.ts",
-      "template": "",
       "variables": { "TPL_CONFIG": {} }
     },
     "src/index.tsx": {
@@ -45,7 +44,6 @@
       "generator": "@baseplate-dev/react-generators#core/react",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/index.tsx",
-      "template": "",
       "variables": { "TPL_APP": {}, "TPL_HEADER": {} }
     },
     "src/vite-env.d.ts": {

@@ -9,7 +9,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/arrays.ts",
       "projectExports": { "notEmpty": {} },
-      "template": "",
       "variables": {}
     },
     "src/utils/normalize-types.ts": {
@@ -20,7 +19,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/normalize-types.ts",
       "projectExports": { "NormalizeTypes": { "isTypeOnly": true } },
-      "template": "",
       "variables": {}
     },
     "src/utils/nulls.ts": {
@@ -31,7 +29,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/nulls.ts",
       "projectExports": { "restrictObjectNulls": {} },
-      "template": "",
       "variables": {}
     },
     "src/utils/string.ts": {
@@ -42,7 +39,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/string.ts",
       "projectExports": { "capitalizeString": {} },
-      "template": "",
       "variables": {}
     }
   }

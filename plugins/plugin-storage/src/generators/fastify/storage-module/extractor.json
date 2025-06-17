@@ -9,7 +9,6 @@
       "group": "adapters",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/adapters/index.ts",
-      "template": "",
       "variables": {}
     },
     "module/adapters/s3.ts": {
@@ -20,7 +19,6 @@
       "group": "adapters",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/adapters/s3.ts",
-      "template": "",
       "variables": {}
     },
     "module/adapters/types.ts": {
@@ -31,7 +29,6 @@
       "group": "adapters",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/adapters/types.ts",
-      "template": "",
       "variables": {}
     },
     "module/adapters/url.ts": {
@@ -42,7 +39,6 @@
       "group": "adapters",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/adapters/url.ts",
-      "template": "",
       "variables": {}
     },
     "module/constants/adapters.ts": {
@@ -53,7 +49,6 @@
       "group": "constants",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/constants/adapters.ts",
-      "template": "",
       "variables": { "TPL_ADAPTERS": {} }
     },
     "module/constants/file-categories.ts": {
@@ -69,7 +64,6 @@
         }
       },
       "pathRootRelativePath": "{module-root}/constants/file-categories.ts",
-      "template": "",
       "variables": {
         "TPL_FILE_CATEGORIES": {},
         "TPL_FILE_COUNT_OUTPUT_TYPE": {},
@@ -89,7 +83,6 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/file-upload.input-type.ts",
-      "template": "",
       "variables": {}
     },
     "module/schema/hosted-url.field.ts": {
@@ -105,7 +98,6 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/hosted-url.field.ts",
-      "template": "",
       "variables": { "TPL_FILE_OBJECT_TYPE": {} }
     },
     "module/schema/presigned.mutations.ts": {
@@ -121,7 +113,6 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/presigned.mutations.ts",
-      "template": "",
       "variables": { "TPL_FILE_OBJECT_TYPE": {} }
     },
     "module/services/create-presigned-download-url.ts": {
@@ -142,7 +133,6 @@
       },
       "pathRootRelativePath": "{module-root}/services/create-presigned-download-url.ts",
       "projectExports": { "createPresignedDownloadUrl": {} },
-      "template": "",
       "variables": { "TPL_FILE_MODEL": {} }
     },
     "module/services/create-presigned-upload-url.ts": {
@@ -166,7 +156,6 @@
         "createPresignedUploadUrl": {},
         "CreatePresignedUploadUrlPayload": { "isTypeOnly": true }
       },
-      "template": "",
       "variables": { "TPL_FILE_MODEL": {}, "TPL_FILE_MODEL_TYPE": {} }
     },
     "module/services/download-file.ts": {
@@ -187,7 +176,6 @@
       },
       "pathRootRelativePath": "{module-root}/services/download-file.ts",
       "projectExports": { "downloadFile": {} },
-      "template": "",
       "variables": { "TPL_FILE_MODEL": {} }
     },
     "module/services/upload-file.ts": {
@@ -208,7 +196,6 @@
       },
       "pathRootRelativePath": "{module-root}/services/upload-file.ts",
       "projectExports": { "uploadFile": {} },
-      "template": "",
       "variables": { "TPL_FILE_MODEL": {}, "TPL_FILE_MODEL_TYPE": {} }
     },
     "module/services/validate-upload-input.ts": {
@@ -236,7 +223,6 @@
         "FileUploadInput": { "isTypeOnly": true },
         "validateFileUploadInput": {}
       },
-      "template": "",
       "variables": { "TPL_FILE_MODEL": {} }
     },
     "module/utils/mime.ts": {
@@ -251,7 +237,6 @@
         "getMimeTypeFromContentType": {},
         "validateFileExtensionWithMimeType": {}
       },
-      "template": "",
       "variables": {}
     },
     "module/utils/mime.unit.test.ts": {
@@ -262,7 +247,6 @@
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/utils/mime.unit.test.ts",
-      "template": "",
       "variables": {}
     },
     "module/utils/upload.ts": {
@@ -286,7 +270,6 @@
         "prepareUploadData": {},
         "UploadDataInput": { "isTypeOnly": true }
       },
-      "template": "",
       "variables": { "TPL_FILE_CREATE_INPUT": {} }
     }
   }

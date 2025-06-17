@@ -17,7 +17,6 @@
         }
       },
       "pathRootRelativePath": "{module-root}/scalars/date-time.ts",
-      "template": "",
       "variables": {}
     },
     "module/scalars/date.ts": {
@@ -36,7 +35,6 @@
         }
       },
       "pathRootRelativePath": "{module-root}/scalars/date.ts",
-      "template": "",
       "variables": {}
     },
     "module/scalars/uuid.ts": {
@@ -55,7 +53,6 @@
         }
       },
       "pathRootRelativePath": "{module-root}/scalars/uuid.ts",
-      "template": "",
       "variables": {}
     }
   }

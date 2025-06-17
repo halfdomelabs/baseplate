@@ -13,7 +13,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/instrument.ts",
-      "template": "",
       "variables": { "TPL_INTEGRATIONS": {} }
     },
     "src/services/sentry.ts": {
@@ -38,7 +37,6 @@
         "registerSentryEventProcessor": {},
         "shouldLogToSentry": {}
       },
-      "template": "",
       "variables": {
         "TPL_LOG_TO_SENTRY_CONDITIONS": {},
         "TPL_SCOPE_CONFIGURATION": {}

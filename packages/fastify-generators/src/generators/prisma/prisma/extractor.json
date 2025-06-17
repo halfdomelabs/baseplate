@@ -8,7 +8,6 @@
       "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/prisma/seed.ts",
-      "template": "",
       "variables": {}
     },
     "src/services/prisma.ts": {
@@ -19,7 +18,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/prisma.ts",
       "projectExports": { "prisma": {} },
-      "template": "",
       "variables": {}
     }
   }

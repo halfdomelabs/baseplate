@@ -17,7 +17,6 @@
         "createContextFromRequest": {},
         "RequestServiceContext": { "isTypeOnly": true }
       },
-      "template": "",
       "variables": {
         "TPL_CONTEXT_BODY": {},
         "TPL_CONTEXT_CREATOR": {},

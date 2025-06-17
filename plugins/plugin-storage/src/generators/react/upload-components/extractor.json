@@ -22,7 +22,6 @@
       },
       "pathRootRelativePath": "{src-root}/components/FileInput/index.tsx",
       "projectExports": { "FileInput": { "exportName": "default" } },
-      "template": "",
       "variables": {}
     },
     "src/components/FileInput/upload.gql": {
@@ -40,7 +39,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/useUpload.ts",
       "projectExports": { "useUpload": {} },
-      "template": "",
       "variables": {}
     }
   }

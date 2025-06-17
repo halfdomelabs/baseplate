@@ -9,7 +9,6 @@
       "generator": "@baseplate-dev/core-generators#node/vitest",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/tests/scripts/global-setup.ts",
-      "template": "",
       "variables": { "TPL_OPERATIONS": {} }
     },
     "vitest.config.ts": {
@@ -23,7 +22,6 @@
       "generator": "@baseplate-dev/core-generators#node/vitest",
       "importMapProviders": {},
       "pathRootRelativePath": "{package-root}/vitest.config.ts",
-      "template": "",
       "variables": { "TPL_CONFIG": {} }
     }
   }

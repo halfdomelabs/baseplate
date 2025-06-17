@@ -19,7 +19,6 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
-      "template": "",
       "variables": {
         "TPL_COMPONENT_NAME": {},
         "TPL_DESTRUCTURED_PROPS": {},

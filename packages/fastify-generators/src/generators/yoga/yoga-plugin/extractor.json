@@ -25,7 +25,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/index.ts",
-      "template": "",
       "variables": {
         "TPL_ENVELOP_PLUGINS": {},
         "TPL_GRAPHQL_HANDLER": {},
@@ -47,7 +46,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/pubsub.ts",
-      "template": "",
       "variables": { "TPL_PUBLISH_ARGS": {} }
     },
     "src/plugins/graphql/use-graph-logger.ts": {
@@ -66,7 +64,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/use-graph-logger.ts",
-      "template": "",
       "variables": {}
     },
     "src/plugins/graphql/websocket.ts": {
@@ -90,7 +87,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/websocket.ts",
-      "template": "",
       "variables": { "TPL_ON_CONNECT": {} }
     },
     "websocket-fragments.ts": {

@@ -10,7 +10,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/DescriptionList/index.tsx",
       "projectExports": { "DescriptionList": { "exportName": "default" } },
-      "template": "",
       "variables": {}
     },
     "src/components/EmbeddedListInput/index.tsx": {
@@ -31,7 +30,6 @@
         "EmbeddedListInput": { "exportName": "default" },
         "EmbeddedListTableProps": { "isTypeOnly": true }
       },
-      "template": "",
       "variables": {}
     },
     "src/components/EmbeddedObjectInput/index.tsx": {
@@ -51,7 +49,6 @@
         "EmbeddedObjectFormProps": { "isTypeOnly": true },
         "EmbeddedObjectInput": { "exportName": "default" }
       },
-      "template": "",
       "variables": {}
     }
   }
