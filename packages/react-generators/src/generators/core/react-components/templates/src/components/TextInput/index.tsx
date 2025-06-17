@@ -35,7 +35,6 @@ interface Props {
   onBlur?: FocusEventHandler<HTMLInputElement>;
   onFocus?: FocusEventHandler<HTMLInputElement>;
   onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
-  autoComplete?: string;
   value?: string;
 }
 
@@ -52,7 +51,6 @@ const TextInput = function TextInput({
   onKeyDown,
   value,
   register,
-  autoComplete,
 }: Props): ReactElement {
   const inputProps: InputHTMLAttributes<HTMLInputElement> = {
     name,
@@ -69,7 +67,6 @@ const TextInput = function TextInput({
     onFocus,
     onKeyDown,
     value,
-    autoComplete,
     ...register,
   };
   return (
