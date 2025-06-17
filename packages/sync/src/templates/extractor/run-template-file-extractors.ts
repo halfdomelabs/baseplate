@@ -2,10 +2,7 @@ import { groupBy, uniq } from 'es-toolkit';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
-import { parseGeneratorName } from '#src/utils/parse-generator-name.js';
-
 import type { TemplateFileMetadataBase } from '../metadata/metadata.js';
-import type { TemplateMetadataFileEntry } from '../metadata/read-template-metadata-files.js';
 import type { TemplateExtractorHook } from './runner/template-extractor-plugin.js';
 import type {
   AnyTemplateFileExtractor,
@@ -32,23 +29,6 @@ export interface RunTemplateFileExtractorsOptions {
    * Whether to skip cleaning the output directories (templates and generated).
    */
   skipClean?: boolean;
-}
-
-const GENERATOR_WHITELIST = new Set([
-  '@baseplate-dev/core-generators',
-  '@baseplate-dev/fastify-generators',
-  '@baseplate-dev/react-generators',
-  '@baseplate-dev/plugin-auth',
-  '@baseplate-dev/plugin-storage',
-]);
-
-// TODO [2025-06-17]: Remove this filter once we've migrated from v1 to v2
-function isV2TemplateMetadataFile(file: TemplateMetadataFileEntry): boolean {
-  const parsedGenerator = parseGeneratorName(file.metadata.generator);
-  if (GENERATOR_WHITELIST.has(parsedGenerator.packageName)) {
-    return true;
-  }
-  return 'fileOptions' in file.metadata;
 }
 
 /**
@@ -79,10 +59,9 @@ export async function runTemplateFileExtractors(
   await configLookup.initialize();
 
   if (options?.autoGenerateExtractor) {
-    // TODO [2025-06-17]: Remove this filter once we've migrated from v1 to v2
-    const generatorNames = templateMetadataFiles
-      .filter(isV2TemplateMetadataFile)
-      .map((m) => m.metadata.generator);
+    const generatorNames = templateMetadataFiles.map(
+      (m) => m.metadata.generator,
+    );
     const missingGeneratorNames = generatorNames.filter(
       (name) => !configLookup.getExtractorConfig(name),
     );
@@ -133,11 +112,7 @@ export async function runTemplateFileExtractors(
   });
 
   // Group files by type and validate uniqueness (throws on duplicates)
-  const filesByType = groupBy(
-    // TODO [2025-06-17]: Remove this filter once we've migrated from v1 to v2
-    templateMetadataFiles.filter(isV2TemplateMetadataFile),
-    (f) => f.metadata.type,
-  );
+  const filesByType = groupBy(templateMetadataFiles, (f) => f.metadata.type);
 
   // Get the metadata entries for each file
   const metadataEntries: TemplateFileExtractorMetadataEntry[] = [];
