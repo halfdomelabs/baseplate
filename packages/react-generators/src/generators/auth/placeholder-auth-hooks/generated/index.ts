@@ -1,0 +1,9 @@
+import { AUTH_PLACEHOLDER_AUTH_HOOKS_PATHS } from './template-paths.js';
+import { AUTH_PLACEHOLDER_AUTH_HOOKS_IMPORTS } from './ts-import-providers.js';
+import { AUTH_PLACEHOLDER_AUTH_HOOKS_TEMPLATES } from './typed-templates.js';
+
+export const AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED = {
+  imports: AUTH_PLACEHOLDER_AUTH_HOOKS_IMPORTS,
+  paths: AUTH_PLACEHOLDER_AUTH_HOOKS_PATHS,
+  templates: AUTH_PLACEHOLDER_AUTH_HOOKS_TEMPLATES,
+};

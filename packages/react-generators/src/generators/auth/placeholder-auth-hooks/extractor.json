@@ -1,3 +1,53 @@
 {
-  "name": "auth/placeholder-auth-hooks"
+  "name": "auth/placeholder-auth-hooks",
+  "templates": {
+    "src/hooks/useCurrentUser.ts": {
+      "name": "use-current-user",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#auth/placeholder-auth-hooks",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/useCurrentUser.ts",
+      "projectExports": { "useCurrentUser": {} },
+      "template": "useCurrentUser.ts",
+      "variables": {}
+    },
+    "src/hooks/useLogOut.ts": {
+      "name": "use-log-out",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#auth/placeholder-auth-hooks",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/useLogOut.ts",
+      "projectExports": { "useLogOut": {} },
+      "template": "useLogOut.ts",
+      "variables": {}
+    },
+    "src/hooks/useRequiredUserId.ts": {
+      "name": "use-required-user-id",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#auth/placeholder-auth-hooks",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/useRequiredUserId.ts",
+      "projectExports": { "useRequiredUserId": {} },
+      "template": "useRequiredUserId.ts",
+      "variables": {}
+    },
+    "src/hooks/useSession.ts": {
+      "name": "use-session",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#auth/placeholder-auth-hooks",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/useSession.ts",
+      "projectExports": { "useSession": {} },
+      "template": "useSession.ts",
+      "variables": {}
+    }
+  }
 }

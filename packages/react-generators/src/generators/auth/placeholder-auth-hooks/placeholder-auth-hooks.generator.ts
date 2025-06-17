@@ -1,13 +1,8 @@
-import {
-  projectScope,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { authHooksImportsProvider } from '../_providers/auth-hooks.js';
-import { createPlaceholderAuthHooksImports } from './generated/ts-import-maps.js';
-import { AUTH_PLACEHOLDER_AUTH_HOOKS_TS_TEMPLATES } from './generated/ts-templates.js';
+import { AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -21,29 +16,21 @@ export const placeholderAuthHooksGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    authHooksImports: createGeneratorTask({
-      exports: {
-        authHooksImports: authHooksImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            authHooksImports: createPlaceholderAuthHooksImports('@/src/hooks'),
-          },
-        };
-      },
-    }),
+    paths: AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED.paths.task,
+    imports: AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        paths: AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED.paths.provider,
       },
-      run({ typescriptFile }) {
+      run({ typescriptFile, paths }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: AUTH_PLACEHOLDER_AUTH_HOOKS_TS_TEMPLATES.hooksGroup,
-                baseDirectory: '@/src/hooks',
+              typescriptFile.renderTemplateGroupV2({
+                group:
+                  AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED.templates.hooksGroup,
+                paths,
                 variables: {},
               }),
             );
