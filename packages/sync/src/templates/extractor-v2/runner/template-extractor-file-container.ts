@@ -19,7 +19,7 @@ export class TemplateExtractorFileContainer {
    * @param filePath - The path of the file to write.
    * @param contents - The contents of the file to write.
    */
-  writeFile(filePath: string, contents: string | Buffer): void {
+  async writeFile(filePath: string, contents: string | Buffer): Promise<void> {
     if (this.files.has(filePath)) {
       throw new Error(`File already written: ${filePath}`);
     }
@@ -29,14 +29,8 @@ export class TemplateExtractorFileContainer {
         `Cannot write file outside of package directories: ${resolvedPath}. Package directories: ${this.packageDirectories.join(', ')}`,
       );
     }
-    this.files.set(resolvedPath, contents);
-  }
 
-  private async commitFile(
-    filePath: string,
-    contents: string | Buffer,
-  ): Promise<void> {
-    // format the file contents
+    // Format the file contents immediately
     const formattedContents =
       typeof contents === 'string'
         ? await formatGeneratedTemplateContents(contents, filePath).catch(
@@ -50,10 +44,18 @@ export class TemplateExtractorFileContainer {
             },
           )
         : contents;
+
+    this.files.set(resolvedPath, formattedContents);
+  }
+
+  private async commitFile(
+    filePath: string,
+    contents: string | Buffer,
+  ): Promise<void> {
     // only commit file if it has changed
-    const contentsBuffer = Buffer.isBuffer(formattedContents)
-      ? formattedContents
-      : Buffer.from(formattedContents);
+    const contentsBuffer = Buffer.isBuffer(contents)
+      ? contents
+      : Buffer.from(contents);
     const existingContents = await fs
       .readFile(filePath)
       .catch(handleFileNotFoundError);

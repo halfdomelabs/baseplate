@@ -69,11 +69,11 @@ export class TemplateExtractorApi {
    * @param generatorTemplatePath - The path of the template file in the generator's templates directory.
    * @param contents - The contents of the template file.
    */
-  writeTemplateFile(
+  async writeTemplateFile(
     generatorName: string,
     generatorTemplatePath: string,
     contents: string | Buffer,
-  ): void {
+  ): Promise<void> {
     const generatorDirectory = this.getGeneratorDirectory(generatorName);
     const absolutePath = path.join(
       generatorDirectory,
@@ -81,7 +81,7 @@ export class TemplateExtractorApi {
       generatorTemplatePath,
     );
 
-    this.context.fileContainer.writeFile(absolutePath, contents);
+    await this.context.fileContainer.writeFile(absolutePath, contents);
   }
 
   /**
@@ -91,17 +91,17 @@ export class TemplateExtractorApi {
    * @param relativePath - The relative path of the file in the generator's generated directory.
    * @param contents - The contents of the file.
    */
-  writeGeneratedFile(
+  async writeGeneratedFile(
     generatorName: string,
     relativePath: string,
     contents: string | Buffer,
-  ): void {
+  ): Promise<void> {
     const generatorDirectory = this.getGeneratorDirectory(generatorName);
     const absolutePath = path.join(
       generatorDirectory,
       TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
       relativePath,
     );
-    this.context.fileContainer.writeFile(absolutePath, contents);
+    await this.context.fileContainer.writeFile(absolutePath, contents);
   }
 }

@@ -108,7 +108,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
                 contents,
                 writeContext,
               );
-              api.writeTemplateFile(
+              await api.writeTemplateFile(
                 file.generator,
                 file.generatorTemplatePath,
                 result.contents,
@@ -129,7 +129,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
       }),
     );
   },
-  writeGeneratedFiles: (generatorNames, context, api) => {
+  writeGeneratedFiles: async (generatorNames, context, api) => {
     const templatePathsPlugin = context.getPlugin('template-paths');
     const typedTemplatesPlugin = context.getPlugin('typed-templates-file');
     const barrelExportPlugin = context.getPlugin('barrel-export');
@@ -188,7 +188,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
         tsExtractorConfig,
       );
       if (importProviders) {
-        api.writeGeneratedFile(
+        await api.writeGeneratedFile(
           generatorName,
           GENERATED_IMPORT_PROVIDERS_FILE_NAME,
           importProviders.contents,

@@ -196,7 +196,7 @@ export async function runTemplateFileExtractors(
 
   // Write extractor.json files before afterWrite hook so writeTemplateFiles can update extractor config
   const generatorNames = uniq(metadataEntries.map((e) => e.generator));
-  writeExtractorTemplateJsons(generatorNames, context);
+  await writeExtractorTemplateJsons(generatorNames, context);
 
   await runHooks('afterWrite');
 

@@ -73,7 +73,7 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
               file.sourceAbsolutePath,
             );
 
-            api.writeTemplateFile(
+            await api.writeTemplateFile(
               file.generator,
               file.generatorTemplatePath,
               templateContents,

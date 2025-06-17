@@ -74,7 +74,7 @@ describe('cleanupUnusedTemplateFiles', () => {
       templates: {},
     });
 
-    context.fileContainer.writeFile(
+    await context.fileContainer.writeFile(
       `${generatorDirectory}/generated/kept-file.ts`,
       'new content',
     );

@@ -61,7 +61,7 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
             const contents = await api.readOutputFileBuffer(
               file.sourceAbsolutePath,
             );
-            api.writeTemplateFile(
+            await api.writeTemplateFile(
               file.generator,
               file.generatorTemplatePath,
               contents,
