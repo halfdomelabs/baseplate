@@ -543,7 +543,6 @@ export const reactApolloGenerator = createGenerator({
                 name: 'graphql',
                 projectExportsOnly: true,
                 type: 'ts',
-                exportGroup: 'generated-graphql',
                 projectExports: {
                   '*': {},
                 },

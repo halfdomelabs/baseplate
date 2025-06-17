@@ -33,7 +33,6 @@
     "src/generated/graphql.tsx": {
       "name": "graphql",
       "type": "ts",
-      "exportGroup": "generated-graphql",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
       "pathRootRelativePath": "{src-root}/generated/graphql.tsx",

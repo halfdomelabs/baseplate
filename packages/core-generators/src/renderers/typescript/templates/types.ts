@@ -58,11 +58,6 @@ export const tsTemplateGeneratorTemplateMetadataSchema =
      */
     group: CASE_VALIDATORS.KEBAB_CASE.optional(),
     /**
-     * The name of the export group that this template belongs to. Export groups
-     * allow you to group templates together that share the same import provider.
-     */
-    exportGroup: CASE_VALIDATORS.KEBAB_CASE.optional(),
-    /**
      * The exports of the file that are unique across the project.
      */
     projectExports: z
@@ -105,11 +100,6 @@ export const tsTemplateOutputTemplateMetadataSchema =
      * The group of templates that this template belongs to.
      */
     group: CASE_VALIDATORS.KEBAB_CASE.optional(),
-    /**
-     * The name of the export group that this template belongs to. Export groups
-     * allow you to group templates together that share the same import provider.
-     */
-    exportGroup: CASE_VALIDATORS.KEBAB_CASE.optional(),
     /**
      * The exports of the file that are unique across the project.
      */
