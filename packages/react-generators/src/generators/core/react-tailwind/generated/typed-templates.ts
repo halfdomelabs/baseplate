@@ -28,13 +28,13 @@ const postcssConfig = createTextTemplateFile({
 
 const tailwindConfig = createTextTemplateFile({
   fileOptions: {
-    generatorTemplatePath: 'tailwind.config.tpl.js',
+    generatorTemplatePath: 'tailwind.tpl.config.js',
     kind: 'singleton',
   },
   group: 'main',
   name: 'tailwind-config',
   source: {
-    path: path.join(import.meta.dirname, '../templates/tailwind.config.tpl.js'),
+    path: path.join(import.meta.dirname, '../templates/tailwind.tpl.config.js'),
   },
   variables: {},
 });
