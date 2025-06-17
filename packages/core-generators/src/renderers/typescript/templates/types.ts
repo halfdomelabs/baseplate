@@ -164,7 +164,7 @@ export interface TsTemplateFile<
   /**
    * The options for the template file
    */
-  fileOptions?: TemplateFileOptions;
+  fileOptions: TemplateFileOptions;
 }
 
 export type TsTemplateFileVariableValue = TsCodeFragment | string;

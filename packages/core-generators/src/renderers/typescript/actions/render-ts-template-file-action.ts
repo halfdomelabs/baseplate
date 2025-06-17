@@ -118,9 +118,7 @@ export function renderTsTemplateFileAction<
           Object.keys(template.projectExports ?? {}).length > 0
             ? template.projectExports
             : undefined,
-        // TODO[2025-06-18]: Remove casting once we've migrated all TS templates.
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        fileOptions: template.fileOptions!,
+        fileOptions: template.fileOptions,
       };
 
       if (template.fileOptions?.kind === 'instance' && !id) {
