@@ -23,10 +23,6 @@
     "./renderers": {
       "types": "./dist/renderers/types.d.ts",
       "default": "./dist/renderers/index.js"
-    },
-    "./extractor-v2": {
-      "types": "./dist/renderers/typescript/extractor-v2/index.d.ts",
-      "default": "./dist/renderers/typescript/extractor-v2/index.js"
     }
   },
   "main": "dist/index.js",

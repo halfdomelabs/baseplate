@@ -2,10 +2,10 @@ import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib
 import type { Logger } from '@baseplate-dev/sync';
 import type { RunTemplateFileExtractorsOptions } from '@baseplate-dev/sync/extractor-v2';
 
-import { TsTemplateFileExtractor } from '@baseplate-dev/core-generators/extractor-v2';
 import {
   RawTemplateFileExtractor,
   TextTemplateFileExtractor,
+  TsTemplateFileExtractor,
 } from '@baseplate-dev/core-generators/renderers';
 import { runTemplateFileExtractors } from '@baseplate-dev/sync/extractor-v2';
 import { findNearestPackageJson } from '@baseplate-dev/utils/node';
