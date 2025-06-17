@@ -20,16 +20,16 @@ beforeEach(() => {
 
 describe('renderTsTemplateFileAction', () => {
   it('should write file from template path with template metadata and replace variables', async () => {
+    const testPath = '/root/pkg/test-generator/templates/test.ts';
     vol.fromJSON({
-      '/root/pkg/test-generator/templates/test.ts':
-        'const greeting = TPL_GREETING;',
+      [testPath]: 'const greeting = TPL_GREETING;',
     });
 
     const action = renderTsTemplateFileAction({
       template: createTsTemplateFile({
         name: 'test',
         source: {
-          path: 'test.ts',
+          path: testPath,
         },
         variables: {
           TPL_GREETING: { description: 'The greeting to use' },
@@ -62,9 +62,9 @@ describe('renderTsTemplateFileAction', () => {
     );
     expect(file?.options?.templateMetadata).toEqual({
       name: 'test',
-      template: 'test.ts',
       generator: 'test-generator',
       type: TS_TEMPLATE_TYPE,
+      fileOptions: { kind: 'singleton' },
     });
   });
 

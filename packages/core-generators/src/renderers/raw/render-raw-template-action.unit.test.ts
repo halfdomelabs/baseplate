@@ -14,15 +14,16 @@ beforeEach(() => {
 
 describe('renderRawTemplateFileAction', () => {
   it('should write file from template path with template metadata', async () => {
+    const testPath = '/root/pkg/test-generator/templates/test.txt';
     vol.fromJSON({
-      '/root/pkg/test-generator/templates/test.txt': 'test content',
+      [testPath]: 'test content',
     });
 
     const action = renderRawTemplateFileAction({
       template: createRawTemplateFile({
         name: 'test',
         source: {
-          path: 'test.txt',
+          path: testPath,
         },
         fileOptions: {
           kind: 'instance',
@@ -50,7 +51,6 @@ describe('renderRawTemplateFileAction', () => {
     expect(file?.contents).toEqual(Buffer.from('test content'));
     expect(file?.options?.templateMetadata).toEqual({
       name: 'test',
-      template: '',
       generator: 'test-generator',
       type: RAW_TEMPLATE_TYPE,
       fileOptions: {

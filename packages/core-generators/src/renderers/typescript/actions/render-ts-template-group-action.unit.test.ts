@@ -1,5 +1,6 @@
 import { createProviderType, testAction } from '@baseplate-dev/sync';
 import { vol } from 'memfs';
+import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { tsCodeFragment } from '../fragments/creators.js';
@@ -20,17 +21,19 @@ beforeEach(() => {
 describe('renderTsTemplateGroupAction', () => {
   it('should render multiple template files from a group', async () => {
     // Arrange
+    const templatesFolder = '/root/pkg/test-generator/templates';
+    const greetingsPath = path.join(templatesFolder, 'greeting.ts');
+    const namePath = path.join(templatesFolder, 'name.ts');
     vol.fromJSON({
-      '/root/pkg/test-generator/templates/greeting.ts':
-        'const greeting = TPL_GREETING;',
-      '/root/pkg/test-generator/templates/name.ts': 'const name = TPL_NAME;',
+      [greetingsPath]: 'const greeting = TPL_GREETING;',
+      [namePath]: 'const name = TPL_NAME;',
     });
 
     const action = renderTsTemplateGroupAction({
       group: {
         greeting: createTsTemplateFile({
           name: 'greeting',
-          source: { path: 'greeting.ts' },
+          source: { path: greetingsPath },
           variables: {
             TPL_GREETING: { description: 'The greeting to use' },
           },
@@ -38,7 +41,7 @@ describe('renderTsTemplateGroupAction', () => {
         }),
         name: createTsTemplateFile({
           name: 'name',
-          source: { path: 'name.ts' },
+          source: { path: namePath },
           variables: {
             TPL_NAME: { description: 'The name to use' },
           },
@@ -81,9 +84,9 @@ describe('renderTsTemplateGroupAction', () => {
     );
     expect(greetingFile?.options?.templateMetadata).toEqual({
       name: 'greeting',
-      template: 'greeting.ts',
       generator: 'test-generator',
       type: TS_TEMPLATE_TYPE,
+      fileOptions: { kind: 'singleton' },
     });
 
     const nameFile = output.files.get('output/name.ts');
@@ -93,9 +96,9 @@ describe('renderTsTemplateGroupAction', () => {
     );
     expect(nameFile?.options?.templateMetadata).toEqual({
       name: 'name',
-      template: 'name.ts',
       generator: 'test-generator',
       type: TS_TEMPLATE_TYPE,
+      fileOptions: { kind: 'singleton' },
     });
   });
 
@@ -177,15 +180,17 @@ describe('renderTsTemplateGroupAction', () => {
 
   it('should apply custom write options to specific templates', async () => {
     // Arrange
+    const templatesFolder = '/root/pkg/test-generator/templates';
+    const testPath = path.join(templatesFolder, 'test.ts');
     vol.fromJSON({
-      '/root/pkg/test-generator/templates/test.ts': 'const test = "value";',
+      [testPath]: 'const test = "value";',
     });
 
     const action = renderTsTemplateGroupAction({
       group: {
         test: createTsTemplateFile({
           name: 'test',
-          source: { path: 'test.ts' },
+          source: { path: testPath },
           variables: {},
           fileOptions: { kind: 'singleton' },
         }),
@@ -278,15 +283,16 @@ describe('renderTsTemplateGroupAction', () => {
 
   it('should handle mixed template types in a group', async () => {
     // Arrange
+    const templatePath = '/root/pkg/test-generator/templates/file.ts';
     vol.fromJSON({
-      '/root/pkg/test-generator/templates/file.ts': 'const fromFile = "file";',
+      [templatePath]: 'const fromFile = "file";',
     });
 
     const action = renderTsTemplateGroupAction({
       group: {
         file: createTsTemplateFile({
           name: 'file',
-          source: { path: 'file.ts' },
+          source: { path: templatePath },
           variables: {},
           fileOptions: { kind: 'singleton' },
         }),

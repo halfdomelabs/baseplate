@@ -1,10 +1,7 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  GENERATOR_INFO_FILENAME,
-  TEMPLATE_METADATA_FILENAME,
-} from '../constants.js';
+import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
 import { deleteMetadataFiles } from './delete-metadata.js';
 
 vi.mock('node:fs');
@@ -27,11 +24,6 @@ describe('deleteMetadataFiles', () => {
 
   it('should delete all metadata files', async () => {
     await deleteMetadataFiles(testDirectory);
-
-    // Verify generator metadata file is deleted
-    expect(() =>
-      vol.readFileSync(`${testDirectory}/${GENERATOR_INFO_FILENAME}`),
-    ).toThrow();
 
     // Verify template metadata files are deleted
     expect(() =>

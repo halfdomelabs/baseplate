@@ -129,14 +129,12 @@ describe('writeTemplateMetadata', () => {
         name: 'user-controller',
         type: 'typescript',
         generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
-        template: 'controllers/user-controller.ts',
         variables: ['TPL_METHODS', 'TPL_MODEL'],
       },
       'product-controller.ts': {
         name: 'product-controller',
         type: 'typescript',
         generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
-        template: 'controllers/product-controller.ts',
         variables: ['TPL_METHODS', 'TPL_MODEL'],
       },
     });
@@ -147,7 +145,6 @@ describe('writeTemplateMetadata', () => {
         name: 'user-model',
         type: 'typescript',
         generator: '@baseplate-dev/fastify-generators/prisma/model',
-        template: 'models/user-model.ts',
         variables: ['TPL_MODEL_NAME'],
       },
     });
@@ -158,7 +155,6 @@ describe('writeTemplateMetadata', () => {
         name: 'readme',
         type: 'text',
         generator: '@baseplate-dev/fastify-generators/core/readme',
-        template: 'README.md',
         variables: [{ name: 'TPL_PROJECT_NAME', value: 'my-project' }],
       },
     });
@@ -209,7 +205,6 @@ describe('writeTemplateMetadata', () => {
         name: 'user-controller',
         type: 'typescript',
         generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
-        template: 'controllers/user-controller.ts',
         variables: ['TPL_METHODS', 'TPL_MODEL'],
       },
     });
