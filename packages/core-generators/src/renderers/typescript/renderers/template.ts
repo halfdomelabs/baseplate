@@ -124,13 +124,10 @@ export function renderTsTemplateToTsCodeFragment(
 
   // --- Pass 4: Replace inline placeholders with unique markers ---
   // This regex ensures the TPL_ variable is not immediately followed by another valid variable character
-  const inlineRegex = new RegExp(
-    `([^\\s]*[\\s]*)(${prefix}[A-Z0-9_]+)([^A-Z0-9_]|$)`,
-    'gm',
-  );
+  const inlineRegex = new RegExp(`(${prefix}[A-Z0-9_]+)([^A-Z0-9_]|$)`, 'gm');
   renderedTemplate = renderedTemplate.replace(
     inlineRegex,
-    (match, leading: string, key: string, followingCharacter: string) => {
+    (match, key: string, followingCharacter: string) => {
       if (!(key in variables)) {
         throw new Error(`Template variable not found: ${key}`);
       }
@@ -145,8 +142,15 @@ export function renderTsTemplateToTsCodeFragment(
       inlineMarkers.set(marker, { key, value });
       variableKeys.delete(key); // Mark as used
 
-      return `${leading.startsWith('(') ? leading.trimEnd() : leading}${marker}${shouldRemoveComma ? '' : followingCharacter}`; // Replace with marker
+      return `${marker}${shouldRemoveComma ? '' : followingCharacter}`; // Replace with marker
     },
+  );
+
+  // Workaround: Replace any whitespace around inline markers with parentheses with just the marker
+  // e.g. ( \n __INLINE_MARKER_0__  \n ) => (__INLINE_MARKER_0__)
+  renderedTemplate = renderedTemplate.replaceAll(
+    /\((\s*)(__INLINE_MARKER_\d+__)(\s*)\)/g,
+    (match, beforeWhitespace: string, marker: string) => `(${marker})`,
   );
 
   // --- Check for unused variables ---
