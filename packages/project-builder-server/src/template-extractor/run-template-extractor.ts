@@ -8,7 +8,7 @@ import {
   RawTemplateFileExtractor,
   TextTemplateFileExtractor,
   TsTemplateFileExtractor,
-} from '@baseplate-dev/core-generators/renderers';
+} from '@baseplate-dev/core-generators/extractors';
 import { runTemplateFileExtractors } from '@baseplate-dev/sync';
 import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import path from 'node:path';

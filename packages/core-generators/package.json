@@ -21,8 +21,12 @@
       "default": "./dist/index.js"
     },
     "./renderers": {
-      "types": "./dist/renderers/types.d.ts",
+      "types": "./dist/renderers/index.d.ts",
       "default": "./dist/renderers/index.js"
+    },
+    "./extractors": {
+      "types": "./dist/renderers/extractors.d.ts",
+      "default": "./dist/renderers/extractors.js"
     }
   },
   "main": "dist/index.js",
