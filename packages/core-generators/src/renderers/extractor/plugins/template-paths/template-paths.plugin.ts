@@ -1,5 +1,7 @@
-import { toCanonicalPath } from '@baseplate-dev/sync';
-import { createTemplateExtractorPlugin } from '@baseplate-dev/sync/extractor-v2';
+import {
+  createTemplateExtractorPlugin,
+  toCanonicalPath,
+} from '@baseplate-dev/sync';
 import {
   handleFileNotFoundError,
   posixJoin,

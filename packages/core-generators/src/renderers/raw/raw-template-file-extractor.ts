@@ -1,5 +1,7 @@
-import { getGenerationConcurrencyLimit } from '@baseplate-dev/sync';
-import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
+import {
+  createTemplateFileExtractor,
+  getGenerationConcurrencyLimit,
+} from '@baseplate-dev/sync';
 import { camelCase } from 'change-case';
 import pLimit from 'p-limit';
 

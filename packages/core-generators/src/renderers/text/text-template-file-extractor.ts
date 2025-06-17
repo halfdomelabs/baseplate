@@ -1,5 +1,7 @@
-import { getGenerationConcurrencyLimit } from '@baseplate-dev/sync';
-import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
+import {
+  createTemplateFileExtractor,
+  getGenerationConcurrencyLimit,
+} from '@baseplate-dev/sync';
 import { mapValues, omit } from 'es-toolkit';
 import pLimit from 'p-limit';
 

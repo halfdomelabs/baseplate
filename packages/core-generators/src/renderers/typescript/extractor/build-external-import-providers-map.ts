@@ -1,4 +1,4 @@
-import type { TemplateExtractorConfigLookup } from '@baseplate-dev/sync/extractor-v2';
+import type { TemplateExtractorConfigLookup } from '@baseplate-dev/sync';
 
 import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 

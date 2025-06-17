@@ -1,7 +1,9 @@
 import type { TemplateFileBase } from '@baseplate-dev/sync';
 
-import { templateFileMetadataBaseSchema } from '@baseplate-dev/sync';
-import { templateConfigSchema } from '@baseplate-dev/sync/extractor-v2';
+import {
+  templateConfigSchema,
+  templateFileMetadataBaseSchema,
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import type { TemplateFileOptions } from '../schemas/template-file-options.js';

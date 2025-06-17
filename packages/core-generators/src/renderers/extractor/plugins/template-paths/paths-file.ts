@@ -1,6 +1,6 @@
-import type { TemplateExtractorContext } from '@baseplate-dev/sync/extractor-v2';
+import type { TemplateExtractorContext } from '@baseplate-dev/sync';
 
-import { TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY } from '@baseplate-dev/sync/extractor-v2';
+import { TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY } from '@baseplate-dev/sync';
 import { mapValuesOfMap } from '@baseplate-dev/utils';
 import { posixJoin } from '@baseplate-dev/utils/node';
 import { camelCase } from 'change-case';

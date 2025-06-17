@@ -7,7 +7,7 @@ import {
 import { TsCodeFragment } from '../fragments/types.js';
 import { z } from 'zod';
 import { CASE_VALIDATORS } from '@baseplate-dev/utils';
-import { templateConfigSchema } from '@baseplate-dev/sync/extractor-v2';
+import { templateConfigSchema } from '../../../../../sync/dist/templates/extractor/index.js';
 import {
   TemplateFileOptions,
   templateFileOptionsSchema,

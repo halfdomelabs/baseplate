@@ -1,4 +1,4 @@
-import type { TemplateExtractorContext } from '@baseplate-dev/sync/extractor-v2';
+import type { TemplateExtractorContext } from '@baseplate-dev/sync';
 
 import path from 'node:path';
 

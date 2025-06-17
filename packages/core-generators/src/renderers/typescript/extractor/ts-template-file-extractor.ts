@@ -1,5 +1,7 @@
-import { getGenerationConcurrencyLimit } from '@baseplate-dev/sync';
-import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
+import {
+  createTemplateFileExtractor,
+  getGenerationConcurrencyLimit,
+} from '@baseplate-dev/sync';
 import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { groupBy } from 'es-toolkit';
 import path from 'node:path';

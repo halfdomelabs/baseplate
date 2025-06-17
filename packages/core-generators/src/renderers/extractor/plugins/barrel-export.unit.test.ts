@@ -2,7 +2,7 @@ import {
   addMockExtractorConfig,
   createMockContext,
   createPluginInstance,
-} from '@baseplate-dev/sync/extractor-v2/test-utils';
+} from '@baseplate-dev/sync/extractor-test-utils';
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

@@ -1,4 +1,4 @@
-import type { TemplateFileExtractorSourceFile } from '@baseplate-dev/sync/extractor-v2';
+import type { TemplateFileExtractorSourceFile } from '@baseplate-dev/sync';
 
 import type { TemplateFileOptions } from '#src/renderers/schemas/template-file-options.js';
 

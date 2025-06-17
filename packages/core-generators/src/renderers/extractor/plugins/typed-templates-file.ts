@@ -1,7 +1,7 @@
 import {
   createTemplateExtractorPlugin,
   TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
-} from '@baseplate-dev/sync/extractor-v2';
+} from '@baseplate-dev/sync';
 import { posixJoin } from '@baseplate-dev/utils/node';
 
 import { normalizeTsPathToJsPath } from '#src/utils/ts-paths.js';

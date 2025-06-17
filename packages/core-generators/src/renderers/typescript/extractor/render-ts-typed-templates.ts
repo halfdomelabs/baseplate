@@ -1,4 +1,4 @@
-import type { TemplateExtractorTemplateEntry } from '@baseplate-dev/sync/extractor-v2';
+import type { TemplateExtractorTemplateEntry } from '@baseplate-dev/sync';
 
 import { quot, sortObjectKeys } from '@baseplate-dev/utils';
 import { camelCase } from 'change-case';
