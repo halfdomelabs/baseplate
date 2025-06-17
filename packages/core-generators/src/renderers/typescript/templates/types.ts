@@ -199,28 +199,7 @@ export function createTsTemplateFile<
   return file;
 }
 
-interface TsTemplateGroupEntry {
-  destination: string;
-  template: TsTemplateFile;
-}
-
 /**
  * A group of text template files.
  */
-export interface TsTemplateGroup<
-  T extends Record<string, TsTemplateGroupEntry> = Record<
-    string,
-    TsTemplateGroupEntry
-  >,
-> {
-  /**
-   * The templates in the group.
-   */
-  templates: T;
-}
-
-export function createTsTemplateGroup<
-  T extends Record<string, TsTemplateGroupEntry>,
->(group: TsTemplateGroup<T>): TsTemplateGroup<T> {
-  return group;
-}
+export type TsTemplateGroup = Record<string, TsTemplateFile>;

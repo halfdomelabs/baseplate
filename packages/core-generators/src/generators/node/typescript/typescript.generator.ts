@@ -20,7 +20,6 @@ import type {
   RenderTsCodeFileTemplateOptions,
   RenderTsFragmentActionInput,
   RenderTsTemplateFileActionInput,
-  RenderTsTemplateGroupActionInput,
   TsTemplateFile,
   TsTemplateGroup,
 } from '#src/renderers/typescript/index.js';
@@ -33,13 +32,11 @@ import {
   renderTsTemplateGroupAction as renderTsTemplateGroupActionV2,
 } from '#src/renderers/typescript/extractor-v2/render-ts-template-group-action.js';
 import {
-  extractTsTemplateFileInputsFromTemplateGroup,
   generatePathMapEntries,
   getProjectRelativePathFromModuleSpecifier,
   normalizeModuleSpecifier,
   pathMapEntriesToRegexes,
   renderTsFragmentAction,
-  renderTsTemplateGroupAction,
 } from '#src/renderers/typescript/index.js';
 import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
@@ -94,22 +91,7 @@ export interface TypescriptFileProvider {
    * @param payload - The payload for the template group
    * @returns The action for the template group
    */
-  addLazyTemplateGroup<T extends TsTemplateGroup = TsTemplateGroup>(
-    payload: RenderTsTemplateGroupActionInput<T> & {
-      generatorInfo: GeneratorInfo;
-    },
-    options?: Omit<LazyTemplateFileEntry, 'payload'>,
-  ): void;
-  /**
-   * Adds a lazy template group whose files will be written only if
-   * another template depends on it.
-   *
-   * @param payload - The payload for the template group
-   * @returns The action for the template group
-   */
-  addLazyTemplateGroupV2<
-    T extends Record<string, TsTemplateFile> = Record<string, TsTemplateFile>,
-  >(
+  addLazyTemplateGroupV2<T extends TsTemplateGroup = TsTemplateGroup>(
     payload: RenderTsTemplateGroupActionInputV2<T> & {
       generatorInfo: GeneratorInfo;
     },
@@ -126,15 +108,6 @@ export interface TypescriptFileProvider {
   ): BuilderAction;
   /** Renders a template fragment to an action */
   renderTemplateFragment(payload: RenderTsFragmentActionInput): BuilderAction;
-  /**
-   * Renders a template group to an action
-   *
-   * @param payload - The payload for the template group
-   * @returns The action for the template group
-   */
-  renderTemplateGroup<T extends TsTemplateGroup = TsTemplateGroup>(
-    payload: RenderTsTemplateGroupActionInput<T>,
-  ): BuilderAction;
   /**
    * Renders a template group to an action using the new v2 implementation
    * with Record<string, TsTemplateFile> signature
@@ -327,20 +300,6 @@ export const typescriptGenerator = createGenerator({
                   ...options,
                 });
               },
-              addLazyTemplateGroup: (payload, options) => {
-                // break out files of the group
-                const files =
-                  extractTsTemplateFileInputsFromTemplateGroup(payload);
-                for (const file of files) {
-                  lazyTemplates.add({
-                    payload: {
-                      ...file,
-                      generatorInfo: payload.generatorInfo,
-                    },
-                    ...options,
-                  });
-                }
-              },
               addLazyTemplateGroupV2(payload, options) {
                 // break out files of the group
                 const files =
@@ -370,19 +329,6 @@ export const typescriptGenerator = createGenerator({
                 });
               },
               renderTemplateFile,
-              renderTemplateGroup: (payload) =>
-                renderTsTemplateGroupAction({
-                  ...payload,
-                  renderOptions: {
-                    resolveModule(moduleSpecifier, sourceDirectory) {
-                      return resolveModuleSpecifier(
-                        moduleSpecifier,
-                        sourceDirectory,
-                      );
-                    },
-                    ...sharedRenderOptions,
-                  },
-                }),
               renderTemplateGroupV2: (payload) =>
                 renderTsTemplateGroupActionV2({
                   ...payload,

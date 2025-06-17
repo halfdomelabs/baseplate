@@ -1,10 +1,9 @@
 import { createTaskTestRunner, testAction } from '@baseplate-dev/sync';
 import { describe, expect, it } from 'vitest';
 
-import {
-  createTsTemplateFile,
-  createTsTemplateGroup,
-} from '#src/renderers/index.js';
+import type { TsTemplateGroup } from '#src/renderers/index.js';
+
+import { createTsTemplateFile } from '#src/renderers/index.js';
 
 import { createTestNodeProvider } from '../node/index.js';
 import { typescriptGenerator } from './typescript.generator.js';
@@ -37,18 +36,10 @@ describe('typescriptGenerator', () => {
       variables: {},
     });
 
-    const testTemplateGroup = createTsTemplateGroup({
-      templates: {
-        'test-utils': {
-          template: testTemplateFile,
-          destination: 'helpers.ts',
-        },
-        'test-utils-2': {
-          template: testTemplateFile2,
-          destination: 'helpers2.ts',
-        },
-      },
-    });
+    const testTemplateGroup = {
+      'test-utils': testTemplateFile,
+      'test-utils-2': testTemplateFile2,
+    } satisfies TsTemplateGroup;
 
     it('renders template files', async () => {
       const runner = createTaskTestRunner(typescriptBundle.tasks.file);
@@ -172,9 +163,12 @@ describe('typescriptGenerator', () => {
           node: nodeProvider,
         },
         async ({ typescriptFile }) => {
-          const action = typescriptFile.renderTemplateGroup({
+          const action = typescriptFile.renderTemplateGroupV2({
             group: testTemplateGroup,
-            baseDirectory: '@/src/utils',
+            paths: {
+              'test-utils': 'helpers.ts',
+              'test-utils-2': 'helpers2.ts',
+            },
           });
 
           const { files } = await testAction(action);
