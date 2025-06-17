@@ -1,53 +1,36 @@
-import type { TemplateFileSource } from '@baseplate-dev/sync';
-
-import {
-  projectScope,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
-import path from 'node:path';
 import { z } from 'zod';
 
-import {
-  createReactUtilsImports,
-  reactUtilsImportsProvider,
-} from './generated/ts-import-maps.js';
-import { REACT_UTILS_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_REACT_UTILS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
-function getUtilsPath(source: TemplateFileSource): string {
-  if (!('path' in source)) {
-    throw new Error('Template path is required');
-  }
-  return path.join('@/src/utils', source.path);
-}
-
-type ReactUtilKey = keyof typeof REACT_UTILS_TS_TEMPLATES;
+type ReactUtilKey = keyof typeof CORE_REACT_UTILS_GENERATED.templates;
 
 export const reactUtilsGenerator = createGenerator({
   name: 'core/react-utils',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: CORE_REACT_UTILS_GENERATED.paths.task,
+    imports: CORE_REACT_UTILS_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        paths: CORE_REACT_UTILS_GENERATED.paths.provider,
       },
-      exports: {
-        reactUtilsImports: reactUtilsImportsProvider.export(projectScope),
-      },
-      run({ typescriptFile }) {
+      run({ typescriptFile, paths }) {
         return {
-          providers: {
-            reactUtilsImports: createReactUtilsImports('@/src/utils'),
-          },
           build: (builder) => {
-            for (const key of Object.keys(REACT_UTILS_TS_TEMPLATES)) {
-              const template = REACT_UTILS_TS_TEMPLATES[key as ReactUtilKey];
+            for (const key of Object.keys(
+              CORE_REACT_UTILS_GENERATED.templates,
+            )) {
+              const typedKey = key as ReactUtilKey;
+              const template = CORE_REACT_UTILS_GENERATED.templates[typedKey];
               typescriptFile.addLazyTemplateFile({
                 template,
-                destination: getUtilsPath(template.source),
+                destination: paths[typedKey],
                 generatorInfo: builder.generatorInfo,
               });
             }
@@ -57,5 +40,3 @@ export const reactUtilsGenerator = createGenerator({
     }),
   }),
 });
-
-export { reactUtilsImportsProvider } from './generated/ts-import-maps.js';
