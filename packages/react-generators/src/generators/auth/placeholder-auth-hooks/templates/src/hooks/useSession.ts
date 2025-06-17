@@ -1,8 +1,10 @@
 // @ts-nocheck
 
-export function useSession(): {
+export interface SessionData {
+  userId: string | null;
   isAuthenticated: boolean;
-  loading: boolean;
-} {
+}
+
+export function useSession(): SessionData {
   throw new Error('Not implemented');
 }

@@ -1,5 +1,13 @@
 {
   "name": "auth/placeholder-auth-hooks",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/react-generators:authHooksImportsProvider"
+      ],
+      "skipDefaultImportMap": true
+    }
+  },
   "templates": {
     "src/hooks/useCurrentUser.ts": {
       "name": "use-current-user",
@@ -45,7 +53,10 @@
       "group": "hooks",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/useSession.ts",
-      "projectExports": { "useSession": {} },
+      "projectExports": {
+        "SessionData": { "isTypeOnly": true },
+        "useSession": {}
+      },
       "template": "useSession.ts",
       "variables": {}
     }
