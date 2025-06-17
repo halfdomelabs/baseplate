@@ -124,10 +124,13 @@ export function renderTsTemplateToTsCodeFragment(
 
   // --- Pass 4: Replace inline placeholders with unique markers ---
   // This regex ensures the TPL_ variable is not immediately followed by another valid variable character
-  const inlineRegex = new RegExp(`(${prefix}[A-Z0-9_]+)([^A-Z0-9_]|$)`, 'g');
+  const inlineRegex = new RegExp(
+    `([^\\s]*[\\s]*)(${prefix}[A-Z0-9_]+)([^A-Z0-9_]|$)`,
+    'gm',
+  );
   renderedTemplate = renderedTemplate.replace(
     inlineRegex,
-    (match, key: string, followingCharacter: string) => {
+    (match, leading: string, key: string, followingCharacter: string) => {
       if (!(key in variables)) {
         throw new Error(`Template variable not found: ${key}`);
       }
@@ -142,7 +145,7 @@ export function renderTsTemplateToTsCodeFragment(
       inlineMarkers.set(marker, { key, value });
       variableKeys.delete(key); // Mark as used
 
-      return `${marker}${shouldRemoveComma ? '' : followingCharacter}`; // Replace with marker
+      return `${leading.startsWith('(') ? leading.trimEnd() : leading}${marker}${shouldRemoveComma ? '' : followingCharacter}`; // Replace with marker
     },
   );
 
@@ -158,7 +161,9 @@ export function renderTsTemplateToTsCodeFragment(
   for (const [marker, { key, leading, value }] of blockMarkers.entries()) {
     const contents = typeof value === 'string' ? value : value.contents;
     const replacement = includeMetadata
-      ? `${leading}/* ${key}:START */\n${contents}\n${leading}/* ${key}:END */` // Preserve indentation for end comment too
+      ? contents.trim() === ''
+        ? `${leading}/* ${key}:BLOCK */`
+        : `${leading}/* ${key}:START */\n${contents}\n${leading}/* ${key}:END */` // Preserve indentation for end comment too
       : contents; // Note: leading whitespace is handled by the marker's position
 
     // Use replace instead of replaceAll as markers are unique
@@ -200,7 +205,9 @@ export function renderTsTemplateToTsCodeFragment(
   for (const [marker, { key, value }] of inlineMarkers.entries()) {
     const contents = typeof value === 'string' ? value : value.contents;
     const replacement = includeMetadata
-      ? `/* ${key}:START */ ${contents.trim()} /* ${key}:END */`
+      ? contents.trim() === ''
+        ? `/* ${key}:INLINE */`
+        : `/* ${key}:START */ ${contents.trim()} /* ${key}:END */`
       : contents;
 
     // Use replace instead of replaceAll as markers are unique

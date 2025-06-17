@@ -62,7 +62,7 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
       generatorTemplates.set(generatorName, templates);
     }
 
-    api.registerHook('afterWrite', () => {
+    api.registerHook('afterWrite', async () => {
       for (const [generatorName, templates] of generatorTemplates) {
         const templateExports = templates.map((t) => t.exportName);
         const templatesFragment = TsCodeUtils.mergeFragments(
@@ -94,7 +94,7 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
           generatorPath,
           TYPED_TEMPLATES_FILE_PATH,
         );
-        context.fileContainer.writeFile(
+        await context.fileContainer.writeFile(
           typedTemplatesPath,
           templateFileContents,
         );

@@ -132,14 +132,14 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
       return { pathRootRelativePath, generatorTemplatePath };
     }
 
-    api.registerHook('afterWrite', () => {
+    api.registerHook('afterWrite', async () => {
       for (const [generatorName, pathMap] of pathMapByGenerator) {
         const config = context.configLookup.getPluginConfigForGenerator(
           generatorName,
           templatePathsPlugin.name,
           templatePathsPluginConfigSchema,
         );
-        const { exportName } = writePathMapFile(
+        const { exportName } = await writePathMapFile(
           generatorName,
           pathMap,
           context,

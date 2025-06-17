@@ -205,12 +205,12 @@ function createPathsTask(
   });
 }
 
-export function writePathMapFile(
+export async function writePathMapFile(
   generatorName: string,
   pathMap: Map<string, string>,
   context: TemplateExtractorContext,
   options: { skipTaskGeneration?: boolean } = {},
-): { exportName: string } {
+): Promise<{ exportName: string }> {
   const extractorConfig =
     context.configLookup.getExtractorConfigOrThrow(generatorName);
   const pathMapPath = posixJoin(
@@ -254,7 +254,7 @@ export function writePathMapFile(
     },
   });
 
-  context.fileContainer.writeFile(pathMapPath, pathMapContents);
+  await context.fileContainer.writeFile(pathMapPath, pathMapContents);
 
   return {
     exportName: fileExportNames.rootExportName,
