@@ -2,7 +2,6 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   packageInfoProvider,
-  projectScope,
   tsCodeFragment,
   typescriptFileProvider,
   vitestConfigProvider,
@@ -12,13 +11,10 @@ import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { prismaImportsProvider } from '#src/generators/prisma/prisma/prisma.generator.js';
+import { prismaImportsProvider } from '#src/generators/prisma/prisma/index.js';
 
-import {
-  createPrismaVitestImports,
-  prismaVitestImportsProvider,
-} from './generated/ts-import-maps.js';
-import { VITEST_PRISMA_VITEST_TS_TEMPLATES } from './generated/ts-templates.js';
+import { VITEST_PRISMA_VITEST_GENERATED } from './generated/index.js';
+import { prismaVitestImportsProvider } from './generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({});
 
@@ -33,20 +29,8 @@ export const prismaVitestGenerator = createGenerator({
         'pg-connection-string',
       ]),
     }),
-    imports: createGeneratorTask({
-      exports: {
-        prismaVitestImports: prismaVitestImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            prismaVitestImports: createPrismaVitestImports(
-              '@/src/tests/helpers',
-            ),
-          },
-        };
-      },
-    }),
+    paths: VITEST_PRISMA_VITEST_GENERATED.paths.task,
+    imports: VITEST_PRISMA_VITEST_GENERATED.imports.task,
     vitestConfig: createGeneratorTask({
       dependencies: {
         vitestConfig: vitestConfigProvider,
@@ -85,17 +69,15 @@ if (TEST_MODE !== 'unit') {
         typescriptFile: typescriptFileProvider,
         prismaImports: prismaImportsProvider,
         packageInfo: packageInfoProvider,
+        paths: VITEST_PRISMA_VITEST_GENERATED.paths.provider,
       },
-      run({ packageInfo, typescriptFile, prismaImports }) {
-        const dbHelperPath = '@/src/tests/helpers/db.test-helper.ts';
-        const prismaHelperPath = '@/src/tests/helpers/prisma.test-helper.ts';
-
+      run({ packageInfo, typescriptFile, prismaImports, paths }) {
         return {
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: VITEST_PRISMA_VITEST_TS_TEMPLATES.dbTestHelper,
-                destination: dbHelperPath,
+                template: VITEST_PRISMA_VITEST_GENERATED.templates.dbTestHelper,
+                destination: paths.dbTestHelper,
                 variables: {
                   TPL_TEST_DB: quot(
                     `${packageInfo.getPackageName().replaceAll('-', '_')}_test`,
@@ -106,8 +88,9 @@ if (TEST_MODE !== 'unit') {
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: VITEST_PRISMA_VITEST_TS_TEMPLATES.prismaTestHelper,
-                destination: prismaHelperPath,
+                template:
+                  VITEST_PRISMA_VITEST_GENERATED.templates.prismaTestHelper,
+                destination: paths.prismaTestHelper,
                 importMapProviders: {
                   prismaImports,
                 },
@@ -115,7 +98,7 @@ if (TEST_MODE !== 'unit') {
                   TPL_PRISMA_PATH: quot(
                     typescriptFile.resolveModuleSpecifier(
                       prismaImports.prisma.moduleSpecifier,
-                      prismaHelperPath,
+                      paths.prismaTestHelper,
                     ),
                   ),
                 },

@@ -1,0 +1,63 @@
+{
+  "name": "admin/admin-crud-list",
+  "templates": {
+    "index.page.tsx": {
+      "name": "list-page",
+      "type": "ts",
+      "fileOptions": {
+        "generatorTemplatePath": "index.page.tsx",
+        "kind": "instance"
+      },
+      "generator": "@baseplate-dev/react-generators#admin/admin-crud-list",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "template": "",
+      "variables": {
+        "TPL_CREATE_BUTTON": {},
+        "TPL_DATA_LOADER": {},
+        "TPL_DATA_PARTS": {},
+        "TPL_DELETE_FUNCTION": {},
+        "TPL_DELETE_MUTATION": {},
+        "TPL_ERROR_PARTS": {},
+        "TPL_PAGE_NAME": {},
+        "TPL_PLURAL_MODEL": {},
+        "TPL_REFETCH_DOCUMENT": {},
+        "TPL_ROW_FRAGMENT_NAME": {},
+        "TPL_TABLE_COMPONENT": {}
+      }
+    },
+    "Table.tsx": {
+      "name": "table",
+      "type": "ts",
+      "fileOptions": {
+        "generatorTemplatePath": "Table.tsx",
+        "kind": "instance"
+      },
+      "generator": "@baseplate-dev/react-generators#admin/admin-crud-list",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "template": "",
+      "variables": {
+        "TPL_CELLS": {},
+        "TPL_COMPONENT_NAME": {},
+        "TPL_DESTRUCTURED_PROPS": {},
+        "TPL_EXTRA_PROPS": {},
+        "TPL_HEADERS": {},
+        "TPL_PLURAL_MODEL": {},
+        "TPL_ROW_FRAGMENT": {}
+      }
+    }
+  }
+}

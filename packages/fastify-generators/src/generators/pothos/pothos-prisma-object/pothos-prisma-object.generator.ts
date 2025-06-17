@@ -10,7 +10,7 @@ import {
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import { prismaOutputProvider } from '#src/generators/prisma/prisma/prisma.generator.js';
+import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { prismaToServiceOutputDto } from '#src/types/service-output.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import {
@@ -22,8 +22,8 @@ import {
   pothosFieldScope,
   pothosTypeOutputProvider,
 } from '../_providers/index.js';
-import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
-import { pothosSchemaBaseTypesProvider } from '../pothos/pothos.generator.js';
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
+import { pothosSchemaBaseTypesProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   /**

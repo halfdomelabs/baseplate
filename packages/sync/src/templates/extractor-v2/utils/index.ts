@@ -1,1 +1,1 @@
-export * from './group-template-files-by-type.js';
+export * from './cleanup-unused-template-files.js';

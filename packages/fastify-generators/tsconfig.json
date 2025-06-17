@@ -6,6 +6,5 @@
     "rootDir": "src"
   },
   "include": ["src/**/*"],
-  "exclude": ["**/generators/*/*/templates/**"],
-  "references": [{ "path": "./tsconfig.build.json" }]
+  "exclude": ["**/generators/*/*/templates/**"]
 }

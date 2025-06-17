@@ -15,7 +15,7 @@ import {
 import { z } from 'zod';
 
 import { configServiceImportsProvider } from '../config-service/index.js';
-import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/index.js';
 import { loggerServiceImportsProvider } from '../logger-service/index.js';
 import { CORE_ERROR_HANDLER_SERVICE_GENERATED } from './generated/index.js';
 import { errorHandlerServiceImportsProvider } from './generated/ts-import-providers.js';
@@ -141,7 +141,8 @@ export const errorHandlerServiceGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateGroupV2({
-                group: CORE_ERROR_HANDLER_SERVICE_GENERATED.templates.utils,
+                group:
+                  CORE_ERROR_HANDLER_SERVICE_GENERATED.templates.utilsGroup,
                 paths,
               }),
             );

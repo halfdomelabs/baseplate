@@ -1,0 +1,35 @@
+{
+  "name": "admin/admin-crud-embedded-form",
+  "templates": {
+    "EmbeddedForm.tsx": {
+      "name": "embedded-form",
+      "type": "ts",
+      "fileOptions": {
+        "generatorTemplatePath": "EmbeddedForm.tsx",
+        "kind": "instance"
+      },
+      "generator": "@baseplate-dev/react-generators#admin/admin-crud-embedded-form",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "template": "",
+      "variables": {
+        "TPL_COMPONENT_NAME": {},
+        "TPL_DESTRUCTURED_PROPS": {},
+        "TPL_EMBEDDED_FORM_DATA_SCHEMA": {},
+        "TPL_EMBEDDED_FORM_DATA_TYPE": {},
+        "TPL_HEADER": {},
+        "TPL_INPUTS": {},
+        "TPL_PROPS": {},
+        "TPL_TABLE_COMPONENT": {}
+      }
+    }
+  }
+}

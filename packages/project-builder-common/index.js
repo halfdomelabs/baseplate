@@ -1,6 +1,9 @@
-import { discoverPlugins } from '@baseplate-dev/project-builder-server';
 import { fileURLToPath } from 'node:url';
 
-export function getDefaultPlugins(logger) {
+export async function getDefaultPlugins(logger) {
+  // dynamically import to avoid loading the server package unnecessarily
+  const { discoverPlugins } = await import(
+    '@baseplate-dev/project-builder-server/plugins'
+  );
   return discoverPlugins(fileURLToPath(import.meta.url), logger);
 }

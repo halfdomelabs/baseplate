@@ -1,0 +1,21 @@
+{
+  "name": "core/react-sentry",
+  "templates": {
+    "src/services/sentry.ts": {
+      "name": "sentry",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-sentry",
+      "importMapProviders": {
+        "reactConfigImportsProvider": {
+          "importName": "reactConfigImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-config/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/services/sentry.ts",
+      "projectExports": { "logBreadcrumbToSentry": {}, "logErrorToSentry": {} },
+      "template": "",
+      "variables": { "TPL_SENTRY_SCOPE_ACTIONS": {} }
+    }
+  }
+}

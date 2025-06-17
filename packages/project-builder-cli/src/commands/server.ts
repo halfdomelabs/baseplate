@@ -1,13 +1,9 @@
+import type { BuilderServiceManager } from '@baseplate-dev/project-builder-server';
 import type { Command } from 'commander';
 import type { FastifyInstance } from 'fastify';
 import type { Logger } from 'pino';
 
 import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
-import {
-  BuilderServiceManager,
-  DEFAULT_SERVER_PORT,
-  startWebServer,
-} from '@baseplate-dev/project-builder-server';
 import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
 
@@ -33,6 +29,9 @@ export async function serveWebServer(
   fastifyInstance: FastifyInstance;
   serviceManager: BuilderServiceManager;
 }> {
+  const { BuilderServiceManager, DEFAULT_SERVER_PORT, startWebServer } =
+    await import('@baseplate-dev/project-builder-server');
+
   const projectBuilderWebDir = await packageDirectory({
     cwd: resolveModule('@baseplate-dev/project-builder-web/package.json'),
   });

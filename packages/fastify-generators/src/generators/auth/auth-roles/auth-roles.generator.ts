@@ -1,20 +1,9 @@
-import {
-  projectScope,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { stringifyPrettyStable } from '@baseplate-dev/utils';
-import { posixJoin } from '@baseplate-dev/utils/node';
-import path from 'node:path';
 import { z } from 'zod';
 
-import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
-
-import {
-  authRolesImportsProvider,
-  createAuthRolesImports,
-} from './generated/ts-import-maps.js';
-import { AUTH_AUTH_ROLES_TS_TEMPLATES } from './generated/ts-templates.js';
+import { AUTH_AUTH_ROLES_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   // Note: Public and user roles are automatically added
@@ -36,15 +25,14 @@ export const authRolesGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ roles }) => ({
+    paths: AUTH_AUTH_ROLES_GENERATED.paths.task,
+    imports: AUTH_AUTH_ROLES_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
-        appModule: appModuleProvider,
+        paths: AUTH_AUTH_ROLES_GENERATED.paths.provider,
       },
-      exports: {
-        authRolesImports: authRolesImportsProvider.export(projectScope),
-      },
-      run({ typescriptFile, appModule }) {
+      run({ typescriptFile, paths }) {
         if (
           !['public', 'user', 'system'].every((name) =>
             roles.some((r) => r.name === name),
@@ -53,20 +41,12 @@ export const authRolesGenerator = createGenerator({
           throw new Error('public, user, and system roles are required');
         }
 
-        const filePath = posixJoin(
-          appModule.getModuleFolder(),
-          'constants/auth-roles.constants.ts',
-        );
-
         return {
-          providers: {
-            authRolesImports: createAuthRolesImports(path.dirname(filePath)),
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: AUTH_AUTH_ROLES_TS_TEMPLATES.authRoles,
-                destination: filePath,
+                template: AUTH_AUTH_ROLES_GENERATED.templates.authRoles,
+                destination: paths.authRoles,
                 variables: {
                   TPL_AUTH_ROLES: stringifyPrettyStable(
                     Object.fromEntries(
@@ -85,5 +65,3 @@ export const authRolesGenerator = createGenerator({
     }),
   }),
 });
-
-export { authRolesImportsProvider } from './generated/ts-import-maps.js';

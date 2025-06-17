@@ -13,7 +13,7 @@ import {
 import { quot, sortObjectKeys } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import { serviceFileOutputProvider } from '#src/generators/core/service-file/service-file.generator.js';
+import { serviceFileOutputProvider } from '#src/generators/core/service-file/index.js';
 import {
   pothosFieldProvider,
   pothosTypeOutputProvider,
@@ -26,10 +26,10 @@ import {
 import { writeValueFromPothosArg } from '#src/writers/pothos/resolvers.js';
 
 import { pothosFieldScope } from '../_providers/scopes.js';
-import { createPothosPrismaObjectTypeOutputName } from '../pothos-prisma-object/pothos-prisma-object.generator.js';
-import { getPothosPrismaPrimaryKeyTypeOutputName } from '../pothos-prisma-primary-key/pothos-prisma-primary-key.generator.js';
-import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
-import { pothosSchemaBaseTypesProvider } from '../pothos/pothos.generator.js';
+import { createPothosPrismaObjectTypeOutputName } from '../pothos-prisma-object/index.js';
+import { getPothosPrismaPrimaryKeyTypeOutputName } from '../pothos-prisma-primary-key/index.js';
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
+import { pothosSchemaBaseTypesProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   /**

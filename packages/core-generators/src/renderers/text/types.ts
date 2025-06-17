@@ -118,3 +118,10 @@ export type InferTextTemplateVariablesFromTemplate<T extends TextTemplateFile> =
   };
 
 export type TextTemplateGroup = Record<string, TextTemplateFile>;
+
+/**
+ * Generator template metadata for text templates
+ */
+export type TextGeneratorTemplateMetadata = z.infer<
+  typeof textTemplateGeneratorTemplateMetadataSchema
+>;

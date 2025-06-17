@@ -1,1 +1,1 @@
-export * from './path-roots/path-roots.generator.js';
+export * from './path-roots/index.js';

@@ -5,6 +5,7 @@ import pLimit from 'p-limit';
 
 import { templatePathsPlugin } from '../extractor/plugins/template-paths/template-paths.plugin.js';
 import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-file.js';
+import { deduplicateTemplateFileExtractorSourceFiles } from '../extractor/utils/deduplicate-templates.js';
 import { resolvePackagePathSpecifier } from '../extractor/utils/package-path-specifier.js';
 import { TsCodeUtils, tsImportBuilder } from '../typescript/index.js';
 import {
@@ -20,8 +21,10 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
   outputTemplateMetadataSchema: rawTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: rawTemplateGeneratorTemplateMetadataSchema,
   extractTemplateMetadataEntries: (files, context) => {
+    const deduplicatedFiles =
+      deduplicateTemplateFileExtractorSourceFiles(files);
     const templatePathPlugin = context.getPlugin('template-paths');
-    return files.map(({ metadata, absolutePath }) => {
+    return deduplicatedFiles.map(({ metadata, absolutePath }) => {
       try {
         const { pathRootRelativePath, generatorTemplatePath } =
           templatePathPlugin.resolveTemplatePaths(
@@ -55,8 +58,10 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
       files.map((file) =>
         limit(async () => {
           try {
-            const contents = await api.readOutputFile(file.sourceAbsolutePath);
-            api.writeTemplateFile(
+            const contents = await api.readOutputFileBuffer(
+              file.sourceAbsolutePath,
+            );
+            await api.writeTemplateFile(
               file.generator,
               file.generatorTemplatePath,
               contents,

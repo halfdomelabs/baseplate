@@ -1,20 +1,17 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
   tsCodeFragment,
   tsImportBuilder,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
-  appModuleProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
   configServiceProvider,
   fastifyServerConfigProvider,
   prismaOutputProvider,
-  userSessionServiceImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import {
@@ -26,8 +23,7 @@ import { z } from 'zod';
 
 import { AUTH0_PACKAGES } from '#src/auth0/constants/packages.js';
 
-import { createAuth0ModuleImports } from './generated/ts-import-maps.js';
-import { AUTH_0_AUTH_0_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';
+import { AUTH0_AUTH0_MODULE_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   userModelName: z.string().min(1),
@@ -39,6 +35,8 @@ export const auth0ModuleGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ includeManagement, userModelName }) => ({
+    paths: AUTH0_AUTH0_MODULE_GENERATED.paths.task,
+    imports: AUTH0_AUTH0_MODULE_GENERATED.imports.task,
     nodeManagementPackage: includeManagement
       ? createNodePackagesTask({
           prod: extractPackageVersions(AUTH0_PACKAGES, ['auth0']),
@@ -87,40 +85,32 @@ export const auth0ModuleGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        paths: AUTH0_AUTH0_MODULE_GENERATED.paths.provider,
         authRolesImports: authRolesImportsProvider,
-        appModule: appModuleProvider,
         configServiceImports: configServiceImportsProvider,
         prismaOutput: prismaOutputProvider,
         userSessionTypesImports: userSessionTypesImportsProvider,
         authContextImports: authContextImportsProvider,
       },
-      exports: {
-        userSessionServiceImports:
-          userSessionServiceImportsProvider.export(projectScope),
-      },
       run({
         typescriptFile,
+        paths,
         authRolesImports,
         prismaOutput,
         configServiceImports,
-        appModule,
         userSessionTypesImports,
         authContextImports,
       }) {
-        const userSessionServicePath = `${appModule.getModuleFolder()}/services/user-session.service.ts`;
-        const managementPath = `${appModule.getModuleFolder()}/services/management.ts`;
         return {
           providers: {
             auth0Module: {},
-            userSessionServiceImports: createAuth0ModuleImports(
-              `${appModule.getModuleFolder()}/services`,
-            ),
           },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: AUTH_0_AUTH_0_MODULE_TS_TEMPLATES.userSessionService,
-                destination: userSessionServicePath,
+                template:
+                  AUTH0_AUTH0_MODULE_GENERATED.templates.userSessionService,
+                destination: paths.userSessionService,
                 variables: {
                   TPL_USER_MODEL:
                     prismaOutput.getPrismaModelFragment(userModelName),
@@ -136,8 +126,8 @@ export const auth0ModuleGenerator = createGenerator({
             if (includeManagement) {
               await builder.apply(
                 typescriptFile.renderTemplateFile({
-                  template: AUTH_0_AUTH_0_MODULE_TS_TEMPLATES.management,
-                  destination: managementPath,
+                  template: AUTH0_AUTH0_MODULE_GENERATED.templates.management,
+                  destination: paths.management,
                   importMapProviders: {
                     configServiceImports,
                   },

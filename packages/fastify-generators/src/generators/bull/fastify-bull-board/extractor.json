@@ -1,0 +1,68 @@
+{
+  "name": "bull/fastify-bull-board",
+  "templates": {
+    "module/bull-board/index.ts": {
+      "name": "index",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
+      "group": "module",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/bull-board/index.ts",
+      "template": "",
+      "variables": {}
+    },
+    "module/bull-board/plugins/bull-board.ts": {
+      "name": "plugins-bull-board",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
+      "group": "module",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/bull-board/plugins/bull-board.ts",
+      "template": "",
+      "variables": { "TPL_QUEUES": {} }
+    },
+    "module/bull-board/schema/authenticate.mutations.ts": {
+      "name": "schema-authenticate-mutations",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
+      "group": "module",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/bull-board/schema/authenticate.mutations.ts",
+      "template": "",
+      "variables": {}
+    },
+    "module/bull-board/services/auth.service.ts": {
+      "name": "services-auth-service",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
+      "group": "module",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "fastifyRedisImportsProvider": {
+          "importName": "fastifyRedisImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/fastify-redis/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/bull-board/services/auth.service.ts",
+      "template": "",
+      "variables": {}
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "core/react-logger",
+  "templates": {
+    "src/services/logger.ts": {
+      "name": "logger",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-logger",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/services/logger.ts",
+      "projectExports": { "logger": {} },
+      "template": "",
+      "variables": {}
+    }
+  }
+}

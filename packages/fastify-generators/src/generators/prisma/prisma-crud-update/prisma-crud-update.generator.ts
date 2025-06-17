@@ -14,8 +14,8 @@ import type {
 } from '#src/providers/prisma/prisma-data-transformable.js';
 import type { ServiceOutputMethod } from '#src/types/service-output.js';
 
-import { serviceContextImportsProvider } from '#src/generators/core/service-context/service-context.generator.js';
-import { serviceFileProvider } from '#src/generators/core/service-file/service-file.generator.js';
+import { serviceContextImportsProvider } from '#src/generators/core/service-context/index.js';
+import { serviceFileProvider } from '#src/generators/core/service-file/index.js';
 import { prismaToServiceOutputDto } from '#src/types/service-output.js';
 
 import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method.js';
@@ -31,9 +31,9 @@ import {
   getPrimaryKeyDefinition,
   getPrimaryKeyExpressions,
 } from '../_shared/crud-method/primary-key-input.js';
-import { prismaCrudServiceProvider } from '../prisma-crud-service/prisma-crud-service.generator.js';
-import { prismaUtilsImportsProvider } from '../prisma-utils/prisma-utils.generator.js';
-import { prismaOutputProvider } from '../prisma/prisma.generator.js';
+import { prismaCrudServiceProvider } from '../prisma-crud-service/index.js';
+import { prismaUtilsImportsProvider } from '../prisma-utils/index.js';
+import { prismaOutputProvider } from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

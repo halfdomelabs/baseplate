@@ -1,2 +1,2 @@
-export * from './bull-mq/bull-mq.generator.js';
-export * from './fastify-bull-board/fastify-bull-board.generator.js';
+export * from './bull-mq/index.js';
+export * from './fastify-bull-board/index.js';

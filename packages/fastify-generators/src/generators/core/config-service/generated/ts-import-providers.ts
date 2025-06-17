@@ -28,12 +28,12 @@ const coreConfigServiceImportsTask = createGeneratorTask({
     paths: CORE_CONFIG_SERVICE_PATHS.provider,
   },
   exports: {
-    imports: configServiceImportsProvider.export(projectScope),
+    configServiceImports: configServiceImportsProvider.export(projectScope),
   },
   run({ paths }) {
     return {
       providers: {
-        imports: createTsImportMap(configServiceImportsSchema, {
+        configServiceImports: createTsImportMap(configServiceImportsSchema, {
           config: paths.config,
         }),
       },

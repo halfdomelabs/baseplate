@@ -6,6 +6,7 @@ import path from 'node:path';
 import pLimit from 'p-limit';
 
 import { templateExtractorBarrelExportPlugin } from '#src/renderers/extractor/index.js';
+import { deduplicateTemplateFileExtractorSourceFiles } from '#src/renderers/extractor/utils/deduplicate-templates.js';
 
 import type { TsGeneratorTemplateMetadata } from '../templates/types.js';
 import type { WriteTsTemplateFileContext } from './render-ts-template-file.js';
@@ -17,6 +18,7 @@ import {
   tsTemplateGeneratorTemplateMetadataSchema,
   tsTemplateOutputTemplateMetadataSchema,
 } from '../templates/types.js';
+import { buildExternalImportProvidersMap } from './build-external-import-providers-map.js';
 import { buildTsProjectExportMap } from './build-ts-project-export-map.js';
 import { getResolverFactory } from './get-resolver-factory.js';
 import {
@@ -25,6 +27,7 @@ import {
 } from './render-ts-import-providers.js';
 import { renderTsTemplateFile } from './render-ts-template-file.js';
 import { renderTsTypedTemplates } from './render-ts-typed-templates.js';
+import { tsExtractorConfigSchema } from './ts-extractor-config.schema.js';
 
 const limit = pLimit(getGenerationConcurrencyLimit());
 
@@ -38,8 +41,10 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
   outputTemplateMetadataSchema: tsTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: tsTemplateGeneratorTemplateMetadataSchema,
   extractTemplateMetadataEntries: (files, context) => {
+    const deduplicatedFiles =
+      deduplicateTemplateFileExtractorSourceFiles(files);
     const templatePathPlugin = context.getPlugin('template-paths');
-    return files.map(({ metadata, absolutePath }) => {
+    return deduplicatedFiles.map(({ metadata, absolutePath }) => {
       try {
         const { pathRootRelativePath, generatorTemplatePath } =
           templatePathPlugin.resolveTemplatePaths(
@@ -68,7 +73,13 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
   },
   writeTemplateFiles: async (files, context, api) => {
     // Gather all the imports from the entry metadata
-    const projectExportMap = buildTsProjectExportMap(context);
+    const externalImportProvidersMap = buildExternalImportProvidersMap(
+      context.configLookup,
+    );
+    const projectExportMap = buildTsProjectExportMap(
+      context,
+      externalImportProvidersMap,
+    );
 
     const filesByGenerator = groupBy(files, (f) => f.generator);
 
@@ -97,7 +108,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
                 contents,
                 writeContext,
               );
-              api.writeTemplateFile(
+              await api.writeTemplateFile(
                 file.generator,
                 file.generatorTemplatePath,
                 result.contents,
@@ -118,10 +129,13 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
       }),
     );
   },
-  writeGeneratedFiles: (generatorNames, context, api) => {
+  writeGeneratedFiles: async (generatorNames, context, api) => {
     const templatePathsPlugin = context.getPlugin('template-paths');
     const typedTemplatesPlugin = context.getPlugin('typed-templates-file');
     const barrelExportPlugin = context.getPlugin('barrel-export');
+    const externalImportProvidersMap = buildExternalImportProvidersMap(
+      context.configLookup,
+    );
 
     for (const generatorName of generatorNames) {
       const generatorConfig =
@@ -154,16 +168,27 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
       // Render the import providers
       const pathsRootExportName =
         templatePathsPlugin.getPathsRootExportName(generatorName);
+
+      // Get the TypeScript extractor configuration
+      const tsExtractorConfig =
+        context.configLookup.getExtractorConfigForGenerator(
+          generatorName,
+          'ts',
+          tsExtractorConfigSchema,
+        );
+
       const importProviders = renderTsImportProviders(
         generatorName,
         templates,
         {
           generatorPackageName: generatorConfig.packageName,
           pathsRootExportName,
+          externalImportProvidersMap,
         },
+        tsExtractorConfig,
       );
       if (importProviders) {
-        api.writeGeneratedFile(
+        await api.writeGeneratedFile(
           generatorName,
           GENERATED_IMPORT_PROVIDERS_FILE_NAME,
           importProviders.contents,

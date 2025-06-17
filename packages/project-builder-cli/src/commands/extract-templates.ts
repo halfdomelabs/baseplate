@@ -1,9 +1,8 @@
 import type { Command } from 'commander';
 
-import { runTemplateExtractorsForProjectV2 } from '@baseplate-dev/project-builder-server';
+import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
 
 import { logger } from '#src/services/logger.js';
-import { createSchemaParserContext } from '#src/services/schema-parser-context.js';
 import { expandPathWithTilde } from '#src/utils/path.js';
 
 /**
@@ -22,21 +21,33 @@ export function addExtractTemplatesCommand(program: Command): void {
       'Auto-generate extractor.json files',
       true,
     )
+    .option(
+      '--skip-clean',
+      'Skip cleaning the output directories (templates and generated)',
+      false,
+    )
     .action(
       async (
         directory: string,
         app: string,
-        options: { autoGenerateExtractor?: boolean },
+        options: {
+          autoGenerateExtractor?: boolean;
+          skipClean?: boolean;
+        },
       ) => {
+        const { runTemplateExtractorsForProjectV2 } = await import(
+          '@baseplate-dev/project-builder-server/template-extractor'
+        );
         const resolvedDirectory = expandPathWithTilde(directory);
-        const context = await createSchemaParserContext(resolvedDirectory);
+        const defaultPlugins = await getDefaultPlugins(logger);
         await runTemplateExtractorsForProjectV2(
           resolvedDirectory,
           app,
-          context,
+          defaultPlugins,
           logger,
           {
             autoGenerateExtractor: options.autoGenerateExtractor,
+            skipClean: options.skipClean,
           },
         );
       },

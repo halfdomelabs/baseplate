@@ -1,15 +1,12 @@
 import { getGenerationConcurrencyLimit } from '@baseplate-dev/sync';
 import { createTemplateFileExtractor } from '@baseplate-dev/sync/extractor-v2';
-import { camelCase } from 'change-case';
 import { mapValues, omit } from 'es-toolkit';
 import pLimit from 'p-limit';
 
-import type { TextTemplateFileVariableWithValue } from './types.js';
-
 import { templatePathsPlugin } from '../extractor/plugins/template-paths/template-paths.plugin.js';
 import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-file.js';
-import { resolvePackagePathSpecifier } from '../extractor/utils/package-path-specifier.js';
-import { TsCodeUtils, tsImportBuilder } from '../typescript/index.js';
+import { deduplicateTemplateFileExtractorSourceFiles } from '../extractor/utils/deduplicate-templates.js';
+import { renderTextTypedTemplates } from './render-text-typed-templates.js';
 import {
   textTemplateGeneratorTemplateMetadataSchema,
   textTemplateOutputTemplateMetadataSchema,
@@ -24,8 +21,10 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
   outputTemplateMetadataSchema: textTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: textTemplateGeneratorTemplateMetadataSchema,
   extractTemplateMetadataEntries: (files, context) => {
+    const deduplicatedFiles =
+      deduplicateTemplateFileExtractorSourceFiles(files);
     const templatePathPlugin = context.getPlugin('template-paths');
-    return files.map(({ metadata, absolutePath }) => {
+    return deduplicatedFiles.map(({ metadata, absolutePath }) => {
       try {
         const { pathRootRelativePath, generatorTemplatePath } =
           templatePathPlugin.resolveTemplatePaths(
@@ -42,6 +41,7 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
           metadata: {
             name: metadata.name,
             type: metadata.type,
+            group: metadata.group,
             fileOptions: metadata.fileOptions,
             pathRootRelativePath,
             variables: mapValues(metadata.variables ?? {}, (variable) =>
@@ -73,7 +73,7 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
               file.sourceAbsolutePath,
             );
 
-            api.writeTemplateFile(
+            await api.writeTemplateFile(
               file.generator,
               file.generatorTemplatePath,
               templateContents,
@@ -100,37 +100,16 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
         textTemplateGeneratorTemplateMetadataSchema,
         'text',
       );
-      for (const { path, config } of templates) {
-        const exportName = camelCase(config.name);
-        const fragment = TsCodeUtils.templateWithImports([
-          tsImportBuilder(['createTextTemplateFile']).from(
-            resolvePackagePathSpecifier(
-              '@baseplate-dev/core-generators:src/renderers/text/types.ts',
-              generatorConfig.packageName,
-            ),
-          ),
-          tsImportBuilder().default('path').from('node:path'),
-        ])`const ${exportName} = createTextTemplateFile({
-          name: '${config.name}',
-          source: {
-            path: path.join(import.meta.dirname, '../templates/${path}'),
-          },
-          fileOptions: ${JSON.stringify(config.fileOptions)},
-          variables: ${JSON.stringify(
-            mapValues(config.variables ?? {}, (variable) => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              const { value: _, ...variableWithoutValue } =
-                variable as TextTemplateFileVariableWithValue;
-              return variableWithoutValue;
-            }),
-          )},
-        });`;
 
-        typedTemplatesPlugin.addTemplate(generatorName, {
-          exportName,
-          fragment,
-        });
+      const typedTemplates = renderTextTypedTemplates(templates, {
+        generatorPackageName: generatorConfig.packageName,
+      });
 
+      for (const typedTemplate of typedTemplates) {
+        typedTemplatesPlugin.addTemplate(generatorName, typedTemplate);
+      }
+
+      for (const { config } of templates) {
         if (config.pathRootRelativePath) {
           templatePathsPlugin.registerTemplatePathEntry(
             generatorName,

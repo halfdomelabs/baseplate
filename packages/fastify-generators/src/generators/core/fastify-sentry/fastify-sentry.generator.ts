@@ -29,13 +29,10 @@ import {
   errorHandlerServiceConfigProvider,
   errorHandlerServiceImportsProvider,
 } from '../error-handler-service/index.js';
-import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
-import { fastifyProvider } from '../fastify/fastify.generator.js';
-import {
-  createFastifySentryImports,
-  fastifySentryImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_FASTIFY_SENTRY_TS_TEMPLATES } from './generated/ts-templates.js';
+import { fastifyServerConfigProvider } from '../fastify-server/index.js';
+import { fastifyProvider } from '../fastify/index.js';
+import { CORE_FASTIFY_SENTRY_GENERATED } from './generated/index.js';
+import { fastifySentryImportsProvider } from './generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({});
 
@@ -64,27 +61,14 @@ const [
 
 export { fastifySentryConfigProvider };
 
-const sentryServicePath = '@/src/services/sentry.ts';
-const sentryInstrumentPath = '@/src/instrument.ts';
-
 export const fastifySentryGenerator = createGenerator({
   name: 'core/fastify-sentry',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: CORE_FASTIFY_SENTRY_GENERATED.paths.task,
+    imports: CORE_FASTIFY_SENTRY_GENERATED.imports.task,
     setup: setupTask,
-    imports: createGeneratorTask({
-      exports: {
-        fastifySentryImports: fastifySentryImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            fastifySentryImports: createFastifySentryImports('@/src/services'),
-          },
-        };
-      },
-    }),
     fastifyInstrument: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
@@ -114,17 +98,19 @@ export const fastifySentryGenerator = createGenerator({
         fastifyServerConfig: fastifyServerConfigProvider,
         errorHandlerServiceConfig: errorHandlerServiceConfigProvider,
         fastifySentryImports: fastifySentryImportsProvider,
+        paths: CORE_FASTIFY_SENTRY_GENERATED.paths.provider,
       },
       run({
         node,
         errorHandlerServiceConfig,
         fastifyServerConfig,
         fastifySentryImports,
+        paths,
       }) {
         if (!node.isEsm) {
           fastifyServerConfig.initializerFragments.set(
             'sentry-instrument',
-            tsCodeFragment(`import '${sentryInstrumentPath}';`),
+            tsCodeFragment(`import '${paths.instrument}';`),
           );
         }
 
@@ -135,7 +121,7 @@ export const fastifySentryGenerator = createGenerator({
              registerSentryEventProcessor();`,
             [
               tsImportBuilder(['registerSentryEventProcessor']).from(
-                sentryServicePath,
+                paths.sentry,
               ),
               tsImportBuilder().namespace('Sentry').from('@sentry/node'),
             ],
@@ -177,6 +163,7 @@ export const fastifySentryGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         fastifySentryConfigValues: fastifySentryConfigValuesProvider,
+        paths: CORE_FASTIFY_SENTRY_GENERATED.paths.provider,
       },
       run({
         configServiceImports,
@@ -187,13 +174,14 @@ export const fastifySentryGenerator = createGenerator({
           scopeConfigurationFragments,
           shouldLogToSentryFragments,
         },
+        paths,
       }) {
         return {
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_FASTIFY_SENTRY_TS_TEMPLATES.sentry,
-                destination: sentryServicePath,
+                template: CORE_FASTIFY_SENTRY_GENERATED.templates.sentry,
+                destination: paths.sentry,
                 variables: {
                   TPL_SCOPE_CONFIGURATION: TsCodeUtils.mergeFragments(
                     scopeConfigurationFragments,
@@ -213,8 +201,8 @@ export const fastifySentryGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_FASTIFY_SENTRY_TS_TEMPLATES.instrument,
-                destination: sentryInstrumentPath,
+                template: CORE_FASTIFY_SENTRY_GENERATED.templates.instrument,
+                destination: paths.instrument,
                 variables: {
                   TPL_INTEGRATIONS:
                     TsCodeUtils.mergeFragmentsAsArray(sentryIntegrations),

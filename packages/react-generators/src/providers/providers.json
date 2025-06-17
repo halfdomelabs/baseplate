@@ -1,0 +1,13 @@
+{
+  "routes.ts": {
+    "reactRoutesProvider": {
+      "type": "path",
+      "pathRoots": [
+        {
+          "name": "routes-root",
+          "method": "getDirectoryBase"
+        }
+      ]
+    }
+  }
+}

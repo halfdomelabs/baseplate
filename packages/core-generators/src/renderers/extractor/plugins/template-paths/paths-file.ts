@@ -18,6 +18,7 @@ import {
 import {
   renderTsCodeFileTemplate,
   TsCodeUtils,
+  tsImportBuilder,
   tsTemplate,
 } from '#src/renderers/typescript/index.js';
 
@@ -29,7 +30,7 @@ const GENERATED_PATHS_FILE_PATH = posixJoin(
 );
 
 const GENERATED_PATHS_TEMPLATE = `
-import { createProviderType, createGeneratorTask } from '@baseplate-dev/sync';
+import { createProviderType } from '@baseplate-dev/sync';
 
 export interface TPL_PATHS_TYPE_NAME {
   TPL_PATHS_CONTENTS;
@@ -37,11 +38,11 @@ export interface TPL_PATHS_TYPE_NAME {
 
 const TPL_PATHS_PROVIDER_EXPORT = createProviderType<TPL_PATHS_TYPE_NAME>('TPL_PATHS_PROVIDER_NAME');
 
-const TPL_PATHS_TASK_NAME = createGeneratorTask(TPL_PATHS_GENERATOR_TASK);
+TPL_PATHS_TASK_DECLARATION
 
 export const TPL_PATHS_EXPORT_NAME = {
   provider: TPL_PATHS_PROVIDER_EXPORT,
-  task: TPL_PATHS_TASK_NAME,
+  TPL_PATHS_TASK_EXPORT
 }
 `;
 
@@ -204,11 +205,12 @@ function createPathsTask(
   });
 }
 
-export function writePathMapFile(
+export async function writePathMapFile(
   generatorName: string,
   pathMap: Map<string, string>,
   context: TemplateExtractorContext,
-): { exportName: string } {
+  options: { skipTaskGeneration?: boolean } = {},
+): Promise<{ exportName: string }> {
   const extractorConfig =
     context.configLookup.getExtractorConfigOrThrow(generatorName);
   const pathMapPath = posixJoin(
@@ -219,12 +221,9 @@ export function writePathMapFile(
   const fileExportNames = getPathsFileExportNames(generatorName);
   const { interfaceName, providerExportName, taskName } = fileExportNames;
 
-  const taskFragment = createPathsTask(
-    generatorName,
-    pathMap,
-    context,
-    fileExportNames,
-  );
+  const taskFragment = options.skipTaskGeneration
+    ? null
+    : createPathsTask(generatorName, pathMap, context, fileExportNames);
 
   const pathMapContents = renderTsCodeFileTemplate({
     templateContents: GENERATED_PATHS_TEMPLATE,
@@ -238,8 +237,14 @@ export function writePathMapFile(
         generatorName,
         'paths',
       ),
-      TPL_PATHS_TASK_NAME: taskName,
-      TPL_PATHS_GENERATOR_TASK: taskFragment,
+      TPL_PATHS_TASK_DECLARATION: taskFragment
+        ? TsCodeUtils.templateWithImports([
+            tsImportBuilder(['createGeneratorTask']).from(
+              '@baseplate-dev/sync',
+            ),
+          ])`const ${taskName} = createGeneratorTask(${taskFragment});`
+        : '',
+      TPL_PATHS_TASK_EXPORT: taskFragment ? `task: ${taskName},` : '',
       TPL_PATHS_EXPORT_NAME: fileExportNames.rootExportName,
     },
     options: {
@@ -249,7 +254,7 @@ export function writePathMapFile(
     },
   });
 
-  context.fileContainer.writeFile(pathMapPath, pathMapContents);
+  await context.fileContainer.writeFile(pathMapPath, pathMapContents);
 
   return {
     exportName: fileExportNames.rootExportName,

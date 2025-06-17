@@ -2,7 +2,6 @@ import {
   authContextGenerator,
   authPluginGenerator,
   authRolesGenerator,
-  placeholderAuthServiceGenerator,
   pothosAuthGenerator,
   userSessionTypesGenerator,
 } from '@baseplate-dev/fastify-generators';
@@ -21,6 +20,8 @@ import {
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
+import { authModuleGenerator } from '../generators/index.js';
+
 export default createPlatformPluginExport({
   dependencies: {
     appCompiler: appCompilerSpec,
@@ -31,7 +32,7 @@ export default createPlatformPluginExport({
     appCompiler.registerAppCompiler({
       pluginId,
       appType: backendAppEntryType,
-      compile: ({ projectDefinition, appCompiler }) => {
+      compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
         const auth = PluginUtils.configByIdOrThrow(
           projectDefinition,
           pluginId,
@@ -48,7 +49,11 @@ export default createPlatformPluginExport({
             })),
           }),
           userSessionTypes: userSessionTypesGenerator({}),
-          placeholderUserSessionService: placeholderAuthServiceGenerator({}),
+          authModule: authModuleGenerator({
+            userSessionModelName: definitionContainer.nameFromId(
+              auth.modelRefs.userSession,
+            ),
+          }),
         });
 
         appCompiler.addRootChildren({

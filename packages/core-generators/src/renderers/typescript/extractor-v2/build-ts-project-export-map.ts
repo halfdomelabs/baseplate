@@ -2,12 +2,15 @@ import type { TemplateExtractorContext } from '@baseplate-dev/sync/extractor-v2'
 
 import path from 'node:path';
 
+import type { ExternalImportProviderEntry } from './build-external-import-providers-map.js';
+
 import {
   TS_TEMPLATE_TYPE,
   tsTemplateGeneratorTemplateMetadataSchema,
 } from '../templates/types.js';
 import { getDefaultImportProviderNames } from './default-import-providers.js';
 import { GENERATED_IMPORT_PROVIDERS_FILE_NAME } from './render-ts-import-providers.js';
+import { tsExtractorConfigSchema } from './ts-extractor-config.schema.js';
 
 /**
  * A project export that represents a single export from a generator.
@@ -58,11 +61,13 @@ export type TsProjectExportMap = Map<string, Map<string, TsProjectExport>>;
  */
 export function buildTsProjectExportMap(
   context: TemplateExtractorContext,
+  externalImportProvidersMap: Map<string, ExternalImportProviderEntry>,
 ): TsProjectExportMap {
   const generatorConfigs =
     context.configLookup.getGeneratorConfigsForExtractorType(
       TS_TEMPLATE_TYPE,
       tsTemplateGeneratorTemplateMetadataSchema,
+      tsExtractorConfigSchema,
     );
 
   const projectExportMap: TsProjectExportMap = new Map();
@@ -74,7 +79,20 @@ export function buildTsProjectExportMap(
       packageName,
       templates,
       packagePath,
+      config,
     } = generatorConfig;
+
+    const externalImportProviders =
+      config.importProviders?.map((importProvider) => {
+        const externalImportProvider =
+          externalImportProvidersMap.get(importProvider);
+        if (!externalImportProvider) {
+          throw new Error(
+            `Import provider ${importProvider} not found in external import providers map.`,
+          );
+        }
+        return externalImportProvider;
+      }) ?? [];
 
     // Figure out the default import provider
     const importProviderNames = getDefaultImportProviderNames(generatorName);
@@ -84,6 +102,40 @@ export function buildTsProjectExportMap(
       generatorDirectory,
     );
     const defaultImportsProviderPackagePathSpecifier = `${packageName}:${relativeGeneratorDirectory}/generated/${GENERATED_IMPORT_PROVIDERS_FILE_NAME}`;
+
+    const getImportProvider = (
+      projectExportName: string,
+    ): {
+      packagePathSpecifier: string;
+      providerExportName: string;
+      placeholderModuleSpecifier: string;
+    } => {
+      const importProvider = externalImportProviders.find(
+        (importProvider) => projectExportName in importProvider.projectExports,
+      );
+      if (importProvider) {
+        return {
+          packagePathSpecifier: importProvider.packagePathSpecifier,
+          providerExportName: importProvider.providerExportName,
+          // TODO[2025-06-18]: Standardize this function
+          placeholderModuleSpecifier: `%${importProvider.providerExportName.replace(
+            /Provider$/,
+            '',
+          )}`,
+        };
+      }
+      if (config.skipDefaultImportMap) {
+        throw new Error(
+          `Import provider not found for project export ${projectExportName} and default import map is disabled.`,
+        );
+      }
+      return {
+        packagePathSpecifier: defaultImportsProviderPackagePathSpecifier,
+        providerExportName: importProviderNames.providerExportName,
+        placeholderModuleSpecifier:
+          importProviderNames.placeholderModuleSpecifier,
+      };
+    };
 
     for (const [, template] of Object.entries(templates)) {
       // skip non-singleton templates
@@ -104,15 +156,15 @@ export function buildTsProjectExportMap(
       for (const [name, projectExport] of Object.entries(
         template.projectExports ?? {},
       )) {
+        const importProvider = getImportProvider(name);
+
         templateProjectExportsMap.set(projectExport.exportName ?? name, {
           name,
           exportedName: projectExport.exportName,
           outputRelativePath,
-          placeholderModuleSpecifier:
-            importProviderNames.placeholderModuleSpecifier,
-          providerPackagePathSpecifier:
-            defaultImportsProviderPackagePathSpecifier,
-          providerImportName: importProviderNames.providerExportName,
+          placeholderModuleSpecifier: importProvider.placeholderModuleSpecifier,
+          providerPackagePathSpecifier: importProvider.packagePathSpecifier,
+          providerImportName: importProvider.providerExportName,
         });
       }
 

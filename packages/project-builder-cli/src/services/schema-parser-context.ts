@@ -1,7 +1,6 @@
 import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 
 import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
-import { createNodeSchemaParserContext } from '@baseplate-dev/project-builder-server';
 
 import { logger } from './logger.js';
 
@@ -13,6 +12,10 @@ import { logger } from './logger.js';
 export async function createSchemaParserContext(
   directory: string,
 ): Promise<SchemaParserContext> {
+  // dynamically import to avoid loading the server package unnecessarily
+  const { createNodeSchemaParserContext } = await import(
+    '@baseplate-dev/project-builder-server/plugins'
+  );
   const builtInPlugins = await getDefaultPlugins(logger);
   return createNodeSchemaParserContext(directory, logger, builtInPlugins);
 }

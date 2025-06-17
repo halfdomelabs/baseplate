@@ -13,7 +13,6 @@ import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createProviderTask,
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
@@ -27,8 +26,8 @@ import {
 } from '#src/providers/routes.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
-import { reactAppConfigProvider } from '../react-app/react-app.generator.js';
-import { CORE_REACT_ROUTER_TS_TEMPLATES } from './generated/ts-templates.js';
+import { reactAppConfigProvider } from '../react-app/index.js';
+import { CORE_REACT_ROUTER_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -46,8 +45,6 @@ const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
 
 export { reactRouterConfigProvider };
 
-const pagesPath = '@/src/pages/index.tsx';
-
 const reactRouteValuesProvider = createReadOnlyProviderType<{
   routes: ReactRoute[];
   layouts: ReactRouteLayout[];
@@ -62,9 +59,13 @@ export const reactRouterGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['react-router-dom']),
     }),
-    reactAppConfig: createProviderTask(
-      reactAppConfigProvider,
-      (reactAppConfig) => {
+    paths: CORE_REACT_ROUTER_GENERATED.paths.task,
+    reactAppConfig: createGeneratorTask({
+      dependencies: {
+        reactAppConfig: reactAppConfigProvider,
+        paths: CORE_REACT_ROUTER_GENERATED.paths.provider,
+      },
+      run({ reactAppConfig, paths }) {
         reactAppConfig.renderWrappers.set('react-router', {
           wrap: (contents) =>
             TsCodeUtils.templateWithImports(
@@ -76,11 +77,11 @@ export const reactRouterGenerator = createGenerator({
         reactAppConfig.renderRoot.set(
           tsCodeFragment(
             '<PagesRoot />',
-            tsImportBuilder().default('PagesRoot').from(pagesPath),
+            tsImportBuilder().default('PagesRoot').from(paths.index),
           ),
         );
       },
-    ),
+    }),
     routes: createGeneratorTask({
       exports: {
         reactRoutes: reactRoutesProvider.export(projectScope),
@@ -124,6 +125,7 @@ export const reactRouterGenerator = createGenerator({
         reactRouterConfigValues: reactRouterConfigValuesProvider,
         reactRouteValues: reactRouteValuesProvider,
         typescriptFile: typescriptFileProvider,
+        paths: CORE_REACT_ROUTER_GENERATED.paths.provider,
       },
       run({
         reactRouterConfigValues: {
@@ -135,6 +137,7 @@ export const reactRouterGenerator = createGenerator({
         },
         reactRouteValues: { routes, layouts },
         typescriptFile,
+        paths,
       }) {
         return {
           build: async (builder) => {
@@ -145,8 +148,8 @@ export const reactRouterGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_ROUTER_TS_TEMPLATES.index,
-                destination: 'src/pages/index.tsx',
+                template: CORE_REACT_ROUTER_GENERATED.templates.index,
+                destination: paths.index,
                 variables: {
                   TPL_RENDER_HEADER: TsCodeUtils.mergeFragments(renderHeaders),
                   TPL_ROUTES: TsCodeUtils.template`<${routesComponent}>${renderedRoutes}</${routesComponent}>`,

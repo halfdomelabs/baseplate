@@ -1,0 +1,9 @@
+import { AUTH_PASSWORD_HASHER_SERVICE_PATHS } from './template-paths.js';
+import { AUTH_PASSWORD_HASHER_SERVICE_IMPORTS } from './ts-import-providers.js';
+import { AUTH_PASSWORD_HASHER_SERVICE_TEMPLATES } from './typed-templates.js';
+
+export const AUTH_PASSWORD_HASHER_SERVICE_GENERATED = {
+  imports: AUTH_PASSWORD_HASHER_SERVICE_IMPORTS,
+  paths: AUTH_PASSWORD_HASHER_SERVICE_PATHS,
+  templates: AUTH_PASSWORD_HASHER_SERVICE_TEMPLATES,
+};

@@ -14,17 +14,16 @@ import { z } from 'zod';
 import {
   generatedGraphqlImportsProvider,
   reactApolloProvider,
-} from '#src/generators/apollo/react-apollo/react-apollo.generator.js';
-import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
+} from '#src/generators/apollo/react-apollo/index.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
 import {
   reactConfigImportsProvider,
   reactConfigProvider,
-} from '#src/generators/core/react-config/react-config.generator.js';
-import { reactErrorImportsProvider } from '#src/generators/core/react-error/react-error.generator.js';
+} from '#src/generators/core/react-config/index.js';
+import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
-import { ADMIN_ADMIN_BULL_BOARD_TEXT_TEMPLATES } from './generated/text-templates.js';
-import { ADMIN_ADMIN_BULL_BOARD_TS_TEMPLATES } from './generated/ts-templates.js';
+import { ADMIN_ADMIN_BULL_BOARD_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   bullBoardUrl: z.string().min(1),
@@ -35,6 +34,7 @@ export const adminBullBoardGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ bullBoardUrl }) => ({
+    paths: ADMIN_ADMIN_BULL_BOARD_GENERATED.paths.task,
     reactConfig: createProviderTask(reactConfigProvider, (reactConfig) => {
       reactConfig.configEntries.set('VITE_BULL_BOARD_BASE', {
         comment: 'Base path for bull-board site',
@@ -51,6 +51,7 @@ export const adminBullBoardGenerator = createGenerator({
         reactApollo: reactApolloProvider,
         reactRoutes: reactRoutesProvider,
         generatedGraphqlImports: generatedGraphqlImportsProvider,
+        paths: ADMIN_ADMIN_BULL_BOARD_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
@@ -60,14 +61,11 @@ export const adminBullBoardGenerator = createGenerator({
         reactApollo,
         reactRoutes,
         generatedGraphqlImports,
+        paths,
       }) {
-        const baseDirectory = `${reactRoutes.getDirectoryBase()}/bull-board`;
-        const bullBoardPagePath = `${baseDirectory}/index.tsx`;
-        const bullBoardGqlPath = `${baseDirectory}/bull-board.gql`;
-
         return {
           build: async (builder) => {
-            reactApollo.registerGqlFile(`${baseDirectory}/bull-board.gql`);
+            reactApollo.registerGqlFile(paths.bullBoard);
 
             reactRoutes.registerRoute({
               path: 'bull-board',
@@ -75,14 +73,15 @@ export const adminBullBoardGenerator = createGenerator({
                 '<BullBoardPage />',
                 tsImportBuilder()
                   .default('BullBoardPage')
-                  .from(bullBoardPagePath),
+                  .from(paths.bullBoardPage),
               ),
             });
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: ADMIN_ADMIN_BULL_BOARD_TS_TEMPLATES.bullBoardPage,
-                destination: bullBoardPagePath,
+                template:
+                  ADMIN_ADMIN_BULL_BOARD_GENERATED.templates.bullBoardPage,
+                destination: paths.bullBoardPage,
                 variables: {},
                 importMapProviders: {
                   reactComponentsImports,
@@ -95,8 +94,8 @@ export const adminBullBoardGenerator = createGenerator({
 
             await builder.apply(
               renderTextTemplateFileAction({
-                template: ADMIN_ADMIN_BULL_BOARD_TEXT_TEMPLATES.bullBoard,
-                destination: bullBoardGqlPath,
+                template: ADMIN_ADMIN_BULL_BOARD_GENERATED.templates.bullBoard,
+                destination: paths.bullBoard,
               }),
             );
           },

@@ -1,0 +1,62 @@
+{
+  "name": "pothos/pothos-scalar",
+  "templates": {
+    "module/scalars/date-time.ts": {
+      "name": "date-time",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/scalars/date-time.ts",
+      "template": "",
+      "variables": {}
+    },
+    "module/scalars/date.ts": {
+      "name": "date",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/scalars/date.ts",
+      "template": "",
+      "variables": {}
+    },
+    "module/scalars/uuid.ts": {
+      "name": "uuid",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/scalars/uuid.ts",
+      "template": "",
+      "variables": {}
+    }
+  }
+}

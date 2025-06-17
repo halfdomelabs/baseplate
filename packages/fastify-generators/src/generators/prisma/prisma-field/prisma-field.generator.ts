@@ -9,7 +9,7 @@ import {
   PRISMA_SCALAR_FIELD_TYPES,
 } from '#src/writers/prisma-schema/fields.js';
 
-import { prismaModelProvider } from '../prisma-model/prisma-model.generator.js';
+import { prismaModelProvider } from '../prisma-model/index.js';
 
 // some typescript hacking to make field types work generically
 const prismaScalarFieldTypes = PRISMA_SCALAR_FIELD_TYPES as Record<

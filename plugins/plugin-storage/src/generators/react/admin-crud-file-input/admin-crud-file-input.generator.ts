@@ -3,7 +3,7 @@ import { adminCrudInputContainerProvider } from '@baseplate-dev/react-generators
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { uploadComponentsImportsProvider } from '../upload-components/upload-components.generator.js';
+import { uploadComponentsImportsProvider } from '../upload-components/index.js';
 
 const descriptorSchema = z.object({
   order: z.number(),

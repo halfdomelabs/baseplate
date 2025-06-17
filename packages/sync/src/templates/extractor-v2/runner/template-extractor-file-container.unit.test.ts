@@ -26,71 +26,71 @@ describe('TemplateExtractorFileContainer', () => {
   });
 
   describe('writeFile', () => {
-    it('should write file within package directory', () => {
+    it('should write file within package directory', async () => {
       const container = new TemplateExtractorFileContainer(packageDirs);
       const filePath = '/project/packages/core/src/test.ts';
       const contents = 'export const test = {};';
 
-      container.writeFile(filePath, contents);
+      await container.writeFile(filePath, contents);
 
       const files = container.getFiles();
       expect(files.get(path.resolve(filePath))).toBe(contents);
     });
 
-    it('should write Buffer contents', () => {
+    it('should write Buffer contents', async () => {
       const container = new TemplateExtractorFileContainer(packageDirs);
       const filePath = '/project/packages/core/assets/image.png';
       const contents = Buffer.from('binary data');
 
-      container.writeFile(filePath, contents);
+      await container.writeFile(filePath, contents);
 
       const files = container.getFiles();
       expect(files.get(path.resolve(filePath))).toBe(contents);
     });
 
-    it('should resolve relative paths', () => {
+    it('should resolve relative paths', async () => {
       const container = new TemplateExtractorFileContainer([process.cwd()]);
       const filePath = './test.ts';
       const contents = 'export const test = {};';
 
-      container.writeFile(filePath, contents);
+      await container.writeFile(filePath, contents);
 
       const files = container.getFiles();
       expect(files.get(path.resolve(filePath))).toBe(contents);
     });
 
-    it('should throw error when file already exists', () => {
+    it('should throw error when file already exists', async () => {
       const container = new TemplateExtractorFileContainer(packageDirs);
       const filePath = '/project/packages/core/src/test.ts';
       const contents = 'export const test = {};';
 
-      container.writeFile(filePath, contents);
+      await container.writeFile(filePath, contents);
 
-      expect(() => {
-        container.writeFile(filePath, 'different content');
-      }).toThrow('File already written: /project/packages/core/src/test.ts');
+      await expect(
+        container.writeFile(filePath, 'different content'),
+      ).rejects.toThrow(
+        'File already written: /project/packages/core/src/test.ts',
+      );
     });
 
-    it('should throw error when writing outside package directories', () => {
+    it('should throw error when writing outside package directories', async () => {
       const container = new TemplateExtractorFileContainer(packageDirs);
       const filePath = '/outside/project/test.ts';
       const contents = 'export const test = {};';
 
-      expect(() => {
-        container.writeFile(filePath, contents);
-      }).toThrow(
+      await expect(container.writeFile(filePath, contents)).rejects.toThrow(
         `Cannot write file outside of package directories: ${path.resolve(filePath)}. Package directories: ${packageDirs.join(', ')}`,
       );
     });
 
-    it('should allow writing to subdirectories within package dirs', () => {
+    it('should allow writing to subdirectories within package dirs', async () => {
       const container = new TemplateExtractorFileContainer(packageDirs);
       const filePath = '/project/packages/core/src/components/Button.tsx';
       const contents = 'export const Button = () => {};';
 
-      expect(() => {
-        container.writeFile(filePath, contents);
-      }).not.toThrow();
+      await expect(
+        container.writeFile(filePath, contents),
+      ).resolves.not.toThrow();
 
       const files = container.getFiles();
       expect(files.get(path.resolve(filePath))).toBe(contents);
@@ -105,7 +105,7 @@ describe('TemplateExtractorFileContainer', () => {
       const filePath = '/project/packages/core/src/test.ts';
       const contents = 'export const test = {};';
 
-      container.writeFile(filePath, contents);
+      await container.writeFile(filePath, contents);
       await container.commit();
 
       const files = vol.toJSON();
@@ -119,7 +119,7 @@ describe('TemplateExtractorFileContainer', () => {
       const filePath = '/project/packages/core/src/deep/nested/test.ts';
       const contents = 'export const test = {};';
 
-      container.writeFile(filePath, contents);
+      await container.writeFile(filePath, contents);
       await container.commit();
 
       const files = vol.toJSON();
@@ -137,7 +137,7 @@ describe('TemplateExtractorFileContainer', () => {
       });
 
       const container = new TemplateExtractorFileContainer(packageDirs);
-      container.writeFile(filePath, contents);
+      await container.writeFile(filePath, contents);
 
       // Mock fs.writeFile to track calls
       const writeFileSpy = vi.fn();
@@ -162,7 +162,7 @@ describe('TemplateExtractorFileContainer', () => {
       });
 
       const container = new TemplateExtractorFileContainer(packageDirs);
-      container.writeFile(filePath, newContents);
+      await container.writeFile(filePath, newContents);
       await container.commit();
 
       const files = vol.toJSON();
@@ -190,7 +190,7 @@ describe('TemplateExtractorFileContainer', () => {
       ];
 
       for (const file of files) {
-        container.writeFile(file.path, file.content);
+        await container.writeFile(file.path, file.content);
       }
 
       await container.commit();
@@ -208,7 +208,7 @@ describe('TemplateExtractorFileContainer', () => {
       const filePath = '/project/packages/core/assets/image.png';
       const contents = Buffer.from('binary image data');
 
-      container.writeFile(filePath, contents);
+      await container.writeFile(filePath, contents);
       await container.commit();
 
       const files = vol.toJSON();
@@ -231,7 +231,7 @@ describe('TemplateExtractorFileContainer', () => {
       const filePath = '/project/packages/core/src/test.ts';
       const contents = 'export const test = {};';
 
-      container.writeFile(filePath, contents);
+      await container.writeFile(filePath, contents);
       await container.commit();
 
       expect(formatGeneratedTemplateContents).toHaveBeenCalledWith(
@@ -251,7 +251,7 @@ describe('TemplateExtractorFileContainer', () => {
       const filePath = '/project/packages/core/assets/data.bin';
       const contents = Buffer.from('binary data');
 
-      container.writeFile(filePath, contents);
+      await container.writeFile(filePath, contents);
       await container.commit();
 
       expect(formatGeneratedTemplateContents).not.toHaveBeenCalledWith(
@@ -262,12 +262,12 @@ describe('TemplateExtractorFileContainer', () => {
   });
 
   describe('getFiles', () => {
-    it('should return readonly map of files', () => {
+    it('should return readonly map of files', async () => {
       const container = new TemplateExtractorFileContainer(packageDirs);
       const filePath = '/project/packages/core/src/test.ts';
       const contents = 'export const test = {};';
 
-      container.writeFile(filePath, contents);
+      await container.writeFile(filePath, contents);
 
       const files = container.getFiles();
       expect(files).toBeInstanceOf(Map);

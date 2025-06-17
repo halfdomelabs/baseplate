@@ -13,14 +13,11 @@ import { z } from 'zod';
 
 import { authComponentsImportsProvider } from '#src/generators/auth/_providers/auth-components.js';
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
-import {
-  reactComponentsImportsProvider,
-  reactComponentsProvider,
-} from '#src/generators/core/react-components/react-components.generator.js';
-import { reactTailwindProvider } from '#src/generators/core/react-tailwind/react-tailwind.generator.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
+import { reactTailwindProvider } from '#src/generators/core/react-tailwind/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
-import { ADMIN_ADMIN_LAYOUT_TS_TEMPLATES } from './generated/ts-templates.js';
+import { ADMIN_ADMIN_LAYOUT_GENERATED } from './generated/index.js';
 
 const linkItemSchema = z.object({
   type: z.literal('link'),
@@ -50,6 +47,7 @@ export const adminLayoutGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ links = [] }) => ({
+    paths: ADMIN_ADMIN_LAYOUT_GENERATED.paths.task,
     reactTailwind: createProviderTask(
       reactTailwindProvider,
       (reactTailwind) => {
@@ -63,28 +61,26 @@ export const adminLayoutGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactComponentsImports: reactComponentsImportsProvider,
-        reactComponents: reactComponentsProvider,
         reactRoutes: reactRoutesProvider,
         authComponentsImports: authComponentsImportsProvider,
         typescriptFile: typescriptFileProvider,
         authHooksImports: authHooksImportsProvider,
+        paths: ADMIN_ADMIN_LAYOUT_GENERATED.paths.provider,
       },
       run({
         reactComponentsImports,
-        reactComponents,
         reactRoutes,
         authComponentsImports,
         typescriptFile,
         authHooksImports,
+        paths,
       }) {
-        const layoutPath = `${reactComponents.getComponentsFolder()}/AdminLayout/index.tsx`;
-
         reactRoutes.registerLayout({
           key: 'admin',
           element: tsCodeFragment(
             `<RequireAuth><AdminLayout /></RequireAuth>`,
             [
-              tsImportBuilder().default('AdminLayout').from(layoutPath),
+              tsImportBuilder().default('AdminLayout').from(paths.adminLayout),
               authComponentsImports.RequireAuth.declaration(),
             ],
           ),
@@ -108,8 +104,8 @@ export const adminLayoutGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: ADMIN_ADMIN_LAYOUT_TS_TEMPLATES.adminLayout,
-                destination: layoutPath,
+                template: ADMIN_ADMIN_LAYOUT_GENERATED.templates.adminLayout,
+                destination: paths.adminLayout,
                 variables: {
                   TPL_SIDEBAR_LINKS: TsCodeUtils.mergeFragments(navEntries),
                 },

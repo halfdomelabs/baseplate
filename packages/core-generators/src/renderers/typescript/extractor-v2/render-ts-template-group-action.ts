@@ -9,6 +9,7 @@ import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { mapValues } from 'es-toolkit';
 import path from 'node:path';
 
+import type { RenderTsTemplateFileActionInput } from '../actions/render-ts-template-file-action.js';
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
 import type {
   InferImportMapProvidersFromProviderTypeMap,
@@ -52,7 +53,7 @@ interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
   paths: {
     [K in keyof T]: string;
   };
-  options?: {
+  writeOptions?: {
     [K in keyof T]?: Omit<WriteFileOptions, 'templateMetadata'>;
   };
   renderOptions?: Omit<RenderTsCodeFileTemplateOptions, 'resolveModule'> & {
@@ -61,6 +62,12 @@ interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
       sourceDirectory: string,
     ) => string;
   };
+  // TODO[2025-06-18]: Remove once we've converted all TS
+  /**
+   * Called when a template file is rendered
+   * @param canonicalPath - The canonical path to the template file
+   */
+  onRenderTemplateFile?: (canonicalPath: string) => void;
 }
 
 export type RenderTsTemplateGroupActionInput<
@@ -75,71 +82,81 @@ export type RenderTsTemplateGroupActionInput<
       }
     : { importMapProviders: InferImportMapProvidersFromTemplateGroup<T> });
 
-export function renderTsTemplateGroupAction<
+/**
+ * Extracts the template file inputs from a template group
+ * @param input - The input for the template group
+ * @returns The template file inputs
+ */
+export function extractTsTemplateFileInputsFromTemplateGroup<
   T extends TsTemplateGroup = TsTemplateGroup,
 >({
   group,
   paths,
   variables,
-  options,
   importMapProviders,
+  writeOptions,
   renderOptions,
-}: RenderTsTemplateGroupActionInput<T>): BuilderAction {
+}: RenderTsTemplateGroupActionInput<T>): RenderTsTemplateFileActionInput[] {
+  const fileActionInputs: RenderTsTemplateFileActionInput[] = [];
+  const typedImportMapProviders =
+    (importMapProviders as undefined | Record<string, ProviderType>) ?? {};
+
+  for (const [key, templateEntry] of Object.entries(group)) {
+    const destination = paths[key];
+
+    const templateSpecificProviders = templateEntry.importMapProviders
+      ? mapValues(
+          templateEntry.importMapProviders,
+          (_, providerKey: string) => {
+            if (!(providerKey in typedImportMapProviders)) {
+              throw new Error(
+                `Import map provider "${providerKey}" is not defined in the import map providers`,
+              );
+            }
+            return typedImportMapProviders[providerKey];
+          },
+        )
+      : undefined;
+
+    const destinationDirectory = path.dirname(
+      normalizePathToProjectPath(destination),
+    );
+    fileActionInputs.push({
+      template: templateEntry,
+      destination,
+      variables:
+        variables && typeof variables === 'object'
+          ? (variables[key as keyof typeof variables] as Record<never, string>)
+          : undefined,
+      writeOptions: writeOptions?.[key],
+      importMapProviders: templateSpecificProviders,
+      renderOptions: {
+        ...renderOptions,
+        resolveModule: (specifier) => {
+          if (!renderOptions?.resolveModule) return specifier;
+          return renderOptions.resolveModule(specifier, destinationDirectory);
+        },
+      },
+    });
+  }
+  return fileActionInputs;
+}
+
+export function renderTsTemplateGroupAction<
+  T extends TsTemplateGroup = TsTemplateGroup,
+>(input: RenderTsTemplateGroupActionInput<T>): BuilderAction {
   return {
     execute: async (builder) => {
-      const typedImportMapProviders =
-        (importMapProviders as undefined | Record<string, ProviderType>) ?? {};
-
-      for (const [key, template] of Object.entries(group)) {
-        const destination = paths[key];
-
-        // Handle template-specific import map providers
-        const templateSpecificProviders = template.importMapProviders
-          ? mapValues(template.importMapProviders, (_, providerKey: string) => {
-              if (!(providerKey in typedImportMapProviders)) {
-                throw new Error(
-                  `Import map provider "${providerKey}" is not defined in the import map providers`,
-                );
-              }
-              return typedImportMapProviders[providerKey];
-            })
-          : undefined;
-
-        // Calculate destination directory for resolveModule
-        const destinationDirectory = path.dirname(
-          normalizePathToProjectPath(destination),
-        );
-
+      const fileActionInputs =
+        extractTsTemplateFileInputsFromTemplateGroup(input);
+      for (const fileActionInput of fileActionInputs) {
         try {
-          await builder.apply(
-            renderTsTemplateFileAction({
-              template,
-              destination,
-              variables:
-                variables && typeof variables === 'object'
-                  ? (variables[key as keyof typeof variables] as Record<
-                      never,
-                      string
-                    >)
-                  : undefined,
-              writeOptions: options?.[key],
-              importMapProviders: templateSpecificProviders,
-              renderOptions: {
-                ...renderOptions,
-                resolveModule: (specifier) => {
-                  if (!renderOptions?.resolveModule) return specifier;
-                  return renderOptions.resolveModule(
-                    specifier,
-                    destinationDirectory,
-                  );
-                },
-              },
-            }),
-          );
+          await builder.apply(renderTsTemplateFileAction(fileActionInput));
+          input.onRenderTemplateFile?.(fileActionInput.destination);
         } catch (error) {
           throw enhanceErrorWithContext(
             error,
-            `Failed to render template "${key}"`,
+            `Failed to render template "${fileActionInput.template.name}"`,
           );
         }
       }

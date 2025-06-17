@@ -1,7 +1,7 @@
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { typescriptFileProvider } from '../typescript/typescript.generator.js';
+import { typescriptFileProvider } from '../typescript/index.js';
 import { NODE_TS_UTILS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});

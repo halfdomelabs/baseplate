@@ -4,21 +4,21 @@ import {
   extractPackageVersions,
   prettierProvider,
   projectScope,
+  renderTextTemplateGroupAction,
   tsCodeFragment,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  renderTextTemplateGroupAction,
 } from '@baseplate-dev/sync';
 import * as prettierPluginTailwindcss from 'prettier-plugin-tailwindcss';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
-import { reactBaseConfigProvider } from '../react/react.generator.js';
-import { CORE_REACT_TAILWIND_TEXT_TEMPLATES } from './generated/text-templates.js';
+import { reactBaseConfigProvider } from '../react/index.js';
+import { CORE_REACT_TAILWIND_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   globalBodyClasses: z.string().optional(),
@@ -44,16 +44,18 @@ export const reactTailwindGenerator = createGenerator({
         '@tailwindcss/forms',
       ]),
     }),
+    paths: CORE_REACT_TAILWIND_GENERATED.paths.task,
     main: createGeneratorTask({
       dependencies: {
         reactBaseConfig: reactBaseConfigProvider,
         eslintConfig: eslintConfigProvider,
         prettier: prettierProvider,
+        paths: CORE_REACT_TAILWIND_GENERATED.paths.provider,
       },
       exports: {
         reactTailwind: reactTailwindProvider.export(projectScope),
       },
-      run({ reactBaseConfig, eslintConfig, prettier }) {
+      run({ reactBaseConfig, eslintConfig, prettier, paths }) {
         eslintConfig.tsDefaultProjectFiles.push(
           'postcss.config.js',
           'tailwind.config.js',
@@ -89,8 +91,8 @@ export const reactTailwindGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               renderTextTemplateGroupAction({
-                group: CORE_REACT_TAILWIND_TEXT_TEMPLATES.mainGroup,
-                baseDirectory: '',
+                group: CORE_REACT_TAILWIND_GENERATED.templates.mainGroup,
+                paths,
                 variables: {
                   indexCss: {
                     TPL_GLOBAL_STYLES:

@@ -1,18 +1,12 @@
+import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import {
-  projectScope,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
-import {
-  authComponentsImportsProvider,
   reactComponentsImportsProvider,
   reactComponentsProvider,
 } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
-import path from 'node:path';
 import { z } from 'zod';
 
-import { createAuth0ComponentsImports } from './generated/ts-import-maps.js';
-import { AUTH_0_AUTH_0_COMPONENTS_TS_TEMPLATES } from './generated/ts-templates.js';
+import { AUTH0_AUTH0_COMPONENTS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -21,31 +15,25 @@ export const auth0ComponentsGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: AUTH0_AUTH0_COMPONENTS_GENERATED.paths.task,
+    imports: AUTH0_AUTH0_COMPONENTS_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         reactComponents: reactComponentsProvider,
         reactComponentsImports: reactComponentsImportsProvider,
         typescriptFile: typescriptFileProvider,
+        paths: AUTH0_AUTH0_COMPONENTS_GENERATED.paths.provider,
       },
-      exports: {
-        authComponentsImports:
-          authComponentsImportsProvider.export(projectScope),
-      },
-      run({ reactComponents, typescriptFile, reactComponentsImports }) {
-        const requireAuthPath = `${reactComponents.getComponentsFolder()}/RequireAuth/index.tsx`;
+      run({ reactComponents, typescriptFile, reactComponentsImports, paths }) {
         reactComponents.registerComponent({ name: 'RequireAuth' });
 
         return {
-          providers: {
-            authComponentsImports: createAuth0ComponentsImports(
-              path.dirname(requireAuthPath),
-            ),
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: AUTH_0_AUTH_0_COMPONENTS_TS_TEMPLATES.requireAuth,
-                destination: requireAuthPath,
+                template:
+                  AUTH0_AUTH0_COMPONENTS_GENERATED.templates.requireAuth,
+                destination: paths.requireAuth,
                 importMapProviders: {
                   reactComponentsImports,
                 },

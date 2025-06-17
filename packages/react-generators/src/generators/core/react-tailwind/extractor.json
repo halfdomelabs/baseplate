@@ -1,0 +1,36 @@
+{
+  "name": "core/react-tailwind",
+  "templates": {
+    "package/postcss.config.js": {
+      "name": "postcss-config",
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "pathRootRelativePath": "{package-root}/postcss.config.js",
+      "variables": {}
+    },
+    "src/index.css": {
+      "name": "index-css",
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "pathRootRelativePath": "{src-root}/index.css",
+      "variables": {
+        "TPL_GLOBAL_STYLES": {
+          "description": "Global styles to apply to the app"
+        }
+      }
+    },
+    "tailwind-tpl.config.js": {
+      "name": "tailwind-config",
+      "type": "text",
+      "fileOptions": {
+        "generatorTemplatePath": "tailwind-tpl.config.js",
+        "kind": "singleton"
+      },
+      "group": "main",
+      "pathRootRelativePath": "{package-root}/tailwind.config.js",
+      "variables": {}
+    }
+  }
+}

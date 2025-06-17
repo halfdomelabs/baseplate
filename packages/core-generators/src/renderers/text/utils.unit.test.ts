@@ -45,6 +45,14 @@ describe('getTextTemplateDelimiters', () => {
     });
   });
 
+  it('should return YAML delimiters for .yml files', () => {
+    const result = getTextTemplateDelimiters('config.yml');
+    expect(result).toEqual({
+      start: '${{',
+      end: '}}',
+    });
+  });
+
   it('should return default delimiters for other files', () => {
     const result = getTextTemplateDelimiters('component.tsx');
     expect(result).toEqual({

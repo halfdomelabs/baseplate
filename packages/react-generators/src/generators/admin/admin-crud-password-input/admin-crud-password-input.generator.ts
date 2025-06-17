@@ -2,7 +2,7 @@ import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
 
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 

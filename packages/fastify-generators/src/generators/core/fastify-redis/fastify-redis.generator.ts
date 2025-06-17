@@ -1,7 +1,6 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
   tsCodeFragment,
   tsImportBuilder,
   typescriptFileProvider,
@@ -12,7 +11,6 @@ import {
   createGeneratorTask,
   createProviderTask,
 } from '@baseplate-dev/sync';
-import path from 'node:path/posix';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
@@ -21,41 +19,23 @@ import {
   configServiceImportsProvider,
   configServiceProvider,
 } from '../config-service/index.js';
-import { fastifyHealthCheckConfigProvider } from '../fastify-health-check/fastify-health-check.generator.js';
-import {
-  createFastifyRedisImports,
-  fastifyRedisImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_FASTIFY_REDIS_TS_TEMPLATES } from './generated/ts-templates.js';
+import { fastifyHealthCheckConfigProvider } from '../fastify-health-check/index.js';
+import { CORE_FASTIFY_REDIS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   defaultUrl: z.string().min(1),
 });
-
-const redisPath = '@/src/services/redis.ts';
 
 export const fastifyRedisGenerator = createGenerator({
   name: 'core/fastify-redis',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ defaultUrl }) => ({
+    paths: CORE_FASTIFY_REDIS_GENERATED.paths.task,
+    imports: CORE_FASTIFY_REDIS_GENERATED.imports.task,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['ioredis']),
       dev: extractPackageVersions(FASTIFY_PACKAGES, ['ioredis-mock']),
-    }),
-    imports: createGeneratorTask({
-      exports: {
-        fastifyRedisImports: fastifyRedisImportsProvider.export(projectScope),
-      },
-      run() {
-        return {
-          providers: {
-            fastifyRedisImports: createFastifyRedisImports(
-              path.dirname(redisPath),
-            ),
-          },
-        };
-      },
     }),
     configService: createProviderTask(
       configServiceProvider,
@@ -67,33 +47,37 @@ export const fastifyRedisGenerator = createGenerator({
         });
       },
     ),
-    fastifyHealthCheck: createProviderTask(
-      fastifyHealthCheckConfigProvider,
-      (fastifyHealthCheckConfig) => {
+    fastifyHealthCheck: createGeneratorTask({
+      dependencies: {
+        fastifyHealthCheckConfig: fastifyHealthCheckConfigProvider,
+        paths: CORE_FASTIFY_REDIS_GENERATED.paths.provider,
+      },
+      run({ fastifyHealthCheckConfig, paths }) {
         fastifyHealthCheckConfig.healthChecks.set(
           'redis',
           tsCodeFragment(
             `// check Redis is operating
           const redisClient = getRedisClient();
           await redisClient.ping();`,
-            tsImportBuilder(['getRedisClient']).from(redisPath),
+            tsImportBuilder(['getRedisClient']).from(paths.redis),
           ),
         );
       },
-    ),
+    }),
     main: createGeneratorTask({
       dependencies: {
         configServiceImports: configServiceImportsProvider,
         typescriptFile: typescriptFileProvider,
         vitestConfig: vitestConfigProvider.dependency().optional(),
+        paths: CORE_FASTIFY_REDIS_GENERATED.paths.provider,
       },
-      run({ configServiceImports, typescriptFile, vitestConfig }) {
+      run({ configServiceImports, typescriptFile, vitestConfig, paths }) {
         return {
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_FASTIFY_REDIS_TS_TEMPLATES.redis,
-                destination: redisPath,
+                template: CORE_FASTIFY_REDIS_GENERATED.templates.redis,
+                destination: paths.redis,
                 importMapProviders: {
                   configServiceImports,
                 },
@@ -101,11 +85,10 @@ export const fastifyRedisGenerator = createGenerator({
             );
 
             if (vitestConfig) {
-              const mockRedisPath = '@/src/tests/scripts/mock-redis.ts';
               await builder.apply(
                 typescriptFile.renderTemplateFile({
-                  template: CORE_FASTIFY_REDIS_TS_TEMPLATES.mockRedis,
-                  destination: mockRedisPath,
+                  template: CORE_FASTIFY_REDIS_GENERATED.templates.mockRedis,
+                  destination: paths.mockRedis,
                   importMapProviders: {},
                 }),
               );
@@ -117,5 +100,3 @@ export const fastifyRedisGenerator = createGenerator({
     }),
   }),
 });
-
-export { fastifyRedisImportsProvider } from './generated/ts-import-maps.js';

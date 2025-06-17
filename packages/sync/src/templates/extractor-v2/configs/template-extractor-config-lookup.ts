@@ -10,6 +10,7 @@ import type {
   TemplateConfig,
 } from './extractor-config.schema.js';
 
+import { sortExtractorConfigTemplateKeys } from '../utils/sort-extractor-config-keys.js';
 import { extractorConfigSchema } from './extractor-config.schema.js';
 import { extractorProvidersConfigSchema } from './providers-config.schema.js';
 
@@ -228,7 +229,7 @@ export class TemplateExtractorConfigLookup {
       ([generatorName, config]) => {
         const generatorConfig = generatorConfigSchema
           ? (generatorConfigSchema.parse(
-              config.config,
+              config.config.extractors?.[templateType],
             ) as z.infer<TGeneratorConfig>)
           : undefined;
         const templates = Object.fromEntries(
@@ -259,23 +260,6 @@ export class TemplateExtractorConfigLookup {
   ): string | undefined {
     const fileId = `${generatorName}:${templateName}`;
     return this.fileIdMap.get(fileId);
-  }
-
-  /**
-   * Get providers config by the fully-qualified provider name (format: package-name:provider-name)
-   */
-  getProviderConfigByName(
-    providerName: string,
-  ): TemplateExtractorProviderEntry | undefined {
-    this.checkInitialized();
-
-    if (!providerName.includes(':')) {
-      throw new Error(
-        `Invalid provider name: ${providerName}. Should be of form "package-name:provider-name"`,
-      );
-    }
-
-    return this.providersConfigCache.get(providerName);
   }
 
   /**
@@ -347,6 +331,64 @@ export class TemplateExtractorConfigLookup {
       );
     }
 
-    templates[templateKey] = config;
+    templates[templateKey] = sortExtractorConfigTemplateKeys(config);
+  }
+
+  /**
+   * Get plugin configuration for a specific generator
+   * @param generatorName - The name of the generator
+   * @param pluginName - The name of the plugin
+   * @param schema - Zod schema to validate and parse the plugin configuration
+   * @returns The parsed plugin configuration or undefined if not found
+   */
+  getPluginConfigForGenerator<T extends z.ZodTypeAny>(
+    generatorName: string,
+    pluginName: string,
+    schema: T,
+  ): z.infer<T> | undefined {
+    this.checkInitialized();
+
+    const config = this.getExtractorConfig(generatorName);
+    if (!config?.config.plugins) {
+      return undefined;
+    }
+
+    if (!(pluginName in config.config.plugins)) {
+      return undefined;
+    }
+
+    const pluginConfig = config.config.plugins[pluginName];
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- pluginConfig is validated by the schema
+    return schema.parse(pluginConfig) as z.infer<T>;
+  }
+
+  /**
+   * Get extractor configuration for a specific generator
+   * @param generatorName - The name of the generator
+   * @param extractorType - The type of extractor
+   * @param schema - Zod schema to validate and parse the extractor configuration
+   * @returns The parsed extractor configuration or undefined if not found
+   */
+  getExtractorConfigForGenerator<T extends z.ZodTypeAny>(
+    generatorName: string,
+    extractorType: string,
+    schema: T,
+  ): z.infer<T> | undefined {
+    this.checkInitialized();
+
+    const config = this.getExtractorConfig(generatorName);
+    if (!config?.config.extractors) {
+      return undefined;
+    }
+
+    if (!(extractorType in config.config.extractors)) {
+      return undefined;
+    }
+
+    const extractorConfig = config.config.extractors[extractorType];
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- extractorConfig is validated by the schema
+    return schema.parse(extractorConfig) as z.infer<T>;
   }
 }

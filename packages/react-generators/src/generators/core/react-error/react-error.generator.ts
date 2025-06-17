@@ -12,12 +12,8 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { reactLoggerImportsProvider } from '../react-logger/react-logger.generator.js';
-import {
-  createReactErrorImports,
-  reactErrorImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_REACT_ERROR_TS_TEMPLATES } from './generated/ts-templates.js';
+import { reactLoggerImportsProvider } from '../react-logger/index.js';
+import { CORE_REACT_ERROR_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -42,14 +38,14 @@ export const reactErrorGenerator = createGenerator({
   descriptorSchema,
   buildTasks: () => ({
     setup: setupTask,
+    paths: CORE_REACT_ERROR_GENERATED.paths.task,
+    imports: CORE_REACT_ERROR_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         reactLoggerImports: reactLoggerImportsProvider,
         reactErrorConfigValues: reactErrorConfigValuesProvider,
-      },
-      exports: {
-        reactErrorImports: reactErrorImportsProvider.export(projectScope),
+        paths: CORE_REACT_ERROR_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
@@ -59,16 +55,14 @@ export const reactErrorGenerator = createGenerator({
           errorReporters,
           contextActions,
         },
+        paths,
       }) {
         return {
-          providers: {
-            reactErrorImports: createReactErrorImports('@/src/services'),
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_ERROR_TS_TEMPLATES.errorLogger,
-                destination: '@/src/services/error-logger.ts',
+                template: CORE_REACT_ERROR_GENERATED.templates.errorLogger,
+                destination: paths.errorLogger,
                 importMapProviders: {
                   reactLoggerImports,
                 },
@@ -82,8 +76,8 @@ export const reactErrorGenerator = createGenerator({
             );
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_ERROR_TS_TEMPLATES.errorFormatter,
-                destination: '@/src/services/error-formatter.ts',
+                template: CORE_REACT_ERROR_GENERATED.templates.errorFormatter,
+                destination: paths.errorFormatter,
                 variables: {
                   TPL_ERROR_FORMATTERS:
                     TsCodeUtils.mergeFragments(errorFormatters),
@@ -96,5 +90,3 @@ export const reactErrorGenerator = createGenerator({
     }),
   }),
 });
-
-export { reactErrorImportsProvider } from './generated/ts-import-maps.js';

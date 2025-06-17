@@ -1,1 +1,1 @@
-export * from './docker-compose/docker-compose.generator.js';
+export * from './docker-compose/index.js';

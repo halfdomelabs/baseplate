@@ -5,8 +5,8 @@
       "name": "tsconfig",
       "type": "raw",
       "fileOptions": {
-        "kind": "singleton",
-        "generatorTemplatePath": "tsconfig.tpl.json"
+        "generatorTemplatePath": "tsconfig.tpl.json",
+        "kind": "singleton"
       },
       "pathRootRelativePath": "{package-root}/scripts/tsconfig.json"
     }

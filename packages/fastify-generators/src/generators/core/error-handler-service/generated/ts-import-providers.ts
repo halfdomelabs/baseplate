@@ -37,21 +37,25 @@ const coreErrorHandlerServiceImportsTask = createGeneratorTask({
     paths: CORE_ERROR_HANDLER_SERVICE_PATHS.provider,
   },
   exports: {
-    imports: errorHandlerServiceImportsProvider.export(projectScope),
+    errorHandlerServiceImports:
+      errorHandlerServiceImportsProvider.export(projectScope),
   },
   run({ paths }) {
     return {
       providers: {
-        imports: createTsImportMap(errorHandlerServiceImportsSchema, {
-          BadRequestError: paths.httpErrors,
-          ForbiddenError: paths.httpErrors,
-          handleZodRequestValidationError: paths.zod,
-          HttpError: paths.httpErrors,
-          InternalServerError: paths.httpErrors,
-          logError: paths.errorLogger,
-          NotFoundError: paths.httpErrors,
-          UnauthorizedError: paths.httpErrors,
-        }),
+        errorHandlerServiceImports: createTsImportMap(
+          errorHandlerServiceImportsSchema,
+          {
+            BadRequestError: paths.httpErrors,
+            ForbiddenError: paths.httpErrors,
+            handleZodRequestValidationError: paths.zod,
+            HttpError: paths.httpErrors,
+            InternalServerError: paths.httpErrors,
+            logError: paths.errorLogger,
+            NotFoundError: paths.httpErrors,
+            UnauthorizedError: paths.httpErrors,
+          },
+        ),
       },
     };
   },

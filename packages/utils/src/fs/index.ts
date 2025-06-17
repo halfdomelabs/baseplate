@@ -4,5 +4,6 @@ export * from './file-exists.js';
 export * from './find-nearest-package-json.js';
 export * from './handle-not-found-error.js';
 export * from './read-json-with-schema.js';
+export * from './remove-empty-directories.js';
 export * from './write-json.js';
 export * from './write-stable-pretty-json.js';

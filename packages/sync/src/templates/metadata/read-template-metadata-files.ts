@@ -58,6 +58,7 @@ export async function readTemplateMetadataFiles(
                 `Could not find source file (${filename}) specified in metadata file: ${metadataFile}`,
               );
             }
+
             return {
               absolutePath: filePath,
               metadata,

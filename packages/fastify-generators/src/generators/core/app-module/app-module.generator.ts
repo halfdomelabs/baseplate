@@ -24,9 +24,11 @@ import {
 import { camelCase, kebabCase } from 'change-case';
 import { z } from 'zod';
 
-import { appModuleConfigValuesProvider } from '../app-module-setup/app-module-setup.generator.js';
-import { appModuleSetupImportsProvider } from '../app-module-setup/generated/ts-import-maps.js';
-import { CORE_APP_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';
+import {
+  appModuleConfigValuesProvider,
+  appModuleSetupImportsProvider,
+} from '../app-module-setup/index.js';
+import { CORE_APP_MODULE_GENERATED } from './generated/index.js';
 
 const appModuleConfigSchema = createFieldMapSchemaBuilder((t) => ({
   moduleFields: t.mapOfMaps<string, string, TsCodeFragment>(),
@@ -153,7 +155,7 @@ export const appModuleGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 id: `module-${id}`,
-                template: CORE_APP_MODULE_TS_TEMPLATES.index,
+                template: CORE_APP_MODULE_GENERATED.templates.index,
                 destination: `${moduleFolder}/index.ts`,
                 importMapProviders: {
                   appModuleSetupImports,

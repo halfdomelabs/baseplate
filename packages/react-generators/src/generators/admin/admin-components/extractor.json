@@ -1,0 +1,58 @@
+{
+  "name": "admin/admin-components",
+  "templates": {
+    "src/components/DescriptionList/index.tsx": {
+      "name": "description-list",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#admin/admin-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/DescriptionList/index.tsx",
+      "projectExports": { "DescriptionList": { "exportName": "default" } },
+      "template": "",
+      "variables": {}
+    },
+    "src/components/EmbeddedListInput/index.tsx": {
+      "name": "embedded-list-input",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#admin/admin-components",
+      "group": "components",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/components/EmbeddedListInput/index.tsx",
+      "projectExports": {
+        "EmbeddedListFormProps": { "isTypeOnly": true },
+        "EmbeddedListInput": { "exportName": "default" },
+        "EmbeddedListTableProps": { "isTypeOnly": true }
+      },
+      "template": "",
+      "variables": {}
+    },
+    "src/components/EmbeddedObjectInput/index.tsx": {
+      "name": "embedded-object-input",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#admin/admin-components",
+      "group": "components",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/components/EmbeddedObjectInput/index.tsx",
+      "projectExports": {
+        "EmbeddedObjectFormProps": { "isTypeOnly": true },
+        "EmbeddedObjectInput": { "exportName": "default" }
+      },
+      "template": "",
+      "variables": {}
+    }
+  }
+}

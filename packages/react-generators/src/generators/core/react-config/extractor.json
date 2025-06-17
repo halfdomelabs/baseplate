@@ -1,0 +1,16 @@
+{
+  "name": "core/react-config",
+  "templates": {
+    "src/services/config.ts": {
+      "name": "config",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-config",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/services/config.ts",
+      "projectExports": { "config": {} },
+      "template": "",
+      "variables": { "TPL_CONFIG_SCHEMA": {} }
+    }
+  }
+}

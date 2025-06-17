@@ -1,0 +1,24 @@
+{
+  "name": "apollo/apollo-sentry",
+  "templates": {
+    "src/services/apollo/apollo-sentry-link.ts": {
+      "name": "apollo-sentry-link",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#apollo/apollo-sentry",
+      "importMapProviders": {
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        },
+        "reactSentryImportsProvider": {
+          "importName": "reactSentryImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-sentry/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/services/apollo/apollo-sentry-link.ts",
+      "template": "",
+      "variables": {}
+    }
+  }
+}

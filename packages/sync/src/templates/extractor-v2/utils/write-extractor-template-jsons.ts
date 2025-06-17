@@ -12,10 +12,10 @@ import type { TemplateExtractorContext } from '../runner/template-extractor-cont
  * @param context - Template extractor context containing config lookup and file container
  * @throws Error if no config is found for a generator
  */
-export function writeExtractorTemplateJsons(
+export async function writeExtractorTemplateJsons(
   generatorNames: string[],
   context: TemplateExtractorContext,
-): void {
+): Promise<void> {
   for (const generator of generatorNames) {
     const generatorConfig = context.configLookup.getExtractorConfig(generator);
     if (!generatorConfig) {
@@ -23,7 +23,7 @@ export function writeExtractorTemplateJsons(
     }
 
     // Write the config to the extractor.json file
-    context.fileContainer.writeFile(
+    await context.fileContainer.writeFile(
       path.join(generatorConfig.generatorDirectory, 'extractor.json'),
       stringifyPrettyCompact(generatorConfig.config),
     );

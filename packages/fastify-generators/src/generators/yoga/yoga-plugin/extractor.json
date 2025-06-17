@@ -1,0 +1,101 @@
+{
+  "name": "yoga/yoga-plugin",
+  "templates": {
+    "src/plugins/graphql/index.ts": {
+      "name": "graphql-plugin",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        },
+        "requestServiceContextImportsProvider": {
+          "importName": "requestServiceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/request-service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/plugins/graphql/index.ts",
+      "template": "",
+      "variables": {
+        "TPL_ENVELOP_PLUGINS": {},
+        "TPL_GRAPHQL_HANDLER": {},
+        "TPL_POST_SCHEMA_FRAGMENTS": {},
+        "TPL_SCHEMA": {},
+        "TPL_SIDE_EFFECT_IMPORTS": {}
+      }
+    },
+    "src/plugins/graphql/pubsub.ts": {
+      "name": "pubsub",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
+      "group": "subscriptions",
+      "importMapProviders": {
+        "fastifyRedisImportsProvider": {
+          "importName": "fastifyRedisImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/fastify-redis/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/plugins/graphql/pubsub.ts",
+      "template": "",
+      "variables": { "TPL_PUBLISH_ARGS": {} }
+    },
+    "src/plugins/graphql/use-graph-logger.ts": {
+      "name": "use-graph-logger",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/plugins/graphql/use-graph-logger.ts",
+      "template": "",
+      "variables": {}
+    },
+    "src/plugins/graphql/websocket.ts": {
+      "name": "websocket",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
+      "group": "subscriptions",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        },
+        "requestServiceContextImportsProvider": {
+          "importName": "requestServiceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/request-service-context/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/plugins/graphql/websocket.ts",
+      "template": "",
+      "variables": { "TPL_ON_CONNECT": {} }
+    },
+    "websocket-fragments.ts": {
+      "name": "websocket-fragments",
+      "type": "ts-snippets"
+    }
+  }
+}

@@ -1,7 +1,7 @@
-import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
+import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 import type { Logger, TemplateFileExtractorCreator } from '@baseplate-dev/sync';
 
-import { TsTemplateFileExtractor } from '@baseplate-dev/core-generators';
+import { TsTemplateFileExtractor } from '@baseplate-dev/core-generators/renderers';
 import {
   RawTemplateFileExtractor,
   runTemplateFileExtractors,
@@ -11,6 +11,8 @@ import { findNearestPackageJson } from '@baseplate-dev/utils/node';
 import { globby } from 'globby';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { discoverPlugins } from '#src/plugins/plugin-discovery.js';
 
 const GENERATOR_PACKAGES = [
   '@baseplate-dev/core-generators',
@@ -25,21 +27,19 @@ const TEMPLATE_FILE_EXTRACTOR_CREATORS: TemplateFileExtractorCreator[] = [
 ];
 
 async function buildGeneratorPackageMap(
-  context: SchemaParserContext,
+  availablePlugins: PluginMetadataWithPaths[],
 ): Promise<Map<string, string>> {
   const generatorPackageMap = new Map<string, string>();
-  for (const plugin of context.pluginStore.availablePlugins) {
+  for (const plugin of availablePlugins) {
     const nearestPackageJsonPath = await findNearestPackageJson({
-      cwd: plugin.metadata.pluginDirectory,
+      cwd: plugin.pluginDirectory,
       stopAtNodeModules: true,
     });
     if (!nearestPackageJsonPath) {
-      throw new Error(
-        `Could not find package.json for ${plugin.metadata.packageName}`,
-      );
+      throw new Error(`Could not find package.json for ${plugin.packageName}`);
     }
     generatorPackageMap.set(
-      plugin.metadata.packageName,
+      plugin.packageName,
       path.dirname(nearestPackageJsonPath),
     );
   }
@@ -60,15 +60,15 @@ async function buildGeneratorPackageMap(
 export async function runTemplateExtractorsForProject(
   directory: string,
   app: string,
-  context: SchemaParserContext,
   logger: Logger,
 ): Promise<void> {
+  const availablePlugins = await discoverPlugins(directory, logger);
   // find all .generator-info.json files in the project
   const generatorInfoFiles = await globby(
     path.join('**', '.generator-info.json'),
     { onlyFiles: true, absolute: true, gitignore: true, cwd: directory },
   );
-  const generatorPackageMap = await buildGeneratorPackageMap(context);
+  const generatorPackageMap = await buildGeneratorPackageMap(availablePlugins);
   logger.info(
     `Running template extractors for ${directory}${
       app ? ` for app ${app}` : ''

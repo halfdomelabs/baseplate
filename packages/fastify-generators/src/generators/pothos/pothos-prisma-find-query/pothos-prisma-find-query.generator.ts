@@ -19,14 +19,14 @@ import {
   getModelIdFieldName,
   getPrimaryKeyDefinition,
 } from '#src/generators/prisma/_shared/crud-method/primary-key-input.js';
-import { prismaOutputProvider } from '#src/generators/prisma/prisma/prisma.generator.js';
+import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 import { writePothosArgsFromDtoFields } from '#src/writers/pothos/index.js';
 
 import { pothosFieldScope } from '../_providers/scopes.js';
-import { getPothosPrismaPrimaryKeyTypeOutputName } from '../pothos-prisma-primary-key/pothos-prisma-primary-key.generator.js';
-import { pothosTypesFileProvider } from '../pothos-types-file/pothos-types-file.generator.js';
-import { pothosSchemaBaseTypesProvider } from '../pothos/pothos.generator.js';
+import { getPothosPrismaPrimaryKeyTypeOutputName } from '../pothos-prisma-primary-key/index.js';
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
+import { pothosSchemaBaseTypesProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   /**

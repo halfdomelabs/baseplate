@@ -27,6 +27,7 @@
     "prettier:check:affected": "turbo run prettier:check --affected --continue",
     "prettier:root:check": "prettier --check .",
     "prettier:write": "turbo run prettier:write",
+    "project:generate": "pnpm --filter @baseplate-dev/project-builder-cli project:generate",
     "release": "pnpm build && pnpm changeset publish",
     "run:morpher": "pnpm --filter @baseplate-dev/code-morph run:morpher",
     "serve": "turbo run @baseplate-dev/project-builder-cli:start serve",

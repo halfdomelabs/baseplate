@@ -58,6 +58,23 @@ function collectUsedIdentifierNames(sourceFile: SourceFile): Set<string> {
   return usedIdentifiers;
 }
 
+const PACKAGE_REGEX =
+  /^(?:@([a-z0-9-~][a-z0-9-._~]*)\/)?([a-z0-9-~][a-z0-9-._~]*)$/;
+
+/**
+ * Converts an NPM package name to its corresponding @types package name.
+ */
+function toTypesPackageName(pkgName: string): string | undefined {
+  if (!PACKAGE_REGEX.test(pkgName)) {
+    return undefined;
+  }
+  if (pkgName.startsWith('@')) {
+    const [scope, name] = pkgName.slice(1).split('/');
+    return `@types/${scope}__${name}`;
+  }
+  return `@types/${pkgName}`;
+}
+
 /**
  * Organizes the imports in a Typescript template file.
  * - Removes unused imports
@@ -103,13 +120,14 @@ export async function organizeTsTemplateImports(
   // this if we can't use collectUsedIdentifierNames.
 
   const usedIdentifierNames = collectUsedIdentifierNames(sourceFile);
+
   const isNodeUsed = (node: Node | undefined): node is Node => {
     if (!node) {
       return false;
     }
     const name =
       (Node.isImportSpecifier(node)
-        ? node.getAliasNode()?.getText()
+        ? (node.getAliasNode()?.getText() ?? node.getName())
         : undefined) ?? node.getText();
     return usedIdentifierNames.has(name);
   };
@@ -157,6 +175,18 @@ export async function organizeTsTemplateImports(
         moduleSpecifier,
       );
       if (!resolutionResult.path) {
+        // It's possible that it's a type only import, so we should check for the @types import
+        const typesPackageName = toTypesPackageName(moduleSpecifier);
+        if (typesPackageName) {
+          const typesResolutionResult = await resolver.async(
+            path.dirname(filePath),
+            typesPackageName,
+          );
+          if (typesResolutionResult.path) {
+            return [importDeclaration];
+          }
+        }
+
         throw new Error(
           `Could not resolve import ${moduleSpecifier} in ${filePath}: ${String(resolutionResult.error)}`,
         );

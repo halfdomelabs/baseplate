@@ -16,7 +16,9 @@
     "#src/*": "./dist/*"
   },
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./template-extractor": "./dist/template-extractor/index.js",
+    "./plugins": "./dist/plugins/index.js"
   },
   "main": "dist/index.js",
   "files": [

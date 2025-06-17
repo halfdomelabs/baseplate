@@ -1,0 +1,16 @@
+{
+  "name": "apollo/apollo-error",
+  "templates": {
+    "src/utils/apollo-error.ts": {
+      "name": "apollo-error",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#apollo/apollo-error",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/utils/apollo-error.ts",
+      "projectExports": { "getApolloErrorCode": {} },
+      "template": "",
+      "variables": {}
+    }
+  }
+}

@@ -11,7 +11,7 @@ export function getResolverFactory(workingDirectory: string): ResolverFactory {
     tsconfig: {
       configFile: path.join(workingDirectory, 'tsconfig.json'),
     },
-    conditionNames: ['node', 'require'],
+    conditionNames: ['node', 'require', 'types'],
     extensions: ['.ts', '.tsx', '.d.ts', '.js', '.jsx', '.json', '.node'],
     extensionAlias: {
       '.js': ['.ts', '.tsx', '.d.ts', '.js'],

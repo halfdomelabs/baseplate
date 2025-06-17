@@ -2,7 +2,7 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
 
-import type { ReactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
+import type { ReactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
 
 export interface DataLoader {
   loader: TsCodeFragment;

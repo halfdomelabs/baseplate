@@ -1,1 +1,1 @@
-export const placeholder = '';
+export * from './generators/index.js';

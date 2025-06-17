@@ -2,9 +2,9 @@ import { tsCodeFragment } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { prismaCrudServiceSetupProvider } from '#src/generators/prisma/prisma-crud-service/prisma-crud-service.generator.js';
+import { prismaCrudServiceSetupProvider } from '#src/generators/prisma/prisma-crud-service/index.js';
 
-import { passwordHasherServiceImportsProvider } from '../password-hasher-service/password-hasher-service.generator.js';
+import { passwordHasherServiceImportsProvider } from '../password-hasher-service/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

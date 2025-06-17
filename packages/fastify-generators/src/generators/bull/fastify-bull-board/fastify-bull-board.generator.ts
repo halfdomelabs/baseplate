@@ -19,16 +19,16 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
+import { appModuleProvider } from '#src/generators/core/app-module/index.js';
 import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
-import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/fastify-redis.generator.js';
-import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/fastify-server.generator.js';
+import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/index.js';
+import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/index.js';
 import {
   pothosImportsProvider,
   pothosSchemaProvider,
-} from '#src/generators/pothos/pothos/pothos.generator.js';
+} from '#src/generators/pothos/pothos/index.js';
 
-import { BULL_FASTIFY_BULL_BOARD_TS_TEMPLATES } from './generated/ts-templates.js';
+import { BULL_FASTIFY_BULL_BOARD_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -53,6 +53,7 @@ export const fastifyBullBoardGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: BULL_FASTIFY_BULL_BOARD_GENERATED.paths.task,
     setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
@@ -68,6 +69,7 @@ export const fastifyBullBoardGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        paths: BULL_FASTIFY_BULL_BOARD_GENERATED.paths.provider,
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         fastifyRedisImports: fastifyRedisImportsProvider,
         pothosSchema: pothosSchemaProvider,
@@ -77,6 +79,7 @@ export const fastifyBullBoardGenerator = createGenerator({
       },
       run({
         typescriptFile,
+        paths,
         errorHandlerServiceImports,
         fastifyRedisImports,
         pothosSchema,
@@ -96,9 +99,9 @@ export const fastifyBullBoardGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: BULL_FASTIFY_BULL_BOARD_TS_TEMPLATES.moduleGroup,
-                baseDirectory: moduleFolder,
+              typescriptFile.renderTemplateGroupV2({
+                group: BULL_FASTIFY_BULL_BOARD_GENERATED.templates.moduleGroup,
+                paths,
                 importMapProviders: {
                   fastifyRedisImports,
                   errorHandlerServiceImports,

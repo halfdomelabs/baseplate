@@ -7,10 +7,9 @@ import {
   reactRoutesProvider,
 } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
-import path from 'node:path/posix';
 import { z } from 'zod';
 
-import { AUTH_0_AUTH_0_CALLBACK_TS_TEMPLATES } from './generated/ts-templates.js';
+import { AUTH0_AUTH0_CALLBACK_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -19,6 +18,7 @@ export const auth0CallbackGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: AUTH0_AUTH0_CALLBACK_GENERATED.paths.task,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
@@ -26,6 +26,7 @@ export const auth0CallbackGenerator = createGenerator({
         authHooksImports: authHooksImportsProvider,
         reactErrorImports: reactErrorImportsProvider,
         reactRoutes: reactRoutesProvider,
+        paths: AUTH0_AUTH0_CALLBACK_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
@@ -33,16 +34,8 @@ export const auth0CallbackGenerator = createGenerator({
         authHooksImports,
         reactErrorImports,
         reactRoutes,
+        paths,
       }) {
-        const callbackPagePath = path.join(
-          reactRoutes.getDirectoryBase(),
-          'auth0-callback.page.tsx',
-        );
-        const signupPagePath = path.join(
-          reactRoutes.getDirectoryBase(),
-          'signup.page.tsx',
-        );
-
         return {
           build: async (builder) => {
             // Callback page
@@ -50,14 +43,15 @@ export const auth0CallbackGenerator = createGenerator({
               path: 'auth0-callback',
               element: createRouteElement(
                 'Auth0CallbackPage',
-                callbackPagePath,
+                paths.auth0CallbackPage,
               ),
             });
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: AUTH_0_AUTH_0_CALLBACK_TS_TEMPLATES.auth0CallbackPage,
-                destination: callbackPagePath,
+                template:
+                  AUTH0_AUTH0_CALLBACK_GENERATED.templates.auth0CallbackPage,
+                destination: paths.auth0CallbackPage,
                 importMapProviders: {
                   authHooksImports,
                   reactComponentsImports,
@@ -69,13 +63,13 @@ export const auth0CallbackGenerator = createGenerator({
             // Signup page
             reactRoutes.registerRoute({
               path: 'signup',
-              element: createRouteElement('SignupPage', signupPagePath),
+              element: createRouteElement('SignupPage', paths.signupPage),
             });
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: AUTH_0_AUTH_0_CALLBACK_TS_TEMPLATES.signupPage,
-                destination: signupPagePath,
+                template: AUTH0_AUTH0_CALLBACK_GENERATED.templates.signupPage,
+                destination: paths.signupPage,
                 importMapProviders: {
                   reactComponentsImports,
                   reactErrorImports,

@@ -1,0 +1,15 @@
+{
+  "name": "pothos/pothos-sentry",
+  "templates": {
+    "src/plugins/graphql/use-sentry.ts": {
+      "name": "use-sentry",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-sentry",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/plugins/graphql/use-sentry.ts",
+      "template": "",
+      "variables": {}
+    }
+  }
+}

@@ -3,7 +3,6 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -36,11 +35,7 @@ import { z } from 'zod';
 
 import { STORAGE_PACKAGES } from '#src/constants/index.js';
 
-import {
-  createStorageModuleImports,
-  storageModuleImportsProvider,
-} from './generated/ts-import-maps.js';
-import { FASTIFY_STORAGE_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';
+import { FASTIFY_STORAGE_MODULE_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   /**
@@ -85,6 +80,8 @@ export const storageModuleGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ fileModel, s3Adapters, categories = [] }) => ({
+    paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.task,
+    imports: FASTIFY_STORAGE_MODULE_GENERATED.imports.task,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(STORAGE_PACKAGES, [
         '@aws-sdk/client-s3',
@@ -114,22 +111,6 @@ export const storageModuleGenerator = createGenerator({
         );
 
         return {};
-      },
-    }),
-    main: createGeneratorTask({
-      dependencies: {
-        appModule: appModuleProvider,
-      },
-      exports: {
-        storageModuleImports: storageModuleImportsProvider.export(projectScope),
-      },
-      run({ appModule }) {
-        const moduleFolder = appModule.getModuleFolder();
-        return {
-          providers: {
-            storageModuleImports: createStorageModuleImports(moduleFolder),
-          },
-        };
       },
     }),
     config: createProviderTask(configServiceProvider, (configService) => {
@@ -181,6 +162,7 @@ export const storageModuleGenerator = createGenerator({
         fileObjectType: pothosTypeOutputProvider
           .dependency()
           .reference(`prisma-object-type:${fileModel}`),
+        paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
@@ -193,6 +175,7 @@ export const storageModuleGenerator = createGenerator({
         configServiceImports,
         prismaUtilsImports,
         fileObjectType,
+        paths,
       }) {
         const moduleFolder = appModule.getModuleFolder();
 
@@ -200,22 +183,28 @@ export const storageModuleGenerator = createGenerator({
           build: async (builder) => {
             // Copy adapters
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_TS_TEMPLATES.adaptersGroup,
-                baseDirectory: path.posix.join(moduleFolder, 'adapters'),
+              typescriptFile.renderTemplateGroupV2({
+                group: FASTIFY_STORAGE_MODULE_GENERATED.templates.adaptersGroup,
+                paths,
               }),
             );
 
             // Copy schema
             const fileObjectRef = fileObjectType.getTypeReference();
+            const { schemaGroup } = FASTIFY_STORAGE_MODULE_GENERATED.templates;
+            for (const template of Object.keys(schemaGroup)) {
+              appModule.moduleImports.push(
+                paths[template as keyof typeof schemaGroup],
+              );
+              pothosSchema.registerSchemaFile(
+                paths[template as keyof typeof schemaGroup],
+              );
+            }
+
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                onRenderTemplateFile: (canonicalPath) => {
-                  appModule.moduleImports.push(canonicalPath);
-                  pothosSchema.registerSchemaFile(canonicalPath);
-                },
-                group: FASTIFY_STORAGE_MODULE_TS_TEMPLATES.schemaGroup,
-                baseDirectory: path.posix.join(moduleFolder, 'schema'),
+              typescriptFile.renderTemplateGroupV2({
+                group: FASTIFY_STORAGE_MODULE_GENERATED.templates.schemaGroup,
+                paths,
                 importMapProviders: {
                   pothosImports,
                 },
@@ -235,9 +224,9 @@ export const storageModuleGenerator = createGenerator({
             const modelType = prismaOutput.getModelTypeFragment(fileModel);
 
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_TS_TEMPLATES.servicesGroup,
-                baseDirectory: path.posix.join(moduleFolder, 'services'),
+              typescriptFile.renderTemplateGroupV2({
+                group: FASTIFY_STORAGE_MODULE_GENERATED.templates.servicesGroup,
+                paths,
                 importMapProviders: {
                   errorHandlerServiceImports,
                   serviceContextImports,
@@ -267,9 +256,9 @@ export const storageModuleGenerator = createGenerator({
 
             // Copy utils
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_TS_TEMPLATES.utilsGroup,
-                baseDirectory: path.posix.join(moduleFolder, 'utils'),
+              typescriptFile.renderTemplateGroupV2({
+                group: FASTIFY_STORAGE_MODULE_GENERATED.templates.utilsGroup,
+                paths,
                 importMapProviders: {
                   serviceContextImports,
                   errorHandlerServiceImports,
@@ -338,9 +327,10 @@ export const storageModuleGenerator = createGenerator({
             }
 
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_TS_TEMPLATES.constantsGroup,
-                baseDirectory: path.posix.join(moduleFolder, 'constants'),
+              typescriptFile.renderTemplateGroupV2({
+                group:
+                  FASTIFY_STORAGE_MODULE_GENERATED.templates.constantsGroup,
+                paths,
                 importMapProviders: {
                   serviceContextImports,
                 },
@@ -367,5 +357,3 @@ export const storageModuleGenerator = createGenerator({
     }),
   }),
 });
-
-export { storageModuleImportsProvider } from './generated/ts-import-maps.js';

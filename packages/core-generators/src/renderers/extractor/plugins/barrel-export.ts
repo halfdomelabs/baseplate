@@ -1,5 +1,8 @@
 import { parseGeneratorName } from '@baseplate-dev/sync';
-import { createTemplateExtractorPlugin } from '@baseplate-dev/sync/extractor-v2';
+import {
+  createTemplateExtractorPlugin,
+  TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
+} from '@baseplate-dev/sync/extractor-v2';
 import { handleFileNotFoundError } from '@baseplate-dev/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -34,6 +37,46 @@ export function mergeBarrelExports(
     indexFileContents ?? '',
   );
 
+  // Collect existing exports to merge with new ones
+  const existingExports: TemplateExtractorBarrelExport[] = [];
+
+  for (const exportDecl of sourceFile.getExportDeclarations()) {
+    const moduleSpecifier = exportDecl.getModuleSpecifierValue();
+    const isTypeOnly = exportDecl.isTypeOnly();
+
+    if (!moduleSpecifier) continue;
+
+    if (
+      moduleSpecifier.startsWith(`./${TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY}`)
+    ) {
+      continue;
+    }
+
+    // Handle star exports
+    if (exportDecl.getNamedExports().length === 0) {
+      existingExports.push({
+        moduleSpecifier,
+        namedExports: ['*'],
+        isTypeOnly,
+      });
+    } else {
+      // Handle named exports
+      const namedExports = exportDecl
+        .getNamedExports()
+        .map((ne) => ne.getName());
+      if (namedExports.length > 0) {
+        existingExports.push({
+          moduleSpecifier,
+          namedExports,
+          isTypeOnly,
+        });
+      }
+    }
+  }
+
+  // Merge existing exports with new ones
+  const allExports = [...existingExports, ...barrelExports];
+
   // Remove all existing export statements
   for (const decl of sourceFile.getExportDeclarations()) {
     decl.remove();
@@ -48,7 +91,7 @@ export function mergeBarrelExports(
     }
   >();
 
-  for (const barrelExport of barrelExports) {
+  for (const barrelExport of allExports) {
     const key = barrelExport.moduleSpecifier;
     if (!exportsByModuleAndType.has(key)) {
       exportsByModuleAndType.set(key, {
@@ -56,8 +99,10 @@ export function mergeBarrelExports(
       });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const moduleData = exportsByModuleAndType.get(key)!;
+    const moduleData = exportsByModuleAndType.get(key);
+    if (!moduleData) {
+      throw new Error(`Module data not found for key: ${key}`);
+    }
     const isTypeOnly = barrelExport.isTypeOnly ?? false;
 
     for (const namedExport of barrelExport.namedExports) {
@@ -249,9 +294,6 @@ export const templateExtractorBarrelExportPlugin =
           if (!extractorConfig) {
             throw new Error(`Extractor config not found: ${generatorName}`);
           }
-          if (barrelExports.length === 0) {
-            continue;
-          }
           const indexFileContents = await fs
             .readFile(
               path.join(extractorConfig.generatorDirectory, 'index.ts'),
@@ -266,7 +308,7 @@ export const templateExtractorBarrelExportPlugin =
               namedExports: ['*'],
             },
           ]);
-          fileContainer.writeFile(
+          await fileContainer.writeFile(
             path.join(extractorConfig.generatorDirectory, 'index.ts'),
             updatedContents,
           );
@@ -303,7 +345,10 @@ export const templateExtractorBarrelExportPlugin =
             generatedBarrelExports,
           );
 
-          fileContainer.writeFile(generatedIndexPath, updatedGeneratedContents);
+          await fileContainer.writeFile(
+            generatedIndexPath,
+            updatedGeneratedContents,
+          );
         }
       });
 

@@ -1,0 +1,38 @@
+{
+  "name": "core/fastify-server",
+  "templates": {
+    "src/index.ts": {
+      "name": "index",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#core/fastify-server",
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        },
+        "loggerServiceImportsProvider": {
+          "importName": "loggerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/logger-service/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/index.ts",
+      "template": "",
+      "variables": { "TPL_LOG_ERROR": {} }
+    },
+    "src/server.ts": {
+      "name": "server",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#core/fastify-server",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/server.ts",
+      "template": "",
+      "variables": {
+        "TPL_PLUGINS": {},
+        "TPL_PRE_PLUGIN_FRAGMENTS": {},
+        "TPL_ROOT_MODULE": {}
+      }
+    }
+  }
+}

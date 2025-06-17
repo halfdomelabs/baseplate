@@ -136,6 +136,19 @@ describe('renderTsTemplateToTsCodeFragment', () => {
     );
   });
 
+  it('should handle inline variables with whitespace around parentheses', () => {
+    const template = `function test() { return ( \n TPL_VARIABLE \n ); }`;
+    const variables = {
+      TPL_VARIABLE: {
+        contents: '123',
+      },
+    };
+
+    const result = renderTsTemplateToTsCodeFragment(template, variables);
+
+    expect(result.contents).toEqual(`function test() { return (123); }`);
+  });
+
   it('should strip ts-nocheck from header', () => {
     const template = '// @ts-nocheck\nconst value = TPL_VARIABLE;';
     const variables = {

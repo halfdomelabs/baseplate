@@ -1,7 +1,7 @@
 import {
   CORE_PACKAGES,
   createNodePackagesTask,
-  projectScope,
+  renderTextTemplateFileAction,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
@@ -11,22 +11,13 @@ import {
   reactComponentsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  renderTextTemplateFileAction,
-} from '@baseplate-dev/sync';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { capitalize } from 'inflection';
 import { z } from 'zod';
 
 import { STORAGE_PACKAGES } from '#src/constants/index.js';
 
-import { REACT_UPLOAD_COMPONENTS_TEXT_TEMPLATES } from './generated/text-templates.js';
-import {
-  createUploadComponentsImports,
-  uploadComponentsImportsProvider,
-} from './generated/ts-import-maps.js';
-import { REACT_UPLOAD_COMPONENTS_TS_TEMPLATES } from './generated/ts-templates.js';
+import { REACT_UPLOAD_COMPONENTS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   fileModelName: z.string().min(1),
@@ -45,6 +36,8 @@ export const uploadComponentsGenerator = createGenerator({
           STORAGE_PACKAGES['react-circular-progressbar'],
       },
     }),
+    paths: REACT_UPLOAD_COMPONENTS_GENERATED.paths.task,
+    imports: REACT_UPLOAD_COMPONENTS_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         reactErrorImports: reactErrorImportsProvider,
@@ -53,10 +46,7 @@ export const uploadComponentsGenerator = createGenerator({
         reactComponentsImports: reactComponentsImportsProvider,
         generatedGraphqlImports: generatedGraphqlImportsProvider,
         reactApollo: reactApolloProvider,
-      },
-      exports: {
-        uploadComponentsImports:
-          uploadComponentsImportsProvider.export(projectScope),
+        paths: REACT_UPLOAD_COMPONENTS_GENERATED.paths.provider,
       },
       run({
         reactErrorImports,
@@ -65,26 +55,22 @@ export const uploadComponentsGenerator = createGenerator({
         generatedGraphqlImports,
         reactApollo,
         reactComponents,
+        paths,
       }) {
         reactComponents.registerComponent({
           name: 'FileInput',
         });
 
-        const hookPath = '@/src/hooks/useUpload.ts';
-        const fileInputComponentPath = `${reactComponents.getComponentsFolder()}/FileInput/index.tsx`;
-        const gqlFilePath = `${reactComponents.getComponentsFolder()}/FileInput/upload.gql`;
-        reactApollo.registerGqlFile(gqlFilePath);
+        reactApollo.registerGqlFile(paths.fileInputUploadGql);
 
         return {
-          providers: {
-            uploadComponentsImports: createUploadComponentsImports('@/src'),
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template:
-                  REACT_UPLOAD_COMPONENTS_TS_TEMPLATES.fileInputComponent,
-                destination: fileInputComponentPath,
+                  REACT_UPLOAD_COMPONENTS_GENERATED.templates
+                    .fileInputComponent,
+                destination: paths.fileInputComponent,
                 importMapProviders: {
                   reactErrorImports,
                   reactComponentsImports,
@@ -96,8 +82,9 @@ export const uploadComponentsGenerator = createGenerator({
             await builder.apply(
               renderTextTemplateFileAction({
                 template:
-                  REACT_UPLOAD_COMPONENTS_TEXT_TEMPLATES.fileInputUploadGql,
-                destination: gqlFilePath,
+                  REACT_UPLOAD_COMPONENTS_GENERATED.templates
+                    .fileInputUploadGql,
+                destination: paths.fileInputUploadGql,
                 variables: {
                   TPL_FILE_TYPE: capitalize(fileModelName),
                 },
@@ -106,8 +93,9 @@ export const uploadComponentsGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: REACT_UPLOAD_COMPONENTS_TS_TEMPLATES.hooksUseUpload,
-                destination: hookPath,
+                template:
+                  REACT_UPLOAD_COMPONENTS_GENERATED.templates.hooksUseUpload,
+                destination: paths.hooksUseUpload,
               }),
             );
           },
@@ -116,5 +104,3 @@ export const uploadComponentsGenerator = createGenerator({
     }),
   }),
 });
-
-export { uploadComponentsImportsProvider } from './generated/ts-import-maps.js';

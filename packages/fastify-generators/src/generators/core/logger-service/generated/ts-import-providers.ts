@@ -28,12 +28,12 @@ const coreLoggerServiceImportsTask = createGeneratorTask({
     paths: CORE_LOGGER_SERVICE_PATHS.provider,
   },
   exports: {
-    imports: loggerServiceImportsProvider.export(projectScope),
+    loggerServiceImports: loggerServiceImportsProvider.export(projectScope),
   },
   run({ paths }) {
     return {
       providers: {
-        imports: createTsImportMap(loggerServiceImportsSchema, {
+        loggerServiceImports: createTsImportMap(loggerServiceImportsSchema, {
           logger: paths.logger,
         }),
       },

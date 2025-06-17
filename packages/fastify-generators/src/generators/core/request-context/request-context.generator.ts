@@ -1,37 +1,28 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
   tsCodeFragment,
   tsImportBuilder,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderTask,
-} from '@baseplate-dev/sync';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
-import { fastifyServerConfigProvider } from '../fastify-server/fastify-server.generator.js';
+import { fastifyServerConfigProvider } from '../fastify-server/index.js';
 import { loggerServiceConfigProvider } from '../logger-service/index.js';
-import {
-  createRequestContextImports,
-  requestContextImportsProvider,
-} from './generated/ts-import-maps.js';
-import { CORE_REQUEST_CONTEXT_TS_TEMPLATES } from './generated/ts-templates.js';
+import { CORE_REQUEST_CONTEXT_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
-
-const requestContextPluginPath = '@/src/plugins/request-context.ts';
 
 export const requestContextGenerator = createGenerator({
   name: 'core/request-context',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: CORE_REQUEST_CONTEXT_GENERATED.paths.task,
+    imports: CORE_REQUEST_CONTEXT_GENERATED.imports.task,
     loggerRequestContext: createGeneratorTask({
       dependencies: { loggerServiceConfig: loggerServiceConfigProvider },
       run({ loggerServiceConfig }) {
@@ -53,37 +44,35 @@ export const requestContextGenerator = createGenerator({
         '@fastify/request-context',
       ]),
     }),
-    fastifyServerConfig: createProviderTask(
-      fastifyServerConfigProvider,
-      (fastifyServerConfig) => {
+    fastifyServerConfig: createGeneratorTask({
+      dependencies: {
+        fastifyServerConfig: fastifyServerConfigProvider,
+        paths: CORE_REQUEST_CONTEXT_GENERATED.paths.provider,
+      },
+      run({ fastifyServerConfig, paths }) {
         fastifyServerConfig.plugins.set('requestContextPlugin', {
           plugin: tsCodeFragment(
             'requestContextPlugin',
             tsImportBuilder(['requestContextPlugin']).from(
-              requestContextPluginPath,
+              paths.requestContext,
             ),
           ),
         });
       },
-    ),
+    }),
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        paths: CORE_REQUEST_CONTEXT_GENERATED.paths.provider,
       },
-      exports: {
-        requestContextImports:
-          requestContextImportsProvider.export(projectScope),
-      },
-      run({ typescriptFile }) {
+      run({ typescriptFile, paths }) {
         return {
-          providers: {
-            requestContextImports: createRequestContextImports('@/src/plugins'),
-          },
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REQUEST_CONTEXT_TS_TEMPLATES.requestContext,
-                destination: requestContextPluginPath,
+                template:
+                  CORE_REQUEST_CONTEXT_GENERATED.templates.requestContext,
+                destination: paths.requestContext,
               }),
             );
           },
@@ -92,5 +81,3 @@ export const requestContextGenerator = createGenerator({
     }),
   }),
 });
-
-export { requestContextImportsProvider } from './generated/ts-import-maps.js';

@@ -4,6 +4,7 @@ import type { formatSchema } from '@prisma/internals';
 import {
   extractPackageVersions,
   nodeProvider,
+  normalizeTsPathToJsPath,
   packageInfoProvider,
   projectScope,
   tsCodeFragment,
@@ -31,19 +32,16 @@ import type { PrismaGeneratorBlock } from '#src/writers/prisma-schema/types.js';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import { configServiceProvider } from '#src/generators/core/config-service/index.js';
-import { fastifyHealthCheckConfigProvider } from '#src/generators/core/fastify-health-check/fastify-health-check.generator.js';
-import { fastifyOutputProvider } from '#src/generators/core/fastify/fastify.generator.js';
+import { fastifyHealthCheckConfigProvider } from '#src/generators/core/fastify-health-check/index.js';
+import { fastifyOutputProvider } from '#src/generators/core/fastify/index.js';
 import {
   createPrismaSchemaDatasourceBlock,
   createPrismaSchemaGeneratorBlock,
   PrismaSchemaFile,
 } from '#src/writers/prisma-schema/schema.js';
 
-import {
-  createPrismaImports,
-  prismaImportsProvider,
-} from './generated/ts-import-maps.js';
-import { PRISMA_PRISMA_TS_TEMPLATES } from './generated/ts-templates.js';
+import { PRISMA_PRISMA_GENERATED } from './generated/index.js';
+import { prismaImportsProvider } from './generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({
   defaultPort: z.number().default(5432),
@@ -77,6 +75,8 @@ export const prismaGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: (descriptor) => ({
+    paths: PRISMA_PRISMA_GENERATED.paths.task,
+    imports: PRISMA_PRISMA_GENERATED.imports.task,
     node: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
@@ -120,33 +120,27 @@ export const prismaGenerator = createGenerator({
     service: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
+        paths: PRISMA_PRISMA_GENERATED.paths.provider,
       },
-      outputs: {
-        prismaImports: prismaImportsProvider.export(projectScope),
-      },
-      run({ typescriptFile }) {
+      run({ typescriptFile, paths }) {
         return {
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: PRISMA_PRISMA_TS_TEMPLATES.service,
-                destination: '@/src/services/prisma.ts',
+                template: PRISMA_PRISMA_GENERATED.templates.service,
+                destination: paths.service,
               }),
             );
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: PRISMA_PRISMA_TS_TEMPLATES.seed,
-                destination: '@/src/prisma/seed.ts',
+                template: PRISMA_PRISMA_GENERATED.templates.seed,
+                destination: paths.seed,
                 writeOptions: {
                   shouldNeverOverwrite: true,
                 },
               }),
             );
-
-            return {
-              prismaImports: createPrismaImports('@/src/services'),
-            };
           },
         };
       },
@@ -169,10 +163,11 @@ export const prismaGenerator = createGenerator({
     schema: createGeneratorTask({
       dependencies: {
         prismaImports: prismaImportsProvider,
+        paths: PRISMA_PRISMA_GENERATED.paths.provider,
       },
       exports: { prismaSchema: prismaSchemaProvider.export(projectScope) },
       outputs: { prismaOutput: prismaOutputProvider.export(projectScope) },
-      run({ prismaImports }) {
+      run({ prismaImports, paths }) {
         const schemaFile = new PrismaSchemaFile();
 
         schemaFile.addGeneratorBlock(
@@ -225,7 +220,8 @@ export const prismaGenerator = createGenerator({
 
             return {
               prismaOutput: {
-                getPrismaServicePath: () => '@/src/services/prisma.js',
+                getPrismaServicePath: () =>
+                  normalizeTsPathToJsPath(paths.service),
                 getPrismaModel: (modelName) => {
                   const modelBlock = schemaFile.getModelBlock(modelName);
                   if (!modelBlock) {
@@ -263,5 +259,3 @@ export const prismaGenerator = createGenerator({
     }),
   }),
 });
-
-export { prismaImportsProvider } from './generated/ts-import-maps.js';

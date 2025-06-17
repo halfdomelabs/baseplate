@@ -1,0 +1,12 @@
+{
+  "generated-graphql.ts": {
+    "generatedGraphqlImportsProvider": {
+      "type": "ts-imports",
+      "providerExport": "generatedGraphqlImportsProvider",
+      "schemaExport": "generatedGraphqlImportsSchema",
+      "projectExports": {
+        "*": {}
+      }
+    }
+  }
+}

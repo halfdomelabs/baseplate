@@ -6,13 +6,14 @@ import {
 import { quot } from '@baseplate-dev/utils';
 
 import { CORE_PACKAGES } from '#src/constants/core-packages.js';
+import { packageInfoProvider } from '#src/providers/project.js';
 import { projectScope } from '#src/providers/scopes.js';
 import { TsCodeUtils } from '#src/renderers/index.js';
 import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
-import { nodeProvider } from '../node/node.generator.js';
-import { typescriptFileProvider } from '../typescript/typescript.generator.js';
-import { NODE_ESLINT_TS_TEMPLATES } from './generated/ts-templates.js';
+import { nodeProvider } from '../node/index.js';
+import { typescriptFileProvider } from '../typescript/index.js';
+import { NODE_ESLINT_GENERATED } from './generated/index.js';
 import { REACT_ESLINT_RULES } from './react-rules.js';
 import { VITEST_ESLINT_RULES } from './vitest-rules.js';
 
@@ -53,6 +54,27 @@ export const eslintGenerator = createGenerator({
   name: 'node/eslint',
   generatorFileUrl: import.meta.url,
   buildTasks: () => ({
+    paths: createGeneratorTask({
+      dependencies: {
+        node: nodeProvider,
+        packageInfo: packageInfoProvider,
+      },
+      exports: {
+        paths: NODE_ESLINT_GENERATED.paths.provider.export(),
+      },
+      run: ({ node, packageInfo }) => {
+        const packageRoot = packageInfo.getPackageRoot();
+        return {
+          providers: {
+            paths: {
+              eslintConfig: `${packageRoot}/${
+                node.isEsm ? 'eslint.config.js' : 'eslint.config.mjs'
+              }`,
+            },
+          },
+        };
+      },
+    }),
     setup: setupTask,
     node: createGeneratorTask({
       dependencies: {
@@ -87,12 +109,11 @@ export const eslintGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        node: nodeProvider,
         eslintConfigValues: eslintConfigValuesProvider,
         typescriptFile: typescriptFileProvider,
+        paths: NODE_ESLINT_GENERATED.paths.provider,
       },
       run({
-        node,
         eslintConfigValues: {
           react,
           eslintIgnore,
@@ -101,6 +122,7 @@ export const eslintGenerator = createGenerator({
           devDependencies,
         },
         typescriptFile,
+        paths,
       }) {
         const defaultProjectFiles = [...tsDefaultProjectFiles];
         if (!disableVitest) {
@@ -108,14 +130,10 @@ export const eslintGenerator = createGenerator({
         }
         return {
           build: async (builder) => {
-            const eslintConfigPath = node.isEsm
-              ? 'eslint.config.js'
-              : 'eslint.config.mjs';
-
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: NODE_ESLINT_TS_TEMPLATES.eslintConfig,
-                destination: eslintConfigPath,
+                template: NODE_ESLINT_GENERATED.templates.eslintConfig,
+                destination: paths.eslintConfig,
                 variables: {
                   TPL_DEFAULT_PROJECT_FILES:
                     TsCodeUtils.mergeFragmentsAsArrayPresorted(

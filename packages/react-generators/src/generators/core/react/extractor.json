@@ -1,0 +1,60 @@
+{
+  "name": "core/react",
+  "templates": {
+    "package/index.html": {
+      "name": "index-html",
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "group": "static",
+      "pathRootRelativePath": "{package-root}/index.html",
+      "variables": {
+        "TPL_DESCRIPTION": { "description": "Description of the project" },
+        "TPL_TITLE": { "description": "Title of the home page" }
+      }
+    },
+    "package/public/favicon.ico": {
+      "name": "favicon",
+      "type": "raw",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{package-root}/public/favicon.ico"
+    },
+    "package/README.md": {
+      "name": "readme",
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "group": "static",
+      "pathRootRelativePath": "{package-root}/README.md",
+      "variables": {
+        "TPL_PROJECT_NAME": { "description": "Name of the project" }
+      }
+    },
+    "package/vite.config.ts": {
+      "name": "vite-config",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{package-root}/vite.config.ts",
+      "template": "",
+      "variables": { "TPL_CONFIG": {} }
+    },
+    "src/index.tsx": {
+      "name": "index",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/index.tsx",
+      "template": "",
+      "variables": { "TPL_APP": {}, "TPL_HEADER": {} }
+    },
+    "src/vite-env.d.ts": {
+      "name": "vite-env",
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "group": "static",
+      "pathRootRelativePath": "{src-root}/vite-env.d.ts",
+      "variables": {}
+    }
+  }
+}

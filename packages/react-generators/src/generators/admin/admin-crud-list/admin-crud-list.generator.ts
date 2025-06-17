@@ -12,8 +12,8 @@ import { notEmpty } from '@baseplate-dev/utils';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
 
-import { reactComponentsImportsProvider } from '#src/generators/core/react-components/react-components.generator.js';
-import { reactErrorImportsProvider } from '#src/generators/core/react-error/react-error.generator.js';
+import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
+import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { titleizeCamel } from '#src/utils/case.js';
 import { createRouteElement } from '#src/utils/routes.js';
@@ -25,8 +25,8 @@ import type { DataLoader } from '../_providers/admin-loader.js';
 import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-column-container.js';
 import { printDataLoaders } from '../_providers/admin-loader.js';
 import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
-import { adminCrudQueriesProvider } from '../admin-crud-queries/admin-crud-queries.generator.js';
-import { ADMIN_ADMIN_CRUD_LIST_TS_TEMPLATES } from './generated/ts-templates.js';
+import { adminCrudQueriesProvider } from '../admin-crud-queries/index.js';
+import { ADMIN_ADMIN_CRUD_LIST_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   modelId: z.string(),
@@ -124,7 +124,7 @@ export const adminCrudListGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 id: `list-${modelId}`,
-                template: ADMIN_ADMIN_CRUD_LIST_TS_TEMPLATES.listPage,
+                template: ADMIN_ADMIN_CRUD_LIST_GENERATED.templates.listPage,
                 destination: listPagePath,
                 variables: {
                   TPL_PAGE_NAME: listPageComponentName,
@@ -184,7 +184,7 @@ export const adminCrudListGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 id: `table-${modelId}`,
-                template: ADMIN_ADMIN_CRUD_LIST_TS_TEMPLATES.table,
+                template: ADMIN_ADMIN_CRUD_LIST_GENERATED.templates.table,
                 destination: tableComponentPath,
                 variables: {
                   TPL_COMPONENT_NAME: tableComponentName,

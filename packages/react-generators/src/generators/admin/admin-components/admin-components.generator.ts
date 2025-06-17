@@ -1,7 +1,6 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
@@ -11,13 +10,9 @@ import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 import {
   reactComponentsImportsProvider,
   reactComponentsProvider,
-} from '#src/generators/core/react-components/react-components.generator.js';
+} from '#src/generators/core/react-components/index.js';
 
-import {
-  adminComponentsImportsProvider,
-  createAdminComponentsImports,
-} from './generated/ts-import-maps.js';
-import { ADMIN_ADMIN_COMPONENTS_TS_TEMPLATES } from './generated/ts-templates.js';
+import { ADMIN_ADMIN_COMPONENTS_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -29,17 +24,16 @@ export const adminComponentsGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, ['nanoid']),
     }),
+    paths: ADMIN_ADMIN_COMPONENTS_GENERATED.paths.task,
+    imports: ADMIN_ADMIN_COMPONENTS_GENERATED.imports.task,
     main: createGeneratorTask({
       dependencies: {
         reactComponents: reactComponentsProvider,
         reactComponentsImports: reactComponentsImportsProvider,
         typescriptFile: typescriptFileProvider,
+        paths: ADMIN_ADMIN_COMPONENTS_GENERATED.paths.provider,
       },
-      exports: {
-        adminComponentsImports:
-          adminComponentsImportsProvider.export(projectScope),
-      },
-      run({ reactComponents, reactComponentsImports, typescriptFile }) {
+      run({ reactComponents, reactComponentsImports, typescriptFile, paths }) {
         reactComponents.registerComponent({ name: 'EmbeddedListInput' });
         reactComponents.registerComponent({
           name: 'EmbeddedObjectInput',
@@ -47,16 +41,12 @@ export const adminComponentsGenerator = createGenerator({
         reactComponents.registerComponent({ name: 'DescriptionList' });
 
         return {
-          providers: {
-            adminComponentsImports: createAdminComponentsImports(
-              reactComponents.getComponentsFolder(),
-            ),
-          },
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: ADMIN_ADMIN_COMPONENTS_TS_TEMPLATES.componentsGroup,
-                baseDirectory: reactComponents.getComponentsFolder(),
+              typescriptFile.renderTemplateGroupV2({
+                group:
+                  ADMIN_ADMIN_COMPONENTS_GENERATED.templates.componentsGroup,
+                paths,
                 importMapProviders: {
                   reactComponentsImports,
                 },
@@ -68,6 +58,3 @@ export const adminComponentsGenerator = createGenerator({
     }),
   }),
 });
-
-export { adminComponentsImportsProvider } from './generated/ts-import-maps.js';
-export type { AdminComponentsImportsProvider } from './generated/ts-import-maps.js';

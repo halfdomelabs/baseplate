@@ -1,0 +1,47 @@
+{
+  "name": "auth0/auth0-callback",
+  "templates": {
+    "routes/auth0-callback.page.tsx": {
+      "name": "auth0-callback-page",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-callback",
+      "importMapProviders": {
+        "authHooksImportsProvider": {
+          "importName": "authHooksImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-hooks.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/auth0-callback.page.tsx",
+      "template": "",
+      "variables": {}
+    },
+    "routes/signup.page.tsx": {
+      "name": "signup-page",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-callback",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/signup.page.tsx",
+      "template": "",
+      "variables": {}
+    }
+  }
+}

@@ -3,11 +3,11 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import { prismaOutputProvider } from '#src/generators/prisma/prisma/prisma.generator.js';
+import { prismaOutputProvider } from '#src/generators/prisma/prisma/index.js';
 import { lowerCaseFirst } from '#src/utils/case.js';
 
-import { pothosEnumsFileProvider } from '../pothos-enums-file/pothos-enums-file.generator.js';
-import { pothosImportsProvider } from '../pothos/pothos.generator.js';
+import { pothosEnumsFileProvider } from '../pothos-enums-file/index.js';
+import { pothosImportsProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   enumName: z.string().min(1),

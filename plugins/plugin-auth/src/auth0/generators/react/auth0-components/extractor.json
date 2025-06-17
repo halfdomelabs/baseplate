@@ -1,0 +1,29 @@
+{
+  "name": "auth0/auth0-components",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/react-generators:authComponentsImportsProvider"
+      ],
+      "skipDefaultImportMap": true
+    }
+  },
+  "templates": {
+    "src/components/RequireAuth/index.tsx": {
+      "name": "require-auth",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-components",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/components/RequireAuth/index.tsx",
+      "projectExports": { "RequireAuth": { "exportName": "default" } },
+      "template": "",
+      "variables": {}
+    }
+  }
+}

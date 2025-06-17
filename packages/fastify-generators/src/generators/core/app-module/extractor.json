@@ -1,0 +1,26 @@
+{
+  "name": "core/app-module",
+  "templates": {
+    "index.ts": {
+      "name": "index",
+      "type": "ts",
+      "fileOptions": {
+        "generatorTemplatePath": "index.ts",
+        "kind": "instance"
+      },
+      "generator": "@baseplate-dev/fastify-generators#core/app-module",
+      "importMapProviders": {
+        "appModuleSetupImportsProvider": {
+          "importName": "appModuleSetupImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-module-setup/generated/ts-import-providers.ts"
+        }
+      },
+      "template": "",
+      "variables": {
+        "TPL_IMPORTS": {},
+        "TPL_MODULE_CONTENTS": {},
+        "TPL_MODULE_NAME": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "core/react-error-boundary",
+  "templates": {
+    "src/components/ErrorBoundary/index.tsx": {
+      "name": "component",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-error-boundary",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/components/ErrorBoundary/index.tsx",
+      "template": "",
+      "variables": {}
+    }
+  }
+}

@@ -26,6 +26,13 @@ export function getTextTemplateDelimiters(filename: string): {
     };
   }
 
+  if (filename.endsWith('.yml') || filename.endsWith('.yaml')) {
+    return {
+      start: '${{',
+      end: '}}',
+    };
+  }
+
   return {
     start: '{{',
     end: '}}',

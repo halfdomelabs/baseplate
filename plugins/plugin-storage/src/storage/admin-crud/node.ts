@@ -7,7 +7,7 @@ import {
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 
-import { adminCrudFileInputGenerator } from '#src/generators/react/admin-crud-file-input/admin-crud-file-input.generator.js';
+import { adminCrudFileInputGenerator } from '#src/generators/react/admin-crud-file-input/index.js';
 
 import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
 import type { FileTransformerConfig } from '../transformers/types.js';

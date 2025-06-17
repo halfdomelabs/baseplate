@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { doubleQuot } from '#src/utils/string.js';
 
-import { prismaModelProvider } from '../prisma-model/prisma-model.generator.js';
+import { prismaModelProvider } from '../prisma-model/index.js';
 
 const REFERENTIAL_ACTIONS = [
   'Cascade',

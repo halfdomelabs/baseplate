@@ -65,10 +65,10 @@ const zod = createTsTemplateFile({
   variables: {},
 });
 
-export const utils = { httpErrors, zod };
+export const utilsGroup = { httpErrors, zod };
 
 export const CORE_ERROR_HANDLER_SERVICE_TEMPLATES = {
-  utils,
+  utilsGroup,
   errorHandlerPlugin,
   errorLogger,
 };

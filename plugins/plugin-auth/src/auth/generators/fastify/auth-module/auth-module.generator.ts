@@ -3,7 +3,6 @@ import {
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
-  appModuleProvider,
   authContextImportsProvider,
   authRolesImportsProvider,
   configServiceImportsProvider,
@@ -20,17 +19,19 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { FASTIFY_AUTH_MODULE_TS_TEMPLATES } from './generated/ts-templates.js';
+import { FASTIFY_AUTH_MODULE_GENERATED } from './generated';
 
 const descriptorSchema = z.object({
   userSessionModelName: z.string().min(1),
 });
 
 export const authModuleGenerator = createGenerator({
-  name: 'auth/auth-module',
+  name: 'fastify/auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ userSessionModelName }) => ({
+    paths: FASTIFY_AUTH_MODULE_GENERATED.paths.task,
+    imports: FASTIFY_AUTH_MODULE_GENERATED.imports.task,
     config: createProviderTask(configServiceProvider, (configService) => {
       configService.configFields.set('AUTH_SECRET', {
         validator: tsCodeFragment(
@@ -46,26 +47,25 @@ export const authModuleGenerator = createGenerator({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         authRolesImports: authRolesImportsProvider,
-        appModule: appModuleProvider,
         configServiceImports: configServiceImportsProvider,
         prismaOutput: prismaOutputProvider,
         userSessionTypesImports: userSessionTypesImportsProvider,
         authContextImports: authContextImportsProvider,
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         requestServiceContextImports: requestServiceContextImportsProvider,
+        paths: FASTIFY_AUTH_MODULE_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
         authRolesImports,
         prismaOutput,
         configServiceImports,
-        appModule,
         userSessionTypesImports,
         authContextImports,
         errorHandlerServiceImports,
         requestServiceContextImports,
+        paths,
       }) {
-        const userSessionServicePath = `${appModule.getModuleFolder()}/services/user-session.service.ts`;
         return {
           providers: {
             authModule: {},
@@ -74,8 +74,8 @@ export const authModuleGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template:
-                  FASTIFY_AUTH_MODULE_TS_TEMPLATES.servicesUserSessionService,
-                destination: userSessionServicePath,
+                  FASTIFY_AUTH_MODULE_GENERATED.templates.userSessionService,
+                destination: paths.userSessionService,
                 variables: {
                   TPL_PRISMA_USER_SESSION:
                     prismaOutput.getPrismaModelFragment(userSessionModelName),
@@ -87,6 +87,21 @@ export const authModuleGenerator = createGenerator({
                   userSessionTypesImports,
                   errorHandlerServiceImports,
                   requestServiceContextImports,
+                },
+              }),
+            );
+            await builder.apply(
+              typescriptFile.renderTemplateGroupV2({
+                group: FASTIFY_AUTH_MODULE_GENERATED.templates.constantsGroup,
+                paths,
+              }),
+            );
+            await builder.apply(
+              typescriptFile.renderTemplateGroupV2({
+                group: FASTIFY_AUTH_MODULE_GENERATED.templates.utilsGroup,
+                paths,
+                importMapProviders: {
+                  configServiceImports,
                 },
               }),
             );

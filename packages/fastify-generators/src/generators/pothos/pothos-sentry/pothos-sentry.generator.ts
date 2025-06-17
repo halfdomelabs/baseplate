@@ -10,11 +10,11 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { fastifySentryConfigProvider } from '#src/generators/core/fastify-sentry/fastify-sentry.generator.js';
-import { yogaPluginConfigProvider } from '#src/generators/yoga/yoga-plugin/yoga-plugin.generator.js';
+import { fastifySentryConfigProvider } from '#src/generators/core/fastify-sentry/index.js';
+import { yogaPluginConfigProvider } from '#src/generators/yoga/yoga-plugin/index.js';
 
-import { pothosConfigProvider } from '../pothos/pothos.generator.js';
-import { POTHOS_POTHOS_SENTRY_TS_TEMPLATES } from './generated/ts-templates.js';
+import { pothosConfigProvider } from '../pothos/index.js';
+import { POTHOS_POTHOS_SENTRY_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -23,6 +23,7 @@ export const pothosSentryGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    paths: POTHOS_POTHOS_SENTRY_GENERATED.paths.task,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         '@pothos/plugin-tracing',
@@ -33,14 +34,13 @@ export const pothosSentryGenerator = createGenerator({
       dependencies: {
         yogaPluginConfig: yogaPluginConfigProvider,
         typescriptFile: typescriptFileProvider,
+        paths: POTHOS_POTHOS_SENTRY_GENERATED.paths.provider,
       },
-      run({ yogaPluginConfig, typescriptFile }) {
-        const pluginPath = '@/src/plugins/graphql/use-sentry.ts';
-
+      run({ yogaPluginConfig, typescriptFile, paths }) {
         yogaPluginConfig.envelopPlugins.set(
           'useSentry',
           tsCodeFragment(`useSentry()`, [
-            tsImportBuilder(['useSentry']).from(pluginPath),
+            tsImportBuilder(['useSentry']).from(paths.useSentry),
           ]),
         );
 
@@ -48,8 +48,8 @@ export const pothosSentryGenerator = createGenerator({
           build: async (builder) => {
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: POTHOS_POTHOS_SENTRY_TS_TEMPLATES.useSentry,
-                destination: pluginPath,
+                template: POTHOS_POTHOS_SENTRY_GENERATED.templates.useSentry,
+                destination: paths.useSentry,
               }),
             );
           },

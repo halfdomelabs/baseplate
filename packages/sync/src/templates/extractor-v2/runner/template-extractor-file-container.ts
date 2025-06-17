@@ -1,3 +1,4 @@
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { handleFileNotFoundError } from '@baseplate-dev/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -18,7 +19,7 @@ export class TemplateExtractorFileContainer {
    * @param filePath - The path of the file to write.
    * @param contents - The contents of the file to write.
    */
-  writeFile(filePath: string, contents: string | Buffer): void {
+  async writeFile(filePath: string, contents: string | Buffer): Promise<void> {
     if (this.files.has(filePath)) {
       throw new Error(`File already written: ${filePath}`);
     }
@@ -28,22 +29,33 @@ export class TemplateExtractorFileContainer {
         `Cannot write file outside of package directories: ${resolvedPath}. Package directories: ${this.packageDirectories.join(', ')}`,
       );
     }
-    this.files.set(resolvedPath, contents);
+
+    // Format the file contents immediately
+    const formattedContents =
+      typeof contents === 'string'
+        ? await formatGeneratedTemplateContents(contents, filePath).catch(
+            (err: unknown) => {
+              console.debug('File dump:');
+              console.debug(contents);
+              throw enhanceErrorWithContext(
+                err,
+                `Failed to format template contents for ${filePath}`,
+              );
+            },
+          )
+        : contents;
+
+    this.files.set(resolvedPath, formattedContents);
   }
 
   private async commitFile(
     filePath: string,
     contents: string | Buffer,
   ): Promise<void> {
-    // format the file contents
-    const formattedContents =
-      typeof contents === 'string'
-        ? await formatGeneratedTemplateContents(contents, filePath)
-        : contents;
     // only commit file if it has changed
-    const contentsBuffer = Buffer.isBuffer(formattedContents)
-      ? formattedContents
-      : Buffer.from(formattedContents);
+    const contentsBuffer = Buffer.isBuffer(contents)
+      ? contents
+      : Buffer.from(contents);
     const existingContents = await fs
       .readFile(filePath)
       .catch(handleFileNotFoundError);

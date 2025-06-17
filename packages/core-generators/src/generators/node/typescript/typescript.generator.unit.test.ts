@@ -6,7 +6,7 @@ import {
   createTsTemplateGroup,
 } from '#src/renderers/index.js';
 
-import { createTestNodeProvider } from '../node/node.generator.js';
+import { createTestNodeProvider } from '../node/index.js';
 import { typescriptGenerator } from './typescript.generator.js';
 
 describe('typescriptGenerator', () => {
