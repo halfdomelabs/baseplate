@@ -308,7 +308,7 @@ export const templateExtractorBarrelExportPlugin =
               namedExports: ['*'],
             },
           ]);
-          fileContainer.writeFile(
+          await fileContainer.writeFile(
             path.join(extractorConfig.generatorDirectory, 'index.ts'),
             updatedContents,
           );
@@ -345,7 +345,10 @@ export const templateExtractorBarrelExportPlugin =
             generatedBarrelExports,
           );
 
-          fileContainer.writeFile(generatedIndexPath, updatedGeneratedContents);
+          await fileContainer.writeFile(
+            generatedIndexPath,
+            updatedGeneratedContents,
+          );
         }
       });
 
