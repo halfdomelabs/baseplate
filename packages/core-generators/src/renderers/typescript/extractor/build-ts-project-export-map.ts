@@ -11,6 +11,7 @@ import {
 import { getDefaultImportProviderNames } from './default-import-providers.js';
 import { GENERATED_IMPORT_PROVIDERS_FILE_NAME } from './render-ts-import-providers.js';
 import { tsExtractorConfigSchema } from './ts-extractor-config.schema.js';
+import { createPlaceholderModuleSpecifier } from './utils/create-placeholder-module-specifier.js';
 
 /**
  * A project export that represents a single export from a generator.
@@ -117,11 +118,9 @@ export function buildTsProjectExportMap(
         return {
           packagePathSpecifier: importProvider.packagePathSpecifier,
           providerExportName: importProvider.providerExportName,
-          // TODO[2025-06-18]: Standardize this function
-          placeholderModuleSpecifier: `%${importProvider.providerExportName.replace(
-            /Provider$/,
-            '',
-          )}`,
+          placeholderModuleSpecifier: createPlaceholderModuleSpecifier(
+            importProvider.providerExportName,
+          ),
         };
       }
       if (config.skipDefaultImportMap) {
