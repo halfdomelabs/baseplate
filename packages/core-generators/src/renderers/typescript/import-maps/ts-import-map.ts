@@ -29,7 +29,7 @@ export function createTsImportMap<
 ): InferTsImportMapFromSchema<T> {
   return Object.fromEntries(
     Object.entries(importSchema).map(([key, value]) => {
-      const name = value.name ?? key;
+      const name = value.exportedAs ?? key;
       const moduleSpecifier =
         typeof imports[key] === 'string'
           ? imports[key]

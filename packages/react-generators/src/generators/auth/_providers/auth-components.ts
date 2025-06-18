@@ -4,7 +4,7 @@ import { createTsImportMapSchema } from '@baseplate-dev/core-generators';
 import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 
 export const authComponentsImportsSchema = createTsImportMapSchema({
-  RequireAuth: { name: 'default' },
+  RequireAuth: { exportedAs: 'default' },
 });
 
 export type AuthComponentImportsProvider = TsImportMapProviderFromSchema<

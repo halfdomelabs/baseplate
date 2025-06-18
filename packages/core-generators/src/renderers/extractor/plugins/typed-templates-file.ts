@@ -1,17 +1,15 @@
 import {
   createTemplateExtractorPlugin,
   TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
-} from '@baseplate-dev/sync/extractor-v2';
+} from '@baseplate-dev/sync';
 import { posixJoin } from '@baseplate-dev/utils/node';
 
 import { normalizeTsPathToJsPath } from '#src/utils/ts-paths.js';
 
-import type { TsCodeFragment } from '../../typescript/index.js';
+import type { TsCodeFragment } from '../../typescript/fragments/index.js';
 
-import {
-  renderTsCodeFileTemplate,
-  TsCodeUtils,
-} from '../../typescript/index.js';
+import { renderTsCodeFileTemplate } from '../../typescript/renderers/file.js';
+import { TsCodeUtils } from '../../typescript/utils/index.js';
 import { getGeneratedTemplateConstantName } from '../utils/index.js';
 import { templateExtractorBarrelExportPlugin } from './barrel-export.js';
 import { templatePathsPlugin } from './template-paths/template-paths.plugin.js';

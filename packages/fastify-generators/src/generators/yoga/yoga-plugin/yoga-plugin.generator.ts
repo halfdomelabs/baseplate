@@ -330,7 +330,7 @@ handler: httpHandler,
                       : undefined;
 
                   await builder.apply(
-                    typescriptFile.renderTemplateGroupV2({
+                    typescriptFile.renderTemplateGroup({
                       group:
                         YOGA_YOGA_PLUGIN_GENERATED.templates.subscriptionsGroup,
                       paths,

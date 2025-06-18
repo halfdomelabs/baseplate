@@ -1,5 +1,6 @@
 import { createProviderType, testAction } from '@baseplate-dev/sync';
 import { vol } from 'memfs';
+import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { tsCodeFragment } from '../fragments/creators.js';
@@ -7,11 +8,7 @@ import {
   createTsImportMap,
   createTsImportMapSchema,
 } from '../import-maps/ts-import-map.js';
-import { tsImportBuilder } from '../imports/builder.js';
-import {
-  createTsTemplateFile,
-  createTsTemplateGroup,
-} from '../templates/types.js';
+import { createTsTemplateFile, TS_TEMPLATE_TYPE } from '../templates/types.js';
 import { renderTsTemplateGroupAction } from './render-ts-template-group-action.js';
 
 vi.mock('fs');
@@ -22,56 +19,193 @@ beforeEach(() => {
 });
 
 describe('renderTsTemplateGroupAction', () => {
-  it('should render multiple templates in a group with variables', async () => {
+  it('should render multiple template files from a group', async () => {
+    // Arrange
+    const templatesFolder = '/root/pkg/test-generator/templates';
+    const greetingsPath = path.join(templatesFolder, 'greeting.ts');
+    const namePath = path.join(templatesFolder, 'name.ts');
     vol.fromJSON({
-      '/root/pkg/test-generator/templates/greeting.ts':
-        'const greeting = TPL_GREETING;',
-      '/root/pkg/test-generator/templates/welcome.ts':
-        'const welcome = TPL_WELCOME;',
-    });
-
-    const group = createTsTemplateGroup({
-      templates: {
-        greeting: {
-          destination: 'output/greeting.ts',
-          template: createTsTemplateFile({
-            name: 'greeting',
-            source: {
-              path: 'greeting.ts',
-            },
-            variables: {
-              TPL_GREETING: { description: 'The greeting to use' },
-            },
-          }),
-        },
-        welcome: {
-          destination: 'output/welcome.ts',
-          template: createTsTemplateFile({
-            name: 'welcome',
-            source: {
-              path: 'welcome.ts',
-            },
-            variables: {
-              TPL_WELCOME: { description: 'The welcome message' },
-            },
-          }),
-        },
-      },
+      [greetingsPath]: 'const greeting = TPL_GREETING;',
+      [namePath]: 'const name = TPL_NAME;',
     });
 
     const action = renderTsTemplateGroupAction({
-      group,
-      baseDirectory: '@/src',
+      group: {
+        greeting: createTsTemplateFile({
+          name: 'greeting',
+          source: { path: greetingsPath },
+          variables: {
+            TPL_GREETING: { description: 'The greeting to use' },
+          },
+          fileOptions: { kind: 'singleton' },
+        }),
+        name: createTsTemplateFile({
+          name: 'name',
+          source: { path: namePath },
+          variables: {
+            TPL_NAME: { description: 'The name to use' },
+          },
+          fileOptions: { kind: 'singleton' },
+        }),
+      },
+      paths: {
+        greeting: 'output/greeting.ts',
+        name: 'output/name.ts',
+      },
       variables: {
         greeting: {
-          TPL_GREETING: tsCodeFragment('"Hello World"'),
+          TPL_GREETING: tsCodeFragment('"Hello"'),
         },
-        welcome: {
-          TPL_WELCOME: tsCodeFragment('"Welcome to Baseplate"'),
+        name: {
+          TPL_NAME: tsCodeFragment('"World"'),
         },
       },
     });
 
+    // Act
+    const output = await testAction(action, {
+      generatorInfo: {
+        name: 'test-generator',
+        baseDirectory: '/root/pkg/test-generator',
+      },
+      templateMetadataOptions: {
+        includeTemplateMetadata: true,
+        shouldGenerateMetadata: () => true,
+      },
+    });
+
+    // Assert
+    expect(output.files.size).toBe(2);
+
+    const greetingFile = output.files.get('output/greeting.ts');
+    expect(greetingFile?.id).toBe('test-generator:greeting');
+    expect(greetingFile?.contents).toEqual(
+      'const greeting = /* TPL_GREETING:START */ "Hello" /* TPL_GREETING:END */;',
+    );
+    expect(greetingFile?.options?.templateMetadata).toEqual({
+      name: 'greeting',
+      generator: 'test-generator',
+      type: TS_TEMPLATE_TYPE,
+      fileOptions: { kind: 'singleton' },
+    });
+
+    const nameFile = output.files.get('output/name.ts');
+    expect(nameFile?.id).toBe('test-generator:name');
+    expect(nameFile?.contents).toEqual(
+      'const name = /* TPL_NAME:START */ "World" /* TPL_NAME:END */;',
+    );
+    expect(nameFile?.options?.templateMetadata).toEqual({
+      name: 'name',
+      generator: 'test-generator',
+      type: TS_TEMPLATE_TYPE,
+      fileOptions: { kind: 'singleton' },
+    });
+  });
+
+  it('should handle templates with import map providers', async () => {
+    // Arrange
+    const importMapSchema = createTsImportMapSchema({
+      TestClass: { exportedAs: 'TestClass' },
+    });
+
+    const importMap = createTsImportMap(importMapSchema, {
+      TestClass: 'test-package',
+    });
+
+    const action = renderTsTemplateGroupAction({
+      group: {
+        test: createTsTemplateFile({
+          name: 'test',
+          source: {
+            contents: `
+              import { TestClass } from "%testImport";
+              const instance = new TestClass();
+            `,
+          },
+          variables: {},
+          importMapProviders: {
+            testImport: createProviderType('test-import'),
+          },
+          fileOptions: { kind: 'singleton' },
+        }),
+      },
+      paths: {
+        test: 'output/test.ts',
+      },
+      importMapProviders: {
+        testImport: importMap,
+      },
+    });
+
+    // Act
+    const output = await testAction(action);
+
+    // Assert
+    expect(output.files.size).toBe(1);
+    const file = output.files.get('output/test.ts');
+    expect(file?.id).toBe('test-generator:test');
+    expect(file?.contents).toContain(
+      'import { TestClass } from "test-package"',
+    );
+    expect(file?.contents).toContain('const instance = new TestClass();');
+  });
+
+  it('should handle templates with content-only source', async () => {
+    // Arrange
+    const action = renderTsTemplateGroupAction({
+      group: {
+        content: createTsTemplateFile({
+          name: 'content',
+          source: {
+            contents: 'const content = "static content";',
+          },
+          variables: {},
+          fileOptions: { kind: 'singleton' },
+        }),
+      },
+      paths: {
+        content: 'output/content.ts',
+      },
+    });
+
+    // Act
+    const output = await testAction(action);
+
+    // Assert
+    expect(output.files.size).toBe(1);
+    const file = output.files.get('output/content.ts');
+    expect(file?.id).toBe('test-generator:content');
+    expect(file?.contents).toEqual('const content = "static content";');
+  });
+
+  it('should apply custom write options to specific templates', async () => {
+    // Arrange
+    const templatesFolder = '/root/pkg/test-generator/templates';
+    const testPath = path.join(templatesFolder, 'test.ts');
+    vol.fromJSON({
+      [testPath]: 'const test = "value";',
+    });
+
+    const action = renderTsTemplateGroupAction({
+      group: {
+        test: createTsTemplateFile({
+          name: 'test',
+          source: { path: testPath },
+          variables: {},
+          fileOptions: { kind: 'singleton' },
+        }),
+      },
+      paths: {
+        test: 'output/test.ts',
+      },
+      writeOptions: {
+        test: {
+          skipFormatting: true,
+        },
+      },
+    });
+
+    // Act
     const output = await testAction(action, {
       generatorInfo: {
         name: 'test-generator',
@@ -79,139 +213,143 @@ describe('renderTsTemplateGroupAction', () => {
       },
     });
 
-    expect(output.files.size).toBe(2);
-
-    const greetingFile = output.files.get('src/output/greeting.ts');
-    expect(greetingFile?.contents).toEqual('const greeting = "Hello World";');
-
-    const welcomeFile = output.files.get('src/output/welcome.ts');
-    expect(welcomeFile?.contents).toEqual(
-      'const welcome = "Welcome to Baseplate";',
-    );
+    // Assert
+    expect(output.files.size).toBe(1);
+    const file = output.files.get('output/test.ts');
+    expect(file?.options?.skipFormatting).toBe(true);
   });
 
-  it('should handle templates with imports with custom resolveModule', async () => {
-    const group = createTsTemplateGroup({
-      templates: {
-        greeting: {
-          destination: 'output/greeting.ts',
-          template: createTsTemplateFile({
-            name: 'greeting',
-            source: {
-              contents: 'const greeting = TPL_GREETING;',
-            },
-            variables: {
-              TPL_GREETING: { description: 'The greeting to use' },
-            },
-          }),
-        },
-      },
-    });
-
+  it('should apply custom render options with resolveModule function', async () => {
+    // Arrange
     const action = renderTsTemplateGroupAction({
-      group,
-      baseDirectory: '@/src',
-      variables: {
-        greeting: {
-          TPL_GREETING: tsCodeFragment('new Greeting("Hello")', [
-            tsImportBuilder().named('Greeting').from('greeting'),
-          ]),
-        },
+      group: {
+        test: createTsTemplateFile({
+          name: 'test',
+          source: {
+            contents: 'import { Test } from "./relative";',
+          },
+          variables: {},
+          fileOptions: { kind: 'singleton' },
+        }),
+      },
+      paths: {
+        test: 'output/nested/test.ts',
       },
       renderOptions: {
-        resolveModule: (moduleSpecifier, sourceDirectory) =>
-          `@project/${sourceDirectory}/${moduleSpecifier}`,
+        resolveModule: (specifier) => {
+          if (specifier === './relative') {
+            return '../relative';
+          }
+          return specifier;
+        },
       },
     });
 
+    // Act
     const output = await testAction(action);
 
+    // Assert
     expect(output.files.size).toBe(1);
-    const file = output.files.get('src/output/greeting.ts');
-    expect(file?.contents).toEqual(
-      'import { Greeting } from "@project/src/output/greeting";\n\nconst greeting = new Greeting("Hello");',
-    );
+    const file = output.files.get('output/nested/test.ts');
+    expect(file?.contents).toContain('import { Test } from "../relative"');
   });
 
-  it('should handle import maps in template group action', async () => {
-    const importMapSchema = createTsImportMapSchema({
-      Test: { name: 'Test' },
-    });
-
-    const importMap = createTsImportMap(importMapSchema, {
-      Test: 'test-package',
-    });
-
-    const importProvider =
-      createProviderType<typeof importMap>('test-provider');
-
-    const group = createTsTemplateGroup({
-      templates: {
-        test1: {
-          destination: 'test1.ts',
-          template: createTsTemplateFile({
-            name: 'test1',
-            source: {
-              contents: `
-                import { Test } from "%testImport";
-
-                const test = new Test();
-              `,
-            },
-            variables: {},
-            importMapProviders: {
-              testImport: importProvider,
-            },
-          }),
-        },
-        test2: {
-          destination: 'test2.ts',
-          template: createTsTemplateFile({
-            name: 'test2',
-            source: {
-              contents: `
-                import { Test } from "%testImport";
-
-                const test = new Test();
-              `,
-            },
-            variables: {},
-            importMapProviders: {
-              testImport: importProvider,
-            },
-          }),
-        },
+  it('should handle templates without variables', async () => {
+    // Arrange
+    const action = renderTsTemplateGroupAction({
+      group: {
+        static: createTsTemplateFile({
+          name: 'static',
+          source: {
+            contents: 'const staticValue = "unchanged";',
+          },
+          variables: {},
+          fileOptions: { kind: 'singleton' },
+        }),
       },
+      paths: {
+        static: 'output/static.ts',
+      },
+    });
+
+    // Act
+    const output = await testAction(action);
+
+    // Assert
+    expect(output.files.size).toBe(1);
+    const file = output.files.get('output/static.ts');
+    expect(file?.contents).toEqual('const staticValue = "unchanged";');
+  });
+
+  it('should handle mixed template types in a group', async () => {
+    // Arrange
+    const templatePath = '/root/pkg/test-generator/templates/file.ts';
+    vol.fromJSON({
+      [templatePath]: 'const fromFile = "file";',
     });
 
     const action = renderTsTemplateGroupAction({
-      group,
-      baseDirectory: '@/output',
-      importMapProviders: {
-        testImport: importMap,
+      group: {
+        file: createTsTemplateFile({
+          name: 'file',
+          source: { path: templatePath },
+          variables: {},
+          fileOptions: { kind: 'singleton' },
+        }),
+        content: createTsTemplateFile({
+          name: 'content',
+          source: {
+            contents: 'const fromContent = "content";',
+          },
+          variables: {},
+          fileOptions: { kind: 'singleton' },
+        }),
+        withVariables: createTsTemplateFile({
+          name: 'withVariables',
+          source: {
+            contents: 'const value = TPL_VALUE;',
+          },
+          variables: {
+            TPL_VALUE: { description: 'A value' },
+          },
+          fileOptions: { kind: 'singleton' },
+        }),
+      },
+      paths: {
+        file: 'output/file.ts',
+        content: 'output/content.ts',
+        withVariables: 'output/with-variables.ts',
+      },
+      variables: {
+        withVariables: {
+          TPL_VALUE: tsCodeFragment('"dynamic"'),
+        },
       },
     });
 
-    const output = await testAction(action);
+    // Act
+    const output = await testAction(action, {
+      generatorInfo: {
+        name: 'test-generator',
+        baseDirectory: '/root/pkg/test-generator',
+      },
+      templateMetadataOptions: {
+        includeTemplateMetadata: true,
+        shouldGenerateMetadata: () => true,
+      },
+    });
 
-    expect(output.files.size).toBe(2);
+    // Assert
+    expect(output.files.size).toBe(3);
 
-    const file1 = output.files.get('output/test1.ts');
-    expect(file1?.contents).toMatchInlineSnapshot(`
-      "import { Test } from "test-package";
-
-
-                                      const test = new Test();
-                    "
-    `);
-
-    const file2 = output.files.get('output/test2.ts');
-    expect(file2?.contents).toMatchInlineSnapshot(`
-      "import { Test } from "test-package";
-
-
-                                      const test = new Test();
-                    "
-    `);
+    expect(output.files.get('output/file.ts')?.contents).toEqual(
+      'const fromFile = "file";',
+    );
+    expect(output.files.get('output/content.ts')?.contents).toEqual(
+      'const fromContent = "content";',
+    );
+    expect(output.files.get('output/with-variables.ts')?.contents).toEqual(
+      'const value = /* TPL_VALUE:START */ "dynamic" /* TPL_VALUE:END */;',
+    );
   });
 });

@@ -9,7 +9,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/tests/helpers/service-context.test-helper.ts",
       "projectExports": { "createTestServiceContext": {} },
-      "template": "",
       "variables": { "TPL_CREATE_TEST_ARGS": {}, "TPL_CREATE_TEST_OBJECT": {} }
     },
     "src/utils/service-context.ts": {
@@ -23,7 +22,6 @@
         "createServiceContext": {},
         "ServiceContext": { "isTypeOnly": true }
       },
-      "template": "",
       "variables": {
         "TPL_CONTEXT_INTERFACE": {},
         "TPL_CONTEXT_OBJECT": {},

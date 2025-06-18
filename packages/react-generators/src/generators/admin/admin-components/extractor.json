@@ -9,8 +9,7 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/DescriptionList/index.tsx",
-      "projectExports": { "DescriptionList": { "exportName": "default" } },
-      "template": "",
+      "projectExports": { "DescriptionList": { "exportedAs": "default" } },
       "variables": {}
     },
     "src/components/EmbeddedListInput/index.tsx": {
@@ -28,10 +27,9 @@
       "pathRootRelativePath": "{src-root}/components/EmbeddedListInput/index.tsx",
       "projectExports": {
         "EmbeddedListFormProps": { "isTypeOnly": true },
-        "EmbeddedListInput": { "exportName": "default" },
+        "EmbeddedListInput": { "exportedAs": "default" },
         "EmbeddedListTableProps": { "isTypeOnly": true }
       },
-      "template": "",
       "variables": {}
     },
     "src/components/EmbeddedObjectInput/index.tsx": {
@@ -49,9 +47,8 @@
       "pathRootRelativePath": "{src-root}/components/EmbeddedObjectInput/index.tsx",
       "projectExports": {
         "EmbeddedObjectFormProps": { "isTypeOnly": true },
-        "EmbeddedObjectInput": { "exportName": "default" }
+        "EmbeddedObjectInput": { "exportedAs": "default" }
       },
-      "template": "",
       "variables": {}
     }
   }

@@ -9,7 +9,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/request-context.ts",
       "projectExports": { "RequestInfo": { "isTypeOnly": true } },
-      "template": "",
       "variables": {}
     }
   }

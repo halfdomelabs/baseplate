@@ -10,6 +10,8 @@ const TSX_VARIABLE_REGEX =
   /\{\/\* TPL_([A-Z0-9_]+):START \*\/\}([\s\S]*?)\{\/\* TPL_\1:END \*\/\}/g;
 const COMMENT_VARIABLE_REGEX =
   /\/\* TPL_([A-Z0-9_]+):COMMENT:START \*\/([\s\S]*?)\/\* TPL_\1:COMMENT:END \*\//g;
+const BLOCK_VARIABLE_REGEX = /\/\* TPL_([A-Z0-9_]+):BLOCK \*\//g;
+const INLINE_VARIABLE_REGEX = /\/\* TPL_([A-Z0-9_]+):INLINE \*\//g;
 const HOISTED_REGEX =
   /\/\* HOISTED:([A-Za-z0-9_-]+):START \*\/([\s\S]*?)\/\* HOISTED:\1:END \*\/\n?/g;
 
@@ -61,6 +63,18 @@ export function extractTsTemplateVariables(
     COMMENT_VARIABLE_REGEX,
     (match: string, varName: string) =>
       processVariableBlock(varName, (name) => `/* ${name} */`),
+  );
+
+  // Process BLOCK and INLINE variable patterns
+  processedContent = processedContent.replaceAll(
+    BLOCK_VARIABLE_REGEX,
+    (match: string, varName: string) =>
+      processVariableBlock(varName, (name) => name),
+  );
+  processedContent = processedContent.replaceAll(
+    INLINE_VARIABLE_REGEX,
+    (match: string, varName: string) =>
+      processVariableBlock(varName, (name) => name),
   );
 
   // Remove HOISTED blocks

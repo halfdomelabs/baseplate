@@ -1,4 +1,5 @@
 import {
+  renderTextTemplateFileAction,
   tsCodeFragment,
   tsImportBuilder,
   typescriptFileProvider,
@@ -7,7 +8,6 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-  renderTextTemplateFileAction,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 

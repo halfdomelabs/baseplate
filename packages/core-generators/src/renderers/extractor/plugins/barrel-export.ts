@@ -1,8 +1,8 @@
-import { parseGeneratorName } from '@baseplate-dev/sync';
 import {
   createTemplateExtractorPlugin,
+  parseGeneratorName,
   TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
-} from '@baseplate-dev/sync/extractor-v2';
+} from '@baseplate-dev/sync';
 import { handleFileNotFoundError } from '@baseplate-dev/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';

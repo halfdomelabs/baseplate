@@ -13,10 +13,11 @@ beforeEach(() => {
 });
 
 describe('renderTextTemplateFileAction', () => {
+  const testPath = '/root/pkg/test-generator/templates/test.txt';
+
   it('should write file from template path with template metadata and replace variables', async () => {
     vol.fromJSON({
-      '/root/pkg/test-generator/templates/test.txt':
-        'Hello {{TPL_NAME}}, welcome to {{TPL_PLACE}}!',
+      [testPath]: 'Hello {{TPL_NAME}}, welcome to {{TPL_PLACE}}!',
     });
 
     const action = renderTextTemplateFileAction({
@@ -24,7 +25,7 @@ describe('renderTextTemplateFileAction', () => {
         name: 'test',
         fileOptions: { kind: 'singleton' },
         source: {
-          path: 'test.txt',
+          path: testPath,
         },
         variables: {
           TPL_NAME: { description: 'The name to greet' },
@@ -56,7 +57,6 @@ describe('renderTextTemplateFileAction', () => {
     expect(file?.contents).toEqual('Hello John, welcome to Baseplate!');
     expect(file?.options?.templateMetadata).toEqual({
       name: 'test',
-      template: '',
       generator: 'test-generator',
       group: undefined,
       type: TEXT_TEMPLATE_TYPE,
@@ -165,7 +165,7 @@ describe('renderTextTemplateFileAction', () => {
 
   it('should throw error when template contains variable value', async () => {
     vol.fromJSON({
-      '/root/pkg/test-generator/templates/test.txt': 'Hello John {{TPL_NAME}}!',
+      [testPath]: 'Hello John {{TPL_NAME}}!',
     });
 
     const action = renderTextTemplateFileAction({
@@ -173,7 +173,7 @@ describe('renderTextTemplateFileAction', () => {
         name: 'test',
         fileOptions: { kind: 'singleton' },
         source: {
-          path: 'test.txt',
+          path: testPath,
         },
         variables: {
           TPL_NAME: { description: 'The name to greet' },
@@ -204,8 +204,7 @@ describe('renderTextTemplateFileAction', () => {
 
   it('should throw error when required variable is missing', async () => {
     vol.fromJSON({
-      '/root/pkg/test-generator/templates/test.txt':
-        'Hello {{TPL_VAR}} {{TPL_NAME}}!',
+      [testPath]: 'Hello {{TPL_VAR}} {{TPL_NAME}}!',
     });
 
     const action = renderTextTemplateFileAction({
@@ -213,7 +212,7 @@ describe('renderTextTemplateFileAction', () => {
         name: 'test',
         fileOptions: { kind: 'singleton' },
         source: {
-          path: 'test.txt',
+          path: testPath,
         },
         variables: {
           TPL_NAME: { description: 'The name to greet' },
@@ -238,7 +237,7 @@ describe('renderTextTemplateFileAction', () => {
 
   it('should throw error when a variable is missing from the template', async () => {
     vol.fromJSON({
-      '/root/pkg/test-generator/templates/test.txt': 'Hello {{TPL_VAR}}!',
+      [testPath]: 'Hello {{TPL_VAR}}!',
     });
 
     const action = renderTextTemplateFileAction({
@@ -246,7 +245,7 @@ describe('renderTextTemplateFileAction', () => {
         name: 'test',
         fileOptions: { kind: 'singleton' },
         source: {
-          path: 'test.txt',
+          path: testPath,
         },
         variables: {
           TPL_VAR: { description: 'The variable to greet' },

@@ -8,7 +8,6 @@
       "generator": "@baseplate-dev/fastify-generators#pothos/pothos-sentry",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/graphql/use-sentry.ts",
-      "template": "",
       "variables": {}
     }
   }

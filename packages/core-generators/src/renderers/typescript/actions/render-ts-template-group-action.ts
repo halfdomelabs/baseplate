@@ -14,11 +14,12 @@ import type {
   InferImportMapProvidersFromProviderTypeMap,
   InferTsTemplateVariablesFromMap,
   TsTemplateFile,
-  TsTemplateGroup,
 } from '../templates/types.js';
 import type { RenderTsTemplateFileActionInput } from './render-ts-template-file-action.js';
 
 import { renderTsTemplateFileAction } from './render-ts-template-file-action.js';
+
+type TsTemplateGroup = Record<string, TsTemplateFile>;
 
 type HasVariables<T extends TsTemplateFile> =
   keyof InferTsTemplateVariablesFromMap<T['variables']> extends never
@@ -26,13 +27,9 @@ type HasVariables<T extends TsTemplateFile> =
     : true;
 
 type InferTsTemplateVariablesFromTemplateGroup<T extends TsTemplateGroup> = {
-  [K in keyof T['templates'] as HasVariables<
-    T['templates'][K]['template']
-  > extends true
+  [K in keyof T as HasVariables<T[K]> extends true
     ? K
-    : never]: InferTsTemplateVariablesFromMap<
-    T['templates'][K]['template']['variables']
-  >;
+    : never]: InferTsTemplateVariablesFromMap<T[K]['variables']>;
 };
 
 type IntersectionOfValues<T> = UnionToIntersection<T[keyof T]>;
@@ -44,31 +41,20 @@ type UnionToIntersection<U> = (
   ? I
   : never;
 
-/**
- * Typescript hack to force IDEs to show raw object
- * type without additional typing that we have added
- */
-type NormalizeTypes<T> =
-  T extends Record<string, unknown>
-    ? {
-        [K in keyof T]: T[K];
-      }
-    : T;
-
 type InferImportMapProvidersFromTemplateGroup<T extends TsTemplateGroup> =
-  NormalizeTypes<
-    IntersectionOfValues<{
-      [K in keyof T['templates']]: InferImportMapProvidersFromProviderTypeMap<
-        T['templates'][K]['template']['importMapProviders']
-      >;
-    }>
-  >;
+  IntersectionOfValues<{
+    [K in keyof T]: InferImportMapProvidersFromProviderTypeMap<
+      T[K]['importMapProviders']
+    >;
+  }>;
 
 interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
   group: T;
-  baseDirectory: string;
+  paths: {
+    [K in keyof T]: string;
+  };
   writeOptions?: {
-    [K in keyof T['templates']]?: Omit<WriteFileOptions, 'templateMetadata'>;
+    [K in keyof T]?: Omit<WriteFileOptions, 'templateMetadata'>;
   };
   renderOptions?: Omit<RenderTsCodeFileTemplateOptions, 'resolveModule'> & {
     resolveModule?: (
@@ -76,11 +62,6 @@ interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
       sourceDirectory: string,
     ) => string;
   };
-  /**
-   * Called when a template file is rendered
-   * @param canonicalPath - The canonical path to the template file
-   */
-  onRenderTemplateFile?: (canonicalPath: string) => void;
 }
 
 export type RenderTsTemplateGroupActionInput<
@@ -104,28 +85,22 @@ export function extractTsTemplateFileInputsFromTemplateGroup<
   T extends TsTemplateGroup = TsTemplateGroup,
 >({
   group,
-  baseDirectory,
+  paths,
   variables,
   importMapProviders,
   writeOptions,
   renderOptions,
 }: RenderTsTemplateGroupActionInput<T>): RenderTsTemplateFileActionInput[] {
-  if (!baseDirectory.startsWith('@/')) {
-    throw new Error('baseDirectory must start with @/');
-  }
   const fileActionInputs: RenderTsTemplateFileActionInput[] = [];
   const typedImportMapProviders =
     (importMapProviders as undefined | Record<string, ProviderType>) ?? {};
 
-  for (const [key, templateEntry] of Object.entries(group.templates)) {
-    const destination = path.posix.join(
-      baseDirectory,
-      templateEntry.destination,
-    );
+  for (const [key, templateEntry] of Object.entries(group)) {
+    const destination = paths[key];
 
-    const templateSpecificProviders = templateEntry.template.importMapProviders
+    const templateSpecificProviders = templateEntry.importMapProviders
       ? mapValues(
-          templateEntry.template.importMapProviders,
+          templateEntry.importMapProviders,
           (_, providerKey: string) => {
             if (!(providerKey in typedImportMapProviders)) {
               throw new Error(
@@ -141,7 +116,7 @@ export function extractTsTemplateFileInputsFromTemplateGroup<
       normalizePathToProjectPath(destination),
     );
     fileActionInputs.push({
-      template: templateEntry.template,
+      template: templateEntry,
       destination,
       variables:
         variables && typeof variables === 'object'
@@ -161,11 +136,6 @@ export function extractTsTemplateFileInputsFromTemplateGroup<
   return fileActionInputs;
 }
 
-/**
- * Renders a template group to a builder action
- * @param input - The input for the template group
- * @returns The builder action
- */
 export function renderTsTemplateGroupAction<
   T extends TsTemplateGroup = TsTemplateGroup,
 >(input: RenderTsTemplateGroupActionInput<T>): BuilderAction {
@@ -176,7 +146,6 @@ export function renderTsTemplateGroupAction<
       for (const fileActionInput of fileActionInputs) {
         try {
           await builder.apply(renderTsTemplateFileAction(fileActionInput));
-          input.onRenderTemplateFile?.(fileActionInput.destination);
         } catch (error) {
           throw enhanceErrorWithContext(
             error,

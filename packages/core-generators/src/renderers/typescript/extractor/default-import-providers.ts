@@ -1,6 +1,8 @@
 import { parseGeneratorName } from '@baseplate-dev/sync';
 import { camelCase, kebabCase, pascalCase } from 'change-case';
 
+import { createPlaceholderModuleSpecifier } from './utils/create-placeholder-module-specifier.js';
+
 export interface TsImportProviderNames {
   /**
    * The name of the import provider type e.g. NodeImportsProvider
@@ -39,7 +41,8 @@ export function getDefaultImportProviderNames(
   const providerExportName = `${camelCase(generatorBasename)}ImportsProvider`;
   const providerSchemaName = `${camelCase(generatorBasename)}ImportsSchema`;
   const providerName = `${kebabCase(generatorBasename)}-imports`;
-  const placeholderModuleSpecifier = `%${camelCase(generatorBasename)}Imports`;
+  const placeholderModuleSpecifier =
+    createPlaceholderModuleSpecifier(providerExportName);
 
   return {
     providerTypeName,

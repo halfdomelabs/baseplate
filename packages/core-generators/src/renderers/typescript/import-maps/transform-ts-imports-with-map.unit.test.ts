@@ -34,12 +34,12 @@ describe('transformImportsWithMap', () => {
 
   describe('for a test import map', () => {
     const testSchema = createTsImportMapSchema({
-      test: { name: 'test' },
-      test2: { name: 'test2' },
+      test: { exportedAs: 'test' },
+      test2: { exportedAs: 'test2' },
     });
 
     const wildcardSchema = createTsImportMapSchema({
-      '*': { name: 'wildcard' },
+      '*': { exportedAs: 'wildcard' },
     });
 
     const testImportMaps = new Map<string, TsImportMap>([
@@ -179,8 +179,8 @@ describe('transformImportsWithMap', () => {
     ];
 
     const schema = createTsImportMapSchema({
-      test1: { name: 'test1' },
-      test2: { name: 'test2' },
+      test1: { exportedAs: 'test1' },
+      test2: { exportedAs: 'test2' },
     });
 
     const importMaps = new Map([

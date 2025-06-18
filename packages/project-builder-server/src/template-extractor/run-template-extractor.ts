@@ -1,18 +1,22 @@
 import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
-import type { Logger, TemplateFileExtractorCreator } from '@baseplate-dev/sync';
+import type {
+  Logger,
+  RunTemplateFileExtractorsOptions,
+} from '@baseplate-dev/sync';
 
-import { TsTemplateFileExtractor } from '@baseplate-dev/core-generators/renderers';
 import {
   RawTemplateFileExtractor,
-  runTemplateFileExtractors,
   TextTemplateFileExtractor,
-} from '@baseplate-dev/sync';
+  TsTemplateFileExtractor,
+} from '@baseplate-dev/core-generators/extractors';
+import { runTemplateFileExtractors } from '@baseplate-dev/sync';
 import { findNearestPackageJson } from '@baseplate-dev/utils/node';
-import { globby } from 'globby';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { discoverPlugins } from '#src/plugins/plugin-discovery.js';
+import { getPreviousGeneratedFileIdMap } from '#src/sync/file-id-map.js';
+import { readSyncMetadata } from '#src/sync/sync-metadata-service.js';
 
 const GENERATOR_PACKAGES = [
   '@baseplate-dev/core-generators',
@@ -20,10 +24,10 @@ const GENERATOR_PACKAGES = [
   '@baseplate-dev/react-generators',
 ];
 
-const TEMPLATE_FILE_EXTRACTOR_CREATORS: TemplateFileExtractorCreator[] = [
-  (context) => new TextTemplateFileExtractor(context),
-  (context) => new RawTemplateFileExtractor(context),
-  (context) => new TsTemplateFileExtractor(context),
+const TEMPLATE_EXTRACTORS = [
+  RawTemplateFileExtractor,
+  TextTemplateFileExtractor,
+  TsTemplateFileExtractor,
 ];
 
 async function buildGeneratorPackageMap(
@@ -60,37 +64,50 @@ async function buildGeneratorPackageMap(
 export async function runTemplateExtractorsForProject(
   directory: string,
   app: string,
+  defaultPlugins: PluginMetadataWithPaths[],
   logger: Logger,
+  options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
   const availablePlugins = await discoverPlugins(directory, logger);
-  // find all .generator-info.json files in the project
-  const generatorInfoFiles = await globby(
-    path.join('**', '.generator-info.json'),
-    { onlyFiles: true, absolute: true, gitignore: true, cwd: directory },
-  );
-  const generatorPackageMap = await buildGeneratorPackageMap(availablePlugins);
+  const syncMetadata = await readSyncMetadata(directory);
+
+  if (
+    syncMetadata.status === 'not-started' ||
+    Object.keys(syncMetadata.packages).length === 0
+  ) {
+    throw new Error(
+      `No sync metadata found for ${directory}. Please run the sync command first.`,
+    );
+  }
+
+  const generatorPackageMap = await buildGeneratorPackageMap([
+    ...defaultPlugins,
+    ...availablePlugins,
+  ]);
   logger.info(
     `Running template extractors for ${directory}${
       app ? ` for app ${app}` : ''
     }...`,
   );
-  const appDirectories = generatorInfoFiles
-    .map((generatorInfoPath) => path.dirname(generatorInfoPath))
-    .filter((appDirectory) => {
-      if (app) {
-        return path.basename(appDirectory).includes(app);
-      }
-      return true;
-    });
+  const appDirectories = Object.values(syncMetadata.packages)
+    .filter((packageInfo) => packageInfo.name.includes(app))
+    .map((packageInfo) => packageInfo.path);
+  if (appDirectories.length === 0) {
+    throw new Error(`No app directories found for ${app}`);
+  }
   if (appDirectories.length > 1) {
     throw new Error(
       `Found multiple app directories for ${app}: ${appDirectories.join(', ')}`,
     );
   }
+  const fileIdMap = await getPreviousGeneratedFileIdMap(appDirectories[0]);
   await runTemplateFileExtractors(
-    TEMPLATE_FILE_EXTRACTOR_CREATORS,
+    TEMPLATE_EXTRACTORS,
     appDirectories[0],
     generatorPackageMap,
     logger,
+    fileIdMap,
+    options,
   );
+  logger.info('Template extraction complete!');
 }

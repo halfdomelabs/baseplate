@@ -15,7 +15,6 @@ import {
   deleteMetadataFiles,
   executeGeneratorEntry,
   writeGeneratorOutput,
-  writeGeneratorsMetadata,
   writeTemplateMetadata,
 } from '@baseplate-dev/sync';
 import { randomUid } from '@baseplate-dev/utils';
@@ -66,7 +65,6 @@ const defaultGeneratorOperations: GeneratorOperations = {
   writeGeneratorOutput,
   writeMetadata: async (project, output, projectDirectory) => {
     await deleteMetadataFiles(projectDirectory);
-    await writeGeneratorsMetadata(project, projectDirectory);
     await writeTemplateMetadata(output.files, projectDirectory);
   },
   writeGeneratorSteps,

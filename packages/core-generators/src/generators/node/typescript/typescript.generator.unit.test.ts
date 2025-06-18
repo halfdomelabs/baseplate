@@ -1,10 +1,9 @@
 import { createTaskTestRunner, testAction } from '@baseplate-dev/sync';
 import { describe, expect, it } from 'vitest';
 
-import {
-  createTsTemplateFile,
-  createTsTemplateGroup,
-} from '#src/renderers/index.js';
+import type { TsTemplateGroup } from '#src/renderers/index.js';
+
+import { createTsTemplateFile } from '#src/renderers/index.js';
 
 import { createTestNodeProvider } from '../node/index.js';
 import { typescriptGenerator } from './typescript.generator.js';
@@ -29,26 +28,20 @@ describe('typescriptGenerator', () => {
       name: 'test-template',
       source: { contents: 'export const helper = () => {};' },
       variables: {},
+      fileOptions: { kind: 'singleton' },
     });
 
     const testTemplateFile2 = createTsTemplateFile({
       name: 'test-template-2',
       source: { contents: 'export const helper2 = () => {};' },
       variables: {},
+      fileOptions: { kind: 'singleton' },
     });
 
-    const testTemplateGroup = createTsTemplateGroup({
-      templates: {
-        'test-utils': {
-          template: testTemplateFile,
-          destination: 'helpers.ts',
-        },
-        'test-utils-2': {
-          template: testTemplateFile2,
-          destination: 'helpers2.ts',
-        },
-      },
-    });
+    const testTemplateGroup = {
+      'test-utils': testTemplateFile,
+      'test-utils-2': testTemplateFile2,
+    } satisfies TsTemplateGroup;
 
     it('renders template files', async () => {
       const runner = createTaskTestRunner(typescriptBundle.tasks.file);
@@ -97,6 +90,7 @@ describe('typescriptGenerator', () => {
             name: 'utils-template',
             source: { contents: 'export const helper = () => {};' },
             variables: {},
+            fileOptions: { kind: 'singleton' },
           });
 
           const dependencyTemplateFile = createTsTemplateFile({
@@ -106,6 +100,7 @@ describe('typescriptGenerator', () => {
                 'import { helper } from "@/src/utils/helpers.ts"; console.log(helper());',
             },
             variables: {},
+            fileOptions: { kind: 'singleton' },
           });
 
           await testAction(
@@ -174,7 +169,10 @@ describe('typescriptGenerator', () => {
         async ({ typescriptFile }) => {
           const action = typescriptFile.renderTemplateGroup({
             group: testTemplateGroup,
-            baseDirectory: '@/src/utils',
+            paths: {
+              'test-utils': '@/src/utils/helpers.ts',
+              'test-utils-2': '@/src/utils/helpers2.ts',
+            },
           });
 
           const { files } = await testAction(action);

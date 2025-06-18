@@ -9,7 +9,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/axios.ts",
       "projectExports": { "getAxiosErrorInfo": {} },
-      "template": "",
       "variables": {}
     }
   }

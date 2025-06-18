@@ -68,7 +68,7 @@ export const bullMqGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: BULL_BULL_MQ_GENERATED.templates.scriptsGroup,
                 paths,
                 importMapProviders: {
@@ -87,7 +87,7 @@ export const bullMqGenerator = createGenerator({
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: BULL_BULL_MQ_GENERATED.templates.serviceGroup,
                 paths,
                 importMapProviders: {

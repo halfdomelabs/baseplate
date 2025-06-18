@@ -21,7 +21,6 @@
         }
       },
       "pathRootRelativePath": "{routes-root}/auth0-callback.page.tsx",
-      "template": "",
       "variables": {}
     },
     "routes/signup.page.tsx": {
@@ -40,7 +39,6 @@
         }
       },
       "pathRootRelativePath": "{routes-root}/signup.page.tsx",
-      "template": "",
       "variables": {}
     }
   }

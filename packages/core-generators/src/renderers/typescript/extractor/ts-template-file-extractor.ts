@@ -1,514 +1,210 @@
-import type {
-  TemplateFileExtractorContext,
-  TemplateFileExtractorFile,
-} from '@baseplate-dev/sync';
-
 import {
+  createTemplateFileExtractor,
   getGenerationConcurrencyLimit,
-  parseGeneratorName,
-  TemplateFileExtractor,
 } from '@baseplate-dev/sync';
-import { TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY } from '@baseplate-dev/sync/extractor-v2';
-import { mapGroupBy, mapKeyBy, quot } from '@baseplate-dev/utils';
-import {
-  getCommonPathPrefix,
-  handleFileNotFoundError,
-  readJsonWithSchema,
-} from '@baseplate-dev/utils/node';
-import { camelCase, constantCase, sortBy, uniq } from 'es-toolkit';
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
+import { groupBy } from 'es-toolkit';
 import path from 'node:path';
-import { ResolverFactory } from 'oxc-resolver';
 import pLimit from 'p-limit';
-import { z } from 'zod';
 
-import type { TsCodeFragment } from '../fragments/types.js';
-import type { TsTemplateOutputTemplateMetadata } from '../templates/types.js';
-import type {
-  ProjectExportLookupMap,
-  TsTemplateImportLookupContext,
-} from './organize-ts-template-imports.js';
-import type { TsProjectExport } from './write-ts-project-exports.js';
+import { templateExtractorBarrelExportPlugin } from '#src/renderers/extractor/index.js';
+import { deduplicateTemplateFileExtractorSourceFiles } from '#src/renderers/extractor/utils/deduplicate-templates.js';
 
-import { tsCodeFragment } from '../fragments/creators.js';
-import { tsImportBuilder } from '../imports/builder.js';
-import { renderTsCodeFileTemplate } from '../renderers/file.js';
+import type { TsGeneratorTemplateMetadata } from '../templates/types.js';
+import type { WriteTsTemplateFileContext } from './render-ts-template-file.js';
+
+import { templatePathsPlugin } from '../../extractor/plugins/template-paths/template-paths.plugin.js';
+import { typedTemplatesFilePlugin } from '../../extractor/plugins/typed-templates-file.js';
 import {
   TS_TEMPLATE_TYPE,
+  tsTemplateGeneratorTemplateMetadataSchema,
   tsTemplateOutputTemplateMetadataSchema,
 } from '../templates/types.js';
-import { TsCodeUtils } from '../utils/ts-code-utils.js';
-import { extractTsTemplateVariables } from './extract-ts-template-variables.js';
-import { organizeTsTemplateImports } from './organize-ts-template-imports.js';
-import { writeTsProjectExports } from './write-ts-project-exports.js';
+import { buildExternalImportProvidersMap } from './build-external-import-providers-map.js';
+import { buildTsProjectExportMap } from './build-ts-project-export-map.js';
+import { getResolverFactory } from './get-resolver-factory.js';
+import {
+  GENERATED_IMPORT_PROVIDERS_FILE_NAME,
+  renderTsImportProviders,
+} from './render-ts-import-providers.js';
+import { renderTsTemplateFile } from './render-ts-template-file.js';
+import { renderTsTypedTemplates } from './render-ts-typed-templates.js';
+import { tsExtractorConfigSchema } from './ts-extractor-config.schema.js';
 
-interface TypescriptCodeEntry {
-  codeBlock: TsCodeFragment;
-  exportName: string;
-}
+const limit = pLimit(getGenerationConcurrencyLimit());
 
-function getImportSourceForGenerator(
-  generatorName: string,
-  importPath: string,
-  importPackage: string,
-): string {
-  const { packageName } = parseGeneratorName(generatorName);
-  return importPackage === packageName ? importPath : importPackage;
-}
+export const TsTemplateFileExtractor = createTemplateFileExtractor({
+  name: TS_TEMPLATE_TYPE,
+  pluginDependencies: [
+    templatePathsPlugin,
+    typedTemplatesFilePlugin,
+    templateExtractorBarrelExportPlugin,
+  ],
+  outputTemplateMetadataSchema: tsTemplateOutputTemplateMetadataSchema,
+  generatorTemplateMetadataSchema: tsTemplateGeneratorTemplateMetadataSchema,
+  extractTemplateMetadataEntries: (files, context) => {
+    const deduplicatedFiles =
+      deduplicateTemplateFileExtractorSourceFiles(files);
+    const templatePathPlugin = context.getPlugin('template-paths');
+    return deduplicatedFiles.map(({ metadata, absolutePath }) => {
+      try {
+        const { pathRootRelativePath, generatorTemplatePath } =
+          templatePathPlugin.resolveTemplatePaths(
+            metadata.fileOptions,
+            absolutePath,
+            metadata.name,
+            metadata.generator,
+          );
 
-const GENERATOR_OPTIONS_FILENAME = 'ts-extractor.json';
-const generatorOptionsSchema = z.object({
-  /**
-   * A map of export group names to export group configuration.
-   *
-   * To refer to the default export group name, use an empty string.
-   */
-  exportGroups: z
-    .record(
-      z.string(),
-      z.object({
-        /**
-         * Whether to export the provider type.
-         */
-        exportProviderType: z.boolean().optional(),
-        /**
-         * The existing imports provider to use.
-         */
-        existingImportsProvider: z
-          .object({
-            /**
-             * The module specifier of the existing imports provider.
-             *
-             * Can be a relative path with @/ or a package name.
-             */
-            moduleSpecifier: z.string(),
-            /**
-             * The name of the import schema export.
-             */
-            importSchemaName: z.string(),
-            /**
-             * The name of the provider type export.
-             */
-            providerTypeName: z.string(),
-            /**
-             * The name of the provider export.
-             */
-            providerName: z.string(),
-          })
-          .optional(),
-      }),
-    )
-    .optional(),
-});
-
-type GeneratorOptions = z.infer<typeof generatorOptionsSchema>;
-
-export class TsTemplateFileExtractor extends TemplateFileExtractor<
-  typeof tsTemplateOutputTemplateMetadataSchema
-> {
-  public name = TS_TEMPLATE_TYPE;
-  public metadataSchema = tsTemplateOutputTemplateMetadataSchema;
-
-  protected pathResolver: ResolverFactory;
-
-  constructor(
-    context: TemplateFileExtractorContext,
-    {
-      pathResolver,
-    }: {
-      pathResolver?: ResolverFactory;
-    } = {},
-  ) {
-    super(context);
-    this.pathResolver =
-      pathResolver ??
-      new ResolverFactory({
-        tsconfig: {
-          configFile: path.join(
-            this.getProjectBaseDirectory(),
-            'tsconfig.json',
-          ),
-        },
-        conditionNames: ['node', 'require'],
-        extensions: ['.ts', '.tsx', '.d.ts', '.js', '.jsx', '.json', '.node'],
-        extensionAlias: {
-          '.js': ['.ts', '.tsx', '.d.ts', '.js'],
-          '.jsx': ['.tsx', '.d.ts', '.jsx'],
-          '.cjs': ['.cts', '.d.cts', '.cjs'],
-          '.mjs': ['.mts', '.d.mts', '.mjs'],
-        },
-      });
-  }
-
-  private generatorConfigCacheMap = new Map<string, GeneratorOptions>();
-
-  protected async getGeneratorOptions(
-    generatorName: string,
-  ): Promise<GeneratorOptions> {
-    let generatorOptions = this.generatorConfigCacheMap.get(generatorName);
-    if (!generatorOptions) {
-      const generatorBase = this.getGeneratorBaseDirectory(generatorName);
-      const generatorOptionsPath = path.join(
-        generatorBase,
-        GENERATOR_OPTIONS_FILENAME,
-      );
-      generatorOptions =
-        (await readJsonWithSchema(
-          generatorOptionsPath,
-          generatorOptionsSchema,
-        ).catch(handleFileNotFoundError)) ?? {};
-      this.generatorConfigCacheMap.set(generatorName, generatorOptions);
-    }
-    return generatorOptions;
-  }
-
-  protected getTypescriptRendererImport(generatorName: string): string {
-    return generatorName.startsWith('@baseplate-dev/core-generators#')
-      ? '@src/renderers/typescript/index.js'
-      : '@baseplate-dev/core-generators';
-  }
-
-  protected async extractTemplateFile(
-    file: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>,
-    importLookupContext: TsTemplateImportLookupContext,
-  ): Promise<
-    TypescriptCodeEntry & {
-      originalPath: string;
-    }
-  > {
-    const sourceFileContents = await this.readSourceFile(file.path);
-    const { content: extractedContent, variables } =
-      extractTsTemplateVariables(sourceFileContents);
-
-    const { usedProjectExports, contents: organizedContents } =
-      await organizeTsTemplateImports(
-        file.path,
-        extractedContent,
-        importLookupContext,
-      );
-
-    const usedImportProviderMap = mapKeyBy(
-      usedProjectExports,
-      (projectExport) => projectExport.providerImportName,
-    );
-    const generatorName = file.metadata.generator;
-    const usedImportProviders = [...usedImportProviderMap.values()].map(
-      (projectExport) => ({
-        name: projectExport.importSource.slice(1),
-        providerFragment: tsCodeFragment(
-          projectExport.providerImportName,
-          tsImportBuilder([projectExport.providerImportName]).from(
-            getImportSourceForGenerator(
-              generatorName,
-              path.relative(
-                path.join(
-                  this.getGeneratorBaseDirectory(generatorName),
-                  TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
-                ),
-                projectExport.providerPath.replace(/\.ts$/, '.js'),
-              ),
-              projectExport.providerPackage,
-            ),
-          ),
-        ),
-      }),
-    );
-
-    let processedContent = organizedContents;
-    if (organizedContents.startsWith('#!')) {
-      // shebang lines must always be the first line
-      const contentLines = organizedContents.split('\n');
-      processedContent = `${contentLines[0]}\n// @ts-nocheck\n\n${contentLines.slice(1).join('\n')}`;
-    } else {
-      processedContent = `// @ts-nocheck\n\n${organizedContents}`;
-    }
-
-    await this.writeTemplateFileIfModified(file, processedContent);
-
-    const templateName = camelCase(file.metadata.name);
-
-    const templateOptions = TsCodeUtils.mergeFragmentsAsObject({
-      name: quot(file.metadata.name),
-      group: file.metadata.group ? quot(file.metadata.group) : undefined,
-      source: JSON.stringify({
-        path: file.metadata.template,
-      }),
-      variables: JSON.stringify(variables),
-      projectExports: JSON.stringify(file.metadata.projectExports ?? {}),
-      importMapProviders:
-        usedImportProviders.length > 0
-          ? TsCodeUtils.mergeFragmentsAsObject(
-              Object.fromEntries(
-                usedImportProviders.map((importProvider) => [
-                  importProvider.name,
-                  importProvider.providerFragment,
-                ]),
-              ),
-            )
-          : undefined,
-    });
-
-    return {
-      codeBlock: TsCodeUtils.templateWithImports([
-        tsImportBuilder(['createTsTemplateFile']).from(
-          this.getTypescriptRendererImport(generatorName),
-        ),
-      ])`const ${templateName} = createTsTemplateFile(${templateOptions});`,
-      exportName: templateName,
-      originalPath: file.path,
-    };
-  }
-
-  protected async extractTemplateFilesForGroup(
-    generatorName: string,
-    groupName: string,
-    files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[],
-    lookupContext: TsTemplateImportLookupContext,
-  ): Promise<TypescriptCodeEntry> {
-    const results = await Promise.all(
-      files.map((file) => this.extractTemplateFile(file, lookupContext)),
-    );
-
-    const originalPaths = results.map((result) => result.originalPath);
-    // identify greatest common prefix
-    const commonPathPrefix = getCommonPathPrefix(originalPaths);
-
-    const groupNameVariable = `${camelCase(groupName)}Group`;
-
-    const groupBlock = TsCodeUtils.templateWithImports(
-      tsImportBuilder(['createTsTemplateGroup']).from(
-        this.getTypescriptRendererImport(generatorName),
-      ),
-    )`const ${groupNameVariable} = createTsTemplateGroup({
-      templates: ${TsCodeUtils.mergeFragmentsAsObject(
-        Object.fromEntries(
-          results.map((result) => [
-            result.exportName,
-            TsCodeUtils.mergeFragmentsAsObject({
-              destination: quot(
-                path.relative(commonPathPrefix, result.originalPath),
-              ),
-              template: result.exportName,
-            }),
-          ]),
-        ),
-      )}
-    });`;
-
-    return {
-      codeBlock: TsCodeUtils.mergeFragmentsPresorted(
-        [
-          ...sortBy(results, [(r) => r.exportName]).map(
-            (result) => result.codeBlock,
-          ),
-          groupBlock,
-        ],
-        '\n\n',
-      ),
-      exportName: groupNameVariable,
-    };
-  }
-
-  protected async extractTemplateFilesForGenerator(
-    generatorName: string,
-    files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[],
-    projectExportMap: ProjectExportLookupMap,
-  ): Promise<void> {
-    const extractLimit = pLimit(getGenerationConcurrencyLimit());
-
-    const filesToExtract = files.filter(
-      (file) => !file.metadata.projectExportsOnly,
-    );
-
-    const filesByGroups = mapGroupBy(
-      filesToExtract.filter((file) => file.metadata.group),
-      (file) => file.metadata.group ?? '',
-    );
-    const filesWithoutGroups = filesToExtract.filter(
-      (file) => !file.metadata.group,
-    );
-
-    const lookupContext: TsTemplateImportLookupContext = {
-      projectExportMap,
-      projectRoot: this.getProjectBaseDirectory(),
-      generatorFiles: files.map((file) => file.path),
-      resolver: this.pathResolver,
-    };
-
-    const results = await Promise.all([
-      ...[...filesByGroups].map(([groupName, files]) =>
-        extractLimit(() =>
-          this.extractTemplateFilesForGroup(
-            generatorName,
-            groupName,
-            files,
-            lookupContext,
-          ),
-        ),
-      ),
-      ...filesWithoutGroups.map((file) =>
-        extractLimit(() => this.extractTemplateFile(file, lookupContext)),
-      ),
-    ]);
-
-    if (!generatorName.includes('#')) {
-      throw new Error(
-        `Generator name ${generatorName} is not in the correct format. Please use the format <package-name>#<generator-name>.`,
-      );
-    }
-    const templatesVariableName = `${constantCase(generatorName.split('#')[1])}_TS_TEMPLATES`;
-
-    const templatesFile = renderTsCodeFileTemplate({
-      templateContents: `TPL_CODE_BLOCKS
-      
-      export const TPL_TEMPLATE_VARIABLE_NAME = TPL_RESULT;`,
-      variables: {
-        TPL_CODE_BLOCKS: TsCodeUtils.mergeFragmentsPresorted(
-          sortBy(results, [(r) => r.exportName]).map(
-            (result) => result.codeBlock,
-          ),
-          '\n\n',
-        ),
-        TPL_TEMPLATE_VARIABLE_NAME: templatesVariableName,
-        TPL_RESULT: TsCodeUtils.mergeFragmentsAsObject(
-          Object.fromEntries(
-            results.map((result) => [result.exportName, result.exportName]),
-          ),
-        ),
-      },
-    });
-
-    await this.writeGeneratedTypescriptFileIfModified(
-      generatorName,
-      'ts-templates.ts',
-      templatesFile,
-    );
-  }
-
-  /**
-   * Generates an import file for a generator.
-   *
-   * @param generatorName - The name of the generator.
-   * @param files - The files to generate the import file for.
-   * @returns A list of project exports.
-   */
-  protected async generateImportFileForGenerator(
-    generatorName: string,
-    files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[],
-  ): Promise<TsProjectExport[]> {
-    const importMapsPath = path.join(
-      this.getGeneratorBaseDirectory(generatorName),
-      'generated/ts-import-maps.ts',
-    );
-    const generatorOptions = await this.getGeneratorOptions(generatorName);
-    const packagePath = this.getGeneratorPackagePath(generatorName);
-
-    const exportGroupMap = mapGroupBy(
-      files,
-      (file) => file.metadata.exportGroup ?? '',
-    );
-
-    const projectExports: TsProjectExport[] = [];
-    const importsFileFragmentMap = new Map<string, TsCodeFragment>();
-
-    for (const [key, files] of exportGroupMap) {
-      const exportConfiguration = generatorOptions.exportGroups?.[key];
-      const result = writeTsProjectExports(files, generatorName, {
-        importMapFilePath: importMapsPath,
-        packagePath,
-        exportProviderType: exportConfiguration?.exportProviderType,
-        existingImportsProvider: exportConfiguration?.existingImportsProvider,
-        exportGroupName: key === '' ? undefined : key,
-      });
-      if (result.importsFileFragment) {
-        importsFileFragmentMap.set(key, result.importsFileFragment);
+        return {
+          generator: metadata.generator,
+          generatorTemplatePath,
+          sourceAbsolutePath: absolutePath,
+          metadata: {
+            ...metadata,
+            pathRootRelativePath,
+          },
+        };
+      } catch (error) {
+        throw enhanceErrorWithContext(
+          error,
+          `Error extracting template metadata for ${absolutePath}`,
+        );
       }
-      projectExports.push(...result.projectExports);
-    }
+    });
+  },
+  writeTemplateFiles: async (files, context, api) => {
+    // Gather all the imports from the entry metadata
+    const externalImportProvidersMap = buildExternalImportProvidersMap(
+      context.configLookup,
+    );
+    const projectExportMap = buildTsProjectExportMap(
+      context,
+      externalImportProvidersMap,
+    );
 
-    const importsFileContents =
-      importsFileFragmentMap.size > 0
-        ? renderTsCodeFileTemplate({
-            templateContents: `TPL_CONTENTS`,
-            variables: {
-              TPL_CONTENTS: TsCodeUtils.mergeFragments(
-                importsFileFragmentMap,
-                '\n\n',
-              ),
-            },
-            importMapProviders: {},
-            options: {
-              importSortOptions: {
-                internalPatterns: [/^@src\//],
-              },
-            },
-          })
-        : undefined;
+    const filesByGenerator = groupBy(files, (f) => f.generator);
 
-    await (importsFileContents
-      ? this.writeGeneratedTypescriptFileIfModified(
+    await Promise.all(
+      Object.entries(filesByGenerator).map(async ([generatorName, files]) => {
+        const writeContext: WriteTsTemplateFileContext = {
           generatorName,
-          'ts-import-maps.ts',
-          importsFileContents,
-        )
-      : this.deleteGeneratedTypescriptFile(generatorName, 'ts-import-maps.ts'));
+          projectExportMap,
+          outputDirectory: context.outputDirectory,
+          internalOutputRelativePaths: files.map((f) =>
+            path.relative(context.outputDirectory, f.sourceAbsolutePath),
+          ),
+          resolver: getResolverFactory(context.outputDirectory),
+        };
 
-    return projectExports;
-  }
+        await Promise.all(
+          files.map((file) =>
+            limit(async () => {
+              if (file.metadata.projectExportsOnly) return;
 
-  async extractTemplateFiles(
-    files: TemplateFileExtractorFile<TsTemplateOutputTemplateMetadata>[],
-  ): Promise<void> {
-    const filesByGenerator = mapGroupBy(
-      files,
-      (file) => file.metadata.generator,
-    );
-    const projectExports: TsProjectExport[] = [];
-    for (const [generator, filesInGenerator] of filesByGenerator) {
-      const result = await this.generateImportFileForGenerator(
-        generator,
-        filesInGenerator,
-      );
-      projectExports.push(...result);
-    }
-
-    // make sure there are no duplicate importProviderNames with different import paths
-    const importProviderNameMap = mapGroupBy(
-      projectExports,
-      (projectExport) => projectExport.providerImportName,
-    );
-    for (const [providerImportName, projectExports] of importProviderNameMap) {
-      const projectExportPaths = uniq(
-        projectExports.map((projectExport) => projectExport.providerPath),
-      );
-      if (projectExportPaths.length > 1) {
-        throw new Error(
-          `Duplicate import provider: ${providerImportName} in ${projectExportPaths.join(', ')}`,
+              const contents = await api.readOutputFile(
+                file.sourceAbsolutePath,
+              );
+              const result = await renderTsTemplateFile(
+                file.sourceAbsolutePath,
+                contents,
+                writeContext,
+              );
+              await api.writeTemplateFile(
+                file.generator,
+                file.generatorTemplatePath,
+                result.contents,
+              );
+              // update the extractor config with the new variables and import providers
+              context.configLookup.updateExtractorTemplateConfig(
+                file.generator,
+                {
+                  ...file.metadata,
+                  variables: result.variables,
+                  importMapProviders: result.importProviders,
+                } as TsGeneratorTemplateMetadata,
+              );
+              return result;
+            }),
+          ),
         );
-      }
-    }
+      }),
+    );
+  },
+  writeGeneratedFiles: async (generatorNames, context, api) => {
+    const templatePathsPlugin = context.getPlugin('template-paths');
+    const typedTemplatesPlugin = context.getPlugin('typed-templates-file');
+    const barrelExportPlugin = context.getPlugin('barrel-export');
+    const externalImportProvidersMap = buildExternalImportProvidersMap(
+      context.configLookup,
+    );
 
-    // organize project exports by project relative path
-    const projectExportMap = new Map<string, Map<string, TsProjectExport>>();
-    for (const projectExport of projectExports) {
-      const { filePath } = projectExport;
-      const exportName = projectExport.exportName ?? projectExport.name;
-      if (!projectExportMap.has(filePath)) {
-        projectExportMap.set(filePath, new Map());
-      }
-      if (projectExportMap.get(filePath)?.has(exportName)) {
-        throw new Error(
-          `Duplicate project export: ${exportName} in ${filePath}`,
-        );
-      }
-      projectExportMap.get(filePath)?.set(exportName, projectExport);
-    }
-
-    for (const [generator, filesInGenerator] of filesByGenerator) {
-      await this.extractTemplateFilesForGenerator(
-        generator,
-        filesInGenerator,
-        projectExportMap,
+    for (const generatorName of generatorNames) {
+      const generatorConfig =
+        context.configLookup.getExtractorConfigOrThrow(generatorName);
+      const templates = context.configLookup.getTemplatesForGenerator(
+        generatorName,
+        tsTemplateGeneratorTemplateMetadataSchema,
+        TS_TEMPLATE_TYPE,
       );
+
+      // Add the typed templates to the typed templates plugin
+      const typedTemplates = renderTsTypedTemplates(templates, {
+        generatorPackageName: generatorConfig.packageName,
+      });
+      for (const typedTemplate of typedTemplates) {
+        typedTemplatesPlugin.addTemplate(generatorName, typedTemplate);
+      }
+
+      // Add the path root relative paths to the template paths plugin
+      for (const { config } of templates) {
+        if (config.pathRootRelativePath) {
+          templatePathsPlugin.registerTemplatePathEntry(
+            generatorName,
+            config.name,
+            config.pathRootRelativePath,
+          );
+        }
+      }
+
+      // Render the import providers
+      const pathsRootExportName =
+        templatePathsPlugin.getPathsRootExportName(generatorName);
+
+      // Get the TypeScript extractor configuration
+      const tsExtractorConfig =
+        context.configLookup.getExtractorConfigForGenerator(
+          generatorName,
+          'ts',
+          tsExtractorConfigSchema,
+        );
+
+      const importProviders = renderTsImportProviders(
+        generatorName,
+        templates,
+        {
+          generatorPackageName: generatorConfig.packageName,
+          pathsRootExportName,
+          externalImportProvidersMap,
+        },
+        tsExtractorConfig,
+      );
+      if (importProviders) {
+        await api.writeGeneratedFile(
+          generatorName,
+          GENERATED_IMPORT_PROVIDERS_FILE_NAME,
+          importProviders.contents,
+        );
+        for (const barrelExport of importProviders.barrelExports) {
+          barrelExportPlugin.addBarrelExport(generatorName, barrelExport);
+        }
+        for (const barrelExport of importProviders.generatorBarrelExports) {
+          barrelExportPlugin.addGeneratedBarrelExport(
+            generatorName,
+            barrelExport,
+          );
+        }
+      }
     }
-  }
-}
+  },
+});

@@ -1,10 +1,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import {
-  GENERATOR_INFO_FILENAME,
-  TEMPLATE_METADATA_FILENAME,
-} from '../constants.js';
+import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
 
 /**
  * Recursively deletes all template metadata files and the generator metadata file
@@ -15,14 +12,6 @@ import {
  */
 export async function deleteMetadataFiles(directory: string): Promise<void> {
   const entries = await fs.readdir(directory, { withFileTypes: true });
-
-  // Delete generator metadata file if it exists
-  const generatorMetadataPath = path.join(directory, GENERATOR_INFO_FILENAME);
-  try {
-    await fs.unlink(generatorMetadataPath);
-  } catch {
-    // Ignore if file doesn't exist
-  }
 
   // Process each entry
   for (const entry of entries) {

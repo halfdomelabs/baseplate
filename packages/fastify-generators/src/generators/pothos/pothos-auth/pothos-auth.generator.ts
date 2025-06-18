@@ -86,7 +86,7 @@ export const pothosAuthGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group:
                   POTHOS_POTHOS_AUTH_GENERATED.templates
                     .fieldAuthorizePluginGroup,

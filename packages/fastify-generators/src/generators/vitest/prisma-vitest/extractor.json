@@ -15,7 +15,6 @@
         "getTestPrisma": {},
         "replaceDatabase": {}
       },
-      "template": "",
       "variables": { "TPL_TEST_DB": {} }
     },
     "src/tests/helpers/prisma.test-helper.ts": {
@@ -31,7 +30,6 @@
       },
       "pathRootRelativePath": "{src-root}/tests/helpers/prisma.test-helper.ts",
       "projectExports": { "prismaMock": {} },
-      "template": "",
       "variables": { "TPL_PRISMA_PATH": {} }
     }
   }

@@ -21,7 +21,6 @@
         }
       },
       "pathRootRelativePath": "{module-root}/services/management.ts",
-      "template": "",
       "variables": {}
     },
     "module/services/user-session.service.ts": {
@@ -45,7 +44,6 @@
       },
       "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
       "projectExports": { "userSessionService": {} },
-      "template": "",
       "variables": { "TPL_USER_MODEL": {} }
     }
   }

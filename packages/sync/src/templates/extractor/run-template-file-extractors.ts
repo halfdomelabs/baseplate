@@ -1,22 +1,35 @@
-import { mapGroupBy } from '@baseplate-dev/utils';
-import {
-  handleFileNotFoundError,
-  readJsonWithSchema,
-} from '@baseplate-dev/utils/node';
-import { omit, orderBy, uniqBy } from 'es-toolkit';
-import { globby } from 'globby';
-import fsAdapter from 'node:fs';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { z } from 'zod';
+import { groupBy, uniq } from 'es-toolkit';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
-import type { TemplateFileExtractorCreator } from './template-file-extractor.js';
+import type { TemplateFileMetadataBase } from '../metadata/metadata.js';
+import type { TemplateExtractorHook } from './runner/template-extractor-plugin.js';
+import type {
+  AnyTemplateFileExtractor,
+  TemplateFileExtractorMetadataEntry,
+} from './runner/template-file-extractor.js';
 
-import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
-import { templateFileMetadataBaseSchema } from '../metadata/metadata.js';
-import { createGeneratorInfoMap } from './create-generator-info-map.js';
+import { readTemplateMetadataFiles } from '../metadata/read-template-metadata-files.js';
+import { TemplateExtractorConfigLookup } from './configs/template-extractor-config-lookup.js';
+import { tryCreateExtractorJson } from './configs/try-create-extractor-json.js';
+import { initializeTemplateExtractorPlugins } from './runner/initialize-template-extractor-plugins.js';
+import { TemplateExtractorApi } from './runner/template-extractor-api.js';
+import { TemplateExtractorContext } from './runner/template-extractor-context.js';
+import { TemplateExtractorFileContainer } from './runner/template-extractor-file-container.js';
+import { cleanupUnusedTemplateFiles } from './utils/cleanup-unused-template-files.js';
+import { mergeExtractorTemplateEntries } from './utils/merge-extractor-template-entries.js';
+import { writeExtractorTemplateJsons } from './utils/write-extractor-template-jsons.js';
+
+export interface RunTemplateFileExtractorsOptions {
+  /**
+   * Whether to auto-generate extractor.json files for generators that don't have one.
+   */
+  autoGenerateExtractor?: boolean;
+  /**
+   * Whether to skip cleaning the output directories (templates and generated).
+   */
+  skipClean?: boolean;
+}
 
 /**
  * Run the template file extractors on a target output directory
@@ -24,106 +37,148 @@ import { createGeneratorInfoMap } from './create-generator-info-map.js';
  * @param extractors - The template file extractors to run
  * @param outputDirectories - The output directories to run the extractors on
  * @param generatorPackageMap - The map of package names with generators to package paths
+ * @param logger - The logger to use
+ * @param fileIdMap - The map of file ids to file paths (used to link generated files to their templates)
+ * @param options - The options to use
  */
 export async function runTemplateFileExtractors(
-  extractorCreators: TemplateFileExtractorCreator[],
+  templateFileExtractors: AnyTemplateFileExtractor[],
   outputDirectory: string,
   generatorPackageMap: Map<string, string>,
   logger: Logger,
+  fileIdMap: Map<string, string>,
+  options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
-  // read generator template metadata
-  const generatorInfoMap = await createGeneratorInfoMap(
-    outputDirectory,
+  const templateMetadataFiles =
+    await readTemplateMetadataFiles(outputDirectory);
+
+  const configLookup = new TemplateExtractorConfigLookup(
     generatorPackageMap,
+    fileIdMap,
   );
-  const extractors = extractorCreators.map((creator) =>
-    creator({
-      generatorInfoMap,
-      logger,
-      baseDirectory: outputDirectory,
-    }),
-  );
+  await configLookup.initialize();
 
-  // Find all template metadata files
-  const templateMetadataFiles = await globby(
-    path.join(outputDirectory, '**', TEMPLATE_METADATA_FILENAME),
-    {
-      absolute: true,
-      onlyFiles: true,
-      fs: fsAdapter,
-      gitignore: true,
-      cwd: outputDirectory,
-    },
-  );
-
-  // Process each metadata file
-  const extractorFileArrays = await Promise.all(
-    templateMetadataFiles.map(async (metadataFile) => {
-      const metadataFileContents = await readJsonWithSchema(
-        metadataFile,
-        z.record(z.string(), templateFileMetadataBaseSchema.passthrough()),
+  if (options?.autoGenerateExtractor) {
+    const generatorNames = templateMetadataFiles.map(
+      (m) => m.metadata.generator,
+    );
+    const missingGeneratorNames = generatorNames.filter(
+      (name) => !configLookup.getExtractorConfig(name),
+    );
+    if (missingGeneratorNames.length > 0) {
+      logger.info(
+        `Auto-generating extractor.json files for ${missingGeneratorNames.length} generators: ${missingGeneratorNames.join(', ')}`,
       );
-      return await Promise.all(
-        Object.entries(metadataFileContents).map(
-          async ([filename, metadata]) => {
-            const filePath = path.join(path.dirname(metadataFile), filename);
-            const modifiedTime = await fs
-              .stat(filePath)
-              .then((stats) => stats.mtime)
-              .catch(handleFileNotFoundError);
-            if (!modifiedTime) {
-              throw new Error(
-                `Could not find source file (${filename}) specified in metadata file: ${metadataFile}`,
-              );
-            }
-            return {
-              path: filePath.replaceAll(path.sep, path.posix.sep),
-              metadata,
-              modifiedTime,
-            };
-          },
-        ),
-      );
-    }),
-  );
-  const extractorFiles = orderBy(
-    extractorFileArrays.flat(),
-    [(f) => f.modifiedTime],
-    ['desc'],
-  );
+      for (const generatorName of missingGeneratorNames) {
+        await tryCreateExtractorJson({
+          packageMap: generatorPackageMap,
+          generatorName,
+        });
+      }
+      // Re-initialize the config lookup to pick up the new extractor.json files
+      await configLookup.initialize();
+    }
+  }
 
-  const filesByType = mapGroupBy(extractorFiles, (m) => m.metadata.type);
-  for (const [type, files] of filesByType) {
-    const extractor = extractors.find((e) => e.name === type);
+  // Initialize plugins
+  const fileContainer = new TemplateExtractorFileContainer([
+    ...generatorPackageMap.values(),
+  ]);
+  const initializerContext = new TemplateExtractorContext({
+    configLookup,
+    logger,
+    outputDirectory,
+    plugins: new Map(),
+    fileContainer,
+  });
+  const { hooks, pluginMap } = await initializeTemplateExtractorPlugins({
+    templateExtractors: templateFileExtractors,
+    context: initializerContext,
+  });
+
+  async function runHooks(hook: TemplateExtractorHook): Promise<void> {
+    for (const hookFn of hooks[hook].toReversed()) {
+      await hookFn();
+    }
+  }
+
+  // Create the context for the extractors
+  const context = new TemplateExtractorContext({
+    configLookup,
+    logger,
+    outputDirectory,
+    plugins: pluginMap,
+    fileContainer,
+  });
+
+  // Group files by type and validate uniqueness (throws on duplicates)
+  const filesByType = groupBy(templateMetadataFiles, (f) => f.metadata.type);
+
+  // Get the metadata entries for each file
+  const metadataEntries: TemplateFileExtractorMetadataEntry[] = [];
+  for (const [type, files] of Object.entries(filesByType)) {
+    const extractor = templateFileExtractors.find((e) => e.name === type);
     if (!extractor) {
       throw new Error(`No extractor found for template type: ${type}`);
     }
-    // make sure we only get the files that have been modified the latest for each generator/template file combo
-    const uniqueTemplateFiles = uniqBy(files, (f) =>
-      JSON.stringify({
-        g: f.metadata.generator,
-        t: f.metadata.template,
-      }),
+
+    const parsedFiles = files.map((f) => {
+      const { absolutePath: path, metadata, modifiedTime } = f;
+      return {
+        absolutePath: path,
+        metadata: extractor.outputTemplateMetadataSchema
+          ? (extractor.outputTemplateMetadataSchema.parse(
+              metadata,
+            ) as TemplateFileMetadataBase)
+          : metadata,
+        modifiedTime,
+      };
+    });
+    const api = new TemplateExtractorApi(context, type);
+
+    const newEntries = await extractor.extractTemplateMetadataEntries(
+      parsedFiles,
+      context,
+      api,
     );
-    // check for duplicate names for the same generator
-    const duplicateNames = uniqueTemplateFiles.filter(
-      (f) =>
-        uniqueTemplateFiles.filter(
-          (f2) =>
-            f2.metadata.generator === f.metadata.generator &&
-            f2.metadata.name === f.metadata.name,
-        ).length > 1,
-    );
-    if (duplicateNames.length > 0) {
-      throw new Error(
-        `Duplicate names found for the same generator: ${duplicateNames
-          .map((f) => f.path)
-          .join(', ')}`,
-      );
+    metadataEntries.push(...newEntries);
+  }
+
+  await runHooks('afterExtract');
+
+  // Merge template entries into extractor configurations
+  mergeExtractorTemplateEntries(metadataEntries, context);
+
+  // Group metadata entries by type
+  const metadataEntriesByType = groupBy(
+    metadataEntries,
+    (e) => e.metadata.type,
+  );
+
+  for (const [type, entries] of Object.entries(metadataEntriesByType)) {
+    const extractor = templateFileExtractors.find((e) => e.name === type);
+    if (!extractor) {
+      throw new Error(`No extractor found for template type: ${type}`);
     }
 
-    await extractor.extractTemplateFiles(
-      uniqueTemplateFiles.map((f) => omit(f, ['modifiedTime'])),
-    );
+    const api = new TemplateExtractorApi(context, type);
+
+    await extractor.writeTemplateFiles(entries, context, api);
+
+    const generatorNames = uniq(entries.map((e) => e.generator));
+    await extractor.writeGeneratedFiles(generatorNames, context, api);
+  }
+
+  // Write extractor.json files before afterWrite hook so writeTemplateFiles can update extractor config
+  const generatorNames = uniq(metadataEntries.map((e) => e.generator));
+  await writeExtractorTemplateJsons(generatorNames, context);
+
+  await runHooks('afterWrite');
+
+  // Commit the file changes once all the extractors and plugins have written their files
+  await fileContainer.commit();
+
+  if (!options?.skipClean) {
+    await cleanupUnusedTemplateFiles(generatorNames, context);
   }
 }

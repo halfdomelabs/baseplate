@@ -19,7 +19,6 @@
         "DeleteServiceInput": { "isTypeOnly": true },
         "UpdateServiceInput": { "isTypeOnly": true }
       },
-      "template": "",
       "variables": {}
     },
     "src/utils/data-pipes.ts": {
@@ -46,7 +45,6 @@
         "DataPipeOutput": { "isTypeOnly": true },
         "mergePipeOperations": {}
       },
-      "template": "",
       "variables": {}
     },
     "src/utils/embedded-pipes/embedded-one-to-many.ts": {
@@ -70,7 +68,6 @@
         "createOneToManyCreateData": {},
         "createOneToManyUpsertData": {}
       },
-      "template": "",
       "variables": {}
     },
     "src/utils/embedded-pipes/embedded-one-to-one.ts": {
@@ -90,7 +87,6 @@
         "createOneToOneCreateData": {},
         "createOneToOneUpsertData": {}
       },
-      "template": "",
       "variables": {}
     },
     "src/utils/embedded-pipes/embedded-types.ts": {
@@ -102,7 +98,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/embedded-pipes/embedded-types.ts",
       "projectExports": { "UpsertPayload": { "isTypeOnly": true } },
-      "template": "",
       "variables": {}
     },
     "src/utils/prisma-relations.ts": {
@@ -114,7 +109,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/prisma-relations.ts",
       "projectExports": { "createPrismaDisconnectOrConnectData": {} },
-      "template": "",
       "variables": {}
     }
   }

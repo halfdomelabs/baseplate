@@ -1,6 +1,5 @@
 import { handleFileNotFoundError } from '@baseplate-dev/utils/node';
 import fs from 'node:fs/promises';
-import path from 'node:path';
 
 import type { TemplateFileSource } from '../types.js';
 
@@ -11,11 +10,10 @@ import type { TemplateFileSource } from '../types.js';
  * @returns The contents of the template file
  */
 export async function readTemplateFileSource(
-  generatorBaseDirectory: string,
   source: TemplateFileSource,
 ): Promise<string> {
-  return readTemplateFileSourceBuffer(generatorBaseDirectory, source).then(
-    (buffer) => buffer.toString(),
+  return readTemplateFileSourceBuffer(source).then((buffer) =>
+    buffer.toString(),
   );
 }
 
@@ -26,16 +24,11 @@ export async function readTemplateFileSource(
  * @returns The contents of the template file as a buffer
  */
 export async function readTemplateFileSourceBuffer(
-  generatorBaseDirectory: string,
   source: TemplateFileSource,
 ): Promise<Buffer> {
   if ('path' in source) {
-    // TODO[2025-06-18]: Remove once we've migrated to v2 of template system
-    const templatePath = path.isAbsolute(source.path)
-      ? source.path
-      : path.join(generatorBaseDirectory, 'templates', source.path);
     const fileContents = await fs
-      .readFile(templatePath)
+      .readFile(source.path)
       .catch(handleFileNotFoundError);
     if (!fileContents) {
       throw new Error(

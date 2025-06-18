@@ -21,8 +21,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/components/RequireAuth/index.tsx",
-      "projectExports": { "RequireAuth": { "exportName": "default" } },
-      "template": "",
+      "projectExports": { "RequireAuth": { "exportedAs": "default" } },
       "variables": {}
     }
   }

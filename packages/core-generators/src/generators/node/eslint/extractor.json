@@ -13,7 +13,6 @@
       "generator": "@baseplate-dev/core-generators#node/eslint",
       "importMapProviders": {},
       "pathRootRelativePath": "{package-root}/eslint.config.js",
-      "template": "",
       "variables": {
         "TPL_DEFAULT_PROJECT_FILES": {},
         "TPL_DEV_DEPENDENCIES": {},

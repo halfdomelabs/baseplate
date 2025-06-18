@@ -41,10 +41,7 @@ export function renderTextTemplateFileAction<
 }: RenderTextTemplateFileActionInput<T>): BuilderAction {
   return {
     execute: async (builder) => {
-      let templateContents = await readTemplateFileSource(
-        builder.generatorInfo.baseDirectory,
-        template.source,
-      );
+      let templateContents = await readTemplateFileSource(template.source);
 
       const variablesObj = variables as
         | Record<string, string | undefined>
@@ -150,7 +147,6 @@ export function renderTextTemplateFileAction<
         'path' in template.source
           ? {
               name: template.name,
-              template: '',
               generator: builder.generatorInfo.name,
               group: template.group,
               type: TEXT_TEMPLATE_TYPE,

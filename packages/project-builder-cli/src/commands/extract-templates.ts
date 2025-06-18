@@ -35,12 +35,12 @@ export function addExtractTemplatesCommand(program: Command): void {
           skipClean?: boolean;
         },
       ) => {
-        const { runTemplateExtractorsForProjectV2 } = await import(
+        const { runTemplateExtractorsForProject } = await import(
           '@baseplate-dev/project-builder-server/template-extractor'
         );
         const resolvedDirectory = expandPathWithTilde(directory);
         const defaultPlugins = await getDefaultPlugins(logger);
-        await runTemplateExtractorsForProjectV2(
+        await runTemplateExtractorsForProject(
           resolvedDirectory,
           app,
           defaultPlugins,

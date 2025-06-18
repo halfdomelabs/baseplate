@@ -13,12 +13,12 @@ import {
 import { ADMIN_ADMIN_COMPONENTS_PATHS } from './template-paths.js';
 
 const adminComponentsImportsSchema = createTsImportMapSchema({
-  DescriptionList: { name: 'default' },
+  DescriptionList: { exportedAs: 'default' },
   EmbeddedListFormProps: { isTypeOnly: true },
-  EmbeddedListInput: { name: 'default' },
+  EmbeddedListInput: { exportedAs: 'default' },
   EmbeddedListTableProps: { isTypeOnly: true },
   EmbeddedObjectFormProps: { isTypeOnly: true },
-  EmbeddedObjectInput: { name: 'default' },
+  EmbeddedObjectInput: { exportedAs: 'default' },
 });
 
 export type AdminComponentsImportsProvider = TsImportMapProviderFromSchema<

@@ -14,7 +14,6 @@
         "DEFAULT_USER_ROLES": {},
         "RoleConfig": { "isTypeOnly": true }
       },
-      "template": "",
       "variables": { "TPL_AUTH_ROLES": {} }
     }
   }

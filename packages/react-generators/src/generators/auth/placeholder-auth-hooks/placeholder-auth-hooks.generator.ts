@@ -27,7 +27,7 @@ export const placeholderAuthHooksGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group:
                   AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED.templates.hooksGroup,
                 paths,

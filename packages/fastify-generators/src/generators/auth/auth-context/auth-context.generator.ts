@@ -74,7 +74,7 @@ export const authContextGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: AUTH_AUTH_CONTEXT_GENERATED.templates.mainGroup,
                 paths,
                 importMapProviders: {

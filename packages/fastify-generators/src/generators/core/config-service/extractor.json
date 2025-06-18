@@ -9,7 +9,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/config.ts",
       "projectExports": { "config": {} },
-      "template": "",
       "variables": { "TPL_CONFIG_SCHEMA": {} }
     }
   }

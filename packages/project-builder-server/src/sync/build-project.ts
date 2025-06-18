@@ -28,7 +28,7 @@ import { compileApplications } from '#src/compiler/index.js';
 import type { PackageSyncResult, SyncStatus } from '../sync/index.js';
 import type { SyncMetadataController } from './sync-metadata-controller.js';
 
-import { generateForDirectory } from '../sync/index.js';
+import { generateForDirectory } from '../sync/generate-for-directory.js';
 import { getPackageSyncStatusFromResult } from './utils.js';
 
 async function loadProjectJson(

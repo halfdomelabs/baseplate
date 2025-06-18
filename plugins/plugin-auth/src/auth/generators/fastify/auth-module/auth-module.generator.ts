@@ -91,13 +91,13 @@ export const authModuleGenerator = createGenerator({
               }),
             );
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: FASTIFY_AUTH_MODULE_GENERATED.templates.constantsGroup,
                 paths,
               }),
             );
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: FASTIFY_AUTH_MODULE_GENERATED.templates.utilsGroup,
                 paths,
                 importMapProviders: {

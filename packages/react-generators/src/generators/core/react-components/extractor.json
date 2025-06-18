@@ -9,7 +9,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/Alert/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/AlertIcon/index.tsx": {
@@ -20,7 +19,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/AlertIcon/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/BackButton/index.tsx": {
@@ -31,7 +29,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/BackButton/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/Button/index.tsx": {
@@ -42,7 +39,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/Button/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/ButtonGroup/index.tsx": {
@@ -53,7 +49,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/ButtonGroup/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/Card/index.tsx": {
@@ -64,7 +59,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/Card/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/CheckedInput/index.tsx": {
@@ -75,7 +69,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/CheckedInput/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/ConfirmDialog/index.tsx": {
@@ -86,7 +79,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/ConfirmDialog/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/ErrorableLoader/index.tsx": {
@@ -97,7 +89,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/ErrorableLoader/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/ErrorDisplay/index.tsx": {
@@ -108,7 +99,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/ErrorDisplay/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/FormError/index.tsx": {
@@ -119,7 +109,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/FormError/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/FormLabel/index.tsx": {
@@ -130,7 +119,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/FormLabel/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/index.ts": {
@@ -167,7 +155,6 @@
         "TextInput": {},
         "Toast": {}
       },
-      "template": "",
       "variables": { "TPL_EXPORTS": {} }
     },
     "src/components/LinkButton/index.tsx": {
@@ -178,7 +165,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/LinkButton/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/ListGroup/index.tsx": {
@@ -189,7 +175,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/ListGroup/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/Modal/index.tsx": {
@@ -200,7 +185,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/Modal/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/NotFoundCard/index.tsx": {
@@ -211,7 +195,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/NotFoundCard/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/ReactDatePickerInput/index.tsx": {
@@ -221,7 +204,6 @@
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/ReactDatePickerInput/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/ReactSelectInput/index.tsx": {
@@ -232,7 +214,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/ReactSelectInput/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/SelectInput/index.tsx": {
@@ -243,7 +224,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/SelectInput/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/Sidebar/index.tsx": {
@@ -254,7 +234,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/Sidebar/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/Spinner/index.tsx": {
@@ -265,7 +244,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/Spinner/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/Table/index.tsx": {
@@ -276,7 +254,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/Table/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/TextAreaInput/index.tsx": {
@@ -287,7 +264,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/TextAreaInput/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/TextInput/index.tsx": {
@@ -298,7 +274,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/TextInput/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/components/Toast/index.tsx": {
@@ -309,7 +284,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/Toast/index.tsx",
-      "template": "",
       "variables": {}
     },
     "src/hooks/useConfirmDialog.ts": {
@@ -325,7 +299,6 @@
         "UseConfirmDialogRequestOptions": { "isTypeOnly": true },
         "useConfirmDialogState": {}
       },
-      "template": "",
       "variables": {}
     },
     "src/hooks/useStatus.ts": {
@@ -341,7 +314,6 @@
         "StatusType": { "isTypeOnly": true },
         "useStatus": {}
       },
-      "template": "",
       "variables": {}
     },
     "src/hooks/useToast.tsx": {
@@ -353,7 +325,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/useToast.tsx",
       "projectExports": { "useToast": {} },
-      "template": "",
       "variables": {}
     }
   }

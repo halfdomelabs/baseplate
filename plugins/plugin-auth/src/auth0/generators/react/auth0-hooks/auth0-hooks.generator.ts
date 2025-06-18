@@ -1,14 +1,13 @@
-import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import {
+  renderTextTemplateFileAction,
+  typescriptFileProvider,
+} from '@baseplate-dev/core-generators';
 import {
   generatedGraphqlImportsProvider,
   reactApolloProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  renderTextTemplateFileAction,
-} from '@baseplate-dev/sync';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { AUTH0_AUTH0_HOOKS_GENERATED } from './generated/index.js';
@@ -42,7 +41,7 @@ export const auth0HooksGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroupV2({
+              typescriptFile.renderTemplateGroup({
                 group: AUTH0_AUTH0_HOOKS_GENERATED.templates.hooksGroup,
                 paths,
                 variables: {

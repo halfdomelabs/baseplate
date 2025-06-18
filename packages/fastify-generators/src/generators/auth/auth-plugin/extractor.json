@@ -21,7 +21,6 @@
         }
       },
       "pathRootRelativePath": "{module-root}/plugins/auth.plugin.ts",
-      "template": "",
       "variables": {}
     }
   }

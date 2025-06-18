@@ -17,7 +17,7 @@ const fileInputComponent = createTsTemplateFile({
     reactErrorImports: reactErrorImportsProvider,
   },
   name: 'file-input-component',
-  projectExports: { FileInput: { exportName: 'default' } },
+  projectExports: { FileInput: { exportedAs: 'default' } },
   source: {
     path: path.join(
       import.meta.dirname,

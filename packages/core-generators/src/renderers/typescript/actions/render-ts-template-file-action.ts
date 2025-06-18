@@ -10,7 +10,6 @@ import {
   readTemplateFileSource,
 } from '@baseplate-dev/sync';
 import { differenceSet } from '@baseplate-dev/utils';
-import path from 'node:path';
 
 import type { TsPositionedHoistedFragment } from '../fragments/types.js';
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
@@ -83,10 +82,7 @@ export function renderTsTemplateFileAction<
   return {
     execute: async (builder) => {
       const generatorInfo = providedGeneratorInfo ?? builder.generatorInfo;
-      const templateContents = await readTemplateFileSource(
-        generatorInfo.baseDirectory,
-        template.source,
-      );
+      const templateContents = await readTemplateFileSource(template.source);
       const prefix = template.prefix ?? 'TPL_';
       const variableValues = variables ?? {};
 
@@ -112,13 +108,6 @@ export function renderTsTemplateFileAction<
 
       const templateMetadata: TsTemplateOutputTemplateMetadata | undefined = {
         name: template.name,
-        template:
-          'path' in template.source
-            ? // TODO[2025-06-18]: Remove this once we've migrated all TS templates.
-              path.isAbsolute(template.source.path)
-              ? ''
-              : template.source.path
-            : 'content-only-template',
         generator: generatorInfo.name,
         group: template.group,
         type: TS_TEMPLATE_TYPE,
@@ -126,12 +115,10 @@ export function renderTsTemplateFileAction<
           Object.keys(template.projectExports ?? {}).length > 0
             ? template.projectExports
             : undefined,
-        // TODO[2025-06-18]: Remove casting once we've migrated all TS templates.
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        fileOptions: template.fileOptions!,
+        fileOptions: template.fileOptions,
       };
 
-      if (template.fileOptions?.kind === 'instance' && !id) {
+      if (template.fileOptions.kind === 'instance' && !id) {
         throw new Error('Instance template must have an id');
       }
 
@@ -143,8 +130,7 @@ export function renderTsTemplateFileAction<
           fileId,
           filePath: normalizePathToProjectPath(destination),
           generatorName: generatorInfo.name,
-          // TODO[2025-06-18]: Turn this into a file options === 'kind'
-          isInstance: !!id,
+          isInstance: template.fileOptions.kind === 'instance',
         });
 
       const renderedTemplate = renderTsCodeFileTemplate({

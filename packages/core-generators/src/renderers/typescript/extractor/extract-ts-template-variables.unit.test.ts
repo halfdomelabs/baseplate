@@ -143,4 +143,48 @@ describe('extractTsTemplateVariables', () => {
       TPL_TODO: {},
     });
   });
+
+  it('should handle BLOCK template variables', () => {
+    const content = `
+      /* TPL_HEADER:BLOCK */
+      const Component = () => {
+        /* TPL_CONTENT:BLOCK */
+        return <div>Hello World</div>;
+      };
+    `;
+
+    const result = extractTsTemplateVariables(content);
+    expect(result.content).toMatchInlineSnapshot(`
+      "
+            TPL_HEADER
+            const Component = () => {
+              TPL_CONTENT
+              return <div>Hello World</div>;
+            };
+          "
+    `);
+    expect(result.variables).toEqual({
+      TPL_HEADER: {},
+      TPL_CONTENT: {},
+    });
+  });
+
+  it('should handle INLINE template variables', () => {
+    const content = `
+      const title = /* TPL_TITLE:INLINE */ "Default Title";
+      const description = /* TPL_DESC:INLINE */ "Default description";
+    `;
+
+    const result = extractTsTemplateVariables(content);
+    expect(result.content).toMatchInlineSnapshot(`
+      "
+            const title = TPL_TITLE "Default Title";
+            const description = TPL_DESC "Default description";
+          "
+    `);
+    expect(result.variables).toEqual({
+      TPL_TITLE: {},
+      TPL_DESC: {},
+    });
+  });
 });

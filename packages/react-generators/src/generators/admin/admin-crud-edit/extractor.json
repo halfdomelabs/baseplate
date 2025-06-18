@@ -15,7 +15,6 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "template": "",
       "variables": {
         "TPL_COMPONENT_NAME": {},
         "TPL_CREATE_MUTATION": {},
@@ -42,7 +41,6 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "template": "",
       "variables": {
         "TPL_COMPONENT_NAME": {},
         "TPL_DATA_GATE": {},
@@ -72,7 +70,6 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
-      "template": "",
       "variables": {
         "TPL_COMPONENT_NAME": {},
         "TPL_DESTRUCTURED_PROPS": {},
@@ -92,7 +89,6 @@
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
       "importMapProviders": {},
-      "template": "",
       "variables": {
         "TPL_FORM_DATA_NAME": {},
         "TPL_SCHEMA_NAME": {},

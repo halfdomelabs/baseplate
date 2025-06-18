@@ -20,13 +20,9 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./extractor-v2": {
-      "types": "./dist/templates/extractor-v2/index.d.ts",
-      "import": "./dist/templates/extractor-v2/index.js"
-    },
-    "./extractor-v2/test-utils": {
-      "types": "./dist/templates/extractor-v2/test-utils/index.d.ts",
-      "import": "./dist/templates/extractor-v2/test-utils/index.js"
+    "./extractor-test-utils": {
+      "types": "./dist/templates/extractor/test-utils/index.d.ts",
+      "import": "./dist/templates/extractor/test-utils/index.js"
     }
   },
   "files": [
@@ -51,7 +47,6 @@
   "dependencies": {
     "@baseplate-dev/utils": "workspace:*",
     "chalk": "5.3.0",
-    "change-case": "5.4.4",
     "es-toolkit": "1.31.0",
     "execa": "9.3.0",
     "fast-json-patch": "^3.1.1",

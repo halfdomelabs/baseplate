@@ -7,7 +7,7 @@ import {
 import { TsCodeFragment } from '../fragments/types.js';
 import { z } from 'zod';
 import { CASE_VALIDATORS } from '@baseplate-dev/utils';
-import { templateConfigSchema } from '@baseplate-dev/sync/extractor-v2';
+import { templateConfigSchema } from '../../../../../sync/dist/templates/extractor/index.js';
 import {
   TemplateFileOptions,
   templateFileOptionsSchema,
@@ -32,11 +32,11 @@ const tsTemplateFileProjectExportSchema = z.object({
    */
   isTypeOnly: z.boolean().optional(),
   /**
-   * The exported name of the export within the file. Use 'default' for default exports.
+   * The name this symbol is exported as from the module. Use `default` for default exports.
    *
-   * TODO[2025-06-10]: Rename this to exportedName
+   * Defaults to the key of the entry.
    */
-  exportName: z.string().optional(),
+  exportedAs: z.string().optional(),
 });
 
 export type TsTemplateFileProjectExport = z.infer<
@@ -57,11 +57,6 @@ export const tsTemplateGeneratorTemplateMetadataSchema =
      * The group to assign the template to when generating the typed templates.
      */
     group: CASE_VALIDATORS.KEBAB_CASE.optional(),
-    /**
-     * The name of the export group that this template belongs to. Export groups
-     * allow you to group templates together that share the same import provider.
-     */
-    exportGroup: CASE_VALIDATORS.KEBAB_CASE.optional(),
     /**
      * The exports of the file that are unique across the project.
      */
@@ -105,11 +100,6 @@ export const tsTemplateOutputTemplateMetadataSchema =
      * The group of templates that this template belongs to.
      */
     group: CASE_VALIDATORS.KEBAB_CASE.optional(),
-    /**
-     * The name of the export group that this template belongs to. Export groups
-     * allow you to group templates together that share the same import provider.
-     */
-    exportGroup: CASE_VALIDATORS.KEBAB_CASE.optional(),
     /**
      * The exports of the file that are unique across the project.
      */
@@ -159,12 +149,12 @@ export interface TsTemplateFile<
    */
   projectExports?: Record<
     string,
-    { isTypeOnly?: boolean; exportName?: string }
+    { isTypeOnly?: boolean; exportedAs?: string }
   >;
   /**
    * The options for the template file
    */
-  fileOptions?: TemplateFileOptions;
+  fileOptions: TemplateFileOptions;
 }
 
 export type TsTemplateFileVariableValue = TsCodeFragment | string;
@@ -199,28 +189,7 @@ export function createTsTemplateFile<
   return file;
 }
 
-interface TsTemplateGroupEntry {
-  destination: string;
-  template: TsTemplateFile;
-}
-
 /**
  * A group of text template files.
  */
-export interface TsTemplateGroup<
-  T extends Record<string, TsTemplateGroupEntry> = Record<
-    string,
-    TsTemplateGroupEntry
-  >,
-> {
-  /**
-   * The templates in the group.
-   */
-  templates: T;
-}
-
-export function createTsTemplateGroup<
-  T extends Record<string, TsTemplateGroupEntry>,
->(group: TsTemplateGroup<T>): TsTemplateGroup<T> {
-  return group;
-}
+export type TsTemplateGroup = Record<string, TsTemplateFile>;

@@ -194,11 +194,11 @@ describe('renderTsCodeFileTemplate', () => {
     };
 
     const importMapSchema1 = createTsImportMapSchema({
-      Test1: { name: 'Test1' },
+      Test1: { exportedAs: 'Test1' },
     });
 
     const importMapSchema2 = createTsImportMapSchema({
-      Test2: { name: 'Test2' },
+      Test2: { exportedAs: 'Test2' },
     });
 
     const importMap1 = createTsImportMap(importMapSchema1, {

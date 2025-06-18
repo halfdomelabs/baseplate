@@ -13,7 +13,6 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/postmark.ts",
-      "template": "",
       "variables": { "TPL_DEFAULT_FROM": {}, "TPL_TEMPLATE_CONFIG": {} }
     }
   }
