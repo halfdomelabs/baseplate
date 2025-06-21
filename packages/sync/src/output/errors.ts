@@ -17,9 +17,9 @@ export class FormatterError extends Error {
   constructor(
     public cause: unknown,
     public fileContents: string,
-    public projectRelativePath: string,
+    public outputRelativePath: string,
   ) {
-    super(`Error formatting ${projectRelativePath}: ${String(cause)}`);
+    super(`Error formatting ${outputRelativePath}: ${String(cause)}`);
     this.name = 'FormatterError';
   }
 }

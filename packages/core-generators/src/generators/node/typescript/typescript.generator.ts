@@ -121,9 +121,9 @@ export interface TypescriptFileProvider {
   /**
    * Marks an import as used
    *
-   * @param projectRelativePath - The project relative path to mark as used
+   * @param outputRelativePath - The project relative path to mark as used
    */
-  markImportAsUsed(projectRelativePath: string): void;
+  markImportAsUsed(outputRelativePath: string): void;
   /**
    * Resolves a module specifier to a project relative path
    *
@@ -241,14 +241,14 @@ export const typescriptGenerator = createGenerator({
           moduleSpecifier: string,
           directory: string,
         ): string {
-          const projectRelativePath = getProjectRelativePathFromModuleSpecifier(
+          const outputRelativePath = getProjectRelativePathFromModuleSpecifier(
             moduleSpecifier,
             directory,
           );
-          if (projectRelativePath) {
+          if (outputRelativePath) {
             // use path without extension for improved matching
             usedProjectRelativePaths.add(
-              projectRelativePath.replace(/\.(j|t)sx?$/, ''),
+              outputRelativePath.replace(/\.(j|t)sx?$/, ''),
             );
           }
           return normalizeModuleSpecifier(moduleSpecifier, directory, {
@@ -340,9 +340,9 @@ export const typescriptGenerator = createGenerator({
                     ...sharedRenderOptions,
                   },
                 }),
-              markImportAsUsed: (projectRelativePath) => {
+              markImportAsUsed: (outputRelativePath) => {
                 usedProjectRelativePaths.add(
-                  projectRelativePath.replace(/\.(j|t)sx?$/, ''),
+                  outputRelativePath.replace(/\.(j|t)sx?$/, ''),
                 );
               },
               resolveModuleSpecifier,

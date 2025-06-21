@@ -156,11 +156,11 @@ export function normalizeModuleSpecifier(
     return moduleSpecifier;
   }
   // figure out the shortest way to resolve the module
-  const projectRelativePath = moduleSpecifier.startsWith('@/')
+  const outputRelativePath = moduleSpecifier.startsWith('@/')
     ? moduleSpecifier.slice(2)
     : pathPosix.join(directory, moduleSpecifier);
 
-  const relativePath = pathPosix.relative(directory, projectRelativePath);
+  const relativePath = pathPosix.relative(directory, outputRelativePath);
   const relativePathImport = relativePath.startsWith('.')
     ? relativePath
     : `./${relativePath}`;
@@ -168,7 +168,7 @@ export function normalizeModuleSpecifier(
   const typescriptPathImports =
     pathMapEntries
       ?.map((entry) =>
-        getAliasedPathFromTsPathMapEntry(projectRelativePath, entry),
+        getAliasedPathFromTsPathMapEntry(outputRelativePath, entry),
       )
       .filter((x) => x !== undefined) ?? [];
 
