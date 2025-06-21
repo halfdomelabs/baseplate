@@ -2,8 +2,8 @@ import {
   createNodePackagesTask,
   eslintConfigProvider,
   extractPackageVersions,
-  prettierProvider,
   packageScope,
+  prettierProvider,
   renderTextTemplateGroupAction,
   tsCodeFragment,
 } from '@baseplate-dev/core-generators';

@@ -3,8 +3,8 @@ import type { InferFieldMapSchemaFromBuilder } from '@baseplate-dev/utils';
 
 import {
   featureScope,
-  pathRootsProvider,
   packageScope,
+  pathRootsProvider,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
