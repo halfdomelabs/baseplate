@@ -9,7 +9,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  normalizePathToProjectPath,
+  normalizePathToOutputPath,
 } from '@baseplate-dev/sync';
 import { safeMergeAll } from '@baseplate-dev/utils';
 import path from 'node:path';
@@ -276,7 +276,7 @@ export const typescriptGenerator = createGenerator({
           payload: RenderTsTemplateFileActionInput,
         ): BuilderAction {
           const directory = path.dirname(
-            normalizePathToProjectPath(payload.destination),
+            normalizePathToOutputPath(payload.destination),
           );
           return renderTsTemplateFileAction({
             ...payload,
@@ -314,7 +314,7 @@ export const typescriptGenerator = createGenerator({
               },
               renderTemplateFragment: (payload) => {
                 const directory = path.dirname(
-                  normalizePathToProjectPath(payload.destination),
+                  normalizePathToOutputPath(payload.destination),
                 );
                 return renderTsFragmentAction({
                   ...payload,
@@ -352,7 +352,7 @@ export const typescriptGenerator = createGenerator({
             while (lazyTemplates.size > 0) {
               const templatesToRender = [...lazyTemplates].filter((template) =>
                 usedOutputRelativePaths.has(
-                  normalizePathToProjectPath(
+                  normalizePathToOutputPath(
                     template.payload.destination,
                   ).replace(/\.(j|t)sx?$/, ''),
                 ),

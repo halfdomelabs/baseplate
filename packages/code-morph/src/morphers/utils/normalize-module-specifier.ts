@@ -30,21 +30,21 @@ function stripRelativePrefixFromOutputRelativePath(path: string): string {
 /**
  * Attempts to resolve the aliased path from a output relative path
  *
- * @param projectPath The output relative path to resolve from
+ * @param outputPath The output relative path to resolve from
  * @param TsPathMapEntry The path map entry to use
  * @returns The aliased path if the path map matches, otherwise undefined
  */
 function getAliasedPathFromTsPathMapEntry(
-  projectPath: string,
+  outputPath: string,
   entry: TsPathMapEntry,
 ): string | undefined {
-  const strippedProjectPath =
-    stripRelativePrefixFromOutputRelativePath(projectPath);
+  const strippedOutputPath =
+    stripRelativePrefixFromOutputRelativePath(outputPath);
   const strippedToPath = stripRelativePrefixFromOutputRelativePath(entry.to);
   const fromPath = entry.from;
 
   // return the from, if it's an exact match
-  if (strippedProjectPath === strippedToPath) return fromPath;
+  if (strippedOutputPath === strippedToPath) return fromPath;
   if (strippedToPath.includes('*')) {
     // validate from and to path
     if (!strippedToPath.endsWith('/*')) {
@@ -59,9 +59,9 @@ function getAliasedPathFromTsPathMapEntry(
       );
     }
     const toPathPrefix = strippedToPath.slice(0, -1);
-    if (!strippedProjectPath.startsWith(toPathPrefix)) return undefined;
+    if (!strippedOutputPath.startsWith(toPathPrefix)) return undefined;
     return isFromPathWildcard
-      ? fromPath.slice(0, -1) + strippedProjectPath.slice(toPathPrefix.length)
+      ? fromPath.slice(0, -1) + strippedOutputPath.slice(toPathPrefix.length)
       : fromPath;
   }
   return undefined;

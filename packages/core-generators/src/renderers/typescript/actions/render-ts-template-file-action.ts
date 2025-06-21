@@ -6,7 +6,7 @@ import type {
 } from '@baseplate-dev/sync';
 
 import {
-  normalizePathToProjectPath,
+  normalizePathToOutputPath,
   readTemplateFileSource,
 } from '@baseplate-dev/sync';
 import { differenceSet } from '@baseplate-dev/utils';
@@ -128,7 +128,7 @@ export function renderTsTemplateFileAction<
         builder.metadataOptions.includeTemplateMetadata &&
         builder.metadataOptions.shouldGenerateMetadata({
           fileId,
-          filePath: normalizePathToProjectPath(destination),
+          filePath: normalizePathToOutputPath(destination),
           generatorName: generatorInfo.name,
           isInstance: template.fileOptions.kind === 'instance',
         });

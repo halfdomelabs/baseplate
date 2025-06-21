@@ -1,4 +1,4 @@
-import { normalizePathToProjectPath } from '#src/utils/canonical-path.js';
+import { normalizePathToOutputPath } from '#src/utils/canonical-path.js';
 
 import type { PostWriteCommand } from './types.js';
 
@@ -30,7 +30,7 @@ export function filterPostWriteCommands(
     return (
       command.options?.onlyIfChanged == null ||
       onlyIfChangedArr.some((file) =>
-        modifiedRelativePaths.has(normalizePathToProjectPath(file)),
+        modifiedRelativePaths.has(normalizePathToOutputPath(file)),
       ) ||
       rerunCommands.includes(command.command)
     );

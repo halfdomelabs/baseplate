@@ -9,11 +9,11 @@ export function isCanonicalPath(path: string): boolean {
 }
 
 /**
- * Normalizes a path to a project path.
+ * Normalizes a path to a output path.
  * @param path The path to normalize
  * @returns The normalized path
  */
-export function normalizePathToProjectPath(path: string): string {
+export function normalizePathToOutputPath(path: string): string {
   if (isCanonicalPath(path)) {
     return path.slice(2);
   }
