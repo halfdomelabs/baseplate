@@ -4,7 +4,7 @@ import type { ImportMapper } from '@baseplate-dev/core-generators';
 
 import {
   makeImportAndFilePath,
-  projectScope,
+  packageScope,
   typescriptProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createProviderType } from '@baseplate-dev/sync';
@@ -34,7 +34,7 @@ export const userSessionTypesGenerator = createGenerator({
         authContext: authContextProvider,
       },
       exports: {
-        userSessionTypes: userSessionTypesProvider.export(projectScope),
+        userSessionTypes: userSessionTypesProvider.export(packageScope),
       },
       run({ appModule, typescript, authContext }) {
         const [typesImport, typesFile] = makeImportAndFilePath(

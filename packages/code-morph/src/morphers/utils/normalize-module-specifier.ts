@@ -6,45 +6,45 @@ import pathPosix from 'node:path/posix';
 interface TsPathMapEntry {
   /** The alias to map from (e.g. "@src/*") */
   from: string;
-  /** The project relative path to map to (e.g. "./src/app/*") */
+  /** The output relative path to map to (e.g. "./src/app/*") */
   to: string;
 }
 
 /**
- * Strips the relative prefix from a project relative path
+ * Strips the relative prefix from a output relative path
  * @param path
  * @returns
  */
-function stripRelativePrefixFromProjectRelativePath(path: string): string {
+function stripRelativePrefixFromOutputRelativePath(path: string): string {
   if (path.startsWith('./')) {
     return path.slice(2);
   }
   if (path.startsWith('../')) {
     throw new Error(
-      `Expected project relative path, but got relative path ${path}`,
+      `Expected output relative path, but got relative path ${path}`,
     );
   }
   return path;
 }
 
 /**
- * Attempts to resolve the aliased path from a project relative path
+ * Attempts to resolve the aliased path from a output relative path
  *
- * @param projectPath The project relative path to resolve from
+ * @param outputPath The output relative path to resolve from
  * @param TsPathMapEntry The path map entry to use
  * @returns The aliased path if the path map matches, otherwise undefined
  */
 function getAliasedPathFromTsPathMapEntry(
-  projectPath: string,
+  outputPath: string,
   entry: TsPathMapEntry,
 ): string | undefined {
-  const strippedProjectPath =
-    stripRelativePrefixFromProjectRelativePath(projectPath);
-  const strippedToPath = stripRelativePrefixFromProjectRelativePath(entry.to);
+  const strippedOutputPath =
+    stripRelativePrefixFromOutputRelativePath(outputPath);
+  const strippedToPath = stripRelativePrefixFromOutputRelativePath(entry.to);
   const fromPath = entry.from;
 
   // return the from, if it's an exact match
-  if (strippedProjectPath === strippedToPath) return fromPath;
+  if (strippedOutputPath === strippedToPath) return fromPath;
   if (strippedToPath.includes('*')) {
     // validate from and to path
     if (!strippedToPath.endsWith('/*')) {
@@ -59,9 +59,9 @@ function getAliasedPathFromTsPathMapEntry(
       );
     }
     const toPathPrefix = strippedToPath.slice(0, -1);
-    if (!strippedProjectPath.startsWith(toPathPrefix)) return undefined;
+    if (!strippedOutputPath.startsWith(toPathPrefix)) return undefined;
     return isFromPathWildcard
-      ? fromPath.slice(0, -1) + strippedProjectPath.slice(toPathPrefix.length)
+      ? fromPath.slice(0, -1) + strippedOutputPath.slice(toPathPrefix.length)
       : fromPath;
   }
   return undefined;
@@ -156,11 +156,11 @@ export function normalizeModuleSpecifier(
     return moduleSpecifier;
   }
   // figure out the shortest way to resolve the module
-  const projectRelativePath = moduleSpecifier.startsWith('@/')
+  const outputRelativePath = moduleSpecifier.startsWith('@/')
     ? moduleSpecifier.slice(2)
     : pathPosix.join(directory, moduleSpecifier);
 
-  const relativePath = pathPosix.relative(directory, projectRelativePath);
+  const relativePath = pathPosix.relative(directory, outputRelativePath);
   const relativePathImport = relativePath.startsWith('.')
     ? relativePath
     : `./${relativePath}`;
@@ -168,7 +168,7 @@ export function normalizeModuleSpecifier(
   const typescriptPathImports =
     pathMapEntries
       ?.map((entry) =>
-        getAliasedPathFromTsPathMapEntry(projectRelativePath, entry),
+        getAliasedPathFromTsPathMapEntry(outputRelativePath, entry),
       )
       .filter((x) => x !== undefined) ?? [];
 

@@ -1,6 +1,6 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import { projectScope, TsCodeUtils } from '@baseplate-dev/core-generators';
+import { packageScope, TsCodeUtils } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -68,7 +68,7 @@ export const pothosPrismaObjectGenerator = createGenerator({
       exports: {
         pothosPrismaObject: pothosPrismaObjectProvider.export(pothosFieldScope),
         pothosTypeOutput: pothosTypeOutputProvider.export(
-          projectScope,
+          packageScope,
           createPothosPrismaObjectTypeOutputName(modelName),
         ),
       },

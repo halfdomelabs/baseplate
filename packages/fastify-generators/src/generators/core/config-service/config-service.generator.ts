@@ -4,7 +4,7 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   nodeGitIgnoreProvider,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -66,7 +66,7 @@ const [setupTask, configServiceProvider, configServiceConfigValuesProvider] =
     }),
     {
       prefix: 'config-service',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 

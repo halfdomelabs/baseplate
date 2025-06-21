@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -30,7 +30,7 @@ const apolloApolloErrorImportsTask = createGeneratorTask({
     paths: APOLLO_APOLLO_ERROR_PATHS.provider,
   },
   exports: {
-    apolloErrorImports: apolloErrorImportsProvider.export(projectScope),
+    apolloErrorImports: apolloErrorImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

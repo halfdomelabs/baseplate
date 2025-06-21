@@ -2,7 +2,7 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import type { InferFieldMapSchemaFromBuilder } from '@baseplate-dev/utils';
 
 import {
-  projectScope,
+  packageScope,
   TsCodeUtils,
   tsImportBuilder,
 } from '@baseplate-dev/core-generators';
@@ -43,7 +43,7 @@ export const authIdentifyGenerator = createGenerator({
         authHooksImports: authHooksImportsProvider,
       },
       exports: {
-        authIdentify: authIdentifyProvider.export(projectScope),
+        authIdentify: authIdentifyProvider.export(packageScope),
       },
       run({ reactRouterConfig, authHooksImports }) {
         const fieldMap = createConfigFieldMap(configSchema);

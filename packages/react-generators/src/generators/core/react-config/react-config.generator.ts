@@ -3,7 +3,7 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -52,7 +52,7 @@ const [setupTask, reactConfigProvider, reactConfigValuesProvider] =
     }),
     {
       prefix: 'react-config',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 

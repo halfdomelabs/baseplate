@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -40,7 +40,7 @@ const fastifyStorageModuleImportsTask = createGeneratorTask({
     paths: FASTIFY_STORAGE_MODULE_PATHS.provider,
   },
   exports: {
-    storageModuleImports: storageModuleImportsProvider.export(projectScope),
+    storageModuleImports: storageModuleImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

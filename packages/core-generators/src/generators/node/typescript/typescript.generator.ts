@@ -9,7 +9,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
-  normalizePathToProjectPath,
+  normalizePathToOutputPath,
 } from '@baseplate-dev/sync';
 import { safeMergeAll } from '@baseplate-dev/utils';
 import path from 'node:path';
@@ -25,12 +25,12 @@ import type {
 } from '#src/renderers/typescript/index.js';
 
 import { CORE_PACKAGES } from '#src/constants/core-packages.js';
-import { projectScope } from '#src/providers/scopes.js';
+import { packageScope } from '#src/providers/scopes.js';
 import { renderTsTemplateFileAction } from '#src/renderers/typescript/actions/render-ts-template-file-action.js';
 import {
   extractTsTemplateFileInputsFromTemplateGroup,
   generatePathMapEntries,
-  getProjectRelativePathFromModuleSpecifier,
+  getOutputRelativePathFromModuleSpecifier,
   normalizeModuleSpecifier,
   pathMapEntriesToRegexes,
   renderTsFragmentAction,
@@ -121,15 +121,15 @@ export interface TypescriptFileProvider {
   /**
    * Marks an import as used
    *
-   * @param projectRelativePath - The project relative path to mark as used
+   * @param outputRelativePath - The output relative path to mark as used
    */
-  markImportAsUsed(projectRelativePath: string): void;
+  markImportAsUsed(outputRelativePath: string): void;
   /**
-   * Resolves a module specifier to a project relative path
+   * Resolves a module specifier to a output relative path
    *
    * @param moduleSpecifier - The module specifier to resolve
    * @param from - The directory to resolve the module from
-   * @returns The project relative path
+   * @returns The output relative path
    */
   resolveModuleSpecifier(moduleSpecifier: string, from: string): string;
 }
@@ -165,8 +165,8 @@ const [setupTask, typescriptSetupProvider, typescriptSetupValuesProvider] =
     }),
     {
       prefix: 'typescript',
-      configScope: projectScope,
-      configValuesScope: projectScope,
+      configScope: packageScope,
+      configValuesScope: packageScope,
     },
   );
 
@@ -224,7 +224,7 @@ export const typescriptGenerator = createGenerator({
         typescriptConfig: typescriptSetupValuesProvider,
         node: nodeProvider,
       },
-      exports: { typescriptFile: typescriptFileProvider.export(projectScope) },
+      exports: { typescriptFile: typescriptFileProvider.export(packageScope) },
       run({ typescriptConfig: { compilerOptions }, node }) {
         const {
           baseUrl = '.',
@@ -235,20 +235,20 @@ export const typescriptGenerator = createGenerator({
         const internalPatterns = pathMapEntriesToRegexes(pathMapEntries);
 
         const lazyTemplates = new Set<LazyTemplateFileEntry>();
-        const usedProjectRelativePaths = new Set<string>();
+        const usedOutputRelativePaths = new Set<string>();
 
         function resolveModuleSpecifier(
           moduleSpecifier: string,
           directory: string,
         ): string {
-          const projectRelativePath = getProjectRelativePathFromModuleSpecifier(
+          const outputRelativePath = getOutputRelativePathFromModuleSpecifier(
             moduleSpecifier,
             directory,
           );
-          if (projectRelativePath) {
+          if (outputRelativePath) {
             // use path without extension for improved matching
-            usedProjectRelativePaths.add(
-              projectRelativePath.replace(/\.(j|t)sx?$/, ''),
+            usedOutputRelativePaths.add(
+              outputRelativePath.replace(/\.(j|t)sx?$/, ''),
             );
           }
           return normalizeModuleSpecifier(moduleSpecifier, directory, {
@@ -276,7 +276,7 @@ export const typescriptGenerator = createGenerator({
           payload: RenderTsTemplateFileActionInput,
         ): BuilderAction {
           const directory = path.dirname(
-            normalizePathToProjectPath(payload.destination),
+            normalizePathToOutputPath(payload.destination),
           );
           return renderTsTemplateFileAction({
             ...payload,
@@ -314,7 +314,7 @@ export const typescriptGenerator = createGenerator({
               },
               renderTemplateFragment: (payload) => {
                 const directory = path.dirname(
-                  normalizePathToProjectPath(payload.destination),
+                  normalizePathToOutputPath(payload.destination),
                 );
                 return renderTsFragmentAction({
                   ...payload,
@@ -340,9 +340,9 @@ export const typescriptGenerator = createGenerator({
                     ...sharedRenderOptions,
                   },
                 }),
-              markImportAsUsed: (projectRelativePath) => {
-                usedProjectRelativePaths.add(
-                  projectRelativePath.replace(/\.(j|t)sx?$/, ''),
+              markImportAsUsed: (outputRelativePath) => {
+                usedOutputRelativePaths.add(
+                  outputRelativePath.replace(/\.(j|t)sx?$/, ''),
                 );
               },
               resolveModuleSpecifier,
@@ -351,8 +351,8 @@ export const typescriptGenerator = createGenerator({
           async build(builder) {
             while (lazyTemplates.size > 0) {
               const templatesToRender = [...lazyTemplates].filter((template) =>
-                usedProjectRelativePaths.has(
-                  normalizePathToProjectPath(
+                usedOutputRelativePaths.has(
+                  normalizePathToOutputPath(
                     template.payload.destination,
                   ).replace(/\.(j|t)sx?$/, ''),
                 ),

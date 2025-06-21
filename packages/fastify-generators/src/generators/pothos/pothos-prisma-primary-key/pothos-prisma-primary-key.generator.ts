@@ -1,4 +1,4 @@
-import { projectScope } from '@baseplate-dev/core-generators';
+import { packageScope } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -46,7 +46,7 @@ export const pothosPrismaPrimaryKeyGenerator = createGenerator({
       },
       exports: {
         pothosTypeOutput: pothosTypeOutputProvider.export(
-          projectScope,
+          packageScope,
           getPothosPrismaPrimaryKeyTypeOutputName(modelName),
         ),
       },

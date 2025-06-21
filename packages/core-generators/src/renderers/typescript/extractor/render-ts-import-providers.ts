@@ -112,8 +112,8 @@ function renderCombinedImportProviderTask(
     `@baseplate-dev/core-generators:src/providers/index.ts`,
     generatorPackageName,
   );
-  const projectScope = TsCodeUtils.importFragment(
-    'projectScope',
+  const packageScope = TsCodeUtils.importFragment(
+    'packageScope',
     projectScopeSpecifier,
   );
   const createTsImportMap = TsCodeUtils.importFragment(
@@ -152,7 +152,7 @@ function renderCombinedImportProviderTask(
     );
     importProviderExports.set(
       exportKey,
-      tsTemplate`${importProviderNames.providerExportName}.export(${projectScope})`,
+      tsTemplate`${importProviderNames.providerExportName}.export(${packageScope})`,
     );
     importProviderPathMap.set(
       exportKey,
@@ -193,7 +193,7 @@ function renderCombinedImportProviderTask(
 
     importProviderExports.set(
       exportKey,
-      tsTemplate`${providerImport}.export(${projectScope})`,
+      tsTemplate`${providerImport}.export(${packageScope})`,
     );
     importProviderPathMap.set(
       exportKey,

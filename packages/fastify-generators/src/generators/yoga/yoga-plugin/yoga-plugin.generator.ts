@@ -8,7 +8,7 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   nodeProvider,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -98,7 +98,7 @@ export const yogaPluginGenerator = createGenerator({
     paths: YOGA_YOGA_PLUGIN_GENERATED.paths.task,
     setup: createGeneratorTask({
       exports: {
-        yogaPluginConfig: yogaPluginConfigProvider.export(projectScope),
+        yogaPluginConfig: yogaPluginConfigProvider.export(packageScope),
       },
       outputs: {
         yogaPluginSetup: yogaPluginSetupProvider.export(),

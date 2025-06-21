@@ -4,7 +4,7 @@ import type {
   WriteFileOptions,
 } from '@baseplate-dev/sync';
 
-import { normalizePathToProjectPath } from '@baseplate-dev/sync';
+import { normalizePathToOutputPath } from '@baseplate-dev/sync';
 import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { mapValues } from 'es-toolkit';
 import path from 'node:path';
@@ -113,7 +113,7 @@ export function extractTsTemplateFileInputsFromTemplateGroup<
       : undefined;
 
     const destinationDirectory = path.dirname(
-      normalizePathToProjectPath(destination),
+      normalizePathToOutputPath(destination),
     );
     fileActionInputs.push({
       template: templateEntry,

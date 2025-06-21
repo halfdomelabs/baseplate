@@ -1,7 +1,7 @@
 import { normalizePathSeparators, posixJoin } from '@baseplate-dev/utils/node';
 
 /**
- * The canonical path is the project relative path to a file that can be used as both an import
+ * The canonical path is the output relative path to a file that can be used as both an import
  * or file destination. It is of the form '@/src/path/file.ts'.
  */
 export function isCanonicalPath(path: string): boolean {
@@ -9,11 +9,11 @@ export function isCanonicalPath(path: string): boolean {
 }
 
 /**
- * Normalizes a path to a project path.
+ * Normalizes a path to a output path.
  * @param path The path to normalize
  * @returns The normalized path
  */
-export function normalizePathToProjectPath(path: string): string {
+export function normalizePathToOutputPath(path: string): string {
   if (isCanonicalPath(path)) {
     return path.slice(2);
   }

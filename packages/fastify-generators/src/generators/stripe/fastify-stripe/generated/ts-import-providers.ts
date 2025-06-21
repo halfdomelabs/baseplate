@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -32,7 +32,7 @@ const stripeFastifyStripeImportsTask = createGeneratorTask({
     paths: STRIPE_FASTIFY_STRIPE_PATHS.provider,
   },
   exports: {
-    fastifyStripeImports: fastifyStripeImportsProvider.export(projectScope),
+    fastifyStripeImports: fastifyStripeImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

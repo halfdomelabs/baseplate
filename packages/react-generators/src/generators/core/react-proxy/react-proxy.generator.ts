@@ -1,4 +1,4 @@
-import { projectScope, tsCodeFragment } from '@baseplate-dev/core-generators';
+import { packageScope, tsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -31,7 +31,7 @@ export const reactProxyGenerator = createGenerator({
         reactBaseConfig: reactBaseConfigProvider,
       },
       exports: {
-        reactProxy: reactProxyProvider.export(projectScope),
+        reactProxy: reactProxyProvider.export(packageScope),
       },
       run({ reactBaseConfig, reactConfig }) {
         reactConfig.additionalDevEnvVars.set(

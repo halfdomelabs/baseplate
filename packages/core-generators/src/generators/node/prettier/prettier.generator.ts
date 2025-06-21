@@ -21,7 +21,7 @@ import resolveFrom from 'resolve-from';
 import { z } from 'zod';
 
 import { CORE_PACKAGES } from '#src/constants/core-packages.js';
-import { projectScope } from '#src/providers/scopes.js';
+import { packageScope } from '#src/providers/scopes.js';
 import { writeJsonToBuilder } from '#src/writers/json.js';
 
 import { nodeProvider } from '../node/index.js';
@@ -125,7 +125,7 @@ export const prettierGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: { node: nodeProvider },
       exports: {
-        prettier: prettierProvider.export(projectScope),
+        prettier: prettierProvider.export(packageScope),
       },
       run({ node }) {
         const prettierConfig = createNonOverwriteableMap<PrettierConfig>({

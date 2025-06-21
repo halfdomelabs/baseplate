@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -28,7 +28,7 @@ const coreLoggerServiceImportsTask = createGeneratorTask({
     paths: CORE_LOGGER_SERVICE_PATHS.provider,
   },
   exports: {
-    loggerServiceImports: loggerServiceImportsProvider.export(projectScope),
+    loggerServiceImports: loggerServiceImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

@@ -4,7 +4,7 @@ import type { ImportMapper } from '@baseplate-dev/core-generators';
 
 import {
   makeImportAndFilePath,
-  projectScope,
+  packageScope,
   typescriptProvider,
 } from '@baseplate-dev/core-generators';
 import {
@@ -33,7 +33,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     authContext: authContextProvider,
   },
   exports: {
-    userSessionTypes: userSessionTypesProvider.export(projectScope),
+    userSessionTypes: userSessionTypesProvider.export(packageScope),
   },
   run({ appModule, typescript, authContext }) {
     const [typesImport, typesFile] = makeImportAndFilePath(

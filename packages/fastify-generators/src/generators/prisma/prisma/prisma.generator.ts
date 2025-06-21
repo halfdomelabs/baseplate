@@ -6,7 +6,7 @@ import {
   nodeProvider,
   normalizeTsPathToJsPath,
   packageInfoProvider,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsTemplate,
@@ -165,8 +165,8 @@ export const prismaGenerator = createGenerator({
         prismaImports: prismaImportsProvider,
         paths: PRISMA_PRISMA_GENERATED.paths.provider,
       },
-      exports: { prismaSchema: prismaSchemaProvider.export(projectScope) },
-      outputs: { prismaOutput: prismaOutputProvider.export(projectScope) },
+      exports: { prismaSchema: prismaSchemaProvider.export(packageScope) },
+      outputs: { prismaOutput: prismaOutputProvider.export(packageScope) },
       run({ prismaImports, paths }) {
         const schemaFile = new PrismaSchemaFile();
 

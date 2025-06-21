@@ -39,7 +39,7 @@ export interface TestRunnerHelpers {
 
 export interface ProjectBuilderTest {
   /**
-   * Path of project relative to root baseplate repo tests directory
+   * Path of output relative to root baseplate repo tests directory
    *
    * baseplate/tests/<directory>
    */

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { TsPathMapEntry } from './types.js';
 
 import {
-  getProjectRelativePathFromModuleSpecifier,
+  getOutputRelativePathFromModuleSpecifier,
   normalizeModuleSpecifier,
 } from './normalize-module-specifier.js';
 
@@ -70,19 +70,16 @@ describe('normalizeModuleSpecifier', () => {
   });
 });
 
-describe('getProjectRelativePathFromModuleSpecifier', () => {
+describe('getOutputRelativePathFromModuleSpecifier', () => {
   const directory = 'src';
 
   it('should return undefined for external module specifier', () => {
-    const result = getProjectRelativePathFromModuleSpecifier(
-      'axios',
-      directory,
-    );
+    const result = getOutputRelativePathFromModuleSpecifier('axios', directory);
     expect(result).toBeUndefined();
   });
 
-  it('should return project relative path for internal module specifier', () => {
-    const result = getProjectRelativePathFromModuleSpecifier(
+  it('should return output relative path for internal module specifier', () => {
+    const result = getOutputRelativePathFromModuleSpecifier(
       '@/components/Button',
       directory,
     );

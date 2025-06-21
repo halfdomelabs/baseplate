@@ -1,7 +1,7 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   tsImportBuilder,
   tsTemplate,
@@ -43,7 +43,7 @@ export const pothosPrismaGenerator = createGenerator({
         prismaImports: prismaImportsProvider,
       },
       exports: {
-        pothosPrisma: pothosPrismaProvider.export(projectScope),
+        pothosPrisma: pothosPrismaProvider.export(packageScope),
       },
       run({ pothosConfig, prismaImports }) {
         return {

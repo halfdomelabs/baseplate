@@ -1,7 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
-  projectScope,
+  packageScope,
   TsCodeUtils,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -58,7 +58,7 @@ const [
   }),
   {
     prefix: 'service-context-config',
-    configScope: projectScope,
+    configScope: packageScope,
   },
 );
 

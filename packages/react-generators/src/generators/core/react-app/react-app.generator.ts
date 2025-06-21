@@ -1,7 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -52,7 +52,7 @@ const [setupTask, reactAppConfigProvider, reactAppConfigValuesProvider] =
     }),
     {
       prefix: 'react-app',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 

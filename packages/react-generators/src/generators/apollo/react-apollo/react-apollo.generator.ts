@@ -9,8 +9,8 @@ import {
   createNodeTask,
   eslintConfigProvider,
   extractPackageVersions,
+  packageScope,
   prettierProvider,
-  projectScope,
   renderTextTemplateFileAction,
   tsCodeFragment,
   TsCodeUtils,
@@ -149,7 +149,7 @@ const [setupTask, reactApolloConfigProvider, reactApolloConfigValuesProvider] =
     }),
     {
       prefix: 'react-apollo',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 
@@ -260,7 +260,7 @@ export const reactApolloGenerator = createGenerator({
         paths: APOLLO_REACT_APOLLO_GENERATED.paths.provider,
       },
       exports: {
-        reactApollo: reactApolloProvider.export(projectScope),
+        reactApollo: reactApolloProvider.export(packageScope),
       },
       run({
         reactConfigImports,

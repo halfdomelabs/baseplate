@@ -1,7 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -29,7 +29,7 @@ const [
   }),
   {
     prefix: 'fastify-health-check',
-    configScope: projectScope,
+    configScope: packageScope,
   },
 );
 

@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -25,7 +25,7 @@ const pothosPothosImportsTask = createGeneratorTask({
   dependencies: {
     paths: POTHOS_POTHOS_PATHS.provider,
   },
-  exports: { pothosImports: pothosImportsProvider.export(projectScope) },
+  exports: { pothosImports: pothosImportsProvider.export(packageScope) },
   run({ paths }) {
     return {
       providers: {

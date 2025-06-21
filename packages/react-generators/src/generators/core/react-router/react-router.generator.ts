@@ -3,7 +3,7 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -39,7 +39,7 @@ const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
     }),
     {
       prefix: 'react-router',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 
@@ -84,8 +84,8 @@ export const reactRouterGenerator = createGenerator({
     }),
     routes: createGeneratorTask({
       exports: {
-        reactRoutes: reactRoutesProvider.export(projectScope),
-        reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(projectScope),
+        reactRoutes: reactRoutesProvider.export(packageScope),
+        reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(packageScope),
       },
       outputs: {
         reactRouteValuesProvider: reactRouteValuesProvider.export(),

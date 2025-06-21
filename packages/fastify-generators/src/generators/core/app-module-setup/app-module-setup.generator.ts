@@ -1,7 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
-  projectScope,
+  packageScope,
   TsCodeUtils,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -24,8 +24,8 @@ const [setupTask, appModuleConfigProvider, appModuleConfigValuesProvider] =
     }),
     {
       prefix: 'app-module',
-      configScope: projectScope,
-      configValuesScope: projectScope,
+      configScope: packageScope,
+      configValuesScope: packageScope,
     },
   );
 

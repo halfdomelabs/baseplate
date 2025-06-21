@@ -1,5 +1,5 @@
 import {
-  projectScope,
+  packageScope,
   tsCodeFragment,
   tsHoistedFragment,
   tsImportBuilder,
@@ -35,7 +35,7 @@ export const apolloErrorLinkGenerator = createGenerator({
         reactLoggerImports: reactLoggerImportsProvider,
       },
       exports: {
-        apolloErrorLink: apolloErrorLinkProvider.export(projectScope),
+        apolloErrorLink: apolloErrorLinkProvider.export(packageScope),
       },
       run({ reactApolloConfig, reactErrorImports, reactLoggerImports }) {
         reactApolloConfig.apolloLinks.add({

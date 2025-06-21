@@ -1,6 +1,6 @@
 import {
   createTsImportMap,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import { createGeneratorTask } from '@baseplate-dev/sync';
 
@@ -15,7 +15,7 @@ const authPlaceholderAuthHooksImportsTask = createGeneratorTask({
   dependencies: {
     paths: AUTH_PLACEHOLDER_AUTH_HOOKS_PATHS.provider,
   },
-  exports: { authHooksImports: authHooksImportsProvider.export(projectScope) },
+  exports: { authHooksImports: authHooksImportsProvider.export(packageScope) },
   run({ paths }) {
     return {
       providers: {

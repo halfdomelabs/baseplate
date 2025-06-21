@@ -1,4 +1,4 @@
-import { projectScope } from '@baseplate-dev/core-generators';
+import { packageScope } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -41,7 +41,7 @@ export const prismaCrudServiceGenerator = createGenerator({
         prismaCrudService: prismaCrudServiceProvider
           // export to children and project under model name
           .export()
-          .andExport(projectScope, modelName),
+          .andExport(packageScope, modelName),
       },
       exports: {
         prismaCrudServiceSetup: prismaCrudServiceSetupProvider.export(),

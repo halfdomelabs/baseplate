@@ -6,7 +6,7 @@ import {
 import { z } from 'zod';
 
 import { CORE_PACKAGES } from '#src/constants/index.js';
-import { projectScope } from '#src/providers/scopes.js';
+import { packageScope } from '#src/providers/scopes.js';
 import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
 import { eslintConfigProvider } from '../eslint/index.js';
@@ -36,7 +36,7 @@ const [setupTask, vitestConfigProvider, vitestConfigValuesProvider] =
     }),
     {
       prefix: 'vitest',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 

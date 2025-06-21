@@ -1,7 +1,7 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   tsImportBuilder,
   typescriptFileProvider,
@@ -77,7 +77,7 @@ export const reactComponentsGenerator = createGenerator({
         paths: CORE_REACT_COMPONENTS_GENERATED.paths.provider,
       },
       exports: {
-        reactComponents: reactComponentsProvider.export(projectScope),
+        reactComponents: reactComponentsProvider.export(packageScope),
       },
       run({ typescriptFile, reactAppConfig, paths }) {
         const coreReactComponents = Object.keys(

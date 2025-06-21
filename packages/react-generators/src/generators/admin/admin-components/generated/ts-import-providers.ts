@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -35,7 +35,7 @@ const adminAdminComponentsImportsTask = createGeneratorTask({
     paths: ADMIN_ADMIN_COMPONENTS_PATHS.provider,
   },
   exports: {
-    adminComponentsImports: adminComponentsImportsProvider.export(projectScope),
+    adminComponentsImports: adminComponentsImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

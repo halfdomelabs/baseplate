@@ -5,7 +5,7 @@ import {
   nodeConfigProvider,
   nodeGitIgnoreProvider,
   packageInfoProvider,
-  projectScope,
+  packageScope,
   renderRawTemplateFileAction,
   renderTextTemplateGroupAction,
   tsCodeFragment,
@@ -39,7 +39,7 @@ const [setupTask, reactBaseConfigProvider, reactConfigValuesProvider] =
     }),
     {
       prefix: 'react',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 
