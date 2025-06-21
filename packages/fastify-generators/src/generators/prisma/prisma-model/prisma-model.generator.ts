@@ -1,4 +1,4 @@
-import { projectScope } from '@baseplate-dev/core-generators';
+import { packageScope } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
@@ -47,7 +47,7 @@ export const prismaModelGenerator = createGenerator({
       exports: {
         prismaModel: prismaModelProvider
           .export()
-          .andExport(projectScope, descriptor.name),
+          .andExport(packageScope, descriptor.name),
       },
       run: ({ prisma }) => {
         const { name } = descriptor;

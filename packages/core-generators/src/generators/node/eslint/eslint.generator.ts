@@ -7,7 +7,7 @@ import { quot } from '@baseplate-dev/utils';
 
 import { CORE_PACKAGES } from '#src/constants/core-packages.js';
 import { packageInfoProvider } from '#src/providers/project.js';
-import { projectScope } from '#src/providers/scopes.js';
+import { packageScope } from '#src/providers/scopes.js';
 import { TsCodeUtils } from '#src/renderers/index.js';
 import { extractPackageVersions } from '#src/utils/extract-packages.js';
 
@@ -44,7 +44,7 @@ const [setupTask, eslintConfigProvider, eslintConfigValuesProvider] =
     }),
     {
       prefix: 'eslint',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 

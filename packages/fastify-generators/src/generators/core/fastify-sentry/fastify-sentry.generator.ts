@@ -4,7 +4,7 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   nodeProvider,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -55,7 +55,7 @@ const [
   }),
   {
     prefix: 'fastify-sentry',
-    configScope: projectScope,
+    configScope: packageScope,
   },
 );
 

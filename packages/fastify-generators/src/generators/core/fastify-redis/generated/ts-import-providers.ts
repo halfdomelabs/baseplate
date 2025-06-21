@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -31,7 +31,7 @@ const coreFastifyRedisImportsTask = createGeneratorTask({
     paths: CORE_FASTIFY_REDIS_PATHS.provider,
   },
   exports: {
-    fastifyRedisImports: fastifyRedisImportsProvider.export(projectScope),
+    fastifyRedisImports: fastifyRedisImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

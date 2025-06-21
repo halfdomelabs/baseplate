@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -31,7 +31,7 @@ const bullBullMqImportsTask = createGeneratorTask({
   dependencies: {
     paths: BULL_BULL_MQ_PATHS.provider,
   },
-  exports: { bullMqImports: bullMqImportsProvider.export(projectScope) },
+  exports: { bullMqImports: bullMqImportsProvider.export(packageScope) },
   run({ paths }) {
     return {
       providers: {

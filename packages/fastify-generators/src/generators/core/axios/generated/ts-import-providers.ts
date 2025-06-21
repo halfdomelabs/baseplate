@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -25,7 +25,7 @@ const coreAxiosImportsTask = createGeneratorTask({
   dependencies: {
     paths: CORE_AXIOS_PATHS.provider,
   },
-  exports: { axiosImports: axiosImportsProvider.export(projectScope) },
+  exports: { axiosImports: axiosImportsProvider.export(packageScope) },
   run({ paths }) {
     return {
       providers: {

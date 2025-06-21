@@ -25,7 +25,7 @@ import type {
 } from '#src/renderers/typescript/index.js';
 
 import { CORE_PACKAGES } from '#src/constants/core-packages.js';
-import { projectScope } from '#src/providers/scopes.js';
+import { packageScope } from '#src/providers/scopes.js';
 import { renderTsTemplateFileAction } from '#src/renderers/typescript/actions/render-ts-template-file-action.js';
 import {
   extractTsTemplateFileInputsFromTemplateGroup,
@@ -165,8 +165,8 @@ const [setupTask, typescriptSetupProvider, typescriptSetupValuesProvider] =
     }),
     {
       prefix: 'typescript',
-      configScope: projectScope,
-      configValuesScope: projectScope,
+      configScope: packageScope,
+      configValuesScope: packageScope,
     },
   );
 
@@ -224,7 +224,7 @@ export const typescriptGenerator = createGenerator({
         typescriptConfig: typescriptSetupValuesProvider,
         node: nodeProvider,
       },
-      exports: { typescriptFile: typescriptFileProvider.export(projectScope) },
+      exports: { typescriptFile: typescriptFileProvider.export(packageScope) },
       run({ typescriptConfig: { compilerOptions }, node }) {
         const {
           baseUrl = '.',

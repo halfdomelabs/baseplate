@@ -1,7 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   typescriptFileProvider,
@@ -106,7 +106,7 @@ export const pothosAuthGenerator = createGenerator({
     }),
     authFormatter: createGeneratorTask({
       exports: {
-        pothosAuth: pothosAuthProvider.export(projectScope),
+        pothosAuth: pothosAuthProvider.export(packageScope),
       },
       run() {
         return {

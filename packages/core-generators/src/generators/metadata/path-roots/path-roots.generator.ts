@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 import type { TemplatePathRoot } from '#src/renderers/extractor/plugins/template-paths/template-paths.plugin.js';
 
-import { projectScope } from '#src/providers/scopes.js';
+import { packageScope } from '#src/providers/scopes.js';
 import { TEMPLATE_PATHS_METADATA_FILE } from '#src/renderers/extractor/plugins/template-paths/template-paths.plugin.js';
 
 const descriptorSchema = z.object({});
@@ -37,7 +37,7 @@ export const pathRootsGenerator = createGenerator({
   buildTasks: () => ({
     main: createGeneratorTask({
       exports: {
-        pathRoots: pathRootsProvider.export(projectScope),
+        pathRoots: pathRootsProvider.export(packageScope),
       },
       dependencies: {},
       run() {

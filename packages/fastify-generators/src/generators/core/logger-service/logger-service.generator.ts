@@ -3,7 +3,7 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
+  packageScope,
   TsCodeUtils,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -29,7 +29,7 @@ const [
   }),
   {
     prefix: 'logger-service',
-    configScope: projectScope,
+    configScope: packageScope,
   },
 );
 

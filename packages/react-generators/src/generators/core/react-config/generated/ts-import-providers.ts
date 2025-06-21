@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -28,7 +28,7 @@ const coreReactConfigImportsTask = createGeneratorTask({
     paths: CORE_REACT_CONFIG_PATHS.provider,
   },
   exports: {
-    reactConfigImports: reactConfigImportsProvider.export(projectScope),
+    reactConfigImports: reactConfigImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

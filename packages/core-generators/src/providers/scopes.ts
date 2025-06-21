@@ -1,6 +1,6 @@
 import { createProviderExportScope } from '@baseplate-dev/sync';
 
-export const projectScope = createProviderExportScope(
+export const packageScope = createProviderExportScope(
   'core/project',
   'Scope for the entire project',
 );

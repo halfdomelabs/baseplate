@@ -5,7 +5,7 @@ import {
   extractPackageVersions,
   nodeProvider,
   prettierProvider,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -53,7 +53,7 @@ const [setupTask, pothosConfigProvider, pothosConfigValuesProvider] =
     }),
     {
       prefix: 'pothos',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 
@@ -99,9 +99,9 @@ export const pothosGenerator = createGenerator({
         pothosConfigValues: pothosConfigValuesProvider,
       },
       exports: {
-        pothosSchema: pothosSchemaProvider.export(projectScope),
+        pothosSchema: pothosSchemaProvider.export(packageScope),
         pothosSchemaBaseTypes:
-          pothosSchemaBaseTypesProvider.export(projectScope),
+          pothosSchemaBaseTypesProvider.export(packageScope),
       },
       outputs: { pothosSchemaOutput: pothosSchemaOutputProvider.export() },
       run({

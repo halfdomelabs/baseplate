@@ -1,7 +1,7 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   tsImportBuilder,
   typescriptFileProvider,
@@ -53,7 +53,7 @@ export const fastifyPostmarkGenerator = createGenerator({
         paths: EMAIL_FASTIFY_POSTMARK_GENERATED.paths.provider,
       },
       exports: {
-        fastifyPostmark: fastifyPostmarkProvider.export(projectScope),
+        fastifyPostmark: fastifyPostmarkProvider.export(packageScope),
       },
       run({ typescriptFile, configServiceImports, paths }) {
         return {

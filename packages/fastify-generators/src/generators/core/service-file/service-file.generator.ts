@@ -5,7 +5,7 @@ import type {
 
 import {
   mergeFragmentsWithHoistedFragmentsPresorted,
-  projectScope,
+  packageScope,
   tsImportBuilder,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -101,7 +101,7 @@ export const serviceFileGenerator = createGenerator({
       exports: { serviceFile: serviceFileProvider.export() },
       outputs: {
         serviceFileOutput: descriptor.id
-          ? serviceFileOutputProvider.export(projectScope, descriptor.id)
+          ? serviceFileOutputProvider.export(packageScope, descriptor.id)
           : serviceFileOutputProvider.export(),
       },
       run({ appModule, typescriptFile }) {

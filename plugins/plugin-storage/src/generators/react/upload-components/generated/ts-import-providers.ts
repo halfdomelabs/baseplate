@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -32,7 +32,7 @@ const reactUploadComponentsImportsTask = createGeneratorTask({
   },
   exports: {
     uploadComponentsImports:
-      uploadComponentsImportsProvider.export(projectScope),
+      uploadComponentsImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

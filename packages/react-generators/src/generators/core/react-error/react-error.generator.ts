@@ -1,7 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
-  projectScope,
+  packageScope,
   TsCodeUtils,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -26,7 +26,7 @@ const [setupTask, reactErrorConfigProvider, reactErrorConfigValuesProvider] =
     }),
     {
       prefix: 'react-error',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 

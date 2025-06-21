@@ -4,7 +4,7 @@ import type { InferFieldMapSchemaFromBuilder } from '@baseplate-dev/utils';
 import {
   featureScope,
   pathRootsProvider,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -85,10 +85,10 @@ export const appModuleGenerator = createGenerator({
       },
       exports: {
         appModule: appModuleProvider.export(
-          isRoot ? projectScope : featureScope,
+          isRoot ? packageScope : featureScope,
         ),
         appModuleImports: appModuleImportsProvider.export(
-          isRoot ? projectScope : featureScope,
+          isRoot ? packageScope : featureScope,
         ),
       },
       run({

@@ -8,7 +8,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { projectScope } from '#src/providers/scopes.js';
+import { packageScope } from '#src/providers/scopes.js';
 
 const descriptorSchema = z.object({
   additionalExclusions: z.array(z.string().min(1)).optional(),
@@ -35,7 +35,7 @@ export const nodeGitIgnoreGenerator = createGenerator({
     mainTask: createGeneratorTask({
       dependencies: {},
       exports: {
-        nodeGitIgnore: nodeGitIgnoreProvider.export(projectScope),
+        nodeGitIgnore: nodeGitIgnoreProvider.export(packageScope),
       },
       run() {
         const exclusionLines: string[] = [

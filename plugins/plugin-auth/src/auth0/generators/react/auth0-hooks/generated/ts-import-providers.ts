@@ -1,6 +1,6 @@
 import {
   createTsImportMap,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   authHooksImportsProvider,
@@ -14,7 +14,7 @@ const auth0Auth0HooksImportsTask = createGeneratorTask({
   dependencies: {
     paths: AUTH0_AUTH0_HOOKS_PATHS.provider,
   },
-  exports: { authHooksImports: authHooksImportsProvider.export(projectScope) },
+  exports: { authHooksImports: authHooksImportsProvider.export(packageScope) },
   run({ paths }) {
     return {
       providers: {

@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -30,7 +30,7 @@ const authAuthRolesImportsTask = createGeneratorTask({
   dependencies: {
     paths: AUTH_AUTH_ROLES_PATHS.provider,
   },
-  exports: { authRolesImports: authRolesImportsProvider.export(projectScope) },
+  exports: { authRolesImports: authRolesImportsProvider.export(packageScope) },
   run({ paths }) {
     return {
       providers: {

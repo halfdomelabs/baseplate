@@ -6,7 +6,7 @@ import {
   nodeConfigProvider,
   nodeGitIgnoreProvider,
   nodeProvider,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigFieldMap,
@@ -113,10 +113,10 @@ export const fastifyGenerator = createGenerator({
         node: nodeProvider,
       },
       exports: {
-        fastify: fastifyProvider.export(projectScope),
+        fastify: fastifyProvider.export(packageScope),
       },
       outputs: {
-        fastifyOutput: fastifyOutputProvider.export(projectScope),
+        fastifyOutput: fastifyOutputProvider.export(packageScope),
       },
       run({ node }) {
         const fastifyConfig = createConfigFieldMap(fastifyConfigSchema);

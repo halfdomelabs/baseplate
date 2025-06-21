@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -33,7 +33,7 @@ const coreFastifySentryImportsTask = createGeneratorTask({
     paths: CORE_FASTIFY_SENTRY_PATHS.provider,
   },
   exports: {
-    fastifySentryImports: fastifySentryImportsProvider.export(projectScope),
+    fastifySentryImports: fastifySentryImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

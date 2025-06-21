@@ -5,7 +5,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { projectScope } from '#src/providers/scopes.js';
+import { packageScope } from '#src/providers/scopes.js';
 
 const descriptorSchema = z.object({
   additionalExclusions: z.array(z.string().min(1)).optional(),
@@ -18,7 +18,7 @@ const [setupTask, nodeGitIgnoreProvider, nodeGitIgnoreConfigValuesProvider] =
     }),
     {
       prefix: 'node-git-ignore',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 

@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -31,7 +31,7 @@ const coreRequestServiceContextImportsTask = createGeneratorTask({
   },
   exports: {
     requestServiceContextImports:
-      requestServiceContextImportsProvider.export(projectScope),
+      requestServiceContextImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

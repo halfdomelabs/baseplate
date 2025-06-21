@@ -19,7 +19,7 @@ import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';
 
 import { NODE_VERSION, PNPM_VERSION } from '#src/constants/node.js';
-import { projectScope } from '#src/providers/scopes.js';
+import { packageScope } from '#src/providers/scopes.js';
 import { writeJsonToBuilder } from '#src/writers/json.js';
 
 import type { NodePackageDependencies } from './package-dependencies-container.js';
@@ -108,7 +108,7 @@ export function createNodePackagesTask(
 const [configTask, nodeConfigProvider, nodeConfigValuesProvider] =
   createConfigProviderTask((t) => ({ isEsm: t.boolean(false) }), {
     prefix: 'node',
-    configScope: projectScope,
+    configScope: packageScope,
   });
 
 export { nodeConfigProvider };
@@ -117,12 +117,12 @@ export const nodeGenerator = createGenerator({
   name: 'node/node',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  scopes: [projectScope],
+  scopes: [packageScope],
   buildTasks: (descriptor) => ({
     config: createGeneratorTask(configTask),
     project: createGeneratorTask({
       name: 'project',
-      outputs: { project: projectProvider.export(projectScope) },
+      outputs: { project: projectProvider.export(packageScope) },
       run: () => ({
         build: () => ({ project: { getProjectName: () => descriptor.name } }),
       }),
@@ -133,7 +133,7 @@ export const nodeGenerator = createGenerator({
         nodeConfigValues: nodeConfigValuesProvider,
       },
       exports: {
-        node: nodeProvider.export(projectScope),
+        node: nodeProvider.export(packageScope),
       },
       run({ nodeConfigValues: { isEsm } }) {
         const packageJsonFields = createFieldMap(nodePackageJsonFieldsSchema);

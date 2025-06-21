@@ -5,7 +5,7 @@ import {
 
 import type { TsImportMapProviderFromSchema } from '#src/renderers/typescript/index.js';
 
-import { projectScope } from '#src/providers/index.js';
+import { packageScope } from '#src/providers/index.js';
 import {
   createTsImportMap,
   createTsImportMapSchema,
@@ -31,7 +31,7 @@ const nodeTsUtilsImportsTask = createGeneratorTask({
   dependencies: {
     paths: NODE_TS_UTILS_PATHS.provider,
   },
-  exports: { tsUtilsImports: tsUtilsImportsProvider.export(projectScope) },
+  exports: { tsUtilsImports: tsUtilsImportsProvider.export(packageScope) },
   run({ paths }) {
     return {
       providers: {

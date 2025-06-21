@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -31,7 +31,7 @@ const coreReactSentryImportsTask = createGeneratorTask({
     paths: CORE_REACT_SENTRY_PATHS.provider,
   },
   exports: {
-    reactSentryImports: reactSentryImportsProvider.export(projectScope),
+    reactSentryImports: reactSentryImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

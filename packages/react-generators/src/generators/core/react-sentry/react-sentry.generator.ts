@@ -3,7 +3,7 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsHoistedFragment,
@@ -38,7 +38,7 @@ const [setupTask, reactSentryConfigProvider, reactSentryConfigValuesProvider] =
     }),
     {
       prefix: 'react-sentry',
-      configScope: projectScope,
+      configScope: packageScope,
     },
   );
 

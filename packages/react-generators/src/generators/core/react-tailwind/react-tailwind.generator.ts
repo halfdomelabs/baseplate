@@ -3,7 +3,7 @@ import {
   eslintConfigProvider,
   extractPackageVersions,
   prettierProvider,
-  projectScope,
+  packageScope,
   renderTextTemplateGroupAction,
   tsCodeFragment,
 } from '@baseplate-dev/core-generators';
@@ -53,7 +53,7 @@ export const reactTailwindGenerator = createGenerator({
         paths: CORE_REACT_TAILWIND_GENERATED.paths.provider,
       },
       exports: {
-        reactTailwind: reactTailwindProvider.export(projectScope),
+        reactTailwind: reactTailwindProvider.export(packageScope),
       },
       run({ reactBaseConfig, eslintConfig, prettier, paths }) {
         eslintConfig.tsDefaultProjectFiles.push(

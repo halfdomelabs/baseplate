@@ -1,6 +1,6 @@
 import {
   nodeProvider,
-  projectScope,
+  packageScope,
   renderRawTemplateFileAction,
 } from '@baseplate-dev/core-generators';
 import {
@@ -35,7 +35,7 @@ export const fastifyScriptsGenerator = createGenerator({
         paths: CORE_FASTIFY_SCRIPTS_GENERATED.paths.provider,
       },
       exports: {
-        fastifyScripts: fastifyScriptsProvider.export(projectScope),
+        fastifyScripts: fastifyScriptsProvider.export(packageScope),
       },
       run({ node, fastifyOutput, paths }) {
         node.scripts.mergeObj({

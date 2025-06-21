@@ -1,5 +1,5 @@
 import {
-  projectScope,
+  packageScope,
   tsCodeFragment,
   tsImportBuilder,
   typescriptFileProvider,
@@ -43,7 +43,7 @@ export const reactNotFoundHandlerGenerator = createGenerator({
         paths: CORE_REACT_NOT_FOUND_HANDLER_GENERATED.paths.provider,
       },
       exports: {
-        reactNotFound: reactNotFoundProvider.export(projectScope),
+        reactNotFound: reactNotFoundProvider.export(packageScope),
       },
       run({ reactRoutes, reactComponentsImports, typescriptFile, paths }) {
         const notFoundRoute = {

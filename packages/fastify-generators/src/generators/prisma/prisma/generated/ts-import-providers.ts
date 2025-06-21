@@ -3,7 +3,7 @@ import type { TsImportMapProviderFromSchema } from '@baseplate-dev/core-generato
 import {
   createTsImportMap,
   createTsImportMapSchema,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   createGeneratorTask,
@@ -25,7 +25,7 @@ const prismaPrismaImportsTask = createGeneratorTask({
   dependencies: {
     paths: PRISMA_PRISMA_PATHS.provider,
   },
-  exports: { prismaImports: prismaImportsProvider.export(projectScope) },
+  exports: { prismaImports: prismaImportsProvider.export(packageScope) },
   run({ paths }) {
     return {
       providers: {

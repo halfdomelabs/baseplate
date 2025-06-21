@@ -1,6 +1,6 @@
 import {
   createTsImportMap,
-  projectScope,
+  packageScope,
 } from '@baseplate-dev/core-generators';
 import {
   userSessionServiceImportsProvider,
@@ -16,7 +16,7 @@ const fastifyAuthModuleImportsTask = createGeneratorTask({
   },
   exports: {
     userSessionServiceImports:
-      userSessionServiceImportsProvider.export(projectScope),
+      userSessionServiceImportsProvider.export(packageScope),
   },
   run({ paths }) {
     return {

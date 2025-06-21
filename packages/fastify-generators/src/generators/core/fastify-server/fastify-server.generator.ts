@@ -3,7 +3,7 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -65,7 +65,7 @@ const [
   }),
   {
     prefix: 'fastify-server',
-    configScope: projectScope,
+    configScope: packageScope,
   },
 );
 

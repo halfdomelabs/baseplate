@@ -1,7 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
-  projectScope,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -33,7 +33,7 @@ export const [
   }),
   {
     prefix: 'error-handler-service',
-    configScope: projectScope,
+    configScope: packageScope,
   },
 );
 
