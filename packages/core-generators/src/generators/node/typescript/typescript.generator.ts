@@ -30,7 +30,7 @@ import { renderTsTemplateFileAction } from '#src/renderers/typescript/actions/re
 import {
   extractTsTemplateFileInputsFromTemplateGroup,
   generatePathMapEntries,
-  getProjectRelativePathFromModuleSpecifier,
+  getOutputRelativePathFromModuleSpecifier,
   normalizeModuleSpecifier,
   pathMapEntriesToRegexes,
   renderTsFragmentAction,
@@ -121,15 +121,15 @@ export interface TypescriptFileProvider {
   /**
    * Marks an import as used
    *
-   * @param outputRelativePath - The project relative path to mark as used
+   * @param outputRelativePath - The output relative path to mark as used
    */
   markImportAsUsed(outputRelativePath: string): void;
   /**
-   * Resolves a module specifier to a project relative path
+   * Resolves a module specifier to a output relative path
    *
    * @param moduleSpecifier - The module specifier to resolve
    * @param from - The directory to resolve the module from
-   * @returns The project relative path
+   * @returns The output relative path
    */
   resolveModuleSpecifier(moduleSpecifier: string, from: string): string;
 }
@@ -235,19 +235,19 @@ export const typescriptGenerator = createGenerator({
         const internalPatterns = pathMapEntriesToRegexes(pathMapEntries);
 
         const lazyTemplates = new Set<LazyTemplateFileEntry>();
-        const usedProjectRelativePaths = new Set<string>();
+        const usedOutputRelativePaths = new Set<string>();
 
         function resolveModuleSpecifier(
           moduleSpecifier: string,
           directory: string,
         ): string {
-          const outputRelativePath = getProjectRelativePathFromModuleSpecifier(
+          const outputRelativePath = getOutputRelativePathFromModuleSpecifier(
             moduleSpecifier,
             directory,
           );
           if (outputRelativePath) {
             // use path without extension for improved matching
-            usedProjectRelativePaths.add(
+            usedOutputRelativePaths.add(
               outputRelativePath.replace(/\.(j|t)sx?$/, ''),
             );
           }
@@ -341,7 +341,7 @@ export const typescriptGenerator = createGenerator({
                   },
                 }),
               markImportAsUsed: (outputRelativePath) => {
-                usedProjectRelativePaths.add(
+                usedOutputRelativePaths.add(
                   outputRelativePath.replace(/\.(j|t)sx?$/, ''),
                 );
               },
@@ -351,7 +351,7 @@ export const typescriptGenerator = createGenerator({
           async build(builder) {
             while (lazyTemplates.size > 0) {
               const templatesToRender = [...lazyTemplates].filter((template) =>
-                usedProjectRelativePaths.has(
+                usedOutputRelativePaths.has(
                   normalizePathToProjectPath(
                     template.payload.destination,
                   ).replace(/\.(j|t)sx?$/, ''),

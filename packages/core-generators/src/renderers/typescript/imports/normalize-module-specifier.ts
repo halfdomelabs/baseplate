@@ -6,26 +6,26 @@ import pathPosix from 'node:path/posix';
 import type { TsPathMapEntry } from './types.js';
 
 /**
- * Strips the relative prefix from a project relative path
+ * Strips the relative prefix from a output relative path
  * @param path
  * @returns
  */
-function stripRelativePrefixFromProjectRelativePath(path: string): string {
+function stripRelativePrefixFromOutputRelativePath(path: string): string {
   if (path.startsWith('./')) {
     return path.slice(2);
   }
   if (path.startsWith('../')) {
     throw new Error(
-      `Expected project relative path, but got relative path ${path}`,
+      `Expected output relative path, but got relative path ${path}`,
     );
   }
   return path;
 }
 
 /**
- * Attempts to resolve the aliased path from a project relative path
+ * Attempts to resolve the aliased path from a output relative path
  *
- * @param projectPath The project relative path to resolve from
+ * @param projectPath The output relative path to resolve from
  * @param TsPathMapEntry The path map entry to use
  * @returns The aliased path if the path map matches, otherwise undefined
  */
@@ -34,8 +34,8 @@ function getAliasedPathFromTsPathMapEntry(
   entry: TsPathMapEntry,
 ): string | undefined {
   const strippedProjectPath =
-    stripRelativePrefixFromProjectRelativePath(projectPath);
-  const strippedToPath = stripRelativePrefixFromProjectRelativePath(entry.to);
+    stripRelativePrefixFromOutputRelativePath(projectPath);
+  const strippedToPath = stripRelativePrefixFromOutputRelativePath(entry.to);
   const fromPath = entry.from;
 
   // return the from, if it's an exact match
@@ -133,13 +133,13 @@ function normalizePathForResolutionKind(
 }
 
 /**
- * Gets the project relative path from a module specifier
+ * Gets the output relative path from a module specifier
  *
- * @param moduleSpecifier The module specifier to get the project relative path from
+ * @param moduleSpecifier The module specifier to get the output relative path from
  * @param directory The directory we need to resolve the module specifier from
- * @returns The project relative path if the module specifier is internal, otherwise undefined
+ * @returns The output relative path if the module specifier is internal, otherwise undefined
  */
-export function getProjectRelativePathFromModuleSpecifier(
+export function getOutputRelativePathFromModuleSpecifier(
   moduleSpecifier: string,
   directory: string,
 ): string | undefined {

@@ -6,31 +6,31 @@ import pathPosix from 'node:path/posix';
 interface TsPathMapEntry {
   /** The alias to map from (e.g. "@src/*") */
   from: string;
-  /** The project relative path to map to (e.g. "./src/app/*") */
+  /** The output relative path to map to (e.g. "./src/app/*") */
   to: string;
 }
 
 /**
- * Strips the relative prefix from a project relative path
+ * Strips the relative prefix from a output relative path
  * @param path
  * @returns
  */
-function stripRelativePrefixFromProjectRelativePath(path: string): string {
+function stripRelativePrefixFromOutputRelativePath(path: string): string {
   if (path.startsWith('./')) {
     return path.slice(2);
   }
   if (path.startsWith('../')) {
     throw new Error(
-      `Expected project relative path, but got relative path ${path}`,
+      `Expected output relative path, but got relative path ${path}`,
     );
   }
   return path;
 }
 
 /**
- * Attempts to resolve the aliased path from a project relative path
+ * Attempts to resolve the aliased path from a output relative path
  *
- * @param projectPath The project relative path to resolve from
+ * @param projectPath The output relative path to resolve from
  * @param TsPathMapEntry The path map entry to use
  * @returns The aliased path if the path map matches, otherwise undefined
  */
@@ -39,8 +39,8 @@ function getAliasedPathFromTsPathMapEntry(
   entry: TsPathMapEntry,
 ): string | undefined {
   const strippedProjectPath =
-    stripRelativePrefixFromProjectRelativePath(projectPath);
-  const strippedToPath = stripRelativePrefixFromProjectRelativePath(entry.to);
+    stripRelativePrefixFromOutputRelativePath(projectPath);
+  const strippedToPath = stripRelativePrefixFromOutputRelativePath(entry.to);
   const fromPath = entry.from;
 
   // return the from, if it's an exact match

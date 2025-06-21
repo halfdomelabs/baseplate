@@ -69,6 +69,6 @@ export interface TsImportDeclaration {
 export interface TsPathMapEntry {
   /** The alias to map from (e.g. "@src/*") */
   from: string;
-  /** The project relative path to map to (e.g. "./src/app/*") */
+  /** The output relative path to map to (e.g. "./src/app/*") */
   to: string;
 }
