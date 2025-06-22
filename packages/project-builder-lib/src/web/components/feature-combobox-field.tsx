@@ -8,11 +8,11 @@ import {
 } from '@baseplate-dev/ui-components';
 import { useMemo, useState } from 'react';
 
-import { ModelUtils } from '#src/definition/index.js';
+import { FeatureUtils } from '#src/definition/index.js';
 
-import { useProjectDefinition } from '../hooks/useProjectDefinition.js';
+import { useProjectDefinition } from '../hooks/use-project-definition.js';
 
-interface ModelComboboxFieldProps
+interface FeatureComboboxFieldProps
   extends Omit<
     ComboboxFieldProps<{
       label: string;
@@ -30,64 +30,64 @@ function createCreateOption(value: string): { label: string; value: string } {
   };
 }
 
-function ModelComboboxField({
+function FeatureComboboxField({
   canCreate,
   value,
   ...rest
-}: ModelComboboxFieldProps): React.ReactElement {
+}: FeatureComboboxFieldProps): React.ReactElement {
   const { definition } = useProjectDefinition();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const modelOptions = useMemo(() => {
-    const baseModels = definition.models.map((model) => ({
-      label: model.name,
-      value: model.id,
+  const featureOptions = useMemo(() => {
+    const baseFeatures = definition.features.map((feature) => ({
+      label: feature.name,
+      value: feature.id,
     }));
 
-    if (!canCreate) return baseModels;
+    if (!canCreate) return baseFeatures;
 
-    const newModelName = searchQuery ? searchQuery : value;
+    const newFeatureName = searchQuery ? searchQuery : value;
 
-    const doesNewModelExist = !!baseModels.some(
+    const doesNewFeatureExist = !!baseFeatures.some(
       (option) =>
-        option.label === newModelName || option.value === newModelName,
+        option.label === newFeatureName || option.value === newFeatureName,
     );
 
-    return !doesNewModelExist &&
-      newModelName &&
-      ModelUtils.validateModelName(newModelName)
-      ? [...baseModels, createCreateOption(newModelName)]
-      : baseModels;
-  }, [definition.models, searchQuery, value, canCreate]);
+    return !doesNewFeatureExist &&
+      newFeatureName &&
+      FeatureUtils.validateFeatureName(newFeatureName)
+      ? [...baseFeatures, createCreateOption(newFeatureName)]
+      : baseFeatures;
+  }, [definition.features, searchQuery, value, canCreate]);
 
   return (
     <ComboboxField
-      placeholder="Select a model"
+      placeholder="Select a feature"
       {...rest}
       searchQuery={canCreate ? searchQuery : undefined}
       onSearchQueryChange={setSearchQuery}
-      options={modelOptions}
+      options={featureOptions}
       value={value}
     />
   );
 }
 
-interface ModelComboboxFieldControllerProps<
+interface FeatureComboboxFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<ModelComboboxFieldProps, 'value'> {
+> extends Omit<FeatureComboboxFieldProps, 'value'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
 
-function ModelComboboxFieldController<
+function FeatureComboboxFieldController<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   name,
   control,
   ...rest
-}: ModelComboboxFieldControllerProps<
+}: FeatureComboboxFieldControllerProps<
   TFieldValues,
   TFieldName
 >): React.JSX.Element {
@@ -99,7 +99,7 @@ function ModelComboboxFieldController<
   const restProps = rest;
 
   return (
-    <ModelComboboxField
+    <FeatureComboboxField
       error={error?.message}
       {...restProps}
       {...field}
@@ -108,4 +108,4 @@ function ModelComboboxFieldController<
   );
 }
 
-export { ModelComboboxField, ModelComboboxFieldController };
+export { FeatureComboboxField, FeatureComboboxFieldController };

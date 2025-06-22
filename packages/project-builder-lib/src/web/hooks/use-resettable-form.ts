@@ -5,7 +5,7 @@ import { isEqual } from 'es-toolkit';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useProjectDefinition } from './useProjectDefinition.js';
+import { useProjectDefinition } from './use-project-definition.js';
 
 export function useResettableForm<
   TFieldValues extends FieldValues = FieldValues,

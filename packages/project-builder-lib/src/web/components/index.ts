@@ -1,3 +1,3 @@
-export * from './FeatureComboboxField.js';
-export * from './ModelComboboxField.js';
-export * from './ModelMergerResultAlert.js';
+export * from './feature-combobox-field.js';
+export * from './model-combobox-field.js';
+export * from './model-merger-result-alert.js';

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { migration005PrimaryUniqueRefs } from './migration-005-primaryUniqueRefs.js';
+import { migration005PrimaryUniqueRefs } from './migration-005-primary-unique-refs.js';
 
 describe('migration005PrimaryUniqueRefs', () => {
   it('migrates primaryKeys to primaryKeyFieldRefs and unique constraints to new format', () => {

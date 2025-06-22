@@ -5,7 +5,7 @@ import { flattenObject } from 'es-toolkit';
 import { useEffect, useRef } from 'react';
 import { useFormState } from 'react-hook-form';
 
-import { useBlockerDialog } from './useBlockerDialog.js';
+import { useBlockerDialog } from './use-blocker-dialog.js';
 
 export function useBlockUnsavedChangesNavigate<
   TFieldValues extends FieldValues = FieldValues,

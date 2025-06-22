@@ -6,7 +6,7 @@ import type { ZodPluginWrapper } from '#src/plugins/index.js';
 
 import { zPluginWrapper } from '#src/plugins/index.js';
 
-import { useProjectDefinition } from './useProjectDefinition.js';
+import { useProjectDefinition } from './use-project-definition.js';
 
 export function usePluginEnhancedSchema<T extends z.ZodTypeAny>(
   schema: T,
