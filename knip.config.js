@@ -46,7 +46,7 @@ export default {
       project: ['src/**/*.{ts,tsx}', 'plugins/*.ts'],
       ignore: [
         // we ignore this file because it may not always be used when there are no feature flags
-        'src/hooks/useFeatureFlag.ts',
+        'src/hooks/use-feature-flag.ts',
         // weird bugs with knip :(
         'src/services/schema-parser-context.ts',
         'src/types/virtual-module-federation.d.ts',
