@@ -1,4 +1,4 @@
-export { useConfirmDialog } from './useConfirmDialog.js';
-export { useControlledState } from './useControlledState.js';
-export { useControllerMerged } from './useControllerMerged.js';
-export { useEventCallback } from './useEventCallback.js';
+export { useConfirmDialog } from './use-confirm-dialog.js';
+export { useControlledState } from './use-controlled-state.js';
+export { useControllerMerged } from './use-controller-merged.js';
+export { useEventCallback } from './use-event-callback.js';
