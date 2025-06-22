@@ -9,7 +9,7 @@ import { createPortal } from 'react-dom';
 import { DARK_MODE_EVENT_NAME } from 'storybook-dark-mode';
 
 import { Toaster } from '../src/components/Toaster/Toaster';
-import CustomTheme from './CustomTheme';
+import CustomTheme from './custom-theme.js';
 import { isDarkModeEnabled, setDarkModeEnabled } from './dark-mode';
 
 import '../src/styles.css';
