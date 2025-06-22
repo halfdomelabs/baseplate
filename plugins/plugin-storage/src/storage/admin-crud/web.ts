@@ -3,7 +3,7 @@ import { adminCrudInputWebSpec } from '@baseplate-dev/project-builder-lib/web';
 
 import type { AdminCrudFileInputConfig } from './types.js';
 
-import { AdminCrudFileInputForm } from './AdminCrudInputForm.js';
+import { AdminCrudFileInputForm } from './admin-crud-input-form.js';
 
 import '../../styles.css';
 

@@ -12,11 +12,11 @@ import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
 import { ErrorBoundary } from '#src/components/index.js';
 import { registerEntityTypeUrl } from '#src/services/entity-type.js';
 
-import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig.js';
-import { useModelForm } from '../../_hooks/useModelForm.js';
-import { ModelFieldsForm } from './_components/fields/ModelFieldsForm.js';
-import { ModelRelationsSection } from './_components/ModelRelationsSection.js';
-import { ModelUniqueConstraintsSection } from './_components/ModelUniqueConstraintsSection.js';
+import { EditedModelContextProvider } from '../../_hooks/use-edited-model-config.js';
+import { useModelForm } from '../../_hooks/use-model-form.js';
+import { ModelFieldsForm } from './_components/fields/model-fields-form.js';
+import { ModelRelationsSection } from './_components/model-relations-section.js';
+import { ModelUniqueConstraintsSection } from './_components/model-unique-constraints-section.js';
 
 registerEntityTypeUrl(modelEntityType, `/data/models/edit/{uid}`);
 registerEntityTypeUrl(

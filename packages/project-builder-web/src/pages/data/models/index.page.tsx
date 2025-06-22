@@ -4,7 +4,7 @@ import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import { Button, EmptyDisplay } from '@baseplate-dev/ui-components';
 import { HiDatabase } from 'react-icons/hi';
 
-import { NewModelDialog } from './_components/NewModelDialog.js';
+import { NewModelDialog } from './_components/new-model-dialog.js';
 
 function ModelsIndexPage(): React.JSX.Element {
   const { definition } = useProjectDefinition();

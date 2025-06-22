@@ -13,7 +13,7 @@ import { modelTransformerWebSpec } from '@baseplate-dev/project-builder-lib/web'
 import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
 import type { FileTransformerConfig } from './types.js';
 
-import { FileTransformerForm } from './components/FileTransformerForm.js';
+import { FileTransformerForm } from './components/file-transformer-form.js';
 
 import '../../styles.css';
 

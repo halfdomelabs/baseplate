@@ -6,9 +6,9 @@ import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
 
 import { ErrorBoundary } from '#src/components/index.js';
 
-import { useEnumForm } from '../hooks/useEnumForm.js';
-import { EnumGraphQLSection } from './sections/EnumGraphQLSection.js';
-import { EnumValuesSection } from './sections/EnumValuesSection.js';
+import { useEnumForm } from '../hooks/use-enum-form.js';
+import { EnumGraphQLSection } from './sections/enum-graph-ql-section.js';
+import { EnumValuesSection } from './sections/enum-values-section.js';
 
 function EnumEditPage(): React.JSX.Element {
   const { form, onSubmit, isSavingDefinition } = useEnumForm({

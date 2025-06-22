@@ -13,7 +13,7 @@ import { NavLink, Outlet, useParams } from 'react-router-dom';
 
 import { NotFoundCard } from '#src/components/index.js';
 
-import { ModelHeaderBar } from './_components/ModelHeaderBar.js';
+import { ModelHeaderBar } from './_components/model-header-bar.js';
 
 export function ModelEditLayout(): React.JSX.Element {
   const { uid } = useParams<'uid'>();

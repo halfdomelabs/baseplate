@@ -1,7 +1,7 @@
 import type { ProjectDefinition } from '../schema/index.js';
 import type { SchemaMigration } from './types.js';
 
-import { migration005PrimaryUniqueRefs } from './migration-005-primaryUniqueRefs.js';
+import { migration005PrimaryUniqueRefs } from './migration-005-primary-unique-refs.js';
 import { migration006IndividualServiceControllers } from './migration-006-individual-service-controllers.js';
 import { migration007ModelGraphql } from './migration-007-model-graphql.js';
 import { migration008AnonymousPublicRole } from './migration-008-anonymous-public-role.js';

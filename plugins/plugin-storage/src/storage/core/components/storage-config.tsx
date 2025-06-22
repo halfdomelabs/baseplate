@@ -22,8 +22,8 @@ import type { StoragePluginDefinitionInput } from '../schema/plugin-definition.j
 
 import { createStorageModels } from '../schema/models.js';
 import { storagePluginDefinitionSchema } from '../schema/plugin-definition.js';
-import AdapterEditorForm from './AdapterEditorForm.js';
-import CategoryEditorForm from './CategoryEditorForm.js';
+import AdapterEditorForm from './adapter-editor-form.js';
+import CategoryEditorForm from './category-editor-form.js';
 
 export function StorageConfig({
   definition: pluginMetadata,

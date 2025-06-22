@@ -3,7 +3,7 @@ import type { ScalarFieldType } from '@baseplate-dev/project-builder-lib';
 import { modelTransformerEntityType } from '@baseplate-dev/project-builder-lib';
 import { createNewModelTransformerWebConfig } from '@baseplate-dev/project-builder-lib/web';
 
-import { embeddedRelationTransformerWebConfig } from './edit/[id]/_components/service/ServiceEmbeddedRelationForm.js';
+import { embeddedRelationTransformerWebConfig } from './edit/[id]/_components/service/service-embedded-relation-form.js';
 
 export const BUILT_IN_TRANSFORMER_WEB_CONFIGS = [
   embeddedRelationTransformerWebConfig,

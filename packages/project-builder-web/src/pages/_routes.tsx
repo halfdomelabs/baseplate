@@ -1,13 +1,13 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-import App from '#src/app/App.js';
-import { AppLayout } from '#src/app/AppLayout/AppLayout.js';
 import { createRouteCrumb } from '#src/types/routes.js';
 
+import { AppLayout } from '../app/app-layout/app-layout.js';
+import App from '../app/app.js';
 import { AppsRoutes } from './apps/index.js';
 import { DataRoutes } from './data/_routes.js';
 import HomePage from './home/home.page.js';
-import { NotFoundRoute } from './NotFound.page.js';
+import { NotFoundRoute } from './not-found.page.js';
 import { PluginRoutes } from './plugins/index.js';
 import { SettingsRoutes } from './settings/_routes.js';
 

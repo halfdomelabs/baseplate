@@ -3,7 +3,7 @@ import type { RouteObject } from 'react-router-dom';
 import { modelEntityType } from '@baseplate-dev/project-builder-lib';
 import { Navigate } from 'react-router-dom';
 
-import { NotFoundRoute } from '#src/pages/NotFound.page.js';
+import { NotFoundRoute } from '#src/pages/not-found.page.js';
 import { createCrumbFromUid, createRouteCrumb } from '#src/types/routes.js';
 
 import { ModelEditLayout } from './_layout.js';

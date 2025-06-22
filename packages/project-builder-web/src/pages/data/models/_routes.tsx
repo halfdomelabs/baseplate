@@ -1,8 +1,8 @@
 import type { RouteObject } from 'react-router-dom';
 
-import { NotFoundRoute } from '#src/pages/NotFound.page.js';
 import { createRouteCrumb } from '#src/types/routes.js';
 
+import { NotFoundRoute } from '../../not-found.page.js';
 import { ModelEditRoutes } from './edit/[id]/_routes.js';
 import ModelsIndexPage from './index.page.js';
 
