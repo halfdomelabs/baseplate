@@ -5,11 +5,11 @@ import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import { EmptyDisplay, ErrorableLoader } from '@baseplate-dev/ui-components';
 import { useEffect, useState } from 'react';
 
-import { useProjects } from '#src/hooks/useProjects.js';
+import { useProjects } from '#src/hooks/use-projects.js';
 import { IS_PREVIEW } from '#src/services/config.js';
 import { trpc } from '#src/services/trpc.js';
 
-import { PluginCard } from './PluginCard.js';
+import { PluginCard } from './plugin-card.js';
 
 export function PluginsHomePage(): React.JSX.Element {
   const { currentProjectId } = useProjects();

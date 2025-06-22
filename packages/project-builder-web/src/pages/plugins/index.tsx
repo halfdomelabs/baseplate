@@ -4,10 +4,10 @@ import { pluginEntityType } from '@baseplate-dev/project-builder-lib';
 
 import { createCrumbFromUid } from '#src/types/routes.js';
 
-import NotFoundPage from '../NotFound.page.js';
+import NotFoundPage from '../not-found.page.js';
 import { PluginsHomePage } from './home.page.js';
 import { PluginConfigPage } from './plugin-config.page.js';
-import PluginsLayout from './PluginsLayout.js';
+import PluginsLayout from './plugins-layout.js';
 
 export const PluginRoutes: RouteObject[] = [
   {

@@ -2,11 +2,11 @@ import type { RouteObject } from 'react-router-dom';
 
 import { modelEnumEntityType } from '@baseplate-dev/project-builder-lib';
 
-import { NotFoundRoute } from '#src/pages/NotFound.page.js';
+import { NotFoundRoute } from '#src/pages/not-found.page.js';
 import { createCrumbFromUid } from '#src/types/routes.js';
 
 import EnumEditPage from './edit.page.js';
-import { EnumEditLayout } from './EnumEditLayout.js';
+import { EnumEditLayout } from './enum-edit-layout.js';
 
 export const EnumEditRoutes: RouteObject = {
   path: 'edit/:uid/*',

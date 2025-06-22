@@ -32,10 +32,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
 
-import { ThemeColorsCssDisplay } from './components/ThemeColorsCssDisplay.js';
-import { ThemeColorsEditor } from './components/ThemeColorsEditor.js';
-import { ThemeColorsPreview } from './components/ThemeColorsPreview.js';
-import { ThemePaletteEditor } from './components/ThemePaletteEditor.js';
+import { ThemeColorsCssDisplay } from './components/theme-colors-css-display.js';
+import { ThemeColorsEditor } from './components/theme-colors-editor.js';
+import { ThemeColorsPreview } from './components/theme-colors-preview.js';
+import { ThemePaletteEditor } from './components/theme-palette-editor.js';
 
 export function ThemeBuilderPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();

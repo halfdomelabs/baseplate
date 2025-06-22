@@ -4,11 +4,11 @@ import { modelBaseSchema } from '@baseplate-dev/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
 import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
 
-import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig.js';
-import { useModelForm } from '../../_hooks/useModelForm.js';
-import { GraphQLMutationsSection } from './_components/graphql/GraphQLMutationsSection.js';
-import { GraphQLObjectTypeSection } from './_components/graphql/GraphQLObjectTypeSection.js';
-import { GraphQLQueriesSection } from './_components/graphql/GraphQLQueriesSection.js';
+import { EditedModelContextProvider } from '../../_hooks/use-edited-model-config.js';
+import { useModelForm } from '../../_hooks/use-model-form.js';
+import { GraphQLMutationsSection } from './_components/graphql/graph-ql-mutations-section.js';
+import { GraphQLObjectTypeSection } from './_components/graphql/graph-ql-object-type-section.js';
+import { GraphQLQueriesSection } from './_components/graphql/graph-ql-queries-section.js';
 
 const formSchema = modelBaseSchema.omit({ name: true, featureRef: true });
 

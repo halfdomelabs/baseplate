@@ -18,10 +18,10 @@ import {
 
 import { registerEntityTypeUrl } from '#src/services/entity-type.js';
 
-import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig.js';
-import { useModelForm } from '../../_hooks/useModelForm.js';
-import { ServiceMethodFieldsSection } from './_components/service/ServiceMethodFieldsSection.js';
-import { ServiceTransformersSection } from './_components/service/ServiceTransformersSection.js';
+import { EditedModelContextProvider } from '../../_hooks/use-edited-model-config.js';
+import { useModelForm } from '../../_hooks/use-model-form.js';
+import { ServiceMethodFieldsSection } from './_components/service/service-method-fields-section.js';
+import { ServiceTransformersSection } from './_components/service/service-transformers-section.js';
 
 registerEntityTypeUrl(
   modelTransformerEntityType,

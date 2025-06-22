@@ -4,8 +4,8 @@ import { appEntityType } from '@baseplate-dev/project-builder-lib';
 
 import { createCrumbFromUid } from '#src/types/routes.js';
 
-import NotFoundPage from '../NotFound.page.js';
-import AppsLayout from './AppsLayout.page.js';
+import NotFoundPage from '../not-found.page.js';
+import AppsLayout from './apps-layout.page.js';
 import EditAppPage from './edit.page.js';
 import { AppsListPage } from './list.page.js';
 import NewAppPage from './new.page.js';

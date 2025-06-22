@@ -18,9 +18,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { NotFoundCard } from '#src/components/index.js';
 
-import AdminAppForm from './edit/AdminAppForm.js';
-import BackendAppForm from './edit/BackendAppForm.js';
-import WebAppForm from './edit/WebAppForm.js';
+import AdminAppForm from './edit/admin-app-form.js';
+import BackendAppForm from './edit/backend-app-form.js';
+import WebAppForm from './edit/web-app-form.js';
 
 function EditAppPage(): React.JSX.Element {
   const { uid } = useParams<'uid'>();

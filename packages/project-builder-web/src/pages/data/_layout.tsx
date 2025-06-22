@@ -11,10 +11,10 @@ import {
 import { maxBy } from 'es-toolkit';
 import { NavLink, Outlet, useMatch } from 'react-router-dom';
 
-import { ErrorBoundary } from '#src/components/ErrorBoundary/ErrorBoundary.js';
+import { ErrorBoundary } from '#src/components/error-boundary/error-boundary.js';
 
-import { EnumsSidebarList } from './enums/EnumsSidebarList.js';
-import { ModelsSidebarList } from './models/_components/ModelsSidebarList.js';
+import { EnumsSidebarList } from './enums/enums-sidebar-list.js';
+import { ModelsSidebarList } from './models/_components/models-sidebar-list.js';
 
 export function DataLayout(): React.JSX.Element {
   const {
