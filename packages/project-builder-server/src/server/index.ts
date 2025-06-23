@@ -12,6 +12,17 @@ export interface StartWebServerOptions extends WebServerOptions {
 
 export { BuilderServiceManager } from './builder-service-manager.js';
 
+async function startListen(
+  server: FastifyInstance,
+  port: number,
+): Promise<void> {
+  await server.listen({
+    port,
+    listenTextResolver: (address) =>
+      `Baseplate is listening on ${address.replace('127.0.0.1', 'localhost')}`,
+  });
+}
+
 export async function startWebServer(
   options: StartWebServerOptions,
 ): Promise<FastifyInstance> {
@@ -19,7 +30,7 @@ export async function startWebServer(
   const server = await buildServer(options);
 
   try {
-    await server.listen({ port });
+    await startListen(server, port);
   } catch (error) {
     if (
       error instanceof Error &&
@@ -32,7 +43,7 @@ export async function startWebServer(
       await new Promise((resolve) => {
         setTimeout(resolve, 500);
       });
-      await server.listen({ port });
+      await startListen(server, port);
     } else {
       throw error;
     }
