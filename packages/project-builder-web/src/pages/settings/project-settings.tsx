@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { createGeneralSettingsSchema } from '@baseplate-dev/project-builder-lib';
+import { generalSettingsSchema } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
@@ -17,14 +17,9 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
-
 function ProjectSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
 
-  const generalSettingsSchema = useDefinitionSchema(
-    createGeneralSettingsSchema,
-  );
   const form = useResettableForm({
     resolver: zodResolver(generalSettingsSchema),
     defaultValues: definition.settings.general,
