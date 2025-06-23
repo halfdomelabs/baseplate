@@ -2,6 +2,14 @@
   "name": "@baseplate-dev/plugin-auth",
   "version": "0.1.3",
   "description": "Contains the auth plugin for Baseplate",
+  "keywords": [
+    "authentication",
+    "plugin",
+    "full-stack",
+    "typescript",
+    "baseplate",
+    "code-generation"
+  ],
   "homepage": "https://www.baseplate.dev",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MPL-2.0",
@@ -79,13 +87,5 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  },
-  "keywords": [
-    "authentication",
-    "plugin",
-    "full-stack",
-    "typescript",
-    "baseplate",
-    "code-generation"
-  ]
+  }
 }

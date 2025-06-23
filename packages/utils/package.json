@@ -2,6 +2,15 @@
   "name": "@baseplate-dev/utils",
   "version": "0.1.3",
   "description": "Shared utility functions for Baseplate",
+  "keywords": [
+    "utilities",
+    "typescript",
+    "helpers",
+    "common",
+    "baseplate",
+    "full-stack",
+    "code-generation"
+  ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
     "type": "git",
@@ -63,14 +72,5 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  },
-  "keywords": [
-    "utilities",
-    "typescript",
-    "helpers",
-    "common",
-    "baseplate",
-    "full-stack",
-    "code-generation"
-  ]
+  }
 }

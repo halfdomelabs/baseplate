@@ -3,6 +3,12 @@
   "version": "0.1.3",
   "private": true,
   "description": "Automated E2E testing for the project builder projects",
+  "keywords": [
+    "baseplate",
+    "full-stack",
+    "typescript",
+    "code-generation"
+  ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
     "type": "git",
@@ -61,11 +67,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "keywords": [
-    "baseplate",
-    "full-stack",
-    "typescript",
-    "code-generation"
-  ]
+  }
 }

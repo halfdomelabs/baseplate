@@ -2,6 +2,16 @@
   "name": "@baseplate-dev/plugin-storage",
   "version": "0.1.3",
   "description": "Contains the storage plugin for Baseplate",
+  "keywords": [
+    "storage",
+    "plugin",
+    "s3",
+    "file-storage",
+    "typescript",
+    "baseplate",
+    "full-stack",
+    "code-generation"
+  ],
   "homepage": "https://www.baseplate.dev",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MPL-2.0",
@@ -81,15 +91,5 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  },
-  "keywords": [
-    "storage",
-    "plugin",
-    "s3",
-    "file-storage",
-    "typescript",
-    "baseplate",
-    "full-stack",
-    "code-generation"
-  ]
+  }
 }
