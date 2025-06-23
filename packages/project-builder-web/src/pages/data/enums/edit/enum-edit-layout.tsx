@@ -12,10 +12,10 @@ import { NotFoundCard } from '#src/components/index.js';
 import { EnumHeaderBar } from './components/enum-header-bar.js';
 
 export function EnumEditLayout(): React.JSX.Element {
-  const { uid } = useParams<'uid'>();
+  const { key } = useParams<'key'>();
   const { definition } = useProjectDefinition();
 
-  const id = modelEnumEntityType.fromUid(uid);
+  const id = modelEnumEntityType.idFromKey(key);
 
   const enumDefinition = EnumUtils.byId(definition, id ?? '');
 

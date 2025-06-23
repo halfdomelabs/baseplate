@@ -1,4 +1,4 @@
-import { randomUid } from '@baseplate-dev/utils';
+import { randomKey } from '@baseplate-dev/utils';
 
 export type ReferencePath = (string | number)[];
 
@@ -31,25 +31,25 @@ export class DefinitionEntityType<THasParent extends boolean = boolean> {
    * @returns The new ID.
    */
   generateNewId(): string {
-    return `${this.prefix}:${randomUid()}`;
+    return `${this.prefix}:${randomKey()}`;
   }
 
   /**
-   * Converts a UID to an ID.
+   * Converts a key to an ID.
    *
-   * @param uid - The UID to convert.
+   * @param key - The key to convert.
    * @returns The ID.
    */
-  fromUid(uid: string): string;
-  fromUid(uid: string | undefined): string | undefined;
-  fromUid(uid: string | undefined): string | undefined {
-    if (!uid) {
+  idFromKey(key: string): string;
+  idFromKey(key: string | undefined): string | undefined;
+  idFromKey(key: string | undefined): string | undefined {
+    if (!key) {
       return undefined;
     }
-    return `${this.prefix}:${uid}`;
+    return `${this.prefix}:${key}`;
   }
 
-  toUid(id: string): string {
+  keyFromId(id: string): string {
     return id.split(':')[1];
   }
 

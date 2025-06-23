@@ -50,7 +50,7 @@ export function AppsListPage(): React.JSX.Element {
               </p>
             </div>
             <Link
-              to={`/apps/edit/${appEntityType.toUid(app.id)}`}
+              to={`/apps/edit/${appEntityType.keyFromId(app.id)}`}
               className="inline-block"
             >
               <Button variant="secondary">Edit</Button>

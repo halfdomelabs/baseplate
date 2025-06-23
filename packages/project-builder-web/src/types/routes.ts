@@ -18,16 +18,16 @@ export function createRouteCrumb(
   return crumb;
 }
 
-export function createCrumbFromUid(
+export function createCrumbFromKey(
   entityType: DefinitionEntityType,
   defaultName: string,
   url?: string,
 ): RouteCrumbOrFunction {
   return createRouteCrumb((params, definition) => ({
     label:
-      (params.uid &&
-        definition.safeNameFromId(entityType.fromUid(params.uid))) ??
+      (params.key &&
+        definition.safeNameFromId(entityType.idFromKey(params.key))) ??
       defaultName,
-    url: url?.replace(':uid', params.uid ?? ''),
+    url: url?.replace(':key', params.key ?? ''),
   }));
 }

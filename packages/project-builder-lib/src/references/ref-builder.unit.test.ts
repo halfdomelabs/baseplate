@@ -38,14 +38,14 @@ describe('ref-builder', () => {
     });
     // Input data: entity has an explicit id and name; ref is set to the entity id.
     const input = {
-      entity: { id: entityType.fromUid('ent-1'), name: 'Entity One' },
-      ref: entityType.fromUid('ent-1'),
+      entity: { id: entityType.idFromKey('ent-1'), name: 'Entity One' },
+      ref: entityType.idFromKey('ent-1'),
     };
 
     // ZodRefWrapper returns a payload containing the parsed data as well as collected entities and references.
     const payload = ZodRefWrapper.create(schema).parse(input);
     // The reference should be resolved to the entity's id.
-    expect(payload.data.ref).toEqual(entityType.fromUid('ent-1'));
+    expect(payload.data.ref).toEqual(entityType.idFromKey('ent-1'));
     expect(payload.entitiesWithNameResolver).toHaveLength(1);
     expect(payload.references).toHaveLength(1);
   });
@@ -91,23 +91,23 @@ describe('ref-builder', () => {
     });
     const input = {
       model: {
-        id: modelType.fromUid('model-1'),
+        id: modelType.idFromKey('model-1'),
         name: 'Model One',
-        field: { id: fieldType.fromUid('field-1'), name: 'Field One' },
+        field: { id: fieldType.idFromKey('field-1'), name: 'Field One' },
       },
       foreignRelation: {
-        modelRef: modelType.fromUid('model-1'),
-        fieldRef: fieldType.fromUid('field-1'),
+        modelRef: modelType.idFromKey('model-1'),
+        fieldRef: fieldType.idFromKey('field-1'),
       },
     } satisfies z.infer<typeof schema>;
     const payload = ZodRefWrapper.create(schema).parse(input);
     // The reference field should resolve to the model's id.
     expect(payload.data.foreignRelation.modelRef).toEqual(
-      modelType.fromUid('model-1'),
+      modelType.idFromKey('model-1'),
     );
     // Verify that the model entity is collected.
     const modelEntity = payload.entitiesWithNameResolver.find(
-      (e) => e.id === modelType.fromUid('model-1'),
+      (e) => e.id === modelType.idFromKey('model-1'),
     );
     expect(modelEntity).toBeDefined();
   });
@@ -131,14 +131,14 @@ describe('ref-builder', () => {
       }),
     });
     const input = {
-      entity: { id: entityType.fromUid('e1'), name: 'E1' },
-      ref1: entityType.fromUid('e1'),
-      ref2: entityType.fromUid('e1'),
+      entity: { id: entityType.idFromKey('e1'), name: 'E1' },
+      ref1: entityType.idFromKey('e1'),
+      ref2: entityType.idFromKey('e1'),
     };
     const payload = ZodRefWrapper.create(schema).parse(input);
     // Both references should resolve to the entity name.
-    expect(payload.data.ref1).toEqual(entityType.fromUid('e1'));
-    expect(payload.data.ref2).toEqual(entityType.fromUid('e1'));
+    expect(payload.data.ref1).toEqual(entityType.idFromKey('e1'));
+    expect(payload.data.ref2).toEqual(entityType.idFromKey('e1'));
     // Verify that exactly one entity and two references are collected.
     expect(payload.entitiesWithNameResolver).toHaveLength(1);
     expect(payload.references).toHaveLength(2);
@@ -165,11 +165,11 @@ describe('ref-builder', () => {
 
     const input = {
       entity: {
-        id: entityType.fromUid('e1'),
+        id: entityType.idFromKey('e1'),
         firstName: 'John',
         lastName: 'Doe',
       },
-      ref: entityType.fromUid('e1'),
+      ref: entityType.idFromKey('e1'),
     };
 
     const payload = ZodRefWrapper.create(schema).parse(input);
@@ -207,21 +207,21 @@ describe('ref-builder', () => {
     });
 
     const input = {
-      company: { id: companyType.fromUid('c1'), name: 'Acme Corp' },
+      company: { id: companyType.idFromKey('c1'), name: 'Acme Corp' },
       person: {
-        id: personType.fromUid('p1'),
+        id: personType.idFromKey('p1'),
         name: 'Alice',
-        companyId: companyType.fromUid('c1'),
+        companyId: companyType.idFromKey('c1'),
       },
-      personRef: personType.fromUid('p1'),
+      personRef: personType.idFromKey('p1'),
     };
 
     const payload = ZodRefWrapper.create(schema).parse(input);
     const person = payload.entitiesWithNameResolver.find(
-      (e) => e.id === personType.fromUid('p1'),
+      (e) => e.id === personType.idFromKey('p1'),
     );
     expect(person?.nameResolver.idsToResolve).toEqual({
-      company: companyType.fromUid('c1'),
+      company: companyType.idFromKey('c1'),
     });
     expect(person?.nameResolver.resolveName({ company: 'Acme Corp' })).toBe(
       'Alice at Acme Corp',

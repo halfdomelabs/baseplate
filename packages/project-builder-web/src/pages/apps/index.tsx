@@ -2,7 +2,7 @@ import type { RouteObject } from 'react-router-dom';
 
 import { appEntityType } from '@baseplate-dev/project-builder-lib';
 
-import { createCrumbFromUid } from '#src/types/routes.js';
+import { createCrumbFromKey } from '#src/types/routes.js';
 
 import NotFoundPage from '../not-found.page.js';
 import AppsLayout from './apps-layout.page.js';
@@ -17,10 +17,10 @@ export const AppsRoutes: RouteObject[] = [
       { index: true, element: <AppsListPage /> },
       { path: 'new', element: <NewAppPage />, handle: { crumb: 'New App' } },
       {
-        path: 'edit/:uid/*',
+        path: 'edit/:key/*',
         element: <EditAppPage />,
         handle: {
-          crumb: createCrumbFromUid(appEntityType, 'Edit App'),
+          crumb: createCrumbFromKey(appEntityType, 'Edit App'),
         },
       },
       { path: '*', element: <NotFoundPage /> },

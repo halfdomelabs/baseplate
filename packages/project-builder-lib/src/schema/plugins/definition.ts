@@ -23,7 +23,7 @@ export type BasePluginDefinition = z.infer<typeof basePluginDefinitionSchema>;
 export const pluginWithConfigSchema = zWithPlugins((plugins, data) => {
   const parsedBasePluginSchema = basePluginDefinitionSchema.parse(data);
 
-  const pluginId = pluginEntityType.toUid(parsedBasePluginSchema.id);
+  const pluginId = pluginEntityType.keyFromId(parsedBasePluginSchema.id);
 
   const configSchema = plugins
     .getPluginSpec(pluginConfigSpec)

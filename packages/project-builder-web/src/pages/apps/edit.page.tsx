@@ -23,16 +23,16 @@ import BackendAppForm from './edit/backend-app-form.js';
 import WebAppForm from './edit/web-app-form.js';
 
 function EditAppPage(): React.JSX.Element {
-  const { uid } = useParams<'uid'>();
+  const { key } = useParams<'key'>();
   const { saveDefinitionWithFeedbackSync, definition, isSavingDefinition } =
     useProjectDefinition();
 
-  const id = uid ? appEntityType.fromUid(uid) : undefined;
+  const id = key ? appEntityType.idFromKey(key) : undefined;
   const app = id && definition.apps.find((a) => a.id === id);
 
   const navigate = useNavigate();
 
-  if (!uid || !app) {
+  if (!key || !app) {
     return <NotFoundCard />;
   }
 

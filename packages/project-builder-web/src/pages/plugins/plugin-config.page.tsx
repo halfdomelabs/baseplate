@@ -81,7 +81,7 @@ export function PluginConfigPage(): React.JSX.Element {
     saveDefinitionWithFeedbackSync(
       (draft) => {
         draft.plugins = (draft.plugins ?? []).filter(
-          (p) => p.id !== pluginEntityType.fromUid(metadata.id),
+          (p) => p.id !== pluginEntityType.idFromKey(metadata.id),
         );
       },
       {

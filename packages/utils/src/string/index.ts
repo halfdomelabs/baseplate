@@ -1,2 +1,2 @@
 export * from './quot.js';
-export * from './random-uid.js';
+export * from './random-key.js';

@@ -14,7 +14,7 @@ function byId(
   projectDefinition: ProjectDefinition,
   id: string,
 ): BasePluginDefinition | null {
-  const pluginEntityId = pluginEntityType.fromUid(id);
+  const pluginEntityId = pluginEntityType.idFromKey(id);
   const plugin = projectDefinition.plugins?.find(
     (m) => m.id === pluginEntityId,
   );
@@ -47,7 +47,7 @@ function setPluginConfig(
   pluginImplementationStore: PluginImplementationStore,
 ): void {
   const plugins = projectDefinition.plugins ?? [];
-  const pluginEntityId = pluginEntityType.fromUid(plugin.id);
+  const pluginEntityId = pluginEntityType.idFromKey(plugin.id);
 
   const pluginConfigService =
     pluginImplementationStore.getPluginSpec(pluginConfigSpec);

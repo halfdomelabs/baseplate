@@ -47,7 +47,7 @@ function NewAppPage(): React.JSX.Element {
       },
       {
         onSuccess: () => {
-          navigate(`../edit/${appEntityType.toUid(data.id)}`);
+          navigate(`../edit/${appEntityType.keyFromId(data.id)}`);
           toast.success(`Sucessfully created ${data.name}!`);
         },
       },

@@ -22,6 +22,7 @@
     "build": "tsc -b && vite build",
     "clean": "rm -rf ./dist",
     "dev": "vite",
+    "dev:serve": "vite --clearScreen false",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",

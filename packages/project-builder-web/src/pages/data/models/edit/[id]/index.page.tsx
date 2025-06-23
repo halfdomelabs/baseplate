@@ -18,14 +18,14 @@ import { ModelFieldsForm } from './_components/fields/model-fields-form.js';
 import { ModelRelationsSection } from './_components/model-relations-section.js';
 import { ModelUniqueConstraintsSection } from './_components/model-unique-constraints-section.js';
 
-registerEntityTypeUrl(modelEntityType, `/data/models/edit/{uid}`);
+registerEntityTypeUrl(modelEntityType, `/data/models/edit/{key}`);
 registerEntityTypeUrl(
   modelScalarFieldEntityType,
-  `/data/models/edit/{parentUid}`,
+  `/data/models/edit/{parentKey}`,
 );
 registerEntityTypeUrl(
   modelLocalRelationEntityType,
-  `/data/models/edit/{parentUid}`,
+  `/data/models/edit/{parentKey}`,
 );
 
 const formSchema = modelBaseSchema.omit({ name: true, featureRef: true });

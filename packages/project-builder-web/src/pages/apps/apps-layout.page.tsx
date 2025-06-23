@@ -35,7 +35,7 @@ function AppsLayout(): React.JSX.Element {
           <NavigationMenuList>
             {sortedApps.map((app) => (
               <NavigationMenuItemWithLink key={app.id} asChild>
-                <NavLink to={`/apps/edit/${appEntityType.toUid(app.id)}`}>
+                <NavLink to={`/apps/edit/${appEntityType.keyFromId(app.id)}`}>
                   {app.name}
                 </NavLink>
               </NavigationMenuItemWithLink>
