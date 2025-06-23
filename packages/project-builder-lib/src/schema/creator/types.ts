@@ -14,14 +14,11 @@ export type DefinitionSchemaCreator<T extends z.ZodTypeAny> = (
   ctx: DefinitionSchemaParserContext,
 ) => T;
 
-export type InferDefinitionSchema<
-  T extends DefinitionSchemaCreator<z.ZodTypeAny>,
-> = ReturnType<T>;
+export type InferSchema<T extends DefinitionSchemaCreator<z.ZodTypeAny>> =
+  ReturnType<T>;
 
-export type InferDefinitionInput<
-  T extends DefinitionSchemaCreator<z.ZodTypeAny>,
-> = z.input<ReturnType<T>>;
+export type InferInput<T extends DefinitionSchemaCreator<z.ZodTypeAny>> =
+  z.input<ReturnType<T>>;
 
-export type InferDefinitionOutput<
-  T extends DefinitionSchemaCreator<z.ZodTypeAny>,
-> = z.output<ReturnType<T>>;
+export type InferOutput<T extends DefinitionSchemaCreator<z.ZodTypeAny>> =
+  z.output<ReturnType<T>>;

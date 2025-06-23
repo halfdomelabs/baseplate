@@ -2,11 +2,7 @@ import { z } from 'zod';
 
 import { zRefBuilder } from '#src/references/index.js';
 
-import type {
-  InferDefinitionInput,
-  InferDefinitionOutput,
-  InferDefinitionSchema,
-} from './creator/types.js';
+import type { def } from './creator/index.js';
 
 import { adminAppSchema } from './apps/admin/index.js';
 import { backendAppSchema } from './apps/backend/index.js';
@@ -35,7 +31,7 @@ export const createAppSchema = definitionSchema(() =>
   ),
 );
 
-export type AppConfig = InferDefinitionOutput<typeof createAppSchema>;
+export type AppConfig = def.InferOutput<typeof createAppSchema>;
 
 export const createProjectDefinitionSchema = definitionSchema((ctx) =>
   z.object({
@@ -51,14 +47,14 @@ export const createProjectDefinitionSchema = definitionSchema((ctx) =>
   }),
 );
 
-export type ProjectDefinitionInput = InferDefinitionInput<
+export type ProjectDefinitionInput = def.InferInput<
   typeof createProjectDefinitionSchema
 >;
 
-export type ProjectDefinition = InferDefinitionOutput<
+export type ProjectDefinition = def.InferOutput<
   typeof createProjectDefinitionSchema
 >;
 
-export type ProjectDefinitionSchema = InferDefinitionSchema<
+export type ProjectDefinitionSchema = def.InferSchema<
   typeof createProjectDefinitionSchema
 >;
