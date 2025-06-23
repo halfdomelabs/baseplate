@@ -2,9 +2,11 @@ import { z } from 'zod';
 
 import type { PaletteShade } from '#src/constants/colors.js';
 import type { ThemeColorKey } from '#src/constants/theme-colors.js';
+import type { def } from '#src/schema/creator/index.js';
 
 import { PALETTE_SHADES } from '#src/constants/colors.js';
 import { THEME_COLOR_KEYS } from '#src/constants/theme-colors.js';
+import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 export const oklchColor = z
   .string()
@@ -43,15 +45,17 @@ export const palettesSchema = z.object({
 
 export type PalettesConfig = z.infer<typeof palettesSchema>;
 
-export const themeSchema = z.object({
-  palettes: z.object({
-    base: paletteSchema,
-    primary: paletteSchema,
+export const createThemeSchema = definitionSchema(() =>
+  z.object({
+    palettes: z.object({
+      base: paletteSchema,
+      primary: paletteSchema,
+    }),
+    colors: z.object({
+      light: themeColorSchema,
+      dark: themeColorSchema,
+    }),
   }),
-  colors: z.object({
-    light: themeColorSchema,
-    dark: themeColorSchema,
-  }),
-});
+);
 
-export type ThemeConfig = z.infer<typeof themeSchema>;
+export type ThemeConfig = def.InferOutput<typeof createThemeSchema>;

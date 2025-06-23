@@ -34,7 +34,9 @@
     "prettier:write": {
       "cache": false
     },
-    "typecheck": {},
+    "typecheck": {
+      "inputs": ["$TURBO_DEFAULT$"]
+    },
     "dev": {
       "persistent": true,
       "cache": false

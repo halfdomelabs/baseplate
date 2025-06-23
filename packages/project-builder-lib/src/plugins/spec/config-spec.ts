@@ -14,12 +14,12 @@ export interface PluginConfigMigration {
  * Spec for registering plugin config schema
  */
 export interface PluginConfigSpec extends PluginSpecImplementation {
-  registerSchema: (pluginId: string, schema: z.ZodTypeAny) => void;
+  registerSchema: (pluginKey: string, schema: z.ZodTypeAny) => void;
   registerMigrations: (
-    pluginId: string,
+    pluginKey: string,
     migrations: PluginConfigMigration[],
   ) => void;
-  getSchema(pluginId: string): z.ZodTypeAny | undefined;
+  getSchema(pluginKey: string): z.ZodTypeAny | undefined;
   getMigrations(pluginId: string): PluginConfigMigration[] | undefined;
   getLastMigrationVersion(pluginId: string): number | undefined;
 }
@@ -47,29 +47,29 @@ export function createPluginConfigImplementation(): PluginConfigSpec {
   const migrationsMap = new Map<string, PluginConfigMigration[]>();
 
   return {
-    registerSchema(pluginId, schema) {
-      if (schemas.has(pluginId)) {
-        throw new Error(`Schema for plugin ${pluginId} is already registered`);
+    registerSchema(pluginKey, schema) {
+      if (schemas.has(pluginKey)) {
+        throw new Error(`Schema for plugin ${pluginKey} is already registered`);
       }
-      schemas.set(pluginId, schema);
+      schemas.set(pluginKey, schema);
     },
-    registerMigrations(pluginId, migrations) {
-      if (migrationsMap.has(pluginId)) {
+    registerMigrations(pluginKey, migrations) {
+      if (migrationsMap.has(pluginKey)) {
         throw new Error(
-          `Migrations for plugin ${pluginId} are already registered`,
+          `Migrations for plugin ${pluginKey} are already registered`,
         );
       }
       const sortedMigrations = sortAndValidateMigrations(migrations);
-      migrationsMap.set(pluginId, sortedMigrations);
+      migrationsMap.set(pluginKey, sortedMigrations);
     },
-    getSchema(pluginId) {
-      return schemas.get(pluginId);
+    getSchema(pluginKey) {
+      return schemas.get(pluginKey);
     },
-    getMigrations(pluginId) {
-      return migrationsMap.get(pluginId);
+    getMigrations(pluginKey) {
+      return migrationsMap.get(pluginKey);
     },
-    getLastMigrationVersion(pluginId) {
-      const migrations = migrationsMap.get(pluginId);
+    getLastMigrationVersion(pluginKey) {
+      const migrations = migrationsMap.get(pluginKey);
       return migrations?.[migrations.length - 1]?.version;
     },
   };

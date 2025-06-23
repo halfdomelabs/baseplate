@@ -1,6 +1,9 @@
+import type { def } from '@baseplate-dev/project-builder-lib';
+
 import {
   baseTransformerFields,
   createDefinitionEntityNameResolver,
+  definitionSchema,
   modelLocalRelationEntityType,
   modelTransformerEntityType,
   zEnt,
@@ -8,25 +11,29 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
-export const fileTransformerSchema = zEnt(
-  z.object({
-    ...baseTransformerFields,
-    fileRelationRef: zRef(z.string(), {
-      type: modelLocalRelationEntityType,
-      onDelete: 'DELETE_PARENT',
-      parentPath: { context: 'model' },
-    }),
-    type: z.literal('file'),
-  }),
-  {
-    type: modelTransformerEntityType,
-    parentPath: { context: 'model' },
-    getNameResolver: (entity) =>
-      createDefinitionEntityNameResolver({
-        idsToResolve: { fileRelation: entity.fileRelationRef },
-        resolveName: (entityNames) => entityNames.fileRelation,
+export const createFileTransformerSchema = definitionSchema(() =>
+  zEnt(
+    z.object({
+      ...baseTransformerFields,
+      fileRelationRef: zRef(z.string(), {
+        type: modelLocalRelationEntityType,
+        onDelete: 'DELETE_PARENT',
+        parentPath: { context: 'model' },
       }),
-  },
+      type: z.literal('file'),
+    }),
+    {
+      type: modelTransformerEntityType,
+      parentPath: { context: 'model' },
+      getNameResolver: (entity) =>
+        createDefinitionEntityNameResolver({
+          idsToResolve: { fileRelation: entity.fileRelationRef },
+          resolveName: (entityNames) => entityNames.fileRelation,
+        }),
+    },
+  ),
 );
 
-export type FileTransformerConfig = z.infer<typeof fileTransformerSchema>;
+export type FileTransformerConfig = def.InferInput<
+  typeof createFileTransformerSchema
+>;

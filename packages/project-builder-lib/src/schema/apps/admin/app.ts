@@ -1,44 +1,50 @@
 import { z } from 'zod';
 
+import type { def } from '#src/schema/creator/index.js';
+
 import { zRef, zRefBuilder } from '#src/references/index.js';
 import { authRoleEntityType } from '#src/schema/auth/index.js';
+import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import type { AdminCrudSectionConfig } from './sections/index.js';
 
 import { baseAppValidators } from '../base.js';
 import { createAppEntryType } from '../types.js';
-import { adminCrudSectionSchema } from './sections/crud.js';
+import { createAdminCrudSectionSchema } from './sections/crud.js';
 import { adminSectionEntityType } from './sections/types.js';
 
-export const adminSectionSchema = zRefBuilder(
-  adminCrudSectionSchema,
-  (builder) => {
+export const createAdminSectionSchema = definitionSchema((ctx) =>
+  zRefBuilder(createAdminCrudSectionSchema(ctx), (builder) => {
     builder.addEntity({
       type: adminSectionEntityType,
       parentPath: { context: 'app' },
       addContext: 'admin-section',
     });
-  },
+  }),
 );
 
 export type AdminSectionConfig = AdminCrudSectionConfig;
 
-export type AdminSectionConfigInput = z.input<typeof adminSectionSchema>;
+export type AdminSectionConfigInput = def.InferInput<
+  typeof createAdminSectionSchema
+>;
 
-export const adminAppSchema = z.object({
-  ...baseAppValidators,
-  type: z.literal('admin'),
-  allowedRoles: z
-    .array(
-      zRef(z.string(), {
-        type: authRoleEntityType,
-        onDelete: 'DELETE',
-      }),
-    )
-    .optional(),
-  sections: z.array(adminSectionSchema).optional(),
-});
+export const createAdminAppSchema = definitionSchema((ctx) =>
+  z.object({
+    ...baseAppValidators,
+    type: z.literal('admin'),
+    allowedRoles: z
+      .array(
+        zRef(z.string(), {
+          type: authRoleEntityType,
+          onDelete: 'DELETE',
+        }),
+      )
+      .optional(),
+    sections: z.array(createAdminSectionSchema(ctx)).optional(),
+  }),
+);
 
-export type AdminAppConfig = z.infer<typeof adminAppSchema>;
+export type AdminAppConfig = def.InferOutput<typeof createAdminAppSchema>;
 
 export const adminAppEntryType = createAppEntryType<AdminAppConfig>('admin');

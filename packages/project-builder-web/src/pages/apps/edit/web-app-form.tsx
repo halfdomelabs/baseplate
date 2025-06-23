@@ -3,7 +3,7 @@ import type React from 'react';
 
 import {
   authConfigSpec,
-  webAppSchema,
+  createWebAppSchema,
 } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
@@ -19,6 +19,8 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
+
 interface Props {
   className?: string;
   appConfig: WebAppConfig;
@@ -28,6 +30,7 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
   const { saveDefinitionWithFeedback, isSavingDefinition } =
     useProjectDefinition();
 
+  const webAppSchema = useDefinitionSchema(createWebAppSchema);
   const formProps = useResettableForm({
     resolver: zodResolver(webAppSchema),
     values: appConfig,

@@ -1,7 +1,7 @@
 import type React from 'react';
 
 import {
-  modelBaseSchema,
+  createModelBaseSchema,
   modelTransformerEntityType,
 } from '@baseplate-dev/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
@@ -16,6 +16,7 @@ import {
   SwitchFieldController,
 } from '@baseplate-dev/ui-components';
 
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { registerEntityTypeUrl } from '#src/services/entity-type.js';
 
 import { EditedModelContextProvider } from '../../_hooks/use-edited-model-config.js';
@@ -28,11 +29,10 @@ registerEntityTypeUrl(
   `/data/models/edit/{parentKey}`,
 );
 
-const formSchema = modelBaseSchema.omit({ name: true, featureRef: true });
-
 function ModelEditServicePage(): React.JSX.Element {
+  const formSchema = useDefinitionSchema(createModelBaseSchema);
   const { form, onSubmit, defaultValues } = useModelForm({
-    schema: formSchema,
+    schema: formSchema.omit({ name: true, featureRef: true }),
   });
   const { control, watch, getValues, setValue, reset } = form;
 

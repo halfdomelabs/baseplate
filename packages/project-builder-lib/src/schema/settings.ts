@@ -1,9 +1,10 @@
 import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
-import { definitionSchema } from './creator/schema-creator.js';
-import { themeSchema } from './features/index.js';
-import { templateExtractorSchema } from './template-extractor/index.js';
+import { definitionSchema } from '#src/schema/creator/schema-creator.js';
+
+import { createThemeSchema } from './features/index.js';
+import { createTemplateExtractorSchema } from './template-extractor/index.js';
 
 export const generalSettingsSchema = z.object({
   /**
@@ -34,10 +35,10 @@ export type GeneralSettingsInput = z.input<typeof generalSettingsSchema>;
 
 export type GeneralSettingsDefinition = z.output<typeof generalSettingsSchema>;
 
-export const createSettingsSchema = definitionSchema(() =>
+export const createSettingsSchema = definitionSchema((ctx) =>
   z.object({
     general: generalSettingsSchema,
-    templateExtractor: templateExtractorSchema.optional(),
-    theme: themeSchema.optional(),
+    templateExtractor: createTemplateExtractorSchema(ctx).optional(),
+    theme: createThemeSchema(ctx).optional(),
   }),
 );

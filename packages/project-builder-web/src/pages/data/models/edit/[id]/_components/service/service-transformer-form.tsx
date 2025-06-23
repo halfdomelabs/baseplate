@@ -3,8 +3,8 @@ import type { ModelTransformerWebConfig } from '@baseplate-dev/project-builder-l
 import type React from 'react';
 
 import {
+  createTransformerSchema,
   modelTransformerEntityType,
-  transformerSchema,
 } from '@baseplate-dev/project-builder-lib';
 import { usePluginEnhancedSchema } from '@baseplate-dev/project-builder-lib/web';
 import {
@@ -17,6 +17,8 @@ import { clsx } from 'clsx';
 import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 import { useEditedModelConfig } from '../../../../_hooks/use-edited-model-config.js';
 
@@ -36,6 +38,7 @@ export function ServiceTransformerForm({
   isCreate,
 }: ServiceTransformerFormProps): React.JSX.Element | null {
   const originalModel = useEditedModelConfig((model) => model);
+  const transformerSchema = useDefinitionSchema(createTransformerSchema);
   const schema = usePluginEnhancedSchema(
     z.object({
       transformer: transformerSchema,

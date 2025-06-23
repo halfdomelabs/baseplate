@@ -3,7 +3,7 @@ import type React from 'react';
 
 import {
   adminSectionEntityType,
-  adminSectionSchema,
+  createAdminSectionSchema,
   zPluginWrapper,
 } from '@baseplate-dev/project-builder-lib';
 import {
@@ -23,6 +23,8 @@ import clsx from 'clsx';
 import { sortBy } from 'es-toolkit';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 import AdminCrudSectionForm from './crud/admin-crud-section-form.js';
 
@@ -56,6 +58,7 @@ function AdminEditSectionForm({
     ? appConfig.sections?.find((section) => section.id === sectionId)
     : undefined;
 
+  const adminSectionSchema = useDefinitionSchema(createAdminSectionSchema);
   const schemaWithPlugins = zPluginWrapper(adminSectionSchema, pluginContainer);
 
   const formProps = useResettableForm({

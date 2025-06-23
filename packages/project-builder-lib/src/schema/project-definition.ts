@@ -2,61 +2,59 @@ import { z } from 'zod';
 
 import { zRefBuilder } from '#src/references/index.js';
 
-import type {
-  InferDefinitionInput,
-  InferDefinitionOutput,
-  InferDefinitionSchema,
-} from './creator/types.js';
+import type { def } from './creator/index.js';
 
-import { adminAppSchema } from './apps/admin/index.js';
-import { backendAppSchema } from './apps/backend/index.js';
-import { webAppSchema } from './apps/index.js';
+import { createAdminAppSchema } from './apps/admin/index.js';
+import { createBackendAppSchema } from './apps/backend/index.js';
+import { createWebAppSchema } from './apps/index.js';
 import { appEntityType } from './apps/types.js';
 import { definitionSchema } from './creator/schema-creator.js';
-import { featuresSchema } from './features/index.js';
-import { enumSchema } from './models/enums.js';
-import { modelSchema } from './models/index.js';
-import { pluginsSchema } from './plugins/index.js';
+import { createFeaturesSchema } from './features/index.js';
+import { createEnumSchema } from './models/enums.js';
+import { createModelSchema } from './models/index.js';
+import { createPluginsSchema } from './plugins/index.js';
 import { createSettingsSchema } from './settings.js';
 
-export const appSchema = zRefBuilder(
-  z.discriminatedUnion('type', [
-    backendAppSchema,
-    webAppSchema,
-    adminAppSchema,
-  ]),
-  (builder) => {
-    builder.addEntity({
-      type: appEntityType,
-      addContext: 'app',
-    });
-  },
+export const createAppSchema = definitionSchema((ctx) =>
+  zRefBuilder(
+    z.discriminatedUnion('type', [
+      createBackendAppSchema(ctx),
+      createWebAppSchema(ctx),
+      createAdminAppSchema(ctx),
+    ]),
+    (builder) => {
+      builder.addEntity({
+        type: appEntityType,
+        addContext: 'app',
+      });
+    },
+  ),
 );
 
-export type AppConfig = z.infer<typeof appSchema>;
+export type AppConfig = def.InferOutput<typeof createAppSchema>;
 
 export const createProjectDefinitionSchema = definitionSchema((ctx) =>
   z.object({
     cliVersion: z.string().nullish(),
-    apps: z.array(appSchema).default([]),
-    features: featuresSchema,
-    models: z.array(modelSchema).default([]),
-    enums: z.array(enumSchema).optional(),
+    apps: z.array(createAppSchema(ctx)).default([]),
+    features: createFeaturesSchema(ctx),
+    models: z.array(createModelSchema(ctx)).default([]),
+    enums: z.array(createEnumSchema(ctx)).optional(),
     isInitialized: z.boolean().default(false),
     schemaVersion: z.number(),
-    plugins: pluginsSchema.optional(),
+    plugins: createPluginsSchema(ctx).optional(),
     settings: createSettingsSchema(ctx),
   }),
 );
 
-export type ProjectDefinitionInput = InferDefinitionInput<
+export type ProjectDefinitionInput = def.InferInput<
   typeof createProjectDefinitionSchema
 >;
 
-export type ProjectDefinition = InferDefinitionOutput<
+export type ProjectDefinition = def.InferOutput<
   typeof createProjectDefinitionSchema
 >;
 
-export type ProjectDefinitionSchema = InferDefinitionSchema<
+export type ProjectDefinitionSchema = def.InferSchema<
   typeof createProjectDefinitionSchema
 >;

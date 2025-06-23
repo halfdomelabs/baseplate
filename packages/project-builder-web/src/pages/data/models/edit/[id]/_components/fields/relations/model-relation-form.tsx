@@ -8,10 +8,10 @@ import type {
 import type { Control } from 'react-hook-form';
 
 import {
+  createModelRelationFieldSchema,
   ModelFieldUtils,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
-  modelRelationFieldSchema,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
@@ -31,6 +31,8 @@ import { camelCase } from 'es-toolkit';
 import { pluralize } from 'inflection';
 import React, { useId, useMemo } from 'react';
 import { useController, useForm } from 'react-hook-form';
+
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 import { useEditedModelConfig } from '../../../../../_hooks/use-edited-model-config.js';
 
@@ -202,6 +204,10 @@ export function ModelRelationForm({
       ),
     };
   }, [modelRelation, defaultFieldName, definition, editedModel]);
+
+  const modelRelationFieldSchema = useDefinitionSchema(
+    createModelRelationFieldSchema,
+  );
 
   const { control, handleSubmit, setError, watch, setValue } = useForm({
     resolver: zodResolver(modelRelationFieldSchema),

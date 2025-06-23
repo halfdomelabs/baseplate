@@ -3,7 +3,7 @@ import type React from 'react';
 import type { Control, UseFormReturn } from 'react-hook-form';
 
 import {
-  adminCrudEmbeddedFormSchema,
+  createAdminCrudEmbeddedFormSchema,
   zPluginWrapper,
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
@@ -29,6 +29,7 @@ import type {
   EmbeddedListTableProps,
 } from '#src/components/index.js';
 
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
 import type { AdminCrudFormConfigInput } from './crud-form-fields-form.js';
@@ -104,6 +105,9 @@ function AdminCrudEmbeddedForm({
   embeddedFormOptions,
 }: Props): React.JSX.Element {
   const { definition, pluginContainer } = useProjectDefinition();
+  const adminCrudEmbeddedFormSchema = useDefinitionSchema(
+    createAdminCrudEmbeddedFormSchema,
+  );
   const schemaWithPlugins = zPluginWrapper(
     adminCrudEmbeddedFormSchema,
     pluginContainer,

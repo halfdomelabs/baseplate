@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# .git/hooks/post-checkout
+# Makes sure .env files are copied from the main repo when creating a new worktree
+
+# Only run on worktree creation (not branch switch)
+if [[ "$1" == "0000000000000000000000000000000000000000" ]]; then
+  # Get the original (main) repo root from the worktree
+  gitDir="$(git rev-parse --git-dir)"                     # e.g., ../.git/worktrees/my-worktree
+  echo $gitDir
+  baseRepoPath="$(cd "$gitDir/../../.." && git rev-parse --show-toplevel)"  # main repo root
+
+  # Files to copy from the base repo
+  paths=(packages/project-builder-cli/.env)
+
+  for path in "${paths[@]}"; do
+    src="$baseRepoPath/$path"
+    dest="$(pwd)/$path"
+    if [[ -f "$src" ]]; then
+      cp "$src" "$dest"
+      echo "Copied $src → $dest"
+    else
+      echo "Skipped missing $src"
+    fi
+  done
+fi
+
