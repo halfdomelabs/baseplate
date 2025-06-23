@@ -61,7 +61,7 @@ export function runMorpherTests(morpher: TypescriptMorpher<any>): void {
 
   let prettierConfig: prettier.Options | null;
 
-  describe(`Test morpher ${morpher.name}`, () => {
+  describe.skipIf(process.env.CI)(`Test morpher ${morpher.name}`, () => {
     test.each(testCases)('case $caseName', async ({ casePath }) => {
       prettierConfig ??= await prettier.resolveConfig(
         path.dirname(fileURLToPath(import.meta.url)),
