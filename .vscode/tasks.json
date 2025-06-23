@@ -33,6 +33,24 @@
       }
     },
     {
+      "label": "Watch Build",
+      "type": "npm",
+      "script": "watch",
+      "group": "build",
+      "problemMatcher": {
+        "base": "$tsc-watch",
+        "pattern": {
+          "regexp": "^//:watch:tsc:root: (.+):(\\d+):(\\d+) - (error|warning|info) TS(\\d+): (.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        }
+      }
+    },
+    {
       "label": "Lint",
       "type": "npm",
       "script": "lint",

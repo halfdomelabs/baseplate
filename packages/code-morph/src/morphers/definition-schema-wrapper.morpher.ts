@@ -9,7 +9,8 @@ export default createTypescriptMorpher({
   description:
     'Wraps zod schema exports with definitionSchema and updates type inference',
   options: {},
-  pathGlobs: ['**/packages/project-builder-lib/src/**/*.ts'],
+  pathGlobs: ['src/schema/**/*.ts'],
+  saveUsingTsMorph: true,
   transform: (sourceFile) => {
     let hasChanges = false;
     let needsDefinitionSchemaImport = false;
