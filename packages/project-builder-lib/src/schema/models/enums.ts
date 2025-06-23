@@ -21,7 +21,7 @@ export const createEnumValueSchema = definitionSchema(() =>
   ),
 );
 
-export type EnumValueConfig = def.InferOutput<typeof createEnumSchema>;
+export type EnumValueConfig = def.InferOutput<typeof createEnumValueSchema>;
 
 export const createEnumBaseSchema = definitionSchema((ctx) =>
   z.object({
