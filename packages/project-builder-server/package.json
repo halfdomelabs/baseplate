@@ -2,6 +2,13 @@
   "name": "@baseplate-dev/project-builder-server",
   "version": "0.1.3",
   "description": "Server for Project Builder using Baseplate generators",
+  "keywords": [
+    "backend",
+    "baseplate",
+    "full-stack",
+    "typescript",
+    "code-generation"
+  ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
     "type": "git",

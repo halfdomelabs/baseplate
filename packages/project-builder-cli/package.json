@@ -2,6 +2,15 @@
   "name": "@baseplate-dev/project-builder-cli",
   "version": "0.1.3",
   "description": "Full-stack CLI builder using Baseplate generators",
+  "keywords": [
+    "cli",
+    "full-stack",
+    "code-generation",
+    "development-tools",
+    "scaffolding",
+    "baseplate",
+    "typescript"
+  ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
     "type": "git",

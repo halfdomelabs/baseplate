@@ -2,6 +2,16 @@
   "name": "@baseplate-dev/create-project",
   "version": "0.1.3",
   "description": "CLI starter kit for creating a new Baseplate project",
+  "keywords": [
+    "cli",
+    "scaffolding",
+    "project-starter",
+    "typescript",
+    "development-tools",
+    "baseplate",
+    "full-stack",
+    "code-generation"
+  ],
   "homepage": "https://www.baseplate.dev",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "MPL-2.0",

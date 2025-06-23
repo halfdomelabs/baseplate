@@ -2,6 +2,14 @@
   "name": "@baseplate-dev/react-generators",
   "version": "0.1.3",
   "description": "React Generators for Baseplate",
+  "keywords": [
+    "react",
+    "code-generation",
+    "typescript",
+    "ui-components",
+    "baseplate",
+    "full-stack"
+  ],
   "homepage": "https://www.baseplate.dev",
   "repository": {
     "type": "git",
