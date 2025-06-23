@@ -63,5 +63,13 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "keywords": [
+    "react",
+    "code-generation",
+    "typescript",
+    "ui-components",
+    "baseplate",
+    "full-stack"
+  ]
 }

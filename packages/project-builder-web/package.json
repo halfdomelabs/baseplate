@@ -105,5 +105,14 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "keywords": [
+    "react",
+    "project-builder",
+    "ui",
+    "baseplate",
+    "full-stack",
+    "typescript",
+    "code-generation"
+  ]
 }

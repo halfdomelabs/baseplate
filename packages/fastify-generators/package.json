@@ -66,5 +66,13 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "keywords": [
+    "fastify",
+    "backend",
+    "code-generation",
+    "typescript",
+    "baseplate",
+    "full-stack"
+  ]
 }

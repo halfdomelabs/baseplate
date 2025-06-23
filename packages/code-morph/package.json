@@ -58,5 +58,14 @@
   },
   "volta": {
     "extends": "../../package.json"
-  }
+  },
+  "keywords": [
+    "code-transformation",
+    "typescript",
+    "ast-manipulation",
+    "migration-tools",
+    "baseplate",
+    "full-stack",
+    "code-generation"
+  ]
 }

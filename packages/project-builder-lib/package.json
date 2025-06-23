@@ -76,5 +76,13 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "keywords": [
+    "configuration",
+    "project-definition",
+    "typescript",
+    "baseplate",
+    "full-stack",
+    "code-generation"
+  ]
 }

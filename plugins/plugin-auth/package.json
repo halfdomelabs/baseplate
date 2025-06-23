@@ -79,5 +79,13 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "keywords": [
+    "authentication",
+    "plugin",
+    "full-stack",
+    "typescript",
+    "baseplate",
+    "code-generation"
+  ]
 }

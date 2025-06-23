@@ -85,5 +85,15 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "keywords": [
+    "development-tools",
+    "eslint",
+    "prettier",
+    "typescript",
+    "configuration",
+    "baseplate",
+    "full-stack",
+    "code-generation"
+  ]
 }

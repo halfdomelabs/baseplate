@@ -63,5 +63,14 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "keywords": [
+    "utilities",
+    "typescript",
+    "helpers",
+    "common",
+    "baseplate",
+    "full-stack",
+    "code-generation"
+  ]
 }

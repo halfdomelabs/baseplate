@@ -83,5 +83,12 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "keywords": [
+    "backend",
+    "baseplate",
+    "full-stack",
+    "typescript",
+    "code-generation"
+  ]
 }

@@ -81,5 +81,15 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "keywords": [
+    "storage",
+    "plugin",
+    "s3",
+    "file-storage",
+    "typescript",
+    "baseplate",
+    "full-stack",
+    "code-generation"
+  ]
 }

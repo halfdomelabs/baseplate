@@ -61,5 +61,11 @@
   },
   "volta": {
     "extends": "../../package.json"
-  }
+  },
+  "keywords": [
+    "baseplate",
+    "full-stack",
+    "typescript",
+    "code-generation"
+  ]
 }

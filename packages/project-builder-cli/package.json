@@ -78,5 +78,14 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "keywords": [
+    "cli",
+    "full-stack",
+    "code-generation",
+    "development-tools",
+    "scaffolding",
+    "baseplate",
+    "typescript"
+  ]
 }

@@ -127,5 +127,14 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
-  }
+  },
+  "keywords": [
+    "react",
+    "ui-components",
+    "design-system",
+    "baseplate",
+    "full-stack",
+    "typescript",
+    "code-generation"
+  ]
 }
