@@ -2,42 +2,47 @@ import { z } from 'zod';
 
 import { pluginConfigSpec, zWithPlugins } from '#src/plugins/index.js';
 import { zEnt } from '#src/references/ref-builder.js';
+import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { pluginEntityType } from './entity-types.js';
 
-export const basePluginDefinitionSchema = zEnt(
-  z.object({
-    packageName: z.string(),
-    name: z.string(),
-    version: z.string(),
-    config: z.unknown(),
-    configSchemaVersion: z.number().optional(),
-  }),
-  {
-    type: pluginEntityType,
-  },
-);
+export const basePluginDefinitionSchema = z.object({
+  id: z.string().min(1),
+  packageName: z.string(),
+  name: z.string(),
+  version: z.string(),
+  config: z.unknown(),
+  configSchemaVersion: z.number().optional(),
+});
 
 export type BasePluginDefinition = z.infer<typeof basePluginDefinitionSchema>;
 
-export const pluginWithConfigSchema = zWithPlugins((plugins, data) => {
-  const parsedBasePluginSchema = basePluginDefinitionSchema.parse(data);
+export const createPluginWithConfigSchema = definitionSchema(() =>
+  zWithPlugins((plugins, data) => {
+    const parsedBasePlugin = basePluginDefinitionSchema.parse(data);
 
-  const pluginId = pluginEntityType.keyFromId(parsedBasePluginSchema.id);
+    const pluginKey = pluginEntityType.keyFromId(parsedBasePlugin.id);
 
-  const configSchema = plugins
-    .getPluginSpec(pluginConfigSpec)
-    .getSchema(pluginId);
+    const configSchema = plugins
+      .getPluginSpec(pluginConfigSpec)
+      .getSchema(pluginKey);
 
-  if (!configSchema) {
-    return basePluginDefinitionSchema;
-  }
+    const pluginDefinitionWithEnt = zEnt(basePluginDefinitionSchema, {
+      type: pluginEntityType,
+    });
 
-  return basePluginDefinitionSchema.and(
-    z.object({
-      config: configSchema,
-    }),
-  );
-});
+    if (!configSchema) {
+      return pluginDefinitionWithEnt;
+    }
 
-export const pluginsSchema = z.array(pluginWithConfigSchema);
+    return pluginDefinitionWithEnt.and(
+      z.object({
+        config: configSchema,
+      }),
+    );
+  }),
+);
+
+export const createPluginsSchema = definitionSchema((ctx) =>
+  z.array(createPluginWithConfigSchema(ctx)),
+);

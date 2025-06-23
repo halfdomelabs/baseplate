@@ -6,7 +6,7 @@ import type { UseFormReturn } from 'react-hook-form';
 import type { z } from 'zod';
 
 import {
-  enumSchema,
+  createEnumBaseSchema,
   EnumUtils,
   FeatureUtils,
   modelEnumEntityType,
@@ -22,6 +22,7 @@ import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { NotFoundError } from '#src/utils/error.js';
 
 import { createEnumEditLink } from '../../models/_utils/url.js';
@@ -69,6 +70,7 @@ export function useEnumForm({
   // memoize it to keep the same key when resetting
   const newEnumDefinition = useMemo(() => createNewEnum(), []);
 
+  const enumSchema = useDefinitionSchema(createEnumBaseSchema);
   const enumSchemaWithPlugins = usePluginEnhancedSchema(schema ?? enumSchema);
 
   const defaultValues = useMemo(() => {

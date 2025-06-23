@@ -1,6 +1,5 @@
-import type { z } from 'zod';
-
 import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
+import type { DefinitionSchemaCreator } from '#src/schema/creator/types.js';
 
 import { createPluginSpec } from '#src/plugins/spec/types.js';
 
@@ -12,7 +11,7 @@ import { BUILT_IN_ADMIN_CRUD_INPUTS } from './built-in-input.js';
  * Spec for registering additional model input types
  */
 export interface AdminCrudInputSpec extends PluginSpecImplementation {
-  registerAdminCrudInput: <T extends z.ZodTypeAny>(
+  registerAdminCrudInput: <T extends DefinitionSchemaCreator>(
     input: AdminCrudInputType<T>,
   ) => void;
   getAdminCrudInputs: () => Map<string, AdminCrudInputType>;

@@ -2,8 +2,8 @@ import type { AdminAppConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
-  adminAppSchema,
   authConfigSpec,
+  createAdminAppSchema,
   zPluginWrapper,
 } from '@baseplate-dev/project-builder-lib';
 import {
@@ -20,6 +20,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
+
 interface Props {
   className?: string;
   appConfig: AdminAppConfig;
@@ -32,9 +34,10 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
     pluginContainer,
     isSavingDefinition,
   } = useProjectDefinition();
+  const adminAppSchema = useDefinitionSchema(createAdminAppSchema);
   const schemaWithPlugins = useMemo(
     () => zPluginWrapper(adminAppSchema, pluginContainer),
-    [pluginContainer],
+    [pluginContainer, adminAppSchema],
   );
 
   const formProps = useResettableForm({

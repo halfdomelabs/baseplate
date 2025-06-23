@@ -7,10 +7,11 @@
 if [[ "$1" == "0000000000000000000000000000000000000000" ]]; then
   # Get the original (main) repo root from the worktree
   gitDir="$(git rev-parse --git-dir)"                     # e.g., ../.git/worktrees/my-worktree
-  baseRepoPath="$(cd "$gitDir/../.." && git rev-parse --show-toplevel)"  # main repo root
+  echo $gitDir
+  baseRepoPath="$(cd "$gitDir/../../.." && git rev-parse --show-toplevel)"  # main repo root
 
   # Files to copy from the base repo
-  paths=(.env .env.local)
+  paths=(packages/project-builder-cli/.env)
 
   for path in "${paths[@]}"; do
     src="$baseRepoPath/$path"

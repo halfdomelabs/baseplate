@@ -4,7 +4,7 @@ import type {
 } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { generalSettingsSchema } from '@baseplate-dev/project-builder-lib';
+import { createGeneralSettingsSchema } from '@baseplate-dev/project-builder-lib';
 import {
   Button,
   Card,
@@ -15,6 +15,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
 interface NewProjectCardProps {
@@ -26,6 +27,9 @@ export function NewProjectCard({
   existingProject,
   saveProject,
 }: NewProjectCardProps): React.JSX.Element {
+  const generalSettingsSchema = useDefinitionSchema(
+    createGeneralSettingsSchema,
+  );
   const {
     control,
     handleSubmit,

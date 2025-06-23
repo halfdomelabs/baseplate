@@ -6,10 +6,10 @@ import type { UseFormReturn } from 'react-hook-form';
 import type { z } from 'zod';
 
 import {
+  createModelSchema,
   FeatureUtils,
   modelEntityType,
   modelScalarFieldEntityType,
-  modelSchema,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
@@ -23,6 +23,7 @@ import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { NotFoundError } from '#src/utils/error.js';
 
 import { createModelEditLink } from '../_utils/url.js';
@@ -91,6 +92,7 @@ export function useModelForm({
   // memoize it to keep the same key when resetting
   const newModel = useMemo(() => createNewModel(), []);
 
+  const modelSchema = useDefinitionSchema(createModelSchema);
   const modelSchemaWithPlugins = usePluginEnhancedSchema(schema ?? modelSchema);
 
   const defaultValues = useMemo(() => {

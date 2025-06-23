@@ -3,7 +3,7 @@ import {
   modelTransformerSpec,
 } from '@baseplate-dev/project-builder-lib';
 
-import { fileTransformerSchema } from './types.js';
+import { createFileTransformerSchema } from './types.js';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -13,7 +13,7 @@ export default createPlatformPluginExport({
   initialize: ({ transformer }) => {
     transformer.registerModelTransformer({
       name: 'file',
-      schema: fileTransformerSchema,
+      schema: createFileTransformerSchema,
       getName(definitionContainer, definition) {
         return definitionContainer.nameFromId(definition.fileRelationRef);
       },

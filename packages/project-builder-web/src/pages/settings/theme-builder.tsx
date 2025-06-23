@@ -2,9 +2,9 @@ import type { ThemeConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
+  createThemeSchema,
   generateDefaultTheme,
   generateThemeColorsFromShade,
-  themeSchema,
 } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
@@ -32,6 +32,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
 
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
+
 import { ThemeColorsCssDisplay } from './components/theme-colors-css-display.js';
 import { ThemeColorsEditor } from './components/theme-colors-editor.js';
 import { ThemeColorsPreview } from './components/theme-colors-preview.js';
@@ -39,7 +41,7 @@ import { ThemePaletteEditor } from './components/theme-palette-editor.js';
 
 export function ThemeBuilderPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
-
+  const themeSchema = useDefinitionSchema(createThemeSchema);
   const values = useMemo(
     () => definition.settings.theme ?? generateDefaultTheme(),
     [definition.settings.theme],

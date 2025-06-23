@@ -1,7 +1,7 @@
 import type { BackendAppConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { backendAppSchema } from '@baseplate-dev/project-builder-lib';
+import { createBackendAppSchema } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
@@ -15,6 +15,8 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
+
 interface Props {
   className?: string;
   appConfig: BackendAppConfig;
@@ -24,6 +26,7 @@ function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
   const { saveDefinitionWithFeedback, isSavingDefinition } =
     useProjectDefinition();
 
+  const backendAppSchema = useDefinitionSchema(createBackendAppSchema);
   const formProps = useResettableForm({
     resolver: zodResolver(backendAppSchema),
     values: appConfig,

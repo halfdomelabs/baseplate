@@ -1,16 +1,18 @@
 import type React from 'react';
 
-import { enumBaseSchema } from '@baseplate-dev/project-builder-lib';
+import { createEnumBaseSchema } from '@baseplate-dev/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
 import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
 
 import { ErrorBoundary } from '#src/components/index.js';
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 import { useEnumForm } from '../hooks/use-enum-form.js';
 import { EnumGraphQLSection } from './sections/enum-graph-ql-section.js';
 import { EnumValuesSection } from './sections/enum-values-section.js';
 
 function EnumEditPage(): React.JSX.Element {
+  const enumBaseSchema = useDefinitionSchema(createEnumBaseSchema);
   const { form, onSubmit, isSavingDefinition } = useEnumForm({
     schema: enumBaseSchema.omit({ name: true, featureRef: true }),
   });

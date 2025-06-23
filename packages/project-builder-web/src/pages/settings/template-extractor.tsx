@@ -1,6 +1,6 @@
 import type React from 'react';
 
-import { templateExtractorSchema } from '@baseplate-dev/project-builder-lib';
+import { createTemplateExtractorSchema } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
@@ -21,6 +21,7 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';
 
 /**
@@ -31,6 +32,9 @@ import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';
 export function TemplateExtractorSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
   const defaultValues = definition.settings.templateExtractor;
+  const templateExtractorSchema = useDefinitionSchema(
+    createTemplateExtractorSchema,
+  );
   const form = useResettableForm({
     resolver: zodResolver(templateExtractorSchema),
     defaultValues,

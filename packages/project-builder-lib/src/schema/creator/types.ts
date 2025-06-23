@@ -10,15 +10,6 @@ interface DefinitionSchemaParserContext {
   plugins: PluginImplementationStore;
 }
 
-export type DefinitionSchemaCreator<T extends z.ZodTypeAny> = (
+export type DefinitionSchemaCreator<T extends z.ZodTypeAny = z.ZodTypeAny> = (
   ctx: DefinitionSchemaParserContext,
 ) => T;
-
-export type InferSchema<T extends DefinitionSchemaCreator<z.ZodTypeAny>> =
-  ReturnType<T>;
-
-export type InferInput<T extends DefinitionSchemaCreator<z.ZodTypeAny>> =
-  z.input<ReturnType<T>>;
-
-export type InferOutput<T extends DefinitionSchemaCreator<z.ZodTypeAny>> =
-  z.output<ReturnType<T>>;

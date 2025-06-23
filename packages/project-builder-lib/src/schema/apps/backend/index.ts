@@ -1,20 +1,26 @@
 import { z } from 'zod';
 
+import type { def } from '#src/schema/creator/index.js';
+
+import { definitionSchema } from '#src/schema/creator/schema-creator.js';
+
 import { baseAppValidators } from '../base.js';
 import { createAppEntryType } from '../types.js';
 
-export const backendAppSchema = z.object({
-  ...baseAppValidators,
-  type: z.literal('backend'),
-  enableStripe: z.boolean().optional(),
-  enableRedis: z.boolean().optional(),
-  enableBullQueue: z.boolean().optional(),
-  enablePostmark: z.boolean().optional(),
-  enableSubscriptions: z.boolean().optional(),
-  enableAxios: z.boolean().optional(),
-});
+export const createBackendAppSchema = definitionSchema(() =>
+  z.object({
+    ...baseAppValidators,
+    type: z.literal('backend'),
+    enableStripe: z.boolean().optional(),
+    enableRedis: z.boolean().optional(),
+    enableBullQueue: z.boolean().optional(),
+    enablePostmark: z.boolean().optional(),
+    enableSubscriptions: z.boolean().optional(),
+    enableAxios: z.boolean().optional(),
+  }),
+);
 
-export type BackendAppConfig = z.infer<typeof backendAppSchema>;
+export type BackendAppConfig = def.InferOutput<typeof createBackendAppSchema>;
 
 export const backendAppEntryType =
   createAppEntryType<BackendAppConfig>('backend');

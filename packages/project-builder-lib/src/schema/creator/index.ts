@@ -1,3 +1,5 @@
+export type * as def from './infer-types.js';
+
 export * from './schema-creator.js';
 
-export type * as def from './types.js';
+export type * from './types.js';
