@@ -88,7 +88,7 @@ describe('deserializeSchemaWithReferences', () => {
       }),
     });
     const dataInput: z.input<typeof schema> = {
-      entity: [{ id: entityType.fromUid('test-id'), name: 'test-name' }],
+      entity: [{ id: entityType.idFromKey('test-id'), name: 'test-name' }],
       ref: '',
     };
 

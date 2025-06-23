@@ -12,6 +12,6 @@ export const migration011PluginId = createSchemaMigration<
   description: 'Convert plugin ids to use the plugin entity type',
   migrate: (config) =>
     transformJsonPath(config, 'plugins.*.id', (id: string) =>
-      pluginEntityType.fromUid(id),
+      pluginEntityType.idFromKey(id),
     ),
 });

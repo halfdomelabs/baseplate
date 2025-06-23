@@ -65,7 +65,7 @@ export function PluginCard({
               p.packageName !== plugin.packageName || p.name !== plugin.name,
           ),
           {
-            id: pluginEntityType.fromUid(plugin.id),
+            id: pluginEntityType.idFromKey(plugin.id),
             packageName: plugin.packageName,
             name: plugin.name,
             version: plugin.version,
@@ -83,7 +83,7 @@ export function PluginCard({
     saveDefinitionWithFeedbackSync(
       (draft) => {
         draft.plugins = (draft.plugins ?? []).filter(
-          (p) => p.id !== pluginEntityType.fromUid(plugin.id),
+          (p) => p.id !== pluginEntityType.idFromKey(plugin.id),
         );
       },
       {

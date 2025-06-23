@@ -26,7 +26,7 @@ function PluginsLayout(): React.JSX.Element {
   const enabledPlugins = (definition.plugins ?? [])
     .map((plugin) => {
       const pluginWithMetadata = availablePlugins.find(
-        (p) => p.metadata.id === pluginEntityType.toUid(plugin.id),
+        (p) => p.metadata.id === pluginEntityType.keyFromId(plugin.id),
       );
       return pluginWithMetadata?.metadata;
     })

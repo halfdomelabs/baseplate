@@ -49,7 +49,7 @@ function AdminEditSectionForm({
   const navigate = useNavigate();
 
   const sectionId = sectionUid
-    ? adminSectionEntityType.fromUid(sectionUid)
+    ? adminSectionEntityType.idFromKey(sectionUid)
     : undefined;
 
   const existingSection = sectionId
@@ -92,7 +92,7 @@ function AdminEditSectionForm({
       {
         onSuccess: () => {
           if (!sectionId) {
-            navigate(`edit/${adminSectionEntityType.toUid(id)}`);
+            navigate(`edit/${adminSectionEntityType.keyFromId(id)}`);
           }
         },
       },

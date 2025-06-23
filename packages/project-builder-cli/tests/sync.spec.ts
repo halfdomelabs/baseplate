@@ -12,10 +12,10 @@ import {
 } from './fixtures/server-fixture.test-helper.js';
 
 test('can sync a minimal project', async ({ page, addProject }) => {
-  const modelId = modelEntityType.fromUid('test-model');
-  const featureId = featureEntityType.fromUid('test-feature');
-  const appId = appEntityType.fromUid('test-app');
-  const fieldId = modelScalarFieldEntityType.fromUid('test-field');
+  const modelId = modelEntityType.idFromKey('test-model');
+  const featureId = featureEntityType.idFromKey('test-feature');
+  const appId = appEntityType.idFromKey('test-app');
+  const fieldId = modelScalarFieldEntityType.idFromKey('test-field');
 
   const { makeUrl } = await addProject({
     ...getInitializedTestProjectDefinition(),

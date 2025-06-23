@@ -16,10 +16,10 @@ import { NotFoundCard } from '#src/components/index.js';
 import { ModelHeaderBar } from './_components/model-header-bar.js';
 
 export function ModelEditLayout(): React.JSX.Element {
-  const { uid } = useParams<'uid'>();
+  const { key } = useParams<'key'>();
   const { definition } = useProjectDefinition();
 
-  const id = modelEntityType.fromUid(uid);
+  const id = modelEntityType.idFromKey(key);
 
   const model = ModelUtils.byId(definition, id ?? '');
 

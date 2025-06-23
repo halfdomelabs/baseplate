@@ -17,7 +17,7 @@ import {
   writeGeneratorOutput,
   writeTemplateMetadata,
 } from '@baseplate-dev/sync';
-import { randomUid } from '@baseplate-dev/utils';
+import { randomKey } from '@baseplate-dev/utils';
 import { dirExists } from '@baseplate-dev/utils/node';
 import chalk from 'chalk';
 import { mkdir, rename, rm } from 'node:fs/promises';
@@ -245,7 +245,7 @@ export async function generateForDirectory({
     return {
       filesWithConflicts,
       failedCommands: failedCommands.map((c) => ({
-        id: randomUid(),
+        id: randomKey(),
         command: c.command,
         workingDir: c.workingDir,
         output: c.output,

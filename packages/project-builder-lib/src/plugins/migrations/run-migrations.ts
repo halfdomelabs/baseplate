@@ -18,7 +18,7 @@ export function runPluginMigrations(
   return produce(projectDefinition, (draft) => {
     for (const pluginDefinition of draft.plugins ?? []) {
       const pluginMigrations = pluginConfigService.getMigrations(
-        pluginEntityType.toUid(pluginDefinition.id),
+        pluginEntityType.keyFromId(pluginDefinition.id),
       );
       const currentSchemaVersion = pluginDefinition.configSchemaVersion ?? -1;
       if (!pluginMigrations) continue;

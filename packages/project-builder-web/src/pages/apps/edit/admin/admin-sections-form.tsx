@@ -19,7 +19,7 @@ import AdminEditSectionForm from './admin-edit-section-form.js';
 
 registerEntityTypeUrl(
   adminSectionEntityType,
-  `/apps/edit/{parentUid}/sections/edit/{uid}`,
+  `/apps/edit/{parentKey}/sections/edit/{key}`,
 );
 
 interface Props {
@@ -50,7 +50,9 @@ function AdminSectionsForm({ className, appConfig }: Props): React.JSX.Element {
             {sortedSections.map((section) => (
               <li key={section.id}>
                 <NavigationMenuItemWithLink asChild>
-                  <Link to={`edit/${adminSectionEntityType.toUid(section.id)}`}>
+                  <Link
+                    to={`edit/${adminSectionEntityType.keyFromId(section.id)}`}
+                  >
                     {section.name}
                   </Link>
                 </NavigationMenuItemWithLink>

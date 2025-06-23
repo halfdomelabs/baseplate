@@ -2,7 +2,7 @@ import type { RouteObject } from 'react-router-dom';
 
 import { pluginEntityType } from '@baseplate-dev/project-builder-lib';
 
-import { createCrumbFromUid } from '#src/types/routes.js';
+import { createCrumbFromKey } from '#src/types/routes.js';
 
 import NotFoundPage from '../not-found.page.js';
 import { PluginsHomePage } from './home.page.js';
@@ -20,7 +20,9 @@ export const PluginRoutes: RouteObject[] = [
       {
         path: 'edit/:id',
         element: <PluginConfigPage />,
-        handle: { crumb: createCrumbFromUid(pluginEntityType, 'Edit Plugin') },
+        handle: {
+          crumb: createCrumbFromKey(pluginEntityType, 'Edit Plugin'),
+        },
       },
       {
         path: '*',

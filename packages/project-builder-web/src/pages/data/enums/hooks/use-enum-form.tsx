@@ -52,12 +52,12 @@ export function useEnumForm({
   defaultValues: EnumConfigInput;
   isSavingDefinition: boolean;
 } {
-  const { uid } = useParams<'uid'>();
+  const { key } = useParams<'key'>();
   const { definition, saveDefinitionWithFeedback, isSavingDefinition } =
     useProjectDefinition();
   const navigate = useNavigate();
 
-  const urlEnumId = isCreate ? undefined : modelEnumEntityType.fromUid(uid);
+  const urlEnumId = isCreate ? undefined : modelEnumEntityType.idFromKey(key);
   const enumDefinition = urlEnumId
     ? EnumUtils.byId(definition, urlEnumId)
     : undefined;
@@ -66,7 +66,7 @@ export function useEnumForm({
     throw new NotFoundError('Enum not found');
   }
 
-  // memoize it to keep the same UID when resetting
+  // memoize it to keep the same key when resetting
   const newEnumDefinition = useMemo(() => createNewEnum(), []);
 
   const enumSchemaWithPlugins = usePluginEnhancedSchema(schema ?? enumSchema);

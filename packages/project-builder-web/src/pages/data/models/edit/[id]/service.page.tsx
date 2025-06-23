@@ -25,7 +25,7 @@ import { ServiceTransformersSection } from './_components/service/service-transf
 
 registerEntityTypeUrl(
   modelTransformerEntityType,
-  `/data/models/edit/{parentUid}`,
+  `/data/models/edit/{parentKey}`,
 );
 
 const formSchema = modelBaseSchema.omit({ name: true, featureRef: true });

@@ -22,15 +22,18 @@ export function getEntityTypeUrl(
 
   return typeUrl
     .replace('{id}', entity.id)
-    .replace('{uid}', entity.type.toUid(entity.id))
+    .replace('{key}', entity.type.keyFromId(entity.id))
     .replace('{parentId}', entityParent?.id ?? '')
-    .replace('{parentUid}', entityParent?.type.toUid(entityParent.id) ?? '');
+    .replace(
+      '{parentKey}',
+      entityParent?.type.keyFromId(entityParent.id) ?? '',
+    );
 }
 
 /**
  * Register a URL for an entity type.
  *
- * Use {id} as a placeholder for the entity ID and {uid} for the random part of the ID.
+ * Use {id} as a placeholder for the entity ID and {key} for the random part of the ID.
  */
 export function registerEntityTypeUrl(
   entityType: DefinitionEntityType,

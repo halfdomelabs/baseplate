@@ -73,11 +73,11 @@ export function useModelForm({
   originalModel?: ModelConfig;
   defaultValues: ModelConfigInput;
 } {
-  const { uid } = useParams<'uid'>();
+  const { key } = useParams<'key'>();
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
   const navigate = useNavigate();
 
-  const urlModelId = isCreate ? undefined : modelEntityType.fromUid(uid);
+  const urlModelId = isCreate ? undefined : modelEntityType.idFromKey(key);
   const model = urlModelId
     ? ModelUtils.byIdOrThrow(definition, urlModelId)
     : undefined;
@@ -88,7 +88,7 @@ export function useModelForm({
     );
   }
 
-  // memoize it to keep the same UID when resetting
+  // memoize it to keep the same key when resetting
   const newModel = useMemo(() => createNewModel(), []);
 
   const modelSchemaWithPlugins = usePluginEnhancedSchema(schema ?? modelSchema);
