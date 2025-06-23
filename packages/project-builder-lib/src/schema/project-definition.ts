@@ -19,26 +19,28 @@ import { modelSchema } from './models/index.js';
 import { pluginsSchema } from './plugins/index.js';
 import { createSettingsSchema } from './settings.js';
 
-export const appSchema = zRefBuilder(
-  z.discriminatedUnion('type', [
-    backendAppSchema,
-    webAppSchema,
-    adminAppSchema,
-  ]),
-  (builder) => {
-    builder.addEntity({
-      type: appEntityType,
-      addContext: 'app',
-    });
-  },
+export const createAppSchema = definitionSchema(() =>
+  zRefBuilder(
+    z.discriminatedUnion('type', [
+      backendAppSchema,
+      webAppSchema,
+      adminAppSchema,
+    ]),
+    (builder) => {
+      builder.addEntity({
+        type: appEntityType,
+        addContext: 'app',
+      });
+    },
+  ),
 );
 
-export type AppConfig = z.infer<typeof appSchema>;
+export type AppConfig = InferDefinitionOutput<typeof createAppSchema>;
 
 export const createProjectDefinitionSchema = definitionSchema((ctx) =>
   z.object({
     cliVersion: z.string().nullish(),
-    apps: z.array(appSchema).default([]),
+    apps: z.array(createAppSchema(ctx)).default([]),
     features: featuresSchema,
     models: z.array(modelSchema).default([]),
     enums: z.array(enumSchema).optional(),
