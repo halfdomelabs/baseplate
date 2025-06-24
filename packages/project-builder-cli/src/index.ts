@@ -3,6 +3,7 @@ import { program } from 'commander';
 import { addBuildCommand } from './commands/build.js';
 import { addConfigCommand } from './commands/config.js';
 import { addExtractTemplatesCommand } from './commands/extract-templates.js';
+import { addListGeneratorsCommand } from './commands/list-generators.js';
 import { addServeCommand } from './commands/server.js';
 import { getEnabledFeatureFlags } from './services/feature-flags.js';
 import { getPackageVersion } from './utils/version.js';
@@ -19,6 +20,7 @@ export async function runCli(): Promise<void> {
 
   if (enabledFlags.includes('TEMPLATE_EXTRACTOR')) {
     addExtractTemplatesCommand(program);
+    addListGeneratorsCommand(program);
   }
 
   addBuildCommand(program);

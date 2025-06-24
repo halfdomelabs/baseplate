@@ -10,56 +10,18 @@ import {
   TsTemplateFileExtractor,
 } from '@baseplate-dev/core-generators/extractors';
 import { runTemplateFileExtractors } from '@baseplate-dev/sync';
-import { findNearestPackageJson } from '@baseplate-dev/utils/node';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { discoverPlugins } from '#src/plugins/plugin-discovery.js';
 import { getPreviousGeneratedFileIdMap } from '#src/sync/file-id-map.js';
 import { readSyncMetadata } from '#src/sync/sync-metadata-service.js';
 
-const GENERATOR_PACKAGES = [
-  '@baseplate-dev/core-generators',
-  '@baseplate-dev/fastify-generators',
-  '@baseplate-dev/react-generators',
-];
+import { buildGeneratorPackageMap } from './discover-generators.js';
 
 const TEMPLATE_EXTRACTORS = [
   RawTemplateFileExtractor,
   TextTemplateFileExtractor,
   TsTemplateFileExtractor,
 ];
-
-async function buildGeneratorPackageMap(
-  availablePlugins: PluginMetadataWithPaths[],
-): Promise<Map<string, string>> {
-  const generatorPackageMap = new Map<string, string>();
-  for (const plugin of availablePlugins) {
-    const nearestPackageJsonPath = await findNearestPackageJson({
-      cwd: plugin.pluginDirectory,
-      stopAtNodeModules: true,
-    });
-    if (!nearestPackageJsonPath) {
-      throw new Error(`Could not find package.json for ${plugin.packageName}`);
-    }
-    generatorPackageMap.set(
-      plugin.packageName,
-      path.dirname(nearestPackageJsonPath),
-    );
-  }
-  // attach generator packages
-  for (const packageName of GENERATOR_PACKAGES) {
-    const nearestPackageJsonPath = await findNearestPackageJson({
-      cwd: path.dirname(fileURLToPath(import.meta.resolve(packageName))),
-      stopAtNodeModules: true,
-    });
-    if (!nearestPackageJsonPath) {
-      throw new Error(`Could not find package.json for ${packageName}`);
-    }
-    generatorPackageMap.set(packageName, path.dirname(nearestPackageJsonPath));
-  }
-  return generatorPackageMap;
-}
 
 export async function runTemplateExtractorsForProject(
   directory: string,

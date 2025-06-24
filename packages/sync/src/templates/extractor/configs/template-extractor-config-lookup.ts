@@ -1,18 +1,12 @@
 import type { z } from 'zod';
 
-import { readJsonWithSchema } from '@baseplate-dev/utils/node';
-import { globby } from 'globby';
-import fsAdapter from 'node:fs';
-import path from 'node:path/posix';
-
 import type {
   ExtractorConfig,
   TemplateConfig,
 } from './extractor-config.schema.js';
 
+import { indexTemplateConfigs } from '../utils/index-template-configs.js';
 import { sortExtractorConfigTemplateKeys } from '../utils/sort-extractor-config-keys.js';
-import { extractorConfigSchema } from './extractor-config.schema.js';
-import { extractorProvidersConfigSchema } from './providers-config.schema.js';
 
 export interface TemplateExtractorGeneratorEntry {
   config: ExtractorConfig;
@@ -66,109 +60,35 @@ export class TemplateExtractorConfigLookup {
     }
   }
 
-  private async indexExtractorConfig(
-    packageName: string,
-    packagePath: string,
-    filePath: string,
-  ): Promise<void> {
-    const config = await readJsonWithSchema(filePath, extractorConfigSchema);
-    const generatorDirectory = path.dirname(filePath);
-
-    this.extractorConfigCache.set(`${packageName}#${config.name}`, {
-      config,
-      generatorDirectory,
-      packageName,
-      packagePath,
-    });
-  }
-
-  private async indexProviderConfig(
-    packageName: string,
-    packagePath: string,
-    filePath: string,
-  ): Promise<void> {
-    const config = await readJsonWithSchema(
-      filePath,
-      extractorProvidersConfigSchema,
-    );
-    const providerDirectory = path.dirname(filePath);
-
-    for (const [fileName, providers] of Object.entries(config)) {
-      for (const [providerName, providerConfig] of Object.entries(providers)) {
-        const relativePath = path.join(
-          path.relative(packagePath, providerDirectory),
-          fileName,
-        );
-        this.providersConfigCache.set(`${packageName}:${providerName}`, {
-          config: providerConfig,
-          packagePathSpecifier: `${packageName}:${relativePath}`,
-          providerName,
-          packageName,
-          packagePath,
-        });
-      }
-    }
-  }
-
-  private async indexPackage(packageName: string): Promise<void> {
-    const packagePath = this.packageMap.get(packageName);
-    if (!packagePath) {
-      throw new Error(
-        `Package ${packageName} not found in package map. Please ensure it is installed and available as a plugin.`,
-      );
-    }
-
-    try {
-      const configFiles = await globby(
-        [
-          path.join(packagePath, '**/extractor.json'),
-          path.join(packagePath, '**/providers.json'),
-        ],
-        {
-          cwd: packagePath,
-          absolute: true,
-          onlyFiles: true,
-          fs: fsAdapter,
-          gitignore: true,
-        },
-      );
-
-      for (const configFile of configFiles) {
-        if (configFile.endsWith('extractor.json')) {
-          await this.indexExtractorConfig(packageName, packagePath, configFile);
-        } else if (configFile.endsWith('providers.json')) {
-          await this.indexProviderConfig(packageName, packagePath, configFile);
-        }
-      }
-
-      this.indexedPackages.add(packageName);
-    } catch (error) {
-      throw new Error(
-        `Failed to index package ${packageName}: ${error instanceof Error ? error.message : String(error)}`,
-      );
-    }
-  }
-
   /**
    * Initialize the lookup service by indexing all packages in the package map
    */
   async initialize(): Promise<void> {
-    const errors: Error[] = [];
-    await Promise.all(
-      [...this.packageMap.keys()].map(async (name) => {
-        try {
-          await this.indexPackage(name);
-        } catch (error) {
-          errors.push(
-            error instanceof Error ? error : new Error(String(error)),
-          );
-        }
-      }),
+    const { extractorEntries, providerEntries } = await indexTemplateConfigs(
+      this.packageMap,
     );
 
-    if (errors.length > 0) {
-      throw new Error(
-        `Failed to initialize packages: ${errors.map((e) => e.message).join(', ')}`,
+    // Build extractor config cache
+    for (const entry of extractorEntries) {
+      this.extractorConfigCache.set(entry.generatorName, {
+        config: entry.config,
+        generatorDirectory: entry.generatorDirectory,
+        packageName: entry.packageName,
+        packagePath: entry.packagePath,
+      });
+    }
+
+    // Build provider config cache
+    for (const entry of providerEntries) {
+      this.providersConfigCache.set(
+        `${entry.packageName}:${entry.providerName}`,
+        {
+          config: entry.config,
+          packagePathSpecifier: entry.packagePathSpecifier,
+          providerName: entry.providerName,
+          packageName: entry.packageName,
+          packagePath: entry.packagePath,
+        },
       );
     }
 
