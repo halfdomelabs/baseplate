@@ -9,6 +9,7 @@ export interface CoreReactComponentsPaths {
   buttonGroup: string;
   card: string;
   checkedInput: string;
+  combobox: string;
   confirmDialog: string;
   errorableLoader: string;
   errorDisplay: string;
@@ -25,6 +26,7 @@ export interface CoreReactComponentsPaths {
   reactDatePickerInput: string;
   reactSelectInput: string;
   scrollArea: string;
+  select: string;
   selectInput: string;
   sidebar: string;
   spinner: string;
@@ -32,12 +34,15 @@ export interface CoreReactComponentsPaths {
   textAreaInput: string;
   textInput: string;
   toast: string;
+  hooksUseControlledState: string;
   useConfirmDialog: string;
   useStatus: string;
   useToast: string;
   stylesButton: string;
   stylesInput: string;
+  stylesSelect: string;
   cn: string;
+  mergeRefs: string;
 }
 
 const coreReactComponentsPaths = createProviderType<CoreReactComponentsPaths>(
@@ -61,27 +66,32 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           card: `${srcRoot}/components/card/card.tsx`,
           checkedInput: `${srcRoot}/components/CheckedInput/index.tsx`,
           cn: `${srcRoot}/utils/cn.ts`,
+          combobox: `${srcRoot}/components/combobox/combobox.tsx`,
           confirmDialog: `${srcRoot}/components/ConfirmDialog/index.tsx`,
           errorableLoader: `${srcRoot}/components/ErrorableLoader/index.tsx`,
           errorDisplay: `${srcRoot}/components/ErrorDisplay/index.tsx`,
           formError: `${srcRoot}/components/FormError/index.tsx`,
           formLabel: `${srcRoot}/components/FormLabel/index.tsx`,
+          hooksUseControlledState: `${srcRoot}/hooks/use-controlled-state.ts`,
           index: `${srcRoot}/components/index.ts`,
           input: `${srcRoot}/components/input/input.tsx`,
           label: `${srcRoot}/components/label/label.tsx`,
           linkButton: `${srcRoot}/components/LinkButton/index.tsx`,
           listGroup: `${srcRoot}/components/ListGroup/index.tsx`,
           loader: `${srcRoot}/components/loader/loader.tsx`,
+          mergeRefs: `${srcRoot}/utils/merge-refs.ts`,
           modal: `${srcRoot}/components/Modal/index.tsx`,
           notFoundCard: `${srcRoot}/components/NotFoundCard/index.tsx`,
           reactDatePickerInput: `${srcRoot}/components/ReactDatePickerInput/index.tsx`,
           reactSelectInput: `${srcRoot}/components/ReactSelectInput/index.tsx`,
           scrollArea: `${srcRoot}/components/scroll-area/scroll-area.tsx`,
+          select: `${srcRoot}/components/select/select.tsx`,
           selectInput: `${srcRoot}/components/SelectInput/index.tsx`,
           sidebar: `${srcRoot}/components/Sidebar/index.tsx`,
           spinner: `${srcRoot}/components/Spinner/index.tsx`,
           stylesButton: `${srcRoot}/styles/button.ts`,
           stylesInput: `${srcRoot}/styles/input.ts`,
+          stylesSelect: `${srcRoot}/styles/select.ts`,
           table: `${srcRoot}/components/Table/index.tsx`,
           textAreaInput: `${srcRoot}/components/TextAreaInput/index.tsx`,
           textInput: `${srcRoot}/components/TextInput/index.tsx`,

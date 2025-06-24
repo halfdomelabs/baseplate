@@ -11,7 +11,7 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { pascalCase } from 'es-toolkit';
+import { kebabCase, pascalCase } from 'es-toolkit';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
@@ -61,6 +61,7 @@ export const reactComponentsGenerator = createGenerator({
         'zustand',
         'radix-ui',
         'class-variance-authority',
+        'cmdk',
       ]),
     }),
     paths: CORE_REACT_COMPONENTS_GENERATED.paths.task,
@@ -89,7 +90,7 @@ export const reactComponentsGenerator = createGenerator({
           (name): ReactComponentEntry => ({
             name: paths[name as keyof typeof paths].endsWith('index.tsx')
               ? pascalCase(name)
-              : name,
+              : kebabCase(name),
             // Temporary while we transition to the new component structure.
             isBarrelExport: paths[name as keyof typeof paths].endsWith(
               'index.tsx',
@@ -154,9 +155,9 @@ export const reactComponentsGenerator = createGenerator({
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: CORE_REACT_COMPONENTS_GENERATED.templates.cn,
-                destination: paths.cn,
+              typescriptFile.renderTemplateGroup({
+                group: CORE_REACT_COMPONENTS_GENERATED.templates.utilsGroup,
+                paths,
               }),
             );
 

@@ -71,6 +71,16 @@
       "pathRootRelativePath": "{src-root}/components/CheckedInput/index.tsx",
       "variables": {}
     },
+    "src/components/combobox/combobox.tsx": {
+      "name": "combobox",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/combobox/combobox.tsx",
+      "variables": {}
+    },
     "src/components/ConfirmDialog/index.tsx": {
       "name": "confirm-dialog",
       "type": "ts",
@@ -136,6 +146,7 @@
         "ButtonGroup": {},
         "Card": {},
         "CheckedInput": {},
+        "Combobox": {},
         "ConfirmDialog": {},
         "ErrorableLoader": {},
         "ErrorDisplay": {},
@@ -151,10 +162,12 @@
         "ReactDatePickerInput": {},
         "ReactSelectInput": {},
         "ScrollArea": {},
+        "Select": {},
         "SelectInput": {},
         "Sidebar": {},
         "Spinner": {},
         "Table": {},
+        "TextArea": {},
         "TextAreaInput": {},
         "TextInput": {},
         "Toast": {}
@@ -255,8 +268,19 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/scroll-area/scroll-area.tsx",
+      "variables": {}
+    },
+    "src/components/select/select.tsx": {
+      "name": "select",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/select/select.tsx",
       "variables": {}
     },
     "src/components/SelectInput/index.tsx": {
@@ -329,6 +353,17 @@
       "pathRootRelativePath": "{src-root}/components/Toast/index.tsx",
       "variables": {}
     },
+    "src/hooks/use-controlled-state.ts": {
+      "name": "hooks-use-controlled-state",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/use-controlled-state.ts",
+      "projectExports": { "useControlledState": {} },
+      "variables": {}
+    },
     "src/hooks/useConfirmDialog.ts": {
       "name": "use-confirm-dialog",
       "type": "ts",
@@ -392,14 +427,42 @@
       "projectExports": { "inputVariants": {} },
       "variables": {}
     },
+    "src/styles/select.ts": {
+      "name": "styles-select",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "styles",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/styles/select.ts",
+      "projectExports": {
+        "selectCheckVariants": {},
+        "selectContentVariants": {},
+        "selectItemVariants": {},
+        "selectTriggerVariants": {}
+      },
+      "variables": {}
+    },
     "src/utils/cn.ts": {
       "name": "cn",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/cn.ts",
       "projectExports": { "cn": {} },
+      "variables": {}
+    },
+    "src/utils/merge-refs.ts": {
+      "name": "merge-refs",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "utils",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/utils/merge-refs.ts",
+      "projectExports": { "mergeRefs": {} },
       "variables": {}
     }
   }

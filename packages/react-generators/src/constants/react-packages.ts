@@ -31,6 +31,7 @@ export const REACT_PACKAGES = {
   'react-error-boundary': '6.0.0',
   'radix-ui': '1.4.2',
   'class-variance-authority': '0.7.1',
+  cmdk: '1.1.1',
 
   // Date Picker
   'react-datepicker': '8.3.0',

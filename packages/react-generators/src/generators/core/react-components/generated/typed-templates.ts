@@ -1,17 +1,6 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
-const cn = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
-  name: 'cn',
-  projectExports: { cn: {} },
-  source: {
-    path: path.join(import.meta.dirname, '../templates/src/utils/cn.ts'),
-  },
-  variables: {},
-});
-
 const alert = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -105,6 +94,20 @@ const checkedInput = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/components/CheckedInput/index.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const combobox = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'combobox',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/combobox/combobox.tsx',
     ),
   },
   variables: {},
@@ -292,6 +295,34 @@ const reactSelectInput = createTsTemplateFile({
   variables: {},
 });
 
+const scrollArea = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'scroll-area',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/scroll-area/scroll-area.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const select = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'select',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/select/select.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const selectInput = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -398,6 +429,7 @@ export const componentsGroup = {
   buttonGroup,
   card,
   checkedInput,
+  combobox,
   confirmDialog,
   errorableLoader,
   errorDisplay,
@@ -411,6 +443,8 @@ export const componentsGroup = {
   modal,
   notFoundCard,
   reactSelectInput,
+  scrollArea,
+  select,
   selectInput,
   sidebar,
   spinner,
@@ -419,6 +453,21 @@ export const componentsGroup = {
   textInput,
   toast,
 };
+
+const hooksUseControlledState = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'hooks',
+  importMapProviders: {},
+  name: 'hooks-use-controlled-state',
+  projectExports: { useControlledState: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-controlled-state.ts',
+    ),
+  },
+  variables: {},
+});
 
 const useConfirmDialog = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -467,7 +516,12 @@ const useToast = createTsTemplateFile({
   variables: {},
 });
 
-export const hooksGroup = { useConfirmDialog, useStatus, useToast };
+export const hooksGroup = {
+  hooksUseControlledState,
+  useConfirmDialog,
+  useStatus,
+  useToast,
+};
 
 const index = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -481,6 +535,7 @@ const index = createTsTemplateFile({
     ButtonGroup: {},
     Card: {},
     CheckedInput: {},
+    Combobox: {},
     ConfirmDialog: {},
     ErrorableLoader: {},
     ErrorDisplay: {},
@@ -496,10 +551,12 @@ const index = createTsTemplateFile({
     ReactDatePickerInput: {},
     ReactSelectInput: {},
     ScrollArea: {},
+    Select: {},
     SelectInput: {},
     Sidebar: {},
     Spinner: {},
     Table: {},
+    TextArea: {},
     TextAreaInput: {},
     TextInput: {},
     Toast: {},
@@ -521,19 +578,6 @@ const reactDatePickerInput = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/components/ReactDatePickerInput/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
-const scrollArea = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
-  name: 'scroll-area',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/scroll-area/scroll-area.tsx',
     ),
   },
   variables: {},
@@ -563,14 +607,59 @@ const stylesInput = createTsTemplateFile({
   variables: {},
 });
 
-export const stylesGroup = { stylesButton, stylesInput };
+const stylesSelect = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'styles',
+  importMapProviders: {},
+  name: 'styles-select',
+  projectExports: {
+    selectCheckVariants: {},
+    selectContentVariants: {},
+    selectItemVariants: {},
+    selectTriggerVariants: {},
+  },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/styles/select.ts'),
+  },
+  variables: {},
+});
+
+export const stylesGroup = { stylesButton, stylesInput, stylesSelect };
+
+const cn = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'utils',
+  importMapProviders: {},
+  name: 'cn',
+  projectExports: { cn: {} },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/utils/cn.ts'),
+  },
+  variables: {},
+});
+
+const mergeRefs = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'utils',
+  importMapProviders: {},
+  name: 'merge-refs',
+  projectExports: { mergeRefs: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/utils/merge-refs.ts',
+    ),
+  },
+  variables: {},
+});
+
+export const utilsGroup = { cn, mergeRefs };
 
 export const CORE_REACT_COMPONENTS_TEMPLATES = {
   componentsGroup,
   hooksGroup,
   stylesGroup,
+  utilsGroup,
   index,
   reactDatePickerInput,
-  scrollArea,
-  cn,
 };
