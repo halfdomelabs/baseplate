@@ -90,7 +90,7 @@ const card = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Card/index.tsx',
+      '../templates/src/components/card/card.tsx',
     ),
   },
   variables: {},

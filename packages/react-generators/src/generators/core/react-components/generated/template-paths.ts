@@ -53,7 +53,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           backButton: `${srcRoot}/components/BackButton/index.tsx`,
           button: `${srcRoot}/components/button/button.tsx`,
           buttonGroup: `${srcRoot}/components/ButtonGroup/index.tsx`,
-          card: `${srcRoot}/components/Card/index.tsx`,
+          card: `${srcRoot}/components/card/card.tsx`,
           checkedInput: `${srcRoot}/components/CheckedInput/index.tsx`,
           cn: `${srcRoot}/utils/cn.ts`,
           confirmDialog: `${srcRoot}/components/ConfirmDialog/index.tsx`,

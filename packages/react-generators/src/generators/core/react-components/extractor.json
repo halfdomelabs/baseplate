@@ -51,14 +51,14 @@
       "pathRootRelativePath": "{src-root}/components/ButtonGroup/index.tsx",
       "variables": {}
     },
-    "src/components/Card/index.tsx": {
+    "src/components/card/card.tsx": {
       "name": "card",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/Card/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/card/card.tsx",
       "variables": {}
     },
     "src/components/CheckedInput/index.tsx": {
