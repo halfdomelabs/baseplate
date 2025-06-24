@@ -1,6 +1,6 @@
-import type React from 'react';
+import type * as React from 'react';
 
-import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
+import { NavigationMenu as NavigationMenuPrimitive } from 'radix-ui';
 
 import { cn } from '#src/utils/index.js';
 

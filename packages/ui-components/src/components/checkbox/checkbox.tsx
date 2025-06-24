@@ -2,7 +2,7 @@
 
 import type * as React from 'react';
 
-import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
+import { Checkbox as CheckboxPrimitive } from 'radix-ui';
 import { MdCheck } from 'react-icons/md';
 
 import { cn } from '#src/utils/index.js';

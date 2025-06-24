@@ -2,8 +2,10 @@
 
 import type * as React from 'react';
 
-import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
-import * as SelectPrimitive from '@radix-ui/react-select';
+import {
+  ScrollArea as ScrollAreaPrimitive,
+  Select as SelectPrimitive,
+} from 'radix-ui';
 import { MdCheck, MdUnfoldMore } from 'react-icons/md';
 
 import {

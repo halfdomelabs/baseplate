@@ -1,8 +1,8 @@
 import type { VariantProps } from 'class-variance-authority';
 import type * as React from 'react';
 
-import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 import { cva } from 'class-variance-authority';
+import { NavigationMenu as NavigationMenuPrimitive } from 'radix-ui';
 import { MdExpandMore } from 'react-icons/md';
 
 import { cn } from '#src/utils/index.js';

@@ -1,4 +1,3 @@
-import type { DropdownMenuCheckboxItemProps } from '@radix-ui/react-dropdown-menu';
 import type { Meta, StoryObj } from '@storybook/react';
 import type React from 'react';
 
@@ -131,7 +130,7 @@ export const FullExample: Story = {
   ),
 };
 
-type Checked = DropdownMenuCheckboxItemProps['checked'];
+type Checked = React.ComponentProps<typeof DropdownMenuCheckboxItem>['checked'];
 
 function DropdownWithCheckboxesExample(): React.JSX.Element {
   const [showStatusBar, setShowStatusBar] = useState<Checked>(true);

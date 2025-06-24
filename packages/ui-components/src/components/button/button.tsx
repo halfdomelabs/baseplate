@@ -1,7 +1,7 @@
 import type { VariantProps } from 'class-variance-authority';
-import type React from 'react';
+import type * as React from 'react';
 
-import { Slot } from '@radix-ui/react-slot';
+import { Slot } from 'radix-ui';
 
 import { buttonVariants } from '#src/styles/index.js';
 import { cn } from '#src/utils/index.js';
@@ -36,7 +36,7 @@ function Button({
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
   }): React.ReactElement {
-  const Comp = asChild ? Slot : 'button';
+  const Comp = asChild ? Slot.Root : 'button';
 
   return (
     <Comp

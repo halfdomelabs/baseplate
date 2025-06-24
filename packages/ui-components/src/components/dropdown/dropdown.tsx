@@ -2,7 +2,7 @@
 
 import type * as React from 'react';
 
-import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
+import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
 import { MdCheck, MdChevronRight, MdCircle } from 'react-icons/md';
 
 import { cn } from '#src/utils/index.js';

@@ -1,4 +1,3 @@
-import type { PopoverProps } from '@radix-ui/react-popover';
 import type { Meta, StoryObj } from '@storybook/react';
 import type React from 'react';
 
@@ -16,7 +15,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 function PopoverContainer(
-  args: Omit<PopoverProps, 'children'>,
+  args: Omit<React.ComponentProps<typeof Popover>, 'children'>,
 ): React.JSX.Element {
   return (
     <Popover {...args}>
