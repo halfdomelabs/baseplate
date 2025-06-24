@@ -180,6 +180,34 @@ const formLabel = createTsTemplateFile({
   variables: {},
 });
 
+const input = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'input',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/input/input.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const label = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'label',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/label/label.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const linkButton = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -213,7 +241,6 @@ const loader = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'loader',
-  projectExports: {},
   source: {
     path: path.join(
       import.meta.dirname,
@@ -376,6 +403,8 @@ export const componentsGroup = {
   errorDisplay,
   formError,
   formLabel,
+  input,
+  label,
   linkButton,
   listGroup,
   loader,
@@ -457,6 +486,8 @@ const index = createTsTemplateFile({
     ErrorDisplay: {},
     FormError: {},
     FormLabel: {},
+    Input: {},
+    Label: {},
     LinkButton: {},
     ListGroup: {},
     Loader: {},
@@ -464,6 +495,7 @@ const index = createTsTemplateFile({
     NotFoundCard: {},
     ReactDatePickerInput: {},
     ReactSelectInput: {},
+    ScrollArea: {},
     SelectInput: {},
     Sidebar: {},
     Spinner: {},
@@ -494,6 +526,19 @@ const reactDatePickerInput = createTsTemplateFile({
   variables: {},
 });
 
+const scrollArea = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
+  name: 'scroll-area',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/scroll-area/scroll-area.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const stylesButton = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'styles',
@@ -506,7 +551,19 @@ const stylesButton = createTsTemplateFile({
   variables: {},
 });
 
-export const stylesGroup = { stylesButton };
+const stylesInput = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'styles',
+  importMapProviders: {},
+  name: 'styles-input',
+  projectExports: { inputVariants: {} },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/styles/input.ts'),
+  },
+  variables: {},
+});
+
+export const stylesGroup = { stylesButton, stylesInput };
 
 export const CORE_REACT_COMPONENTS_TEMPLATES = {
   componentsGroup,
@@ -514,5 +571,6 @@ export const CORE_REACT_COMPONENTS_TEMPLATES = {
   stylesGroup,
   index,
   reactDatePickerInput,
+  scrollArea,
   cn,
 };

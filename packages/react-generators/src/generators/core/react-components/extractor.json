@@ -141,6 +141,8 @@
         "ErrorDisplay": {},
         "FormError": {},
         "FormLabel": {},
+        "Input": {},
+        "Label": {},
         "LinkButton": {},
         "ListGroup": {},
         "Loader": {},
@@ -148,6 +150,7 @@
         "NotFoundCard": {},
         "ReactDatePickerInput": {},
         "ReactSelectInput": {},
+        "ScrollArea": {},
         "SelectInput": {},
         "Sidebar": {},
         "Spinner": {},
@@ -157,6 +160,26 @@
         "Toast": {}
       },
       "variables": { "TPL_EXPORTS": {} }
+    },
+    "src/components/input/input.tsx": {
+      "name": "input",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/input/input.tsx",
+      "variables": {}
+    },
+    "src/components/label/label.tsx": {
+      "name": "label",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/label/label.tsx",
+      "variables": {}
     },
     "src/components/LinkButton/index.tsx": {
       "name": "link-button",
@@ -186,7 +209,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/loader/loader.tsx",
-      "projectExports": {},
       "variables": {}
     },
     "src/components/Modal/index.tsx": {
@@ -226,6 +248,15 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/ReactSelectInput/index.tsx",
+      "variables": {}
+    },
+    "src/components/scroll-area/scroll-area.tsx": {
+      "name": "scroll-area",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/scroll-area/scroll-area.tsx",
       "variables": {}
     },
     "src/components/SelectInput/index.tsx": {
@@ -348,6 +379,17 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/styles/button.ts",
       "projectExports": { "buttonVariants": {} },
+      "variables": {}
+    },
+    "src/styles/input.ts": {
+      "name": "styles-input",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "styles",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/styles/input.ts",
+      "projectExports": { "inputVariants": {} },
       "variables": {}
     },
     "src/utils/cn.ts": {

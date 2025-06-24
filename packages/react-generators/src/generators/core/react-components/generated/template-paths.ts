@@ -15,6 +15,8 @@ export interface CoreReactComponentsPaths {
   formError: string;
   formLabel: string;
   index: string;
+  input: string;
+  label: string;
   linkButton: string;
   listGroup: string;
   loader: string;
@@ -22,6 +24,7 @@ export interface CoreReactComponentsPaths {
   notFoundCard: string;
   reactDatePickerInput: string;
   reactSelectInput: string;
+  scrollArea: string;
   selectInput: string;
   sidebar: string;
   spinner: string;
@@ -33,6 +36,7 @@ export interface CoreReactComponentsPaths {
   useStatus: string;
   useToast: string;
   stylesButton: string;
+  stylesInput: string;
   cn: string;
 }
 
@@ -63,6 +67,8 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           formError: `${srcRoot}/components/FormError/index.tsx`,
           formLabel: `${srcRoot}/components/FormLabel/index.tsx`,
           index: `${srcRoot}/components/index.ts`,
+          input: `${srcRoot}/components/input/input.tsx`,
+          label: `${srcRoot}/components/label/label.tsx`,
           linkButton: `${srcRoot}/components/LinkButton/index.tsx`,
           listGroup: `${srcRoot}/components/ListGroup/index.tsx`,
           loader: `${srcRoot}/components/loader/loader.tsx`,
@@ -70,10 +76,12 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           notFoundCard: `${srcRoot}/components/NotFoundCard/index.tsx`,
           reactDatePickerInput: `${srcRoot}/components/ReactDatePickerInput/index.tsx`,
           reactSelectInput: `${srcRoot}/components/ReactSelectInput/index.tsx`,
+          scrollArea: `${srcRoot}/components/scroll-area/scroll-area.tsx`,
           selectInput: `${srcRoot}/components/SelectInput/index.tsx`,
           sidebar: `${srcRoot}/components/Sidebar/index.tsx`,
           spinner: `${srcRoot}/components/Spinner/index.tsx`,
           stylesButton: `${srcRoot}/styles/button.ts`,
+          stylesInput: `${srcRoot}/styles/input.ts`,
           table: `${srcRoot}/components/Table/index.tsx`,
           textAreaInput: `${srcRoot}/components/TextAreaInput/index.tsx`,
           textInput: `${srcRoot}/components/TextInput/index.tsx`,
