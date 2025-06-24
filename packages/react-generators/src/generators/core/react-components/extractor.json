@@ -185,7 +185,6 @@
         "TextArea": {},
         "TextAreaInput": {},
         "TextInput": {},
-        "Toast": {},
         "Toaster": {}
       },
       "variables": { "TPL_EXPORTS": {} }
@@ -379,16 +378,6 @@
       "pathRootRelativePath": "{src-root}/components/TextInput/index.tsx",
       "variables": {}
     },
-    "src/components/Toast/index.tsx": {
-      "name": "toast",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/Toast/index.tsx",
-      "variables": {}
-    },
     "src/components/toaster/toaster.tsx": {
       "name": "toaster",
       "type": "ts",
@@ -438,17 +427,6 @@
         "StatusType": { "isTypeOnly": true },
         "useStatus": {}
       },
-      "variables": {}
-    },
-    "src/hooks/useToast.tsx": {
-      "name": "use-toast",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "hooks",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/hooks/useToast.tsx",
-      "projectExports": { "useToast": {} },
       "variables": {}
     },
     "src/styles/button.ts": {

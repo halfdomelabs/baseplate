@@ -36,12 +36,10 @@ export interface CoreReactComponentsPaths {
   table: string;
   textAreaInput: string;
   textInput: string;
-  toast: string;
   toaster: string;
   hooksUseControlledState: string;
   useConfirmDialog: string;
   useStatus: string;
-  useToast: string;
   stylesButton: string;
   stylesInput: string;
   stylesSelect: string;
@@ -103,12 +101,10 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           table: `${srcRoot}/components/Table/index.tsx`,
           textAreaInput: `${srcRoot}/components/TextAreaInput/index.tsx`,
           textInput: `${srcRoot}/components/TextInput/index.tsx`,
-          toast: `${srcRoot}/components/Toast/index.tsx`,
           toaster: `${srcRoot}/components/toaster/toaster.tsx`,
           typesForm: `${srcRoot}/types/form.ts`,
           useConfirmDialog: `${srcRoot}/hooks/useConfirmDialog.ts`,
           useStatus: `${srcRoot}/hooks/useStatus.ts`,
-          useToast: `${srcRoot}/hooks/useToast.tsx`,
         },
       },
     };

@@ -24,7 +24,6 @@ export const REACT_PACKAGES = {
   '@hookform/resolvers': '5.0.1',
   clsx: '2.1.1',
   'react-hook-form': '7.56.3',
-  'react-hot-toast': '2.5.2',
   'react-icons': '5.5.0',
   'react-select': '5.10.1',
   zustand: '5.0.3',

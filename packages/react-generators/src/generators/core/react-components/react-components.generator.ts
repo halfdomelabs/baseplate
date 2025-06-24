@@ -55,7 +55,6 @@ export const reactComponentsGenerator = createGenerator({
         '@hookform/resolvers',
         'clsx',
         'react-hook-form',
-        'react-hot-toast',
         'react-icons',
         'react-select',
         'zustand',

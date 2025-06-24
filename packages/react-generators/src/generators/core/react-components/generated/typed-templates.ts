@@ -449,20 +449,6 @@ const textInput = createTsTemplateFile({
   variables: {},
 });
 
-const toast = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'toast',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/Toast/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const toaster = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -510,7 +496,6 @@ export const componentsGroup = {
   table,
   textAreaInput,
   textInput,
-  toast,
   toaster,
 };
 
@@ -564,23 +549,10 @@ const useStatus = createTsTemplateFile({
   variables: {},
 });
 
-const useToast = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'hooks',
-  importMapProviders: {},
-  name: 'use-toast',
-  projectExports: { useToast: {} },
-  source: {
-    path: path.join(import.meta.dirname, '../templates/src/hooks/useToast.tsx'),
-  },
-  variables: {},
-});
-
 export const hooksGroup = {
   hooksUseControlledState,
   useConfirmDialog,
   useStatus,
-  useToast,
 };
 
 const index = createTsTemplateFile({
@@ -624,7 +596,6 @@ const index = createTsTemplateFile({
     TextArea: {},
     TextAreaInput: {},
     TextInput: {},
-    Toast: {},
     Toaster: {},
   },
   source: {
