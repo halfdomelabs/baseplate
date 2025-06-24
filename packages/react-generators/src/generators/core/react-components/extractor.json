@@ -143,6 +143,7 @@
         "FormLabel": {},
         "LinkButton": {},
         "ListGroup": {},
+        "Loader": {},
         "Modal": {},
         "NotFoundCard": {},
         "ReactDatePickerInput": {},
@@ -175,6 +176,17 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/ListGroup/index.tsx",
+      "variables": {}
+    },
+    "src/components/loader/loader.tsx": {
+      "name": "loader",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/loader/loader.tsx",
+      "projectExports": {},
       "variables": {}
     },
     "src/components/Modal/index.tsx": {

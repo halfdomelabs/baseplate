@@ -17,6 +17,7 @@ export interface CoreReactComponentsPaths {
   index: string;
   linkButton: string;
   listGroup: string;
+  loader: string;
   modal: string;
   notFoundCard: string;
   reactDatePickerInput: string;
@@ -64,6 +65,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           index: `${srcRoot}/components/index.ts`,
           linkButton: `${srcRoot}/components/LinkButton/index.tsx`,
           listGroup: `${srcRoot}/components/ListGroup/index.tsx`,
+          loader: `${srcRoot}/components/loader/loader.tsx`,
           modal: `${srcRoot}/components/Modal/index.tsx`,
           notFoundCard: `${srcRoot}/components/NotFoundCard/index.tsx`,
           reactDatePickerInput: `${srcRoot}/components/ReactDatePickerInput/index.tsx`,

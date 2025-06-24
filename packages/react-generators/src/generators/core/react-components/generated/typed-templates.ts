@@ -208,6 +208,21 @@ const listGroup = createTsTemplateFile({
   variables: {},
 });
 
+const loader = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'loader',
+  projectExports: {},
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/loader/loader.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const modal = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -363,6 +378,7 @@ export const componentsGroup = {
   formLabel,
   linkButton,
   listGroup,
+  loader,
   modal,
   notFoundCard,
   reactSelectInput,
@@ -443,6 +459,7 @@ const index = createTsTemplateFile({
     FormLabel: {},
     LinkButton: {},
     ListGroup: {},
+    Loader: {},
     Modal: {},
     NotFoundCard: {},
     ReactDatePickerInput: {},

@@ -2,7 +2,7 @@
 
 import type { ReactElement } from 'react';
 
-import { Spinner } from '%reactComponentsImports';
+import { Loader } from '%reactComponentsImports';
 import { withAuthenticationRequired } from '@auth0/auth0-react';
 
 interface Props {
@@ -16,7 +16,7 @@ function RequireAuth({ children }: Props): ReactElement {
 export default withAuthenticationRequired(RequireAuth, {
   onRedirecting: () => (
     <div className="flex h-full items-center justify-center">
-      <Spinner size="large" />
+      <Loader />
     </div>
   ),
 });

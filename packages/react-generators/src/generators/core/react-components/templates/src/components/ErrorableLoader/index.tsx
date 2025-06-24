@@ -3,7 +3,7 @@
 import type { ReactElement } from 'react';
 
 import { Alert } from '../alert/alert.js';
-import Spinner from '../Spinner/index.js';
+import { Loader } from '../loader/loader.js';
 
 interface Props {
   className?: string;
@@ -19,7 +19,7 @@ function getErrorString(error: Error | string): string {
 
 function ErrorableLoader({ className, error }: Props): ReactElement {
   if (!error) {
-    return <Spinner className={className} size="large" center />;
+    return <Loader className={className} />;
   }
   return (
     <Alert variant="error" className={className}>

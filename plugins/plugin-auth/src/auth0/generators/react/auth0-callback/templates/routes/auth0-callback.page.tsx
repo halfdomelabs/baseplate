@@ -3,7 +3,7 @@
 import type { ReactElement } from 'react';
 
 import { useLogOut } from '%authHooksImports';
-import { Alert, Button, Card, Spinner } from '%reactComponentsImports';
+import { Alert, Button, Card, Loader } from '%reactComponentsImports';
 import { logError } from '%reactErrorImports';
 import { OAuthError, useAuth0 } from '@auth0/auth0-react';
 import { useEffect, useRef, useState } from 'react';
@@ -52,7 +52,7 @@ function Auth0CallbackPage(): ReactElement {
           <Button onClick={logOut}>Try Again</Button>
         </Card>
       ) : (
-        <Spinner size="large" />
+        <Loader />
       )}
     </div>
   );

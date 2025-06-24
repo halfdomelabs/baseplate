@@ -2,7 +2,7 @@
 
 import type { ReactElement } from 'react';
 
-import { Alert, Button, Card, Spinner } from '%reactComponentsImports';
+import { Alert, Button, Card, Loader } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -39,7 +39,7 @@ function SignupPage(): ReactElement {
           <Button onClick={redirectToSignup}>Try Again</Button>
         </Card>
       ) : (
-        <Spinner size="large" />
+        <Loader />
       )}
     </div>
   );
