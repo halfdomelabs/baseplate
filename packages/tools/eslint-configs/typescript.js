@@ -5,6 +5,7 @@ import vitest from '@vitest/eslint-plugin';
 import { importX } from 'eslint-plugin-import-x';
 import perfectionist from 'eslint-plugin-perfectionist';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+import unusedImports from 'eslint-plugin-unused-imports';
 import tsEslint from 'typescript-eslint';
 
 /**
@@ -112,6 +113,26 @@ export function generateTypescriptEslintConfig(options = []) {
         '@typescript-eslint/prefer-nullish-coalescing': [
           'error',
           { ignoreTernaryTests: true },
+        ],
+      },
+    },
+
+    // Unused Imports Configs
+    {
+      plugins: {
+        'unused-imports': unusedImports,
+      },
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+        'unused-imports/no-unused-imports': 'error',
+        'unused-imports/no-unused-vars': [
+          'error',
+          {
+            vars: 'all',
+            varsIgnorePattern: '^_',
+            args: 'after-used',
+            argsIgnorePattern: '^_',
+          },
         ],
       },
     },
