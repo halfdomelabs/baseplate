@@ -6,7 +6,10 @@ import {
   createAdminCrudEmbeddedFormSchema,
   zPluginWrapper,
 } from '@baseplate-dev/project-builder-lib';
-import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import {
+  useDefinitionSchema,
+  useProjectDefinition,
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   CheckboxFieldController,
@@ -29,7 +32,6 @@ import type {
   EmbeddedListTableProps,
 } from '#src/components/index.js';
 
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
 import type { AdminCrudFormConfigInput } from './crud-form-fields-form.js';

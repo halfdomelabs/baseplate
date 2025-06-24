@@ -3,6 +3,7 @@ import type React from 'react';
 import { createTemplateExtractorSchema } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -21,7 +22,6 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';
 
 /**

@@ -8,6 +8,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -23,8 +24,6 @@ import clsx from 'clsx';
 import { sortBy } from 'es-toolkit';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 import AdminCrudSectionForm from './crud/admin-crud-section-form.js';
 

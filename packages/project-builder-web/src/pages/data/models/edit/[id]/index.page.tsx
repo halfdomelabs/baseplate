@@ -6,11 +6,13 @@ import {
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '@baseplate-dev/project-builder-lib';
-import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
+import {
+  useBlockUnsavedChangesNavigate,
+  useDefinitionSchema,
+} from '@baseplate-dev/project-builder-lib/web';
 import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
 
 import { ErrorBoundary } from '#src/components/index.js';
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { registerEntityTypeUrl } from '#src/services/entity-type.js';
 
 import { EditedModelContextProvider } from '../../_hooks/use-edited-model-config.js';

@@ -24,7 +24,7 @@ export const createPluginWithConfigSchema = definitionSchema((ctx) =>
 
     const configSchema = plugins
       .getPluginSpec(pluginConfigSpec)
-      .getSchema(pluginKey);
+      .getSchemaCreator(pluginKey);
 
     const pluginDefinitionWithEnt = ctx.withEnt(basePluginDefinitionSchema, {
       type: pluginEntityType,
@@ -36,7 +36,7 @@ export const createPluginWithConfigSchema = definitionSchema((ctx) =>
 
     return pluginDefinitionWithEnt.and(
       z.object({
-        config: configSchema,
+        config: configSchema(ctx),
       }),
     );
   }),

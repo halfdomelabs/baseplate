@@ -6,16 +6,14 @@ import {
   definitionSchema,
   modelLocalRelationEntityType,
   modelTransformerEntityType,
-  zEnt,
-  zRef,
 } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
-export const createFileTransformerSchema = definitionSchema(() =>
-  zEnt(
+export const createFileTransformerSchema = definitionSchema((ctx) =>
+  ctx.withEnt(
     z.object({
       ...baseTransformerFields,
-      fileRelationRef: zRef(z.string(), {
+      fileRelationRef: ctx.withRef(z.string(), {
         type: modelLocalRelationEntityType,
         onDelete: 'DELETE_PARENT',
         parentPath: { context: 'model' },

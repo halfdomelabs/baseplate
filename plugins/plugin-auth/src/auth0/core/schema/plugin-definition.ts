@@ -1,28 +1,34 @@
+import type { def } from '@baseplate-dev/project-builder-lib';
+
 import {
+  definitionSchema,
   featureEntityType,
   modelEntityType,
-  zRef,
 } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
-import { authRolesSchema } from '#src/roles/index.js';
+import { createAuthRolesSchema } from '#src/roles/index.js';
 
-export const auth0PluginDefinitionSchema = z.object({
-  modelRefs: z.object({
-    user: zRef(z.string().min(1), {
-      type: modelEntityType,
+export const createAuth0PluginDefinitionSchema = definitionSchema((ctx) =>
+  z.object({
+    modelRefs: z.object({
+      user: ctx.withRef(z.string().min(1), {
+        type: modelEntityType,
+        onDelete: 'RESTRICT',
+      }),
+    }),
+    authFeatureRef: ctx.withRef(z.string().min(1), {
+      type: featureEntityType,
       onDelete: 'RESTRICT',
     }),
+    roles: createAuthRolesSchema(ctx),
   }),
-  authFeatureRef: zRef(z.string().min(1), {
-    type: featureEntityType,
-    onDelete: 'RESTRICT',
-  }),
-  roles: authRolesSchema,
-});
+);
 
-export type Auth0PluginDefinition = z.infer<typeof auth0PluginDefinitionSchema>;
+export type Auth0PluginDefinition = def.InferOutput<
+  typeof createAuth0PluginDefinitionSchema
+>;
 
-export type Auth0PluginDefinitionInput = z.input<
-  typeof auth0PluginDefinitionSchema
+export type Auth0PluginDefinitionInput = def.InferInput<
+  typeof createAuth0PluginDefinitionSchema
 >;

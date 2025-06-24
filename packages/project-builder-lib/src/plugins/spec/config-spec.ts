@@ -1,4 +1,4 @@
-import type { z } from 'zod';
+import type { DefinitionSchemaCreator } from '#src/schema/index.js';
 
 import type { PluginSpecImplementation } from './types.js';
 
@@ -14,12 +14,15 @@ export interface PluginConfigMigration {
  * Spec for registering plugin config schema
  */
 export interface PluginConfigSpec extends PluginSpecImplementation {
-  registerSchema: (pluginKey: string, schema: z.ZodTypeAny) => void;
+  registerSchemaCreator: (
+    pluginKey: string,
+    schemaCreator: DefinitionSchemaCreator,
+  ) => void;
   registerMigrations: (
     pluginKey: string,
     migrations: PluginConfigMigration[],
   ) => void;
-  getSchema(pluginKey: string): z.ZodTypeAny | undefined;
+  getSchemaCreator(pluginKey: string): DefinitionSchemaCreator | undefined;
   getMigrations(pluginId: string): PluginConfigMigration[] | undefined;
   getLastMigrationVersion(pluginId: string): number | undefined;
 }
@@ -43,15 +46,15 @@ function sortAndValidateMigrations(
 }
 
 export function createPluginConfigImplementation(): PluginConfigSpec {
-  const schemas = new Map<string, z.ZodTypeAny>();
+  const schemas = new Map<string, DefinitionSchemaCreator>();
   const migrationsMap = new Map<string, PluginConfigMigration[]>();
 
   return {
-    registerSchema(pluginKey, schema) {
+    registerSchemaCreator(pluginKey, schemaCreator) {
       if (schemas.has(pluginKey)) {
         throw new Error(`Schema for plugin ${pluginKey} is already registered`);
       }
-      schemas.set(pluginKey, schema);
+      schemas.set(pluginKey, schemaCreator);
     },
     registerMigrations(pluginKey, migrations) {
       if (migrationsMap.has(pluginKey)) {
@@ -62,7 +65,7 @@ export function createPluginConfigImplementation(): PluginConfigSpec {
       const sortedMigrations = sortAndValidateMigrations(migrations);
       migrationsMap.set(pluginKey, sortedMigrations);
     },
-    getSchema(pluginKey) {
+    getSchemaCreator(pluginKey) {
       return schemas.get(pluginKey);
     },
     getMigrations(pluginKey) {

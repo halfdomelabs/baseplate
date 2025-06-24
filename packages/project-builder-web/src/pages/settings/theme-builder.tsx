@@ -8,6 +8,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -31,8 +32,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
-
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 import { ThemeColorsCssDisplay } from './components/theme-colors-css-display.js';
 import { ThemeColorsEditor } from './components/theme-colors-editor.js';

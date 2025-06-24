@@ -17,7 +17,7 @@ import { useForm } from 'react-hook-form';
 
 import type { AuthRoleInput } from '#src/roles/schema.js';
 
-import { authRoleSchema } from '#src/roles/schema.js';
+import { createAuthRoleSchema } from '#src/roles/schema.js';
 
 interface RoleDialogProps {
   open?: boolean;
@@ -39,7 +39,7 @@ export function RoleDialog({
   children,
 }: RoleDialogProps): React.JSX.Element {
   const form = useForm({
-    resolver: zodResolver(authRoleSchema),
+    resolver: zodResolver(createAuthRoleSchema),
     values: role,
   });
 

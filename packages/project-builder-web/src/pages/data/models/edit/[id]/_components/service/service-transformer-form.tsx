@@ -6,7 +6,10 @@ import {
   createTransformerSchema,
   modelTransformerEntityType,
 } from '@baseplate-dev/project-builder-lib';
-import { usePluginEnhancedSchema } from '@baseplate-dev/project-builder-lib/web';
+import {
+  useDefinitionSchema,
+  usePluginEnhancedSchema,
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   DialogClose,
@@ -17,8 +20,6 @@ import { clsx } from 'clsx';
 import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 import { useEditedModelConfig } from '../../../../_hooks/use-edited-model-config.js';
 

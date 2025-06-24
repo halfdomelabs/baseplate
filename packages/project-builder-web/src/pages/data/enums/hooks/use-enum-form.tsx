@@ -12,6 +12,7 @@ import {
   modelEnumEntityType,
 } from '@baseplate-dev/project-builder-lib';
 import {
+  useDefinitionSchema,
   usePluginEnhancedSchema,
   useProjectDefinition,
   useResettableForm,
@@ -22,7 +23,6 @@ import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { NotFoundError } from '#src/utils/error.js';
 
 import { createEnumEditLink } from '../../models/_utils/url.js';

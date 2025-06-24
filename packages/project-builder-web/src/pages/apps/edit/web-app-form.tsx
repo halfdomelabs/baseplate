@@ -7,6 +7,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -18,8 +19,6 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
-
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 interface Props {
   className?: string;

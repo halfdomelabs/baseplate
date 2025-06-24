@@ -13,6 +13,7 @@ import {
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
+  useDefinitionSchema,
   usePluginEnhancedSchema,
   useProjectDefinition,
   useResettableForm,
@@ -23,7 +24,6 @@ import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { NotFoundError } from '#src/utils/error.js';
 
 import { createModelEditLink } from '../_utils/url.js';
