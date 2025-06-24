@@ -1,14 +1,14 @@
 {
   "name": "core/react-components",
   "templates": {
-    "src/components/Alert/index.tsx": {
+    "src/components/alert/alert.tsx": {
       "name": "alert",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/Alert/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/alert/alert.tsx",
       "variables": {}
     },
     "src/components/AlertIcon/index.tsx": {

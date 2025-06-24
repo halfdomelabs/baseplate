@@ -40,7 +40,7 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
   }
 
   if (items.length === 0) {
-    return <Alert type="info">No TPL_PLURAL_MODEL found.</Alert>;
+    return <Alert variant="default">No TPL_PLURAL_MODEL found.</Alert>;
   }
 
   return (

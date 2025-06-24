@@ -2,7 +2,7 @@
 
 import type { ReactElement } from 'react';
 
-import Alert from '../Alert/index.js';
+import { Alert } from '../alert/alert.js';
 import Spinner from '../Spinner/index.js';
 
 interface Props {
@@ -22,7 +22,7 @@ function ErrorableLoader({ className, error }: Props): ReactElement {
     return <Spinner className={className} size="large" center />;
   }
   return (
-    <Alert type="error" className={className}>
+    <Alert variant="error" className={className}>
       {getErrorString(error)}
     </Alert>
   );

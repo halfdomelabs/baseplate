@@ -48,7 +48,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
     return {
       providers: {
         coreReactComponentsPaths: {
-          alert: `${srcRoot}/components/Alert/index.tsx`,
+          alert: `${srcRoot}/components/alert/alert.tsx`,
           alertIcon: `${srcRoot}/components/AlertIcon/index.tsx`,
           backButton: `${srcRoot}/components/BackButton/index.tsx`,
           button: `${srcRoot}/components/button/button.tsx`,

@@ -48,7 +48,7 @@ function Auth0CallbackPage(): ReactElement {
     <div className="flex h-full items-center justify-center">
       {error ? (
         <Card className="space-y-4 p-4">
-          <Alert type="error">{error}</Alert>
+          <Alert variant="error">{error}</Alert>
           <Button onClick={logOut}>Try Again</Button>
         </Card>
       ) : (

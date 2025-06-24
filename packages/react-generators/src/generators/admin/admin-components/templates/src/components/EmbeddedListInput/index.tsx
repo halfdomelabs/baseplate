@@ -103,7 +103,7 @@ function EmbeddedListInput<InputType>({
           },
         })
       ) : (
-        <Alert type="info">No items currently</Alert>
+        <Alert variant="default">No items currently</Alert>
       )}
       <Modal
         isOpen={!!valueToEdit}

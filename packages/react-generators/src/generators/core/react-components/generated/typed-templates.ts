@@ -20,7 +20,7 @@ const alert = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Alert/index.tsx',
+      '../templates/src/components/alert/alert.tsx',
     ),
   },
   variables: {},
