@@ -24,6 +24,7 @@ export interface CoreReactComponentsPaths {
   listGroup: string;
   loader: string;
   modal: string;
+  navigationMenu: string;
   notFoundCard: string;
   reactDatePickerInput: string;
   reactSelectInput: string;
@@ -86,6 +87,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           loader: `${srcRoot}/components/loader/loader.tsx`,
           mergeRefs: `${srcRoot}/utils/merge-refs.ts`,
           modal: `${srcRoot}/components/Modal/index.tsx`,
+          navigationMenu: `${srcRoot}/components/navigation-menu/navigation-menu.tsx`,
           notFoundCard: `${srcRoot}/components/NotFoundCard/index.tsx`,
           reactDatePickerInput: `${srcRoot}/components/ReactDatePickerInput/index.tsx`,
           reactSelectInput: `${srcRoot}/components/ReactSelectInput/index.tsx`,

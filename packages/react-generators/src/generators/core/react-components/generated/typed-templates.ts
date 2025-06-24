@@ -295,6 +295,20 @@ const modal = createTsTemplateFile({
   variables: {},
 });
 
+const navigationMenu = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'navigation-menu',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/navigation-menu/navigation-menu.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const notFoundCard = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -485,6 +499,7 @@ export const componentsGroup = {
   listGroup,
   loader,
   modal,
+  navigationMenu,
   notFoundCard,
   reactSelectInput,
   scrollArea,
@@ -581,6 +596,16 @@ const index = createTsTemplateFile({
     ListGroup: {},
     Loader: {},
     Modal: {},
+    NavigationMenu: {},
+    NavigationMenuContent: {},
+    NavigationMenuIndicator: {},
+    NavigationMenuItem: {},
+    NavigationMenuItemWithLink: {},
+    NavigationMenuLink: {},
+    NavigationMenuList: {},
+    NavigationMenuTrigger: {},
+    navigationMenuTriggerStyle: {},
+    NavigationMenuViewport: {},
     NotFoundCard: {},
     ReactDatePickerInput: {},
     ReactSelectInput: {},

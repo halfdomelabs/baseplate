@@ -170,6 +170,16 @@
         "ListGroup": {},
         "Loader": {},
         "Modal": {},
+        "NavigationMenu": {},
+        "NavigationMenuContent": {},
+        "NavigationMenuIndicator": {},
+        "NavigationMenuItem": {},
+        "NavigationMenuItemWithLink": {},
+        "NavigationMenuLink": {},
+        "NavigationMenuList": {},
+        "NavigationMenuTrigger": {},
+        "navigationMenuTriggerStyle": {},
+        "NavigationMenuViewport": {},
         "NotFoundCard": {},
         "ReactDatePickerInput": {},
         "ReactSelectInput": {},
@@ -257,6 +267,16 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/Modal/index.tsx",
+      "variables": {}
+    },
+    "src/components/navigation-menu/navigation-menu.tsx": {
+      "name": "navigation-menu",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/navigation-menu/navigation-menu.tsx",
       "variables": {}
     },
     "src/components/NotFoundCard/index.tsx": {
