@@ -78,6 +78,7 @@ interface ProjectBuilderServiceOptions {
   cliVersion: string;
   userConfig: BaseplateUserConfig;
   skipCommands?: boolean;
+  cliFilePath?: string;
 }
 
 export interface SyncMetadataChangedPayload {
@@ -137,6 +138,8 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
 
   private skipCommands: boolean;
 
+  private cliFilePath: string | undefined;
+
   constructor({
     directory,
     id,
@@ -144,6 +147,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     builtInPlugins,
     userConfig,
     skipCommands,
+    cliFilePath,
   }: ProjectBuilderServiceOptions) {
     super();
 
@@ -162,6 +166,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       this.logger,
     );
     this.skipCommands = skipCommands ?? false;
+    this.cliFilePath = cliFilePath;
     this.syncMetadataController
       .getMetadata()
       .then((syncMetadata) => {
@@ -362,6 +367,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
         syncMetadataController: this.syncMetadataController,
         abortSignal: this.abortController.signal,
         skipCommands: this.skipCommands,
+        cliFilePath: this.cliFilePath,
       });
     } catch (error) {
       this.logger.error(

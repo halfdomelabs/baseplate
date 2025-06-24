@@ -91,6 +91,7 @@ export const syncMetadataSchema = z.object({
   globalErrors: z.array(z.string()).optional(),
   startedAt: z.string().optional(),
   completedAt: z.string().optional(),
+  cliFilePath: z.string().optional(),
   packages: z.record(z.string(), packageSyncInfoSchema),
 });
 

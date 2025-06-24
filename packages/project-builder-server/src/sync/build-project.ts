@@ -113,6 +113,11 @@ export interface BuildProjectOptions {
    * Whether to skip running commands.
    */
   skipCommands?: boolean;
+  /**
+   * The path to the CLI file that was executed to start the sync.
+   * This is used by the VSCode extension to find the command to trigger additional commands.
+   */
+  cliFilePath?: string;
 }
 
 /**
@@ -138,6 +143,7 @@ export async function buildProject({
   syncMetadataController,
   abortSignal,
   skipCommands,
+  cliFilePath,
 }: BuildProjectOptions): Promise<BuildProjectResult> {
   await syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
@@ -162,6 +168,11 @@ export async function buildProject({
       ...metadata,
       status: 'in-progress',
       startedAt: new Date().toISOString(),
+      // Set cliFilePath only if template extraction is enabled
+      cliFilePath:
+        projectJson.settings.templateExtractor?.writeMetadata && cliFilePath
+          ? cliFilePath
+          : undefined,
       packages: Object.fromEntries(
         apps.map((app, index) => [
           app.id,
