@@ -1,6 +1,17 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+const cn = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
+  name: 'cn',
+  projectExports: { cn: {} },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/utils/cn.ts'),
+  },
+  variables: {},
+});
+
 const alert = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -51,7 +62,7 @@ const button = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Button/index.tsx',
+      '../templates/src/components/button/button.tsx',
     ),
   },
   variables: {},
@@ -466,9 +477,25 @@ const reactDatePickerInput = createTsTemplateFile({
   variables: {},
 });
 
+const stylesButton = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'styles',
+  importMapProviders: {},
+  name: 'styles-button',
+  projectExports: { buttonVariants: {} },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/styles/button.ts'),
+  },
+  variables: {},
+});
+
+export const stylesGroup = { stylesButton };
+
 export const CORE_REACT_COMPONENTS_TEMPLATES = {
   componentsGroup,
   hooksGroup,
+  stylesGroup,
   index,
   reactDatePickerInput,
+  cn,
 };

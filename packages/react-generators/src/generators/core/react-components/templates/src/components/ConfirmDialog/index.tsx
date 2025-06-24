@@ -7,7 +7,7 @@ import * as React from 'react';
 import type { UseConfirmDialogRequestOptions } from '../../hooks/useConfirmDialog.js';
 
 import { useConfirmDialogState } from '../../hooks/useConfirmDialog.js';
-import Button from '../Button/index.js';
+import { Button } from '../button/button.js';
 import Modal from '../Modal/index.js';
 
 /**

@@ -48,7 +48,7 @@ function EmbeddedObjectInput<InputType>({
   return (
     <div className={clsx('flex flex-row space-x-4', className)}>
       <Button
-        size="small"
+        size="sm"
         onClick={() => {
           setValueToEdit(
             (value ?? defaultValue) as DefaultValues<
@@ -61,7 +61,7 @@ function EmbeddedObjectInput<InputType>({
       </Button>
       {value && (
         <Button
-          size="small"
+          size="sm"
           color="light"
           onClick={() => {
             onChange(null);

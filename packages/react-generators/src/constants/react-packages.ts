@@ -29,6 +29,8 @@ export const REACT_PACKAGES = {
   'react-select': '5.10.1',
   zustand: '5.0.3',
   'react-error-boundary': '6.0.0',
+  'radix-ui': '1.4.2',
+  'class-variance-authority': '0.7.1',
 
   // Date Picker
   'react-datepicker': '8.3.0',

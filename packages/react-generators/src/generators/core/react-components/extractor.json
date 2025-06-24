@@ -31,14 +31,14 @@
       "pathRootRelativePath": "{src-root}/components/BackButton/index.tsx",
       "variables": {}
     },
-    "src/components/Button/index.tsx": {
+    "src/components/button/button.tsx": {
       "name": "button",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/Button/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/button/button.tsx",
       "variables": {}
     },
     "src/components/ButtonGroup/index.tsx": {
@@ -325,6 +325,27 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/useToast.tsx",
       "projectExports": { "useToast": {} },
+      "variables": {}
+    },
+    "src/styles/button.ts": {
+      "name": "styles-button",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "styles",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/styles/button.ts",
+      "projectExports": { "buttonVariants": {} },
+      "variables": {}
+    },
+    "src/utils/cn.ts": {
+      "name": "cn",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/utils/cn.ts",
+      "projectExports": { "cn": {} },
       "variables": {}
     }
   }

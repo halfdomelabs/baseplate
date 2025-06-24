@@ -31,6 +31,8 @@ export interface CoreReactComponentsPaths {
   useConfirmDialog: string;
   useStatus: string;
   useToast: string;
+  stylesButton: string;
+  cn: string;
 }
 
 const coreReactComponentsPaths = createProviderType<CoreReactComponentsPaths>(
@@ -49,10 +51,11 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           alert: `${srcRoot}/components/Alert/index.tsx`,
           alertIcon: `${srcRoot}/components/AlertIcon/index.tsx`,
           backButton: `${srcRoot}/components/BackButton/index.tsx`,
-          button: `${srcRoot}/components/Button/index.tsx`,
+          button: `${srcRoot}/components/button/button.tsx`,
           buttonGroup: `${srcRoot}/components/ButtonGroup/index.tsx`,
           card: `${srcRoot}/components/Card/index.tsx`,
           checkedInput: `${srcRoot}/components/CheckedInput/index.tsx`,
+          cn: `${srcRoot}/utils/cn.ts`,
           confirmDialog: `${srcRoot}/components/ConfirmDialog/index.tsx`,
           errorableLoader: `${srcRoot}/components/ErrorableLoader/index.tsx`,
           errorDisplay: `${srcRoot}/components/ErrorDisplay/index.tsx`,
@@ -68,6 +71,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           selectInput: `${srcRoot}/components/SelectInput/index.tsx`,
           sidebar: `${srcRoot}/components/Sidebar/index.tsx`,
           spinner: `${srcRoot}/components/Spinner/index.tsx`,
+          stylesButton: `${srcRoot}/styles/button.ts`,
           table: `${srcRoot}/components/Table/index.tsx`,
           textAreaInput: `${srcRoot}/components/TextAreaInput/index.tsx`,
           textInput: `${srcRoot}/components/TextInput/index.tsx`,

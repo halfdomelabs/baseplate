@@ -82,7 +82,7 @@ function EmbeddedListInput<InputType>({
   return (
     <div className={clsx('space-y-2', className)}>
       <Button
-        size="small"
+        size="sm"
         onClick={() => {
           setValueToEdit({ data: defaultValue });
         }}

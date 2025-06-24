@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
-import Button from '../Button/index.js';
+import { Button } from '../button/button.js';
 import Card from '../Card/index.js';
 
 function NotFoundCard(): ReactElement {

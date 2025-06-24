@@ -25,6 +25,7 @@ const descriptorSchema = z.object({
 
 export interface ReactComponentEntry {
   name: string;
+  isBarrelExport?: boolean;
 }
 
 export interface ReactComponentsProvider {
@@ -58,6 +59,8 @@ export const reactComponentsGenerator = createGenerator({
         'react-icons',
         'react-select',
         'zustand',
+        'radix-ui',
+        'class-variance-authority',
       ]),
     }),
     paths: CORE_REACT_COMPONENTS_GENERATED.paths.task,
@@ -82,7 +85,19 @@ export const reactComponentsGenerator = createGenerator({
       run({ typescriptFile, reactAppConfig, paths }) {
         const coreReactComponents = Object.keys(
           CORE_REACT_COMPONENTS_GENERATED.templates.componentsGroup,
-        ).map((name) => ({ name: pascalCase(name) }));
+        ).map(
+          (name): ReactComponentEntry => ({
+            name: paths[name as keyof typeof paths].endsWith('index.tsx')
+              ? pascalCase(name)
+              : name,
+            // Temporary while we transition to the new component structure.
+            isBarrelExport: paths[name as keyof typeof paths].endsWith(
+              'index.tsx',
+            )
+              ? false
+              : true,
+          }),
+        );
 
         if (includeDatePicker) {
           coreReactComponents.push({ name: 'ReactDatePickerInput' });
@@ -131,6 +146,20 @@ export const reactComponentsGenerator = createGenerator({
               }),
             );
 
+            await builder.apply(
+              typescriptFile.renderTemplateGroup({
+                group: CORE_REACT_COMPONENTS_GENERATED.templates.stylesGroup,
+                paths,
+              }),
+            );
+
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_COMPONENTS_GENERATED.templates.cn,
+                destination: paths.cn,
+              }),
+            );
+
             if (includeDatePicker) {
               await builder.apply(
                 typescriptFile.renderTemplateFile({
@@ -143,11 +172,15 @@ export const reactComponentsGenerator = createGenerator({
             }
 
             // build component index
-            const componentNames = allReactComponents
-              .toSorted((a, b) => a.name.localeCompare(b.name))
-              .map((entry) => entry.name);
-            const componentIndex = componentNames
-              .map((name) => `export { default as ${name} } from './${name}';`)
+            const sortedComponents = allReactComponents.toSorted((a, b) =>
+              a.name.localeCompare(b.name),
+            );
+            const componentIndex = sortedComponents
+              .map(({ name, isBarrelExport }) =>
+                isBarrelExport
+                  ? `export * from './${name}/${name}.js';`
+                  : `export { default as ${name} } from './${name}';`,
+              )
               .join('\n');
             await builder.apply(
               typescriptFile.renderTemplateFile({
