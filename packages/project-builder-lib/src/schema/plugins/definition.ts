@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { pluginConfigSpec, zWithPlugins } from '#src/plugins/index.js';
-import { zEnt } from '#src/references/ref-builder.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { pluginEntityType } from './entity-types.js';
@@ -17,7 +16,7 @@ export const basePluginDefinitionSchema = z.object({
 
 export type BasePluginDefinition = z.infer<typeof basePluginDefinitionSchema>;
 
-export const createPluginWithConfigSchema = definitionSchema(() =>
+export const createPluginWithConfigSchema = definitionSchema((ctx) =>
   zWithPlugins((plugins, data) => {
     const parsedBasePlugin = basePluginDefinitionSchema.parse(data);
 
@@ -27,7 +26,7 @@ export const createPluginWithConfigSchema = definitionSchema(() =>
       .getPluginSpec(pluginConfigSpec)
       .getSchema(pluginKey);
 
-    const pluginDefinitionWithEnt = zEnt(basePluginDefinitionSchema, {
+    const pluginDefinitionWithEnt = ctx.withEnt(basePluginDefinitionSchema, {
       type: pluginEntityType,
     });
 

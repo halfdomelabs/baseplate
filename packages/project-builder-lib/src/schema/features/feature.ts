@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { createEntityType, zEnt } from '#src/references/index.js';
+import { createEntityType } from '#src/references/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 export const featureEntityType = createEntityType('feature');
@@ -11,7 +11,7 @@ export const featureEntityType = createEntityType('feature');
 export const featureNameSchema = CASE_VALIDATORS.KEBAB_CASE;
 
 export const createFeatureSchema = definitionSchema((ctx) =>
-  zEnt(
+  ctx.withEnt(
     z.object({
       name: z
         .string()

@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-import { zRefBuilder } from '#src/references/index.js';
-
 import type { def } from './creator/index.js';
 
 import { createAdminAppSchema } from './apps/admin/index.js';
@@ -16,7 +14,7 @@ import { createPluginsSchema } from './plugins/index.js';
 import { createSettingsSchema } from './settings.js';
 
 export const createAppSchema = definitionSchema((ctx) =>
-  zRefBuilder(
+  ctx.withRefBuilder(
     z.discriminatedUnion('type', [
       createBackendAppSchema(ctx),
       createWebAppSchema(ctx),

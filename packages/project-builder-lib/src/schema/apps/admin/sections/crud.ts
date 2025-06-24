@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { zRefBuilder } from '#src/references/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 import {
   modelEntityType,
@@ -107,7 +106,7 @@ export const createAdminCrudEmbeddedListSchema = definitionSchema((ctx) =>
 );
 
 export const createAdminCrudEmbeddedFormSchema = definitionSchema((ctx) =>
-  zRefBuilder(
+  ctx.withRefBuilder(
     z.discriminatedUnion('type', [
       createAdminCrudEmbeddedObjectSchema(ctx),
       createAdminCrudEmbeddedListSchema(ctx),
@@ -133,7 +132,7 @@ export type AdminCrudEmbeddedFormConfigInput = def.InferInput<
 // Admin Section
 
 export const createAdminCrudSectionSchema = definitionSchema((ctx) =>
-  zRefBuilder(
+  ctx.withRefBuilder(
     createBaseAdminSectionValidators(ctx).and(
       z.object({
         type: z.literal('crud'),

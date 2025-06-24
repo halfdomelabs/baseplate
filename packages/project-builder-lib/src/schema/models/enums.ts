@@ -2,14 +2,13 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { zEnt } from '#src/references/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { featureEntityType } from '../features/index.js';
 import { modelEnumEntityType, modelEnumValueEntityType } from './types.js';
 
-export const createEnumValueSchema = definitionSchema(() =>
-  zEnt(
+export const createEnumValueSchema = definitionSchema((ctx) =>
+  ctx.withEnt(
     z.object({
       name: z.string().min(1),
       friendlyName: z.string().min(1),
@@ -36,7 +35,7 @@ export const createEnumBaseSchema = definitionSchema((ctx) =>
 );
 
 export const createEnumSchema = definitionSchema((ctx) =>
-  zEnt(createEnumBaseSchema(ctx), {
+  ctx.withEnt(createEnumBaseSchema(ctx), {
     type: modelEnumEntityType,
     addContext: 'enum',
   }),
