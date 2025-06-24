@@ -1,6 +1,6 @@
 import type * as React from 'react';
 
-import { Slot } from '@radix-ui/react-slot';
+import { Slot } from 'radix-ui';
 import { MdChevronRight, MdMoreHoriz } from 'react-icons/md';
 
 import { cn } from '#src/utils/index.js';
@@ -47,7 +47,7 @@ function BreadcrumbLink({
 }: React.ComponentProps<'a'> & {
   asChild?: boolean;
 }): React.ReactElement {
-  const Comp = asChild ? Slot : 'a';
+  const Comp = asChild ? Slot.Root : 'a';
 
   return (
     <Comp

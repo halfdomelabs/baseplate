@@ -2,7 +2,7 @@
 
 import type * as React from 'react';
 
-import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { Dialog as DialogPrimitive } from 'radix-ui';
 import { MdClose } from 'react-icons/md';
 
 import { cn } from '#src/utils/index.js';

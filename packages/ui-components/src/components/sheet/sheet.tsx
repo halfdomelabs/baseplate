@@ -1,9 +1,9 @@
 'use client';
 
-import type React from 'react';
+import type * as React from 'react';
 import type { ReactElement } from 'react';
 
-import * as SheetPrimitive from '@radix-ui/react-dialog';
+import { Dialog as SheetPrimitive } from 'radix-ui';
 import { MdClose } from 'react-icons/md';
 
 import { cn } from '#src/utils/index.js';

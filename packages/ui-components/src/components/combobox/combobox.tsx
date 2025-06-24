@@ -1,13 +1,7 @@
 'use client';
 
-import {
-  Popover,
-  PopoverAnchor,
-  PopoverContent,
-  PopoverPortal,
-} from '@radix-ui/react-popover';
-import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import { Command } from 'cmdk';
+import { Popover, ScrollArea as ScrollAreaPrimitive } from 'radix-ui';
 import * as React from 'react';
 import { MdCheck, MdUnfoldMore } from 'react-icons/md';
 
@@ -145,7 +139,7 @@ function Combobox({
 
   return (
     <ComboboxContext.Provider value={contextValue}>
-      <Popover open={isOpen} onOpenChange={contextValue.setIsOpen}>
+      <Popover.Root open={isOpen} onOpenChange={contextValue.setIsOpen}>
         <Command
           aria-disabled={disabled}
           shouldFilter={false}
@@ -157,7 +151,7 @@ function Combobox({
         >
           {children}
         </Command>
-      </Popover>
+      </Popover.Root>
     </ComboboxContext.Provider>
   );
 }
@@ -212,7 +206,7 @@ function ComboboxInput({
     );
 
   return (
-    <PopoverAnchor>
+    <Popover.Anchor>
       <div className="relative" data-cmdk-input-id={inputId}>
         <Command.Input
           asChild
@@ -297,7 +291,7 @@ function ComboboxInput({
           <MdUnfoldMore className="size-4" />
         </Button>
       </div>
-    </PopoverAnchor>
+    </Popover.Anchor>
   );
 }
 
@@ -317,8 +311,8 @@ function ComboboxContent({
 }: ComboboxContentProps): React.JSX.Element {
   const { inputId, listRef } = useComboboxContext();
   return (
-    <PopoverPortal>
-      <PopoverContent
+    <Popover.Portal>
+      <Popover.Content
         onOpenAutoFocus={(e) => {
           e.preventDefault();
         }}
@@ -361,8 +355,8 @@ function ComboboxContent({
           <ScrollBar />
           <ScrollAreaPrimitive.Corner />
         </ScrollAreaPrimitive.Root>
-      </PopoverContent>
-    </PopoverPortal>
+      </Popover.Content>
+    </Popover.Portal>
   );
 }
 

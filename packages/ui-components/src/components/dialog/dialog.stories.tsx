@@ -1,4 +1,3 @@
-import type { DialogProps } from '@radix-ui/react-dialog';
 import type { Meta, StoryObj } from '@storybook/react';
 import type React from 'react';
 
@@ -26,7 +25,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 function DialogContainer(
-  args: Omit<DialogProps, 'children'>,
+  args: Omit<React.ComponentProps<typeof Dialog>, 'children'>,
 ): React.JSX.Element {
   return (
     <Dialog {...args}>
@@ -61,7 +60,7 @@ export const Default: Story = {
 };
 
 function ControlledDialogContainer(
-  args: Omit<DialogProps, 'children' | 'open'>,
+  args: Omit<React.ComponentProps<typeof Dialog>, 'children' | 'open'>,
 ): React.JSX.Element {
   const [open, setOpen] = useState(false);
 

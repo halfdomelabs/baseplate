@@ -2,7 +2,7 @@
 
 import type * as React from 'react';
 
-import * as TabsPrimitive from '@radix-ui/react-tabs';
+import { Tabs as TabsPrimitive } from 'radix-ui';
 
 import { cn } from '#src/utils/index.js';
 

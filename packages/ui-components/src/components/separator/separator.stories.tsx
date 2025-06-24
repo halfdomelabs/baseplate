@@ -1,4 +1,3 @@
-import type { SelectSeparatorProps } from '@radix-ui/react-select';
 import type { Meta, StoryObj } from '@storybook/react';
 import type React from 'react';
 
@@ -12,7 +11,9 @@ const meta = {
   },
 } satisfies Meta<typeof Separator>;
 
-function SeparatorContainer(args: SelectSeparatorProps): React.JSX.Element {
+function SeparatorContainer(
+  args: React.ComponentProps<typeof Separator>,
+): React.JSX.Element {
   return (
     <div className="space-y-4">
       <p>This is some content</p>
