@@ -32,6 +32,7 @@ export const REACT_PACKAGES = {
   'radix-ui': '1.4.2',
   'class-variance-authority': '0.7.1',
   cmdk: '1.1.1',
+  sonner: '2.0.3',
 
   // Date Picker
   'react-datepicker': '8.3.0',

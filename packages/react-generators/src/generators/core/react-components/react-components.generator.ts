@@ -62,6 +62,7 @@ export const reactComponentsGenerator = createGenerator({
         'radix-ui',
         'class-variance-authority',
         'cmdk',
+        'sonner',
       ]),
     }),
     paths: CORE_REACT_COMPONENTS_GENERATED.paths.task,
