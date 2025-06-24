@@ -463,6 +463,20 @@ const toast = createTsTemplateFile({
   variables: {},
 });
 
+const toaster = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'toaster',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/toaster/toaster.tsx',
+    ),
+  },
+  variables: {},
+});
+
 export const componentsGroup = {
   alert,
   alertIcon,
@@ -497,6 +511,7 @@ export const componentsGroup = {
   textAreaInput,
   textInput,
   toast,
+  toaster,
 };
 
 const hooksUseControlledState = createTsTemplateFile({
@@ -610,6 +625,7 @@ const index = createTsTemplateFile({
     TextAreaInput: {},
     TextInput: {},
     Toast: {},
+    Toaster: {},
   },
   source: {
     path: path.join(

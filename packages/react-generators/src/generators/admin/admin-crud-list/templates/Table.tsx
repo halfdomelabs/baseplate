@@ -7,10 +7,10 @@ import {
   LinkButton,
   Table,
   useConfirmDialog,
-  useToast,
 } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface Props {
   items: TPL_ROW_FRAGMENT[];
@@ -20,7 +20,6 @@ interface Props {
 
 function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
   const { requestConfirm } = useConfirmDialog();
-  const toast = useToast();
   function handleDelete(item: TPL_ROW_FRAGMENT): void {
     requestConfirm({
       title: 'Delete Item',

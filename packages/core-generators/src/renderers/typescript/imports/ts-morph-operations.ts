@@ -160,7 +160,7 @@ export function replaceImportDeclarationsInSourceFile(
           const child = children[0];
           return !Node.isStringLiteral(child);
         });
-  const insertionPosition = firstNonDirectiveNode?.getNonWhitespaceStart() ?? 0;
+  const insertionPosition = firstNonDirectiveNode?.getFullStart() ?? 0;
 
   // special case shebang to remove the first line if it's a shebang
   const firstNonDirectiveNodeHasShebang = firstNonDirectiveNode
@@ -174,6 +174,9 @@ export function replaceImportDeclarationsInSourceFile(
   sourceFile.insertText(insertionPosition, (writer) => {
     if (beforeImportsWriter) {
       beforeImportsWriter(writer);
+    }
+    if (insertionPosition > 0) {
+      writer.blankLineIfLastNot();
     }
     writeGroupedImportDeclarationsWithCodeBlockWriter(
       writer,

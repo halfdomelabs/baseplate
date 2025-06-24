@@ -503,8 +503,13 @@ const x = A();`,
     it('should preserve client directives', () => {
       // Arrange
       sourceFile.replaceWithText(
-        `"use client";
-import React from "react";
+        `'use client';
+
+import type React from 'react';
+
+import { Toaster as Sonner } from 'sonner';
+
+import { buttonVariants } from '@src/styles/button.js';
 
 const x = A();`,
       );
@@ -528,7 +533,7 @@ const x = A();`,
 
       // Assert
       expect(sourceFile.getFullText()).toBe(
-        '"use client";\n' + 'import React from "react";\n\nconst x = A();',
+        "'use client';\n\n" + 'import React from "react";\n\n\nconst x = A();',
       );
     });
 

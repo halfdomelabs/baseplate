@@ -2,8 +2,9 @@
 
 import type { ReactElement } from 'react';
 
-import { BackButton, useToast } from '%reactComponentsImports';
+import { BackButton } from '%reactComponentsImports';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 function TPL_COMPONENT_NAME(): ReactElement {
   TPL_DATA_LOADER;
@@ -16,7 +17,6 @@ function TPL_COMPONENT_NAME(): ReactElement {
     ],
   });
 
-  const toast = useToast();
   const navigate = useNavigate();
 
   const submitData = async (formData: TPL_FORM_DATA_NAME): Promise<void> => {

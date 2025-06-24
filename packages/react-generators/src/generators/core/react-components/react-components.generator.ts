@@ -109,10 +109,10 @@ export const reactComponentsGenerator = createGenerator({
 
         // add toaster root sibling component
         reactAppConfig.renderSiblings.set(
-          'react-hot-toast',
+          'toaster',
           tsCodeFragment(
             '<Toaster />',
-            tsImportBuilder(['Toaster']).from('react-hot-toast'),
+            tsImportBuilder(['Toaster']).from(paths.index),
           ),
         );
 

@@ -37,6 +37,7 @@ export interface CoreReactComponentsPaths {
   textAreaInput: string;
   textInput: string;
   toast: string;
+  toaster: string;
   hooksUseControlledState: string;
   useConfirmDialog: string;
   useStatus: string;
@@ -103,6 +104,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           textAreaInput: `${srcRoot}/components/TextAreaInput/index.tsx`,
           textInput: `${srcRoot}/components/TextInput/index.tsx`,
           toast: `${srcRoot}/components/Toast/index.tsx`,
+          toaster: `${srcRoot}/components/toaster/toaster.tsx`,
           typesForm: `${srcRoot}/types/form.ts`,
           useConfirmDialog: `${srcRoot}/hooks/useConfirmDialog.ts`,
           useStatus: `${srcRoot}/hooks/useStatus.ts`,

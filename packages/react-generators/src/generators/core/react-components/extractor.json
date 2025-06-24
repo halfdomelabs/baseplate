@@ -185,7 +185,8 @@
         "TextArea": {},
         "TextAreaInput": {},
         "TextInput": {},
-        "Toast": {}
+        "Toast": {},
+        "Toaster": {}
       },
       "variables": { "TPL_EXPORTS": {} }
     },
@@ -386,6 +387,16 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/Toast/index.tsx",
+      "variables": {}
+    },
+    "src/components/toaster/toaster.tsx": {
+      "name": "toaster",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/toaster/toaster.tsx",
       "variables": {}
     },
     "src/hooks/use-controlled-state.ts": {
