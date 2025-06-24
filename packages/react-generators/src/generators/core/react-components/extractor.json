@@ -111,6 +111,16 @@
       "pathRootRelativePath": "{src-root}/components/ErrorDisplay/index.tsx",
       "variables": {}
     },
+    "src/components/form-item/form-item.tsx": {
+      "name": "form-item",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/form-item/form-item.tsx",
+      "variables": {}
+    },
     "src/components/FormError/index.tsx": {
       "name": "form-error",
       "type": "ts",
@@ -153,6 +163,8 @@
         "FormError": {},
         "FormLabel": {},
         "Input": {},
+        "InputField": {},
+        "InputFieldController": {},
         "Label": {},
         "LinkButton": {},
         "ListGroup": {},
@@ -173,6 +185,16 @@
         "Toast": {}
       },
       "variables": { "TPL_EXPORTS": {} }
+    },
+    "src/components/input-field/input-field.tsx": {
+      "name": "input-field",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/input-field/input-field.tsx",
+      "variables": {}
     },
     "src/components/input/input.tsx": {
       "name": "input",
@@ -440,6 +462,22 @@
         "selectContentVariants": {},
         "selectItemVariants": {},
         "selectTriggerVariants": {}
+      },
+      "variables": {}
+    },
+    "src/types/form.ts": {
+      "name": "types-form",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "utils",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/types/form.ts",
+      "projectExports": {
+        "AddOptionRequiredFields": { "isTypeOnly": true },
+        "FormFieldProps": { "isTypeOnly": true },
+        "MultiSelectOptionProps": { "isTypeOnly": true },
+        "SelectOptionProps": { "isTypeOnly": true }
       },
       "variables": {}
     },

@@ -13,9 +13,11 @@ export interface CoreReactComponentsPaths {
   confirmDialog: string;
   errorableLoader: string;
   errorDisplay: string;
+  formItem: string;
   formError: string;
   formLabel: string;
   index: string;
+  inputField: string;
   input: string;
   label: string;
   linkButton: string;
@@ -41,6 +43,7 @@ export interface CoreReactComponentsPaths {
   stylesButton: string;
   stylesInput: string;
   stylesSelect: string;
+  typesForm: string;
   cn: string;
   mergeRefs: string;
 }
@@ -71,10 +74,12 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           errorableLoader: `${srcRoot}/components/ErrorableLoader/index.tsx`,
           errorDisplay: `${srcRoot}/components/ErrorDisplay/index.tsx`,
           formError: `${srcRoot}/components/FormError/index.tsx`,
+          formItem: `${srcRoot}/components/form-item/form-item.tsx`,
           formLabel: `${srcRoot}/components/FormLabel/index.tsx`,
           hooksUseControlledState: `${srcRoot}/hooks/use-controlled-state.ts`,
           index: `${srcRoot}/components/index.ts`,
           input: `${srcRoot}/components/input/input.tsx`,
+          inputField: `${srcRoot}/components/input-field/input-field.tsx`,
           label: `${srcRoot}/components/label/label.tsx`,
           linkButton: `${srcRoot}/components/LinkButton/index.tsx`,
           listGroup: `${srcRoot}/components/ListGroup/index.tsx`,
@@ -96,6 +101,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           textAreaInput: `${srcRoot}/components/TextAreaInput/index.tsx`,
           textInput: `${srcRoot}/components/TextInput/index.tsx`,
           toast: `${srcRoot}/components/Toast/index.tsx`,
+          typesForm: `${srcRoot}/types/form.ts`,
           useConfirmDialog: `${srcRoot}/hooks/useConfirmDialog.ts`,
           useStatus: `${srcRoot}/hooks/useStatus.ts`,
           useToast: `${srcRoot}/hooks/useToast.tsx`,

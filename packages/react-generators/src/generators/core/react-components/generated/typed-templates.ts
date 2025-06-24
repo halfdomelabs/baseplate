@@ -169,6 +169,20 @@ const formError = createTsTemplateFile({
   variables: {},
 });
 
+const formItem = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'form-item',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/form-item/form-item.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const formLabel = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -192,6 +206,20 @@ const input = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/components/input/input.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const inputField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'input-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/input-field/input-field.tsx',
     ),
   },
   variables: {},
@@ -434,8 +462,10 @@ export const componentsGroup = {
   errorableLoader,
   errorDisplay,
   formError,
+  formItem,
   formLabel,
   input,
+  inputField,
   label,
   linkButton,
   listGroup,
@@ -542,6 +572,8 @@ const index = createTsTemplateFile({
     FormError: {},
     FormLabel: {},
     Input: {},
+    InputField: {},
+    InputFieldController: {},
     Label: {},
     LinkButton: {},
     ListGroup: {},
@@ -653,7 +685,24 @@ const mergeRefs = createTsTemplateFile({
   variables: {},
 });
 
-export const utilsGroup = { cn, mergeRefs };
+const typesForm = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'utils',
+  importMapProviders: {},
+  name: 'types-form',
+  projectExports: {
+    AddOptionRequiredFields: { isTypeOnly: true },
+    FormFieldProps: { isTypeOnly: true },
+    MultiSelectOptionProps: { isTypeOnly: true },
+    SelectOptionProps: { isTypeOnly: true },
+  },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/types/form.ts'),
+  },
+  variables: {},
+});
+
+export const utilsGroup = { cn, mergeRefs, typesForm };
 
 export const CORE_REACT_COMPONENTS_TEMPLATES = {
   componentsGroup,
