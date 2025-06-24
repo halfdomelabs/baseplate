@@ -3,14 +3,14 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { createEntityType, zEnt, zRef } from '#src/references/index.js';
+import { createEntityType, zEnt } from '#src/references/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 export const featureEntityType = createEntityType('feature');
 
 export const featureNameSchema = CASE_VALIDATORS.KEBAB_CASE;
 
-export const createFeatureSchema = definitionSchema(() =>
+export const createFeatureSchema = definitionSchema((ctx) =>
   zEnt(
     z.object({
       name: z
@@ -26,7 +26,7 @@ export const createFeatureSchema = definitionSchema(() =>
               'Feature name must be lowercase and contain only letters, numbers, and dashes',
           },
         ),
-      parentRef: zRef(z.string().nullish(), {
+      parentRef: ctx.withRef(z.string().nullish(), {
         type: featureEntityType,
         onDelete: 'DELETE_PARENT',
       }),

@@ -6,6 +6,7 @@ import type {
 import type React from 'react';
 
 import {
+  createDefinitionSchemaParserContext,
   createPluginImplementationStore,
   createProjectDefinitionSchemaWithContext,
   fixRefDeletions,
@@ -152,12 +153,12 @@ export function ProjectDefinitionProvider({
       pluginContainer: projectDefinitionContainer.pluginStore,
       schemaParserContext,
       updatedExternally,
-      definitionSchemaCreatorOptions: {
+      definitionSchemaParserContext: createDefinitionSchemaParserContext({
         plugins: createPluginImplementationStore(
           schemaParserContext.pluginStore,
           definition,
         ),
-      },
+      }),
     };
   }, [
     cliVersion,

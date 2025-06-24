@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { zRef, zRefBuilder } from '#src/references/index.js';
+import { zRefBuilder } from '#src/references/index.js';
 import { authRoleEntityType } from '#src/schema/auth/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
@@ -35,7 +35,7 @@ export const createAdminAppSchema = definitionSchema((ctx) =>
     type: z.literal('admin'),
     allowedRoles: z
       .array(
-        zRef(z.string(), {
+        ctx.withRef(z.string(), {
           type: authRoleEntityType,
           onDelete: 'DELETE',
         }),

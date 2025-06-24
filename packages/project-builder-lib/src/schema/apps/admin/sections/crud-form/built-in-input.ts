@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { zRef } from '#src/references/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 import {
   modelForeignRelationEntityType,
@@ -17,11 +16,11 @@ import {
   createAdminCrudInputType,
 } from './types.js';
 
-export const createAdminCrudTextInputSchema = definitionSchema(() =>
+export const createAdminCrudTextInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('text'),
     label: z.string().min(1),
-    modelFieldRef: zRef(z.string(), {
+    modelFieldRef: ctx.withRef(z.string(), {
       type: modelScalarFieldEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
@@ -39,11 +38,11 @@ const adminCrudTextInputType = createAdminCrudInputType({
   schema: createAdminCrudTextInputSchema,
 });
 
-export const createAdminCrudForeignInputSchema = definitionSchema(() =>
+export const createAdminCrudForeignInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('foreign'),
     label: z.string().min(1),
-    localRelationRef: zRef(z.string(), {
+    localRelationRef: ctx.withRef(z.string(), {
       type: modelLocalRelationEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
@@ -64,11 +63,11 @@ const adminCrudForeignInputType = createAdminCrudInputType({
   schema: createAdminCrudForeignInputSchema,
 });
 
-export const createAdminCrudEnumInputSchema = definitionSchema(() =>
+export const createAdminCrudEnumInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('enum'),
     label: z.string().min(1),
-    modelFieldRef: zRef(z.string(), {
+    modelFieldRef: ctx.withRef(z.string(), {
       type: modelScalarFieldEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
@@ -85,16 +84,16 @@ const adminCrudEnumInputType = createAdminCrudInputType({
   schema: createAdminCrudEnumInputSchema,
 });
 
-export const createAdminCrudEmbeddedInputSchema = definitionSchema(() =>
+export const createAdminCrudEmbeddedInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('embedded'),
     label: z.string().min(1),
-    modelRelationRef: zRef(z.string(), {
+    modelRelationRef: ctx.withRef(z.string(), {
       type: modelForeignRelationEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
     }),
-    embeddedFormRef: zRef(z.string(), {
+    embeddedFormRef: ctx.withRef(z.string(), {
       type: adminCrudEmbeddedFormEntityType,
       parentPath: { context: 'admin-section' },
       onDelete: 'RESTRICT',
@@ -111,16 +110,16 @@ export const adminCrudEmbeddedInputType = createAdminCrudInputType({
   schema: createAdminCrudEmbeddedInputSchema,
 });
 
-export const createAdminCrudEmbeddedLocalInputSchema = definitionSchema(() =>
+export const createAdminCrudEmbeddedLocalInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('embeddedLocal'),
     label: z.string().min(1),
-    localRelationRef: zRef(z.string(), {
+    localRelationRef: ctx.withRef(z.string(), {
       type: modelLocalRelationEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
     }),
-    embeddedFormRef: zRef(z.string(), {
+    embeddedFormRef: ctx.withRef(z.string(), {
       type: adminCrudEmbeddedFormEntityType,
       parentPath: { context: 'admin-section' },
       onDelete: 'RESTRICT',

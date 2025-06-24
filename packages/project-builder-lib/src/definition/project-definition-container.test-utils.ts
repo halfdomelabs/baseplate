@@ -9,6 +9,7 @@ import {
   zPluginWrapper,
 } from '#src/plugins/index.js';
 import { deserializeSchemaWithReferences } from '#src/references/deserialize-schema.js';
+import { createDefinitionSchemaParserContext } from '#src/schema/index.js';
 import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
 
 import { ProjectDefinitionContainer } from './project-definition-container.js';
@@ -50,9 +51,11 @@ export function createTestProjectDefinitionContainer(
     availablePlugins: [],
   };
   const pluginImplementationStore = new PluginImplementationStore({});
-  const projectDefinitionSchema = createProjectDefinitionSchema({
+  const definitionContext = createDefinitionSchemaParserContext({
     plugins: pluginImplementationStore,
   });
+  const projectDefinitionSchema =
+    createProjectDefinitionSchema(definitionContext);
   const schemaWithPlugins = zPluginWrapper(
     projectDefinitionSchema,
     pluginImplementationStore,

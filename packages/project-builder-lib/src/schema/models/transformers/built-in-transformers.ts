@@ -5,7 +5,6 @@ import type { def } from '#src/schema/creator/index.js';
 import {
   createDefinitionEntityNameResolver,
   zEnt,
-  zRef,
 } from '#src/references/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
@@ -35,18 +34,18 @@ export type PasswordTransformerConfig = def.InferOutput<
   typeof createPasswordTransformerSchema
 >;
 
-export const createEmbeddedRelationTransformerSchema = definitionSchema(() =>
+export const createEmbeddedRelationTransformerSchema = definitionSchema((ctx) =>
   zEnt(
     z.object({
       ...baseTransformerFields,
-      foreignRelationRef: zRef(z.string().min(1), {
+      foreignRelationRef: ctx.withRef(z.string().min(1), {
         type: modelForeignRelationEntityType,
         onDelete: 'DELETE_PARENT',
         parentPath: { context: 'model' },
       }),
       type: z.literal('embeddedRelation'),
       embeddedFieldNames: z.array(
-        zRef(z.string().min(1), {
+        ctx.withRef(z.string().min(1), {
           type: modelScalarFieldEntityType,
           onDelete: 'RESTRICT',
           parentPath: { context: 'embeddedModel' },
@@ -54,14 +53,14 @@ export const createEmbeddedRelationTransformerSchema = definitionSchema(() =>
       ),
       embeddedTransformerNames: z
         .array(
-          zRef(z.string().min(1), {
+          ctx.withRef(z.string().min(1), {
             type: modelTransformerEntityType,
             onDelete: 'RESTRICT',
             parentPath: { context: 'embeddedModel' },
           }),
         )
         .optional(),
-      modelRef: zRef(z.string().min(1), {
+      modelRef: ctx.withRef(z.string().min(1), {
         type: modelEntityType,
         onDelete: 'RESTRICT',
       }),

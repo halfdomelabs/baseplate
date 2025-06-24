@@ -18,7 +18,11 @@ import type {
 import { initializePlugins } from '#src/plugins/imports/loader.js';
 import { pluginConfigSpec, zPluginWrapper } from '#src/plugins/index.js';
 import { parseSchemaWithReferences } from '#src/references/parse-schema-with-references.js';
-import { adminCrudInputSpec, modelTransformerSpec } from '#src/schema/index.js';
+import {
+  adminCrudInputSpec,
+  createDefinitionSchemaParserContext,
+  modelTransformerSpec,
+} from '#src/schema/index.js';
 import { basePluginDefinitionSchema } from '#src/schema/plugins/definition.js';
 import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
 
@@ -101,8 +105,11 @@ export function createProjectDefinitionSchemaWithContext(
     pluginStore,
     projectDefinition,
   );
+  const definitionContext = createDefinitionSchemaParserContext({
+    plugins: pluginImplementationStore,
+  });
   return zPluginWrapper(
-    createProjectDefinitionSchema({ plugins: pluginImplementationStore }),
+    createProjectDefinitionSchema(definitionContext),
     pluginImplementationStore,
   );
 }

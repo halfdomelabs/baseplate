@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { zEnt, zRef } from '#src/references/index.js';
+import { zEnt } from '#src/references/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { featureEntityType } from '../features/index.js';
@@ -26,7 +26,7 @@ export type EnumValueConfig = def.InferOutput<typeof createEnumValueSchema>;
 export const createEnumBaseSchema = definitionSchema((ctx) =>
   z.object({
     name: z.string().min(1),
-    featureRef: zRef(z.string().min(1), {
+    featureRef: ctx.withRef(z.string().min(1), {
       type: featureEntityType,
       onDelete: 'RESTRICT',
     }),

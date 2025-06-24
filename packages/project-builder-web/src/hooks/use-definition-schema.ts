@@ -9,9 +9,9 @@ import { useMemo } from 'react';
 export function useDefinitionSchema<T extends DefinitionSchemaCreator>(
   schemaCreator: T,
 ): def.InferSchema<T> {
-  const { definitionSchemaCreatorOptions } = useProjectDefinition();
+  const { definitionSchemaParserContext } = useProjectDefinition();
   return useMemo(
-    () => schemaCreator(definitionSchemaCreatorOptions),
-    [definitionSchemaCreatorOptions, schemaCreator],
+    () => schemaCreator(definitionSchemaParserContext),
+    [definitionSchemaParserContext, schemaCreator],
   ) as def.InferSchema<T>;
 }
