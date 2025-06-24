@@ -30,6 +30,7 @@ export interface CoreReactComponentsPaths {
   scrollArea: string;
   select: string;
   selectInput: string;
+  sidebarLayout: string;
   sidebar: string;
   spinner: string;
   table: string;
@@ -93,6 +94,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           select: `${srcRoot}/components/select/select.tsx`,
           selectInput: `${srcRoot}/components/SelectInput/index.tsx`,
           sidebar: `${srcRoot}/components/Sidebar/index.tsx`,
+          sidebarLayout: `${srcRoot}/components/sidebar-layout/sidebar-layout.tsx`,
           spinner: `${srcRoot}/components/Spinner/index.tsx`,
           stylesButton: `${srcRoot}/styles/button.ts`,
           stylesInput: `${srcRoot}/styles/input.ts`,

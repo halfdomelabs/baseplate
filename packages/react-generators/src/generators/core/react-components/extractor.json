@@ -177,6 +177,9 @@
         "Select": {},
         "SelectInput": {},
         "Sidebar": {},
+        "SidebarLayout": {},
+        "SidebarLayoutContent": {},
+        "SidebarLayoutSidebar": {},
         "Spinner": {},
         "Table": {},
         "TextArea": {},
@@ -313,6 +316,16 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/SelectInput/index.tsx",
+      "variables": {}
+    },
+    "src/components/sidebar-layout/sidebar-layout.tsx": {
+      "name": "sidebar-layout",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/sidebar-layout/sidebar-layout.tsx",
       "variables": {}
     },
     "src/components/Sidebar/index.tsx": {
