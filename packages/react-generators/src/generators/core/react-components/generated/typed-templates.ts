@@ -71,6 +71,20 @@ const buttonGroup = createTsTemplateFile({
   variables: {},
 });
 
+const calendar = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'calendar',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/calendar/calendar.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const card = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -164,6 +178,34 @@ const confirmDialog = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/components/ConfirmDialog/index.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const datePickerField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'date-picker-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/date-picker-field/date-picker-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const dialog = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'dialog',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/dialog/dialog.tsx',
     ),
   },
   variables: {},
@@ -374,6 +416,20 @@ const notFoundCard = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/components/NotFoundCard/index.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const popover = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'popover',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/popover/popover.tsx',
     ),
   },
   variables: {},
@@ -595,6 +651,7 @@ export const componentsGroup = {
   backButton,
   button,
   buttonGroup,
+  calendar,
   card,
   checkbox,
   checkboxField,
@@ -602,6 +659,8 @@ export const componentsGroup = {
   combobox,
   comboboxField,
   confirmDialog,
+  datePickerField,
+  dialog,
   emptyDisplay,
   errorableLoader,
   errorDisplay,
@@ -617,6 +676,7 @@ export const componentsGroup = {
   modal,
   navigationMenu,
   notFoundCard,
+  popover,
   reactSelectInput,
   scrollArea,
   select,
@@ -716,6 +776,7 @@ const index = createTsTemplateFile({
     BackButton: {},
     Button: {},
     ButtonGroup: {},
+    Calendar: {},
     Card: {},
     Checkbox: {},
     CheckboxField: {},
@@ -725,6 +786,19 @@ const index = createTsTemplateFile({
     ComboboxField: {},
     ComboboxFieldController: {},
     ConfirmDialog: {},
+    DatePickerField: {},
+    DatePickerFieldController: {},
+    Dialog: {},
+    DialogClose: {},
+    DialogContent: {},
+    DialogDescription: {},
+    DialogFooter: {},
+    DialogHeader: {},
+    DialogOverlay: {},
+    DialogPortal: {},
+    DialogTitle: {},
+    DialogTrigger: {},
+    DialogWidth: { isTypeOnly: true },
     EmptyDisplay: {},
     ErrorableLoader: {},
     ErrorDisplay: {},
@@ -749,6 +823,10 @@ const index = createTsTemplateFile({
     navigationMenuTriggerStyle: {},
     NavigationMenuViewport: {},
     NotFoundCard: {},
+    Popover: {},
+    PopoverAnchor: {},
+    PopoverContent: {},
+    PopoverTrigger: {},
     ReactDatePickerInput: {},
     ReactSelectInput: {},
     ScrollArea: {},

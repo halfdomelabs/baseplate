@@ -7,6 +7,7 @@ export interface CoreReactComponentsPaths {
   backButton: string;
   button: string;
   buttonGroup: string;
+  calendar: string;
   card: string;
   checkboxField: string;
   checkbox: string;
@@ -14,6 +15,8 @@ export interface CoreReactComponentsPaths {
   comboboxField: string;
   combobox: string;
   confirmDialog: string;
+  datePickerField: string;
+  dialog: string;
   emptyDisplay: string;
   errorDisplay: string;
   errorableLoader: string;
@@ -30,6 +33,7 @@ export interface CoreReactComponentsPaths {
   modal: string;
   navigationMenu: string;
   notFoundCard: string;
+  popover: string;
   reactDatePickerInput: string;
   reactSelectInput: string;
   scrollArea: string;
@@ -77,6 +81,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           backButton: `${srcRoot}/components/BackButton/index.tsx`,
           button: `${srcRoot}/components/button/button.tsx`,
           buttonGroup: `${srcRoot}/components/ButtonGroup/index.tsx`,
+          calendar: `${srcRoot}/components/calendar/calendar.tsx`,
           card: `${srcRoot}/components/card/card.tsx`,
           checkbox: `${srcRoot}/components/checkbox/checkbox.tsx`,
           checkboxField: `${srcRoot}/components/checkbox-field/checkbox-field.tsx`,
@@ -85,6 +90,8 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           combobox: `${srcRoot}/components/combobox/combobox.tsx`,
           comboboxField: `${srcRoot}/components/combobox-field/combobox-field.tsx`,
           confirmDialog: `${srcRoot}/components/ConfirmDialog/index.tsx`,
+          datePickerField: `${srcRoot}/components/date-picker-field/date-picker-field.tsx`,
+          dialog: `${srcRoot}/components/dialog/dialog.tsx`,
           emptyDisplay: `${srcRoot}/components/empty-display/empty-display.tsx`,
           errorableLoader: `${srcRoot}/components/errorable-loader/errorable-loader.tsx`,
           errorDisplay: `${srcRoot}/components/error-display/error-display.tsx`,
@@ -104,6 +111,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           modal: `${srcRoot}/components/Modal/index.tsx`,
           navigationMenu: `${srcRoot}/components/navigation-menu/navigation-menu.tsx`,
           notFoundCard: `${srcRoot}/components/NotFoundCard/index.tsx`,
+          popover: `${srcRoot}/components/popover/popover.tsx`,
           reactDatePickerInput: `${srcRoot}/components/ReactDatePickerInput/index.tsx`,
           reactSelectInput: `${srcRoot}/components/ReactSelectInput/index.tsx`,
           scrollArea: `${srcRoot}/components/scroll-area/scroll-area.tsx`,

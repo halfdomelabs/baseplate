@@ -34,7 +34,7 @@ export const REACT_PACKAGES = {
   sonner: '2.0.3',
 
   // Date Picker
-  'react-datepicker': '8.3.0',
+  'react-day-picker': '9.7.0',
   'date-fns': '4.1.0',
 
   // GraphQL

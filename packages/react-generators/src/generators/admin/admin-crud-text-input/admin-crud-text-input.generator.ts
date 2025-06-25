@@ -22,10 +22,10 @@ const INPUT_TYPE_MAP: Record<
   TextInputType,
   keyof ReactComponentsImportsProvider
 > = {
-  checked: 'CheckedInput',
-  date: 'ReactDatePickerInput',
-  dateTime: 'ReactDatePickerInput',
-  text: 'TextInput',
+  checked: 'CheckboxFieldController',
+  date: 'DatePickerFieldController',
+  dateTime: 'DatePickerFieldController',
+  text: 'InputFieldController',
 };
 
 export const adminCrudTextInputGenerator = createGenerator({
@@ -44,7 +44,7 @@ export const adminCrudTextInputGenerator = createGenerator({
         adminCrudInputContainer.addInput({
           order,
           content: tsCodeFragment(
-            `<${inputType}.LabelledController
+            `<${inputType}
           label="${label}"
           control={control}
           name="${modelField}"

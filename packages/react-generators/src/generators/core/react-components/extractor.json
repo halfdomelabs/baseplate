@@ -51,6 +51,16 @@
       "pathRootRelativePath": "{src-root}/components/ButtonGroup/index.tsx",
       "variables": {}
     },
+    "src/components/calendar/calendar.tsx": {
+      "name": "calendar",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/calendar/calendar.tsx",
+      "variables": {}
+    },
     "src/components/card/card.tsx": {
       "name": "card",
       "type": "ts",
@@ -119,6 +129,26 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/ConfirmDialog/index.tsx",
+      "variables": {}
+    },
+    "src/components/date-picker-field/date-picker-field.tsx": {
+      "name": "date-picker-field",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/date-picker-field/date-picker-field.tsx",
+      "variables": {}
+    },
+    "src/components/dialog/dialog.tsx": {
+      "name": "dialog",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/dialog/dialog.tsx",
       "variables": {}
     },
     "src/components/empty-display/empty-display.tsx": {
@@ -194,6 +224,7 @@
         "BackButton": {},
         "Button": {},
         "ButtonGroup": {},
+        "Calendar": {},
         "Card": {},
         "Checkbox": {},
         "CheckboxField": {},
@@ -203,6 +234,19 @@
         "ComboboxField": {},
         "ComboboxFieldController": {},
         "ConfirmDialog": {},
+        "DatePickerField": {},
+        "DatePickerFieldController": {},
+        "Dialog": {},
+        "DialogClose": {},
+        "DialogContent": {},
+        "DialogDescription": {},
+        "DialogFooter": {},
+        "DialogHeader": {},
+        "DialogOverlay": {},
+        "DialogPortal": {},
+        "DialogTitle": {},
+        "DialogTrigger": {},
+        "DialogWidth": { "isTypeOnly": true },
         "EmptyDisplay": {},
         "ErrorableLoader": {},
         "ErrorDisplay": {},
@@ -227,6 +271,10 @@
         "navigationMenuTriggerStyle": {},
         "NavigationMenuViewport": {},
         "NotFoundCard": {},
+        "Popover": {},
+        "PopoverAnchor": {},
+        "PopoverContent": {},
+        "PopoverTrigger": {},
         "ReactDatePickerInput": {},
         "ReactSelectInput": {},
         "ScrollArea": {},
@@ -341,13 +389,14 @@
       "pathRootRelativePath": "{src-root}/components/NotFoundCard/index.tsx",
       "variables": {}
     },
-    "src/components/ReactDatePickerInput/index.tsx": {
-      "name": "react-date-picker-input",
+    "src/components/popover/popover.tsx": {
+      "name": "popover",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/ReactDatePickerInput/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/popover/popover.tsx",
       "variables": {}
     },
     "src/components/ReactSelectInput/index.tsx": {

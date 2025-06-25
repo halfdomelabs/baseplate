@@ -19,9 +19,7 @@ import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 import { reactAppConfigProvider } from '../react-app/index.js';
 import { CORE_REACT_COMPONENTS_GENERATED } from './generated/index.js';
 
-const descriptorSchema = z.object({
-  includeDatePicker: z.boolean().optional(),
-});
+const descriptorSchema = z.object({});
 
 export interface ReactComponentEntry {
   name: string;
@@ -48,7 +46,7 @@ export const reactComponentsGenerator = createGenerator({
   name: 'core/react-components',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ includeDatePicker }) => ({
+  buildTasks: () => ({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
         '@headlessui/react',
@@ -62,18 +60,12 @@ export const reactComponentsGenerator = createGenerator({
         'class-variance-authority',
         'cmdk',
         'sonner',
+        'react-day-picker',
+        'date-fns',
       ]),
     }),
     paths: CORE_REACT_COMPONENTS_GENERATED.paths.task,
     imports: CORE_REACT_COMPONENTS_GENERATED.imports.task,
-    datePickerPackages: includeDatePicker
-      ? createNodePackagesTask({
-          prod: extractPackageVersions(REACT_PACKAGES, [
-            'react-datepicker',
-            'date-fns',
-          ]),
-        })
-      : undefined,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
@@ -100,10 +92,6 @@ export const reactComponentsGenerator = createGenerator({
               : true,
           }),
         );
-
-        if (includeDatePicker) {
-          coreReactComponents.push({ name: 'ReactDatePickerInput' });
-        }
 
         const allReactComponents = [...coreReactComponents];
 
@@ -161,17 +149,6 @@ export const reactComponentsGenerator = createGenerator({
                 paths,
               }),
             );
-
-            if (includeDatePicker) {
-              await builder.apply(
-                typescriptFile.renderTemplateFile({
-                  template:
-                    CORE_REACT_COMPONENTS_GENERATED.templates
-                      .reactDatePickerInput,
-                  destination: paths.reactDatePickerInput,
-                }),
-              );
-            }
 
             // build component index
             const sortedComponents = allReactComponents.toSorted((a, b) =>
