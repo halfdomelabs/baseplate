@@ -24,7 +24,7 @@ const INPUT_TYPE_MAP: Record<
 > = {
   checked: 'CheckboxFieldController',
   date: 'DatePickerFieldController',
-  dateTime: 'DatePickerFieldController',
+  dateTime: 'DateTimePickerFieldController',
   text: 'InputFieldController',
 };
 
@@ -48,7 +48,6 @@ export const adminCrudTextInputGenerator = createGenerator({
           label="${label}"
           control={control}
           name="${modelField}"
-          ${type === 'dateTime' ? 'showTimeSelect' : ''}
         />`,
             reactComponentsImports[inputType].declaration(),
           ),

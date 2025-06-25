@@ -16,6 +16,7 @@ export interface CoreReactComponentsPaths {
   combobox: string;
   confirmDialog: string;
   datePickerField: string;
+  dateTimePickerField: string;
   dialog: string;
   emptyDisplay: string;
   errorDisplay: string;
@@ -34,7 +35,6 @@ export interface CoreReactComponentsPaths {
   navigationMenu: string;
   notFoundCard: string;
   popover: string;
-  reactDatePickerInput: string;
   reactSelectInput: string;
   scrollArea: string;
   selectField: string;
@@ -91,6 +91,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           comboboxField: `${srcRoot}/components/combobox-field/combobox-field.tsx`,
           confirmDialog: `${srcRoot}/components/ConfirmDialog/index.tsx`,
           datePickerField: `${srcRoot}/components/date-picker-field/date-picker-field.tsx`,
+          dateTimePickerField: `${srcRoot}/components/date-time-picker-field/date-time-picker-field.tsx`,
           dialog: `${srcRoot}/components/dialog/dialog.tsx`,
           emptyDisplay: `${srcRoot}/components/empty-display/empty-display.tsx`,
           errorableLoader: `${srcRoot}/components/errorable-loader/errorable-loader.tsx`,
@@ -112,7 +113,6 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           navigationMenu: `${srcRoot}/components/navigation-menu/navigation-menu.tsx`,
           notFoundCard: `${srcRoot}/components/NotFoundCard/index.tsx`,
           popover: `${srcRoot}/components/popover/popover.tsx`,
-          reactDatePickerInput: `${srcRoot}/components/ReactDatePickerInput/index.tsx`,
           reactSelectInput: `${srcRoot}/components/ReactSelectInput/index.tsx`,
           scrollArea: `${srcRoot}/components/scroll-area/scroll-area.tsx`,
           select: `${srcRoot}/components/select/select.tsx`,

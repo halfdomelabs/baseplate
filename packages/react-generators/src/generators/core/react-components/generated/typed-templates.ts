@@ -197,6 +197,20 @@ const datePickerField = createTsTemplateFile({
   variables: {},
 });
 
+const dateTimePickerField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'date-time-picker-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/date-time-picker-field/date-time-picker-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const dialog = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -660,6 +674,7 @@ export const componentsGroup = {
   comboboxField,
   confirmDialog,
   datePickerField,
+  dateTimePickerField,
   dialog,
   emptyDisplay,
   errorableLoader,
@@ -788,6 +803,8 @@ const index = createTsTemplateFile({
     ConfirmDialog: {},
     DatePickerField: {},
     DatePickerFieldController: {},
+    DateTimePickerField: {},
+    DateTimePickerFieldController: {},
     Dialog: {},
     DialogClose: {},
     DialogContent: {},
@@ -856,19 +873,6 @@ const index = createTsTemplateFile({
     ),
   },
   variables: { TPL_EXPORTS: {} },
-});
-
-const reactDatePickerInput = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
-  name: 'react-date-picker-input',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/ReactDatePickerInput/index.tsx',
-    ),
-  },
-  variables: {},
 });
 
 const stylesButton = createTsTemplateFile({
@@ -978,5 +982,4 @@ export const CORE_REACT_COMPONENTS_TEMPLATES = {
   stylesGroup,
   utilsGroup,
   index,
-  reactDatePickerInput,
 };
