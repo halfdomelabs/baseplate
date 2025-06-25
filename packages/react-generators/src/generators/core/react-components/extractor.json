@@ -91,6 +91,16 @@
       "pathRootRelativePath": "{src-root}/components/CheckedInput/index.tsx",
       "variables": {}
     },
+    "src/components/combobox-field/combobox-field.tsx": {
+      "name": "combobox-field",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/combobox-field/combobox-field.tsx",
+      "variables": {}
+    },
     "src/components/combobox/combobox.tsx": {
       "name": "combobox",
       "type": "ts",
@@ -180,6 +190,8 @@
         "CheckboxFieldController": {},
         "CheckedInput": {},
         "Combobox": {},
+        "ComboboxField": {},
+        "ComboboxFieldController": {},
         "ConfirmDialog": {},
         "ErrorableLoader": {},
         "ErrorDisplay": {},
@@ -215,8 +227,13 @@
         "SidebarLayoutContent": {},
         "SidebarLayoutSidebar": {},
         "Spinner": {},
+        "Switch": {},
+        "SwitchField": {},
+        "SwitchFieldController": {},
         "Table": {},
-        "TextArea": {},
+        "Textarea": {},
+        "TextareaField": {},
+        "TextareaFieldController": {},
         "TextAreaInput": {},
         "TextInput": {},
         "Toaster": {}
@@ -392,6 +409,26 @@
       "pathRootRelativePath": "{src-root}/components/Spinner/index.tsx",
       "variables": {}
     },
+    "src/components/switch-field/switch-field.tsx": {
+      "name": "switch-field",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/switch-field/switch-field.tsx",
+      "variables": {}
+    },
+    "src/components/switch/switch.tsx": {
+      "name": "switch-component",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/switch/switch.tsx",
+      "variables": {}
+    },
     "src/components/Table/index.tsx": {
       "name": "table",
       "type": "ts",
@@ -400,6 +437,26 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/Table/index.tsx",
+      "variables": {}
+    },
+    "src/components/textarea-field/textarea-field.tsx": {
+      "name": "textarea-field",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/textarea-field/textarea-field.tsx",
+      "variables": {}
+    },
+    "src/components/textarea/textarea.tsx": {
+      "name": "textarea",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/textarea/textarea.tsx",
       "variables": {}
     },
     "src/components/TextAreaInput/index.tsx": {

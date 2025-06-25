@@ -11,6 +11,7 @@ export interface CoreReactComponentsPaths {
   checkboxField: string;
   checkbox: string;
   checkedInput: string;
+  comboboxField: string;
   combobox: string;
   confirmDialog: string;
   errorableLoader: string;
@@ -36,7 +37,11 @@ export interface CoreReactComponentsPaths {
   selectInput: string;
   sidebarLayout: string;
   spinner: string;
+  switchField: string;
+  switchComponent: string;
   table: string;
+  textareaField: string;
+  textarea: string;
   textAreaInput: string;
   textInput: string;
   toaster: string;
@@ -76,6 +81,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           checkedInput: `${srcRoot}/components/CheckedInput/index.tsx`,
           cn: `${srcRoot}/utils/cn.ts`,
           combobox: `${srcRoot}/components/combobox/combobox.tsx`,
+          comboboxField: `${srcRoot}/components/combobox-field/combobox-field.tsx`,
           confirmDialog: `${srcRoot}/components/ConfirmDialog/index.tsx`,
           errorableLoader: `${srcRoot}/components/ErrorableLoader/index.tsx`,
           errorDisplay: `${srcRoot}/components/ErrorDisplay/index.tsx`,
@@ -106,7 +112,11 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           stylesButton: `${srcRoot}/styles/button.ts`,
           stylesInput: `${srcRoot}/styles/input.ts`,
           stylesSelect: `${srcRoot}/styles/select.ts`,
+          switchComponent: `${srcRoot}/components/switch/switch.tsx`,
+          switchField: `${srcRoot}/components/switch-field/switch-field.tsx`,
           table: `${srcRoot}/components/Table/index.tsx`,
+          textarea: `${srcRoot}/components/textarea/textarea.tsx`,
+          textareaField: `${srcRoot}/components/textarea-field/textarea-field.tsx`,
           textAreaInput: `${srcRoot}/components/TextAreaInput/index.tsx`,
           textInput: `${srcRoot}/components/TextInput/index.tsx`,
           toaster: `${srcRoot}/components/toaster/toaster.tsx`,

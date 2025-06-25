@@ -90,7 +90,8 @@ export const reactComponentsGenerator = createGenerator({
           (name): ReactComponentEntry => ({
             name: paths[name as keyof typeof paths].endsWith('index.tsx')
               ? pascalCase(name)
-              : kebabCase(name),
+              : // Some components are invalid variable names, e.g. switch
+                kebabCase(name).replace('-component', ''),
             // Temporary while we transition to the new component structure.
             isBarrelExport: paths[name as keyof typeof paths].endsWith(
               'index.tsx',

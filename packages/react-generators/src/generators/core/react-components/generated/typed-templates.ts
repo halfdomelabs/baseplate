@@ -141,6 +141,20 @@ const combobox = createTsTemplateFile({
   variables: {},
 });
 
+const comboboxField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'combobox-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/combobox-field/combobox-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const confirmDialog = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -449,6 +463,34 @@ const spinner = createTsTemplateFile({
   variables: {},
 });
 
+const switchComponent = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'switch-component',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/switch/switch.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const switchField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'switch-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/switch-field/switch-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const table = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -458,6 +500,34 @@ const table = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/components/Table/index.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const textarea = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'textarea',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/textarea/textarea.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const textareaField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'textarea-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/textarea-field/textarea-field.tsx',
     ),
   },
   variables: {},
@@ -516,6 +586,7 @@ export const componentsGroup = {
   checkboxField,
   checkedInput,
   combobox,
+  comboboxField,
   confirmDialog,
   errorableLoader,
   errorDisplay,
@@ -538,7 +609,11 @@ export const componentsGroup = {
   selectInput,
   sidebarLayout,
   spinner,
+  switchComponent,
+  switchField,
   table,
+  textarea,
+  textareaField,
   textAreaInput,
   textInput,
   toaster,
@@ -632,6 +707,8 @@ const index = createTsTemplateFile({
     CheckboxFieldController: {},
     CheckedInput: {},
     Combobox: {},
+    ComboboxField: {},
+    ComboboxFieldController: {},
     ConfirmDialog: {},
     ErrorableLoader: {},
     ErrorDisplay: {},
@@ -667,8 +744,13 @@ const index = createTsTemplateFile({
     SidebarLayoutContent: {},
     SidebarLayoutSidebar: {},
     Spinner: {},
+    Switch: {},
+    SwitchField: {},
+    SwitchFieldController: {},
     Table: {},
-    TextArea: {},
+    Textarea: {},
+    TextareaField: {},
+    TextareaFieldController: {},
     TextAreaInput: {},
     TextInput: {},
     Toaster: {},
