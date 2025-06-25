@@ -17,7 +17,6 @@ export const REACT_PACKAGES = {
   autoprefixer: '10.4.20',
   tailwindcss: '3.4.11',
   'prettier-plugin-tailwindcss': '0.6.6',
-  '@tailwindcss/forms': '0.5.9',
 
   // Components
   '@headlessui/react': '2.2.2',

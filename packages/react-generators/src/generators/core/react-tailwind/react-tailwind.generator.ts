@@ -41,7 +41,6 @@ export const reactTailwindGenerator = createGenerator({
         'autoprefixer',
         'tailwindcss',
         'prettier-plugin-tailwindcss',
-        '@tailwindcss/forms',
       ]),
     }),
     paths: CORE_REACT_TAILWIND_GENERATED.paths.task,
