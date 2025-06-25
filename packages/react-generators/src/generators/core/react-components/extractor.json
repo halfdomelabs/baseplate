@@ -61,6 +61,26 @@
       "pathRootRelativePath": "{src-root}/components/card/card.tsx",
       "variables": {}
     },
+    "src/components/checkbox-field/checkbox-field.tsx": {
+      "name": "checkbox-field",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/checkbox-field/checkbox-field.tsx",
+      "variables": {}
+    },
+    "src/components/checkbox/checkbox.tsx": {
+      "name": "checkbox",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/checkbox/checkbox.tsx",
+      "variables": {}
+    },
     "src/components/CheckedInput/index.tsx": {
       "name": "checked-input",
       "type": "ts",
@@ -155,6 +175,9 @@
         "Button": {},
         "ButtonGroup": {},
         "Card": {},
+        "Checkbox": {},
+        "CheckboxField": {},
+        "CheckboxFieldController": {},
         "CheckedInput": {},
         "Combobox": {},
         "ConfirmDialog": {},
@@ -185,6 +208,8 @@
         "ReactSelectInput": {},
         "ScrollArea": {},
         "Select": {},
+        "SelectField": {},
+        "SelectFieldController": {},
         "SelectInput": {},
         "SidebarLayout": {},
         "SidebarLayoutContent": {},
@@ -317,6 +342,16 @@
       "pathRootRelativePath": "{src-root}/components/scroll-area/scroll-area.tsx",
       "variables": {}
     },
+    "src/components/select-field/select-field.tsx": {
+      "name": "select-field",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/select-field/select-field.tsx",
+      "variables": {}
+    },
     "src/components/select/select.tsx": {
       "name": "select",
       "type": "ts",
@@ -406,6 +441,17 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-controlled-state.ts",
       "projectExports": { "useControlledState": {} },
+      "variables": {}
+    },
+    "src/hooks/use-controller-merged.ts": {
+      "name": "hooks-use-controller-merged",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/use-controller-merged.ts",
+      "projectExports": { "useControllerMerged": {} },
       "variables": {}
     },
     "src/hooks/useConfirmDialog.ts": {

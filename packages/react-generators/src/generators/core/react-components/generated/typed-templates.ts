@@ -85,6 +85,34 @@ const card = createTsTemplateFile({
   variables: {},
 });
 
+const checkbox = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'checkbox',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/checkbox/checkbox.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const checkboxField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'checkbox-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/checkbox-field/checkbox-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const checkedInput = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -365,6 +393,20 @@ const select = createTsTemplateFile({
   variables: {},
 });
 
+const selectField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'select-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/select-field/select-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const selectInput = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -470,6 +512,8 @@ export const componentsGroup = {
   button,
   buttonGroup,
   card,
+  checkbox,
+  checkboxField,
   checkedInput,
   combobox,
   confirmDialog,
@@ -490,6 +534,7 @@ export const componentsGroup = {
   reactSelectInput,
   scrollArea,
   select,
+  selectField,
   selectInput,
   sidebarLayout,
   spinner,
@@ -509,6 +554,21 @@ const hooksUseControlledState = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/hooks/use-controlled-state.ts',
+    ),
+  },
+  variables: {},
+});
+
+const hooksUseControllerMerged = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'hooks',
+  importMapProviders: {},
+  name: 'hooks-use-controller-merged',
+  projectExports: { useControllerMerged: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-controller-merged.ts',
     ),
   },
   variables: {},
@@ -551,6 +611,7 @@ const useStatus = createTsTemplateFile({
 
 export const hooksGroup = {
   hooksUseControlledState,
+  hooksUseControllerMerged,
   useConfirmDialog,
   useStatus,
 };
@@ -566,6 +627,9 @@ const index = createTsTemplateFile({
     Button: {},
     ButtonGroup: {},
     Card: {},
+    Checkbox: {},
+    CheckboxField: {},
+    CheckboxFieldController: {},
     CheckedInput: {},
     Combobox: {},
     ConfirmDialog: {},
@@ -596,6 +660,8 @@ const index = createTsTemplateFile({
     ReactSelectInput: {},
     ScrollArea: {},
     Select: {},
+    SelectField: {},
+    SelectFieldController: {},
     SelectInput: {},
     SidebarLayout: {},
     SidebarLayoutContent: {},

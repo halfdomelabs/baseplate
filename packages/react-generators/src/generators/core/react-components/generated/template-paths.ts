@@ -8,6 +8,8 @@ export interface CoreReactComponentsPaths {
   button: string;
   buttonGroup: string;
   card: string;
+  checkboxField: string;
+  checkbox: string;
   checkedInput: string;
   combobox: string;
   confirmDialog: string;
@@ -29,6 +31,7 @@ export interface CoreReactComponentsPaths {
   reactDatePickerInput: string;
   reactSelectInput: string;
   scrollArea: string;
+  selectField: string;
   select: string;
   selectInput: string;
   sidebarLayout: string;
@@ -38,6 +41,7 @@ export interface CoreReactComponentsPaths {
   textInput: string;
   toaster: string;
   hooksUseControlledState: string;
+  hooksUseControllerMerged: string;
   useConfirmDialog: string;
   useStatus: string;
   stylesButton: string;
@@ -67,6 +71,8 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           button: `${srcRoot}/components/button/button.tsx`,
           buttonGroup: `${srcRoot}/components/ButtonGroup/index.tsx`,
           card: `${srcRoot}/components/card/card.tsx`,
+          checkbox: `${srcRoot}/components/checkbox/checkbox.tsx`,
+          checkboxField: `${srcRoot}/components/checkbox-field/checkbox-field.tsx`,
           checkedInput: `${srcRoot}/components/CheckedInput/index.tsx`,
           cn: `${srcRoot}/utils/cn.ts`,
           combobox: `${srcRoot}/components/combobox/combobox.tsx`,
@@ -77,6 +83,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           formItem: `${srcRoot}/components/form-item/form-item.tsx`,
           formLabel: `${srcRoot}/components/FormLabel/index.tsx`,
           hooksUseControlledState: `${srcRoot}/hooks/use-controlled-state.ts`,
+          hooksUseControllerMerged: `${srcRoot}/hooks/use-controller-merged.ts`,
           index: `${srcRoot}/components/index.ts`,
           input: `${srcRoot}/components/input/input.tsx`,
           inputField: `${srcRoot}/components/input-field/input-field.tsx`,
@@ -92,6 +99,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           reactSelectInput: `${srcRoot}/components/ReactSelectInput/index.tsx`,
           scrollArea: `${srcRoot}/components/scroll-area/scroll-area.tsx`,
           select: `${srcRoot}/components/select/select.tsx`,
+          selectField: `${srcRoot}/components/select-field/select-field.tsx`,
           selectInput: `${srcRoot}/components/SelectInput/index.tsx`,
           sidebarLayout: `${srcRoot}/components/sidebar-layout/sidebar-layout.tsx`,
           spinner: `${srcRoot}/components/Spinner/index.tsx`,
