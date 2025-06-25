@@ -2,7 +2,7 @@
 
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { useId, useState } from 'react';
 import { MdCalendarMonth } from 'react-icons/md';
 
@@ -27,8 +27,8 @@ export interface DatePickerFieldProps extends FormFieldProps {
   wrapperClassName?: string;
   disabled?: boolean;
   placeholder?: string;
-  onChange?: (value: Date | undefined) => void;
-  value?: Date | undefined;
+  onChange?: (value: string | undefined) => void;
+  value?: string | undefined;
   dateFormat?: string;
   calendarProps?: Omit<
     React.ComponentProps<typeof Calendar>,
@@ -58,10 +58,17 @@ function DatePickerField({
   const id = useId();
   const [open, setOpen] = useState(false);
 
+  // Parse string value to Date for Calendar component
+  const dateValue = value ? parseISO(value) : undefined;
+
   const handleSelect = (date: Date | undefined): void => {
-    onChange?.(date);
     if (date) {
+      // Format date as YYYY-MM-DD string
+      const dateString = format(date, 'yyyy-MM-dd');
+      onChange?.(dateString);
       setOpen(false);
+    } else {
+      onChange?.(undefined);
     }
   };
 
@@ -70,7 +77,7 @@ function DatePickerField({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          data-empty={!value}
+          data-empty={!dateValue}
           disabled={disabled}
           id={id}
           ref={ref}
@@ -80,13 +87,17 @@ function DatePickerField({
           )}
         >
           <MdCalendarMonth />
-          {value ? format(value, dateFormat) : <span>{placeholder}</span>}
+          {dateValue ? (
+            format(dateValue, dateFormat)
+          ) : (
+            <span>{placeholder}</span>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
-          selected={value}
+          selected={dateValue}
           onSelect={handleSelect}
           captionLayout="dropdown"
           {...calendarProps}

@@ -2,7 +2,7 @@
 
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { format, set } from 'date-fns';
+import { format, parseISO, set } from 'date-fns';
 import { useId, useState } from 'react';
 import { MdSchedule } from 'react-icons/md';
 
@@ -28,8 +28,8 @@ export interface DateTimePickerFieldProps extends FormFieldProps {
   wrapperClassName?: string;
   disabled?: boolean;
   placeholder?: string;
-  onChange?: (value: Date | undefined) => void;
-  value?: Date | undefined;
+  onChange?: (value: string | undefined) => void;
+  value?: string | undefined;
   dateTimeFormat?: string;
   showSeconds?: boolean;
   calendarProps?: Omit<
@@ -61,6 +61,9 @@ function DateTimePickerField({
   const id = useId();
   const [open, setOpen] = useState(false);
 
+  // Parse string value to Date for internal operations
+  const dateTimeValue = value ? parseISO(value) : undefined;
+
   const handleDateSelect = (date: Date | undefined): void => {
     if (!date) {
       onChange?.(undefined);
@@ -68,12 +71,12 @@ function DateTimePickerField({
     }
 
     let newDate: Date;
-    if (value) {
+    if (dateTimeValue) {
       // Preserve existing time when changing date
       newDate = set(date, {
-        hours: value.getHours(),
-        minutes: value.getMinutes(),
-        seconds: showSeconds ? value.getSeconds() : 0,
+        hours: dateTimeValue.getHours(),
+        minutes: dateTimeValue.getMinutes(),
+        seconds: showSeconds ? dateTimeValue.getSeconds() : 0,
       });
     } else {
       // Set default time to current time or noon if no current time
@@ -84,11 +87,12 @@ function DateTimePickerField({
         seconds: showSeconds ? now.getSeconds() : 0,
       });
     }
-    onChange?.(newDate);
+    // Convert to ISO string
+    onChange?.(newDate.toISOString());
   };
 
   const handleTimeChange = (timeString: string): void => {
-    if (!value) {
+    if (!dateTimeValue) {
       // If no date selected, use today's date
       const today = new Date();
       const [hours, minutes, seconds = 0] = timeString
@@ -99,19 +103,19 @@ function DateTimePickerField({
         minutes,
         seconds: showSeconds ? seconds : 0,
       });
-      onChange?.(newDate);
+      onChange?.(newDate.toISOString());
       return;
     }
 
     const [hours, minutes, seconds = 0] = timeString
       .split(':')
       .map((n) => (n ? Number(n) : 0));
-    const newDate = set(value, {
+    const newDate = set(dateTimeValue, {
       hours,
       minutes,
       seconds: showSeconds ? seconds : 0,
     });
-    onChange?.(newDate);
+    onChange?.(newDate.toISOString());
   };
 
   const formatTimeValue = (date: Date | undefined): string => {
@@ -132,7 +136,7 @@ function DateTimePickerField({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          data-empty={!value}
+          data-empty={!dateTimeValue}
           disabled={disabled}
           id={id}
           ref={ref}
@@ -142,14 +146,18 @@ function DateTimePickerField({
           )}
         >
           <MdSchedule />
-          {value ? format(value, dateTimeFormat) : <span>{placeholder}</span>}
+          {dateTimeValue ? (
+            format(dateTimeValue, dateTimeFormat)
+          ) : (
+            <span>{placeholder}</span>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <div className="space-y-3 p-3">
           <Calendar
             mode="single"
-            selected={value}
+            selected={dateTimeValue}
             onSelect={handleDateSelect}
             captionLayout="dropdown"
             {...calendarProps}
@@ -159,7 +167,7 @@ function DateTimePickerField({
             <Input
               type="time"
               step={showSeconds ? 1 : 60}
-              value={formatTimeValue(value)}
+              value={formatTimeValue(dateTimeValue)}
               onChange={(e) => {
                 handleTimeChange(e.target.value);
               }}
