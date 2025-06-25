@@ -6,6 +6,10 @@ import {
   Alert,
   LinkButton,
   Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
   useConfirmDialog,
 } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
@@ -48,17 +52,17 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
 
   return (
     <Table>
-      <Table.Head>
-        <Table.HeadRow>
+      <TableHeader>
+        <TableRow>
           <TPL_HEADERS />
-          <Table.HeadCell>Actions</Table.HeadCell>
-        </Table.HeadRow>
-      </Table.Head>
-      <Table.Body>
+          <TableCell>Actions</TableCell>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {items.map((item) => (
-          <Table.Row key={item.id}>
+          <TableRow key={item.id}>
             <TPL_CELLS />
-            <Table.Cell className="space-x-4">
+            <TableCell className="space-x-4">
               <Link to={`${item.id}/show`}>Show</Link>
               <Link to={`${item.id}/edit`}>Edit</Link>
               <LinkButton
@@ -69,10 +73,10 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
               >
                 Delete
               </LinkButton>
-            </Table.Cell>
-          </Table.Row>
+            </TableCell>
+          </TableRow>
         ))}
-      </Table.Body>
+      </TableBody>
     </Table>
   );
 }

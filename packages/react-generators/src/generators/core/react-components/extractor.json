@@ -302,6 +302,13 @@
         "SwitchField": {},
         "SwitchFieldController": {},
         "Table": {},
+        "TableBody": {},
+        "TableCaption": {},
+        "TableCell": {},
+        "TableFooter": {},
+        "TableHead": {},
+        "TableHeader": {},
+        "TableRow": {},
         "Textarea": {},
         "TextareaField": {},
         "TextareaFieldController": {},
@@ -501,14 +508,14 @@
       "pathRootRelativePath": "{src-root}/components/switch/switch.tsx",
       "variables": {}
     },
-    "src/components/Table/index.tsx": {
+    "src/components/table/table.tsx": {
       "name": "table",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/Table/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/table/table.tsx",
       "variables": {}
     },
     "src/components/textarea-field/textarea-field.tsx": {

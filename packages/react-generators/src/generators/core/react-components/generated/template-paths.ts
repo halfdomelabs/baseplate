@@ -125,7 +125,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           stylesSelect: `${srcRoot}/styles/select.ts`,
           switchComponent: `${srcRoot}/components/switch/switch.tsx`,
           switchField: `${srcRoot}/components/switch-field/switch-field.tsx`,
-          table: `${srcRoot}/components/Table/index.tsx`,
+          table: `${srcRoot}/components/table/table.tsx`,
           textarea: `${srcRoot}/components/textarea/textarea.tsx`,
           textareaField: `${srcRoot}/components/textarea-field/textarea-field.tsx`,
           textAreaInput: `${srcRoot}/components/TextAreaInput/index.tsx`,

@@ -583,7 +583,7 @@ const table = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Table/index.tsx',
+      '../templates/src/components/table/table.tsx',
     ),
   },
   variables: {},
@@ -859,6 +859,13 @@ const index = createTsTemplateFile({
     SwitchField: {},
     SwitchFieldController: {},
     Table: {},
+    TableBody: {},
+    TableCaption: {},
+    TableCell: {},
+    TableFooter: {},
+    TableHead: {},
+    TableHeader: {},
+    TableRow: {},
     Textarea: {},
     TextareaField: {},
     TextareaFieldController: {},

@@ -322,14 +322,21 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
             },
           },
           build: async (builder) => {
+            const tableImports = [
+              reactComponentsImports.Table.declaration(),
+              reactComponentsImports.TableHeader.declaration(),
+              reactComponentsImports.TableHead.declaration(),
+              reactComponentsImports.TableBody.declaration(),
+              reactComponentsImports.TableRow.declaration(),
+              reactComponentsImports.TableCell.declaration(),
+              reactComponentsImports.LinkButton.declaration(),
+            ];
             const headers = tableColumns.map((column) =>
-              tsCodeFragment(
-                `<Table.HeadCell>${column.label}</Table.HeadCell>`,
-              ),
+              tsCodeFragment(`<TableHead>${column.label}</TableHead>`),
             );
             const cells = tableColumns.map(
               (column) =>
-                tsTemplate`<Table.Cell>${column.display.content('item')}</Table.Cell>`,
+                tsTemplate`<TableCell>${column.display.content('item')}</TableCell>`,
             );
             const tableComponent = isList
               ? TsCodeUtils.formatFragment(
@@ -342,17 +349,17 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
               }: TPL_PROPS): ReactElement {
               return (
                   <Table className="max-w-6xl">
-                    <Table.Head>
-                      <Table.HeadRow>
+                    <TableHeader>
+                      <TableRow>
                         TPL_HEADERS
-                        <Table.HeadCell>Actions</Table.HeadCell>
-                      </Table.HeadRow>
-                    </Table.Head>
-                    <Table.Body>
+                        <TableCell>Actions</TableCell>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {items.map((item, idx) => (
-                        <Table.Row key={item.id}>
+                        <TableRow key={item.id}>
                           TPL_CELLS
-                          <Table.Cell className="space-x-4">
+                          <TableCell className="space-x-4">
                             <LinkButton onClick={() => {
                               edit(idx);
                             }}>Edit</LinkButton>
@@ -361,10 +368,10 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                             }}>
                               Remove
                             </LinkButton>
-                          </Table.Cell>
-                        </Table.Row>
+                          </TableCell>
+                        </TableRow>
                       ))}
-                    </Table.Body>
+                    </TableBody>
                   </Table>
                 );
               }
@@ -388,7 +395,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                     TPL_CELLS: TsCodeUtils.mergeFragmentsPresorted(cells, '\n'),
                   },
                   [
-                    reactComponentsImports.Table.declaration(),
+                    ...tableImports,
                     reactComponentsImports.LinkButton.declaration(),
                     tsTypeImportBuilder(['ReactElement']).from('react'),
                   ],
