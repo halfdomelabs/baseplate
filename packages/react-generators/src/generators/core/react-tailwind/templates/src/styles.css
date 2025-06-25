@@ -208,15 +208,15 @@ html[data-theme='dark'] {
 
 @layer base {
   h1 {
-    @apply text-3xl font-semibold leading-none tracking-tight;
+    @apply text-3xl leading-none font-semibold tracking-tight;
   }
 
   h2 {
-    @apply text-2xl font-semibold leading-7 tracking-tight;
+    @apply text-2xl leading-7 font-semibold tracking-tight;
   }
 
   h3 {
-    @apply text-xl font-semibold leading-6 tracking-tight;
+    @apply text-xl leading-6 font-semibold tracking-tight;
   }
 
   p {
@@ -229,15 +229,15 @@ html[data-theme='dark'] {
  */
 
 @utility text-style-lead {
-  @apply text-muted-foreground text-xl font-medium leading-6;
+  @apply text-muted-foreground text-xl leading-6 font-medium;
 }
 
 @utility text-style-large {
-  @apply text-lg font-semibold leading-6;
+  @apply text-lg leading-6 font-semibold;
 }
 
 @utility text-style-small {
-  @apply text-sm font-medium leading-none;
+  @apply text-sm leading-none font-medium;
 }
 
 @utility text-style-muted {

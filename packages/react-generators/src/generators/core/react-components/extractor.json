@@ -186,7 +186,6 @@
         "ScrollArea": {},
         "Select": {},
         "SelectInput": {},
-        "Sidebar": {},
         "SidebarLayout": {},
         "SidebarLayoutContent": {},
         "SidebarLayoutSidebar": {},
@@ -346,16 +345,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/sidebar-layout/sidebar-layout.tsx",
-      "variables": {}
-    },
-    "src/components/Sidebar/index.tsx": {
-      "name": "sidebar",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/Sidebar/index.tsx",
       "variables": {}
     },
     "src/components/Spinner/index.tsx": {

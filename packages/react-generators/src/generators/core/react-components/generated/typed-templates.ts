@@ -379,20 +379,6 @@ const selectInput = createTsTemplateFile({
   variables: {},
 });
 
-const sidebar = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'sidebar',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/Sidebar/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const sidebarLayout = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -505,7 +491,6 @@ export const componentsGroup = {
   scrollArea,
   select,
   selectInput,
-  sidebar,
   sidebarLayout,
   spinner,
   table,
@@ -612,7 +597,6 @@ const index = createTsTemplateFile({
     ScrollArea: {},
     Select: {},
     SelectInput: {},
-    Sidebar: {},
     SidebarLayout: {},
     SidebarLayoutContent: {},
     SidebarLayoutSidebar: {},
