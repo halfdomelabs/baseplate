@@ -14,6 +14,7 @@ export * from './combobox/combobox.js';
 export * from './command/command.js';
 export * from './confirm-dialog/confirm-dialog.js';
 export * from './date-picker-field/date-picker-field.js';
+export * from './date-time-picker-field/date-time-picker-field.js';
 export * from './dialog/dialog.js';
 export * from './dropdown/dropdown.js';
 export * from './empty-display/empty-display.js';
