@@ -12,7 +12,7 @@ interface Props {
   className?: string;
 }
 
-function AdminLayout({ className }: Props): ReactElement {
+export function AdminLayout({ className }: Props): ReactElement {
   const logOut = useLogOut();
 
   return (
@@ -39,5 +39,3 @@ function AdminLayout({ className }: Props): ReactElement {
     </div>
   );
 }
-
-export default AdminLayout;

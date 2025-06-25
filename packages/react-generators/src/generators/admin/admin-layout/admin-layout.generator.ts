@@ -65,7 +65,7 @@ export const adminLayoutGenerator = createGenerator({
           element: tsCodeFragment(
             `<RequireAuth><AdminLayout /></RequireAuth>`,
             [
-              tsImportBuilder().default('AdminLayout').from(paths.adminLayout),
+              tsImportBuilder(['AdminLayout']).from(paths.adminLayout),
               authComponentsImports.RequireAuth.declaration(),
             ],
           ),
