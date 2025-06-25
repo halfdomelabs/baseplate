@@ -3,6 +3,7 @@ export * from './badge/badge.js';
 export * from './breadcrumb/breadcrumb.js';
 export * from './button-group/button-group.js';
 export * from './button/button.js';
+export * from './calendar/calendar.js';
 export * from './card/card.js';
 export * from './checkbox-field/checkbox-field.js';
 export * from './checkbox/checkbox.js';
