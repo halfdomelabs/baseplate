@@ -76,14 +76,17 @@ export const adminLayoutGenerator = createGenerator({
             const navEntries = Object.fromEntries(
               links.map((link) => [
                 link.path,
-                TsCodeUtils.mergeFragmentsAsJsxElement('Sidebar.LinkItem', {
-                  Icon: tsCodeFragment(
-                    link.icon,
-                    tsImportBuilder([link.icon]).from(getIconImport(link.icon)),
-                  ),
-                  to: link.path,
-                  children: link.label,
-                }),
+                TsCodeUtils.templateWithImports([
+                  reactComponentsImports.NavigationMenuItemWithLink.declaration(),
+                  tsImportBuilder(['NavLink']).from('react-router-dom'),
+                ])`
+                <NavigationMenuItemWithLink asChild>
+                  <NavLink to="${link.path}" className="flex-row items-center gap-2">
+                    <${TsCodeUtils.importFragment(link.icon, getIconImport(link.icon))} />
+                    ${link.label}
+                  </NavLink>
+                </NavigationMenuItemWithLink>
+                `,
               ]),
             );
 

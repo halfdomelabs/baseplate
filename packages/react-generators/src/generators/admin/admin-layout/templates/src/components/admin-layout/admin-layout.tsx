@@ -3,9 +3,14 @@
 import type { ReactElement } from 'react';
 
 import { useLogOut } from '%authHooksImports';
-import { Sidebar } from '%reactComponentsImports';
-import clsx from 'clsx';
-import { MdLogout } from 'react-icons/md';
+import {
+  NavigationMenu,
+  NavigationMenuItemWithLink,
+  NavigationMenuList,
+  SidebarLayout,
+  SidebarLayoutContent,
+  SidebarLayoutSidebar,
+} from '%reactComponentsImports';
 import { Outlet } from 'react-router-dom';
 
 interface Props {
@@ -16,26 +21,30 @@ export function AdminLayout({ className }: Props): ReactElement {
   const logOut = useLogOut();
 
   return (
-    <div className={clsx('flex h-full items-stretch', className)}>
-      <Sidebar className="flex-none">
-        <Sidebar.Header className="mb-4 space-y-2">
+    <SidebarLayout className={className}>
+      <SidebarLayoutSidebar>
+        <div className="mb-4">
           <h1>Admin Dashboard</h1>
-        </Sidebar.Header>
-        <Sidebar.LinkGroup>
-          <TPL_SIDEBAR_LINKS />
-          <Sidebar.ButtonItem
-            Icon={MdLogout}
-            onClick={() => {
-              logOut();
-            }}
-          >
-            Log Out
-          </Sidebar.ButtonItem>
-        </Sidebar.LinkGroup>
-      </Sidebar>
-      <div className="flex flex-auto flex-col overflow-auto p-4">
+        </div>
+        <NavigationMenu orientation="vertical">
+          <NavigationMenuList>
+            <TPL_SIDEBAR_LINKS />
+            <NavigationMenuItemWithLink asChild>
+              <button
+                className="cursor-pointer text-left"
+                onClick={() => {
+                  logOut();
+                }}
+              >
+                Log Out
+              </button>
+            </NavigationMenuItemWithLink>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </SidebarLayoutSidebar>
+      <SidebarLayoutContent>
         <Outlet />
-      </div>
-    </div>
+      </SidebarLayoutContent>
+    </SidebarLayout>
   );
 }
