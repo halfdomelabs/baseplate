@@ -9,6 +9,7 @@ export interface CoreReactComponentsPaths {
   checkboxField: string;
   checkbox: string;
   checkedInput: string;
+  circularProgress: string;
   comboboxField: string;
   combobox: string;
   confirmDialog: string;
@@ -79,6 +80,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           checkbox: `${srcRoot}/components/checkbox/checkbox.tsx`,
           checkboxField: `${srcRoot}/components/checkbox-field/checkbox-field.tsx`,
           checkedInput: `${srcRoot}/components/CheckedInput/index.tsx`,
+          circularProgress: `${srcRoot}/components/circular-progress/circular-progress.tsx`,
           cn: `${srcRoot}/utils/cn.ts`,
           combobox: `${srcRoot}/components/combobox/combobox.tsx`,
           comboboxField: `${srcRoot}/components/combobox-field/combobox-field.tsx`,

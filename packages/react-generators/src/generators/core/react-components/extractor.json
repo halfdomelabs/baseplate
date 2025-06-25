@@ -71,6 +71,16 @@
       "pathRootRelativePath": "{src-root}/components/CheckedInput/index.tsx",
       "variables": {}
     },
+    "src/components/circular-progress/circular-progress.tsx": {
+      "name": "circular-progress",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/circular-progress/circular-progress.tsx",
+      "variables": {}
+    },
     "src/components/combobox-field/combobox-field.tsx": {
       "name": "combobox-field",
       "type": "ts",
@@ -207,6 +217,7 @@
         "CheckboxField": {},
         "CheckboxFieldController": {},
         "CheckedInput": {},
+        "CircularProgress": {},
         "Combobox": {},
         "ComboboxField": {},
         "ComboboxFieldController": {},

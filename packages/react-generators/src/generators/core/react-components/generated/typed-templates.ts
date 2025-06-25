@@ -99,6 +99,20 @@ const checkedInput = createTsTemplateFile({
   variables: {},
 });
 
+const circularProgress = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'circular-progress',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/circular-progress/circular-progress.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const combobox = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -611,6 +625,7 @@ export const componentsGroup = {
   checkbox,
   checkboxField,
   checkedInput,
+  circularProgress,
   combobox,
   comboboxField,
   confirmDialog,
@@ -734,6 +749,7 @@ const index = createTsTemplateFile({
     CheckboxField: {},
     CheckboxFieldController: {},
     CheckedInput: {},
+    CircularProgress: {},
     Combobox: {},
     ComboboxField: {},
     ComboboxFieldController: {},
