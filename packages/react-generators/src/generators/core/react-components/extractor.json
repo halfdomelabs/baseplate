@@ -11,26 +11,6 @@
       "pathRootRelativePath": "{src-root}/components/alert/alert.tsx",
       "variables": {}
     },
-    "src/components/AlertIcon/index.tsx": {
-      "name": "alert-icon",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/AlertIcon/index.tsx",
-      "variables": {}
-    },
-    "src/components/BackButton/index.tsx": {
-      "name": "back-button",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/BackButton/index.tsx",
-      "variables": {}
-    },
     "src/components/button/button.tsx": {
       "name": "button",
       "type": "ts",
@@ -39,16 +19,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/button/button.tsx",
-      "variables": {}
-    },
-    "src/components/ButtonGroup/index.tsx": {
-      "name": "button-group",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/ButtonGroup/index.tsx",
       "variables": {}
     },
     "src/components/calendar/calendar.tsx": {
@@ -230,10 +200,7 @@
       "pathRootRelativePath": "{src-root}/components/index.ts",
       "projectExports": {
         "Alert": {},
-        "AlertIcon": {},
-        "BackButton": {},
         "Button": {},
-        "ButtonGroup": {},
         "Calendar": {},
         "Card": {},
         "Checkbox": {},
@@ -297,7 +264,6 @@
         "SidebarLayout": {},
         "SidebarLayoutContent": {},
         "SidebarLayoutSidebar": {},
-        "Spinner": {},
         "Switch": {},
         "SwitchField": {},
         "SwitchFieldController": {},
@@ -476,16 +442,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/sidebar-layout/sidebar-layout.tsx",
-      "variables": {}
-    },
-    "src/components/Spinner/index.tsx": {
-      "name": "spinner",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/Spinner/index.tsx",
       "variables": {}
     },
     "src/components/switch-field/switch-field.tsx": {

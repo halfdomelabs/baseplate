@@ -3,10 +3,7 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface CoreReactComponentsPaths {
   alert: string;
-  alertIcon: string;
-  backButton: string;
   button: string;
-  buttonGroup: string;
   calendar: string;
   card: string;
   checkboxField: string;
@@ -41,7 +38,6 @@ export interface CoreReactComponentsPaths {
   select: string;
   selectInput: string;
   sidebarLayout: string;
-  spinner: string;
   switchField: string;
   switchComponent: string;
   table: string;
@@ -77,10 +73,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
       providers: {
         coreReactComponentsPaths: {
           alert: `${srcRoot}/components/alert/alert.tsx`,
-          alertIcon: `${srcRoot}/components/AlertIcon/index.tsx`,
-          backButton: `${srcRoot}/components/BackButton/index.tsx`,
           button: `${srcRoot}/components/button/button.tsx`,
-          buttonGroup: `${srcRoot}/components/ButtonGroup/index.tsx`,
           calendar: `${srcRoot}/components/calendar/calendar.tsx`,
           card: `${srcRoot}/components/card/card.tsx`,
           checkbox: `${srcRoot}/components/checkbox/checkbox.tsx`,
@@ -119,7 +112,6 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           selectField: `${srcRoot}/components/select-field/select-field.tsx`,
           selectInput: `${srcRoot}/components/SelectInput/index.tsx`,
           sidebarLayout: `${srcRoot}/components/sidebar-layout/sidebar-layout.tsx`,
-          spinner: `${srcRoot}/components/Spinner/index.tsx`,
           stylesButton: `${srcRoot}/styles/button.ts`,
           stylesInput: `${srcRoot}/styles/input.ts`,
           stylesSelect: `${srcRoot}/styles/select.ts`,

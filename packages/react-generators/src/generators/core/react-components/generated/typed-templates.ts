@@ -15,34 +15,6 @@ const alert = createTsTemplateFile({
   variables: {},
 });
 
-const alertIcon = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'alert-icon',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/AlertIcon/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
-const backButton = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'back-button',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/BackButton/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const button = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -52,20 +24,6 @@ const button = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/components/button/button.tsx',
-    ),
-  },
-  variables: {},
-});
-
-const buttonGroup = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'button-group',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/ButtonGroup/index.tsx',
     ),
   },
   variables: {},
@@ -533,20 +491,6 @@ const sidebarLayout = createTsTemplateFile({
   variables: {},
 });
 
-const spinner = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'spinner',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/Spinner/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const switchComponent = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -661,10 +605,7 @@ const toaster = createTsTemplateFile({
 
 export const componentsGroup = {
   alert,
-  alertIcon,
-  backButton,
   button,
-  buttonGroup,
   calendar,
   card,
   checkbox,
@@ -698,7 +639,6 @@ export const componentsGroup = {
   selectField,
   selectInput,
   sidebarLayout,
-  spinner,
   switchComponent,
   switchField,
   table,
@@ -787,10 +727,7 @@ const index = createTsTemplateFile({
   name: 'index',
   projectExports: {
     Alert: {},
-    AlertIcon: {},
-    BackButton: {},
     Button: {},
-    ButtonGroup: {},
     Calendar: {},
     Card: {},
     Checkbox: {},
@@ -854,7 +791,6 @@ const index = createTsTemplateFile({
     SidebarLayout: {},
     SidebarLayoutContent: {},
     SidebarLayoutSidebar: {},
-    Spinner: {},
     Switch: {},
     SwitchField: {},
     SwitchFieldController: {},
