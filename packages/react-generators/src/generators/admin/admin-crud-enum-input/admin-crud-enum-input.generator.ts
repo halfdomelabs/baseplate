@@ -38,13 +38,13 @@ export const adminCrudEnumInputGenerator = createGenerator({
         adminCrudInputContainer.addInput({
           order,
           content: tsCodeFragment(
-            `<SelectInput.LabelledController
+            `<SelectFieldController
           label="${label}"
           control={control}
           name="${modelField}"
           options={${modelField}Options}
         />`,
-            reactComponentsImports.SelectInput.declaration(),
+            reactComponentsImports.SelectFieldController.declaration(),
             {
               hoistedFragments: [
                 tsHoistedFragment(

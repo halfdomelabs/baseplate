@@ -27,7 +27,7 @@ export const adminCrudPasswordInputGenerator = createGenerator({
         adminCrudInputContainer.addInput({
           order,
           content: TsCodeUtils.mergeFragmentsAsJsxElement(
-            'TextInput.LabelledController',
+            'InputFieldController',
             {
               label,
               control: tsCodeFragment('control'),
@@ -37,7 +37,7 @@ export const adminCrudPasswordInputGenerator = createGenerator({
                 '{ setValueAs: (val: string) => val === "" ? undefined : val }',
               ),
             },
-            reactComponentsImports.TextInput.declaration(),
+            reactComponentsImports.InputFieldController.declaration(),
           ),
           graphQLFields: [],
           validation: [
