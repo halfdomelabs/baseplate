@@ -250,9 +250,6 @@ export const adminCrudEditGenerator = createGenerator({
                     TPL_DATA_LOADER: createLoaderOutput.loader,
                     TPL_DATA_GATE: createLoaderOutput.gate,
                   },
-                  importMapProviders: {
-                    reactComponentsImports,
-                  },
                 }),
               );
 
@@ -304,9 +301,6 @@ export const adminCrudEditGenerator = createGenerator({
                   TPL_MODEL_NAME: titleizeCamel(modelName),
                   TPL_DATA_LOADER: editPageLoaderOutput.loader,
                   TPL_DATA_GATE: editPageLoaderOutput.gate,
-                },
-                importMapProviders: {
-                  reactComponentsImports,
                 },
               }),
             );

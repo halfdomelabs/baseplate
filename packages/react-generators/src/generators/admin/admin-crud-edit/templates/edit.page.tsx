@@ -2,7 +2,6 @@
 
 import type { ReactElement } from 'react';
 
-import { BackButton } from '%reactComponentsImports';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -27,7 +26,6 @@ function TPL_COMPONENT_NAME(): ReactElement {
   return (
     <div className="space-y-4">
       <h1 className="flex space-x-2">
-        <BackButton />
         <span>
           Edit <TPL_MODEL_NAME /> ({id})
         </span>
