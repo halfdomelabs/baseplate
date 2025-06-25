@@ -73,14 +73,13 @@ export const adminCrudForeignInputGenerator = createGenerator({
         adminCrudInputContainer.addInput({
           order,
           content: tsCodeFragment(
-            `<ReactSelectInput.LabelledController
+            `<ComboboxFieldController
           label="${label}"
           control={control}
           name="${localField}"
           options={${optionsName}}
-          ${adminCrudInputContainer.isInModal() ? 'fixedPosition' : ''}
         />`,
-            reactComponentsImports.ReactSelectInput.declaration(),
+            reactComponentsImports.ComboboxFieldController.declaration(),
           ),
           graphQLFields: [{ name: localField }],
           validation: [
