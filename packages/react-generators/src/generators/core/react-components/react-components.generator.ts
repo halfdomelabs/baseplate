@@ -151,9 +151,14 @@ export const reactComponentsGenerator = createGenerator({
             );
 
             // build component index
+            const getComponentPath = (a: ReactComponentEntry): string =>
+              a.isBarrelExport ? `./${a.name}/${a.name}.js` : `./${a.name}.js`;
+
             const sortedComponents = allReactComponents.toSorted((a, b) =>
-              a.name.localeCompare(b.name),
+              getComponentPath(a).localeCompare(getComponentPath(b)),
             );
+
+            // build component index
             const componentIndex = sortedComponents
               .map(({ name, isBarrelExport }) =>
                 isBarrelExport
