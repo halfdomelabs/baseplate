@@ -162,7 +162,7 @@
  */
 
 @utility text-style-lead {
-  @apply text-xl leading-6 font-medium text-muted-foreground;
+  @apply text-muted-foreground text-xl leading-6 font-medium;
 }
 
 @utility text-style-large {
@@ -174,14 +174,14 @@
 }
 
 @utility text-style-muted {
-  @apply text-sm leading-5 text-muted-foreground;
+  @apply text-muted-foreground text-sm leading-5;
 }
 
 @utility text-style-prose {
   @apply text-base leading-6;
 
   & a {
-    @apply font-medium text-link;
+    @apply text-link font-medium;
 
     &:hover {
       @apply underline;
@@ -204,6 +204,12 @@
   body {
     @apply bg-background font-body text-foreground antialiased;
     @apply surface-default;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100vh;
   }
 }
 

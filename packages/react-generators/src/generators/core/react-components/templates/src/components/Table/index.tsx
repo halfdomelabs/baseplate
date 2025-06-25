@@ -66,7 +66,7 @@ Table.HeadCell = function TableHeadCell({
     <th
       scope="col"
       className={clsx(
-        'px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400',
+        'px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-700 uppercase dark:text-gray-400',
         className,
       )}
     >
@@ -120,7 +120,7 @@ Table.Cell = function TableCell({
   return (
     <td
       className={clsx(
-        'whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400',
+        'px-6 py-4 text-sm whitespace-nowrap text-gray-500 dark:text-gray-400',
         className,
       )}
     >
