@@ -3,7 +3,7 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface CoreReactTailwindPaths {
   postcssConfig: string;
-  indexCss: string;
+  stylesCss: string;
   tailwindConfig: string;
 }
 
@@ -21,7 +21,7 @@ const coreReactTailwindPathsTask = createGeneratorTask({
     return {
       providers: {
         coreReactTailwindPaths: {
-          indexCss: `${srcRoot}/index.css`,
+          stylesCss: `${srcRoot}/styles.css`,
           postcssConfig: `${packageRoot}/postcss.config.js`,
           tailwindConfig: `${packageRoot}/tailwind.config.js`,
         },

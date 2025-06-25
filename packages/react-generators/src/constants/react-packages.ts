@@ -14,9 +14,10 @@ export const REACT_PACKAGES = {
   loglevel: '1.9.1',
 
   // Tailwind
-  autoprefixer: '10.4.20',
-  tailwindcss: '3.4.11',
-  'prettier-plugin-tailwindcss': '0.6.6',
+  '@tailwindcss/vite': '4.1.6',
+  tailwindcss: '4.1.6',
+  'prettier-plugin-tailwindcss': '0.6.11',
+  'tw-animate-css': '1.2.9',
 
   // Components
   '@headlessui/react': '2.2.2',

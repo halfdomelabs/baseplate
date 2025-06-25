@@ -4,17 +4,12 @@ import {
   tsImportBuilder,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
-import {
-  createGenerator,
-  createGeneratorTask,
-  createProviderTask,
-} from '@baseplate-dev/sync';
+import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { authComponentsImportsProvider } from '#src/generators/auth/_providers/auth-components.js';
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
-import { reactTailwindProvider } from '#src/generators/core/react-tailwind/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
 import { ADMIN_ADMIN_LAYOUT_GENERATED } from './generated/index.js';
@@ -48,16 +43,6 @@ export const adminLayoutGenerator = createGenerator({
   descriptorSchema,
   buildTasks: ({ links = [] }) => ({
     paths: ADMIN_ADMIN_LAYOUT_GENERATED.paths.task,
-    reactTailwind: createProviderTask(
-      reactTailwindProvider,
-      (reactTailwind) => {
-        reactTailwind.addGlobalStyle(
-          `body {
-  overscroll-behavior-y: none;
-}`,
-        );
-      },
-    ),
     main: createGeneratorTask({
       dependencies: {
         reactComponentsImports: reactComponentsImportsProvider,

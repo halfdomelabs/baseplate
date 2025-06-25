@@ -1,15 +1,17 @@
 import {
   createNodePackagesTask,
-  eslintConfigProvider,
   extractPackageVersions,
   packageScope,
   prettierProvider,
   renderTextTemplateGroupAction,
   tsCodeFragment,
+  TsCodeUtils,
+  tsTemplate,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
+  createProviderTask,
   createProviderType,
 } from '@baseplate-dev/sync';
 import * as prettierPluginTailwindcss from 'prettier-plugin-tailwindcss';
@@ -38,28 +40,32 @@ export const reactTailwindGenerator = createGenerator({
   buildTasks: ({ globalBodyClasses }) => ({
     nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(REACT_PACKAGES, [
-        'autoprefixer',
+        '@tailwindcss/vite',
         'tailwindcss',
         'prettier-plugin-tailwindcss',
+        'tw-animate-css',
       ]),
     }),
     paths: CORE_REACT_TAILWIND_GENERATED.paths.task,
+    vite: createProviderTask(reactBaseConfigProvider, (reactBaseConfig) => {
+      reactBaseConfig.vitePlugins.set(
+        '@tailwindcss/vite',
+        tsTemplate`${TsCodeUtils.defaultImportFragment(
+          'tailwindcss',
+          '@tailwindcss/vite',
+        )}()`,
+      );
+    }),
     main: createGeneratorTask({
       dependencies: {
         reactBaseConfig: reactBaseConfigProvider,
-        eslintConfig: eslintConfigProvider,
         prettier: prettierProvider,
         paths: CORE_REACT_TAILWIND_GENERATED.paths.provider,
       },
       exports: {
         reactTailwind: reactTailwindProvider.export(packageScope),
       },
-      run({ reactBaseConfig, eslintConfig, prettier, paths }) {
-        eslintConfig.tsDefaultProjectFiles.push(
-          'postcss.config.js',
-          'tailwind.config.js',
-        );
-
+      run({ reactBaseConfig, prettier, paths }) {
         prettier.addPlugin({
           name: 'prettier-plugin-tailwindcss',
           version: REACT_PACKAGES['prettier-plugin-tailwindcss'],
@@ -67,8 +73,8 @@ export const reactTailwindGenerator = createGenerator({
         });
 
         reactBaseConfig.headerFragments.set(
-          'INDEX_CSS_IMPORTS',
-          tsCodeFragment("import './index.css'"),
+          'styles-css-import',
+          tsCodeFragment("import './styles.css'"),
         );
 
         const globalStyles: string[] = [];
@@ -93,7 +99,7 @@ export const reactTailwindGenerator = createGenerator({
                 group: CORE_REACT_TAILWIND_GENERATED.templates.mainGroup,
                 paths,
                 variables: {
-                  indexCss: {
+                  stylesCss: {
                     TPL_GLOBAL_STYLES:
                       globalStyles.length > 0 ||
                       !builder.metadataOptions.includeTemplateMetadata
