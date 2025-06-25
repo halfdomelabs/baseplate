@@ -135,7 +135,7 @@ const confirmDialog = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/ConfirmDialog/index.tsx',
+      '../templates/src/components/confirm-dialog/confirm-dialog.tsx',
     ),
   },
   variables: {},
@@ -692,7 +692,7 @@ const useConfirmDialog = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/hooks/useConfirmDialog.ts',
+      '../templates/src/hooks/use-confirm-dialog.ts',
     ),
   },
   variables: {},

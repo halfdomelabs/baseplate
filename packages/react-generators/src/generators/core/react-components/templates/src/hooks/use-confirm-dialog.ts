@@ -10,7 +10,7 @@ export interface UseConfirmDialogRequestOptions {
   content: string;
   buttonCancelText?: string;
   buttonConfirmText?: string;
-  buttonConfirmColor?: ButtonProps['color'];
+  buttonConfirmVariant?: ButtonProps['variant'];
   onCancel?: React.MouseEventHandler<HTMLButtonElement>;
   onConfirm?: React.MouseEventHandler<HTMLButtonElement>;
 }

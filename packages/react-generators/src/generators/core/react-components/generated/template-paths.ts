@@ -46,9 +46,9 @@ export interface CoreReactComponentsPaths {
   textAreaInput: string;
   textInput: string;
   toaster: string;
+  useConfirmDialog: string;
   hooksUseControlledState: string;
   hooksUseControllerMerged: string;
-  useConfirmDialog: string;
   useStatus: string;
   stylesButton: string;
   stylesInput: string;
@@ -82,7 +82,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           cn: `${srcRoot}/utils/cn.ts`,
           combobox: `${srcRoot}/components/combobox/combobox.tsx`,
           comboboxField: `${srcRoot}/components/combobox-field/combobox-field.tsx`,
-          confirmDialog: `${srcRoot}/components/ConfirmDialog/index.tsx`,
+          confirmDialog: `${srcRoot}/components/confirm-dialog/confirm-dialog.tsx`,
           datePickerField: `${srcRoot}/components/date-picker-field/date-picker-field.tsx`,
           dateTimePickerField: `${srcRoot}/components/date-time-picker-field/date-time-picker-field.tsx`,
           dialog: `${srcRoot}/components/dialog/dialog.tsx`,
@@ -125,7 +125,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           toaster: `${srcRoot}/components/toaster/toaster.tsx`,
           typesForm: `${srcRoot}/types/form.ts`,
           typesIcon: `${srcRoot}/types/icon.ts`,
-          useConfirmDialog: `${srcRoot}/hooks/useConfirmDialog.ts`,
+          useConfirmDialog: `${srcRoot}/hooks/use-confirm-dialog.ts`,
           useStatus: `${srcRoot}/hooks/useStatus.ts`,
         },
       },

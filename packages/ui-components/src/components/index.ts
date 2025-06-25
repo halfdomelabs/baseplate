@@ -7,6 +7,7 @@ export * from './calendar/calendar.js';
 export * from './card/card.js';
 export * from './checkbox-field/checkbox-field.js';
 export * from './checkbox/checkbox.js';
+export * from './circular-progress/circular-progress.js';
 export * from './color-picker-field/color-picker-field.js';
 export * from './color-picker/color-picker.js';
 export * from './combobox-field/combobox-field.js';

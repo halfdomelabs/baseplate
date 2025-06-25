@@ -91,14 +91,14 @@
       "pathRootRelativePath": "{src-root}/components/combobox/combobox.tsx",
       "variables": {}
     },
-    "src/components/ConfirmDialog/index.tsx": {
+    "src/components/confirm-dialog/confirm-dialog.tsx": {
       "name": "confirm-dialog",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/ConfirmDialog/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/confirm-dialog/confirm-dialog.tsx",
       "variables": {}
     },
     "src/components/date-picker-field/date-picker-field.tsx": {
@@ -524,6 +524,21 @@
       "pathRootRelativePath": "{src-root}/components/toaster/toaster.tsx",
       "variables": {}
     },
+    "src/hooks/use-confirm-dialog.ts": {
+      "name": "use-confirm-dialog",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/use-confirm-dialog.ts",
+      "projectExports": {
+        "useConfirmDialog": {},
+        "UseConfirmDialogRequestOptions": { "isTypeOnly": true },
+        "useConfirmDialogState": {}
+      },
+      "variables": {}
+    },
     "src/hooks/use-controlled-state.ts": {
       "name": "hooks-use-controlled-state",
       "type": "ts",
@@ -544,21 +559,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-controller-merged.ts",
       "projectExports": { "useControllerMerged": {} },
-      "variables": {}
-    },
-    "src/hooks/useConfirmDialog.ts": {
-      "name": "use-confirm-dialog",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "hooks",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/hooks/useConfirmDialog.ts",
-      "projectExports": {
-        "useConfirmDialog": {},
-        "UseConfirmDialogRequestOptions": { "isTypeOnly": true },
-        "useConfirmDialogState": {}
-      },
       "variables": {}
     },
     "src/hooks/useStatus.ts": {
