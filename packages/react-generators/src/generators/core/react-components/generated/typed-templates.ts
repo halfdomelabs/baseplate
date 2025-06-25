@@ -169,6 +169,20 @@ const confirmDialog = createTsTemplateFile({
   variables: {},
 });
 
+const emptyDisplay = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'empty-display',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/empty-display/empty-display.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const errorableLoader = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -177,7 +191,7 @@ const errorableLoader = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/ErrorableLoader/index.tsx',
+      '../templates/src/components/errorable-loader/errorable-loader.tsx',
     ),
   },
   variables: {},
@@ -191,7 +205,7 @@ const errorDisplay = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/ErrorDisplay/index.tsx',
+      '../templates/src/components/error-display/error-display.tsx',
     ),
   },
   variables: {},
@@ -588,6 +602,7 @@ export const componentsGroup = {
   combobox,
   comboboxField,
   confirmDialog,
+  emptyDisplay,
   errorableLoader,
   errorDisplay,
   formError,
@@ -710,6 +725,7 @@ const index = createTsTemplateFile({
     ComboboxField: {},
     ComboboxFieldController: {},
     ConfirmDialog: {},
+    EmptyDisplay: {},
     ErrorableLoader: {},
     ErrorDisplay: {},
     FormError: {},
@@ -864,7 +880,19 @@ const typesForm = createTsTemplateFile({
   variables: {},
 });
 
-export const utilsGroup = { cn, mergeRefs, typesForm };
+const typesIcon = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'utils',
+  importMapProviders: {},
+  name: 'types-icon',
+  projectExports: { IconElement: { isTypeOnly: true } },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/types/icon.ts'),
+  },
+  variables: {},
+});
+
+export const utilsGroup = { cn, mergeRefs, typesForm, typesIcon };
 
 export const CORE_REACT_COMPONENTS_TEMPLATES = {
   componentsGroup,

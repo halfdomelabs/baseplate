@@ -1,10 +1,9 @@
 // @ts-nocheck
 
-import type { ReactElement } from 'react';
-
-import clsx from 'clsx';
 import React from 'react';
 import { MdOutlineErrorOutline } from 'react-icons/md';
+
+import { cn } from '../../utils/cn.js';
 
 interface ErrorDisplayProps {
   /**
@@ -14,7 +13,7 @@ interface ErrorDisplayProps {
   /**
    * Header to be displayed (if not passed, a generic error header will be displayed)
    */
-  header?: string;
+  header?: React.ReactNode;
   /**
    * Error to be displayed (if a string is passed, it will be displayed as-is, otherwise a generic error message will be displayed)
    */
@@ -25,20 +24,29 @@ interface ErrorDisplayProps {
   actions?: React.ReactNode;
 }
 
+/**
+ * Displays a generic error state with a header and error message.
+ */
 function ErrorDisplay({
   className,
   header,
   error,
   actions,
-}: ErrorDisplayProps): ReactElement {
+}: ErrorDisplayProps): React.ReactElement {
   return (
-    <div className={clsx('flex h-full items-center justify-center', className)}>
+    <div
+      className={cn(
+        'flex h-full w-full items-center justify-center',
+        className,
+      )}
+      role="alert"
+    >
       <div className="flex max-w-xl flex-col items-center space-y-4 text-center">
         <div>
-          <MdOutlineErrorOutline className="text-foreground-300 dark:text-foreground-700 h-20 w-20" />
+          <MdOutlineErrorOutline className="text-muted-foreground size-20" />
         </div>
         <h1>{header ?? 'Sorry, something went wrong'}</h1>
-        <p className="text-base">
+        <p>
           {typeof error === 'string' || React.isValidElement(error)
             ? error
             : 'We encountered an error showing this page.'}
@@ -49,4 +57,4 @@ function ErrorDisplay({
   );
 }
 
-export default ErrorDisplay;
+export { ErrorDisplay };

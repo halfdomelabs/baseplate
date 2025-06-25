@@ -14,8 +14,9 @@ export interface CoreReactComponentsPaths {
   comboboxField: string;
   combobox: string;
   confirmDialog: string;
-  errorableLoader: string;
+  emptyDisplay: string;
   errorDisplay: string;
+  errorableLoader: string;
   formItem: string;
   formError: string;
   formLabel: string;
@@ -53,6 +54,7 @@ export interface CoreReactComponentsPaths {
   stylesInput: string;
   stylesSelect: string;
   typesForm: string;
+  typesIcon: string;
   cn: string;
   mergeRefs: string;
 }
@@ -83,8 +85,9 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           combobox: `${srcRoot}/components/combobox/combobox.tsx`,
           comboboxField: `${srcRoot}/components/combobox-field/combobox-field.tsx`,
           confirmDialog: `${srcRoot}/components/ConfirmDialog/index.tsx`,
-          errorableLoader: `${srcRoot}/components/ErrorableLoader/index.tsx`,
-          errorDisplay: `${srcRoot}/components/ErrorDisplay/index.tsx`,
+          emptyDisplay: `${srcRoot}/components/empty-display/empty-display.tsx`,
+          errorableLoader: `${srcRoot}/components/errorable-loader/errorable-loader.tsx`,
+          errorDisplay: `${srcRoot}/components/error-display/error-display.tsx`,
           formError: `${srcRoot}/components/FormError/index.tsx`,
           formItem: `${srcRoot}/components/form-item/form-item.tsx`,
           formLabel: `${srcRoot}/components/FormLabel/index.tsx`,
@@ -121,6 +124,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           textInput: `${srcRoot}/components/TextInput/index.tsx`,
           toaster: `${srcRoot}/components/toaster/toaster.tsx`,
           typesForm: `${srcRoot}/types/form.ts`,
+          typesIcon: `${srcRoot}/types/icon.ts`,
           useConfirmDialog: `${srcRoot}/hooks/useConfirmDialog.ts`,
           useStatus: `${srcRoot}/hooks/useStatus.ts`,
         },

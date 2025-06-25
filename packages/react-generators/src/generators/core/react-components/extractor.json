@@ -121,24 +121,34 @@
       "pathRootRelativePath": "{src-root}/components/ConfirmDialog/index.tsx",
       "variables": {}
     },
-    "src/components/ErrorableLoader/index.tsx": {
-      "name": "errorable-loader",
+    "src/components/empty-display/empty-display.tsx": {
+      "name": "empty-display",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/ErrorableLoader/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/empty-display/empty-display.tsx",
       "variables": {}
     },
-    "src/components/ErrorDisplay/index.tsx": {
+    "src/components/error-display/error-display.tsx": {
       "name": "error-display",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/ErrorDisplay/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/error-display/error-display.tsx",
+      "variables": {}
+    },
+    "src/components/errorable-loader/errorable-loader.tsx": {
+      "name": "errorable-loader",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/errorable-loader/errorable-loader.tsx",
       "variables": {}
     },
     "src/components/form-item/form-item.tsx": {
@@ -193,6 +203,7 @@
         "ComboboxField": {},
         "ComboboxFieldController": {},
         "ConfirmDialog": {},
+        "EmptyDisplay": {},
         "ErrorableLoader": {},
         "ErrorDisplay": {},
         "FormError": {},
@@ -593,6 +604,17 @@
         "MultiSelectOptionProps": { "isTypeOnly": true },
         "SelectOptionProps": { "isTypeOnly": true }
       },
+      "variables": {}
+    },
+    "src/types/icon.ts": {
+      "name": "types-icon",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "utils",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/types/icon.ts",
+      "projectExports": { "IconElement": { "isTypeOnly": true } },
       "variables": {}
     },
     "src/utils/cn.ts": {
