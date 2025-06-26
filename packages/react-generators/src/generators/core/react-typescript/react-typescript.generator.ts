@@ -60,7 +60,7 @@ export const reactTypescriptGenerator = createGenerator({
               contents: {
                 compilerOptions: {
                   composite: true,
-                  moduleResolution: 'Node',
+                  moduleResolution: 'Bundler',
                   strict: true,
                 },
                 include: ['vite.config.ts'],
