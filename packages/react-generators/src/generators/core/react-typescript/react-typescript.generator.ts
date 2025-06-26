@@ -59,9 +59,25 @@ export const reactTypescriptGenerator = createGenerator({
               destination: 'tsconfig.node.json',
               contents: {
                 compilerOptions: {
+                  target: 'ES2023',
+                  lib: ['ES2023'],
+                  module: 'ESNext',
+                  skipLibCheck: true,
                   composite: true,
-                  moduleResolution: 'Bundler',
+
+                  /* Bundler mode */
+                  moduleResolution: 'bundler',
+                  allowImportingTsExtensions: true,
+                  verbatimModuleSyntax: true,
+                  moduleDetection: 'force',
+                  noEmit: true,
+
+                  /* Linting */
                   strict: true,
+                  noUnusedLocals: true,
+                  noUnusedParameters: true,
+                  noFallthroughCasesInSwitch: true,
+                  noUncheckedSideEffectImports: true,
                 },
                 include: ['vite.config.ts'],
               },
