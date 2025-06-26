@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 
 import {
   Alert,
-  LinkButton,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -63,16 +63,20 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
           <TableRow key={item.id}>
             <TPL_CELLS />
             <TableCell className="space-x-4">
-              <Link to={`${item.id}/show`}>Show</Link>
-              <Link to={`${item.id}/edit`}>Edit</Link>
-              <LinkButton
-                negative
+              <Link to={`${item.id}/edit`}>
+                <Button variant="link" size="none">
+                  Edit
+                </Button>
+              </Link>
+              <Button
+                variant="linkDestructive"
                 onClick={() => {
                   handleDelete(item);
                 }}
+                size="none"
               >
                 Delete
-              </LinkButton>
+              </Button>
             </TableCell>
           </TableRow>
         ))}

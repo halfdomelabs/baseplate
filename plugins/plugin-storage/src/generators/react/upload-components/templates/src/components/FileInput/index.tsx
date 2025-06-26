@@ -10,7 +10,7 @@ import type {
 } from 'react-hook-form';
 
 import { useCreateUploadUrlMutation } from '%generatedGraphqlImports';
-import { FormError, FormLabel, LinkButton } from '%reactComponentsImports';
+import { FormError, FormLabel, Button } from '%reactComponentsImports';
 import { formatError, logError } from '%reactErrorImports';
 import clsx from 'clsx';
 import { useCallback } from 'react';
@@ -165,12 +165,12 @@ const FileInput = function FileInput({
                   )}
                 </div>
               </div>
-              <LinkButton onClick={handleRemove}>
+              <Button variant="ghost" size="icon" onClick={handleRemove}>
                 <MdOutlineClear
                   aria-label="Remove"
                   className="h-8 w-6 text-black"
                 />
-              </LinkButton>
+              </Button>
             </div>
           );
         }
@@ -197,22 +197,26 @@ const FileInput = function FileInput({
                       text={`${uploadPercentage}%`}
                       className="h-8 w-8"
                     />
-                    <LinkButton
-                      negative
+                    <Button
+                      variant="linkDestructive"
                       onClick={handleCancel}
                       disabled={disabled}
                     >
                       Cancel
-                    </LinkButton>
+                    </Button>
                   </div>
                 );
               }
               if (error) {
                 return (
                   <div className="flex items-center space-x-4">
-                    <LinkButton onClick={handleRemove} disabled={disabled}>
+                    <Button
+                      variant="link"
+                      onClick={handleRemove}
+                      disabled={disabled}
+                    >
                       Retry
-                    </LinkButton>
+                    </Button>
                   </div>
                 );
               }

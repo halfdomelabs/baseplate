@@ -329,7 +329,6 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
               reactComponentsImports.TableBody.declaration(),
               reactComponentsImports.TableRow.declaration(),
               reactComponentsImports.TableCell.declaration(),
-              reactComponentsImports.LinkButton.declaration(),
             ];
             const headers = tableColumns.map((column) =>
               tsCodeFragment(`<TableHead>${column.label}</TableHead>`),
@@ -360,14 +359,14 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                         <TableRow key={item.id}>
                           TPL_CELLS
                           <TableCell className="space-x-4">
-                            <LinkButton onClick={() => {
+                            <Button variant="link" onClick={() => {
                               edit(idx);
-                            }}>Edit</LinkButton>
-                            <LinkButton negative onClick={() => {
+                            }}>Edit</Button>
+                            <Button variant="linkDestructive" onClick={() => {
                               remove(idx);
                             }}>
                               Remove
-                            </LinkButton>
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -396,7 +395,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
                   },
                   [
                     ...tableImports,
-                    reactComponentsImports.LinkButton.declaration(),
+                    reactComponentsImports.Button.declaration(),
                     tsTypeImportBuilder(['ReactElement']).from('react'),
                   ],
                 )
