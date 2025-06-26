@@ -106,7 +106,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           mergeRefs: `${srcRoot}/utils/merge-refs.ts`,
           modal: `${srcRoot}/components/Modal/index.tsx`,
           navigationMenu: `${srcRoot}/components/navigation-menu/navigation-menu.tsx`,
-          notFoundCard: `${srcRoot}/components/NotFoundCard/index.tsx`,
+          notFoundCard: `${srcRoot}/components/not-found-card/not-found-card.tsx`,
           popover: `${srcRoot}/components/popover/popover.tsx`,
           reactSelectInput: `${srcRoot}/components/ReactSelectInput/index.tsx`,
           scrollArea: `${srcRoot}/components/scroll-area/scroll-area.tsx`,

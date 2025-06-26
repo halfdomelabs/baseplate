@@ -401,7 +401,7 @@ const notFoundCard = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/NotFoundCard/index.tsx',
+      '../templates/src/components/not-found-card/not-found-card.tsx',
     ),
   },
   variables: {},

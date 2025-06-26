@@ -375,14 +375,14 @@
       "pathRootRelativePath": "{src-root}/components/navigation-menu/navigation-menu.tsx",
       "variables": {}
     },
-    "src/components/NotFoundCard/index.tsx": {
+    "src/components/not-found-card/not-found-card.tsx": {
       "name": "not-found-card",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/NotFoundCard/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/not-found-card/not-found-card.tsx",
       "variables": {}
     },
     "src/components/popover/popover.tsx": {
