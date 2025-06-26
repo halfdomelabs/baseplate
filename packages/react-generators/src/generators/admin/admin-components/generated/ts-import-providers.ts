@@ -14,11 +14,17 @@ import { ADMIN_ADMIN_COMPONENTS_PATHS } from './template-paths.js';
 
 const adminComponentsImportsSchema = createTsImportMapSchema({
   DescriptionList: { exportedAs: 'default' },
+  EmbeddedListField: {},
+  EmbeddedListFieldController: {},
+  EmbeddedListFieldProps: { isTypeOnly: true },
   EmbeddedListFormProps: { isTypeOnly: true },
-  EmbeddedListInput: { exportedAs: 'default' },
+  EmbeddedListInput: {},
   EmbeddedListTableProps: { isTypeOnly: true },
+  EmbeddedObjectField: {},
+  EmbeddedObjectFieldController: {},
+  EmbeddedObjectFieldProps: { isTypeOnly: true },
   EmbeddedObjectFormProps: { isTypeOnly: true },
-  EmbeddedObjectInput: { exportedAs: 'default' },
+  EmbeddedObjectInput: {},
 });
 
 export type AdminComponentsImportsProvider = TsImportMapProviderFromSchema<
@@ -44,9 +50,15 @@ const adminAdminComponentsImportsTask = createGeneratorTask({
           adminComponentsImportsSchema,
           {
             DescriptionList: paths.descriptionList,
+            EmbeddedListField: paths.embeddedListField,
+            EmbeddedListFieldController: paths.embeddedListField,
+            EmbeddedListFieldProps: paths.embeddedListField,
             EmbeddedListFormProps: paths.embeddedListInput,
             EmbeddedListInput: paths.embeddedListInput,
             EmbeddedListTableProps: paths.embeddedListInput,
+            EmbeddedObjectField: paths.embeddedObjectField,
+            EmbeddedObjectFieldController: paths.embeddedObjectField,
+            EmbeddedObjectFieldProps: paths.embeddedObjectField,
             EmbeddedObjectFormProps: paths.embeddedObjectInput,
             EmbeddedObjectInput: paths.embeddedObjectInput,
           },

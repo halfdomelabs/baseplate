@@ -67,7 +67,7 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
         const content =
           formInfo.type === 'object'
             ? TsCodeUtils.formatFragment(
-                `<EmbeddedObjectInput.LabelledController
+                `<EmbeddedObjectFieldController
           label="${label}"
           control={control}
           name="${modelRelation}"
@@ -79,10 +79,10 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
                   EMBEDDED_FORM_COMPONENT: embeddedFormComponent.expression,
                   EXTRA_FORM_PROPS: embeddedFormComponent.extraProps,
                 },
-                adminComponentsImports.EmbeddedObjectInput.declaration(),
+                adminComponentsImports.EmbeddedObjectFieldController.declaration(),
               )
             : TsCodeUtils.formatFragment(
-                `<EmbeddedListInput.LabelledController
+                `<EmbeddedListFieldController
         label="${label}"
         control={control}
         name="${modelRelation}"
@@ -100,7 +100,7 @@ export const adminCrudEmbeddedInputGenerator = createGenerator({
                     formInfo.embeddedTableComponent.expression,
                   EXTRA_TABLE_PROPS: formInfo.embeddedTableComponent.extraProps,
                 },
-                adminComponentsImports.EmbeddedListInput.declaration(),
+                adminComponentsImports.EmbeddedListFieldController.declaration(),
               );
 
         adminCrudInputContainer.addInput({
