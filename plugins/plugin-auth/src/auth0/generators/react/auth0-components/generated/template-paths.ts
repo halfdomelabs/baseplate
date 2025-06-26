@@ -18,7 +18,7 @@ const auth0Auth0ComponentsPathsTask = createGeneratorTask({
     return {
       providers: {
         auth0Auth0ComponentsPaths: {
-          requireAuth: `${srcRoot}/components/RequireAuth/index.tsx`,
+          requireAuth: `${srcRoot}/components/require-auth/require-auth.tsx`,
         },
       },
     };

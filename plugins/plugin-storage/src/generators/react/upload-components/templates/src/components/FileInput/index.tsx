@@ -10,7 +10,7 @@ import type {
 } from 'react-hook-form';
 
 import { useCreateUploadUrlMutation } from '%generatedGraphqlImports';
-import { FormError, FormLabel, Button } from '%reactComponentsImports';
+import { Button, FormError, FormLabel } from '%reactComponentsImports';
 import { formatError, logError } from '%reactErrorImports';
 import clsx from 'clsx';
 import { useCallback } from 'react';

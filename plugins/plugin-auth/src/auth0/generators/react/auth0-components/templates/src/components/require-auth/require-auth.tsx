@@ -9,11 +9,11 @@ interface Props {
   children: ReactElement;
 }
 
-function RequireAuth({ children }: Props): ReactElement {
+function RequireAuthRoot({ children }: Props): ReactElement {
   return children;
 }
 
-export default withAuthenticationRequired(RequireAuth, {
+export const RequireAuth = withAuthenticationRequired(RequireAuthRoot, {
   onRedirecting: () => (
     <div className="flex h-full items-center justify-center">
       <Loader />

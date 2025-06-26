@@ -25,7 +25,10 @@ export const auth0ComponentsGenerator = createGenerator({
         paths: AUTH0_AUTH0_COMPONENTS_GENERATED.paths.provider,
       },
       run({ reactComponents, typescriptFile, reactComponentsImports, paths }) {
-        reactComponents.registerComponent({ name: 'RequireAuth' });
+        reactComponents.registerComponent({
+          name: 'require-auth',
+          isBarrelExport: true,
+        });
 
         return {
           build: async (builder) => {
