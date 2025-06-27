@@ -72,38 +72,6 @@ const defaultGeneratorOperations: GeneratorOperations = {
 
 const GENERATED_DIRECTORY = 'baseplate/generated';
 
-// TODO [>=0.2.0] Remove this once we've released a new major version.
-async function migrateCleanDirectory(
-  projectDirectory: string,
-  logger: Logger,
-): Promise<void> {
-  const oldDirectory = path.join(projectDirectory, 'baseplate/.clean');
-  const newDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
-
-  const oldDirectoryExists = await dirExists(oldDirectory);
-  const newDirectoryExists = await dirExists(newDirectory);
-
-  if (oldDirectoryExists) {
-    logger.info(`Migrating legacy .clean directory to ${newDirectory}...`);
-
-    // Create parent directory if it doesn't exist
-    await mkdir(path.dirname(newDirectory), { recursive: true });
-
-    if (newDirectoryExists) {
-      throw new Error(
-        `New generated directory already exists: ${newDirectory}. Please remove either baseplate.clean or baseplate/generated.`,
-      );
-    }
-
-    // Rename directory
-    await rename(oldDirectory, newDirectory).catch((err: unknown) => {
-      throw new Error(
-        `Failed to migrate .clean directory: ${err instanceof Error ? err.message : String(err)}`,
-      );
-    });
-  }
-}
-
 async function getPreviousGeneratedPayload(
   projectDirectory: string,
 ): Promise<PreviousGeneratedPayload | undefined> {
@@ -137,9 +105,6 @@ export async function generateForDirectory({
   const { appDirectory, name, generatorBundle } = appEntry;
 
   const projectDirectory = path.join(baseDirectory, appDirectory);
-
-  // Migrate .clean directory if it exists
-  await migrateCleanDirectory(projectDirectory, logger);
 
   logger.info(`Generating project ${name} in ${projectDirectory}...`);
 

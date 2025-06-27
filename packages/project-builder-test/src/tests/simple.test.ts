@@ -31,8 +31,7 @@ export default {
       timeout: 60_000,
     });
     await helpers.runCommand('pnpm lint');
-    // Disabled because there's a mystery bug where it errors out on GitHub Actions but not locally
-    // Linear: kingston/eng-760-figure-out-why-github-action-prettiercheck-in-e2e-tests-is
+    // TODO: Fix prettier due to weird bug that only happens on CI
     // await helpers.runCommand('pnpm prettier:check');
     await helpers.runCommand('pnpm build');
   },

@@ -384,13 +384,10 @@ export class ZodRefBuilder<TInput> {
       ? this._constructPathWithoutPrefix(entity.idPath as PathInput<TInput>)
       : [...this._constructPathWithoutPrefix(entity.path), 'id'];
 
-    // TODO [>=0.2.0] Remove the fallback to generateNewId once we've released a new major verison.
-    const id =
-      (get(this.data, idPath) as string | undefined) ??
-      entity.type.generateNewId();
+    const id = get(this.data, idPath) as string;
 
-    if (!get(this.data, idPath)) {
-      set(this.data as object, idPath, id);
+    if (!id) {
+      throw new Error(`No id found for entity ${entity.type.name}`);
     }
 
     if (!entity.type.isId(id)) {
