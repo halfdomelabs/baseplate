@@ -281,34 +281,6 @@ const label = createTsTemplateFile({
   variables: {},
 });
 
-const linkButton = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'link-button',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/LinkButton/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
-const listGroup = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'list-group',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/ListGroup/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const loader = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -318,20 +290,6 @@ const loader = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/components/loader/loader.tsx',
-    ),
-  },
-  variables: {},
-});
-
-const modal = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'modal',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/Modal/index.tsx',
     ),
   },
   variables: {},
@@ -540,10 +498,7 @@ export const componentsGroup = {
   input,
   inputField,
   label,
-  linkButton,
-  listGroup,
   loader,
-  modal,
   navigationMenu,
   notFoundCard,
   popover,

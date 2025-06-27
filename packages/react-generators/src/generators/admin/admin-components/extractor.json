@@ -1,17 +1,6 @@
 {
   "name": "admin/admin-components",
   "templates": {
-    "src/components/DescriptionList/index.tsx": {
-      "name": "description-list",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#admin/admin-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/DescriptionList/index.tsx",
-      "projectExports": { "DescriptionList": { "exportedAs": "default" } },
-      "variables": {}
-    },
     "src/components/embedded-list-field/embedded-list-field.tsx": {
       "name": "embedded-list-field",
       "type": "ts",

@@ -13,7 +13,6 @@ import {
 import { ADMIN_ADMIN_COMPONENTS_PATHS } from './template-paths.js';
 
 const adminComponentsImportsSchema = createTsImportMapSchema({
-  DescriptionList: { exportedAs: 'default' },
   EmbeddedListField: {},
   EmbeddedListFieldController: {},
   EmbeddedListFieldProps: { isTypeOnly: true },
@@ -49,7 +48,6 @@ const adminAdminComponentsImportsTask = createGeneratorTask({
         adminComponentsImports: createTsImportMap(
           adminComponentsImportsSchema,
           {
-            DescriptionList: paths.descriptionList,
             EmbeddedListField: paths.embeddedListField,
             EmbeddedListFieldController: paths.embeddedListField,
             EmbeddedListFieldProps: paths.embeddedListField,

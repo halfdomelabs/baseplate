@@ -298,26 +298,6 @@
       "pathRootRelativePath": "{src-root}/components/label/label.tsx",
       "variables": {}
     },
-    "src/components/LinkButton/index.tsx": {
-      "name": "link-button",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/LinkButton/index.tsx",
-      "variables": {}
-    },
-    "src/components/ListGroup/index.tsx": {
-      "name": "list-group",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/ListGroup/index.tsx",
-      "variables": {}
-    },
     "src/components/loader/loader.tsx": {
       "name": "loader",
       "type": "ts",
@@ -326,16 +306,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/loader/loader.tsx",
-      "variables": {}
-    },
-    "src/components/Modal/index.tsx": {
-      "name": "modal",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/Modal/index.tsx",
       "variables": {}
     },
     "src/components/navigation-menu/navigation-menu.tsx": {

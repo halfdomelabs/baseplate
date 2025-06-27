@@ -2,7 +2,6 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface AdminAdminComponentsPaths {
-  descriptionList: string;
   embeddedListField: string;
   embeddedListInput: string;
   embeddedObjectField: string;
@@ -22,7 +21,6 @@ const adminAdminComponentsPathsTask = createGeneratorTask({
     return {
       providers: {
         adminAdminComponentsPaths: {
-          descriptionList: `${srcRoot}/components/DescriptionList/index.tsx`,
           embeddedListField: `${srcRoot}/components/embedded-list-field/embedded-list-field.tsx`,
           embeddedListInput: `${srcRoot}/components/embedded-list-input/embedded-list-input.tsx`,
           embeddedObjectField: `${srcRoot}/components/embedded-object-field/embedded-object-field.tsx`,

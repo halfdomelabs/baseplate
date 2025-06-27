@@ -3,21 +3,6 @@ import path from 'node:path';
 
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
 
-const descriptionList = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'description-list',
-  projectExports: { DescriptionList: { exportedAs: 'default' } },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/DescriptionList/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const embeddedListField = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -102,7 +87,6 @@ const embeddedObjectInput = createTsTemplateFile({
 });
 
 export const componentsGroup = {
-  descriptionList,
   embeddedListField,
   embeddedListInput,
   embeddedObjectField,

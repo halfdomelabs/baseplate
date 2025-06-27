@@ -23,10 +23,7 @@ export interface CoreReactComponentsPaths {
   inputField: string;
   input: string;
   label: string;
-  linkButton: string;
-  listGroup: string;
   loader: string;
-  modal: string;
   navigationMenu: string;
   notFoundCard: string;
   popover: string;
@@ -90,11 +87,8 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           input: `${srcRoot}/components/input/input.tsx`,
           inputField: `${srcRoot}/components/input-field/input-field.tsx`,
           label: `${srcRoot}/components/label/label.tsx`,
-          linkButton: `${srcRoot}/components/LinkButton/index.tsx`,
-          listGroup: `${srcRoot}/components/ListGroup/index.tsx`,
           loader: `${srcRoot}/components/loader/loader.tsx`,
           mergeRefs: `${srcRoot}/utils/merge-refs.ts`,
-          modal: `${srcRoot}/components/Modal/index.tsx`,
           navigationMenu: `${srcRoot}/components/navigation-menu/navigation-menu.tsx`,
           notFoundCard: `${srcRoot}/components/not-found-card/not-found-card.tsx`,
           popover: `${srcRoot}/components/popover/popover.tsx`,
