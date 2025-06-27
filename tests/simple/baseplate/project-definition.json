@@ -74,7 +74,7 @@
       "name": "BlogPost"
     }
   ],
-  "schemaVersion": 13,
+  "schemaVersion": 14,
   "settings": { "general": { "name": "simple", "portOffset": 3000 } },
   "version": "0.1.0"
 }
