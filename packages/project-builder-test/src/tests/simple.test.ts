@@ -31,7 +31,7 @@ export default {
       timeout: 60_000,
     });
     await helpers.runCommand('pnpm lint');
-    await helpers.runCommand('pnpm prettier:check -- --log-level debug');
+    await helpers.runCommand('pnpm prettier:check');
     await helpers.runCommand('pnpm build');
   },
 } satisfies ProjectBuilderTest;
