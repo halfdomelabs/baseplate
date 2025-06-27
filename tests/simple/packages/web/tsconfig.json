@@ -1,28 +1,11 @@
 {
-  "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
-    "target": "esnext",
-    "skipLibCheck": true,
-    "esModuleInterop": false,
-    "allowJs": false,
-    "jsx": "react-jsx",
-    "strict": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "bundler",
-    "isolatedModules": true,
-    "noEmit": true,
-    "paths": {
-      "@src/*": ["./src/*"]
-    }
-  },
-  "include": ["src"],
-  "exclude": ["**/node_modules", "**/dist", "**/lib"],
   "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
     {
       "path": "./tsconfig.node.json"
     }
-  ]
+  ],
+  "files": []
 }

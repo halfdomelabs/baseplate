@@ -18,7 +18,7 @@ const adminAdminLayoutPathsTask = createGeneratorTask({
     return {
       providers: {
         adminAdminLayoutPaths: {
-          adminLayout: `${srcRoot}/components/AdminLayout/index.tsx`,
+          adminLayout: `${srcRoot}/components/admin-layout/admin-layout.tsx`,
         },
       },
     };

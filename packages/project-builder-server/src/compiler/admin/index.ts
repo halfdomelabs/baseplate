@@ -91,9 +91,7 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
             rootFeatures,
           ),
         }),
-        reactComponents: reactComponentsGenerator({
-          includeDatePicker: true,
-        }),
+        reactComponents: reactComponentsGenerator({}),
         reactTailwind: reactTailwindGenerator({}),
         reactSentry: reactSentryGenerator({}),
         reactApollo: reactApolloGenerator({

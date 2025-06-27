@@ -34,11 +34,18 @@ export const adminComponentsGenerator = createGenerator({
         paths: ADMIN_ADMIN_COMPONENTS_GENERATED.paths.provider,
       },
       run({ reactComponents, reactComponentsImports, typescriptFile, paths }) {
-        reactComponents.registerComponent({ name: 'EmbeddedListInput' });
         reactComponents.registerComponent({
-          name: 'EmbeddedObjectInput',
+          name: 'embedded-list-input',
         });
-        reactComponents.registerComponent({ name: 'DescriptionList' });
+        reactComponents.registerComponent({
+          name: 'embedded-object-input',
+        });
+        reactComponents.registerComponent({
+          name: 'embedded-list-field',
+        });
+        reactComponents.registerComponent({
+          name: 'embedded-object-field',
+        });
 
         return {
           build: async (builder) => {

@@ -8,11 +8,11 @@ const requireAuth = createTsTemplateFile({
     reactComponentsImports: reactComponentsImportsProvider,
   },
   name: 'require-auth',
-  projectExports: { RequireAuth: { exportedAs: 'default' } },
+  projectExports: { RequireAuth: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/RequireAuth/index.tsx',
+      '../templates/src/components/require-auth/require-auth.tsx',
     ),
   },
   variables: {},

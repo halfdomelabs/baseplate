@@ -39,6 +39,7 @@
       "group": "build",
       "problemMatcher": {
         "base": "$tsc-watch",
+        "owner": "typescript",
         "pattern": {
           "regexp": "^//:watch:tsc:root: (.+):(\\d+):(\\d+) - (error|warning|info) TS(\\d+): (.*)$",
           "file": 1,

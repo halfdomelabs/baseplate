@@ -581,3 +581,6 @@ export const TsCodeUtils = {
 
 // Shortcut for template function
 export const tsTemplate = TsCodeUtils.template.bind(TsCodeUtils);
+
+export const tsTemplateWithImports =
+  TsCodeUtils.templateWithImports.bind(TsCodeUtils);

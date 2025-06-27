@@ -5,6 +5,7 @@ import {
   TsCodeUtils,
   tsImportBuilder,
   tsTemplate,
+  tsTemplateWithImports,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
@@ -172,14 +173,17 @@ export const adminCrudListGenerator = createGenerator({
               element: createRouteElement(listPageComponentName, listPagePath),
             });
 
-            const headers = sortedColumns.map((column) =>
-              tsCodeFragment(
-                `<Table.HeadCell>${column.label}</Table.HeadCell>`,
-              ),
+            const headers = sortedColumns.map(
+              (column) =>
+                tsTemplateWithImports(
+                  reactComponentsImports.TableHead.declaration(),
+                )`<TableHead>${column.label}</TableHead>`,
             );
             const cells = sortedColumns.map(
               (column) =>
-                tsTemplate`<Table.Cell>${column.display.content('item')}</Table.Cell>`,
+                tsTemplateWithImports(
+                  reactComponentsImports.TableCell.declaration(),
+                )`<TableCell>${column.display.content('item')}</TableCell>`,
             );
             await builder.apply(
               typescriptFile.renderTemplateFile({

@@ -22,6 +22,7 @@ describe('typescriptGenerator', () => {
       exclude: ['**/node_modules', '**/dist'],
       references: [],
       extraSections: [],
+      tsconfigPath: 'tsconfig.json',
     };
 
     const testTemplateFile = createTsTemplateFile({

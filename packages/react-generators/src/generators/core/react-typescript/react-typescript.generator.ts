@@ -20,26 +20,25 @@ export const reactTypescriptGenerator = createGenerator({
         typescriptSetup.compilerOptions.set(
           {
             /* Compilation */
-            lib: ['dom', 'dom.iterable', 'esnext'],
+            target: 'es2022',
+            useDefineForClassFields: true,
+            lib: ['dom', 'dom.iterable', 'es2022'],
             module: 'esnext',
-            target: 'esnext',
             skipLibCheck: true,
-            esModuleInterop: false,
-            allowJs: false,
+
+            /* Bundler mode */
+            moduleResolution: 'bundler',
+            allowImportingTsExtensions: true,
+            verbatimModuleSyntax: true,
+            noEmit: true,
             jsx: 'react-jsx',
 
             /* Linting */
             strict: true,
-
-            /* Resolution */
-            allowSyntheticDefaultImports: true,
-            forceConsistentCasingInFileNames: true,
-            resolveJsonModule: true,
-            moduleResolution: 'bundler',
-
-            /* Output */
-            isolatedModules: true,
-            noEmit: true,
+            noUnusedLocals: true,
+            noUnusedParameters: true,
+            noFallthroughCasesInSwitch: true,
+            noUncheckedSideEffectImports: true,
 
             /* Paths */
             paths: {
@@ -49,19 +48,44 @@ export const reactTypescriptGenerator = createGenerator({
           'react',
         );
         typescriptSetup.include.push('src');
-        typescriptSetup.references.push({
-          path: './tsconfig.node.json',
-        });
+        typescriptSetup.tsconfigPath.set('tsconfig.app.json');
         return {
           build: (builder) => {
+            writeJsonToBuilder(builder, {
+              id: 'tsconfig-root',
+              destination: 'tsconfig.json',
+              contents: {
+                files: [],
+                references: [
+                  { path: './tsconfig.app.json' },
+                  { path: './tsconfig.node.json' },
+                ],
+              },
+            });
             writeJsonToBuilder(builder, {
               id: 'tsconfig-node',
               destination: 'tsconfig.node.json',
               contents: {
                 compilerOptions: {
+                  target: 'ES2023',
+                  lib: ['ES2023'],
+                  module: 'ESNext',
+                  skipLibCheck: true,
                   composite: true,
-                  moduleResolution: 'Node',
+
+                  /* Bundler mode */
+                  moduleResolution: 'bundler',
+                  allowImportingTsExtensions: true,
+                  verbatimModuleSyntax: true,
+                  moduleDetection: 'force',
+                  noEmit: true,
+
+                  /* Linting */
                   strict: true,
+                  noUnusedLocals: true,
+                  noUnusedParameters: true,
+                  noFallthroughCasesInSwitch: true,
+                  noUncheckedSideEffectImports: true,
                 },
                 include: ['vite.config.ts'],
               },

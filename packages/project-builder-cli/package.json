@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-cli",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Full-stack CLI builder using Baseplate generators",
   "keywords": [
     "cli",
@@ -44,7 +44,7 @@
     "clean": "rm -rf ./dist",
     "dev": "tsx watch --tsconfig ./tsconfig.app.json --exclude /**/node_modules/** -r dotenv/config -C development ./src/cli.ts",
     "dev:serve": "pnpm dev serve",
-    "extract:templates": "pnpm start extract-templates",
+    "extract:templates": "pnpm start templates extract",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",

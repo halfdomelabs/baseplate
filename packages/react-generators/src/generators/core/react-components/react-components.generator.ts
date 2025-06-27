@@ -11,7 +11,7 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { pascalCase } from 'es-toolkit';
+import { kebabCase } from 'es-toolkit';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
@@ -19,9 +19,7 @@ import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 import { reactAppConfigProvider } from '../react-app/index.js';
 import { CORE_REACT_COMPONENTS_GENERATED } from './generated/index.js';
 
-const descriptorSchema = z.object({
-  includeDatePicker: z.boolean().optional(),
-});
+const descriptorSchema = z.object({});
 
 export interface ReactComponentEntry {
   name: string;
@@ -47,29 +45,25 @@ export const reactComponentsGenerator = createGenerator({
   name: 'core/react-components',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ includeDatePicker }) => ({
+  buildTasks: () => ({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
         '@headlessui/react',
         '@hookform/resolvers',
         'clsx',
         'react-hook-form',
-        'react-hot-toast',
         'react-icons',
-        'react-select',
         'zustand',
+        'radix-ui',
+        'class-variance-authority',
+        'cmdk',
+        'sonner',
+        'react-day-picker',
+        'date-fns',
       ]),
     }),
     paths: CORE_REACT_COMPONENTS_GENERATED.paths.task,
     imports: CORE_REACT_COMPONENTS_GENERATED.imports.task,
-    datePickerPackages: includeDatePicker
-      ? createNodePackagesTask({
-          prod: extractPackageVersions(REACT_PACKAGES, [
-            'react-datepicker',
-            'date-fns',
-          ]),
-        })
-      : undefined,
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
@@ -82,20 +76,20 @@ export const reactComponentsGenerator = createGenerator({
       run({ typescriptFile, reactAppConfig, paths }) {
         const coreReactComponents = Object.keys(
           CORE_REACT_COMPONENTS_GENERATED.templates.componentsGroup,
-        ).map((name) => ({ name: pascalCase(name) }));
-
-        if (includeDatePicker) {
-          coreReactComponents.push({ name: 'ReactDatePickerInput' });
-        }
+        ).map(
+          (name): ReactComponentEntry => ({
+            name: kebabCase(name).replace('-component', ''),
+          }),
+        );
 
         const allReactComponents = [...coreReactComponents];
 
         // add toaster root sibling component
         reactAppConfig.renderSiblings.set(
-          'react-hot-toast',
+          'toaster',
           tsCodeFragment(
             '<Toaster />',
-            tsImportBuilder(['Toaster']).from('react-hot-toast'),
+            tsImportBuilder(['Toaster']).from(paths.index),
           ),
         );
 
@@ -131,23 +125,31 @@ export const reactComponentsGenerator = createGenerator({
               }),
             );
 
-            if (includeDatePicker) {
-              await builder.apply(
-                typescriptFile.renderTemplateFile({
-                  template:
-                    CORE_REACT_COMPONENTS_GENERATED.templates
-                      .reactDatePickerInput,
-                  destination: paths.reactDatePickerInput,
-                }),
-              );
-            }
+            await builder.apply(
+              typescriptFile.renderTemplateGroup({
+                group: CORE_REACT_COMPONENTS_GENERATED.templates.stylesGroup,
+                paths,
+              }),
+            );
+
+            await builder.apply(
+              typescriptFile.renderTemplateGroup({
+                group: CORE_REACT_COMPONENTS_GENERATED.templates.utilsGroup,
+                paths,
+              }),
+            );
 
             // build component index
-            const componentNames = allReactComponents
-              .toSorted((a, b) => a.name.localeCompare(b.name))
-              .map((entry) => entry.name);
-            const componentIndex = componentNames
-              .map((name) => `export { default as ${name} } from './${name}';`)
+            const getComponentPath = (a: ReactComponentEntry): string =>
+              `./${a.name}/${a.name}.js`;
+
+            const sortedComponentPaths = allReactComponents
+              .map(getComponentPath)
+              .toSorted();
+
+            // build component index
+            const componentIndex = sortedComponentPaths
+              .map((path) => `export * from '${path}';`)
               .join('\n');
             await builder.apply(
               typescriptFile.renderTemplateFile({

@@ -14,24 +14,27 @@ export const REACT_PACKAGES = {
   loglevel: '1.9.1',
 
   // Tailwind
-  autoprefixer: '10.4.20',
-  tailwindcss: '3.4.11',
-  'prettier-plugin-tailwindcss': '0.6.6',
-  '@tailwindcss/forms': '0.5.9',
+  '@tailwindcss/vite': '4.1.6',
+  tailwindcss: '4.1.6',
+  'prettier-plugin-tailwindcss': '0.6.11',
+  'tw-animate-css': '1.2.9',
 
   // Components
   '@headlessui/react': '2.2.2',
   '@hookform/resolvers': '5.0.1',
   clsx: '2.1.1',
   'react-hook-form': '7.56.3',
-  'react-hot-toast': '2.5.2',
   'react-icons': '5.5.0',
   'react-select': '5.10.1',
   zustand: '5.0.3',
   'react-error-boundary': '6.0.0',
+  'radix-ui': '1.4.2',
+  'class-variance-authority': '0.7.1',
+  cmdk: '1.1.1',
+  sonner: '2.0.3',
 
   // Date Picker
-  'react-datepicker': '8.3.0',
+  'react-day-picker': '9.7.0',
   'date-fns': '4.1.0',
 
   // GraphQL
