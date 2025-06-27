@@ -225,20 +225,6 @@ const errorDisplay = createTsTemplateFile({
   variables: {},
 });
 
-const formError = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'form-error',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/FormError/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const formItem = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -248,20 +234,6 @@ const formItem = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/components/form-item/form-item.tsx',
-    ),
-  },
-  variables: {},
-});
-
-const formLabel = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'form-label',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/FormLabel/index.tsx',
     ),
   },
   variables: {},
@@ -564,9 +536,7 @@ export const componentsGroup = {
   emptyDisplay,
   errorableLoader,
   errorDisplay,
-  formError,
   formItem,
-  formLabel,
   input,
   inputField,
   label,

@@ -19,8 +19,6 @@ export interface CoreReactComponentsPaths {
   errorDisplay: string;
   errorableLoader: string;
   formItem: string;
-  formError: string;
-  formLabel: string;
   index: string;
   inputField: string;
   input: string;
@@ -85,9 +83,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           emptyDisplay: `${srcRoot}/components/empty-display/empty-display.tsx`,
           errorableLoader: `${srcRoot}/components/errorable-loader/errorable-loader.tsx`,
           errorDisplay: `${srcRoot}/components/error-display/error-display.tsx`,
-          formError: `${srcRoot}/components/FormError/index.tsx`,
           formItem: `${srcRoot}/components/form-item/form-item.tsx`,
-          formLabel: `${srcRoot}/components/FormLabel/index.tsx`,
           hooksUseControlledState: `${srcRoot}/hooks/use-controlled-state.ts`,
           hooksUseControllerMerged: `${srcRoot}/hooks/use-controller-merged.ts`,
           index: `${srcRoot}/components/index.ts`,

@@ -171,26 +171,6 @@
       "pathRootRelativePath": "{src-root}/components/form-item/form-item.tsx",
       "variables": {}
     },
-    "src/components/FormError/index.tsx": {
-      "name": "form-error",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/FormError/index.tsx",
-      "variables": {}
-    },
-    "src/components/FormLabel/index.tsx": {
-      "name": "form-label",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/FormLabel/index.tsx",
-      "variables": {}
-    },
     "src/components/index.ts": {
       "name": "index",
       "type": "ts",
