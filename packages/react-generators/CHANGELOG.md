@@ -1,5 +1,16 @@
 # @baseplate-dev/react-generators
 
+## 0.2.1
+
+### Patch Changes
+
+- [#581](https://github.com/halfdomelabs/baseplate/pull/581) [`d7d9985`](https://github.com/halfdomelabs/baseplate/commit/d7d998540ca5886259f93b5020c4d8939c5cdf5f) Thanks [@kingston](https://github.com/kingston)! - Fix settings for prettier with Tailwind v4
+
+- Updated dependencies [[`d7d9985`](https://github.com/halfdomelabs/baseplate/commit/d7d998540ca5886259f93b5020c4d8939c5cdf5f)]:
+  - @baseplate-dev/core-generators@0.2.1
+  - @baseplate-dev/sync@0.2.1
+  - @baseplate-dev/utils@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes
