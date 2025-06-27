@@ -101,7 +101,7 @@ function SelectContent({
               className={cn(
                 'h-full w-full rounded-[inherit] p-1',
                 position === 'popper'
-                  ? 'max-h-[min(var(--max-popper-height),var(--radix-select-content-available-height))] w-full min-w-(--radix-select-trigger-width)'
+                  ? 'min-w-(--radix-select-trigger-width) max-h-[min(var(--max-popper-height),var(--radix-select-content-available-height))] w-full'
                   : 'max-h-(--max-popper-height)',
               )}
               style={
