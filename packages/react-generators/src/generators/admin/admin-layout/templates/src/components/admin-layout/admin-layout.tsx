@@ -42,7 +42,7 @@ export function AdminLayout({ className }: Props): ReactElement {
           </NavigationMenuList>
         </NavigationMenu>
       </SidebarLayoutSidebar>
-      <SidebarLayoutContent>
+      <SidebarLayoutContent className="p-4">
         <Outlet />
       </SidebarLayoutContent>
     </SidebarLayout>
