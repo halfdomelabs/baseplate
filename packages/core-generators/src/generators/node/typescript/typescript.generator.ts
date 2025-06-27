@@ -162,6 +162,7 @@ const [setupTask, typescriptSetupProvider, typescriptSetupValuesProvider] =
       exclude: t.array<string>(['**/node_modules', '**/dist', '**/lib']),
       references: t.array<TypescriptConfigReference>(),
       extraSections: t.array<Record<string, unknown>>(),
+      tsconfigPath: t.scalar<string>('tsconfig.json'),
     }),
     {
       prefix: 'typescript',
@@ -206,7 +207,7 @@ export const typescriptGenerator = createGenerator({
 
             writeJsonToBuilder(builder, {
               id: 'tsconfig',
-              destination: 'tsconfig.json',
+              destination: typescriptConfig.tsconfigPath,
               contents: {
                 compilerOptions,
                 include,

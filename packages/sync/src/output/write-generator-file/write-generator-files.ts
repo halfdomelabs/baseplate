@@ -34,24 +34,40 @@ export async function writeGeneratorFiles({
 
   const writeErrors: { relativePath: string; error: unknown }[] = [];
 
-  await Promise.all(
-    fileOperations.map((fileOperation) =>
-      writeLimit(async () => {
-        try {
-          await writeGeneratorFile({
-            fileOperation,
-            outputDirectory,
-            generatedContentsDirectory,
-          });
-        } catch (error: unknown) {
-          writeErrors.push({
-            relativePath: fileOperation.relativePath,
-            error,
-          });
-        }
-      }),
-    ),
+  // Sort operations that require rename before other operations
+  // to ensure that we write new files after renames occur
+  const fileOperationsWithRenames = fileOperations.filter(
+    (f) => f.previousRelativePath !== f.relativePath,
   );
+  const fileOperationsWithoutRenames = fileOperations.filter(
+    (f) => f.previousRelativePath === f.relativePath,
+  );
+
+  async function writeFileOperations(
+    fileOperations: GeneratorFileOperationResult[],
+  ): Promise<void> {
+    await Promise.all(
+      fileOperations.map((fileOperation) =>
+        writeLimit(async () => {
+          try {
+            await writeGeneratorFile({
+              fileOperation,
+              outputDirectory,
+              generatedContentsDirectory,
+            });
+          } catch (error: unknown) {
+            writeErrors.push({
+              relativePath: fileOperation.relativePath,
+              error,
+            });
+          }
+        }),
+      ),
+    );
+  }
+
+  await writeFileOperations(fileOperationsWithRenames);
+  await writeFileOperations(fileOperationsWithoutRenames);
 
   if (writeErrors.length > 0) {
     throw new WriteGeneratorFilesError(writeErrors);
