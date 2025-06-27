@@ -46,6 +46,17 @@ export const reactTailwindGenerator = createGenerator({
         'tw-animate-css',
       ]),
     }),
+    prettier: createProviderTask(prettierProvider, (prettier) => {
+      prettier.addPlugin({
+        name: 'prettier-plugin-tailwindcss',
+        version: REACT_PACKAGES['prettier-plugin-tailwindcss'],
+        default: prettierPluginTailwindcss,
+      });
+      prettier.addExtraOptions({
+        tailwindFunctions: ['clsx', 'cn', 'cva'],
+        tailwindStylesheet: './src/styles.css',
+      });
+    }),
     paths: CORE_REACT_TAILWIND_GENERATED.paths.task,
     vite: createProviderTask(reactBaseConfigProvider, (reactBaseConfig) => {
       reactBaseConfig.vitePlugins.set(
@@ -59,19 +70,12 @@ export const reactTailwindGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactBaseConfig: reactBaseConfigProvider,
-        prettier: prettierProvider,
         paths: CORE_REACT_TAILWIND_GENERATED.paths.provider,
       },
       exports: {
         reactTailwind: reactTailwindProvider.export(packageScope),
       },
-      run({ reactBaseConfig, prettier, paths }) {
-        prettier.addPlugin({
-          name: 'prettier-plugin-tailwindcss',
-          version: REACT_PACKAGES['prettier-plugin-tailwindcss'],
-          default: prettierPluginTailwindcss,
-        });
-
+      run({ reactBaseConfig, paths }) {
         reactBaseConfig.headerFragments.set(
           'styles-css-import',
           tsCodeFragment("import './styles.css'"),

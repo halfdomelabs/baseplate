@@ -57,6 +57,7 @@ const DEFAULT_PLUGINS: PrettierPluginConfig[] = [
 export interface PrettierProvider {
   getConfig(): NonOverwriteableMap<PrettierConfig>;
   addPlugin: (plugin: PrettierPluginConfig) => void;
+  addExtraOptions: (options: Record<string, unknown>) => void;
   addPrettierIgnore(path: string): void;
 }
 
@@ -153,6 +154,9 @@ export const prettierGenerator = createGenerator({
               },
               addPlugin(plugin) {
                 plugins.push(plugin);
+              },
+              addExtraOptions(options) {
+                prettierConfig.merge(options);
               },
             },
           },
