@@ -3,7 +3,7 @@
 import type { ReactElement } from 'react';
 
 import { useLogOut } from '%authHooksImports';
-import { Alert, Button, Card, Spinner } from '%reactComponentsImports';
+import { Alert, Button, Card, Loader } from '%reactComponentsImports';
 import { logError } from '%reactErrorImports';
 import { OAuthError, useAuth0 } from '@auth0/auth0-react';
 import { useEffect, useRef, useState } from 'react';
@@ -48,11 +48,11 @@ function Auth0CallbackPage(): ReactElement {
     <div className="flex h-full items-center justify-center">
       {error ? (
         <Card className="space-y-4 p-4">
-          <Alert type="error">{error}</Alert>
+          <Alert variant="error">{error}</Alert>
           <Button onClick={logOut}>Try Again</Button>
         </Card>
       ) : (
-        <Spinner size="large" />
+        <Loader />
       )}
     </div>
   );

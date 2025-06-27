@@ -1,18 +1,27 @@
 {
   "name": "admin/admin-components",
   "templates": {
-    "src/components/DescriptionList/index.tsx": {
-      "name": "description-list",
+    "src/components/embedded-list-field/embedded-list-field.tsx": {
+      "name": "embedded-list-field",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#admin/admin-components",
       "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/DescriptionList/index.tsx",
-      "projectExports": { "DescriptionList": { "exportedAs": "default" } },
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/components/embedded-list-field/embedded-list-field.tsx",
+      "projectExports": {
+        "EmbeddedListField": {},
+        "EmbeddedListFieldController": {},
+        "EmbeddedListFieldProps": { "isTypeOnly": true }
+      },
       "variables": {}
     },
-    "src/components/EmbeddedListInput/index.tsx": {
+    "src/components/embedded-list-input/embedded-list-input.tsx": {
       "name": "embedded-list-input",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -24,15 +33,35 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/components/EmbeddedListInput/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/embedded-list-input/embedded-list-input.tsx",
       "projectExports": {
         "EmbeddedListFormProps": { "isTypeOnly": true },
-        "EmbeddedListInput": { "exportedAs": "default" },
+        "EmbeddedListInput": {},
         "EmbeddedListTableProps": { "isTypeOnly": true }
       },
       "variables": {}
     },
-    "src/components/EmbeddedObjectInput/index.tsx": {
+    "src/components/embedded-object-field/embedded-object-field.tsx": {
+      "name": "embedded-object-field",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#admin/admin-components",
+      "group": "components",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/components/embedded-object-field/embedded-object-field.tsx",
+      "projectExports": {
+        "EmbeddedObjectField": {},
+        "EmbeddedObjectFieldController": {},
+        "EmbeddedObjectFieldProps": { "isTypeOnly": true }
+      },
+      "variables": {}
+    },
+    "src/components/embedded-object-input/embedded-object-input.tsx": {
       "name": "embedded-object-input",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -44,10 +73,10 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/components/EmbeddedObjectInput/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/embedded-object-input/embedded-object-input.tsx",
       "projectExports": {
         "EmbeddedObjectFormProps": { "isTypeOnly": true },
-        "EmbeddedObjectInput": { "exportedAs": "default" }
+        "EmbeddedObjectInput": {}
       },
       "variables": {}
     }

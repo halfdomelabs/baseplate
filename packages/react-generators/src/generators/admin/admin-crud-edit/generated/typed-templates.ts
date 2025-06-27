@@ -6,9 +6,7 @@ import { reactErrorImportsProvider } from '#src/generators/core/react-error/gene
 
 const createPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'create.page.tsx', kind: 'instance' },
-  importMapProviders: {
-    reactComponentsImports: reactComponentsImportsProvider,
-  },
+  importMapProviders: {},
   name: 'create-page',
   source: {
     path: path.join(import.meta.dirname, '../templates/create.page.tsx'),
@@ -49,9 +47,7 @@ const editForm = createTsTemplateFile({
 
 const editPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'edit.page.tsx', kind: 'instance' },
-  importMapProviders: {
-    reactComponentsImports: reactComponentsImportsProvider,
-  },
+  importMapProviders: {},
   name: 'edit-page',
   source: {
     path: path.join(import.meta.dirname, '../templates/edit.page.tsx'),

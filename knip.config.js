@@ -35,11 +35,6 @@ export default {
     'packages/fastify-generators': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
-      ignoreDependencies: [
-        // Tricky bug where @tailwlindcss/forms is being used by prettier-plugin-tailwindcss
-        // so must be included to not bug the build
-        '@tailwindcss/forms',
-      ],
     },
     'packages/project-builder-web': {
       entry: ['src/index.{ts,tsx}'],

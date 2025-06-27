@@ -30,6 +30,7 @@ export function addBuildCommand(program: Command): void {
         logger,
         context,
         userConfig,
+        cliFilePath: process.argv[1],
       });
     });
 }

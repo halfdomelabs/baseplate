@@ -1,7 +1,7 @@
 {
   "name": "core/react-error-boundary",
   "templates": {
-    "src/components/ErrorBoundary/index.tsx": {
+    "src/components/error-boundary/error-boundary.tsx": {
       "name": "component",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -16,7 +16,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/components/ErrorBoundary/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/error-boundary/error-boundary.tsx",
       "variables": {}
     }
   }

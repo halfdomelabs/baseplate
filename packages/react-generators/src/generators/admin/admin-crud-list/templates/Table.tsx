@@ -4,13 +4,17 @@ import type { ReactElement } from 'react';
 
 import {
   Alert,
-  LinkButton,
+  Button,
   Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
   useConfirmDialog,
-  useToast,
 } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface Props {
   items: TPL_ROW_FRAGMENT[];
@@ -20,7 +24,6 @@ interface Props {
 
 function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
   const { requestConfirm } = useConfirmDialog();
-  const toast = useToast();
   function handleDelete(item: TPL_ROW_FRAGMENT): void {
     requestConfirm({
       title: 'Delete Item',
@@ -40,36 +43,44 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
   }
 
   if (items.length === 0) {
-    return <Alert type="info">No TPL_PLURAL_MODEL found.</Alert>;
+    return (
+      <Alert variant="default">
+        No <TPL_PLURAL_MODEL /> found.
+      </Alert>
+    );
   }
 
   return (
     <Table>
-      <Table.Head>
-        <Table.HeadRow>
+      <TableHeader>
+        <TableRow>
           <TPL_HEADERS />
-          <Table.HeadCell>Actions</Table.HeadCell>
-        </Table.HeadRow>
-      </Table.Head>
-      <Table.Body>
+          <TableCell>Actions</TableCell>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {items.map((item) => (
-          <Table.Row key={item.id}>
+          <TableRow key={item.id}>
             <TPL_CELLS />
-            <Table.Cell className="space-x-4">
-              <Link to={`${item.id}/show`}>Show</Link>
-              <Link to={`${item.id}/edit`}>Edit</Link>
-              <LinkButton
-                negative
+            <TableCell className="space-x-4">
+              <Link to={`${item.id}/edit`}>
+                <Button variant="link" size="none">
+                  Edit
+                </Button>
+              </Link>
+              <Button
+                variant="linkDestructive"
                 onClick={() => {
                   handleDelete(item);
                 }}
+                size="none"
               >
                 Delete
-              </LinkButton>
-            </Table.Cell>
-          </Table.Row>
+              </Button>
+            </TableCell>
+          </TableRow>
         ))}
-      </Table.Body>
+      </TableBody>
     </Table>
   );
 }

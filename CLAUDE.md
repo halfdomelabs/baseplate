@@ -30,6 +30,7 @@ Note: Make sure to run the commands in the sub-packages if only modifying files 
 - If a particular interface or type is not exported, change the file so it is exported
 - We use the prefer using nullish coalescing operator (`??`) ESLint rule instead of a logical or (`||`), as it is a safer operator
 - Prefer barrel exports e.g. export \* from './foo.js' instead of individual named exports
+- Use console.info/warn/error instead of console.log
 
 ## UI Development Guidelines
 

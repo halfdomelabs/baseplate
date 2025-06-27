@@ -39,7 +39,7 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
   return (
     <div className={className}>
       <form onSubmit={handleSubmit(onSubmit)} className="max-w-md space-y-4">
-        <Alert.WithStatus status={status} />
+        {status && <Alert>{status.message}</Alert>}
         <TPL_INPUTS />
         <Button type="submit" disabled={isUpdating}>
           Save

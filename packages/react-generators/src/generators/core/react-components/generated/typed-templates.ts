@@ -9,35 +9,7 @@ const alert = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Alert/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
-const alertIcon = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'alert-icon',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/AlertIcon/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
-const backButton = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'back-button',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/BackButton/index.tsx',
+      '../templates/src/components/alert/alert.tsx',
     ),
   },
   variables: {},
@@ -51,21 +23,21 @@ const button = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Button/index.tsx',
+      '../templates/src/components/button/button.tsx',
     ),
   },
   variables: {},
 });
 
-const buttonGroup = createTsTemplateFile({
+const calendar = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'button-group',
+  name: 'calendar',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/ButtonGroup/index.tsx',
+      '../templates/src/components/calendar/calendar.tsx',
     ),
   },
   variables: {},
@@ -79,21 +51,77 @@ const card = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Card/index.tsx',
+      '../templates/src/components/card/card.tsx',
     ),
   },
   variables: {},
 });
 
-const checkedInput = createTsTemplateFile({
+const checkbox = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'checked-input',
+  name: 'checkbox',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/CheckedInput/index.tsx',
+      '../templates/src/components/checkbox/checkbox.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const checkboxField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'checkbox-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/checkbox-field/checkbox-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const circularProgress = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'circular-progress',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/circular-progress/circular-progress.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const combobox = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'combobox',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/combobox/combobox.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const comboboxField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'combobox-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/combobox-field/combobox-field.tsx',
     ),
   },
   variables: {},
@@ -107,7 +135,63 @@ const confirmDialog = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/ConfirmDialog/index.tsx',
+      '../templates/src/components/confirm-dialog/confirm-dialog.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const datePickerField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'date-picker-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/date-picker-field/date-picker-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const dateTimePickerField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'date-time-picker-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/date-time-picker-field/date-time-picker-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const dialog = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'dialog',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/dialog/dialog.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const emptyDisplay = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'empty-display',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/empty-display/empty-display.tsx',
     ),
   },
   variables: {},
@@ -121,7 +205,7 @@ const errorableLoader = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/ErrorableLoader/index.tsx',
+      '../templates/src/components/errorable-loader/errorable-loader.tsx',
     ),
   },
   variables: {},
@@ -135,77 +219,91 @@ const errorDisplay = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/ErrorDisplay/index.tsx',
+      '../templates/src/components/error-display/error-display.tsx',
     ),
   },
   variables: {},
 });
 
-const formError = createTsTemplateFile({
+const formItem = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'form-error',
+  name: 'form-item',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/FormError/index.tsx',
+      '../templates/src/components/form-item/form-item.tsx',
     ),
   },
   variables: {},
 });
 
-const formLabel = createTsTemplateFile({
+const input = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'form-label',
+  name: 'input',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/FormLabel/index.tsx',
+      '../templates/src/components/input/input.tsx',
     ),
   },
   variables: {},
 });
 
-const linkButton = createTsTemplateFile({
+const inputField = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'link-button',
+  name: 'input-field',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/LinkButton/index.tsx',
+      '../templates/src/components/input-field/input-field.tsx',
     ),
   },
   variables: {},
 });
 
-const listGroup = createTsTemplateFile({
+const label = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'list-group',
+  name: 'label',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/ListGroup/index.tsx',
+      '../templates/src/components/label/label.tsx',
     ),
   },
   variables: {},
 });
 
-const modal = createTsTemplateFile({
+const loader = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'modal',
+  name: 'loader',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Modal/index.tsx',
+      '../templates/src/components/loader/loader.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const navigationMenu = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'navigation-menu',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/navigation-menu/navigation-menu.tsx',
     ),
   },
   variables: {},
@@ -219,63 +317,105 @@ const notFoundCard = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/NotFoundCard/index.tsx',
+      '../templates/src/components/not-found-card/not-found-card.tsx',
     ),
   },
   variables: {},
 });
 
-const reactSelectInput = createTsTemplateFile({
+const popover = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'react-select-input',
+  name: 'popover',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/ReactSelectInput/index.tsx',
+      '../templates/src/components/popover/popover.tsx',
     ),
   },
   variables: {},
 });
 
-const selectInput = createTsTemplateFile({
+const scrollArea = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'select-input',
+  name: 'scroll-area',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/SelectInput/index.tsx',
+      '../templates/src/components/scroll-area/scroll-area.tsx',
     ),
   },
   variables: {},
 });
 
-const sidebar = createTsTemplateFile({
+const select = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'sidebar',
+  name: 'select',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Sidebar/index.tsx',
+      '../templates/src/components/select/select.tsx',
     ),
   },
   variables: {},
 });
 
-const spinner = createTsTemplateFile({
+const selectField = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'spinner',
+  name: 'select-field',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Spinner/index.tsx',
+      '../templates/src/components/select-field/select-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const sidebarLayout = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'sidebar-layout',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/sidebar-layout/sidebar-layout.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const switchComponent = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'switch-component',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/switch/switch.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const switchField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'switch-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/components/switch-field/switch-field.tsx',
     ),
   },
   variables: {},
@@ -289,49 +429,49 @@ const table = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Table/index.tsx',
+      '../templates/src/components/table/table.tsx',
     ),
   },
   variables: {},
 });
 
-const textAreaInput = createTsTemplateFile({
+const textarea = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'text-area-input',
+  name: 'textarea',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/TextAreaInput/index.tsx',
+      '../templates/src/components/textarea/textarea.tsx',
     ),
   },
   variables: {},
 });
 
-const textInput = createTsTemplateFile({
+const textareaField = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'text-input',
+  name: 'textarea-field',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/TextInput/index.tsx',
+      '../templates/src/components/textarea-field/textarea-field.tsx',
     ),
   },
   variables: {},
 });
 
-const toast = createTsTemplateFile({
+const toaster = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
   importMapProviders: {},
-  name: 'toast',
+  name: 'toaster',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/Toast/index.tsx',
+      '../templates/src/components/toaster/toaster.tsx',
     ),
   },
   variables: {},
@@ -339,30 +479,70 @@ const toast = createTsTemplateFile({
 
 export const componentsGroup = {
   alert,
-  alertIcon,
-  backButton,
   button,
-  buttonGroup,
+  calendar,
   card,
-  checkedInput,
+  checkbox,
+  checkboxField,
+  circularProgress,
+  combobox,
+  comboboxField,
   confirmDialog,
+  datePickerField,
+  dateTimePickerField,
+  dialog,
+  emptyDisplay,
   errorableLoader,
   errorDisplay,
-  formError,
-  formLabel,
-  linkButton,
-  listGroup,
-  modal,
+  formItem,
+  input,
+  inputField,
+  label,
+  loader,
+  navigationMenu,
   notFoundCard,
-  reactSelectInput,
-  selectInput,
-  sidebar,
-  spinner,
+  popover,
+  scrollArea,
+  select,
+  selectField,
+  sidebarLayout,
+  switchComponent,
+  switchField,
   table,
-  textAreaInput,
-  textInput,
-  toast,
+  textarea,
+  textareaField,
+  toaster,
 };
+
+const hooksUseControlledState = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'hooks',
+  importMapProviders: {},
+  name: 'hooks-use-controlled-state',
+  projectExports: { useControlledState: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-controlled-state.ts',
+    ),
+  },
+  variables: {},
+});
+
+const hooksUseControllerMerged = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'hooks',
+  importMapProviders: {},
+  name: 'hooks-use-controller-merged',
+  projectExports: { useControllerMerged: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-controller-merged.ts',
+    ),
+  },
+  variables: {},
+});
 
 const useConfirmDialog = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -377,7 +557,7 @@ const useConfirmDialog = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/hooks/useConfirmDialog.ts',
+      '../templates/src/hooks/use-confirm-dialog.ts',
     ),
   },
   variables: {},
@@ -399,19 +579,12 @@ const useStatus = createTsTemplateFile({
   variables: {},
 });
 
-const useToast = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'hooks',
-  importMapProviders: {},
-  name: 'use-toast',
-  projectExports: { useToast: {} },
-  source: {
-    path: path.join(import.meta.dirname, '../templates/src/hooks/useToast.tsx'),
-  },
-  variables: {},
-});
-
-export const hooksGroup = { useConfirmDialog, useStatus, useToast };
+export const hooksGroup = {
+  hooksUseControlledState,
+  hooksUseControllerMerged,
+  useConfirmDialog,
+  useStatus,
+};
 
 const index = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -419,30 +592,91 @@ const index = createTsTemplateFile({
   name: 'index',
   projectExports: {
     Alert: {},
-    AlertIcon: {},
-    BackButton: {},
     Button: {},
-    ButtonGroup: {},
+    Calendar: {},
     Card: {},
+    Checkbox: {},
+    CheckboxField: {},
+    CheckboxFieldController: {},
     CheckedInput: {},
+    CircularProgress: {},
+    Combobox: {},
+    ComboboxField: {},
+    ComboboxFieldController: {},
     ConfirmDialog: {},
+    DatePickerField: {},
+    DatePickerFieldController: {},
+    DateTimePickerField: {},
+    DateTimePickerFieldController: {},
+    Dialog: {},
+    DialogClose: {},
+    DialogContent: {},
+    DialogDescription: {},
+    DialogFooter: {},
+    DialogHeader: {},
+    DialogOverlay: {},
+    DialogPortal: {},
+    DialogTitle: {},
+    DialogTrigger: {},
+    DialogWidth: { isTypeOnly: true },
+    EmptyDisplay: {},
     ErrorableLoader: {},
     ErrorDisplay: {},
-    FormError: {},
+    FormControl: {},
+    FormDescription: {},
+    FormItem: {},
     FormLabel: {},
+    FormMessage: {},
+    Input: {},
+    InputField: {},
+    InputFieldController: {},
+    Label: {},
     LinkButton: {},
     ListGroup: {},
+    Loader: {},
     Modal: {},
+    NavigationMenu: {},
+    NavigationMenuContent: {},
+    NavigationMenuIndicator: {},
+    NavigationMenuItem: {},
+    NavigationMenuItemWithLink: {},
+    NavigationMenuLink: {},
+    NavigationMenuList: {},
+    NavigationMenuTrigger: {},
+    navigationMenuTriggerStyle: {},
+    NavigationMenuViewport: {},
     NotFoundCard: {},
+    Popover: {},
+    PopoverAnchor: {},
+    PopoverContent: {},
+    PopoverTrigger: {},
     ReactDatePickerInput: {},
     ReactSelectInput: {},
+    ScrollArea: {},
+    Select: {},
+    SelectField: {},
+    SelectFieldController: {},
     SelectInput: {},
-    Sidebar: {},
-    Spinner: {},
+    SidebarLayout: {},
+    SidebarLayoutContent: {},
+    SidebarLayoutSidebar: {},
+    Switch: {},
+    SwitchField: {},
+    SwitchFieldController: {},
     Table: {},
+    TableBody: {},
+    TableCaption: {},
+    TableCell: {},
+    TableFooter: {},
+    TableHead: {},
+    TableHeader: {},
+    TableRow: {},
+    Textarea: {},
+    TextareaField: {},
+    TextareaFieldController: {},
     TextAreaInput: {},
     TextInput: {},
-    Toast: {},
+    Toaster: {},
   },
   source: {
     path: path.join(
@@ -453,22 +687,111 @@ const index = createTsTemplateFile({
   variables: { TPL_EXPORTS: {} },
 });
 
-const reactDatePickerInput = createTsTemplateFile({
+const stylesButton = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'styles',
   importMapProviders: {},
-  name: 'react-date-picker-input',
+  name: 'styles-button',
+  projectExports: { buttonVariants: {} },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/styles/button.ts'),
+  },
+  variables: {},
+});
+
+const stylesInput = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'styles',
+  importMapProviders: {},
+  name: 'styles-input',
+  projectExports: { inputVariants: {} },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/styles/input.ts'),
+  },
+  variables: {},
+});
+
+const stylesSelect = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'styles',
+  importMapProviders: {},
+  name: 'styles-select',
+  projectExports: {
+    selectCheckVariants: {},
+    selectContentVariants: {},
+    selectItemVariants: {},
+    selectTriggerVariants: {},
+  },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/styles/select.ts'),
+  },
+  variables: {},
+});
+
+export const stylesGroup = { stylesButton, stylesInput, stylesSelect };
+
+const cn = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'utils',
+  importMapProviders: {},
+  name: 'cn',
+  projectExports: { cn: {} },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/utils/cn.ts'),
+  },
+  variables: {},
+});
+
+const mergeRefs = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'utils',
+  importMapProviders: {},
+  name: 'merge-refs',
+  projectExports: { mergeRefs: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/ReactDatePickerInput/index.tsx',
+      '../templates/src/utils/merge-refs.ts',
     ),
   },
   variables: {},
 });
 
+const typesForm = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'utils',
+  importMapProviders: {},
+  name: 'types-form',
+  projectExports: {
+    AddOptionRequiredFields: { isTypeOnly: true },
+    FormFieldProps: { isTypeOnly: true },
+    MultiSelectOptionProps: { isTypeOnly: true },
+    SelectOptionProps: { isTypeOnly: true },
+  },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/types/form.ts'),
+  },
+  variables: {},
+});
+
+const typesIcon = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'utils',
+  importMapProviders: {},
+  name: 'types-icon',
+  projectExports: { IconElement: { isTypeOnly: true } },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/types/icon.ts'),
+  },
+  variables: {},
+});
+
+export const utilsGroup = { cn, mergeRefs, typesForm, typesIcon };
+
 export const CORE_REACT_COMPONENTS_TEMPLATES = {
   componentsGroup,
   hooksGroup,
+  stylesGroup,
+  utilsGroup,
   index,
-  reactDatePickerInput,
 };

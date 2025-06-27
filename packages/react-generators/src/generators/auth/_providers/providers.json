@@ -19,7 +19,7 @@
       "providerExport": "authComponentsImportsProvider",
       "schemaExport": "authComponentsImportsSchema",
       "projectExports": {
-        "RequireAuth": { "name": "default" }
+        "RequireAuth": {}
       }
     }
   }

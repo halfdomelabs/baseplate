@@ -30,7 +30,7 @@ export function TPL_COMPONENT_NAME(
       }}
       className="space-y-4"
     >
-      <Alert.WithStatus status={status} />
+      {status && <Alert>{status.message}</Alert>}
       <TPL_INPUTS />
       <Button type="submit">Update</Button>
     </form>

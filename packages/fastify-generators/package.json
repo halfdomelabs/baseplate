@@ -58,7 +58,6 @@
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
-    "@tailwindcss/forms": "0.5.9",
     "concurrently": "9.0.1",
     "cpx2": "catalog:",
     "eslint": "catalog:",

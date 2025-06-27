@@ -19,6 +19,10 @@ export class BuilderServiceManager {
        * Whether to skip running commands for use in testing.
        */
       skipCommands?: boolean;
+      /**
+       * The path to the CLI file that was executed to start the sync.
+       */
+      cliFilePath?: string;
     },
   ) {
     for (const directory of this.options.initialDirectories ?? []) {
@@ -40,6 +44,7 @@ export class BuilderServiceManager {
       builtInPlugins: this.options.builtInPlugins,
       userConfig: this.options.userConfig,
       skipCommands: this.options.skipCommands,
+      cliFilePath: this.options.cliFilePath,
     });
     service.init();
     this.services.set(id, service);

@@ -72,6 +72,8 @@ export function capitalizeString(str: string) {
 
 import { A } from "test";
 
+
+
 export function capitalizeString(str: string) {
     A();
 }

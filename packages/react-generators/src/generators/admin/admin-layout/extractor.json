@@ -1,7 +1,7 @@
 {
   "name": "admin/admin-layout",
   "templates": {
-    "src/components/AdminLayout/index.tsx": {
+    "src/components/admin-layout/admin-layout.tsx": {
       "name": "admin-layout",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -16,7 +16,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/components/AdminLayout/index.tsx",
+      "pathRootRelativePath": "{src-root}/components/admin-layout/admin-layout.tsx",
       "variables": { "TPL_SIDEBAR_LINKS": {} }
     }
   }

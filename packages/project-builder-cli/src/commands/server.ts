@@ -55,6 +55,7 @@ export async function serveWebServer(
     builtInPlugins,
     userConfig,
     skipCommands,
+    cliFilePath: process.argv[1],
   });
 
   const fastifyInstance = await startWebServer({

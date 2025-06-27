@@ -2,7 +2,7 @@
 
 import type { ReactElement } from 'react';
 
-import { Alert, Button, Card, Spinner } from '%reactComponentsImports';
+import { Alert, Button, Card, Loader } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -35,11 +35,11 @@ function SignupPage(): ReactElement {
     <div className="flex h-full items-center justify-center">
       {error ? (
         <Card className="space-y-4 p-4">
-          <Alert type="error">{error}</Alert>
+          <Alert variant="error">{error}</Alert>
           <Button onClick={redirectToSignup}>Try Again</Button>
         </Card>
       ) : (
-        <Spinner size="large" />
+        <Loader />
       )}
     </div>
   );
