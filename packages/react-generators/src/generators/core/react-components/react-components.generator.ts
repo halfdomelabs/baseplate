@@ -11,7 +11,7 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { kebabCase, pascalCase } from 'es-toolkit';
+import { kebabCase } from 'es-toolkit';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
@@ -23,7 +23,6 @@ const descriptorSchema = z.object({});
 
 export interface ReactComponentEntry {
   name: string;
-  isBarrelExport?: boolean;
 }
 
 export interface ReactComponentsProvider {
@@ -79,16 +78,7 @@ export const reactComponentsGenerator = createGenerator({
           CORE_REACT_COMPONENTS_GENERATED.templates.componentsGroup,
         ).map(
           (name): ReactComponentEntry => ({
-            name: paths[name as keyof typeof paths].endsWith('index.tsx')
-              ? pascalCase(name)
-              : // Some components are invalid variable names, e.g. switch
-                kebabCase(name).replace('-component', ''),
-            // Temporary while we transition to the new component structure.
-            isBarrelExport: paths[name as keyof typeof paths].endsWith(
-              'index.tsx',
-            )
-              ? false
-              : true,
+            name: kebabCase(name).replace('-component', ''),
           }),
         );
 
@@ -151,19 +141,15 @@ export const reactComponentsGenerator = createGenerator({
 
             // build component index
             const getComponentPath = (a: ReactComponentEntry): string =>
-              a.isBarrelExport ? `./${a.name}/${a.name}.js` : `./${a.name}.js`;
+              `./${a.name}/${a.name}.js`;
 
-            const sortedComponents = allReactComponents.toSorted((a, b) =>
-              getComponentPath(a).localeCompare(getComponentPath(b)),
-            );
+            const sortedComponentPaths = allReactComponents
+              .map(getComponentPath)
+              .toSorted();
 
             // build component index
-            const componentIndex = sortedComponents
-              .map(({ name, isBarrelExport }) =>
-                isBarrelExport
-                  ? `export * from './${name}/${name}.js';`
-                  : `export { default as ${name} } from './${name}';`,
-              )
+            const componentIndex = sortedComponentPaths
+              .map((path) => `export * from '${path}';`)
               .join('\n');
             await builder.apply(
               typescriptFile.renderTemplateFile({

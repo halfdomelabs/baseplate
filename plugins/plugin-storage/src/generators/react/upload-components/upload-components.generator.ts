@@ -59,7 +59,6 @@ export const uploadComponentsGenerator = createGenerator({
       }) {
         reactComponents.registerComponent({
           name: 'file-input',
-          isBarrelExport: true,
         });
 
         reactApollo.registerGqlFile(paths.fileInputUploadGql);

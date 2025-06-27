@@ -36,19 +36,15 @@ export const adminComponentsGenerator = createGenerator({
       run({ reactComponents, reactComponentsImports, typescriptFile, paths }) {
         reactComponents.registerComponent({
           name: 'embedded-list-input',
-          isBarrelExport: true,
         });
         reactComponents.registerComponent({
           name: 'embedded-object-input',
-          isBarrelExport: true,
         });
         reactComponents.registerComponent({
           name: 'embedded-list-field',
-          isBarrelExport: true,
         });
         reactComponents.registerComponent({
           name: 'embedded-object-field',
-          isBarrelExport: true,
         });
 
         return {
