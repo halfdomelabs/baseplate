@@ -48,9 +48,6 @@ export const reactTypescriptGenerator = createGenerator({
           'react',
         );
         typescriptSetup.include.push('src');
-        typescriptSetup.references.push({
-          path: './tsconfig.node.json',
-        });
         typescriptSetup.tsconfigPath.set('tsconfig.app.json');
         return {
           build: (builder) => {

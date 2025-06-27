@@ -1,5 +1,5 @@
 import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
-import type { Logger } from '@baseplate-dev/sync';
+import type { Logger, TemplateConfig } from '@baseplate-dev/sync';
 
 import { indexTemplateConfigs } from '@baseplate-dev/sync';
 import { findNearestPackageJson } from '@baseplate-dev/utils/node';
@@ -19,6 +19,7 @@ export interface GeneratorInfo {
   packageName: string;
   packagePath: string;
   generatorDirectory: string;
+  templates: Record<string, TemplateConfig>;
   templateCount: number;
 }
 
@@ -83,6 +84,7 @@ export async function discoverGenerators(
     packageName: entry.packageName,
     packagePath: entry.packagePath,
     generatorDirectory: entry.generatorDirectory,
+    templates: entry.config.templates,
     templateCount: Object.keys(entry.config.templates).length,
   }));
 
