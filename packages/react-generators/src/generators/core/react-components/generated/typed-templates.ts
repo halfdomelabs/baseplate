@@ -773,7 +773,7 @@ const index = createTsTemplateFile({
     ErrorableLoader: {},
     ErrorDisplay: {},
     FormControl: {},
-    FormError: {},
+    FormDescription: {},
     FormItem: {},
     FormLabel: {},
     FormMessage: {},

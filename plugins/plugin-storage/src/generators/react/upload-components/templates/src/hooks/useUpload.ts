@@ -18,8 +18,10 @@ interface UploadedFile<FileMetadata = never> {
 interface UseUploadOptions<FileMetadata = never> {
   getUploadParameters: (file: File) => Promise<UploadParams<FileMetadata>>;
   onUploaded?: (file: UploadedFile<FileMetadata>) => void;
-  onError?: (err: unknown) => void;
+  onError?: (error: unknown) => void;
   trackProgress?: boolean;
+  maxFileSize?: number;
+  allowedTypes?: string[];
 }
 
 interface UseUploadResult {
@@ -28,6 +30,7 @@ interface UseUploadResult {
   progress: number;
   uploadFile: (file: File) => void;
   cancelUpload: () => void;
+  reset: () => void;
 }
 
 /**
@@ -38,6 +41,8 @@ export function useUpload<FileMetadata>({
   onUploaded,
   onError,
   trackProgress,
+  maxFileSize,
+  allowedTypes,
 }: UseUploadOptions<FileMetadata>): UseUploadResult {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<unknown>(null);
@@ -45,17 +50,44 @@ export function useUpload<FileMetadata>({
 
   const currentAbortController = useRef<AbortController | null>(null);
 
+  const reset = useCallback(() => {
+    setError(null);
+    setProgress(0);
+    setIsUploading(false);
+  }, []);
+
   const cancelUpload = useCallback(() => {
     if (currentAbortController.current) {
       currentAbortController.current.abort();
       currentAbortController.current = null;
     }
-    setError(null);
-    setProgress(0);
-  }, []);
+    reset();
+  }, [reset]);
 
   const uploadFile = useCallback(
     (file: File) => {
+      // Validate file size
+      if (maxFileSize && file.size > maxFileSize) {
+        const error = new Error(
+          `File size exceeds maximum allowed size of ${Math.round(maxFileSize / 1024 / 1024)}MB`,
+        );
+        setError(error);
+        if (onError) onError(error);
+        return;
+      }
+
+      // Validate file type
+      if (
+        allowedTypes &&
+        allowedTypes.length > 0 &&
+        !allowedTypes.includes(file.type)
+      ) {
+        const error = new Error(`File type '${file.type}' is not allowed`);
+        setError(error);
+        if (onError) onError(error);
+        return;
+      }
+
       const abortController = new AbortController();
 
       const upload = async (): Promise<void> => {
@@ -95,8 +127,8 @@ export function useUpload<FileMetadata>({
           signal: abortController.signal,
           onUploadProgress: trackProgress
             ? (event) => {
-                if (event.progress) {
-                  setProgress(event.progress);
+                if (event.progress !== undefined) {
+                  setProgress(Math.min(event.progress, 1));
                 }
               }
             : undefined,
@@ -106,25 +138,35 @@ export function useUpload<FileMetadata>({
           return;
         }
 
-        if (response.status === 204) {
+        if (response.status === 204 || response.status === 200) {
           setIsUploading(false);
           setProgress(1);
           if (onUploaded) onUploaded({ file, meta: uploadParams.meta });
         } else {
-          throw new Error(`Unexpected response: ${response.statusText}`);
+          throw new Error(
+            `Upload failed with status ${response.status}: ${response.statusText}`,
+          );
         }
       };
 
-      upload().catch((err: unknown) => {
+      upload().catch((error: unknown) => {
         setIsUploading(false);
         if (abortController.signal.aborted) {
           return;
         }
-        if (onError) onError(err);
-        setError(err);
+        if (onError) onError(error);
+        setError(error);
       });
     },
-    [cancelUpload, getUploadParameters, onError, onUploaded, trackProgress],
+    [
+      cancelUpload,
+      getUploadParameters,
+      onError,
+      onUploaded,
+      trackProgress,
+      maxFileSize,
+      allowedTypes,
+    ],
   );
 
   return {
@@ -133,5 +175,6 @@ export function useUpload<FileMetadata>({
     progress,
     uploadFile,
     cancelUpload,
+    reset,
   };
 }

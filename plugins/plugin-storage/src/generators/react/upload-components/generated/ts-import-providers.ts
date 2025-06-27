@@ -14,6 +14,8 @@ import { REACT_UPLOAD_COMPONENTS_PATHS } from './template-paths.js';
 
 const uploadComponentsImportsSchema = createTsImportMapSchema({
   FileInput: { exportedAs: 'default' },
+  FileInputField: {},
+  FileInputFieldController: {},
   useUpload: {},
 });
 
@@ -41,6 +43,8 @@ const reactUploadComponentsImportsTask = createGeneratorTask({
           uploadComponentsImportsSchema,
           {
             FileInput: paths.fileInputComponent,
+            FileInputField: paths.fileInputField,
+            FileInputFieldController: paths.fileInputField,
             useUpload: paths.hooksUseUpload,
           },
         ),

@@ -1,35 +1,28 @@
 // @ts-nocheck
 
 import type { ReactElement } from 'react';
-import type {
-  Control,
-  FieldError,
-  FieldPath,
-  FieldPathValue,
-  FieldValues,
-} from 'react-hook-form';
 
 import { useCreateUploadUrlMutation } from '%generatedGraphqlImports';
-import { Button, FormError, FormLabel } from '%reactComponentsImports';
+import {
+  Button,
+  CircularProgress,
+  cn,
+  FormMessage,
+} from '%reactComponentsImports';
 import { formatError, logError } from '%reactErrorImports';
-import clsx from 'clsx';
 import { useCallback } from 'react';
-import { CircularProgressbar } from 'react-circular-progressbar';
 import { useDropzone } from 'react-dropzone';
-import { get, useController } from 'react-hook-form';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
 
 import { useUpload } from '../../hooks/useUpload.js';
 
-import 'react-circular-progressbar/dist/styles.css';
-
-interface FileUploadInput {
+export interface FileUploadInput {
   id: string;
   name: string;
   hostedUrl?: string | null;
 }
 
-interface Props {
+export interface FileInputProps {
   className?: string;
   disabled?: boolean;
   name?: string;
@@ -52,7 +45,7 @@ function truncateFilenameWithExtension(filename: string, length = 20): string {
   return `${truncatedFilename}...${extension}`;
 }
 
-const FileInput = function FileInput({
+export function FileInput({
   className,
   disabled,
   name,
@@ -62,7 +55,7 @@ const FileInput = function FileInput({
   placeholder,
   imagePreview,
   accept,
-}: Props): ReactElement {
+}: FileInputProps): ReactElement {
   const [createUploadUrl] = useCreateUploadUrlMutation();
 
   const { isUploading, error, progress, uploadFile, cancelUpload } =
@@ -114,13 +107,14 @@ const FileInput = function FileInput({
 
   const isDraggable = !isUploading && !error && !disabled;
 
-  const { getRootProps, getInputProps, inputRef, isDragActive } = useDropzone({
-    accept,
-    onDropAccepted,
-    multiple: false,
-    maxFiles: 1,
-    disabled: !isDraggable,
-  });
+  const { getRootProps, getInputProps, inputRef, isDragActive, isDragReject } =
+    useDropzone({
+      accept,
+      onDropAccepted,
+      multiple: false,
+      maxFiles: 1,
+      disabled: !isDraggable,
+    });
 
   const handleRemove = (): void => {
     if (onChange) onChange(null);
@@ -134,27 +128,36 @@ const FileInput = function FileInput({
   };
 
   return (
-    <div className={clsx('max-w-md', className)}>
+    <div className={cn('max-w-md', className)}>
       {(() => {
         if (value) {
           return (
-            <div className="flex h-12 w-full max-w-md items-center justify-between rounded-lg border bg-white p-4 shadow-md">
+            <div
+              className="bg-background flex h-12 w-full max-w-md items-center justify-between rounded-md border px-3 py-2 shadow-sm"
+              role="group"
+              aria-label={`Uploaded file: ${value.name}`}
+            >
               <div />
               <div className="flex items-center">
                 {imagePreview && value.hostedUrl && (
-                  <a href={value.hostedUrl} target="_blank" rel="noreferrer">
+                  <a
+                    href={value.hostedUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Preview ${value.name}`}
+                  >
                     <img
                       src={value.hostedUrl}
-                      className="mr-4 h-8 w-8 rounded-lg bg-gray-300 object-cover"
-                      alt={`${value.name} upload`}
+                      className="bg-muted mr-4 h-8 w-8 rounded-lg object-cover"
+                      alt={`Preview of ${value.name}`}
                     />
                   </a>
                 )}
-                <div className="font-medium">
+                <div className="text-sm font-medium">
                   {value.hostedUrl ? (
                     <a
                       href={value.hostedUrl}
-                      className="text-gray-700 hover:underline"
+                      className="text-foreground hover:underline"
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -167,8 +170,8 @@ const FileInput = function FileInput({
               </div>
               <Button variant="ghost" size="icon" onClick={handleRemove}>
                 <MdOutlineClear
-                  aria-label="Remove"
-                  className="h-8 w-6 text-black"
+                  className="text-muted-foreground hover:text-foreground h-5 w-5"
+                  aria-hidden="true"
                 />
               </Button>
             </div>
@@ -180,27 +183,35 @@ const FileInput = function FileInput({
         return (
           <div
             {...getRootProps()}
-            className={clsx(
-              'flex h-12 w-full max-w-md items-center justify-center rounded-md border-2 border-dashed px-4',
-              isDragActive
-                ? 'border-blue-300 text-blue-600'
-                : 'border-gray-300 text-gray-600',
-              { 'opacity-50': disabled, 'cursor-pointer': isDraggable },
+            className={cn(
+              'flex h-12 w-full max-w-md items-center justify-center rounded-md border-2 border-dashed px-4 py-2 transition-colors duration-200',
+              isDragActive && !isDragReject
+                ? 'border-primary/50 bg-primary/5 text-primary'
+                : isDragReject
+                  ? 'border-destructive/50 bg-destructive/5 text-destructive'
+                  : 'border-input text-muted-foreground hover:border-primary/30 hover:bg-accent/5',
+              disabled && 'cursor-not-allowed opacity-50',
+              isDraggable && 'cursor-pointer',
             )}
           >
             {(() => {
               if (isUploading) {
                 return (
                   <div className="flex items-center space-x-4">
-                    <CircularProgressbar
+                    <CircularProgress
                       value={uploadPercentage}
-                      text={`${uploadPercentage}%`}
+                      max={100}
+                      min={0}
+                      gaugePrimaryColor="var(--primary)"
+                      gaugeSecondaryColor="var(--muted)"
+                      size="sm"
                       className="h-8 w-8"
                     />
                     <Button
                       variant="linkDestructive"
                       onClick={handleCancel}
                       disabled={disabled}
+                      aria-label="Cancel upload"
                     >
                       Cancel
                     </Button>
@@ -225,11 +236,16 @@ const FileInput = function FileInput({
                   <input
                     name={name}
                     {...getInputProps()}
-                    disabled={isDraggable}
+                    disabled={!isDraggable}
+                    aria-label={placeholder ?? 'Select a file'}
                   />
-                  <MdUploadFile className="h-6 w-6" />
-                  <div className="text-lg font-medium">
-                    {placeholder ?? 'Select a file'}
+                  <MdUploadFile className="h-6 w-6" aria-hidden="true" />
+                  <div className="text-sm font-medium">
+                    {isDragActive && !isDragReject
+                      ? 'Drop file here'
+                      : isDragReject
+                        ? 'File type not supported'
+                        : (placeholder ?? 'Select a file or drag and drop')}
                   </div>
                 </div>
               );
@@ -238,71 +254,10 @@ const FileInput = function FileInput({
         );
       })()}
       {!!error && (
-        <FormError>
+        <FormMessage>
           {formatError(error, 'Sorry, we could not upload the file.')}
-        </FormError>
+        </FormMessage>
       )}
     </div>
   );
-};
-
-interface FileInputLabelledProps extends Props {
-  label?: string;
-  error?: React.ReactNode;
 }
-
-FileInput.Labelled = function FileInputLabelled({
-  label,
-  className,
-  error,
-  ...rest
-}: FileInputLabelledProps): ReactElement {
-  return (
-    <div className={clsx('block', className)}>
-      {label && <FormLabel>{label}</FormLabel>}
-      <FileInput {...rest} />
-      {error && <FormError>{error}</FormError>}
-    </div>
-  );
-};
-
-interface FileInputControllerProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<FileInputLabelledProps, 'onChange' | 'value' | 'error'> {
-  control: Control<TFieldValues>;
-  name: TFieldName;
-}
-
-FileInput.LabelledController = function FileInputController<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({
-  control,
-  name,
-  ...rest
-}: FileInputControllerProps<TFieldValues, TFieldName>): ReactElement {
-  const {
-    field: { value, onChange },
-    formState: { errors },
-  } = useController({ control, name });
-  const error = get(errors, name) as FieldError | undefined;
-
-  // TODO: Validate value is correct type
-  const validatedValue = (value as FileUploadInput | undefined)?.id
-    ? (value as FileUploadInput)
-    : undefined;
-
-  return (
-    <FileInput.Labelled
-      onChange={(newValue) => {
-        onChange(newValue as FieldPathValue<TFieldValues, TFieldName>);
-      }}
-      value={validatedValue}
-      error={error?.message}
-      {...rest}
-    />
-  );
-};
-
-export default FileInput;

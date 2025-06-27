@@ -58,7 +58,8 @@ export const uploadComponentsGenerator = createGenerator({
         paths,
       }) {
         reactComponents.registerComponent({
-          name: 'FileInput',
+          name: 'file-input',
+          isBarrelExport: true,
         });
 
         reactApollo.registerGqlFile(paths.fileInputUploadGql);
@@ -75,6 +76,17 @@ export const uploadComponentsGenerator = createGenerator({
                   reactErrorImports,
                   reactComponentsImports,
                   generatedGraphqlImports,
+                },
+              }),
+            );
+
+            await builder.apply(
+              typescriptFile.renderTemplateFile({
+                template:
+                  REACT_UPLOAD_COMPONENTS_GENERATED.templates.fileInputField,
+                destination: paths.fileInputField,
+                importMapProviders: {
+                  reactComponentsImports,
                 },
               }),
             );

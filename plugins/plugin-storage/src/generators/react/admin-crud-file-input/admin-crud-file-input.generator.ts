@@ -28,14 +28,14 @@ export const adminCrudFileInputGenerator = createGenerator({
         adminCrudInputContainer.addInput({
           order,
           content: TsCodeUtils.mergeFragmentsAsJsxElement(
-            'FileInput.LabelledController',
+            'FileInputFieldController',
             {
               label,
               category,
               control: tsCodeFragment('control'),
               name: modelRelation,
             },
-            uploadComponentsImports.FileInput.declaration(),
+            uploadComponentsImports.FileInputFieldController.declaration(),
           ),
           graphQLFields: [
             {
