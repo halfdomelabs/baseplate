@@ -44,8 +44,6 @@ export interface CoreReactComponentsPaths {
   table: string;
   textareaField: string;
   textarea: string;
-  textAreaInput: string;
-  textInput: string;
   toaster: string;
   useConfirmDialog: string;
   hooksUseControlledState: string;
@@ -122,8 +120,6 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           table: `${srcRoot}/components/table/table.tsx`,
           textarea: `${srcRoot}/components/textarea/textarea.tsx`,
           textareaField: `${srcRoot}/components/textarea-field/textarea-field.tsx`,
-          textAreaInput: `${srcRoot}/components/TextAreaInput/index.tsx`,
-          textInput: `${srcRoot}/components/TextInput/index.tsx`,
           toaster: `${srcRoot}/components/toaster/toaster.tsx`,
           typesForm: `${srcRoot}/types/form.ts`,
           typesIcon: `${srcRoot}/types/icon.ts`,

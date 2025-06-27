@@ -508,26 +508,6 @@
       "pathRootRelativePath": "{src-root}/components/textarea/textarea.tsx",
       "variables": {}
     },
-    "src/components/TextAreaInput/index.tsx": {
-      "name": "text-area-input",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/TextAreaInput/index.tsx",
-      "variables": {}
-    },
-    "src/components/TextInput/index.tsx": {
-      "name": "text-input",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/TextInput/index.tsx",
-      "variables": {}
-    },
     "src/components/toaster/toaster.tsx": {
       "name": "toaster",
       "type": "ts",

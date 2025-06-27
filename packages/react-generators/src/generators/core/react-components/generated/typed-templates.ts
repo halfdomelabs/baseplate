@@ -575,34 +575,6 @@ const textareaField = createTsTemplateFile({
   variables: {},
 });
 
-const textAreaInput = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'text-area-input',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/TextAreaInput/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
-const textInput = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'text-input',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/TextInput/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const toaster = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -659,8 +631,6 @@ export const componentsGroup = {
   table,
   textarea,
   textareaField,
-  textAreaInput,
-  textInput,
   toaster,
 };
 
