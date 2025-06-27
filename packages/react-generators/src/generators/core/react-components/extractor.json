@@ -61,16 +61,6 @@
       "pathRootRelativePath": "{src-root}/components/checkbox/checkbox.tsx",
       "variables": {}
     },
-    "src/components/CheckedInput/index.tsx": {
-      "name": "checked-input",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/CheckedInput/index.tsx",
-      "variables": {}
-    },
     "src/components/circular-progress/circular-progress.tsx": {
       "name": "circular-progress",
       "type": "ts",
@@ -398,16 +388,6 @@
       "pathRootRelativePath": "{src-root}/components/popover/popover.tsx",
       "variables": {}
     },
-    "src/components/ReactSelectInput/index.tsx": {
-      "name": "react-select-input",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/ReactSelectInput/index.tsx",
-      "variables": {}
-    },
     "src/components/scroll-area/scroll-area.tsx": {
       "name": "scroll-area",
       "type": "ts",
@@ -436,16 +416,6 @@
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/select/select.tsx",
-      "variables": {}
-    },
-    "src/components/SelectInput/index.tsx": {
-      "name": "select-input",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/SelectInput/index.tsx",
       "variables": {}
     },
     "src/components/sidebar-layout/sidebar-layout.tsx": {

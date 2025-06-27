@@ -8,7 +8,6 @@ export interface CoreReactComponentsPaths {
   card: string;
   checkboxField: string;
   checkbox: string;
-  checkedInput: string;
   circularProgress: string;
   comboboxField: string;
   combobox: string;
@@ -33,11 +32,9 @@ export interface CoreReactComponentsPaths {
   navigationMenu: string;
   notFoundCard: string;
   popover: string;
-  reactSelectInput: string;
   scrollArea: string;
   selectField: string;
   select: string;
-  selectInput: string;
   sidebarLayout: string;
   switchField: string;
   switchComponent: string;
@@ -77,7 +74,6 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           card: `${srcRoot}/components/card/card.tsx`,
           checkbox: `${srcRoot}/components/checkbox/checkbox.tsx`,
           checkboxField: `${srcRoot}/components/checkbox-field/checkbox-field.tsx`,
-          checkedInput: `${srcRoot}/components/CheckedInput/index.tsx`,
           circularProgress: `${srcRoot}/components/circular-progress/circular-progress.tsx`,
           cn: `${srcRoot}/utils/cn.ts`,
           combobox: `${srcRoot}/components/combobox/combobox.tsx`,
@@ -106,11 +102,9 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           navigationMenu: `${srcRoot}/components/navigation-menu/navigation-menu.tsx`,
           notFoundCard: `${srcRoot}/components/not-found-card/not-found-card.tsx`,
           popover: `${srcRoot}/components/popover/popover.tsx`,
-          reactSelectInput: `${srcRoot}/components/ReactSelectInput/index.tsx`,
           scrollArea: `${srcRoot}/components/scroll-area/scroll-area.tsx`,
           select: `${srcRoot}/components/select/select.tsx`,
           selectField: `${srcRoot}/components/select-field/select-field.tsx`,
-          selectInput: `${srcRoot}/components/SelectInput/index.tsx`,
           sidebarLayout: `${srcRoot}/components/sidebar-layout/sidebar-layout.tsx`,
           stylesButton: `${srcRoot}/styles/button.ts`,
           stylesInput: `${srcRoot}/styles/input.ts`,

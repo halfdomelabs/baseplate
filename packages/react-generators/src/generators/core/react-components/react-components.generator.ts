@@ -54,7 +54,6 @@ export const reactComponentsGenerator = createGenerator({
         'clsx',
         'react-hook-form',
         'react-icons',
-        'react-select',
         'zustand',
         'radix-ui',
         'class-variance-authority',

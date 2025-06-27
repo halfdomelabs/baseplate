@@ -85,20 +85,6 @@ const checkboxField = createTsTemplateFile({
   variables: {},
 });
 
-const checkedInput = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'checked-input',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/CheckedInput/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const circularProgress = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -421,20 +407,6 @@ const popover = createTsTemplateFile({
   variables: {},
 });
 
-const reactSelectInput = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'react-select-input',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/ReactSelectInput/index.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const scrollArea = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -472,20 +444,6 @@ const selectField = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/src/components/select-field/select-field.tsx',
-    ),
-  },
-  variables: {},
-});
-
-const selectInput = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'select-input',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/SelectInput/index.tsx',
     ),
   },
   variables: {},
@@ -596,7 +554,6 @@ export const componentsGroup = {
   card,
   checkbox,
   checkboxField,
-  checkedInput,
   circularProgress,
   combobox,
   comboboxField,
@@ -620,11 +577,9 @@ export const componentsGroup = {
   navigationMenu,
   notFoundCard,
   popover,
-  reactSelectInput,
   scrollArea,
   select,
   selectField,
-  selectInput,
   sidebarLayout,
   switchComponent,
   switchField,
