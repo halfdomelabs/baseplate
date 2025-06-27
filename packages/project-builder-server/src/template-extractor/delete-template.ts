@@ -1,8 +1,12 @@
 import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
+import { extractorConfigSchema, parseGeneratorName } from '@baseplate-dev/sync';
 import { stringifyPrettyCompact } from '@baseplate-dev/utils';
-import { handleFileNotFoundError } from '@baseplate-dev/utils/node';
+import {
+  handleFileNotFoundError,
+  readJsonWithSchema,
+} from '@baseplate-dev/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -41,12 +45,28 @@ export async function deleteTemplate(
   );
 
   // Pull the generator config
-  const generator = generators.find((g) => g.name === generatorName);
+  const generator = generators.find((g) => {
+    const parsedGeneratorName = parseGeneratorName(g.name);
+    return (
+      g.name === generatorName ||
+      parsedGeneratorName.generatorPath === generatorName
+    );
+  });
   if (!generator) {
     throw new Error(`Generator '${generatorName}' not found`);
   }
 
-  const templatePath = Object.keys(generator.templates).find(
+  const extractorJsonPath = path.join(
+    generator.generatorDirectory,
+    'extractor.json',
+  );
+
+  const templateExtractorJson = await readJsonWithSchema(
+    extractorJsonPath,
+    extractorConfigSchema,
+  );
+
+  const templatePath = Object.keys(templateExtractorJson.templates).find(
     (templatePath) => generator.templates[templatePath].name === templateName,
   );
 
@@ -56,20 +76,15 @@ export async function deleteTemplate(
     );
   }
 
-  const updatedTemplates = {
-    ...generator.templates,
-    [templatePath]: undefined,
-  };
+  const updatedTemplates = templateExtractorJson.templates;
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- easiest way of deleting without reordering the keys
+  delete updatedTemplates[templatePath];
 
   // Write the updated configuration back to the extractor.json file
-  const extractorJsonPath = path.join(
-    generator.generatorDirectory,
-    'extractor.json',
-  );
 
   await fs.writeFile(
     extractorJsonPath,
-    stringifyPrettyCompact(updatedTemplates),
+    stringifyPrettyCompact(templateExtractorJson),
     'utf8',
   );
 

@@ -159,6 +159,9 @@ async function handleDeleteTemplate(
   const { deleteTemplate } = await import(
     '@baseplate-dev/project-builder-server/template-extractor'
   );
+  const resolvedDirectory = options.directory
+    ? expandPathWithTilde(options.directory)
+    : path.resolve('.');
 
   const defaultPlugins = await getDefaultPlugins(logger);
 
@@ -166,7 +169,7 @@ async function handleDeleteTemplate(
     await deleteTemplate(generatorName, templateName, {
       defaultPlugins,
       logger,
-      directory: options.directory,
+      directory: resolvedDirectory,
     });
 
     console.info(
