@@ -13,7 +13,9 @@ import {
 } from '@baseplate-dev/ui-components';
 import { sortBy } from 'es-toolkit';
 import { MdAdd } from 'react-icons/md';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
+
+import NewAppDialog from './_components/new-app-dialog.js';
 
 function AppsLayout(): React.JSX.Element {
   const { definition } = useProjectDefinition();
@@ -25,12 +27,12 @@ function AppsLayout(): React.JSX.Element {
     <SidebarLayout className="flex-1">
       <SidebarLayoutSidebar className="space-y-4" width="sm">
         <div className="flex flex-col gap-4">
-          <Link to="/apps/new" className="inline-block w-full">
+          <NewAppDialog>
             <Button variant="secondary" className="w-full">
               <MdAdd />
               New App
             </Button>
-          </Link>
+          </NewAppDialog>
         </div>
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>

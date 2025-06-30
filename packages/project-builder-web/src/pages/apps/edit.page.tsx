@@ -45,7 +45,7 @@ function EditAppPage(): React.JSX.Element {
         successMessage: 'Successfully unlinked app!',
         disableDeleteRefDialog: true,
         onSuccess: () => {
-          navigate('/apps/new');
+          navigate('/apps');
         },
       },
     );

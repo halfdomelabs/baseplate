@@ -7,6 +7,8 @@ import { sortBy } from 'es-toolkit';
 import { MdApps } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
+import NewAppDialog from './_components/new-app-dialog.js';
+
 export function AppsListPage(): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
@@ -20,9 +22,9 @@ export function AppsListPage(): React.JSX.Element {
         header="No Apps"
         subtitle="You haven't created any apps yet"
         actions={
-          <Link to="/apps/new" className="inline-block">
+          <NewAppDialog>
             <Button>New App</Button>
-          </Link>
+          </NewAppDialog>
         }
       />
     );
@@ -35,9 +37,9 @@ export function AppsListPage(): React.JSX.Element {
         These are the apps that are defined in your project. You can edit them
         here.
       </p>
-      <Link to="/apps/new" className="inline-block">
+      <NewAppDialog>
         <Button>New App</Button>
-      </Link>
+      </NewAppDialog>
       <div className="max-w-xl space-y-4">
         {sortedApps.map((app) => (
           <Card key={app.id} className="flex justify-between space-x-4 p-4">

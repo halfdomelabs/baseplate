@@ -58,7 +58,7 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
     }));
 
   return (
-    <div className={clsx('', className)}>
+    <div className={clsx('p-4', className)}>
       <form onSubmit={onSubmit} className="space-y-4">
         <InputFieldController label="Name" control={control} name="name" />
         <InputFieldController
