@@ -8,14 +8,12 @@ import NotFoundPage from '../not-found.page.js';
 import AppsLayout from './apps-layout.page.js';
 import EditAppPage from './edit.page.js';
 import { AppsListPage } from './list.page.js';
-import NewAppPage from './new.page.js';
 
 export const AppsRoutes: RouteObject[] = [
   {
     element: <AppsLayout />,
     children: [
       { index: true, element: <AppsListPage /> },
-      { path: 'new', element: <NewAppPage />, handle: { crumb: 'New App' } },
       {
         path: 'edit/:key/*',
         element: <EditAppPage />,

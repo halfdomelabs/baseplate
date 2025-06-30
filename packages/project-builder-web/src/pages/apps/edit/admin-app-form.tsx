@@ -21,7 +21,7 @@ interface Props {
 
 function AdminAppForm({ className, appConfig }: Props): React.JSX.Element {
   return (
-    <div className={clsx('', className)}>
+    <div className={clsx('p-4', className)}>
       <Alert variant="warning" className="mb-4">
         <AlertTitle>⚠️ Development Preview</AlertTitle>
         <AlertDescription>
@@ -42,14 +42,7 @@ function AdminAppForm({ className, appConfig }: Props): React.JSX.Element {
       </NavigationTabs>
       <div className="mt-4 border-t">
         <Routes>
-          <Route
-            index
-            element={
-              <div className="p-4">
-                <AdminGeneralForm appConfig={appConfig} />
-              </div>
-            }
-          />
+          <Route index element={<AdminGeneralForm appConfig={appConfig} />} />
           <Route
             path="/sections/*"
             element={<AdminSectionsForm appConfig={appConfig} />}

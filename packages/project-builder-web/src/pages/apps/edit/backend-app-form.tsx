@@ -8,9 +8,15 @@ import {
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
 import {
-  Button,
-  CheckboxFieldController,
+  FormActionBar,
   InputFieldController,
+  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
+  SwitchFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
@@ -23,8 +29,7 @@ interface Props {
 }
 
 function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
-  const { saveDefinitionWithFeedback, isSavingDefinition } =
-    useProjectDefinition();
+  const { saveDefinitionWithFeedback } = useProjectDefinition();
 
   const backendAppSchema = useDefinitionSchema(createBackendAppSchema);
   const formProps = useResettableForm({
@@ -44,49 +49,81 @@ function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
-    <div className={clsx('', className)}>
-      <form onSubmit={onSubmit} className="space-y-4">
-        <InputFieldController label="Name" control={control} name="name" />
-        <InputFieldController
-          label="Package Location (optional) e.g. packages/backend"
-          control={control}
-          name="packageLocation"
-        />
-        <CheckboxFieldController
-          label="Enable Stripe?"
-          control={control}
-          name="enableStripe"
-        />
-        <CheckboxFieldController
-          label="Enable Postmark?"
-          control={control}
-          name="enablePostmark"
-        />
-        <CheckboxFieldController
-          label="Enable Redis?"
-          control={control}
-          name="enableRedis"
-        />
-        <CheckboxFieldController
-          label="Enable Bull Queue?"
-          control={control}
-          name="enableBullQueue"
-        />
-        <CheckboxFieldController
-          label="Enable GraphQL Subscriptions?"
-          control={control}
-          name="enableSubscriptions"
-        />
-        <CheckboxFieldController
-          label="Enable Axios?"
-          control={control}
-          name="enableAxios"
-        />
-        <Button type="submit" disabled={isSavingDefinition}>
-          Save
-        </Button>
-      </form>
-    </div>
+    <form
+      className={clsx('w-full max-w-7xl space-y-4 px-4', className)}
+      onSubmit={onSubmit}
+    >
+      <SectionList>
+        <SectionListSection>
+          <SectionListSectionHeader>
+            <SectionListSectionTitle>General</SectionListSectionTitle>
+            <SectionListSectionDescription>
+              Basic configuration for your backend application.
+            </SectionListSectionDescription>
+          </SectionListSectionHeader>
+          <SectionListSectionContent className="space-y-6">
+            <InputFieldController label="Name" control={control} name="name" />
+            <InputFieldController
+              label="Package Location (optional)"
+              placeholder="e.g. packages/backend"
+              control={control}
+              name="packageLocation"
+            />
+          </SectionListSectionContent>
+        </SectionListSection>
+
+        <SectionListSection>
+          <SectionListSectionHeader>
+            <SectionListSectionTitle>Configuration</SectionListSectionTitle>
+            <SectionListSectionDescription>
+              Enable or disable external services and features for your backend
+              application.
+            </SectionListSectionDescription>
+          </SectionListSectionHeader>
+          <SectionListSectionContent>
+            <div className="space-y-4">
+              <SwitchFieldController
+                control={control}
+                name="enableStripe"
+                label="Stripe"
+                description="Enable Stripe for payment processing"
+              />
+              <SwitchFieldController
+                control={control}
+                name="enablePostmark"
+                label="Postmark"
+                description="Enable Postmark for email delivery"
+              />
+              <SwitchFieldController
+                control={control}
+                name="enableRedis"
+                label="Redis"
+                description="Enable Redis for caching and session storage"
+              />
+              <SwitchFieldController
+                control={control}
+                name="enableBullQueue"
+                label="Bull Queue"
+                description="Enable Bull Queue for background job processing"
+              />
+              <SwitchFieldController
+                control={control}
+                name="enableSubscriptions"
+                label="GraphQL Subscriptions"
+                description="Enable GraphQL Subscriptions for real-time updates"
+              />
+              <SwitchFieldController
+                control={control}
+                name="enableAxios"
+                label="Axios"
+                description="Enable Axios for HTTP requests"
+              />
+            </div>
+          </SectionListSectionContent>
+        </SectionListSection>
+      </SectionList>
+      <FormActionBar form={formProps} />
+    </form>
   );
 }
 
