@@ -136,7 +136,7 @@ interface DefinitionEntityInputWithoutParent<
  * Depending on the entity type’s requirements, this type resolves to either the
  * with- or without-parent version.
  */
-type DefinitionEntityInput<
+export type DefinitionEntityInput<
   TInput,
   TEntityType extends DefinitionEntityType,
   TPath extends PathInput<TInput> | undefined = undefined,
@@ -176,7 +176,7 @@ interface DefinitionReferenceInputWithoutParent<
 /**
  * Depending on the entity type’s requirements, defines the input required to create a definition reference.
  */
-type DefinitionReferenceInput<
+export type DefinitionReferenceInput<
   TInput,
   TEntityType extends DefinitionEntityType,
 > = TEntityType['parentType'] extends undefined
@@ -708,9 +708,7 @@ export function zRef<
   TEntityType extends DefinitionEntityType,
 >(
   schema: T,
-  reference:
-    | DefinitionReferenceInput<input<T>, TEntityType>
-    | ((data: input<T>) => DefinitionReferenceInput<input<T>, TEntityType>),
+  reference: DefinitionReferenceInput<input<T>, TEntityType>,
 ): ZodRef<T> {
   return ZodRef.create(schema).addReference(reference);
 }
@@ -732,11 +730,7 @@ export function zEnt<
   TPath extends PathInput<input<TObject>>,
 >(
   schema: TObject,
-  entity:
-    | DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>
-    | ((
-        data: z.input<TObject>,
-      ) => DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>),
+  entity: DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>,
 ): ZodRef<
   z.ZodObject<
     TObject['shape'] & {
