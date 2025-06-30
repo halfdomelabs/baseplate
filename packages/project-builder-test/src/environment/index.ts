@@ -69,12 +69,10 @@ export function createEnvironmentHelpers({
                 stdin: 'inherit',
                 stdout: 'inherit',
                 stderr: 'inherit',
-                extendEnv: true,
               }
             : {
                 ...execAOptions,
                 all: true,
-                extendEnv: true,
                 env: { CI: 'true' },
               },
         ).catch((err: unknown) => {
