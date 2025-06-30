@@ -12,9 +12,15 @@ import {
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
 import {
-  Button,
+  FormActionBar,
   InputFieldController,
   MultiComboboxFieldController,
+  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
@@ -28,12 +34,8 @@ interface Props {
 }
 
 function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
-  const {
-    definition,
-    saveDefinitionWithFeedback,
-    pluginContainer,
-    isSavingDefinition,
-  } = useProjectDefinition();
+  const { definition, saveDefinitionWithFeedback, pluginContainer } =
+    useProjectDefinition();
   const adminAppSchema = useDefinitionSchema(createAdminAppSchema);
   const schemaWithPlugins = useMemo(
     () => zPluginWrapper(adminAppSchema, pluginContainer),
@@ -65,27 +67,50 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
     }));
 
   return (
-    <div className={clsx('', className)}>
-      <form onSubmit={onSubmit} className="space-y-4">
-        <InputFieldController label="Name" control={control} name="name" />
-        <InputFieldController
-          label="Package Location (optional) e.g. packages/web"
-          control={control}
-          name="packageLocation"
-        />
+    <form
+      className={clsx('w-full max-w-7xl space-y-4 p-4', className)}
+      onSubmit={onSubmit}
+    >
+      <SectionList>
+        <SectionListSection>
+          <SectionListSectionHeader>
+            <SectionListSectionTitle>General</SectionListSectionTitle>
+            <SectionListSectionDescription>
+              Basic configuration for your admin application.
+            </SectionListSectionDescription>
+          </SectionListSectionHeader>
+          <SectionListSectionContent className="space-y-6">
+            <InputFieldController label="Name" control={control} name="name" />
+            <InputFieldController
+              label="Package Location (optional)"
+              placeholder="e.g. packages/admin"
+              control={control}
+              name="packageLocation"
+            />
+          </SectionListSectionContent>
+        </SectionListSection>
+
         {roleOptions && (
-          <MultiComboboxFieldController
-            label="Allowed Roles?"
-            control={control}
-            options={roleOptions}
-            name="allowedRoles"
-          />
+          <SectionListSection>
+            <SectionListSectionHeader>
+              <SectionListSectionTitle>Access Control</SectionListSectionTitle>
+              <SectionListSectionDescription>
+                Configure which user roles can access the admin application.
+              </SectionListSectionDescription>
+            </SectionListSectionHeader>
+            <SectionListSectionContent>
+              <MultiComboboxFieldController
+                label="Allowed Roles"
+                control={control}
+                options={roleOptions}
+                name="allowedRoles"
+              />
+            </SectionListSectionContent>
+          </SectionListSection>
         )}
-        <Button type="submit" disabled={isSavingDefinition}>
-          Save
-        </Button>
-      </form>
-    </div>
+      </SectionList>
+      <FormActionBar form={formProps} />
+    </form>
   );
 }
 

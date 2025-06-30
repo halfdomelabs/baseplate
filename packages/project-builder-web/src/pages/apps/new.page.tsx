@@ -55,7 +55,7 @@ function NewAppPage(): React.JSX.Element {
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4">
       <h1>New App</h1>
       <Card>
         <CardContent>
