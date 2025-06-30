@@ -82,52 +82,42 @@ function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
           </SectionListSectionHeader>
           <SectionListSectionContent>
             <div className="space-y-4">
-              <div className="grid grid-cols-[1fr_auto] items-center gap-4 py-3">
-                <div className="flex flex-col">
-                  <span className="font-medium">Service</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-medium">Enable</span>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="grid grid-cols-[1fr_auto] items-center gap-4 py-2">
-                  <span>Stripe</span>
-                  <SwitchFieldController
-                    control={control}
-                    name="enableStripe"
-                  />
-                </div>
-                <div className="grid grid-cols-[1fr_auto] items-center gap-4 py-2">
-                  <span>Postmark</span>
-                  <SwitchFieldController
-                    control={control}
-                    name="enablePostmark"
-                  />
-                </div>
-                <div className="grid grid-cols-[1fr_auto] items-center gap-4 py-2">
-                  <span>Redis</span>
-                  <SwitchFieldController control={control} name="enableRedis" />
-                </div>
-                <div className="grid grid-cols-[1fr_auto] items-center gap-4 py-2">
-                  <span>Bull Queue</span>
-                  <SwitchFieldController
-                    control={control}
-                    name="enableBullQueue"
-                  />
-                </div>
-                <div className="grid grid-cols-[1fr_auto] items-center gap-4 py-2">
-                  <span>GraphQL Subscriptions</span>
-                  <SwitchFieldController
-                    control={control}
-                    name="enableSubscriptions"
-                  />
-                </div>
-                <div className="grid grid-cols-[1fr_auto] items-center gap-4 py-2">
-                  <span>Axios</span>
-                  <SwitchFieldController control={control} name="enableAxios" />
-                </div>
-              </div>
+              <SwitchFieldController
+                control={control}
+                name="enableStripe"
+                label="Stripe"
+                description="Enable Stripe for payment processing"
+              />
+              <SwitchFieldController
+                control={control}
+                name="enablePostmark"
+                label="Postmark"
+                description="Enable Postmark for email delivery"
+              />
+              <SwitchFieldController
+                control={control}
+                name="enableRedis"
+                label="Redis"
+                description="Enable Redis for caching and session storage"
+              />
+              <SwitchFieldController
+                control={control}
+                name="enableBullQueue"
+                label="Bull Queue"
+                description="Enable Bull Queue for background job processing"
+              />
+              <SwitchFieldController
+                control={control}
+                name="enableSubscriptions"
+                label="GraphQL Subscriptions"
+                description="Enable GraphQL Subscriptions for real-time updates"
+              />
+              <SwitchFieldController
+                control={control}
+                name="enableAxios"
+                label="Axios"
+                description="Enable Axios for HTTP requests"
+              />
             </div>
           </SectionListSectionContent>
         </SectionListSection>
