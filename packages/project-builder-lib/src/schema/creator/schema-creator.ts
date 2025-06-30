@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import { zEnt, zRef, zRefBuilder } from '#src/references/ref-builder.js';
+import { extendParserContextWithRefs } from '#src/references/extend-parser-context-with-refs.js';
 
 import type {
   DefinitionSchemaCreator,
@@ -13,9 +13,7 @@ export function createDefinitionSchemaParserContext(
 ): DefinitionSchemaParserContext {
   return {
     ...options,
-    withRef: zRef,
-    withEnt: zEnt,
-    withRefBuilder: zRefBuilder,
+    ...extendParserContextWithRefs(options),
   };
 }
 

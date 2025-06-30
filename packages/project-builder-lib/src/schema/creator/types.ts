@@ -1,7 +1,11 @@
 import type { z } from 'zod';
 
 import type { PluginImplementationStore } from '#src/plugins/index.js';
-import type { zEnt, zRef, zRefBuilder } from '#src/references/ref-builder.js';
+import type {
+  WithEntType,
+  WithRefBuilder,
+  WithRefType,
+} from '#src/references/extend-parser-context-with-refs.js';
 
 /**
  * Options for creating a definition schema.
@@ -13,6 +17,10 @@ export interface DefinitionSchemaCreatorOptions {
   plugins: PluginImplementationStore;
   /**
    * If true, the schema will be transformed to include references.
+   *
+   * Note: The parsed data will not match the Typescript type definition of the schema
+   * because refs will be replaced with special marker classes. You must call extractRefs
+   * to convert the parsed data to the correct type.
    */
   transformReferences?: boolean;
 }
@@ -29,15 +37,15 @@ export interface DefinitionSchemaParserContext {
   /**
    * Adds a zRef
    */
-  withRef: typeof zRef;
+  withRef: WithRefType;
   /**
    * Adds a zEnt
    */
-  withEnt: typeof zEnt;
+  withEnt: WithEntType;
   /**
    * Adds a zRefBuilder
    */
-  withRefBuilder: typeof zRefBuilder;
+  withRefBuilder: WithRefBuilder;
 }
 
 export type DefinitionSchemaCreator<T extends z.ZodTypeAny = z.ZodTypeAny> = (

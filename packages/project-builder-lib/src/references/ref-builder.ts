@@ -195,6 +195,24 @@ interface RefBuilderContext {
   pathMap: Map<string, { path: ReferencePath; type: DefinitionEntityType }>;
 }
 
+export interface ZodRefBuilderInterface<TInput> {
+  addReference<TEntityType extends DefinitionEntityType>(
+    reference: DefinitionReferenceInput<TInput, TEntityType>,
+  ): void;
+  addEntity<
+    TEntityType extends DefinitionEntityType,
+    TPath extends PathInput<TInput> | undefined = undefined,
+    TIDKey extends string | PathInput<TInput> = 'id',
+  >(
+    entity: DefinitionEntityInput<TInput, TEntityType, TPath, TIDKey>,
+  ): void;
+  addPathToContext(
+    path: PathInput<TInput>,
+    type: DefinitionEntityType,
+    context: string,
+  ): void;
+}
+
 /**
  * ZodRefBuilder is responsible for constructing reference paths, and registering
  * references and entities as defined in a Zod schema.
@@ -204,7 +222,7 @@ interface RefBuilderContext {
  *
  * @template TInput - The type of the input data being parsed.
  */
-export class ZodRefBuilder<TInput> {
+export class ZodRefBuilder<TInput> implements ZodRefBuilderInterface<TInput> {
   readonly references: DefinitionReference[];
   readonly entitiesWithNameResolver: DefinitionEntityWithNameResolver[];
   readonly pathPrefix: ReferencePath;
@@ -475,8 +493,8 @@ export class ZodRefBuilder<TInput> {
  *
  * @template Input - The input data type.
  */
-type ZodBuilderFunction<Input> = (
-  builder: ZodRefBuilder<Input>,
+export type ZodBuilderFunction<Input> = (
+  builder: ZodRefBuilderInterface<Input>,
   data: Input,
 ) => void;
 

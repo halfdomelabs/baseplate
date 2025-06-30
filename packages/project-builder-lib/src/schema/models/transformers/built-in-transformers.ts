@@ -32,8 +32,8 @@ export type PasswordTransformerConfig = def.InferOutput<
 >;
 
 export const createEmbeddedRelationTransformerSchema = definitionSchema((ctx) =>
-  ctx
-    .withEnt(
+  ctx.withRefBuilder(
+    ctx.withEnt(
       z.object({
         ...baseTransformerFields,
         foreignRelationRef: ctx.withRef(z.string().min(1), {
@@ -72,10 +72,11 @@ export const createEmbeddedRelationTransformerSchema = definitionSchema((ctx) =>
             resolveName: (entityNames) => entityNames.foreignRelation,
           }),
       },
-    )
-    .refBuilder((builder) => {
+    ),
+    (builder) => {
       builder.addPathToContext('modelRef', modelEntityType, 'embeddedModel');
-    }),
+    },
+  ),
 );
 
 export type EmbeddedRelationTransformerConfig = def.InferOutput<
