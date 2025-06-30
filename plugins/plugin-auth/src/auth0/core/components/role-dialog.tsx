@@ -1,5 +1,6 @@
 import type React from 'react';
 
+import { useDefinitionSchema } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   Dialog,
@@ -38,8 +39,9 @@ export function RoleDialog({
   asChild,
   children,
 }: RoleDialogProps): React.JSX.Element {
+  const authRoleSchema = useDefinitionSchema(createAuthRoleSchema);
   const form = useForm({
-    resolver: zodResolver(createAuthRoleSchema),
+    resolver: zodResolver(authRoleSchema),
     values: role,
   });
 
