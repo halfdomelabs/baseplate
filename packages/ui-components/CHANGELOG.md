@@ -1,5 +1,14 @@
 # @baseplate-dev/ui-components
 
+## 0.2.1
+
+### Patch Changes
+
+- [#583](https://github.com/halfdomelabs/baseplate/pull/583) [`4d7677e`](https://github.com/halfdomelabs/baseplate/commit/4d7677e8ef2da8ed045ee7fe409519f0f124b34c) Thanks [@kingston](https://github.com/kingston)! - Update UI for app editor
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.2.1
+
 ## 0.2.0
 
 ### Patch Changes
