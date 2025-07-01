@@ -1,5 +1,17 @@
 # @baseplate-dev/plugin-auth
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`4d7677e`](https://github.com/halfdomelabs/baseplate/commit/4d7677e8ef2da8ed045ee7fe409519f0f124b34c), [`d7d9985`](https://github.com/halfdomelabs/baseplate/commit/d7d998540ca5886259f93b5020c4d8939c5cdf5f)]:
+  - @baseplate-dev/ui-components@0.2.1
+  - @baseplate-dev/react-generators@0.2.1
+  - @baseplate-dev/core-generators@0.2.1
+  - @baseplate-dev/project-builder-lib@0.2.1
+  - @baseplate-dev/fastify-generators@0.2.1
+  - @baseplate-dev/sync@0.2.1
+
 ## 1.0.0
 
 ### Patch Changes
