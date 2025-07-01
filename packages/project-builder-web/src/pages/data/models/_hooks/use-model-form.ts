@@ -6,7 +6,7 @@ import type { UseFormReturn } from 'react-hook-form';
 import type { z } from 'zod';
 
 import {
-  createModelSchema,
+  createModelBaseSchema,
   FeatureUtils,
   modelEntityType,
   modelScalarFieldEntityType,
@@ -20,7 +20,7 @@ import {
 import { toast, useEventCallback } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sortBy } from 'es-toolkit';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
@@ -30,6 +30,7 @@ import { createModelEditLink } from '../_utils/url.js';
 
 interface UseModelFormOptions {
   schema?: z.ZodTypeAny;
+  omit?: string[];
   onSubmitSuccess?: () => void;
   isCreate?: boolean;
 }
@@ -67,7 +68,7 @@ function createNewModel(): ModelConfig {
 export function useModelForm({
   onSubmitSuccess,
   isCreate,
-  schema,
+  omit,
 }: UseModelFormOptions = {}): {
   form: UseFormReturn<ModelConfigInput>;
   onSubmit: () => Promise<void>;
@@ -92,15 +93,30 @@ export function useModelForm({
   // memoize it to keep the same key when resetting
   const newModel = useMemo(() => createNewModel(), []);
 
-  const modelSchema = useDefinitionSchema(createModelSchema);
-  const modelSchemaWithPlugins = usePluginEnhancedSchema(schema ?? modelSchema);
+  const baseModelSchema = useDefinitionSchema(createModelBaseSchema);
+
+  const fieldsToOmit = useRef(omit);
+
+  const finalSchema = useMemo(() => {
+    if (fieldsToOmit.current) {
+      return baseModelSchema.omit(
+        Object.fromEntries(
+          fieldsToOmit.current.map((field) => [field, true]),
+        ) as Record<string | number, never>,
+      ) as typeof baseModelSchema;
+    }
+
+    return baseModelSchema;
+  }, [baseModelSchema]);
+
+  const modelSchemaWithPlugins = usePluginEnhancedSchema(finalSchema);
 
   const defaultValues = useMemo(() => {
     const modelToUse = model ?? newModel;
-    return schema
+    return fieldsToOmit.current
       ? (modelSchemaWithPlugins.parse(modelToUse) as ModelConfigInput)
       : modelToUse;
-  }, [model, newModel, schema, modelSchemaWithPlugins]);
+  }, [model, newModel, modelSchemaWithPlugins]);
 
   const form = useResettableForm<ModelConfigInput, unknown, ModelConfig>({
     resolver: zodResolver(modelSchemaWithPlugins),

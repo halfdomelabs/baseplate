@@ -1,10 +1,7 @@
 import type React from 'react';
 
-import { createModelBaseSchema } from '@baseplate-dev/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
 import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
-
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 import { EditedModelContextProvider } from '../../_hooks/use-edited-model-config.js';
 import { useModelForm } from '../../_hooks/use-model-form.js';
@@ -13,12 +10,8 @@ import { GraphQLObjectTypeSection } from './_components/graphql/graph-ql-object-
 import { GraphQLQueriesSection } from './_components/graphql/graph-ql-queries-section.js';
 
 function ModelEditGraphQLPage(): React.JSX.Element {
-  const formSchema = useDefinitionSchema(createModelBaseSchema);
   const { form, onSubmit, defaultValues } = useModelForm({
-    schema: formSchema.omit({
-      name: true,
-      featureRef: true,
-    }),
+    omit: ['name', 'featureRef'],
   });
 
   const { control, watch, getValues, reset } = form;
