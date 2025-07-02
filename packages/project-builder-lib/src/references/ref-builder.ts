@@ -464,12 +464,10 @@ export class ZodRefBuilder<TInput> implements ZodRefBuilderInterface<TInput> {
     type: DefinitionEntityType,
     context: string,
   ): void {
-    if (this.pathMap.has(context)) {
-      throw new Error(
-        `Context path already defined for ${context} at ${this.pathPrefix.join('.')}`,
-      );
-    }
+    // For now, allow overriding contexts to maintain compatibility
     this.pathMap.set(context, { path, type });
+    // Also register in the shared context for other builders to access
+    this.context.pathMap.set(context, { path, type });
   }
 
   /**

@@ -112,7 +112,8 @@ export function extendParserContextWithRefs({
           ...value,
           [REF_ANNOTATIONS_MARKER_SYMBOL]: {
             entities: [...(existingAnnotations?.entities ?? []), entity],
-            references: existingAnnotations?.references,
+            references: existingAnnotations?.references ?? [],
+            contextPaths: existingAnnotations?.contextPaths ?? [],
           },
         };
       }

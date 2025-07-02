@@ -6,7 +6,7 @@ import type {
   DefinitionSchemaCreatorOptions,
 } from '#src/schema/index.js';
 
-import { createDefinitionSchemaParserContext } from '#src/schema/index.js';
+import { createDefinitionSchemaParserContext } from '#src/schema/creator/index.js';
 
 import type { ResolveZodRefPayloadNamesOptions } from './resolve-zod-ref-payload-names.js';
 import type { ResolvedZodRefPayload } from './types.js';

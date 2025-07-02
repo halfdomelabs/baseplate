@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { createEntityType } from '#src/references/index.js';
+import { createEntityType } from '#src/references/types.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 export const featureEntityType = createEntityType('feature');
