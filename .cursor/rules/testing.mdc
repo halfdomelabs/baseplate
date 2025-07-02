@@ -1,0 +1,65 @@
+---
+description: 
+globs: *.ts,*.tsx
+alwaysApply: false
+---
+## Testing Best Practices
+
+1. **Clear Test Names**: Use descriptive test names that explain what is being tested
+2. **Arrange-Act-Assert**: Structure tests with clear setup, execution, and verification phases
+3. **Mock External Services**: Always mock external API calls and file system operations
+4. **Use Test Helpers**: Extract common setup code into test helpers. These can be new files if needed named `*.test-helper.ts`.
+5. **Avoid Test Interdependence**: Each test should be independent and not rely on others
+6. **
+7. **Use Type-Safe Mocks**: Leverage TypeScript for type-safe mocking
+8. **Test Public APIs**: Focus on testing public methods and behaviors, not implementation details
+9. **Keep Tests Simple**: Each test should verify one specific behavior
+10. **Reusable functions**: Extract repeated logic into helper functions
+11. **Judicious tests**: Try to test broad behavior and common edge cases but be intelligent in the number of tests introduced to avoid slowing down CI.
+
+### Test Organization
+
+- Unit tests are colocated with source files using `.unit.test.ts` suffix
+- Integration tests use `.int.test.ts` suffix
+- Test helpers are located in `src/tests/` directory
+- Manual mocks are in `src/__mocks__/` directory
+
+### Common Test Patterns
+
+#### Mocking the File System
+
+For file system operations, use memfs:
+
+```typescript
+import { vol } from 'memfs';
+
+vi.mock('node:fs');
+vi.mock('node:fs/promises');
+
+beforeEach(() => {
+  vol.reset();
+});
+
+test('should do something', () => {
+  // Arrange
+  vol.fromJSON({
+    'test-file.txt': 'test content',
+  })
+
+  // Act
+  ...
+
+  // Assert
+  const files = vol.toJSON();
+  expect(files['test-file.txt']).toBe('test content');
+});
+```
+
+If using globby, make sure we pass the mocked fs adapter:
+
+```typescript
+import { globby } from 'globby';
+import fsAdapter from 'node:fs';
+
+const files = await globby(['**/*.ts'], { fs: fsAdapter });
+```

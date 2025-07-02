@@ -1,22 +1,24 @@
 ---
 description: 
-globs: packages/**,plugins/**
-alwaysApply: false
+globs: 
+alwaysApply: true
 ---
-- Use TypeScript with strict type checking enabled
-- All functions (excluding one-liner arrow functions) require explicit return types
+## Code Style Guidelines
 
-## Testing Practices
-- We use vitest for unit testing
-- Unit tests use `.unit.test.ts` suffix
-- Integration tests use `.int.test.ts` suffix
-- Colocate tests with implementation files, e.g. for `./utils.ts`, add the test to `./utils.unit.test.ts`
+- TypeScript with strict type checking
+- Unit tests use `.unit.test.ts` suffix, integration tests use `.int.test.ts`
+- Node 16 module resolution - include file extensions in imports (`.js`)
 - Always import vitest globals explicitly (describe, it, expect)
-
-## Naming Conventions
-- Use camelCase for variables and functions
-- Use PascalCase for types and classes
-
-## Code Style
+- Sort imports by group: external libs first, then local imports
+- Use camelCase for variables/functions, PascalCase for types/classes
+- Always include return types on top-level functions including React components (`React.ReactElement`)
 - Prefer functional programming patterns
-- Extract repeated components into distinct functions or components where applicable
+- Colocate tests with implementation files
+- Include absolute paths in import statements via tsconfig paths (`@src/` is the alias for `src/`)
+- Order functions such that functions are placed below the variables/functions they use
+- Use kebab-case for file names
+- If a particular interface or type is not exported, change the file so it is exported
+- We use the prefer using nullish coalescing operator (`??`) ESLint rule instead of a logical or (`||`), as it is a safer operator
+- Prefer barrel exports e.g. export \* from './foo.js' instead of individual named exports
+- Use console.info/warn/error instead of console.log
+- If you get caught on a typing loop where you have to force the any type, DO NOT iterate too much. Just leave the typing as broken and let the user fix it. Typescript is hard.
