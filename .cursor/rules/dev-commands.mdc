@@ -8,7 +8,7 @@ alwaysApply: true
 ### From repository root
 
 - Build: `pnpm build`
-- Lint affected with auto-fixing: `pnpm lint:affected -- --fix`
+- Lint affected with auto-fixing: `pnpm lint:only:affected -- --fix`
 - Check types: `pnpm typecheck`
 - Test affected: `pnpm test:affected`
 - Test single file: `./run-vitest.js <path/to/file.unit.test.ts>`
