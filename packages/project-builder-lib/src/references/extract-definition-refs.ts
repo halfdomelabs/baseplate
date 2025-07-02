@@ -88,6 +88,13 @@ export function extractDefinitionRefsRecursive(
     );
   }
 
+  // Run recursively for arrays first (arrays are also objects)
+  if (Array.isArray(value)) {
+    return value.map((element, i) =>
+      extractDefinitionRefsRecursive(element, context, [...path, i]),
+    );
+  }
+
   // Run recursively for regular objects
   if (typeof value === 'object' && value !== null) {
     return Object.fromEntries(
@@ -95,13 +102,6 @@ export function extractDefinitionRefsRecursive(
         key,
         extractDefinitionRefsRecursive(childValue, context, [...path, key]),
       ]),
-    );
-  }
-
-  // Run recursively for arrays
-  if (Array.isArray(value)) {
-    return value.map((element, i) =>
-      extractDefinitionRefsRecursive(element, context, [...path, i]),
     );
   }
 
@@ -118,10 +118,10 @@ export function extractDefinitionRefs<T>(value: T): ZodRefPayload<T> {
     entitiesWithNameResolver: [],
   };
 
-  extractDefinitionRefsRecursive(value, refContext, []);
+  const cleanData = extractDefinitionRefsRecursive(value, refContext, []);
 
   return {
-    data: value,
+    data: cleanData as T,
     references: refContext.references,
     entitiesWithNameResolver: refContext.entitiesWithNameResolver,
   };
