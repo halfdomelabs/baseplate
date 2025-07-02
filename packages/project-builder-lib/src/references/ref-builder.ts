@@ -34,7 +34,7 @@ function isPromise(object: unknown): object is Promise<unknown> {
   return object instanceof Promise;
 }
 
-type PathInput<Type> = Exclude<Paths<Type>, number>;
+export type PathInput<Type> = Exclude<Paths<Type>, number>;
 
 interface ContextValue {
   context: string;
@@ -191,7 +191,7 @@ interface DefinitionEntityWithNameResolver
   nameResolver: DefinitionEntityNameResolver;
 }
 
-interface RefBuilderContext {
+export interface RefBuilderContext {
   pathMap: Map<string, { path: ReferencePath; type: DefinitionEntityType }>;
 }
 

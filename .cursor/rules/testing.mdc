@@ -16,6 +16,7 @@ alwaysApply: false
 9. **Keep Tests Simple**: Each test should verify one specific behavior
 10. **Reusable functions**: Extract repeated logic into helper functions
 11. **Judicious tests**: Try to test broad behavior and common edge cases but be intelligent in the number of tests introduced to avoid slowing down CI.
+12. **Refactor for testability**: If the target code is not easily testable, feel free to refactor the code to be more easily testable, e.g. exporting types or functions.
 
 ### Test Organization
 

@@ -17,7 +17,7 @@ import type {
 
 import { initializePlugins } from '#src/plugins/imports/loader.js';
 import { pluginConfigSpec, zPluginWrapper } from '#src/plugins/index.js';
-import { parseSchemaWithReferences } from '#src/references/parse-schema-with-references.js';
+import { parseSchemaWithTransformedReferences } from '#src/references/parse-schema-with-references.js';
 import {
   adminCrudInputSpec,
   createDefinitionSchemaParserContext,
@@ -139,10 +139,15 @@ export function parseProjectDefinitionWithReferences(
   definition: ResolvedZodRefPayload<ProjectDefinition>;
   pluginStore: PluginImplementationStore;
 } {
-  const schema = createProjectDefinitionSchemaWithContext(
+  const { pluginStore } = context;
+  const pluginImplementationStore = createPluginImplementationStore(
+    pluginStore,
     projectDefinition,
-    context,
   );
-  const definition = parseSchemaWithReferences(schema, projectDefinition);
-  return { definition, pluginStore: schema._def.pluginStore };
+  const definition = parseSchemaWithTransformedReferences(
+    createProjectDefinitionSchema,
+    projectDefinition,
+    { plugins: pluginImplementationStore },
+  );
+  return { definition, pluginStore: pluginImplementationStore };
 }
