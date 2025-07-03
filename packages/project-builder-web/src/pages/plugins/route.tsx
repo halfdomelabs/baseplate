@@ -16,7 +16,7 @@ import { notEmpty } from '@baseplate-dev/utils';
 import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { MdAdd } from 'react-icons/md';
 
-import { ErrorBoundary, NavLink } from '#src/components/index.js';
+import { ErrorBoundary } from '#src/components/index.js';
 
 export const Route = createFileRoute('/plugins')({
   component: PluginsLayout,
@@ -52,9 +52,9 @@ function PluginsLayout(): React.JSX.Element {
           <NavigationMenuList>
             {enabledPlugins.map((plugin) => (
               <NavigationMenuLink key={plugin.id} asChild>
-                <NavLink to={`/plugins/edit/$id`} params={{ id: plugin.id }}>
+                <Link to={`/plugins/edit/$id`} params={{ id: plugin.id }}>
                   {plugin.displayName}
-                </NavLink>
+                </Link>
               </NavigationMenuLink>
             ))}
             {enabledPlugins.length === 0 && (

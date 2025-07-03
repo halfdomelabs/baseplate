@@ -8,9 +8,8 @@ import {
   SidebarLayoutContent,
   SidebarLayoutSidebar,
 } from '@baseplate-dev/ui-components';
-import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 
-import { NavLink } from '#src/components/index.js';
 import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';
 
 export const Route = createFileRoute('/settings')({
@@ -27,19 +26,19 @@ function SettingsLayout(): React.JSX.Element {
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>
             <NavigationMenuLink asChild>
-              <NavLink to={`/settings`}>Project settings</NavLink>
+              <Link to={`/settings`}>Project settings</Link>
             </NavigationMenuLink>
             <NavigationMenuLink asChild>
-              <NavLink to={`/settings/hierarchy`}>Hierarchy</NavLink>
+              <Link to={`/settings/hierarchy`}>Hierarchy</Link>
             </NavigationMenuLink>
             <NavigationMenuLink asChild>
-              <NavLink to={`/settings/theme-builder`}>Theme builder</NavLink>
+              <Link to={`/settings/theme-builder`}>Theme builder</Link>
             </NavigationMenuLink>
             {ENABLE_TEMPLATE_EXTRACTOR && (
               <NavigationMenuLink asChild>
-                <NavLink to={`/settings/template-extractor`}>
+                <Link to={`/settings/template-extractor`}>
                   Template extractor
-                </NavLink>
+                </Link>
               </NavigationMenuLink>
             )}
           </NavigationMenuList>

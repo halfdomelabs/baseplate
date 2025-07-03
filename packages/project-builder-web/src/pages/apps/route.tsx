@@ -11,11 +11,9 @@ import {
   SidebarLayoutContent,
   SidebarLayoutSidebar,
 } from '@baseplate-dev/ui-components';
-import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { MdAdd } from 'react-icons/md';
-
-import { NavLink } from '#src/components/index.js';
 
 import NewAppDialog from './-components/new-app-dialog.js';
 
@@ -47,12 +45,12 @@ function AppsLayout(): React.JSX.Element {
           <NavigationMenuList>
             {sortedApps.map((app) => (
               <NavigationMenuItemWithLink key={app.id} asChild>
-                <NavLink
+                <Link
                   to="/apps/edit/$key"
                   params={{ key: appEntityType.keyFromId(app.id) }}
                 >
                   {app.name}
-                </NavLink>
+                </Link>
               </NavigationMenuItemWithLink>
             ))}
           </NavigationMenuList>
