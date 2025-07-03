@@ -35,7 +35,7 @@ export type AdminCrudTextInputConfig = def.InferOutput<
 
 const adminCrudTextInputType = createAdminCrudInputType({
   name: 'text',
-  schema: createAdminCrudTextInputSchema,
+  createSchema: createAdminCrudTextInputSchema,
 });
 
 export const createAdminCrudForeignInputSchema = definitionSchema((ctx) =>
@@ -60,7 +60,7 @@ export type AdminCrudForeignInputConfig = def.InferOutput<
 
 const adminCrudForeignInputType = createAdminCrudInputType({
   name: 'foreign',
-  schema: createAdminCrudForeignInputSchema,
+  createSchema: createAdminCrudForeignInputSchema,
 });
 
 export const createAdminCrudEnumInputSchema = definitionSchema((ctx) =>
@@ -81,7 +81,7 @@ export type AdminCrudEnumInputConfig = def.InferOutput<
 
 const adminCrudEnumInputType = createAdminCrudInputType({
   name: 'enum',
-  schema: createAdminCrudEnumInputSchema,
+  createSchema: createAdminCrudEnumInputSchema,
 });
 
 export const createAdminCrudEmbeddedInputSchema = definitionSchema((ctx) =>
@@ -107,7 +107,7 @@ export type AdminCrudEmbeddedInputConfig = def.InferOutput<
 
 export const adminCrudEmbeddedInputType = createAdminCrudInputType({
   name: 'embedded',
-  schema: createAdminCrudEmbeddedInputSchema,
+  createSchema: createAdminCrudEmbeddedInputSchema,
 });
 
 export const createAdminCrudEmbeddedLocalInputSchema = definitionSchema((ctx) =>
@@ -133,7 +133,7 @@ export type AdminCrudEmbeddedLocalInputConfig = def.InferOutput<
 
 export const adminCrudEmbeddedLocalInputType = createAdminCrudInputType({
   name: 'embeddedLocal',
-  schema: createAdminCrudEmbeddedLocalInputSchema,
+  createSchema: createAdminCrudEmbeddedLocalInputSchema,
 });
 
 export const createAdminCrudPasswordInputSchema = definitionSchema(() =>
@@ -149,7 +149,7 @@ export type AdminCrudPasswordInputConfig = def.InferOutput<
 
 const adminCrudPasswordInputType = createAdminCrudInputType({
   name: 'password',
-  schema: createAdminCrudPasswordInputSchema,
+  createSchema: createAdminCrudPasswordInputSchema,
 });
 
 export const BUILT_IN_ADMIN_CRUD_INPUTS: AdminCrudInputType[] = [

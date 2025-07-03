@@ -6,7 +6,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
-export const adminCrudFileInputSchema = definitionSchema((ctx) =>
+export const createAdminCrudFileInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('file'),
     label: z.string().min(1),
@@ -19,5 +19,5 @@ export const adminCrudFileInputSchema = definitionSchema((ctx) =>
 );
 
 export type AdminCrudFileInputConfig = def.InferInput<
-  typeof adminCrudFileInputSchema
+  typeof createAdminCrudFileInputSchema
 >;

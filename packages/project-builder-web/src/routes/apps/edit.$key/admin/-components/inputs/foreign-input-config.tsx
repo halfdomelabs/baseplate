@@ -3,7 +3,10 @@ import type { AdminCrudInputWebFormProps } from '@baseplate-dev/project-builder-
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { createAdminCrudInputWebConfig } from '@baseplate-dev/project-builder-lib/web';
+import {
+  createAdminCrudInputWebConfig,
+  useProjectDefinition,
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   InputFieldController,
   SelectFieldController,
@@ -14,9 +17,10 @@ function AdminCrudForeignInputForm({
   name,
   model,
 }: AdminCrudInputWebFormProps): React.JSX.Element {
+  const { definitionContainer } = useProjectDefinition();
   const localRelationOptions =
     model.model.relations?.map((relation) => ({
-      label: `${relation.name} (${relation.modelRef})`,
+      label: `${relation.name} (${definitionContainer.nameFromId(relation.modelRef)})`,
       value: relation.id,
     })) ?? [];
   const prefix = name as 'prefix';

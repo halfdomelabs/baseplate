@@ -3,7 +3,7 @@ import {
   createPlatformPluginExport,
 } from '@baseplate-dev/project-builder-lib';
 
-import { adminCrudFileInputSchema } from './types.js';
+import { createAdminCrudFileInputSchema } from './types.js';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -13,7 +13,7 @@ export default createPlatformPluginExport({
   initialize: ({ adminCrudInput }) => {
     adminCrudInput.registerAdminCrudInput({
       name: 'file',
-      schema: adminCrudFileInputSchema,
+      createSchema: createAdminCrudFileInputSchema,
     });
     return {};
   },
