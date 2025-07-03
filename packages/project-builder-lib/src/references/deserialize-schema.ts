@@ -11,24 +11,10 @@ import type {
 
 import type { DefinitionEntity, ResolvedZodRefPayload } from './types.js';
 
-import {
-  parseSchemaWithReferences,
-  parseSchemaWithTransformedReferences,
-} from './parse-schema-with-references.js';
+import { parseSchemaWithTransformedReferences } from './parse-schema-with-references.js';
 
 function referenceToNameParentId(name: string, parentId?: string): string {
   return JSON.stringify({ name, parentId });
-}
-
-export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
-  schema: TSchema,
-  input: unknown,
-): ResolvedZodRefPayload<TypeOf<TSchema>> {
-  const payload = parseSchemaWithReferences(schema, input, {
-    skipReferenceNameResolution: true,
-  });
-
-  return resolveReferencesToIds(payload);
 }
 
 /**
