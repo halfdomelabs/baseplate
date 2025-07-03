@@ -40,7 +40,7 @@ describe('deserializeSchemaWithTransformedReferences', () => {
             type: entityType,
           }),
         ),
-        ref: ctx.withRef(z.string(), {
+        ref: ctx.withRef({
           type: entityType,
           onDelete: 'DELETE',
         }),
@@ -71,14 +71,18 @@ describe('deserializeSchemaWithTransformedReferences', () => {
             type: entityType,
           }),
         ),
-        nullRef: ctx.withRef(z.string().nullable(), {
-          type: entityType,
-          onDelete: 'DELETE',
-        }),
-        undefinedRef: ctx.withRef(z.string().optional(), {
-          type: entityType,
-          onDelete: 'DELETE',
-        }),
+        nullRef: ctx
+          .withRef({
+            type: entityType,
+            onDelete: 'DELETE',
+          })
+          .optional(),
+        undefinedRef: ctx
+          .withRef({
+            type: entityType,
+            onDelete: 'DELETE',
+          })
+          .optional(),
       }),
     );
 
@@ -108,7 +112,7 @@ describe('deserializeSchemaWithTransformedReferences', () => {
             type: entityType,
           }),
         ),
-        ref: ctx.withRef(z.string(), {
+        ref: ctx.withRef({
           type: entityType,
           onDelete: 'DELETE',
         }),
@@ -138,12 +142,12 @@ describe('deserializeSchemaWithTransformedReferences', () => {
           }),
         ),
         nestedRef: z.object({
-          ref: ctx.withRef(z.string(), {
+          ref: ctx.withRef({
             type: entityType,
             onDelete: 'DELETE',
           }),
         }),
-        ref: ctx.withRef(z.string(), {
+        ref: ctx.withRef({
           type: entityType,
           onDelete: 'DELETE',
         }),

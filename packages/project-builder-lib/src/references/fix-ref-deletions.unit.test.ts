@@ -43,7 +43,7 @@ describe('fixRefDeletions', () => {
           }),
         ),
         refs: z.array(
-          ctx.withRef(z.string(), {
+          ctx.withRef({
             type: entityType,
             onDelete: 'DELETE',
           }),
@@ -79,7 +79,7 @@ describe('fixRefDeletions', () => {
           }),
         ),
         refs: z.array(
-          ctx.withRef(z.string(), {
+          ctx.withRef({
             type: entityType,
             onDelete: 'DELETE',
           }),
@@ -123,10 +123,12 @@ describe('fixRefDeletions', () => {
           }),
         ),
         refs: z.array(
-          ctx.withRef(z.string().nullish(), {
-            type: entityType,
-            onDelete: 'SET_NULL',
-          }),
+          ctx
+            .withRef({
+              type: entityType,
+              onDelete: 'SET_NULL',
+            })
+            .optional(),
         ),
       }),
     );
@@ -159,7 +161,7 @@ describe('fixRefDeletions', () => {
           }),
         ),
         refs: z.array(
-          ctx.withRef(z.string(), {
+          ctx.withRef({
             type: entityType,
             onDelete: 'RESTRICT',
           }),

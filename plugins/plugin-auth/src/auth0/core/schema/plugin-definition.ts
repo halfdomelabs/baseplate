@@ -12,12 +12,12 @@ import { createAuthRolesSchema } from '#src/roles/index.js';
 export const createAuth0PluginDefinitionSchema = definitionSchema((ctx) =>
   z.object({
     modelRefs: z.object({
-      user: ctx.withRef(z.string().min(1), {
+      user: ctx.withRef({
         type: modelEntityType,
         onDelete: 'RESTRICT',
       }),
     }),
-    authFeatureRef: ctx.withRef(z.string().min(1), {
+    authFeatureRef: ctx.withRef({
       type: featureEntityType,
       onDelete: 'RESTRICT',
     }),

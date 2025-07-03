@@ -17,7 +17,7 @@ import { adminCrudEmbeddedFormEntityType } from './crud-form/types.js';
 export const createAdminCrudForeignDisplaySchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('foreign'),
-    localRelationRef: ctx.withRef(z.string(), {
+    localRelationRef: ctx.withRef({
       type: modelLocalRelationEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
@@ -34,7 +34,7 @@ export type AdminCrudForeignDisplayConfig = def.InferOutput<
 export const createAdminCrudTextDisplaySchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('text'),
-    modelFieldRef: ctx.withRef(z.string(), {
+    modelFieldRef: ctx.withRef({
       type: modelScalarFieldEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
@@ -72,7 +72,7 @@ export const createAdminCrudEmbeddedObjectSchema = definitionSchema((ctx) =>
   z.object({
     id: z.string().min(1),
     name: z.string().min(1),
-    modelRef: ctx.withRef(z.string().min(1), {
+    modelRef: ctx.withRef({
       type: modelEntityType,
       onDelete: 'RESTRICT',
     }),
@@ -88,7 +88,7 @@ export const createAdminCrudEmbeddedListSchema = definitionSchema((ctx) =>
   z.object({
     id: z.string().min(1),
     name: z.string().min(1),
-    modelRef: ctx.withRef(z.string().min(1), {
+    modelRef: ctx.withRef({
       type: modelEntityType,
       onDelete: 'RESTRICT',
     }),
@@ -136,7 +136,7 @@ export const createAdminCrudSectionSchema = definitionSchema((ctx) =>
     createBaseAdminSectionValidators(ctx).and(
       z.object({
         type: z.literal('crud'),
-        modelRef: ctx.withRef(z.string().min(1), {
+        modelRef: ctx.withRef({
           type: modelEntityType,
           onDelete: 'RESTRICT',
         }),

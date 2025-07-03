@@ -17,7 +17,7 @@ export const createWebAppSchema = definitionSchema((ctx) =>
     description: z.string().optional(),
     allowedRoles: z
       .array(
-        ctx.withRef(z.string().min(1), {
+        ctx.withRef({
           type: authRoleEntityType,
           onDelete: 'DELETE',
         }),

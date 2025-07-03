@@ -34,7 +34,7 @@ export const createAdminAppSchema = definitionSchema((ctx) =>
     type: z.literal('admin'),
     allowedRoles: z
       .array(
-        ctx.withRef(z.string(), {
+        ctx.withRef({
           type: authRoleEntityType,
           onDelete: 'DELETE',
         }),

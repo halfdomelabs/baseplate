@@ -13,7 +13,7 @@ export const createFileTransformerSchema = definitionSchema((ctx) =>
   ctx.withEnt(
     z.object({
       ...baseTransformerFields,
-      fileRelationRef: ctx.withRef(z.string(), {
+      fileRelationRef: ctx.withRef({
         type: modelLocalRelationEntityType,
         onDelete: 'DELETE_PARENT',
         parentPath: { context: 'model' },

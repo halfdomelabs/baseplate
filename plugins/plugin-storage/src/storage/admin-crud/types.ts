@@ -10,7 +10,7 @@ export const adminCrudFileInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('file'),
     label: z.string().min(1),
-    modelRelationRef: ctx.withRef(z.string(), {
+    modelRelationRef: ctx.withRef({
       type: modelTransformerEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },

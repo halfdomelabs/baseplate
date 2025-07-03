@@ -14,7 +14,7 @@ import {
 const createRoleArray = definitionSchema((ctx) =>
   z
     .array(
-      ctx.withRef(z.string(), {
+      ctx.withRef({
         type: authRoleEntityType,
         onDelete: 'DELETE',
       }),
@@ -28,7 +28,7 @@ export const createModelGraphqlSchema = definitionSchema((ctx) =>
       .object({
         enabled: z.boolean().default(false),
         fields: z.array(
-          ctx.withRef(z.string(), {
+          ctx.withRef({
             type: modelScalarFieldEntityType,
             onDelete: 'DELETE',
             parentPath: { context: 'model' },
@@ -36,7 +36,7 @@ export const createModelGraphqlSchema = definitionSchema((ctx) =>
         ),
         localRelations: z
           .array(
-            ctx.withRef(z.string(), {
+            ctx.withRef({
               type: modelLocalRelationEntityType,
               onDelete: 'DELETE',
               parentPath: { context: 'model' },
@@ -45,7 +45,7 @@ export const createModelGraphqlSchema = definitionSchema((ctx) =>
           .optional(),
         foreignRelations: z
           .array(
-            ctx.withRef(z.string(), {
+            ctx.withRef({
               type: modelForeignRelationEntityType,
               onDelete: 'DELETE',
               parentPath: { context: 'model' },

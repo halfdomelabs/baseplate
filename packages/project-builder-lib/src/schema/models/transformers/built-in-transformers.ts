@@ -36,14 +36,14 @@ export const createEmbeddedRelationTransformerSchema = definitionSchema((ctx) =>
     ctx.withEnt(
       z.object({
         ...baseTransformerFields,
-        foreignRelationRef: ctx.withRef(z.string().min(1), {
+        foreignRelationRef: ctx.withRef({
           type: modelForeignRelationEntityType,
           onDelete: 'DELETE_PARENT',
           parentPath: { context: 'model' },
         }),
         type: z.literal('embeddedRelation'),
         embeddedFieldNames: z.array(
-          ctx.withRef(z.string().min(1), {
+          ctx.withRef({
             type: modelScalarFieldEntityType,
             onDelete: 'RESTRICT',
             parentPath: { context: 'embeddedModel' },
@@ -51,14 +51,14 @@ export const createEmbeddedRelationTransformerSchema = definitionSchema((ctx) =>
         ),
         embeddedTransformerNames: z
           .array(
-            ctx.withRef(z.string().min(1), {
+            ctx.withRef({
               type: modelTransformerEntityType,
               onDelete: 'RESTRICT',
               parentPath: { context: 'embeddedModel' },
             }),
           )
           .optional(),
-        modelRef: ctx.withRef(z.string().min(1), {
+        modelRef: ctx.withRef({
           type: modelEntityType,
           onDelete: 'RESTRICT',
         }),

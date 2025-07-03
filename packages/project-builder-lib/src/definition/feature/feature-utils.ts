@@ -67,7 +67,7 @@ function ensureFeatureByNameRecursively(
   }
   const nameParts = nameOrId.split('/');
   let lastName = '';
-  let parentRef: string | null = null;
+  let parentRef: string | undefined = undefined;
   for (const part of nameParts) {
     const feature = projectDefinition.features.find(
       (f) => f.name === part && f.parentRef === parentRef,

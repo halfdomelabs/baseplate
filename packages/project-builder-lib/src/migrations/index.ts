@@ -11,6 +11,7 @@ import { migration011PluginId } from './migration-011-plugin-id.js';
 import { migration012MigrateAuthConfig } from './migration-012-migrate-auth-config.js';
 import { migration013MoveGeneralSettings } from './migration-013-move-general-settings.js';
 import { migration014MigratePluginIds } from './migration-014-migrate-plugin-ids.js';
+import { migration015NullParentRefs } from './migration-015-null-parent-refs.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -23,6 +24,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration012MigrateAuthConfig,
   migration013MoveGeneralSettings,
   migration014MigratePluginIds,
+  migration015NullParentRefs,
 ];
 
 export function isMigrateableProjectDefinition(

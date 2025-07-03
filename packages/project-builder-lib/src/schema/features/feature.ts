@@ -27,10 +27,12 @@ export const createFeatureSchema = definitionSchema((ctx) =>
               'Feature name must be lowercase and contain only letters, numbers, and dashes',
           },
         ),
-      parentRef: ctx.withRef(z.string().nullish(), {
-        type: featureEntityType,
-        onDelete: 'DELETE_PARENT',
-      }),
+      parentRef: ctx
+        .withRef({
+          type: featureEntityType,
+          onDelete: 'DELETE_PARENT',
+        })
+        .optional(),
     }),
     { type: featureEntityType },
   ),

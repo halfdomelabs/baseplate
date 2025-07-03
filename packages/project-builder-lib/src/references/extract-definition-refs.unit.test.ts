@@ -55,7 +55,7 @@ describe('extract-definition-refs', () => {
                 type: entityType,
               }),
             ),
-            ref: ctx.withRef(z.string(), {
+            ref: ctx.withRef({
               type: entityType,
               onDelete: 'RESTRICT',
             }),
@@ -93,11 +93,11 @@ describe('extract-definition-refs', () => {
                 type: entityType,
               }),
             ),
-            ref1: ctx.withRef(z.string(), {
+            ref1: ctx.withRef({
               type: entityType,
               onDelete: 'DELETE',
             }),
-            ref2: ctx.withRef(z.string(), {
+            ref2: ctx.withRef({
               type: entityType,
               onDelete: 'RESTRICT',
             }),
@@ -138,7 +138,7 @@ describe('extract-definition-refs', () => {
               }),
             ),
             nested: z.object({
-              ref: ctx.withRef(z.string(), {
+              ref: ctx.withRef({
                 type: entityType,
                 onDelete: 'SET_NULL',
               }),
@@ -187,7 +187,7 @@ describe('extract-definition-refs', () => {
               }),
             ),
             refs: z.array(
-              ctx.withRef(z.string(), {
+              ctx.withRef({
                 type: entityType,
                 onDelete: 'RESTRICT',
               }),
@@ -226,14 +226,18 @@ describe('extract-definition-refs', () => {
                 type: entityType,
               }),
             ),
-            nullRef: ctx.withRef(z.string().nullable(), {
-              type: entityType,
-              onDelete: 'SET_NULL',
-            }),
-            undefinedRef: ctx.withRef(z.string().optional(), {
-              type: entityType,
-              onDelete: 'SET_NULL',
-            }),
+            nullRef: ctx
+              .withRef({
+                type: entityType,
+                onDelete: 'SET_NULL',
+              })
+              .optional(),
+            undefinedRef: ctx
+              .withRef({
+                type: entityType,
+                onDelete: 'SET_NULL',
+              })
+              .optional(),
           }),
         );
 
@@ -280,7 +284,7 @@ describe('extract-definition-refs', () => {
             foreignRelation: ctx.withRefBuilder(
               z.object({
                 modelRef: z.string(),
-                fieldRef: ctx.withRef(z.string(), {
+                fieldRef: ctx.withRef({
                   type: fieldType,
                   onDelete: 'RESTRICT',
                   parentPath: { context: 'model' },
@@ -357,13 +361,13 @@ describe('extract-definition-refs', () => {
                   ),
                   relations: z.array(
                     z.object({
-                      modelName: ctx.withRef(z.string(), {
+                      modelName: ctx.withRef({
                         type: modelType,
                         onDelete: 'RESTRICT',
                         addContext: 'foreignModel',
                       }),
                       fields: z.array(
-                        ctx.withRef(z.string(), {
+                        ctx.withRef({
                           type: fieldType,
                           onDelete: 'RESTRICT',
                           parentPath: { context: 'foreignModel' },
@@ -441,7 +445,7 @@ describe('extract-definition-refs', () => {
                 }),
               },
             ),
-            ref: ctx.withRef(z.string(), {
+            ref: ctx.withRef({
               type: entityType,
               onDelete: 'RESTRICT',
             }),
@@ -488,7 +492,7 @@ describe('extract-definition-refs', () => {
                 type: personType,
               }),
             ),
-            personRef: ctx.withRef(z.string(), {
+            personRef: ctx.withRef({
               type: personType,
               onDelete: 'RESTRICT',
             }),
@@ -655,11 +659,11 @@ describe('extract-definition-refs', () => {
               }),
             ),
             // Multiple references to same entity type
-            ref1: ctx.withRef(z.string(), {
+            ref1: ctx.withRef({
               type: entityType,
               onDelete: 'RESTRICT',
             }),
-            ref2: ctx.withRef(z.string(), {
+            ref2: ctx.withRef({
               type: entityType,
               onDelete: 'SET_NULL',
             }),
@@ -700,7 +704,7 @@ describe('extract-definition-refs', () => {
                 type: entityType,
               }),
             ),
-            ref: ctx.withRef(z.string(), {
+            ref: ctx.withRef({
               type: entityType,
               onDelete: 'RESTRICT',
             }),

@@ -20,7 +20,7 @@ export const createAdminCrudTextInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('text'),
     label: z.string().min(1),
-    modelFieldRef: ctx.withRef(z.string(), {
+    modelFieldRef: ctx.withRef({
       type: modelScalarFieldEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
@@ -42,7 +42,7 @@ export const createAdminCrudForeignInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('foreign'),
     label: z.string().min(1),
-    localRelationRef: ctx.withRef(z.string(), {
+    localRelationRef: ctx.withRef({
       type: modelLocalRelationEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
@@ -67,7 +67,7 @@ export const createAdminCrudEnumInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('enum'),
     label: z.string().min(1),
-    modelFieldRef: ctx.withRef(z.string(), {
+    modelFieldRef: ctx.withRef({
       type: modelScalarFieldEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
@@ -88,12 +88,12 @@ export const createAdminCrudEmbeddedInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('embedded'),
     label: z.string().min(1),
-    modelRelationRef: ctx.withRef(z.string(), {
+    modelRelationRef: ctx.withRef({
       type: modelForeignRelationEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
     }),
-    embeddedFormRef: ctx.withRef(z.string(), {
+    embeddedFormRef: ctx.withRef({
       type: adminCrudEmbeddedFormEntityType,
       parentPath: { context: 'admin-section' },
       onDelete: 'RESTRICT',
@@ -114,12 +114,12 @@ export const createAdminCrudEmbeddedLocalInputSchema = definitionSchema((ctx) =>
   z.object({
     type: z.literal('embeddedLocal'),
     label: z.string().min(1),
-    localRelationRef: ctx.withRef(z.string(), {
+    localRelationRef: ctx.withRef({
       type: modelLocalRelationEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'model' },
     }),
-    embeddedFormRef: ctx.withRef(z.string(), {
+    embeddedFormRef: ctx.withRef({
       type: adminCrudEmbeddedFormEntityType,
       parentPath: { context: 'admin-section' },
       onDelete: 'RESTRICT',

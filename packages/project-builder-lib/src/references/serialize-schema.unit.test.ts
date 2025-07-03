@@ -38,7 +38,7 @@ describe('serializeSchema', () => {
             type: entityType,
           }),
         ),
-        ref: ctx.withRef(z.string(), {
+        ref: ctx.withRef({
           type: entityType,
           onDelete: 'DELETE',
         }),
@@ -74,12 +74,12 @@ describe('serializeSchema', () => {
           ),
         ),
         nestedRef: z.object({
-          ref: ctx.withRef(z.string(), {
+          ref: ctx.withRef({
             type: entityType,
             onDelete: 'RESTRICT',
           }),
         }),
-        ref: ctx.withRef(z.string(), {
+        ref: ctx.withRef({
           type: entityType,
           onDelete: 'RESTRICT',
         }),
@@ -138,13 +138,13 @@ describe('serializeSchema', () => {
               ),
               relations: z.array(
                 z.object({
-                  modelName: ctx.withRef(z.string(), {
+                  modelName: ctx.withRef({
                     type: modelType,
                     onDelete: 'RESTRICT',
                     addContext: 'foreignModel',
                   }),
                   fields: z.array(
-                    ctx.withRef(z.string(), {
+                    ctx.withRef({
                       type: fieldType,
                       onDelete: 'RESTRICT',
                       parentPath: { context: 'foreignModel' },

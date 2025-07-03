@@ -9,7 +9,7 @@ export const createBaseAdminSectionValidators = definitionSchema((ctx) =>
   z.object({
     id: z.string().default(adminSectionEntityType.generateNewId()),
     name: z.string().min(1),
-    featureRef: ctx.withRef(z.string().min(1), {
+    featureRef: ctx.withRef({
       type: featureEntityType,
       onDelete: 'RESTRICT',
     }),

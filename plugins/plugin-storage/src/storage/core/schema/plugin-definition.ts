@@ -19,12 +19,12 @@ export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
   ctx.withRefBuilder(
     z.object({
       modelRefs: z.object({
-        file: ctx.withRef(z.string(), {
+        file: ctx.withRef({
           type: modelEntityType,
           onDelete: 'RESTRICT',
         }),
       }),
-      storageFeatureRef: ctx.withRef(z.string().min(1), {
+      storageFeatureRef: ctx.withRef({
         type: featureEntityType,
         onDelete: 'RESTRICT',
       }),
@@ -42,7 +42,7 @@ export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
       categories: z.array(
         z.object({
           name: z.string().min(1),
-          defaultAdapterRef: ctx.withRef(z.string(), {
+          defaultAdapterRef: ctx.withRef({
             type: storageAdapterEntityType,
             onDelete: 'RESTRICT',
           }),
@@ -50,13 +50,13 @@ export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
             (a) => a && Number.parseInt(a as string, 10),
             z.number().positive().optional(),
           ),
-          usedByRelationRef: ctx.withRef(z.string(), {
+          usedByRelationRef: ctx.withRef({
             type: modelForeignRelationEntityType,
             onDelete: 'RESTRICT',
             parentPath: { context: 'fileModel' },
           }),
           uploadRoles: z.array(
-            ctx.withRef(z.string().min(1), {
+            ctx.withRef({
               type: authRoleEntityType,
               onDelete: 'DELETE',
             }),

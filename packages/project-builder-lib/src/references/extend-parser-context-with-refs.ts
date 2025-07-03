@@ -1,5 +1,6 @@
 import type { Paths } from 'type-fest';
-import type { z } from 'zod';
+
+import { z } from 'zod';
 
 import type { DefinitionEntityType } from '#src/index.js';
 import type { DefinitionSchemaCreatorOptions } from '#src/schema/index.js';
@@ -22,13 +23,9 @@ import {
 } from './markers.js';
 import { zRefBuilder } from './ref-builder.js';
 
-export type WithRefType = <
-  T extends z.ZodTypeAny,
-  TEntityType extends DefinitionEntityType,
->(
-  schema: T,
-  reference: DefinitionReferenceInput<z.input<T>, TEntityType>,
-) => z.ZodEffects<T>;
+export type WithRefType = <TEntityType extends DefinitionEntityType>(
+  reference: DefinitionReferenceInput<string, TEntityType>,
+) => z.ZodEffects<z.ZodString>;
 
 type PathInput<Type> = Exclude<Paths<Type>, number>;
 
@@ -53,22 +50,17 @@ export function extendParserContextWithRefs({
   withEnt: WithEntType;
   withRefBuilder: WithRefBuilder;
 } {
-  function withRef<
-    T extends z.ZodType,
-    TEntityType extends DefinitionEntityType,
-  >(
-    schema: T,
-    reference: DefinitionReferenceInput<z.input<T>, TEntityType>,
-  ): z.ZodEffects<T> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we can change this to zod string in the future
-    return schema.transform((value) => {
+  function withRef<TEntityType extends DefinitionEntityType>(
+    reference: DefinitionReferenceInput<string, TEntityType>,
+  ): z.ZodEffects<z.ZodString> {
+    return z.string().transform((value) => {
       if (transformReferences && value) {
         return new DefinitionReferenceMarker(
-          value as string,
+          value,
           reference,
-        ) as unknown as z.input<T>;
+        ) as unknown as string;
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we can change this to zod string in the future
+
       return value;
     });
   }
