@@ -3,7 +3,6 @@ import type React from 'react';
 import {
   authConfigSpec,
   createAdminAppSchema,
-  zPluginWrapper,
 } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
@@ -23,7 +22,6 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute } from '@tanstack/react-router';
-import { useMemo } from 'react';
 
 import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
@@ -36,13 +34,9 @@ function AdminAppEditPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback, pluginContainer } =
     useProjectDefinition();
   const adminAppSchema = useDefinitionSchema(createAdminAppSchema);
-  const schemaWithPlugins = useMemo(
-    () => zPluginWrapper(adminAppSchema, pluginContainer),
-    [pluginContainer, adminAppSchema],
-  );
 
   const formProps = useResettableForm({
-    resolver: zodResolver(schemaWithPlugins),
+    resolver: zodResolver(adminAppSchema),
     values: adminDefinition,
   });
   const { control, handleSubmit, reset } = formProps;

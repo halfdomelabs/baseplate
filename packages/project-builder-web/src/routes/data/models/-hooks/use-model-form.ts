@@ -14,7 +14,6 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import {
   useDefinitionSchema,
-  usePluginEnhancedSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -109,17 +108,15 @@ export function useModelForm({
     return baseModelSchema;
   }, [baseModelSchema]);
 
-  const modelSchemaWithPlugins = usePluginEnhancedSchema(finalSchema);
-
   const defaultValues = useMemo(() => {
     const modelToUse = model ?? newModel;
     return fieldsToOmit.current
-      ? (modelSchemaWithPlugins.parse(modelToUse) as ModelConfigInput)
+      ? (finalSchema.parse(modelToUse) as ModelConfigInput)
       : modelToUse;
-  }, [model, newModel, modelSchemaWithPlugins]);
+  }, [model, newModel, finalSchema]);
 
   const form = useResettableForm<ModelConfigInput, unknown, ModelConfig>({
-    resolver: zodResolver(modelSchemaWithPlugins),
+    resolver: zodResolver(finalSchema),
     defaultValues,
   });
 

@@ -3,7 +3,6 @@ import type React from 'react';
 import {
   adminSectionEntityType,
   createAdminSectionSchema,
-  zPluginWrapper,
 } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
@@ -52,18 +51,16 @@ function AdminAppEditSectionPage(): React.JSX.Element {
     saveDefinitionWithFeedbackSync,
     isSavingDefinition,
     definition,
-    pluginContainer,
   } = useProjectDefinition();
   const navigate = useNavigate();
   const { adminDefinition, sectionId, existingSection } = Route.useLoaderData();
 
   const adminSectionSchema = useDefinitionSchema(createAdminSectionSchema);
-  const schemaWithPlugins = zPluginWrapper(adminSectionSchema, pluginContainer);
 
   const formProps = useResettableForm({
     values: existingSection,
     defaultValues: { type: 'crud' },
-    resolver: zodResolver(schemaWithPlugins),
+    resolver: zodResolver(adminSectionSchema),
   });
 
   const { control, handleSubmit, watch, reset } = formProps;

@@ -13,7 +13,6 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import {
   useDefinitionSchema,
-  usePluginEnhancedSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -73,17 +72,14 @@ export function useEnumForm({
   const newEnumDefinition = useMemo(() => createNewEnum(), []);
 
   const enumSchema = useDefinitionSchema(createEnumBaseSchema);
-  const enumSchemaWithPlugins = usePluginEnhancedSchema(schema ?? enumSchema);
 
   const defaultValues = useMemo(() => {
     const enumToUse = enumDefinition ?? newEnumDefinition;
-    return schema
-      ? (enumSchemaWithPlugins.parse(enumToUse) as EnumConfig)
-      : enumToUse;
-  }, [enumDefinition, newEnumDefinition, schema, enumSchemaWithPlugins]);
+    return schema ? (enumSchema.parse(enumToUse) as EnumConfig) : enumToUse;
+  }, [enumDefinition, newEnumDefinition, schema, enumSchema]);
 
   const form = useResettableForm<EnumConfigInput>({
-    resolver: zodResolver(enumSchemaWithPlugins),
+    resolver: zodResolver(enumSchema),
     defaultValues,
   });
 

@@ -2,10 +2,7 @@ import type { AdminCrudEmbeddedFormConfigInput } from '@baseplate-dev/project-bu
 import type React from 'react';
 import type { Control, UseFormReturn } from 'react-hook-form';
 
-import {
-  createAdminCrudEmbeddedFormSchema,
-  zPluginWrapper,
-} from '@baseplate-dev/project-builder-lib';
+import { createAdminCrudEmbeddedFormSchema } from '@baseplate-dev/project-builder-lib';
 import {
   useDefinitionSchema,
   useProjectDefinition,
@@ -106,16 +103,12 @@ function AdminCrudEmbeddedForm({
   onSubmit,
   embeddedFormOptions,
 }: Props): React.JSX.Element {
-  const { definition, pluginContainer } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
   const adminCrudEmbeddedFormSchema = useDefinitionSchema(
     createAdminCrudEmbeddedFormSchema,
   );
-  const schemaWithPlugins = zPluginWrapper(
-    adminCrudEmbeddedFormSchema,
-    pluginContainer,
-  );
   const formProps = useForm<AdminCrudEmbeddedFormConfigInput>({
-    resolver: zodResolver(schemaWithPlugins),
+    resolver: zodResolver(adminCrudEmbeddedFormSchema),
     defaultValues: initialData,
   });
   const { handleSubmit, control, watch } = formProps;
