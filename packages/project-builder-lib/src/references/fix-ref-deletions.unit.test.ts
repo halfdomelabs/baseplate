@@ -113,7 +113,43 @@ describe('fixRefDeletions', () => {
     });
   });
 
-  it('should work with a simple SET NULL reference', () => {
+  it('should work with a simple SET_UNDEFINED reference for object properties', () => {
+    const entityType = createEntityType('entity');
+    const schemaCreator = definitionSchema((ctx) =>
+      z.object({
+        entity: z.array(
+          ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
+            type: entityType,
+          }),
+        ),
+        optionalRef: ctx
+          .withRef({
+            type: entityType,
+            onDelete: 'SET_UNDEFINED',
+          })
+          .optional(),
+      }),
+    );
+
+    const data = {
+      entity: [{ id: entityType.idFromKey('test-id2'), name: 'test-name' }],
+      optionalRef: entityType.idFromKey('test-id'), // Reference to non-existent entity
+    };
+
+    const refPayload = fixRefDeletions(schemaCreator, data, {
+      plugins: pluginStore,
+    });
+
+    expect(refPayload).toMatchObject({
+      type: 'success',
+      value: {
+        entity: [{ id: entityType.idFromKey('test-id2'), name: 'test-name' }],
+        optionalRef: undefined,
+      },
+    });
+  });
+
+  it('should throw error when SET_UNDEFINED is used in array context', () => {
     const entityType = createEntityType('entity');
     const schemaCreator = definitionSchema((ctx) =>
       z.object({
@@ -126,7 +162,7 @@ describe('fixRefDeletions', () => {
           ctx
             .withRef({
               type: entityType,
-              onDelete: 'SET_NULL',
+              onDelete: 'SET_UNDEFINED', // This should cause an error
             })
             .optional(),
         ),
@@ -135,20 +171,18 @@ describe('fixRefDeletions', () => {
 
     const data = {
       entity: [{ id: entityType.idFromKey('test-id2'), name: 'test-name' }],
-      refs: [entityType.idFromKey('test-id')],
+      refs: [entityType.idFromKey('test-id')], // Reference to non-existent entity
     };
 
-    const refPayload = fixRefDeletions(schemaCreator, data, {
-      plugins: pluginStore,
-    });
-
-    expect(refPayload).toMatchObject({
-      type: 'success',
-      value: {
-        entity: [{ id: entityType.idFromKey('test-id2'), name: 'test-name' }],
-        refs: [null],
-      },
-    });
+    expect(() =>
+      fixRefDeletions(schemaCreator, data, {
+        plugins: pluginStore,
+      }),
+    ).toThrow(
+      new TypeError(
+        'SET_UNDEFINED cannot be used for references inside arrays at path refs.0. Use DELETE instead to remove the array element.',
+      ),
+    );
   });
 
   it('should work with a simple RESTRICT reference', () => {

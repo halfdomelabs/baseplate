@@ -140,7 +140,7 @@ describe('extract-definition-refs', () => {
             nested: z.object({
               ref: ctx.withRef({
                 type: entityType,
-                onDelete: 'SET_NULL',
+                onDelete: 'SET_UNDEFINED',
               }),
               metadata: z.object({
                 description: z.string(),
@@ -172,7 +172,7 @@ describe('extract-definition-refs', () => {
         expect(result.references[0]).toMatchObject({
           type: entityType,
           path: ['nested', 'ref'],
-          onDelete: 'SET_NULL',
+          onDelete: 'SET_UNDEFINED',
         });
       });
 
@@ -216,7 +216,7 @@ describe('extract-definition-refs', () => {
         expect(result.references[1].path).toEqual(['refs', 1]);
       });
 
-      it('should handle optional references (null and undefined)', () => {
+      it('should handle optional references (undefined)', () => {
         const entityType = createEntityType('entity');
 
         const schemaCreator = definitionSchema((ctx) =>
@@ -226,16 +226,10 @@ describe('extract-definition-refs', () => {
                 type: entityType,
               }),
             ),
-            nullRef: ctx
+            optionalRef: ctx
               .withRef({
                 type: entityType,
-                onDelete: 'SET_NULL',
-              })
-              .optional(),
-            undefinedRef: ctx
-              .withRef({
-                type: entityType,
-                onDelete: 'SET_NULL',
+                onDelete: 'SET_UNDEFINED',
               })
               .optional(),
           }),
@@ -243,8 +237,7 @@ describe('extract-definition-refs', () => {
 
         const input = {
           entities: [{ id: entityType.generateNewId(), name: 'Entity One' }],
-          nullRef: null,
-          undefinedRef: undefined,
+          optionalRef: undefined,
         };
 
         const result = deserializeSchemaWithTransformedReferences(
@@ -253,10 +246,9 @@ describe('extract-definition-refs', () => {
           { plugins: pluginStore },
         );
 
-        expect(result.data.nullRef).toBeNull();
-        expect(result.data.undefinedRef).toBeUndefined();
+        expect(result.data.optionalRef).toBeUndefined();
         expect(result.entities).toHaveLength(1);
-        expect(result.references).toHaveLength(0); // No references since values are null/undefined
+        expect(result.references).toHaveLength(0); // No references since value is undefined
       });
     });
 
@@ -665,7 +657,7 @@ describe('extract-definition-refs', () => {
             }),
             ref2: ctx.withRef({
               type: entityType,
-              onDelete: 'SET_NULL',
+              onDelete: 'SET_UNDEFINED',
             }),
           }),
         );

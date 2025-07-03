@@ -71,13 +71,7 @@ describe('deserializeSchemaWithTransformedReferences', () => {
             type: entityType,
           }),
         ),
-        nullRef: ctx
-          .withRef({
-            type: entityType,
-            onDelete: 'DELETE',
-          })
-          .optional(),
-        undefinedRef: ctx
+        optionalRef: ctx
           .withRef({
             type: entityType,
             onDelete: 'DELETE',
@@ -88,8 +82,7 @@ describe('deserializeSchemaWithTransformedReferences', () => {
 
     const dataInput = {
       entity: [{ id: entityType.generateNewId(), name: 'test-name' }],
-      nullRef: null,
-      undefinedRef: undefined,
+      optionalRef: undefined,
     };
 
     const parsedData = deserializeSchemaWithTransformedReferences(
@@ -98,8 +91,7 @@ describe('deserializeSchemaWithTransformedReferences', () => {
       { plugins: pluginStore },
     );
 
-    expect(parsedData.data.nullRef).toBeNull();
-    expect(parsedData.data.undefinedRef).toBeUndefined();
+    expect(parsedData.data.optionalRef).toBeUndefined();
   });
 
   it('should fail with an optional reference that is an empty string', () => {

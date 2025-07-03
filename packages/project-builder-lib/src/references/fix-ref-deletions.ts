@@ -110,8 +110,18 @@ export function fixRefDeletions<T extends DefinitionSchemaCreator>(
       const id = get(valueToEdit as object, ref.path) as string;
 
       switch (ref.onDelete) {
-        case 'SET_NULL': {
-          set(valueToEdit as object, ref.path, null);
+        case 'SET_UNDEFINED': {
+          // Check if reference is inside an array
+          if (ref.path.length > 0) {
+            const parentPath = ref.path.slice(0, -1);
+            const parent = get(valueToEdit as object, parentPath) as unknown;
+            if (Array.isArray(parent)) {
+              throw new TypeError(
+                `SET_UNDEFINED cannot be used for references inside arrays at path ${ref.path.join('.')}. Use DELETE instead to remove the array element.`,
+              );
+            }
+          }
+          set(valueToEdit as object, ref.path, undefined);
           break;
         }
         case 'RESTRICT': {
