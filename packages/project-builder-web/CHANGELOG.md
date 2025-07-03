@@ -1,5 +1,18 @@
 # @baseplate-dev/project-builder-web
 
+## 0.2.1
+
+### Patch Changes
+
+- [#583](https://github.com/halfdomelabs/baseplate/pull/583) [`4d7677e`](https://github.com/halfdomelabs/baseplate/commit/4d7677e8ef2da8ed045ee7fe409519f0f124b34c) Thanks [@kingston](https://github.com/kingston)! - Update UI for app editor
+
+- [#584](https://github.com/halfdomelabs/baseplate/pull/584) [`df2c7d5`](https://github.com/halfdomelabs/baseplate/commit/df2c7d59895944991a1c569862187eb787db2d4c) Thanks [@kingston](https://github.com/kingston)! - Fix inability to create a new field
+
+- Updated dependencies [[`4d7677e`](https://github.com/halfdomelabs/baseplate/commit/4d7677e8ef2da8ed045ee7fe409519f0f124b34c)]:
+  - @baseplate-dev/ui-components@0.2.1
+  - @baseplate-dev/project-builder-lib@0.2.1
+  - @baseplate-dev/utils@0.2.1
+
 ## 0.2.0
 
 ### Patch Changes

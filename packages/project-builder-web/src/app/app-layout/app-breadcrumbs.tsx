@@ -16,31 +16,31 @@ import {
   DropdownMenuTrigger,
 } from '@baseplate-dev/ui-components';
 import { notEmpty } from '@baseplate-dev/utils';
+import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
 import { orderBy, upperFirst } from 'es-toolkit';
 import { Fragment } from 'react';
 import { MdKeyboardArrowDown } from 'react-icons/md';
-import { Link, useMatches, useNavigate } from 'react-router-dom';
-
-import type { RouteCrumbOrFunction } from '#src/types/routes.js';
 
 import { useProjects } from '#src/hooks/use-projects.js';
+import { logAndFormatError } from '#src/services/error-formatter.js';
 
 export function AppBreadcrumbs(): React.JSX.Element {
   const { definitionContainer } = useProjectDefinition();
-  const matches = useMatches();
+  const matches = useRouterState({ select: (s) => s.matches });
+  let lastGetTitle: string | (() => string) | undefined;
   const crumbs = matches
     .map((match) => {
-      const crumbOrFunction = (
-        match.handle as { crumb?: RouteCrumbOrFunction } | undefined
-      )?.crumb;
-      if (!crumbOrFunction) return null;
-      const crumb =
-        typeof crumbOrFunction === 'function'
-          ? crumbOrFunction(match.params, definitionContainer)
-          : crumbOrFunction;
-      const { label, url } =
-        typeof crumb === 'string' ? { label: crumb, url: undefined } : crumb;
-      return { id: match.id, label, url };
+      const { getTitle } = match.context;
+      if (!getTitle) return null;
+      // Since context accumulates, if they don't change, don't show the same title twice
+      if (lastGetTitle === getTitle) return null;
+      const title = typeof getTitle === 'function' ? getTitle() : getTitle;
+      lastGetTitle = getTitle;
+      return {
+        id: match.id,
+        label: title,
+        url: match.pathname,
+      };
     })
     .filter(notEmpty);
   const projects = useProjects((state) => state.projects);
@@ -74,7 +74,7 @@ export function AppBreadcrumbs(): React.JSX.Element {
                   key={project.id}
                   onSelect={() => {
                     setCurrentProjectId(project.id);
-                    navigate('/');
+                    navigate({ to: '/' }).catch(logAndFormatError);
                   }}
                 >
                   <div className="flex flex-col space-y-1">
@@ -109,13 +109,9 @@ export function AppBreadcrumbs(): React.JSX.Element {
                 <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
               ) : (
                 <BreadcrumbItem className="hidden sm:block">
-                  {crumb.url ? (
-                    <BreadcrumbLink asChild>
-                      <Link to={crumb.url}>{crumb.label}</Link>
-                    </BreadcrumbLink>
-                  ) : (
-                    crumb.label
-                  )}
+                  <BreadcrumbLink asChild>
+                    <Link to={crumb.url}>{crumb.label}</Link>
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
               )}
             </Fragment>

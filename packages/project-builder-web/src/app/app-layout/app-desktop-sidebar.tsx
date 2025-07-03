@@ -1,41 +1,48 @@
 import type { IconElement } from '@baseplate-dev/ui-components';
 import type React from 'react';
 
+import { cn } from '@baseplate-dev/ui-components';
+import { createLink, Link } from '@tanstack/react-router';
 import { HiDatabase } from 'react-icons/hi';
 import { MdApps, MdOutlineSettings, MdWidgets } from 'react-icons/md';
-import { Link, NavLink } from 'react-router-dom';
+
+interface SidebarNavigationIconProps
+  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  icon: IconElement;
+  label: React.ReactNode;
+}
 
 function SidebarNavigationIcon({
   icon: Icon,
-  to,
   label,
-  end,
-}: {
-  to: string;
-  icon: IconElement;
-  label: React.ReactNode;
-  end?: boolean;
-}): React.JSX.Element {
+  ...props
+}: SidebarNavigationIconProps): React.JSX.Element {
   return (
-    <NavLink
-      to={to}
-      className={`flex h-12 w-[50px] items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground aria-[current="page"]:hover:bg-accent`}
-      end={end}
+    <a
+      {...props}
+      className={cn(
+        `flex h-12 w-[50px] items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground aria-[current="page"]:hover:bg-accent`,
+        props.className,
+      )}
     >
       <div className="flex flex-col items-center space-y-1">
         <Icon className="size-5" />
         <div className="text-xs font-medium">{label}</div>
       </div>
-    </NavLink>
+    </a>
   );
 }
 
+const SidebarNavigationLink = createLink(SidebarNavigationIcon);
+
 export function AppDesktopSidebar(): React.JSX.Element {
+  // Need 'from="/"' to avoid false positive warnings (https://github.com/TanStack/router/issues/4010)
   return (
     <nav className="flex h-full flex-col items-center justify-between px-2 pt-2.5 pb-4">
       <div className="space-y-8">
         <Link
           to="/"
+          from="/"
           className="group flex shrink-0 items-center justify-center"
         >
           <img
@@ -45,15 +52,27 @@ export function AppDesktopSidebar(): React.JSX.Element {
           />
         </Link>
         <div className="space-y-2">
-          <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />
-          <SidebarNavigationIcon to="/data" icon={HiDatabase} label="Data" />
-          <SidebarNavigationIcon
+          <SidebarNavigationLink
+            to="/apps"
+            from="/"
+            icon={MdApps}
+            label="Apps"
+          />
+          <SidebarNavigationLink
+            to="/data"
+            from="/"
+            icon={HiDatabase}
+            label="Data"
+          />
+          <SidebarNavigationLink
             to="/plugins"
+            from="/"
             icon={MdWidgets}
             label="Plugins"
           />
-          <SidebarNavigationIcon
+          <SidebarNavigationLink
             to="/settings"
+            from="/"
             icon={MdOutlineSettings}
             label="Settings"
           />

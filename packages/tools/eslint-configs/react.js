@@ -42,6 +42,13 @@ export const reactEslintConfig = tsEslint.config(
         'error',
         { checksVoidReturn: { attributes: false } },
       ],
+      // Allow floating navigate from useNavigate to be handled by the router
+      '@typescript-eslint/no-floating-promises': [
+        'error',
+        {
+          allowForKnownSafeCalls: ['UseNavigateResult'],
+        },
+      ],
     },
   },
 
@@ -56,6 +63,21 @@ export const reactEslintConfig = tsEslint.config(
     rules: {
       // We use replace since it is not supported by ES2020
       'unicorn/prefer-string-replace-all': 'off',
+      // Support kebab case with - prefix to support ignored files in routes
+      'unicorn/filename-case': [
+        'error',
+        {
+          cases: {
+            kebabCase: true,
+          },
+          ignore: [String.raw`^-[a-z0-9\-\.]+$`],
+        },
+      ],
     },
+  },
+
+  // Global ignores
+  {
+    ignores: ['**/route-tree.gen.ts'],
   },
 );

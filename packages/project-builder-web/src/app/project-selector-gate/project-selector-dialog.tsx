@@ -4,6 +4,7 @@ import {
   Button,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   Table,
@@ -13,7 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from '@baseplate-dev/ui-components';
-import { useNavigate } from 'react-router-dom';
 
 import { useProjects } from '#src/hooks/use-projects.js';
 
@@ -27,7 +27,6 @@ export function ProjectSelectDialog({
   isOpen,
 }: ProjectSelectDialogProps): React.JSX.Element {
   const { currentProjectId, setCurrentProjectId, projects } = useProjects();
-  const navigate = useNavigate();
 
   return (
     <Dialog
@@ -42,6 +41,7 @@ export function ProjectSelectDialog({
       <DialogContent width="lg">
         <DialogHeader>
           <DialogTitle>Pick Project</DialogTitle>
+          <DialogDescription>Select a project to continue.</DialogDescription>
         </DialogHeader>
         <Table>
           <TableHeader>
@@ -68,7 +68,7 @@ export function ProjectSelectDialog({
                       variant="link"
                       onClick={() => {
                         setCurrentProjectId(project.id);
-                        navigate('/');
+                        history.pushState(null, '', '/');
                         if (onClose) {
                           onClose();
                         }
