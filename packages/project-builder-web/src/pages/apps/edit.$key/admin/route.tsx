@@ -40,7 +40,12 @@ function AdminAppForm(): React.JSX.Element {
       </Alert>
       <NavigationTabs>
         <NavigationTabsItem asChild>
-          <Link to="." activeOptions={{ exact: true }}>
+          <Link
+            to="/apps/edit/$key/admin"
+            from="/"
+            params={{ key }}
+            activeOptions={{ exact: true }}
+          >
             General
           </Link>
         </NavigationTabsItem>

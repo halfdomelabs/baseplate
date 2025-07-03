@@ -98,6 +98,7 @@ export function EnumsSidebarList({
                 <NavigationMenuItemWithLink asChild>
                   <Link
                     to="/data/enums/edit/$key"
+                    from="/"
                     params={{ key: modelEnumEntityType.keyFromId(enumDef.id) }}
                   >
                     {enumDef.name}

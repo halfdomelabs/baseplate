@@ -42,6 +42,7 @@ export function ModelEditLayout(): React.JSX.Element {
           <NavigationTabsItem asChild>
             <Link
               to="/data/models/edit/$key"
+              from="/"
               params={{ key }}
               activeOptions={{ exact: true }}
             >
@@ -51,6 +52,7 @@ export function ModelEditLayout(): React.JSX.Element {
           <NavigationTabsItem asChild>
             <Link
               to="/data/models/edit/$key/service"
+              from="/"
               params={{ key }}
               activeOptions={{ exact: true }}
             >
@@ -60,6 +62,7 @@ export function ModelEditLayout(): React.JSX.Element {
           <NavigationTabsItem asChild>
             <Link
               to="/data/models/edit/$key/graphql"
+              from="/"
               params={{ key }}
               activeOptions={{ exact: true }}
             >

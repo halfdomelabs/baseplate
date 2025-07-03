@@ -36,7 +36,7 @@ function Index(): React.JSX.Element {
               </CardDescription>
             </CardHeader>
             <CardFooter>
-              <Link to="/data">
+              <Link to="/data" from="/">
                 <Button>Configure Models</Button>
               </Link>
             </CardFooter>
@@ -50,7 +50,7 @@ function Index(): React.JSX.Element {
               </CardDescription>
             </CardHeader>
             <CardFooter>
-              <Link to="/plugins">
+              <Link to="/plugins" from="/">
                 <Button>Configure Plugins</Button>
               </Link>
             </CardFooter>
@@ -65,7 +65,7 @@ function Index(): React.JSX.Element {
               </CardDescription>
             </CardHeader>
             <CardFooter>
-              <Link className="inline-block" to="/apps">
+              <Link className="inline-block" to="/apps" from="/">
                 <Button>Configure Apps</Button>
               </Link>
             </CardFooter>

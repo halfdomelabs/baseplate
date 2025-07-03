@@ -89,6 +89,7 @@ export function RefIssueDialog(): React.JSX.Element {
                           {referenceParentUrl ? (
                             <Link
                               to={referenceParentUrl}
+                              from="/"
                               onClick={() => {
                                 setDialogOptions(undefined);
                               }}

@@ -57,6 +57,7 @@ function AppsListPage(): React.JSX.Element {
             </div>
             <Link
               to="/apps/edit/$key"
+              from="/"
               params={{ key: appEntityType.keyFromId(app.id) }}
               className="inline-block"
             >

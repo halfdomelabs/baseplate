@@ -26,17 +26,23 @@ function SettingsLayout(): React.JSX.Element {
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>
             <NavigationMenuLink asChild>
-              <Link to={`/settings`}>Project settings</Link>
+              <Link to={`/settings`} from="/">
+                Project settings
+              </Link>
             </NavigationMenuLink>
             <NavigationMenuLink asChild>
-              <Link to={`/settings/hierarchy`}>Hierarchy</Link>
+              <Link to={`/settings/hierarchy`} from="/">
+                Hierarchy
+              </Link>
             </NavigationMenuLink>
             <NavigationMenuLink asChild>
-              <Link to={`/settings/theme-builder`}>Theme builder</Link>
+              <Link to={`/settings/theme-builder`} from="/">
+                Theme builder
+              </Link>
             </NavigationMenuLink>
             {ENABLE_TEMPLATE_EXTRACTOR && (
               <NavigationMenuLink asChild>
-                <Link to={`/settings/template-extractor`}>
+                <Link to={`/settings/template-extractor`} from="/">
                   Template extractor
                 </Link>
               </NavigationMenuLink>

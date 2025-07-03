@@ -10,7 +10,7 @@ export function NotFoundCard(): React.JSX.Element {
       header="Page not found"
       error="Sorry, we were unable to find the page you were looking for."
       actions={
-        <Link to="/">
+        <Link to="/" from="/">
           <Button>Back to Home</Button>
         </Link>
       }

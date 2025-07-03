@@ -42,7 +42,7 @@ function PluginsLayout(): React.JSX.Element {
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayoutSidebar className="flex flex-col gap-4" width="sm">
-        <Link to="/plugins">
+        <Link to="/plugins" from="/">
           <Button variant="secondary" className="w-full" size="sm">
             <MdAdd />
             Add new plugin
@@ -52,7 +52,11 @@ function PluginsLayout(): React.JSX.Element {
           <NavigationMenuList>
             {enabledPlugins.map((plugin) => (
               <NavigationMenuLink key={plugin.id} asChild>
-                <Link to={`/plugins/edit/$id`} params={{ id: plugin.id }}>
+                <Link
+                  to={`/plugins/edit/$id`}
+                  from="/"
+                  params={{ id: plugin.id }}
+                >
                   {plugin.displayName}
                 </Link>
               </NavigationMenuLink>

@@ -42,6 +42,7 @@ function AdminSectionsForm(): React.JSX.Element {
               <NavigationMenuItemWithLink asChild>
                 <Link
                   to="/apps/edit/$key/admin/sections/$sectionKey"
+                  from="/"
                   params={{
                     key,
                     sectionKey: 'new',
@@ -57,6 +58,7 @@ function AdminSectionsForm(): React.JSX.Element {
                 <NavigationMenuItemWithLink asChild>
                   <Link
                     to="/apps/edit/$key/admin/sections/$sectionKey"
+                    from="/"
                     params={{
                       key,
                       sectionKey: adminSectionEntityType.keyFromId(section.id),
