@@ -526,6 +526,7 @@ describe('extract-definition-refs', () => {
             ),
             person: ctx.withEnt(
               z.object({
+                id: z.string(),
                 name: z.string(),
                 companyId: z.string(),
               }),

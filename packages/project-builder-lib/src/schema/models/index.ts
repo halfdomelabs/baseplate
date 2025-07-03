@@ -2,10 +2,7 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import {
-  createDefinitionEntityNameResolver,
-  zRefId,
-} from '#src/references/index.js';
+import { createDefinitionEntityNameResolver } from '#src/references/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 import { SCALAR_FIELD_TYPES } from '#src/types/field-types.js';
 
@@ -122,7 +119,7 @@ export const REFERENTIAL_ACTIONS = [
 export const createModelRelationFieldSchema = definitionSchema((ctx) =>
   ctx.withRefBuilder(
     z.object({
-      id: zRefId,
+      id: z.string(),
       foreignId: z
         .string()
         .default(() => modelForeignRelationEntityType.generateNewId()),
@@ -275,7 +272,7 @@ export type ModelServiceConfig = def.InferOutput<
 
 export const createModelBaseSchema = definitionSchema((ctx) =>
   z.object({
-    id: zRefId,
+    id: z.string(),
     name: VALIDATORS.PASCAL_CASE_STRING,
     featureRef: ctx.withRef(z.string().min(1), {
       type: featureEntityType,

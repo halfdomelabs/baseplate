@@ -12,6 +12,7 @@ import type {
   DefinitionEntityInput,
   DefinitionReferenceInput,
   ZodBuilderFunction,
+  ZodRef,
   ZodRefBuilderInterface,
 } from './ref-builder.js';
 
@@ -19,7 +20,7 @@ import {
   DefinitionReferenceMarker,
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
-import { ZodRef, zRefBuilder } from './ref-builder.js';
+import { zRefBuilder } from './ref-builder.js';
 
 export type WithRefType = <
   T extends z.ZodTypeAny,
@@ -27,7 +28,7 @@ export type WithRefType = <
 >(
   schema: T,
   reference: DefinitionReferenceInput<z.input<T>, TEntityType>,
-) => z.ZodEffects<ZodRef<T>>;
+) => z.ZodEffects<T>;
 
 type PathInput<Type> = Exclude<Paths<Type>, number>;
 
@@ -52,29 +53,27 @@ export function extendParserContextWithRefs({
   withEnt: WithEntType;
   withRefBuilder: WithRefBuilder;
 } {
-  function wrappedZRef<
+  function withRef<
     T extends z.ZodType,
     TEntityType extends DefinitionEntityType,
   >(
     schema: T,
     reference: DefinitionReferenceInput<z.input<T>, TEntityType>,
-  ): z.ZodEffects<ZodRef<T>> {
-    return ZodRef.create(schema)
-      .addReference(reference)
-      .transform((value) => {
-        if (transformReferences && value) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- T is unknown
-          return new DefinitionReferenceMarker(
-            value,
-            reference,
-          ) as unknown as z.input<T>;
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we can change this to zod string in the future
-        return value;
-      });
+  ): z.ZodEffects<T> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we can change this to zod string in the future
+    return schema.transform((value) => {
+      if (transformReferences && value) {
+        return new DefinitionReferenceMarker(
+          value as string,
+          reference,
+        ) as unknown as z.input<T>;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we can change this to zod string in the future
+      return value;
+    });
   }
 
-  function wrappedZEnt<
+  function withEnt<
     TObject extends z.SomeZodObject,
     TEntityType extends DefinitionEntityType,
     TPath extends PathInput<z.input<TObject>>,
@@ -164,8 +163,8 @@ export function extendParserContextWithRefs({
   }
 
   return {
-    withRef: wrappedZRef,
-    withEnt: wrappedZEnt,
+    withRef,
+    withEnt,
     withRefBuilder: wrappedZRefBuilder,
   };
 }

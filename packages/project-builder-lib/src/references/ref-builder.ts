@@ -6,12 +6,13 @@ import type {
   ParseReturnType,
   SyncParseReturnType,
   TypeOf,
+  z,
   ZodTypeAny,
   ZodTypeDef,
 } from 'zod';
 
 import { get, set } from 'es-toolkit/compat';
-import { z, ZodType } from 'zod';
+import { ZodType } from 'zod';
 
 import type {
   DefinitionEntity,
@@ -21,11 +22,6 @@ import type {
 } from './types.js';
 
 import { stripRefMarkers } from './strip-ref-markers.js';
-
-/**
- * Zod reference ID schema: a string with a minimum length of 1.
- */
-export const zRefId = z.string().min(1);
 
 /**
  * Determines whether the given object is a Promise.
@@ -713,22 +709,6 @@ export function zRefBuilder<T extends z.ZodType>(
   builder?: ZodBuilderFunction<TypeOf<T>>,
 ): ZodRef<T> {
   return ZodRef.create(schema, builder);
-}
-
-/**
- * Convenience function for creating a ZodRef with a reference added.
- * @param schema - The base Zod schema.
- * @param reference - Either a reference definition or a function returning one.
- * @returns A new ZodRef instance with the reference registration.
- */
-export function zRef<
-  T extends z.ZodType,
-  TEntityType extends DefinitionEntityType,
->(
-  schema: T,
-  reference: DefinitionReferenceInput<input<T>, TEntityType>,
-): ZodRef<T> {
-  return ZodRef.create(schema).addReference(reference);
 }
 
 /**

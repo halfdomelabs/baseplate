@@ -35,15 +35,15 @@ export interface DefinitionSchemaParserContext {
    */
   transformReferences?: boolean;
   /**
-   * Adds a zRef
+   * Adds a reference to the schema.
    */
   withRef: WithRefType;
   /**
-   * Adds a zEnt
+   * Adds an entity to the schema.
    */
   withEnt: WithEntType;
   /**
-   * Adds a zRefBuilder
+   * Provides access to the reference builder functions for the schema.
    */
   withRefBuilder: WithRefBuilder;
 }
