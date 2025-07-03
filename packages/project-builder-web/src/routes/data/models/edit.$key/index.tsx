@@ -5,10 +5,7 @@ import {
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '@baseplate-dev/project-builder-lib';
-import {
-  useBlockUnsavedChangesNavigate,
-  useDefinitionSchema,
-} from '@baseplate-dev/project-builder-lib/web';
+import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
 import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
 import { createFileRoute } from '@tanstack/react-router';
 

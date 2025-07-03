@@ -1,11 +1,15 @@
-import type { TypeOf, z } from 'zod';
-
 import { get, set } from 'es-toolkit/compat';
 import { produce } from 'immer';
 
+import type {
+  def,
+  DefinitionSchemaCreator,
+  DefinitionSchemaCreatorOptions,
+} from '#src/schema/index.js';
+
 import type { ResolvedZodRefPayload } from './types.js';
 
-import { parseSchemaWithReferences } from './parse-schema-with-references.js';
+import { parseSchemaWithTransformedReferences } from './parse-schema-with-references.js';
 
 export function serializeSchemaFromRefPayload<
   TValue extends Record<string, unknown>,
@@ -30,11 +34,20 @@ export function serializeSchemaFromRefPayload<
   })(data) as TValue;
 }
 
-export function serializeSchema<TSchema extends z.ZodType>(
-  schema: TSchema,
-  value: TypeOf<TSchema>,
-): TypeOf<TSchema> {
-  const payload = parseSchemaWithReferences(schema, value);
+export function serializeSchema<T extends DefinitionSchemaCreator>(
+  schemaCreator: T,
+  value: unknown,
+  schemaCreatorOptions: Omit<
+    DefinitionSchemaCreatorOptions,
+    'transformReferences'
+  >,
+): def.InferOutput<T> {
+  const payload = parseSchemaWithTransformedReferences(
+    schemaCreator,
+    value,
+    schemaCreatorOptions,
+  );
 
-  return serializeSchemaFromRefPayload(payload) as unknown;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- typed as def.InferOutput<T>
+  return serializeSchemaFromRefPayload(payload);
 }
