@@ -191,7 +191,7 @@ export interface ZodRefBuilderInterface<TInput> {
 }
 
 /**
- * ZodRefBuilder is responsible for constructing reference paths, and registering
+ * DefinitionRefBuilder is responsible for constructing reference paths, and registering
  * references and entities as defined in a Zod schema.
  *
  * The builder uses a prefix (usually the current parsing path) and context (a
@@ -199,7 +199,9 @@ export interface ZodRefBuilderInterface<TInput> {
  *
  * @template TInput - The type of the input data being parsed.
  */
-export class ZodRefBuilder<TInput> implements ZodRefBuilderInterface<TInput> {
+export class DefinitionRefBuilder<TInput>
+  implements ZodRefBuilderInterface<TInput>
+{
   readonly references: DefinitionReference[];
   readonly entitiesWithNameResolver: DefinitionEntityWithNameResolver[];
   readonly pathPrefix: ReferencePath;

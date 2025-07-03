@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ZodRefPayload } from './ref-builder.js';
+import type { ZodRefPayload } from './definition-ref-builder.js';
 
 import { resolveZodRefPayloadNames } from './resolve-zod-ref-payload-names.js';
 import { createEntityType } from './types.js';

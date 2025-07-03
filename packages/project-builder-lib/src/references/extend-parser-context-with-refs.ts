@@ -6,15 +6,15 @@ import type { DefinitionEntityType } from '#src/index.js';
 import type { DefinitionSchemaCreatorOptions } from '#src/schema/index.js';
 
 import type {
-  AnyDefinitionEntityInput,
-  DefinitionRefAnnotations,
-} from './markers.js';
-import type {
   DefinitionEntityInput,
   DefinitionReferenceInput,
   ZodBuilderFunction,
   ZodRefBuilderInterface,
-} from './ref-builder.js';
+} from './definition-ref-builder.js';
+import type {
+  AnyDefinitionEntityInput,
+  DefinitionRefAnnotations,
+} from './markers.js';
 
 import {
   DefinitionReferenceMarker,

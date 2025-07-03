@@ -6,6 +6,7 @@ import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import type { ZodRefContext } from './extract-definition-refs.js';
 
+import { createDefinitionEntityNameResolver } from './definition-ref-builder.js';
 import { deserializeSchemaWithTransformedReferences } from './deserialize-schema.js';
 import { extractDefinitionRefsRecursive } from './extract-definition-refs.js';
 import {
@@ -13,7 +14,6 @@ import {
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
 import { parseSchemaWithTransformedReferences } from './parse-schema-with-references.js';
-import { createDefinitionEntityNameResolver } from './ref-builder.js';
 import { createEntityType, DefinitionEntityType } from './types.js';
 
 describe('extract-definition-refs', () => {

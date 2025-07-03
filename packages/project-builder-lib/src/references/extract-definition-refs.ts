@@ -1,21 +1,21 @@
-import type { DefinitionRefAnnotations } from './markers.js';
 import type {
   DefinitionEntityNameResolver,
   PathInput,
   RefBuilderContext,
   ZodRefPayload,
-} from './ref-builder.js';
+} from './definition-ref-builder.js';
+import type { DefinitionRefAnnotations } from './markers.js';
 import type {
   DefinitionEntity,
   DefinitionReference,
   ReferencePath,
 } from './types.js';
 
+import { DefinitionRefBuilder } from './definition-ref-builder.js';
 import {
   DefinitionReferenceMarker,
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
-import { ZodRefBuilder } from './ref-builder.js';
 
 /**
  * Entity with a name resolver.
@@ -39,7 +39,11 @@ export function extractDefinitionRefsRecursive(
   context: ZodRefContext,
   path: ReferencePath,
 ): unknown {
-  const builder = new ZodRefBuilder<unknown>(path, context.context, value);
+  const builder = new DefinitionRefBuilder<unknown>(
+    path,
+    context.context,
+    value,
+  );
 
   if (value instanceof DefinitionReferenceMarker) {
     builder.addReference(value.reference);

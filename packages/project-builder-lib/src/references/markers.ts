@@ -1,7 +1,7 @@
 import type {
   DefinitionEntityInput,
   DefinitionReferenceInput,
-} from './ref-builder.js';
+} from './definition-ref-builder.js';
 import type { DefinitionEntityType } from './types.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- to allow it to accept any generic
