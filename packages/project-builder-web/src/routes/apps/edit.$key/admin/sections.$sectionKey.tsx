@@ -31,10 +31,10 @@ const SECTION_OPTIONS = [{ label: 'Crud', value: 'crud' }];
 export const Route = createFileRoute(
   '/apps/edit/$key/admin/sections/$sectionKey',
 )({
-  component: AdminEditSectionPage,
+  component: AdminAppEditSectionPage,
 });
 
-function AdminEditSectionPage(): React.JSX.Element {
+function AdminAppEditSectionPage(): React.JSX.Element {
   const { adminDefinition } = Route.useRouteContext();
   const { requestConfirm } = useConfirmDialog();
   const { key, sectionKey } = Route.useParams();

@@ -15,7 +15,7 @@ import {
 } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/apps/edit/$key/admin')({
-  component: AdminAppForm,
+  component: AdminAppEditLayout,
   beforeLoad: ({ context: { app }, params: { key } }) => {
     if (app.type !== 'admin') {
       throw redirect({ to: '/apps/edit/$key', params: { key } });
@@ -26,7 +26,7 @@ export const Route = createFileRoute('/apps/edit/$key/admin')({
   },
 });
 
-function AdminAppForm(): React.JSX.Element {
+function AdminAppEditLayout(): React.JSX.Element {
   const { key } = Route.useParams();
   return (
     <div className="p-4">
@@ -61,5 +61,3 @@ function AdminAppForm(): React.JSX.Element {
     </div>
   );
 }
-
-export default AdminAppForm;

@@ -20,10 +20,10 @@ registerEntityTypeUrl(
 );
 
 export const Route = createFileRoute('/apps/edit/$key/admin/sections')({
-  component: AdminSectionsForm,
+  component: AdminAppEditSectionsPage,
 });
 
-function AdminSectionsForm(): React.JSX.Element {
+function AdminAppEditSectionsPage(): React.JSX.Element {
   const { adminDefinition } = Route.useRouteContext();
   const { key } = Route.useParams();
   const sortedSections = sortBy(adminDefinition.sections ?? [], [
@@ -78,5 +78,3 @@ function AdminSectionsForm(): React.JSX.Element {
     </SidebarLayout>
   );
 }
-
-export default AdminSectionsForm;

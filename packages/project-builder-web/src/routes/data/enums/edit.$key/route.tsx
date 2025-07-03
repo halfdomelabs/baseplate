@@ -21,7 +21,7 @@ export const Route = createFileRoute('/data/enums/edit/$key')({
   },
 });
 
-export function EnumEditLayout(): React.JSX.Element {
+function EnumEditLayout(): React.JSX.Element {
   const { enumDefinition } = Route.useRouteContext();
 
   return (

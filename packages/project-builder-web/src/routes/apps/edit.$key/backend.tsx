@@ -23,7 +23,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 export const Route = createFileRoute('/apps/edit/$key/backend')({
-  component: BackendAppForm,
+  component: BackendAppEditPage,
   loader: ({ context: { app }, params: { key } }) => {
     if (app.type !== 'backend') {
       throw redirect({ to: '/apps/edit/$key', params: { key } });
@@ -34,7 +34,7 @@ export const Route = createFileRoute('/apps/edit/$key/backend')({
   },
 });
 
-function BackendAppForm(): React.JSX.Element {
+function BackendAppEditPage(): React.JSX.Element {
   const { saveDefinitionWithFeedback } = useProjectDefinition();
   const { backendDefinition } = Route.useLoaderData();
 
@@ -130,5 +130,3 @@ function BackendAppForm(): React.JSX.Element {
     </form>
   );
 }
-
-export default BackendAppForm;

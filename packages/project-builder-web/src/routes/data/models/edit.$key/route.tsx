@@ -30,7 +30,7 @@ export const Route = createFileRoute('/data/models/edit/$key')({
   },
 });
 
-export function ModelEditLayout(): React.JSX.Element {
+function ModelEditLayout(): React.JSX.Element {
   const { model } = Route.useRouteContext();
   const { key } = Route.useParams();
 

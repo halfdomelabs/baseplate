@@ -28,10 +28,10 @@ import { useMemo } from 'react';
 import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 export const Route = createFileRoute('/apps/edit/$key/admin/')({
-  component: AdminGeneralForm,
+  component: AdminAppEditPage,
 });
 
-function AdminGeneralForm(): React.JSX.Element {
+function AdminAppEditPage(): React.JSX.Element {
   const { adminDefinition } = Route.useRouteContext();
   const { definition, saveDefinitionWithFeedback, pluginContainer } =
     useProjectDefinition();
@@ -109,5 +109,3 @@ function AdminGeneralForm(): React.JSX.Element {
     </form>
   );
 }
-
-export default AdminGeneralForm;

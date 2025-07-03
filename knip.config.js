@@ -40,6 +40,8 @@ export default {
       entry: ['src/main.{ts,tsx}'],
       project: ['src/**/*.{ts,tsx}', 'plugins/*.ts'],
       ignore: [
+        // ignore generated files
+        '**/route-tree.gen.ts',
         // we ignore this file because it may not always be used when there are no feature flags
         'src/hooks/use-feature-flag.ts',
         // weird bugs with knip :(

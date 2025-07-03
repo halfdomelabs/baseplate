@@ -25,7 +25,7 @@ import { ClientVersionProvider } from './client-version-provider/client-version-
 import { ProjectDefinitionProvider } from './project-definition-provider/project-definition-provider.js';
 import { ProjectSelectorGate } from './project-selector-gate/project-selector-gate.js';
 
-export function AppRoutes(): React.ReactElement {
+function AppRoutes(): React.ReactElement {
   const { definition: projectDefinition, schemaParserContext } =
     useProjectDefinition();
   return (
