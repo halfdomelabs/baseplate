@@ -15,14 +15,16 @@ import type {
 } from '#src/schema/index.js';
 
 import {
+  createPluginImplementationStore,
   createProjectDefinitionSchemaWithContext,
   parseProjectDefinitionWithReferences,
 } from '#src/parser/parser.js';
 import {
-  deserializeSchemaWithReferences,
+  deserializeSchemaWithTransformedReferences,
   fixRefDeletions,
   serializeSchemaFromRefPayload,
 } from '#src/references/index.js';
+import { createProjectDefinitionSchema } from '#src/schema/index.js';
 
 /**
  * Container for a project definition that includes references and entities.
@@ -140,15 +142,18 @@ export class ProjectDefinitionContainer {
     config: unknown,
     context: SchemaParserContext,
   ): ProjectDefinitionContainer {
-    const projectDefinitionSchemaWithContext =
-      createProjectDefinitionSchemaWithContext(config, context);
+    const plugins = createPluginImplementationStore(
+      context.pluginStore,
+      config,
+    );
     return new ProjectDefinitionContainer(
-      deserializeSchemaWithReferences(
-        projectDefinitionSchemaWithContext,
+      deserializeSchemaWithTransformedReferences(
+        createProjectDefinitionSchema,
         config,
+        { plugins },
       ),
       context,
-      projectDefinitionSchemaWithContext.pluginStore,
+      plugins,
     );
   }
 }

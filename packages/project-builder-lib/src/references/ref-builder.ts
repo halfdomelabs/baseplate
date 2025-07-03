@@ -20,6 +20,8 @@ import type {
   ReferencePath,
 } from './types.js';
 
+import { stripRefMarkers } from './strip-ref-markers.js';
+
 /**
  * Zod reference ID schema: a string with a minimum length of 1.
  */
@@ -416,7 +418,7 @@ export class ZodRefBuilder<TInput> implements ZodRefBuilderInterface<TInput> {
     // use the default name resolver.
     const getNameResolver =
       entity.getNameResolver ?? ((value) => get(value, 'name') as string);
-    const nameResolver = getNameResolver(this.data);
+    const nameResolver = getNameResolver(stripRefMarkers(this.data));
 
     // Base entity definition shared between regular entities and those with a name reference.
     const entityBase = {
