@@ -22,10 +22,6 @@ export default defineConfig(({ mode }) => {
         autoCodeSplitting: true,
         generatedRouteTree: './src/route-tree.gen.ts',
         quoteStyle: 'single',
-        // TODO: Rename to ./src/routes.
-        routesDirectory: './src/pages',
-        // TODO: Remove this once we've completed the transition.
-        disableLogging: true,
       }),
       react(),
       srcSubpathImportPlugin(import.meta.dirname),
