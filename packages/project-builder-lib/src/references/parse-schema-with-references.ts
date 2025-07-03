@@ -4,7 +4,6 @@ import type {
   DefinitionSchemaCreatorOptions,
 } from '#src/schema/index.js';
 
-import { zPluginWrapper } from '#src/plugins/index.js';
 import { createDefinitionSchemaParserContext } from '#src/schema/creator/index.js';
 
 import type { ResolveZodRefPayloadNamesOptions } from './resolve-zod-ref-payload-names.js';
@@ -38,12 +37,8 @@ export function parseSchemaWithTransformedReferences<
     transformReferences: true,
   });
   const schema = schemaCreator(schemaContext);
-  const schemaWithPlugins = zPluginWrapper(
-    schema,
-    schemaCreatorOptions.plugins,
-  );
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- using the type T which can be any zod schema
-  const value = schemaWithPlugins.parse(input);
+  const value = schema.parse(input);
   const refPayload = extractDefinitionRefs(value);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- using the type T which can be any zod schema
