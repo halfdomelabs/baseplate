@@ -22,23 +22,23 @@ export const createPluginWithConfigSchema = definitionSchema((ctx) =>
 
     const pluginKey = pluginEntityType.keyFromId(parsedBasePlugin.id);
 
-    const configSchema = plugins
+    const createConfigSchema = plugins
       .getPluginSpec(pluginConfigSpec)
       .getSchemaCreator(pluginKey);
 
-    const pluginDefinitionWithEnt = ctx.withEnt(basePluginDefinitionSchema, {
+    let pluginDefinitionSchema = basePluginDefinitionSchema;
+
+    if (createConfigSchema) {
+      pluginDefinitionSchema = pluginDefinitionSchema.extend({
+        config: createConfigSchema(ctx),
+      }) as typeof basePluginDefinitionSchema;
+    }
+
+    const pluginDefinitionWithEnt = ctx.withEnt(pluginDefinitionSchema, {
       type: pluginEntityType,
     });
 
-    if (!configSchema) {
-      return pluginDefinitionWithEnt;
-    }
-
-    return pluginDefinitionWithEnt.and(
-      z.object({
-        config: configSchema(ctx),
-      }),
-    );
+    return pluginDefinitionWithEnt;
   }),
 );
 
