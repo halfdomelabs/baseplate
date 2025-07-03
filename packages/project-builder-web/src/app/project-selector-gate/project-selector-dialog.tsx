@@ -4,6 +4,7 @@ import {
   Button,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   Table,
@@ -13,9 +14,10 @@ import {
   TableHeader,
   TableRow,
 } from '@baseplate-dev/ui-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { useProjects } from '#src/hooks/use-projects.js';
+import { logAndFormatError } from '#src/services/error-formatter.js';
 
 interface ProjectSelectDialogProps {
   onClose?: () => void;
@@ -42,6 +44,7 @@ export function ProjectSelectDialog({
       <DialogContent width="lg">
         <DialogHeader>
           <DialogTitle>Pick Project</DialogTitle>
+          <DialogDescription>Select a project to continue.</DialogDescription>
         </DialogHeader>
         <Table>
           <TableHeader>
@@ -68,7 +71,7 @@ export function ProjectSelectDialog({
                       variant="link"
                       onClick={() => {
                         setCurrentProjectId(project.id);
-                        navigate('/');
+                        navigate({ to: '/' }).catch(logAndFormatError);
                         if (onClose) {
                           onClose();
                         }

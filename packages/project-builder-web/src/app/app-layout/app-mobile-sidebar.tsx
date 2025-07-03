@@ -2,31 +2,33 @@ import type { IconElement } from '@baseplate-dev/ui-components';
 import type React from 'react';
 
 import { SheetClose } from '@baseplate-dev/ui-components';
+import { Link } from '@tanstack/react-router';
 import { HiDatabase } from 'react-icons/hi';
 import { MdApps, MdHome, MdOutlineSettings, MdWidgets } from 'react-icons/md';
-import { NavLink } from 'react-router-dom';
 
 function SidebarNavigationIcon({
   icon: Icon,
   to,
   label,
-  end,
+  exact,
 }: {
   to: string;
   icon: IconElement;
   label: React.ReactNode;
-  end?: boolean;
+  exact?: boolean;
 }): React.JSX.Element {
   return (
     <SheetClose asChild>
-      <NavLink
+      <Link
         to={to}
+        activeOptions={{
+          exact,
+        }}
         className={`flex items-center gap-4 px-2.5 py-4 text-muted-foreground transition-colors hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground`}
-        end={end}
       >
         <Icon className="size-5 transition-all group-hover:scale-110" />
         {label}
-      </NavLink>
+      </Link>
     </SheetClose>
   );
 }
@@ -39,7 +41,7 @@ export function AppMobileSidebar(): React.JSX.Element {
         <h3>Baseplate</h3>
       </div>
       <div>
-        <SidebarNavigationIcon to="/" icon={MdHome} label="Home" end />
+        <SidebarNavigationIcon to="/" icon={MdHome} label="Home" exact />
         <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />
         <SidebarNavigationIcon
           to="/data/models"

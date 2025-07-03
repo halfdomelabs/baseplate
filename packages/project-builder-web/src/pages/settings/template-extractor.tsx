@@ -20,16 +20,24 @@ import {
   TextareaFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { createFileRoute } from '@tanstack/react-router';
 
 import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { ENABLE_TEMPLATE_EXTRACTOR } from '#src/services/config.js';
+
+export const Route = createFileRoute('/settings/template-extractor')({
+  component: TemplateExtractorSettingsPage,
+  beforeLoad: () => ({
+    getTitle: () => 'Template Extractor',
+  }),
+});
 
 /**
  * Settings page for template extractor configuration
  *
  * Allows users to control template metadata generation during the extraction process.
  */
-export function TemplateExtractorSettingsPage(): React.JSX.Element {
+function TemplateExtractorSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
   const defaultValues = definition.settings.templateExtractor;
   const templateExtractorSchema = useDefinitionSchema(

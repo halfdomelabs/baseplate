@@ -12,13 +12,21 @@ import {
   cn,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
+import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import { FiCornerDownRight } from 'react-icons/fi';
 import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
 
 import { useDeleteReferenceDialog } from '#src/hooks/use-delete-reference-dialog.js';
 
-import { FeatureForm } from './components/feature-form.js';
+import { FeatureForm } from './-components/feature-form.js';
+
+export const Route = createFileRoute('/settings/hierarchy')({
+  component: HierarchyPage,
+  beforeLoad: () => ({
+    getTitle: () => 'Hierarchy',
+  }),
+});
 
 function HierarchyPage(): React.JSX.Element {
   const { definitionContainer, saveDefinitionWithFeedbackSync } =
@@ -191,5 +199,3 @@ function FeatureItem({
     </div>
   );
 }
-
-export default HierarchyPage;

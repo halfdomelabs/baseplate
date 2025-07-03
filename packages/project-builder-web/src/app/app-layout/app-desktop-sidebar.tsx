@@ -1,32 +1,29 @@
 import type { IconElement } from '@baseplate-dev/ui-components';
 import type React from 'react';
 
+import { Link } from '@tanstack/react-router';
 import { HiDatabase } from 'react-icons/hi';
 import { MdApps, MdOutlineSettings, MdWidgets } from 'react-icons/md';
-import { Link, NavLink } from 'react-router-dom';
 
 function SidebarNavigationIcon({
   icon: Icon,
   to,
   label,
-  end,
 }: {
   to: string;
   icon: IconElement;
   label: React.ReactNode;
-  end?: boolean;
 }): React.JSX.Element {
   return (
-    <NavLink
+    <Link
       to={to}
       className={`flex h-12 w-[50px] items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground aria-[current="page"]:hover:bg-accent`}
-      end={end}
     >
       <div className="flex flex-col items-center space-y-1">
         <Icon className="size-5" />
         <div className="text-xs font-medium">{label}</div>
       </div>
-    </NavLink>
+    </Link>
   );
 }
 

@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@baseplate-dev/ui-components';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import { useDeleteReferenceDialogState } from '#src/hooks/use-delete-reference-dialog.js';
 import { usePrevious } from '#src/hooks/use-previous.js';

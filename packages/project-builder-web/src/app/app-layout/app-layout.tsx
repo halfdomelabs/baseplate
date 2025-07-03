@@ -6,11 +6,12 @@ import {
   SheetContent,
   SheetTrigger,
 } from '@baseplate-dev/ui-components';
+import { Outlet } from '@tanstack/react-router';
 import clsx from 'clsx';
 import { MdMenu } from 'react-icons/md';
-import { Outlet } from 'react-router-dom';
 
 import { ErrorBoundary } from '#src/components/error-boundary/error-boundary.js';
+import { BlockerDialog } from '#src/components/index.js';
 
 import ProjectSyncModal from '../project-sync-modal/project-sync-modal.js';
 import { AppBreadcrumbs } from './app-breadcrumbs.js';
@@ -73,6 +74,7 @@ export function AppLayout({ className }: AppLayoutProps): React.JSX.Element {
           </ErrorBoundary>
         </main>
       </div>
+      <BlockerDialog />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import type { ClientRequest } from 'node:http';
 import { srcSubpathImportPlugin } from '@baseplate-dev/tools/src-subpath-import-plugin';
 import federation from '@originjs/vite-plugin-federation';
 import tailwindcss from '@tailwindcss/vite';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
 import svgrPlugin from 'vite-plugin-svgr';
@@ -16,6 +17,16 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
+      tanstackRouter({
+        target: 'react',
+        autoCodeSplitting: true,
+        generatedRouteTree: './src/route-tree.gen.ts',
+        quoteStyle: 'single',
+        // TODO: Rename to ./src/routes.
+        routesDirectory: './src/pages',
+        // TODO: Remove this once we've completed the transition.
+        disableLogging: true,
+      }),
       react(),
       srcSubpathImportPlugin(import.meta.dirname),
       svgrPlugin(),
