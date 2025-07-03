@@ -61,7 +61,6 @@
     "@dnd-kit/utilities": "^3.2.1",
     "@hookform/resolvers": "5.0.1",
     "@tanstack/react-router": "1.124.0",
-    "@tanstack/react-router-devtools": "1.124.0",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/react": "16.2.0",

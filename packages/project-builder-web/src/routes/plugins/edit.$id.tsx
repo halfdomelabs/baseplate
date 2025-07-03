@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
 
@@ -26,9 +26,15 @@ import { loadPluginImplementationStoreWithNewPlugin } from './-components/utils.
 
 export const Route = createFileRoute('/plugins/edit/$id')({
   component: PluginConfigPage,
-  beforeLoad: () => ({
-    getTitle: () => 'Plugin Configuration',
-  }),
+  beforeLoad: ({ params: { id }, context: { schemaParserContext } }) => {
+    const { availablePlugins } = schemaParserContext.pluginStore;
+    const plugin = availablePlugins.find((p) => p.metadata.id === id);
+    if (!plugin) throw notFound();
+    return {
+      getTitle: () => plugin.metadata.displayName,
+      plugin,
+    };
+  },
 });
 
 function PluginConfigPage(): React.JSX.Element {
@@ -42,6 +48,7 @@ function PluginConfigPage(): React.JSX.Element {
   const { id } = Route.useParams();
   const { requestConfirm } = useConfirmDialog();
   const navigate = useNavigate({ from: Route.fullPath });
+  const { plugin } = Route.useRouteContext();
 
   const pluginDefinition = PluginUtils.byId(definitionContainer.definition, id);
 
@@ -55,13 +62,6 @@ function PluginConfigPage(): React.JSX.Element {
     if (webConfigComponent) {
       return webConfigComponent;
     }
-    // it may not be activated yet
-    const plugin = schemaParserContext.pluginStore.availablePlugins.find(
-      (p) => p.metadata.id === id,
-    );
-    if (!plugin) {
-      return;
-    }
     const newPluginContainer = loadPluginImplementationStoreWithNewPlugin(
       schemaParserContext.pluginStore,
       plugin.metadata,
@@ -71,17 +71,13 @@ function PluginConfigPage(): React.JSX.Element {
     return newPluginContainer
       .getPluginSpec(webConfigSpec)
       .getWebConfigComponent(id);
-  }, [id, schemaParserContext, definitionContainer, pluginContainer]);
-
-  const plugin = schemaParserContext.pluginStore.availablePlugins.find(
-    (p) => p.metadata.id === id,
-  );
-
-  if (!Container || !plugin) {
-    return <NotFoundCard />;
-  }
+  }, [id, schemaParserContext, definitionContainer, pluginContainer, plugin]);
 
   const { metadata } = plugin;
+
+  if (!Container) {
+    return <NotFoundCard />;
+  }
 
   function onDisablePlugin(): void {
     saveDefinitionWithFeedbackSync(

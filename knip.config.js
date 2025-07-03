@@ -37,7 +37,7 @@ export default {
       project: 'src/**/*.{ts,tsx}',
     },
     'packages/project-builder-web': {
-      entry: ['src/index.{ts,tsx}'],
+      entry: ['src/main.{ts,tsx}'],
       project: ['src/**/*.{ts,tsx}', 'plugins/*.ts'],
       ignore: [
         // we ignore this file because it may not always be used when there are no feature flags

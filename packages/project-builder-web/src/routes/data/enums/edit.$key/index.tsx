@@ -14,9 +14,6 @@ import { EnumValuesSection } from './-components/enum-values-section.js';
 
 export const Route = createFileRoute('/data/enums/edit/$key/')({
   component: EnumEditPage,
-  beforeLoad: () => ({
-    getTitle: () => 'Edit Enum',
-  }),
 });
 
 function EnumEditPage(): React.JSX.Element {

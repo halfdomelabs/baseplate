@@ -26,8 +26,14 @@ import { ProjectDefinitionProvider } from './project-definition-provider/project
 import { ProjectSelectorGate } from './project-selector-gate/project-selector-gate.js';
 
 export function AppRoutes(): React.ReactElement {
-  const { definition: projectDefinition } = useProjectDefinition();
-  return <RouterProvider router={router} context={{ projectDefinition }} />;
+  const { definition: projectDefinition, schemaParserContext } =
+    useProjectDefinition();
+  return (
+    <RouterProvider
+      router={router}
+      context={{ projectDefinition, schemaParserContext }}
+    />
+  );
 }
 
 export function App(): React.ReactElement {

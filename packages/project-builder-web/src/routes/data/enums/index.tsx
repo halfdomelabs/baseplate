@@ -7,9 +7,6 @@ import { NewEnumDialog } from './-components/new-enum-dialog.js';
 
 export const Route = createFileRoute('/data/enums/')({
   component: EnumsListPage,
-  beforeLoad: () => ({
-    getTitle: () => 'Enums',
-  }),
 });
 
 function EnumsListPage(): React.JSX.Element {

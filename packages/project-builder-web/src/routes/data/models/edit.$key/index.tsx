@@ -30,9 +30,6 @@ registerEntityTypeUrl(
 
 export const Route = createFileRoute('/data/models/edit/$key/')({
   component: ModelEditModelPage,
-  beforeLoad: () => ({
-    getTitle: () => 'Model Details',
-  }),
 });
 
 function ModelEditModelPage(): React.JSX.Element {

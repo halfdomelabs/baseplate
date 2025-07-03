@@ -135,7 +135,11 @@ export function PluginCard({
                 );
               } else if (webConfig) {
                 return (
-                  <Link to={`/plugins/edit/$id`} params={{ id: plugin.id }}>
+                  <Link
+                    to={`/plugins/edit/$id`}
+                    from="/"
+                    params={{ id: plugin.id }}
+                  >
                     <Button variant="secondary">Configure</Button>
                   </Link>
                 );

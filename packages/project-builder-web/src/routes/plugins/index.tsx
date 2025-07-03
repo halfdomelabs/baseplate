@@ -14,9 +14,6 @@ import { PluginCard } from './-components/plugin-card.js';
 
 export const Route = createFileRoute('/plugins/')({
   component: PluginsHomePage,
-  beforeLoad: () => ({
-    getTitle: () => 'Plugins',
-  }),
 });
 
 function PluginsHomePage(): React.JSX.Element {

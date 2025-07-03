@@ -4,37 +4,40 @@ import {
   modelEntityType,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
-import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   NavigationTabs,
   NavigationTabsItem,
 } from '@baseplate-dev/ui-components';
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
-
-import { NotFoundCard } from '#src/components/index.js';
+import {
+  createFileRoute,
+  Link,
+  notFound,
+  Outlet,
+} from '@tanstack/react-router';
 
 import { ModelHeaderBar } from './-components/model-header-bar.js';
 
 export const Route = createFileRoute('/data/models/edit/$key')({
   component: ModelEditLayout,
+  beforeLoad: ({ params: { key }, context: { projectDefinition } }) => {
+    const id = modelEntityType.idFromKey(key);
+    const model = ModelUtils.byId(projectDefinition, id);
+    if (!model) throw notFound();
+    return {
+      getTitle: () => model.name,
+      model,
+    };
+  },
 });
 
 export function ModelEditLayout(): React.JSX.Element {
+  const { model } = Route.useRouteContext();
   const { key } = Route.useParams();
-  const { definition } = useProjectDefinition();
-
-  const id = modelEntityType.idFromKey(key);
-
-  const model = ModelUtils.byId(definition, id);
-
-  if (!model) {
-    return <NotFoundCard />;
-  }
 
   return (
     <div
       className="relative flex h-full flex-1 flex-col overflow-hidden"
-      key={id}
+      key={model.id}
     >
       <div className="max-w-7xl space-y-4 px-4 pb-4">
         <ModelHeaderBar model={model} />
