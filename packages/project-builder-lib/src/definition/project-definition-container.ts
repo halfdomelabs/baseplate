@@ -9,20 +9,18 @@ import type {
   FixRefDeletionResult,
   ResolvedZodRefPayload,
 } from '#src/references/index.js';
-import type {
-  ProjectDefinition,
-  ProjectDefinitionSchema,
-} from '#src/schema/index.js';
+import type { ProjectDefinition } from '#src/schema/index.js';
 
 import {
-  createProjectDefinitionSchemaWithContext,
+  createPluginImplementationStore,
   parseProjectDefinitionWithReferences,
 } from '#src/parser/parser.js';
 import {
-  deserializeSchemaWithReferences,
+  deserializeSchemaWithTransformedReferences,
   fixRefDeletions,
   serializeSchemaFromRefPayload,
 } from '#src/references/index.js';
+import { createProjectDefinitionSchema } from '#src/schema/index.js';
 
 /**
  * Container for a project definition that includes references and entities.
@@ -89,13 +87,11 @@ export class ProjectDefinitionContainer {
    */
   fixRefDeletions(
     setter: (draftConfig: ProjectDefinition) => void,
-  ): FixRefDeletionResult<ProjectDefinitionSchema> {
+  ): FixRefDeletionResult<typeof createProjectDefinitionSchema> {
     const newDefinition = produce(setter)(this.definition);
-    const schemaWithContext = createProjectDefinitionSchemaWithContext(
-      newDefinition,
-      this.parserContext,
-    );
-    return fixRefDeletions(schemaWithContext, newDefinition);
+    return fixRefDeletions(createProjectDefinitionSchema, newDefinition, {
+      plugins: this.pluginStore,
+    });
   }
 
   /**
@@ -140,15 +136,18 @@ export class ProjectDefinitionContainer {
     config: unknown,
     context: SchemaParserContext,
   ): ProjectDefinitionContainer {
-    const projectDefinitionSchemaWithContext =
-      createProjectDefinitionSchemaWithContext(config, context);
+    const plugins = createPluginImplementationStore(
+      context.pluginStore,
+      config,
+    );
     return new ProjectDefinitionContainer(
-      deserializeSchemaWithReferences(
-        projectDefinitionSchemaWithContext,
+      deserializeSchemaWithTransformedReferences(
+        createProjectDefinitionSchema,
         config,
+        { plugins },
       ),
       context,
-      projectDefinitionSchemaWithContext.pluginStore,
+      plugins,
     );
   }
 }

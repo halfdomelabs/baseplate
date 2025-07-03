@@ -1,13 +1,12 @@
 import { z } from 'zod';
 
-import { pluginConfigSpec, zWithPlugins } from '#src/plugins/index.js';
-import { zEnt } from '#src/references/ref-builder.js';
+import { pluginConfigSpec } from '#src/plugins/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { pluginEntityType } from './entity-types.js';
 
 export const basePluginDefinitionSchema = z.object({
-  id: z.string().min(1),
+  id: z.string(),
   packageName: z.string(),
   name: z.string(),
   version: z.string(),
@@ -17,30 +16,30 @@ export const basePluginDefinitionSchema = z.object({
 
 export type BasePluginDefinition = z.infer<typeof basePluginDefinitionSchema>;
 
-export const createPluginWithConfigSchema = definitionSchema(() =>
-  zWithPlugins((plugins, data) => {
-    const parsedBasePlugin = basePluginDefinitionSchema.parse(data);
-
-    const pluginKey = pluginEntityType.keyFromId(parsedBasePlugin.id);
-
-    const configSchema = plugins
-      .getPluginSpec(pluginConfigSpec)
-      .getSchema(pluginKey);
-
-    const pluginDefinitionWithEnt = zEnt(basePluginDefinitionSchema, {
+export const createPluginWithConfigSchema = definitionSchema((ctx) =>
+  ctx
+    .withEnt(basePluginDefinitionSchema.passthrough(), {
       type: pluginEntityType,
-    });
+    })
+    .transform((data, parseCtx) => {
+      const pluginKey = pluginEntityType.keyFromId(data.id);
 
-    if (!configSchema) {
-      return pluginDefinitionWithEnt;
-    }
+      const createConfigSchema = ctx.plugins
+        .getPluginSpec(pluginConfigSpec)
+        .getSchemaCreator(pluginKey);
 
-    return pluginDefinitionWithEnt.and(
-      z.object({
-        config: configSchema,
-      }),
-    );
-  }),
+      let pluginDefinitionSchema = basePluginDefinitionSchema;
+
+      if (createConfigSchema) {
+        pluginDefinitionSchema = pluginDefinitionSchema.extend({
+          config: createConfigSchema(ctx),
+        }) as typeof basePluginDefinitionSchema;
+      }
+
+      return pluginDefinitionSchema.parse(data, {
+        path: parseCtx.path,
+      });
+    }),
 );
 
 export const createPluginsSchema = definitionSchema((ctx) =>

@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { zRef, zRefBuilder } from '#src/references/index.js';
 import { authRoleEntityType } from '#src/schema/auth/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
@@ -14,7 +13,7 @@ import { createAdminCrudSectionSchema } from './sections/crud.js';
 import { adminSectionEntityType } from './sections/types.js';
 
 export const createAdminSectionSchema = definitionSchema((ctx) =>
-  zRefBuilder(createAdminCrudSectionSchema(ctx), (builder) => {
+  ctx.withRefBuilder(createAdminCrudSectionSchema(ctx), (builder) => {
     builder.addEntity({
       type: adminSectionEntityType,
       parentPath: { context: 'app' },
@@ -35,7 +34,7 @@ export const createAdminAppSchema = definitionSchema((ctx) =>
     type: z.literal('admin'),
     allowedRoles: z
       .array(
-        zRef(z.string(), {
+        ctx.withRef({
           type: authRoleEntityType,
           onDelete: 'DELETE',
         }),

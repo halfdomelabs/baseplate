@@ -2,13 +2,7 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import {
-  createDefinitionEntityNameResolver,
-  zEnt,
-  zRef,
-  zRefBuilder,
-  zRefId,
-} from '#src/references/index.js';
+import { createDefinitionEntityNameResolver } from '#src/references/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 import { SCALAR_FIELD_TYPES } from '#src/types/field-types.js';
 
@@ -32,49 +26,53 @@ export * from './graphql.js';
 export * from './transformers/index.js';
 export * from './types.js';
 
-export const createModelScalarFieldSchema = definitionSchema(() =>
-  zEnt(
-    z.object({
-      name: VALIDATORS.CAMEL_CASE_STRING,
-      type: z.enum(SCALAR_FIELD_TYPES),
-      isOptional: z.boolean().default(false),
-      options: zRefBuilder(
-        z
-          .object({
-            // string options
-            default: z.string().default(''),
-            // uuid options
-            genUuid: z.boolean().optional(),
-            // date options
-            updatedAt: z.boolean().optional(),
-            defaultToNow: z.boolean().optional(),
-            // enum options
-            enumRef: zRef(z.string().optional(), {
-              type: modelEnumEntityType,
+export const createModelScalarFieldSchema = definitionSchema((ctx) =>
+  ctx
+    .withEnt(
+      z.object({
+        id: z.string(),
+        name: VALIDATORS.CAMEL_CASE_STRING,
+        type: z.enum(SCALAR_FIELD_TYPES),
+        isOptional: z.boolean().default(false),
+        options: ctx.withRefBuilder(
+          z
+            .object({
+              // string options
+              default: z.string().default(''),
+              // uuid options
+              genUuid: z.boolean().optional(),
+              // date options
+              updatedAt: z.boolean().optional(),
+              defaultToNow: z.boolean().optional(),
+              // enum options
+              enumRef: ctx
+                .withRef({
+                  type: modelEnumEntityType,
+                  onDelete: 'RESTRICT',
+                })
+                .optional(),
+              defaultEnumValueRef: z.string().optional(),
+            })
+            .transform((val) => ({
+              ...val,
+              ...(val.enumRef ? {} : { defaultEnumValueRef: undefined }),
+            }))
+            .default({ default: '' }),
+          (builder) => {
+            builder.addReference({
+              type: modelEnumValueEntityType,
               onDelete: 'RESTRICT',
-            }),
-            defaultEnumValueRef: z.string().optional(),
-          })
-          .transform((val) => ({
-            ...val,
-            ...(val.enumRef ? {} : { defaultEnumValueRef: undefined }),
-          }))
-          .default({ default: '' }),
-        (builder) => {
-          builder.addReference({
-            type: modelEnumValueEntityType,
-            onDelete: 'RESTRICT',
-            path: 'defaultEnumValueRef',
-            parentPath: 'enumRef',
-          });
-        },
-      ),
-    }),
-    {
-      type: modelScalarFieldEntityType,
-      parentPath: { context: 'model' },
-    },
-  )
+              path: 'defaultEnumValueRef',
+              parentPath: 'enumRef',
+            });
+          },
+        ),
+      }),
+      {
+        type: modelScalarFieldEntityType,
+        parentPath: { context: 'model' },
+      },
+    )
     .superRefine((arg, ctx) => {
       // check default values
       const defaultValue = arg.options.default;
@@ -120,22 +118,22 @@ export const REFERENTIAL_ACTIONS = [
   'SetDefault',
 ] as const;
 
-export const createModelRelationFieldSchema = definitionSchema(() =>
-  zRefBuilder(
+export const createModelRelationFieldSchema = definitionSchema((ctx) =>
+  ctx.withRefBuilder(
     z.object({
-      id: zRefId,
+      id: z.string(),
       foreignId: z
         .string()
         .default(() => modelForeignRelationEntityType.generateNewId()),
       name: VALIDATORS.CAMEL_CASE_STRING,
       references: z.array(
         z.object({
-          localRef: zRef(z.string(), {
+          localRef: ctx.withRef({
             type: modelScalarFieldEntityType,
             onDelete: 'RESTRICT',
             parentPath: { context: 'model' },
           }),
-          foreignRef: zRef(z.string(), {
+          foreignRef: ctx.withRef({
             type: modelScalarFieldEntityType,
             onDelete: 'RESTRICT',
             parentPath: { context: 'foreignModel' },
@@ -176,12 +174,13 @@ export type ModelRelationFieldConfigInput = def.InferInput<
   typeof createModelRelationFieldSchema
 >;
 
-export const createModelUniqueConstraintSchema = definitionSchema(() =>
-  zEnt(
+export const createModelUniqueConstraintSchema = definitionSchema((ctx) =>
+  ctx.withEnt(
     z.object({
+      id: z.string(),
       fields: z.array(
         z.object({
-          fieldRef: zRef(z.string().min(1), {
+          fieldRef: ctx.withRef({
             type: modelScalarFieldEntityType,
             onDelete: 'RESTRICT',
             parentPath: { context: 'model' },
@@ -217,7 +216,7 @@ export const createModelServiceSchema = definitionSchema((ctx) =>
         enabled: z.boolean().default(false),
         fields: z
           .array(
-            zRef(z.string(), {
+            ctx.withRef({
               type: modelScalarFieldEntityType,
               onDelete: 'DELETE',
               parentPath: { context: 'model' },
@@ -226,7 +225,7 @@ export const createModelServiceSchema = definitionSchema((ctx) =>
           .optional(),
         transformerNames: z
           .array(
-            zRef(z.string(), {
+            ctx.withRef({
               type: modelTransformerEntityType,
               onDelete: 'DELETE',
               parentPath: { context: 'model' },
@@ -240,7 +239,7 @@ export const createModelServiceSchema = definitionSchema((ctx) =>
         enabled: z.boolean().default(false),
         fields: z
           .array(
-            zRef(z.string(), {
+            ctx.withRef({
               type: modelScalarFieldEntityType,
               onDelete: 'DELETE',
               parentPath: { context: 'model' },
@@ -249,7 +248,7 @@ export const createModelServiceSchema = definitionSchema((ctx) =>
           .optional(),
         transformerNames: z
           .array(
-            zRef(z.string(), {
+            ctx.withRef({
               type: modelTransformerEntityType,
               onDelete: 'DELETE',
               parentPath: { context: 'model' },
@@ -275,9 +274,9 @@ export type ModelServiceConfig = def.InferOutput<
 
 export const createModelBaseSchema = definitionSchema((ctx) =>
   z.object({
-    id: zRefId,
+    id: z.string(),
     name: VALIDATORS.PASCAL_CASE_STRING,
-    featureRef: zRef(z.string().min(1), {
+    featureRef: ctx.withRef({
       type: featureEntityType,
       onDelete: 'RESTRICT',
     }),
@@ -286,7 +285,7 @@ export const createModelBaseSchema = definitionSchema((ctx) =>
       relations: z.array(createModelRelationFieldSchema(ctx)).optional(),
       primaryKeyFieldRefs: z
         .array(
-          zRef(z.string(), {
+          ctx.withRef({
             type: modelScalarFieldEntityType,
             onDelete: 'RESTRICT',
             parentPath: { context: 'model' },
@@ -308,7 +307,7 @@ export const createModelBaseSchema = definitionSchema((ctx) =>
 );
 
 export const createModelSchema = definitionSchema((ctx) =>
-  zEnt(createModelBaseSchema(ctx), {
+  ctx.withEnt(createModelBaseSchema(ctx), {
     type: modelEntityType,
     addContext: 'model',
   }),

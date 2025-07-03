@@ -1,3 +1,3 @@
-import { createEntityType } from '#src/references/index.js';
+import { createEntityType } from '#src/references/types.js';
 
 export const authRoleEntityType = createEntityType('role');

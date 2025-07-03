@@ -1,17 +1,21 @@
-import { zWithPlugins } from '#src/plugins/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
+
+import type { AdminCrudInputDefinition } from './types.js';
 
 import { adminCrudInputSpec } from './admin-input-spec.js';
 import { baseAdminCrudInputSchema } from './types.js';
 
 export const createAdminCrudInputSchema = definitionSchema((ctx) =>
-  zWithPlugins<typeof baseAdminCrudInputSchema>((plugins, data) => {
-    const { type } = baseAdminCrudInputSchema.parse(data);
-
-    const input = plugins
+  baseAdminCrudInputSchema.passthrough().transform((data, parseCtx) => {
+    const { type } = data;
+    const crudInput = ctx.plugins
       .getPluginSpec(adminCrudInputSpec)
       .getAdminCrudInput(type);
-
-    return input.schema(ctx) as typeof baseAdminCrudInputSchema;
+    return crudInput
+      .createSchema(ctx)
+      .and(baseAdminCrudInputSchema)
+      .parse(data, {
+        path: parseCtx.path,
+      }) as AdminCrudInputDefinition;
   }),
 );

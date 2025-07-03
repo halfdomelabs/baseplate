@@ -17,6 +17,7 @@
     "lint": "turbo run lint --continue",
     "lint:affected": "turbo run lint --affected --continue",
     "lint:only": "pnpm run -r lint",
+    "lint:only:affected": "turbo run lint --affected --continue --only",
     "lint:staged": "lint-staged",
     "metadata:check": "workspace-meta check",
     "metadata:generate": "workspace-meta generate",

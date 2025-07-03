@@ -90,9 +90,9 @@ export interface DefinitionEntity {
 
 type ReferenceOnDeleteAction =
   /**
-   * Set the reference to null.
+   * Set the reference to undefined. Cannot be used for references inside arrays.
    */
-  | 'SET_NULL'
+  | 'SET_UNDEFINED'
   /**
    * Delete the entity.
    */

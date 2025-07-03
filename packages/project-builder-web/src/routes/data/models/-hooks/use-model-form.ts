@@ -13,7 +13,7 @@ import {
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
-  usePluginEnhancedSchema,
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -23,7 +23,6 @@ import { useNavigate } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { useMemo, useRef } from 'react';
 
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 import { NotFoundError } from '#src/utils/error.js';
 
@@ -109,17 +108,15 @@ export function useModelForm({
     return baseModelSchema;
   }, [baseModelSchema]);
 
-  const modelSchemaWithPlugins = usePluginEnhancedSchema(finalSchema);
-
   const defaultValues = useMemo(() => {
     const modelToUse = model ?? newModel;
     return fieldsToOmit.current
-      ? (modelSchemaWithPlugins.parse(modelToUse) as ModelConfigInput)
+      ? (finalSchema.parse(modelToUse) as ModelConfigInput)
       : modelToUse;
-  }, [model, newModel, modelSchemaWithPlugins]);
+  }, [model, newModel, finalSchema]);
 
   const form = useResettableForm<ModelConfigInput, unknown, ModelConfig>({
-    resolver: zodResolver(modelSchemaWithPlugins),
+    resolver: zodResolver(finalSchema),
     defaultValues,
   });
 

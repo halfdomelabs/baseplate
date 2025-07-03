@@ -94,7 +94,7 @@ function HierarchyPage(): React.JSX.Element {
               setFeatureToEdit({
                 id: featureEntityType.generateNewId(),
                 name: '',
-                parentRef: null,
+                parentRef: undefined,
               });
               setShowFeatureForm(true);
             }}

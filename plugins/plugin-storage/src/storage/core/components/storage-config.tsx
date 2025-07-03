@@ -11,6 +11,7 @@ import {
 import {
   ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -21,7 +22,7 @@ import { useMemo } from 'react';
 import type { StoragePluginDefinitionInput } from '../schema/plugin-definition.js';
 
 import { createStorageModels } from '../schema/models.js';
-import { storagePluginDefinitionSchema } from '../schema/plugin-definition.js';
+import { createStoragePluginDefinitionSchema } from '../schema/plugin-definition.js';
 import AdapterEditorForm from './adapter-editor-form.js';
 import CategoryEditorForm from './category-editor-form.js';
 
@@ -32,6 +33,10 @@ export function StorageConfig({
 }: WebConfigProps): React.JSX.Element {
   const { definition, definitionContainer, saveDefinitionWithFeedback } =
     useProjectDefinition();
+
+  const storagePluginDefinitionSchema = useDefinitionSchema(
+    createStoragePluginDefinitionSchema,
+  );
 
   const defaultValues = useMemo(() => {
     if (pluginMetadata?.config) {

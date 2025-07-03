@@ -3,10 +3,10 @@ import type React from 'react';
 import {
   adminSectionEntityType,
   createAdminSectionSchema,
-  zPluginWrapper,
 } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -21,8 +21,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { useEffect } from 'react';
-
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 import AdminCrudSectionForm from './-components/admin-crud-section-form.js';
 
@@ -53,18 +51,16 @@ function AdminAppEditSectionPage(): React.JSX.Element {
     saveDefinitionWithFeedbackSync,
     isSavingDefinition,
     definition,
-    pluginContainer,
   } = useProjectDefinition();
   const navigate = useNavigate();
   const { adminDefinition, sectionId, existingSection } = Route.useLoaderData();
 
   const adminSectionSchema = useDefinitionSchema(createAdminSectionSchema);
-  const schemaWithPlugins = zPluginWrapper(adminSectionSchema, pluginContainer);
 
   const formProps = useResettableForm({
     values: existingSection,
     defaultValues: { type: 'crud' },
-    resolver: zodResolver(schemaWithPlugins),
+    resolver: zodResolver(adminSectionSchema),
   });
 
   const { control, handleSubmit, watch, reset } = formProps;

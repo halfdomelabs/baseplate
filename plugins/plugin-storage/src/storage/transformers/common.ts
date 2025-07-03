@@ -13,7 +13,7 @@ export default createPlatformPluginExport({
   initialize: ({ transformer }) => {
     transformer.registerModelTransformer({
       name: 'file',
-      schema: createFileTransformerSchema,
+      createSchema: createFileTransformerSchema,
       getName(definitionContainer, definition) {
         return definitionContainer.nameFromId(definition.fileRelationRef);
       },

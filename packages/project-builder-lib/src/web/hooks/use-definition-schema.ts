@@ -1,10 +1,8 @@
-import type {
-  def,
-  DefinitionSchemaCreator,
-} from '@baseplate-dev/project-builder-lib';
-
-import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import { useMemo } from 'react';
+
+import type { def, DefinitionSchemaCreator } from '#src/schema/index.js';
+
+import { useProjectDefinition } from './use-project-definition.js';
 
 export function useDefinitionSchema<T extends DefinitionSchemaCreator>(
   schemaCreator: T,

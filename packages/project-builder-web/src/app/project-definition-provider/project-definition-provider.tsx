@@ -1,3 +1,4 @@
+import type { ProjectDefinition } from '@baseplate-dev/project-builder-lib';
 import type {
   ProjectDefinitionSetter,
   SaveDefinitionWithFeedbackOptions,
@@ -6,8 +7,9 @@ import type {
 import type React from 'react';
 
 import {
+  createDefinitionSchemaParserContext,
   createPluginImplementationStore,
-  createProjectDefinitionSchemaWithContext,
+  createProjectDefinitionSchema,
   fixRefDeletions,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
@@ -19,13 +21,14 @@ import {
   toast,
 } from '@baseplate-dev/ui-components';
 import { produce } from 'immer';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import semver from 'semver';
 
 import { useClientVersion } from '#src/hooks/use-client-version.js';
 import { useDeleteReferenceDialog } from '#src/hooks/use-delete-reference-dialog.js';
 import { useProjects } from '#src/hooks/use-projects.js';
 import { useSyncMetadataListener } from '#src/hooks/use-sync-metadata.js';
+import { router } from '#src/router.js';
 import {
   formatError,
   logAndFormatError,
@@ -81,19 +84,20 @@ export function ProjectDefinitionProvider({
       try {
         const newProjectDefinition = produce(definition, newConfig);
 
-        const projectDefinitionSchemaWithContext =
-          createProjectDefinitionSchemaWithContext(
-            newProjectDefinition,
-            parserContext,
-          );
+        const pluginStore = createPluginImplementationStore(
+          parserContext.pluginStore,
+          newProjectDefinition,
+        );
 
         const result = fixRefDeletions(
-          projectDefinitionSchemaWithContext,
+          createProjectDefinitionSchema,
           newProjectDefinition,
+          { plugins: pluginStore },
         );
         if (result.type === 'failure') {
           throw new RefDeleteError(result.issues);
         }
+
         const fixedProjectDefinition = result.value;
 
         fixedProjectDefinition.cliVersion = cliVersion;
@@ -101,7 +105,7 @@ export function ProjectDefinitionProvider({
         const definitionContainer = new ProjectDefinitionContainer(
           result.refPayload,
           parserContext,
-          projectDefinitionSchemaWithContext.pluginStore,
+          pluginStore,
         );
         const serializedContents = definitionContainer.toSerializedContents();
 
@@ -152,12 +156,12 @@ export function ProjectDefinitionProvider({
       pluginContainer: projectDefinitionContainer.pluginStore,
       schemaParserContext,
       updatedExternally,
-      definitionSchemaCreatorOptions: {
+      definitionSchemaParserContext: createDefinitionSchemaParserContext({
         plugins: createPluginImplementationStore(
           schemaParserContext.pluginStore,
           definition,
         ),
-      },
+      }),
     };
   }, [
     cliVersion,
@@ -169,6 +173,16 @@ export function ProjectDefinitionProvider({
     showRefIssues,
     cacheProjectDefinitionContainer,
   ]);
+
+  const previousDefinition = useRef<ProjectDefinition>(result?.definition);
+  useEffect(() => {
+    if (!result?.definition) return;
+    if (previousDefinition.current !== result.definition) {
+      // Invalidate the router cache when we update the project definition
+      router.invalidate().catch(logAndFormatError);
+    }
+    previousDefinition.current = result.definition;
+  }, [result?.definition]);
 
   const error = contextError ?? definitionError ?? containerError;
 

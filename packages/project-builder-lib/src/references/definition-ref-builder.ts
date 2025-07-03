@@ -1,17 +1,6 @@
 import type { Paths } from 'type-fest';
-import type {
-  input,
-  ParseContext,
-  ParseInput,
-  ParseReturnType,
-  SyncParseReturnType,
-  TypeOf,
-  ZodTypeAny,
-  ZodTypeDef,
-} from 'zod';
 
-import { get, set } from 'es-toolkit/compat';
-import { z, ZodType } from 'zod';
+import { get } from 'es-toolkit/compat';
 
 import type {
   DefinitionEntity,
@@ -20,21 +9,9 @@ import type {
   ReferencePath,
 } from './types.js';
 
-/**
- * Zod reference ID schema: a string with a minimum length of 1.
- */
-export const zRefId = z.string().min(1);
+import { stripRefMarkers } from './strip-ref-markers.js';
 
-/**
- * Determines whether the given object is a Promise.
- * @param object - The value to test.
- * @returns True if the value is a Promise, false otherwise.
- */
-function isPromise(object: unknown): object is Promise<unknown> {
-  return object instanceof Promise;
-}
-
-type PathInput<Type> = Exclude<Paths<Type>, number>;
+export type PathInput<Type> = Exclude<Paths<Type>, number>;
 
 interface ContextValue {
   context: string;
@@ -136,7 +113,7 @@ interface DefinitionEntityInputWithoutParent<
  * Depending on the entity type’s requirements, this type resolves to either the
  * with- or without-parent version.
  */
-type DefinitionEntityInput<
+export type DefinitionEntityInput<
   TInput,
   TEntityType extends DefinitionEntityType,
   TPath extends PathInput<TInput> | undefined = undefined,
@@ -176,7 +153,7 @@ interface DefinitionReferenceInputWithoutParent<
 /**
  * Depending on the entity type’s requirements, defines the input required to create a definition reference.
  */
-type DefinitionReferenceInput<
+export type DefinitionReferenceInput<
   TInput,
   TEntityType extends DefinitionEntityType,
 > = TEntityType['parentType'] extends undefined
@@ -191,12 +168,30 @@ interface DefinitionEntityWithNameResolver
   nameResolver: DefinitionEntityNameResolver;
 }
 
-interface RefBuilderContext {
+export interface RefBuilderContext {
   pathMap: Map<string, { path: ReferencePath; type: DefinitionEntityType }>;
 }
 
+export interface ZodRefBuilderInterface<TInput> {
+  addReference<TEntityType extends DefinitionEntityType>(
+    reference: DefinitionReferenceInput<TInput, TEntityType>,
+  ): void;
+  addEntity<
+    TEntityType extends DefinitionEntityType,
+    TPath extends PathInput<TInput> | undefined = undefined,
+    TIDKey extends string | PathInput<TInput> = 'id',
+  >(
+    entity: DefinitionEntityInput<TInput, TEntityType, TPath, TIDKey>,
+  ): void;
+  addPathToContext(
+    path: PathInput<TInput>,
+    type: DefinitionEntityType,
+    context: string,
+  ): void;
+}
+
 /**
- * ZodRefBuilder is responsible for constructing reference paths, and registering
+ * DefinitionRefBuilder is responsible for constructing reference paths, and registering
  * references and entities as defined in a Zod schema.
  *
  * The builder uses a prefix (usually the current parsing path) and context (a
@@ -204,7 +199,9 @@ interface RefBuilderContext {
  *
  * @template TInput - The type of the input data being parsed.
  */
-export class ZodRefBuilder<TInput> {
+export class DefinitionRefBuilder<TInput>
+  implements ZodRefBuilderInterface<TInput>
+{
   readonly references: DefinitionReference[];
   readonly entitiesWithNameResolver: DefinitionEntityWithNameResolver[];
   readonly pathPrefix: ReferencePath;
@@ -398,7 +395,7 @@ export class ZodRefBuilder<TInput> {
     // use the default name resolver.
     const getNameResolver =
       entity.getNameResolver ?? ((value) => get(value, 'name') as string);
-    const nameResolver = getNameResolver(this.data);
+    const nameResolver = getNameResolver(stripRefMarkers(this.data));
 
     // Base entity definition shared between regular entities and those with a name reference.
     const entityBase = {
@@ -446,12 +443,10 @@ export class ZodRefBuilder<TInput> {
     type: DefinitionEntityType,
     context: string,
   ): void {
-    if (this.pathMap.has(context)) {
-      throw new Error(
-        `Context path already defined for ${context} at ${this.pathPrefix.join('.')}`,
-      );
-    }
+    // For now, allow overriding contexts to maintain compatibility
     this.pathMap.set(context, { path, type });
+    // Also register in the shared context for other builders to access
+    this.context.pathMap.set(context, { path, type });
   }
 
   /**
@@ -475,281 +470,10 @@ export class ZodRefBuilder<TInput> {
  *
  * @template Input - The input data type.
  */
-type ZodBuilderFunction<Input> = (
-  builder: ZodRefBuilder<Input>,
+export type ZodBuilderFunction<Input> = (
+  builder: ZodRefBuilderInterface<Input>,
   data: Input,
 ) => void;
-
-/**
- * Definition for a ZodRef wrapper type that adds reference/entity capabilities.
- *
- * @template T - The inner Zod type.
- */
-export interface ZodRefDef<T extends ZodTypeAny = ZodTypeAny>
-  extends ZodTypeDef {
-  innerType: T;
-  builder?: ZodBuilderFunction<input<T>>;
-}
-
-/**
- * Unique symbol used to store ZodRef context in the parent’s common context.
- */
-const zodRefSymbol = Symbol('zod-ref');
-
-/**
- * Context for storing references, entities, and builder context.
- */
-interface ZodRefContext {
-  context: RefBuilderContext;
-  references: DefinitionReference[];
-  entitiesWithNameResolver: DefinitionEntityWithNameResolver[];
-}
-
-/**
- * Extended common context that may contain a ZodRefContext.
- */
-interface ExtendedCommonContext {
-  [zodRefSymbol]?: ZodRefContext;
-}
-
-/**
- * ZodRef wraps an inner Zod type and enhances it with the ability to register
- * and process entity references. During parsing, it delegates to a builder (if present)
- * to collect references and entities before delegating to the inner type.
- *
- * @template T - The inner Zod type.
- */
-export class ZodRef<T extends ZodTypeAny> extends ZodType<
-  TypeOf<T>,
-  ZodRefDef<T>,
-  input<T>
-> {
-  /**
-   * The core parse method that:
-   * 1. Retrieves (or creates) the builder context from the parent.
-   * 2. Runs the builder function (if present) to register references/entities.
-   * 3. Delegates parsing to the inner type.
-   * 4. Transforms the output to replace entity id placeholders with generated ids.
-   *
-   * @param input - The Zod parse input.
-   * @returns The parse result.
-   */
-  _parse(input: ParseInput): ParseReturnType<TypeOf<T>> {
-    const context = input.parent.common as ExtendedCommonContext;
-    // If no builder context or builder function exists, simply parse using the inner type.
-    const zodRefContext = context[zodRefSymbol];
-    if (!zodRefContext || !this._def.builder) {
-      return this._def.innerType._parse(input);
-    }
-    // Create a new builder instance for the current parsing context.
-    const builder = new ZodRefBuilder<input<T>>(
-      input.path,
-      zodRefContext.context,
-      input.data as input<T>,
-    );
-    // Execute the builder function to register references/entities.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    this._def.builder(builder, input.data);
-    zodRefContext.references.push(...builder.references);
-    zodRefContext.entitiesWithNameResolver.push(
-      ...builder.entitiesWithNameResolver,
-    );
-
-    // Re-parse using the inner type but merge the updated context.
-    const parseOutput = this._def.innerType._parse({
-      ...input,
-      path: input.path,
-      parent: {
-        ...input.parent,
-        common: {
-          ...input.parent.common,
-          [zodRefSymbol]: {
-            ...zodRefContext,
-            context: {
-              ...zodRefContext.context,
-              // Merge new context entries from the builder.
-              pathMap: new Map([
-                ...zodRefContext.context.pathMap,
-                ...builder.pathMap,
-              ]),
-            },
-          },
-        },
-      } as ParseContext,
-    });
-
-    /**
-     * Transforms the output of the inner parse by iterating through all registered
-     * entities and assigning the id to the corresponding path in the output in case
-     * it was generated by the builder.
-     *
-     * @param output - The result from the inner parse.
-     * @returns The transformed parse output.
-     */
-    function transformParseOutput(
-      output: SyncParseReturnType<unknown>,
-    ): SyncParseReturnType<unknown> {
-      if (output.status === 'aborted') return output;
-
-      // For each entity, assign the id to the corresponding path in the output
-      // in the event that it was generated by the builder.
-      for (const entity of builder.entitiesWithNameResolver) {
-        set(
-          output.value as object,
-          entity.idPath.slice(input.path.length),
-          entity.id,
-        );
-      }
-      return output;
-    }
-
-    // If the parse result is a Promise, attach the transformation asynchronously.
-    if (isPromise(parseOutput)) {
-      return parseOutput.then(transformParseOutput);
-    }
-
-    return transformParseOutput(parseOutput);
-  }
-
-  /**
-   * Returns the inner Zod type.
-   * @returns The wrapped inner Zod type.
-   */
-  innerType(): T {
-    return this._def.innerType;
-  }
-
-  /**
-   * Adds an entity registration to the current ZodRef.
-   *
-   * @param entity - Either an entity definition or a function that returns one.
-   * @returns A new ZodRef instance with the entity registration added.
-   */
-  addEntity<
-    TEntityType extends DefinitionEntityType,
-    TPath extends PathInput<input<T>> | undefined = undefined,
-    TIDKey extends string = 'id',
-  >(
-    entity:
-      | DefinitionEntityInput<input<T>, TEntityType, TPath, TIDKey>
-      | ((
-          data: input<T>,
-        ) => DefinitionEntityInput<input<T>, TEntityType, TPath, TIDKey>),
-  ): ZodRef<T> {
-    return ZodRef.create(this, (builder, data) => {
-      builder.addEntity(typeof entity === 'function' ? entity(data) : entity);
-    }) as unknown as ZodRef<T>;
-  }
-
-  /**
-   * Adds a reference registration to the current ZodRef.
-   *
-   * @param reference - Either a reference definition or a function that returns one.
-   * @returns A new ZodRef instance with the reference registration added.
-   */
-  addReference<TEntityType extends DefinitionEntityType>(
-    reference:
-      | DefinitionReferenceInput<input<T>, TEntityType>
-      | ((data: input<T>) => DefinitionReferenceInput<input<T>, TEntityType>),
-  ): ZodRef<T> {
-    return ZodRef.create(this, (builder, data) => {
-      builder.addReference(
-        typeof reference === 'function' ? reference(data) : reference,
-      );
-    }) as unknown as ZodRef<T>;
-  }
-
-  /**
-   * Applies a custom builder function to the ZodRef.
-   * @param builder - The builder function that registers additional references/entities.
-   * @returns A new ZodRef instance with the builder applied.
-   */
-  refBuilder(builder: ZodBuilderFunction<input<T>>): ZodRef<T> {
-    return ZodRef.create(this, builder) as unknown as ZodRef<T>;
-  }
-
-  /**
-   * Creates a new ZodRef instance wrapping a given Zod type with an optional builder.
-   * @param type - The inner Zod type.
-   * @param builder - Optional builder function to register references/entities.
-   * @returns A new ZodRef instance.
-   */
-  static create = <T extends ZodTypeAny>(
-    type: T,
-    builder?: ZodBuilderFunction<input<T>>,
-  ): ZodRef<T> =>
-    new ZodRef<T>({
-      innerType: type,
-      builder,
-    });
-}
-
-/**
- * Convenience function for creating a ZodRef using a schema and an optional builder.
- * @param schema - The base Zod schema.
- * @param builder - Optional builder function.
- * @returns A new ZodRef instance.
- */
-export function zRefBuilder<T extends z.ZodType>(
-  schema: T,
-  builder?: ZodBuilderFunction<TypeOf<T>>,
-): ZodRef<T> {
-  return ZodRef.create(schema, builder);
-}
-
-/**
- * Convenience function for creating a ZodRef with a reference added.
- * @param schema - The base Zod schema.
- * @param reference - Either a reference definition or a function returning one.
- * @returns A new ZodRef instance with the reference registration.
- */
-export function zRef<
-  T extends z.ZodType,
-  TEntityType extends DefinitionEntityType,
->(
-  schema: T,
-  reference:
-    | DefinitionReferenceInput<input<T>, TEntityType>
-    | ((data: input<T>) => DefinitionReferenceInput<input<T>, TEntityType>),
-): ZodRef<T> {
-  return ZodRef.create(schema).addReference(reference);
-}
-
-/**
- * Convenience function for creating a ZodRef that registers an entity.
- * This function also sets the id key on the schema using zRefId.
- *
- * @template TObject - The Zod object type.
- * @template TEntityType - The entity type.
- * @template TPath - The path type.
- * @param schema - The base Zod object schema.
- * @param entity - Either an entity definition or a function returning one.
- * @returns A new ZodRef instance with the entity registration.
- */
-export function zEnt<
-  TObject extends z.SomeZodObject,
-  TEntityType extends DefinitionEntityType,
-  TPath extends PathInput<input<TObject>>,
->(
-  schema: TObject,
-  entity:
-    | DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>
-    | ((
-        data: z.input<TObject>,
-      ) => DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>),
-): ZodRef<
-  z.ZodObject<
-    TObject['shape'] & {
-      id: z.ZodType<string, z.ZodAnyDef, string>;
-    },
-    TObject['_def']['unknownKeys'],
-    TObject['_def']['catchall']
-  >
-> {
-  // Set the "id" key on the schema using zRefId and then register the entity.
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-  return ZodRef.create(schema.setKey('id', zRefId)).addEntity(entity) as any;
-}
 
 /**
  * Payload returned after parsing, containing the data, references, and entities.
@@ -760,91 +484,4 @@ export interface ZodRefPayload<TData> {
   data: TData;
   references: DefinitionReference[];
   entitiesWithNameResolver: DefinitionEntityWithNameResolver[];
-}
-
-/**
- * Definition for a ZodRefWrapper, which wraps a schema for collecting references and entities.
- *
- * @template T - The inner Zod type.
- */
-export interface ZodRefWrapperDef<T extends ZodTypeAny = ZodTypeAny>
-  extends ZodTypeDef {
-  innerType: T;
-}
-
-/**
- * ZodRefWrapper is used for initializing parsing that collects references and entities.
- *
- * @template T - The inner Zod type.
- */
-export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
-  ZodRefPayload<TypeOf<T>>,
-  ZodRefWrapperDef<T>,
-  input<T>
-> {
-  /**
-   * Core parse method that:
-   * 1. Initializes a fresh reference context.
-   * 2. Parses using the inner type while injecting the context.
-   * 3. Returns a payload containing the parsed data, along with references and entities.
-   *
-   * @param input - The parse input.
-   * @returns The parsed payload.
-   */
-  _parse(input: ParseInput): ParseReturnType<ZodRefPayload<TypeOf<T>>> {
-    // Initialize the reference context.
-    const refContext: ZodRefContext = {
-      context: {
-        pathMap: new Map(),
-      },
-      references: [],
-      entitiesWithNameResolver: [],
-    };
-
-    // Inject the refContext into the parent's common context and parse the inner type.
-    const parseOutput = this._def.innerType._parse({
-      ...input,
-      parent: {
-        ...input.parent,
-        common: {
-          ...input.parent.common,
-          [zodRefSymbol]: refContext,
-        },
-      } as ParseContext,
-    });
-
-    function transformParseOutput(
-      output: SyncParseReturnType<unknown>,
-    ): SyncParseReturnType<ZodRefPayload<TypeOf<T>>> {
-      if (output.status === 'aborted') return output;
-
-      return {
-        ...output,
-        value: {
-          data: output.value,
-          entitiesWithNameResolver: refContext.entitiesWithNameResolver,
-          references: refContext.references,
-        },
-      };
-    }
-
-    if (isPromise(parseOutput)) {
-      return parseOutput.then(transformParseOutput);
-    }
-
-    return transformParseOutput(parseOutput);
-  }
-
-  /**
-   * Creates a new ZodRefWrapper instance.
-   * @param type - The inner Zod type.
-   * @param options - Options for the ZodRefWrapper.
-   * @param options.skipReferenceNameResolution - Flag to skip resolving references to names (serialized definitions use resolved name references).
-   * @param options.allowInvalidReferences - Flag to allow invalid references (used for testing deletes).
-   * @returns A new instance of ZodRefWrapper.
-   */
-  static create = <T extends ZodTypeAny>(type: T): ZodRefWrapper<T> =>
-    new ZodRefWrapper<T>({
-      innerType: type,
-    });
 }

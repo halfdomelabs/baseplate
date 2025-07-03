@@ -13,6 +13,7 @@ import {
   ModelComboboxFieldController,
   ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
+  useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -32,7 +33,7 @@ import { createDefaultAuthRoles } from '#src/roles/index.js';
 import type { AuthPluginDefinitionInput } from '../schema/plugin-definition.js';
 
 import { createAuthModels } from '../schema/models.js';
-import { authPluginDefinitionSchema } from '../schema/plugin-definition.js';
+import { createAuthPluginDefinitionSchema } from '../schema/plugin-definition.js';
 import RoleEditorForm from './role-editor-form.js';
 
 import '#src/styles.css';
@@ -44,6 +45,10 @@ export function AuthDefinitionEditor({
 }: WebConfigProps): React.JSX.Element {
   const { definition, definitionContainer, saveDefinitionWithFeedback } =
     useProjectDefinition();
+
+  const authPluginDefinitionSchema = useDefinitionSchema(
+    createAuthPluginDefinitionSchema,
+  );
 
   const defaultValues = useMemo(() => {
     if (pluginMetadata?.config) {

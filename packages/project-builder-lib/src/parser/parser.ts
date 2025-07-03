@@ -7,7 +7,6 @@ import type {
   PluginImplementationStore,
   PluginSpecImplementation,
   PluginSpecWithInitializer,
-  ZodPluginWrapper,
 } from '#src/plugins/index.js';
 import type { ResolvedZodRefPayload } from '#src/references/types.js';
 import type {
@@ -16,9 +15,13 @@ import type {
 } from '#src/schema/project-definition.js';
 
 import { initializePlugins } from '#src/plugins/imports/loader.js';
-import { pluginConfigSpec, zPluginWrapper } from '#src/plugins/index.js';
-import { parseSchemaWithReferences } from '#src/references/parse-schema-with-references.js';
-import { adminCrudInputSpec, modelTransformerSpec } from '#src/schema/index.js';
+import { pluginConfigSpec } from '#src/plugins/index.js';
+import { parseSchemaWithTransformedReferences } from '#src/references/parse-schema-with-references.js';
+import {
+  adminCrudInputSpec,
+  createDefinitionSchemaParserContext,
+  modelTransformerSpec,
+} from '#src/schema/index.js';
 import { basePluginDefinitionSchema } from '#src/schema/plugins/definition.js';
 import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
 
@@ -95,16 +98,16 @@ export function createPluginImplementationStore(
 export function createProjectDefinitionSchemaWithContext(
   projectDefinition: unknown,
   context: SchemaParserContext,
-): ZodPluginWrapper<ProjectDefinitionSchema> {
+): ProjectDefinitionSchema {
   const { pluginStore } = context;
   const pluginImplementationStore = createPluginImplementationStore(
     pluginStore,
     projectDefinition,
   );
-  return zPluginWrapper(
-    createProjectDefinitionSchema({ plugins: pluginImplementationStore }),
-    pluginImplementationStore,
-  );
+  const definitionContext = createDefinitionSchemaParserContext({
+    plugins: pluginImplementationStore,
+  });
+  return createProjectDefinitionSchema(definitionContext);
 }
 
 export function parseProjectDefinitionWithContext(
@@ -132,10 +135,15 @@ export function parseProjectDefinitionWithReferences(
   definition: ResolvedZodRefPayload<ProjectDefinition>;
   pluginStore: PluginImplementationStore;
 } {
-  const schema = createProjectDefinitionSchemaWithContext(
+  const { pluginStore } = context;
+  const pluginImplementationStore = createPluginImplementationStore(
+    pluginStore,
     projectDefinition,
-    context,
   );
-  const definition = parseSchemaWithReferences(schema, projectDefinition);
-  return { definition, pluginStore: schema._def.pluginStore };
+  const definition = parseSchemaWithTransformedReferences(
+    createProjectDefinitionSchema,
+    projectDefinition,
+    { plugins: pluginImplementationStore },
+  );
+  return { definition, pluginStore: pluginImplementationStore };
 }

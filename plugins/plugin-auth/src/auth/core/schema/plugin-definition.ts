@@ -1,40 +1,46 @@
+import type { def } from '@baseplate-dev/project-builder-lib';
+
 import {
+  definitionSchema,
   featureEntityType,
   modelEntityType,
-  zRef,
 } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
-import { authRolesSchema } from '#src/roles/index.js';
+import { createAuthRolesSchema } from '#src/roles/index.js';
 
-export const authPluginDefinitionSchema = z.object({
-  modelRefs: z.object({
-    user: zRef(z.string().min(1), {
-      type: modelEntityType,
+export const createAuthPluginDefinitionSchema = definitionSchema((ctx) =>
+  z.object({
+    modelRefs: z.object({
+      user: ctx.withRef({
+        type: modelEntityType,
+        onDelete: 'RESTRICT',
+      }),
+      userAccount: ctx.withRef({
+        type: modelEntityType,
+        onDelete: 'RESTRICT',
+      }),
+      userRole: ctx.withRef({
+        type: modelEntityType,
+        onDelete: 'RESTRICT',
+      }),
+      userSession: ctx.withRef({
+        type: modelEntityType,
+        onDelete: 'RESTRICT',
+      }),
+    }),
+    authFeatureRef: ctx.withRef({
+      type: featureEntityType,
       onDelete: 'RESTRICT',
     }),
-    userAccount: zRef(z.string().min(1), {
-      type: modelEntityType,
-      onDelete: 'RESTRICT',
-    }),
-    userRole: zRef(z.string().min(1), {
-      type: modelEntityType,
-      onDelete: 'RESTRICT',
-    }),
-    userSession: zRef(z.string().min(1), {
-      type: modelEntityType,
-      onDelete: 'RESTRICT',
-    }),
+    roles: createAuthRolesSchema(ctx),
   }),
-  authFeatureRef: zRef(z.string().min(1), {
-    type: featureEntityType,
-    onDelete: 'RESTRICT',
-  }),
-  roles: authRolesSchema,
-});
+);
 
-export type AuthPluginDefinition = z.infer<typeof authPluginDefinitionSchema>;
+export type AuthPluginDefinition = def.InferOutput<
+  typeof createAuthPluginDefinitionSchema
+>;
 
-export type AuthPluginDefinitionInput = z.input<
-  typeof authPluginDefinitionSchema
+export type AuthPluginDefinitionInput = def.InferInput<
+  typeof createAuthPluginDefinitionSchema
 >;

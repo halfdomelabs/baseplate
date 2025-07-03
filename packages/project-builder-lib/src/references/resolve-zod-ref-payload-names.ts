@@ -1,7 +1,7 @@
 import { toposort } from '@baseplate-dev/utils';
 import { keyBy, mapValues } from 'es-toolkit';
 
-import type { ZodRefPayload } from './ref-builder.js';
+import type { ZodRefPayload } from './definition-ref-builder.js';
 import type { DefinitionEntity, ResolvedZodRefPayload } from './types.js';
 
 /**

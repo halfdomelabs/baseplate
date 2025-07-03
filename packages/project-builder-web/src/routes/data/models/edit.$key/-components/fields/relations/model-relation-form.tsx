@@ -14,7 +14,10 @@ import {
   modelLocalRelationEntityType,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
-import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import {
+  useDefinitionSchema,
+  useProjectDefinition,
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   ComboboxField,
@@ -31,8 +34,6 @@ import { camelCase } from 'es-toolkit';
 import { pluralize } from 'inflection';
 import React, { useId, useMemo } from 'react';
 import { useController, useForm } from 'react-hook-form';
-
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 import { useEditedModelConfig } from '../../../../-hooks/use-edited-model-config.js';
 

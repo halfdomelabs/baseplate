@@ -17,7 +17,7 @@ export interface AdminCrudInputType<
   T extends DefinitionSchemaCreator = DefinitionSchemaCreator,
 > {
   name: string;
-  schema: T;
+  createSchema: T;
 }
 
 export function createAdminCrudInputType<T extends DefinitionSchemaCreator>(

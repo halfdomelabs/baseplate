@@ -32,7 +32,7 @@ const featureSchema = z.object({
     .string()
     .min(1)
     .regex(/^[a-z0-9-]+$/, 'Must be lowercase, numbers, and dashes only'),
-  parentRef: z.string().nullish(),
+  parentRef: z.string().optional(),
 });
 
 export function FeatureForm({
@@ -48,7 +48,7 @@ export function FeatureForm({
     () => ({
       id: feature?.id ?? '',
       childName: feature?.name.split('/').pop() ?? '',
-      parentRef: feature?.parentRef ?? null,
+      parentRef: feature?.parentRef,
     }),
     [feature],
   );
@@ -120,7 +120,7 @@ export function FeatureForm({
   const parentOptions = [
     {
       label: 'None',
-      value: null,
+      value: undefined,
     },
     ...definition.features
       .filter((f) => f.id !== feature?.id)

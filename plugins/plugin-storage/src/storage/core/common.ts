@@ -4,7 +4,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 
 import { STORAGE_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations.js';
-import { storagePluginDefinitionSchema } from './schema/plugin-definition.js';
+import { createStoragePluginDefinitionSchema } from './schema/plugin-definition.js';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -12,7 +12,7 @@ export default createPlatformPluginExport({
   },
   exports: {},
   initialize: ({ config }, { pluginId }) => {
-    config.registerSchema(pluginId, storagePluginDefinitionSchema);
+    config.registerSchemaCreator(pluginId, createStoragePluginDefinitionSchema);
     config.registerMigrations(pluginId, STORAGE_PLUGIN_CONFIG_MIGRATIONS);
     return {};
   },

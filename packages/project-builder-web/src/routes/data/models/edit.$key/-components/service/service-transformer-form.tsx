@@ -6,7 +6,7 @@ import {
   createTransformerSchema,
   modelTransformerEntityType,
 } from '@baseplate-dev/project-builder-lib';
-import { usePluginEnhancedSchema } from '@baseplate-dev/project-builder-lib/web';
+import { useDefinitionSchema } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
   DialogClose,
@@ -14,11 +14,9 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
-import { useId } from 'react';
+import { useId, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
 
@@ -39,10 +37,12 @@ export function ServiceTransformerForm({
 }: ServiceTransformerFormProps): React.JSX.Element | null {
   const originalModel = useEditedModelConfig((model) => model);
   const transformerSchema = useDefinitionSchema(createTransformerSchema);
-  const schema = usePluginEnhancedSchema(
-    z.object({
-      transformer: transformerSchema,
-    }),
+  const schema = useMemo(
+    () =>
+      z.object({
+        transformer: transformerSchema,
+      }),
+    [transformerSchema],
   );
   const formProps = useForm<{ transformer: TransformerConfig }>({
     resolver: zodResolver(schema),

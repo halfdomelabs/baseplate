@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import type { def } from '#src/schema/creator/index.js';
 
-import { zRef } from '#src/references/ref-builder.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { authRoleEntityType } from '../auth/index.js';
@@ -12,22 +11,24 @@ import {
   modelScalarFieldEntityType,
 } from './types.js';
 
-const roleArray = z
-  .array(
-    zRef(z.string(), {
-      type: authRoleEntityType,
-      onDelete: 'DELETE',
-    }),
-  )
-  .optional();
+const createRoleArray = definitionSchema((ctx) =>
+  z
+    .array(
+      ctx.withRef({
+        type: authRoleEntityType,
+        onDelete: 'DELETE',
+      }),
+    )
+    .optional(),
+);
 
-export const createModelGraphqlSchema = definitionSchema(() =>
+export const createModelGraphqlSchema = definitionSchema((ctx) =>
   z.object({
     objectType: z
       .object({
         enabled: z.boolean().default(false),
         fields: z.array(
-          zRef(z.string(), {
+          ctx.withRef({
             type: modelScalarFieldEntityType,
             onDelete: 'DELETE',
             parentPath: { context: 'model' },
@@ -35,7 +36,7 @@ export const createModelGraphqlSchema = definitionSchema(() =>
         ),
         localRelations: z
           .array(
-            zRef(z.string(), {
+            ctx.withRef({
               type: modelLocalRelationEntityType,
               onDelete: 'DELETE',
               parentPath: { context: 'model' },
@@ -44,7 +45,7 @@ export const createModelGraphqlSchema = definitionSchema(() =>
           .optional(),
         foreignRelations: z
           .array(
-            zRef(z.string(), {
+            ctx.withRef({
               type: modelForeignRelationEntityType,
               onDelete: 'DELETE',
               parentPath: { context: 'model' },
@@ -61,13 +62,13 @@ export const createModelGraphqlSchema = definitionSchema(() =>
         get: z
           .object({
             enabled: z.boolean().optional(),
-            roles: roleArray,
+            roles: createRoleArray(ctx),
           })
           .optional(),
         list: z
           .object({
             enabled: z.boolean().optional(),
-            roles: roleArray,
+            roles: createRoleArray(ctx),
           })
           .optional(),
       })
@@ -86,7 +87,7 @@ export const createModelGraphqlSchema = definitionSchema(() =>
         create: z
           .object({
             enabled: z.boolean().optional(),
-            roles: roleArray,
+            roles: createRoleArray(ctx),
           })
           .default({
             enabled: false,
@@ -95,7 +96,7 @@ export const createModelGraphqlSchema = definitionSchema(() =>
         update: z
           .object({
             enabled: z.boolean().optional(),
-            roles: roleArray,
+            roles: createRoleArray(ctx),
           })
           .default({
             enabled: false,
@@ -104,7 +105,7 @@ export const createModelGraphqlSchema = definitionSchema(() =>
         delete: z
           .object({
             enabled: z.boolean().optional(),
-            roles: roleArray,
+            roles: createRoleArray(ctx),
           })
           .default({
             enabled: false,

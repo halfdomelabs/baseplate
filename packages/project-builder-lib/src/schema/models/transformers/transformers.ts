@@ -1,17 +1,22 @@
-import { zWithPlugins } from '#src/plugins/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
+
+import type { TransformerConfig } from './types.js';
 
 import { modelTransformerSpec } from './model-transformer-spec.js';
 import { baseTransformerSchema } from './types.js';
 
 export const createTransformerSchema = definitionSchema((ctx) =>
-  zWithPlugins<typeof baseTransformerSchema>((plugins, data) => {
-    const { type } = baseTransformerSchema.parse(data);
+  baseTransformerSchema.passthrough().transform((data, parseCtx) => {
+    const { type } = data;
 
-    const transformer = plugins
+    const transformer = ctx.plugins
       .getPluginSpec(modelTransformerSpec)
       .getModelTransformer(type);
-
-    return transformer.schema(ctx) as typeof baseTransformerSchema;
+    return transformer
+      .createSchema(ctx)
+      .and(baseTransformerSchema)
+      .parse(data, {
+        path: parseCtx.path,
+      }) as TransformerConfig;
   }),
 );
