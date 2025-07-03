@@ -1,10 +1,6 @@
 import type React from 'react';
 
-import { createEnumBaseSchema } from '@baseplate-dev/project-builder-lib';
-import {
-  useBlockUnsavedChangesNavigate,
-  useDefinitionSchema,
-} from '@baseplate-dev/project-builder-lib/web';
+import { useBlockUnsavedChangesNavigate } from '@baseplate-dev/project-builder-lib/web';
 import { FormActionBar, SectionList } from '@baseplate-dev/ui-components';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -20,9 +16,8 @@ export const Route = createFileRoute('/data/enums/edit/$key/')({
 
 function EnumEditPage(): React.JSX.Element {
   const { key } = Route.useParams();
-  const enumBaseSchema = useDefinitionSchema(createEnumBaseSchema);
   const { form, onSubmit, isSavingDefinition } = useEnumForm({
-    schema: enumBaseSchema.omit({ name: true, featureRef: true }),
+    omit: ['name', 'featureRef'],
     enumKey: key,
   });
   const { control, setValue } = form;

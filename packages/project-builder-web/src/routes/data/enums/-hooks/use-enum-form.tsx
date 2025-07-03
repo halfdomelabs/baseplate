@@ -3,7 +3,6 @@ import type {
   EnumConfigInput,
 } from '@baseplate-dev/project-builder-lib';
 import type { UseFormReturn } from 'react-hook-form';
-import type { z } from 'zod';
 
 import {
   createEnumBaseSchema,
@@ -20,14 +19,14 @@ import { useEventCallback } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { logAndFormatError } from '#src/services/error-formatter.js';
 import { NotFoundError } from '#src/utils/error.js';
 
 interface UseEnumFormOptions {
   enumKey?: string;
-  schema?: z.ZodTypeAny;
+  omit?: string[];
   onSubmitSuccess?: () => void;
   isCreate?: boolean;
 }
@@ -44,7 +43,7 @@ function createNewEnum(): EnumConfig {
 
 export function useEnumForm({
   enumKey,
-  schema,
+  omit,
   onSubmitSuccess,
   isCreate,
 }: UseEnumFormOptions = {}): {
@@ -71,15 +70,31 @@ export function useEnumForm({
   // memoize it to keep the same key when resetting
   const newEnumDefinition = useMemo(() => createNewEnum(), []);
 
-  const enumSchema = useDefinitionSchema(createEnumBaseSchema);
+  const baseEnumSchema = useDefinitionSchema(createEnumBaseSchema);
+
+  const fieldsToOmit = useRef(omit);
+
+  const finalSchema = useMemo(() => {
+    if (fieldsToOmit.current) {
+      return baseEnumSchema.omit(
+        Object.fromEntries(
+          fieldsToOmit.current.map((field) => [field, true]),
+        ) as Record<string | number, never>,
+      ) as typeof baseEnumSchema;
+    }
+
+    return baseEnumSchema;
+  }, [baseEnumSchema]);
 
   const defaultValues = useMemo(() => {
     const enumToUse = enumDefinition ?? newEnumDefinition;
-    return schema ? (enumSchema.parse(enumToUse) as EnumConfig) : enumToUse;
-  }, [enumDefinition, newEnumDefinition, schema, enumSchema]);
+    return fieldsToOmit.current
+      ? (finalSchema.parse(enumToUse) as EnumConfigInput)
+      : enumToUse;
+  }, [enumDefinition, newEnumDefinition, finalSchema]);
 
   const form = useResettableForm<EnumConfigInput>({
-    resolver: zodResolver(enumSchema),
+    resolver: zodResolver(finalSchema),
     defaultValues,
   });
 
