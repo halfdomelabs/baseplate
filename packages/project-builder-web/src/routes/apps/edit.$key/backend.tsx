@@ -18,13 +18,14 @@ import {
   SwitchFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 
 import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 export const Route = createFileRoute('/apps/edit/$key/backend')({
   component: BackendAppEditPage,
   loader: ({ context: { app }, params: { key } }) => {
+    if (!app) throw notFound();
     if (app.type !== 'backend') {
       throw redirect({ to: '/apps/edit/$key', params: { key } });
     }

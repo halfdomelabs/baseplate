@@ -17,7 +17,7 @@ import {
 export const Route = createFileRoute('/apps/edit/$key/admin')({
   component: AdminAppEditLayout,
   beforeLoad: ({ context: { app }, params: { key } }) => {
-    if (app.type !== 'admin') {
+    if (app?.type !== 'admin') {
       throw redirect({ to: '/apps/edit/$key', params: { key } });
     }
     return {

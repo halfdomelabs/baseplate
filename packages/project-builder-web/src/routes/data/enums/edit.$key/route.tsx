@@ -13,16 +13,22 @@ export const Route = createFileRoute('/data/enums/edit/$key')({
   beforeLoad: ({ params: { key }, context: { projectDefinition } }) => {
     const id = modelEnumEntityType.idFromKey(key);
     const enumDefinition = EnumUtils.byId(projectDefinition, id);
-    if (!enumDefinition) throw notFound();
+    if (!enumDefinition) return {};
     return {
       getTitle: () => enumDefinition.name,
       enumDefinition,
     };
   },
+  // Workaround for https://github.com/TanStack/router/issues/2139#issuecomment-2632375738
+  // where throwing notFound() in beforeLoad causes the not found component to be rendered incorrectly
+  loader: ({ context: { enumDefinition } }) => {
+    if (!enumDefinition) throw notFound();
+    return { enumDefinition };
+  },
 });
 
 function EnumEditLayout(): React.JSX.Element {
-  const { enumDefinition } = Route.useRouteContext();
+  const { enumDefinition } = Route.useLoaderData();
 
   return (
     <div

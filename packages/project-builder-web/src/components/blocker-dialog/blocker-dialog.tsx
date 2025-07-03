@@ -35,6 +35,7 @@ export function BlockerDialog(): React.JSX.Element {
     shouldBlockFn: () =>
       useBlockerDialogState.getState().activeBlockers.length > 0,
     withResolver: true,
+    disabled: !activeBlocker,
   });
 
   const [isContinuing, setIsContinuing] = useState(false);

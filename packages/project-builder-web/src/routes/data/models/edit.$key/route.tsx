@@ -22,16 +22,20 @@ export const Route = createFileRoute('/data/models/edit/$key')({
   beforeLoad: ({ params: { key }, context: { projectDefinition } }) => {
     const id = modelEntityType.idFromKey(key);
     const model = ModelUtils.byId(projectDefinition, id);
-    if (!model) throw notFound();
+    if (!model) return {};
     return {
       getTitle: () => model.name,
       model,
     };
   },
+  loader: ({ context: { model } }) => {
+    if (!model) throw notFound();
+    return { model };
+  },
 });
 
 function ModelEditLayout(): React.JSX.Element {
-  const { model } = Route.useRouteContext();
+  const { model } = Route.useLoaderData();
   const { key } = Route.useParams();
 
   return (

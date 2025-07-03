@@ -16,13 +16,14 @@ import {
   MultiComboboxFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 
 import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
 export const Route = createFileRoute('/apps/edit/$key/web')({
   component: WebAppForm,
-  beforeLoad: ({ context: { app }, params: { key } }) => {
+  loader: ({ context: { app }, params: { key } }) => {
+    if (!app) throw notFound();
     if (app.type !== 'web') {
       throw redirect({ to: '/apps/edit/$key', params: { key } });
     }
@@ -35,7 +36,7 @@ export const Route = createFileRoute('/apps/edit/$key/web')({
 function WebAppForm(): React.JSX.Element {
   const { saveDefinitionWithFeedback, isSavingDefinition } =
     useProjectDefinition();
-  const { appConfig } = Route.useRouteContext();
+  const { appConfig } = Route.useLoaderData();
 
   const webAppSchema = useDefinitionSchema(createWebAppSchema);
   const formProps = useResettableForm({

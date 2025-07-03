@@ -18,7 +18,7 @@ import {
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { useEffect } from 'react';
 
@@ -32,12 +32,22 @@ export const Route = createFileRoute(
   '/apps/edit/$key/admin/sections/$sectionKey',
 )({
   component: AdminAppEditSectionPage,
+  loader: ({ context: { adminDefinition }, params: { sectionKey } }) => {
+    const sectionId =
+      sectionKey === 'new'
+        ? undefined
+        : adminSectionEntityType.idFromKey(sectionKey);
+    const existingSection = sectionId
+      ? adminDefinition.sections?.find((section) => section.id === sectionId)
+      : undefined;
+    if (sectionId && !existingSection) throw notFound();
+    return { adminDefinition, sectionId, existingSection };
+  },
 });
 
 function AdminAppEditSectionPage(): React.JSX.Element {
-  const { adminDefinition } = Route.useRouteContext();
   const { requestConfirm } = useConfirmDialog();
-  const { key, sectionKey } = Route.useParams();
+  const { key } = Route.useParams();
   const {
     saveDefinitionWithFeedback,
     saveDefinitionWithFeedbackSync,
@@ -46,15 +56,7 @@ function AdminAppEditSectionPage(): React.JSX.Element {
     pluginContainer,
   } = useProjectDefinition();
   const navigate = useNavigate();
-
-  const sectionId =
-    sectionKey === 'new'
-      ? undefined
-      : adminSectionEntityType.idFromKey(sectionKey);
-
-  const existingSection = sectionId
-    ? adminDefinition.sections?.find((section) => section.id === sectionId)
-    : undefined;
+  const { adminDefinition, sectionId, existingSection } = Route.useLoaderData();
 
   const adminSectionSchema = useDefinitionSchema(createAdminSectionSchema);
   const schemaWithPlugins = zPluginWrapper(adminSectionSchema, pluginContainer);

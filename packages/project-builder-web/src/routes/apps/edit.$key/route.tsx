@@ -26,11 +26,19 @@ export const Route = createFileRoute('/apps/edit/$key')({
   beforeLoad: ({ params: { key }, context: { projectDefinition } }) => {
     const id = appEntityType.idFromKey(key);
     const app = id && projectDefinition.apps.find((a) => a.id === id);
-    if (!app) throw notFound();
+    if (!app) {
+      return {};
+    }
     return {
       getTitle: () => app.name,
       app,
     };
+  },
+  // Workaround for https://github.com/TanStack/router/issues/2139#issuecomment-2632375738
+  // where throwing notFound() in beforeLoad causes the not found component to be rendered incorrectly
+  loader: ({ context: { app } }) => {
+    if (!app) throw notFound();
+    return { app };
   },
 });
 
@@ -38,7 +46,7 @@ function EditAppPage(): React.JSX.Element {
   const { saveDefinitionWithFeedbackSync, definition, isSavingDefinition } =
     useProjectDefinition();
 
-  const { app } = Route.useRouteContext();
+  const { app } = Route.useLoaderData();
 
   const navigate = useNavigate({ from: Route.fullPath });
 

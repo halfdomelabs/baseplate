@@ -29,11 +29,15 @@ export const Route = createFileRoute('/plugins/edit/$id')({
   beforeLoad: ({ params: { id }, context: { schemaParserContext } }) => {
     const { availablePlugins } = schemaParserContext.pluginStore;
     const plugin = availablePlugins.find((p) => p.metadata.id === id);
-    if (!plugin) throw notFound();
+    if (!plugin) return {};
     return {
       getTitle: () => plugin.metadata.displayName,
       plugin,
     };
+  },
+  loader: ({ context: { plugin } }) => {
+    if (!plugin) throw notFound();
+    return { plugin };
   },
 });
 
@@ -48,7 +52,7 @@ function PluginConfigPage(): React.JSX.Element {
   const { id } = Route.useParams();
   const { requestConfirm } = useConfirmDialog();
   const navigate = useNavigate({ from: Route.fullPath });
-  const { plugin } = Route.useRouteContext();
+  const { plugin } = Route.useLoaderData();
 
   const pluginDefinition = PluginUtils.byId(definitionContainer.definition, id);
 
