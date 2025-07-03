@@ -86,12 +86,12 @@ export type EmbeddedRelationTransformerConfig = def.InferOutput<
 export const BUILT_IN_TRANSFORMERS = [
   createModelTransformerType({
     name: 'password',
-    schema: createPasswordTransformerSchema,
+    createSchema: createPasswordTransformerSchema,
     getName: () => 'Password',
   }),
   createModelTransformerType({
     name: 'embeddedRelation',
-    schema: createEmbeddedRelationTransformerSchema,
+    createSchema: createEmbeddedRelationTransformerSchema,
     getName: (definitionContainer, definition) =>
       definitionContainer.nameFromId(definition.foreignRelationRef),
   }),

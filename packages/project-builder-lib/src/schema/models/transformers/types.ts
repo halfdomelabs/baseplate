@@ -15,7 +15,7 @@ export interface ModelTransformerType<
   T extends DefinitionSchemaCreator = DefinitionSchemaCreator,
 > {
   name: string;
-  schema: T;
+  createSchema: T;
   getName: (
     definitionContainer: ProjectDefinitionContainer,
     definition: def.InferOutput<T>,

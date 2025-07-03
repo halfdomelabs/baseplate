@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { pluginConfigSpec, zWithPlugins } from '#src/plugins/index.js';
+import { pluginConfigSpec } from '#src/plugins/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { pluginEntityType } from './entity-types.js';
@@ -17,29 +17,29 @@ export const basePluginDefinitionSchema = z.object({
 export type BasePluginDefinition = z.infer<typeof basePluginDefinitionSchema>;
 
 export const createPluginWithConfigSchema = definitionSchema((ctx) =>
-  zWithPlugins((plugins, data) => {
-    const parsedBasePlugin = basePluginDefinitionSchema.parse(data);
-
-    const pluginKey = pluginEntityType.keyFromId(parsedBasePlugin.id);
-
-    const createConfigSchema = plugins
-      .getPluginSpec(pluginConfigSpec)
-      .getSchemaCreator(pluginKey);
-
-    let pluginDefinitionSchema = basePluginDefinitionSchema;
-
-    if (createConfigSchema) {
-      pluginDefinitionSchema = pluginDefinitionSchema.extend({
-        config: createConfigSchema(ctx),
-      }) as typeof basePluginDefinitionSchema;
-    }
-
-    const pluginDefinitionWithEnt = ctx.withEnt(pluginDefinitionSchema, {
+  ctx
+    .withEnt(basePluginDefinitionSchema.passthrough(), {
       type: pluginEntityType,
-    });
+    })
+    .transform((data, parseCtx) => {
+      const pluginKey = pluginEntityType.keyFromId(data.id);
 
-    return pluginDefinitionWithEnt;
-  }),
+      const createConfigSchema = ctx.plugins
+        .getPluginSpec(pluginConfigSpec)
+        .getSchemaCreator(pluginKey);
+
+      let pluginDefinitionSchema = basePluginDefinitionSchema;
+
+      if (createConfigSchema) {
+        pluginDefinitionSchema = pluginDefinitionSchema.extend({
+          config: createConfigSchema(ctx),
+        }) as typeof basePluginDefinitionSchema;
+      }
+
+      return pluginDefinitionSchema.parse(data, {
+        path: parseCtx.path,
+      });
+    }),
 );
 
 export const createPluginsSchema = definitionSchema((ctx) =>
