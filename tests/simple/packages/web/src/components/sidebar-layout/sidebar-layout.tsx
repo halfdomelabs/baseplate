@@ -35,7 +35,7 @@ function SidebarLayoutSidebar({
   return (
     <aside
       className={cn(
-        'sticky shrink-0 overflow-y-auto border-r border-border',
+        'border-border sticky shrink-0 overflow-y-auto border-r',
         {
           'w-64': width === 'sm',
           'w-72': width === 'md',

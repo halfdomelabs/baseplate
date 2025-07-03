@@ -127,7 +127,7 @@ export function CircularProgress({
       </svg>
       <span
         data-current-value={currentPercent}
-        className="absolute inset-0 m-auto size-fit animate-in delay-[var(--delay)] duration-[var(--transition-length)] ease-linear fade-in"
+        className="animate-in fade-in absolute inset-0 m-auto size-fit delay-[var(--delay)] duration-[var(--transition-length)] ease-linear"
       >
         {currentPercent}
       </span>
