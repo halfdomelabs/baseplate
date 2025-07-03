@@ -29,7 +29,7 @@ export function runPluginMigrations(
         if (migration.version > currentSchemaVersion) {
           try {
             pluginDefinition.config = migration.migrate(
-              pluginDefinition.config as unknown,
+              pluginDefinition.config,
             );
           } catch (error) {
             throw new Error(

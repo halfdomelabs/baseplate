@@ -9,14 +9,10 @@ import type {
   FixRefDeletionResult,
   ResolvedZodRefPayload,
 } from '#src/references/index.js';
-import type {
-  ProjectDefinition,
-  ProjectDefinitionSchema,
-} from '#src/schema/index.js';
+import type { ProjectDefinition } from '#src/schema/index.js';
 
 import {
   createPluginImplementationStore,
-  createProjectDefinitionSchemaWithContext,
   parseProjectDefinitionWithReferences,
 } from '#src/parser/parser.js';
 import {
@@ -91,13 +87,11 @@ export class ProjectDefinitionContainer {
    */
   fixRefDeletions(
     setter: (draftConfig: ProjectDefinition) => void,
-  ): FixRefDeletionResult<ProjectDefinitionSchema> {
+  ): FixRefDeletionResult<typeof createProjectDefinitionSchema> {
     const newDefinition = produce(setter)(this.definition);
-    const schemaWithContext = createProjectDefinitionSchemaWithContext(
-      newDefinition,
-      this.parserContext,
-    );
-    return fixRefDeletions(schemaWithContext, newDefinition);
+    return fixRefDeletions(createProjectDefinitionSchema, newDefinition, {
+      plugins: this.pluginStore,
+    });
   }
 
   /**

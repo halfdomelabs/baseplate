@@ -8,7 +8,7 @@ import type React from 'react';
 import {
   createDefinitionSchemaParserContext,
   createPluginImplementationStore,
-  createProjectDefinitionSchemaWithContext,
+  createProjectDefinitionSchema,
   fixRefDeletions,
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
@@ -82,19 +82,20 @@ export function ProjectDefinitionProvider({
       try {
         const newProjectDefinition = produce(definition, newConfig);
 
-        const projectDefinitionSchemaWithContext =
-          createProjectDefinitionSchemaWithContext(
-            newProjectDefinition,
-            parserContext,
-          );
+        const pluginStore = createPluginImplementationStore(
+          parserContext.pluginStore,
+          newProjectDefinition,
+        );
 
         const result = fixRefDeletions(
-          projectDefinitionSchemaWithContext,
+          createProjectDefinitionSchema,
           newProjectDefinition,
+          { plugins: pluginStore },
         );
         if (result.type === 'failure') {
           throw new RefDeleteError(result.issues);
         }
+
         const fixedProjectDefinition = result.value;
 
         fixedProjectDefinition.cliVersion = cliVersion;
@@ -102,7 +103,7 @@ export function ProjectDefinitionProvider({
         const definitionContainer = new ProjectDefinitionContainer(
           result.refPayload,
           parserContext,
-          projectDefinitionSchemaWithContext.pluginStore,
+          pluginStore,
         );
         const serializedContents = definitionContainer.toSerializedContents();
 
