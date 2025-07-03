@@ -33,6 +33,7 @@ export const createModelScalarFieldSchema = definitionSchema((ctx) =>
   ctx
     .withEnt(
       z.object({
+        id: z.string(),
         name: VALIDATORS.CAMEL_CASE_STRING,
         type: z.enum(SCALAR_FIELD_TYPES),
         isOptional: z.boolean().default(false),
@@ -177,6 +178,7 @@ export type ModelRelationFieldConfigInput = def.InferInput<
 export const createModelUniqueConstraintSchema = definitionSchema((ctx) =>
   ctx.withEnt(
     z.object({
+      id: z.string(),
       fields: z.array(
         z.object({
           fieldRef: ctx.withRef(z.string().min(1), {

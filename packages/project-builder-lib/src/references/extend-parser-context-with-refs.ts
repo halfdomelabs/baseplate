@@ -19,7 +19,7 @@ import {
   DefinitionReferenceMarker,
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
-import { zEnt, ZodRef, zRefBuilder } from './ref-builder.js';
+import { ZodRef, zRefBuilder } from './ref-builder.js';
 
 export type WithRefType = <
   T extends z.ZodTypeAny,
@@ -38,17 +38,7 @@ export type WithEntType = <
 >(
   schema: TObject,
   entity: DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>,
-) => z.ZodEffects<
-  ZodRef<
-    z.ZodObject<
-      TObject['shape'] & {
-        id: z.ZodType<string, z.ZodAnyDef, string>;
-      },
-      TObject['_def']['unknownKeys'],
-      TObject['_def']['catchall']
-    >
-  >
->;
+) => z.ZodEffects<TObject>;
 
 export type WithRefBuilder = <T extends z.ZodType>(
   schema: T,
@@ -91,18 +81,21 @@ export function extendParserContextWithRefs({
   >(
     schema: TObject,
     entity: DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>,
-  ): z.ZodEffects<
-    ZodRef<
-      z.ZodObject<
-        TObject['shape'] & {
-          id: z.ZodType<string, z.ZodAnyDef, string>;
-        },
-        TObject['_def']['unknownKeys'],
-        TObject['_def']['catchall']
-      >
-    >
-  > {
-    return zEnt(schema, entity).transform((value) => {
+  ): z.ZodEffects<TObject> {
+    if (!('id' in schema.shape)) {
+      throw new Error(
+        `Entity must have an id field. Entity type: ${entity.type.name}. Schema keys: ${Object.keys(
+          schema.shape,
+        ).join(', ')}`,
+      );
+    }
+    return schema.transform((value) => {
+      // Check if the id is valid
+      if (!('id' in value) || !entity.type.isId(value.id as string)) {
+        throw new Error(
+          `Invalid id for entity ${entity.type.name}. Id: ${value.id}`,
+        );
+      }
       if (transformReferences) {
         const existingAnnotations =
           REF_ANNOTATIONS_MARKER_SYMBOL in value

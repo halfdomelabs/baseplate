@@ -13,6 +13,7 @@ export const featureNameSchema = CASE_VALIDATORS.KEBAB_CASE;
 export const createFeatureSchema = definitionSchema((ctx) =>
   ctx.withEnt(
     z.object({
+      id: z.string(),
       name: z
         .string()
         .min(1)

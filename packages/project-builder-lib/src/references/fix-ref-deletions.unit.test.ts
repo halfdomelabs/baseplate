@@ -38,7 +38,7 @@ describe('fixRefDeletions', () => {
     const schemaCreator = definitionSchema((ctx) =>
       z.object({
         entity: z.array(
-          ctx.withEnt(z.object({ name: z.string() }), {
+          ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
             type: entityType,
           }),
         ),
@@ -74,7 +74,7 @@ describe('fixRefDeletions', () => {
     const schemaCreator = definitionSchema((ctx) =>
       z.object({
         entity: z.array(
-          ctx.withEnt(z.object({ name: z.string() }), {
+          ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
             type: entityType,
           }),
         ),
@@ -118,7 +118,7 @@ describe('fixRefDeletions', () => {
     const schemaCreator = definitionSchema((ctx) =>
       z.object({
         entity: z.array(
-          ctx.withEnt(z.object({ name: z.string() }), {
+          ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
             type: entityType,
           }),
         ),
@@ -154,7 +154,7 @@ describe('fixRefDeletions', () => {
     const schemaCreator = definitionSchema((ctx) =>
       z.object({
         entity: z.array(
-          ctx.withEnt(z.object({ name: z.string() }), {
+          ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
             type: entityType,
           }),
         ),

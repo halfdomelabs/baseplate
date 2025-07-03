@@ -51,7 +51,7 @@ describe('extract-definition-refs', () => {
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
             entity: z.array(
-              ctx.withEnt(z.object({ name: z.string() }), {
+              ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
                 type: entityType,
               }),
             ),
@@ -89,7 +89,7 @@ describe('extract-definition-refs', () => {
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
             entities: z.array(
-              ctx.withEnt(z.object({ name: z.string() }), {
+              ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
                 type: entityType,
               }),
             ),
@@ -133,7 +133,7 @@ describe('extract-definition-refs', () => {
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
             entities: z.array(
-              ctx.withEnt(z.object({ name: z.string() }), {
+              ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
                 type: entityType,
               }),
             ),
@@ -182,7 +182,7 @@ describe('extract-definition-refs', () => {
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
             entities: z.array(
-              ctx.withEnt(z.object({ name: z.string() }), {
+              ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
                 type: entityType,
               }),
             ),
@@ -222,7 +222,7 @@ describe('extract-definition-refs', () => {
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
             entities: z.array(
-              ctx.withEnt(z.object({ name: z.string() }), {
+              ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
                 type: entityType,
               }),
             ),
@@ -265,11 +265,15 @@ describe('extract-definition-refs', () => {
           z.object({
             model: ctx.withEnt(
               z.object({
+                id: z.string(),
                 name: z.string(),
-                field: ctx.withEnt(z.object({ name: z.string() }), {
-                  type: fieldType,
-                  parentPath: { context: 'model' },
-                }),
+                field: ctx.withEnt(
+                  z.object({ id: z.string(), name: z.string() }),
+                  {
+                    type: fieldType,
+                    parentPath: { context: 'model' },
+                  },
+                ),
               }),
               { type: modelType, addContext: 'model' },
             ),
@@ -340,12 +344,16 @@ describe('extract-definition-refs', () => {
             models: z.array(
               ctx.withEnt(
                 z.object({
+                  id: z.string(),
                   name: z.string(),
                   fields: z.array(
-                    ctx.withEnt(z.object({ name: z.string() }), {
-                      type: fieldType,
-                      parentPath: { context: 'model' },
-                    }),
+                    ctx.withEnt(
+                      z.object({ id: z.string(), name: z.string() }),
+                      {
+                        type: fieldType,
+                        parentPath: { context: 'model' },
+                      },
+                    ),
                   ),
                   relations: z.array(
                     z.object({
@@ -422,6 +430,7 @@ describe('extract-definition-refs', () => {
           z.object({
             person: ctx.withEnt(
               z.object({
+                id: z.string(),
                 firstName: z.string(),
                 lastName: z.string(),
               }),
@@ -470,12 +479,14 @@ describe('extract-definition-refs', () => {
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
             companies: z.array(
-              ctx.withEnt(z.object({ name: z.string() }), {
+              ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
                 type: companyType,
               }),
             ),
             people: z.array(
-              ctx.withEnt(z.object({ name: z.string() }), { type: personType }),
+              ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
+                type: personType,
+              }),
             ),
             personRef: ctx.withRef(z.string(), {
               type: personType,
@@ -507,9 +518,12 @@ describe('extract-definition-refs', () => {
 
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
-            company: ctx.withEnt(z.object({ name: z.string() }), {
-              type: companyType,
-            }),
+            company: ctx.withEnt(
+              z.object({ id: z.string(), name: z.string() }),
+              {
+                type: companyType,
+              },
+            ),
             person: ctx.withEnt(
               z.object({
                 name: z.string(),
@@ -577,7 +591,7 @@ describe('extract-definition-refs', () => {
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
             entities: z.array(
-              ctx.withEnt(z.object({ name: z.string() }), {
+              ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
                 type: entityType,
               }),
             ),
@@ -635,7 +649,9 @@ describe('extract-definition-refs', () => {
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
             entities: z.array(
-              ctx.withEnt(z.object({ name: z.string() }), { type: entityType }),
+              ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
+                type: entityType,
+              }),
             ),
             // Multiple references to same entity type
             ref1: ctx.withRef(z.string(), {
@@ -679,7 +695,7 @@ describe('extract-definition-refs', () => {
         const schemaCreator = definitionSchema((ctx) =>
           z.object({
             entities: z.array(
-              ctx.withEnt(z.object({ name: z.string() }), {
+              ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
                 type: entityType,
               }),
             ),

@@ -31,6 +31,7 @@ export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
       s3Adapters: z.array(
         ctx.withEnt(
           z.object({
+            id: z.string(),
             name: VALIDATORS.CAMEL_CASE_STRING,
             bucketConfigVar: VALIDATORS.CONSTANT_CASE_STRING,
             hostedUrlConfigVar: VALIDATORS.OPTIONAL_CONSTANT_CASE_STRING,

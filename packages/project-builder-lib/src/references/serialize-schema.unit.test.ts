@@ -34,7 +34,7 @@ describe('serializeSchema', () => {
     const schemaCreator = definitionSchema((ctx) =>
       z.object({
         entity: z.array(
-          ctx.withEnt(z.object({ name: z.string() }), {
+          ctx.withEnt(z.object({ id: z.string(), name: z.string() }), {
             type: entityType,
           }),
         ),
@@ -67,6 +67,7 @@ describe('serializeSchema', () => {
         entity: z.array(
           ctx.withEnt(
             z.object({
+              id: z.string(),
               name: z.string(),
             }),
             { type: entityType },
@@ -124,10 +125,12 @@ describe('serializeSchema', () => {
         models: z.array(
           ctx.withEnt(
             z.object({
+              id: z.string(),
               name: z.string(),
               fields: z.array(
                 ctx.withEnt(
                   z.object({
+                    id: z.string(),
                     name: z.string(),
                   }),
                   { type: fieldType, parentPath: { context: 'model' } },

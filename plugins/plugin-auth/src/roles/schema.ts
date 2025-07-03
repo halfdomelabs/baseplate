@@ -11,6 +11,7 @@ import { AUTH_DEFAULT_ROLES } from './constants.js';
 export const createAuthRoleSchema = definitionSchema((ctx) =>
   ctx.withEnt(
     z.object({
+      id: z.string(),
       name: z.string().min(1),
       comment: z.string().min(1),
       builtIn: z.boolean().default(false),

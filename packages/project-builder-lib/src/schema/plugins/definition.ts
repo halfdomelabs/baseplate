@@ -6,7 +6,7 @@ import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 import { pluginEntityType } from './entity-types.js';
 
 export const basePluginDefinitionSchema = z.object({
-  id: z.string().min(1),
+  id: z.string(),
   packageName: z.string(),
   name: z.string(),
   version: z.string(),

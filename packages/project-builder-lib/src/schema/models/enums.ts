@@ -10,6 +10,7 @@ import { modelEnumEntityType, modelEnumValueEntityType } from './types.js';
 export const createEnumValueSchema = definitionSchema((ctx) =>
   ctx.withEnt(
     z.object({
+      id: z.string(),
       name: z.string().min(1),
       friendlyName: z.string().min(1),
     }),
@@ -24,6 +25,7 @@ export type EnumValueConfig = def.InferOutput<typeof createEnumValueSchema>;
 
 export const createEnumBaseSchema = definitionSchema((ctx) =>
   z.object({
+    id: z.string(),
     name: z.string().min(1),
     featureRef: ctx.withRef(z.string().min(1), {
       type: featureEntityType,
