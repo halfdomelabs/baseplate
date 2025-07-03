@@ -98,13 +98,13 @@ describe('discoverPlugins', () => {
     );
   });
 
-  it('should throw error when package.json is not found', async () => {
+  it('should throw error when directory does not exist', async () => {
     // Arrange
     const projectDir = '/empty-project';
 
     // Act & Assert
     await expect(discoverPlugins(projectDir, mockLogger)).rejects.toThrow(
-      'Could not find root package.json file for the Baseplate project',
+      'The project directory /empty-project does not exist.',
     );
   });
 

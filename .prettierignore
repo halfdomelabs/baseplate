@@ -1,2 +1,3 @@
 pnpm-lock.yaml
 tests/
+**/route-tree.gen.ts

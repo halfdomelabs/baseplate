@@ -1,20 +1,20 @@
 import type { ErrorHandlerValue } from '@baseplate-dev/project-builder-lib/web';
 import type React from 'react';
 
-import { ErrorHandlerContext } from '@baseplate-dev/project-builder-lib/web';
+import {
+  ErrorHandlerContext,
+  useProjectDefinition,
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   ConfirmDialog,
   Toaster,
   TooltipProvider,
 } from '@baseplate-dev/ui-components';
+import { RouterProvider } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { Outlet } from 'react-router-dom';
 
-import {
-  BlockerDialog,
-  ErrorBoundary,
-  RefIssueDialog,
-} from '#src/components/index.js';
+import { ErrorBoundary, RefIssueDialog } from '#src/components/index.js';
+import { router } from '#src/router.js';
 import {
   formatError,
   logAndFormatError,
@@ -25,7 +25,18 @@ import { ClientVersionProvider } from './client-version-provider/client-version-
 import { ProjectDefinitionProvider } from './project-definition-provider/project-definition-provider.js';
 import { ProjectSelectorGate } from './project-selector-gate/project-selector-gate.js';
 
-function App(): React.JSX.Element {
+function AppRoutes(): React.ReactElement {
+  const { definition: projectDefinition, schemaParserContext } =
+    useProjectDefinition();
+  return (
+    <RouterProvider
+      router={router}
+      context={{ projectDefinition, schemaParserContext }}
+    />
+  );
+}
+
+export function App(): React.ReactElement {
   const errorHandler: ErrorHandlerValue = useMemo(
     () => ({
       formatError,
@@ -41,18 +52,15 @@ function App(): React.JSX.Element {
           <ClientVersionProvider>
             <ProjectSelectorGate>
               <ProjectDefinitionProvider>
-                <Outlet />
+                <AppRoutes />
                 <RefIssueDialog />
               </ProjectDefinitionProvider>
             </ProjectSelectorGate>
           </ClientVersionProvider>
           <Toaster />
           <ConfirmDialog />
-          <BlockerDialog />
         </TooltipProvider>
       </ErrorHandlerContext.Provider>
     </ErrorBoundary>
   );
 }
-
-export default App;

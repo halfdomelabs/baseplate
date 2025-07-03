@@ -10,8 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@baseplate-dev/ui-components';
+import { useBlocker } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
-import { useBlocker } from 'react-router-dom';
 
 import { logError } from '#src/services/error-logger.js';
 
@@ -30,17 +30,20 @@ export function BlockerDialog(): React.JSX.Element {
     (state) => state.clearRequestedBlockers,
   );
 
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      !!activeBlocker && currentLocation.pathname !== nextLocation.pathname,
-  );
+  const { proceed, reset, status } = useBlocker({
+    enableBeforeUnload: false,
+    shouldBlockFn: () =>
+      useBlockerDialogState.getState().activeBlockers.length > 0,
+    withResolver: true,
+    disabled: !activeBlocker,
+  });
 
   const [isContinuing, setIsContinuing] = useState(false);
 
   const resetBlockers = useCallback(() => {
-    blocker.reset?.();
     clearRequestedBlockers();
-  }, [blocker, clearRequestedBlockers]);
+    reset?.();
+  }, [reset, clearRequestedBlockers]);
 
   const continueBlockers = useCallback(
     async (
@@ -55,8 +58,8 @@ export function BlockerDialog(): React.JSX.Element {
             return;
           }
         }
-        if (blocker.state === 'blocked') {
-          blocker.proceed();
+        if (status === 'blocked') {
+          proceed();
         }
         for (const request of requestedBlockers) request.onContinue();
         clearRequestedBlockers();
@@ -64,19 +67,17 @@ export function BlockerDialog(): React.JSX.Element {
         setIsContinuing(false);
       }
     },
-    [blocker, requestedBlockers, clearRequestedBlockers, resetBlockers],
+    [status, proceed, requestedBlockers, clearRequestedBlockers, resetBlockers],
   );
 
   const shouldShowBlocker =
-    blocker.state === 'blocked' || requestedBlockers.length > 0;
+    status === 'blocked' || requestedBlockers.length > 0;
 
   useEffect(() => {
     if (shouldShowBlocker && !activeBlocker && !isContinuing) {
-      continueBlockers().catch((error: unknown) => {
-        logError(error);
-      });
+      proceed?.();
     }
-  }, [shouldShowBlocker, continueBlockers, activeBlocker, isContinuing]);
+  }, [shouldShowBlocker, proceed, activeBlocker, isContinuing]);
 
   const cancelButton = (
     <Button onClick={resetBlockers} variant="secondary">
@@ -88,11 +89,7 @@ export function BlockerDialog(): React.JSX.Element {
     activeBlocker?.buttonContinueWithoutSaveText && (
       <Button
         onClick={() =>
-          continueBlockers(activeBlocker.onContinueWithoutSave).catch(
-            (error: unknown) => {
-              logError(error);
-            },
-          )
+          continueBlockers(activeBlocker.onContinueWithoutSave).catch(logError)
         }
         disabled={isContinuing}
         variant="secondary"

@@ -1,37 +1,42 @@
 import type { IconElement } from '@baseplate-dev/ui-components';
 import type React from 'react';
 
-import { SheetClose } from '@baseplate-dev/ui-components';
+import { cn, SheetClose } from '@baseplate-dev/ui-components';
+import { createLink } from '@tanstack/react-router';
 import { HiDatabase } from 'react-icons/hi';
 import { MdApps, MdHome, MdOutlineSettings, MdWidgets } from 'react-icons/md';
-import { NavLink } from 'react-router-dom';
+
+interface SidebarNavigationIconProps
+  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  icon: IconElement;
+  label: React.ReactNode;
+}
 
 function SidebarNavigationIcon({
   icon: Icon,
-  to,
   label,
-  end,
-}: {
-  to: string;
-  icon: IconElement;
-  label: React.ReactNode;
-  end?: boolean;
-}): React.JSX.Element {
+  ...props
+}: SidebarNavigationIconProps): React.JSX.Element {
   return (
     <SheetClose asChild>
-      <NavLink
-        to={to}
-        className={`flex items-center gap-4 px-2.5 py-4 text-muted-foreground transition-colors hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground`}
-        end={end}
+      <a
+        {...props}
+        className={cn(
+          `flex items-center gap-4 px-2.5 py-4 text-muted-foreground transition-colors hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground`,
+          props.className,
+        )}
       >
         <Icon className="size-5 transition-all group-hover:scale-110" />
         {label}
-      </NavLink>
+      </a>
     </SheetClose>
   );
 }
 
+const SidebarNavigationLink = createLink(SidebarNavigationIcon);
+
 export function AppMobileSidebar(): React.JSX.Element {
+  // Need 'from="/"' to avoid false positive warnings (https://github.com/TanStack/router/issues/4010)
   return (
     <nav className="grid gap-6 text-lg font-medium">
       <div className="flex items-center space-x-2">
@@ -39,16 +44,29 @@ export function AppMobileSidebar(): React.JSX.Element {
         <h3>Baseplate</h3>
       </div>
       <div>
-        <SidebarNavigationIcon to="/" icon={MdHome} label="Home" end />
-        <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />
-        <SidebarNavigationIcon
+        <SidebarNavigationLink
+          to="/"
+          from="/"
+          icon={MdHome}
+          label="Home"
+          activeOptions={{ exact: true }}
+        />
+        <SidebarNavigationLink to="/apps" icon={MdApps} label="Apps" />
+        <SidebarNavigationLink
           to="/data/models"
+          from="/"
           icon={HiDatabase}
           label="Models"
         />
-        <SidebarNavigationIcon to="/plugins" icon={MdWidgets} label="Plugins" />
-        <SidebarNavigationIcon
+        <SidebarNavigationLink
+          to="/plugins"
+          from="/"
+          icon={MdWidgets}
+          label="Plugins"
+        />
+        <SidebarNavigationLink
           to="/settings"
+          from="/"
           icon={MdOutlineSettings}
           label="Settings"
         />

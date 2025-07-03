@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export async function getDefaultPlugins(logger) {
@@ -5,5 +6,5 @@ export async function getDefaultPlugins(logger) {
   const { discoverPlugins } = await import(
     '@baseplate-dev/project-builder-server/plugins'
   );
-  return discoverPlugins(fileURLToPath(import.meta.url), logger);
+  return discoverPlugins(path.dirname(fileURLToPath(import.meta.url)), logger);
 }
