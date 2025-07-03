@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export async function getDefaultPlugins(logger) {
   // dynamically import to avoid loading the server package unnecessarily

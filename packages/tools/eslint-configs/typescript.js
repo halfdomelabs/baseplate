@@ -113,6 +113,14 @@ export function generateTypescriptEslintConfig(options = []) {
           'error',
           { ignoreTernaryTests: true },
         ],
+
+        // Allow redirect and notFound to be thrown from routes (placing in generic config to allow it to be used in *.ts files too)
+        '@typescript-eslint/only-throw-error': [
+          'error',
+          {
+            allow: ['NotFoundError', 'Redirect'],
+          },
+        ],
       },
     },
 
@@ -143,14 +151,6 @@ export function generateTypescriptEslintConfig(options = []) {
         'import-x/consistent-type-specifier-style': [
           'error',
           'prefer-top-level',
-        ],
-
-        // Allow redirect and notFound to be thrown from routes (placing in generic config to allow it to be used in *.ts files too)
-        '@typescript-eslint/only-throw-error': [
-          'error',
-          {
-            allow: ['NotFoundError', 'Redirect'],
-          },
         ],
       },
       languageOptions: {

@@ -63,6 +63,16 @@ export const reactEslintConfig = tsEslint.config(
     rules: {
       // We use replace since it is not supported by ES2020
       'unicorn/prefer-string-replace-all': 'off',
+      // Support kebab case with - prefix to support ignored files in routes
+      'unicorn/filename-case': [
+        'error',
+        {
+          cases: {
+            kebabCase: true,
+          },
+          ignore: [String.raw`^-[a-z0-9\-\.]+$`],
+        },
+      ],
     },
   },
 

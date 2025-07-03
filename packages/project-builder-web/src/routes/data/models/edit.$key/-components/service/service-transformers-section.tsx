@@ -31,7 +31,7 @@ import { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdAdd, MdEdit, MdOutlineDelete } from 'react-icons/md';
 
-import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '#src/pages/data/models/-constants.js';
+import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '#src/routes/data/models/-constants.js';
 
 import { useEditedModelConfig } from '../../../-hooks/use-edited-model-config.js';
 import { ServiceTransformerDialog } from './service-transformer-dialog.js';
