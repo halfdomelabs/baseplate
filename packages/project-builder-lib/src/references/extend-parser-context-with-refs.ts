@@ -13,7 +13,6 @@ import type {
   DefinitionEntityInput,
   DefinitionReferenceInput,
   ZodBuilderFunction,
-  ZodRef,
   ZodRefBuilderInterface,
 } from './ref-builder.js';
 
@@ -21,7 +20,6 @@ import {
   DefinitionReferenceMarker,
   REF_ANNOTATIONS_MARKER_SYMBOL,
 } from './markers.js';
-import { zRefBuilder } from './ref-builder.js';
 
 export type WithRefType = <TEntityType extends DefinitionEntityType>(
   reference: DefinitionReferenceInput<string, TEntityType>,
@@ -41,7 +39,7 @@ export type WithEntType = <
 export type WithRefBuilder = <T extends z.ZodType>(
   schema: T,
   builder?: ZodBuilderFunction<z.TypeOf<T>>,
-) => z.ZodEffects<ZodRef<T>>;
+) => z.ZodEffects<T>;
 
 export function extendParserContextWithRefs({
   transformReferences,
@@ -105,18 +103,17 @@ export function extendParserContextWithRefs({
     });
   }
 
-  function wrappedZRefBuilder<T extends z.ZodType>(
+  function withRefBuilder<T extends z.ZodType>(
     schema: T,
     builder?: ZodBuilderFunction<z.TypeOf<T>>,
-  ): z.ZodEffects<ZodRef<T>> {
-    return zRefBuilder(schema, builder).transform((value) => {
+  ): z.ZodEffects<T> {
+    return schema.transform((value: unknown) => {
       if (!value) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we're returning a generic type
         return value;
       }
       if (typeof value !== 'object') {
         throw new TypeError(
-          `zRefBuilder requires an object, but got ${typeof value}`,
+          `refBuilder requires an object, but got ${typeof value}`,
         );
       }
       const existingAnnotations =
@@ -139,7 +136,6 @@ export function extendParserContextWithRefs({
       };
       builder?.(refBuilder, value);
       if (transformReferences) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we're returning a generic type
         return {
           ...value,
           [REF_ANNOTATIONS_MARKER_SYMBOL]: {
@@ -149,7 +145,7 @@ export function extendParserContextWithRefs({
           },
         };
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we're returning a generic type
+
       return value;
     });
   }
@@ -157,6 +153,6 @@ export function extendParserContextWithRefs({
   return {
     withRef,
     withEnt,
-    withRefBuilder: wrappedZRefBuilder,
+    withRefBuilder,
   };
 }

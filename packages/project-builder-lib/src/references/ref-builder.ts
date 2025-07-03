@@ -6,7 +6,6 @@ import type {
   ParseReturnType,
   SyncParseReturnType,
   TypeOf,
-  z,
   ZodTypeAny,
   ZodTypeDef,
 } from 'zod';
@@ -696,19 +695,6 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
       innerType: type,
       builder,
     });
-}
-
-/**
- * Convenience function for creating a ZodRef using a schema and an optional builder.
- * @param schema - The base Zod schema.
- * @param builder - Optional builder function.
- * @returns A new ZodRef instance.
- */
-export function zRefBuilder<T extends z.ZodType>(
-  schema: T,
-  builder?: ZodBuilderFunction<TypeOf<T>>,
-): ZodRef<T> {
-  return ZodRef.create(schema, builder);
 }
 
 /**
