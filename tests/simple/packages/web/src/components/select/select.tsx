@@ -101,7 +101,7 @@ function SelectContent({
               className={cn(
                 'h-full w-full rounded-[inherit] p-1',
                 position === 'popper'
-                  ? 'min-w-(--radix-select-trigger-width) max-h-[min(var(--max-popper-height),var(--radix-select-content-available-height))] w-full'
+                  ? 'max-h-[min(var(--max-popper-height),var(--radix-select-content-available-height))] w-full min-w-(--radix-select-trigger-width)'
                   : 'max-h-(--max-popper-height)',
               )}
               style={
@@ -130,7 +130,7 @@ function SelectLabel({
   return (
     <SelectPrimitive.Label
       data-slot="select-label"
-      className={cn('text-muted-foreground px-2 py-1.5 text-xs', className)}
+      className={cn('px-2 py-1.5 text-xs text-muted-foreground', className)}
       {...props}
     />
   );
@@ -164,7 +164,7 @@ function SelectSeparator({
   return (
     <SelectPrimitive.Separator
       data-slot="select-separator"
-      className={cn('bg-border pointer-events-none -mx-1 my-1 h-px', className)}
+      className={cn('pointer-events-none -mx-1 my-1 h-px bg-border', className)}
       {...props}
     />
   );
