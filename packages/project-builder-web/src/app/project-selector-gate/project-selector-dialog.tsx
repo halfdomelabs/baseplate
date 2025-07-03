@@ -14,10 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from '@baseplate-dev/ui-components';
-import { useNavigate } from '@tanstack/react-router';
 
 import { useProjects } from '#src/hooks/use-projects.js';
-import { logAndFormatError } from '#src/services/error-formatter.js';
 
 interface ProjectSelectDialogProps {
   onClose?: () => void;
@@ -29,7 +27,6 @@ export function ProjectSelectDialog({
   isOpen,
 }: ProjectSelectDialogProps): React.JSX.Element {
   const { currentProjectId, setCurrentProjectId, projects } = useProjects();
-  const navigate = useNavigate();
 
   return (
     <Dialog
@@ -71,7 +68,7 @@ export function ProjectSelectDialog({
                       variant="link"
                       onClick={() => {
                         setCurrentProjectId(project.id);
-                        navigate({ to: '/' }).catch(logAndFormatError);
+                        history.pushState(null, '', '/');
                         if (onClose) {
                           onClose();
                         }

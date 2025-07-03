@@ -4,6 +4,7 @@ import type { Logger } from '@baseplate-dev/sync';
 import { loadPluginsInPackage } from '@baseplate-dev/project-builder-lib/plugin-tools';
 import { notEmpty } from '@baseplate-dev/utils';
 import {
+  dirExists,
   findNearestPackageJson,
   readJsonWithSchema,
 } from '@baseplate-dev/utils/node';
@@ -20,13 +21,21 @@ export async function discoverPlugins(
   projectDirectory: string,
   logger: Logger,
 ): Promise<PluginMetadataWithPaths[]> {
+  const directoryExists = await dirExists(projectDirectory);
+  if (!directoryExists) {
+    throw new UserVisibleError(
+      `The project directory ${projectDirectory} does not exist.`,
+      'Make sure the project directory exists and is accessible.',
+    );
+  }
+
   const packageJsonPath = await findNearestPackageJson({
     cwd: projectDirectory,
   });
 
   if (!packageJsonPath) {
     throw new UserVisibleError(
-      'Could not find root package.json file for the Baseplate project',
+      `Could not find root package.json file for the Baseplate project at ${projectDirectory}.`,
       'Make sure the project-definition.json file is inside a valid Node package with @baseplate-dev/project-builder-cli.',
     );
   }
