@@ -91,7 +91,6 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
         <DialogTrigger asChild>
           <Button
             onClick={(e) => {
-              setIsOpen(true);
               if (!isSyncing && !hasConflicts) {
                 blockBeforeContinue({
                   onContinue: startSyncProject,

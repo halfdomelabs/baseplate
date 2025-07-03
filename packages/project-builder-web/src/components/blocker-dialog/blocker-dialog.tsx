@@ -32,16 +32,16 @@ export function BlockerDialog(): React.JSX.Element {
 
   const { proceed, reset, status } = useBlocker({
     enableBeforeUnload: false,
-    shouldBlockFn: ({ current, next }) =>
-      !!activeBlocker && current.pathname !== next.pathname,
+    shouldBlockFn: () =>
+      useBlockerDialogState.getState().activeBlockers.length > 0,
     withResolver: true,
   });
 
   const [isContinuing, setIsContinuing] = useState(false);
 
   const resetBlockers = useCallback(() => {
-    reset?.();
     clearRequestedBlockers();
+    reset?.();
   }, [reset, clearRequestedBlockers]);
 
   const continueBlockers = useCallback(
@@ -74,11 +74,9 @@ export function BlockerDialog(): React.JSX.Element {
 
   useEffect(() => {
     if (shouldShowBlocker && !activeBlocker && !isContinuing) {
-      continueBlockers().catch((error: unknown) => {
-        logError(error);
-      });
+      proceed?.();
     }
-  }, [shouldShowBlocker, continueBlockers, activeBlocker, isContinuing]);
+  }, [shouldShowBlocker, proceed, activeBlocker, isContinuing]);
 
   const cancelButton = (
     <Button onClick={resetBlockers} variant="secondary">
@@ -90,11 +88,7 @@ export function BlockerDialog(): React.JSX.Element {
     activeBlocker?.buttonContinueWithoutSaveText && (
       <Button
         onClick={() =>
-          continueBlockers(activeBlocker.onContinueWithoutSave).catch(
-            (error: unknown) => {
-              logError(error);
-            },
-          )
+          continueBlockers(activeBlocker.onContinueWithoutSave).catch(logError)
         }
         disabled={isContinuing}
         variant="secondary"
