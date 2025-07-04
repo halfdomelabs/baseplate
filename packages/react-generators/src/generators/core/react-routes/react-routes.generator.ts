@@ -10,10 +10,7 @@ import { z } from 'zod';
 import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';
 
 import { reactRoutesProvider } from '#src/providers/routes.js';
-import { upperCaseFirst } from '#src/utils/case.js';
-import { createRouteElement } from '#src/utils/routes.js';
 
-import { renderRoutes } from '../_utils/render-routes.js';
 import { reactNotFoundProvider } from '../react-not-found-handler/index.js';
 
 const descriptorSchema = z.object({
@@ -70,61 +67,61 @@ export const reactRoutesGenerator = createGenerator({
               return;
             }
 
-            if (isPassthrough) {
-              const renderedRoutes = renderRoutes(routes, layouts);
+            // if (isPassthrough) {
+            //   const renderedRoutes = renderRoutes(routes, layouts);
 
-              reactRoutes.registerRoute({
-                path: pathName,
-                layoutKey,
-                children: renderedRoutes,
-              });
-              for (const route of routes)
-                reactRoutes.registerRoute({
-                  ...route,
-                  path:
-                    route.path &&
-                    `${reactRoutes.getRoutePrefix()}/${pathName}/${route.path}`,
-                });
-              for (const layout of layouts) reactRoutes.registerLayout(layout);
-            } else {
-              // if we have an optional notFoundHandler, we need to register it as a route
-              if (reactNotFound) {
-                routes.push(reactNotFound.getNotFoundRoute());
-              }
+            //   reactRoutes.registerRoute({
+            //     path: pathName,
+            //     layoutKey,
+            //     children: renderedRoutes,
+            //   });
+            //   for (const route of routes)
+            //     reactRoutes.registerRoute({
+            //       ...route,
+            //       path:
+            //         route.path &&
+            //         `${reactRoutes.getRoutePrefix()}/${pathName}/${route.path}`,
+            //     });
+            //   for (const layout of layouts) reactRoutes.registerLayout(layout);
+            // } else {
+            //   // // if we have an optional notFoundHandler, we need to register it as a route
+            //   // if (reactNotFound) {
+            //   //   routes.push(reactNotFound.getNotFoundRoute());
+            //   // }
 
-              const renderedRoutes = renderRoutes(routes, layouts);
+            //   const renderedRoutes = renderRoutes(routes, layouts);
 
-              const componentName = `${upperCaseFirst(name)}Routes`;
+            //   const componentName = `${upperCaseFirst(name)}Routes`;
 
-              // await builder.apply(
-              //   typescriptFile.renderTemplateFile({
-              //     id: `route-${id}`,
-              //     template: CORE_REACT_ROUTES_GENERATED.templates.index,
-              //     destination: `${directoryBase}/index.tsx`,
-              //     variables: {
-              //       TPL_ROUTE_HEADER: TsCodeUtils.mergeFragments(
-              //         new Map(
-              //           layouts.map(
-              //             (layout) =>
-              //               [layout.key, layout.header] as [
-              //                 string,
-              //                 TsCodeFragment | undefined,
-              //               ],
-              //           ),
-              //         ),
-              //       ),
-              //       TPL_ROUTES: renderedRoutes,
-              //       TPL_ROUTES_NAME: `${upperCaseFirst(name)}FeatureRoutes`,
-              //     },
-              //   }),
-              // );
+            //   // await builder.apply(
+            //   //   typescriptFile.renderTemplateFile({
+            //   //     id: `route-${id}`,
+            //   //     template: CORE_REACT_ROUTES_GENERATED.templates.index,
+            //   //     destination: `${directoryBase}/index.tsx`,
+            //   //     variables: {
+            //   //       TPL_ROUTE_HEADER: TsCodeUtils.mergeFragments(
+            //   //         new Map(
+            //   //           layouts.map(
+            //   //             (layout) =>
+            //   //               [layout.key, layout.header] as [
+            //   //                 string,
+            //   //                 TsCodeFragment | undefined,
+            //   //               ],
+            //   //           ),
+            //   //         ),
+            //   //       ),
+            //   //       TPL_ROUTES: renderedRoutes,
+            //   //       TPL_ROUTES_NAME: `${upperCaseFirst(name)}FeatureRoutes`,
+            //   //     },
+            //   //   }),
+            //   // );
 
-              reactRoutes.registerRoute({
-                path: `${pathName}/*`,
-                layoutKey,
-                element: createRouteElement(componentName, directoryBase),
-              });
-            }
+            //   reactRoutes.registerRoute({
+            //     path: `${pathName}/*`,
+            //     layoutKey,
+            //     element: createRouteElement(componentName, directoryBase),
+            //   });
+            // }
           },
         };
       },
