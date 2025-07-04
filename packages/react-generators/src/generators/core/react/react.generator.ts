@@ -153,8 +153,8 @@ export const reactGenerator = createGenerator({
 
             await builder.apply(
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_GENERATED.templates.index,
-                destination: paths.index,
+                template: CORE_REACT_GENERATED.templates.main,
+                destination: paths.main,
                 variables: {
                   TPL_APP: appFragment ?? '<div />',
                   TPL_HEADER: TsCodeUtils.mergeFragments(

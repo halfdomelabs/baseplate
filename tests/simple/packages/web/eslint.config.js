@@ -31,6 +31,7 @@ const IGNORE_FILES = [
   'node_modules',
   'src/generated/graphql.tsx',
   'src/generated/graphql.tsx',
+  'src/route-tree.gen.ts',
 ];
 
 // Specifies which files should use the default tsconfig.json project

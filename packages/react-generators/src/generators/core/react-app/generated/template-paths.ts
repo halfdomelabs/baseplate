@@ -17,7 +17,7 @@ const coreReactAppPathsTask = createGeneratorTask({
 
     return {
       providers: {
-        coreReactAppPaths: { app: `${srcRoot}/app/App.tsx` },
+        coreReactAppPaths: { app: `${srcRoot}/app/app.tsx` },
       },
     };
   },

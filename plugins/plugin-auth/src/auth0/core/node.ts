@@ -82,7 +82,6 @@ export default createPlatformPluginExport({
           auth0Apollo: auth0ApolloGenerator({}),
           auth0Components: auth0ComponentsGenerator({}),
           auth0Callback: reactRoutesGenerator({
-            id: 'auth',
             name: 'auth',
             children: {
               auth: auth0CallbackGenerator({}),
@@ -104,7 +103,6 @@ export default createPlatformPluginExport({
           auth0Apollo: auth0ApolloGenerator({}),
           auth0Components: auth0ComponentsGenerator({}),
           auth0Callback: reactRoutesGenerator({
-            id: 'auth',
             name: 'auth',
             children: {
               auth: auth0CallbackGenerator({}),

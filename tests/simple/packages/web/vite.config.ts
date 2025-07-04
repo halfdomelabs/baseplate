@@ -1,4 +1,5 @@
 import tailwindcss from '@tailwindcss/vite';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv } from 'vite';
 import svgrPlugin from 'vite-plugin-svgr';
@@ -10,7 +11,18 @@ export default defineConfig(({ mode }) => {
 
   return {
     build: { outDir: 'build' },
-    plugins: [tailwindcss(), react(), svgrPlugin(), viteTsconfigPaths()],
+    plugins: [
+      tailwindcss(),
+      tanstackRouter({
+        target: 'react',
+        autoCodeSplitting: true,
+        generatedRouteTree: './src/route-tree.gen.ts',
+        quoteStyle: 'single',
+      }),
+      react(),
+      svgrPlugin(),
+      viteTsconfigPaths(),
+    ],
     server: {
       port: envVars.PORT ? Number.parseInt(envVars.PORT, 10) : 3000,
       proxy: envVars.DEV_BACKEND_HOST

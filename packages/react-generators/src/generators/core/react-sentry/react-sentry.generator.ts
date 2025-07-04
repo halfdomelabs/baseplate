@@ -6,9 +6,7 @@ import {
   packageScope,
   tsCodeFragment,
   TsCodeUtils,
-  tsHoistedFragment,
   tsImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
@@ -21,12 +19,8 @@ import { z } from 'zod';
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 import { authIdentifyProvider } from '#src/generators/auth/auth-identify/index.js';
 
-import {
-  reactConfigImportsProvider,
-  reactConfigProvider,
-} from '../react-config/index.js';
+import { reactConfigProvider } from '../react-config/index.js';
 import { reactErrorConfigProvider } from '../react-error/index.js';
-import { reactRouterConfigProvider } from '../react-router/index.js';
 import { CORE_REACT_SENTRY_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -55,6 +49,7 @@ export const reactSentryGenerator = createGenerator({
     }),
     paths: CORE_REACT_SENTRY_GENERATED.paths.task,
     imports: CORE_REACT_SENTRY_GENERATED.imports.task,
+    renderers: CORE_REACT_SENTRY_GENERATED.renderers.task,
     reactError: createProviderTask(
       reactErrorConfigProvider,
       (reactErrorConfig) => {
@@ -97,26 +92,14 @@ export const reactSentryGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        reactConfigImports: reactConfigImportsProvider,
         reactSentryConfigValues: reactSentryConfigValuesProvider,
-        paths: CORE_REACT_SENTRY_GENERATED.paths.provider,
+        renderers: CORE_REACT_SENTRY_GENERATED.renderers.provider,
       },
-      run({
-        typescriptFile,
-        reactConfigImports,
-        reactSentryConfigValues: { sentryScopeActions },
-        paths,
-      }) {
+      run({ reactSentryConfigValues: { sentryScopeActions }, renderers }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: CORE_REACT_SENTRY_GENERATED.templates.sentry,
-                destination: paths.sentry,
-                importMapProviders: {
-                  reactConfigImports,
-                },
+              renderers.sentry.render({
                 variables: {
                   TPL_SENTRY_SCOPE_ACTIONS:
                     TsCodeUtils.mergeFragments(sentryScopeActions),
@@ -125,28 +108,6 @@ export const reactSentryGenerator = createGenerator({
             );
           },
         };
-      },
-    }),
-    addRouterDomIntegration: createGeneratorTask({
-      dependencies: {
-        reactRouterConfig: reactRouterConfigProvider,
-      },
-      run({ reactRouterConfig }) {
-        reactRouterConfig.routesComponent.set(
-          tsCodeFragment('SentryRoutes', undefined, {
-            hoistedFragments: [
-              tsHoistedFragment(
-                'sentry-routes',
-                `const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);`,
-                [
-                  tsImportBuilder().namespace('Sentry').from('@sentry/react'),
-                  tsImportBuilder(['Routes']).from('react-router-dom'),
-                ],
-              ),
-            ],
-          }),
-        );
-        return {};
       },
     }),
   }),

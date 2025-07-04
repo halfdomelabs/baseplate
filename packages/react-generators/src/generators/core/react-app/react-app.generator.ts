@@ -71,7 +71,7 @@ export const reactAppGenerator = createGenerator({
         reactBaseConfig.appFragment.set(
           tsCodeFragment(
             '<App />',
-            tsImportBuilder().default('App').from('@/src/app/App'),
+            tsImportBuilder(['App']).from('@/src/app/app'),
           ),
         );
       },

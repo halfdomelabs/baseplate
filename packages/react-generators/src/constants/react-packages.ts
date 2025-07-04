@@ -2,7 +2,8 @@ export const REACT_PACKAGES = {
   // React
   react: '19.1.0',
   'react-dom': '19.1.0',
-  'react-router-dom': '6.30.0',
+  '@tanstack/react-router': '1.124.0',
+  '@tanstack/router-plugin': '1.124.0',
   '@types/node': `^22.0.0`,
   '@types/react': '19.1.3',
   '@types/react-dom': '19.1.3',

@@ -5,11 +5,11 @@ import { reactComponentsImportsProvider } from '#src/generators/core/react-compo
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
 
 const createPage = createTsTemplateFile({
-  fileOptions: { generatorTemplatePath: 'create.page.tsx', kind: 'instance' },
-  importMapProviders: {},
+  fileOptions: { generatorTemplatePath: 'create.tsx', kind: 'instance' },
+  importMapProviders: { reactErrorImports: reactErrorImportsProvider },
   name: 'create-page',
   source: {
-    path: path.join(import.meta.dirname, '../templates/create.page.tsx'),
+    path: path.join(import.meta.dirname, '../templates/create.tsx'),
   },
   variables: {
     TPL_COMPONENT_NAME: {},
@@ -21,18 +21,19 @@ const createPage = createTsTemplateFile({
     TPL_MODEL_NAME: {},
     TPL_MUTATION_NAME: {},
     TPL_REFETCH_DOCUMENT: {},
+    TPL_ROUTE_VALUE: {},
   },
 });
 
 const editForm = createTsTemplateFile({
-  fileOptions: { generatorTemplatePath: 'EditForm.tsx', kind: 'instance' },
+  fileOptions: { generatorTemplatePath: 'edit-form.tsx', kind: 'instance' },
   importMapProviders: {
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
   },
   name: 'edit-form',
   source: {
-    path: path.join(import.meta.dirname, '../templates/EditForm.tsx'),
+    path: path.join(import.meta.dirname, '../templates/edit-form.tsx'),
   },
   variables: {
     TPL_COMPONENT_NAME: {},
@@ -46,11 +47,11 @@ const editForm = createTsTemplateFile({
 });
 
 const editPage = createTsTemplateFile({
-  fileOptions: { generatorTemplatePath: 'edit.page.tsx', kind: 'instance' },
-  importMapProviders: {},
+  fileOptions: { generatorTemplatePath: 'edit.tsx', kind: 'instance' },
+  importMapProviders: { reactErrorImports: reactErrorImportsProvider },
   name: 'edit-page',
   source: {
-    path: path.join(import.meta.dirname, '../templates/edit.page.tsx'),
+    path: path.join(import.meta.dirname, '../templates/edit.tsx'),
   },
   variables: {
     TPL_COMPONENT_NAME: {},
@@ -60,6 +61,7 @@ const editPage = createTsTemplateFile({
     TPL_FORM_DATA_NAME: {},
     TPL_MODEL_NAME: {},
     TPL_MUTATION_NAME: {},
+    TPL_ROUTE_VALUE: {},
     TPL_UPDATE_MUTATION: {},
   },
 });
@@ -80,7 +82,7 @@ const schema = createTsTemplateFile({
 
 export const ADMIN_ADMIN_CRUD_EDIT_TEMPLATES = {
   createPage,
-  editPage,
   editForm,
+  editPage,
   schema,
 };

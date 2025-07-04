@@ -4,8 +4,6 @@ import { z } from 'zod';
 
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
-import { reactRoutesProvider } from '#src/providers/routes.js';
-import { createRouteElement } from '#src/utils/routes.js';
 
 import { ADMIN_ADMIN_HOME_GENERATED } from './generated/index.js';
 
@@ -22,22 +20,9 @@ export const adminHomeGenerator = createGenerator({
         reactComponentsImports: reactComponentsImportsProvider,
         authHooksImports: authHooksImportsProvider,
         typescriptFile: typescriptFileProvider,
-        reactRoutes: reactRoutesProvider,
         paths: ADMIN_ADMIN_HOME_GENERATED.paths.provider,
       },
-      run({
-        authHooksImports,
-        reactComponentsImports,
-        reactRoutes,
-        typescriptFile,
-        paths,
-      }) {
-        reactRoutes.registerRoute({
-          index: true,
-          element: createRouteElement('Home', paths.home),
-          layoutKey: 'admin',
-        });
-
+      run({ authHooksImports, reactComponentsImports, typescriptFile, paths }) {
         return {
           build: async (builder) => {
             await builder.apply(

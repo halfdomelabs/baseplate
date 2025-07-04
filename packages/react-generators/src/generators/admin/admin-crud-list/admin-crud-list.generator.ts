@@ -9,7 +9,8 @@ import {
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
-import { notEmpty } from '@baseplate-dev/utils';
+import { notEmpty, quot } from '@baseplate-dev/utils';
+import { kebabCase } from 'es-toolkit';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
 
@@ -17,7 +18,6 @@ import { reactComponentsImportsProvider } from '#src/generators/core/react-compo
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { titleizeCamel } from '#src/utils/case.js';
-import { createRouteElement } from '#src/utils/routes.js';
 import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
 
 import type { AdminCrudColumn } from '../_providers/admin-crud-column-container.js';
@@ -59,9 +59,10 @@ export const adminCrudListGenerator = createGenerator({
         reactComponentsImports,
         reactErrorImports,
       }) {
+        const routePrefix = reactRoutes.getRoutePrefix();
         const columns: AdminCrudColumn[] = [];
-        const listPagePath = `${reactRoutes.getDirectoryBase()}/list/index.page.tsx`;
-        const tableComponentPath = `${reactRoutes.getDirectoryBase()}/list/${modelName}Table.tsx`;
+        const listPagePath = `${reactRoutes.getDirectoryBase()}/index.tsx`;
+        const tableComponentPath = `${reactRoutes.getDirectoryBase()}/-components/${kebabCase(modelName)}-table.tsx`;
         const tableComponentName = `${modelName}Table`;
 
         const listInfo = adminCrudQueries.getListQueryHookInfo();
@@ -128,6 +129,7 @@ export const adminCrudListGenerator = createGenerator({
                 template: ADMIN_ADMIN_CRUD_LIST_GENERATED.templates.listPage,
                 destination: listPagePath,
                 variables: {
+                  TPL_ROUTE_VALUE: quot(`${routePrefix}/`),
                   TPL_PAGE_NAME: listPageComponentName,
                   TPL_DELETE_FUNCTION: deleteInfo.fieldName,
                   TPL_DELETE_MUTATION: deleteInfo.hookExpression,
@@ -136,8 +138,7 @@ export const adminCrudListGenerator = createGenerator({
                   TPL_PLURAL_MODEL: titleizeCamel(pluralize(modelName)),
                   TPL_TABLE_COMPONENT: tsCodeFragment(
                     `<${tableComponentName} deleteItem={handleDeleteItem} items={data.${listInfo.fieldName}} ${tableLoaderExtraProps} />`,
-                    TsCodeUtils.defaultImport(
-                      tableComponentName,
+                    TsCodeUtils.importBuilder([tableComponentName]).from(
                       tableComponentPath,
                     ),
                   ),
@@ -148,12 +149,14 @@ export const adminCrudListGenerator = createGenerator({
                     : tsCodeFragment(
                         `
             <div className="block">
-            <Link to="new">
+            <Link to="${routePrefix}/new">
               <Button>Create ${titleizeCamel(modelName)}</Button>
             </Link>
           </div>`,
                         [
-                          tsImportBuilder(['Link']).from('react-router-dom'),
+                          tsImportBuilder(['Link']).from(
+                            '@tanstack/react-router',
+                          ),
                           reactComponentsImports.Button.declaration(),
                           reactComponentsImports.ErrorableLoader.declaration(),
                         ],
@@ -167,11 +170,6 @@ export const adminCrudListGenerator = createGenerator({
                 },
               }),
             );
-
-            reactRoutes.registerRoute({
-              index: true,
-              element: createRouteElement(listPageComponentName, listPagePath),
-            });
 
             const headers = sortedColumns.map(
               (column) =>
@@ -212,6 +210,7 @@ export const adminCrudListGenerator = createGenerator({
                     deleteItem,
                     ${dataDependencies.map((d) => d.propName).join(',\n')}
                   }`,
+                  TPL_EDIT_ROUTE: quot(`${routePrefix}/$id`),
                 },
                 importMapProviders: {
                   reactComponentsImports,

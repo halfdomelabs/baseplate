@@ -16,12 +16,12 @@ const favicon = createRawTemplateFile({
   fileOptions: { kind: 'singleton' },
 });
 
-const index = createTsTemplateFile({
+const main = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
-  name: 'index',
+  name: 'main',
   source: {
-    path: path.join(import.meta.dirname, '../templates/src/index.tsx'),
+    path: path.join(import.meta.dirname, '../templates/src/main.tsx'),
   },
   variables: { TPL_APP: {}, TPL_HEADER: {} },
 });
@@ -71,4 +71,4 @@ const viteConfig = createTsTemplateFile({
   variables: { TPL_CONFIG: {} },
 });
 
-export const CORE_REACT_TEMPLATES = { staticGroup, viteConfig, index, favicon };
+export const CORE_REACT_TEMPLATES = { staticGroup, viteConfig, main, favicon };

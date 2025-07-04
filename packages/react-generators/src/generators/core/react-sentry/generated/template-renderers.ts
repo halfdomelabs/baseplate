@@ -5,6 +5,7 @@ import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { reactConfigImportsProvider } from '#src/generators/core/react-config/generated/ts-import-providers.js';
+import { reactRouterImportsProvider } from '#src/generators/core/react-router/generated/ts-import-providers.js';
 
 import { CORE_REACT_SENTRY_PATHS } from './template-paths.js';
 import { CORE_REACT_SENTRY_TEMPLATES } from './typed-templates.js';
@@ -30,10 +31,11 @@ const coreReactSentryRenderersTask = createGeneratorTask({
   dependencies: {
     paths: CORE_REACT_SENTRY_PATHS.provider,
     reactConfigImports: reactConfigImportsProvider,
+    reactRouterImports: reactRouterImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { coreReactSentryRenderers: coreReactSentryRenderers.export() },
-  run({ paths, reactConfigImports, typescriptFile }) {
+  run({ paths, reactConfigImports, reactRouterImports, typescriptFile }) {
     return {
       providers: {
         coreReactSentryRenderers: {
@@ -44,6 +46,7 @@ const coreReactSentryRenderersTask = createGeneratorTask({
                 destination: paths.sentry,
                 importMapProviders: {
                   reactConfigImports,
+                  reactRouterImports,
                 },
                 ...options,
               }),

@@ -13,7 +13,6 @@ import {
   apolloSentryGenerator,
   composeReactGenerators,
   reactApolloGenerator,
-  reactNotFoundHandlerGenerator,
   reactRouterGenerator,
   reactSentryGenerator,
   reactTailwindGenerator,
@@ -42,11 +41,11 @@ function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
         reactRouter: reactRouterGenerator({
           children: safeMerge(
             {
-              reactNotFoundHandler: reactNotFoundHandlerGenerator({}),
               features: compileWebFeatures(builder),
             },
             rootFeatures,
           ),
+          renderPlaceholderIndex: true,
         }),
         reactTailwind: reactTailwindGenerator({}),
         reactSentry: reactSentryGenerator({}),

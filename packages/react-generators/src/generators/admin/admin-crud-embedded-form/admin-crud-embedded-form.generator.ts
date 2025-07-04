@@ -16,7 +16,7 @@ import {
 } from '@baseplate-dev/sync';
 import { notEmpty } from '@baseplate-dev/utils';
 import { posixJoin } from '@baseplate-dev/utils/node';
-import { sortBy } from 'es-toolkit';
+import { kebabCase, sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
 import type { GraphQLField } from '#src/writers/graphql/index.js';
@@ -223,7 +223,7 @@ export const adminCrudEmbeddedFormGenerator = createGenerator({
 
         const formPath = posixJoin(
           adminCrudEdit.getDirectoryBase(),
-          `${formName}.tsx`,
+          `-components/${kebabCase(formName)}.tsx`,
         );
 
         const inputDataDependencies = inputFields.flatMap(

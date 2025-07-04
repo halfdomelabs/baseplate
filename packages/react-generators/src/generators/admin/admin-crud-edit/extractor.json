@@ -1,15 +1,20 @@
 {
   "name": "admin/admin-crud-edit",
   "templates": {
-    "create.page.tsx": {
+    "create.tsx": {
       "name": "create-page",
       "type": "ts",
       "fileOptions": {
-        "generatorTemplatePath": "create.page.tsx",
+        "generatorTemplatePath": "create.tsx",
         "kind": "instance"
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
       "variables": {
         "TPL_COMPONENT_NAME": {},
         "TPL_CREATE_MUTATION": {},
@@ -19,34 +24,15 @@
         "TPL_FORM_DATA_NAME": {},
         "TPL_MODEL_NAME": {},
         "TPL_MUTATION_NAME": {},
-        "TPL_REFETCH_DOCUMENT": {}
+        "TPL_REFETCH_DOCUMENT": {},
+        "TPL_ROUTE_VALUE": {}
       }
     },
-    "edit.page.tsx": {
-      "name": "edit-page",
-      "type": "ts",
-      "fileOptions": {
-        "generatorTemplatePath": "edit.page.tsx",
-        "kind": "instance"
-      },
-      "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
-      "importMapProviders": {},
-      "variables": {
-        "TPL_COMPONENT_NAME": {},
-        "TPL_DATA_GATE": {},
-        "TPL_DATA_LOADER": {},
-        "TPL_EDIT_FORM": {},
-        "TPL_FORM_DATA_NAME": {},
-        "TPL_MODEL_NAME": {},
-        "TPL_MUTATION_NAME": {},
-        "TPL_UPDATE_MUTATION": {}
-      }
-    },
-    "EditForm.tsx": {
+    "edit-form.tsx": {
       "name": "edit-form",
       "type": "ts",
       "fileOptions": {
-        "generatorTemplatePath": "EditForm.tsx",
+        "generatorTemplatePath": "edit-form.tsx",
         "kind": "instance"
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
@@ -68,6 +54,32 @@
         "TPL_FORM_DATA_NAME": {},
         "TPL_HEADER": {},
         "TPL_INPUTS": {}
+      }
+    },
+    "edit.tsx": {
+      "name": "edit-page",
+      "type": "ts",
+      "fileOptions": {
+        "generatorTemplatePath": "edit.tsx",
+        "kind": "instance"
+      },
+      "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
+      "importMapProviders": {
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "variables": {
+        "TPL_COMPONENT_NAME": {},
+        "TPL_DATA_GATE": {},
+        "TPL_DATA_LOADER": {},
+        "TPL_EDIT_FORM": {},
+        "TPL_FORM_DATA_NAME": {},
+        "TPL_MODEL_NAME": {},
+        "TPL_MUTATION_NAME": {},
+        "TPL_ROUTE_VALUE": {},
+        "TPL_UPDATE_MUTATION": {}
       }
     },
     "schema.ts": {

@@ -252,4 +252,62 @@ describe('toposort', () => {
     expect(sortedReverse).toEqual(['a', 'c', 'b']);
     expectOrder(sorted, edges);
   });
+
+  it('should throw ToposortCyclicalDependencyError for complex graph with cycle', () => {
+    const nodes = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+    const edges: [string, string][] = [
+      // Non-cyclical dependencies
+      ['a', 'b'],
+      ['a', 'c'],
+      ['b', 'd'],
+      ['c', 'e'],
+      ['d', 'f'],
+      ['e', 'f'],
+      // Cyclical dependencies
+      ['f', 'g'],
+      ['g', 'c'], // Creates cycle: c -> e -> f -> g -> c
+    ];
+    try {
+      toposort(nodes, edges);
+    } catch (e) {
+      expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
+      const { cyclePath } = e as ToposortCyclicalDependencyError;
+      // The cycle should contain: c -> e -> f -> g -> c
+      expect(cyclePath).toContain('c');
+      expect(cyclePath).toContain('e');
+      expect(cyclePath).toContain('f');
+      expect(cyclePath).toContain('g');
+      expect(cyclePath[0]).toBe(cyclePath.at(-1)); // Should start and end with same node
+      expect(cyclePath.length).toBeGreaterThan(3); // Should have at least 4 nodes in the cycle
+    }
+  });
+
+  it('should detect cycle in disconnected components where first unvisited node has no cycle', () => {
+    // This test case reproduces the bug where cycle detection would fail
+    // if the first unvisited node doesn't lead to a cycle, but other unvisited nodes do
+    const nodes = ['1', 'a', 'b', 'c', 'd', 'z'];
+    const edges: [string, string][] = [
+      // Create a scenario where some nodes are processed by topological sort
+      // but 'isolated' will be only depended on by the cycle
+      ['b', '1'],
+      ['b', 'z'],
+      ['b', 'c'],
+      ['c', 'd'],
+      ['d', 'b'], // Creates cycle: b -> c -> d -> b
+    ];
+
+    try {
+      toposort(nodes, edges);
+      throw new Error('Expected ToposortCyclicalDependencyError');
+    } catch (e) {
+      expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
+      const { cyclePath } = e as ToposortCyclicalDependencyError;
+      // Should find the cycle despite 'b' being the first unvisited node
+      expect(cyclePath.length).toBeGreaterThan(0);
+      expect(cyclePath).toContain('b');
+      expect(cyclePath).toContain('c');
+      expect(cyclePath).toContain('d');
+      expect(cyclePath[0]).toBe(cyclePath.at(-1)); // Should start and end with same node
+    }
+  });
 });

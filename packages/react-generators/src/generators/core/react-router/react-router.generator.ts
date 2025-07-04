@@ -1,41 +1,44 @@
-import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+import type {
+  TsCodeFragment,
+  TsTemplateOutputTemplateMetadata,
+} from '@baseplate-dev/core-generators';
 
 import {
   createNodePackagesTask,
+  eslintConfigProvider,
   extractPackageVersions,
   packageScope,
+  pathRootsProvider,
+  prettierProvider,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-  typescriptFileProvider,
+  tsTemplate,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
-  createReadOnlyProviderType,
+  createProviderTask,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';
-
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
-import {
-  reactRoutesProvider,
-  reactRoutesReadOnlyProvider,
-} from '#src/providers/routes.js';
+import { reactRoutesProvider } from '#src/providers/routes.js';
 
-import { renderRoutes } from '../_utils/render-routes.js';
 import { reactAppConfigProvider } from '../react-app/index.js';
+import { reactBaseConfigProvider } from '../react/react.generator.js';
 import { CORE_REACT_ROUTER_GENERATED } from './generated/index.js';
 
-const descriptorSchema = z.object({});
+const descriptorSchema = z.object({
+  renderPlaceholderIndex: z.boolean().default(false),
+});
 
 const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
       renderHeaders: t.map<string, TsCodeFragment>(),
-      routesComponent: t.scalar<TsCodeFragment>(),
+      rootLayoutComponent: t.scalar<TsCodeFragment>(),
     }),
     {
       prefix: 'react-router',
@@ -45,117 +48,123 @@ const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
 
 export { reactRouterConfigProvider };
 
-const reactRouteValuesProvider = createReadOnlyProviderType<{
-  routes: ReactRoute[];
-  layouts: ReactRouteLayout[];
-}>('react-route-values');
-
 export const reactRouterGenerator = createGenerator({
   name: 'core/react-router',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => ({
+  buildTasks: ({ renderPlaceholderIndex }) => ({
     setup: setupTask,
     nodePackages: createNodePackagesTask({
-      prod: extractPackageVersions(REACT_PACKAGES, ['react-router-dom']),
+      prod: extractPackageVersions(REACT_PACKAGES, ['@tanstack/react-router']),
+      dev: extractPackageVersions(REACT_PACKAGES, ['@tanstack/router-plugin']),
     }),
     paths: CORE_REACT_ROUTER_GENERATED.paths.task,
+    imports: CORE_REACT_ROUTER_GENERATED.imports.task,
+    renderers: CORE_REACT_ROUTER_GENERATED.renderers.task,
+    vite: createProviderTask(reactBaseConfigProvider, (reactBaseConfig) => {
+      reactBaseConfig.vitePlugins.set(
+        '@tanstack/router-plugin',
+        tsTemplate`${TsCodeUtils.importFragment(
+          'tanstackRouter',
+          '@tanstack/router-plugin/vite',
+        )}({
+        target: 'react',
+        autoCodeSplitting: true,
+        generatedRouteTree: './src/route-tree.gen.ts',
+        quoteStyle: 'single',
+      })`,
+      );
+    }),
     reactAppConfig: createGeneratorTask({
       dependencies: {
         reactAppConfig: reactAppConfigProvider,
         paths: CORE_REACT_ROUTER_GENERATED.paths.provider,
       },
       run({ reactAppConfig, paths }) {
-        reactAppConfig.renderWrappers.set('react-router', {
-          wrap: (contents) =>
-            TsCodeUtils.templateWithImports(
-              tsImportBuilder(['BrowserRouter']).from('react-router-dom'),
-            )`<BrowserRouter>${contents}</BrowserRouter>`,
-          type: 'router',
-        });
-
         reactAppConfig.renderRoot.set(
           tsCodeFragment(
-            '<PagesRoot />',
-            tsImportBuilder().default('PagesRoot').from(paths.index),
+            '<AppRoutes />',
+            tsImportBuilder(['AppRoutes']).from(paths.appRoutes),
           ),
         );
       },
     }),
+    prettier: createProviderTask(prettierProvider, (prettier) => {
+      prettier.addPrettierIgnore('/src/route-tree.gen.ts');
+    }),
+    eslint: createProviderTask(eslintConfigProvider, (eslint) => {
+      eslint.eslintIgnore.push('src/route-tree.gen.ts');
+    }),
     routes: createGeneratorTask({
+      dependencies: {
+        pathRoots: pathRootsProvider,
+      },
       exports: {
         reactRoutes: reactRoutesProvider.export(packageScope),
-        reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(packageScope),
       },
-      outputs: {
-        reactRouteValuesProvider: reactRouteValuesProvider.export(),
-      },
-      run() {
-        const routes: ReactRoute[] = [];
-        const layouts: ReactRouteLayout[] = [];
+      run({ pathRoots }) {
+        const directoryBase = `@/src/routes`;
+
+        pathRoots.registerPathRoot('routes-root', directoryBase);
 
         return {
           providers: {
             reactRoutes: {
-              registerRoute(route) {
-                routes.push(route);
-              },
-              registerLayout(layout) {
-                layouts.push(layout);
-              },
-              getDirectoryBase: () => `@/src/pages`,
-              getRoutePrefix: () => ``,
-            },
-            reactRoutesReadOnly: {
-              getDirectoryBase: () => `@/src/pages`,
+              getDirectoryBase: () => directoryBase,
               getRoutePrefix: () => ``,
             },
           },
-          build: () => ({
-            reactRouteValuesProvider: {
-              routes,
-              layouts,
-            },
-          }),
         };
       },
     }),
     main: createGeneratorTask({
       dependencies: {
         reactRouterConfigValues: reactRouterConfigValuesProvider,
-        reactRouteValues: reactRouteValuesProvider,
-        typescriptFile: typescriptFileProvider,
-        paths: CORE_REACT_ROUTER_GENERATED.paths.provider,
+        renderers: CORE_REACT_ROUTER_GENERATED.renderers.provider,
       },
       run({
-        reactRouterConfigValues: {
-          routesComponent = tsCodeFragment(
-            'Routes',
-            tsImportBuilder(['Routes']).from('react-router-dom'),
-          ),
-          renderHeaders,
-        },
-        reactRouteValues: { routes, layouts },
-        typescriptFile,
-        paths,
+        reactRouterConfigValues: { renderHeaders, rootLayoutComponent },
+        renderers,
       }) {
         return {
           build: async (builder) => {
-            // TODO: Make sure we don't have more than one layout key
-
-            // group routes by layout key
-            const renderedRoutes = renderRoutes(routes, layouts);
-
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: CORE_REACT_ROUTER_GENERATED.templates.index,
-                destination: paths.index,
+              renderers.appRoutes.render({
                 variables: {
                   TPL_RENDER_HEADER: TsCodeUtils.mergeFragments(renderHeaders),
-                  TPL_ROUTES: TsCodeUtils.template`<${routesComponent}>${renderedRoutes}</${routesComponent}>`,
                 },
               }),
             );
+
+            await builder.apply(
+              renderers.rootRoute.render({
+                variables: {
+                  TPL_ROOT_ROUTE_OPTIONS: TsCodeUtils.mergeFragmentsAsObject({
+                    component: rootLayoutComponent,
+                  }),
+                },
+              }),
+            );
+
+            if (renderPlaceholderIndex) {
+              await builder.apply(renderers.placeholderIndex.render({}));
+            }
+
+            // Write a pseudo-file so that the template extractor can infer metadata for the
+            // generated route tree file
+            builder.writeFile({
+              id: 'route-tree',
+              destination: '@/src/route-tree.gen.ts',
+              contents: '',
+              options: { skipWriting: true },
+              templateMetadata: {
+                generator: builder.generatorInfo.name,
+                name: 'route-tree',
+                projectExportsOnly: true,
+                type: 'ts',
+                fileOptions: { kind: 'singleton' },
+              } satisfies TsTemplateOutputTemplateMetadata,
+            });
           },
         };
       },

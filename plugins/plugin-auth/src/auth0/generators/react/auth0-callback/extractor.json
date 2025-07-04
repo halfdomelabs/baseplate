@@ -1,7 +1,7 @@
 {
   "name": "auth0/auth0-callback",
   "templates": {
-    "routes/auth0-callback.page.tsx": {
+    "routes/auth0-callback.tsx": {
       "name": "auth0-callback-page",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -20,10 +20,10 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{routes-root}/auth0-callback.page.tsx",
+      "pathRootRelativePath": "{routes-root}/auth0-callback.tsx",
       "variables": {}
     },
-    "routes/signup.page.tsx": {
+    "routes/signup.tsx": {
       "name": "signup-page",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -38,7 +38,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{routes-root}/signup.page.tsx",
+      "pathRootRelativePath": "{routes-root}/signup.tsx",
       "variables": {}
     }
   }

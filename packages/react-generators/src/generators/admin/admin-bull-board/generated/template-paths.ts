@@ -1,5 +1,6 @@
-import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
+
+import { reactRoutesProvider } from '#src/providers/routes.js';
 
 export interface AdminAdminBullBoardPaths {
   bullBoard: string;
@@ -11,16 +12,16 @@ const adminAdminBullBoardPaths = createProviderType<AdminAdminBullBoardPaths>(
 );
 
 const adminAdminBullBoardPathsTask = createGeneratorTask({
-  dependencies: { packageInfo: packageInfoProvider },
+  dependencies: { reactRoutes: reactRoutesProvider },
   exports: { adminAdminBullBoardPaths: adminAdminBullBoardPaths.export() },
-  run({ packageInfo }) {
-    const srcRoot = packageInfo.getPackageSrcPath();
+  run({ reactRoutes }) {
+    const routesRoot = reactRoutes.getDirectoryBase();
 
     return {
       providers: {
         adminAdminBullBoardPaths: {
-          bullBoard: `${srcRoot}/pages/bull-board/bull-board.gql`,
-          bullBoardPage: `${srcRoot}/pages/bull-board/index.tsx`,
+          bullBoard: `${routesRoot}/bull-board/bull-board.gql`,
+          bullBoardPage: `${routesRoot}/bull-board/index.tsx`,
         },
       },
     };

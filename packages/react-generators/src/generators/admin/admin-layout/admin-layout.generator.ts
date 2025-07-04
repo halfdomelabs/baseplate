@@ -1,16 +1,8 @@
-import {
-  tsCodeFragment,
-  TsCodeUtils,
-  tsImportBuilder,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { TsCodeUtils, tsImportBuilder } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { authComponentsImportsProvider } from '#src/generators/auth/_providers/auth-components.js';
-import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
-import { reactRoutesProvider } from '#src/providers/routes.js';
 
 import { ADMIN_ADMIN_LAYOUT_GENERATED } from './generated/index.js';
 
@@ -43,34 +35,25 @@ export const adminLayoutGenerator = createGenerator({
   descriptorSchema,
   buildTasks: ({ links = [] }) => ({
     paths: ADMIN_ADMIN_LAYOUT_GENERATED.paths.task,
-    main: createGeneratorTask({
+    renderers: ADMIN_ADMIN_LAYOUT_GENERATED.renderers.task,
+    route: createGeneratorTask({
+      dependencies: {
+        renderers: ADMIN_ADMIN_LAYOUT_GENERATED.renderers.provider,
+      },
+      run({ renderers }) {
+        return {
+          build: async (builder) => {
+            await builder.apply(renderers.adminRoute.render({}));
+          },
+        };
+      },
+    }),
+    layout: createGeneratorTask({
       dependencies: {
         reactComponentsImports: reactComponentsImportsProvider,
-        reactRoutes: reactRoutesProvider,
-        authComponentsImports: authComponentsImportsProvider,
-        typescriptFile: typescriptFileProvider,
-        authHooksImports: authHooksImportsProvider,
-        paths: ADMIN_ADMIN_LAYOUT_GENERATED.paths.provider,
+        renderers: ADMIN_ADMIN_LAYOUT_GENERATED.renderers.provider,
       },
-      run({
-        reactComponentsImports,
-        reactRoutes,
-        authComponentsImports,
-        typescriptFile,
-        authHooksImports,
-        paths,
-      }) {
-        reactRoutes.registerLayout({
-          key: 'admin',
-          element: tsCodeFragment(
-            `<RequireAuth><AdminLayout /></RequireAuth>`,
-            [
-              tsImportBuilder(['AdminLayout']).from(paths.adminLayout),
-              authComponentsImports.RequireAuth.declaration(),
-            ],
-          ),
-        });
-
+      run({ reactComponentsImports, renderers }) {
         return {
           build: async (builder) => {
             const navEntries = Object.fromEntries(
@@ -78,28 +61,22 @@ export const adminLayoutGenerator = createGenerator({
                 link.path,
                 TsCodeUtils.templateWithImports([
                   reactComponentsImports.NavigationMenuItemWithLink.declaration(),
-                  tsImportBuilder(['NavLink']).from('react-router-dom'),
+                  tsImportBuilder(['Link']).from('@tanstack/react-router'),
                 ])`
                 <NavigationMenuItemWithLink asChild>
-                  <NavLink to="${link.path}" className="flex-row items-center gap-2">
+                  <Link to="${link.path}" className="flex-row items-center gap-2">
                     <${TsCodeUtils.importFragment(link.icon, getIconImport(link.icon))} />
                     ${link.label}
-                  </NavLink>
+                  </Link>
                 </NavigationMenuItemWithLink>
                 `,
               ]),
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: ADMIN_ADMIN_LAYOUT_GENERATED.templates.adminLayout,
-                destination: paths.adminLayout,
+              renderers.adminLayout.render({
                 variables: {
                   TPL_SIDEBAR_LINKS: TsCodeUtils.mergeFragments(navEntries),
-                },
-                importMapProviders: {
-                  authHooksImports,
-                  reactComponentsImports,
                 },
               }),
             );

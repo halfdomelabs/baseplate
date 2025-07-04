@@ -11,8 +11,8 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { notEmpty } from '@baseplate-dev/utils';
-import { sortBy } from 'es-toolkit';
+import { notEmpty, quot } from '@baseplate-dev/utils';
+import { kebabCase, sortBy } from 'es-toolkit';
 import { dasherize, underscore } from 'inflection';
 import { z } from 'zod';
 
@@ -20,7 +20,6 @@ import { reactComponentsImportsProvider } from '#src/generators/core/react-compo
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { lowerCaseFirst, titleizeCamel } from '#src/utils/case.js';
-import { createRouteElement } from '#src/utils/routes.js';
 import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
 
 import type { AdminCrudInput } from '../_providers/admin-crud-input-container.js';
@@ -76,7 +75,8 @@ export const adminCrudEditGenerator = createGenerator({
         reactComponentsImports,
         reactErrorImports,
       }) {
-        const editSchemaPath = `${reactRoutes.getDirectoryBase()}/edit/${lowerCaseFirst(
+        const routePrefix = reactRoutes.getRoutePrefix();
+        const editSchemaPath = `${reactRoutes.getDirectoryBase()}/-schemas/${lowerCaseFirst(
           dasherize(underscore(modelName)),
         )}-schema.ts`;
 
@@ -92,21 +92,17 @@ export const adminCrudEditGenerator = createGenerator({
           editSchemaPath,
         );
 
-        const editFormComponentPath = `${reactRoutes.getDirectoryBase()}/edit/${modelName}EditForm.tsx`;
+        const editFormComponentPath = `${reactRoutes.getDirectoryBase()}/-components/${kebabCase(modelName)}-edit-form.tsx`;
         const editFormComponentName = `${modelName}EditForm`;
-        const editFormComponentExpression = TsCodeUtils.defaultImportFragment(
+        const editFormComponentExpression = TsCodeUtils.importFragment(
           editFormComponentName,
           editFormComponentPath,
         );
 
-        const editPagePath = `${reactRoutes.getDirectoryBase()}/edit/edit.page.tsx`;
+        const editPagePath = `${reactRoutes.getDirectoryBase()}/$id.tsx`;
         const editPageName = `${modelName}EditPage`;
-        reactRoutes.registerRoute({
-          path: ':id/edit',
-          element: createRouteElement(editPageName, editPagePath),
-        });
 
-        const createPagePath = `${reactRoutes.getDirectoryBase()}/edit/create.page.tsx`;
+        const createPagePath = `${reactRoutes.getDirectoryBase()}/new.tsx`;
         const createPageName = `${modelName}CreatePage`;
 
         const editQueryInfo = adminCrudQueries.getEditQueryHookInfo();
@@ -117,7 +113,7 @@ export const adminCrudEditGenerator = createGenerator({
         return {
           providers: {
             adminCrudEdit: {
-              getDirectoryBase: () => `${reactRoutes.getDirectoryBase()}/edit`,
+              getDirectoryBase: () => reactRoutes.getDirectoryBase(),
               getSchemaPath: () => editSchemaPath,
               getSchemaImport: () => editSchemaPath,
             },
@@ -238,7 +234,11 @@ export const adminCrudEditGenerator = createGenerator({
                   template:
                     ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.createPage,
                   destination: createPagePath,
+                  importMapProviders: {
+                    reactErrorImports,
+                  },
                   variables: {
+                    TPL_ROUTE_VALUE: quot(`${routePrefix}/new`),
                     TPL_COMPONENT_NAME: createPageName,
                     TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} ${inputLoaderExtraProps} />`,
                     TPL_CREATE_MUTATION: createInfo.hookExpression,
@@ -252,11 +252,6 @@ export const adminCrudEditGenerator = createGenerator({
                   },
                 }),
               );
-
-              reactRoutes.registerRoute({
-                path: 'new',
-                element: createRouteElement(createPageName, createPagePath),
-              });
             }
 
             const editPageLoader: DataLoader = {
@@ -292,7 +287,11 @@ export const adminCrudEditGenerator = createGenerator({
                 id: `edit-${modelId}`,
                 template: ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.editPage,
                 destination: editPagePath,
+                importMapProviders: {
+                  reactErrorImports,
+                },
                 variables: {
+                  TPL_ROUTE_VALUE: quot(`${routePrefix}/$id`),
                   TPL_COMPONENT_NAME: editPageName,
                   TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} initialData={initialData} ${inputLoaderExtraProps} />`,
                   TPL_UPDATE_MUTATION: updateInfo.hookExpression,

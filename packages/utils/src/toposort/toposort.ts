@@ -89,18 +89,23 @@ function detectCycle<T>(
     return false;
   }
 
-  // For cycle detection, we need to find nodes that weren't visited
-  const unvistedNodeIdx = nodes.findIndex((node, idx) => !visited.has(idx));
+  // For cycle detection, we need to try all unvisited nodes
+  for (let i = 0; i < nodes.length; i++) {
+    if (!visited.has(i)) {
+      // Reset path and visitSet for each starting node
+      path.length = 0;
+      visitSet.clear();
 
-  if (unvistedNodeIdx === -1) {
-    return [];
+      const cycleFound = dfs(i);
+
+      if (cycleFound) {
+        // Convert path indices to actual nodes
+        return path.map((idx) => nodes[idx]);
+      }
+    }
   }
 
-  // Start DFS from any unvisited node
-  dfs(unvistedNodeIdx);
-
-  // Convert path indices to actual nodes
-  return path.map((idx) => nodes[idx]);
+  return [];
 }
 
 /**

@@ -1,5 +1,4 @@
 import { vol } from 'memfs';
-import fs from 'node:fs/promises';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -7,150 +6,195 @@ import {
   removeEmptyAncestorDirectories,
 } from './directories.js';
 
-// Mock the fs module
 vi.mock('node:fs');
 vi.mock('node:fs/promises');
 
-beforeEach(() => {
-  vol.reset();
-});
+describe('directories', () => {
+  beforeEach(() => {
+    vol.reset();
+  });
 
-describe('directory cleanup functions', () => {
   describe('isDirectoryEmpty', () => {
     it('should return true for empty directory', async () => {
-      // Setup
-      vol.mkdirSync('/empty');
+      vol.mkdirSync('/empty-dir');
 
-      // Test
-      const result = await isDirectoryEmpty('/empty');
-
-      // Assert
+      const result = await isDirectoryEmpty('/empty-dir');
       expect(result).toBe(true);
     });
 
-    it('should return false for non-empty directory', async () => {
-      // Setup
-      vol.mkdirSync('/nonempty');
-      vol.writeFileSync('/nonempty/file.txt', 'content');
+    it('should return false for directory with files', async () => {
+      vol.fromJSON({
+        '/non-empty-dir/file.txt': 'content',
+      });
 
-      // Test
-      const result = await isDirectoryEmpty('/nonempty');
-
-      // Assert
+      const result = await isDirectoryEmpty('/non-empty-dir');
       expect(result).toBe(false);
     });
 
-    it('should return false for non-existent directory', async () => {
-      const result = await isDirectoryEmpty('/nonexistent');
+    it('should return false when directory does not exist', async () => {
+      const result = await isDirectoryEmpty('/non-existent-dir');
+      expect(result).toBe(false);
+    });
+
+    it('should return true when directory only contains ignored files', async () => {
+      vol.fromJSON({
+        '/dir-with-ignored/.gitkeep': '',
+        '/dir-with-ignored/.DS_Store': '',
+      });
+
+      const result = await isDirectoryEmpty('/dir-with-ignored', {
+        ignoreFiles: ['.gitkeep', '.DS_Store'],
+      });
+      expect(result).toBe(true);
+    });
+
+    it('should return false when directory contains both ignored and non-ignored files', async () => {
+      vol.fromJSON({
+        '/mixed-dir/.gitkeep': '',
+        '/mixed-dir/important.txt': 'content',
+      });
+
+      const result = await isDirectoryEmpty('/mixed-dir', {
+        ignoreFiles: ['.gitkeep'],
+      });
+      expect(result).toBe(false);
+    });
+
+    it('should handle empty ignoreFiles array', async () => {
+      vol.fromJSON({
+        '/test-dir/file.txt': 'content',
+      });
+
+      const result = await isDirectoryEmpty('/test-dir', { ignoreFiles: [] });
       expect(result).toBe(false);
     });
   });
 
   describe('removeEmptyAncestorDirectories', () => {
-    it('should remove empty parent directories', async () => {
-      // Setup
-      const filePath = '/root/empty1/empty2/file.txt';
+    it('should remove empty ancestor directories', async () => {
+      // Setup: Create file structure
       vol.fromJSON({
-        [filePath]: 'content',
+        '/root/level1/level2/level3/file.txt': 'content',
       });
-      await fs.unlink(filePath);
 
-      // Test
-      await removeEmptyAncestorDirectories([filePath], '/root');
+      // Simulate file deletion using memfs directly
+      vol.unlinkSync('/root/level1/level2/level3/file.txt');
 
-      // Assert
-      expect(vol.existsSync('/root/empty1/empty2')).toBe(false);
-      expect(vol.existsSync('/root/empty1')).toBe(false);
+      // Test: Remove empty directories
+      await removeEmptyAncestorDirectories(
+        ['/root/level1/level2/level3/file.txt'],
+        '/root',
+      );
+
+      // Assert: Directories should be removed
+      const files = vol.toJSON();
+      expect(files['/root/level1/level2/level3/file.txt']).toBeUndefined();
+      expect(files['/root/level1/level2/level3/']).toBeUndefined();
+      expect(files['/root/level1/level2/']).toBeUndefined();
+      expect(files['/root/level1/']).toBeUndefined();
       expect(vol.existsSync('/root')).toBe(true);
     });
 
-    it('should stop at non-empty directories', async () => {
-      // Setup
-      const filePath = '/root/dir1/empty/file1.txt';
+    it('should stop at specified directory', async () => {
+      // Setup: Create file structure
       vol.fromJSON({
-        [filePath]: 'content',
-        '/root/dir1/other-file.txt': 'content',
+        '/root/level1/level2/level3/file.txt': 'content',
       });
 
-      await fs.unlink(filePath);
+      // Simulate file deletion using memfs directly
+      vol.unlinkSync('/root/level1/level2/level3/file.txt');
 
-      // Test
-      await removeEmptyAncestorDirectories([filePath], '/root');
+      // Test: Remove empty directories with stop point
+      await removeEmptyAncestorDirectories(
+        ['/root/level1/level2/level3/file.txt'],
+        '/root/level1',
+      );
 
-      // Assert
-      expect(vol.existsSync('/root/dir1/empty')).toBe(false);
-      expect(vol.existsSync('/root/dir1')).toBe(true);
-      expect(vol.existsSync('/root')).toBe(true);
+      // Assert: Should stop at level1
+      const files = vol.toJSON();
+      expect(files['/root/level1/level2/level3/file.txt']).toBeUndefined();
+      expect(vol.existsSync('/root/level1/level2/level3/')).toBe(false);
+      expect(vol.existsSync('/root/level1/level2/')).toBe(false);
+      expect(vol.existsSync('/root/level1/')).toBe(true); // Should not be removed
     });
 
-    it('should stop at specified stopAt directory', async () => {
-      // Setup
-      const filePath = '/root/dir1/empty/file1.txt';
+    it('should not remove directories that are not empty', async () => {
+      // Setup: Create file structure with multiple files
       vol.fromJSON({
-        [filePath]: 'content',
+        '/root/level1/level2/level3/file1.txt': 'content1',
+        '/root/level1/level2/level3/file2.txt': 'content2',
       });
-      await fs.unlink(filePath);
 
-      // Test
-      await removeEmptyAncestorDirectories([filePath], '/root/dir1');
+      // Simulate deletion of only one file using memfs directly
+      vol.unlinkSync('/root/level1/level2/level3/file1.txt');
 
-      // Assert
-      expect(vol.existsSync('/root/dir1/empty')).toBe(false);
-      expect(vol.existsSync('/root/dir1')).toBe(true);
+      // Test: Remove empty directories
+      await removeEmptyAncestorDirectories(
+        ['/root/level1/level2/level3/file1.txt'],
+        '/root',
+      );
+
+      // Assert: Directory should not be removed because it still has file2.txt
+      const files = vol.toJSON();
+      expect(files['/root/level1/level2/level3/file1.txt']).toBeUndefined();
+      expect(files['/root/level1/level2/level3/file2.txt']).toBe('content2');
+      expect(vol.existsSync('/root/level1/level2/level3/')).toBe(true); // Should not be removed
     });
 
     it('should handle multiple file paths', async () => {
-      // Setup
+      // Setup: Create file structure
       vol.fromJSON({
-        '/root/dir1/empty1/file1.txt': 'content',
-        '/root/dir2/empty2/file2.txt': 'content',
-        '/root/dir3/empty3/file3.txt': 'content',
-        '/root/dir3/other-file.txt': 'content',
+        '/root/level1/level2/file1.txt': 'content1',
+        '/root/level1/level2/file2.txt': 'content2',
       });
 
-      const filePaths = [
-        '/root/dir1/empty1/file1.txt',
-        '/root/dir2/empty2/file2.txt',
-        '/root/dir3/empty3/file3.txt',
-      ];
+      // Simulate deletion of both files using memfs directly
+      vol.unlinkSync('/root/level1/level2/file1.txt');
+      vol.unlinkSync('/root/level1/level2/file2.txt');
 
-      for (const filePath of filePaths) {
-        await fs.unlink(filePath);
-      }
+      // Test: Remove empty directories
+      await removeEmptyAncestorDirectories(
+        ['/root/level1/level2/file1.txt', '/root/level1/level2/file2.txt'],
+        '/root',
+      );
 
-      // Test
-      await removeEmptyAncestorDirectories(filePaths, '/root');
-
-      // Assert
-      expect(vol.existsSync('/root/dir1/empty1')).toBe(false);
-      expect(vol.existsSync('/root/dir2/empty2')).toBe(false);
-      expect(vol.existsSync('/root/dir3/empty3')).toBe(false);
-      expect(vol.existsSync('/root/dir1')).toBe(false);
-      expect(vol.existsSync('/root/dir2')).toBe(false);
-      expect(vol.existsSync('/root/dir3')).toBe(true);
-      expect(vol.existsSync('/root')).toBe(true);
+      // Assert: Directories should be removed
+      const files = vol.toJSON();
+      expect(files['/root/level1/level2/file1.txt']).toBeUndefined();
+      expect(files['/root/level1/level2/file2.txt']).toBeUndefined();
+      expect(files['/root/level1/level2/']).toBeUndefined();
+      expect(files['/root/level1/']).toBeUndefined();
     });
 
-    it('should handle errors gracefully', async () => {
-      // Setup
+    it('should remove directories that only contain ignored files', async () => {
+      // Setup: Create file structure with ignored files
       vol.fromJSON({
-        '/root/dir1/empty/file1.txt': 'content',
+        '/root/level1/level2/level3/file.txt': 'content',
+        '/root/level1/level2/.gitkeep': '',
       });
 
-      // Mock fs.rmdir to throw an error
-      const mockReaddir = vi.spyOn(fs, 'readdir');
-      mockReaddir.mockRejectedValueOnce(new Error('Permission denied'));
+      // Simulate file deletion using memfs directly
+      vol.unlinkSync('/root/level1/level2/level3/file.txt');
 
-      const filePath = '/root/dir1/empty/file1.txt';
-      await fs.unlink(filePath);
+      // Test: Remove empty directories with ignoreFiles
+      await removeEmptyAncestorDirectories(
+        ['/root/level1/level2/level3/file.txt'],
+        '/root',
+        { ignoreFiles: ['.gitkeep'] },
+      );
 
-      // Test
+      // Assert: level3 should be removed, and level2 should also be removed (including .gitkeep)
+      const files = vol.toJSON();
+      expect(files['/root/level1/level2/level3/file.txt']).toBeUndefined();
+      expect(files['/root/level1/level2/.gitkeep']).toBeUndefined(); // Should be removed with directory
+      expect(vol.existsSync('/root/level1/level2/level3/')).toBe(false); // Should be removed
+      expect(vol.existsSync('/root/level1/level2/')).toBe(false); // Should be removed (only contained ignored files)
+    });
+
+    it('should handle non-existent directories gracefully', async () => {
       await expect(
-        removeEmptyAncestorDirectories([filePath], '/root'),
+        removeEmptyAncestorDirectories(['/non/existent/file.txt'], '/root'),
       ).resolves.not.toThrow();
-
-      // Assert
-      expect(mockReaddir).toHaveBeenCalled();
     });
   });
 });

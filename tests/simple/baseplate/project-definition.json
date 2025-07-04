@@ -15,9 +15,7 @@
     }
   ],
   "cliVersion": "0.7.8",
-  "features": [
-    { "id": "feature:EHdFHsD17AHI", "name": "blog", "parentRef": null }
-  ],
+  "features": [{ "id": "feature:EHdFHsD17AHI", "name": "blog" }],
   "isInitialized": true,
   "models": [
     {
@@ -74,7 +72,7 @@
       "name": "BlogPost"
     }
   ],
-  "schemaVersion": 14,
+  "schemaVersion": 15,
   "settings": { "general": { "name": "simple", "portOffset": 3000 } },
   "version": "0.1.0"
 }

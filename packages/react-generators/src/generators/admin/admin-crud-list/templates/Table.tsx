@@ -13,7 +13,7 @@ import {
   useConfirmDialog,
 } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
 interface Props {
@@ -22,7 +22,9 @@ interface Props {
   TPL_EXTRA_PROPS;
 }
 
-function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
+export function TPL_COMPONENT_NAME(
+  TPL_DESTRUCTURED_PROPS: Props,
+): ReactElement {
   const { requestConfirm } = useConfirmDialog();
   function handleDelete(item: TPL_ROW_FRAGMENT): void {
     requestConfirm({
@@ -63,7 +65,7 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
           <TableRow key={item.id}>
             <TPL_CELLS />
             <TableCell className="space-x-4">
-              <Link to={`${item.id}/edit`}>
+              <Link to={TPL_EDIT_ROUTE} params={{ id: item.id }}>
                 <Button variant="link" size="none">
                   Edit
                 </Button>
@@ -84,5 +86,3 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
     </Table>
   );
 }
-
-export default TPL_COMPONENT_NAME;

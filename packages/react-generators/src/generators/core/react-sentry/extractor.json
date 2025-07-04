@@ -10,6 +10,10 @@
         "reactConfigImportsProvider": {
           "importName": "reactConfigImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-config/generated/ts-import-providers.ts"
+        },
+        "reactRouterImportsProvider": {
+          "importName": "reactRouterImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-router/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{src-root}/services/sentry.ts",

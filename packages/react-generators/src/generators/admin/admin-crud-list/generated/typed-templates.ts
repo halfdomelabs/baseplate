@@ -5,13 +5,13 @@ import { reactComponentsImportsProvider } from '#src/generators/core/react-compo
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
 
 const listPage = createTsTemplateFile({
-  fileOptions: { generatorTemplatePath: 'index.page.tsx', kind: 'instance' },
+  fileOptions: { generatorTemplatePath: 'index.tsx', kind: 'instance' },
   importMapProviders: {
     reactComponentsImports: reactComponentsImportsProvider,
   },
   name: 'list-page',
   source: {
-    path: path.join(import.meta.dirname, '../templates/index.page.tsx'),
+    path: path.join(import.meta.dirname, '../templates/index.tsx'),
   },
   variables: {
     TPL_CREATE_BUTTON: {},
@@ -23,6 +23,7 @@ const listPage = createTsTemplateFile({
     TPL_PAGE_NAME: {},
     TPL_PLURAL_MODEL: {},
     TPL_REFETCH_DOCUMENT: {},
+    TPL_ROUTE_VALUE: {},
     TPL_ROW_FRAGMENT_NAME: {},
     TPL_TABLE_COMPONENT: {},
   },
@@ -42,6 +43,7 @@ const table = createTsTemplateFile({
     TPL_CELLS: {},
     TPL_COMPONENT_NAME: {},
     TPL_DESTRUCTURED_PROPS: {},
+    TPL_EDIT_ROUTE: {},
     TPL_EXTRA_PROPS: {},
     TPL_HEADERS: {},
     TPL_PLURAL_MODEL: {},

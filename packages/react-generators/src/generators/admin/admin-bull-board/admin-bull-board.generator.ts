@@ -1,7 +1,5 @@
 import {
   renderTextTemplateFileAction,
-  tsCodeFragment,
-  tsImportBuilder,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
@@ -21,7 +19,6 @@ import {
   reactConfigProvider,
 } from '#src/generators/core/react-config/index.js';
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
-import { reactRoutesProvider } from '#src/providers/routes.js';
 
 import { ADMIN_ADMIN_BULL_BOARD_GENERATED } from './generated/index.js';
 
@@ -49,7 +46,6 @@ export const adminBullBoardGenerator = createGenerator({
         reactConfigImports: reactConfigImportsProvider,
         reactErrorImports: reactErrorImportsProvider,
         reactApollo: reactApolloProvider,
-        reactRoutes: reactRoutesProvider,
         generatedGraphqlImports: generatedGraphqlImportsProvider,
         paths: ADMIN_ADMIN_BULL_BOARD_GENERATED.paths.provider,
       },
@@ -59,23 +55,12 @@ export const adminBullBoardGenerator = createGenerator({
         reactConfigImports,
         reactErrorImports,
         reactApollo,
-        reactRoutes,
         generatedGraphqlImports,
         paths,
       }) {
         return {
           build: async (builder) => {
             reactApollo.registerGqlFile(paths.bullBoard);
-
-            reactRoutes.registerRoute({
-              path: 'bull-board',
-              element: tsCodeFragment(
-                '<BullBoardPage />',
-                tsImportBuilder()
-                  .default('BullBoardPage')
-                  .from(paths.bullBoardPage),
-              ),
-            });
 
             await builder.apply(
               typescriptFile.renderTemplateFile({

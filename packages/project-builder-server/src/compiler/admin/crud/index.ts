@@ -107,7 +107,6 @@ export function compileAdminCrudSection(
   const modelName = builder.nameFromId(crudSection.modelRef);
   const { disableCreate } = crudSection;
   return reactRoutesGenerator({
-    id: crudSection.id,
     name: sectionName,
     children: {
       section: adminCrudSectionGenerator({
