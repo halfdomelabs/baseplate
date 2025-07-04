@@ -252,4 +252,33 @@ describe('toposort', () => {
     expect(sortedReverse).toEqual(['a', 'c', 'b']);
     expectOrder(sorted, edges);
   });
+
+  it('should throw ToposortCyclicalDependencyError for complex graph with cycle', () => {
+    const nodes = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+    const edges: [string, string][] = [
+      // Non-cyclical dependencies
+      ['a', 'b'],
+      ['a', 'c'],
+      ['b', 'd'],
+      ['c', 'e'],
+      ['d', 'f'],
+      ['e', 'f'],
+      // Cyclical dependencies
+      ['f', 'g'],
+      ['g', 'c'], // Creates cycle: c -> e -> f -> g -> c
+    ];
+    try {
+      toposort(nodes, edges);
+    } catch (e) {
+      expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
+      const { cyclePath } = e as ToposortCyclicalDependencyError;
+      // The cycle should contain: c -> e -> f -> g -> c
+      expect(cyclePath).toContain('c');
+      expect(cyclePath).toContain('e');
+      expect(cyclePath).toContain('f');
+      expect(cyclePath).toContain('g');
+      expect(cyclePath[0]).toBe(cyclePath.at(-1)); // Should start and end with same node
+      expect(cyclePath.length).toBeGreaterThan(3); // Should have at least 4 nodes in the cycle
+    }
+  });
 });
