@@ -22,10 +22,7 @@ import { z } from 'zod';
 import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
-import {
-  reactRoutesProvider,
-  reactRoutesReadOnlyProvider,
-} from '#src/providers/routes.js';
+import { reactRoutesProvider } from '#src/providers/routes.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
 import { reactAppConfigProvider } from '../react-app/index.js';
@@ -108,7 +105,6 @@ export const reactRouterGenerator = createGenerator({
     routes: createGeneratorTask({
       exports: {
         reactRoutes: reactRoutesProvider.export(packageScope),
-        reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(packageScope),
       },
       outputs: {
         reactRouteValuesProvider: reactRouteValuesProvider.export(),

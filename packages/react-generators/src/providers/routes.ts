@@ -25,13 +25,3 @@ export interface ReactRoutesProvider {
 
 export const reactRoutesProvider =
   createProviderType<ReactRoutesProvider>('react-routes');
-
-export interface ReactRoutesReadOnlyProvider {
-  getRoutePrefix(): string;
-  getDirectoryBase(): string;
-}
-
-export const reactRoutesReadOnlyProvider =
-  createProviderType<ReactRoutesReadOnlyProvider>('react-routes-read-only', {
-    isReadOnly: true,
-  });

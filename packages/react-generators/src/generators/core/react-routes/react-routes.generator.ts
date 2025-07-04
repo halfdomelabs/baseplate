@@ -10,10 +10,7 @@ import { z } from 'zod';
 
 import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';
 
-import {
-  reactRoutesProvider,
-  reactRoutesReadOnlyProvider,
-} from '#src/providers/routes.js';
+import { reactRoutesProvider } from '#src/providers/routes.js';
 import { dasherizeCamel, upperCaseFirst } from '#src/utils/case.js';
 import { createRouteElement } from '#src/utils/routes.js';
 
@@ -44,7 +41,6 @@ export const reactRoutesGenerator = createGenerator({
       },
       exports: {
         reactRoutes: reactRoutesProvider.export(),
-        reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(),
       },
       run({ reactRoutes, typescriptFile, reactNotFound, pathRoots }) {
         const routes: ReactRoute[] = [];
