@@ -229,7 +229,7 @@ html[data-theme='dark'] {
  */
 
 @utility text-style-lead {
-  @apply text-muted-foreground text-xl leading-6 font-medium;
+  @apply text-xl leading-6 font-medium text-muted-foreground;
 }
 
 @utility text-style-large {
@@ -241,14 +241,14 @@ html[data-theme='dark'] {
 }
 
 @utility text-style-muted {
-  @apply text-muted-foreground text-sm leading-5;
+  @apply text-sm leading-5 text-muted-foreground;
 }
 
 @utility text-style-prose {
   @apply text-base leading-6;
 
   & a {
-    @apply text-link font-medium;
+    @apply font-medium text-link;
 
     &:hover {
       @apply underline;
