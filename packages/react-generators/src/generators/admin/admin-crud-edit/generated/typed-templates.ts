@@ -5,11 +5,11 @@ import { reactComponentsImportsProvider } from '#src/generators/core/react-compo
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
 
 const createPage = createTsTemplateFile({
-  fileOptions: { generatorTemplatePath: 'create.page.tsx', kind: 'instance' },
+  fileOptions: { generatorTemplatePath: 'create.tsx', kind: 'instance' },
   importMapProviders: {},
   name: 'create-page',
   source: {
-    path: path.join(import.meta.dirname, '../templates/create.page.tsx'),
+    path: path.join(import.meta.dirname, '../templates/create.tsx'),
   },
   variables: {
     TPL_COMPONENT_NAME: {},
@@ -46,11 +46,11 @@ const editForm = createTsTemplateFile({
 });
 
 const editPage = createTsTemplateFile({
-  fileOptions: { generatorTemplatePath: 'edit.page.tsx', kind: 'instance' },
+  fileOptions: { generatorTemplatePath: 'edit.tsx', kind: 'instance' },
   importMapProviders: {},
   name: 'edit-page',
   source: {
-    path: path.join(import.meta.dirname, '../templates/edit.page.tsx'),
+    path: path.join(import.meta.dirname, '../templates/edit.tsx'),
   },
   variables: {
     TPL_COMPONENT_NAME: {},

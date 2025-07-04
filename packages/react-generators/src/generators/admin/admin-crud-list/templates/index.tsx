@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import { ErrorableLoader } from '%reactComponentsImports';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/accounts/users/user/')({
+export const Route = createFileRoute(TPL_ROUTE_VALUE)({
   component: TPL_PAGE_NAME,
 });
 

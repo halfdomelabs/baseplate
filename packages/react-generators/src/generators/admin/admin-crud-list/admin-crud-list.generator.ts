@@ -9,7 +9,7 @@ import {
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
-import { notEmpty } from '@baseplate-dev/utils';
+import { notEmpty, quot } from '@baseplate-dev/utils';
 import { kebabCase } from 'es-toolkit';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
@@ -60,6 +60,7 @@ export const adminCrudListGenerator = createGenerator({
         reactComponentsImports,
         reactErrorImports,
       }) {
+        const routePrefix = reactRoutes.getRoutePrefix();
         const columns: AdminCrudColumn[] = [];
         const listPagePath = `${reactRoutes.getDirectoryBase()}/index.tsx`;
         const tableComponentPath = `${reactRoutes.getDirectoryBase()}/-components/${kebabCase(modelName)}-table.tsx`;
@@ -129,6 +130,7 @@ export const adminCrudListGenerator = createGenerator({
                 template: ADMIN_ADMIN_CRUD_LIST_GENERATED.templates.listPage,
                 destination: listPagePath,
                 variables: {
+                  TPL_ROUTE_VALUE: quot(`${routePrefix}/`),
                   TPL_PAGE_NAME: listPageComponentName,
                   TPL_DELETE_FUNCTION: deleteInfo.fieldName,
                   TPL_DELETE_MUTATION: deleteInfo.hookExpression,
@@ -148,12 +150,14 @@ export const adminCrudListGenerator = createGenerator({
                     : tsCodeFragment(
                         `
             <div className="block">
-            <Link to="new">
+            <Link to="${routePrefix}/new">
               <Button>Create ${titleizeCamel(modelName)}</Button>
             </Link>
           </div>`,
                         [
-                          tsImportBuilder(['Link']).from('react-router-dom'),
+                          tsImportBuilder(['Link']).from(
+                            '@tanstack/react-router',
+                          ),
                           reactComponentsImports.Button.declaration(),
                           reactComponentsImports.ErrorableLoader.declaration(),
                         ],

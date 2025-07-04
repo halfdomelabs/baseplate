@@ -23,6 +23,7 @@ const listPage = createTsTemplateFile({
     TPL_PAGE_NAME: {},
     TPL_PLURAL_MODEL: {},
     TPL_REFETCH_DOCUMENT: {},
+    TPL_ROUTE_VALUE: {},
     TPL_ROW_FRAGMENT_NAME: {},
     TPL_TABLE_COMPONENT: {},
   },

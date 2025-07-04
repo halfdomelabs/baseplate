@@ -1,11 +1,11 @@
 {
   "name": "admin/admin-crud-edit",
   "templates": {
-    "create.page.tsx": {
+    "create.tsx": {
       "name": "create-page",
       "type": "ts",
       "fileOptions": {
-        "generatorTemplatePath": "create.page.tsx",
+        "generatorTemplatePath": "create.tsx",
         "kind": "instance"
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
@@ -22,11 +22,11 @@
         "TPL_REFETCH_DOCUMENT": {}
       }
     },
-    "edit.page.tsx": {
+    "edit.tsx": {
       "name": "edit-page",
       "type": "ts",
       "fileOptions": {
-        "generatorTemplatePath": "edit.page.tsx",
+        "generatorTemplatePath": "edit.tsx",
         "kind": "instance"
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
