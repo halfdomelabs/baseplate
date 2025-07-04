@@ -1,6 +1,21 @@
 {
   "name": "core/react-router",
   "templates": {
+    "src/app/app-routes.tsx": {
+      "name": "app-routes",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-router",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/app/app-routes.tsx",
+      "projectExports": { "AppRoutes": {}, "router": {} },
+      "variables": {}
+    },
     "src/pages/index.tsx": {
       "name": "index",
       "type": "ts",
@@ -9,6 +24,14 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/pages/index.tsx",
       "variables": { "TPL_RENDER_HEADER": {}, "TPL_ROUTES": {} }
+    },
+    "src/route-tree.gen.ts": {
+      "name": "route-tree",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-router",
+      "pathRootRelativePath": "{src-root}/route-tree.gen.ts",
+      "projectExportsOnly": true
     }
   }
 }

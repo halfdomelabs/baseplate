@@ -1,4 +1,7 @@
-import type { TsCodeFragment } from '@baseplate-dev/core-generators';
+import type {
+  TsCodeFragment,
+  TsTemplateOutputTemplateMetadata,
+} from '@baseplate-dev/core-generators';
 
 import {
   createNodePackagesTask,
@@ -64,6 +67,8 @@ export const reactRouterGenerator = createGenerator({
       dev: extractPackageVersions(REACT_PACKAGES, ['@tanstack/router-plugin']),
     }),
     paths: CORE_REACT_ROUTER_GENERATED.paths.task,
+    imports: CORE_REACT_ROUTER_GENERATED.imports.task,
+    renderers: CORE_REACT_ROUTER_GENERATED.renderers.task,
     vite: createProviderTask(reactBaseConfigProvider, (reactBaseConfig) => {
       // TODO [2025-07-03]: Re-enable logging once migration is complete
       reactBaseConfig.vitePlugins.set(
@@ -86,18 +91,10 @@ export const reactRouterGenerator = createGenerator({
         paths: CORE_REACT_ROUTER_GENERATED.paths.provider,
       },
       run({ reactAppConfig, paths }) {
-        reactAppConfig.renderWrappers.set('react-router', {
-          wrap: (contents) =>
-            TsCodeUtils.templateWithImports(
-              tsImportBuilder(['BrowserRouter']).from('react-router-dom'),
-            )`<BrowserRouter>${contents}</BrowserRouter>`,
-          type: 'router',
-        });
-
         reactAppConfig.renderRoot.set(
           tsCodeFragment(
-            '<PagesRoot />',
-            tsImportBuilder().default('PagesRoot').from(paths.index),
+            '<AppRoutes />',
+            tsImportBuilder(['AppRoutes']).from(paths.appRoutes),
           ),
         );
       },
@@ -145,6 +142,7 @@ export const reactRouterGenerator = createGenerator({
         reactRouteValues: reactRouteValuesProvider,
         typescriptFile: typescriptFileProvider,
         paths: CORE_REACT_ROUTER_GENERATED.paths.provider,
+        renderers: CORE_REACT_ROUTER_GENERATED.renderers.provider,
       },
       run({
         reactRouterConfigValues: {
@@ -157,6 +155,7 @@ export const reactRouterGenerator = createGenerator({
         reactRouteValues: { routes, layouts },
         typescriptFile,
         paths,
+        renderers,
       }) {
         return {
           build: async (builder) => {
@@ -164,6 +163,24 @@ export const reactRouterGenerator = createGenerator({
 
             // group routes by layout key
             const renderedRoutes = renderRoutes(routes, layouts);
+
+            await builder.apply(renderers.appRoutes.render({}));
+
+            // Write a pseudo-file so that the template extractor can infer metadata for the
+            // generated route tree file
+            builder.writeFile({
+              id: 'route-tree',
+              destination: '@/src/route-tree.gen.ts',
+              contents: '',
+              options: { skipWriting: true },
+              templateMetadata: {
+                generator: builder.generatorInfo.name,
+                name: 'route-tree',
+                projectExportsOnly: true,
+                type: 'ts',
+                fileOptions: { kind: 'singleton' },
+              } satisfies TsTemplateOutputTemplateMetadata,
+            });
 
             await builder.apply(
               typescriptFile.renderTemplateFile({

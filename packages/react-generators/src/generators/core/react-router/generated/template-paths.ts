@@ -2,7 +2,9 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface CoreReactRouterPaths {
+  appRoutes: string;
   index: string;
+  routeTree: string;
 }
 
 const coreReactRouterPaths = createProviderType<CoreReactRouterPaths>(
@@ -17,7 +19,11 @@ const coreReactRouterPathsTask = createGeneratorTask({
 
     return {
       providers: {
-        coreReactRouterPaths: { index: `${srcRoot}/pages/index.tsx` },
+        coreReactRouterPaths: {
+          appRoutes: `${srcRoot}/app/app-routes.tsx`,
+          index: `${srcRoot}/pages/index.tsx`,
+          routeTree: `${srcRoot}/route-tree.gen.ts`,
+        },
       },
     };
   },
