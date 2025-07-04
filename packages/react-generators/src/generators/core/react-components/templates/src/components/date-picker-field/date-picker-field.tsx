@@ -83,7 +83,7 @@ function DatePickerField({
           id={id}
           ref={ref}
           className={cn(
-            'data-[empty=true]:text-muted-foreground w-[280px] justify-start text-left font-normal',
+            'w-[280px] justify-start text-left font-normal data-[empty=true]:text-muted-foreground',
             className,
           )}
         >

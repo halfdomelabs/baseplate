@@ -18,9 +18,9 @@ function Loader({ className }: LoaderProps): React.ReactElement {
       role="progressbar"
     >
       <div className="flex items-center space-x-2">
-        <div className="bg-muted-foreground size-3 animate-pulse rounded-full" />
-        <div className="bg-muted-foreground size-3 animate-pulse rounded-full delay-300" />
-        <div className="bg-muted-foreground size-3 animate-pulse rounded-full delay-[600ms]" />
+        <div className="size-3 animate-pulse rounded-full bg-muted-foreground" />
+        <div className="size-3 animate-pulse rounded-full bg-muted-foreground delay-300" />
+        <div className="size-3 animate-pulse rounded-full bg-muted-foreground delay-[600ms]" />
       </div>
     </div>
   );
