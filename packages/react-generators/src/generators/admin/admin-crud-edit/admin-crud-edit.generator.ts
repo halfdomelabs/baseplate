@@ -95,7 +95,7 @@ export const adminCrudEditGenerator = createGenerator({
 
         const editFormComponentPath = `${reactRoutes.getDirectoryBase()}/-components/${kebabCase(modelName)}-edit-form.tsx`;
         const editFormComponentName = `${modelName}EditForm`;
-        const editFormComponentExpression = TsCodeUtils.defaultImportFragment(
+        const editFormComponentExpression = TsCodeUtils.importFragment(
           editFormComponentName,
           editFormComponentPath,
         );

@@ -26,14 +26,14 @@ const createPage = createTsTemplateFile({
 });
 
 const editForm = createTsTemplateFile({
-  fileOptions: { generatorTemplatePath: 'EditForm.tsx', kind: 'instance' },
+  fileOptions: { generatorTemplatePath: 'edit-form.tsx', kind: 'instance' },
   importMapProviders: {
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
   },
   name: 'edit-form',
   source: {
-    path: path.join(import.meta.dirname, '../templates/EditForm.tsx'),
+    path: path.join(import.meta.dirname, '../templates/edit-form.tsx'),
   },
   variables: {
     TPL_COMPONENT_NAME: {},
@@ -82,7 +82,7 @@ const schema = createTsTemplateFile({
 
 export const ADMIN_ADMIN_CRUD_EDIT_TEMPLATES = {
   createPage,
-  editPage,
   editForm,
+  editPage,
   schema,
 };

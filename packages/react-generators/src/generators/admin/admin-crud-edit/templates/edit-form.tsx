@@ -15,7 +15,9 @@ interface Props {
   TPL_EXTRA_PROPS;
 }
 
-function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
+export function TPL_COMPONENT_NAME(
+  TPL_DESTRUCTURED_PROPS: Props,
+): ReactElement {
   const { handleSubmit, control } = useForm({
     resolver: zodResolver(TPL_EDIT_SCHEMA),
     defaultValues: initialData,
@@ -48,5 +50,3 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
     </div>
   );
 }
-
-export default TPL_COMPONENT_NAME;
