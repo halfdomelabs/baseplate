@@ -48,7 +48,7 @@ const editForm = createTsTemplateFile({
 
 const editPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'edit.tsx', kind: 'instance' },
-  importMapProviders: {},
+  importMapProviders: { reactErrorImports: reactErrorImportsProvider },
   name: 'edit-page',
   source: {
     path: path.join(import.meta.dirname, '../templates/edit.tsx'),

@@ -297,6 +297,9 @@ export const adminCrudEditGenerator = createGenerator({
                 id: `edit-${modelId}`,
                 template: ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.editPage,
                 destination: editPagePath,
+                importMapProviders: {
+                  reactErrorImports,
+                },
                 variables: {
                   TPL_ROUTE_VALUE: quot(`${routePrefix}/$id`),
                   TPL_COMPONENT_NAME: editPageName,

@@ -2,8 +2,8 @@
 
 import type { ReactElement } from 'react';
 
-import { createFileRoute } from '@tanstack/react-router';
-import { useNavigate, useParams } from 'react-router-dom';
+import { logError } from '%reactErrorImports';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
 export const Route = createFileRoute(TPL_ROUTE_VALUE)({
@@ -11,7 +11,7 @@ export const Route = createFileRoute(TPL_ROUTE_VALUE)({
 });
 
 function TPL_COMPONENT_NAME(): ReactElement {
-  const { id } = useParams() as { id: string };
+  const { id } = Route.useParams();
 
   TPL_DATA_LOADER;
 
@@ -25,7 +25,7 @@ function TPL_COMPONENT_NAME(): ReactElement {
       variables: { input: { id, data: formData } },
     });
     toast.success('Successfully updated item!');
-    navigate('..');
+    navigate({ to: '..' }).catch(logError);
   };
 
   return (
