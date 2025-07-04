@@ -1,7 +1,7 @@
 {
   "name": "core/react-not-found-handler",
   "templates": {
-    "src/pages/NotFound.page.tsx": {
+    "routes/NotFound.page.tsx": {
       "name": "not-found-page",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -12,7 +12,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/pages/NotFound.page.tsx",
+      "pathRootRelativePath": "{routes-root}/NotFound.page.tsx",
       "variables": {}
     }
   }

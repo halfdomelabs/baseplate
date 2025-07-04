@@ -1,5 +1,6 @@
-import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
+
+import { reactRoutesProvider } from '#src/providers/routes.js';
 
 export interface AdminAdminHomePaths {
   home: string;
@@ -10,14 +11,14 @@ const adminAdminHomePaths = createProviderType<AdminAdminHomePaths>(
 );
 
 const adminAdminHomePathsTask = createGeneratorTask({
-  dependencies: { packageInfo: packageInfoProvider },
+  dependencies: { reactRoutes: reactRoutesProvider },
   exports: { adminAdminHomePaths: adminAdminHomePaths.export() },
-  run({ packageInfo }) {
-    const srcRoot = packageInfo.getPackageSrcPath();
+  run({ reactRoutes }) {
+    const routesRoot = reactRoutes.getDirectoryBase();
 
     return {
       providers: {
-        adminAdminHomePaths: { home: `${srcRoot}/pages/Home/index.tsx` },
+        adminAdminHomePaths: { home: `${routesRoot}/Home/index.tsx` },
       },
     };
   },

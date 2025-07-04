@@ -21,7 +21,7 @@ const index = createTsTemplateFile({
   importMapProviders: {},
   name: 'index',
   source: {
-    path: path.join(import.meta.dirname, '../templates/src/pages/index.tsx'),
+    path: path.join(import.meta.dirname, '../templates/routes/index.tsx'),
   },
   variables: { TPL_RENDER_HEADER: {}, TPL_ROUTES: {} },
 });
@@ -35,4 +35,4 @@ const routeTree = createTsTemplateFile({
   variables: {},
 });
 
-export const CORE_REACT_ROUTER_TEMPLATES = { appRoutes, index, routeTree };
+export const CORE_REACT_ROUTER_TEMPLATES = { index, appRoutes, routeTree };

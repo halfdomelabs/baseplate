@@ -12,7 +12,7 @@ const notFoundPage = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/pages/NotFound.page.tsx',
+      '../templates/routes/NotFound.page.tsx',
     ),
   },
   variables: {},

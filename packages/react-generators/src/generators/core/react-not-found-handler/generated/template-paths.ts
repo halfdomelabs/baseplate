@@ -1,5 +1,6 @@
-import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
+
+import { reactRoutesProvider } from '#src/providers/routes.js';
 
 export interface CoreReactNotFoundHandlerPaths {
   notFoundPage: string;
@@ -11,17 +12,17 @@ const coreReactNotFoundHandlerPaths =
   );
 
 const coreReactNotFoundHandlerPathsTask = createGeneratorTask({
-  dependencies: { packageInfo: packageInfoProvider },
+  dependencies: { reactRoutes: reactRoutesProvider },
   exports: {
     coreReactNotFoundHandlerPaths: coreReactNotFoundHandlerPaths.export(),
   },
-  run({ packageInfo }) {
-    const srcRoot = packageInfo.getPackageSrcPath();
+  run({ reactRoutes }) {
+    const routesRoot = reactRoutes.getDirectoryBase();
 
     return {
       providers: {
         coreReactNotFoundHandlerPaths: {
-          notFoundPage: `${srcRoot}/pages/NotFound.page.tsx`,
+          notFoundPage: `${routesRoot}/NotFound.page.tsx`,
         },
       },
     };

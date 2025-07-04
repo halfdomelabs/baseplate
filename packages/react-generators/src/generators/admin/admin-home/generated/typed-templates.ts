@@ -12,10 +12,7 @@ const home = createTsTemplateFile({
   },
   name: 'home',
   source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/pages/Home/index.tsx',
-    ),
+    path: path.join(import.meta.dirname, '../templates/routes/Home/index.tsx'),
   },
   variables: {},
 });

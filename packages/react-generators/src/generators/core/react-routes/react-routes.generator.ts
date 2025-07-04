@@ -66,11 +66,6 @@ export const reactRoutesGenerator = createGenerator({
               getRoutePrefix: () =>
                 `${reactRoutes.getRoutePrefix()}/${pathName}`,
             },
-            reactRoutesReadOnly: {
-              getDirectoryBase: () => directoryBase,
-              getRoutePrefix: () =>
-                `${reactRoutes.getRoutePrefix()}/${pathName}`,
-            },
           },
           build: async (builder) => {
             if (routes.length === 0) {

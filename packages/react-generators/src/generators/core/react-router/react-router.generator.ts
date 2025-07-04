@@ -7,6 +7,7 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   packageScope,
+  pathRootsProvider,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -100,15 +101,20 @@ export const reactRouterGenerator = createGenerator({
       },
     }),
     routes: createGeneratorTask({
+      dependencies: {
+        pathRoots: pathRootsProvider,
+      },
       exports: {
         reactRoutes: reactRoutesProvider.export(packageScope),
-      },
-      outputs: {
         reactRouteValuesProvider: reactRouteValuesProvider.export(),
       },
-      run() {
+      run({ pathRoots }) {
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];
+
+        const directoryBase = `@/src/pages`;
+
+        pathRoots.registerPathRoot('routes-root', directoryBase);
 
         return {
           providers: {
@@ -119,20 +125,14 @@ export const reactRouterGenerator = createGenerator({
               registerLayout(layout) {
                 layouts.push(layout);
               },
-              getDirectoryBase: () => `@/src/pages`,
+              getDirectoryBase: () => directoryBase,
               getRoutePrefix: () => ``,
             },
-            reactRoutesReadOnly: {
-              getDirectoryBase: () => `@/src/pages`,
-              getRoutePrefix: () => ``,
-            },
-          },
-          build: () => ({
             reactRouteValuesProvider: {
               routes,
               layouts,
             },
-          }),
+          },
         };
       },
     }),

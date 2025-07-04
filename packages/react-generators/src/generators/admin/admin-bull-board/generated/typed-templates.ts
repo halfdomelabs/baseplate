@@ -15,7 +15,7 @@ const bullBoard = createTextTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/pages/bull-board/bull-board.gql',
+      '../templates/routes/bull-board/bull-board.gql',
     ),
   },
   variables: {},
@@ -33,7 +33,7 @@ const bullBoardPage = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/pages/bull-board/index.tsx',
+      '../templates/routes/bull-board/index.tsx',
     ),
   },
   variables: {},
