@@ -1,7 +1,7 @@
 {
   "name": "admin/admin-home",
   "templates": {
-    "routes/Home/index.tsx": {
+    "routes/index.tsx": {
       "name": "home",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -16,7 +16,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{routes-root}/Home/index.tsx",
+      "pathRootRelativePath": "{routes-root}/index.tsx",
       "variables": {}
     }
   }

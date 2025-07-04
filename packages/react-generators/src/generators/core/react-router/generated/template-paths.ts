@@ -1,10 +1,7 @@
 import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { reactRoutesProvider } from '#src/providers/routes.js';
-
 export interface CoreReactRouterPaths {
-  index: string;
   appRoutes: string;
   routeTree: string;
 }
@@ -14,20 +11,15 @@ const coreReactRouterPaths = createProviderType<CoreReactRouterPaths>(
 );
 
 const coreReactRouterPathsTask = createGeneratorTask({
-  dependencies: {
-    packageInfo: packageInfoProvider,
-    reactRoutes: reactRoutesProvider,
-  },
+  dependencies: { packageInfo: packageInfoProvider },
   exports: { coreReactRouterPaths: coreReactRouterPaths.export() },
-  run({ packageInfo, reactRoutes }) {
-    const routesRoot = reactRoutes.getDirectoryBase();
+  run({ packageInfo }) {
     const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
       providers: {
         coreReactRouterPaths: {
           appRoutes: `${srcRoot}/app/app-routes.tsx`,
-          index: `${routesRoot}/index.tsx`,
           routeTree: `${srcRoot}/route-tree.gen.ts`,
         },
       },

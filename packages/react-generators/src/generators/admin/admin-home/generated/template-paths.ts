@@ -18,7 +18,7 @@ const adminAdminHomePathsTask = createGeneratorTask({
 
     return {
       providers: {
-        adminAdminHomePaths: { home: `${routesRoot}/Home/index.tsx` },
+        adminAdminHomePaths: { home: `${routesRoot}/index.tsx` },
       },
     };
   },

@@ -4,6 +4,11 @@ import type { ReactElement } from 'react';
 
 import { useCurrentUser } from '%authHooksImports';
 import { ErrorableLoader } from '%reactComponentsImports';
+import { createFileRoute } from '@tanstack/react-router';
+
+export const Route = createFileRoute('/')({
+  component: HomePage,
+});
 
 function HomePage(): ReactElement {
   const { user, error } = useCurrentUser();
@@ -19,5 +24,3 @@ function HomePage(): ReactElement {
     </div>
   );
 }
-
-export default HomePage;

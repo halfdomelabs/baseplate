@@ -187,17 +187,6 @@ export const reactRouterGenerator = createGenerator({
                 fileOptions: { kind: 'singleton' },
               } satisfies TsTemplateOutputTemplateMetadata,
             });
-
-            await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: CORE_REACT_ROUTER_GENERATED.templates.index,
-                destination: paths.index,
-                variables: {
-                  TPL_RENDER_HEADER: TsCodeUtils.mergeFragments(renderHeaders),
-                  TPL_ROUTES: TsCodeUtils.template`<${routesComponent}>${renderedRoutes}</${routesComponent}>`,
-                },
-              }),
-            );
           },
         };
       },
