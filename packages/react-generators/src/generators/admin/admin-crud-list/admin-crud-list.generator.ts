@@ -60,8 +60,8 @@ export const adminCrudListGenerator = createGenerator({
         reactErrorImports,
       }) {
         const columns: AdminCrudColumn[] = [];
-        const listPagePath = `${reactRoutes.getDirectoryBase()}/list/index.page.tsx`;
-        const tableComponentPath = `${reactRoutes.getDirectoryBase()}/list/${modelName}Table.tsx`;
+        const listPagePath = `${reactRoutes.getDirectoryBase()}/index.tsx`;
+        const tableComponentPath = `${reactRoutes.getDirectoryBase()}/-components/${modelName}Table.tsx`;
         const tableComponentName = `${modelName}Table`;
 
         const listInfo = adminCrudQueries.getListQueryHookInfo();

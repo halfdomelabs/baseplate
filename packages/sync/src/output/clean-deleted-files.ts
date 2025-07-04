@@ -95,6 +95,9 @@ export async function cleanDeletedFiles({
       path.join(outputDirectory, relativePath),
     ),
     outputDirectory,
+    {
+      ignoreFiles: ['.template-metadata.json'],
+    },
   );
 
   return {
