@@ -6,9 +6,8 @@ import { useLogOut } from '%authHooksImports';
 import { Alert, Button, Card, Loader } from '%reactComponentsImports';
 import { logError } from '%reactErrorImports';
 import { OAuthError, useAuth0 } from '@auth0/auth0-react';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 function formatAndReportAuthError(error: unknown): string {
   if (
@@ -42,7 +41,7 @@ function Auth0CallbackPage(): ReactElement {
     didHandleRedirect.current = true;
     handleRedirectCallback()
       .then(({ appState }: { appState?: { returnTo?: string } }) => {
-        navigate(appState?.returnTo ?? '/', { replace: true });
+        navigate({ to: appState?.returnTo ?? '/' }).catch(logError);
       })
       .catch((err: unknown) => {
         setError(formatAndReportAuthError(err));
