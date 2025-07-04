@@ -8,6 +8,8 @@ import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import unusedImports from 'eslint-plugin-unused-imports';
 import tsEslint from 'typescript-eslint';
 
+import noUnusedGeneratorDependencies from './rules/no-unused-generator-dependencies.js';
+
 /**
  * @typedef {Object} GenerateTypescriptEslintConfigOptions
  * @property {string[]} [extraTsFileGlobs] - Additional file globs to lint with Typescript
@@ -262,6 +264,21 @@ export function generateTypescriptEslintConfig(options = []) {
         vitest: {
           typecheck: true,
         },
+      },
+    },
+
+    // Baseplate Generator Eslint Rule
+    {
+      files: ['**/*.generator.ts'],
+      plugins: {
+        baseplate: {
+          rules: {
+            'no-unused-generator-dependencies': noUnusedGeneratorDependencies,
+          },
+        },
+      },
+      rules: {
+        'baseplate/no-unused-generator-dependencies': ['error'],
       },
     },
 

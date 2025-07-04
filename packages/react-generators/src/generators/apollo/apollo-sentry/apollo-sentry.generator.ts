@@ -29,7 +29,6 @@ export const apolloSentryGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactSentryConfig: reactSentryConfigProvider,
-        paths: APOLLO_APOLLO_SENTRY_GENERATED.paths.provider,
       },
       run({ reactSentryConfig }) {
         const headerFragment = tsHoistedFragment(
