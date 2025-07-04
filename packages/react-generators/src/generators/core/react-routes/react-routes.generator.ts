@@ -1,7 +1,4 @@
-import {
-  pathRootsProvider,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { pathRootsProvider } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { convertCaseWithPrefix } from '@baseplate-dev/utils';
 import { kebabCase } from 'es-toolkit';
@@ -10,8 +7,6 @@ import { z } from 'zod';
 import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';
 
 import { reactRoutesProvider } from '#src/providers/routes.js';
-
-import { reactNotFoundProvider } from '../react-not-found-handler/index.js';
 
 const descriptorSchema = z.object({
   id: z.string().min(1),
@@ -30,14 +25,12 @@ export const reactRoutesGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactRoutes: reactRoutesProvider.dependency().parentScopeOnly(),
-        typescriptFile: typescriptFileProvider,
-        reactNotFound: reactNotFoundProvider.dependency().optional(),
         pathRoots: pathRootsProvider.dependency(),
       },
       exports: {
         reactRoutes: reactRoutesProvider.export(),
       },
-      run({ reactRoutes, typescriptFile, reactNotFound, pathRoots }) {
+      run({ reactRoutes, pathRoots }) {
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];
 
@@ -59,7 +52,9 @@ export const reactRoutesGenerator = createGenerator({
               },
               getDirectoryBase: () => directoryBase,
               getRoutePrefix: () =>
-                `${reactRoutes.getRoutePrefix()}/${pathName}`,
+                pathName.startsWith('_')
+                  ? reactRoutes.getRoutePrefix()
+                  : `${reactRoutes.getRoutePrefix()}/${pathName}`,
             },
           },
           build: async (builder) => {

@@ -4,6 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { authComponentsImportsProvider } from '#src/generators/auth/_providers/auth-components.js';
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
 
@@ -21,6 +22,16 @@ export interface AdminAdminLayoutRenderers {
       >,
     ) => BuilderAction;
   };
+  adminRoute: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof ADMIN_ADMIN_LAYOUT_TEMPLATES.adminRoute
+        >,
+        'destination' | 'importMapProviders' | 'template'
+      >,
+    ) => BuilderAction;
+  };
 }
 
 const adminAdminLayoutRenderers = createProviderType<AdminAdminLayoutRenderers>(
@@ -29,13 +40,20 @@ const adminAdminLayoutRenderers = createProviderType<AdminAdminLayoutRenderers>(
 
 const adminAdminLayoutRenderersTask = createGeneratorTask({
   dependencies: {
+    authComponentsImports: authComponentsImportsProvider,
     authHooksImports: authHooksImportsProvider,
     paths: ADMIN_ADMIN_LAYOUT_PATHS.provider,
     reactComponentsImports: reactComponentsImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { adminAdminLayoutRenderers: adminAdminLayoutRenderers.export() },
-  run({ authHooksImports, paths, reactComponentsImports, typescriptFile }) {
+  run({
+    authComponentsImports,
+    authHooksImports,
+    paths,
+    reactComponentsImports,
+    typescriptFile,
+  }) {
     return {
       providers: {
         adminAdminLayoutRenderers: {
@@ -47,6 +65,17 @@ const adminAdminLayoutRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   authHooksImports,
                   reactComponentsImports,
+                },
+                ...options,
+              }),
+          },
+          adminRoute: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: ADMIN_ADMIN_LAYOUT_TEMPLATES.adminRoute,
+                destination: paths.adminRoute,
+                importMapProviders: {
+                  authComponentsImports,
                 },
                 ...options,
               }),

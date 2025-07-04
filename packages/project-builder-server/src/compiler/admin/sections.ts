@@ -74,8 +74,6 @@ function compileAdminFeatureRecursive(
   return reactRoutesGenerator({
     id: featureId,
     name: featureName,
-    // add admin layout to any root features
-    layoutKey: feature.parentRef ? undefined : 'admin',
     children: {
       $sections: sectionDescriptors,
       $childRoutes: subDescriptors,

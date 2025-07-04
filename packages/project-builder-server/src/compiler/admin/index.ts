@@ -25,6 +25,7 @@ import {
   reactComponentsGenerator,
   reactNotFoundHandlerGenerator,
   reactRouterGenerator,
+  reactRoutesGenerator,
   reactSentryGenerator,
   reactTailwindGenerator,
 } from '@baseplate-dev/react-generators';
@@ -77,16 +78,43 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
         reactRouter: reactRouterGenerator({
           children: safeMerge(
             {
-              reactNotFoundHandler: reactNotFoundHandlerGenerator({}),
-              admin: adminHomeGenerator({}),
-              adminRoutes: backendApp.enableBullQueue
-                ? adminBullBoardGenerator({
-                    bullBoardUrl: `http://localhost:${
-                      generalSettings.portOffset + 1
-                    }`,
-                  })
-                : undefined,
-              routes: compileAdminFeatures(builder),
+              adminRoute: reactRoutesGenerator({
+                id: 'admin',
+                name: '_admin',
+                children: {
+                  adminLayout: adminLayoutGenerator({
+                    links: [
+                      {
+                        type: 'link',
+                        label: 'Home',
+                        icon: 'MdHome',
+                        path: '/',
+                      },
+                      ...buildNavigationLinks(builder),
+                      ...(backendApp.enableBullQueue
+                        ? [
+                            {
+                              type: 'link' as const,
+                              label: 'Queues',
+                              icon: 'AiOutlineOrderedList',
+                              path: '/bull-board',
+                            },
+                          ]
+                        : []),
+                    ],
+                  }),
+                  reactNotFoundHandler: reactNotFoundHandlerGenerator({}),
+                  admin: adminHomeGenerator({}),
+                  adminRoutes: backendApp.enableBullQueue
+                    ? adminBullBoardGenerator({
+                        bullBoardUrl: `http://localhost:${
+                          generalSettings.portOffset + 1
+                        }`,
+                      })
+                    : undefined,
+                  routes: compileAdminFeatures(builder),
+                },
+              }),
             },
             rootFeatures,
           ),
@@ -103,22 +131,6 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
           },
         }),
         apolloError: apolloErrorGenerator({}),
-        adminLayout: adminLayoutGenerator({
-          links: [
-            { type: 'link', label: 'Home', icon: 'MdHome', path: '/' },
-            ...buildNavigationLinks(builder),
-            ...(backendApp.enableBullQueue
-              ? [
-                  {
-                    type: 'link' as const,
-                    label: 'Queues',
-                    icon: 'AiOutlineOrderedList',
-                    path: '/bull-board',
-                  },
-                ]
-              : []),
-          ],
-        }),
         adminComponents: adminComponentsGenerator({}),
       },
     },

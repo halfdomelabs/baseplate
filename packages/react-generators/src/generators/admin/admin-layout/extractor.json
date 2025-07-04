@@ -1,6 +1,21 @@
 {
   "name": "admin/admin-layout",
   "templates": {
+    "routes/route.tsx": {
+      "name": "admin-route",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#admin/admin-layout",
+      "importMapProviders": {
+        "authComponentsImportsProvider": {
+          "importName": "authComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-components.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/route.tsx",
+      "projectExports": { "Route": {} },
+      "variables": {}
+    },
     "src/components/admin-layout/admin-layout.tsx": {
       "name": "admin-layout",
       "type": "ts",
