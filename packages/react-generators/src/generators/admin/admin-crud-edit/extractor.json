@@ -9,7 +9,12 @@
         "kind": "instance"
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
       "variables": {
         "TPL_COMPONENT_NAME": {},
         "TPL_CREATE_MUTATION": {},

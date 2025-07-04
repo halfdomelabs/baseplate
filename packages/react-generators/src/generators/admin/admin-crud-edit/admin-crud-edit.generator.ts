@@ -239,6 +239,9 @@ export const adminCrudEditGenerator = createGenerator({
                   template:
                     ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.createPage,
                   destination: createPagePath,
+                  importMapProviders: {
+                    reactErrorImports,
+                  },
                   variables: {
                     TPL_ROUTE_VALUE: quot(`${routePrefix}/new`),
                     TPL_COMPONENT_NAME: createPageName,

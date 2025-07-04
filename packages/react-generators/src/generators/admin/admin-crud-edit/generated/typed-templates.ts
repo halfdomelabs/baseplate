@@ -6,7 +6,7 @@ import { reactErrorImportsProvider } from '#src/generators/core/react-error/gene
 
 const createPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'create.tsx', kind: 'instance' },
-  importMapProviders: {},
+  importMapProviders: { reactErrorImports: reactErrorImportsProvider },
   name: 'create-page',
   source: {
     path: path.join(import.meta.dirname, '../templates/create.tsx'),

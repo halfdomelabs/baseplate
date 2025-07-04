@@ -2,8 +2,8 @@
 
 import type { ReactElement } from 'react';
 
-import { createFileRoute } from '@tanstack/react-router';
-import { useNavigate } from 'react-router-dom';
+import { logError } from '%reactErrorImports';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
 export const Route = createFileRoute(TPL_ROUTE_VALUE)({
@@ -28,7 +28,7 @@ function TPL_COMPONENT_NAME(): ReactElement {
       variables: { input: { data: formData } },
     });
     toast.success('Successfully created item!');
-    navigate('..');
+    navigate({ to: '..' }).catch(logError);
   };
 
   TPL_DATA_GATE;
