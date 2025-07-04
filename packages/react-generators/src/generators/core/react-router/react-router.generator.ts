@@ -14,23 +14,18 @@ import {
   TsCodeUtils,
   tsImportBuilder,
   tsTemplate,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderTask,
-  createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
-
-import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
-import { renderRoutes } from '../_utils/render-routes.js';
 import { reactAppConfigProvider } from '../react-app/index.js';
 import { reactBaseConfigProvider } from '../react/react.generator.js';
 import { CORE_REACT_ROUTER_GENERATED } from './generated/index.js';
@@ -52,11 +47,6 @@ const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
   );
 
 export { reactRouterConfigProvider };
-
-const reactRouteValuesProvider = createReadOnlyProviderType<{
-  routes: ReactRoute[];
-  layouts: ReactRouteLayout[];
-}>('react-route-values');
 
 export const reactRouterGenerator = createGenerator({
   name: 'core/react-router',
@@ -111,12 +101,8 @@ export const reactRouterGenerator = createGenerator({
       },
       exports: {
         reactRoutes: reactRoutesProvider.export(packageScope),
-        reactRouteValuesProvider: reactRouteValuesProvider.export(),
       },
       run({ pathRoots }) {
-        const routes: ReactRoute[] = [];
-        const layouts: ReactRouteLayout[] = [];
-
         const directoryBase = `@/src/routes`;
 
         pathRoots.registerPathRoot('routes-root', directoryBase);
@@ -124,18 +110,8 @@ export const reactRouterGenerator = createGenerator({
         return {
           providers: {
             reactRoutes: {
-              registerRoute(route) {
-                routes.push(route);
-              },
-              registerLayout(layout) {
-                layouts.push(layout);
-              },
               getDirectoryBase: () => directoryBase,
               getRoutePrefix: () => ``,
-            },
-            reactRouteValuesProvider: {
-              routes,
-              layouts,
             },
           },
         };
@@ -144,25 +120,14 @@ export const reactRouterGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactRouterConfigValues: reactRouterConfigValuesProvider,
-        reactRouteValues: reactRouteValuesProvider,
-        typescriptFile: typescriptFileProvider,
-        paths: CORE_REACT_ROUTER_GENERATED.paths.provider,
         renderers: CORE_REACT_ROUTER_GENERATED.renderers.provider,
       },
       run({
         reactRouterConfigValues: { renderHeaders, rootLayoutComponent },
-        reactRouteValues: { routes, layouts },
-        typescriptFile,
-        paths,
         renderers,
       }) {
         return {
           build: async (builder) => {
-            // TODO: Make sure we don't have more than one layout key
-
-            // group routes by layout key
-            const renderedRoutes = renderRoutes(routes, layouts);
-
             await builder.apply(
               renderers.appRoutes.render({
                 variables: {

@@ -17,8 +17,6 @@ export interface ReactRoute {
 }
 
 export interface ReactRoutesProvider {
-  registerLayout(layout: ReactRouteLayout): void;
-  registerRoute(route: ReactRoute): void;
   getRoutePrefix(): string;
   getDirectoryBase(): string;
 }

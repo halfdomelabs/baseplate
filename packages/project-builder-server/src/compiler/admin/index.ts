@@ -23,7 +23,6 @@ import {
   composeReactGenerators,
   reactApolloGenerator,
   reactComponentsGenerator,
-  reactNotFoundHandlerGenerator,
   reactRouterGenerator,
   reactRoutesGenerator,
   reactSentryGenerator,
@@ -79,7 +78,6 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
           children: safeMerge(
             {
               adminRoute: reactRoutesGenerator({
-                id: 'admin',
                 name: '_admin',
                 children: {
                   adminLayout: adminLayoutGenerator({
@@ -103,7 +101,6 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
                         : []),
                     ],
                   }),
-                  reactNotFoundHandler: reactNotFoundHandlerGenerator({}),
                   admin: adminHomeGenerator({}),
                   adminRoutes: backendApp.enableBullQueue
                     ? adminBullBoardGenerator({

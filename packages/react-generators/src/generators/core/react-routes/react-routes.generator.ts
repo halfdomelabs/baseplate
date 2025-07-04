@@ -4,16 +4,10 @@ import { convertCaseWithPrefix } from '@baseplate-dev/utils';
 import { kebabCase } from 'es-toolkit';
 import { z } from 'zod';
 
-import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';
-
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
 const descriptorSchema = z.object({
-  id: z.string().min(1),
   name: z.string().min(1),
-  layoutKey: z.string().optional(),
-  // whether to pass the routes through to the parent routes container
-  isPassthrough: z.boolean().optional(),
 });
 
 export const reactRoutesGenerator = createGenerator({
@@ -21,7 +15,7 @@ export const reactRoutesGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: ({ id, name, layoutKey, isPassthrough }) => ({
+  buildTasks: ({ name }) => ({
     main: createGeneratorTask({
       dependencies: {
         reactRoutes: reactRoutesProvider.dependency().parentScopeOnly(),
@@ -31,9 +25,6 @@ export const reactRoutesGenerator = createGenerator({
         reactRoutes: reactRoutesProvider.export(),
       },
       run({ reactRoutes, pathRoots }) {
-        const routes: ReactRoute[] = [];
-        const layouts: ReactRouteLayout[] = [];
-
         const pathName = convertCaseWithPrefix(name, kebabCase);
 
         const directoryBase = `${reactRoutes.getDirectoryBase()}/${pathName}`;
@@ -44,79 +35,12 @@ export const reactRoutesGenerator = createGenerator({
         return {
           providers: {
             reactRoutes: {
-              registerRoute(route) {
-                routes.push(route);
-              },
-              registerLayout(layout) {
-                layouts.push(layout);
-              },
               getDirectoryBase: () => directoryBase,
               getRoutePrefix: () =>
                 pathName.startsWith('_')
                   ? reactRoutes.getRoutePrefix()
                   : `${reactRoutes.getRoutePrefix()}/${pathName}`,
             },
-          },
-          build: async (builder) => {
-            if (routes.length === 0) {
-              return;
-            }
-
-            // if (isPassthrough) {
-            //   const renderedRoutes = renderRoutes(routes, layouts);
-
-            //   reactRoutes.registerRoute({
-            //     path: pathName,
-            //     layoutKey,
-            //     children: renderedRoutes,
-            //   });
-            //   for (const route of routes)
-            //     reactRoutes.registerRoute({
-            //       ...route,
-            //       path:
-            //         route.path &&
-            //         `${reactRoutes.getRoutePrefix()}/${pathName}/${route.path}`,
-            //     });
-            //   for (const layout of layouts) reactRoutes.registerLayout(layout);
-            // } else {
-            //   // // if we have an optional notFoundHandler, we need to register it as a route
-            //   // if (reactNotFound) {
-            //   //   routes.push(reactNotFound.getNotFoundRoute());
-            //   // }
-
-            //   const renderedRoutes = renderRoutes(routes, layouts);
-
-            //   const componentName = `${upperCaseFirst(name)}Routes`;
-
-            //   // await builder.apply(
-            //   //   typescriptFile.renderTemplateFile({
-            //   //     id: `route-${id}`,
-            //   //     template: CORE_REACT_ROUTES_GENERATED.templates.index,
-            //   //     destination: `${directoryBase}/index.tsx`,
-            //   //     variables: {
-            //   //       TPL_ROUTE_HEADER: TsCodeUtils.mergeFragments(
-            //   //         new Map(
-            //   //           layouts.map(
-            //   //             (layout) =>
-            //   //               [layout.key, layout.header] as [
-            //   //                 string,
-            //   //                 TsCodeFragment | undefined,
-            //   //               ],
-            //   //           ),
-            //   //         ),
-            //   //       ),
-            //   //       TPL_ROUTES: renderedRoutes,
-            //   //       TPL_ROUTES_NAME: `${upperCaseFirst(name)}FeatureRoutes`,
-            //   //     },
-            //   //   }),
-            //   // );
-
-            //   reactRoutes.registerRoute({
-            //     path: `${pathName}/*`,
-            //     layoutKey,
-            //     element: createRouteElement(componentName, directoryBase),
-            //   });
-            // }
           },
         };
       },

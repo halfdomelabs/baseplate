@@ -36,7 +36,6 @@ function compileWebFeatureRecursive(
     builder.appCompiler.getChildrenForFeature(featureId);
 
   return reactRoutesGenerator({
-    id: featureId,
     name: featureName,
     children: safeMerge({ $childRoutes: subDescriptors }, generatorsForFeature),
   });

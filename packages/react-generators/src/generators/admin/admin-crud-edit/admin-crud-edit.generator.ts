@@ -20,7 +20,6 @@ import { reactComponentsImportsProvider } from '#src/generators/core/react-compo
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { lowerCaseFirst, titleizeCamel } from '#src/utils/case.js';
-import { createRouteElement } from '#src/utils/routes.js';
 import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
 
 import type { AdminCrudInput } from '../_providers/admin-crud-input-container.js';
@@ -102,10 +101,6 @@ export const adminCrudEditGenerator = createGenerator({
 
         const editPagePath = `${reactRoutes.getDirectoryBase()}/$id.tsx`;
         const editPageName = `${modelName}EditPage`;
-        reactRoutes.registerRoute({
-          path: ':id/edit',
-          element: createRouteElement(editPageName, editPagePath),
-        });
 
         const createPagePath = `${reactRoutes.getDirectoryBase()}/new.tsx`;
         const createPageName = `${modelName}CreatePage`;
@@ -257,11 +252,6 @@ export const adminCrudEditGenerator = createGenerator({
                   },
                 }),
               );
-
-              reactRoutes.registerRoute({
-                path: 'new',
-                element: createRouteElement(createPageName, createPagePath),
-              });
             }
 
             const editPageLoader: DataLoader = {

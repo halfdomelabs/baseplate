@@ -18,7 +18,6 @@ import { reactComponentsImportsProvider } from '#src/generators/core/react-compo
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { titleizeCamel } from '#src/utils/case.js';
-import { createRouteElement } from '#src/utils/routes.js';
 import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
 
 import type { AdminCrudColumn } from '../_providers/admin-crud-column-container.js';
@@ -171,11 +170,6 @@ export const adminCrudListGenerator = createGenerator({
                 },
               }),
             );
-
-            reactRoutes.registerRoute({
-              index: true,
-              element: createRouteElement(listPageComponentName, listPagePath),
-            });
 
             const headers = sortedColumns.map(
               (column) =>
