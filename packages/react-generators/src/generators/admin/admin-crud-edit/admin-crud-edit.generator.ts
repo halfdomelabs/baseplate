@@ -11,7 +11,7 @@ import {
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { notEmpty } from '@baseplate-dev/utils';
+import { notEmpty, quot } from '@baseplate-dev/utils';
 import { kebabCase, sortBy } from 'es-toolkit';
 import { dasherize, underscore } from 'inflection';
 import { z } from 'zod';
@@ -76,6 +76,7 @@ export const adminCrudEditGenerator = createGenerator({
         reactComponentsImports,
         reactErrorImports,
       }) {
+        const routePrefix = reactRoutes.getRoutePrefix();
         const editSchemaPath = `${reactRoutes.getDirectoryBase()}/-schemas/${lowerCaseFirst(
           dasherize(underscore(modelName)),
         )}-schema.ts`;
@@ -239,6 +240,7 @@ export const adminCrudEditGenerator = createGenerator({
                     ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.createPage,
                   destination: createPagePath,
                   variables: {
+                    TPL_ROUTE_VALUE: quot(`${routePrefix}/new`),
                     TPL_COMPONENT_NAME: createPageName,
                     TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} ${inputLoaderExtraProps} />`,
                     TPL_CREATE_MUTATION: createInfo.hookExpression,
@@ -293,6 +295,7 @@ export const adminCrudEditGenerator = createGenerator({
                 template: ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.editPage,
                 destination: editPagePath,
                 variables: {
+                  TPL_ROUTE_VALUE: quot(`${routePrefix}/$id`),
                   TPL_COMPONENT_NAME: editPageName,
                   TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} initialData={initialData} ${inputLoaderExtraProps} />`,
                   TPL_UPDATE_MUTATION: updateInfo.hookExpression,

@@ -2,8 +2,13 @@
 
 import type { ReactElement } from 'react';
 
+import { createFileRoute } from '@tanstack/react-router';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+
+export const Route = createFileRoute(TPL_ROUTE_VALUE)({
+  component: TPL_COMPONENT_NAME,
+});
 
 function TPL_COMPONENT_NAME(): ReactElement {
   TPL_DATA_LOADER;
@@ -39,5 +44,3 @@ function TPL_COMPONENT_NAME(): ReactElement {
     </div>
   );
 }
-
-export default TPL_COMPONENT_NAME;
