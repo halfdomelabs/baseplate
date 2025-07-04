@@ -1,5 +1,50 @@
 # @baseplate-dev/core-generators
 
+## 0.2.2
+
+### Patch Changes
+
+- [#589](https://github.com/halfdomelabs/baseplate/pull/589) [`dce88ac`](https://github.com/halfdomelabs/baseplate/commit/dce88ac8d1f951f7336c12c5e004107de3a23e97) Thanks [@kingston](https://github.com/kingston)! - Add Template Renderers plugin for auto-generated simplified template rendering APIs
+
+  This new plugin reduces template rendering boilerplate by 70-80% by automatically generating pre-configured rendering functions. It follows the same architectural pattern as the typed templates system, with a TypeScript-specific renderer function (`renderTsTemplateRenderers`) that generates generic definitions consumed by the plugin.
+
+  **Key Features:**
+
+  - **Simplified API**: Reduces complex `renderTemplate`/`renderTemplateGroup` calls to simple `renderers.templateName.render()` calls
+  - **Automatic Dependency Resolution**: Import map providers and task dependencies are automatically resolved
+  - **Type Safety**: Generated interfaces provide full TypeScript type safety
+  - **Generic Architecture**: Extensible to support future template types (text, raw, etc.)
+  - **Backward Compatibility**: Existing generators continue working unchanged
+
+  **Before:**
+
+  ```typescript
+  await builder.apply(
+    typescriptFile.renderTemplateGroup({
+      group: templates.hooksGroup,
+      paths,
+      variables: { useCurrentUser: { TPL_USER: userQueryName } },
+      importMapProviders: { generatedGraphqlImports, reactErrorImports },
+    }),
+  );
+  ```
+
+  **After:**
+
+  ```typescript
+  await builder.apply(
+    renderers.hooksGroup.render({
+      variables: { useCurrentUser: { TPL_USER: userQueryName } },
+    }),
+  );
+  ```
+
+  The plugin automatically generates TypeScript interfaces, tasks with resolved dependencies, and exports that integrate seamlessly with the existing generator system.
+
+- Updated dependencies [[`f8c9284`](https://github.com/halfdomelabs/baseplate/commit/f8c9284752c12c6aab70481bf98e6fa402e61075), [`f8c9284`](https://github.com/halfdomelabs/baseplate/commit/f8c9284752c12c6aab70481bf98e6fa402e61075)]:
+  - @baseplate-dev/utils@0.2.2
+  - @baseplate-dev/sync@0.2.2
+
 ## 0.2.1
 
 ### Patch Changes

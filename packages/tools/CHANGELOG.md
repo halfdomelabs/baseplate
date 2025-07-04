@@ -1,5 +1,13 @@
 # @baseplate-dev/tools
 
+## 0.2.2
+
+### Patch Changes
+
+- [#588](https://github.com/halfdomelabs/baseplate/pull/588) [`c4b14f7`](https://github.com/halfdomelabs/baseplate/commit/c4b14f780e93b3dfe63863a1b78cbbaf4e4d9020) Thanks [@kingston](https://github.com/kingston)! - Add new ESLint rule `no-unused-generator-dependencies` to identify and autofix unused dependencies in `createGeneratorTask` definitions.
+
+- [#585](https://github.com/halfdomelabs/baseplate/pull/585) [`def0b7a`](https://github.com/halfdomelabs/baseplate/commit/def0b7a202ce49a93714a8acf876ff845c2e8e24) Thanks [@kingston](https://github.com/kingston)! - Add rules for tanstack router
+
 ## 0.2.1
 
 ## 0.2.0

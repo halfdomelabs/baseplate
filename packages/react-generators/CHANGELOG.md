@@ -1,5 +1,16 @@
 # @baseplate-dev/react-generators
 
+## 0.2.2
+
+### Patch Changes
+
+- [#591](https://github.com/halfdomelabs/baseplate/pull/591) [`f8c9284`](https://github.com/halfdomelabs/baseplate/commit/f8c9284752c12c6aab70481bf98e6fa402e61075) Thanks [@kingston](https://github.com/kingston)! - Migrate React generators to use Tanstack Router instead of React Router for improved type safety and developer experience
+
+- Updated dependencies [[`f8c9284`](https://github.com/halfdomelabs/baseplate/commit/f8c9284752c12c6aab70481bf98e6fa402e61075), [`f8c9284`](https://github.com/halfdomelabs/baseplate/commit/f8c9284752c12c6aab70481bf98e6fa402e61075), [`dce88ac`](https://github.com/halfdomelabs/baseplate/commit/dce88ac8d1f951f7336c12c5e004107de3a23e97)]:
+  - @baseplate-dev/utils@0.2.2
+  - @baseplate-dev/sync@0.2.2
+  - @baseplate-dev/core-generators@0.2.2
+
 ## 0.2.1
 
 ### Patch Changes
