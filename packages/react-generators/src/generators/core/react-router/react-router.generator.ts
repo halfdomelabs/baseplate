@@ -103,7 +103,7 @@ export const reactRouterGenerator = createGenerator({
       prettier.addPrettierIgnore('/src/route-tree.gen.ts');
     }),
     eslint: createProviderTask(eslintConfigProvider, (eslint) => {
-      eslint.eslintIgnore.push('/src/route-tree.gen.ts');
+      eslint.eslintIgnore.push('src/route-tree.gen.ts');
     }),
     routes: createGeneratorTask({
       dependencies: {
