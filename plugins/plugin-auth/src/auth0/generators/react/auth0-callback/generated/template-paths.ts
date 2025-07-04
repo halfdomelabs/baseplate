@@ -19,8 +19,8 @@ const auth0Auth0CallbackPathsTask = createGeneratorTask({
     return {
       providers: {
         auth0Auth0CallbackPaths: {
-          auth0CallbackPage: `${routesRoot}/auth0-callback.page.tsx`,
-          signupPage: `${routesRoot}/signup.page.tsx`,
+          auth0CallbackPage: `${routesRoot}/auth0-callback.tsx`,
+          signupPage: `${routesRoot}/signup.tsx`,
         },
       },
     };

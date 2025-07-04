@@ -11,7 +11,7 @@ import {
   SidebarLayoutContent,
   SidebarLayoutSidebar,
 } from '%reactComponentsImports';
-import { Outlet } from 'react-router-dom';
+import { Outlet } from '@tanstack/react-router';
 
 interface Props {
   className?: string;

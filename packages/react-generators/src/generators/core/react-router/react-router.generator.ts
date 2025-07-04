@@ -5,9 +5,11 @@ import type {
 
 import {
   createNodePackagesTask,
+  eslintConfigProvider,
   extractPackageVersions,
   packageScope,
   pathRootsProvider,
+  prettierProvider,
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
@@ -41,7 +43,7 @@ const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
       renderHeaders: t.map<string, TsCodeFragment>(),
-      routesComponent: t.scalar<TsCodeFragment>(),
+      rootLayoutComponent: t.scalar<TsCodeFragment>(),
     }),
     {
       prefix: 'react-router',
@@ -102,6 +104,12 @@ export const reactRouterGenerator = createGenerator({
         );
       },
     }),
+    prettier: createProviderTask(prettierProvider, (prettier) => {
+      prettier.addPrettierIgnore('/src/route-tree.gen.ts');
+    }),
+    eslint: createProviderTask(eslintConfigProvider, (eslint) => {
+      eslint.eslintIgnore.push('/src/route-tree.gen.ts');
+    }),
     routes: createGeneratorTask({
       dependencies: {
         pathRoots: pathRootsProvider,
@@ -147,13 +155,7 @@ export const reactRouterGenerator = createGenerator({
         renderers: CORE_REACT_ROUTER_GENERATED.renderers.provider,
       },
       run({
-        reactRouterConfigValues: {
-          routesComponent = tsCodeFragment(
-            'Routes',
-            tsImportBuilder(['Routes']).from('react-router-dom'),
-          ),
-          renderHeaders,
-        },
+        reactRouterConfigValues: { renderHeaders, rootLayoutComponent },
         reactRouteValues: { routes, layouts },
         typescriptFile,
         paths,
@@ -170,6 +172,16 @@ export const reactRouterGenerator = createGenerator({
               renderers.appRoutes.render({
                 variables: {
                   TPL_RENDER_HEADER: TsCodeUtils.mergeFragments(renderHeaders),
+                },
+              }),
+            );
+
+            await builder.apply(
+              renderers.rootRoute.render({
+                variables: {
+                  TPL_ROOT_ROUTE_OPTIONS: TsCodeUtils.mergeFragmentsAsObject({
+                    component: rootLayoutComponent,
+                  }),
                 },
               }),
             );

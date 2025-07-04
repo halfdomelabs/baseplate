@@ -1,8 +1,5 @@
-import type { TsCodeFragment } from '@baseplate-dev/core-generators';
-
 import {
   pathRootsProvider,
-  TsCodeUtils,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
@@ -16,7 +13,6 @@ import { createRouteElement } from '#src/utils/routes.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
 import { reactNotFoundProvider } from '../react-not-found-handler/index.js';
-import { CORE_REACT_ROUTES_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
   id: z.string().min(1),
@@ -98,28 +94,28 @@ export const reactRoutesGenerator = createGenerator({
 
               const componentName = `${upperCaseFirst(name)}Routes`;
 
-              await builder.apply(
-                typescriptFile.renderTemplateFile({
-                  id: `route-${id}`,
-                  template: CORE_REACT_ROUTES_GENERATED.templates.index,
-                  destination: `${directoryBase}/index.tsx`,
-                  variables: {
-                    TPL_ROUTE_HEADER: TsCodeUtils.mergeFragments(
-                      new Map(
-                        layouts.map(
-                          (layout) =>
-                            [layout.key, layout.header] as [
-                              string,
-                              TsCodeFragment | undefined,
-                            ],
-                        ),
-                      ),
-                    ),
-                    TPL_ROUTES: renderedRoutes,
-                    TPL_ROUTES_NAME: `${upperCaseFirst(name)}FeatureRoutes`,
-                  },
-                }),
-              );
+              // await builder.apply(
+              //   typescriptFile.renderTemplateFile({
+              //     id: `route-${id}`,
+              //     template: CORE_REACT_ROUTES_GENERATED.templates.index,
+              //     destination: `${directoryBase}/index.tsx`,
+              //     variables: {
+              //       TPL_ROUTE_HEADER: TsCodeUtils.mergeFragments(
+              //         new Map(
+              //           layouts.map(
+              //             (layout) =>
+              //               [layout.key, layout.header] as [
+              //                 string,
+              //                 TsCodeFragment | undefined,
+              //               ],
+              //           ),
+              //         ),
+              //       ),
+              //       TPL_ROUTES: renderedRoutes,
+              //       TPL_ROUTES_NAME: `${upperCaseFirst(name)}FeatureRoutes`,
+              //     },
+              //   }),
+              // );
 
               reactRoutes.registerRoute({
                 path: `${pathName}/*`,

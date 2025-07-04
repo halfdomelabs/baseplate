@@ -1,6 +1,16 @@
 {
   "name": "core/react-router",
   "templates": {
+    "routes/__root.tsx": {
+      "name": "root-route",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-router",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{routes-root}/__root.tsx",
+      "projectExports": { "Route": {} },
+      "variables": { "TPL_ROOT_ROUTE_OPTIONS": {} }
+    },
     "routes/index.tsx": {
       "name": "placeholder-index",
       "type": "ts",

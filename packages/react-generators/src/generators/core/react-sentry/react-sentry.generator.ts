@@ -6,7 +6,6 @@ import {
   packageScope,
   tsCodeFragment,
   TsCodeUtils,
-  tsHoistedFragment,
   tsImportBuilder,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -26,7 +25,6 @@ import {
   reactConfigProvider,
 } from '../react-config/index.js';
 import { reactErrorConfigProvider } from '../react-error/index.js';
-import { reactRouterConfigProvider } from '../react-router/index.js';
 import { CORE_REACT_SENTRY_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -125,28 +123,6 @@ export const reactSentryGenerator = createGenerator({
             );
           },
         };
-      },
-    }),
-    addRouterDomIntegration: createGeneratorTask({
-      dependencies: {
-        reactRouterConfig: reactRouterConfigProvider,
-      },
-      run({ reactRouterConfig }) {
-        reactRouterConfig.routesComponent.set(
-          tsCodeFragment('SentryRoutes', undefined, {
-            hoistedFragments: [
-              tsHoistedFragment(
-                'sentry-routes',
-                `const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);`,
-                [
-                  tsImportBuilder().namespace('Sentry').from('@sentry/react'),
-                  tsImportBuilder(['Routes']).from('react-router-dom'),
-                ],
-              ),
-            ],
-          }),
-        );
-        return {};
       },
     }),
   }),

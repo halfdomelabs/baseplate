@@ -6,6 +6,7 @@ import { useLogOut } from '%authHooksImports';
 import { Alert, Button, Card, Loader } from '%reactComponentsImports';
 import { logError } from '%reactErrorImports';
 import { OAuthError, useAuth0 } from '@auth0/auth0-react';
+import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,6 +21,10 @@ function formatAndReportAuthError(error: unknown): string {
   logError(error);
   return 'Sorry, we could not log you in. Please try again.';
 }
+
+export const Route = createFileRoute('/auth/auth0-callback')({
+  component: Auth0CallbackPage,
+});
 
 function Auth0CallbackPage(): ReactElement {
   const logOut = useLogOut();
@@ -57,5 +62,3 @@ function Auth0CallbackPage(): ReactElement {
     </div>
   );
 }
-
-export default Auth0CallbackPage;

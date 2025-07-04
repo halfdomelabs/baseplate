@@ -14,6 +14,7 @@ import { CORE_REACT_ROUTER_PATHS } from './template-paths.js';
 
 const reactRouterImportsSchema = createTsImportMapSchema({
   AppRoutes: {},
+  Route: {},
   router: {},
 });
 
@@ -38,6 +39,7 @@ const coreReactRouterImportsTask = createGeneratorTask({
       providers: {
         reactRouterImports: createTsImportMap(reactRouterImportsSchema, {
           AppRoutes: paths.appRoutes,
+          Route: paths.rootRoute,
           router: paths.appRoutes,
         }),
       },

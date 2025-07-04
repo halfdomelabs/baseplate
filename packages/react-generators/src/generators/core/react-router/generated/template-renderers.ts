@@ -30,6 +30,16 @@ export interface CoreReactRouterRenderers {
       >,
     ) => BuilderAction;
   };
+  rootRoute: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof CORE_REACT_ROUTER_TEMPLATES.rootRoute
+        >,
+        'destination' | 'importMapProviders' | 'template'
+      >,
+    ) => BuilderAction;
+  };
   routeTree: {
     render: (
       options: Omit<
@@ -73,6 +83,14 @@ const coreReactRouterRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: CORE_REACT_ROUTER_TEMPLATES.placeholderIndex,
                 destination: paths.placeholderIndex,
+                ...options,
+              }),
+          },
+          rootRoute: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_ROUTER_TEMPLATES.rootRoute,
+                destination: paths.rootRoute,
                 ...options,
               }),
           },

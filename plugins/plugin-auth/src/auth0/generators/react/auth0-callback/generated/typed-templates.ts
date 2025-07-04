@@ -17,7 +17,7 @@ const auth0CallbackPage = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/routes/auth0-callback.page.tsx',
+      '../templates/routes/auth0-callback.tsx',
     ),
   },
   variables: {},
@@ -31,7 +31,7 @@ const signupPage = createTsTemplateFile({
   },
   name: 'signup-page',
   source: {
-    path: path.join(import.meta.dirname, '../templates/routes/signup.page.tsx'),
+    path: path.join(import.meta.dirname, '../templates/routes/signup.tsx'),
   },
   variables: {},
 });

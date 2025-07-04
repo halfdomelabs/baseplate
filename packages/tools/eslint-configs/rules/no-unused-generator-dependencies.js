@@ -108,6 +108,22 @@ export default {
                     fix(fixer) {
                       // Remove the entire property from the dependencies object
                       // This handles commas and whitespace correctly for object properties.
+                      const sourceCode = context.sourceCode;
+                      const nextToken = sourceCode.getTokenAfter(depProp);
+
+                      // If there's a comma after this property, remove it too
+                      if (
+                        nextToken &&
+                        nextToken.type === 'Punctuator' &&
+                        nextToken.value === ',' &&
+                        depProp.range
+                      ) {
+                        return fixer.removeRange([
+                          depProp.range[0],
+                          nextToken.range[1],
+                        ]);
+                      }
+
                       return fixer.remove(depProp);
                     },
                   });
