@@ -6,7 +6,7 @@ const app = createTsTemplateFile({
   importMapProviders: {},
   name: 'app',
   source: {
-    path: path.join(import.meta.dirname, '../templates/src/app/App.tsx'),
+    path: path.join(import.meta.dirname, '../templates/src/app/app.tsx'),
   },
   variables: { TPL_RENDER_ROOT: {} },
 });
