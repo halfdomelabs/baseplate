@@ -65,17 +65,13 @@ export const reactRouterGenerator = createGenerator({
   buildTasks: ({ renderPlaceholderIndex }) => ({
     setup: setupTask,
     nodePackages: createNodePackagesTask({
-      prod: extractPackageVersions(REACT_PACKAGES, [
-        '@tanstack/react-router',
-        'react-router-dom',
-      ]),
+      prod: extractPackageVersions(REACT_PACKAGES, ['@tanstack/react-router']),
       dev: extractPackageVersions(REACT_PACKAGES, ['@tanstack/router-plugin']),
     }),
     paths: CORE_REACT_ROUTER_GENERATED.paths.task,
     imports: CORE_REACT_ROUTER_GENERATED.imports.task,
     renderers: CORE_REACT_ROUTER_GENERATED.renderers.task,
     vite: createProviderTask(reactBaseConfigProvider, (reactBaseConfig) => {
-      // TODO [2025-07-03]: Re-enable logging once migration is complete
       reactBaseConfig.vitePlugins.set(
         '@tanstack/router-plugin',
         tsTemplate`${TsCodeUtils.importFragment(
@@ -86,7 +82,6 @@ export const reactRouterGenerator = createGenerator({
         autoCodeSplitting: true,
         generatedRouteTree: './src/route-tree.gen.ts',
         quoteStyle: 'single',
-        disableLogging: true,
       })`,
       );
     }),
