@@ -1,14 +1,8 @@
 // @ts-nocheck
 
 import { config } from '%reactConfigImports';
+import { router } from '%reactRouterImports';
 import * as Sentry from '@sentry/react';
-import React from 'react';
-import {
-  createRoutesFromChildren,
-  matchRoutes,
-  useLocation,
-  useNavigationType,
-} from 'react-router-dom';
 
 const SENTRY_ENABLED = !!config.VITE_SENTRY_DSN;
 const TRACE_SAMPLE_RATE = 1;
@@ -17,15 +11,7 @@ if (SENTRY_ENABLED) {
   Sentry.init({
     dsn: config.VITE_SENTRY_DSN,
     environment: config.VITE_ENVIRONMENT,
-    integrations: [
-      Sentry.reactRouterV6BrowserTracingIntegration({
-        useEffect: React.useEffect,
-        useLocation,
-        useNavigationType,
-        createRoutesFromChildren,
-        matchRoutes,
-      }),
-    ],
+    integrations: [Sentry.tanstackRouterBrowserTracingIntegration(router)],
     tracesSampleRate: TRACE_SAMPLE_RATE,
   });
 }

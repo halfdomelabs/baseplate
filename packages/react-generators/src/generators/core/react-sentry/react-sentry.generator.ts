@@ -7,7 +7,6 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
@@ -20,10 +19,7 @@ import { z } from 'zod';
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 import { authIdentifyProvider } from '#src/generators/auth/auth-identify/index.js';
 
-import {
-  reactConfigImportsProvider,
-  reactConfigProvider,
-} from '../react-config/index.js';
+import { reactConfigProvider } from '../react-config/index.js';
 import { reactErrorConfigProvider } from '../react-error/index.js';
 import { CORE_REACT_SENTRY_GENERATED } from './generated/index.js';
 
@@ -53,6 +49,7 @@ export const reactSentryGenerator = createGenerator({
     }),
     paths: CORE_REACT_SENTRY_GENERATED.paths.task,
     imports: CORE_REACT_SENTRY_GENERATED.imports.task,
+    renderers: CORE_REACT_SENTRY_GENERATED.renderers.task,
     reactError: createProviderTask(
       reactErrorConfigProvider,
       (reactErrorConfig) => {
@@ -95,26 +92,14 @@ export const reactSentryGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        reactConfigImports: reactConfigImportsProvider,
         reactSentryConfigValues: reactSentryConfigValuesProvider,
-        paths: CORE_REACT_SENTRY_GENERATED.paths.provider,
+        renderers: CORE_REACT_SENTRY_GENERATED.renderers.provider,
       },
-      run({
-        typescriptFile,
-        reactConfigImports,
-        reactSentryConfigValues: { sentryScopeActions },
-        paths,
-      }) {
+      run({ reactSentryConfigValues: { sentryScopeActions }, renderers }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: CORE_REACT_SENTRY_GENERATED.templates.sentry,
-                destination: paths.sentry,
-                importMapProviders: {
-                  reactConfigImports,
-                },
+              renderers.sentry.render({
                 variables: {
                   TPL_SENTRY_SCOPE_ACTIONS:
                     TsCodeUtils.mergeFragments(sentryScopeActions),
