@@ -7,12 +7,14 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
+  tsTemplate,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
+  createProviderTask,
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
@@ -27,6 +29,7 @@ import {
 
 import { renderRoutes } from '../_utils/render-routes.js';
 import { reactAppConfigProvider } from '../react-app/index.js';
+import { reactBaseConfigProvider } from '../react/react.generator.js';
 import { CORE_REACT_ROUTER_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -64,6 +67,22 @@ export const reactRouterGenerator = createGenerator({
       dev: extractPackageVersions(REACT_PACKAGES, ['@tanstack/router-plugin']),
     }),
     paths: CORE_REACT_ROUTER_GENERATED.paths.task,
+    vite: createProviderTask(reactBaseConfigProvider, (reactBaseConfig) => {
+      // TODO [2025-07-03]: Re-enable logging once migration is complete
+      reactBaseConfig.vitePlugins.set(
+        '@tanstack/router-plugin',
+        tsTemplate`${TsCodeUtils.importFragment(
+          'tanstackRouter',
+          '@tanstack/router-plugin/vite',
+        )}({
+        target: 'react',
+        autoCodeSplitting: true,
+        generatedRouteTree: './src/route-tree.gen.ts',
+        quoteStyle: 'single',
+        disableLogging: true,
+      })`,
+      );
+    }),
     reactAppConfig: createGeneratorTask({
       dependencies: {
         reactAppConfig: reactAppConfigProvider,
