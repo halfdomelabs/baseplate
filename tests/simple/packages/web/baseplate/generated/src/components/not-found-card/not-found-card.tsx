@@ -1,25 +1,19 @@
 import type React from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
-import { Button } from '../button/button';
-import { ErrorDisplay } from '../error-display/error-display';
+import { Button, ErrorDisplay } from '..';
 
 export function NotFoundCard(): React.JSX.Element {
-  const navigate = useNavigate();
   return (
     <ErrorDisplay
       className="flex-1"
       header="Page not found"
       error="Sorry, we were unable to find the page you were looking for."
       actions={
-        <Button
-          onClick={() => {
-            navigate('/');
-          }}
-        >
-          Back to Home
-        </Button>
+        <Link to="/" from="/">
+          <Button>Back to Home</Button>
+        </Link>
       }
     />
   );

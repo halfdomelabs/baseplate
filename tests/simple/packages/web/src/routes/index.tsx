@@ -1,9 +1,14 @@
 import type { ReactElement } from 'react';
 
-import { ErrorableLoader } from '@src/components';
+import { createFileRoute } from '@tanstack/react-router';
+
 import { useGetBlogPostsQuery } from '@src/generated/graphql';
 
-export function HomePage(): ReactElement {
+export const Route = createFileRoute('/')({
+  component: HomePage,
+});
+
+function HomePage(): ReactElement {
   const { data, error } = useGetBlogPostsQuery();
 
   if (!data) {

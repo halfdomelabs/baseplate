@@ -3,14 +3,8 @@ import type { GraphQLFormattedError } from 'graphql';
 import { ApolloError } from '@apollo/client';
 import * as Sentry from '@sentry/react';
 import { GraphQLError } from 'graphql';
-import React from 'react';
-import {
-  createRoutesFromChildren,
-  matchRoutes,
-  useLocation,
-  useNavigationType,
-} from 'react-router-dom';
 
+import { router } from '../app/app-routes';
 import { config } from './config';
 
 function configureSentryScopeForGraphqlError(
@@ -37,15 +31,7 @@ if (SENTRY_ENABLED) {
   Sentry.init({
     dsn: config.VITE_SENTRY_DSN,
     environment: config.VITE_ENVIRONMENT,
-    integrations: [
-      Sentry.reactRouterV6BrowserTracingIntegration({
-        useEffect: React.useEffect,
-        useLocation,
-        useNavigationType,
-        createRoutesFromChildren,
-        matchRoutes,
-      }),
-    ],
+    integrations: [Sentry.tanstackRouterBrowserTracingIntegration(router)],
     tracesSampleRate: TRACE_SAMPLE_RATE,
   });
 }
