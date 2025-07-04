@@ -164,7 +164,13 @@ export const reactRouterGenerator = createGenerator({
             // group routes by layout key
             const renderedRoutes = renderRoutes(routes, layouts);
 
-            await builder.apply(renderers.appRoutes.render({}));
+            await builder.apply(
+              renderers.appRoutes.render({
+                variables: {
+                  TPL_RENDER_HEADER: TsCodeUtils.mergeFragments(renderHeaders),
+                },
+              }),
+            );
 
             // Write a pseudo-file so that the template extractor can infer metadata for the
             // generated route tree file

@@ -14,7 +14,7 @@
       },
       "pathRootRelativePath": "{src-root}/app/app-routes.tsx",
       "projectExports": { "AppRoutes": {}, "router": {} },
-      "variables": {}
+      "variables": { "TPL_RENDER_HEADER": {} }
     },
     "src/pages/index.tsx": {
       "name": "index",

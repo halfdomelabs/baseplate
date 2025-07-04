@@ -13,7 +13,7 @@ const appRoutes = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/src/app/app-routes.tsx'),
   },
-  variables: {},
+  variables: { TPL_RENDER_HEADER: {} },
 });
 
 const index = createTsTemplateFile({

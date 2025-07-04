@@ -31,5 +31,7 @@ declare module '@tanstack/react-router' {
 }
 
 export function AppRoutes(): React.ReactElement {
+  TPL_RENDER_HEADER;
+
   return <RouterProvider router={router} />;
 }
