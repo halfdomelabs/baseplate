@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 
 import { createFileRoute } from '@tanstack/react-router';
 
+import { ErrorableLoader } from '@src/components';
 import { useGetBlogPostsQuery } from '@src/generated/graphql';
 
 export const Route = createFileRoute('/')({
