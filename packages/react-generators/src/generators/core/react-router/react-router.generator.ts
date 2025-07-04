@@ -112,7 +112,7 @@ export const reactRouterGenerator = createGenerator({
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];
 
-        const directoryBase = `@/src/pages`;
+        const directoryBase = `@/src/routes`;
 
         pathRoots.registerPathRoot('routes-root', directoryBase);
 
