@@ -1,5 +1,19 @@
 # @baseplate-dev/project-builder-server
 
+## 0.2.2
+
+### Patch Changes
+
+- [#585](https://github.com/halfdomelabs/baseplate/pull/585) [`def0b7a`](https://github.com/halfdomelabs/baseplate/commit/def0b7a202ce49a93714a8acf876ff845c2e8e24) Thanks [@kingston](https://github.com/kingston)! - Show project directory not found error for plugin discovery
+
+- Updated dependencies [[`f8c9284`](https://github.com/halfdomelabs/baseplate/commit/f8c9284752c12c6aab70481bf98e6fa402e61075), [`f8c9284`](https://github.com/halfdomelabs/baseplate/commit/f8c9284752c12c6aab70481bf98e6fa402e61075), [`f8c9284`](https://github.com/halfdomelabs/baseplate/commit/f8c9284752c12c6aab70481bf98e6fa402e61075), [`b6bc11f`](https://github.com/halfdomelabs/baseplate/commit/b6bc11fdf199c8de40832eb88ea6f6cfc83aa5d7), [`dce88ac`](https://github.com/halfdomelabs/baseplate/commit/dce88ac8d1f951f7336c12c5e004107de3a23e97)]:
+  - @baseplate-dev/utils@0.2.2
+  - @baseplate-dev/sync@0.2.2
+  - @baseplate-dev/react-generators@0.2.2
+  - @baseplate-dev/project-builder-lib@0.2.2
+  - @baseplate-dev/core-generators@0.2.2
+  - @baseplate-dev/fastify-generators@0.2.2
+
 ## 0.2.1
 
 ### Patch Changes

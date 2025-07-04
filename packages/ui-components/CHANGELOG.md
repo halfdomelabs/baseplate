@@ -1,5 +1,12 @@
 # @baseplate-dev/ui-components
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [[`f8c9284`](https://github.com/halfdomelabs/baseplate/commit/f8c9284752c12c6aab70481bf98e6fa402e61075)]:
+  - @baseplate-dev/utils@0.2.2
+
 ## 0.2.1
 
 ### Patch Changes

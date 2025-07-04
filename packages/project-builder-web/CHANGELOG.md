@@ -1,5 +1,26 @@
 # @baseplate-dev/project-builder-web
 
+## 0.2.2
+
+### Patch Changes
+
+- [#585](https://github.com/halfdomelabs/baseplate/pull/585) [`def0b7a`](https://github.com/halfdomelabs/baseplate/commit/def0b7a202ce49a93714a8acf876ff845c2e8e24) Thanks [@kingston](https://github.com/kingston)! - Convert all `*.page.tsx` files to the new Tanstack Router file-based routing system.
+
+- [#587](https://github.com/halfdomelabs/baseplate/pull/587) [`b6bc11f`](https://github.com/halfdomelabs/baseplate/commit/b6bc11fdf199c8de40832eb88ea6f6cfc83aa5d7) Thanks [@kingston](https://github.com/kingston)! - Migrate reference system from ZodRef to transform-based architecture
+
+  - Complete migration from legacy ZodRef system to new transform-based reference processing using marker classes and schema transformations
+  - Implement `deserializeSchemaWithTransformedReferences` for integration testing with real-world usage patterns
+  - Replace `fixRefDeletions` implementation to use new transform system with `parseSchemaWithTransformedReferences`
+  - Add comprehensive test coverage using integration tests with `deserializeSchemaWithTransformedReferences` instead of manual marker creation
+  - Support for complex reference scenarios including nested references, parent-child relationships, and custom name resolvers
+  - Rename `SET_NULL` to `SET_UNDEFINED` and add array context detection to prevent JSON serialization issues
+  - Add omit pattern support to `useEnumForm` hook for consistency with `useModelForm`
+
+- Updated dependencies [[`f8c9284`](https://github.com/halfdomelabs/baseplate/commit/f8c9284752c12c6aab70481bf98e6fa402e61075), [`b6bc11f`](https://github.com/halfdomelabs/baseplate/commit/b6bc11fdf199c8de40832eb88ea6f6cfc83aa5d7)]:
+  - @baseplate-dev/utils@0.2.2
+  - @baseplate-dev/project-builder-lib@0.2.2
+  - @baseplate-dev/ui-components@0.2.2
+
 ## 0.2.1
 
 ### Patch Changes

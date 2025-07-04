@@ -1,5 +1,11 @@
 # @baseplate-dev/utils
 
+## 0.2.2
+
+### Patch Changes
+
+- [#591](https://github.com/halfdomelabs/baseplate/pull/591) [`f8c9284`](https://github.com/halfdomelabs/baseplate/commit/f8c9284752c12c6aab70481bf98e6fa402e61075) Thanks [@kingston](https://github.com/kingston)! - Add option to ignore filenames when cleaning empty directories
+
 ## 0.2.1
 
 ## 0.2.0
