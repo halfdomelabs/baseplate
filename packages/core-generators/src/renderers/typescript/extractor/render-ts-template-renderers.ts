@@ -34,13 +34,20 @@ interface RenderTsTemplateRenderersContext {
 }
 
 function getImportMapProvidersExpression(
-  templateConfig: TsGeneratorTemplateMetadata,
+  templateConfigOrConfigs:
+    | TsGeneratorTemplateMetadata
+    | TsGeneratorTemplateMetadata[],
 ): string | undefined {
-  const providers = Object.keys(templateConfig.importMapProviders ?? {});
+  const templateConfigs = Array.isArray(templateConfigOrConfigs)
+    ? templateConfigOrConfigs
+    : [templateConfigOrConfigs];
+  const providers = templateConfigs.flatMap((t) =>
+    Object.keys(t.importMapProviders ?? {}),
+  );
   if (providers.length === 0) return;
 
   return `{
-    ${providers.map((p) => p.replace(/Provider$/, '')).join(', ')}
+    ${[...new Set(providers.map((p) => p.replace(/Provider$/, '')))].sort().join(', ')}
   }`;
 }
 
@@ -123,12 +130,12 @@ function createTypeScriptRenderFunctionForTemplate(
         ),
     ])`(options: Omit<RenderTsTemplateFileActionInput<typeof ${
       templateExpression
-    }>, ${isSingleton ? "'path' | " : ''}'importProviders' | 'template'>) => ${builderActionTypeImport}`,
+    }>, ${isSingleton ? "'destination' | " : ''}'importMapProviders' | 'template'>) => ${builderActionTypeImport}`,
     renderFunction: tsTemplate`
-      (options) => typescriptFile.renderTemplate(${TsCodeUtils.mergeFragmentsAsObjectPresorted(
+      (options) => typescriptFile.renderTemplateFile(${TsCodeUtils.mergeFragmentsAsObjectPresorted(
         {
           template: templateExpression,
-          path: isSingleton
+          destination: isSingleton
             ? `paths.${camelCase(templateConfig.name)}`
             : undefined,
           importMapProviders: importMapProvidersExpression,
@@ -164,26 +171,21 @@ function createTypeScriptRenderFunctionForTemplateGroup(
   return {
     name: camelCase(groupName),
     renderType: tsTemplateWithImports([
-      tsImportBuilder(['RenderTsTemplateGroupActionInput']).from(
-        resolvePackagePathSpecifier(
-          '@baseplate-dev/core-generators:src/renderers/typescript/actions/render-ts-template-group-action.ts',
-          context.generatorPackageName,
+      tsImportBuilder(['RenderTsTemplateGroupActionInput'])
+        .typeOnly()
+        .from(
+          resolvePackagePathSpecifier(
+            '@baseplate-dev/core-generators:src/renderers/typescript/actions/render-ts-template-group-action.ts',
+            context.generatorPackageName,
+          ),
         ),
-      ),
-    ])`(options: Omit<RenderTsTemplateGroupActionInput<typeof ${templatesExpression}>, 'importProviders' | 'group' | 'paths'>) => ${builderActionTypeImport}`,
+    ])`(options: Omit<RenderTsTemplateGroupActionInput<typeof ${templatesExpression}>, 'importMapProviders' | 'group' | 'paths'>) => ${builderActionTypeImport}`,
     renderFunction: tsTemplate`
-      (options) => typescriptFile.renderTemplate(${TsCodeUtils.mergeFragmentsAsObjectPresorted(
+      (options) => typescriptFile.renderTemplateGroup(${TsCodeUtils.mergeFragmentsAsObjectPresorted(
         {
           group: templatesExpression,
           paths: `paths`,
-          importMapProviders: TsCodeUtils.mergeFragmentsAsObject(
-            new Map(
-              templateConfigs.map((templateConfig) => [
-                camelCase(templateConfig.name),
-                getImportMapProvidersExpression(templateConfig),
-              ]),
-            ),
-          ),
+          importMapProviders: getImportMapProvidersExpression(templateConfigs),
           '...': 'options',
         },
       )})
@@ -216,7 +218,7 @@ export function renderTsTemplateRenderers(
   return [
     ...Object.entries(templateGroups).map(([groupName, templates]) =>
       createTypeScriptRenderFunctionForTemplateGroup(
-        groupName,
+        `${groupName}Group`,
         templates.map((t) => t.config),
         context,
       ),

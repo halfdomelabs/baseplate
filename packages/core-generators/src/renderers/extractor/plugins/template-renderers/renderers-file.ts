@@ -35,7 +35,7 @@ const GENERATED_RENDERERS_FILE_PATH = posixJoin(
 const GENERATED_RENDERERS_TEMPLATE = `
 import { createProviderType } from '@baseplate-dev/sync';
 
-interface TPL_PROVIDER_TYPE_NAME {
+export interface TPL_PROVIDER_TYPE_NAME {
   TPL_PROVIDER_TYPE_CONTENTS;
 }
 
@@ -56,7 +56,7 @@ interface RenderersFileExportNames {
   rootExportName: string;
 }
 
-export function getRenderersFileExportNames(
+function getRenderersFileExportNames(
   generatorName: string,
 ): RenderersFileExportNames {
   return {

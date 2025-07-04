@@ -10,7 +10,6 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsTemplate,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
@@ -77,6 +76,7 @@ export const prismaGenerator = createGenerator({
   buildTasks: (descriptor) => ({
     paths: PRISMA_PRISMA_GENERATED.paths.task,
     imports: PRISMA_PRISMA_GENERATED.imports.task,
+    renderers: PRISMA_PRISMA_GENERATED.renderers.task,
     node: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
@@ -119,23 +119,15 @@ export const prismaGenerator = createGenerator({
     }),
     service: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        paths: PRISMA_PRISMA_GENERATED.paths.provider,
+        renderers: PRISMA_PRISMA_GENERATED.renderers.provider,
       },
-      run({ typescriptFile, paths }) {
+      run({ renderers }) {
         return {
           build: async (builder) => {
-            await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: PRISMA_PRISMA_GENERATED.templates.service,
-                destination: paths.service,
-              }),
-            );
+            await builder.apply(renderers.service.render({}));
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: PRISMA_PRISMA_GENERATED.templates.seed,
-                destination: paths.seed,
+              renderers.seed.render({
                 writeOptions: {
                   shouldNeverOverwrite: true,
                 },
