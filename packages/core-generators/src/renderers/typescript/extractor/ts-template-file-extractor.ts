@@ -14,6 +14,7 @@ import type { TsGeneratorTemplateMetadata } from '../templates/types.js';
 import type { WriteTsTemplateFileContext } from './render-ts-template-file.js';
 
 import { templatePathsPlugin } from '../../extractor/plugins/template-paths/template-paths.plugin.js';
+import { templateRenderersPlugin } from '../../extractor/plugins/template-renderers/template-renderers.plugin.js';
 import { typedTemplatesFilePlugin } from '../../extractor/plugins/typed-templates-file.js';
 import {
   TS_TEMPLATE_TYPE,
@@ -28,6 +29,7 @@ import {
   renderTsImportProviders,
 } from './render-ts-import-providers.js';
 import { renderTsTemplateFile } from './render-ts-template-file.js';
+import { renderTsTemplateRenderers } from './render-ts-template-renderers.js';
 import { renderTsTypedTemplates } from './render-ts-typed-templates.js';
 import { tsExtractorConfigSchema } from './ts-extractor-config.schema.js';
 
@@ -37,6 +39,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
   name: TS_TEMPLATE_TYPE,
   pluginDependencies: [
     templatePathsPlugin,
+    templateRenderersPlugin,
     typedTemplatesFilePlugin,
     templateExtractorBarrelExportPlugin,
   ],
@@ -133,6 +136,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
   },
   writeGeneratedFiles: async (generatorNames, context, api) => {
     const templatePathsPlugin = context.getPlugin('template-paths');
+    const templateRenderersPlugin = context.getPlugin('template-renderers');
     const typedTemplatesPlugin = context.getPlugin('typed-templates-file');
     const barrelExportPlugin = context.getPlugin('barrel-export');
     const externalImportProvidersMap = buildExternalImportProvidersMap(
@@ -165,6 +169,18 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
             config.pathRootRelativePath,
           );
         }
+      }
+
+      // Add the template renderer entries to the template renderers plugin
+      const templateRenderers = renderTsTemplateRenderers(templates, {
+        generatorPackageName: generatorConfig.packageName,
+        generatorName,
+      });
+      for (const templateRenderer of templateRenderers) {
+        templateRenderersPlugin.addTemplateRenderer(
+          generatorName,
+          templateRenderer,
+        );
       }
 
       // Render the import providers

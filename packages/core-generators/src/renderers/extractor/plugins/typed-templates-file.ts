@@ -14,11 +14,11 @@ import { getGeneratedTemplateConstantName } from '../utils/index.js';
 import { templateExtractorBarrelExportPlugin } from './barrel-export.js';
 import { templatePathsPlugin } from './template-paths/template-paths.plugin.js';
 
-const TYPED_TEMPLATES_FILE_NAME = 'typed-templates.ts';
+export const GENERATED_TYPED_TEMPLATES_FILE_NAME = 'typed-templates.ts';
 
 const TYPED_TEMPLATES_FILE_PATH = posixJoin(
   TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
-  TYPED_TEMPLATES_FILE_NAME,
+  GENERATED_TYPED_TEMPLATES_FILE_NAME,
 );
 
 export interface TemplateExtractorTypedTemplate {
@@ -31,6 +31,10 @@ TPL_TEMPLATE_FRAGMENTS;
 
 export const TPL_EXPORT_NAME = TPL_TEMPLATE_EXPORTS;
 `;
+
+export function getTypedTemplatesFileExportName(generatorName: string): string {
+  return getGeneratedTemplateConstantName(generatorName, 'TEMPLATES');
+}
 
 /**
  * The typed templates file plugin is used to generate a file that exports
@@ -67,10 +71,7 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
           new Map(templates.map((t) => [t.exportName, t.fragment])),
           '\n\n',
         );
-        const exportName = getGeneratedTemplateConstantName(
-          generatorName,
-          'TEMPLATES',
-        );
+        const exportName = getTypedTemplatesFileExportName(generatorName);
         const templateFileContents = renderTsCodeFileTemplate({
           templateContents: TS_TEMPLATE,
           variables: {
@@ -98,7 +99,7 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
         );
 
         barrelExportPlugin.addGeneratedBarrelExport(generatorName, {
-          moduleSpecifier: `./${normalizeTsPathToJsPath(TYPED_TEMPLATES_FILE_NAME)}`,
+          moduleSpecifier: `./${normalizeTsPathToJsPath(GENERATED_TYPED_TEMPLATES_FILE_NAME)}`,
           namedExport: exportName,
           name: 'templates',
         });
