@@ -33,7 +33,9 @@ import { reactAppConfigProvider } from '../react-app/index.js';
 import { reactBaseConfigProvider } from '../react/react.generator.js';
 import { CORE_REACT_ROUTER_GENERATED } from './generated/index.js';
 
-const descriptorSchema = z.object({});
+const descriptorSchema = z.object({
+  renderPlaceholderIndex: z.boolean().default(false),
+});
 
 const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
   createConfigProviderTask(
@@ -58,7 +60,7 @@ export const reactRouterGenerator = createGenerator({
   name: 'core/react-router',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: () => ({
+  buildTasks: ({ renderPlaceholderIndex }) => ({
     setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
@@ -171,6 +173,10 @@ export const reactRouterGenerator = createGenerator({
                 },
               }),
             );
+
+            if (renderPlaceholderIndex) {
+              await builder.apply(renderers.placeholderIndex.render({}));
+            }
 
             // Write a pseudo-file so that the template extractor can infer metadata for the
             // generated route tree file

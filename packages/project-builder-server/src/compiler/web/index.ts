@@ -47,6 +47,7 @@ function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
             },
             rootFeatures,
           ),
+          renderPlaceholderIndex: true,
         }),
         reactTailwind: reactTailwindGenerator({}),
         reactSentry: reactSentryGenerator({}),
