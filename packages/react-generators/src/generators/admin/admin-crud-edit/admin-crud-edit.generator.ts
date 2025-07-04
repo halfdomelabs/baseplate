@@ -118,7 +118,7 @@ export const adminCrudEditGenerator = createGenerator({
         return {
           providers: {
             adminCrudEdit: {
-              getDirectoryBase: () => `${reactRoutes.getDirectoryBase()}/edit`,
+              getDirectoryBase: () => reactRoutes.getDirectoryBase(),
               getSchemaPath: () => editSchemaPath,
               getSchemaImport: () => editSchemaPath,
             },
