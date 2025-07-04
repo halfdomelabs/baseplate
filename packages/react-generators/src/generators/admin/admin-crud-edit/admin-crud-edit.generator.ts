@@ -12,7 +12,7 @@ import {
   createProviderType,
 } from '@baseplate-dev/sync';
 import { notEmpty } from '@baseplate-dev/utils';
-import { sortBy } from 'es-toolkit';
+import { kebabCase, sortBy } from 'es-toolkit';
 import { dasherize, underscore } from 'inflection';
 import { z } from 'zod';
 
@@ -76,7 +76,7 @@ export const adminCrudEditGenerator = createGenerator({
         reactComponentsImports,
         reactErrorImports,
       }) {
-        const editSchemaPath = `${reactRoutes.getDirectoryBase()}/edit/${lowerCaseFirst(
+        const editSchemaPath = `${reactRoutes.getDirectoryBase()}/-schemas/${lowerCaseFirst(
           dasherize(underscore(modelName)),
         )}-schema.ts`;
 
@@ -92,21 +92,21 @@ export const adminCrudEditGenerator = createGenerator({
           editSchemaPath,
         );
 
-        const editFormComponentPath = `${reactRoutes.getDirectoryBase()}/edit/${modelName}EditForm.tsx`;
+        const editFormComponentPath = `${reactRoutes.getDirectoryBase()}/-components/${kebabCase(modelName)}-edit-form.tsx`;
         const editFormComponentName = `${modelName}EditForm`;
         const editFormComponentExpression = TsCodeUtils.defaultImportFragment(
           editFormComponentName,
           editFormComponentPath,
         );
 
-        const editPagePath = `${reactRoutes.getDirectoryBase()}/edit/edit.page.tsx`;
+        const editPagePath = `${reactRoutes.getDirectoryBase()}/$id.tsx`;
         const editPageName = `${modelName}EditPage`;
         reactRoutes.registerRoute({
           path: ':id/edit',
           element: createRouteElement(editPageName, editPagePath),
         });
 
-        const createPagePath = `${reactRoutes.getDirectoryBase()}/edit/create.page.tsx`;
+        const createPagePath = `${reactRoutes.getDirectoryBase()}/new.tsx`;
         const createPageName = `${modelName}CreatePage`;
 
         const editQueryInfo = adminCrudQueries.getEditQueryHookInfo();
