@@ -113,9 +113,9 @@ describe('directories', () => {
       // Assert: Should stop at level1
       const files = vol.toJSON();
       expect(files['/root/level1/level2/level3/file.txt']).toBeUndefined();
-      expect(files['/root/level1/level2/level3/']).toBeUndefined();
-      expect(files['/root/level1/level2/']).toBeUndefined();
-      expect(files['/root/level1/']).toBeDefined(); // Should not be removed
+      expect(vol.existsSync('/root/level1/level2/level3/')).toBe(false);
+      expect(vol.existsSync('/root/level1/level2/')).toBe(false);
+      expect(vol.existsSync('/root/level1/')).toBe(true); // Should not be removed
     });
 
     it('should not remove directories that are not empty', async () => {
@@ -138,7 +138,7 @@ describe('directories', () => {
       const files = vol.toJSON();
       expect(files['/root/level1/level2/level3/file1.txt']).toBeUndefined();
       expect(files['/root/level1/level2/level3/file2.txt']).toBe('content2');
-      expect(files['/root/level1/level2/level3/']).toBeDefined(); // Should not be removed
+      expect(vol.existsSync('/root/level1/level2/level3/')).toBe(true); // Should not be removed
     });
 
     it('should handle multiple file paths', async () => {
@@ -166,7 +166,7 @@ describe('directories', () => {
       expect(files['/root/level1/']).toBeUndefined();
     });
 
-    it('should respect ignoreFiles option', async () => {
+    it('should remove directories that only contain ignored files', async () => {
       // Setup: Create file structure with ignored files
       vol.fromJSON({
         '/root/level1/level2/level3/file.txt': 'content',
@@ -183,12 +183,12 @@ describe('directories', () => {
         { ignoreFiles: ['.gitkeep'] },
       );
 
-      // Assert: level3 should be removed, but level2 should remain due to .gitkeep
+      // Assert: level3 should be removed, and level2 should also be removed (including .gitkeep)
       const files = vol.toJSON();
       expect(files['/root/level1/level2/level3/file.txt']).toBeUndefined();
-      expect(files['/root/level1/level2/.gitkeep']).toBe('');
-      expect(files['/root/level1/level2/level3/']).toBeUndefined(); // Should be removed
-      expect(files['/root/level1/level2/']).toBeDefined(); // Should not be removed due to .gitkeep
+      expect(files['/root/level1/level2/.gitkeep']).toBeUndefined(); // Should be removed with directory
+      expect(vol.existsSync('/root/level1/level2/level3/')).toBe(false); // Should be removed
+      expect(vol.existsSync('/root/level1/level2/')).toBe(false); // Should be removed (only contained ignored files)
     });
 
     it('should handle non-existent directories gracefully', async () => {
