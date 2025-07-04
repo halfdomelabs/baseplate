@@ -3,12 +3,14 @@ import {
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { convertCaseWithPrefix } from '@baseplate-dev/utils';
+import { kebabCase } from 'es-toolkit';
 import { z } from 'zod';
 
 import type { ReactRoute, ReactRouteLayout } from '#src/providers/routes.js';
 
 import { reactRoutesProvider } from '#src/providers/routes.js';
-import { dasherizeCamel, upperCaseFirst } from '#src/utils/case.js';
+import { upperCaseFirst } from '#src/utils/case.js';
 import { createRouteElement } from '#src/utils/routes.js';
 
 import { renderRoutes } from '../_utils/render-routes.js';
@@ -42,7 +44,7 @@ export const reactRoutesGenerator = createGenerator({
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];
 
-        const pathName = dasherizeCamel(name);
+        const pathName = convertCaseWithPrefix(name, kebabCase);
 
         const directoryBase = `${reactRoutes.getDirectoryBase()}/${pathName}`;
 
