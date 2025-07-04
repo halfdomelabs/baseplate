@@ -65,16 +65,17 @@ export const reactNotFoundHandlerGenerator = createGenerator({
             },
           },
           build: async (builder) => {
-            await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  CORE_REACT_NOT_FOUND_HANDLER_GENERATED.templates.notFoundPage,
-                destination: paths.notFoundPage,
-                importMapProviders: {
-                  reactComponentsImports,
-                },
-              }),
-            );
+            // TODO [2025-07-03]: Remove this once we've finished migration
+            // await builder.apply(
+            //   typescriptFile.renderTemplateFile({
+            //     template:
+            //       CORE_REACT_NOT_FOUND_HANDLER_GENERATED.templates.notFoundPage,
+            //     destination: paths.notFoundPage,
+            //     importMapProviders: {
+            //       reactComponentsImports,
+            //     },
+            //   }),
+            // );
           },
         };
       },
