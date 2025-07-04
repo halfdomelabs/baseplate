@@ -6,7 +6,12 @@ import { useCreateBullBoardAuthCodeMutation } from '%generatedGraphqlImports';
 import { ErrorableLoader } from '%reactComponentsImports';
 import { config } from '%reactConfigImports';
 import { logAndFormatError } from '%reactErrorImports';
+import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
+
+export const Route = createFileRoute('/bull-board/')({
+  component: BullBoardPage,
+});
 
 function BullBoardPage(): ReactElement {
   const [createBullBoardAuthCode] = useCreateBullBoardAuthCodeMutation();
@@ -43,5 +48,3 @@ function BullBoardPage(): ReactElement {
 
   return <ErrorableLoader error={error} />;
 }
-
-export default BullBoardPage;
