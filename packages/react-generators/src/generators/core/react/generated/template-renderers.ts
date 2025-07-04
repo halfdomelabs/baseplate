@@ -8,10 +8,10 @@ import { CORE_REACT_PATHS } from './template-paths.js';
 import { CORE_REACT_TEMPLATES } from './typed-templates.js';
 
 export interface CoreReactRenderers {
-  index: {
+  main: {
     render: (
       options: Omit<
-        RenderTsTemplateFileActionInput<typeof CORE_REACT_TEMPLATES.index>,
+        RenderTsTemplateFileActionInput<typeof CORE_REACT_TEMPLATES.main>,
         'destination' | 'importMapProviders' | 'template'
       >,
     ) => BuilderAction;
@@ -40,11 +40,11 @@ const coreReactRenderersTask = createGeneratorTask({
     return {
       providers: {
         coreReactRenderers: {
-          index: {
+          main: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
-                template: CORE_REACT_TEMPLATES.index,
-                destination: paths.index,
+                template: CORE_REACT_TEMPLATES.main,
+                destination: paths.main,
                 ...options,
               }),
           },

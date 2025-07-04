@@ -6,7 +6,7 @@ export interface CoreReactPaths {
   readme: string;
   viteEnv: string;
   viteConfig: string;
-  index: string;
+  main: string;
   favicon: string;
 }
 
@@ -23,8 +23,8 @@ const coreReactPathsTask = createGeneratorTask({
       providers: {
         coreReactPaths: {
           favicon: `${packageRoot}/public/favicon.ico`,
-          index: `${srcRoot}/index.tsx`,
           indexHtml: `${packageRoot}/index.html`,
+          main: `${srcRoot}/main.tsx`,
           readme: `${packageRoot}/README.md`,
           viteConfig: `${packageRoot}/vite.config.ts`,
           viteEnv: `${srcRoot}/vite-env.d.ts`,

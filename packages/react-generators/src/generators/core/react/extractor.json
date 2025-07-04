@@ -37,13 +37,13 @@
       "pathRootRelativePath": "{package-root}/vite.config.ts",
       "variables": { "TPL_CONFIG": {} }
     },
-    "src/index.tsx": {
-      "name": "index",
+    "src/main.tsx": {
+      "name": "main",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/index.tsx",
+      "pathRootRelativePath": "{src-root}/main.tsx",
       "variables": { "TPL_APP": {}, "TPL_HEADER": {} }
     },
     "src/vite-env.d.ts": {

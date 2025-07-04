@@ -57,7 +57,11 @@ export const reactRouterGenerator = createGenerator({
   buildTasks: () => ({
     setup: setupTask,
     nodePackages: createNodePackagesTask({
-      prod: extractPackageVersions(REACT_PACKAGES, ['react-router-dom']),
+      prod: extractPackageVersions(REACT_PACKAGES, [
+        '@tanstack/react-router',
+        'react-router-dom',
+      ]),
+      dev: extractPackageVersions(REACT_PACKAGES, ['@tanstack/router-plugin']),
     }),
     paths: CORE_REACT_ROUTER_GENERATED.paths.task,
     reactAppConfig: createGeneratorTask({
