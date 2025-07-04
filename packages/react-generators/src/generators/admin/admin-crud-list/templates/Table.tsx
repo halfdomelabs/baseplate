@@ -13,7 +13,7 @@ import {
   useConfirmDialog,
 } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
 interface Props {
@@ -65,7 +65,7 @@ export function TPL_COMPONENT_NAME(
           <TableRow key={item.id}>
             <TPL_CELLS />
             <TableCell className="space-x-4">
-              <Link to={`${item.id}/edit`}>
+              <Link to={TPL_EDIT_ROUTE} params={{ id: item.id }}>
                 <Button variant="link" size="none">
                   Edit
                 </Button>

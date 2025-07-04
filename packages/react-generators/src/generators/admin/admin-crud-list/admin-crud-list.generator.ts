@@ -216,6 +216,7 @@ export const adminCrudListGenerator = createGenerator({
                     deleteItem,
                     ${dataDependencies.map((d) => d.propName).join(',\n')}
                   }`,
+                  TPL_EDIT_ROUTE: quot(`${routePrefix}/$id`),
                 },
                 importMapProviders: {
                   reactComponentsImports,
