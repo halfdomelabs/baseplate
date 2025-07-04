@@ -16,7 +16,7 @@ export function deduplicateTemplateFileExtractorSourceFiles<
 
   // Sort by modified time to ensure the latest version is used
   for (const file of files.toSorted(
-    (a, b) => a.modifiedTime.getTime() - b.modifiedTime.getTime(),
+    (a, b) => b.modifiedTime.getTime() - a.modifiedTime.getTime(),
   )) {
     const fileKey = `${file.metadata.generator}__${file.metadata.name}`;
     if (addedTemplates.has(fileKey)) {

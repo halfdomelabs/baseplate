@@ -3,6 +3,11 @@
 import type { ReactElement } from 'react';
 
 import { ErrorableLoader } from '%reactComponentsImports';
+import { createFileRoute } from '@tanstack/react-router';
+
+export const Route = createFileRoute('/accounts/users/user/')({
+  component: TPL_PAGE_NAME,
+});
 
 function TPL_PAGE_NAME(): ReactElement {
   TPL_DATA_LOADER;
@@ -36,5 +41,3 @@ function TPL_PAGE_NAME(): ReactElement {
     </div>
   );
 }
-
-export default TPL_PAGE_NAME;

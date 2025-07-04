@@ -1,11 +1,11 @@
 {
   "name": "admin/admin-crud-list",
   "templates": {
-    "index.page.tsx": {
+    "index.tsx": {
       "name": "list-page",
       "type": "ts",
       "fileOptions": {
-        "generatorTemplatePath": "index.page.tsx",
+        "generatorTemplatePath": "index.tsx",
         "kind": "instance"
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-list",

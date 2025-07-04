@@ -10,6 +10,7 @@ import {
 } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { notEmpty } from '@baseplate-dev/utils';
+import { kebabCase } from 'es-toolkit';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
 
@@ -61,7 +62,7 @@ export const adminCrudListGenerator = createGenerator({
       }) {
         const columns: AdminCrudColumn[] = [];
         const listPagePath = `${reactRoutes.getDirectoryBase()}/index.tsx`;
-        const tableComponentPath = `${reactRoutes.getDirectoryBase()}/-components/${modelName}Table.tsx`;
+        const tableComponentPath = `${reactRoutes.getDirectoryBase()}/-components/${kebabCase(modelName)}-table.tsx`;
         const tableComponentName = `${modelName}Table`;
 
         const listInfo = adminCrudQueries.getListQueryHookInfo();
@@ -136,8 +137,7 @@ export const adminCrudListGenerator = createGenerator({
                   TPL_PLURAL_MODEL: titleizeCamel(pluralize(modelName)),
                   TPL_TABLE_COMPONENT: tsCodeFragment(
                     `<${tableComponentName} deleteItem={handleDeleteItem} items={data.${listInfo.fieldName}} ${tableLoaderExtraProps} />`,
-                    TsCodeUtils.defaultImport(
-                      tableComponentName,
+                    TsCodeUtils.importBuilder([tableComponentName]).from(
                       tableComponentPath,
                     ),
                   ),

@@ -22,7 +22,9 @@ interface Props {
   TPL_EXTRA_PROPS;
 }
 
-function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
+export function TPL_COMPONENT_NAME(
+  TPL_DESTRUCTURED_PROPS: Props,
+): ReactElement {
   const { requestConfirm } = useConfirmDialog();
   function handleDelete(item: TPL_ROW_FRAGMENT): void {
     requestConfirm({
@@ -84,5 +86,3 @@ function TPL_COMPONENT_NAME(TPL_DESTRUCTURED_PROPS: Props): ReactElement {
     </Table>
   );
 }
-
-export default TPL_COMPONENT_NAME;
