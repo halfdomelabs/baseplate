@@ -42,8 +42,6 @@ export const REACT_ESLINT_RULES = tsCodeFragment(
     rules: {
       // We use replace since it is not supported by ES2020
       'unicorn/prefer-string-replace-all': 'off',
-      // Allow PascalCase for React components
-      'unicorn/filename-case': 'off',
     },
   },
 `,
