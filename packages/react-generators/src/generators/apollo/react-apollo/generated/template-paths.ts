@@ -23,7 +23,7 @@ const apolloReactApolloPathsTask = createGeneratorTask({
     return {
       providers: {
         apolloReactApolloPaths: {
-          appApolloProvider: `${srcRoot}/app/AppApolloProvider.tsx`,
+          appApolloProvider: `${srcRoot}/app/app-apollo-provider.tsx`,
           cache: `${srcRoot}/services/apollo/cache.ts`,
           codegenYml: `${packageRoot}/codegen.yml`,
           graphql: `${srcRoot}/generated/graphql.tsx`,

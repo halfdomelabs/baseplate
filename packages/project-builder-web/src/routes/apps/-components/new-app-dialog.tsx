@@ -108,6 +108,7 @@ function NewAppDialog({
             name="name"
             placeholder="e.g. backend, web, admin"
             description="The name of the app, such as 'backend' or 'web'"
+            autoComplete="off"
           />
           <SelectFieldController
             label="Type"

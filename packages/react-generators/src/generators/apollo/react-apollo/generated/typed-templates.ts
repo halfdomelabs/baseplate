@@ -11,7 +11,7 @@ const appApolloProvider = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/app/AppApolloProvider.tsx',
+      '../templates/src/app/app-apollo-provider.tsx',
     ),
   },
   variables: {
