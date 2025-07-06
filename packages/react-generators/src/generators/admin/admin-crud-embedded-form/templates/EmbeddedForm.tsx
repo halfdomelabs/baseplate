@@ -2,10 +2,11 @@
 
 import type { ReactElement } from 'react';
 
-import { Alert, Button, useStatus } from '%reactComponentsImports';
+import { Button } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 TPL_TABLE_COMPONENT;
 
@@ -16,7 +17,6 @@ export function TPL_COMPONENT_NAME(
     resolver: zodResolver(TPL_EMBEDDED_FORM_DATA_SCHEMA),
     defaultValues: initialData,
   });
-  const { status, setError } = useStatus();
 
   TPL_HEADER;
 
@@ -25,12 +25,11 @@ export function TPL_COMPONENT_NAME(
       onSubmit={(e) => {
         e.stopPropagation();
         handleSubmit(onSubmit)(e).catch((err: unknown) => {
-          setError(logAndFormatError(err));
+          toast.error(logAndFormatError(err));
         });
       }}
       className="space-y-4"
     >
-      {status && <Alert>{status.message}</Alert>}
       <TPL_INPUTS />
       <Button type="submit">Update</Button>
     </form>
