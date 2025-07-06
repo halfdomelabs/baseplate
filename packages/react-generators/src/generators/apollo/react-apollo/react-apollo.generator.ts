@@ -244,9 +244,9 @@ export const reactApolloGenerator = createGenerator({
         reactAppConfig.renderWrappers.set('react-apollo', {
           wrap: (contents) =>
             TsCodeUtils.templateWithImports(
-              tsImportBuilder()
-                .default('AppApolloProvider')
-                .from(paths.appApolloProvider),
+              tsImportBuilder(['AppApolloProvider']).from(
+                paths.appApolloProvider,
+              ),
             )`<AppApolloProvider>${contents}</AppApolloProvider>`,
           type: 'data',
         });
