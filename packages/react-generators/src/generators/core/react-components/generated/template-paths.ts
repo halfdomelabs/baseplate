@@ -40,7 +40,6 @@ export interface CoreReactComponentsPaths {
   useConfirmDialog: string;
   hooksUseControlledState: string;
   hooksUseControllerMerged: string;
-  useStatus: string;
   stylesButton: string;
   stylesInput: string;
   stylesSelect: string;
@@ -108,7 +107,6 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           typesForm: `${srcRoot}/types/form.ts`,
           typesIcon: `${srcRoot}/types/icon.ts`,
           useConfirmDialog: `${srcRoot}/hooks/use-confirm-dialog.ts`,
-          useStatus: `${srcRoot}/hooks/useStatus.ts`,
         },
       },
     };

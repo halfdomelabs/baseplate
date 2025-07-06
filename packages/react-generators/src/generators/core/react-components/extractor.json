@@ -475,21 +475,6 @@
       "projectExports": { "useControllerMerged": {} },
       "variables": {}
     },
-    "src/hooks/useStatus.ts": {
-      "name": "use-status",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "hooks",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/hooks/useStatus.ts",
-      "projectExports": {
-        "Status": { "isTypeOnly": true },
-        "StatusType": { "isTypeOnly": true },
-        "useStatus": {}
-      },
-      "variables": {}
-    },
     "src/styles/button.ts": {
       "name": "styles-button",
       "type": "ts",
