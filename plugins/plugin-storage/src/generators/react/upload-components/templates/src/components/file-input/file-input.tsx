@@ -14,7 +14,7 @@ import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
 
-import { useUpload } from '../../hooks/useUpload.js';
+import { useUpload } from '../../hooks/use-upload.js';
 
 export interface FileUploadInput {
   id: string;
