@@ -48,7 +48,7 @@ function buildNavigationLinks(
       type: 'link',
       label: titleizeCamel(section.name),
       icon: section.icon ?? 'MdHome',
-      path: `${
+      path: `/${
         FeatureUtils.getFeatureByIdOrThrow(
           projectDefinition,
           section.featureRef,
