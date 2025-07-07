@@ -2,11 +2,7 @@ import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-gener
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
-import {
-  authHooksImportsProvider,
-  reactComponentsImportsProvider,
-  reactErrorImportsProvider,
-} from '@baseplate-dev/react-generators';
+import { reactComponentsImportsProvider } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { AUTH0_AUTH0_PAGES_PATHS } from './template-paths.js';
@@ -31,20 +27,12 @@ const auth0Auth0PagesRenderers = createProviderType<Auth0Auth0PagesRenderers>(
 
 const auth0Auth0PagesRenderersTask = createGeneratorTask({
   dependencies: {
-    authHooksImports: authHooksImportsProvider,
     paths: AUTH0_AUTH0_PAGES_PATHS.provider,
     reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { auth0Auth0PagesRenderers: auth0Auth0PagesRenderers.export() },
-  run({
-    authHooksImports,
-    paths,
-    reactComponentsImports,
-    reactErrorImports,
-    typescriptFile,
-  }) {
+  run({ paths, reactComponentsImports, typescriptFile }) {
     return {
       providers: {
         auth0Auth0PagesRenderers: {
@@ -54,9 +42,7 @@ const auth0Auth0PagesRenderersTask = createGeneratorTask({
                 group: AUTH0_AUTH0_PAGES_TEMPLATES.pagesGroup,
                 paths,
                 importMapProviders: {
-                  authHooksImports,
                   reactComponentsImports,
-                  reactErrorImports,
                 },
                 ...options,
               }),

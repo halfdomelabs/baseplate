@@ -2,7 +2,6 @@ import { reactRoutesProvider } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface Auth0Auth0PagesPaths {
-  auth0Callback: string;
   login: string;
 }
 
@@ -18,10 +17,7 @@ const auth0Auth0PagesPathsTask = createGeneratorTask({
 
     return {
       providers: {
-        auth0Auth0PagesPaths: {
-          auth0Callback: `${routesRoot}/auth0-callback.tsx`,
-          login: `${routesRoot}/login.tsx`,
-        },
+        auth0Auth0PagesPaths: { login: `${routesRoot}/login.tsx` },
       },
     };
   },
