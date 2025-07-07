@@ -180,6 +180,8 @@
       "pathRootRelativePath": "{src-root}/components/index.ts",
       "projectExports": {
         "Alert": {},
+        "AlertDescription": {},
+        "AlertTitle": {},
         "Button": {},
         "Calendar": {},
         "Card": {},

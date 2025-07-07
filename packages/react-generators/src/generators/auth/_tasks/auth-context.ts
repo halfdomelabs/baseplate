@@ -22,7 +22,10 @@ export const authContextTask = createGeneratorTask({
       name: 'userId',
       type: tsTemplate`string | undefined`,
       optional: true,
-      routerProviderInitializer: tsTemplate`userId`,
+      routerProviderInitializer: {
+        code: tsTemplate`userId`,
+        dependencies: ['userId'],
+      },
     });
   },
 });

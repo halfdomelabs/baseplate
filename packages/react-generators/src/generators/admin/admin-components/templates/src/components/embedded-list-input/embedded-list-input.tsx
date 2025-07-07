@@ -5,6 +5,8 @@ import type { DefaultValues } from 'react-hook-form';
 
 import {
   Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
   Dialog,
   DialogContent,
@@ -107,7 +109,10 @@ export function EmbeddedListInput<T>({
             },
           })
         ) : (
-          <Alert variant="default">No items currently</Alert>
+          <Alert variant="default">
+            <AlertTitle>No items currently</AlertTitle>
+            <AlertDescription>Add an item to get started.</AlertDescription>
+          </Alert>
         )}
         <DialogContent width="lg">
           <DialogHeader>

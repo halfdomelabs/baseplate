@@ -15,6 +15,8 @@ import { CORE_REACT_COMPONENTS_PATHS } from './template-paths.js';
 const reactComponentsImportsSchema = createTsImportMapSchema({
   AddOptionRequiredFields: { isTypeOnly: true },
   Alert: {},
+  AlertDescription: {},
+  AlertTitle: {},
   Button: {},
   buttonVariants: {},
   Calendar: {},
@@ -143,6 +145,8 @@ const coreReactComponentsImportsTask = createGeneratorTask({
           {
             AddOptionRequiredFields: paths.typesForm,
             Alert: paths.index,
+            AlertDescription: paths.index,
+            AlertTitle: paths.index,
             Button: paths.index,
             buttonVariants: paths.stylesButton,
             Calendar: paths.index,

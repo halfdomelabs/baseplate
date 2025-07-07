@@ -11,7 +11,6 @@ import {
   authContextTask,
   reactAppConfigProvider,
   reactAuthProvider,
-  reactComponentsImportsProvider,
   reactConfigImportsProvider,
   reactConfigProvider,
   reactRouterConfigProvider,
@@ -25,15 +24,17 @@ import { z } from 'zod';
 
 import { AUTH0_PACKAGES } from '#src/auth0/constants/packages.js';
 
-const descriptorSchema = z.object({
-  callbackPath: z.string().optional(),
-});
+import { AUTH0_REACT_AUTH0_GENERATED } from './generated';
+
+const descriptorSchema = z.object({});
 
 export const reactAuth0Generator = createGenerator({
   name: 'auth0/react-auth0',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ callbackPath }) => ({
+  buildTasks: () => ({
+    paths: AUTH0_REACT_AUTH0_GENERATED.paths.task,
+    renderers: AUTH0_REACT_AUTH0_GENERATED.renderers.task,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(AUTH0_PACKAGES, ['@auth0/auth0-react']),
     }),
@@ -57,21 +58,16 @@ export const reactAuth0Generator = createGenerator({
       });
     }),
     authContext: authContextTask,
-    reactRouterGate: createGeneratorTask({
+    reactRouterContext: createGeneratorTask({
       dependencies: {
         reactRouterConfig: reactRouterConfigProvider,
-        reactComponentsImports: reactComponentsImportsProvider,
       },
-      run({ reactRouterConfig, reactComponentsImports }) {
+      run({ reactRouterConfig }) {
         reactRouterConfig.routerSetupFragments.set(
           'auth0',
           tsTemplateWithImports(
             tsImportBuilder(['useAuth0']).from('@auth0/auth0-react'),
           )`const auth0 = useAuth0()`,
-        );
-        reactRouterConfig.routerBodyFragments.set(
-          'auth0-gate',
-          tsTemplate`if (auth0.isLoading) return <${reactComponentsImports.ErrorableLoader.fragment()} error={auth0.error} />`,
         );
         reactRouterConfig.rootContextFields.add({
           name: 'auth0',
@@ -80,8 +76,23 @@ export const reactAuth0Generator = createGenerator({
             '@auth0/auth0-react',
           ),
           optional: false,
-          routerProviderInitializer: tsTemplate`auth0`,
+          routerProviderInitializer: {
+            code: tsTemplate`auth0`,
+            dependencies: ['auth0'],
+          },
         });
+      },
+    }),
+    authLoadedGate: createGeneratorTask({
+      dependencies: {
+        renderers: AUTH0_REACT_AUTH0_GENERATED.renderers.provider,
+      },
+      run({ renderers }) {
+        return {
+          build: async (builder) => {
+            await builder.apply(renderers.authLoadedGate.render({}));
+          },
+        };
       },
     }),
     reactAuth: createGeneratorTask({
@@ -103,25 +114,22 @@ export const reactAuth0Generator = createGenerator({
       dependencies: {
         reactConfigImports: reactConfigImportsProvider,
         reactAppConfig: reactAppConfigProvider,
+        paths: AUTH0_REACT_AUTH0_GENERATED.paths.provider,
       },
-      run({ reactConfigImports, reactAppConfig }) {
-        const redirectUri = callbackPath
-          ? `\`\${globalThis.location.origin}/${callbackPath}\``
-          : 'globalThis.location.origin';
-
+      run({ reactConfigImports, reactAppConfig, paths }) {
         reactAppConfig.renderWrappers.set('react-auth0', {
           wrap: (contents) => TsCodeUtils.templateWithImports([
             tsImportBuilder(['Auth0Provider']).from('@auth0/auth0-react'),
             reactConfigImports.config.declaration(),
+            tsImportBuilder(['AuthLoadedGate']).from(paths.authLoadedGate),
           ])`<Auth0Provider
         domain={config.VITE_AUTH0_DOMAIN}
         clientId={config.VITE_AUTH0_CLIENT_ID}
         authorizationParams={{
-          redirect_uri: ${redirectUri},
+          redirect_uri: globalThis.location.origin,
           audience: config.VITE_AUTH0_AUDIENCE,
         }}
-        skipRedirectCallback
-      >${contents}</Auth0Provider>`,
+      ><AuthLoadedGate>${contents}</AuthLoadedGate></Auth0Provider>`,
           type: 'auth',
         });
       },

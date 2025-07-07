@@ -14,6 +14,7 @@ import {
   TsCodeUtils,
   tsImportBuilder,
   tsTemplate,
+  tsTemplateWithImports,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
@@ -28,6 +29,7 @@ import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
 import { reactAppConfigProvider } from '../react-app/index.js';
+import { reactErrorImportsProvider } from '../react-error/index.js';
 import { reactBaseConfigProvider } from '../react/react.generator.js';
 import { CORE_REACT_ROUTER_GENERATED } from './generated/index.js';
 
@@ -47,8 +49,13 @@ export interface RootRouteContextField {
   optional: boolean;
   /** The code to initialize the field in the createRouter function */
   createRouteInitializer?: TsCodeFragment;
-  /** The code to initialize the field in the RouterProvider */
-  routerProviderInitializer?: TsCodeFragment;
+  /** The code to initialize the field in the RouterProvider context */
+  routerProviderInitializer?: {
+    /** The code to initialize the field */
+    code: TsCodeFragment;
+    /** Any dependencies that should be included in the useMemo dependency array */
+    dependencies: string[];
+  };
 }
 
 const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
@@ -114,7 +121,7 @@ export const reactRouterGenerator = createGenerator({
         reactAppConfig.renderRoot.set(
           tsCodeFragment(
             '<AppRoutes />',
-            tsImportBuilder(['AppRoutes']).from(paths.appRoutes),
+            tsImportBuilder(['AppRoutes']).from(paths.router),
           ),
         );
       },
@@ -156,6 +163,7 @@ export const reactRouterGenerator = createGenerator({
       dependencies: {
         reactRouterConfigValues: reactRouterConfigValuesProvider,
         renderers: CORE_REACT_ROUTER_GENERATED.renderers.provider,
+        reactErrorImports: reactErrorImportsProvider,
       },
       run({
         reactRouterConfigValues: {
@@ -165,6 +173,7 @@ export const reactRouterGenerator = createGenerator({
           rootContextFields,
         },
         renderers,
+        reactErrorImports,
       }) {
         const fieldMissingInitializer = rootContextFields.filter(
           (field) =>
@@ -191,12 +200,40 @@ export const reactRouterGenerator = createGenerator({
             );
             const routeProviderInitializers = new Map(
               sortedRootContextFields
-                .filter((f) => f.routerProviderInitializer)
-                .map((field) => [field.name, field.routerProviderInitializer]),
+                .filter((f) => f.routerProviderInitializer?.code)
+                .map((field) => [
+                  field.name,
+                  field.routerProviderInitializer?.code,
+                ]),
             );
 
+            const routerContext =
+              routeProviderInitializers.size > 0
+                ? tsTemplateWithImports([
+                    reactErrorImports.logError.declaration(),
+                    tsImportBuilder(['useMemo', 'useEffect', 'useRef']).from(
+                      'react',
+                    ),
+                  ])`
+            const routerContext = useMemo(() => (${TsCodeUtils.mergeFragmentsAsObject(
+              routeProviderInitializers,
+            )}), [${[...sortedRootContextFields]
+              .flatMap((v) => v.routerProviderInitializer?.dependencies ?? [])
+              .join(', ')}])
+
+            // Ensure we always have the latest context in the router
+            const previousContext = useRef<typeof routerContext>(undefined);
+            useEffect(() => {
+              if (previousContext.current && previousContext.current !== routerContext) {
+                router.invalidate().catch(logError);
+              }
+              previousContext.current = routerContext;
+            }, [routerContext])
+            `
+                : '';
+
             await builder.apply(
-              renderers.appRoutes.render({
+              renderers.router.render({
                 variables: {
                   TPL_ADDITIONAL_ROUTER_OPTIONS:
                     rootContextFields.length > 0
@@ -217,15 +254,18 @@ export const reactRouterGenerator = createGenerator({
                     }
                   `
                       : '',
-                  TPL_COMPONENT_SETUP:
-                    TsCodeUtils.mergeFragments(routerSetupFragments),
-                  TPL_COMPONENT_BODY:
-                    TsCodeUtils.mergeFragments(routerBodyFragments),
+                  TPL_COMPONENT_SETUP: TsCodeUtils.mergeFragments(
+                    routerSetupFragments,
+                    '\n\n',
+                  ),
+                  TPL_COMPONENT_BODY: TsCodeUtils.mergeFragments(
+                    routerBodyFragments,
+                    '\n\n',
+                  ),
+                  TPL_ROUTER_CONTEXT: routerContext,
                   TPL_ROUTER_PROVIDER: tsTemplate`<${routerProvider} router={router} ${
                     routeProviderInitializers.size > 0
-                      ? tsTemplate`context={${TsCodeUtils.mergeFragmentsAsObject(
-                          routeProviderInitializers,
-                        )}}`
+                      ? tsTemplate`context={routerContext}`
                       : ''
                   } />`,
                 },

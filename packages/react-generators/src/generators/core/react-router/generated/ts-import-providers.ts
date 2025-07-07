@@ -38,9 +38,9 @@ const coreReactRouterImportsTask = createGeneratorTask({
     return {
       providers: {
         reactRouterImports: createTsImportMap(reactRouterImportsSchema, {
-          AppRoutes: paths.appRoutes,
+          AppRoutes: paths.router,
           Route: paths.rootRoute,
-          router: paths.appRoutes,
+          router: paths.router,
         }),
       },
     };

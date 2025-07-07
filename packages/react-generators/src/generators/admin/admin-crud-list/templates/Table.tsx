@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 
 import {
   Alert,
+  AlertTitle,
   Button,
   Table,
   TableBody,
@@ -47,7 +48,9 @@ export function TPL_COMPONENT_NAME(
   if (items.length === 0) {
     return (
       <Alert variant="default">
-        No <TPL_PLURAL_MODEL /> found.
+        <AlertTitle>
+          No <TPL_PLURAL_MODEL /> found.
+        </AlertTitle>
       </Alert>
     );
   }

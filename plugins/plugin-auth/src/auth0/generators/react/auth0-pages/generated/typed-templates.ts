@@ -37,6 +37,6 @@ const login = createTsTemplateFile({
   variables: {},
 });
 
-export const pagesGroup = { auth0Callback, login };
+export const pagesGroup = { login };
 
 export const AUTH0_AUTH0_PAGES_TEMPLATES = { pagesGroup };

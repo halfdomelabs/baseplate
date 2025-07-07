@@ -575,6 +575,8 @@ const index = createTsTemplateFile({
   name: 'index',
   projectExports: {
     Alert: {},
+    AlertDescription: {},
+    AlertTitle: {},
     Button: {},
     Calendar: {},
     Card: {},

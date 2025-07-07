@@ -23,8 +23,8 @@
       "pathRootRelativePath": "{routes-root}/index.tsx",
       "variables": {}
     },
-    "src/app/app-routes.tsx": {
-      "name": "app-routes",
+    "src/app/router.tsx": {
+      "name": "router",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-router",
@@ -34,12 +34,13 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/app/app-routes.tsx",
+      "pathRootRelativePath": "{src-root}/app/router.tsx",
       "projectExports": { "AppRoutes": {}, "router": {} },
       "variables": {
         "TPL_ADDITIONAL_ROUTER_OPTIONS": {},
         "TPL_COMPONENT_BODY": {},
         "TPL_COMPONENT_SETUP": {},
+        "TPL_ROUTER_CONTEXT": {},
         "TPL_ROUTER_PROVIDER": {}
       }
     },

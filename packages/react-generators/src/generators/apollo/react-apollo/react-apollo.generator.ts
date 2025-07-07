@@ -265,7 +265,10 @@ export const reactApolloGenerator = createGenerator({
             tsImportBuilder(['ApolloClient']).typeOnly().from('@apollo/client'),
           ])`ApolloClient<object>`,
           optional: false,
-          routerProviderInitializer: tsTemplate`apolloClient`,
+          routerProviderInitializer: {
+            code: tsTemplate`apolloClient`,
+            dependencies: ['apolloClient'],
+          },
         });
 
         reactRouterConfig.routerSetupFragments.set(
