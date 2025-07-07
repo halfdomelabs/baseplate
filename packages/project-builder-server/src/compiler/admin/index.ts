@@ -86,7 +86,7 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
                         type: 'link',
                         label: 'Home',
                         icon: 'MdHome',
-                        path: '/admin/',
+                        path: '/admin',
                       },
                       ...buildNavigationLinks(builder),
                       ...(backendApp.enableBullQueue
