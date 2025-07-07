@@ -3,6 +3,7 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import { reactAuthProvider } from '#src/generators/auth/index.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
 import { reactRoutesProvider } from '#src/providers/index.js';
 
@@ -42,14 +43,16 @@ export const adminLayoutGenerator = createGenerator({
       dependencies: {
         renderers: ADMIN_ADMIN_LAYOUT_GENERATED.renderers.provider,
         reactRoutes: reactRoutesProvider,
+        reactAuth: reactAuthProvider,
       },
-      run({ renderers, reactRoutes }) {
+      run({ renderers, reactRoutes, reactAuth }) {
         return {
           build: async (builder) => {
             await builder.apply(
               renderers.adminRoute.render({
                 variables: {
                   TPL_ROUTE_PATH: quot(reactRoutes.getRouteFilePath()),
+                  TPL_LOGIN_URL_PATH: quot(reactAuth.getLoginUrlPath()),
                 },
               }),
             );

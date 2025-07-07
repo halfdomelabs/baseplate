@@ -37,19 +37,6 @@ const login = createTsTemplateFile({
   variables: {},
 });
 
-const register = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'pages',
-  importMapProviders: {
-    reactComponentsImports: reactComponentsImportsProvider,
-  },
-  name: 'register',
-  source: {
-    path: path.join(import.meta.dirname, '../templates/routes/register.tsx'),
-  },
-  variables: {},
-});
-
-export const pagesGroup = { auth0Callback, login, register };
+export const pagesGroup = { auth0Callback, login };
 
 export const AUTH0_AUTH0_PAGES_TEMPLATES = { pagesGroup };

@@ -1,6 +1,7 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
+  packageScope,
   TsCodeUtils,
   tsImportBuilder,
   tsTemplate,
@@ -9,6 +10,7 @@ import {
 import {
   authContextTask,
   reactAppConfigProvider,
+  reactAuthProvider,
   reactComponentsImportsProvider,
   reactConfigImportsProvider,
   reactConfigProvider,
@@ -80,6 +82,21 @@ export const reactAuth0Generator = createGenerator({
           optional: false,
           routerProviderInitializer: tsTemplate`auth0`,
         });
+      },
+    }),
+    reactAuth: createGeneratorTask({
+      exports: {
+        reactAuth: reactAuthProvider.export(packageScope),
+      },
+      run() {
+        return {
+          providers: {
+            reactAuth: {
+              getLoginUrlPath: () => '/auth/login',
+              getRegisterUrlPath: () => '/auth/login?screen_hint=signup',
+            },
+          },
+        };
       },
     }),
     reactAppConfig: createGeneratorTask({
