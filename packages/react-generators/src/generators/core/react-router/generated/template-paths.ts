@@ -21,7 +21,7 @@ const coreReactRouterPathsTask = createGeneratorTask({
   },
   exports: { coreReactRouterPaths: coreReactRouterPaths.export() },
   run({ packageInfo, reactRoutes }) {
-    const routesRoot = reactRoutes.getDirectoryBase();
+    const routesRoot = reactRoutes.getOutputRelativePath();
     const srcRoot = packageInfo.getPackageSrcPath();
 
     return {

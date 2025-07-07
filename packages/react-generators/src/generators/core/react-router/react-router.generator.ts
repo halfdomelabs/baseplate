@@ -110,8 +110,9 @@ export const reactRouterGenerator = createGenerator({
         return {
           providers: {
             reactRoutes: {
-              getDirectoryBase: () => directoryBase,
-              getRoutePrefix: () => ``,
+              getOutputRelativePath: () => directoryBase,
+              getRoutePrefix: () => '',
+              getRouteFilePath: () => '',
             },
           },
         };

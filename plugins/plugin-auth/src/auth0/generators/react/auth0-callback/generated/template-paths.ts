@@ -14,7 +14,7 @@ const auth0Auth0CallbackPathsTask = createGeneratorTask({
   dependencies: { reactRoutes: reactRoutesProvider },
   exports: { auth0Auth0CallbackPaths: auth0Auth0CallbackPaths.export() },
   run({ reactRoutes }) {
-    const routesRoot = reactRoutes.getDirectoryBase();
+    const routesRoot = reactRoutes.getOutputRelativePath();
 
     return {
       providers: {

@@ -76,7 +76,7 @@ export const adminCrudEditGenerator = createGenerator({
         reactErrorImports,
       }) {
         const routePrefix = reactRoutes.getRoutePrefix();
-        const editSchemaPath = `${reactRoutes.getDirectoryBase()}/-schemas/${lowerCaseFirst(
+        const editSchemaPath = `${reactRoutes.getOutputRelativePath()}/-schemas/${lowerCaseFirst(
           dasherize(underscore(modelName)),
         )}-schema.ts`;
 
@@ -92,17 +92,17 @@ export const adminCrudEditGenerator = createGenerator({
           editSchemaPath,
         );
 
-        const editFormComponentPath = `${reactRoutes.getDirectoryBase()}/-components/${kebabCase(modelName)}-edit-form.tsx`;
+        const editFormComponentPath = `${reactRoutes.getOutputRelativePath()}/-components/${kebabCase(modelName)}-edit-form.tsx`;
         const editFormComponentName = `${modelName}EditForm`;
         const editFormComponentExpression = TsCodeUtils.importFragment(
           editFormComponentName,
           editFormComponentPath,
         );
 
-        const editPagePath = `${reactRoutes.getDirectoryBase()}/$id.tsx`;
+        const editPagePath = `${reactRoutes.getOutputRelativePath()}/$id.tsx`;
         const editPageName = `${modelName}EditPage`;
 
-        const createPagePath = `${reactRoutes.getDirectoryBase()}/new.tsx`;
+        const createPagePath = `${reactRoutes.getOutputRelativePath()}/new.tsx`;
         const createPageName = `${modelName}CreatePage`;
 
         const editQueryInfo = adminCrudQueries.getEditQueryHookInfo();
@@ -113,7 +113,7 @@ export const adminCrudEditGenerator = createGenerator({
         return {
           providers: {
             adminCrudEdit: {
-              getDirectoryBase: () => reactRoutes.getDirectoryBase(),
+              getDirectoryBase: () => reactRoutes.getOutputRelativePath(),
               getSchemaPath: () => editSchemaPath,
               getSchemaImport: () => editSchemaPath,
             },
