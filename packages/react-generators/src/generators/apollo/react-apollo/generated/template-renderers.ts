@@ -28,6 +28,16 @@ export interface ApolloReactApolloRenderers {
       >,
     ) => BuilderAction;
   };
+  codegenConfig: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof APOLLO_REACT_APOLLO_TEMPLATES.codegenConfig
+        >,
+        'destination' | 'importMapProviders' | 'template'
+      >,
+    ) => BuilderAction;
+  };
   graphql: {
     render: (
       options: Omit<
@@ -78,6 +88,14 @@ const apolloReactApolloRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: APOLLO_REACT_APOLLO_TEMPLATES.cache,
                 destination: paths.cache,
+                ...options,
+              }),
+          },
+          codegenConfig: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: APOLLO_REACT_APOLLO_TEMPLATES.codegenConfig,
+                destination: paths.codegenConfig,
                 ...options,
               }),
           },

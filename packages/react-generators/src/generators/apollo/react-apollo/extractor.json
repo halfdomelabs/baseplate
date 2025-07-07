@@ -8,14 +8,15 @@
     }
   },
   "templates": {
-    "package/codegen.yml": {
-      "name": "codegen-yml",
-      "type": "text",
+    "package/codegen.ts": {
+      "name": "codegen-config",
+      "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{package-root}/codegen.yml",
-      "variables": {
-        "TPL_SCHEMA_LOCATION": { "description": "Location of the schema" }
-      }
+      "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{package-root}/codegen.ts",
+      "projectExports": { "config": {} },
+      "variables": { "TPL_BACKEND_SCHEMA": {} }
     },
     "src/app/app-apollo-provider.tsx": {
       "name": "app-apollo-provider",

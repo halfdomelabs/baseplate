@@ -11,7 +11,6 @@ import {
   extractPackageVersions,
   packageScope,
   prettierProvider,
-  renderTextTemplateFileAction,
   tsCodeFragment,
   TsCodeUtils,
   tsHoistedFragment,
@@ -29,7 +28,7 @@ import {
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@baseplate-dev/sync';
-import { notEmpty, toposortLocal } from '@baseplate-dev/utils';
+import { notEmpty, quot, toposortLocal } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
@@ -193,7 +192,7 @@ export const reactApolloGenerator = createGenerator({
         '@graphql-codegen/cli',
         '@graphql-codegen/typescript',
         '@graphql-codegen/typescript-operations',
-        '@graphql-codegen/typescript-react-apollo',
+        '@graphql-codegen/typed-document-node',
         '@parcel/watcher',
       ]),
     }),
@@ -519,13 +518,13 @@ export const reactApolloGenerator = createGenerator({
               }),
             );
 
-            // codegen.yml
+            // codegen.ts
             await builder.apply(
-              renderTextTemplateFileAction({
-                template: APOLLO_REACT_APOLLO_GENERATED.templates.codegenYml,
-                destination: 'codegen.yml',
+              typescriptFile.renderTemplateFile({
+                template: APOLLO_REACT_APOLLO_GENERATED.templates.codegenConfig,
+                destination: paths.codegenConfig,
                 variables: {
-                  TPL_SCHEMA_LOCATION: schemaLocation,
+                  TPL_BACKEND_SCHEMA: quot(schemaLocation),
                 },
               }),
             );
@@ -579,7 +578,7 @@ export const reactApolloGenerator = createGenerator({
 
             builder.addPostWriteCommand('pnpm generate', {
               priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
-              onlyIfChanged: [...gqlFiles, 'codegen.yml'],
+              onlyIfChanged: [...gqlFiles, 'codegen.ts'],
             });
           },
         };
