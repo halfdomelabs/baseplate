@@ -54,7 +54,7 @@ export const authIdentifyGenerator = createGenerator({
           build: () => {
             const { identifyFragments } = fieldMap.getValues();
             if (identifyFragments.size > 0) {
-              reactRouterConfig.renderHeaders.set(
+              reactRouterConfig.routerSetupFragments.set(
                 'auth-identify',
                 TsCodeUtils.templateWithImports([
                   authHooksImports.useSession.declaration(),

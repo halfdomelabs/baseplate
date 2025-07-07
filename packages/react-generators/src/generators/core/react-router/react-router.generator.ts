@@ -35,11 +35,33 @@ const descriptorSchema = z.object({
   renderPlaceholderIndex: z.boolean().default(false),
 });
 
+/**
+ * A field in the root route context.
+ */
+export interface RootRouteContextField {
+  /** The name of the field */
+  name: string;
+  /** The type of the field */
+  type: TsCodeFragment;
+  /** Whether the field is optional */
+  optional: boolean;
+  /** The code to initialize the field in the createRouter function */
+  createRouteInitializer?: TsCodeFragment;
+  /** The code to initialize the field in the RouterProvider */
+  routerProviderInitializer?: TsCodeFragment;
+}
+
 const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
   createConfigProviderTask(
     (t) => ({
-      renderHeaders: t.map<string, TsCodeFragment>(),
+      /* The code to set up the component that will be placed in the render function of the router component (no conditional logic, hooks only) */
+      routerSetupFragments: t.map<string, TsCodeFragment>(),
+      /* The code to set up the component that will be placed in the body of the router component (conditional logic, no hooks) */
+      routerBodyFragments: t.map<string, TsCodeFragment>(),
+      /* The component that contains the root layout, e.g. <RootLayout /> */
       rootLayoutComponent: t.scalar<TsCodeFragment>(),
+      /* The fields in the root route context */
+      rootContextFields: t.namedArray<RootRouteContextField>(),
     }),
     {
       prefix: 'react-router',
@@ -136,16 +158,75 @@ export const reactRouterGenerator = createGenerator({
         renderers: CORE_REACT_ROUTER_GENERATED.renderers.provider,
       },
       run({
-        reactRouterConfigValues: { renderHeaders, rootLayoutComponent },
+        reactRouterConfigValues: {
+          routerSetupFragments,
+          routerBodyFragments,
+          rootLayoutComponent,
+          rootContextFields,
+        },
         renderers,
       }) {
+        const fieldMissingInitializer = rootContextFields.filter(
+          (field) =>
+            !field.createRouteInitializer &&
+            !field.routerProviderInitializer &&
+            !field.optional,
+        );
+
+        if (fieldMissingInitializer.length > 0) {
+          throw new Error(
+            `The following route root context fields are missing an initializer: ${fieldMissingInitializer.map((field) => field.name).join(', ')}`,
+          );
+        }
+
+        const sortedRootContextFields = rootContextFields.toSorted((a, b) =>
+          a.name.localeCompare(b.name),
+        );
+
         return {
           build: async (builder) => {
+            const routerProvider = TsCodeUtils.importFragment(
+              'RouterProvider',
+              '@tanstack/react-router',
+            );
+            const routeProviderInitializers = new Map(
+              sortedRootContextFields
+                .filter((f) => f.routerProviderInitializer)
+                .map((field) => [field.name, field.routerProviderInitializer]),
+            );
+
             await builder.apply(
               renderers.appRoutes.render({
                 variables: {
-                  TPL_ADDITIONAL_ROUTER_OPTIONS: '',
-                  TPL_RENDER_HEADER: TsCodeUtils.mergeFragments(renderHeaders),
+                  TPL_ADDITIONAL_ROUTER_OPTIONS:
+                    rootContextFields.length > 0
+                      ? tsTemplate`{
+                    context: {
+                      ${TsCodeUtils.mergeFragmentsPresorted(
+                        sortedRootContextFields
+                          .filter(
+                            (f) => !f.optional || f.createRouteInitializer,
+                          )
+                          .map((field) =>
+                            field.createRouteInitializer
+                              ? tsTemplate`${field.name}: ${field.createRouteInitializer},`
+                              : `// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- context instantiated in the RouteProvider
+                           ${field.name}: undefined!,`,
+                          ),
+                      )}
+                  }`
+                      : '',
+                  TPL_COMPONENT_SETUP:
+                    TsCodeUtils.mergeFragments(routerSetupFragments),
+                  TPL_COMPONENT_BODY:
+                    TsCodeUtils.mergeFragments(routerBodyFragments),
+                  TPL_ROUTER_PROVIDER: tsTemplate`<${routerProvider} router={router} ${
+                    routeProviderInitializers.size > 0
+                      ? tsTemplate`context={${TsCodeUtils.mergeFragmentsAsObject(
+                          routeProviderInitializers,
+                        )}}`
+                      : ''
+                  } />`,
                 },
               }),
             );
@@ -153,7 +234,17 @@ export const reactRouterGenerator = createGenerator({
             await builder.apply(
               renderers.rootRoute.render({
                 variables: {
-                  TPL_ROOT_ROUTE_CONTEXT: 'placeholder?: string',
+                  TPL_ROOT_ROUTE_CONTEXT:
+                    rootContextFields.length > 0
+                      ? TsCodeUtils.mergeFragmentsAsInterfaceContent(
+                          new Map(
+                            sortedRootContextFields.map((field) => [
+                              field.optional ? `${field.name}?` : field.name,
+                              field.type,
+                            ]),
+                          ),
+                        )
+                      : 'placeholder?: string',
                   TPL_ROOT_ROUTE_OPTIONS: TsCodeUtils.mergeFragmentsAsObject({
                     component: rootLayoutComponent,
                   }),

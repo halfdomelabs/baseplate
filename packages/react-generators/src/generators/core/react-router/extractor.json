@@ -38,7 +38,9 @@
       "projectExports": { "AppRoutes": {}, "router": {} },
       "variables": {
         "TPL_ADDITIONAL_ROUTER_OPTIONS": {},
-        "TPL_RENDER_HEADER": {}
+        "TPL_COMPONENT_BODY": {},
+        "TPL_COMPONENT_SETUP": {},
+        "TPL_ROUTER_PROVIDER": {}
       }
     },
     "src/route-tree.gen.ts": {
