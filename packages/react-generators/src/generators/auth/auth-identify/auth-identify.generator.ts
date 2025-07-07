@@ -17,8 +17,6 @@ import { z } from 'zod';
 
 import { reactRouterConfigProvider } from '#src/generators/core/react-router/index.js';
 
-import { authHooksImportsProvider } from '../_providers/auth-hooks.js';
-
 const descriptorSchema = z.object({});
 
 const configSchema = createFieldMapSchemaBuilder((t) => ({
@@ -40,12 +38,11 @@ export const authIdentifyGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactRouterConfig: reactRouterConfigProvider,
-        authHooksImports: authHooksImportsProvider,
       },
       exports: {
         authIdentify: authIdentifyProvider.export(packageScope),
       },
-      run({ reactRouterConfig, authHooksImports }) {
+      run({ reactRouterConfig }) {
         const fieldMap = createConfigFieldMap(configSchema);
         return {
           providers: {
@@ -57,11 +54,8 @@ export const authIdentifyGenerator = createGenerator({
               reactRouterConfig.routerSetupFragments.set(
                 'auth-identify',
                 TsCodeUtils.templateWithImports([
-                  authHooksImports.useSession.declaration(),
                   tsImportBuilder(['useEffect']).from('react'),
                 ])`
-                const { userId } = useSession();
-
                 useEffect(() => {
                   if (!userId) return;
                   

@@ -3,11 +3,16 @@ import {
   extractPackageVersions,
   TsCodeUtils,
   tsImportBuilder,
+  tsTemplate,
+  tsTemplateWithImports,
 } from '@baseplate-dev/core-generators';
 import {
+  authContextTask,
   reactAppConfigProvider,
+  reactComponentsImportsProvider,
   reactConfigImportsProvider,
   reactConfigProvider,
+  reactRouterConfigProvider,
 } from '@baseplate-dev/react-generators';
 import {
   createGenerator,
@@ -48,6 +53,25 @@ export const reactAuth0Generator = createGenerator({
           devDefaultValue: 'AUTH0_AUDIENCE',
         },
       });
+    }),
+    authContext: authContextTask,
+    reactRouterGate: createGeneratorTask({
+      dependencies: {
+        reactRouterConfig: reactRouterConfigProvider,
+        reactComponentsImports: reactComponentsImportsProvider,
+      },
+      run({ reactRouterConfig, reactComponentsImports }) {
+        reactRouterConfig.routerSetupFragments.set(
+          'auth0',
+          tsTemplateWithImports(
+            tsImportBuilder(['useAuth0']).from('@auth0/auth0-react'),
+          )`const { isLoading, error } = useAuth0()`,
+        );
+        reactRouterConfig.routerBodyFragments.set(
+          'auth0-gate',
+          tsTemplate`if (isLoading) return <${reactComponentsImports.ErrorableLoader.fragment()} error={error} />`,
+        );
+      },
     }),
     reactAppConfig: createGeneratorTask({
       dependencies: {
