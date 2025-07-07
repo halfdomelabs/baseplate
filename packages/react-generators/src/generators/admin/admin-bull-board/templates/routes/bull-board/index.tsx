@@ -9,7 +9,7 @@ import { logAndFormatError } from '%reactErrorImports';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
-export const Route = createFileRoute('/admin/bull-board/')({
+export const Route = createFileRoute('/_admin/bull-board/')({
   component: BullBoardPage,
 });
 

@@ -60,6 +60,7 @@ export const adminCrudListGenerator = createGenerator({
         reactErrorImports,
       }) {
         const routePrefix = reactRoutes.getRoutePrefix();
+        const routeFilePath = reactRoutes.getRouteFilePath();
         const columns: AdminCrudColumn[] = [];
         const listPagePath = `${reactRoutes.getOutputRelativePath()}/index.tsx`;
         const tableComponentPath = `${reactRoutes.getOutputRelativePath()}/-components/${kebabCase(modelName)}-table.tsx`;
@@ -129,7 +130,7 @@ export const adminCrudListGenerator = createGenerator({
                 template: ADMIN_ADMIN_CRUD_LIST_GENERATED.templates.listPage,
                 destination: listPagePath,
                 variables: {
-                  TPL_ROUTE_VALUE: quot(`${routePrefix}/`),
+                  TPL_ROUTE_PATH: quot(`${routeFilePath}/`),
                   TPL_PAGE_NAME: listPageComponentName,
                   TPL_DELETE_FUNCTION: deleteInfo.fieldName,
                   TPL_DELETE_MUTATION: deleteInfo.hookExpression,

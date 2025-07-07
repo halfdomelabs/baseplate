@@ -21,7 +21,7 @@ const createPage = createTsTemplateFile({
     TPL_MODEL_NAME: {},
     TPL_MUTATION_NAME: {},
     TPL_REFETCH_DOCUMENT: {},
-    TPL_ROUTE_VALUE: {},
+    TPL_ROUTE_PATH: {},
   },
 });
 
@@ -61,7 +61,7 @@ const editPage = createTsTemplateFile({
     TPL_FORM_DATA_NAME: {},
     TPL_MODEL_NAME: {},
     TPL_MUTATION_NAME: {},
-    TPL_ROUTE_VALUE: {},
+    TPL_ROUTE_PATH: {},
     TPL_UPDATE_MUTATION: {},
   },
 });

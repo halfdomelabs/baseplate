@@ -6,7 +6,7 @@ import { logError } from '%reactErrorImports';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-export const Route = createFileRoute(TPL_ROUTE_VALUE)({
+export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: TPL_COMPONENT_NAME,
 });
 
