@@ -43,7 +43,7 @@ export const adminHomeGenerator = createGenerator({
                   reactComponentsImports,
                 },
                 variables: {
-                  TPL_ROUTE_PATH: quot(reactRoutes.getRouteFilePath()),
+                  TPL_ROUTE_PATH: quot(`${reactRoutes.getRouteFilePath()}/`),
                 },
               }),
             );

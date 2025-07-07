@@ -73,7 +73,7 @@ export const adminBullBoardGenerator = createGenerator({
                   ADMIN_ADMIN_BULL_BOARD_GENERATED.templates.bullBoardPage,
                 destination: paths.bullBoardPage,
                 variables: {
-                  TPL_ROUTE_PATH: quot(routeFilePath),
+                  TPL_ROUTE_PATH: quot(`${routeFilePath}/bull-board/`),
                 },
                 importMapProviders: {
                   reactComponentsImports,
