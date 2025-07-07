@@ -15,7 +15,7 @@ const adminAdminBullBoardPathsTask = createGeneratorTask({
   dependencies: { reactRoutes: reactRoutesProvider },
   exports: { adminAdminBullBoardPaths: adminAdminBullBoardPaths.export() },
   run({ reactRoutes }) {
-    const routesRoot = reactRoutes.getDirectoryBase();
+    const routesRoot = reactRoutes.getOutputRelativePath();
 
     return {
       providers: {

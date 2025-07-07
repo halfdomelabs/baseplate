@@ -2,11 +2,12 @@
 
 import type { ReactElement } from 'react';
 
-import { Alert, Button, useStatus } from '%reactComponentsImports';
+import { Button } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 interface Props {
   className?: string;
@@ -22,7 +23,6 @@ export function TPL_COMPONENT_NAME(
     resolver: zodResolver(TPL_EDIT_SCHEMA),
     defaultValues: initialData,
   });
-  const { status, setError } = useStatus();
   const [isUpdating, setIsUpdating] = useState(false);
 
   const onSubmit = async (data: TPL_FORM_DATA_NAME): Promise<void> => {
@@ -30,7 +30,7 @@ export function TPL_COMPONENT_NAME(
       setIsUpdating(true);
       await submitData(data);
     } catch (err) {
-      setError(logAndFormatError(err));
+      toast.error(logAndFormatError(err));
     } finally {
       setIsUpdating(false);
     }
@@ -41,7 +41,6 @@ export function TPL_COMPONENT_NAME(
   return (
     <div className={className}>
       <form onSubmit={handleSubmit(onSubmit)} className="max-w-md space-y-4">
-        {status && <Alert>{status.message}</Alert>}
         <TPL_INPUTS />
         <Button type="submit" disabled={isUpdating}>
           Save

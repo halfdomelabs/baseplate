@@ -1,0 +1,23 @@
+{
+  "name": "auth0/react-auth0",
+  "templates": {
+    "src/app/auth-loaded-gate.tsx": {
+      "name": "auth-loaded-gate",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth0/react-auth0",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/app/auth-loaded-gate.tsx",
+      "variables": {}
+    }
+  }
+}

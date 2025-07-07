@@ -3,7 +3,7 @@
 import type { ErrorRouteComponent } from '@tanstack/react-router';
 
 import { Button, ErrorDisplay, NotFoundCard } from '%reactComponentsImports';
-import { createRouter, RouterProvider } from '@tanstack/react-router';
+import { createRouter } from '@tanstack/react-router';
 
 import { routeTree } from '../route-tree.gen.js';
 
@@ -21,6 +21,7 @@ export const router = createRouter({
   routeTree,
   defaultNotFoundComponent: NotFoundCard,
   defaultErrorComponent: ErrorComponent,
+  TPL_ADDITIONAL_ROUTER_OPTIONS,
 });
 
 // Register the router instance for type safety
@@ -31,7 +32,11 @@ declare module '@tanstack/react-router' {
 }
 
 export function AppRoutes(): React.ReactElement {
-  TPL_RENDER_HEADER;
+  TPL_COMPONENT_SETUP;
 
-  return <RouterProvider router={router} />;
+  TPL_ROUTER_CONTEXT;
+
+  TPL_COMPONENT_BODY;
+
+  return TPL_ROUTER_PROVIDER;
 }

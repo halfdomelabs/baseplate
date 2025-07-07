@@ -15,6 +15,8 @@ import { CORE_REACT_COMPONENTS_PATHS } from './template-paths.js';
 const reactComponentsImportsSchema = createTsImportMapSchema({
   AddOptionRequiredFields: { isTypeOnly: true },
   Alert: {},
+  AlertDescription: {},
+  AlertTitle: {},
   Button: {},
   buttonVariants: {},
   Calendar: {},
@@ -95,8 +97,6 @@ const reactComponentsImportsSchema = createTsImportMapSchema({
   SidebarLayout: {},
   SidebarLayoutContent: {},
   SidebarLayoutSidebar: {},
-  Status: { isTypeOnly: true },
-  StatusType: { isTypeOnly: true },
   Switch: {},
   SwitchField: {},
   SwitchFieldController: {},
@@ -119,7 +119,6 @@ const reactComponentsImportsSchema = createTsImportMapSchema({
   useConfirmDialogState: {},
   useControlledState: {},
   useControllerMerged: {},
-  useStatus: {},
 });
 
 export type ReactComponentsImportsProvider = TsImportMapProviderFromSchema<
@@ -146,6 +145,8 @@ const coreReactComponentsImportsTask = createGeneratorTask({
           {
             AddOptionRequiredFields: paths.typesForm,
             Alert: paths.index,
+            AlertDescription: paths.index,
+            AlertTitle: paths.index,
             Button: paths.index,
             buttonVariants: paths.stylesButton,
             Calendar: paths.index,
@@ -226,8 +227,6 @@ const coreReactComponentsImportsTask = createGeneratorTask({
             SidebarLayout: paths.index,
             SidebarLayoutContent: paths.index,
             SidebarLayoutSidebar: paths.index,
-            Status: paths.useStatus,
-            StatusType: paths.useStatus,
             Switch: paths.index,
             SwitchField: paths.index,
             SwitchFieldController: paths.index,
@@ -250,7 +249,6 @@ const coreReactComponentsImportsTask = createGeneratorTask({
             useConfirmDialogState: paths.useConfirmDialog,
             useControlledState: paths.hooksUseControlledState,
             useControllerMerged: paths.hooksUseControllerMerged,
-            useStatus: paths.useStatus,
           },
         ),
       },

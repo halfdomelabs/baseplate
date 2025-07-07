@@ -1,5 +1,11 @@
 // @ts-nocheck
 
-import { createRootRoute } from '@tanstack/react-router';
+import { createRootRouteWithContext } from '@tanstack/react-router';
 
-export const Route = createRootRoute(TPL_ROOT_ROUTE_OPTIONS);
+export interface RootRouteContext {
+  TPL_ROOT_ROUTE_CONTEXT;
+}
+
+export const Route = createRootRouteWithContext<RootRouteContext>()(
+  TPL_ROOT_ROUTE_OPTIONS,
+);

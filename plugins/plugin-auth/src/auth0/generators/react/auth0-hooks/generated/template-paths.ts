@@ -22,11 +22,11 @@ const auth0Auth0HooksPathsTask = createGeneratorTask({
     return {
       providers: {
         auth0Auth0HooksPaths: {
-          useCurrentUser: `${srcRoot}/hooks/useCurrentUser.ts`,
-          useCurrentUserGql: `${srcRoot}/hooks/useCurrentUser.gql`,
-          useLogOut: `${srcRoot}/hooks/useLogOut.ts`,
-          useRequiredUserId: `${srcRoot}/hooks/useRequiredUserId.ts`,
-          useSession: `${srcRoot}/hooks/useSession.ts`,
+          useCurrentUser: `${srcRoot}/hooks/use-current-user.ts`,
+          useCurrentUserGql: `${srcRoot}/hooks/use-current-user.gql`,
+          useLogOut: `${srcRoot}/hooks/use-log-out.ts`,
+          useRequiredUserId: `${srcRoot}/hooks/use-required-user-id.ts`,
+          useSession: `${srcRoot}/hooks/use-session.ts`,
         },
       },
     };

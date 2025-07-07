@@ -27,7 +27,7 @@ export const reactRoutesGenerator = createGenerator({
       run({ reactRoutes, pathRoots }) {
         const pathName = convertCaseWithPrefix(name, kebabCase);
 
-        const directoryBase = `${reactRoutes.getDirectoryBase()}/${pathName}`;
+        const directoryBase = `${reactRoutes.getOutputRelativePath()}/${pathName}`;
 
         // Register routes-root path root
         pathRoots.registerPathRoot('routes-root', directoryBase);
@@ -35,11 +35,13 @@ export const reactRoutesGenerator = createGenerator({
         return {
           providers: {
             reactRoutes: {
-              getDirectoryBase: () => directoryBase,
+              getOutputRelativePath: () => directoryBase,
               getRoutePrefix: () =>
                 pathName.startsWith('_')
                   ? reactRoutes.getRoutePrefix()
                   : `${reactRoutes.getRoutePrefix()}/${pathName}`,
+              getRouteFilePath: () =>
+                `${reactRoutes.getRouteFilePath()}/${pathName}`,
             },
           },
         };

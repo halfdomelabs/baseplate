@@ -22,10 +22,10 @@ import type { Auth0PluginDefinition } from './schema/plugin-definition.js';
 
 import {
   auth0ApolloGenerator,
-  auth0CallbackGenerator,
   auth0ComponentsGenerator,
   auth0HooksGenerator,
   auth0ModuleGenerator,
+  auth0PagesGenerator,
   reactAuth0Generator,
 } from '../generators/index.js';
 
@@ -74,9 +74,7 @@ export default createPlatformPluginExport({
       appType: webAppEntryType,
       compile: ({ appCompiler }) => {
         appCompiler.addRootChildren({
-          auth: reactAuth0Generator({
-            callbackPath: 'auth/auth0-callback',
-          }),
+          auth: reactAuth0Generator({}),
           authHooks: auth0HooksGenerator({}),
           authIdentify: authIdentifyGenerator({}),
           auth0Apollo: auth0ApolloGenerator({}),
@@ -84,7 +82,7 @@ export default createPlatformPluginExport({
           auth0Callback: reactRoutesGenerator({
             name: 'auth',
             children: {
-              auth: auth0CallbackGenerator({}),
+              auth: auth0PagesGenerator({}),
             },
           }),
         });
@@ -95,9 +93,7 @@ export default createPlatformPluginExport({
       appType: adminAppEntryType,
       compile: ({ appCompiler }) => {
         appCompiler.addRootChildren({
-          auth: reactAuth0Generator({
-            callbackPath: 'auth/auth0-callback',
-          }),
+          auth: reactAuth0Generator({}),
           authHooks: auth0HooksGenerator({}),
           authIdentify: authIdentifyGenerator({}),
           auth0Apollo: auth0ApolloGenerator({}),
@@ -105,7 +101,7 @@ export default createPlatformPluginExport({
           auth0Callback: reactRoutesGenerator({
             name: 'auth',
             children: {
-              auth: auth0CallbackGenerator({}),
+              auth: auth0PagesGenerator({}),
             },
           }),
         });

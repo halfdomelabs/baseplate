@@ -11,7 +11,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-function AppApolloProvider({ children }: Props): ReactElement {
+export function AppApolloProvider({ children }: Props): ReactElement {
   TPL_RENDER_BODY;
 
   const client = useMemo(
@@ -21,5 +21,3 @@ function AppApolloProvider({ children }: Props): ReactElement {
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 }
-
-export default AppApolloProvider;

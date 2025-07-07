@@ -1,11 +1,18 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { removeEmptyAncestorDirectories } from '#src/utils/directories.js';
+
 import { cleanDeletedFiles } from './clean-deleted-files.js';
 import { createCodebaseFileReaderFromDirectory } from './codebase-file-reader.js';
 
 vi.mock('node:fs');
 vi.mock('node:fs/promises');
+
+// Mock the directories utility
+vi.mock('#src/utils/directories.js', () => ({
+  removeEmptyAncestorDirectories: vi.fn(),
+}));
 
 describe('cleanDeletedFiles', () => {
   const outputDirectory = '/test/output';
@@ -13,6 +20,7 @@ describe('cleanDeletedFiles', () => {
 
   beforeEach(() => {
     vol.reset();
+    vi.mocked(removeEmptyAncestorDirectories).mockClear();
   });
 
   it('should delete files that are identical to previous generated version', async () => {
@@ -133,5 +141,51 @@ describe('cleanDeletedFiles', () => {
     expect(vol.existsSync(`${outputDirectory}/file1.txt`)).toBe(true);
     expect(result.deletedRelativePaths).toEqual([]);
     expect(result.relativePathsPendingDelete).toEqual([]);
+  });
+
+  it('should clean up empty ancestor directories for renamed files', async () => {
+    // Setup test files with renamed files that no longer exist at their previous paths
+    vol.fromJSON({
+      [`${previousGeneratedDirectory}/nested/dir/file1.txt`]: 'content1',
+      [`${previousGeneratedDirectory}/nested/dir/file2.txt`]: 'content2',
+    });
+
+    const previousGeneratedPayload = {
+      fileReader: createCodebaseFileReaderFromDirectory(
+        previousGeneratedDirectory,
+      ),
+      fileIdToRelativePathMap: new Map<string, string>([
+        ['id1', 'nested/dir/file1.txt'],
+        ['id2', 'nested/dir/file2.txt'],
+      ]),
+    };
+
+    // Simulate files being renamed (they no longer exist at their previous paths)
+    const currentFileIdToRelativePathMap = new Map<string, string>([
+      ['id1', 'new-location/file1.txt'],
+      ['id2', 'new-location/file2.txt'],
+    ]);
+
+    const result = await cleanDeletedFiles({
+      outputDirectory,
+      previousGeneratedPayload,
+      currentFileIdToRelativePathMap,
+    });
+
+    // Verify no files were deleted or marked for pending deletion
+    expect(result.deletedRelativePaths).toEqual([]);
+    expect(result.relativePathsPendingDelete).toEqual([]);
+
+    // Verify removeEmptyAncestorDirectories was called with the renamed file paths
+    expect(vi.mocked(removeEmptyAncestorDirectories)).toHaveBeenCalledWith(
+      [
+        `${outputDirectory}/nested/dir/file1.txt`,
+        `${outputDirectory}/nested/dir/file2.txt`,
+      ],
+      outputDirectory,
+      {
+        ignoreFiles: ['.template-metadata.json'],
+      },
+    );
   });
 });

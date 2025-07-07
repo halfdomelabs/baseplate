@@ -563,27 +563,10 @@ const useConfirmDialog = createTsTemplateFile({
   variables: {},
 });
 
-const useStatus = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'hooks',
-  importMapProviders: {},
-  name: 'use-status',
-  projectExports: {
-    Status: { isTypeOnly: true },
-    StatusType: { isTypeOnly: true },
-    useStatus: {},
-  },
-  source: {
-    path: path.join(import.meta.dirname, '../templates/src/hooks/useStatus.ts'),
-  },
-  variables: {},
-});
-
 export const hooksGroup = {
   hooksUseControlledState,
   hooksUseControllerMerged,
   useConfirmDialog,
-  useStatus,
 };
 
 const index = createTsTemplateFile({
@@ -592,6 +575,8 @@ const index = createTsTemplateFile({
   name: 'index',
   projectExports: {
     Alert: {},
+    AlertDescription: {},
+    AlertTitle: {},
     Button: {},
     Calendar: {},
     Card: {},

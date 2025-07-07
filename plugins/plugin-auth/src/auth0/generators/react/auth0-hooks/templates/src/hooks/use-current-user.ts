@@ -4,7 +4,7 @@ import type { CurrentUserFragment } from '%generatedGraphqlImports';
 
 import { useGetUserByIdQuery } from '%generatedGraphqlImports';
 
-import { useSession } from './useSession.js';
+import { useSession } from './use-session.js';
 
 interface UseCurrentUserResult {
   user?: CurrentUserFragment;

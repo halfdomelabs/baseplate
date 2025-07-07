@@ -17,6 +17,7 @@ import {
   tsHoistedFragment,
   tsImportBuilder,
   tsTemplate,
+  tsTemplateWithImports,
   tsTypeImportBuilder,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -39,6 +40,7 @@ import {
 } from '#src/generators/core/react-config/index.js';
 import { reactErrorConfigProvider } from '#src/generators/core/react-error/index.js';
 import { reactProxyProvider } from '#src/generators/core/react-proxy/index.js';
+import { reactRouterConfigProvider } from '#src/generators/core/react-router/index.js';
 
 import { APOLLO_REACT_APOLLO_GENERATED } from './generated/index.js';
 
@@ -244,12 +246,37 @@ export const reactApolloGenerator = createGenerator({
         reactAppConfig.renderWrappers.set('react-apollo', {
           wrap: (contents) =>
             TsCodeUtils.templateWithImports(
-              tsImportBuilder()
-                .default('AppApolloProvider')
-                .from(paths.appApolloProvider),
+              tsImportBuilder(['AppApolloProvider']).from(
+                paths.appApolloProvider,
+              ),
             )`<AppApolloProvider>${contents}</AppApolloProvider>`,
           type: 'data',
         });
+      },
+    }),
+    routerContext: createGeneratorTask({
+      dependencies: {
+        reactRouterConfig: reactRouterConfigProvider,
+      },
+      run({ reactRouterConfig }) {
+        reactRouterConfig.rootContextFields.add({
+          name: 'apolloClient',
+          type: tsTemplateWithImports([
+            tsImportBuilder(['ApolloClient']).typeOnly().from('@apollo/client'),
+          ])`ApolloClient<object>`,
+          optional: false,
+          routerProviderInitializer: {
+            code: tsTemplate`apolloClient`,
+            dependencies: ['apolloClient'],
+          },
+        });
+
+        reactRouterConfig.routerSetupFragments.set(
+          'apollo-client',
+          tsTemplateWithImports([
+            tsImportBuilder(['useApolloClient']).from('@apollo/client'),
+          ])`const apolloClient = useApolloClient();`,
+        );
       },
     }),
     main: createGeneratorTask({

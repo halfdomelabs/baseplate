@@ -49,6 +49,7 @@ export async function cleanDeletedFiles({
 
   const deletedRelativePaths: string[] = [];
   const relativePathsPendingDelete: string[] = [];
+  const renamedOrDeletedPaths: string[] = [];
 
   // Get set of current relative paths
   const currentRelativePaths = new Set(currentFileIdToRelativePathMap.values());
@@ -65,8 +66,9 @@ export async function cleanDeletedFiles({
 
     const fullPath = path.join(outputDirectory, previousRelativePath);
 
-    // Skip if file doesn't exist (e.g. was renamed)
+    // Check if file doesn't exist (e.g. was renamed or deleted)
     if (!(await pathExists(fullPath))) {
+      renamedOrDeletedPaths.push(previousRelativePath);
       continue;
     }
 
@@ -89,9 +91,9 @@ export async function cleanDeletedFiles({
     }
   }
 
-  // Remove empty ancestor directories
+  // Remove empty ancestor directories for both deleted and renamed files
   await removeEmptyAncestorDirectories(
-    deletedRelativePaths.map((relativePath) =>
+    [...deletedRelativePaths, ...renamedOrDeletedPaths].map((relativePath) =>
       path.join(outputDirectory, relativePath),
     ),
     outputDirectory,

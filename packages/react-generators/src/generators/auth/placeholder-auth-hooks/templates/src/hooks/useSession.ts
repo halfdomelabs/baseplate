@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 export interface SessionData {
-  userId: string | null;
+  userId: string | undefined;
   isAuthenticated: boolean;
 }
 

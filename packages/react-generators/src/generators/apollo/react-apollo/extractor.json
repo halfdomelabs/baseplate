@@ -17,13 +17,13 @@
         "TPL_SCHEMA_LOCATION": { "description": "Location of the schema" }
       }
     },
-    "src/app/AppApolloProvider.tsx": {
+    "src/app/app-apollo-provider.tsx": {
       "name": "app-apollo-provider",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/app/AppApolloProvider.tsx",
+      "pathRootRelativePath": "{src-root}/app/app-apollo-provider.tsx",
       "variables": {
         "TPL_CREATE_ARGS": {},
         "TPL_MEMO_DEPENDENCIES": {},

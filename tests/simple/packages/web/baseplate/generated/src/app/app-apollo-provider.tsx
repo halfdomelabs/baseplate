@@ -9,10 +9,8 @@ interface Props {
   children: React.ReactNode;
 }
 
-function AppApolloProvider({ children }: Props): ReactElement {
+export function AppApolloProvider({ children }: Props): ReactElement {
   const client = useMemo(() => createApolloClient(), []);
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
 }
-
-export default AppApolloProvider;

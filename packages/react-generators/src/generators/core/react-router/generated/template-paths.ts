@@ -6,7 +6,7 @@ import { reactRoutesProvider } from '#src/providers/routes.js';
 export interface CoreReactRouterPaths {
   rootRoute: string;
   placeholderIndex: string;
-  appRoutes: string;
+  router: string;
   routeTree: string;
 }
 
@@ -21,15 +21,15 @@ const coreReactRouterPathsTask = createGeneratorTask({
   },
   exports: { coreReactRouterPaths: coreReactRouterPaths.export() },
   run({ packageInfo, reactRoutes }) {
-    const routesRoot = reactRoutes.getDirectoryBase();
+    const routesRoot = reactRoutes.getOutputRelativePath();
     const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
       providers: {
         coreReactRouterPaths: {
-          appRoutes: `${srcRoot}/app/app-routes.tsx`,
           placeholderIndex: `${routesRoot}/index.tsx`,
           rootRoute: `${routesRoot}/__root.tsx`,
+          router: `${srcRoot}/app/router.tsx`,
           routeTree: `${srcRoot}/route-tree.gen.ts`,
         },
       },

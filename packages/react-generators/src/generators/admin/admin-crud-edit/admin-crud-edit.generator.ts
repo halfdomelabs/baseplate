@@ -75,8 +75,8 @@ export const adminCrudEditGenerator = createGenerator({
         reactComponentsImports,
         reactErrorImports,
       }) {
-        const routePrefix = reactRoutes.getRoutePrefix();
-        const editSchemaPath = `${reactRoutes.getDirectoryBase()}/-schemas/${lowerCaseFirst(
+        const routeFilePath = reactRoutes.getRouteFilePath();
+        const editSchemaPath = `${reactRoutes.getOutputRelativePath()}/-schemas/${lowerCaseFirst(
           dasherize(underscore(modelName)),
         )}-schema.ts`;
 
@@ -92,17 +92,17 @@ export const adminCrudEditGenerator = createGenerator({
           editSchemaPath,
         );
 
-        const editFormComponentPath = `${reactRoutes.getDirectoryBase()}/-components/${kebabCase(modelName)}-edit-form.tsx`;
+        const editFormComponentPath = `${reactRoutes.getOutputRelativePath()}/-components/${kebabCase(modelName)}-edit-form.tsx`;
         const editFormComponentName = `${modelName}EditForm`;
         const editFormComponentExpression = TsCodeUtils.importFragment(
           editFormComponentName,
           editFormComponentPath,
         );
 
-        const editPagePath = `${reactRoutes.getDirectoryBase()}/$id.tsx`;
+        const editPagePath = `${reactRoutes.getOutputRelativePath()}/$id.tsx`;
         const editPageName = `${modelName}EditPage`;
 
-        const createPagePath = `${reactRoutes.getDirectoryBase()}/new.tsx`;
+        const createPagePath = `${reactRoutes.getOutputRelativePath()}/new.tsx`;
         const createPageName = `${modelName}CreatePage`;
 
         const editQueryInfo = adminCrudQueries.getEditQueryHookInfo();
@@ -113,7 +113,7 @@ export const adminCrudEditGenerator = createGenerator({
         return {
           providers: {
             adminCrudEdit: {
-              getDirectoryBase: () => reactRoutes.getDirectoryBase(),
+              getDirectoryBase: () => reactRoutes.getOutputRelativePath(),
               getSchemaPath: () => editSchemaPath,
               getSchemaImport: () => editSchemaPath,
             },
@@ -238,7 +238,7 @@ export const adminCrudEditGenerator = createGenerator({
                     reactErrorImports,
                   },
                   variables: {
-                    TPL_ROUTE_VALUE: quot(`${routePrefix}/new`),
+                    TPL_ROUTE_PATH: quot(`${routeFilePath}/new`),
                     TPL_COMPONENT_NAME: createPageName,
                     TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} ${inputLoaderExtraProps} />`,
                     TPL_CREATE_MUTATION: createInfo.hookExpression,
@@ -291,7 +291,7 @@ export const adminCrudEditGenerator = createGenerator({
                   reactErrorImports,
                 },
                 variables: {
-                  TPL_ROUTE_VALUE: quot(`${routePrefix}/$id`),
+                  TPL_ROUTE_PATH: quot(`${routeFilePath}/$id`),
                   TPL_COMPONENT_NAME: editPageName,
                   TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} initialData={initialData} ${inputLoaderExtraProps} />`,
                   TPL_UPDATE_MUTATION: updateInfo.hookExpression,
