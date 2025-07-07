@@ -196,5 +196,33 @@ describe('directories', () => {
         removeEmptyAncestorDirectories(['/non/existent/file.txt'], '/root'),
       ).resolves.not.toThrow();
     });
+
+    it('should process directories in correct order (deeper first) and clean mutual ancestor directories', async () => {
+      // Setup: Create nested directory structure
+      vol.fromJSON({
+        '/root/nested-1/nested-2/nested-3/file.txt': 'content',
+        '/root/nested-1/nested-4/other-file.txt': 'content',
+      });
+
+      // Simulate deletion of both files
+      vol.unlinkSync('/root/nested-1/nested-2/nested-3/file.txt');
+      vol.unlinkSync('/root/nested-1/nested-4/other-file.txt');
+
+      // Test: Remove empty directories
+      await removeEmptyAncestorDirectories(
+        [
+          '/root/nested-1/nested-2/nested-3/file.txt',
+          '/root/nested-1/nested-4/other-file.txt',
+        ],
+        '/root',
+      );
+
+      // Assert: all directories should be removed
+      expect(vol.existsSync('/root/nested-1/nested-2/nested-3/')).toBe(false); // Should be removed
+      expect(vol.existsSync('/root/nested-1/nested-2/')).toBe(false); // Should be removed
+      expect(vol.existsSync('/root/nested-1/nested-4/')).toBe(false); // Should be removed
+      expect(vol.existsSync('/root/nested-1/')).toBe(false); // Should be removed
+      expect(vol.existsSync('/root')).toBe(true); // Should remain
+    });
   });
 });
