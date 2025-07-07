@@ -32,6 +32,7 @@ import { notEmpty, quot, toposortLocal } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
+import { reactTypescriptProvider } from '#src/generators/core/index.js';
 import { reactAppConfigProvider } from '#src/generators/core/react-app/index.js';
 import {
   reactConfigImportsProvider,
@@ -193,6 +194,7 @@ export const reactApolloGenerator = createGenerator({
         '@graphql-codegen/typescript',
         '@graphql-codegen/typescript-operations',
         '@graphql-codegen/typed-document-node',
+        '@graphql-typed-document-node/core',
         '@parcel/watcher',
       ]),
     }),
@@ -205,6 +207,12 @@ export const reactApolloGenerator = createGenerator({
         'graphql-codegen',
       );
     }),
+    reactTypescript: createProviderTask(
+      reactTypescriptProvider,
+      (reactTypescript) => {
+        reactTypescript.addNodeTsFile('codegen.ts');
+      },
+    ),
     websocketPackages: enableSubscriptions
       ? createNodePackagesTask({
           prod: extractPackageVersions(REACT_PACKAGES, ['graphql-ws']),

@@ -46,6 +46,7 @@ export const REACT_PACKAGES = {
   '@graphql-codegen/typescript': '4.1.6',
   '@graphql-codegen/typescript-operations': '4.6.1',
   '@graphql-codegen/typed-document-node': '5.1.2',
+  '@graphql-typed-document-node/core': '3.2.0',
   '@parcel/watcher': '2.5.1',
 
   // Utils

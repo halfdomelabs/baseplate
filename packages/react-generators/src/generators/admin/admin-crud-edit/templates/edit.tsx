@@ -3,6 +3,7 @@
 import type { ReactElement } from 'react';
 
 import { logError } from '%reactErrorImports';
+import { useMutation } from '@apollo/client';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
@@ -15,7 +16,7 @@ function TPL_COMPONENT_NAME(): ReactElement {
 
   TPL_DATA_LOADER;
 
-  const [TPL_MUTATION_NAME] = TPL_UPDATE_MUTATION();
+  const [TPL_MUTATION_NAME] = useMutation(TPL_UPDATE_MUTATION);
   const navigate = useNavigate();
 
   TPL_DATA_GATE;

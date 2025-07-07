@@ -12,6 +12,7 @@ const config: CodegenConfig = {
       Date: 'string',
       Uuid: 'string',
     },
+    useTypeImports: true,
   },
   generates: {
     './src/generated/graphql.tsx': {
