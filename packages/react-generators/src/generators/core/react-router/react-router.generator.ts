@@ -49,7 +49,7 @@ const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
 
 export { reactRouterConfigProvider };
 
-interface ReactRouterProvider {
+export interface ReactRouterProvider {
   getRootRouteDirectory(): string;
 }
 
