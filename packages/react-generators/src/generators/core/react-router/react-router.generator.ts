@@ -144,6 +144,7 @@ export const reactRouterGenerator = createGenerator({
             await builder.apply(
               renderers.appRoutes.render({
                 variables: {
+                  TPL_ADDITIONAL_ROUTER_OPTIONS: '',
                   TPL_RENDER_HEADER: TsCodeUtils.mergeFragments(renderHeaders),
                 },
               }),
@@ -152,6 +153,7 @@ export const reactRouterGenerator = createGenerator({
             await builder.apply(
               renderers.rootRoute.render({
                 variables: {
+                  TPL_ROOT_ROUTE_CONTEXT: 'placeholder?: string',
                   TPL_ROOT_ROUTE_OPTIONS: TsCodeUtils.mergeFragmentsAsObject({
                     component: rootLayoutComponent,
                   }),

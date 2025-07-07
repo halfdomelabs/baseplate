@@ -13,7 +13,7 @@ const appRoutes = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/src/app/app-routes.tsx'),
   },
-  variables: { TPL_RENDER_HEADER: {} },
+  variables: { TPL_ADDITIONAL_ROUTER_OPTIONS: {}, TPL_RENDER_HEADER: {} },
 });
 
 const placeholderIndex = createTsTemplateFile({
@@ -34,7 +34,7 @@ const rootRoute = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/__root.tsx'),
   },
-  variables: { TPL_ROOT_ROUTE_OPTIONS: {} },
+  variables: { TPL_ROOT_ROUTE_CONTEXT: {}, TPL_ROOT_ROUTE_OPTIONS: {} },
 });
 
 const routeTree = createTsTemplateFile({

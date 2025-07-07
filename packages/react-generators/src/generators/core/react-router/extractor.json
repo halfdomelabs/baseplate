@@ -9,7 +9,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{routes-root}/__root.tsx",
       "projectExports": { "Route": {} },
-      "variables": { "TPL_ROOT_ROUTE_OPTIONS": {} }
+      "variables": {
+        "TPL_ROOT_ROUTE_CONTEXT": {},
+        "TPL_ROOT_ROUTE_OPTIONS": {}
+      }
     },
     "routes/index.tsx": {
       "name": "placeholder-index",
@@ -33,7 +36,10 @@
       },
       "pathRootRelativePath": "{src-root}/app/app-routes.tsx",
       "projectExports": { "AppRoutes": {}, "router": {} },
-      "variables": { "TPL_RENDER_HEADER": {} }
+      "variables": {
+        "TPL_ADDITIONAL_ROUTER_OPTIONS": {},
+        "TPL_RENDER_HEADER": {}
+      }
     },
     "src/route-tree.gen.ts": {
       "name": "route-tree",

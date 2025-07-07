@@ -21,6 +21,7 @@ export const router = createRouter({
   routeTree,
   defaultNotFoundComponent: NotFoundCard,
   defaultErrorComponent: ErrorComponent,
+  TPL_ADDITIONAL_ROUTER_OPTIONS,
 });
 
 // Register the router instance for type safety
