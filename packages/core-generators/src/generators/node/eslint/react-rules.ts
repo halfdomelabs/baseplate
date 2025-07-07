@@ -28,6 +28,14 @@ export const REACT_ESLINT_RULES = tsCodeFragment(
         'error',
         { checksVoidReturn: { attributes: false } },
       ],
+
+      // Allow redirect and notFound to be thrown from routes
+      '@typescript-eslint/only-throw-error': [
+        'error',
+        {
+          allow: ['NotFoundError', 'Redirect'],
+        },
+      ],
     },
   },
 

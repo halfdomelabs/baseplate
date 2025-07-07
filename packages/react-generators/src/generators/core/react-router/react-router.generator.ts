@@ -20,6 +20,7 @@ import {
   createGenerator,
   createGeneratorTask,
   createProviderTask,
+  createProviderType,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -47,6 +48,13 @@ const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
   );
 
 export { reactRouterConfigProvider };
+
+interface ReactRouterProvider {
+  getRootRouteDirectory(): string;
+}
+
+export const reactRouterProvider =
+  createProviderType<ReactRouterProvider>('react-router');
 
 export const reactRouterGenerator = createGenerator({
   name: 'core/react-router',
@@ -101,6 +109,7 @@ export const reactRouterGenerator = createGenerator({
       },
       exports: {
         reactRoutes: reactRoutesProvider.export(packageScope),
+        reactRouter: reactRouterProvider.export(packageScope),
       },
       run({ pathRoots }) {
         const directoryBase = `@/src/routes`;
@@ -113,6 +122,9 @@ export const reactRouterGenerator = createGenerator({
               getOutputRelativePath: () => directoryBase,
               getRoutePrefix: () => '',
               getRouteFilePath: () => '',
+            },
+            reactRouter: {
+              getRootRouteDirectory: () => directoryBase,
             },
           },
         };

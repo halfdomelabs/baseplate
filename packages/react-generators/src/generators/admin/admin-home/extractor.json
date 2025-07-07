@@ -1,6 +1,17 @@
 {
   "name": "admin/admin-home",
   "templates": {
+    "root-index.tsx": {
+      "name": "root-index",
+      "type": "ts",
+      "fileOptions": {
+        "generatorTemplatePath": "root-index.tsx",
+        "kind": "instance"
+      },
+      "generator": "@baseplate-dev/react-generators#admin/admin-home",
+      "importMapProviders": {},
+      "variables": {}
+    },
     "routes/index.tsx": {
       "name": "home",
       "type": "ts",

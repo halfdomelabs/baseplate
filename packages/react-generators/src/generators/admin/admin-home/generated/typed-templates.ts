@@ -17,4 +17,14 @@ const home = createTsTemplateFile({
   variables: { TPL_ROUTE_PATH: {} },
 });
 
-export const ADMIN_ADMIN_HOME_TEMPLATES = { home };
+const rootIndex = createTsTemplateFile({
+  fileOptions: { generatorTemplatePath: 'root-index.tsx', kind: 'instance' },
+  importMapProviders: {},
+  name: 'root-index',
+  source: {
+    path: path.join(import.meta.dirname, '../templates/root-index.tsx'),
+  },
+  variables: {},
+});
+
+export const ADMIN_ADMIN_HOME_TEMPLATES = { rootIndex, home };
