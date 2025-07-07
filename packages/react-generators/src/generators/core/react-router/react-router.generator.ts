@@ -200,7 +200,7 @@ export const reactRouterGenerator = createGenerator({
                 variables: {
                   TPL_ADDITIONAL_ROUTER_OPTIONS:
                     rootContextFields.length > 0
-                      ? tsTemplate`{
+                      ? tsTemplate`
                     context: {
                       ${TsCodeUtils.mergeFragmentsPresorted(
                         sortedRootContextFields
@@ -214,7 +214,8 @@ export const reactRouterGenerator = createGenerator({
                            ${field.name}: undefined!,`,
                           ),
                       )}
-                  }`
+                    }
+                  `
                       : '',
                   TPL_COMPONENT_SETUP:
                     TsCodeUtils.mergeFragments(routerSetupFragments),
