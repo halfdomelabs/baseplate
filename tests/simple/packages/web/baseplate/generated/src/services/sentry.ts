@@ -4,7 +4,7 @@ import { ApolloError } from '@apollo/client';
 import * as Sentry from '@sentry/react';
 import { GraphQLError } from 'graphql';
 
-import { router } from '../app/app-routes';
+import { router } from '../app/router';
 import { config } from './config';
 
 function configureSentryScopeForGraphqlError(
