@@ -6,14 +6,15 @@ import {
 } from '@baseplate-dev/react-generators';
 import path from 'node:path';
 
-const auth0CallbackPage = createTsTemplateFile({
+const auth0Callback = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'pages',
   importMapProviders: {
     authHooksImports: authHooksImportsProvider,
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
   },
-  name: 'auth0-callback-page',
+  name: 'auth0-callback',
   source: {
     path: path.join(
       import.meta.dirname,
@@ -23,17 +24,32 @@ const auth0CallbackPage = createTsTemplateFile({
   variables: {},
 });
 
-const signupPage = createTsTemplateFile({
+const login = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
+  group: 'pages',
   importMapProviders: {
     reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
   },
-  name: 'signup-page',
+  name: 'login',
   source: {
-    path: path.join(import.meta.dirname, '../templates/routes/signup.tsx'),
+    path: path.join(import.meta.dirname, '../templates/routes/login.tsx'),
   },
   variables: {},
 });
 
-export const AUTH0_AUTH0_CALLBACK_TEMPLATES = { auth0CallbackPage, signupPage };
+const register = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'pages',
+  importMapProviders: {
+    reactComponentsImports: reactComponentsImportsProvider,
+  },
+  name: 'register',
+  source: {
+    path: path.join(import.meta.dirname, '../templates/routes/register.tsx'),
+  },
+  variables: {},
+});
+
+export const pagesGroup = { auth0Callback, login, register };
+
+export const AUTH0_AUTH0_PAGES_TEMPLATES = { pagesGroup };

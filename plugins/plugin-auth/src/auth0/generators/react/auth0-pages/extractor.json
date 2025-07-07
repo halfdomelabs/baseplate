@@ -1,11 +1,12 @@
 {
-  "name": "auth0/auth0-callback",
+  "name": "auth0/auth0-pages",
   "templates": {
     "routes/auth0-callback.tsx": {
-      "name": "auth0-callback-page",
+      "name": "auth0-callback",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-callback",
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-pages",
+      "group": "pages",
       "importMapProviders": {
         "authHooksImportsProvider": {
           "importName": "authHooksImportsProvider",
@@ -23,22 +24,34 @@
       "pathRootRelativePath": "{routes-root}/auth0-callback.tsx",
       "variables": {}
     },
-    "routes/signup.tsx": {
-      "name": "signup-page",
+    "routes/login.tsx": {
+      "name": "login",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-callback",
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-pages",
+      "group": "pages",
       "importMapProviders": {
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
-        },
-        "reactErrorImportsProvider": {
-          "importName": "reactErrorImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{routes-root}/signup.tsx",
+      "pathRootRelativePath": "{routes-root}/login.tsx",
+      "variables": {}
+    },
+    "routes/register.tsx": {
+      "name": "register",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-pages",
+      "group": "pages",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/register.tsx",
       "variables": {}
     }
   }

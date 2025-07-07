@@ -22,7 +22,7 @@ import type { Auth0PluginDefinition } from './schema/plugin-definition.js';
 
 import {
   auth0ApolloGenerator,
-  auth0CallbackGenerator,
+  auth0PagesGenerator,
   auth0ComponentsGenerator,
   auth0HooksGenerator,
   auth0ModuleGenerator,
@@ -84,7 +84,7 @@ export default createPlatformPluginExport({
           auth0Callback: reactRoutesGenerator({
             name: 'auth',
             children: {
-              auth: auth0CallbackGenerator({}),
+              auth: auth0PagesGenerator({}),
             },
           }),
         });
@@ -105,7 +105,7 @@ export default createPlatformPluginExport({
           auth0Callback: reactRoutesGenerator({
             name: 'auth',
             children: {
-              auth: auth0CallbackGenerator({}),
+              auth: auth0PagesGenerator({}),
             },
           }),
         });

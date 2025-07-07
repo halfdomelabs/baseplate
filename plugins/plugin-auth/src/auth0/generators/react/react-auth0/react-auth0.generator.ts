@@ -65,12 +65,21 @@ export const reactAuth0Generator = createGenerator({
           'auth0',
           tsTemplateWithImports(
             tsImportBuilder(['useAuth0']).from('@auth0/auth0-react'),
-          )`const { isLoading, error } = useAuth0()`,
+          )`const auth0 = useAuth0()`,
         );
         reactRouterConfig.routerBodyFragments.set(
           'auth0-gate',
-          tsTemplate`if (isLoading) return <${reactComponentsImports.ErrorableLoader.fragment()} error={error} />`,
+          tsTemplate`if (auth0.isLoading) return <${reactComponentsImports.ErrorableLoader.fragment()} error={auth0.error} />`,
         );
+        reactRouterConfig.rootContextFields.add({
+          name: 'auth0',
+          type: TsCodeUtils.typeImportFragment(
+            'Auth0ContextInterface',
+            '@auth0/auth0-react',
+          ),
+          optional: false,
+          routerProviderInitializer: tsTemplate`auth0`,
+        });
       },
     }),
     reactAppConfig: createGeneratorTask({
