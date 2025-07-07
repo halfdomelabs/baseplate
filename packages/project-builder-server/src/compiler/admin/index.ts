@@ -48,7 +48,7 @@ function buildNavigationLinks(
       type: 'link',
       label: titleizeCamel(section.name),
       icon: section.icon ?? 'MdHome',
-      path: `/${
+      path: `/admin/${
         FeatureUtils.getFeatureByIdOrThrow(
           projectDefinition,
           section.featureRef,
@@ -78,7 +78,7 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
           children: safeMerge(
             {
               adminRoute: reactRoutesGenerator({
-                name: '_admin',
+                name: 'admin',
                 children: {
                   adminLayout: adminLayoutGenerator({
                     links: [
@@ -86,7 +86,7 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
                         type: 'link',
                         label: 'Home',
                         icon: 'MdHome',
-                        path: '/',
+                        path: '/admin/',
                       },
                       ...buildNavigationLinks(builder),
                       ...(backendApp.enableBullQueue
@@ -95,7 +95,7 @@ function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
                               type: 'link' as const,
                               label: 'Queues',
                               icon: 'AiOutlineOrderedList',
-                              path: '/bull-board',
+                              path: '/admin/bull-board',
                             },
                           ]
                         : []),
