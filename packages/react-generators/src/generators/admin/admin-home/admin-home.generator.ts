@@ -1,9 +1,11 @@
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
+import { reactRoutesProvider } from '#src/providers/index.js';
 
 import { ADMIN_ADMIN_HOME_GENERATED } from './generated/index.js';
 
@@ -21,8 +23,15 @@ export const adminHomeGenerator = createGenerator({
         authHooksImports: authHooksImportsProvider,
         typescriptFile: typescriptFileProvider,
         paths: ADMIN_ADMIN_HOME_GENERATED.paths.provider,
+        reactRoutes: reactRoutesProvider,
       },
-      run({ authHooksImports, reactComponentsImports, typescriptFile, paths }) {
+      run({
+        authHooksImports,
+        reactComponentsImports,
+        typescriptFile,
+        paths,
+        reactRoutes,
+      }) {
         return {
           build: async (builder) => {
             await builder.apply(
@@ -32,6 +41,9 @@ export const adminHomeGenerator = createGenerator({
                 importMapProviders: {
                   authHooksImports,
                   reactComponentsImports,
+                },
+                variables: {
+                  TPL_ROUTE_PATH: quot(reactRoutes.getRouteFilePath()),
                 },
               }),
             );

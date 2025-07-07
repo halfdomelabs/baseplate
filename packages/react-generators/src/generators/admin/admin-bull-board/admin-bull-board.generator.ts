@@ -7,6 +7,7 @@ import {
   createGeneratorTask,
   createProviderTask,
 } from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import {
@@ -19,6 +20,7 @@ import {
   reactConfigProvider,
 } from '#src/generators/core/react-config/index.js';
 import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
+import { reactRoutesProvider } from '#src/providers/index.js';
 
 import { ADMIN_ADMIN_BULL_BOARD_GENERATED } from './generated/index.js';
 
@@ -48,6 +50,7 @@ export const adminBullBoardGenerator = createGenerator({
         reactApollo: reactApolloProvider,
         generatedGraphqlImports: generatedGraphqlImportsProvider,
         paths: ADMIN_ADMIN_BULL_BOARD_GENERATED.paths.provider,
+        reactRoutes: reactRoutesProvider,
       },
       run({
         typescriptFile,
@@ -57,7 +60,9 @@ export const adminBullBoardGenerator = createGenerator({
         reactApollo,
         generatedGraphqlImports,
         paths,
+        reactRoutes,
       }) {
+        const routeFilePath = reactRoutes.getRouteFilePath();
         return {
           build: async (builder) => {
             reactApollo.registerGqlFile(paths.bullBoard);
@@ -67,7 +72,9 @@ export const adminBullBoardGenerator = createGenerator({
                 template:
                   ADMIN_ADMIN_BULL_BOARD_GENERATED.templates.bullBoardPage,
                 destination: paths.bullBoardPage,
-                variables: {},
+                variables: {
+                  TPL_ROUTE_PATH: quot(routeFilePath),
+                },
                 importMapProviders: {
                   reactComponentsImports,
                   reactConfigImports,

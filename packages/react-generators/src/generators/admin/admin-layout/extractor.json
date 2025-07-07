@@ -14,7 +14,7 @@
       },
       "pathRootRelativePath": "{routes-root}/route.tsx",
       "projectExports": { "Route": {} },
-      "variables": {}
+      "variables": { "TPL_ROUTE_PATH": {} }
     },
     "src/components/admin-layout/admin-layout.tsx": {
       "name": "admin-layout",

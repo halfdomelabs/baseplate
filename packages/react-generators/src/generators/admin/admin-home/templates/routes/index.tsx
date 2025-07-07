@@ -6,7 +6,7 @@ import { useCurrentUser } from '%authHooksImports';
 import { ErrorableLoader } from '%reactComponentsImports';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/_admin/')({
+export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: HomePage,
 });
 

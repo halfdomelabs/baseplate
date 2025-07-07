@@ -32,7 +32,7 @@
         }
       },
       "pathRootRelativePath": "{routes-root}/bull-board/index.tsx",
-      "variables": {}
+      "variables": { "TPL_ROUTE_PATH": {} }
     }
   }
 }

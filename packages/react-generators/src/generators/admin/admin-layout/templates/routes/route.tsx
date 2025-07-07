@@ -7,7 +7,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { AdminLayout } from '../../components/admin-layout/admin-layout.js';
 
-export const Route = createFileRoute('/_admin')({
+export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: AuthenticatedAdminLayout,
 });
 

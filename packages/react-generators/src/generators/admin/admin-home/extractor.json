@@ -17,7 +17,7 @@
         }
       },
       "pathRootRelativePath": "{routes-root}/index.tsx",
-      "variables": {}
+      "variables": { "TPL_ROUTE_PATH": {} }
     }
   }
 }

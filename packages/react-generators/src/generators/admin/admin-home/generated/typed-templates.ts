@@ -14,7 +14,7 @@ const home = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/index.tsx'),
   },
-  variables: {},
+  variables: { TPL_ROUTE_PATH: {} },
 });
 
 export const ADMIN_ADMIN_HOME_TEMPLATES = { home };

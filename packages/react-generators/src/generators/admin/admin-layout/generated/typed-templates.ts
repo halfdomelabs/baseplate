@@ -29,7 +29,7 @@ const adminRoute = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/route.tsx'),
   },
-  variables: {},
+  variables: { TPL_ROUTE_PATH: {} },
 });
 
 export const ADMIN_ADMIN_LAYOUT_TEMPLATES = { adminRoute, adminLayout };
