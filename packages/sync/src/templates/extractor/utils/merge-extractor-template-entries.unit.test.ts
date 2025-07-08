@@ -39,7 +39,7 @@ describe('mergeExtractorTemplateEntries', () => {
     vol.reset();
   });
 
-  it('should update single generator with new template entries', async () => {
+  it('should merge new template entries into existing extractor config', async () => {
     // Arrange
     const originalConfig: ExtractorConfig = {
       name: 'test-generator',
@@ -47,7 +47,6 @@ describe('mergeExtractorTemplateEntries', () => {
         'existing-template': {
           sourceFile: 'existing-template.ts',
           type: 'ts',
-          description: 'Existing template',
         },
       },
       extractors: {},
@@ -64,25 +63,12 @@ describe('mergeExtractorTemplateEntries', () => {
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
         generator: '@test/package1#test-generator',
-        templateName: 'new-template-1',
+        templateName: 'new-template',
         sourceAbsolutePath:
-          '/packages/package1/generators/test/templates/new-template-1.ts',
+          '/packages/package1/generators/test/templates/new-template.ts',
         metadata: {
-          sourceFile: 'new-template-1.ts',
+          sourceFile: 'new-template.ts',
           type: 'ts',
-          description: 'New template 1',
-        },
-        instanceData: {},
-      },
-      {
-        generator: '@test/package1#test-generator',
-        templateName: 'new-template-2',
-        sourceAbsolutePath:
-          '/packages/package1/generators/test/templates/new-template-2.ts',
-        metadata: {
-          sourceFile: 'new-template-2.ts',
-          type: 'ts',
-          description: 'New template 2',
         },
         instanceData: {},
       },
@@ -99,17 +85,10 @@ describe('mergeExtractorTemplateEntries', () => {
       'existing-template': {
         sourceFile: 'existing-template.ts',
         type: 'ts',
-        description: 'Existing template',
       },
-      'new-template-1': {
-        sourceFile: 'new-template-1.ts',
+      'new-template': {
+        sourceFile: 'new-template.ts',
         type: 'ts',
-        description: 'New template 1',
-      },
-      'new-template-2': {
-        sourceFile: 'new-template-2.ts',
-        type: 'ts',
-        description: 'New template 2',
       },
     });
   });
@@ -118,23 +97,13 @@ describe('mergeExtractorTemplateEntries', () => {
     // Arrange
     const config1: ExtractorConfig = {
       name: 'generator-1',
-      templates: {
-        'template-1': {
-          sourceFile: 'template-1.ts',
-          type: 'ts',
-        },
-      },
+      templates: {},
       extractors: {},
     };
 
     const config2: ExtractorConfig = {
       name: 'generator-2',
-      templates: {
-        'template-2': {
-          sourceFile: 'template-2.ts',
-          type: 'js',
-        },
-      },
+      templates: {},
       extractors: {},
     };
 
@@ -184,14 +153,11 @@ describe('mergeExtractorTemplateEntries', () => {
       '@test/package2#generator-2',
     );
 
-    expect(updatedConfig1?.config.templates).toHaveProperty('template-1');
     expect(updatedConfig1?.config.templates).toHaveProperty('new-ts-template');
-
-    expect(updatedConfig2?.config.templates).toHaveProperty('template-2');
     expect(updatedConfig2?.config.templates).toHaveProperty('new-js-template');
   });
 
-  it('should overwrite existing template entries with same path', async () => {
+  it('should overwrite existing template entries with same name', async () => {
     // Arrange
     const originalConfig: ExtractorConfig = {
       name: 'test-generator',
@@ -251,7 +217,6 @@ describe('mergeExtractorTemplateEntries', () => {
         'ts-extractor': {
           config: { option: 'value' },
         },
-        instanceData: {},
       },
     };
 
@@ -291,184 +256,6 @@ describe('mergeExtractorTemplateEntries', () => {
     });
   });
 
-  it('should dedupe templates by name when same name exists with different path', async () => {
-    // Arrange
-    const originalConfig: ExtractorConfig = {
-      name: 'test-generator',
-      templates: {
-        'old-path/my-template': {
-          sourceFile: 'my-template.ts',
-          type: 'ts',
-          description: 'Original template at old path',
-        },
-        'other-template': {
-          sourceFile: 'other-template.ts',
-          type: 'js',
-          description: 'Should be preserved',
-        },
-      },
-      extractors: {},
-    };
-
-    vol.fromJSON({
-      '/packages/package1/generators/test/extractor.json':
-        JSON.stringify(originalConfig),
-    });
-
-    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
-    const context = await createMockContext(configLookup);
-
-    const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
-      {
-        generator: '@test/package1#test-generator',
-        templateName: 'my-template',
-        sourceAbsolutePath:
-          '/packages/package1/generators/test/templates/new-path/my-template.ts',
-        metadata: {
-          sourceFile: 'my-template.ts',
-          type: 'ts',
-          description: 'Updated template at new path',
-        },
-        instanceData: {},
-      },
-    ];
-
-    // Act
-    mergeExtractorTemplateEntries(metadataEntries, context);
-
-    // Assert
-    const updatedConfig = context.configLookup.getExtractorConfig(
-      '@test/package1#test-generator',
-    );
-
-    // Should only have 2 templates: the new one and the preserved one
-    expect(Object.keys(updatedConfig?.config.templates ?? {})).toEqual([
-      'new-path/my-template',
-      'other-template',
-    ]);
-
-    // The old template with same name should be removed
-    expect(updatedConfig?.config.templates).not.toHaveProperty(
-      'old-path/my-template',
-    );
-
-    // The new template should be present with updated content
-    expect(updatedConfig?.config.templates['new-path/my-template']).toEqual({
-      sourceFile: 'my-template.ts',
-      type: 'ts',
-      description: 'Updated template at new path',
-    });
-
-    // The other template should be preserved
-    expect(updatedConfig?.config.templates['other-template']).toEqual({
-      sourceFile: 'other-template.ts',
-      type: 'js',
-      description: 'Should be preserved',
-    });
-  });
-
-  it('should handle multiple templates with same names being replaced', async () => {
-    // Arrange
-    const originalConfig: ExtractorConfig = {
-      name: 'test-generator',
-      templates: {
-        'old-path/template-a': {
-          sourceFile: 'template-a.ts',
-          type: 'ts',
-          description: 'Old template A',
-        },
-        'old-path/template-b': {
-          sourceFile: 'template-b.ts',
-          type: 'js',
-          description: 'Old template B',
-        },
-        'keep-me': {
-          sourceFile: 'keep-me.ts',
-          type: 'ts',
-          description: 'Should be kept',
-        },
-      },
-      extractors: {},
-    };
-
-    vol.fromJSON({
-      '/packages/package1/generators/test/extractor.json':
-        JSON.stringify(originalConfig),
-    });
-
-    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
-    const context = await createMockContext(configLookup);
-
-    const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
-      {
-        generator: '@test/package1#test-generator',
-        templateName: 'template-a',
-        sourceAbsolutePath:
-          '/packages/package1/generators/test/templates/new-path/template-a.ts',
-        metadata: {
-          sourceFile: 'template-a.ts',
-          type: 'ts',
-          description: 'New template A',
-        },
-        instanceData: {},
-      },
-      {
-        generator: '@test/package1#test-generator',
-        templateName: 'template-b',
-        sourceAbsolutePath:
-          '/packages/package1/generators/test/templates/new-path/template-b.ts',
-        metadata: {
-          sourceFile: 'template-b.ts',
-          type: 'js',
-          description: 'New template B',
-        },
-        instanceData: {},
-      },
-    ];
-
-    // Act
-    mergeExtractorTemplateEntries(metadataEntries, context);
-
-    // Assert
-    const updatedConfig = context.configLookup.getExtractorConfig(
-      '@test/package1#test-generator',
-    );
-
-    // Should have 3 templates: 2 new ones and 1 preserved
-    expect(Object.keys(updatedConfig?.config.templates ?? {})).toEqual([
-      'keep-me',
-      'new-path/template-a',
-      'new-path/template-b',
-    ]);
-
-    // Old templates should be removed
-    expect(updatedConfig?.config.templates).not.toHaveProperty(
-      'old-path/template-a',
-    );
-    expect(updatedConfig?.config.templates).not.toHaveProperty(
-      'old-path/template-b',
-    );
-
-    // New templates should be present
-    expect(updatedConfig?.config.templates['new-path/template-a']).toEqual({
-      sourceFile: 'template-a.ts',
-      type: 'ts',
-      description: 'New template A',
-    });
-    expect(updatedConfig?.config.templates['new-path/template-b']).toEqual({
-      sourceFile: 'template-b.ts',
-      type: 'js',
-      description: 'New template B',
-    });
-
-    // Existing template with different name should be preserved
-    expect(updatedConfig?.config.templates['keep-me']).toEqual({
-      name: 'keep-me',
-      type: 'ts',
-      description: 'Should be kept',
-    });
-  });
-
   it('should handle empty metadata entries array', async () => {
     // Arrange
     const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
@@ -478,5 +265,31 @@ describe('mergeExtractorTemplateEntries', () => {
     expect(() => {
       mergeExtractorTemplateEntries([], context);
     }).not.toThrow();
+  });
+
+  it('should throw error when generator config is not found', async () => {
+    // Arrange
+    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
+    const context = await createMockContext(configLookup);
+
+    const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
+      {
+        generator: '@test/nonexistent#generator',
+        templateName: 'template',
+        sourceAbsolutePath: '/path/to/template.ts',
+        metadata: {
+          sourceFile: 'template.ts',
+          type: 'ts',
+        },
+        instanceData: {},
+      },
+    ];
+
+    // Act & Assert
+    expect(() => {
+      mergeExtractorTemplateEntries(metadataEntries, context);
+    }).toThrow(
+      "No 'extractor.json' found for generator: @test/nonexistent#generator",
+    );
   });
 });

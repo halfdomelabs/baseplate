@@ -21,14 +21,14 @@ describe('indexTemplateConfigs', () => {
       '/packages/pkg1/generator1/extractor.json': JSON.stringify({
         name: 'test-generator-1',
         templates: {
-          'template1.ts': { name: 'template1', type: 'ts' },
-          'template2.ts': { name: 'template2', type: 'ts' },
+          template1: { sourceFile: 'template1.ts', type: 'ts' },
+          template2: { sourceFile: 'template2.ts', type: 'ts' },
         },
       }),
       '/packages/pkg1/generator2/extractor.json': JSON.stringify({
         name: 'test-generator-2',
         templates: {
-          'template3.ts': { name: 'template3', type: 'ts' },
+          template3: { sourceFile: 'template3.ts', type: 'ts' },
         },
       }),
       '/packages/pkg1/providers/providers.json': JSON.stringify({
@@ -42,9 +42,9 @@ describe('indexTemplateConfigs', () => {
       '/packages/pkg2/generator3/extractor.json': JSON.stringify({
         name: 'test-generator-3',
         templates: {
-          'template4.ts': { name: 'template4', type: 'ts' },
-          'template5.ts': { name: 'template5', type: 'ts' },
-          'template6.ts': { name: 'template6', type: 'ts' },
+          template4: { sourceFile: 'template4.ts', type: 'ts' },
+          template5: { sourceFile: 'template5.ts', type: 'ts' },
+          template6: { sourceFile: 'template6.ts', type: 'ts' },
         },
       }),
       '/packages/pkg2/providers/providers.json': JSON.stringify({
@@ -73,8 +73,8 @@ describe('indexTemplateConfigs', () => {
       config: {
         name: 'test-generator-1',
         templates: {
-          'template1.ts': { name: 'template1', type: 'ts' },
-          'template2.ts': { name: 'template2', type: 'ts' },
+          template1: { sourceFile: 'template1.ts', type: 'ts' },
+          template2: { sourceFile: 'template2.ts', type: 'ts' },
         },
       },
       generatorDirectory: '/packages/pkg1/generator1',
@@ -87,7 +87,7 @@ describe('indexTemplateConfigs', () => {
       config: {
         name: 'test-generator-2',
         templates: {
-          'template3.ts': { name: 'template3', type: 'ts' },
+          template3: { sourceFile: 'template3.ts', type: 'ts' },
         },
       },
       generatorDirectory: '/packages/pkg1/generator2',
@@ -100,9 +100,9 @@ describe('indexTemplateConfigs', () => {
       config: {
         name: 'test-generator-3',
         templates: {
-          'template4.ts': { name: 'template4', type: 'ts' },
-          'template5.ts': { name: 'template5', type: 'ts' },
-          'template6.ts': { name: 'template6', type: 'ts' },
+          template4: { sourceFile: 'template4.ts', type: 'ts' },
+          template5: { sourceFile: 'template5.ts', type: 'ts' },
+          template6: { sourceFile: 'template6.ts', type: 'ts' },
         },
       },
       generatorDirectory: '/packages/pkg2/generator3',
@@ -151,7 +151,7 @@ describe('indexTemplateConfigs', () => {
       '/packages/pkg1/generator1/extractor.json': JSON.stringify({
         name: 'test-generator-1',
         templates: {
-          'template1.ts': { name: 'template1', type: 'ts' },
+          template1: { sourceFile: 'template1.ts', type: 'ts' },
         },
       }),
     });
@@ -230,7 +230,7 @@ describe('indexTemplateConfigs', () => {
         JSON.stringify({
           name: 'auth/auth-module',
           templates: {
-            'auth.service.ts': { name: 'auth-service', type: 'ts' },
+            'auth-service': { sourceFile: 'auth.service.ts', type: 'ts' },
           },
         }),
       '/packages/nested/providers/deep/nested/providers.json': JSON.stringify({
