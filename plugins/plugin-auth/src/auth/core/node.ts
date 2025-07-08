@@ -20,7 +20,7 @@ import {
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
-import { authModuleGenerator } from '../generators/index.js';
+import { authModuleGenerator, reactAuthGenerator } from './generators/index.js';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -68,6 +68,7 @@ export default createPlatformPluginExport({
       appType: webAppEntryType,
       compile: ({ appCompiler }) => {
         appCompiler.addRootChildren({
+          reactAuth: reactAuthGenerator({}),
           authIdentify: authIdentifyGenerator({}),
           authHooks: placeholderAuthHooksGenerator({}),
         });
@@ -78,6 +79,7 @@ export default createPlatformPluginExport({
       appType: adminAppEntryType,
       compile: ({ appCompiler }) => {
         appCompiler.addRootChildren({
+          reactAuth: reactAuthGenerator({}),
           authIdentify: authIdentifyGenerator({}),
           authHooks: placeholderAuthHooksGenerator({}),
         });
