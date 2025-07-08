@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { readTemplateMetadataFiles } from './read-template-metadata-files.js';
+import { readTemplateInfoFiles } from './read-template-info-files.js';
 
 vi.mock('node:fs');
 vi.mock('node:fs/promises');
@@ -56,7 +56,7 @@ describe('readTemplateMetadataFiles', () => {
     vol.utimesSync('/project/config/config.ts', now, now);
 
     // Act
-    const result = await readTemplateMetadataFiles('/project');
+    const result = await readTemplateInfoFiles('/project');
 
     // Assert
     expect(result).toHaveLength(3);
@@ -98,7 +98,7 @@ describe('readTemplateMetadataFiles', () => {
     });
 
     // Act
-    const result = await readTemplateMetadataFiles('/empty-project');
+    const result = await readTemplateInfoFiles('/empty-project');
 
     // Assert
     expect(result).toEqual([]);
@@ -121,7 +121,7 @@ describe('readTemplateMetadataFiles', () => {
     });
 
     // Act & Assert
-    await expect(readTemplateMetadataFiles('/project')).rejects.toThrow(
+    await expect(readTemplateInfoFiles('/project')).rejects.toThrow(
       'Could not find source file (missing.ts) specified in metadata file: /project/.template-metadata.json',
     );
   });
@@ -133,7 +133,7 @@ describe('readTemplateMetadataFiles', () => {
     });
 
     // Act & Assert
-    await expect(readTemplateMetadataFiles('/project')).rejects.toThrow();
+    await expect(readTemplateInfoFiles('/project')).rejects.toThrow();
   });
 
   it('should validate metadata schema', async () => {
@@ -153,7 +153,7 @@ describe('readTemplateMetadataFiles', () => {
     });
 
     // Act & Assert
-    await expect(readTemplateMetadataFiles('/project')).rejects.toThrow(
+    await expect(readTemplateInfoFiles('/project')).rejects.toThrow(
       'Must be kebab case',
     );
   });
@@ -187,7 +187,7 @@ describe('readTemplateMetadataFiles', () => {
     });
 
     // Act
-    const result = await readTemplateMetadataFiles('/project');
+    const result = await readTemplateInfoFiles('/project');
 
     // Assert
     expect(result).toHaveLength(2);
@@ -230,7 +230,7 @@ describe('readTemplateMetadataFiles', () => {
     });
 
     // Act
-    const result = await readTemplateMetadataFiles('/project');
+    const result = await readTemplateInfoFiles('/project');
 
     // Assert
     expect(result).toHaveLength(3);

@@ -19,7 +19,6 @@ describe('mergeExtractorTemplateEntries', () => {
     ['@test/package1', '/packages/package1'],
     ['@test/package2', '/packages/package2'],
   ]);
-  const mockFileIdMap = new Map<string, string>([]);
 
   const createMockContext = async (
     configLookup: TemplateExtractorConfigLookup,
@@ -46,10 +45,11 @@ describe('mergeExtractorTemplateEntries', () => {
       name: 'test-generator',
       templates: {
         'existing-template': {
-          name: 'existing-template',
+          sourceFile: 'existing-template.ts',
           type: 'ts',
           description: 'Existing template',
         },
+        instanceData: {},
       },
       extractors: {},
     };
@@ -59,34 +59,33 @@ describe('mergeExtractorTemplateEntries', () => {
         JSON.stringify(originalConfig),
     });
 
-    const configLookup = new TemplateExtractorConfigLookup(
-      mockPackageMap,
-      mockFileIdMap,
-    );
+    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
     const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
         generator: '@test/package1#test-generator',
-        generatorTemplatePath: 'new-template-1',
+        templateName: 'new-template-1',
         sourceAbsolutePath:
           '/packages/package1/generators/test/templates/new-template-1.ts',
         metadata: {
-          name: 'new-template-1',
+          sourceFile: 'new-template-1.ts',
           type: 'ts',
           description: 'New template 1',
         },
+        instanceData: {},
       },
       {
         generator: '@test/package1#test-generator',
-        generatorTemplatePath: 'new-template-2',
+        templateName: 'new-template-2',
         sourceAbsolutePath:
           '/packages/package1/generators/test/templates/new-template-2.ts',
         metadata: {
-          name: 'new-template-2',
+          sourceFile: 'new-template-2.ts',
           type: 'ts',
           description: 'New template 2',
         },
+        instanceData: {},
       },
     ];
 
@@ -99,17 +98,17 @@ describe('mergeExtractorTemplateEntries', () => {
     );
     expect(updatedConfig?.config.templates).toEqual({
       'existing-template': {
-        name: 'existing-template',
+        sourceFile: 'existing-template.ts',
         type: 'ts',
         description: 'Existing template',
       },
       'new-template-1': {
-        name: 'new-template-1',
+        sourceFile: 'new-template-1.ts',
         type: 'ts',
         description: 'New template 1',
       },
       'new-template-2': {
-        name: 'new-template-2',
+        sourceFile: 'new-template-2.ts',
         type: 'ts',
         description: 'New template 2',
       },
@@ -122,9 +121,10 @@ describe('mergeExtractorTemplateEntries', () => {
       name: 'generator-1',
       templates: {
         'template-1': {
-          name: 'template-1',
+          sourceFile: 'template-1.ts',
           type: 'ts',
         },
+        instanceData: {},
       },
       extractors: {},
     };
@@ -133,9 +133,10 @@ describe('mergeExtractorTemplateEntries', () => {
       name: 'generator-2',
       templates: {
         'template-2': {
-          name: 'template-2',
+          sourceFile: 'template-2.ts',
           type: 'js',
         },
+        instanceData: {},
       },
       extractors: {},
     };
@@ -147,32 +148,31 @@ describe('mergeExtractorTemplateEntries', () => {
         JSON.stringify(config2),
     });
 
-    const configLookup = new TemplateExtractorConfigLookup(
-      mockPackageMap,
-      mockFileIdMap,
-    );
+    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
     const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
         generator: '@test/package1#generator-1',
-        generatorTemplatePath: 'new-ts-template',
+        templateName: 'new-ts-template',
         sourceAbsolutePath:
           '/packages/package1/generators/gen1/templates/new-ts-template.ts',
         metadata: {
-          name: 'new-ts-template',
+          sourceFile: 'new-ts-template.ts',
           type: 'ts',
         },
+        instanceData: {},
       },
       {
         generator: '@test/package2#generator-2',
-        generatorTemplatePath: 'new-js-template',
+        templateName: 'new-js-template',
         sourceAbsolutePath:
           '/packages/package2/generators/gen2/templates/new-js-template.ts',
         metadata: {
-          name: 'new-js-template',
+          sourceFile: 'new-js-template.js',
           type: 'js',
         },
+        instanceData: {},
       },
     ];
 
@@ -200,10 +200,11 @@ describe('mergeExtractorTemplateEntries', () => {
       name: 'test-generator',
       templates: {
         'existing-template': {
-          name: 'existing-template',
+          sourceFile: 'existing-template.ts',
           type: 'ts',
           description: 'Original description',
         },
+        instanceData: {},
       },
       extractors: {},
     };
@@ -213,23 +214,21 @@ describe('mergeExtractorTemplateEntries', () => {
         JSON.stringify(originalConfig),
     });
 
-    const configLookup = new TemplateExtractorConfigLookup(
-      mockPackageMap,
-      mockFileIdMap,
-    );
+    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
     const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
         generator: '@test/package1#test-generator',
-        generatorTemplatePath: 'existing-template',
+        templateName: 'existing-template',
         sourceAbsolutePath:
           '/packages/package1/generators/test/templates/existing-template.ts',
         metadata: {
-          name: 'existing-template',
+          sourceFile: 'existing-template.ts',
           type: 'ts',
           description: 'Updated description',
         },
+        instanceData: {},
       },
     ];
 
@@ -241,7 +240,7 @@ describe('mergeExtractorTemplateEntries', () => {
       '@test/package1#test-generator',
     );
     expect(updatedConfig?.config.templates['existing-template']).toEqual({
-      name: 'existing-template',
+      sourceFile: 'existing-template.ts',
       type: 'ts',
       description: 'Updated description',
     });
@@ -256,6 +255,7 @@ describe('mergeExtractorTemplateEntries', () => {
         'ts-extractor': {
           config: { option: 'value' },
         },
+        instanceData: {},
       },
     };
 
@@ -264,22 +264,20 @@ describe('mergeExtractorTemplateEntries', () => {
         JSON.stringify(originalConfig),
     });
 
-    const configLookup = new TemplateExtractorConfigLookup(
-      mockPackageMap,
-      mockFileIdMap,
-    );
+    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
     const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
         generator: '@test/package1#test-generator',
-        generatorTemplatePath: 'new-template',
+        templateName: 'new-template',
         sourceAbsolutePath:
           '/packages/package1/generators/test/templates/new-template.ts',
         metadata: {
-          name: 'new-template',
+          sourceFile: 'new-template.ts',
           type: 'ts',
         },
+        instanceData: {},
       },
     ];
 
@@ -303,15 +301,16 @@ describe('mergeExtractorTemplateEntries', () => {
       name: 'test-generator',
       templates: {
         'old-path/my-template': {
-          name: 'my-template',
+          sourceFile: 'my-template.ts',
           type: 'ts',
           description: 'Original template at old path',
         },
         'other-template': {
-          name: 'other-template',
+          sourceFile: 'other-template.ts',
           type: 'js',
           description: 'Should be preserved',
         },
+        instanceData: {},
       },
       extractors: {},
     };
@@ -321,23 +320,21 @@ describe('mergeExtractorTemplateEntries', () => {
         JSON.stringify(originalConfig),
     });
 
-    const configLookup = new TemplateExtractorConfigLookup(
-      mockPackageMap,
-      mockFileIdMap,
-    );
+    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
     const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
         generator: '@test/package1#test-generator',
-        generatorTemplatePath: 'new-path/my-template',
+        templateName: 'my-template',
         sourceAbsolutePath:
           '/packages/package1/generators/test/templates/new-path/my-template.ts',
         metadata: {
-          name: 'my-template',
+          sourceFile: 'my-template.ts',
           type: 'ts',
           description: 'Updated template at new path',
         },
+        instanceData: {},
       },
     ];
 
@@ -362,14 +359,14 @@ describe('mergeExtractorTemplateEntries', () => {
 
     // The new template should be present with updated content
     expect(updatedConfig?.config.templates['new-path/my-template']).toEqual({
-      name: 'my-template',
+      sourceFile: 'my-template.ts',
       type: 'ts',
       description: 'Updated template at new path',
     });
 
     // The other template should be preserved
     expect(updatedConfig?.config.templates['other-template']).toEqual({
-      name: 'other-template',
+      sourceFile: 'other-template.ts',
       type: 'js',
       description: 'Should be preserved',
     });
@@ -381,12 +378,12 @@ describe('mergeExtractorTemplateEntries', () => {
       name: 'test-generator',
       templates: {
         'old-path/template-a': {
-          name: 'template-a',
+          sourceFile: 'template-a.ts',
           type: 'ts',
           description: 'Old template A',
         },
         'old-path/template-b': {
-          name: 'template-b',
+          sourceFile: 'template-b.ts',
           type: 'js',
           description: 'Old template B',
         },
@@ -395,6 +392,7 @@ describe('mergeExtractorTemplateEntries', () => {
           type: 'ts',
           description: 'Should be kept',
         },
+        instanceData: {},
       },
       extractors: {},
     };
@@ -404,34 +402,33 @@ describe('mergeExtractorTemplateEntries', () => {
         JSON.stringify(originalConfig),
     });
 
-    const configLookup = new TemplateExtractorConfigLookup(
-      mockPackageMap,
-      mockFileIdMap,
-    );
+    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
     const context = await createMockContext(configLookup);
 
     const metadataEntries: TemplateFileExtractorMetadataEntry[] = [
       {
         generator: '@test/package1#test-generator',
-        generatorTemplatePath: 'new-path/template-a',
+        templateName: 'template-a',
         sourceAbsolutePath:
           '/packages/package1/generators/test/templates/new-path/template-a.ts',
         metadata: {
-          name: 'template-a',
+          sourceFile: 'template-a.ts',
           type: 'ts',
           description: 'New template A',
         },
+        instanceData: {},
       },
       {
         generator: '@test/package1#test-generator',
-        generatorTemplatePath: 'new-path/template-b',
+        templateName: 'template-b',
         sourceAbsolutePath:
           '/packages/package1/generators/test/templates/new-path/template-b.ts',
         metadata: {
-          name: 'template-b',
+          sourceFile: 'template-b.ts',
           type: 'js',
           description: 'New template B',
         },
+        instanceData: {},
       },
     ];
 
@@ -460,12 +457,12 @@ describe('mergeExtractorTemplateEntries', () => {
 
     // New templates should be present
     expect(updatedConfig?.config.templates['new-path/template-a']).toEqual({
-      name: 'template-a',
+      sourceFile: 'template-a.ts',
       type: 'ts',
       description: 'New template A',
     });
     expect(updatedConfig?.config.templates['new-path/template-b']).toEqual({
-      name: 'template-b',
+      sourceFile: 'template-b.ts',
       type: 'js',
       description: 'New template B',
     });
@@ -480,10 +477,7 @@ describe('mergeExtractorTemplateEntries', () => {
 
   it('should handle empty metadata entries array', async () => {
     // Arrange
-    const configLookup = new TemplateExtractorConfigLookup(
-      mockPackageMap,
-      mockFileIdMap,
-    );
+    const configLookup = new TemplateExtractorConfigLookup(mockPackageMap);
     const context = await createMockContext(configLookup);
 
     // Act & Assert - should not throw

@@ -9,7 +9,7 @@ import type {
   TemplateFileExtractorSourceFile,
 } from './runner/template-file-extractor.js';
 
-import { readTemplateMetadataFiles } from '../metadata/read-template-metadata-files.js';
+import { readTemplateInfoFiles } from '../metadata/read-template-info-files.js';
 import { TemplateExtractorConfigLookup } from './configs/template-extractor-config-lookup.js';
 import { tryCreateExtractorJson } from './configs/try-create-extractor-json.js';
 import { initializeTemplateExtractorPlugins } from './runner/initialize-template-extractor-plugins.js';
@@ -47,8 +47,7 @@ export async function runTemplateFileExtractors(
   logger: Logger,
   options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
-  const templateMetadataFiles =
-    await readTemplateMetadataFiles(outputDirectory);
+  const templateMetadataFiles = await readTemplateInfoFiles(outputDirectory);
 
   const configLookup = new TemplateExtractorConfigLookup(generatorPackageMap);
   await configLookup.initialize();

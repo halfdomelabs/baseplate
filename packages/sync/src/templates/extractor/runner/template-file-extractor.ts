@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { TemplateMetadataFileEntry } from '#src/templates/metadata/read-template-metadata-files.js';
+import type { TemplateMetadataFileEntry } from '#src/templates/metadata/read-template-info-files.js';
 
 import type {
   TemplateConfig,

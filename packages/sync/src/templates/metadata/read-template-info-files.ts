@@ -24,7 +24,7 @@ export interface TemplateMetadataFileEntry {
  * @param outputDirectory - The directory to read templates info files from.
  * @returns An array of template metadata file entries.
  */
-export async function readTemplateMetadataFiles(
+export async function readTemplateInfoFiles(
   outputDirectory: string,
 ): Promise<TemplateMetadataFileEntry[]> {
   const templateInfoFiles = await globby(
