@@ -20,6 +20,10 @@ interface ExtractTemplatesOptions {
   skipClean?: boolean;
 }
 
+interface GenerateTemplatesOptions {
+  skipClean?: boolean;
+}
+
 /**
  * Adds template management commands to the program.
  * @param program - The program to add the commands to.
@@ -79,6 +83,27 @@ export function addTemplatesCommand(program: Command): void {
         options: ExtractTemplatesOptions,
       ) => {
         await handleExtractTemplates(directory, app, options);
+      },
+    );
+
+  // Templates generate subcommand
+  templatesCommand
+    .command('generate <directory> <app>')
+    .description(
+      'Generate template files from existing extractor.json configurations without running extraction',
+    )
+    .option(
+      '--skip-clean',
+      'Skip cleaning the output directories (templates and generated)',
+      false,
+    )
+    .action(
+      async (
+        directory: string,
+        app: string,
+        options: GenerateTemplatesOptions,
+      ) => {
+        await handleGenerateTemplates(directory, app, options);
       },
     );
 }
@@ -202,6 +227,29 @@ async function handleExtractTemplates(
     logger,
     {
       autoGenerateExtractor: options.autoGenerateExtractor,
+      skipClean: options.skipClean,
+    },
+  );
+}
+
+async function handleGenerateTemplates(
+  directory: string,
+  app: string,
+  options: GenerateTemplatesOptions,
+): Promise<void> {
+  const { generateTemplateFilesForProject } = await import(
+    '@baseplate-dev/project-builder-server/template-extractor'
+  );
+
+  const resolvedDirectory = expandPathWithTilde(directory);
+  const defaultPlugins = await getDefaultPlugins(logger);
+
+  await generateTemplateFilesForProject(
+    resolvedDirectory,
+    app,
+    defaultPlugins,
+    logger,
+    {
       skipClean: options.skipClean,
     },
   );

@@ -1,4 +1,5 @@
 import { groupBy, uniq } from 'es-toolkit';
+import { z } from 'zod';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
@@ -25,6 +26,13 @@ export interface RunTemplateFileExtractorsOptions {
    * Whether to auto-generate extractor.json files for generators that don't have one.
    */
   autoGenerateExtractor?: boolean;
+  /**
+   * Whether to skip cleaning the output directories (templates and generated).
+   */
+  skipClean?: boolean;
+}
+
+export interface GenerateTemplateFilesOptions {
   /**
    * Whether to skip cleaning the output directories (templates and generated).
    */
@@ -198,4 +206,121 @@ export async function runTemplateFileExtractors(
   if (!options?.skipClean) {
     await cleanupUnusedTemplateFiles(generatorNames, context);
   }
+}
+
+/**
+ * Generate template files from existing extractor.json configurations without running extraction
+ *
+ * @param templateFileExtractors - The template file extractors to use for generation
+ * @param outputDirectory - The output directory (not used for generation but needed for context)
+ * @param generatorPackageMap - The map of package names with generators to package paths
+ * @param logger - The logger to use
+ * @param options - The options to use
+ */
+export async function generateTemplateFiles(
+  templateFileExtractors: AnyTemplateFileExtractor[],
+  outputDirectory: string,
+  generatorPackageMap: Map<string, string>,
+  logger: Logger,
+  options?: GenerateTemplateFilesOptions,
+): Promise<void> {
+  // Initialize config lookup from existing extractor.json files
+  const configLookup = new TemplateExtractorConfigLookup(generatorPackageMap);
+  await configLookup.initialize();
+
+  // Initialize plugins
+  const fileContainer = new TemplateExtractorFileContainer([
+    ...generatorPackageMap.values(),
+  ]);
+  const initializerContext = new TemplateExtractorContext({
+    configLookup,
+    logger,
+    outputDirectory,
+    plugins: new Map(),
+    fileContainer,
+  });
+  const { hooks, pluginMap } = await initializeTemplateExtractorPlugins({
+    templateExtractors: templateFileExtractors,
+    context: initializerContext,
+  });
+
+  async function runHooks(hook: TemplateExtractorHook): Promise<void> {
+    for (const hookFn of hooks[hook].toReversed()) {
+      await hookFn();
+    }
+  }
+
+  // Create the context for the extractors
+  const context = new TemplateExtractorContext({
+    configLookup,
+    logger,
+    outputDirectory,
+    plugins: pluginMap,
+    fileContainer,
+  });
+
+  // Get all generator configurations and group them by template type
+  const allGeneratorNames: string[] = [];
+  const generatorsByType = new Map<string, string[]>();
+
+  // Get all unique template types from all extractors
+  const allTemplateTypes = new Set<string>();
+  for (const extractor of templateFileExtractors) {
+    allTemplateTypes.add(extractor.name);
+  }
+
+  // For each template type, get all generators that have templates of that type
+  for (const templateType of allTemplateTypes) {
+    const generatorConfigs = configLookup.getGeneratorConfigsForExtractorType(
+      templateType,
+      // Use a simple passthrough schema since we just need the type
+      z.object({ type: z.literal(templateType) }).passthrough(),
+    );
+
+    const generatorNames = generatorConfigs
+      .filter((config) => Object.keys(config.templates).length > 0)
+      .map((config) => config.generatorName);
+
+    if (generatorNames.length > 0) {
+      generatorsByType.set(templateType, generatorNames);
+    }
+
+    // Add generator names to the complete list
+    for (const name of generatorNames) {
+      if (!allGeneratorNames.includes(name)) {
+        allGeneratorNames.push(name);
+      }
+    }
+  }
+
+  // Generate files for each extractor type
+  for (const [templateType, generatorNames] of generatorsByType) {
+    const extractor = templateFileExtractors.find(
+      (e) => e.name === templateType,
+    );
+    if (!extractor) {
+      logger.warn(
+        `No extractor found for template type: ${templateType}, skipping...`,
+      );
+      continue;
+    }
+
+    logger.info(
+      `Generating files for ${templateType} templates from generators: ${generatorNames.join(', ')}`,
+    );
+
+    const api = new TemplateExtractorApi(context, templateType);
+    await extractor.writeGeneratedFiles(generatorNames, context, api);
+  }
+
+  await runHooks('afterWrite');
+
+  // Commit the file changes once all the extractors and plugins have written their files
+  await fileContainer.commit();
+
+  if (!options?.skipClean) {
+    await cleanupUnusedTemplateFiles(allGeneratorNames, context);
+  }
+
+  logger.info('Template file generation completed');
 }
