@@ -6,7 +6,7 @@ import {
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
-import { reactRoutesGenerator } from '@baseplate-dev/react-generators';
+import { placeholderAuthHooksGenerator } from '@baseplate-dev/react-generators';
 
 import {
   createCommonBackendAuthModuleGenerators,
@@ -14,15 +14,9 @@ import {
   createCommonWebAuthGenerators,
 } from '#src/common/index.js';
 
-import type { Auth0PluginDefinition } from './schema/plugin-definition.js';
+import type { PlaceholderAuthPluginDefinition } from './schema/plugin-definition.js';
 
-import {
-  auth0ApolloGenerator,
-  auth0HooksGenerator,
-  auth0ModuleGenerator,
-  auth0PagesGenerator,
-  reactAuth0Generator,
-} from '../generators/index.js';
+import { authModuleGenerator, reactAuthGenerator } from './generators/index.js';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -34,18 +28,15 @@ export default createPlatformPluginExport({
     appCompiler.registerAppCompiler({
       pluginId,
       appType: backendAppEntryType,
-      compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
+      compile: ({ projectDefinition, appCompiler }) => {
         const auth = PluginUtils.configByIdOrThrow(
           projectDefinition,
           pluginId,
-        ) as Auth0PluginDefinition;
+        ) as PlaceholderAuthPluginDefinition;
 
         appCompiler.addChildrenToFeature(auth.authFeatureRef, {
           ...createCommonBackendAuthModuleGenerators({ roles: auth.roles }),
-          auth0Module: auth0ModuleGenerator({
-            userModelName: definitionContainer.nameFromId(auth.modelRefs.user),
-            includeManagement: true,
-          }),
+          authModule: authModuleGenerator({}),
         });
 
         appCompiler.addRootChildren(createCommonBackendAuthRootGenerators());
@@ -54,15 +45,8 @@ export default createPlatformPluginExport({
 
     const sharedWebGenerators = {
       ...createCommonWebAuthGenerators(),
-      auth: reactAuth0Generator({}),
-      authHooks: auth0HooksGenerator({}),
-      auth0Apollo: auth0ApolloGenerator({}),
-      auth0Callback: reactRoutesGenerator({
-        name: 'auth',
-        children: {
-          auth: auth0PagesGenerator({}),
-        },
-      }),
+      reactAuth: reactAuthGenerator({}),
+      authHooks: placeholderAuthHooksGenerator({}),
     };
 
     // register web compiler

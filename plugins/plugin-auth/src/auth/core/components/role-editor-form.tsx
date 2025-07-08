@@ -5,7 +5,7 @@ import { authRoleEntityType } from '@baseplate-dev/project-builder-lib';
 import { Button, InputFieldController } from '@baseplate-dev/ui-components';
 import { useFieldArray } from 'react-hook-form';
 
-import { AUTH_DEFAULT_ROLES } from '#src/roles/index.js';
+import { AUTH_DEFAULT_ROLES } from '#src/common/roles/index.js';
 import { cn } from '#src/utils/cn.js';
 
 import type { AuthPluginDefinitionInput } from '../schema/plugin-definition.js';

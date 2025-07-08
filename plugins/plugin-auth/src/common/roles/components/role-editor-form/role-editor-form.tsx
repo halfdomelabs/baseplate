@@ -1,5 +1,5 @@
+import type { Lens } from '@hookform/lenses';
 import type React from 'react';
-import type { Control } from 'react-hook-form';
 
 import { authRoleEntityType } from '@baseplate-dev/project-builder-lib';
 import {
@@ -16,31 +16,27 @@ import {
   SectionListSectionTitle,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
+import { useFieldArray } from '@hookform/lenses/rhf';
 import { useState } from 'react';
-import { useFieldArray, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
 import type { AuthRoleInput } from '#src/common/roles/index.js';
-
-import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition.js';
 
 import { RoleDialog } from './role-dialog.js';
 
 interface Props {
   className?: string;
-  control: Control<Auth0PluginDefinitionInput>;
+  lens: Lens<AuthRoleInput[]>;
 }
 
-function RoleEditorForm({ className, control }: Props): React.JSX.Element {
+export function RoleEditorForm({ className, lens }: Props): React.JSX.Element {
   const { requestConfirm } = useConfirmDialog();
-  const { append, update, remove } = useFieldArray({
-    control,
-    name: 'roles',
-  });
+  const { append, update, remove } = useFieldArray(lens.interop());
   const [roleToEdit, setRoleToEdit] = useState<AuthRoleInput | undefined>();
   const [isEditing, setIsEditing] = useState(false);
 
-  const roles = useWatch({ control, name: 'roles' });
+  const roles = useWatch(lens.interop());
 
   function handleSaveRole(newRole: AuthRoleInput): void {
     const existingIndex = roles.findIndex((role) => role.id === newRole.id);
@@ -147,5 +143,3 @@ function RoleEditorForm({ className, control }: Props): React.JSX.Element {
     </SectionListSection>
   );
 }
-
-export default RoleEditorForm;

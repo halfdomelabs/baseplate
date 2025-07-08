@@ -27,16 +27,17 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
 } from '@baseplate-dev/ui-components';
+import { useLens } from '@hookform/lenses';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
-import { AUTH_DEFAULT_ROLES } from '#src/roles/index.js';
+import { RoleEditorForm } from '#src/common/roles/components/index.js';
+import { AUTH_DEFAULT_ROLES } from '#src/common/roles/index.js';
 
 import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition.js';
 
 import { createAuth0Models } from '../schema/models.js';
 import { createAuth0PluginDefinitionSchema } from '../schema/plugin-definition.js';
-import RoleEditorForm from './role-editor-form.js';
 
 import '#src/styles.css';
 
@@ -126,6 +127,8 @@ export function AuthDefinitionEditor({
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
+  const lens = useLens({ control });
+
   return (
     <form
       onSubmit={onSubmit}
@@ -167,11 +170,11 @@ export function AuthDefinitionEditor({
             </SectionListSectionContent>
           </SectionListSection>
 
-          <RoleEditorForm control={control} />
+          <RoleEditorForm lens={lens.focus('roles')} />
         </SectionList>
       </div>
 
-      <FormActionBar form={form} />
+      <FormActionBar form={form} allowSaveWithoutDirty={!pluginMetadata} />
     </form>
   );
 }

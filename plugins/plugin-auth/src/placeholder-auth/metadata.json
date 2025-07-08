@@ -1,0 +1,8 @@
+{
+  "name": "placeholder-auth",
+  "displayName": "Placeholder Auth",
+  "icon": "icon.svg",
+  "description": "This plugin sets up a placeholder auth service that acts as a template for other auth plugins.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"]
+}
