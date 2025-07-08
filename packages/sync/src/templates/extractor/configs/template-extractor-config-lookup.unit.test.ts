@@ -164,28 +164,10 @@ describe('TemplateExtractorConfigLookup - Cache and Lookup Behavior', () => {
       );
 
       expect(results).toHaveLength(2);
-      expect(results[0].path).toBe('template1');
+      expect(results[0].name).toBe('template1');
       expect(results[0].config.sourceFile).toBe('template1.ts');
-      expect(results[1].path).toBe('template2');
+      expect(results[1].name).toBe('template2');
       expect(results[1].config.sourceFile).toBe('template2.ts');
-    });
-  });
-
-  describe('getOutputRelativePathForTemplate', () => {
-    it('should return undefined (deprecated method)', () => {
-      const result = lookup.getOutputRelativePathForTemplate(
-        '@test/package1#test-generator',
-        'template1',
-      );
-      expect(result).toBeUndefined();
-    });
-
-    it('should return undefined for non-existent template', () => {
-      const result = lookup.getOutputRelativePathForTemplate(
-        'non-existent#generator',
-        'template1',
-      );
-      expect(result).toBeUndefined();
     });
   });
 

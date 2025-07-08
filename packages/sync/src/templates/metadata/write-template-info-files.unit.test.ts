@@ -3,27 +3,23 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { FileData } from '#src/output/generator-task-output.js';
 
-import type { TemplateFileMetadataBase } from './metadata.js';
+import type { TemplateInfo } from './metadata.js';
 
-import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
+import { TEMPLATES_INFO_FILENAME } from '../constants.js';
 import { writeTemplateInfoFiles } from './write-template-info-files.js';
 
 vi.mock('node:fs');
 vi.mock('node:fs/promises');
 
-interface ExtendedTemplateMetadata extends TemplateFileMetadataBase {
-  variables?: string[] | { name: string; value: string }[];
-}
-
 interface ExtendedFileData extends Omit<FileData, 'options'> {
   options?: {
-    templateMetadata?: ExtendedTemplateMetadata;
+    templateInfo?: TemplateInfo;
   };
 }
 
-type DirectoryMetadata = Record<string, ExtendedTemplateMetadata>;
+type DirectoryMetadata = Record<string, TemplateInfo>;
 
-describe('writeTemplateMetadata', () => {
+describe('writeTemplateInfoFiles', () => {
   const outputDirectory = '/test/output';
 
   beforeEach(() => {
@@ -34,7 +30,7 @@ describe('writeTemplateMetadata', () => {
     });
   });
 
-  it('should write metadata files in directories with template metadata', async () => {
+  it('should write info files in directories with template info', async () => {
     const files = new Map<string, ExtendedFileData>([
       [
         'src/controllers/user-controller.ts',
@@ -42,11 +38,13 @@ describe('writeTemplateMetadata', () => {
           id: 'test-1',
           contents: 'test content',
           options: {
-            templateMetadata: {
-              name: 'user-controller',
-              type: 'typescript',
+            templateInfo: {
+              template: 'user-controller',
               generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
-              variables: ['TPL_METHODS', 'TPL_MODEL'],
+              instanceData: {
+                methods: ['TPL_METHODS'],
+                model: 'TPL_MODEL',
+              },
             },
           },
         },
@@ -57,11 +55,13 @@ describe('writeTemplateMetadata', () => {
           id: 'test-2',
           contents: 'test content',
           options: {
-            templateMetadata: {
-              name: 'product-controller',
-              type: 'typescript',
+            templateInfo: {
+              template: 'product-controller',
               generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
-              variables: ['TPL_METHODS', 'TPL_MODEL'],
+              instanceData: {
+                methods: ['TPL_METHODS'],
+                model: 'TPL_MODEL',
+              },
             },
           },
         },
@@ -72,11 +72,12 @@ describe('writeTemplateMetadata', () => {
           id: 'test-3',
           contents: 'test content',
           options: {
-            templateMetadata: {
-              name: 'user-model',
-              type: 'typescript',
+            templateInfo: {
+              template: 'user-model',
               generator: '@baseplate-dev/fastify-generators/prisma/model',
-              variables: ['TPL_MODEL_NAME'],
+              instanceData: {
+                modelName: 'TPL_MODEL_NAME',
+              },
             },
           },
         },
@@ -87,11 +88,12 @@ describe('writeTemplateMetadata', () => {
           id: 'test-4',
           contents: 'test content',
           options: {
-            templateMetadata: {
-              name: 'readme',
-              type: 'text',
+            templateInfo: {
+              template: 'readme',
               generator: '@baseplate-dev/fastify-generators/core/readme',
-              variables: [{ name: 'TPL_PROJECT_NAME', value: 'my-project' }],
+              instanceData: {
+                projectName: 'my-project',
+              },
             },
           },
         },
@@ -103,22 +105,22 @@ describe('writeTemplateMetadata', () => {
       outputDirectory,
     );
 
-    // Verify metadata files were created in correct locations
+    // Verify info files were created in correct locations
     const controllersMetadata = JSON.parse(
       vol.readFileSync(
-        `${outputDirectory}/src/controllers/${TEMPLATE_METADATA_FILENAME}`,
+        `${outputDirectory}/src/controllers/${TEMPLATES_INFO_FILENAME}`,
         'utf8',
       ) as string,
     ) as DirectoryMetadata;
     const modelsMetadata = JSON.parse(
       vol.readFileSync(
-        `${outputDirectory}/src/models/${TEMPLATE_METADATA_FILENAME}`,
+        `${outputDirectory}/src/models/${TEMPLATES_INFO_FILENAME}`,
         'utf8',
       ) as string,
     ) as DirectoryMetadata;
     const rootMetadata = JSON.parse(
       vol.readFileSync(
-        `${outputDirectory}/${TEMPLATE_METADATA_FILENAME}`,
+        `${outputDirectory}/${TEMPLATES_INFO_FILENAME}`,
         'utf8',
       ) as string,
     ) as DirectoryMetadata;
@@ -126,41 +128,47 @@ describe('writeTemplateMetadata', () => {
     // Verify controllers metadata
     expect(controllersMetadata).toEqual({
       'user-controller.ts': {
-        name: 'user-controller',
-        type: 'typescript',
+        template: 'user-controller',
         generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
-        variables: ['TPL_METHODS', 'TPL_MODEL'],
+        instanceData: {
+          methods: ['TPL_METHODS'],
+          model: 'TPL_MODEL',
+        },
       },
       'product-controller.ts': {
-        name: 'product-controller',
-        type: 'typescript',
+        template: 'product-controller',
         generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
-        variables: ['TPL_METHODS', 'TPL_MODEL'],
+        instanceData: {
+          methods: ['TPL_METHODS'],
+          model: 'TPL_MODEL',
+        },
       },
     });
 
     // Verify models metadata
     expect(modelsMetadata).toEqual({
       'user-model.ts': {
-        name: 'user-model',
-        type: 'typescript',
+        template: 'user-model',
         generator: '@baseplate-dev/fastify-generators/prisma/model',
-        variables: ['TPL_MODEL_NAME'],
+        instanceData: {
+          modelName: 'TPL_MODEL_NAME',
+        },
       },
     });
 
     // Verify root metadata
     expect(rootMetadata).toEqual({
       'README.md': {
-        name: 'readme',
-        type: 'text',
+        template: 'readme',
         generator: '@baseplate-dev/fastify-generators/core/readme',
-        variables: [{ name: 'TPL_PROJECT_NAME', value: 'my-project' }],
+        instanceData: {
+          projectName: 'my-project',
+        },
       },
     });
   });
 
-  it('should skip files without template metadata', async () => {
+  it('should skip files without template info', async () => {
     const files = new Map<string, ExtendedFileData>([
       [
         'src/controllers/user-controller.ts',
@@ -168,11 +176,13 @@ describe('writeTemplateMetadata', () => {
           id: 'test-1',
           contents: 'test content',
           options: {
-            templateMetadata: {
-              name: 'user-controller',
-              type: 'typescript',
+            templateInfo: {
+              template: 'user-controller',
               generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
-              variables: ['TPL_METHODS', 'TPL_MODEL'],
+              instanceData: {
+                methods: ['TPL_METHODS'],
+                model: 'TPL_MODEL',
+              },
             },
           },
         },
@@ -182,7 +192,7 @@ describe('writeTemplateMetadata', () => {
         {
           id: 'test-2',
           contents: 'test content',
-          // No template metadata
+          // No template info
         },
       ],
     ]);
@@ -192,20 +202,22 @@ describe('writeTemplateMetadata', () => {
       outputDirectory,
     );
 
-    // Verify only metadata for files with template metadata was written
+    // Verify only metadata for files with template info was written
     const controllersMetadata = JSON.parse(
       vol.readFileSync(
-        `${outputDirectory}/src/controllers/${TEMPLATE_METADATA_FILENAME}`,
+        `${outputDirectory}/src/controllers/${TEMPLATES_INFO_FILENAME}`,
         'utf8',
       ) as string,
     ) as DirectoryMetadata;
 
     expect(controllersMetadata).toEqual({
       'user-controller.ts': {
-        name: 'user-controller',
-        type: 'typescript',
+        template: 'user-controller',
         generator: '@baseplate-dev/fastify-generators/prisma/crud-file',
-        variables: ['TPL_METHODS', 'TPL_MODEL'],
+        instanceData: {
+          methods: ['TPL_METHODS'],
+          model: 'TPL_MODEL',
+        },
       },
     });
   });
@@ -215,7 +227,7 @@ describe('writeTemplateMetadata', () => {
 
     await writeTemplateInfoFiles(files, outputDirectory);
 
-    // Verify no metadata files were created
+    // Verify no info files were created
     expect(() => vol.readdirSync(outputDirectory)).not.toThrow();
     expect(vol.readdirSync(outputDirectory)).toHaveLength(0);
   });
@@ -234,7 +246,7 @@ describe('writeTemplateMetadata', () => {
 
     await writeTemplateInfoFiles(files, outputDirectory);
 
-    // Verify no metadata files were created
+    // Verify no info files were created
     expect(() => vol.readdirSync(outputDirectory)).not.toThrow();
     expect(vol.readdirSync(outputDirectory)).toHaveLength(0);
   });

@@ -49,7 +49,6 @@ describe('mergeExtractorTemplateEntries', () => {
           type: 'ts',
           description: 'Existing template',
         },
-        instanceData: {},
       },
       extractors: {},
     };
@@ -124,7 +123,6 @@ describe('mergeExtractorTemplateEntries', () => {
           sourceFile: 'template-1.ts',
           type: 'ts',
         },
-        instanceData: {},
       },
       extractors: {},
     };
@@ -136,7 +134,6 @@ describe('mergeExtractorTemplateEntries', () => {
           sourceFile: 'template-2.ts',
           type: 'js',
         },
-        instanceData: {},
       },
       extractors: {},
     };
@@ -204,7 +201,6 @@ describe('mergeExtractorTemplateEntries', () => {
           type: 'ts',
           description: 'Original description',
         },
-        instanceData: {},
       },
       extractors: {},
     };
@@ -310,7 +306,6 @@ describe('mergeExtractorTemplateEntries', () => {
           type: 'js',
           description: 'Should be preserved',
         },
-        instanceData: {},
       },
       extractors: {},
     };
@@ -388,11 +383,10 @@ describe('mergeExtractorTemplateEntries', () => {
           description: 'Old template B',
         },
         'keep-me': {
-          name: 'keep-me',
+          sourceFile: 'keep-me.ts',
           type: 'ts',
           description: 'Should be kept',
         },
-        instanceData: {},
       },
       extractors: {},
     };

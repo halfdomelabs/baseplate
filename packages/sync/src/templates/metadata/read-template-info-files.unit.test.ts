@@ -16,25 +16,19 @@ describe('readTemplateMetadataFiles', () => {
     // Arrange
     const metadata1 = {
       'auth.service.ts': {
-        type: 'ts',
-        name: 'auth-service',
         generator: '@auth/package#auth-module',
-        template: 'services/auth.service.ts',
+        template: 'auth-service',
       },
       'user.service.ts': {
-        type: 'ts',
-        name: 'user-service',
         generator: '@auth/package#auth-module',
-        template: 'services/user.service.ts',
+        template: 'user-service',
       },
     };
 
     const metadata2 = {
       'config.ts': {
-        type: 'text',
-        name: 'config',
         generator: '@config/package#config-module',
-        template: 'config.ts',
+        template: 'config',
       },
     };
 
@@ -42,11 +36,10 @@ describe('readTemplateMetadataFiles', () => {
     const later = new Date('2024-01-02T00:00:00Z');
 
     vol.fromJSON({
-      '/project/src/services/.template-metadata.json':
-        JSON.stringify(metadata1),
+      '/project/src/services/.templates-info.json': JSON.stringify(metadata1),
       '/project/src/services/auth.service.ts': 'export class AuthService {}',
       '/project/src/services/user.service.ts': 'export class UserService {}',
-      '/project/config/.template-metadata.json': JSON.stringify(metadata2),
+      '/project/config/.templates-info.json': JSON.stringify(metadata2),
       '/project/config/config.ts': 'export const config = {};',
     });
 
@@ -63,7 +56,7 @@ describe('readTemplateMetadataFiles', () => {
 
     // Check auth service entry
     const authEntry = result.find(
-      (e) => e.templateInfo.name === 'auth-service',
+      (e) => e.templateInfo.template === 'auth-service',
     );
     expect(authEntry).toBeDefined();
     expect(authEntry?.absolutePath).toBe(
@@ -74,7 +67,7 @@ describe('readTemplateMetadataFiles', () => {
 
     // Check user service entry
     const userEntry = result.find(
-      (e) => e.templateInfo.name === 'user-service',
+      (e) => e.templateInfo.template === 'user-service',
     );
     expect(userEntry).toBeDefined();
     expect(userEntry?.absolutePath).toBe(
@@ -84,7 +77,9 @@ describe('readTemplateMetadataFiles', () => {
     expect(userEntry?.modifiedTime).toEqual(later);
 
     // Check config entry
-    const configEntry = result.find((e) => e.templateInfo.name === 'config');
+    const configEntry = result.find(
+      (e) => e.templateInfo.template === 'config',
+    );
     expect(configEntry).toBeDefined();
     expect(configEntry?.absolutePath).toBe('/project/config/config.ts');
     expect(configEntry?.templateInfo).toEqual(metadata2['config.ts']);
@@ -108,28 +103,26 @@ describe('readTemplateMetadataFiles', () => {
     // Arrange
     const metadata = {
       'missing.ts': {
-        type: 'ts',
-        name: 'missing',
         generator: 'test#generator',
-        template: 'missing.ts',
+        template: 'missing',
       },
     };
 
     vol.fromJSON({
-      '/project/.template-metadata.json': JSON.stringify(metadata),
+      '/project/.templates-info.json': JSON.stringify(metadata),
       // Note: missing.ts file is not created
     });
 
     // Act & Assert
     await expect(readTemplateInfoFiles('/project')).rejects.toThrow(
-      'Could not find source file (missing.ts) specified in metadata file: /project/.template-metadata.json',
+      'Could not find source file (missing.ts) specified in templates info file: /project/.templates-info.json',
     );
   });
 
   it('should handle invalid metadata file gracefully', async () => {
     // Arrange
     vol.fromJSON({
-      '/project/.template-metadata.json': 'invalid json',
+      '/project/.templates-info.json': 'invalid json',
     });
 
     // Act & Assert
@@ -140,15 +133,13 @@ describe('readTemplateMetadataFiles', () => {
     // Arrange
     const invalidMetadata = {
       'test.ts': {
-        type: 'ts',
-        name: 'InvalidName', // Should be kebab-case
         generator: 'test#generator',
-        template: 'test.ts',
+        template: 'invalid-name!',
       },
     };
 
     vol.fromJSON({
-      '/project/.template-metadata.json': JSON.stringify(invalidMetadata),
+      '/project/.templates-info.json': JSON.stringify(invalidMetadata),
       '/project/test.ts': 'export {};',
     });
 
@@ -162,26 +153,22 @@ describe('readTemplateMetadataFiles', () => {
     // Arrange
     const metadata1 = {
       'file1.ts': {
-        type: 'ts',
-        name: 'file-one',
         generator: 'test#generator',
-        template: 'file1.ts',
+        template: 'file-1',
       },
     };
 
     const metadata2 = {
       'file2.ts': {
-        type: 'ts',
-        name: 'file-two',
         generator: 'test#generator',
-        template: 'file2.ts',
+        template: 'file-2',
       },
     };
 
     vol.fromJSON({
-      '/project/src/.template-metadata.json': JSON.stringify(metadata1),
+      '/project/src/.templates-info.json': JSON.stringify(metadata1),
       '/project/src/file1.ts': 'export const file1 = 1;',
-      '/project/src/nested/deep/.template-metadata.json':
+      '/project/src/nested/deep/.templates-info.json':
         JSON.stringify(metadata2),
       '/project/src/nested/deep/file2.ts': 'export const file2 = 2;',
     });
@@ -203,27 +190,21 @@ describe('readTemplateMetadataFiles', () => {
     // Arrange
     const metadata = {
       'file1.ts': {
-        type: 'ts',
-        name: 'file-one',
         generator: 'test#generator',
-        template: 'templates/file1.ts',
+        template: 'file-one',
       },
       'file2.ts': {
-        type: 'text',
-        name: 'file-two',
         generator: 'test#generator',
-        template: 'templates/file2.ts',
+        template: 'file-two',
       },
       'subdir/file3.ts': {
-        type: 'ts',
-        name: 'file-three',
         generator: 'test#generator',
-        template: 'templates/file3.ts',
+        template: 'file-three',
       },
     };
 
     vol.fromJSON({
-      '/project/.template-metadata.json': JSON.stringify(metadata),
+      '/project/.templates-info.json': JSON.stringify(metadata),
       '/project/file1.ts': 'export const file1 = 1;',
       '/project/file2.ts': 'export const file2 = 2;',
       '/project/subdir/file3.ts': 'export const file3 = 3;',
@@ -235,7 +216,7 @@ describe('readTemplateMetadataFiles', () => {
     // Assert
     expect(result).toHaveLength(3);
 
-    const names = result.map((e) => e.templateInfo.name).sort();
+    const names = result.map((e) => e.templateInfo.template).sort();
     expect(names).toEqual(['file-one', 'file-three', 'file-two']);
   });
 });
