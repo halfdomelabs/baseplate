@@ -6,10 +6,10 @@ import { z } from 'zod';
 const descriptorSchema = z.object({});
 
 /**
- * Generator for basic React auth integrations
+ * Generator for placeholder React auth
  */
-export const reactAuthGenerator = createGenerator({
-  name: 'react/react-auth',
+export const placeholderReactAuthGenerator = createGenerator({
+  name: 'placeholder-auth/core/placeholder-react-auth',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({

@@ -6,7 +6,6 @@ import {
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
-import { placeholderAuthHooksGenerator } from '@baseplate-dev/react-generators';
 
 import {
   createCommonBackendAuthModuleGenerators,
@@ -17,8 +16,9 @@ import {
 import type { PlaceholderAuthPluginDefinition } from './schema/plugin-definition.js';
 
 import {
+  placeholderAuthHooksGenerator,
   placeholderAuthModuleGenerator,
-  reactAuthGenerator,
+  placeholderReactAuthGenerator,
 } from './generators/index.js';
 
 export default createPlatformPluginExport({
@@ -48,7 +48,7 @@ export default createPlatformPluginExport({
 
     const sharedWebGenerators = {
       ...createCommonWebAuthGenerators(),
-      reactAuth: reactAuthGenerator({}),
+      reactAuth: placeholderReactAuthGenerator({}),
       authHooks: placeholderAuthHooksGenerator({}),
     };
 
