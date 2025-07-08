@@ -22,6 +22,6 @@ const userSessionService = createTsTemplateFile({
   variables: {},
 });
 
-export const PLACEHOLDER_AUTH_CORE_AUTH_MODULE_TEMPLATES = {
+export const PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_MODULE_TEMPLATES = {
   userSessionService,
 };

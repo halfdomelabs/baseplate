@@ -16,7 +16,10 @@ import {
 
 import type { PlaceholderAuthPluginDefinition } from './schema/plugin-definition.js';
 
-import { authModuleGenerator, reactAuthGenerator } from './generators/index.js';
+import {
+  placeholderAuthModuleGenerator,
+  reactAuthGenerator,
+} from './generators/index.js';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -36,7 +39,7 @@ export default createPlatformPluginExport({
 
         appCompiler.addChildrenToFeature(auth.authFeatureRef, {
           ...createCommonBackendAuthModuleGenerators({ roles: auth.roles }),
-          authModule: authModuleGenerator({}),
+          authModule: placeholderAuthModuleGenerator({}),
         });
 
         appCompiler.addRootChildren(createCommonBackendAuthRootGenerators());

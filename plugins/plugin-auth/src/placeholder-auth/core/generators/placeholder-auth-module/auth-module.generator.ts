@@ -5,8 +5,8 @@ import { PLACEHOLDER_AUTH_CORE_AUTH_MODULE_GENERATED } from './generated';
 
 const descriptorSchema = z.object({});
 
-export const authModuleGenerator = createGenerator({
-  name: 'placeholder-auth/core/auth-module',
+export const placeholderAuthModuleGenerator = createGenerator({
+  name: 'placeholder-auth/core/placeholder-auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({

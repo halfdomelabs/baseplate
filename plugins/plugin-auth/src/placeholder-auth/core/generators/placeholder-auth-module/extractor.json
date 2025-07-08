@@ -1,5 +1,5 @@
 {
-  "name": "placeholder-auth/core/auth-module",
+  "name": "placeholder-auth/core/placeholder-auth-module",
   "extractors": {
     "ts": {
       "importProviders": [
@@ -13,7 +13,7 @@
       "name": "user-session-service",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#placeholder-auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#placeholder-auth/core/placeholder-auth-module",
       "importMapProviders": {
         "authContextImportsProvider": {
           "importName": "authContextImportsProvider",
