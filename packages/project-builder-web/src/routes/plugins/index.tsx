@@ -62,6 +62,7 @@ function PluginsHomePage(): React.JSX.Element {
   );
   const uninstalledPlugins = plugins.filter(
     (plugin) =>
+      !plugin.hidden &&
       !pluginConfig.some(
         (config) =>
           config.packageName === plugin.packageName &&

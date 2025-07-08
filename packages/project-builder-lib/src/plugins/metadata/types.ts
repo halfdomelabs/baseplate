@@ -63,6 +63,12 @@ export const pluginMetadataSchema = z.object({
       dependencies: z.array(pluginSpecDependencySchema).optional(),
     })
     .optional(),
+  /**
+   * Whether the plugin should be hidden in the project builder UI
+   *
+   * (It can be used once in the definition but cannot be added)
+   */
+  hidden: z.boolean().optional(),
 });
 
 export type PluginMetadata = z.infer<typeof pluginMetadataSchema>;
