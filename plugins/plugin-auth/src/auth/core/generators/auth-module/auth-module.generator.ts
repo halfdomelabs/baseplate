@@ -1,16 +1,7 @@
+import { tsCodeFragment } from '@baseplate-dev/core-generators';
 import {
-  tsCodeFragment,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
-import {
-  authContextImportsProvider,
-  authRolesImportsProvider,
-  configServiceImportsProvider,
   configServiceProvider,
-  errorHandlerServiceImportsProvider,
   prismaOutputProvider,
-  requestServiceContextImportsProvider,
-  userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import {
   createGenerator,
@@ -19,7 +10,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { AUTH_CORE_AUTH_MODULE_GENERATED } from './generated';
+import { AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated';
 
 const descriptorSchema = z.object({
   userSessionModelName: z.string().min(1),
@@ -30,8 +21,9 @@ export const authModuleGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ userSessionModelName }) => ({
-    paths: AUTH_CORE_AUTH_MODULE_GENERATED.paths.task,
-    imports: AUTH_CORE_AUTH_MODULE_GENERATED.imports.task,
+    paths: GENERATED_TEMPLATES.paths.task,
+    imports: GENERATED_TEMPLATES.imports.task,
+    renderers: GENERATED_TEMPLATES.renderers.task,
     config: createProviderTask(configServiceProvider, (configService) => {
       configService.configFields.set('AUTH_SECRET', {
         validator: tsCodeFragment(
@@ -45,66 +37,25 @@ export const authModuleGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        authRolesImports: authRolesImportsProvider,
-        configServiceImports: configServiceImportsProvider,
         prismaOutput: prismaOutputProvider,
-        userSessionTypesImports: userSessionTypesImportsProvider,
-        authContextImports: authContextImportsProvider,
-        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-        requestServiceContextImports: requestServiceContextImportsProvider,
-        paths: AUTH_CORE_AUTH_MODULE_GENERATED.paths.provider,
+        renderers: GENERATED_TEMPLATES.renderers.provider,
       },
-      run({
-        typescriptFile,
-        authRolesImports,
-        prismaOutput,
-        configServiceImports,
-        userSessionTypesImports,
-        authContextImports,
-        errorHandlerServiceImports,
-        requestServiceContextImports,
-        paths,
-      }) {
+      run({ prismaOutput, renderers }) {
         return {
           providers: {
             authModule: {},
           },
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  AUTH_CORE_AUTH_MODULE_GENERATED.templates.userSessionService,
-                destination: paths.userSessionService,
+              renderers.userSessionService.render({
                 variables: {
                   TPL_PRISMA_USER_SESSION:
                     prismaOutput.getPrismaModelFragment(userSessionModelName),
                 },
-                importMapProviders: {
-                  configServiceImports,
-                  authContextImports,
-                  authRolesImports,
-                  userSessionTypesImports,
-                  errorHandlerServiceImports,
-                  requestServiceContextImports,
-                },
               }),
             );
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: AUTH_CORE_AUTH_MODULE_GENERATED.templates.constantsGroup,
-                paths,
-              }),
-            );
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: AUTH_CORE_AUTH_MODULE_GENERATED.templates.utilsGroup,
-                paths,
-                importMapProviders: {
-                  configServiceImports,
-                },
-              }),
-            );
+            await builder.apply(renderers.constantsGroup.render({}));
+            await builder.apply(renderers.utilsGroup.render({}));
           },
         };
       },
