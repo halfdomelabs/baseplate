@@ -22,6 +22,7 @@
     "metadata:check": "workspace-meta check",
     "metadata:generate": "workspace-meta generate",
     "metadata:sync": "workspace-meta sync",
+    "migrate:extractor-templates": "node migrate-extractor-templates.js",
     "precheck": "turbo run lint prettier:check typecheck --output-logs=errors-only --affected --continue && pnpm run knip",
     "prepare": "husky",
     "prettier:check": "turbo run prettier:check --continue",
@@ -49,7 +50,8 @@
     "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|toml|html|svg|yml|yaml|json)": "prettier --write"
   },
   "dependencies": {
-    "@changesets/cli": "2.28.1"
+    "@changesets/cli": "2.28.1",
+    "globby": "^14.0.0"
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
