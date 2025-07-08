@@ -42,11 +42,12 @@ export const REACT_PACKAGES = {
   '@apollo/client': '3.13.8',
   graphql: '16.9.0',
   'graphql-ws': '5.16.0',
-  '@graphql-codegen/cli': '5.0.2',
-  '@graphql-codegen/typescript': '4.0.9',
-  '@graphql-codegen/typescript-operations': '4.2.3',
-  '@graphql-codegen/typescript-react-apollo': '4.3.0',
-  '@parcel/watcher': '2.4.1',
+  '@graphql-codegen/cli': '5.0.7',
+  '@graphql-codegen/typescript': '4.1.6',
+  '@graphql-codegen/typescript-operations': '4.6.1',
+  '@graphql-codegen/typed-document-node': '5.1.2',
+  '@graphql-typed-document-node/core': '3.2.0',
+  '@parcel/watcher': '2.5.1',
 
   // Utils
   nanoid: '3.3.8',

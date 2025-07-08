@@ -3,6 +3,7 @@
 import type { ReactElement } from 'react';
 
 import { logError } from '%reactErrorImports';
+import { useMutation } from '@apollo/client';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
@@ -13,7 +14,7 @@ export const Route = createFileRoute(TPL_ROUTE_PATH)({
 function TPL_COMPONENT_NAME(): ReactElement {
   TPL_DATA_LOADER;
 
-  const [TPL_MUTATION_NAME] = TPL_CREATE_MUTATION({
+  const [TPL_MUTATION_NAME] = useMutation(TPL_CREATE_MUTATION, {
     refetchQueries: [
       {
         query: TPL_REFETCH_DOCUMENT,

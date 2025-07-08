@@ -2,7 +2,8 @@
 
 import type { CurrentUserFragment } from '%generatedGraphqlImports';
 
-import { useGetUserByIdQuery } from '%generatedGraphqlImports';
+import { GetUserByIdDocument } from '%generatedGraphqlImports';
+import { useQuery } from '@apollo/client';
 
 import { useSession } from './use-session.js';
 
@@ -14,7 +15,7 @@ interface UseCurrentUserResult {
 
 export function useCurrentUser(): UseCurrentUserResult {
   const { userId } = useSession();
-  const { data, loading, error } = useGetUserByIdQuery({
+  const { data, loading, error } = useQuery(GetUserByIdDocument, {
     variables: { id: userId ?? '' },
     skip: !userId,
   });

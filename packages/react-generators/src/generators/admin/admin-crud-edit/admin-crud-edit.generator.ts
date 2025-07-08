@@ -241,7 +241,7 @@ export const adminCrudEditGenerator = createGenerator({
                     TPL_ROUTE_PATH: quot(`${routeFilePath}/new`),
                     TPL_COMPONENT_NAME: createPageName,
                     TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} ${inputLoaderExtraProps} />`,
-                    TPL_CREATE_MUTATION: createInfo.hookExpression,
+                    TPL_CREATE_MUTATION: createInfo.documentExpression,
                     TPL_MUTATION_NAME: createInfo.fieldName,
                     TPL_FORM_DATA_NAME: formDataExpression,
                     TPL_MODEL_NAME: titleizeCamel(modelName),
@@ -257,7 +257,7 @@ export const adminCrudEditGenerator = createGenerator({
             const editPageLoader: DataLoader = {
               loader: TsCodeUtils.formatFragment(
                 `
-          const { data, error } = GET_EDIT_BY_ID_QUERY({
+          const { data, error } = useQuery(GET_EDIT_BY_ID_QUERY, {
             variables: { id },
           });
         
@@ -267,11 +267,14 @@ export const adminCrudEditGenerator = createGenerator({
           }, [data]);
           `,
                 {
-                  GET_EDIT_BY_ID_QUERY: editQueryInfo.hookExpression,
+                  GET_EDIT_BY_ID_QUERY: editQueryInfo.documentExpression,
                   FORM_DATA_NAME: formDataExpression,
                   QUERY_FIELD_NAME: editQueryInfo.fieldName,
                 },
-                tsImportBuilder(['useMemo']).from('react'),
+                [
+                  tsImportBuilder(['useMemo']).from('react'),
+                  tsImportBuilder(['useQuery']).from('@apollo/client'),
+                ],
               ),
               loaderErrorName: 'error',
               loaderValueName: 'initialData',
@@ -294,7 +297,7 @@ export const adminCrudEditGenerator = createGenerator({
                   TPL_ROUTE_PATH: quot(`${routeFilePath}/$id`),
                   TPL_COMPONENT_NAME: editPageName,
                   TPL_EDIT_FORM: tsTemplate`<${editFormComponentExpression} submitData={submitData} initialData={initialData} ${inputLoaderExtraProps} />`,
-                  TPL_UPDATE_MUTATION: updateInfo.hookExpression,
+                  TPL_UPDATE_MUTATION: updateInfo.documentExpression,
                   TPL_MUTATION_NAME: updateInfo.fieldName,
                   TPL_FORM_DATA_NAME: formDataExpression,
                   TPL_MODEL_NAME: titleizeCamel(modelName),

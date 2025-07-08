@@ -97,8 +97,13 @@ export const adminCrudListGenerator = createGenerator({
 
             const inputLoaders = dataDependencies.map((d) => d.loader);
 
+            const useQuery = TsCodeUtils.importFragment(
+              'useQuery',
+              '@apollo/client',
+            );
+
             const listPageLoader: DataLoader = {
-              loader: tsTemplate`const { data, error } = ${listInfo.hookExpression}();`,
+              loader: tsTemplate`const { data, error } = ${useQuery}(${listInfo.documentExpression});`,
               loaderErrorName: 'error',
               loaderValueName: 'data',
             };
@@ -133,7 +138,7 @@ export const adminCrudListGenerator = createGenerator({
                   TPL_ROUTE_PATH: quot(`${routeFilePath}/`),
                   TPL_PAGE_NAME: listPageComponentName,
                   TPL_DELETE_FUNCTION: deleteInfo.fieldName,
-                  TPL_DELETE_MUTATION: deleteInfo.hookExpression,
+                  TPL_DELETE_MUTATION: deleteInfo.documentExpression,
                   TPL_ROW_FRAGMENT_NAME:
                     adminCrudQueries.getRowFragmentExpression(),
                   TPL_PLURAL_MODEL: titleizeCamel(pluralize(modelName)),
