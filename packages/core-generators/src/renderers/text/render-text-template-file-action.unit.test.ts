@@ -3,7 +3,7 @@ import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { renderTextTemplateFileAction } from './render-text-template-file-action.js';
-import { createTextTemplateFile, TEXT_TEMPLATE_TYPE } from './types.js';
+import { createTextTemplateFile } from './types.js';
 
 vi.mock('fs');
 vi.mock('fs/promises');
@@ -55,22 +55,13 @@ describe('renderTextTemplateFileAction', () => {
     const file = output.files.get('output/test.txt');
     expect(file?.id).toBe('test-generator:test-id');
     expect(file?.contents).toEqual('Hello John, welcome to Baseplate!');
-    expect(file?.options?.templateMetadata).toEqual({
-      name: 'test',
+    expect(file?.options?.templateInfo).toEqual({
+      template: 'test',
       generator: 'test-generator',
-      group: undefined,
-      type: TEXT_TEMPLATE_TYPE,
-      fileOptions: {
-        kind: 'singleton',
-      },
-      variables: {
-        TPL_NAME: {
-          description: 'The name to greet',
-          value: 'John',
-        },
-        TPL_PLACE: {
-          description: 'The place to welcome to',
-          value: 'Baseplate',
+      instanceData: {
+        variables: {
+          TPL_NAME: 'John',
+          TPL_PLACE: 'Baseplate',
         },
       },
     });
@@ -101,7 +92,7 @@ describe('renderTextTemplateFileAction', () => {
     const file = output.files.get('output/test.txt');
     expect(file?.id).toBe('test-generator:test-id');
     expect(file?.contents).toEqual('Hello John!');
-    expect(file?.options?.templateMetadata).toBeUndefined();
+    expect(file?.options?.templateInfo).toBeUndefined();
   });
 
   it('should write a css file from template contents with variables', async () => {

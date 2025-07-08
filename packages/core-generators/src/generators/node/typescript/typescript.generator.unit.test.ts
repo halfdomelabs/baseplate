@@ -142,7 +142,7 @@ describe('typescriptGenerator', () => {
       expect(utilsFileOutput?.contents).toEqual(
         'export const helper = () => {};',
       );
-      expect(utilsFileOutput?.options?.templateMetadata?.generator).toEqual(
+      expect(utilsFileOutput?.options?.templateInfo?.generator).toEqual(
         'lazy-generator',
       );
 

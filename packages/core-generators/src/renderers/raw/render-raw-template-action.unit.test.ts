@@ -3,7 +3,7 @@ import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { renderRawTemplateFileAction } from './render-raw-template-action.js';
-import { createRawTemplateFile, RAW_TEMPLATE_TYPE } from './types.js';
+import { createRawTemplateFile } from './types.js';
 
 vi.mock('fs');
 vi.mock('fs/promises');
@@ -49,14 +49,10 @@ describe('renderRawTemplateFileAction', () => {
     const file = output.files.get('output/test.txt');
     expect(file?.id).toBe('test-generator:test-id');
     expect(file?.contents).toEqual(Buffer.from('test content'));
-    expect(file?.options?.templateMetadata).toEqual({
-      name: 'test',
+    expect(file?.options?.templateInfo).toEqual({
+      template: 'test',
       generator: 'test-generator',
-      type: RAW_TEMPLATE_TYPE,
-      fileOptions: {
-        kind: 'instance',
-        generatorTemplatePath: 'test.txt',
-      },
+      instanceData: {},
     });
   });
 
@@ -82,6 +78,6 @@ describe('renderRawTemplateFileAction', () => {
     const file = output.files.get('output/test.txt');
     expect(file?.id).toBe('test-generator:test-id');
     expect(file?.contents).toEqual(Buffer.from('test content'));
-    expect(file?.options?.templateMetadata).toBeUndefined();
+    expect(file?.options?.templateInfo).toBeUndefined();
   });
 });

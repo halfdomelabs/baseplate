@@ -8,7 +8,7 @@ import {
   createTsImportMapSchema,
 } from '../import-maps/ts-import-map.js';
 import { tsImportBuilder } from '../imports/builder.js';
-import { createTsTemplateFile, TS_TEMPLATE_TYPE } from '../templates/types.js';
+import { createTsTemplateFile } from '../templates/types.js';
 import { renderTsTemplateFileAction } from './render-ts-template-file-action.js';
 
 vi.mock('fs');
@@ -60,11 +60,10 @@ describe('renderTsTemplateFileAction', () => {
     expect(file?.contents).toEqual(
       'const greeting = /* TPL_GREETING:START */ "Hello World" /* TPL_GREETING:END */;',
     );
-    expect(file?.options?.templateMetadata).toEqual({
-      name: 'test',
+    expect(file?.options?.templateInfo).toEqual({
+      template: 'test',
       generator: 'test-generator',
-      type: TS_TEMPLATE_TYPE,
-      fileOptions: { kind: 'singleton' },
+      instanceData: {},
     });
   });
 
@@ -97,7 +96,7 @@ describe('renderTsTemplateFileAction', () => {
     expect(file?.contents).toEqual(
       'import { Greeting } from "./greeting";\n\nconst greeting = new Greeting("Hello");',
     );
-    expect(file?.options?.templateMetadata).toBeUndefined();
+    expect(file?.options?.templateInfo).toBeUndefined();
   });
 
   it('should throw error when template variables and provided variables do not match', async () => {
