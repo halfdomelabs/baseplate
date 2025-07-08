@@ -124,6 +124,15 @@ export function extractDefinitionRefs<T>(value: T): ZodRefPayload<T> {
 
   const cleanData = extractDefinitionRefsRecursive(value, refContext, []);
 
+  // Simple sanity check to make sure we don't have duplicate IDs
+  const idSet = new Set<string>();
+  for (const entity of refContext.entitiesWithNameResolver) {
+    if (idSet.has(entity.id)) {
+      throw new Error(`Duplicate ID found: ${entity.id}`);
+    }
+    idSet.add(entity.id);
+  }
+
   return {
     data: cleanData as T,
     references: refContext.references,

@@ -8,7 +8,10 @@ import type { ZodRefContext } from './extract-definition-refs.js';
 
 import { createDefinitionEntityNameResolver } from './definition-ref-builder.js';
 import { deserializeSchemaWithTransformedReferences } from './deserialize-schema.js';
-import { extractDefinitionRefsRecursive } from './extract-definition-refs.js';
+import {
+  extractDefinitionRefs,
+  extractDefinitionRefsRecursive,
+} from './extract-definition-refs.js';
 import {
   DefinitionReferenceMarker,
   REF_ANNOTATIONS_MARKER_SYMBOL,
@@ -858,6 +861,126 @@ describe('extract-definition-refs', () => {
           path: ['entity'],
           idPath: ['entity', 'id'],
         });
+      });
+    });
+
+    describe('Duplicate ID Detection', () => {
+      it('should throw error when duplicate entity IDs are found', () => {
+        const testEntityType = new DefinitionEntityType('test', 'test');
+
+        const inputWithDuplicateIds = {
+          entity1: {
+            id: 'test:duplicate-id',
+            name: 'Entity One',
+            [REF_ANNOTATIONS_MARKER_SYMBOL]: {
+              entities: [
+                {
+                  type: testEntityType,
+                  getNameResolver: () => ({ resolveName: () => 'Entity One' }),
+                },
+              ],
+              references: [],
+              contextPaths: [],
+            },
+          },
+          entity2: {
+            id: 'test:duplicate-id', // Same ID as entity1
+            name: 'Entity Two',
+            [REF_ANNOTATIONS_MARKER_SYMBOL]: {
+              entities: [
+                {
+                  type: testEntityType,
+                  getNameResolver: () => ({ resolveName: () => 'Entity Two' }),
+                },
+              ],
+              references: [],
+              contextPaths: [],
+            },
+          },
+        };
+
+        expect(() => extractDefinitionRefs(inputWithDuplicateIds)).toThrow(
+          'Duplicate ID found: test:duplicate-id',
+        );
+      });
+    });
+  });
+
+  describe('Non-Recursive Function Tests (extractDefinitionRefs)', () => {
+    it('should process simple object with entity annotations', () => {
+      const testEntityType = new DefinitionEntityType('test', 'test');
+
+      const input = {
+        id: 'test:test-id',
+        name: 'Test Entity',
+        [REF_ANNOTATIONS_MARKER_SYMBOL]: {
+          entities: [
+            {
+              type: testEntityType,
+              getNameResolver: () => ({ resolveName: () => 'Test Entity' }),
+            },
+          ],
+          references: [],
+          contextPaths: [],
+        },
+      };
+
+      const result = extractDefinitionRefs(input);
+
+      expect(result.data).toEqual({
+        id: 'test:test-id',
+        name: 'Test Entity',
+      });
+      expect(result.entitiesWithNameResolver).toHaveLength(1);
+      expect(result.entitiesWithNameResolver[0]).toMatchObject({
+        id: 'test:test-id',
+        type: testEntityType,
+        path: [],
+        idPath: ['id'],
+      });
+      expect(result.references).toHaveLength(0);
+    });
+
+    it('should process object with both entities and references', () => {
+      const testEntityType = new DefinitionEntityType('test', 'test');
+      const refEntityType = new DefinitionEntityType('ref', 'ref');
+
+      const input = {
+        entity: {
+          id: 'test:entity-id',
+          name: 'Test Entity',
+          [REF_ANNOTATIONS_MARKER_SYMBOL]: {
+            entities: [
+              {
+                type: testEntityType,
+                getNameResolver: () => ({ resolveName: () => 'Test Entity' }),
+              },
+            ],
+            references: [],
+            contextPaths: [],
+          },
+        },
+        ref: new DefinitionReferenceMarker('ref:ref-id', {
+          type: refEntityType,
+          onDelete: 'RESTRICT',
+        }),
+      };
+
+      const result = extractDefinitionRefs(input);
+
+      expect(result.data).toEqual({
+        entity: {
+          id: 'test:entity-id',
+          name: 'Test Entity',
+        },
+        ref: 'ref:ref-id',
+      });
+      expect(result.entitiesWithNameResolver).toHaveLength(1);
+      expect(result.references).toHaveLength(1);
+      expect(result.references[0]).toMatchObject({
+        type: refEntityType,
+        path: ['ref'],
+        onDelete: 'RESTRICT',
       });
     });
   });
