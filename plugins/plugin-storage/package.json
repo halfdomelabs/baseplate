@@ -56,7 +56,7 @@
     "inflection": "3.0.0",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-hook-form": "7.56.3",
+    "react-hook-form": "7.60.0",
     "zod": "catalog:"
   },
   "devDependencies": {

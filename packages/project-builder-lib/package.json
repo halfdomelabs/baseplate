@@ -58,7 +58,7 @@
     "immer": "10.1.1",
     "inflection": "3.0.0",
     "react": "catalog:",
-    "react-hook-form": "7.56.3",
+    "react-hook-form": "7.60.0",
     "zod": "catalog:",
     "zustand": "5.0.3"
   },
