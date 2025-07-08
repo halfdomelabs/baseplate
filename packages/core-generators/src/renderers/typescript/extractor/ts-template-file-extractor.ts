@@ -11,7 +11,7 @@ import { z } from 'zod';
 import { templateExtractorBarrelExportPlugin } from '#src/renderers/extractor/index.js';
 import { deduplicateTemplateFileExtractorSourceFiles } from '#src/renderers/extractor/utils/deduplicate-templates.js';
 
-import type { TsGeneratorTemplateMetadata } from '../templates/types.js';
+import type { TsTemplateMetadata } from '../templates/types.js';
 import type { WriteTsTemplateFileContext } from './render-ts-template-file.js';
 
 import { templatePathsPlugin } from '../../extractor/plugins/template-paths/template-paths.plugin.js';
@@ -19,7 +19,7 @@ import { templateRenderersPlugin } from '../../extractor/plugins/template-render
 import { typedTemplatesFilePlugin } from '../../extractor/plugins/typed-templates-file.js';
 import {
   TS_TEMPLATE_TYPE,
-  tsTemplateGeneratorTemplateMetadataSchema,
+  tsTemplateMetadataSchema,
 } from '../templates/types.js';
 import { buildExternalImportProvidersMap } from './build-external-import-providers-map.js';
 import { buildTsProjectExportMap } from './build-ts-project-export-map.js';
@@ -43,7 +43,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
     typedTemplatesFilePlugin,
     templateExtractorBarrelExportPlugin,
   ],
-  generatorTemplateMetadataSchema: tsTemplateGeneratorTemplateMetadataSchema,
+  templateMetadataSchema: tsTemplateMetadataSchema,
   templateInstanceDataSchema: z.object({}),
   extractTemplateMetadataEntries: (files, context) => {
     const deduplicatedFiles =
@@ -73,7 +73,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
               ...existingMetadata,
               sourceFile: generatorTemplatePath,
               pathRootRelativePath,
-            } satisfies TsGeneratorTemplateMetadata,
+            } satisfies TsTemplateMetadata,
             instanceData,
             templateName,
           };
@@ -159,7 +159,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
                   ...file.metadata,
                   variables: result.variables,
                   importMapProviders: result.importProviders,
-                } as TsGeneratorTemplateMetadata,
+                } as TsTemplateMetadata,
               );
               return result;
             }),
@@ -182,7 +182,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
         context.configLookup.getExtractorConfigOrThrow(generatorName);
       const templates = context.configLookup.getTemplatesForGenerator(
         generatorName,
-        tsTemplateGeneratorTemplateMetadataSchema,
+        tsTemplateMetadataSchema,
         TS_TEMPLATE_TYPE,
       );
 

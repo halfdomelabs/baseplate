@@ -135,7 +135,7 @@ export class TemplateExtractorConfigLookup {
 
   getTemplatesForGenerator<T extends z.ZodTypeAny>(
     generatorName: string,
-    generatorTemplateMetadataSchema: T,
+    templateMetadataSchema: T,
     templateType: z.infer<T>['type'],
   ): TemplateExtractorTemplateEntry<z.infer<T>>[] {
     const config = this.getExtractorConfigOrThrow(generatorName);
@@ -144,7 +144,7 @@ export class TemplateExtractorConfigLookup {
       .filter(([, template]) => template.type === templateType)
       .map(([templateName, template]) => ({
         name: templateName,
-        config: generatorTemplateMetadataSchema.parse(template) as z.infer<T>,
+        config: templateMetadataSchema.parse(template) as z.infer<T>,
       }));
   }
 

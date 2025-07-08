@@ -8,7 +8,7 @@ import type { TemplateExtractorTypedTemplate } from '#src/renderers/extractor/pl
 
 import { resolvePackagePathSpecifier } from '#src/renderers/extractor/utils/package-path-specifier.js';
 
-import type { TsGeneratorTemplateMetadata } from '../templates/types.js';
+import type { TsTemplateMetadata } from '../templates/types.js';
 
 import { tsImportBuilder } from '../imports/builder.js';
 import { TsCodeUtils, tsTemplate } from '../utils/ts-code-utils.js';
@@ -19,7 +19,7 @@ interface RenderTsTypedTemplateContext {
 
 function renderTsTypedTemplate(
   templateName: string,
-  metadata: TsGeneratorTemplateMetadata,
+  metadata: TsTemplateMetadata,
   { generatorPackageName }: RenderTsTypedTemplateContext,
 ): TemplateExtractorTypedTemplate {
   const exportName = camelCase(templateName);
@@ -71,7 +71,7 @@ function renderTsTypedTemplate(
 
 function renderTsTypedTemplateGroup(
   groupName: string,
-  templates: TemplateExtractorTemplateEntry<TsGeneratorTemplateMetadata>[],
+  templates: TemplateExtractorTemplateEntry<TsTemplateMetadata>[],
   context: RenderTsTypedTemplateContext,
 ): TemplateExtractorTypedTemplate {
   const renderedTemplates = templates
@@ -96,7 +96,7 @@ function renderTsTypedTemplateGroup(
 }
 
 export function renderTsTypedTemplates(
-  templates: TemplateExtractorTemplateEntry<TsGeneratorTemplateMetadata>[],
+  templates: TemplateExtractorTemplateEntry<TsTemplateMetadata>[],
   context: RenderTsTypedTemplateContext,
 ): TemplateExtractorTypedTemplate[] {
   const templatesWithGroup = templates.filter((t) => t.config.group);

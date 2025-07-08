@@ -1,9 +1,6 @@
 import type { TemplateFileBase } from '@baseplate-dev/sync';
 
-import {
-  templateConfigSchema,
-  templateFileMetadataBaseSchema,
-} from '@baseplate-dev/sync';
+import { templateConfigSchema } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import type { TemplateFileOptions } from '../schemas/template-file-options.js';
@@ -17,29 +14,26 @@ const textTemplateFileVariableSchema = z.object({
   description: z.string().optional(),
 });
 
-export const textTemplateGeneratorTemplateMetadataSchema =
-  templateConfigSchema.extend({
-    /**
-     * The options for the template file
-     */
-    fileOptions: templateFileOptionsSchema,
-    /**
-     * The path of the template relative to the closest file path root.
-     */
-    pathRootRelativePath: z.string().optional(),
-    /**
-     * The group to assign the template to when generating the typed templates.
-     */
-    group: z.string().optional(),
-    /**
-     * The variables for the template.
-     */
-    variables: z.record(z.string(), textTemplateFileVariableSchema).optional(),
-  });
+export const textTemplateMetadataSchema = templateConfigSchema.extend({
+  /**
+   * The options for the template file
+   */
+  fileOptions: templateFileOptionsSchema,
+  /**
+   * The path of the template relative to the closest file path root.
+   */
+  pathRootRelativePath: z.string().optional(),
+  /**
+   * The group to assign the template to when generating the typed templates.
+   */
+  group: z.string().optional(),
+  /**
+   * The variables for the template.
+   */
+  variables: z.record(z.string(), textTemplateFileVariableSchema).optional(),
+});
 
-export type TextTemplateGeneratorTemplateMetadata = z.infer<
-  typeof textTemplateGeneratorTemplateMetadataSchema
->;
+export type TextTemplateMetadata = z.infer<typeof textTemplateMetadataSchema>;
 
 export const textTemplateInstanceDataSchema = z.object({
   /**
@@ -50,41 +44,6 @@ export const textTemplateInstanceDataSchema = z.object({
 
 export type TextTemplateInstanceData = z.infer<
   typeof textTemplateInstanceDataSchema
->;
-
-export const textTemplateOutputTemplateMetadataSchema =
-  templateFileMetadataBaseSchema.extend({
-    /**
-     * The type of the template (always `text`)
-     */
-    type: z.literal(TEXT_TEMPLATE_TYPE),
-    /**
-     * The options for the template file
-     */
-    fileOptions: templateFileOptionsSchema,
-    /**
-     * The group to assign the template to when generating the typed templates.
-     */
-    group: z.string().optional(),
-    /**
-     * The variables for the template with their values.
-     */
-    variables: z
-      .record(
-        z.string(),
-        textTemplateFileVariableSchema.extend({
-          // The value of the variable.
-          value: z.string(),
-        }),
-      )
-      .optional(),
-  });
-
-/**
- * Metadata for a text template file
- */
-export type TextTemplateOutputTemplateMetadata = z.infer<
-  typeof textTemplateOutputTemplateMetadataSchema
 >;
 
 /**
@@ -133,5 +92,5 @@ export type TextTemplateGroup = Record<string, TextTemplateFile>;
  * Generator template metadata for text templates
  */
 export type TextGeneratorTemplateMetadata = z.infer<
-  typeof textTemplateGeneratorTemplateMetadataSchema
+  typeof textTemplateMetadataSchema
 >;

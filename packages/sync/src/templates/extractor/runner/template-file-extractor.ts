@@ -82,8 +82,8 @@ export interface TemplateFileExtractorMetadataEntry<
  * - Writing template files to the package
  */
 export interface TemplateFileExtractor<
-  TGeneratorTemplateMetadata extends z.ZodSchema = typeof templateConfigSchema,
-  TTemplateInstanceData extends z.AnyZodObject = z.AnyZodObject,
+  TTemplateMetadataSchema extends z.ZodSchema = typeof templateConfigSchema,
+  TTemplateInstanceDataSchema extends z.AnyZodObject = z.AnyZodObject,
   TExtractorConfig extends z.ZodSchema = z.ZodUnknown,
   TPluginDependencies extends
     TemplateExtractorPluginDependencies = TemplateExtractorPluginDependencies,
@@ -95,11 +95,11 @@ export interface TemplateFileExtractor<
   /**
    * The schema for the metadata for a template in the `extractor.json` file.
    */
-  generatorTemplateMetadataSchema?: TGeneratorTemplateMetadata;
+  templateMetadataSchema?: TTemplateMetadataSchema;
   /**
    * The schema for the instance data for a template in the `.templates-info.json` file.
    */
-  templateInstanceDataSchema?: TTemplateInstanceData;
+  templateInstanceDataSchema?: TTemplateInstanceDataSchema;
   /**
    * The schema for the config for the extractor in the `extractor.json` file.
    */
@@ -121,20 +121,20 @@ export interface TemplateFileExtractor<
    */
   extractTemplateMetadataEntries(
     files: TemplateFileExtractorSourceFile<
-      z.infer<TGeneratorTemplateMetadata>,
-      z.infer<TTemplateInstanceData>
+      z.infer<TTemplateMetadataSchema>,
+      z.infer<TTemplateInstanceDataSchema>
     >[],
     context: TemplateExtractorContext<TPluginDependencies>,
     api: TemplateExtractorApi,
   ):
     | TemplateFileExtractorMetadataEntry<
-        z.infer<TGeneratorTemplateMetadata>,
-        z.infer<TTemplateInstanceData>
+        z.infer<TTemplateMetadataSchema>,
+        z.infer<TTemplateInstanceDataSchema>
       >[]
     | Promise<
         TemplateFileExtractorMetadataEntry<
-          z.infer<TGeneratorTemplateMetadata>,
-          z.infer<TTemplateInstanceData>
+          z.infer<TTemplateMetadataSchema>,
+          z.infer<TTemplateInstanceDataSchema>
         >[]
       >;
 
@@ -148,8 +148,8 @@ export interface TemplateFileExtractor<
    */
   writeTemplateFiles(
     files: TemplateFileExtractorMetadataEntry<
-      z.infer<TGeneratorTemplateMetadata>,
-      z.infer<TTemplateInstanceData>
+      z.infer<TTemplateMetadataSchema>,
+      z.infer<TTemplateInstanceDataSchema>
     >[],
     context: TemplateExtractorContext<TPluginDependencies>,
     api: TemplateExtractorApi,
@@ -172,8 +172,6 @@ export interface TemplateFileExtractor<
 }
 
 export type AnyTemplateFileExtractor = TemplateFileExtractor<z.ZodSchema>;
-
-// TODO [2025-07-03]: Rename generatorTemplateMetadataSchema to templateMetadataSchema
 
 /**
  * Creates a typed TemplateFileExtractor.

@@ -12,7 +12,7 @@ import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-f
 import { deduplicateTemplateFileExtractorSourceFiles } from '../extractor/utils/deduplicate-templates.js';
 import { renderTextTypedTemplates } from './render-text-typed-templates.js';
 import {
-  textTemplateGeneratorTemplateMetadataSchema,
+  textTemplateMetadataSchema,
   textTemplateInstanceDataSchema,
 } from './types.js';
 import { extractTemplateVariables } from './utils.js';
@@ -22,7 +22,7 @@ const limit = pLimit(getGenerationConcurrencyLimit());
 export const TextTemplateFileExtractor = createTemplateFileExtractor({
   name: 'text',
   pluginDependencies: [templatePathsPlugin, typedTemplatesFilePlugin],
-  generatorTemplateMetadataSchema: textTemplateGeneratorTemplateMetadataSchema,
+  templateMetadataSchema: textTemplateMetadataSchema,
   templateInstanceDataSchema: textTemplateInstanceDataSchema,
   extractTemplateMetadataEntries: (files, context) => {
     const deduplicatedFiles =
@@ -105,7 +105,7 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
         context.configLookup.getExtractorConfigOrThrow(generatorName);
       const templates = context.configLookup.getTemplatesForGenerator(
         generatorName,
-        textTemplateGeneratorTemplateMetadataSchema,
+        textTemplateMetadataSchema,
         'text',
       );
 

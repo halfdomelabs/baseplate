@@ -7,21 +7,21 @@ import {
 import { camelCase } from 'change-case';
 import pLimit from 'p-limit';
 
-import type { RawTemplateGeneratorTemplateMetadata } from './types.js';
+import type { RawTemplateMetadata } from './types.js';
 
 import { templatePathsPlugin } from '../extractor/plugins/template-paths/template-paths.plugin.js';
 import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-file.js';
 import { deduplicateTemplateFileExtractorSourceFiles } from '../extractor/utils/deduplicate-templates.js';
 import { resolvePackagePathSpecifier } from '../extractor/utils/package-path-specifier.js';
 import { TsCodeUtils, tsImportBuilder } from '../typescript/index.js';
-import { rawTemplateGeneratorTemplateMetadataSchema } from './types.js';
+import { rawTemplateMetadataSchema } from './types.js';
 
 const limit = pLimit(getGenerationConcurrencyLimit());
 
 export const RawTemplateFileExtractor = createTemplateFileExtractor({
   name: 'raw',
   pluginDependencies: [templatePathsPlugin, typedTemplatesFilePlugin],
-  generatorTemplateMetadataSchema: rawTemplateGeneratorTemplateMetadataSchema,
+  templateMetadataSchema: rawTemplateMetadataSchema,
   extractTemplateMetadataEntries: (files, context) => {
     const deduplicatedFiles =
       deduplicateTemplateFileExtractorSourceFiles(files);
@@ -47,7 +47,7 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
               pathRootRelativePath,
             },
             instanceData: {},
-          } satisfies TemplateFileExtractorMetadataEntry<RawTemplateGeneratorTemplateMetadata>;
+          } satisfies TemplateFileExtractorMetadataEntry<RawTemplateMetadata>;
         } catch (error) {
           throw new Error(
             `Error extracting template metadata for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
@@ -89,7 +89,7 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
         context.configLookup.getExtractorConfigOrThrow(generatorName);
       const templates = context.configLookup.getTemplatesForGenerator(
         generatorName,
-        rawTemplateGeneratorTemplateMetadataSchema,
+        rawTemplateMetadataSchema,
         'raw',
       );
       for (const { name, config } of templates) {

@@ -19,7 +19,7 @@ import {
 import { resolvePackagePathSpecifier } from '#src/renderers/extractor/utils/index.js';
 import { normalizeTsPathToJsPath } from '#src/utils/ts-paths.js';
 
-import type { TsGeneratorTemplateMetadata } from '../templates/types.js';
+import type { TsTemplateMetadata } from '../templates/types.js';
 
 import { tsImportBuilder } from '../imports/builder.js';
 import {
@@ -34,9 +34,7 @@ interface RenderTsTemplateRenderersContext {
 }
 
 function getImportMapProvidersExpression(
-  templateConfigOrConfigs:
-    | TsGeneratorTemplateMetadata
-    | TsGeneratorTemplateMetadata[],
+  templateConfigOrConfigs: TsTemplateMetadata | TsTemplateMetadata[],
 ): string | undefined {
   const templateConfigs = Array.isArray(templateConfigOrConfigs)
     ? templateConfigOrConfigs
@@ -81,7 +79,7 @@ function createTypeScriptTaskDependencies(
 }
 
 function createImportProviderTaskDependencies(
-  templateConfig: TsGeneratorTemplateMetadata,
+  templateConfig: TsTemplateMetadata,
   context: RenderTsTemplateRenderersContext,
 ): TemplateRendererTaskDependency[] {
   return Object.entries(templateConfig.importMapProviders ?? {}).map(
@@ -103,7 +101,7 @@ const builderActionTypeImport = TsCodeUtils.typeImportFragment(
 
 function createTypeScriptRenderFunctionForTemplate(
   templateName: string,
-  templateConfig: TsGeneratorTemplateMetadata,
+  templateConfig: TsTemplateMetadata,
   context: RenderTsTemplateRenderersContext,
 ): TemplateRendererEntry {
   const importMapProvidersExpression =
@@ -157,7 +155,7 @@ function createTypeScriptRenderFunctionForTemplate(
 
 function createTypeScriptRenderFunctionForTemplateGroup(
   groupName: string,
-  templateConfigs: TsGeneratorTemplateMetadata[],
+  templateConfigs: TsTemplateMetadata[],
   context: RenderTsTemplateRenderersContext,
 ): TemplateRendererEntry {
   const typedTemplatesExportName = getTypedTemplatesFileExportName(
@@ -205,7 +203,7 @@ function createTypeScriptRenderFunctionForTemplateGroup(
 }
 
 export function renderTsTemplateRenderers(
-  templates: TemplateExtractorTemplateEntry<TsGeneratorTemplateMetadata>[],
+  templates: TemplateExtractorTemplateEntry<TsTemplateMetadata>[],
   context: RenderTsTemplateRenderersContext,
 ): TemplateRendererEntry[] {
   const templatesWithGroup = templates.filter((t) => t.config.group);

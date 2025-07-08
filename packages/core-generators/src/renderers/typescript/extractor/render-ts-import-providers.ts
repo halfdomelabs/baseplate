@@ -20,7 +20,7 @@ import { normalizeTsPathToJsPath } from '#src/utils/index.js';
 import type { TsCodeFragment } from '../fragments/types.js';
 import type { TsImportMapSchemaEntry } from '../import-maps/types.js';
 import type {
-  TsGeneratorTemplateMetadata,
+  TsTemplateMetadata,
   TsTemplateFileProjectExport,
 } from '../templates/types.js';
 import type { ExternalImportProviderEntry } from './build-external-import-providers-map.js';
@@ -94,7 +94,7 @@ function renderDefaultTsImportProviders(
 
 function renderCombinedImportProviderTask(
   generatorName: string,
-  templates: TemplateExtractorTemplateEntry<TsGeneratorTemplateMetadata>[],
+  templates: TemplateExtractorTemplateEntry<TsTemplateMetadata>[],
   defaultImportProviderConfig:
     | {
         importProviderNames: TsImportProviderNames;
@@ -257,7 +257,7 @@ function renderCombinedImportProviderTask(
  */
 export function renderTsImportProviders(
   generatorName: string,
-  templates: TemplateExtractorTemplateEntry<TsGeneratorTemplateMetadata>[],
+  templates: TemplateExtractorTemplateEntry<TsTemplateMetadata>[],
   context: RenderTsImportProvidersContext,
   extractorConfig?: TsExtractorConfig,
 ):

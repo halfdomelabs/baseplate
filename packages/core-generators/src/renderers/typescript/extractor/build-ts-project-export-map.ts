@@ -6,7 +6,7 @@ import type { ExternalImportProviderEntry } from './build-external-import-provid
 
 import {
   TS_TEMPLATE_TYPE,
-  tsTemplateGeneratorTemplateMetadataSchema,
+  tsTemplateMetadataSchema,
 } from '../templates/types.js';
 import { getDefaultImportProviderNames } from './default-import-providers.js';
 import { GENERATED_IMPORT_PROVIDERS_FILE_NAME } from './render-ts-import-providers.js';
@@ -70,7 +70,7 @@ export function buildTsProjectExportMap(
   const generatorConfigs =
     context.configLookup.getGeneratorConfigsForExtractorType(
       TS_TEMPLATE_TYPE,
-      tsTemplateGeneratorTemplateMetadataSchema,
+      tsTemplateMetadataSchema,
       tsExtractorConfigSchema,
     );
 
