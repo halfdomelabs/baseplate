@@ -1,7 +1,6 @@
 import type {
   TsCodeFragment,
   TsImportDeclaration,
-  TsTemplateOutputTemplateMetadata,
 } from '@baseplate-dev/core-generators';
 
 import {
@@ -538,16 +537,10 @@ export const reactApolloGenerator = createGenerator({
               destination: '@/src/generated/graphql.tsx',
               contents: '',
               options: { skipWriting: true },
-              templateMetadata: {
+              templateInfo: {
+                template: 'graphql',
                 generator: builder.generatorInfo.name,
-                name: 'graphql',
-                projectExportsOnly: true,
-                type: 'ts',
-                projectExports: {
-                  '*': {},
-                },
-                fileOptions: { kind: 'singleton' },
-              } satisfies TsTemplateOutputTemplateMetadata,
+              },
             });
 
             builder.addPostWriteCommand('pnpm generate', {

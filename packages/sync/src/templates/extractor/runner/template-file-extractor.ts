@@ -1,9 +1,7 @@
 import type { z } from 'zod';
 
-import type {
-  TemplateFileMetadataBase,
-  templateFileMetadataBaseSchema,
-} from '../../metadata/index.js';
+import type { TemplateMetadataFileEntry } from '#src/templates/metadata/read-template-metadata-files.js';
+
 import type {
   TemplateConfig,
   templateConfigSchema,
@@ -16,17 +14,29 @@ import type { TemplateExtractorPluginDependencies } from './template-extractor-p
  * A source file for a template file extractor annotated with metadata.
  */
 export interface TemplateFileExtractorSourceFile<
-  TOutputTemplateMetadata extends
-    TemplateFileMetadataBase = TemplateFileMetadataBase,
+  TGeneratorTemplateMetadata extends TemplateConfig = TemplateConfig,
+  TInstanceData extends Record<string, unknown> = Record<string, unknown>,
 > {
   /**
    * The absolute path of the source file.
    */
   absolutePath: string;
   /**
-   * The metadata for the file.
+   * The name of the template.
    */
-  metadata: TOutputTemplateMetadata;
+  templateName: string;
+  /**
+   * The name of the generator.
+   */
+  generatorName: string;
+  /**
+   * The existing metadata for the template.
+   */
+  existingMetadata: TGeneratorTemplateMetadata;
+  /**
+   * The instance data for the file.
+   */
+  instanceData: TInstanceData;
   /**
    * The modified time of the file.
    */
@@ -34,33 +44,32 @@ export interface TemplateFileExtractorSourceFile<
 }
 
 /**
- * A metadata entry that will be added to the `extractor.json` file.
+ * A metadata entry that will be upserted to the `extractor.json` file.
  */
 export interface TemplateFileExtractorMetadataEntry<
   TGeneratorTemplateMetadata extends TemplateConfig = TemplateConfig,
-  TExtractionContext = unknown,
+  TInstanceData extends Record<string, unknown> = Record<string, unknown>,
 > {
   /**
    * The name of the generator.
    */
   generator: string;
   /**
-   * The relative path of the file in the templates/ folder.
-   */
-  generatorTemplatePath: string;
-  /**
    * The absolute path of the source file.
    */
   sourceAbsolutePath: string;
   /**
-   * The metadata for the file.
+   * The name of the template.
+   */
+  templateName: string;
+  /**
+   * The metadata for the template.
    */
   metadata: TGeneratorTemplateMetadata;
   /**
-   * Temporary extraction context data needed for writeTemplateFiles.
-   * This data is not persisted to the extractor.json file.
+   * Instance data attached to the template.
    */
-  extractionContext?: TExtractionContext;
+  instanceData: TInstanceData;
 }
 
 /**
@@ -74,12 +83,10 @@ export interface TemplateFileExtractorMetadataEntry<
  */
 export interface TemplateFileExtractor<
   TGeneratorTemplateMetadata extends z.ZodSchema = typeof templateConfigSchema,
-  TOutputTemplateMetadata extends
-    z.ZodSchema = typeof templateFileMetadataBaseSchema,
+  TTemplateInstanceData extends z.AnyZodObject = z.AnyZodObject,
   TExtractorConfig extends z.ZodSchema = z.ZodUnknown,
   TPluginDependencies extends
     TemplateExtractorPluginDependencies = TemplateExtractorPluginDependencies,
-  TExtractionContext = unknown,
 > {
   /**
    * The name of the extractor.
@@ -90,9 +97,9 @@ export interface TemplateFileExtractor<
    */
   generatorTemplateMetadataSchema?: TGeneratorTemplateMetadata;
   /**
-   * The schema for the metadata for a generated file in the `.template-metadata.json` file.
+   * The schema for the instance data for a template in the `.templates-info.json` file.
    */
-  outputTemplateMetadataSchema?: TOutputTemplateMetadata;
+  templateInstanceDataSchema?: TTemplateInstanceData;
   /**
    * The schema for the config for the extractor in the `extractor.json` file.
    */
@@ -113,18 +120,21 @@ export interface TemplateFileExtractor<
    * @returns The metadata entries for the given files.
    */
   extractTemplateMetadataEntries(
-    files: TemplateFileExtractorSourceFile<z.infer<TOutputTemplateMetadata>>[],
+    files: TemplateFileExtractorSourceFile<
+      z.infer<TGeneratorTemplateMetadata>,
+      z.infer<TTemplateInstanceData>
+    >[],
     context: TemplateExtractorContext<TPluginDependencies>,
     api: TemplateExtractorApi,
   ):
     | TemplateFileExtractorMetadataEntry<
         z.infer<TGeneratorTemplateMetadata>,
-        TExtractionContext
+        z.infer<TTemplateInstanceData>
       >[]
     | Promise<
         TemplateFileExtractorMetadataEntry<
           z.infer<TGeneratorTemplateMetadata>,
-          TExtractionContext
+          z.infer<TTemplateInstanceData>
         >[]
       >;
 
@@ -134,14 +144,16 @@ export interface TemplateFileExtractor<
    * @param files - The metadata entries for the files to write.
    * @param context - The context for the extractor.
    * @param api - The API for reading and writing files.
+   * @param allFiles - All the files with metadata in the output directory.
    */
   writeTemplateFiles(
     files: TemplateFileExtractorMetadataEntry<
       z.infer<TGeneratorTemplateMetadata>,
-      TExtractionContext
+      z.infer<TTemplateInstanceData>
     >[],
     context: TemplateExtractorContext<TPluginDependencies>,
     api: TemplateExtractorApi,
+    allFiles: TemplateMetadataFileEntry[],
   ): Promise<void> | void;
 
   /**
@@ -159,36 +171,31 @@ export interface TemplateFileExtractor<
   ): Promise<void> | void;
 }
 
-export type AnyTemplateFileExtractor = TemplateFileExtractor<
-  z.ZodSchema,
-  z.ZodSchema
->;
+export type AnyTemplateFileExtractor = TemplateFileExtractor<z.ZodSchema>;
+
+// TODO [2025-07-03]: Rename generatorTemplateMetadataSchema to templateMetadataSchema
 
 /**
  * Creates a typed TemplateFileExtractor.
  */
 export function createTemplateFileExtractor<
   TGeneratorTemplateMetadata extends z.ZodSchema = typeof templateConfigSchema,
-  TOutputTemplateMetadata extends
-    z.ZodSchema = typeof templateFileMetadataBaseSchema,
+  TTemplateInstanceData extends z.AnyZodObject = z.AnyZodObject,
   TExtractorConfig extends z.ZodSchema = z.ZodUnknown,
   TPluginDependencies extends
     TemplateExtractorPluginDependencies = TemplateExtractorPluginDependencies,
-  TExtractionContext = unknown,
 >(
   input: TemplateFileExtractor<
     TGeneratorTemplateMetadata,
-    TOutputTemplateMetadata,
+    TTemplateInstanceData,
     TExtractorConfig,
-    TPluginDependencies,
-    TExtractionContext
+    TPluginDependencies
   >,
 ): TemplateFileExtractor<
   TGeneratorTemplateMetadata,
-  TOutputTemplateMetadata,
+  TTemplateInstanceData,
   TExtractorConfig,
-  TPluginDependencies,
-  TExtractionContext
+  TPluginDependencies
 > {
   return input;
 }

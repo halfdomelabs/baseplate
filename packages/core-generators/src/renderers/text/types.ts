@@ -37,6 +37,21 @@ export const textTemplateGeneratorTemplateMetadataSchema =
     variables: z.record(z.string(), textTemplateFileVariableSchema).optional(),
   });
 
+export type TextTemplateGeneratorTemplateMetadata = z.infer<
+  typeof textTemplateGeneratorTemplateMetadataSchema
+>;
+
+export const textTemplateInstanceDataSchema = z.object({
+  /**
+   * The variables for the template with their values.
+   */
+  variables: z.record(z.string(), z.string()),
+});
+
+export type TextTemplateInstanceData = z.infer<
+  typeof textTemplateInstanceDataSchema
+>;
+
 export const textTemplateOutputTemplateMetadataSchema =
   templateFileMetadataBaseSchema.extend({
     /**
@@ -78,13 +93,6 @@ export type TextTemplateOutputTemplateMetadata = z.infer<
 export type TextTemplateFileVariable = z.infer<
   typeof textTemplateFileVariableSchema
 >;
-
-/**
- * A variable for a text template with a value.
- */
-export type TextTemplateFileVariableWithValue = TextTemplateFileVariable & {
-  value: string;
-};
 
 /**
  * A template for a text file with replacements.

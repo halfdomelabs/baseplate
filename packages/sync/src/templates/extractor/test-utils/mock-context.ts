@@ -15,7 +15,6 @@ export async function createMockContext(
   options: {
     outputDirectory?: string;
     packageMap?: Map<string, string>;
-    fileIdMap?: Map<string, string>;
     plugins?: Map<string, unknown>;
     logger?: Logger;
   } = {},
@@ -23,12 +22,11 @@ export async function createMockContext(
   const {
     outputDirectory = '/test-output',
     packageMap = new Map<string, string>(),
-    fileIdMap = new Map<string, string>(),
     plugins = new Map(),
     logger = createTestLogger(),
   } = options;
 
-  const configLookup = new TemplateExtractorConfigLookup(packageMap, fileIdMap);
+  const configLookup = new TemplateExtractorConfigLookup(packageMap);
   const fileContainer = new TemplateExtractorFileContainer([
     ...packageMap.values(),
   ] as string[]);

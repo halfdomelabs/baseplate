@@ -2,11 +2,11 @@ import { groupBy, uniq } from 'es-toolkit';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
-import type { TemplateFileMetadataBase } from '../metadata/metadata.js';
 import type { TemplateExtractorHook } from './runner/template-extractor-plugin.js';
 import type {
   AnyTemplateFileExtractor,
   TemplateFileExtractorMetadataEntry,
+  TemplateFileExtractorSourceFile,
 } from './runner/template-file-extractor.js';
 
 import { readTemplateMetadataFiles } from '../metadata/read-template-metadata-files.js';
@@ -38,7 +38,6 @@ export interface RunTemplateFileExtractorsOptions {
  * @param outputDirectories - The output directories to run the extractors on
  * @param generatorPackageMap - The map of package names with generators to package paths
  * @param logger - The logger to use
- * @param fileIdMap - The map of file ids to file paths (used to link generated files to their templates)
  * @param options - The options to use
  */
 export async function runTemplateFileExtractors(
@@ -46,21 +45,17 @@ export async function runTemplateFileExtractors(
   outputDirectory: string,
   generatorPackageMap: Map<string, string>,
   logger: Logger,
-  fileIdMap: Map<string, string>,
   options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
   const templateMetadataFiles =
     await readTemplateMetadataFiles(outputDirectory);
 
-  const configLookup = new TemplateExtractorConfigLookup(
-    generatorPackageMap,
-    fileIdMap,
-  );
+  const configLookup = new TemplateExtractorConfigLookup(generatorPackageMap);
   await configLookup.initialize();
 
   if (options?.autoGenerateExtractor) {
     const generatorNames = templateMetadataFiles.map(
-      (m) => m.metadata.generator,
+      (m) => m.templateInfo.generator,
     );
     const missingGeneratorNames = generatorNames.filter(
       (name) => !configLookup.getExtractorConfig(name),
@@ -111,8 +106,20 @@ export async function runTemplateFileExtractors(
     fileContainer,
   });
 
-  // Group files by type and validate uniqueness (throws on duplicates)
-  const filesByType = groupBy(templateMetadataFiles, (f) => f.metadata.type);
+  // Group files by type (need to look up type from template definition)
+  const filesWithTypeAndMetadata = templateMetadataFiles.map((file) => {
+    const templateConfig = configLookup.getTemplateConfigOrThrow(
+      file.templateInfo.generator,
+      file.templateInfo.template,
+    );
+    return {
+      ...file,
+      templateType: templateConfig.type,
+      metadata: templateConfig,
+    };
+  });
+
+  const filesByType = groupBy(filesWithTypeAndMetadata, (f) => f.templateType);
 
   // Get the metadata entries for each file
   const metadataEntries: TemplateFileExtractorMetadataEntry[] = [];
@@ -122,18 +129,24 @@ export async function runTemplateFileExtractors(
       throw new Error(`No extractor found for template type: ${type}`);
     }
 
-    const parsedFiles = files.map((f) => {
-      const { absolutePath: path, metadata, modifiedTime } = f;
-      return {
-        absolutePath: path,
-        metadata: extractor.outputTemplateMetadataSchema
-          ? (extractor.outputTemplateMetadataSchema.parse(
-              metadata,
-            ) as TemplateFileMetadataBase)
-          : metadata,
-        modifiedTime,
-      };
-    });
+    const parsedFiles = files
+      // Only files with instanceData are extractable
+      .filter((f) => f.templateInfo.instanceData !== undefined)
+      .map((f) => {
+        const { absolutePath: path, templateInfo, metadata, modifiedTime } = f;
+        return {
+          absolutePath: path,
+          templateName: templateInfo.template,
+          generatorName: templateInfo.generator,
+          existingMetadata: metadata,
+          instanceData: extractor.templateInstanceDataSchema
+            ? extractor.templateInstanceDataSchema.parse(
+                templateInfo.instanceData,
+              )
+            : {},
+          modifiedTime,
+        } satisfies TemplateFileExtractorSourceFile;
+      });
     const api = new TemplateExtractorApi(context, type);
 
     const newEntries = await extractor.extractTemplateMetadataEntries(
@@ -163,7 +176,12 @@ export async function runTemplateFileExtractors(
 
     const api = new TemplateExtractorApi(context, type);
 
-    await extractor.writeTemplateFiles(entries, context, api);
+    await extractor.writeTemplateFiles(
+      entries,
+      context,
+      api,
+      templateMetadataFiles,
+    );
 
     const generatorNames = uniq(entries.map((e) => e.generator));
     await extractor.writeGeneratedFiles(generatorNames, context, api);

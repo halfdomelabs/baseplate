@@ -6,6 +6,7 @@ import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { groupBy } from 'es-toolkit';
 import path from 'node:path';
 import pLimit from 'p-limit';
+import { z } from 'zod';
 
 import { templateExtractorBarrelExportPlugin } from '#src/renderers/extractor/index.js';
 import { deduplicateTemplateFileExtractorSourceFiles } from '#src/renderers/extractor/utils/deduplicate-templates.js';
@@ -19,7 +20,6 @@ import { typedTemplatesFilePlugin } from '../../extractor/plugins/typed-template
 import {
   TS_TEMPLATE_TYPE,
   tsTemplateGeneratorTemplateMetadataSchema,
-  tsTemplateOutputTemplateMetadataSchema,
 } from '../templates/types.js';
 import { buildExternalImportProvidersMap } from './build-external-import-providers-map.js';
 import { buildTsProjectExportMap } from './build-ts-project-export-map.js';
@@ -43,40 +43,72 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
     typedTemplatesFilePlugin,
     templateExtractorBarrelExportPlugin,
   ],
-  outputTemplateMetadataSchema: tsTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: tsTemplateGeneratorTemplateMetadataSchema,
+  templateInstanceDataSchema: z.object({}),
   extractTemplateMetadataEntries: (files, context) => {
     const deduplicatedFiles =
       deduplicateTemplateFileExtractorSourceFiles(files);
     const templatePathPlugin = context.getPlugin('template-paths');
-    return deduplicatedFiles.map(({ metadata, absolutePath }) => {
-      try {
-        const { pathRootRelativePath, generatorTemplatePath } =
-          templatePathPlugin.resolveTemplatePaths(
-            metadata.fileOptions,
-            absolutePath,
-            metadata.name,
-            metadata.generator,
-          );
+    return deduplicatedFiles.map(
+      ({
+        existingMetadata,
+        instanceData,
+        templateName,
+        generatorName,
+        absolutePath,
+      }) => {
+        try {
+          const { pathRootRelativePath, generatorTemplatePath } =
+            templatePathPlugin.resolveTemplatePaths(
+              existingMetadata.fileOptions,
+              absolutePath,
+              templateName,
+              generatorName,
+            );
 
-        return {
-          generator: metadata.generator,
-          generatorTemplatePath,
-          sourceAbsolutePath: absolutePath,
-          metadata: {
-            ...metadata,
-            pathRootRelativePath,
-          },
-        };
-      } catch (error) {
-        throw enhanceErrorWithContext(
-          error,
-          `Error extracting template metadata for ${absolutePath}`,
-        );
-      }
-    });
+          return {
+            generator: generatorName,
+            sourceAbsolutePath: absolutePath,
+            metadata: {
+              ...existingMetadata,
+              sourceFile: generatorTemplatePath,
+              pathRootRelativePath,
+            } satisfies TsGeneratorTemplateMetadata,
+            instanceData,
+            templateName,
+          };
+        } catch (error) {
+          throw enhanceErrorWithContext(
+            error,
+            `Error extracting template metadata for ${absolutePath}`,
+          );
+        }
+      },
+    );
   },
-  writeTemplateFiles: async (files, context, api) => {
+  writeTemplateFiles: async (files, context, api, allFiles) => {
+    // Build a map of generators to template names to the output relative paths of the template.
+    const templatesOutputRelativePathMap = new Map<
+      string,
+      Map<string, string[]>
+    >();
+    for (const file of allFiles) {
+      const outputRelativePath = path.relative(
+        context.outputDirectory,
+        file.absolutePath,
+      );
+      const { generator } = file.templateInfo;
+      let generatorMap = templatesOutputRelativePathMap.get(generator);
+      if (!generatorMap) {
+        generatorMap = new Map();
+        templatesOutputRelativePathMap.set(generator, generatorMap);
+      }
+      generatorMap.set(file.templateInfo.template, [
+        ...(generatorMap.get(file.templateInfo.template) ?? []),
+        outputRelativePath,
+      ]);
+    }
+
     // Gather all the imports from the entry metadata
     const externalImportProvidersMap = buildExternalImportProvidersMap(
       context.configLookup,
@@ -84,6 +116,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
     const projectExportMap = buildTsProjectExportMap(
       context,
       externalImportProvidersMap,
+      templatesOutputRelativePathMap,
     );
 
     const filesByGenerator = groupBy(files, (f) => f.generator);
@@ -115,12 +148,13 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
               );
               await api.writeTemplateFile(
                 file.generator,
-                file.generatorTemplatePath,
+                file.metadata.sourceFile,
                 result.contents,
               );
               // update the extractor config with the new variables and import providers
               context.configLookup.updateExtractorTemplateConfig(
                 file.generator,
+                file.templateName,
                 {
                   ...file.metadata,
                   variables: result.variables,
@@ -161,11 +195,11 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
       }
 
       // Add the path root relative paths to the template paths plugin
-      for (const { config } of templates) {
+      for (const { config, name } of templates) {
         if (config.pathRootRelativePath) {
           templatePathsPlugin.registerTemplatePathEntry(
             generatorName,
-            config.name,
+            name,
             config.pathRootRelativePath,
           );
         }

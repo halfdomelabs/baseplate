@@ -18,11 +18,9 @@ import type {
   InferTsTemplateVariablesFromMap,
   TsTemplateFile,
   TsTemplateFileVariable,
-  TsTemplateOutputTemplateMetadata,
 } from '../templates/types.js';
 
 import { renderTsCodeFileTemplate } from '../renderers/file.js';
-import { TS_TEMPLATE_TYPE } from '../templates/types.js';
 
 interface RenderTsTemplateFileActionInputBase<T extends TsTemplateFile> {
   template: T;
@@ -106,18 +104,6 @@ export function renderTsTemplateFileAction<
         );
       }
 
-      const templateMetadata: TsTemplateOutputTemplateMetadata | undefined = {
-        name: template.name,
-        generator: generatorInfo.name,
-        group: template.group,
-        type: TS_TEMPLATE_TYPE,
-        projectExports:
-          Object.keys(template.projectExports ?? {}).length > 0
-            ? template.projectExports
-            : undefined,
-        fileOptions: template.fileOptions,
-      };
-
       if (template.fileOptions.kind === 'instance' && !id) {
         throw new Error('Instance template must have an id');
       }
@@ -150,7 +136,11 @@ export function renderTsTemplateFileAction<
         destination,
         contents: renderedTemplate,
         options: writeOptions,
-        templateMetadata: shouldIncludeMetadata ? templateMetadata : undefined,
+        templateInfo: {
+          template: template.name,
+          generator: generatorInfo.name,
+          instanceData: shouldIncludeMetadata ? {} : undefined,
+        },
         generatorName: generatorInfo.name,
       });
     },

@@ -37,23 +37,13 @@ export function mergeExtractorTemplateEntries(
 
     // Create a map of new templates to add
     const newTemplates = Object.fromEntries(
-      entries.map((e) => [e.generatorTemplatePath, e.metadata]),
-    );
-
-    // Remove any existing templates that have the same name as new templates
-    // This prevents duplicates when template names match but paths differ
-    const newTemplateNames = new Set(entries.map((e) => e.metadata.name));
-
-    const filteredExistingTemplates = Object.fromEntries(
-      Object.entries(templates).filter(
-        ([, templateConfig]) => !newTemplateNames.has(templateConfig.name),
-      ),
+      entries.map((e) => [e.templateName, e.metadata]),
     );
 
     const newConfig = sortExtractorConfigKeys({
       ...generatorConfig.config,
       templates: {
-        ...filteredExistingTemplates,
+        ...templates,
         ...newTemplates,
       },
     });

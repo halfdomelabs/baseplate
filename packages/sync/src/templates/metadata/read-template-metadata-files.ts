@@ -6,30 +6,29 @@ import { globby } from 'globby';
 import fsAdapter from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { z } from 'zod';
 
-import type { TemplateFileMetadataBase } from './metadata.js';
+import type { TemplateInfo } from './metadata.js';
 
-import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
-import { templateFileMetadataBaseSchema } from './metadata.js';
+import { TEMPLATES_INFO_FILENAME } from '../constants.js';
+import { templatesInfoFileSchema } from './metadata.js';
 
 export interface TemplateMetadataFileEntry {
   absolutePath: string;
-  metadata: TemplateFileMetadataBase;
+  templateInfo: TemplateInfo;
   modifiedTime: Date;
 }
 
 /**
- * Reads all template metadata files in the output directory and returns an array of template metadata file entries.
+ * Reads all templates info files in the output directory and returns an array of template metadata file entries.
  *
- * @param outputDirectory - The directory to read template metadata files from.
+ * @param outputDirectory - The directory to read templates info files from.
  * @returns An array of template metadata file entries.
  */
 export async function readTemplateMetadataFiles(
   outputDirectory: string,
 ): Promise<TemplateMetadataFileEntry[]> {
-  const templateMetadataFiles = await globby(
-    path.join('**', TEMPLATE_METADATA_FILENAME),
+  const templateInfoFiles = await globby(
+    path.join('**', TEMPLATES_INFO_FILENAME),
     {
       absolute: true,
       onlyFiles: true,
@@ -40,28 +39,31 @@ export async function readTemplateMetadataFiles(
   );
 
   const templateFileArrays = await Promise.all(
-    templateMetadataFiles.flatMap(async (metadataFile) => {
-      const metadataFileContents = await readJsonWithSchema(
-        metadataFile,
-        z.record(z.string(), templateFileMetadataBaseSchema.passthrough()),
+    templateInfoFiles.flatMap(async (infoFile) => {
+      const infoFileContents = await readJsonWithSchema(
+        infoFile,
+        templatesInfoFileSchema,
       );
       return await Promise.all(
-        Object.entries(metadataFileContents).map(
-          async ([filename, metadata]): Promise<TemplateMetadataFileEntry> => {
-            const filePath = path.join(path.dirname(metadataFile), filename);
+        Object.entries(infoFileContents).map(
+          async ([
+            filename,
+            templateInfo,
+          ]): Promise<TemplateMetadataFileEntry> => {
+            const filePath = path.join(path.dirname(infoFile), filename);
             const modifiedTime = await fs
               .stat(filePath)
               .then((stats) => stats.mtime)
               .catch(handleFileNotFoundError);
             if (!modifiedTime) {
               throw new Error(
-                `Could not find source file (${filename}) specified in metadata file: ${metadataFile}`,
+                `Could not find source file (${filename}) specified in templates info file: ${infoFile}`,
               );
             }
 
             return {
               absolutePath: filePath,
-              metadata,
+              templateInfo,
               modifiedTime,
             };
           },

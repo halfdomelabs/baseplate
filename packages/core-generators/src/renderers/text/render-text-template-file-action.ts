@@ -1,16 +1,13 @@
 import type { BuilderAction, WriteFileOptions } from '@baseplate-dev/sync';
 
 import { readTemplateFileSource } from '@baseplate-dev/sync';
-import { escapeRegExp, mapValues } from 'es-toolkit';
+import { escapeRegExp } from 'es-toolkit';
 
 import type {
   InferTextTemplateVariablesFromTemplate,
   TextTemplateFile,
-  TextTemplateFileVariable,
-  TextTemplateOutputTemplateMetadata,
 } from './types.js';
 
-import { TEXT_TEMPLATE_TYPE } from './types.js';
 import {
   getTextTemplateDelimiters,
   getTextTemplateVariableRegExp,
@@ -64,11 +61,6 @@ export function renderTextTemplateFileAction<
           generatorName: builder.generatorInfo.name,
           isInstance: template.fileOptions.kind === 'instance',
         });
-
-      const templateVariables = template.variables as Record<
-        string,
-        TextTemplateFileVariable
-      >;
 
       if (variablesObj && Object.keys(variablesObj).length > 0) {
         // make sure all variables begin with TPL_
@@ -143,30 +135,16 @@ export function renderTextTemplateFileAction<
         );
       }
 
-      const templateMetadata: TextTemplateOutputTemplateMetadata | undefined =
-        'path' in template.source
-          ? {
-              name: template.name,
-              generator: builder.generatorInfo.name,
-              group: template.group,
-              type: TEXT_TEMPLATE_TYPE,
-              fileOptions: template.fileOptions,
-              variables:
-                Object.keys(templateVariables).length > 0
-                  ? mapValues(templateVariables, (val, key) => ({
-                      ...val,
-                      value: (variables as Record<string, string>)[key],
-                    }))
-                  : undefined,
-            }
-          : undefined;
-
       builder.writeFile({
         id: fileId,
         destination,
         contents: templateContents,
         options,
-        templateMetadata: shouldWriteMetadata ? templateMetadata : undefined,
+        templateInfo: {
+          template: template.name,
+          generator: builder.generatorInfo.name,
+          instanceData: shouldWriteMetadata ? { variables } : undefined,
+        },
       });
     },
   };

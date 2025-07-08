@@ -24,6 +24,10 @@ export const rawTemplateGeneratorTemplateMetadataSchema =
     pathRootRelativePath: z.string().optional(),
   });
 
+export type RawTemplateGeneratorTemplateMetadata = z.infer<
+  typeof rawTemplateGeneratorTemplateMetadataSchema
+>;
+
 export const rawTemplateOutputTemplateMetadataSchema =
   templateFileMetadataBaseSchema.extend({
     /**

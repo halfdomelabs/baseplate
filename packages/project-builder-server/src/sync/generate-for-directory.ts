@@ -15,7 +15,7 @@ import {
   deleteMetadataFiles,
   executeGeneratorEntry,
   writeGeneratorOutput,
-  writeTemplateMetadata,
+  writeTemplateInfoFiles,
 } from '@baseplate-dev/sync';
 import { randomKey } from '@baseplate-dev/utils';
 import { dirExists } from '@baseplate-dev/utils/node';
@@ -65,7 +65,7 @@ const defaultGeneratorOperations: GeneratorOperations = {
   writeGeneratorOutput,
   writeMetadata: async (project, output, projectDirectory) => {
     await deleteMetadataFiles(projectDirectory);
-    await writeTemplateMetadata(output.files, projectDirectory);
+    await writeTemplateInfoFiles(output.files, projectDirectory);
   },
   writeGeneratorSteps,
 };

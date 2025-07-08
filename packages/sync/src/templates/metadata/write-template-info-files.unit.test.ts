@@ -6,7 +6,7 @@ import type { FileData } from '#src/output/generator-task-output.js';
 import type { TemplateFileMetadataBase } from './metadata.js';
 
 import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
-import { writeTemplateMetadata } from './write-template-metadata.js';
+import { writeTemplateInfoFiles } from './write-template-info-files.js';
 
 vi.mock('node:fs');
 vi.mock('node:fs/promises');
@@ -98,7 +98,7 @@ describe('writeTemplateMetadata', () => {
       ],
     ]);
 
-    await writeTemplateMetadata(
+    await writeTemplateInfoFiles(
       files as Map<string, FileData>,
       outputDirectory,
     );
@@ -187,7 +187,7 @@ describe('writeTemplateMetadata', () => {
       ],
     ]);
 
-    await writeTemplateMetadata(
+    await writeTemplateInfoFiles(
       files as Map<string, FileData>,
       outputDirectory,
     );
@@ -213,7 +213,7 @@ describe('writeTemplateMetadata', () => {
   it('should handle empty file map', async () => {
     const files = new Map<string, FileData>();
 
-    await writeTemplateMetadata(files, outputDirectory);
+    await writeTemplateInfoFiles(files, outputDirectory);
 
     // Verify no metadata files were created
     expect(() => vol.readdirSync(outputDirectory)).not.toThrow();
@@ -232,7 +232,7 @@ describe('writeTemplateMetadata', () => {
       ],
     ]);
 
-    await writeTemplateMetadata(files, outputDirectory);
+    await writeTemplateInfoFiles(files, outputDirectory);
 
     // Verify no metadata files were created
     expect(() => vol.readdirSync(outputDirectory)).not.toThrow();

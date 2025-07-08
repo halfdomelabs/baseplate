@@ -58,11 +58,14 @@ export type TsProjectExportMap = Map<string, Map<string, TsProjectExport>>;
  * Builds a map of output relative paths to a map of export names to project exports.
  *
  * @param context - The template extractor context.
+ * @param externalImportProvidersMap - A map of external import providers to use.
+ * @param templatesOutputRelativePathMap - A map of generators to template names to the output relative paths of the template.
  * @returns A map of output relative paths to a map of export names to project exports.
  */
 export function buildTsProjectExportMap(
   context: TemplateExtractorContext,
   externalImportProvidersMap: Map<string, ExternalImportProviderEntry>,
+  templatesOutputRelativePathMap: Map<string, Map<string, string[]>>,
 ): TsProjectExportMap {
   const generatorConfigs =
     context.configLookup.getGeneratorConfigsForExtractorType(
@@ -136,19 +139,27 @@ export function buildTsProjectExportMap(
       };
     };
 
-    for (const [, template] of Object.entries(templates)) {
+    for (const [templateName, template] of Object.entries(templates)) {
       // skip non-singleton templates
       if (template.fileOptions.kind !== 'singleton') continue;
 
-      const outputRelativePath =
-        context.configLookup.getOutputRelativePathForTemplate(
-          generatorName,
-          template.name,
-        );
-      if (!outputRelativePath) {
+      const outputRelativePaths = templatesOutputRelativePathMap
+        .get(generatorName)
+        ?.get(templateName);
+      if (!outputRelativePaths || outputRelativePaths.length === 0) {
         // if the template file was not written, skip it
         continue;
       }
+
+      if (outputRelativePaths.length > 1) {
+        throw new Error(
+          `Template ${templateName} has multiple output relative paths: ${outputRelativePaths.join(
+            ', ',
+          )}`,
+        );
+      }
+
+      const outputRelativePath = outputRelativePaths[0];
 
       const templateProjectExportsMap = new Map<string, TsProjectExport>();
 

@@ -1,3 +1,5 @@
+import type { TemplateFileExtractorMetadataEntry } from '@baseplate-dev/sync';
+
 import {
   createTemplateFileExtractor,
   getGenerationConcurrencyLimit,
@@ -5,55 +7,55 @@ import {
 import { camelCase } from 'change-case';
 import pLimit from 'p-limit';
 
+import type { RawTemplateGeneratorTemplateMetadata } from './types.js';
+
 import { templatePathsPlugin } from '../extractor/plugins/template-paths/template-paths.plugin.js';
 import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-file.js';
 import { deduplicateTemplateFileExtractorSourceFiles } from '../extractor/utils/deduplicate-templates.js';
 import { resolvePackagePathSpecifier } from '../extractor/utils/package-path-specifier.js';
 import { TsCodeUtils, tsImportBuilder } from '../typescript/index.js';
-import {
-  rawTemplateGeneratorTemplateMetadataSchema,
-  rawTemplateOutputTemplateMetadataSchema,
-} from './types.js';
+import { rawTemplateGeneratorTemplateMetadataSchema } from './types.js';
 
 const limit = pLimit(getGenerationConcurrencyLimit());
 
 export const RawTemplateFileExtractor = createTemplateFileExtractor({
   name: 'raw',
   pluginDependencies: [templatePathsPlugin, typedTemplatesFilePlugin],
-  outputTemplateMetadataSchema: rawTemplateOutputTemplateMetadataSchema,
   generatorTemplateMetadataSchema: rawTemplateGeneratorTemplateMetadataSchema,
   extractTemplateMetadataEntries: (files, context) => {
     const deduplicatedFiles =
       deduplicateTemplateFileExtractorSourceFiles(files);
     const templatePathPlugin = context.getPlugin('template-paths');
-    return deduplicatedFiles.map(({ metadata, absolutePath }) => {
-      try {
-        const { pathRootRelativePath, generatorTemplatePath } =
-          templatePathPlugin.resolveTemplatePaths(
-            metadata.fileOptions,
-            absolutePath,
-            metadata.name,
-            metadata.generator,
-          );
+    return deduplicatedFiles.map(
+      ({ templateName, generatorName, existingMetadata, absolutePath }) => {
+        try {
+          const { pathRootRelativePath, generatorTemplatePath } =
+            templatePathPlugin.resolveTemplatePaths(
+              existingMetadata.fileOptions,
+              absolutePath,
+              templateName,
+              generatorName,
+            );
 
-        return {
-          generator: metadata.generator,
-          generatorTemplatePath,
-          sourceAbsolutePath: absolutePath,
-          metadata: {
-            name: metadata.name,
-            type: metadata.type,
-            fileOptions: metadata.fileOptions,
-            pathRootRelativePath,
-          },
-        };
-      } catch (error) {
-        throw new Error(
-          `Error extracting template metadata for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
-          { cause: error },
-        );
-      }
-    });
+          return {
+            generator: generatorName,
+            sourceAbsolutePath: absolutePath,
+            templateName,
+            metadata: {
+              ...existingMetadata,
+              sourceFile: generatorTemplatePath,
+              pathRootRelativePath,
+            },
+            instanceData: {},
+          } satisfies TemplateFileExtractorMetadataEntry<RawTemplateGeneratorTemplateMetadata>;
+        } catch (error) {
+          throw new Error(
+            `Error extracting template metadata for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+            { cause: error },
+          );
+        }
+      },
+    );
   },
   writeTemplateFiles: async (files, _context, api) => {
     await Promise.all(
@@ -65,7 +67,7 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
             );
             await api.writeTemplateFile(
               file.generator,
-              file.generatorTemplatePath,
+              file.metadata.sourceFile,
               contents,
             );
           } catch (error) {
@@ -90,8 +92,9 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
         rawTemplateGeneratorTemplateMetadataSchema,
         'raw',
       );
-      for (const { path, config } of templates) {
-        const exportName = camelCase(config.name);
+      for (const { name, config } of templates) {
+        const sourceFilePath = config.sourceFile;
+        const exportName = camelCase(name);
         const fragment = TsCodeUtils.templateWithImports([
           tsImportBuilder(['createRawTemplateFile']).from(
             resolvePackagePathSpecifier(
@@ -101,9 +104,9 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
           ),
           tsImportBuilder().default('path').from('node:path'),
         ])`const ${exportName} = createRawTemplateFile({
-          name: '${config.name}',
+          name: '${name}',
           source: {
-            path: path.join(import.meta.dirname, '../templates/${path}'),
+            path: path.join(import.meta.dirname, '../templates/${sourceFilePath}'),
           },
           fileOptions: ${JSON.stringify(config.fileOptions)},
         });`;
@@ -116,7 +119,7 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
         if (config.pathRootRelativePath) {
           templatePathsPlugin.registerTemplatePathEntry(
             generatorName,
-            config.name,
+            name,
             config.pathRootRelativePath,
           );
         }

@@ -6,7 +6,7 @@ import type {
   GeneratorTask,
   GeneratorTaskEntry,
 } from '#src/generators/index.js';
-import type { TemplateFileMetadataBase } from '#src/templates/metadata/index.js';
+import type { TemplateInfo } from '#src/templates/metadata/index.js';
 
 import type { BuilderAction } from './builder-action.js';
 import type { GeneratorOutputFormatter } from './formatter.js';
@@ -43,9 +43,12 @@ export interface WriteFileOptions {
    */
   mergeAlgorithms?: StringMergeAlgorithm[];
   /**
-   * Metadata about the template that was used to generate the file
+   * Info about the template that was used to generate the file. Written to the `.templates-info.json` file.
+   *
+   * This will always be written if template extractino is enabled. However, the instanceData key is required
+   * in order to enable template extraction for that file.
    */
-  templateMetadata?: TemplateFileMetadataBase;
+  templateInfo?: TemplateInfo;
 }
 
 /**
@@ -223,14 +226,18 @@ export class GeneratorTaskOutputBuilder {
     contents,
     options,
     generatorName,
-    templateMetadata,
+    templateInfo,
   }: {
     id: string;
     generatorName?: string;
     destination: string;
     contents: string | Buffer;
-    options?: Omit<WriteFileOptions, 'templateMetadata'>;
-    templateMetadata?: TemplateFileMetadataBase & Record<string, unknown>;
+    options?: Omit<WriteFileOptions, 'templateInfo'>;
+    /**
+     * Template info for the file. This should always be written if template info is present. However,
+     * if not adding metadata to the file, instanceData should be undefined.
+     */
+    templateInfo?: TemplateInfo;
   }): void {
     // normalize all paths to POSIX style / paths and remove any preceding @/
     const fullPath = filePath
@@ -249,10 +256,10 @@ export class GeneratorTaskOutputBuilder {
       id: `${generatorName ?? this.generatorInfo.name}:${id}`,
       contents,
       options:
-        this.metadataOptions.includeTemplateMetadata && templateMetadata
+        this.metadataOptions.includeTemplateMetadata && templateInfo
           ? {
               ...options,
-              templateMetadata,
+              templateInfo,
             }
           : options,
     });

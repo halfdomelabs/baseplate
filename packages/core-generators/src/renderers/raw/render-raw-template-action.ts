@@ -2,19 +2,14 @@ import type { BuilderAction, WriteFileOptions } from '@baseplate-dev/sync';
 
 import { readTemplateFileSourceBuffer } from '@baseplate-dev/sync';
 
-import type {
-  RawTemplateFile,
-  RawTemplateOutputTemplateMetadata,
-} from './types.js';
-
-import { RAW_TEMPLATE_TYPE } from './types.js';
+import type { RawTemplateFile } from './types.js';
 
 interface RenderRawTemplateFileActionInputBase<
   TemplateFile extends RawTemplateFile,
 > {
   template: TemplateFile;
   destination: string;
-  options?: Omit<WriteFileOptions, 'templateMetadata'>;
+  options?: Omit<WriteFileOptions, 'templateInfo'>;
 }
 
 type RenderRawTemplateFileActionInput<TTemplateFile extends RawTemplateFile> =
@@ -50,16 +45,6 @@ export function renderRawTemplateFileAction<
           isInstance: template.fileOptions.kind === 'instance',
         });
 
-      const templateMetadata: RawTemplateOutputTemplateMetadata | undefined =
-        'path' in template.source
-          ? {
-              generator: builder.generatorInfo.name,
-              type: RAW_TEMPLATE_TYPE,
-              name: template.name,
-              fileOptions: template.fileOptions,
-            }
-          : undefined;
-
       builder.writeFile({
         id: fileId,
         destination,
@@ -68,7 +53,11 @@ export function renderRawTemplateFileAction<
           skipFormatting: true,
           ...options,
         },
-        templateMetadata: shouldWriteMetadata ? templateMetadata : undefined,
+        templateInfo: {
+          template: template.name,
+          generator: builder.generatorInfo.name,
+          instanceData: shouldWriteMetadata ? {} : undefined,
+        },
       });
     },
   };

@@ -102,6 +102,7 @@ const builderActionTypeImport = TsCodeUtils.typeImportFragment(
 );
 
 function createTypeScriptRenderFunctionForTemplate(
+  templateName: string,
   templateConfig: TsGeneratorTemplateMetadata,
   context: RenderTsTemplateRenderersContext,
 ): TemplateRendererEntry {
@@ -115,10 +116,10 @@ function createTypeScriptRenderFunctionForTemplate(
     tsImportBuilder([typedTemplatesExportName]).from(
       `./${normalizeTsPathToJsPath(GENERATED_TYPED_TEMPLATES_FILE_NAME)}`,
     ),
-  )`${typedTemplatesExportName}.${camelCase(templateConfig.name)}`;
+  )`${typedTemplatesExportName}.${camelCase(templateName)}`;
 
   return {
-    name: camelCase(templateConfig.name),
+    name: camelCase(templateName),
     renderType: tsTemplateWithImports([
       tsImportBuilder(['RenderTsTemplateFileActionInput'])
         .typeOnly()
@@ -136,7 +137,7 @@ function createTypeScriptRenderFunctionForTemplate(
         {
           template: templateExpression,
           destination: isSingleton
-            ? `paths.${camelCase(templateConfig.name)}`
+            ? `paths.${camelCase(templateName)}`
             : undefined,
           importMapProviders: importMapProvidersExpression,
           '...': 'options',
@@ -224,7 +225,11 @@ export function renderTsTemplateRenderers(
       ),
     ),
     ...templatesWithoutGroup.map((template) =>
-      createTypeScriptRenderFunctionForTemplate(template.config, context),
+      createTypeScriptRenderFunctionForTemplate(
+        template.name,
+        template.config,
+        context,
+      ),
     ),
   ];
 }

@@ -139,7 +139,7 @@ function renderCombinedImportProviderTask(
     templates.flatMap((template) =>
       Object.keys(template.config.projectExports ?? {}).map((name) => [
         name,
-        `paths.${camelCase(template.config.name)}`,
+        `paths.${camelCase(template.name)}`,
       ]),
     ),
   );

@@ -18,13 +18,14 @@ interface RenderTsTypedTemplateContext {
 }
 
 function renderTsTypedTemplate(
-  templatePath: string,
+  templateName: string,
   metadata: TsGeneratorTemplateMetadata,
   { generatorPackageName }: RenderTsTypedTemplateContext,
 ): TemplateExtractorTypedTemplate {
-  const exportName = camelCase(metadata.name);
+  const exportName = camelCase(templateName);
+  const templatePath = metadata.sourceFile;
   const createOptions = TsCodeUtils.mergeFragmentsAsObject({
-    name: quot(metadata.name),
+    name: quot(templateName),
     group: metadata.group ? quot(metadata.group) : undefined,
     source: TsCodeUtils.templateWithImports([
       tsImportBuilder().default('path').from('node:path'),
@@ -74,7 +75,7 @@ function renderTsTypedTemplateGroup(
   context: RenderTsTypedTemplateContext,
 ): TemplateExtractorTypedTemplate {
   const renderedTemplates = templates
-    .map(({ path, config }) => renderTsTypedTemplate(path, config, context))
+    .map(({ name, config }) => renderTsTypedTemplate(name, config, context))
     .toSorted((a, b) => a.exportName.localeCompare(b.exportName));
   const exportName = `${camelCase(groupName)}Group`;
 
@@ -113,7 +114,7 @@ export function renderTsTypedTemplates(
   );
 
   const typedTemplates = templatesWithoutGroup.map((t) =>
-    renderTsTypedTemplate(t.path, t.config, context),
+    renderTsTypedTemplate(t.name, t.config, context),
   );
 
   return [...typedTemplateGroups, ...typedTemplates];

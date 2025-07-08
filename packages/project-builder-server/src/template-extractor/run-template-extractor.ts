@@ -12,7 +12,6 @@ import {
 import { runTemplateFileExtractors } from '@baseplate-dev/sync';
 
 import { discoverPlugins } from '#src/plugins/plugin-discovery.js';
-import { getPreviousGeneratedFileIdMap } from '#src/sync/file-id-map.js';
 import { readSyncMetadata } from '#src/sync/sync-metadata-service.js';
 
 import { buildGeneratorPackageMap } from './discover-generators.js';
@@ -62,13 +61,11 @@ export async function runTemplateExtractorsForProject(
       `Found multiple app directories for ${app}: ${appDirectories.join(', ')}`,
     );
   }
-  const fileIdMap = await getPreviousGeneratedFileIdMap(appDirectories[0]);
   await runTemplateFileExtractors(
     TEMPLATE_EXTRACTORS,
     appDirectories[0],
     generatorPackageMap,
     logger,
-    fileIdMap,
     options,
   );
   logger.info('Template extraction complete!');

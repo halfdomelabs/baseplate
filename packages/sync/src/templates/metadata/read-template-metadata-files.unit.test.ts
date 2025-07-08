@@ -62,28 +62,32 @@ describe('readTemplateMetadataFiles', () => {
     expect(result).toHaveLength(3);
 
     // Check auth service entry
-    const authEntry = result.find((e) => e.metadata.name === 'auth-service');
+    const authEntry = result.find(
+      (e) => e.templateInfo.name === 'auth-service',
+    );
     expect(authEntry).toBeDefined();
     expect(authEntry?.absolutePath).toBe(
       '/project/src/services/auth.service.ts',
     );
-    expect(authEntry?.metadata).toEqual(metadata1['auth.service.ts']);
+    expect(authEntry?.templateInfo).toEqual(metadata1['auth.service.ts']);
     expect(authEntry?.modifiedTime).toEqual(now);
 
     // Check user service entry
-    const userEntry = result.find((e) => e.metadata.name === 'user-service');
+    const userEntry = result.find(
+      (e) => e.templateInfo.name === 'user-service',
+    );
     expect(userEntry).toBeDefined();
     expect(userEntry?.absolutePath).toBe(
       '/project/src/services/user.service.ts',
     );
-    expect(userEntry?.metadata).toEqual(metadata1['user.service.ts']);
+    expect(userEntry?.templateInfo).toEqual(metadata1['user.service.ts']);
     expect(userEntry?.modifiedTime).toEqual(later);
 
     // Check config entry
-    const configEntry = result.find((e) => e.metadata.name === 'config');
+    const configEntry = result.find((e) => e.templateInfo.name === 'config');
     expect(configEntry).toBeDefined();
     expect(configEntry?.absolutePath).toBe('/project/config/config.ts');
-    expect(configEntry?.metadata).toEqual(metadata2['config.ts']);
+    expect(configEntry?.templateInfo).toEqual(metadata2['config.ts']);
     expect(configEntry?.modifiedTime).toEqual(now);
   });
 
@@ -231,7 +235,7 @@ describe('readTemplateMetadataFiles', () => {
     // Assert
     expect(result).toHaveLength(3);
 
-    const names = result.map((e) => e.metadata.name).sort();
+    const names = result.map((e) => e.templateInfo.name).sort();
     expect(names).toEqual(['file-one', 'file-three', 'file-two']);
   });
 });

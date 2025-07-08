@@ -1,7 +1,5 @@
 import { escapeRegExp } from 'es-toolkit';
 
-import type { TextTemplateFileVariableWithValue } from './types.js';
-
 /**
  * Get the delimiters for a text template file.
  * @param filename The filename of the text template file.
@@ -59,7 +57,7 @@ export function getTextTemplateVariableRegExp(value: string): RegExp {
  */
 export function extractTemplateVariables(
   contents: string,
-  variables: Record<string, TextTemplateFileVariableWithValue> | undefined,
+  variables: Record<string, string> | undefined,
   filename: string,
 ): string {
   if (!variables) {
@@ -70,14 +68,11 @@ export function extractTemplateVariables(
   const { start, end } = getTextTemplateDelimiters(filename);
 
   // Sort variables by descending length of their values to prevent overlapping replacements
-  const sortedVariables = Object.entries(variables).sort(([, a], [, b]) => {
-    const aValue = a.value;
-    const bValue = b.value;
-    return bValue.length - aValue.length;
-  });
+  const sortedVariables = Object.entries(variables).sort(
+    ([, a], [, b]) => b.length - a.length,
+  );
 
-  for (const [key, variableWithValue] of sortedVariables) {
-    const { value } = variableWithValue;
+  for (const [key, value] of sortedVariables) {
     const variableRegex = getTextTemplateVariableRegExp(value);
     const newTemplateContents = templateContents.replaceAll(
       variableRegex,
