@@ -22,7 +22,6 @@ import type { Auth0PluginDefinition } from './schema/plugin-definition.js';
 
 import {
   auth0ApolloGenerator,
-  auth0ComponentsGenerator,
   auth0HooksGenerator,
   auth0ModuleGenerator,
   auth0PagesGenerator,
@@ -78,7 +77,6 @@ export default createPlatformPluginExport({
           authHooks: auth0HooksGenerator({}),
           authIdentify: authIdentifyGenerator({}),
           auth0Apollo: auth0ApolloGenerator({}),
-          auth0Components: auth0ComponentsGenerator({}),
           auth0Callback: reactRoutesGenerator({
             name: 'auth',
             children: {
@@ -97,7 +95,6 @@ export default createPlatformPluginExport({
           authHooks: auth0HooksGenerator({}),
           authIdentify: authIdentifyGenerator({}),
           auth0Apollo: auth0ApolloGenerator({}),
-          auth0Components: auth0ComponentsGenerator({}),
           auth0Callback: reactRoutesGenerator({
             name: 'auth',
             children: {
