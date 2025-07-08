@@ -29,7 +29,3 @@ export const createPlaceholderAuthPluginDefinitionSchema = definitionSchema(
 export type PlaceholderAuthPluginDefinition = def.InferOutput<
   typeof createPlaceholderAuthPluginDefinitionSchema
 >;
-
-export type PlaceholderAuthPluginDefinitionInput = def.InferInput<
-  typeof createPlaceholderAuthPluginDefinitionSchema
->;

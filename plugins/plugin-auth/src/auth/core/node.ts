@@ -1,11 +1,4 @@
 import {
-  authContextGenerator,
-  authPluginGenerator,
-  authRolesGenerator,
-  pothosAuthGenerator,
-  userSessionTypesGenerator,
-} from '@baseplate-dev/fastify-generators';
-import {
   adminAppEntryType,
   appCompilerSpec,
   backendAppEntryType,
@@ -13,10 +6,13 @@ import {
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
+
 import {
-  authIdentifyGenerator,
-  placeholderAuthHooksGenerator,
-} from '@baseplate-dev/react-generators';
+  createCommonBackendAuthModuleGenerators,
+  createCommonBackendAuthRootGenerators,
+  createCommonWebAuthGenerators,
+} from '#src/common/index.js';
+import { placeholderAuthHooksGenerator } from '#src/placeholder-auth/index.js';
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
@@ -39,16 +35,7 @@ export default createPlatformPluginExport({
         ) as AuthPluginDefinition;
 
         appCompiler.addChildrenToFeature(auth.authFeatureRef, {
-          authContext: authContextGenerator({}),
-          authPlugin: authPluginGenerator({}),
-          authRoles: authRolesGenerator({
-            roles: auth.roles.map((r) => ({
-              name: r.name,
-              comment: r.comment,
-              builtIn: r.builtIn,
-            })),
-          }),
-          userSessionTypes: userSessionTypesGenerator({}),
+          ...createCommonBackendAuthModuleGenerators({ roles: auth.roles }),
           authModule: authModuleGenerator({
             userSessionModelName: definitionContainer.nameFromId(
               auth.modelRefs.userSession,
@@ -56,33 +43,29 @@ export default createPlatformPluginExport({
           }),
         });
 
-        appCompiler.addRootChildren({
-          pothosAuth: pothosAuthGenerator({}),
-        });
+        appCompiler.addRootChildren(createCommonBackendAuthRootGenerators());
       },
     });
+
+    const sharedWebGenerators = {
+      ...createCommonWebAuthGenerators(),
+      reactAuth: reactAuthGenerator({}),
+      authHooks: placeholderAuthHooksGenerator({}),
+    };
 
     // register web compiler
     appCompiler.registerAppCompiler({
       pluginId,
       appType: webAppEntryType,
       compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren({
-          reactAuth: reactAuthGenerator({}),
-          authIdentify: authIdentifyGenerator({}),
-          authHooks: placeholderAuthHooksGenerator({}),
-        });
+        appCompiler.addRootChildren(sharedWebGenerators);
       },
     });
     appCompiler.registerAppCompiler({
       pluginId,
       appType: adminAppEntryType,
       compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren({
-          reactAuth: reactAuthGenerator({}),
-          authIdentify: authIdentifyGenerator({}),
-          authHooks: placeholderAuthHooksGenerator({}),
-        });
+        appCompiler.addRootChildren(sharedWebGenerators);
       },
     });
 
