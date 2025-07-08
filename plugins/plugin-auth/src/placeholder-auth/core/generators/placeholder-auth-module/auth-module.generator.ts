@@ -1,7 +1,7 @@
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { PLACEHOLDER_AUTH_CORE_AUTH_MODULE_GENERATED } from './generated';
+import { PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated';
 
 const descriptorSchema = z.object({});
 
@@ -10,13 +10,12 @@ export const placeholderAuthModuleGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    paths: PLACEHOLDER_AUTH_CORE_AUTH_MODULE_GENERATED.paths.task,
-    imports: PLACEHOLDER_AUTH_CORE_AUTH_MODULE_GENERATED.imports.task,
-    renderers: PLACEHOLDER_AUTH_CORE_AUTH_MODULE_GENERATED.renderers.task,
+    paths: GENERATED_TEMPLATES.paths.task,
+    imports: GENERATED_TEMPLATES.imports.task,
+    renderers: GENERATED_TEMPLATES.renderers.task,
     authService: createGeneratorTask({
       dependencies: {
-        renderers:
-          PLACEHOLDER_AUTH_CORE_AUTH_MODULE_GENERATED.renderers.provider,
+        renderers: GENERATED_TEMPLATES.renderers.provider,
       },
       run({ renderers }) {
         return {
