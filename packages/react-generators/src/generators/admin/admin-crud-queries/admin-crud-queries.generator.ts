@@ -321,7 +321,6 @@ export const adminCrudQueriesGenerator = createGenerator({
                 reactRoutes.getOutputRelativePath(),
                 'queries.gql',
               );
-              reactApollo.registerGqlFile(filePath);
               builder.writeFile({
                 id: `${modelId}-crud-queries`,
                 destination: filePath,
