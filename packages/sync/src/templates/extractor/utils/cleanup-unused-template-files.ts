@@ -36,7 +36,9 @@ export async function cleanupUnusedTemplateFiles(
     const { templates } = config;
 
     // Get all template paths from extractor.json
-    const referencedTemplatePaths = new Set(Object.keys(templates));
+    const referencedTemplatePaths = new Set(
+      Object.values(templates).map((t) => t.sourceFile),
+    );
 
     // Clean up template files
     await cleanupTemplateDirectory(
