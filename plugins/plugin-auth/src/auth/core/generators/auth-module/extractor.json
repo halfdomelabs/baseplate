@@ -1,5 +1,5 @@
 {
-  "name": "fastify/auth-module",
+  "name": "auth/core/auth-module",
   "extractors": {
     "ts": {
       "importProviders": [
@@ -13,7 +13,7 @@
       "name": "user-session-constants",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#fastify/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
       "group": "constants",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/constants/user-session.constants.ts",
@@ -23,7 +23,7 @@
       "name": "user-session-service",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#fastify/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
       "importMapProviders": {
         "authContextImportsProvider": {
           "importName": "authContextImportsProvider",
@@ -58,7 +58,7 @@
       "name": "cookie-signer",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#fastify/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/utils/cookie-signer.ts",
@@ -68,7 +68,7 @@
       "name": "session-cookie",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#fastify/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
       "group": "utils",
       "importMapProviders": {
         "configServiceImportsProvider": {
@@ -83,7 +83,7 @@
       "name": "verify-request-origin",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#fastify/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/utils/verify-request-origin.ts",

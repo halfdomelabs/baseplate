@@ -8,11 +8,11 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask } from '@baseplate-dev/sync';
 
-import { FASTIFY_AUTH_MODULE_PATHS } from './template-paths.js';
+import { AUTH_CORE_AUTH_MODULE_PATHS } from './template-paths.js';
 
-const fastifyAuthModuleImportsTask = createGeneratorTask({
+const authCoreAuthModuleImportsTask = createGeneratorTask({
   dependencies: {
-    paths: FASTIFY_AUTH_MODULE_PATHS.provider,
+    paths: AUTH_CORE_AUTH_MODULE_PATHS.provider,
   },
   exports: {
     userSessionServiceImports:
@@ -30,6 +30,6 @@ const fastifyAuthModuleImportsTask = createGeneratorTask({
   },
 });
 
-export const FASTIFY_AUTH_MODULE_IMPORTS = {
-  task: fastifyAuthModuleImportsTask,
+export const AUTH_CORE_AUTH_MODULE_IMPORTS = {
+  task: authCoreAuthModuleImportsTask,
 };

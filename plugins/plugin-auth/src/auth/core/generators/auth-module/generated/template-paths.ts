@@ -1,7 +1,7 @@
 import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-export interface FastifyAuthModulePaths {
+export interface AuthCoreAuthModulePaths {
   userSessionConstants: string;
   userSessionService: string;
   cookieSigner: string;
@@ -9,19 +9,19 @@ export interface FastifyAuthModulePaths {
   verifyRequestOrigin: string;
 }
 
-const fastifyAuthModulePaths = createProviderType<FastifyAuthModulePaths>(
-  'fastify-auth-module-paths',
+const authCoreAuthModulePaths = createProviderType<AuthCoreAuthModulePaths>(
+  'auth-core-auth-module-paths',
 );
 
-const fastifyAuthModulePathsTask = createGeneratorTask({
+const authCoreAuthModulePathsTask = createGeneratorTask({
   dependencies: { appModule: appModuleProvider },
-  exports: { fastifyAuthModulePaths: fastifyAuthModulePaths.export() },
+  exports: { authCoreAuthModulePaths: authCoreAuthModulePaths.export() },
   run({ appModule }) {
     const moduleRoot = appModule.getModuleFolder();
 
     return {
       providers: {
-        fastifyAuthModulePaths: {
+        authCoreAuthModulePaths: {
           cookieSigner: `${moduleRoot}/utils/cookie-signer.ts`,
           sessionCookie: `${moduleRoot}/utils/session-cookie.ts`,
           userSessionConstants: `${moduleRoot}/constants/user-session.constants.ts`,
@@ -33,7 +33,7 @@ const fastifyAuthModulePathsTask = createGeneratorTask({
   },
 });
 
-export const FASTIFY_AUTH_MODULE_PATHS = {
-  provider: fastifyAuthModulePaths,
-  task: fastifyAuthModulePathsTask,
+export const AUTH_CORE_AUTH_MODULE_PATHS = {
+  provider: authCoreAuthModulePaths,
+  task: authCoreAuthModulePathsTask,
 };

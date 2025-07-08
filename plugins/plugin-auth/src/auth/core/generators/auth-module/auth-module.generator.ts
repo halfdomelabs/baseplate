@@ -19,19 +19,19 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { FASTIFY_AUTH_MODULE_GENERATED } from './generated';
+import { AUTH_CORE_AUTH_MODULE_GENERATED } from './generated';
 
 const descriptorSchema = z.object({
   userSessionModelName: z.string().min(1),
 });
 
 export const authModuleGenerator = createGenerator({
-  name: 'fastify/auth-module',
+  name: 'auth/core/auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ userSessionModelName }) => ({
-    paths: FASTIFY_AUTH_MODULE_GENERATED.paths.task,
-    imports: FASTIFY_AUTH_MODULE_GENERATED.imports.task,
+    paths: AUTH_CORE_AUTH_MODULE_GENERATED.paths.task,
+    imports: AUTH_CORE_AUTH_MODULE_GENERATED.imports.task,
     config: createProviderTask(configServiceProvider, (configService) => {
       configService.configFields.set('AUTH_SECRET', {
         validator: tsCodeFragment(
@@ -53,7 +53,7 @@ export const authModuleGenerator = createGenerator({
         authContextImports: authContextImportsProvider,
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         requestServiceContextImports: requestServiceContextImportsProvider,
-        paths: FASTIFY_AUTH_MODULE_GENERATED.paths.provider,
+        paths: AUTH_CORE_AUTH_MODULE_GENERATED.paths.provider,
       },
       run({
         typescriptFile,
@@ -74,7 +74,7 @@ export const authModuleGenerator = createGenerator({
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template:
-                  FASTIFY_AUTH_MODULE_GENERATED.templates.userSessionService,
+                  AUTH_CORE_AUTH_MODULE_GENERATED.templates.userSessionService,
                 destination: paths.userSessionService,
                 variables: {
                   TPL_PRISMA_USER_SESSION:
@@ -92,13 +92,13 @@ export const authModuleGenerator = createGenerator({
             );
             await builder.apply(
               typescriptFile.renderTemplateGroup({
-                group: FASTIFY_AUTH_MODULE_GENERATED.templates.constantsGroup,
+                group: AUTH_CORE_AUTH_MODULE_GENERATED.templates.constantsGroup,
                 paths,
               }),
             );
             await builder.apply(
               typescriptFile.renderTemplateGroup({
-                group: FASTIFY_AUTH_MODULE_GENERATED.templates.utilsGroup,
+                group: AUTH_CORE_AUTH_MODULE_GENERATED.templates.utilsGroup,
                 paths,
                 importMapProviders: {
                   configServiceImports,
