@@ -1,16 +1,22 @@
-import { createTsTemplateFile } from '@baseplate-dev/core-generators';
+import {
+  createTextTemplateFile,
+  createTsTemplateFile,
+} from '@baseplate-dev/core-generators';
+import { generatedGraphqlImportsProvider } from '@baseplate-dev/react-generators';
 import path from 'node:path';
 
 const useCurrentUser = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'hooks',
-  importMapProviders: {},
+  importMapProviders: {
+    generatedGraphqlImports: generatedGraphqlImportsProvider,
+  },
   name: 'use-current-user',
   projectExports: { useCurrentUser: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/hooks/useCurrentUser.ts',
+      '../templates/src/hooks/use-current-user.ts',
     ),
   },
   variables: {},
@@ -23,7 +29,10 @@ const useLogOut = createTsTemplateFile({
   name: 'use-log-out',
   projectExports: { useLogOut: {} },
   source: {
-    path: path.join(import.meta.dirname, '../templates/src/hooks/useLogOut.ts'),
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-log-out.ts',
+    ),
   },
   variables: {},
 });
@@ -37,7 +46,7 @@ const useRequiredUserId = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/hooks/useRequiredUserId.ts',
+      '../templates/src/hooks/use-user-id-or-throw.ts',
     ),
   },
   variables: {},
@@ -52,7 +61,7 @@ const useSession = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/hooks/useSession.ts',
+      '../templates/src/hooks/use-session.ts',
     ),
   },
   variables: {},
@@ -65,4 +74,19 @@ export const hooksGroup = {
   useSession,
 };
 
-export const AUTH_PLACEHOLDER_AUTH_HOOKS_TEMPLATES = { hooksGroup };
+const useCurrentUserGql = createTextTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  name: 'use-current-user-gql',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-current-user.gql',
+    ),
+  },
+  variables: {},
+});
+
+export const PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES = {
+  useCurrentUserGql,
+  hooksGroup,
+};

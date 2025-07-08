@@ -1,8 +1,8 @@
-import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import { renderTextTemplateFileAction } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED } from './generated/index.js';
+import { PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -16,22 +16,22 @@ export const placeholderAuthHooksGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    paths: AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED.paths.task,
-    imports: AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED.imports.task,
+    paths: GENERATED_TEMPLATES.paths.task,
+    imports: GENERATED_TEMPLATES.imports.task,
+    renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        paths: AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED.paths.provider,
+        paths: GENERATED_TEMPLATES.paths.provider,
+        renderers: GENERATED_TEMPLATES.renderers.provider,
       },
-      run({ typescriptFile, paths }) {
+      run({ paths, renderers }) {
         return {
           build: async (builder) => {
+            await builder.apply(renderers.hooksGroup.render({}));
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group:
-                  AUTH_PLACEHOLDER_AUTH_HOOKS_GENERATED.templates.hooksGroup,
-                paths,
-                variables: {},
+              renderTextTemplateFileAction({
+                template: GENERATED_TEMPLATES.templates.useCurrentUserGql,
+                destination: paths.useCurrentUserGql,
               }),
             );
           },

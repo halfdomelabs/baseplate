@@ -1,40 +1,43 @@
 import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-export interface AuthPlaceholderAuthHooksPaths {
+export interface PlaceholderAuthCorePlaceholderAuthHooksPaths {
+  useCurrentUserGql: string;
   useCurrentUser: string;
   useLogOut: string;
-  useRequiredUserId: string;
   useSession: string;
+  useRequiredUserId: string;
 }
 
-const authPlaceholderAuthHooksPaths =
-  createProviderType<AuthPlaceholderAuthHooksPaths>(
-    'auth-placeholder-auth-hooks-paths',
+const placeholderAuthCorePlaceholderAuthHooksPaths =
+  createProviderType<PlaceholderAuthCorePlaceholderAuthHooksPaths>(
+    'placeholder-auth-core-placeholder-auth-hooks-paths',
   );
 
-const authPlaceholderAuthHooksPathsTask = createGeneratorTask({
+const placeholderAuthCorePlaceholderAuthHooksPathsTask = createGeneratorTask({
   dependencies: { packageInfo: packageInfoProvider },
   exports: {
-    authPlaceholderAuthHooksPaths: authPlaceholderAuthHooksPaths.export(),
+    placeholderAuthCorePlaceholderAuthHooksPaths:
+      placeholderAuthCorePlaceholderAuthHooksPaths.export(),
   },
   run({ packageInfo }) {
     const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
       providers: {
-        authPlaceholderAuthHooksPaths: {
-          useCurrentUser: `${srcRoot}/hooks/useCurrentUser.ts`,
-          useLogOut: `${srcRoot}/hooks/useLogOut.ts`,
-          useRequiredUserId: `${srcRoot}/hooks/useRequiredUserId.ts`,
-          useSession: `${srcRoot}/hooks/useSession.ts`,
+        placeholderAuthCorePlaceholderAuthHooksPaths: {
+          useCurrentUser: `${srcRoot}/hooks/use-current-user.ts`,
+          useCurrentUserGql: `${srcRoot}/hooks/use-current-user.gql`,
+          useLogOut: `${srcRoot}/hooks/use-log-out.ts`,
+          useRequiredUserId: `${srcRoot}/hooks/use-user-id-or-throw.ts`,
+          useSession: `${srcRoot}/hooks/use-session.ts`,
         },
       },
     };
   },
 });
 
-export const AUTH_PLACEHOLDER_AUTH_HOOKS_PATHS = {
-  provider: authPlaceholderAuthHooksPaths,
-  task: authPlaceholderAuthHooksPathsTask,
+export const PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_PATHS = {
+  provider: placeholderAuthCorePlaceholderAuthHooksPaths,
+  task: placeholderAuthCorePlaceholderAuthHooksPathsTask,
 };
