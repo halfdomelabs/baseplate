@@ -24,7 +24,7 @@ function isEmpty(value: unknown): boolean {
 export function createDefaultHandler<T>(
   ctx: DefinitionSchemaParserContext,
   defaultValue: T,
-): <TValue>(value: T extends TValue ? TValue : never) => TValue {
+): <TValue>(value: T | undefined extends TValue ? TValue : never) => TValue {
   const mode = ctx.defaultMode ?? 'populate';
 
   return <TValue>(value: TValue): TValue => {

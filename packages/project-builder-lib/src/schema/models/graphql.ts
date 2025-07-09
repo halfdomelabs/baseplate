@@ -87,6 +87,7 @@ export const createModelGraphqlSchema = definitionSchema((ctx) =>
           .optional()
           .transform(createDefaultHandler(ctx, {})),
       })
+      .optional()
       .transform(createDefaultHandler(ctx, {})),
     mutations: z
       .object({
@@ -121,6 +122,7 @@ export const createModelGraphqlSchema = definitionSchema((ctx) =>
           .optional()
           .transform(createDefaultHandler(ctx, {})),
       })
+      .optional()
       .transform(createDefaultHandler(ctx, {})),
   }),
 );
