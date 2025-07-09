@@ -3,6 +3,7 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   packageScope,
   TsCodeUtils,
+  tsTemplate,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
@@ -74,13 +75,20 @@ export const reactErrorGenerator = createGenerator({
                 },
               }),
             );
+            const getFormattedErrorSuffix = tsTemplate`
+              ${errorFormatters.size === 0 ? '// eslint-disable-next-line @typescript-eslint/no-unused-vars' : ''}
+              function getFormattedErrorSuffix(${errorFormatters.size > 0 ? 'error' : '_error'}: unknown): string {
+                ${TsCodeUtils.mergeFragments(errorFormatters)};
+
+                return 'Please try again later.';
+              }
+                  `;
             await builder.apply(
               typescriptFile.renderTemplateFile({
                 template: CORE_REACT_ERROR_GENERATED.templates.errorFormatter,
                 destination: paths.errorFormatter,
                 variables: {
-                  TPL_ERROR_FORMATTERS:
-                    TsCodeUtils.mergeFragments(errorFormatters),
+                  TPL_GET_FORMATTED_ERROR_SUFFIX: getFormattedErrorSuffix,
                 },
               }),
             );

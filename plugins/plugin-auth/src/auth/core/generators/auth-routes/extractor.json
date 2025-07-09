@@ -1,0 +1,84 @@
+{
+  "name": "auth/core/auth-routes",
+  "templates": {
+    "routes/auth_/login.tsx": {
+      "name": "login",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+      "group": "main",
+      "importMapProviders": {
+        "apolloErrorImportsProvider": {
+          "importName": "apolloErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/apollo-error/generated/ts-import-providers.ts"
+        },
+        "generatedGraphqlImportsProvider": {
+          "importName": "generatedGraphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        },
+        "reactSessionImportsProvider": {
+          "importName": "reactSessionImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/auth/core/generators/react-session/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/auth_/login.tsx",
+      "variables": {}
+    },
+    "routes/auth_/queries.gql": {
+      "name": "queries-gql",
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{routes-root}/auth_/queries.gql",
+      "variables": {}
+    },
+    "routes/auth_/register.tsx": {
+      "name": "register",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+      "group": "main",
+      "importMapProviders": {
+        "apolloErrorImportsProvider": {
+          "importName": "apolloErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/apollo-error/generated/ts-import-providers.ts"
+        },
+        "generatedGraphqlImportsProvider": {
+          "importName": "generatedGraphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        },
+        "reactSessionImportsProvider": {
+          "importName": "reactSessionImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/auth/core/generators/react-session/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/auth_/register.tsx",
+      "variables": {}
+    },
+    "routes/auth_/route.tsx": {
+      "name": "route",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{routes-root}/auth_/route.tsx",
+      "variables": {}
+    }
+  }
+}

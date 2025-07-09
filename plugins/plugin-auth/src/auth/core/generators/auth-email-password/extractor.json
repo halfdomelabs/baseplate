@@ -1,0 +1,74 @@
+{
+  "name": "auth/core/auth-email-password",
+  "templates": {
+    "module/constants/password.constants.ts": {
+      "name": "constants-password",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-email-password",
+      "group": "module",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/constants/password.constants.ts",
+      "projectExports": { "PASSWORD_MIN_LENGTH": {} },
+      "variables": {}
+    },
+    "module/schema/user-password.mutations.ts": {
+      "name": "schema-user-password-mutations",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-email-password",
+      "group": "module",
+      "importMapProviders": {
+        "authModuleImportsProvider": {
+          "importName": "authModuleImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/auth/core/generators/auth-module/generated/ts-import-providers.ts"
+        },
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/user-password.mutations.ts",
+      "variables": {}
+    },
+    "module/services/user-password.service.ts": {
+      "name": "services-user-password",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-email-password",
+      "group": "module",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "passwordHasherServiceImportsProvider": {
+          "importName": "passwordHasherServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/password-hasher-service/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        },
+        "requestServiceContextImportsProvider": {
+          "importName": "requestServiceContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/request-service-context/generated/ts-import-providers.ts"
+        },
+        "userSessionServiceImportsProvider": {
+          "importName": "userSessionServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/_providers/user-session.ts"
+        },
+        "userSessionTypesImportsProvider": {
+          "importName": "userSessionTypesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/user-session-types/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/user-password.service.ts",
+      "projectExports": {
+        "authenticateUserWithEmailAndPassword": {},
+        "createUserWithEmailAndPassword": {}
+      },
+      "variables": {}
+    }
+  }
+}

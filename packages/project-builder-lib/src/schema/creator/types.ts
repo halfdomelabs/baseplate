@@ -7,6 +7,8 @@ import type {
   WithRefType,
 } from '#src/references/extend-parser-context-with-refs.js';
 
+import type { WithDefaultType } from './extend-parser-context-with-defaults.js';
+
 /**
  * Options for creating a definition schema.
  */
@@ -23,6 +25,16 @@ export interface DefinitionSchemaCreatorOptions {
    * to convert the parsed data to the correct type.
    */
   transformReferences?: boolean;
+  /**
+   * How to handle default values in the schema.
+   *
+   * - 'populate': Ensure defaults are present (useful for React Hook Form)
+   * - 'strip': Remove values that match their defaults (useful for clean JSON serialization)
+   * - 'preserve': Keep values as-is without transformation
+   *
+   * @default 'populate'
+   */
+  defaultMode?: 'populate' | 'strip' | 'preserve';
 }
 
 export interface DefinitionSchemaParserContext {
@@ -35,6 +47,10 @@ export interface DefinitionSchemaParserContext {
    */
   transformReferences?: boolean;
   /**
+   * How to handle default values in the schema.
+   */
+  defaultMode?: 'populate' | 'strip' | 'preserve';
+  /**
    * Adds a reference to the schema.
    */
   withRef: WithRefType;
@@ -46,6 +62,13 @@ export interface DefinitionSchemaParserContext {
    * Provides access to the reference builder functions for the schema.
    */
   withRefBuilder: WithRefBuilder;
+  /**
+   * Wraps a schema with default value handling based on the defaultMode.
+   * - 'populate': Uses preprocess to ensure defaults are present
+   * - 'strip': Uses transform to remove values matching defaults
+   * - 'preserve': Returns schema unchanged
+   */
+  withDefault: WithDefaultType;
 }
 
 export type DefinitionSchemaCreator<T extends z.ZodTypeAny = z.ZodTypeAny> = (

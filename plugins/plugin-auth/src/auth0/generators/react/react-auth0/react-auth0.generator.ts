@@ -8,9 +8,8 @@ import {
   tsTemplateWithImports,
 } from '@baseplate-dev/core-generators';
 import {
-  authContextTask,
   reactAppConfigProvider,
-  reactAuthProvider,
+  reactAuthRoutesProvider,
   reactConfigImportsProvider,
   reactConfigProvider,
   reactRouterConfigProvider,
@@ -57,7 +56,6 @@ export const reactAuth0Generator = createGenerator({
         },
       });
     }),
-    authContext: authContextTask,
     reactRouterContext: createGeneratorTask({
       dependencies: {
         reactRouterConfig: reactRouterConfigProvider,
@@ -97,7 +95,7 @@ export const reactAuth0Generator = createGenerator({
     }),
     reactAuth: createGeneratorTask({
       exports: {
-        reactAuth: reactAuthProvider.export(packageScope),
+        reactAuth: reactAuthRoutesProvider.export(packageScope),
       },
       run() {
         return {

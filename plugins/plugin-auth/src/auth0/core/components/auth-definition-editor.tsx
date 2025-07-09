@@ -5,6 +5,7 @@ import {
   authRoleEntityType,
   createAndApplyModelMergerResults,
   createModelMergerResults,
+  doesModelMergerResultsHaveChanges,
   FeatureUtils,
   ModelUtils,
   PluginUtils,
@@ -27,16 +28,17 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
 } from '@baseplate-dev/ui-components';
+import { useLens } from '@hookform/lenses';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
-import { AUTH_DEFAULT_ROLES } from '#src/roles/index.js';
+import { RoleEditorForm } from '#src/common/roles/components/index.js';
+import { AUTH_DEFAULT_ROLES } from '#src/common/roles/index.js';
 
 import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition.js';
 
 import { createAuth0Models } from '../schema/models.js';
 import { createAuth0PluginDefinitionSchema } from '../schema/plugin-definition.js';
-import RoleEditorForm from './role-editor-form.js';
 
 import '#src/styles.css';
 
@@ -126,10 +128,12 @@ export function AuthDefinitionEditor({
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
+  const lens = useLens({ control });
+
   return (
     <form
       onSubmit={onSubmit}
-      className="max-w-6xl auth:mb-[--action-bar-height]"
+      className="auth:mb-[--action-bar-height] auth:max-w-6xl"
     >
       <div className="auth:pb-16">
         <SectionList>
@@ -148,7 +152,7 @@ export function AuthDefinitionEditor({
                 pendingModelChanges={pendingModelChanges}
               />
 
-              <div className="md:auth:grid-cols-2 auth:grid auth:grid-cols-1 auth:gap-6">
+              <div className="auth:grid auth:grid-cols-1 auth:gap-6 auth:md:grid-cols-2">
                 <ModelComboboxFieldController
                   label="User Model"
                   name="modelRefs.user"
@@ -167,11 +171,17 @@ export function AuthDefinitionEditor({
             </SectionListSectionContent>
           </SectionListSection>
 
-          <RoleEditorForm control={control} />
+          <RoleEditorForm lens={lens.focus('roles')} />
         </SectionList>
       </div>
 
-      <FormActionBar form={form} />
+      <FormActionBar
+        form={form}
+        allowSaveWithoutDirty={
+          !pluginMetadata ||
+          doesModelMergerResultsHaveChanges(pendingModelChanges)
+        }
+      />
     </form>
   );
 }

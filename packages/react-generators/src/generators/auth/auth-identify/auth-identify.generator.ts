@@ -17,6 +17,8 @@ import { z } from 'zod';
 
 import { reactRouterConfigProvider } from '#src/generators/core/react-router/index.js';
 
+import { authContextTask } from '../_tasks/auth-context.js';
+
 const descriptorSchema = z.object({});
 
 const configSchema = createFieldMapSchemaBuilder((t) => ({
@@ -35,6 +37,7 @@ export const authIdentifyGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    authContext: authContextTask,
     main: createGeneratorTask({
       dependencies: {
         reactRouterConfig: reactRouterConfigProvider,

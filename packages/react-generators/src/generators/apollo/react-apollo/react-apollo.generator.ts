@@ -159,13 +159,6 @@ export { reactApolloConfigProvider };
 
 export interface ReactApolloProvider {
   /**
-   * Register a gql file so that any changes to this file will
-   * trigger a regeneration of the generated graphql file
-   *
-   * @param filePath - The path to the gql file
-   */
-  registerGqlFile(filePath: string): void;
-  /**
    * Get the path to the generated graphql file
    *
    * @returns The path to the generated graphql file
@@ -306,14 +299,9 @@ export const reactApolloGenerator = createGenerator({
         },
         paths,
       }) {
-        const gqlFiles: string[] = [];
-
         return {
           providers: {
             reactApollo: {
-              registerGqlFile(filePath) {
-                gqlFiles.push(filePath);
-              },
               getGeneratedFilePath() {
                 return paths.graphql;
               },
@@ -586,7 +574,7 @@ export const reactApolloGenerator = createGenerator({
 
             builder.addPostWriteCommand('pnpm generate', {
               priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
-              onlyIfChanged: [...gqlFiles, 'codegen.ts'],
+              onlyIfChanged: ['codegen.ts', 'src/**/*.gql'],
             });
           },
         };

@@ -454,8 +454,8 @@ importers:
         specifier: 'catalog:'
         version: 19.1.0
       react-hook-form:
-        specifier: 7.56.3
-        version: 7.56.3(react@19.1.0)
+        specifier: 7.60.0
+        version: 7.60.0(react@19.1.0)
       zod:
         specifier: 'catalog:'
         version: 3.24.1
@@ -683,7 +683,7 @@ importers:
         version: 3.2.2(react@19.1.0)
       '@hookform/resolvers':
         specifier: 5.0.1
-        version: 5.0.1(react-hook-form@7.56.3(react@19.1.0))
+        version: 5.0.1(react-hook-form@7.60.0(react@19.1.0))
       '@tanstack/react-router':
         specifier: 1.124.0
         version: 1.124.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -742,8 +742,8 @@ importers:
         specifier: 6.0.0
         version: 6.0.0(react@19.1.0)
       react-hook-form:
-        specifier: 7.56.3
-        version: 7.56.3(react@19.1.0)
+        specifier: 7.60.0
+        version: 7.60.0(react@19.1.0)
       react-icons:
         specifier: 5.5.0
         version: 5.5.0(react@19.1.0)
@@ -881,6 +881,9 @@ importers:
       globby:
         specifier: ^14.0.2
         version: 14.0.2
+      micromatch:
+        specifier: 4.0.8
+        version: 4.0.8
       ms:
         specifier: 2.1.3
         version: 2.1.3
@@ -900,6 +903,9 @@ importers:
       '@baseplate-dev/tools':
         specifier: workspace:*
         version: link:../tools
+      '@types/micromatch':
+        specifier: 4.0.9
+        version: 4.0.9
       '@types/ms':
         specifier: 0.7.34
         version: 0.7.34
@@ -1008,7 +1014,7 @@ importers:
         version: 5.2.5
       '@hookform/resolvers':
         specifier: 5.0.1
-        version: 5.0.1(react-hook-form@7.56.3(react@19.1.0))
+        version: 5.0.1(react-hook-form@7.60.0(react@19.1.0))
       '@types/react':
         specifier: 'catalog:'
         version: 19.1.3
@@ -1043,8 +1049,8 @@ importers:
         specifier: 'catalog:'
         version: 19.1.0(react@19.1.0)
       react-hook-form:
-        specifier: 7.56.3
-        version: 7.56.3(react@19.1.0)
+        specifier: 7.60.0
+        version: 7.60.0(react@19.1.0)
       react-icons:
         specifier: 5.5.0
         version: 5.5.0(react@19.1.0)
@@ -1203,9 +1209,12 @@ importers:
       '@baseplate-dev/ui-components':
         specifier: workspace:*
         version: link:../../packages/ui-components
+      '@hookform/lenses':
+        specifier: 0.7.1
+        version: 0.7.1(react-hook-form@7.60.0(react@19.1.0))(react@19.1.0)
       '@hookform/resolvers':
         specifier: 5.0.1
-        version: 5.0.1(react-hook-form@7.56.3(react@19.1.0))
+        version: 5.0.1(react-hook-form@7.60.0(react@19.1.0))
       react:
         specifier: 'catalog:'
         version: 19.1.0
@@ -1213,8 +1222,8 @@ importers:
         specifier: 'catalog:'
         version: 19.1.0(react@19.1.0)
       react-hook-form:
-        specifier: 7.56.3
-        version: 7.56.3(react@19.1.0)
+        specifier: 7.60.0
+        version: 7.60.0(react@19.1.0)
       react-icons:
         specifier: 5.5.0
         version: 5.5.0(react@19.1.0)
@@ -1293,7 +1302,7 @@ importers:
         version: link:../../packages/utils
       '@hookform/resolvers':
         specifier: 5.0.1
-        version: 5.0.1(react-hook-form@7.56.3(react@19.1.0))
+        version: 5.0.1(react-hook-form@7.60.0(react@19.1.0))
       inflection:
         specifier: 3.0.0
         version: 3.0.0
@@ -1304,8 +1313,8 @@ importers:
         specifier: 'catalog:'
         version: 19.1.0(react@19.1.0)
       react-hook-form:
-        specifier: 7.56.3
-        version: 7.56.3(react@19.1.0)
+        specifier: 7.60.0
+        version: 7.60.0(react@19.1.0)
       zod:
         specifier: 'catalog:'
         version: 3.24.1
@@ -1909,6 +1918,13 @@ packages:
     resolution: {integrity: sha512-AiXO/bfe9bmxBjxxtYxFAXGZvMaN5s8kO+jBHAJCON8rJoB5YS/D6X7ZNc6XQkuHNmyl4CYaMI1fJ/Gn27RGGw==}
     engines: {node: '>=6'}
     hasBin: true
+
+  '@hookform/lenses@0.7.1':
+    resolution: {integrity: sha512-lURXz2/mzQFGW6taJi+klKxVqMkwSqh/eZGOzA98svLhYC/63rKyJQTX7mK17NCwDo02j9wYxrG1qD85MBTWYg==}
+    engines: {bun: '>=1.2'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+      react-hook-form: ^7.0.0
 
   '@hookform/resolvers@5.0.1':
     resolution: {integrity: sha512-u/+Jp83luQNx9AdyW2fIPGY6Y7NG68eN2ZW8FOJYL+M0i4s49+refdJdOp/A9n9HFQtQs3HIDHQvX3ZET2o7YA==}
@@ -3643,6 +3659,9 @@ packages:
   '@types/babel__traverse@7.20.6':
     resolution: {integrity: sha512-r1bzfrm0tomOI8g1SzvCaQHo6Lcv6zu0EA+W2kHrt8dyrHQxGzBBL4kdkzIS+jBMV+EYcMAEAqXqYaLJq5rOZg==}
 
+  '@types/braces@3.0.5':
+    resolution: {integrity: sha512-SQFof9H+LXeWNz8wDe7oN5zu7ket0qwMu5vZubW4GCJ8Kkeh6nBWUz87+KTz/G3Kqsrp0j/W253XJb3KMEeg3w==}
+
   '@types/culori@2.1.1':
     resolution: {integrity: sha512-NzLYD0vNHLxTdPp8+RlvGbR2NfOZkwxcYGFwxNtm+WH2NuUNV8785zv1h0sulFQ5aFQ9n/jNDUuJeo3Bh7+oFA==}
 
@@ -3672,6 +3691,9 @@ packages:
 
   '@types/mdx@2.0.13':
     resolution: {integrity: sha512-+OWZQfAYyio6YkJb3HLxDrvnx6SWWDbC0zVPfBRzUk0/nqoDyf6dNxQi3eArPe8rJ473nobTMQ/8Zk+LxJ+Yuw==}
+
+  '@types/micromatch@4.0.9':
+    resolution: {integrity: sha512-7V+8ncr22h4UoYRLnLXSpTxjQrNUXtWHGeMPRJt1nULXI57G9bIcpyrHlmrQ7QK24EyyuXvYcSSWAM8GA9nqCg==}
 
   '@types/ms@0.7.34':
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
@@ -6513,8 +6535,8 @@ packages:
     peerDependencies:
       react: '>=16.13.1'
 
-  react-hook-form@7.56.3:
-    resolution: {integrity: sha512-IK18V6GVbab4TAo1/cz3kqajxbDPGofdF0w7VHdCo0Nt8PrPlOZcuuDq9YYIV1BtjcX78x0XsldbQRQnQXWXmw==}
+  react-hook-form@7.60.0:
+    resolution: {integrity: sha512-SBrYOvMbDB7cV8ZfNpaiLcgjH/a1c7aK0lK+aNigpf4xWLO8q+o4tcvVurv3c4EOyzn/3dCsYt4GKD42VvJ/+A==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -8315,10 +8337,15 @@ snapshots:
       protobufjs: 7.4.0
       yargs: 17.7.2
 
-  '@hookform/resolvers@5.0.1(react-hook-form@7.56.3(react@19.1.0))':
+  '@hookform/lenses@0.7.1(react-hook-form@7.60.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      react: 19.1.0
+      react-hook-form: 7.60.0(react@19.1.0)
+
+  '@hookform/resolvers@5.0.1(react-hook-form@7.60.0(react@19.1.0))':
     dependencies:
       '@standard-schema/utils': 0.3.0
-      react-hook-form: 7.56.3(react@19.1.0)
+      react-hook-form: 7.60.0(react@19.1.0)
 
   '@humanfs/core@0.19.1': {}
 
@@ -10119,6 +10146,8 @@ snapshots:
     dependencies:
       '@babel/types': 7.28.0
 
+  '@types/braces@3.0.5': {}
+
   '@types/culori@2.1.1': {}
 
   '@types/docker-modem@3.0.6':
@@ -10150,6 +10179,10 @@ snapshots:
   '@types/json-schema@7.0.15': {}
 
   '@types/mdx@2.0.13': {}
+
+  '@types/micromatch@4.0.9':
+    dependencies:
+      '@types/braces': 3.0.5
 
   '@types/ms@0.7.34': {}
 
@@ -13241,7 +13274,7 @@ snapshots:
       '@babel/runtime': 7.26.10
       react: 19.1.0
 
-  react-hook-form@7.56.3(react@19.1.0):
+  react-hook-form@7.60.0(react@19.1.0):
     dependencies:
       react: 19.1.0
 

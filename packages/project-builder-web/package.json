@@ -79,7 +79,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-error-boundary": "6.0.0",
-    "react-hook-form": "7.56.3",
+    "react-hook-form": "7.60.0",
     "react-icons": "5.5.0",
     "react-timeago": "8.2.0",
     "semver": "^7.5.4",

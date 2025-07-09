@@ -1,4 +1,4 @@
-const generatorNameRegex = /^([^#]+)#([^/]+\/)?([^#]+)$/;
+const generatorNameRegex = /^([^#]+)#(.+\/)?([^#/]+)$/;
 
 /**
  * A parsed generator name.

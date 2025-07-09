@@ -8,12 +8,15 @@ import type {
   DefinitionSchemaParserContext,
 } from './types.js';
 
+import { extendParserContextWithDefaults } from './extend-parser-context-with-defaults.js';
+
 export function createDefinitionSchemaParserContext(
   options: DefinitionSchemaCreatorOptions,
 ): DefinitionSchemaParserContext {
   return {
     ...options,
     ...extendParserContextWithRefs(options),
+    ...extendParserContextWithDefaults(options),
   };
 }
 

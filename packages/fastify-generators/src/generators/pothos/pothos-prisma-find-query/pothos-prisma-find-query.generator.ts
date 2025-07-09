@@ -137,7 +137,7 @@ export const pothosPrismaFindQueryGenerator = createGenerator({
         );`,
               {
                 QUERY_EXPORT: `${lowerFirstModelName}Query`,
-                BUILDER: 'builder',
+                BUILDER: pothosTypesFile.getBuilderFragment(),
                 QUERY_NAME: quot(lowerFirstModelName),
                 OPTIONS: TsCodeUtils.mergeFragmentsAsObject(options, {
                   disableSort: true,

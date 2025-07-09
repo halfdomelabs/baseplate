@@ -7,7 +7,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
-import { createAuthRolesSchema } from '#src/roles/index.js';
+import { createAuthRolesSchema } from '#src/common/roles/index.js';
 
 export const createAuthPluginDefinitionSchema = definitionSchema((ctx) =>
   z.object({

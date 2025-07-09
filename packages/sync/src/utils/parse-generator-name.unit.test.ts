@@ -34,6 +34,22 @@ describe('parseGeneratorName', () => {
     });
   });
 
+  it('parses generator with nested subdirectory', () => {
+    // Arrange
+    const input =
+      '@baseplate-dev/plugin-storage#fastify/core/prisma-file-transformer';
+
+    // Act
+    const result = parseGeneratorName(input);
+
+    // Assert
+    expect(result).toEqual({
+      packageName: '@baseplate-dev/plugin-storage',
+      generatorPath: 'fastify/core/prisma-file-transformer',
+      generatorBasename: 'prisma-file-transformer',
+    });
+  });
+
   it('throws on invalid input', () => {
     // Arrange
     const input = '@baseplate-dev/core-generators';

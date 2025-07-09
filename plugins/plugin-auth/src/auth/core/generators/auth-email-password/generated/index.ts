@@ -1,0 +1,11 @@
+import { AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS } from './template-paths.js';
+import { AUTH_CORE_AUTH_EMAIL_PASSWORD_RENDERERS } from './template-renderers.js';
+import { AUTH_CORE_AUTH_EMAIL_PASSWORD_IMPORTS } from './ts-import-providers.js';
+import { AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES } from './typed-templates.js';
+
+export const AUTH_CORE_AUTH_EMAIL_PASSWORD_GENERATED = {
+  imports: AUTH_CORE_AUTH_EMAIL_PASSWORD_IMPORTS,
+  paths: AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS,
+  renderers: AUTH_CORE_AUTH_EMAIL_PASSWORD_RENDERERS,
+  templates: AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES,
+};

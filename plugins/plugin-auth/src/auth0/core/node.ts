@@ -1,11 +1,4 @@
 import {
-  authContextGenerator,
-  authPluginGenerator,
-  authRolesGenerator,
-  pothosAuthGenerator,
-  userSessionTypesGenerator,
-} from '@baseplate-dev/fastify-generators';
-import {
   adminAppEntryType,
   appCompilerSpec,
   backendAppEntryType,
@@ -13,16 +6,18 @@ import {
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
+import { reactRoutesGenerator } from '@baseplate-dev/react-generators';
+
 import {
-  authIdentifyGenerator,
-  reactRoutesGenerator,
-} from '@baseplate-dev/react-generators';
+  createCommonBackendAuthModuleGenerators,
+  createCommonBackendAuthRootGenerators,
+  createCommonWebAuthGenerators,
+} from '#src/common/index.js';
 
 import type { Auth0PluginDefinition } from './schema/plugin-definition.js';
 
 import {
   auth0ApolloGenerator,
-  auth0ComponentsGenerator,
   auth0HooksGenerator,
   auth0ModuleGenerator,
   auth0PagesGenerator,
@@ -46,65 +41,43 @@ export default createPlatformPluginExport({
         ) as Auth0PluginDefinition;
 
         appCompiler.addChildrenToFeature(auth.authFeatureRef, {
-          authContext: authContextGenerator({}),
-          authPlugin: authPluginGenerator({}),
-          authRoles: authRolesGenerator({
-            roles: auth.roles.map((r) => ({
-              name: r.name,
-              comment: r.comment,
-              builtIn: r.builtIn,
-            })),
-          }),
+          ...createCommonBackendAuthModuleGenerators({ roles: auth.roles }),
           auth0Module: auth0ModuleGenerator({
             userModelName: definitionContainer.nameFromId(auth.modelRefs.user),
             includeManagement: true,
           }),
-          userSessionTypes: userSessionTypesGenerator({}),
         });
 
-        appCompiler.addRootChildren({
-          pothosAuth: pothosAuthGenerator({}),
-        });
+        appCompiler.addRootChildren(createCommonBackendAuthRootGenerators());
       },
     });
+
+    const sharedWebGenerators = {
+      ...createCommonWebAuthGenerators(),
+      auth: reactAuth0Generator({}),
+      authHooks: auth0HooksGenerator({}),
+      auth0Apollo: auth0ApolloGenerator({}),
+      auth0Callback: reactRoutesGenerator({
+        name: 'auth',
+        children: {
+          auth: auth0PagesGenerator({}),
+        },
+      }),
+    };
 
     // register web compiler
     appCompiler.registerAppCompiler({
       pluginId,
       appType: webAppEntryType,
       compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren({
-          auth: reactAuth0Generator({}),
-          authHooks: auth0HooksGenerator({}),
-          authIdentify: authIdentifyGenerator({}),
-          auth0Apollo: auth0ApolloGenerator({}),
-          auth0Components: auth0ComponentsGenerator({}),
-          auth0Callback: reactRoutesGenerator({
-            name: 'auth',
-            children: {
-              auth: auth0PagesGenerator({}),
-            },
-          }),
-        });
+        appCompiler.addRootChildren(sharedWebGenerators);
       },
     });
     appCompiler.registerAppCompiler({
       pluginId,
       appType: adminAppEntryType,
       compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren({
-          auth: reactAuth0Generator({}),
-          authHooks: auth0HooksGenerator({}),
-          authIdentify: authIdentifyGenerator({}),
-          auth0Apollo: auth0ApolloGenerator({}),
-          auth0Components: auth0ComponentsGenerator({}),
-          auth0Callback: reactRoutesGenerator({
-            name: 'auth',
-            children: {
-              auth: auth0PagesGenerator({}),
-            },
-          }),
-        });
+        appCompiler.addRootChildren(sharedWebGenerators);
       },
     });
 

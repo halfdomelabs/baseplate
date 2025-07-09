@@ -14,9 +14,13 @@ interface FormActionBarProps extends React.ComponentProps<'div'> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- need to support any form return
   form?: UseFormReturn<any>;
   /**
-   * Whether the form actions should be disabled
+   * Whether the form actions should be disabled (if undefined, will use (form.isSubmitting || !form.isDirty))
    */
   disabled?: boolean;
+  /**
+   * Whether to enable the save button even if the form is not dirty (useful when submitting data where defaults are allowed)
+   */
+  allowSaveWithoutDirty?: boolean;
   /**
    * Optional custom reset handler (defaults to form.reset)
    */
@@ -38,19 +42,24 @@ interface FormActionBarProps extends React.ComponentProps<'div'> {
 function FormActionBar(props: FormActionBarProps): React.ReactElement {
   const {
     className,
-    disabled = false,
+    disabled,
     children,
     form,
     onReset,
+    allowSaveWithoutDirty,
     ...rest
   } = props;
 
   // Determine values based on whether form prop is provided
   const { formState } = form ?? {};
-  const formIsDisabled = formState
+  const defaultSaveIsDisabled = formState
+    ? formState.isSubmitting || (!allowSaveWithoutDirty && !formState.isDirty)
+    : false;
+  const defaultResetIsDisabled = formState
     ? formState.isSubmitting || !formState.isDirty
     : false;
-  const isDisabled = formIsDisabled || disabled;
+  const isSaveDisabled = disabled ?? defaultSaveIsDisabled;
+  const isResetDisabled = disabled ?? defaultResetIsDisabled;
 
   const handleReset = (): void => {
     form?.reset();
@@ -73,7 +82,7 @@ function FormActionBar(props: FormActionBarProps): React.ReactElement {
             size="sm"
             type="button"
             onClick={handleReset}
-            disabled={isDisabled}
+            disabled={isResetDisabled}
           >
             Reset
           </Button>
@@ -81,7 +90,7 @@ function FormActionBar(props: FormActionBarProps): React.ReactElement {
             variant="default"
             size="sm"
             type="submit"
-            disabled={isDisabled}
+            disabled={isSaveDisabled}
           >
             <MdOutlineSave className="mr-2 h-4 w-4" />
             Save

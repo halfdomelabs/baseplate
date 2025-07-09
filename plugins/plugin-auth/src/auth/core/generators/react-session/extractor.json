@@ -1,0 +1,74 @@
+{
+  "name": "auth/core/react-session",
+  "templates": {
+    "src/app/user-session-check.gql": {
+      "name": "user-session-check-gql",
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/app/user-session-check.gql",
+      "variables": {}
+    },
+    "src/app/user-session-check.tsx": {
+      "name": "user-session-check",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
+      "group": "main",
+      "importMapProviders": {
+        "generatedGraphqlImportsProvider": {
+          "importName": "generatedGraphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/app/user-session-check.tsx",
+      "variables": {}
+    },
+    "src/app/user-session-provider.tsx": {
+      "name": "user-session-provider",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/app/user-session-provider.tsx",
+      "variables": {}
+    },
+    "src/hooks/use-user-session-client.ts": {
+      "name": "use-user-session-client",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/use-user-session-client.ts",
+      "projectExports": {
+        "UserSessionClientContext": {},
+        "UserSessionClientContextValue": { "isTypeOnly": true },
+        "useUserSessionClient": {}
+      },
+      "variables": {}
+    },
+    "src/services/user-session-client.ts": {
+      "name": "user-session-client",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
+      "group": "main",
+      "importMapProviders": {
+        "reactUtilsImportsProvider": {
+          "importName": "reactUtilsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-utils/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/services/user-session-client.ts",
+      "projectExports": {
+        "createUserSessionClient": {},
+        "SessionChangeCallback": { "isTypeOnly": true },
+        "UserSessionClient": {},
+        "UserSessionClientConfig": { "isTypeOnly": true },
+        "UserSessionData": { "isTypeOnly": true }
+      },
+      "variables": {}
+    }
+  }
+}

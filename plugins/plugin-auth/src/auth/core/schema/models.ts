@@ -23,14 +23,18 @@ export function createAuthModels({
             options: { genUuid: true },
           },
           {
-            name: 'email',
+            name: 'name',
             type: 'string',
             isOptional: true,
           },
           {
-            name: 'phone',
+            name: 'email',
             type: 'string',
-            isOptional: true,
+          },
+          {
+            name: 'emailVerified',
+            type: 'boolean',
+            options: { default: 'false' },
           },
           {
             name: 'updatedAt',
@@ -72,7 +76,7 @@ export function createAuthModels({
             type: 'uuid',
           },
           {
-            name: 'providerType',
+            name: 'accountId',
             type: 'string',
           },
           {
@@ -80,8 +84,9 @@ export function createAuthModels({
             type: 'string',
           },
           {
-            name: 'providerSecret',
+            name: 'password',
             type: 'string',
+            isOptional: true,
           },
           {
             name: 'createdAt',
@@ -97,7 +102,7 @@ export function createAuthModels({
         primaryKeyFieldRefs: ['id'],
         uniqueConstraints: [
           {
-            fields: [{ fieldRef: 'providerType' }, { fieldRef: 'providerId' }],
+            fields: [{ fieldRef: 'accountId' }, { fieldRef: 'providerId' }],
           },
         ],
         relations: [
@@ -160,12 +165,12 @@ export function createAuthModels({
             options: { genUuid: true },
           },
           {
-            name: 'token',
-            type: 'string',
-          },
-          {
             name: 'userId',
             type: 'uuid',
+          },
+          {
+            name: 'token',
+            type: 'string',
           },
           {
             name: 'expiresAt',
