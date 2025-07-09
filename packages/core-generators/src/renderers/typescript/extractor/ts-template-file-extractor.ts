@@ -123,13 +123,21 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
 
     await Promise.all(
       Object.entries(filesByGenerator).map(async ([generatorName, files]) => {
+        const generatorOutputRelativePathMap =
+          templatesOutputRelativePathMap.get(generatorName);
+        if (!generatorOutputRelativePathMap) {
+          throw new Error(
+            `No output relative paths found for generator ${generatorName}`,
+          );
+        }
+
         const writeContext: WriteTsTemplateFileContext = {
           generatorName,
           projectExportMap,
           outputDirectory: context.outputDirectory,
-          internalOutputRelativePaths: files.map((f) =>
-            path.relative(context.outputDirectory, f.sourceAbsolutePath),
-          ),
+          internalOutputRelativePaths: [
+            ...generatorOutputRelativePathMap.values(),
+          ].flat(),
           resolver: getResolverFactory(context.outputDirectory),
         };
 

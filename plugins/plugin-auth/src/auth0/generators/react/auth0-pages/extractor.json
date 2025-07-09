@@ -1,8 +1,7 @@
 {
   "name": "auth0/auth0-pages",
   "templates": {
-    "routes/login.tsx": {
-      "name": "login",
+    "login": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth0/auth0-pages",
@@ -14,6 +13,7 @@
         }
       },
       "pathRootRelativePath": "{routes-root}/login.tsx",
+      "sourceFile": "routes/login.tsx",
       "variables": {}
     }
   }

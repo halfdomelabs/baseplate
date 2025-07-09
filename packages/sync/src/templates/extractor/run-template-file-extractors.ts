@@ -1,3 +1,4 @@
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { groupBy, uniq } from 'es-toolkit';
 import { z } from 'zod';
 
@@ -141,18 +142,25 @@ export async function runTemplateFileExtractors(
       .filter((f) => f.templateInfo.instanceData !== undefined)
       .map((f) => {
         const { absolutePath: path, templateInfo, metadata, modifiedTime } = f;
-        return {
-          absolutePath: path,
-          templateName: templateInfo.template,
-          generatorName: templateInfo.generator,
-          existingMetadata: metadata,
-          instanceData: extractor.templateInstanceDataSchema
-            ? extractor.templateInstanceDataSchema.parse(
-                templateInfo.instanceData,
-              )
-            : {},
-          modifiedTime,
-        } satisfies TemplateFileExtractorSourceFile;
+        try {
+          return {
+            absolutePath: path,
+            templateName: templateInfo.template,
+            generatorName: templateInfo.generator,
+            existingMetadata: metadata,
+            instanceData: extractor.templateInstanceDataSchema
+              ? extractor.templateInstanceDataSchema.parse(
+                  templateInfo.instanceData,
+                )
+              : {},
+            modifiedTime,
+          } satisfies TemplateFileExtractorSourceFile;
+        } catch (err: unknown) {
+          throw enhanceErrorWithContext(
+            err,
+            `Error parsing instance data for ${path}`,
+          );
+        }
       });
     const api = new TemplateExtractorApi(context, type);
 

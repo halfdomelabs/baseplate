@@ -780,8 +780,8 @@ export const utilsGroup = { cn, mergeRefs, typesForm, typesIcon };
 
 export const CORE_REACT_COMPONENTS_TEMPLATES = {
   componentsGroup,
+  utilsGroup,
   hooksGroup,
   stylesGroup,
-  utilsGroup,
   index,
 };

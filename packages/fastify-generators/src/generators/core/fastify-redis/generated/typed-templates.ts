@@ -27,4 +27,4 @@ const redis = createTsTemplateFile({
   variables: {},
 });
 
-export const CORE_FASTIFY_REDIS_TEMPLATES = { redis, mockRedis };
+export const CORE_FASTIFY_REDIS_TEMPLATES = { mockRedis, redis };

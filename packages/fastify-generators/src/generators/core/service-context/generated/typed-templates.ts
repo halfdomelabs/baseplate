@@ -36,4 +36,4 @@ const testHelper = createTsTemplateFile({
   variables: { TPL_CREATE_TEST_ARGS: {}, TPL_CREATE_TEST_OBJECT: {} },
 });
 
-export const CORE_SERVICE_CONTEXT_TEMPLATES = { testHelper, serviceContext };
+export const CORE_SERVICE_CONTEXT_TEMPLATES = { serviceContext, testHelper };

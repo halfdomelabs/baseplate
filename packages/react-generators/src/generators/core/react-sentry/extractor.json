@@ -1,8 +1,7 @@
 {
   "name": "core/react-sentry",
   "templates": {
-    "src/services/sentry.ts": {
-      "name": "sentry",
+    "sentry": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-sentry",
@@ -18,6 +17,7 @@
       },
       "pathRootRelativePath": "{src-root}/services/sentry.ts",
       "projectExports": { "logBreadcrumbToSentry": {}, "logErrorToSentry": {} },
+      "sourceFile": "src/services/sentry.ts",
       "variables": { "TPL_SENTRY_SCOPE_ACTIONS": {} }
     }
   }

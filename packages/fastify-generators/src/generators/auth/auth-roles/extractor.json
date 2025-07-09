@@ -1,8 +1,7 @@
 {
   "name": "auth/auth-roles",
   "templates": {
-    "module/constants/auth-roles.constants.ts": {
-      "name": "auth-roles",
+    "auth-roles": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#auth/auth-roles",
@@ -14,6 +13,7 @@
         "DEFAULT_USER_ROLES": {},
         "RoleConfig": { "isTypeOnly": true }
       },
+      "sourceFile": "module/constants/auth-roles.constants.ts",
       "variables": { "TPL_AUTH_ROLES": {} }
     }
   }

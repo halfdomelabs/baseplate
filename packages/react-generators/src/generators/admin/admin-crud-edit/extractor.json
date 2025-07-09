@@ -1,8 +1,7 @@
 {
   "name": "admin/admin-crud-edit",
   "templates": {
-    "create.tsx": {
-      "name": "create-page",
+    "create-page": {
       "type": "ts",
       "fileOptions": {
         "generatorTemplatePath": "create.tsx",
@@ -15,6 +14,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
+      "sourceFile": "create.tsx",
       "variables": {
         "TPL_COMPONENT_NAME": {},
         "TPL_CREATE_MUTATION": {},
@@ -28,8 +28,7 @@
         "TPL_ROUTE_PATH": {}
       }
     },
-    "edit-form.tsx": {
-      "name": "edit-form",
+    "edit-form": {
       "type": "ts",
       "fileOptions": {
         "generatorTemplatePath": "edit-form.tsx",
@@ -46,6 +45,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
+      "sourceFile": "edit-form.tsx",
       "variables": {
         "TPL_COMPONENT_NAME": {},
         "TPL_DESTRUCTURED_PROPS": {},
@@ -56,8 +56,7 @@
         "TPL_INPUTS": {}
       }
     },
-    "edit.tsx": {
-      "name": "edit-page",
+    "edit-page": {
       "type": "ts",
       "fileOptions": {
         "generatorTemplatePath": "edit.tsx",
@@ -70,6 +69,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
+      "sourceFile": "edit.tsx",
       "variables": {
         "TPL_COMPONENT_NAME": {},
         "TPL_DATA_GATE": {},
@@ -82,8 +82,7 @@
         "TPL_UPDATE_MUTATION": {}
       }
     },
-    "schema.ts": {
-      "name": "schema",
+    "schema": {
       "type": "ts",
       "fileOptions": {
         "generatorTemplatePath": "schema.ts",
@@ -91,6 +90,7 @@
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
       "importMapProviders": {},
+      "sourceFile": "schema.ts",
       "variables": {
         "TPL_FORM_DATA_NAME": {},
         "TPL_SCHEMA_NAME": {},

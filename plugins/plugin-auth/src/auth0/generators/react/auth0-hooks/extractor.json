@@ -9,17 +9,7 @@
     }
   },
   "templates": {
-    "src/hooks/use-current-user.gql": {
-      "name": "use-current-user-gql",
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{src-root}/hooks/use-current-user.gql",
-      "variables": {
-        "TPL_USER_QUERY_NAME": { "description": "The name of the user query" }
-      }
-    },
-    "src/hooks/use-current-user.ts": {
-      "name": "use-current-user",
+    "use-current-user": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
@@ -32,10 +22,19 @@
       },
       "pathRootRelativePath": "{src-root}/hooks/use-current-user.ts",
       "projectExports": { "useCurrentUser": {} },
+      "sourceFile": "src/hooks/use-current-user.ts",
       "variables": { "TPL_USER": {} }
     },
-    "src/hooks/use-log-out.ts": {
-      "name": "use-log-out",
+    "use-current-user-gql": {
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/hooks/use-current-user.gql",
+      "sourceFile": "src/hooks/use-current-user.gql",
+      "variables": {
+        "TPL_USER_QUERY_NAME": { "description": "The name of the user query" }
+      }
+    },
+    "use-log-out": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
@@ -48,10 +47,10 @@
       },
       "pathRootRelativePath": "{src-root}/hooks/use-log-out.ts",
       "projectExports": { "useLogOut": {} },
+      "sourceFile": "src/hooks/use-log-out.ts",
       "variables": {}
     },
-    "src/hooks/use-required-user-id.ts": {
-      "name": "use-required-user-id",
+    "use-required-user-id": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
@@ -59,10 +58,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-required-user-id.ts",
       "projectExports": { "useRequiredUserId": {} },
+      "sourceFile": "src/hooks/use-required-user-id.ts",
       "variables": {}
     },
-    "src/hooks/use-session.ts": {
-      "name": "use-session",
+    "use-session": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth0/auth0-hooks",
@@ -73,6 +72,7 @@
         "SessionData": { "isTypeOnly": true },
         "useSession": {}
       },
+      "sourceFile": "src/hooks/use-session.ts",
       "variables": {}
     }
   }

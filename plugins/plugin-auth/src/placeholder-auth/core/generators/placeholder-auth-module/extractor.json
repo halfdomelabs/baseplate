@@ -9,10 +9,12 @@
     }
   },
   "templates": {
-    "module/services/user-session.service.ts": {
-      "name": "user-session-service",
+    "user-session-service": {
+      "sourceFile": "module/services/user-session.service.ts",
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "generator": "@baseplate-dev/plugin-auth#placeholder-auth/core/placeholder-auth-module",
       "importMapProviders": {
         "authContextImportsProvider": {
@@ -25,7 +27,9 @@
         }
       },
       "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
-      "projectExports": { "userSessionService": {} },
+      "projectExports": {
+        "userSessionService": {}
+      },
       "variables": {}
     }
   }

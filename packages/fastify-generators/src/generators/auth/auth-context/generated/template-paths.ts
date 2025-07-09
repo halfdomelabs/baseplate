@@ -4,8 +4,8 @@ import { appModuleProvider } from '#src/generators/core/app-module/app-module.ge
 
 export interface AuthAuthContextPaths {
   authContextTypes: string;
-  authSessionTypes: string;
   authContextUtils: string;
+  authSessionTypes: string;
 }
 
 const authAuthContextPaths = createProviderType<AuthAuthContextPaths>(

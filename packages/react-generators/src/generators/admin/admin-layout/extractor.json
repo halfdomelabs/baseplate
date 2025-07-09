@@ -1,18 +1,7 @@
 {
   "name": "admin/admin-layout",
   "templates": {
-    "routes/route.tsx": {
-      "name": "admin-route",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#admin/admin-layout",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{routes-root}/route.tsx",
-      "projectExports": { "Route": {} },
-      "variables": { "TPL_LOGIN_URL_PATH": {}, "TPL_ROUTE_PATH": {} }
-    },
-    "src/components/admin-layout/admin-layout.tsx": {
-      "name": "admin-layout",
+    "admin-layout": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#admin/admin-layout",
@@ -27,7 +16,18 @@
         }
       },
       "pathRootRelativePath": "{src-root}/components/admin-layout/admin-layout.tsx",
+      "sourceFile": "src/components/admin-layout/admin-layout.tsx",
       "variables": { "TPL_SIDEBAR_LINKS": {} }
+    },
+    "admin-route": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#admin/admin-layout",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{routes-root}/route.tsx",
+      "projectExports": { "Route": {} },
+      "sourceFile": "routes/route.tsx",
+      "variables": { "TPL_LOGIN_URL_PATH": {}, "TPL_ROUTE_PATH": {} }
     }
   }
 }

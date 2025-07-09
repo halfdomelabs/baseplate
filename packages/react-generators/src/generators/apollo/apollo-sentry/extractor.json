@@ -1,8 +1,7 @@
 {
   "name": "apollo/apollo-sentry",
   "templates": {
-    "src/services/apollo/apollo-sentry-link.ts": {
-      "name": "apollo-sentry-link",
+    "apollo-sentry-link": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/apollo-sentry",
@@ -17,6 +16,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/apollo/apollo-sentry-link.ts",
+      "sourceFile": "src/services/apollo/apollo-sentry-link.ts",
       "variables": {}
     }
   }

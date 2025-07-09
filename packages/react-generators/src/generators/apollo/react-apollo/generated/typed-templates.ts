@@ -71,9 +71,9 @@ const service = createTsTemplateFile({
 });
 
 export const APOLLO_REACT_APOLLO_TEMPLATES = {
-  codegenConfig,
   appApolloProvider,
-  graphql,
   cache,
+  codegenConfig,
+  graphql,
   service,
 };

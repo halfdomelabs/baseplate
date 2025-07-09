@@ -1,8 +1,7 @@
 {
   "name": "vitest/prisma-vitest",
   "templates": {
-    "src/tests/helpers/db.test-helper.ts": {
-      "name": "db-test-helper",
+    "db-test-helper": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
@@ -15,10 +14,10 @@
         "getTestPrisma": {},
         "replaceDatabase": {}
       },
+      "sourceFile": "src/tests/helpers/db.test-helper.ts",
       "variables": { "TPL_TEST_DB": {} }
     },
-    "src/tests/helpers/prisma.test-helper.ts": {
-      "name": "prisma-test-helper",
+    "prisma-test-helper": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
@@ -30,6 +29,7 @@
       },
       "pathRootRelativePath": "{src-root}/tests/helpers/prisma.test-helper.ts",
       "projectExports": { "prismaMock": {} },
+      "sourceFile": "src/tests/helpers/prisma.test-helper.ts",
       "variables": { "TPL_PRISMA_PATH": {} }
     }
   }

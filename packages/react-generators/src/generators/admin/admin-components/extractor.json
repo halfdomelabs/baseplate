@@ -1,8 +1,7 @@
 {
   "name": "admin/admin-components",
   "templates": {
-    "src/components/embedded-list-field/embedded-list-field.tsx": {
-      "name": "embedded-list-field",
+    "embedded-list-field": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#admin/admin-components",
@@ -19,10 +18,10 @@
         "EmbeddedListFieldController": {},
         "EmbeddedListFieldProps": { "isTypeOnly": true }
       },
+      "sourceFile": "src/components/embedded-list-field/embedded-list-field.tsx",
       "variables": {}
     },
-    "src/components/embedded-list-input/embedded-list-input.tsx": {
-      "name": "embedded-list-input",
+    "embedded-list-input": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#admin/admin-components",
@@ -39,10 +38,10 @@
         "EmbeddedListInput": {},
         "EmbeddedListTableProps": { "isTypeOnly": true }
       },
+      "sourceFile": "src/components/embedded-list-input/embedded-list-input.tsx",
       "variables": {}
     },
-    "src/components/embedded-object-field/embedded-object-field.tsx": {
-      "name": "embedded-object-field",
+    "embedded-object-field": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#admin/admin-components",
@@ -59,10 +58,10 @@
         "EmbeddedObjectFieldController": {},
         "EmbeddedObjectFieldProps": { "isTypeOnly": true }
       },
+      "sourceFile": "src/components/embedded-object-field/embedded-object-field.tsx",
       "variables": {}
     },
-    "src/components/embedded-object-input/embedded-object-input.tsx": {
-      "name": "embedded-object-input",
+    "embedded-object-input": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#admin/admin-components",
@@ -78,6 +77,7 @@
         "EmbeddedObjectFormProps": { "isTypeOnly": true },
         "EmbeddedObjectInput": {}
       },
+      "sourceFile": "src/components/embedded-object-input/embedded-object-input.tsx",
       "variables": {}
     }
   }

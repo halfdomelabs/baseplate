@@ -71,7 +71,7 @@ const hooksUseUpload = createTsTemplateFile({
 
 export const REACT_UPLOAD_COMPONENTS_TEMPLATES = {
   fileInputUploadGql,
-  fileInputField,
   fileInputComponent,
+  fileInputField,
   hooksUseUpload,
 };

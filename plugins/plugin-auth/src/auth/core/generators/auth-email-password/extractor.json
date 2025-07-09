@@ -1,21 +1,27 @@
 {
   "name": "auth/core/auth-email-password",
   "templates": {
-    "module/constants/password.constants.ts": {
-      "name": "constants-password",
+    "constants-password": {
+      "sourceFile": "module/constants/password.constants.ts",
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "generator": "@baseplate-dev/plugin-auth#auth/core/auth-email-password",
       "group": "module",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/constants/password.constants.ts",
-      "projectExports": { "PASSWORD_MIN_LENGTH": {} },
+      "projectExports": {
+        "PASSWORD_MIN_LENGTH": {}
+      },
       "variables": {}
     },
-    "module/schema/user-password.mutations.ts": {
-      "name": "schema-user-password-mutations",
+    "schema-user-password-mutations": {
+      "sourceFile": "module/schema/user-password.mutations.ts",
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "generator": "@baseplate-dev/plugin-auth#auth/core/auth-email-password",
       "group": "module",
       "importMapProviders": {
@@ -31,10 +37,12 @@
       "pathRootRelativePath": "{module-root}/schema/user-password.mutations.ts",
       "variables": {}
     },
-    "module/services/user-password.service.ts": {
-      "name": "services-user-password",
+    "services-user-password": {
+      "sourceFile": "module/services/user-password.service.ts",
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "generator": "@baseplate-dev/plugin-auth#auth/core/auth-email-password",
       "group": "module",
       "importMapProviders": {

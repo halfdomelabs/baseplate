@@ -9,8 +9,7 @@
     }
   },
   "templates": {
-    "module/services/management.ts": {
-      "name": "management",
+    "management": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
@@ -21,10 +20,10 @@
         }
       },
       "pathRootRelativePath": "{module-root}/services/management.ts",
+      "sourceFile": "module/services/management.ts",
       "variables": {}
     },
-    "module/services/user-session.service.ts": {
-      "name": "user-session-service",
+    "user-session-service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
@@ -44,6 +43,7 @@
       },
       "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
       "projectExports": { "userSessionService": {} },
+      "sourceFile": "module/services/user-session.service.ts",
       "variables": { "TPL_USER_MODEL": {} }
     }
   }

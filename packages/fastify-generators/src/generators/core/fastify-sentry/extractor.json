@@ -1,8 +1,7 @@
 {
   "name": "core/fastify-sentry",
   "templates": {
-    "src/instrument.ts": {
-      "name": "instrument",
+    "instrument": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
@@ -13,10 +12,10 @@
         }
       },
       "pathRootRelativePath": "{src-root}/instrument.ts",
+      "sourceFile": "src/instrument.ts",
       "variables": { "TPL_INTEGRATIONS": {} }
     },
-    "src/services/sentry.ts": {
-      "name": "sentry",
+    "sentry": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
@@ -37,6 +36,7 @@
         "registerSentryEventProcessor": {},
         "shouldLogToSentry": {}
       },
+      "sourceFile": "src/services/sentry.ts",
       "variables": {
         "TPL_LOG_TO_SENTRY_CONDITIONS": {},
         "TPL_SCOPE_CONFIGURATION": {}

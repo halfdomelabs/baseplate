@@ -5,8 +5,8 @@ export interface CoreReactPaths {
   indexHtml: string;
   readme: string;
   viteEnv: string;
-  viteConfig: string;
   main: string;
+  viteConfig: string;
   favicon: string;
 }
 

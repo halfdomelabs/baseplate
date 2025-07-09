@@ -1,18 +1,17 @@
 {
   "name": "pothos/pothos-auth",
   "templates": {
-    "src/plugins/graphql/FieldAuthorizePlugin/global-types.ts": {
-      "name": "field-authorize-global-types",
+    "field-authorize-global-types": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
       "group": "field-authorize-plugin",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/global-types.ts",
+      "sourceFile": "src/plugins/graphql/FieldAuthorizePlugin/global-types.ts",
       "variables": {}
     },
-    "src/plugins/graphql/FieldAuthorizePlugin/index.ts": {
-      "name": "field-authorize-plugin",
+    "field-authorize-plugin": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
@@ -24,16 +23,17 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/index.ts",
+      "sourceFile": "src/plugins/graphql/FieldAuthorizePlugin/index.ts",
       "variables": {}
     },
-    "src/plugins/graphql/FieldAuthorizePlugin/types.ts": {
-      "name": "field-authorize-types",
+    "field-authorize-types": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
       "group": "field-authorize-plugin",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/types.ts",
+      "sourceFile": "src/plugins/graphql/FieldAuthorizePlugin/types.ts",
       "variables": {}
     }
   }

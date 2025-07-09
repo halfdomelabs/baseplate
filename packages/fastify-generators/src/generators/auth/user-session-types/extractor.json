@@ -1,8 +1,7 @@
 {
   "name": "auth/user-session-types",
   "templates": {
-    "module/types/user-session.types.ts": {
-      "name": "user-session-types",
+    "user-session-types": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#auth/user-session-types",
@@ -17,6 +16,7 @@
         "UserSessionPayload": { "isTypeOnly": true },
         "UserSessionService": { "isTypeOnly": true }
       },
+      "sourceFile": "module/types/user-session.types.ts",
       "variables": {}
     }
   }

@@ -1,8 +1,7 @@
 {
   "name": "admin/admin-crud-list",
   "templates": {
-    "index.tsx": {
-      "name": "list-page",
+    "list-page": {
       "type": "ts",
       "fileOptions": {
         "generatorTemplatePath": "index.tsx",
@@ -15,6 +14,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
+      "sourceFile": "index.tsx",
       "variables": {
         "TPL_CREATE_BUTTON": {},
         "TPL_DATA_LOADER": {},
@@ -30,8 +30,7 @@
         "TPL_TABLE_COMPONENT": {}
       }
     },
-    "Table.tsx": {
-      "name": "table",
+    "table": {
       "type": "ts",
       "fileOptions": {
         "generatorTemplatePath": "Table.tsx",
@@ -48,6 +47,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
+      "sourceFile": "Table.tsx",
       "variables": {
         "TPL_CELLS": {},
         "TPL_COMPONENT_NAME": {},

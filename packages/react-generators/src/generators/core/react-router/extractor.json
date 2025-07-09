@@ -1,30 +1,37 @@
 {
   "name": "core/react-router",
   "templates": {
-    "routes/__root.tsx": {
-      "name": "root-route",
+    "placeholder-index": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-router",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{routes-root}/index.tsx",
+      "sourceFile": "routes/index.tsx",
+      "variables": {}
+    },
+    "root-route": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-router",
       "importMapProviders": {},
       "pathRootRelativePath": "{routes-root}/__root.tsx",
       "projectExports": { "Route": {} },
+      "sourceFile": "routes/__root.tsx",
       "variables": {
         "TPL_ROOT_ROUTE_CONTEXT": {},
         "TPL_ROOT_ROUTE_OPTIONS": {}
       }
     },
-    "routes/index.tsx": {
-      "name": "placeholder-index",
+    "route-tree": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-router",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{routes-root}/index.tsx",
-      "variables": {}
+      "pathRootRelativePath": "{src-root}/route-tree.gen.ts",
+      "projectExportsOnly": true,
+      "sourceFile": "src/route-tree.gen.ts"
     },
-    "src/app/router.tsx": {
-      "name": "router",
+    "router": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-router",
@@ -36,6 +43,7 @@
       },
       "pathRootRelativePath": "{src-root}/app/router.tsx",
       "projectExports": { "AppRoutes": {}, "router": {} },
+      "sourceFile": "src/app/router.tsx",
       "variables": {
         "TPL_ADDITIONAL_ROUTER_OPTIONS": {},
         "TPL_COMPONENT_BODY": {},
@@ -43,14 +51,6 @@
         "TPL_ROUTER_CONTEXT": {},
         "TPL_ROUTER_PROVIDER": {}
       }
-    },
-    "src/route-tree.gen.ts": {
-      "name": "route-tree",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-router",
-      "pathRootRelativePath": "{src-root}/route-tree.gen.ts",
-      "projectExportsOnly": true
     }
   }
 }

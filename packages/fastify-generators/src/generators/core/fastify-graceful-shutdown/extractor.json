@@ -1,8 +1,7 @@
 {
   "name": "core/fastify-graceful-shutdown",
   "templates": {
-    "src/plugins/graceful-shutdown.ts": {
-      "name": "graceful-shutdown",
+    "graceful-shutdown": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/fastify-graceful-shutdown",
@@ -17,6 +16,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graceful-shutdown.ts",
+      "sourceFile": "src/plugins/graceful-shutdown.ts",
       "variables": {}
     }
   }

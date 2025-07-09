@@ -1,8 +1,7 @@
 {
   "name": "bull/bull-mq",
   "templates": {
-    "package/scripts/run-workers.ts": {
-      "name": "scripts-run-workers",
+    "scripts-run-workers": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
@@ -18,10 +17,10 @@
         }
       },
       "pathRootRelativePath": "{package-root}/scripts/run-workers.ts",
+      "sourceFile": "package/scripts/run-workers.ts",
       "variables": { "TPL_WORKERS": {} }
     },
-    "package/scripts/synchronize-repeat-jobs.ts": {
-      "name": "scripts-synchronize-repeat-jobs",
+    "scripts-synchronize-repeat-jobs": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
@@ -33,10 +32,10 @@
         }
       },
       "pathRootRelativePath": "{package-root}/scripts/synchronize-repeat-jobs.ts",
+      "sourceFile": "package/scripts/synchronize-repeat-jobs.ts",
       "variables": { "TPL_REPEAT_JOBS": {} }
     },
-    "src/services/bull/index.ts": {
-      "name": "service-index",
+    "service-index": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
@@ -50,10 +49,10 @@
         "ManagedRepeatableJobsConfig": { "isTypeOnly": true },
         "synchronizeRepeatableJobs": {}
       },
+      "sourceFile": "src/services/bull/index.ts",
       "variables": {}
     },
-    "src/services/bull/queue.ts": {
-      "name": "service-queue",
+    "service-queue": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
@@ -69,10 +68,10 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/bull/queue.ts",
+      "sourceFile": "src/services/bull/queue.ts",
       "variables": {}
     },
-    "src/services/bull/repeatable.ts": {
-      "name": "service-repeatable",
+    "service-repeatable": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
@@ -88,10 +87,10 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/bull/repeatable.ts",
+      "sourceFile": "src/services/bull/repeatable.ts",
       "variables": {}
     },
-    "src/services/bull/worker.ts": {
-      "name": "service-worker",
+    "service-worker": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#bull/bull-mq",
@@ -111,6 +110,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/bull/worker.ts",
+      "sourceFile": "src/services/bull/worker.ts",
       "variables": {}
     }
   }

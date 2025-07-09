@@ -2,8 +2,7 @@
   "name": "node/eslint",
   "plugins": { "template-paths": { "skipTaskGeneration": true } },
   "templates": {
-    "eslint.config.js": {
-      "name": "eslint-config",
+    "eslint-config": {
       "type": "ts",
       "fileOptions": {
         "generatorTemplatePath": "eslint.config.js",
@@ -13,6 +12,7 @@
       "generator": "@baseplate-dev/core-generators#node/eslint",
       "importMapProviders": {},
       "pathRootRelativePath": "{package-root}/eslint.config.js",
+      "sourceFile": "eslint.config.js",
       "variables": {
         "TPL_DEFAULT_PROJECT_FILES": {},
         "TPL_DEV_DEPENDENCIES": {},

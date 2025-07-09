@@ -1,8 +1,7 @@
 {
   "name": "auth0/react-auth0",
   "templates": {
-    "src/app/auth-loaded-gate.tsx": {
-      "name": "auth-loaded-gate",
+    "auth-loaded-gate": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth0/react-auth0",
@@ -17,6 +16,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/app/auth-loaded-gate.tsx",
+      "sourceFile": "src/app/auth-loaded-gate.tsx",
       "variables": {}
     }
   }

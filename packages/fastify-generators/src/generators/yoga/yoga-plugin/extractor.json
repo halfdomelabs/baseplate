@@ -1,8 +1,7 @@
 {
   "name": "yoga/yoga-plugin",
   "templates": {
-    "src/plugins/graphql/index.ts": {
-      "name": "graphql-plugin",
+    "graphql-plugin": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
@@ -25,6 +24,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/index.ts",
+      "sourceFile": "src/plugins/graphql/index.ts",
       "variables": {
         "TPL_ENVELOP_PLUGINS": {},
         "TPL_GRAPHQL_HANDLER": {},
@@ -33,8 +33,7 @@
         "TPL_SIDE_EFFECT_IMPORTS": {}
       }
     },
-    "src/plugins/graphql/pubsub.ts": {
-      "name": "pubsub",
+    "pubsub": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
@@ -46,10 +45,10 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/pubsub.ts",
+      "sourceFile": "src/plugins/graphql/pubsub.ts",
       "variables": { "TPL_PUBLISH_ARGS": {} }
     },
-    "src/plugins/graphql/use-graph-logger.ts": {
-      "name": "use-graph-logger",
+    "use-graph-logger": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
@@ -64,10 +63,10 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/use-graph-logger.ts",
+      "sourceFile": "src/plugins/graphql/use-graph-logger.ts",
       "variables": {}
     },
-    "src/plugins/graphql/websocket.ts": {
-      "name": "websocket",
+    "websocket": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
@@ -87,11 +86,12 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/websocket.ts",
+      "sourceFile": "src/plugins/graphql/websocket.ts",
       "variables": { "TPL_ON_CONNECT": {} }
     },
-    "websocket-fragments.ts": {
-      "name": "websocket-fragments",
-      "type": "ts-snippets"
+    "websocket-fragments": {
+      "type": "ts-snippets",
+      "sourceFile": "websocket-fragments.ts"
     }
   }
 }

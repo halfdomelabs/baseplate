@@ -27,4 +27,4 @@ const rootIndex = createTsTemplateFile({
   variables: {},
 });
 
-export const ADMIN_ADMIN_HOME_TEMPLATES = { rootIndex, home };
+export const ADMIN_ADMIN_HOME_TEMPLATES = { home, rootIndex };

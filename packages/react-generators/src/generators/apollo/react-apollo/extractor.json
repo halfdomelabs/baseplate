@@ -8,62 +8,65 @@
     }
   },
   "templates": {
-    "package/codegen.ts": {
-      "name": "codegen-config",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{package-root}/codegen.ts",
-      "projectExports": { "config": {} },
-      "variables": { "TPL_BACKEND_SCHEMA": {} }
-    },
-    "src/app/app-apollo-provider.tsx": {
-      "name": "app-apollo-provider",
+    "app-apollo-provider": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/app/app-apollo-provider.tsx",
+      "sourceFile": "src/app/app-apollo-provider.tsx",
       "variables": {
         "TPL_CREATE_ARGS": {},
         "TPL_MEMO_DEPENDENCIES": {},
         "TPL_RENDER_BODY": {}
       }
     },
-    "src/generated/graphql.tsx": {
-      "name": "graphql",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
-      "pathRootRelativePath": "{src-root}/generated/graphql.tsx",
-      "projectExports": { "*": {} },
-      "projectExportsOnly": true
-    },
-    "src/services/apollo/cache.ts": {
-      "name": "cache",
+    "cache": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/apollo/cache.ts",
       "projectExports": { "createApolloCache": {} },
+      "sourceFile": "src/services/apollo/cache.ts",
       "variables": {}
     },
-    "src/services/apollo/index.ts": {
-      "name": "service",
+    "codegen-config": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{package-root}/codegen.ts",
+      "projectExports": { "config": {} },
+      "sourceFile": "package/codegen.ts",
+      "variables": { "TPL_BACKEND_SCHEMA": {} }
+    },
+    "graphql": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+      "pathRootRelativePath": "{src-root}/generated/graphql.tsx",
+      "projectExports": { "*": {} },
+      "projectExportsOnly": true,
+      "sourceFile": "src/generated/graphql.tsx"
+    },
+    "service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/apollo/index.ts",
       "projectExports": { "createApolloClient": {} },
+      "sourceFile": "src/services/apollo/index.ts",
       "variables": {
         "TPL_CREATE_ARGS": {},
         "TPL_LINK_BODIES": {},
         "TPL_LINKS": {}
       }
     },
-    "websocket-links.ts": { "name": "websocket-links", "type": "ts-snippet" }
+    "websocket-links": {
+      "type": "ts-snippet",
+      "sourceFile": "websocket-links.ts"
+    }
   }
 }

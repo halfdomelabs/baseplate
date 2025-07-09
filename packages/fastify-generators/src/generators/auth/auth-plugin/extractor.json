@@ -1,8 +1,7 @@
 {
   "name": "auth/auth-plugin",
   "templates": {
-    "module/plugins/auth.plugin.ts": {
-      "name": "auth-plugin",
+    "auth-plugin": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#auth/auth-plugin",
@@ -21,6 +20,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/plugins/auth.plugin.ts",
+      "sourceFile": "module/plugins/auth.plugin.ts",
       "variables": {}
     }
   }

@@ -2,10 +2,10 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface ApolloReactApolloPaths {
-  codegenConfig: string;
   appApolloProvider: string;
-  graphql: string;
   cache: string;
+  codegenConfig: string;
+  graphql: string;
   service: string;
 }
 

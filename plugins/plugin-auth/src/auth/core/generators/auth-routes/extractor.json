@@ -1,10 +1,12 @@
 {
   "name": "auth/core/auth-routes",
   "templates": {
-    "routes/auth_/login.tsx": {
-      "name": "login",
+    "login": {
+      "sourceFile": "routes/auth_/login.tsx",
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
       "group": "main",
       "importMapProviders": {
@@ -32,17 +34,21 @@
       "pathRootRelativePath": "{routes-root}/auth_/login.tsx",
       "variables": {}
     },
-    "routes/auth_/queries.gql": {
-      "name": "queries-gql",
+    "queries-gql": {
+      "sourceFile": "routes/auth_/queries.gql",
       "type": "text",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "pathRootRelativePath": "{routes-root}/auth_/queries.gql",
       "variables": {}
     },
-    "routes/auth_/register.tsx": {
-      "name": "register",
+    "register": {
+      "sourceFile": "routes/auth_/register.tsx",
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
       "group": "main",
       "importMapProviders": {
@@ -70,10 +76,12 @@
       "pathRootRelativePath": "{routes-root}/auth_/register.tsx",
       "variables": {}
     },
-    "routes/auth_/route.tsx": {
-      "name": "route",
+    "route": {
+      "sourceFile": "routes/auth_/route.tsx",
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
       "group": "main",
       "importMapProviders": {},
