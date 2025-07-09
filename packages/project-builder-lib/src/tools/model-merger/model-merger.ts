@@ -172,11 +172,14 @@ function serializeModelMergerModelInput(
       ...input.graphql,
       objectType: {
         ...input.graphql?.objectType,
-        fields: input.graphql?.objectType?.fields.map(fieldNameFromId) ?? [],
+        fields: input.graphql?.objectType?.fields?.map(fieldNameFromId) ?? [],
         localRelations:
-          input.graphql?.objectType?.localRelations?.map(relationNameFromId),
+          input.graphql?.objectType?.localRelations?.map(relationNameFromId) ??
+          [],
         foreignRelations:
-          input.graphql?.objectType?.foreignRelations?.map(relationNameFromId),
+          input.graphql?.objectType?.foreignRelations?.map(
+            relationNameFromId,
+          ) ?? [],
       },
     },
   };
@@ -273,7 +276,7 @@ function deserializeModelMergerModelInput(
       objectType: {
         ...inputWithIds.graphql?.objectType,
         fields:
-          inputWithIds.graphql?.objectType?.fields.map((fieldRef) =>
+          inputWithIds.graphql?.objectType?.fields?.map((fieldRef) =>
             resolveLocalFieldName(fieldRef),
           ) ?? [],
         localRelations:

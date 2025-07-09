@@ -15,7 +15,11 @@ function isEmpty(value: unknown): boolean {
 export type WithDefaultType = <T extends z.ZodTypeAny>(
   schema: T,
   defaultValue: z.infer<T>,
-) => z.ZodEffects<z.ZodOptional<T>, z.output<z.ZodOptional<T>>, z.input<T>>;
+) => z.ZodEffects<
+  z.ZodOptional<T>,
+  z.output<z.ZodOptional<T>>,
+  z.input<z.ZodOptional<T>>
+>;
 
 export interface WithDefaultContext {
   withDefault: WithDefaultType;
