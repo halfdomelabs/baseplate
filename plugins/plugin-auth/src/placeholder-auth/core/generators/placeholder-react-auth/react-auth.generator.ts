@@ -1,5 +1,5 @@
 import { packageScope } from '@baseplate-dev/core-generators';
-import { reactAuthProvider } from '@baseplate-dev/react-generators';
+import { reactAuthRoutesProvider } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -15,7 +15,7 @@ export const placeholderReactAuthGenerator = createGenerator({
   buildTasks: () => ({
     reactAuth: createGeneratorTask({
       exports: {
-        reactAuth: reactAuthProvider.export(packageScope),
+        reactAuth: reactAuthRoutesProvider.export(packageScope),
       },
       run() {
         return {

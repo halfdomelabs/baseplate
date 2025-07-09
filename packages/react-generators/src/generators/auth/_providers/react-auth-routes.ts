@@ -1,6 +1,6 @@
 import { createReadOnlyProviderType } from '@baseplate-dev/sync';
 
-export interface ReactAuthProvider {
+export interface ReactAuthRoutesProvider {
   /** Gets the URL path for the login page, e.g. `/auth/login` */
   getLoginUrlPath: () => string;
   /** Gets the URL path for the register page, e.g. `/auth/register` */
@@ -10,5 +10,5 @@ export interface ReactAuthProvider {
 /**
  * A generic provider for using React
  */
-export const reactAuthProvider =
-  createReadOnlyProviderType<ReactAuthProvider>('react-auth');
+export const reactAuthRoutesProvider =
+  createReadOnlyProviderType<ReactAuthRoutesProvider>('react-auth-routes');

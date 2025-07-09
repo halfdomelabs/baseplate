@@ -9,7 +9,7 @@ import {
 } from '@baseplate-dev/core-generators';
 import {
   reactAppConfigProvider,
-  reactAuthProvider,
+  reactAuthRoutesProvider,
   reactConfigImportsProvider,
   reactConfigProvider,
   reactRouterConfigProvider,
@@ -95,7 +95,7 @@ export const reactAuth0Generator = createGenerator({
     }),
     reactAuth: createGeneratorTask({
       exports: {
-        reactAuth: reactAuthProvider.export(packageScope),
+        reactAuth: reactAuthRoutesProvider.export(packageScope),
       },
       run() {
         return {
