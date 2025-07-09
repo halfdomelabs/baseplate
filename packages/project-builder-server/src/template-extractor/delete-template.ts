@@ -76,7 +76,7 @@ export async function deleteTemplate(
 
   const updatedTemplates = templateExtractorJson.templates;
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- easiest way of deleting without reordering the keys
-  delete updatedTemplates[templatePath];
+  delete updatedTemplates[templateName];
 
   // Write the updated configuration back to the extractor.json file
 
