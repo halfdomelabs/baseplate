@@ -3,6 +3,9 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface AuthCoreAuthModulePaths {
   userSessionConstants: string;
+  schemaUserSessionPayloadObjectType: string;
+  schemaUserSessionMutations: string;
+  schemaUserSessionQueries: string;
   userSessionService: string;
   cookieSigner: string;
   sessionCookie: string;
@@ -23,6 +26,9 @@ const authCoreAuthModulePathsTask = createGeneratorTask({
       providers: {
         authCoreAuthModulePaths: {
           cookieSigner: `${moduleRoot}/utils/cookie-signer.ts`,
+          schemaUserSessionMutations: `${moduleRoot}/schema/user-session.mutations.ts`,
+          schemaUserSessionPayloadObjectType: `${moduleRoot}/schema/user-session-payload.object-type.ts`,
+          schemaUserSessionQueries: `${moduleRoot}/schema/user-session.queries.ts`,
           sessionCookie: `${moduleRoot}/utils/session-cookie.ts`,
           userSessionConstants: `${moduleRoot}/constants/user-session.constants.ts`,
           userSessionService: `${moduleRoot}/services/user-session.service.ts`,

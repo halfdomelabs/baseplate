@@ -1,4 +1,8 @@
 import {
+  appModuleGenerator,
+  passwordHasherServiceGenerator,
+} from '@baseplate-dev/fastify-generators';
+import {
   adminAppEntryType,
   appCompilerSpec,
   backendAppEntryType,
@@ -15,6 +19,7 @@ import {
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
+import { authEmailPasswordGenerator } from './generators/auth-email-password/auth-email-password.generator.js';
 import { authHooksGenerator } from './generators/auth-hooks/auth-hooks.generator.js';
 import { authModuleGenerator, reactAuthGenerator } from './generators/index.js';
 
@@ -40,6 +45,15 @@ export default createPlatformPluginExport({
             userSessionModelName: definitionContainer.nameFromId(
               auth.modelRefs.userSession,
             ),
+            userModelName: definitionContainer.nameFromId(auth.modelRefs.user),
+          }),
+          emailPassword: appModuleGenerator({
+            id: 'email-password',
+            name: 'password',
+            children: {
+              module: authEmailPasswordGenerator({}),
+              hasher: passwordHasherServiceGenerator({}),
+            },
           }),
         });
 

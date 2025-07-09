@@ -4,8 +4,7 @@
     "ts": {
       "importProviders": [
         "@baseplate-dev/fastify-generators:userSessionServiceImportsProvider"
-      ],
-      "skipDefaultImportMap": true
+      ]
     }
   },
   "templates": {
@@ -17,6 +16,52 @@
       "group": "constants",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/constants/user-session.constants.ts",
+      "variables": {}
+    },
+    "module/schema/user-session-payload.object-type.ts": {
+      "name": "schema-user-session-payload-object-type",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "group": "module",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/user-session-payload.object-type.ts",
+      "projectExports": { "userSessionPayload": {} },
+      "variables": { "TPL_PRISMA_USER": {}, "TPL_USER_OBJECT_TYPE": {} }
+    },
+    "module/schema/user-session.mutations.ts": {
+      "name": "schema-user-session-mutations",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "group": "module",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/user-session.mutations.ts",
+      "variables": {}
+    },
+    "module/schema/user-session.queries.ts": {
+      "name": "schema-user-session-queries",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "group": "module",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/user-session.queries.ts",
       "variables": {}
     },
     "module/services/user-session.service.ts": {

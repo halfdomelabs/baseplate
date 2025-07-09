@@ -10,6 +10,7 @@ import {
   authRolesImportsProvider,
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
+  pothosImportsProvider,
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
@@ -24,6 +25,16 @@ export interface AuthCoreAuthModuleRenderers {
       options: Omit<
         RenderTsTemplateGroupActionInput<
           typeof AUTH_CORE_AUTH_MODULE_TEMPLATES.constantsGroup
+        >,
+        'importMapProviders' | 'group' | 'paths'
+      >,
+    ) => BuilderAction;
+  };
+  moduleGroup: {
+    render: (
+      options: Omit<
+        RenderTsTemplateGroupActionInput<
+          typeof AUTH_CORE_AUTH_MODULE_TEMPLATES.moduleGroup
         >,
         'importMapProviders' | 'group' | 'paths'
       >,
@@ -63,6 +74,7 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: AUTH_CORE_AUTH_MODULE_PATHS.provider,
+    pothosImports: pothosImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
     userSessionTypesImports: userSessionTypesImportsProvider,
@@ -76,6 +88,7 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
     configServiceImports,
     errorHandlerServiceImports,
     paths,
+    pothosImports,
     requestServiceContextImports,
     typescriptFile,
     userSessionTypesImports,
@@ -88,6 +101,17 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateGroup({
                 group: AUTH_CORE_AUTH_MODULE_TEMPLATES.constantsGroup,
                 paths,
+                ...options,
+              }),
+          },
+          moduleGroup: {
+            render: (options) =>
+              typescriptFile.renderTemplateGroup({
+                group: AUTH_CORE_AUTH_MODULE_TEMPLATES.moduleGroup,
+                paths,
+                importMapProviders: {
+                  pothosImports,
+                },
                 ...options,
               }),
           },

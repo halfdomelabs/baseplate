@@ -4,6 +4,7 @@ import {
   authRolesImportsProvider,
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
+  pothosImportsProvider,
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
@@ -24,6 +25,55 @@ const userSessionConstants = createTsTemplateFile({
 });
 
 export const constantsGroup = { userSessionConstants };
+
+const schemaUserSessionMutations = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'module',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-user-session-mutations',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/user-session.mutations.ts',
+    ),
+  },
+  variables: {},
+});
+
+const schemaUserSessionPayloadObjectType = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'module',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-user-session-payload-object-type',
+  projectExports: { userSessionPayload: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/user-session-payload.object-type.ts',
+    ),
+  },
+  variables: { TPL_PRISMA_USER: {}, TPL_USER_OBJECT_TYPE: {} },
+});
+
+const schemaUserSessionQueries = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'module',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-user-session-queries',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/user-session.queries.ts',
+    ),
+  },
+  variables: {},
+});
+
+export const moduleGroup = {
+  schemaUserSessionMutations,
+  schemaUserSessionPayloadObjectType,
+  schemaUserSessionQueries,
+};
 
 const userSessionService = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -92,6 +142,7 @@ export const utilsGroup = { cookieSigner, sessionCookie, verifyRequestOrigin };
 
 export const AUTH_CORE_AUTH_MODULE_TEMPLATES = {
   constantsGroup,
+  moduleGroup,
   utilsGroup,
   userSessionService,
 };

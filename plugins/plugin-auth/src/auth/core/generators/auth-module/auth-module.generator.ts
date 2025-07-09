@@ -1,6 +1,8 @@
 import { tsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   configServiceProvider,
+  createPothosPrismaObjectTypeOutputName,
+  pothosTypeOutputProvider,
   prismaOutputProvider,
 } from '@baseplate-dev/fastify-generators';
 import {
@@ -14,13 +16,14 @@ import { AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './genera
 
 const descriptorSchema = z.object({
   userSessionModelName: z.string().min(1),
+  userModelName: z.string().min(1),
 });
 
 export const authModuleGenerator = createGenerator({
   name: 'auth/core/auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ userSessionModelName }) => ({
+  buildTasks: ({ userSessionModelName, userModelName }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
@@ -39,8 +42,11 @@ export const authModuleGenerator = createGenerator({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         renderers: GENERATED_TEMPLATES.renderers.provider,
+        userObjectType: pothosTypeOutputProvider
+          .dependency()
+          .reference(createPothosPrismaObjectTypeOutputName(userModelName)),
       },
-      run({ prismaOutput, renderers }) {
+      run({ prismaOutput, renderers, userObjectType }) {
         return {
           providers: {
             authModule: {},
@@ -56,6 +62,18 @@ export const authModuleGenerator = createGenerator({
             );
             await builder.apply(renderers.constantsGroup.render({}));
             await builder.apply(renderers.utilsGroup.render({}));
+            await builder.apply(
+              renderers.moduleGroup.render({
+                variables: {
+                  schemaUserSessionPayloadObjectType: {
+                    TPL_PRISMA_USER:
+                      prismaOutput.getPrismaModelFragment(userModelName),
+                    TPL_USER_OBJECT_TYPE:
+                      userObjectType.getTypeReference().fragment,
+                  },
+                },
+              }),
+            );
           },
         };
       },
