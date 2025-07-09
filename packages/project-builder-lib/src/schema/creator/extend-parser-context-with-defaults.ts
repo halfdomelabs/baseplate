@@ -21,10 +21,6 @@ export type WithDefaultType = <T extends z.ZodTypeAny>(
   z.input<z.ZodOptional<T>>
 >;
 
-export interface WithDefaultContext {
-  withDefault: WithDefaultType;
-}
-
 /**
  * Extends the parser context with default value handling functionality.
  *
@@ -33,7 +29,9 @@ export interface WithDefaultContext {
  */
 export function extendParserContextWithDefaults(
   options: DefinitionSchemaCreatorOptions,
-): WithDefaultContext {
+): {
+  withDefault: WithDefaultType;
+} {
   const mode = options.defaultMode ?? 'populate';
 
   return {
