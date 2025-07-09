@@ -133,7 +133,7 @@ export function AuthDefinitionEditor({
   return (
     <form
       onSubmit={onSubmit}
-      className="max-w-6xl auth:mb-[--action-bar-height]"
+      className="auth:mb-[--action-bar-height] auth:max-w-6xl"
     >
       <div className="auth:pb-16">
         <SectionList>
@@ -152,7 +152,7 @@ export function AuthDefinitionEditor({
                 pendingModelChanges={pendingModelChanges}
               />
 
-              <div className="md:auth:grid-cols-2 auth:grid auth:grid-cols-1 auth:gap-6">
+              <div className="auth:grid auth:grid-cols-1 auth:gap-6 auth:md:grid-cols-2">
                 <ModelComboboxFieldController
                   label="User Model"
                   name="modelRefs.user"
