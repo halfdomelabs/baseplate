@@ -1,5 +1,7 @@
 import type { Command } from 'commander';
 
+import { SyncMetadataController } from '@baseplate-dev/project-builder-server';
+
 import { createSchemaParserContext } from '#src/services/schema-parser-context.js';
 import { getUserConfig } from '#src/services/user-config.js';
 import { expandPathWithTilde } from '#src/utils/path.js';
@@ -25,12 +27,17 @@ export function addBuildCommand(program: Command): void {
         : '.';
       const context = await createSchemaParserContext(resolvedDirectory);
       const userConfig = await getUserConfig();
+      const syncMetadataController = new SyncMetadataController(
+        resolvedDirectory,
+        logger,
+      );
       await buildProject({
         directory: resolvedDirectory,
         logger,
         context,
         userConfig,
         cliFilePath: process.argv[1],
+        syncMetadataController,
       });
     });
 }
