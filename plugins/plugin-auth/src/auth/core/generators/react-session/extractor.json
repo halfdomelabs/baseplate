@@ -1,21 +1,24 @@
 {
   "name": "auth/core/react-session",
   "templates": {
-    "user-session-check-gql": {
-      "sourceFile": "src/app/user-session-check.gql",
-      "type": "text",
-      "fileOptions": {
-        "kind": "singleton"
+    "use-user-session-client": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/use-user-session-client.ts",
+      "projectExports": {
+        "UserSessionClientContext": {},
+        "UserSessionClientContextValue": { "isTypeOnly": true },
+        "useUserSessionClient": {}
       },
-      "pathRootRelativePath": "{src-root}/app/user-session-check.gql",
+      "sourceFile": "src/hooks/use-user-session-client.ts",
       "variables": {}
     },
     "user-session-check": {
-      "sourceFile": "src/app/user-session-check.tsx",
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
       "group": "main",
       "importMapProviders": {
@@ -25,45 +28,19 @@
         }
       },
       "pathRootRelativePath": "{src-root}/app/user-session-check.tsx",
+      "sourceFile": "src/app/user-session-check.tsx",
       "variables": {}
     },
-    "user-session-provider": {
-      "sourceFile": "src/app/user-session-provider.tsx",
-      "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
-      "group": "main",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/app/user-session-provider.tsx",
-      "variables": {}
-    },
-    "use-user-session-client": {
-      "sourceFile": "src/hooks/use-user-session-client.ts",
-      "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
-      "group": "main",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/hooks/use-user-session-client.ts",
-      "projectExports": {
-        "UserSessionClientContext": {},
-        "UserSessionClientContextValue": {
-          "isTypeOnly": true
-        },
-        "useUserSessionClient": {}
-      },
+    "user-session-check-gql": {
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/app/user-session-check.gql",
+      "sourceFile": "src/app/user-session-check.gql",
       "variables": {}
     },
     "user-session-client": {
-      "sourceFile": "src/services/user-session-client.ts",
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
       "group": "main",
       "importMapProviders": {
@@ -75,17 +52,22 @@
       "pathRootRelativePath": "{src-root}/services/user-session-client.ts",
       "projectExports": {
         "createUserSessionClient": {},
-        "SessionChangeCallback": {
-          "isTypeOnly": true
-        },
+        "SessionChangeCallback": { "isTypeOnly": true },
         "UserSessionClient": {},
-        "UserSessionClientConfig": {
-          "isTypeOnly": true
-        },
-        "UserSessionData": {
-          "isTypeOnly": true
-        }
+        "UserSessionClientConfig": { "isTypeOnly": true },
+        "UserSessionData": { "isTypeOnly": true }
       },
+      "sourceFile": "src/services/user-session-client.ts",
+      "variables": {}
+    },
+    "user-session-provider": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/app/user-session-provider.tsx",
+      "sourceFile": "src/app/user-session-provider.tsx",
       "variables": {}
     }
   }

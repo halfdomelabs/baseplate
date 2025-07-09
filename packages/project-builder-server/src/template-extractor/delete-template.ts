@@ -66,19 +66,17 @@ export async function deleteTemplate(
     extractorConfigSchema,
   );
 
-  const templatePath = Object.keys(templateExtractorJson.templates).find(
-    (templatePath) => generator.templates[templatePath].name === templateName,
-  );
-
-  if (!templatePath) {
+  if (!(templateName in templateExtractorJson.templates)) {
     throw new Error(
       `Template '${templateName}' not found in generator '${generatorName}'`,
     );
   }
 
+  const templatePath = templateExtractorJson.templates[templateName].sourceFile;
+
   const updatedTemplates = templateExtractorJson.templates;
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- easiest way of deleting without reordering the keys
-  delete updatedTemplates[templatePath];
+  delete updatedTemplates[templateName];
 
   // Write the updated configuration back to the extractor.json file
 
