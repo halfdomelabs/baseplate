@@ -2,12 +2,12 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface CoreReactPaths {
-  favicon: string;
   indexHtml: string;
   readme: string;
   viteEnv: string;
   main: string;
   viteConfig: string;
+  favicon: string;
 }
 
 const coreReactPaths = createProviderType<CoreReactPaths>('core-react-paths');

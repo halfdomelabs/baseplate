@@ -5,8 +5,8 @@ export interface AuthCoreAuthHooksPaths {
   useCurrentUserGql: string;
   useCurrentUser: string;
   useLogOut: string;
-  useSession: string;
   useRequiredUserId: string;
+  useSession: string;
 }
 
 const authCoreAuthHooksPaths = createProviderType<AuthCoreAuthHooksPaths>(

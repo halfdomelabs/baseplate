@@ -2,13 +2,13 @@ import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface AuthCoreAuthModulePaths {
-  userSessionConstants: string;
-  schemaUserSessionPayloadObjectType: string;
-  schemaUserSessionMutations: string;
-  schemaUserSessionQueries: string;
-  userSessionService: string;
   cookieSigner: string;
+  schemaUserSessionMutations: string;
+  schemaUserSessionPayloadObjectType: string;
+  schemaUserSessionQueries: string;
   sessionCookie: string;
+  userSessionConstants: string;
+  userSessionService: string;
   verifyRequestOrigin: string;
 }
 

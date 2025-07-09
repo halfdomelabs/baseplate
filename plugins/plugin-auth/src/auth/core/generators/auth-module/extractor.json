@@ -8,47 +8,19 @@
     }
   },
   "templates": {
-    "user-session-constants": {
-      "sourceFile": "module/constants/user-session.constants.ts",
+    "cookie-signer": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
-      "group": "constants",
+      "group": "utils",
       "importMapProviders": {},
-      "pathRootRelativePath": "{module-root}/constants/user-session.constants.ts",
+      "pathRootRelativePath": "{module-root}/utils/cookie-signer.ts",
+      "sourceFile": "module/utils/cookie-signer.ts",
       "variables": {}
     },
-    "schema-user-session-payload-object-type": {
-      "sourceFile": "module/schema/user-session-payload.object-type.ts",
-      "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
-      "group": "module",
-      "importMapProviders": {
-        "pothosImportsProvider": {
-          "importName": "pothosImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{module-root}/schema/user-session-payload.object-type.ts",
-      "projectExports": {
-        "userSessionPayload": {}
-      },
-      "variables": {
-        "TPL_PRISMA_USER": {},
-        "TPL_USER_OBJECT_TYPE": {}
-      }
-    },
     "schema-user-session-mutations": {
-      "sourceFile": "module/schema/user-session.mutations.ts",
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
       "group": "module",
       "importMapProviders": {
@@ -58,14 +30,28 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/user-session.mutations.ts",
+      "sourceFile": "module/schema/user-session.mutations.ts",
       "variables": {}
     },
-    "schema-user-session-queries": {
-      "sourceFile": "module/schema/user-session.queries.ts",
+    "schema-user-session-payload-object-type": {
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "group": "module",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
       },
+      "pathRootRelativePath": "{module-root}/schema/user-session-payload.object-type.ts",
+      "projectExports": { "userSessionPayload": {} },
+      "sourceFile": "module/schema/user-session-payload.object-type.ts",
+      "variables": { "TPL_PRISMA_USER": {}, "TPL_USER_OBJECT_TYPE": {} }
+    },
+    "schema-user-session-queries": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
       "group": "module",
       "importMapProviders": {
@@ -75,14 +61,37 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/user-session.queries.ts",
+      "sourceFile": "module/schema/user-session.queries.ts",
+      "variables": {}
+    },
+    "session-cookie": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "group": "utils",
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/utils/session-cookie.ts",
+      "sourceFile": "module/utils/session-cookie.ts",
+      "variables": {}
+    },
+    "user-session-constants": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "group": "constants",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{module-root}/constants/user-session.constants.ts",
+      "sourceFile": "module/constants/user-session.constants.ts",
       "variables": {}
     },
     "user-session-service": {
-      "sourceFile": "module/services/user-session.service.ts",
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
       "importMapProviders": {
         "authContextImportsProvider": {
@@ -111,52 +120,18 @@
         }
       },
       "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
-      "projectExports": {
-        "userSessionService": {}
-      },
-      "variables": {
-        "TPL_PRISMA_USER_SESSION": {}
-      }
-    },
-    "cookie-signer": {
-      "sourceFile": "module/utils/cookie-signer.ts",
-      "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
-      "group": "utils",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{module-root}/utils/cookie-signer.ts",
-      "variables": {}
-    },
-    "session-cookie": {
-      "sourceFile": "module/utils/session-cookie.ts",
-      "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
-      "group": "utils",
-      "importMapProviders": {
-        "configServiceImportsProvider": {
-          "importName": "configServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{module-root}/utils/session-cookie.ts",
-      "variables": {}
+      "projectExports": { "userSessionService": {} },
+      "sourceFile": "module/services/user-session.service.ts",
+      "variables": { "TPL_PRISMA_USER_SESSION": {} }
     },
     "verify-request-origin": {
-      "sourceFile": "module/utils/verify-request-origin.ts",
       "type": "ts",
-      "fileOptions": {
-        "kind": "singleton"
-      },
+      "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/utils/verify-request-origin.ts",
+      "sourceFile": "module/utils/verify-request-origin.ts",
       "variables": {}
     }
   }
