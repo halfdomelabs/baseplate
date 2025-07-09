@@ -8,11 +8,11 @@ import {
 } from '@baseplate-dev/react-generators';
 import { createGeneratorTask } from '@baseplate-dev/sync';
 
-import { PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_PATHS } from './template-paths.js';
+import { AUTH_CORE_AUTH_HOOKS_PATHS } from './template-paths.js';
 
-const placeholderAuthCorePlaceholderAuthHooksImportsTask = createGeneratorTask({
+const authCoreAuthHooksImportsTask = createGeneratorTask({
   dependencies: {
-    paths: PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_PATHS.provider,
+    paths: AUTH_CORE_AUTH_HOOKS_PATHS.provider,
   },
   exports: { authHooksImports: authHooksImportsProvider.export(packageScope) },
   run({ paths }) {
@@ -30,6 +30,6 @@ const placeholderAuthCorePlaceholderAuthHooksImportsTask = createGeneratorTask({
   },
 });
 
-export const PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_IMPORTS = {
-  task: placeholderAuthCorePlaceholderAuthHooksImportsTask,
+export const AUTH_CORE_AUTH_HOOKS_IMPORTS = {
+  task: authCoreAuthHooksImportsTask,
 };

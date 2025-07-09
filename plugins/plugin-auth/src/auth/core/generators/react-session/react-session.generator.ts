@@ -2,17 +2,15 @@ import { renderTextTemplateFileAction } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { AUTH_CORE_AUTH_HOOKS_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
+import { AUTH_CORE_REACT_SESSION_GENERATED as GENERATED_TEMPLATES } from './generated';
 
 const descriptorSchema = z.object({});
 
 /**
- * Placeholder generator for auth hooks.
- *
- * Useful for creating a test auth implementation.
+ * Generator for React session management
  */
-export const authHooksGenerator = createGenerator({
-  name: 'auth/core/auth-hooks',
+export const reactSessionGenerator = createGenerator({
+  name: 'auth/core/react-session',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
@@ -21,17 +19,22 @@ export const authHooksGenerator = createGenerator({
     renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        paths: GENERATED_TEMPLATES.paths.provider,
         renderers: GENERATED_TEMPLATES.renderers.provider,
+        paths: GENERATED_TEMPLATES.paths.provider,
       },
-      run({ paths, renderers }) {
+      run({ renderers, paths }) {
         return {
           build: async (builder) => {
-            await builder.apply(renderers.hooksGroup.render({}));
+            await builder.apply(
+              renderers.mainGroup.render({
+                variables: {},
+              }),
+            );
             await builder.apply(
               renderTextTemplateFileAction({
-                template: GENERATED_TEMPLATES.templates.useCurrentUserGql,
-                destination: paths.useCurrentUserGql,
+                destination: paths.userSessionCheckGql,
+                template: GENERATED_TEMPLATES.templates.userSessionCheckGql,
+                variables: {},
               }),
             );
           },

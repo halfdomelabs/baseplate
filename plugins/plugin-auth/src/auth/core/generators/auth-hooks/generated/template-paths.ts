@@ -1,7 +1,7 @@
 import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-export interface PlaceholderAuthCorePlaceholderAuthHooksPaths {
+export interface AuthCoreAuthHooksPaths {
   useCurrentUserGql: string;
   useCurrentUser: string;
   useLogOut: string;
@@ -9,23 +9,19 @@ export interface PlaceholderAuthCorePlaceholderAuthHooksPaths {
   useRequiredUserId: string;
 }
 
-const placeholderAuthCorePlaceholderAuthHooksPaths =
-  createProviderType<PlaceholderAuthCorePlaceholderAuthHooksPaths>(
-    'placeholder-auth-core-placeholder-auth-hooks-paths',
-  );
+const authCoreAuthHooksPaths = createProviderType<AuthCoreAuthHooksPaths>(
+  'auth-core-auth-hooks-paths',
+);
 
-const placeholderAuthCorePlaceholderAuthHooksPathsTask = createGeneratorTask({
+const authCoreAuthHooksPathsTask = createGeneratorTask({
   dependencies: { packageInfo: packageInfoProvider },
-  exports: {
-    placeholderAuthCorePlaceholderAuthHooksPaths:
-      placeholderAuthCorePlaceholderAuthHooksPaths.export(),
-  },
+  exports: { authCoreAuthHooksPaths: authCoreAuthHooksPaths.export() },
   run({ packageInfo }) {
     const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
       providers: {
-        placeholderAuthCorePlaceholderAuthHooksPaths: {
+        authCoreAuthHooksPaths: {
           useCurrentUser: `${srcRoot}/hooks/use-current-user.ts`,
           useCurrentUserGql: `${srcRoot}/hooks/use-current-user.gql`,
           useLogOut: `${srcRoot}/hooks/use-log-out.ts`,
@@ -37,7 +33,7 @@ const placeholderAuthCorePlaceholderAuthHooksPathsTask = createGeneratorTask({
   },
 });
 
-export const PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_PATHS = {
-  provider: placeholderAuthCorePlaceholderAuthHooksPaths,
-  task: placeholderAuthCorePlaceholderAuthHooksPathsTask,
+export const AUTH_CORE_AUTH_HOOKS_PATHS = {
+  provider: authCoreAuthHooksPaths,
+  task: authCoreAuthHooksPathsTask,
 };

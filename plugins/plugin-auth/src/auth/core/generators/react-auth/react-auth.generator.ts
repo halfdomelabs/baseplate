@@ -15,12 +15,12 @@ export const reactAuthGenerator = createGenerator({
   buildTasks: () => ({
     reactAuth: createGeneratorTask({
       exports: {
-        reactAuth: reactAuthRoutesProvider.export(packageScope),
+        reactAuthRoutes: reactAuthRoutesProvider.export(packageScope),
       },
       run() {
         return {
           providers: {
-            reactAuth: {
+            reactAuthRoutes: {
               getLoginUrlPath: () => '/auth/login',
               getRegisterUrlPath: () => '/auth/register',
             },

@@ -20,7 +20,7 @@
       "name": "use-current-user",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#placeholder-auth/core/placeholder-auth-hooks",
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-hooks",
       "group": "hooks",
       "importMapProviders": {
         "generatedGraphqlImportsProvider": {
@@ -36,9 +36,22 @@
       "name": "use-log-out",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#placeholder-auth/core/placeholder-auth-hooks",
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-hooks",
       "group": "hooks",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "generatedGraphqlImportsProvider": {
+          "importName": "generatedGraphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        },
+        "reactSessionImportsProvider": {
+          "importName": "reactSessionImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/auth/core/generators/react-session/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/hooks/use-log-out.ts",
       "projectExports": { "useLogOut": {} },
       "variables": {}
@@ -47,9 +60,14 @@
       "name": "use-session",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#placeholder-auth/core/placeholder-auth-hooks",
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-hooks",
       "group": "hooks",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "reactSessionImportsProvider": {
+          "importName": "reactSessionImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/auth/core/generators/react-session/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/hooks/use-session.ts",
       "projectExports": {
         "SessionData": { "isTypeOnly": true },
@@ -61,7 +79,7 @@
       "name": "use-required-user-id",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#placeholder-auth/core/placeholder-auth-hooks",
+      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-hooks",
       "group": "hooks",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-user-id-or-throw.ts",

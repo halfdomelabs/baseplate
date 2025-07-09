@@ -22,6 +22,7 @@ import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 import { authEmailPasswordGenerator } from './generators/auth-email-password/auth-email-password.generator.js';
 import { authHooksGenerator } from './generators/auth-hooks/auth-hooks.generator.js';
 import { authModuleGenerator, reactAuthGenerator } from './generators/index.js';
+import { reactSessionGenerator } from './generators/react-session/react-session.generator.js';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -65,6 +66,7 @@ export default createPlatformPluginExport({
       ...createCommonWebAuthGenerators(),
       reactAuth: reactAuthGenerator({}),
       authHooks: authHooksGenerator({}),
+      reactSession: reactSessionGenerator({}),
     };
 
     // register web compiler
