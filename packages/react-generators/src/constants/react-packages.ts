@@ -19,6 +19,7 @@ export const REACT_PACKAGES = {
   tailwindcss: '4.1.6',
   'prettier-plugin-tailwindcss': '0.6.11',
   'tw-animate-css': '1.2.9',
+  'tailwind-merge': '3.3.1',
 
   // Components
   '@headlessui/react': '2.2.2',

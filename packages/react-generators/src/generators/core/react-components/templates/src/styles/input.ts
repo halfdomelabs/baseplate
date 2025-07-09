@@ -21,15 +21,10 @@ export const inputVariants = cva(
         default: 'bg-background',
         transparent: '',
       },
-      rightPadding: {
-        default: 'pr-3',
-        none: '',
-      },
     },
     defaultVariants: {
       height: 'default',
       background: 'default',
-      rightPadding: 'default',
     },
   },
 );

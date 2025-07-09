@@ -39,6 +39,7 @@ export const reactTailwindGenerator = createGenerator({
   descriptorSchema,
   buildTasks: ({ globalBodyClasses }) => ({
     nodePackages: createNodePackagesTask({
+      prod: extractPackageVersions(REACT_PACKAGES, ['tailwind-merge']),
       dev: extractPackageVersions(REACT_PACKAGES, [
         '@tailwindcss/vite',
         'tailwindcss',
