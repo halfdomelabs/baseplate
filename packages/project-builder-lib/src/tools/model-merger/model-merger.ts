@@ -372,6 +372,15 @@ export function createModelMergerResult(
   };
 }
 
+export function doesModelMergerResultsHaveChanges(
+  results: Record<
+    keyof ModelMergerModelsInput,
+    ModelMergerModelDiffResult | undefined
+  >,
+): boolean {
+  return Object.values(results).some((result) => result?.changes);
+}
+
 /**
  * Creates a model merger result for a set of models.
  *

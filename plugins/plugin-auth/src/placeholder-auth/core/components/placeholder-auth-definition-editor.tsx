@@ -8,6 +8,7 @@ import {
   ModelUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
+import { doesModelMergerResultsHaveChanges } from '@baseplate-dev/project-builder-lib/src/tools/model-merger/model-merger.js';
 import {
   FeatureComboboxFieldController,
   ModelComboboxFieldController,
@@ -170,7 +171,13 @@ export function PlaceholderAuthDefinitionEditor({
         </SectionList>
       </div>
 
-      <FormActionBar form={form} allowSaveWithoutDirty={!pluginMetadata} />
+      <FormActionBar
+        form={form}
+        allowSaveWithoutDirty={
+          !pluginMetadata ||
+          doesModelMergerResultsHaveChanges(pendingModelChanges)
+        }
+      />
     </form>
   );
 }

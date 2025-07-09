@@ -5,6 +5,7 @@ import {
   authRoleEntityType,
   createAndApplyModelMergerResults,
   createModelMergerResults,
+  doesModelMergerResultsHaveChanges,
   FeatureUtils,
   ModelUtils,
   PluginUtils,
@@ -174,7 +175,13 @@ export function AuthDefinitionEditor({
         </SectionList>
       </div>
 
-      <FormActionBar form={form} allowSaveWithoutDirty={!pluginMetadata} />
+      <FormActionBar
+        form={form}
+        allowSaveWithoutDirty={
+          !pluginMetadata ||
+          doesModelMergerResultsHaveChanges(pendingModelChanges)
+        }
+      />
     </form>
   );
 }
