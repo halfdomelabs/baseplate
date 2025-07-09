@@ -75,10 +75,10 @@ export const reactConfigGenerator = createGenerator({
         reactConfig.configEntries.set('VITE_ENVIRONMENT', {
           comment: 'Environment the app is running in',
           validator: tsCodeFragment(
-            `z.enum(['development', 'test', 'staging', 'production'])`,
+            `z.enum(['dev', 'test', 'stage', 'prod'])`,
             tsImportBuilder(['z']).from('zod'),
           ),
-          devDefaultValue: 'development',
+          devDefaultValue: 'dev',
         });
       },
     ),
@@ -134,6 +134,9 @@ export const reactConfigGenerator = createGenerator({
                 id: 'development-env',
                 destination: '.env.development',
                 contents: developmentEnvFile,
+                options: {
+                  shouldNeverOverwrite: true,
+                },
               });
             }
           },
