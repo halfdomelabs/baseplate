@@ -12,10 +12,10 @@ import {
   createCommonBackendAuthRootGenerators,
   createCommonWebAuthGenerators,
 } from '#src/common/index.js';
-import { placeholderAuthHooksGenerator } from '#src/placeholder-auth/index.js';
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
+import { authHooksGenerator } from './generators/auth-hooks/auth-hooks.generator.js';
 import { authModuleGenerator, reactAuthGenerator } from './generators/index.js';
 
 export default createPlatformPluginExport({
@@ -50,7 +50,7 @@ export default createPlatformPluginExport({
     const sharedWebGenerators = {
       ...createCommonWebAuthGenerators(),
       reactAuth: reactAuthGenerator({}),
-      authHooks: placeholderAuthHooksGenerator({}),
+      authHooks: authHooksGenerator({}),
     };
 
     // register web compiler
