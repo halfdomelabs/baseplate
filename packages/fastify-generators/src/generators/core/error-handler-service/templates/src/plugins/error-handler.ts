@@ -6,7 +6,7 @@ import fp from 'fastify-plugin';
 import { logError } from '../services/error-logger.js';
 import { HttpError, NotFoundError } from '../utils/http-errors.js';
 
-const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
+const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'dev';
 
 /**
  * Handles errors from Fastify route handlers, sending the correct code

@@ -15,7 +15,7 @@ import { createYoga } from 'graphql-yoga';
 
 TPL_SIDE_EFFECT_IMPORTS;
 
-const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
+const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'dev';
 
 const schema = TPL_SCHEMA;
 
