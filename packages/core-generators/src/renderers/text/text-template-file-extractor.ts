@@ -12,8 +12,8 @@ import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-f
 import { deduplicateTemplateFileExtractorSourceFiles } from '../extractor/utils/deduplicate-templates.js';
 import { renderTextTypedTemplates } from './render-text-typed-templates.js';
 import {
-  textTemplateMetadataSchema,
   textTemplateInstanceDataSchema,
+  textTemplateMetadataSchema,
 } from './types.js';
 import { extractTemplateVariables } from './utils.js';
 
