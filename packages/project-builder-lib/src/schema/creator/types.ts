@@ -23,6 +23,16 @@ export interface DefinitionSchemaCreatorOptions {
    * to convert the parsed data to the correct type.
    */
   transformReferences?: boolean;
+  /**
+   * How to handle default values in the schema.
+   *
+   * - 'populate': Ensure defaults are present (useful for React Hook Form)
+   * - 'strip': Remove values that match their defaults (useful for clean JSON serialization)
+   * - 'preserve': Keep values as-is without transformation
+   *
+   * @default 'populate'
+   */
+  defaultMode?: 'populate' | 'strip' | 'preserve';
 }
 
 export interface DefinitionSchemaParserContext {
@@ -34,6 +44,10 @@ export interface DefinitionSchemaParserContext {
    * If true, the schema will be transformed to include references.
    */
   transformReferences?: boolean;
+  /**
+   * How to handle default values in the schema.
+   */
+  defaultMode?: 'populate' | 'strip' | 'preserve';
   /**
    * Adds a reference to the schema.
    */

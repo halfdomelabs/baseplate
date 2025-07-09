@@ -5,6 +5,7 @@ import type { def } from '#src/schema/creator/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 
 import { authRoleEntityType } from '../auth/index.js';
+import { createDefaultHandler } from '../utils/create-default-handler.js';
 import {
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
@@ -19,21 +20,28 @@ const createRoleArray = definitionSchema((ctx) =>
         onDelete: 'DELETE',
       }),
     )
-    .optional(),
+    .optional()
+    .transform(createDefaultHandler(ctx, [])),
 );
 
 export const createModelGraphqlSchema = definitionSchema((ctx) =>
   z.object({
     objectType: z
       .object({
-        enabled: z.boolean().default(false),
-        fields: z.array(
-          ctx.withRef({
-            type: modelScalarFieldEntityType,
-            onDelete: 'DELETE',
-            parentPath: { context: 'model' },
-          }),
-        ),
+        enabled: z
+          .boolean()
+          .optional()
+          .transform(createDefaultHandler(ctx, false)),
+        fields: z
+          .array(
+            ctx.withRef({
+              type: modelScalarFieldEntityType,
+              onDelete: 'DELETE',
+              parentPath: { context: 'model' },
+            }),
+          )
+          .optional()
+          .transform(createDefaultHandler(ctx, [])),
         localRelations: z
           .array(
             ctx.withRef({
@@ -42,7 +50,8 @@ export const createModelGraphqlSchema = definitionSchema((ctx) =>
               parentPath: { context: 'model' },
             }),
           )
-          .optional(),
+          .optional()
+          .transform(createDefaultHandler(ctx, [])),
         foreignRelations: z
           .array(
             ctx.withRef({
@@ -51,68 +60,68 @@ export const createModelGraphqlSchema = definitionSchema((ctx) =>
               parentPath: { context: 'model' },
             }),
           )
-          .optional(),
+          .optional()
+          .transform(createDefaultHandler(ctx, [])),
       })
-      .default({
-        enabled: false,
-        fields: [],
-      }),
+      .transform(createDefaultHandler(ctx, {})),
     queries: z
       .object({
         get: z
           .object({
-            enabled: z.boolean().optional(),
+            enabled: z
+              .boolean()
+              .optional()
+              .transform(createDefaultHandler(ctx, false)),
             roles: createRoleArray(ctx),
           })
-          .optional(),
+          .optional()
+          .transform(createDefaultHandler(ctx, {})),
         list: z
           .object({
-            enabled: z.boolean().optional(),
+            enabled: z
+              .boolean()
+              .optional()
+              .transform(createDefaultHandler(ctx, false)),
             roles: createRoleArray(ctx),
           })
-          .optional(),
+          .optional()
+          .transform(createDefaultHandler(ctx, {})),
       })
-      .default({
-        get: {
-          enabled: false,
-          roles: [],
-        },
-        list: {
-          enabled: false,
-          roles: [],
-        },
-      }),
+      .transform(createDefaultHandler(ctx, {})),
     mutations: z
       .object({
         create: z
           .object({
-            enabled: z.boolean().optional(),
+            enabled: z
+              .boolean()
+              .optional()
+              .transform(createDefaultHandler(ctx, false)),
             roles: createRoleArray(ctx),
           })
-          .default({
-            enabled: false,
-            roles: [],
-          }),
+          .optional()
+          .transform(createDefaultHandler(ctx, {})),
         update: z
           .object({
-            enabled: z.boolean().optional(),
+            enabled: z
+              .boolean()
+              .optional()
+              .transform(createDefaultHandler(ctx, false)),
             roles: createRoleArray(ctx),
           })
-          .default({
-            enabled: false,
-            roles: [],
-          }),
+          .optional()
+          .transform(createDefaultHandler(ctx, {})),
         delete: z
           .object({
-            enabled: z.boolean().optional(),
+            enabled: z
+              .boolean()
+              .optional()
+              .transform(createDefaultHandler(ctx, false)),
             roles: createRoleArray(ctx),
           })
-          .default({
-            enabled: false,
-            roles: [],
-          }),
+          .optional()
+          .transform(createDefaultHandler(ctx, {})),
       })
-      .default({}),
+      .transform(createDefaultHandler(ctx, {})),
   }),
 );
 
