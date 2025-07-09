@@ -7,6 +7,8 @@ import type {
   WithRefType,
 } from '#src/references/extend-parser-context-with-refs.js';
 
+import type { WithDefaultType } from './extend-parser-context-with-defaults.js';
+
 /**
  * Options for creating a definition schema.
  */
@@ -60,6 +62,13 @@ export interface DefinitionSchemaParserContext {
    * Provides access to the reference builder functions for the schema.
    */
   withRefBuilder: WithRefBuilder;
+  /**
+   * Wraps a schema with default value handling based on the defaultMode.
+   * - 'populate': Uses preprocess to ensure defaults are present
+   * - 'strip': Uses transform to remove values matching defaults
+   * - 'preserve': Returns schema unchanged
+   */
+  withDefault: WithDefaultType;
 }
 
 export type DefinitionSchemaCreator<T extends z.ZodTypeAny = z.ZodTypeAny> = (
