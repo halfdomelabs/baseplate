@@ -1,7 +1,5 @@
 import type { Command } from 'commander';
 
-import { SyncMetadataController } from '@baseplate-dev/project-builder-server';
-
 import { createSchemaParserContext } from '#src/services/schema-parser-context.js';
 import { getUserConfig } from '#src/services/user-config.js';
 import { expandPathWithTilde } from '#src/utils/path.js';
@@ -19,7 +17,7 @@ export function addBuildCommand(program: Command): void {
       'Builds project from project-definition.json in baseplate/ directory',
     )
     .action(async (directory: string | undefined) => {
-      const { buildProject } = await import(
+      const { buildProject, SyncMetadataController } = await import(
         '@baseplate-dev/project-builder-server'
       );
       const resolvedDirectory = directory
