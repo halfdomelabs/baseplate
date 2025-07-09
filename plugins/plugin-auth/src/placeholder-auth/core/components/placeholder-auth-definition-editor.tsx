@@ -4,11 +4,11 @@ import type React from 'react';
 import {
   createAndApplyModelMergerResults,
   createModelMergerResults,
+  doesModelMergerResultsHaveChanges,
   FeatureUtils,
   ModelUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
-import { doesModelMergerResultsHaveChanges } from '@baseplate-dev/project-builder-lib/src/tools/model-merger/model-merger.js';
 import {
   FeatureComboboxFieldController,
   ModelComboboxFieldController,
