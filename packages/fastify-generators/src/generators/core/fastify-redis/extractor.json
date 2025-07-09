@@ -1,8 +1,16 @@
 {
   "name": "core/fastify-redis",
   "templates": {
-    "src/services/redis.ts": {
-      "name": "redis",
+    "mock-redis": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#core/fastify-redis",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/tests/scripts/mock-redis.ts",
+      "sourceFile": "src/tests/scripts/mock-redis.ts",
+      "variables": {}
+    },
+    "redis": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/fastify-redis",
@@ -14,15 +22,7 @@
       },
       "pathRootRelativePath": "{src-root}/services/redis.ts",
       "projectExports": { "createRedisClient": {}, "getRedisClient": {} },
-      "variables": {}
-    },
-    "src/tests/scripts/mock-redis.ts": {
-      "name": "mock-redis",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/fastify-generators#core/fastify-redis",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/tests/scripts/mock-redis.ts",
+      "sourceFile": "src/services/redis.ts",
       "variables": {}
     }
   }

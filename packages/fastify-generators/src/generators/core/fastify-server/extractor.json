@@ -1,8 +1,7 @@
 {
   "name": "core/fastify-server",
   "templates": {
-    "src/index.ts": {
-      "name": "index",
+    "index": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/fastify-server",
@@ -17,15 +16,16 @@
         }
       },
       "pathRootRelativePath": "{src-root}/index.ts",
+      "sourceFile": "src/index.ts",
       "variables": { "TPL_LOG_ERROR": {} }
     },
-    "src/server.ts": {
-      "name": "server",
+    "server": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/fastify-server",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/server.ts",
+      "sourceFile": "src/server.ts",
       "variables": {
         "TPL_PLUGINS": {},
         "TPL_PRE_PLUGIN_FRAGMENTS": {},

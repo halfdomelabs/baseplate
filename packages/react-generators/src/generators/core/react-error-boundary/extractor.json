@@ -1,8 +1,7 @@
 {
   "name": "core/react-error-boundary",
   "templates": {
-    "src/components/error-boundary/error-boundary.tsx": {
-      "name": "component",
+    "component": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-error-boundary",
@@ -17,6 +16,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/components/error-boundary/error-boundary.tsx",
+      "sourceFile": "src/components/error-boundary/error-boundary.tsx",
       "variables": {}
     }
   }

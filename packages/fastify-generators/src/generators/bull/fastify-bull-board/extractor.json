@@ -1,18 +1,17 @@
 {
   "name": "bull/fastify-bull-board",
   "templates": {
-    "module/bull-board/index.ts": {
-      "name": "index",
+    "index": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
       "group": "module",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/bull-board/index.ts",
+      "sourceFile": "module/bull-board/index.ts",
       "variables": {}
     },
-    "module/bull-board/plugins/bull-board.ts": {
-      "name": "plugins-bull-board",
+    "plugins-bull-board": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
@@ -24,10 +23,10 @@
         }
       },
       "pathRootRelativePath": "{module-root}/bull-board/plugins/bull-board.ts",
+      "sourceFile": "module/bull-board/plugins/bull-board.ts",
       "variables": { "TPL_QUEUES": {} }
     },
-    "module/bull-board/schema/authenticate.mutations.ts": {
-      "name": "schema-authenticate-mutations",
+    "schema-authenticate-mutations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
@@ -39,10 +38,10 @@
         }
       },
       "pathRootRelativePath": "{module-root}/bull-board/schema/authenticate.mutations.ts",
+      "sourceFile": "module/bull-board/schema/authenticate.mutations.ts",
       "variables": {}
     },
-    "module/bull-board/services/auth.service.ts": {
-      "name": "services-auth-service",
+    "services-auth-service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
@@ -58,6 +57,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/bull-board/services/auth.service.ts",
+      "sourceFile": "module/bull-board/services/auth.service.ts",
       "variables": {}
     }
   }

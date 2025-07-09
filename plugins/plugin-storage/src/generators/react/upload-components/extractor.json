@@ -1,26 +1,7 @@
 {
   "name": "react/upload-components",
   "templates": {
-    "src/components/file-input-field/file-input-field.tsx": {
-      "name": "file-input-field",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-storage#react/upload-components",
-      "importMapProviders": {
-        "reactComponentsImportsProvider": {
-          "importName": "reactComponentsImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{src-root}/components/file-input-field/file-input-field.tsx",
-      "projectExports": {
-        "FileInputField": {},
-        "FileInputFieldController": {}
-      },
-      "variables": {}
-    },
-    "src/components/file-input/file-input.tsx": {
-      "name": "file-input-component",
+    "file-input-component": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#react/upload-components",
@@ -40,23 +21,42 @@
       },
       "pathRootRelativePath": "{src-root}/components/file-input/file-input.tsx",
       "projectExports": { "FileInput": { "exportedAs": "default" } },
+      "sourceFile": "src/components/file-input/file-input.tsx",
       "variables": {}
     },
-    "src/components/file-input/upload.gql": {
-      "name": "file-input-upload-gql",
+    "file-input-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#react/upload-components",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/components/file-input-field/file-input-field.tsx",
+      "projectExports": {
+        "FileInputField": {},
+        "FileInputFieldController": {}
+      },
+      "sourceFile": "src/components/file-input-field/file-input-field.tsx",
+      "variables": {}
+    },
+    "file-input-upload-gql": {
       "type": "text",
       "fileOptions": { "kind": "singleton" },
       "pathRootRelativePath": "{src-root}/components/file-input/upload.gql",
+      "sourceFile": "src/components/file-input/upload.gql",
       "variables": { "TPL_FILE_TYPE": {} }
     },
-    "src/hooks/use-upload.ts": {
-      "name": "hooks-use-upload",
+    "hooks-use-upload": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#react/upload-components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-upload.ts",
       "projectExports": { "useUpload": {} },
+      "sourceFile": "src/hooks/use-upload.ts",
       "variables": {}
     }
   }

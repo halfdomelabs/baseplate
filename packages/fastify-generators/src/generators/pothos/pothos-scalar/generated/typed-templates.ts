@@ -46,4 +46,4 @@ const uuid = createTsTemplateFile({
   variables: {},
 });
 
-export const POTHOS_POTHOS_SCALAR_TEMPLATES = { dateTime, date, uuid };
+export const POTHOS_POTHOS_SCALAR_TEMPLATES = { date, dateTime, uuid };

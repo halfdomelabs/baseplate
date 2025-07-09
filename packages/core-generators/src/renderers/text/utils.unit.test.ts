@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest';
 
-import type { TextTemplateFileVariableWithValue } from './types.js';
-
 import {
   extractTemplateVariables,
   getTextTemplateDelimiters,
@@ -72,13 +70,9 @@ describe('extractTemplateVariables', () => {
   it('should replace variable values with template placeholders', () => {
     const contents =
       'const MyComponent = () => { return <div>Hello World</div>; };';
-    const variables: Record<string, TextTemplateFileVariableWithValue> = {
-      componentName: {
-        value: 'MyComponent',
-      },
-      message: {
-        value: 'Hello World',
-      },
+    const variables: Record<string, string> = {
+      componentName: 'MyComponent',
+      message: 'Hello World',
     };
 
     const result = extractTemplateVariables(
@@ -93,10 +87,8 @@ describe('extractTemplateVariables', () => {
 
   it('should use CSS delimiters for .css files', () => {
     const contents = '.my-class { color: red; }';
-    const variables: Record<string, TextTemplateFileVariableWithValue> = {
-      className: {
-        value: 'my-class',
-      },
+    const variables: Record<string, string> = {
+      className: 'my-class',
     };
 
     const result = extractTemplateVariables(contents, variables, 'styles.css');
@@ -105,10 +97,8 @@ describe('extractTemplateVariables', () => {
 
   it('should use empty delimiters for .gql files', () => {
     const contents = 'query GetUser { user { name } }';
-    const variables: Record<string, TextTemplateFileVariableWithValue> = {
-      queryName: {
-        value: 'GetUser',
-      },
+    const variables: Record<string, string> = {
+      queryName: 'GetUser',
     };
 
     const result = extractTemplateVariables(contents, variables, 'query.gql');
@@ -118,13 +108,9 @@ describe('extractTemplateVariables', () => {
   it('should handle overlapping variable values by processing longer values first', () => {
     const contents =
       'const MyComponentProps = {}; const MyComponent = () => {};';
-    const variables: Record<string, TextTemplateFileVariableWithValue> = {
-      componentName: {
-        value: 'MyComponent',
-      },
-      propsName: {
-        value: 'MyComponentProps',
-      },
+    const variables: Record<string, string> = {
+      componentName: 'MyComponent',
+      propsName: 'MyComponentProps',
     };
 
     const result = extractTemplateVariables(
@@ -139,10 +125,8 @@ describe('extractTemplateVariables', () => {
 
   it('should throw error when variable value is not found', () => {
     const contents = 'const SomeOtherComponent = () => {};';
-    const variables: Record<string, TextTemplateFileVariableWithValue> = {
-      componentName: {
-        value: 'MyComponent',
-      },
+    const variables: Record<string, string> = {
+      componentName: 'MyComponent',
     };
 
     expect(() => {
@@ -153,10 +137,8 @@ describe('extractTemplateVariables', () => {
   it('should respect word boundaries when replacing variables', () => {
     const contents =
       'const MyComponentWrapper = () => { return <MyComponent />; };';
-    const variables: Record<string, TextTemplateFileVariableWithValue> = {
-      componentName: {
-        value: 'MyComponent',
-      },
+    const variables: Record<string, string> = {
+      componentName: 'MyComponent',
     };
 
     const result = extractTemplateVariables(

@@ -1,7 +1,4 @@
-import type {
-  TsCodeFragment,
-  TsTemplateOutputTemplateMetadata,
-} from '@baseplate-dev/core-generators';
+import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
   createNodePackagesTask,
@@ -304,13 +301,10 @@ export const reactRouterGenerator = createGenerator({
               destination: '@/src/route-tree.gen.ts',
               contents: '',
               options: { skipWriting: true },
-              templateMetadata: {
+              templateInfo: {
                 generator: builder.generatorInfo.name,
-                name: 'route-tree',
-                projectExportsOnly: true,
-                type: 'ts',
-                fileOptions: { kind: 'singleton' },
-              } satisfies TsTemplateOutputTemplateMetadata,
+                template: 'route-tree',
+              },
             });
           },
         };

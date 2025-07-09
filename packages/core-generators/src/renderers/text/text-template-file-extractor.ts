@@ -2,16 +2,18 @@ import {
   createTemplateFileExtractor,
   getGenerationConcurrencyLimit,
 } from '@baseplate-dev/sync';
-import { mapValues, omit } from 'es-toolkit';
+import { mapValues } from 'es-toolkit';
 import pLimit from 'p-limit';
+
+import type { TextGeneratorTemplateMetadata } from './types.js';
 
 import { templatePathsPlugin } from '../extractor/plugins/template-paths/template-paths.plugin.js';
 import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-file.js';
 import { deduplicateTemplateFileExtractorSourceFiles } from '../extractor/utils/deduplicate-templates.js';
 import { renderTextTypedTemplates } from './render-text-typed-templates.js';
 import {
-  textTemplateGeneratorTemplateMetadataSchema,
-  textTemplateOutputTemplateMetadataSchema,
+  textTemplateInstanceDataSchema,
+  textTemplateMetadataSchema,
 } from './types.js';
 import { extractTemplateVariables } from './utils.js';
 
@@ -20,47 +22,51 @@ const limit = pLimit(getGenerationConcurrencyLimit());
 export const TextTemplateFileExtractor = createTemplateFileExtractor({
   name: 'text',
   pluginDependencies: [templatePathsPlugin, typedTemplatesFilePlugin],
-  outputTemplateMetadataSchema: textTemplateOutputTemplateMetadataSchema,
-  generatorTemplateMetadataSchema: textTemplateGeneratorTemplateMetadataSchema,
+  templateMetadataSchema: textTemplateMetadataSchema,
+  templateInstanceDataSchema: textTemplateInstanceDataSchema,
   extractTemplateMetadataEntries: (files, context) => {
     const deduplicatedFiles =
       deduplicateTemplateFileExtractorSourceFiles(files);
     const templatePathPlugin = context.getPlugin('template-paths');
-    return deduplicatedFiles.map(({ metadata, absolutePath }) => {
-      try {
-        const { pathRootRelativePath, generatorTemplatePath } =
-          templatePathPlugin.resolveTemplatePaths(
-            metadata.fileOptions,
-            absolutePath,
-            metadata.name,
-            metadata.generator,
-          );
+    return deduplicatedFiles.map(
+      ({
+        existingMetadata,
+        instanceData,
+        templateName,
+        generatorName,
+        absolutePath,
+      }) => {
+        try {
+          const { pathRootRelativePath, generatorTemplatePath } =
+            templatePathPlugin.resolveTemplatePaths(
+              existingMetadata.fileOptions,
+              absolutePath,
+              templateName,
+              generatorName,
+            );
 
-        return {
-          generator: metadata.generator,
-          generatorTemplatePath,
-          sourceAbsolutePath: absolutePath,
-          metadata: {
-            name: metadata.name,
-            type: metadata.type,
-            group: metadata.group,
-            fileOptions: metadata.fileOptions,
-            pathRootRelativePath,
-            variables: mapValues(metadata.variables ?? {}, (variable) =>
-              omit(variable, ['value']),
-            ),
-          },
-          extractionContext: {
-            variables: metadata.variables ?? {},
-          },
-        };
-      } catch (error) {
-        throw new Error(
-          `Error extracting template metadata for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
-          { cause: error },
-        );
-      }
-    });
+          return {
+            generator: generatorName,
+            sourceAbsolutePath: absolutePath,
+            templateName,
+            metadata: {
+              ...existingMetadata,
+              sourceFile: generatorTemplatePath,
+              pathRootRelativePath,
+              variables: mapValues(instanceData.variables, (_, key) => ({
+                description: existingMetadata.variables?.[key]?.description,
+              })),
+            } satisfies TextGeneratorTemplateMetadata,
+            instanceData,
+          };
+        } catch (error) {
+          throw new Error(
+            `Error extracting template metadata for ${absolutePath}: ${error instanceof Error ? error.message : String(error)}`,
+            { cause: error },
+          );
+        }
+      },
+    );
   },
   writeTemplateFiles: async (files, _context, api) => {
     await Promise.all(
@@ -71,13 +77,13 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
 
             const templateContents = extractTemplateVariables(
               contents,
-              file.extractionContext?.variables ?? {},
+              file.instanceData.variables,
               file.sourceAbsolutePath,
             );
 
             await api.writeTemplateFile(
               file.generator,
-              file.generatorTemplatePath,
+              file.metadata.sourceFile,
               templateContents,
             );
           } catch (error) {
@@ -99,7 +105,7 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
         context.configLookup.getExtractorConfigOrThrow(generatorName);
       const templates = context.configLookup.getTemplatesForGenerator(
         generatorName,
-        textTemplateGeneratorTemplateMetadataSchema,
+        textTemplateMetadataSchema,
         'text',
       );
 
@@ -111,11 +117,11 @@ export const TextTemplateFileExtractor = createTemplateFileExtractor({
         typedTemplatesPlugin.addTemplate(generatorName, typedTemplate);
       }
 
-      for (const { config } of templates) {
+      for (const { config, name } of templates) {
         if (config.pathRootRelativePath) {
           templatePathsPlugin.registerTemplatePathEntry(
             generatorName,
-            config.name,
+            name,
             config.pathRootRelativePath,
           );
         }

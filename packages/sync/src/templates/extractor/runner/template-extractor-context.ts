@@ -47,7 +47,7 @@ export class TemplateExtractorContext<
   }
 
   /**
-   * A map of generator name to its info.
+   * Utility class for looking up extractor configs and templates.
    */
   configLookup: TemplateExtractorConfigLookup;
 

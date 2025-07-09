@@ -31,4 +31,4 @@ const adminRoute = createTsTemplateFile({
   variables: { TPL_LOGIN_URL_PATH: {}, TPL_ROUTE_PATH: {} },
 });
 
-export const ADMIN_ADMIN_LAYOUT_TEMPLATES = { adminRoute, adminLayout };
+export const ADMIN_ADMIN_LAYOUT_TEMPLATES = { adminLayout, adminRoute };

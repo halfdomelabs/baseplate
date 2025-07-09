@@ -1,12 +1,12 @@
 {
   "name": "core/react-tailwind",
   "templates": {
-    "src/styles.css": {
-      "name": "styles-css",
+    "styles-css": {
       "type": "text",
       "fileOptions": { "kind": "singleton" },
       "group": "main",
       "pathRootRelativePath": "{src-root}/styles.css",
+      "sourceFile": "src/styles.css",
       "variables": {
         "TPL_GLOBAL_STYLES": {
           "description": "Global styles to apply to the app"

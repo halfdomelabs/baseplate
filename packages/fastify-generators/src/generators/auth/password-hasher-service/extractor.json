@@ -1,14 +1,19 @@
 {
   "name": "auth/password-hasher-service",
   "templates": {
-    "module/services/password-hasher.service.ts": {
-      "name": "password-hasher-service",
+    "password-hasher-service": {
+      "sourceFile": "module/services/password-hasher.service.ts",
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "generator": "@baseplate-dev/fastify-generators#auth/password-hasher-service",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/password-hasher.service.ts",
-      "projectExports": { "createPasswordHash": {}, "verifyPasswordHash": {} },
+      "projectExports": {
+        "createPasswordHash": {},
+        "verifyPasswordHash": {}
+      },
       "variables": {}
     }
   }

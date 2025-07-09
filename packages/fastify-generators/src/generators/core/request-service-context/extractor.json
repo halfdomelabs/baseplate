@@ -1,8 +1,7 @@
 {
   "name": "core/request-service-context",
   "templates": {
-    "src/utils/request-service-context.ts": {
-      "name": "request-service-context",
+    "request-service-context": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/request-service-context",
@@ -17,6 +16,7 @@
         "createContextFromRequest": {},
         "RequestServiceContext": { "isTypeOnly": true }
       },
+      "sourceFile": "src/utils/request-service-context.ts",
       "variables": {
         "TPL_CONTEXT_BODY": {},
         "TPL_CONTEXT_CREATOR": {},

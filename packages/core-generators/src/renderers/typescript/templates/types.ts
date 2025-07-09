@@ -43,79 +43,48 @@ export type TsTemplateFileProjectExport = z.infer<
   typeof tsTemplateFileProjectExportSchema
 >;
 
-export const tsTemplateGeneratorTemplateMetadataSchema =
-  templateConfigSchema.extend({
-    /**
-     * The options for the template file
-     */
-    fileOptions: templateFileOptionsSchema,
-    /**
-     * The path of the template relative to the closest file path root.
-     */
-    pathRootRelativePath: z.string().optional(),
-    /**
-     * The group to assign the template to when generating the typed templates.
-     */
-    group: CASE_VALIDATORS.KEBAB_CASE.optional(),
-    /**
-     * The exports of the file that are unique across the project.
-     */
-    projectExports: z
-      .record(z.string(), tsTemplateFileProjectExportSchema)
-      .optional(),
-    /**
-     * The import providers that will be used to resolve imports for the template.
-     */
-    importMapProviders: z
-      .record(z.string(), tsTemplateFileImportProviderSchema)
-      .optional(),
-    /**
-     * Whether the template is only exporting types and we should not attempt to extract
-     * the contents of the template.
-     */
-    projectExportsOnly: z.boolean().optional(),
-    /**
-     * The variables for the template.
-     */
-    variables: z.record(z.string(), tsTemplateFileVariableSchema).optional(),
-    /**
-     * The prefix to use for the template variables.
-     * @default 'TPL_'
-     */
-    prefix: z.string().optional(),
-  });
+export const tsTemplateMetadataSchema = templateConfigSchema.extend({
+  /**
+   * The options for the template file
+   */
+  fileOptions: templateFileOptionsSchema,
+  /**
+   * The path of the template relative to the closest file path root.
+   */
+  pathRootRelativePath: z.string().optional(),
+  /**
+   * The group to assign the template to when generating the typed templates.
+   */
+  group: CASE_VALIDATORS.KEBAB_CASE.optional(),
+  /**
+   * The exports of the file that are unique across the project.
+   */
+  projectExports: z
+    .record(z.string(), tsTemplateFileProjectExportSchema)
+    .optional(),
+  /**
+   * The import providers that will be used to resolve imports for the template.
+   */
+  importMapProviders: z
+    .record(z.string(), tsTemplateFileImportProviderSchema)
+    .optional(),
+  /**
+   * Whether the template is only exporting types and we should not attempt to extract
+   * the contents of the template.
+   */
+  projectExportsOnly: z.boolean().optional(),
+  /**
+   * The variables for the template.
+   */
+  variables: z.record(z.string(), tsTemplateFileVariableSchema).optional(),
+  /**
+   * The prefix to use for the template variables.
+   * @default 'TPL_'
+   */
+  prefix: z.string().optional(),
+});
 
-export type TsGeneratorTemplateMetadata = z.infer<
-  typeof tsTemplateGeneratorTemplateMetadataSchema
->;
-
-export const tsTemplateOutputTemplateMetadataSchema =
-  templateFileMetadataBaseSchema.extend({
-    type: z.literal(TS_TEMPLATE_TYPE),
-    /**
-     * The options for the template file
-     */
-    fileOptions: templateFileOptionsSchema,
-    /**
-     * The group of templates that this template belongs to.
-     */
-    group: CASE_VALIDATORS.KEBAB_CASE.optional(),
-    /**
-     * The exports of the file that are unique across the project.
-     */
-    projectExports: z
-      .record(z.string(), tsTemplateFileProjectExportSchema)
-      .optional(),
-    /**
-     * Whether the template is only providing exports and we should not attempt to extract
-     * the contents of the template.
-     */
-    projectExportsOnly: z.boolean().optional(),
-  });
-
-export type TsTemplateOutputTemplateMetadata = z.infer<
-  typeof tsTemplateOutputTemplateMetadataSchema
->;
+export type TsTemplateMetadata = z.infer<typeof tsTemplateMetadataSchema>;
 
 export interface TsTemplateFileVariable {}
 

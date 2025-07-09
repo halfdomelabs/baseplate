@@ -18,18 +18,18 @@ interface RenderTextTypedTemplateContext {
 }
 
 function renderTextTypedTemplate(
-  templatePath: string,
+  templateName: string,
   metadata: TextGeneratorTemplateMetadata,
   { generatorPackageName }: RenderTextTypedTemplateContext,
 ): TemplateExtractorTypedTemplate {
-  const exportName = camelCase(metadata.name);
+  const exportName = camelCase(templateName);
   const createOptions = TsCodeUtils.mergeFragmentsAsObject({
-    name: quot(metadata.name),
+    name: quot(templateName),
     group: metadata.group ? quot(metadata.group) : undefined,
     source: TsCodeUtils.templateWithImports([
       tsImportBuilder().default('path').from('node:path'),
     ])`{
-      path: path.join(import.meta.dirname, '../templates/${templatePath}'),
+      path: path.join(import.meta.dirname, '../templates/${metadata.sourceFile}'),
     }`,
     fileOptions: JSON.stringify(sortObjectKeys(metadata.fileOptions)),
     variables: JSON.stringify(sortObjectKeys(metadata.variables ?? {})),
@@ -55,7 +55,7 @@ function renderTextTypedTemplateGroup(
   context: RenderTextTypedTemplateContext,
 ): TemplateExtractorTypedTemplate {
   const renderedTemplates = templates
-    .map(({ path, config }) => renderTextTypedTemplate(path, config, context))
+    .map(({ name, config }) => renderTextTypedTemplate(name, config, context))
     .toSorted((a, b) => a.exportName.localeCompare(b.exportName));
   const exportName = `${camelCase(groupName)}Group`;
 
@@ -94,7 +94,7 @@ export function renderTextTypedTemplates(
   );
 
   const typedTemplates = templatesWithoutGroup.map((t) =>
-    renderTextTypedTemplate(t.path, t.config, context),
+    renderTextTypedTemplate(t.name, t.config, context),
   );
 
   return [...typedTemplateGroups, ...typedTemplates];

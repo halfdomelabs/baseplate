@@ -1,15 +1,17 @@
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import { groupBy, uniq } from 'es-toolkit';
+import { z } from 'zod';
 
 import type { Logger } from '#src/utils/evented-logger.js';
 
-import type { TemplateFileMetadataBase } from '../metadata/metadata.js';
 import type { TemplateExtractorHook } from './runner/template-extractor-plugin.js';
 import type {
   AnyTemplateFileExtractor,
   TemplateFileExtractorMetadataEntry,
+  TemplateFileExtractorSourceFile,
 } from './runner/template-file-extractor.js';
 
-import { readTemplateMetadataFiles } from '../metadata/read-template-metadata-files.js';
+import { readTemplateInfoFiles } from '../metadata/read-template-info-files.js';
 import { TemplateExtractorConfigLookup } from './configs/template-extractor-config-lookup.js';
 import { tryCreateExtractorJson } from './configs/try-create-extractor-json.js';
 import { initializeTemplateExtractorPlugins } from './runner/initialize-template-extractor-plugins.js';
@@ -31,6 +33,13 @@ export interface RunTemplateFileExtractorsOptions {
   skipClean?: boolean;
 }
 
+export interface GenerateTemplateFilesOptions {
+  /**
+   * Whether to skip cleaning the output directories (templates and generated).
+   */
+  skipClean?: boolean;
+}
+
 /**
  * Run the template file extractors on a target output directory
  *
@@ -38,7 +47,6 @@ export interface RunTemplateFileExtractorsOptions {
  * @param outputDirectories - The output directories to run the extractors on
  * @param generatorPackageMap - The map of package names with generators to package paths
  * @param logger - The logger to use
- * @param fileIdMap - The map of file ids to file paths (used to link generated files to their templates)
  * @param options - The options to use
  */
 export async function runTemplateFileExtractors(
@@ -46,21 +54,16 @@ export async function runTemplateFileExtractors(
   outputDirectory: string,
   generatorPackageMap: Map<string, string>,
   logger: Logger,
-  fileIdMap: Map<string, string>,
   options?: RunTemplateFileExtractorsOptions,
 ): Promise<void> {
-  const templateMetadataFiles =
-    await readTemplateMetadataFiles(outputDirectory);
+  const templateMetadataFiles = await readTemplateInfoFiles(outputDirectory);
 
-  const configLookup = new TemplateExtractorConfigLookup(
-    generatorPackageMap,
-    fileIdMap,
-  );
+  const configLookup = new TemplateExtractorConfigLookup(generatorPackageMap);
   await configLookup.initialize();
 
   if (options?.autoGenerateExtractor) {
     const generatorNames = templateMetadataFiles.map(
-      (m) => m.metadata.generator,
+      (m) => m.templateInfo.generator,
     );
     const missingGeneratorNames = generatorNames.filter(
       (name) => !configLookup.getExtractorConfig(name),
@@ -111,8 +114,20 @@ export async function runTemplateFileExtractors(
     fileContainer,
   });
 
-  // Group files by type and validate uniqueness (throws on duplicates)
-  const filesByType = groupBy(templateMetadataFiles, (f) => f.metadata.type);
+  // Group files by type (need to look up type from template definition)
+  const filesWithTypeAndMetadata = templateMetadataFiles.map((file) => {
+    const templateConfig = configLookup.getTemplateConfigOrThrow(
+      file.templateInfo.generator,
+      file.templateInfo.template,
+    );
+    return {
+      ...file,
+      templateType: templateConfig.type,
+      metadata: templateConfig,
+    };
+  });
+
+  const filesByType = groupBy(filesWithTypeAndMetadata, (f) => f.templateType);
 
   // Get the metadata entries for each file
   const metadataEntries: TemplateFileExtractorMetadataEntry[] = [];
@@ -122,18 +137,31 @@ export async function runTemplateFileExtractors(
       throw new Error(`No extractor found for template type: ${type}`);
     }
 
-    const parsedFiles = files.map((f) => {
-      const { absolutePath: path, metadata, modifiedTime } = f;
-      return {
-        absolutePath: path,
-        metadata: extractor.outputTemplateMetadataSchema
-          ? (extractor.outputTemplateMetadataSchema.parse(
-              metadata,
-            ) as TemplateFileMetadataBase)
-          : metadata,
-        modifiedTime,
-      };
-    });
+    const parsedFiles = files
+      // Only files with instanceData are extractable
+      .filter((f) => f.templateInfo.instanceData !== undefined)
+      .map((f) => {
+        const { absolutePath: path, templateInfo, metadata, modifiedTime } = f;
+        try {
+          return {
+            absolutePath: path,
+            templateName: templateInfo.template,
+            generatorName: templateInfo.generator,
+            existingMetadata: metadata,
+            instanceData: extractor.templateInstanceDataSchema
+              ? extractor.templateInstanceDataSchema.parse(
+                  templateInfo.instanceData,
+                )
+              : {},
+            modifiedTime,
+          } satisfies TemplateFileExtractorSourceFile;
+        } catch (err: unknown) {
+          throw enhanceErrorWithContext(
+            err,
+            `Error parsing instance data for ${path}`,
+          );
+        }
+      });
     const api = new TemplateExtractorApi(context, type);
 
     const newEntries = await extractor.extractTemplateMetadataEntries(
@@ -163,7 +191,12 @@ export async function runTemplateFileExtractors(
 
     const api = new TemplateExtractorApi(context, type);
 
-    await extractor.writeTemplateFiles(entries, context, api);
+    await extractor.writeTemplateFiles(
+      entries,
+      context,
+      api,
+      templateMetadataFiles,
+    );
 
     const generatorNames = uniq(entries.map((e) => e.generator));
     await extractor.writeGeneratedFiles(generatorNames, context, api);
@@ -181,4 +214,121 @@ export async function runTemplateFileExtractors(
   if (!options?.skipClean) {
     await cleanupUnusedTemplateFiles(generatorNames, context);
   }
+}
+
+/**
+ * Generate template files from existing extractor.json configurations without running extraction
+ *
+ * @param templateFileExtractors - The template file extractors to use for generation
+ * @param outputDirectory - The output directory (not used for generation but needed for context)
+ * @param generatorPackageMap - The map of package names with generators to package paths
+ * @param logger - The logger to use
+ * @param options - The options to use
+ */
+export async function generateTemplateFiles(
+  templateFileExtractors: AnyTemplateFileExtractor[],
+  outputDirectory: string,
+  generatorPackageMap: Map<string, string>,
+  logger: Logger,
+  options?: GenerateTemplateFilesOptions,
+): Promise<void> {
+  // Initialize config lookup from existing extractor.json files
+  const configLookup = new TemplateExtractorConfigLookup(generatorPackageMap);
+  await configLookup.initialize();
+
+  // Initialize plugins
+  const fileContainer = new TemplateExtractorFileContainer([
+    ...generatorPackageMap.values(),
+  ]);
+  const initializerContext = new TemplateExtractorContext({
+    configLookup,
+    logger,
+    outputDirectory,
+    plugins: new Map(),
+    fileContainer,
+  });
+  const { hooks, pluginMap } = await initializeTemplateExtractorPlugins({
+    templateExtractors: templateFileExtractors,
+    context: initializerContext,
+  });
+
+  async function runHooks(hook: TemplateExtractorHook): Promise<void> {
+    for (const hookFn of hooks[hook].toReversed()) {
+      await hookFn();
+    }
+  }
+
+  // Create the context for the extractors
+  const context = new TemplateExtractorContext({
+    configLookup,
+    logger,
+    outputDirectory,
+    plugins: pluginMap,
+    fileContainer,
+  });
+
+  // Get all generator configurations and group them by template type
+  const allGeneratorNames: string[] = [];
+  const generatorsByType = new Map<string, string[]>();
+
+  // Get all unique template types from all extractors
+  const allTemplateTypes = new Set<string>();
+  for (const extractor of templateFileExtractors) {
+    allTemplateTypes.add(extractor.name);
+  }
+
+  // For each template type, get all generators that have templates of that type
+  for (const templateType of allTemplateTypes) {
+    const generatorConfigs = configLookup.getGeneratorConfigsForExtractorType(
+      templateType,
+      // Use a simple passthrough schema since we just need the type
+      z.object({ type: z.literal(templateType) }).passthrough(),
+    );
+
+    const generatorNames = generatorConfigs
+      .filter((config) => Object.keys(config.templates).length > 0)
+      .map((config) => config.generatorName);
+
+    if (generatorNames.length > 0) {
+      generatorsByType.set(templateType, generatorNames);
+    }
+
+    // Add generator names to the complete list
+    for (const name of generatorNames) {
+      if (!allGeneratorNames.includes(name)) {
+        allGeneratorNames.push(name);
+      }
+    }
+  }
+
+  // Generate files for each extractor type
+  for (const [templateType, generatorNames] of generatorsByType) {
+    const extractor = templateFileExtractors.find(
+      (e) => e.name === templateType,
+    );
+    if (!extractor) {
+      logger.warn(
+        `No extractor found for template type: ${templateType}, skipping...`,
+      );
+      continue;
+    }
+
+    logger.info(
+      `Generating files for ${templateType} templates from generators: ${generatorNames.join(', ')}`,
+    );
+
+    const api = new TemplateExtractorApi(context, templateType);
+    await extractor.writeGeneratedFiles(generatorNames, context, api);
+  }
+
+  await runHooks('afterWrite');
+
+  // Commit the file changes once all the extractors and plugins have written their files
+  await fileContainer.commit();
+
+  if (!options?.skipClean) {
+    await cleanupUnusedTemplateFiles(allGeneratorNames, context);
+  }
+
+  logger.info('Template file generation completed');
 }

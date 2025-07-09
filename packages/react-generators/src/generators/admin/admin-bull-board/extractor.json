@@ -1,15 +1,14 @@
 {
   "name": "admin/admin-bull-board",
   "templates": {
-    "routes/bull-board/bull-board.gql": {
-      "name": "bull-board",
+    "bull-board": {
       "type": "text",
       "fileOptions": { "kind": "singleton" },
       "pathRootRelativePath": "{routes-root}/bull-board/bull-board.gql",
+      "sourceFile": "routes/bull-board/bull-board.gql",
       "variables": {}
     },
-    "routes/bull-board/index.tsx": {
-      "name": "bull-board-page",
+    "bull-board-page": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#admin/admin-bull-board",
@@ -32,6 +31,7 @@
         }
       },
       "pathRootRelativePath": "{routes-root}/bull-board/index.tsx",
+      "sourceFile": "routes/bull-board/index.tsx",
       "variables": { "TPL_ROUTE_PATH": {} }
     }
   }

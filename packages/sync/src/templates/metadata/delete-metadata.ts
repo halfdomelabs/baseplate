@@ -1,7 +1,10 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
+import {
+  TEMPLATE_METADATA_FILENAME,
+  TEMPLATES_INFO_FILENAME,
+} from '../constants.js';
 
 /**
  * Recursively deletes all template metadata files and the generator metadata file
@@ -21,7 +24,12 @@ export async function deleteMetadataFiles(directory: string): Promise<void> {
       // Recursively process subdirectories
       await deleteMetadataFiles(fullPath);
     } else if (entry.name === TEMPLATE_METADATA_FILENAME) {
+      // TODO [>=2025-07-15] Remove this check once we've cleared all old metadata files
+
       // Delete template metadata file
+      await fs.unlink(fullPath);
+    } else if (entry.name === TEMPLATES_INFO_FILENAME) {
+      // Delete templates info file
       await fs.unlink(fullPath);
     }
   }

@@ -1,14 +1,18 @@
 {
   "name": "core/react-utils",
   "templates": {
-    "src/utils/safe-local-storage.ts": {
-      "name": "safe-local-storage",
+    "safe-local-storage": {
+      "sourceFile": "src/utils/safe-local-storage.ts",
       "type": "ts",
-      "fileOptions": { "kind": "singleton" },
+      "fileOptions": {
+        "kind": "singleton"
+      },
       "generator": "@baseplate-dev/react-generators#core/react-utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/safe-local-storage.ts",
-      "projectExports": { "getSafeLocalStorage": {} },
+      "projectExports": {
+        "getSafeLocalStorage": {}
+      },
       "variables": {}
     }
   }

@@ -1,18 +1,7 @@
 {
   "name": "stripe/fastify-stripe",
   "templates": {
-    "src/plugins/stripe-webhook.int.test.ts": {
-      "name": "plugins-webhook-test",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
-      "group": "plugins",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.int.test.ts",
-      "variables": {}
-    },
-    "src/plugins/stripe-webhook.ts": {
-      "name": "plugins-webhook",
+    "plugins-webhook": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
@@ -28,10 +17,36 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.ts",
+      "sourceFile": "src/plugins/stripe-webhook.ts",
       "variables": {}
     },
-    "src/services/stripe-events.ts": {
-      "name": "service-events",
+    "plugins-webhook-test": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+      "group": "plugins",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.int.test.ts",
+      "sourceFile": "src/plugins/stripe-webhook.int.test.ts",
+      "variables": {}
+    },
+    "service": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+      "group": "services",
+      "importMapProviders": {
+        "configServiceImportsProvider": {
+          "importName": "configServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{src-root}/services/stripe.ts",
+      "projectExports": { "stripe": {} },
+      "sourceFile": "src/services/stripe.ts",
+      "variables": {}
+    },
+    "service-events": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
@@ -47,22 +62,7 @@
         "StripeEventHandler": { "isTypeOnly": true },
         "stripeEventService": {}
       },
-      "variables": {}
-    },
-    "src/services/stripe.ts": {
-      "name": "service",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
-      "group": "services",
-      "importMapProviders": {
-        "configServiceImportsProvider": {
-          "importName": "configServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/config-service/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{src-root}/services/stripe.ts",
-      "projectExports": { "stripe": {} },
+      "sourceFile": "src/services/stripe-events.ts",
       "variables": {}
     }
   }

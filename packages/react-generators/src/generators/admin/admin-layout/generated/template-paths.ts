@@ -4,8 +4,8 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
 export interface AdminAdminLayoutPaths {
-  adminRoute: string;
   adminLayout: string;
+  adminRoute: string;
 }
 
 const adminAdminLayoutPaths = createProviderType<AdminAdminLayoutPaths>(

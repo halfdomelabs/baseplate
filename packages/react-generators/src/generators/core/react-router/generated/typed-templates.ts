@@ -53,8 +53,8 @@ const router = createTsTemplateFile({
 });
 
 export const CORE_REACT_ROUTER_TEMPLATES = {
-  rootRoute,
   placeholderIndex,
-  router,
+  rootRoute,
   routeTree,
+  router,
 };

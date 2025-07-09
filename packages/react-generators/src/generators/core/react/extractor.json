@@ -1,57 +1,57 @@
 {
   "name": "core/react",
   "templates": {
-    "package/index.html": {
-      "name": "index-html",
+    "favicon": {
+      "type": "raw",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{package-root}/public/favicon.ico",
+      "sourceFile": "package/public/favicon.ico"
+    },
+    "index-html": {
       "type": "text",
       "fileOptions": { "kind": "singleton" },
       "group": "static",
       "pathRootRelativePath": "{package-root}/index.html",
+      "sourceFile": "package/index.html",
       "variables": {
         "TPL_DESCRIPTION": { "description": "Description of the project" },
         "TPL_TITLE": { "description": "Title of the home page" }
       }
     },
-    "package/public/favicon.ico": {
-      "name": "favicon",
-      "type": "raw",
-      "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{package-root}/public/favicon.ico"
-    },
-    "package/README.md": {
-      "name": "readme",
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "group": "static",
-      "pathRootRelativePath": "{package-root}/README.md",
-      "variables": {
-        "TPL_PROJECT_NAME": { "description": "Name of the project" }
-      }
-    },
-    "package/vite.config.ts": {
-      "name": "vite-config",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{package-root}/vite.config.ts",
-      "variables": { "TPL_CONFIG": {} }
-    },
-    "src/main.tsx": {
-      "name": "main",
+    "main": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/main.tsx",
+      "sourceFile": "src/main.tsx",
       "variables": { "TPL_APP": {}, "TPL_HEADER": {} }
     },
-    "src/vite-env.d.ts": {
-      "name": "vite-env",
+    "readme": {
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "group": "static",
+      "pathRootRelativePath": "{package-root}/README.md",
+      "sourceFile": "package/README.md",
+      "variables": {
+        "TPL_PROJECT_NAME": { "description": "Name of the project" }
+      }
+    },
+    "vite-config": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{package-root}/vite.config.ts",
+      "sourceFile": "package/vite.config.ts",
+      "variables": { "TPL_CONFIG": {} }
+    },
+    "vite-env": {
       "type": "text",
       "fileOptions": { "kind": "singleton" },
       "group": "static",
       "pathRootRelativePath": "{src-root}/vite-env.d.ts",
+      "sourceFile": "src/vite-env.d.ts",
       "variables": {}
     }
   }

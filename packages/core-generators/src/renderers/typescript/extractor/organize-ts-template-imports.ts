@@ -252,7 +252,7 @@ export async function organizeTsTemplateImports(
             pathExports.get(namedImport.name) ?? pathExports.get('*');
           if (!projectExport) {
             throw new Error(
-              `Import ${namedImport.name} from ${moduleSpecifier} in ${filePath} is not found in the project exports.`,
+              `Import { ${namedImport.name} } from ${moduleSpecifier} in ${filePath} is not found in the project exports.`,
             );
           }
           const isTypeOnly =

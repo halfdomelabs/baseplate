@@ -1,8 +1,7 @@
 {
   "name": "core/app-module",
   "templates": {
-    "index.ts": {
-      "name": "index",
+    "index": {
       "type": "ts",
       "fileOptions": {
         "generatorTemplatePath": "index.ts",
@@ -15,6 +14,7 @@
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/app-module-setup/generated/ts-import-providers.ts"
         }
       },
+      "sourceFile": "index.ts",
       "variables": {
         "TPL_IMPORTS": {},
         "TPL_MODULE_CONTENTS": {},

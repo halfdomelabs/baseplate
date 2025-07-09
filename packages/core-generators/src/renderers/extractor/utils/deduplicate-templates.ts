@@ -18,11 +18,12 @@ export function deduplicateTemplateFileExtractorSourceFiles<
   for (const file of files.toSorted(
     (a, b) => b.modifiedTime.getTime() - a.modifiedTime.getTime(),
   )) {
-    const fileKey = `${file.metadata.generator}__${file.metadata.name}`;
+    const fileKey = `${file.generatorName}__${file.templateName}`;
     if (addedTemplates.has(fileKey)) {
       if (
-        'fileOptions' in file.metadata &&
-        (file.metadata.fileOptions as TemplateFileOptions).kind === 'singleton'
+        'fileOptions' in file.existingMetadata &&
+        (file.existingMetadata.fileOptions as TemplateFileOptions).kind ===
+          'singleton'
       ) {
         throw new Error(`Duplicate singleton template found: ${fileKey}`);
       } else {

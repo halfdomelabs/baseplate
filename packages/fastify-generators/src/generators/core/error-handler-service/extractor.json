@@ -1,8 +1,7 @@
 {
   "name": "core/error-handler-service",
   "templates": {
-    "src/plugins/error-handler.ts": {
-      "name": "error-handler-plugin",
+    "error-handler-plugin": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
@@ -13,10 +12,10 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/error-handler.ts",
+      "sourceFile": "src/plugins/error-handler.ts",
       "variables": {}
     },
-    "src/services/error-logger.ts": {
-      "name": "error-logger",
+    "error-logger": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
@@ -28,10 +27,10 @@
       },
       "pathRootRelativePath": "{src-root}/services/error-logger.ts",
       "projectExports": { "logError": {} },
+      "sourceFile": "src/services/error-logger.ts",
       "variables": { "TPL_CONTEXT_ACTIONS": {}, "TPL_LOGGER_ACTIONS": {} }
     },
-    "src/utils/http-errors.ts": {
-      "name": "http-errors",
+    "http-errors": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
@@ -46,10 +45,10 @@
         "NotFoundError": {},
         "UnauthorizedError": {}
       },
+      "sourceFile": "src/utils/http-errors.ts",
       "variables": {}
     },
-    "src/utils/zod.ts": {
-      "name": "zod",
+    "zod": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
@@ -57,6 +56,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/zod.ts",
       "projectExports": { "handleZodRequestValidationError": {} },
+      "sourceFile": "src/utils/zod.ts",
       "variables": {}
     }
   }

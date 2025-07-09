@@ -3,8 +3,8 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface ReactUploadComponentsPaths {
   fileInputUploadGql: string;
-  fileInputField: string;
   fileInputComponent: string;
+  fileInputField: string;
   hooksUseUpload: string;
 }
 

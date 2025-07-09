@@ -1,18 +1,17 @@
 {
   "name": "core/react-error",
   "templates": {
-    "src/services/error-formatter.ts": {
-      "name": "error-formatter",
+    "error-formatter": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-error",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/error-formatter.ts",
       "projectExports": { "formatError": {}, "logAndFormatError": {} },
+      "sourceFile": "src/services/error-formatter.ts",
       "variables": { "TPL_GET_FORMATTED_ERROR_SUFFIX": {} }
     },
-    "src/services/error-logger.ts": {
-      "name": "error-logger",
+    "error-logger": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-error",
@@ -24,6 +23,7 @@
       },
       "pathRootRelativePath": "{src-root}/services/error-logger.ts",
       "projectExports": { "logError": {} },
+      "sourceFile": "src/services/error-logger.ts",
       "variables": { "TPL_CONTEXT_ACTIONS": {}, "TPL_LOGGER_ACTIONS": {} }
     }
   }

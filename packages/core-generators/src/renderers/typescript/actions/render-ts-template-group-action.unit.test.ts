@@ -8,7 +8,7 @@ import {
   createTsImportMap,
   createTsImportMapSchema,
 } from '../import-maps/ts-import-map.js';
-import { createTsTemplateFile, TS_TEMPLATE_TYPE } from '../templates/types.js';
+import { createTsTemplateFile } from '../templates/types.js';
 import { renderTsTemplateGroupAction } from './render-ts-template-group-action.js';
 
 vi.mock('fs');
@@ -82,11 +82,10 @@ describe('renderTsTemplateGroupAction', () => {
     expect(greetingFile?.contents).toEqual(
       'const greeting = /* TPL_GREETING:START */ "Hello" /* TPL_GREETING:END */;',
     );
-    expect(greetingFile?.options?.templateMetadata).toEqual({
-      name: 'greeting',
+    expect(greetingFile?.options?.templateInfo).toEqual({
+      template: 'greeting',
       generator: 'test-generator',
-      type: TS_TEMPLATE_TYPE,
-      fileOptions: { kind: 'singleton' },
+      instanceData: {},
     });
 
     const nameFile = output.files.get('output/name.ts');
@@ -94,11 +93,10 @@ describe('renderTsTemplateGroupAction', () => {
     expect(nameFile?.contents).toEqual(
       'const name = /* TPL_NAME:START */ "World" /* TPL_NAME:END */;',
     );
-    expect(nameFile?.options?.templateMetadata).toEqual({
-      name: 'name',
+    expect(nameFile?.options?.templateInfo).toEqual({
+      template: 'name',
       generator: 'test-generator',
-      type: TS_TEMPLATE_TYPE,
-      fileOptions: { kind: 'singleton' },
+      instanceData: {},
     });
   });
 

@@ -29,7 +29,7 @@ export interface TemplateExtractorTemplateEntry<
   TConfig = Record<string, unknown>,
 > {
   config: TConfig;
-  path: string;
+  name: string;
 }
 
 /**
@@ -47,10 +47,7 @@ export class TemplateExtractorConfigLookup {
   private indexedPackages = new Set<string>();
   private initialized = false;
 
-  constructor(
-    private readonly packageMap: Map<string, string>,
-    private readonly fileIdMap: Map<string, string>,
-  ) {}
+  constructor(private readonly packageMap: Map<string, string>) {}
 
   private checkInitialized(): void {
     if (!this.initialized) {
@@ -115,18 +112,39 @@ export class TemplateExtractorConfigLookup {
     return config;
   }
 
+  getTemplateConfig(
+    generatorName: string,
+    templateName: string,
+  ): TemplateConfig | undefined {
+    const config = this.getExtractorConfigOrThrow(generatorName);
+    return config.config.templates[templateName];
+  }
+
+  getTemplateConfigOrThrow(
+    generatorName: string,
+    templateName: string,
+  ): TemplateConfig {
+    const config = this.getTemplateConfig(generatorName, templateName);
+    if (!config) {
+      throw new Error(
+        `Template ${templateName} not found in generator ${generatorName}`,
+      );
+    }
+    return config;
+  }
+
   getTemplatesForGenerator<T extends z.ZodTypeAny>(
     generatorName: string,
-    generatorTemplateMetadataSchema: T,
+    templateMetadataSchema: T,
     templateType: z.infer<T>['type'],
   ): TemplateExtractorTemplateEntry<z.infer<T>>[] {
     const config = this.getExtractorConfigOrThrow(generatorName);
     const { templates } = config.config;
     return Object.entries(templates)
       .filter(([, template]) => template.type === templateType)
-      .map(([path, template]) => ({
-        path,
-        config: generatorTemplateMetadataSchema.parse(template) as z.infer<T>,
+      .map(([templateName, template]) => ({
+        name: templateName,
+        config: templateMetadataSchema.parse(template) as z.infer<T>,
       }));
   }
 
@@ -155,11 +173,11 @@ export class TemplateExtractorConfigLookup {
         const templates = Object.fromEntries(
           Object.entries(config.config.templates)
             .filter(([, template]) => template.type === templateType)
-            .map(([path, template]) => {
+            .map(([templateName, template]) => {
               const metadata = templateMetadataSchema.parse(
                 template,
               ) as z.infer<TTemplateMetadata>;
-              return [path, metadata];
+              return [templateName, metadata];
             }),
         );
         return {
@@ -172,14 +190,6 @@ export class TemplateExtractorConfigLookup {
         };
       },
     );
-  }
-
-  getOutputRelativePathForTemplate(
-    generatorName: string,
-    templateName: string,
-  ): string | undefined {
-    const fileId = `${generatorName}:${templateName}`;
-    return this.fileIdMap.get(fileId);
   }
 
   /**
@@ -226,10 +236,12 @@ export class TemplateExtractorConfigLookup {
   /**
    * Update the template config for a generator
    * @param generatorName - The name of the generator
+   * @param templateName - The name of the template to update
    * @param config - The template config to update
    */
   updateExtractorTemplateConfig(
     generatorName: string,
+    templateName: string,
     config: TemplateConfig,
   ): void {
     this.checkInitialized();
@@ -241,17 +253,13 @@ export class TemplateExtractorConfigLookup {
 
     const { templates } = existingEntry.config;
 
-    const templateKey = Object.keys(templates).find(
-      (key) => templates[key].name === config.name,
-    );
-
-    if (!templateKey) {
+    if (!(templateName in templates)) {
       throw new Error(
-        `Template ${config.name} not found in generator ${generatorName}`,
+        `Template ${templateName} not found in generator ${generatorName}`,
       );
     }
 
-    templates[templateKey] = sortExtractorConfigTemplateKeys(config);
+    templates[templateName] = sortExtractorConfigTemplateKeys(config);
   }
 
   /**

@@ -3,8 +3,8 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 import { appModuleProvider } from '#src/generators/core/app-module/app-module.generator.js';
 
 export interface PothosPothosScalarPaths {
-  dateTime: string;
   date: string;
+  dateTime: string;
   uuid: string;
 }
 

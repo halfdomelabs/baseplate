@@ -1,8 +1,7 @@
 {
   "name": "admin/admin-crud-embedded-form",
   "templates": {
-    "EmbeddedForm.tsx": {
-      "name": "embedded-form",
+    "embedded-form": {
       "type": "ts",
       "fileOptions": {
         "generatorTemplatePath": "EmbeddedForm.tsx",
@@ -19,6 +18,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
+      "sourceFile": "EmbeddedForm.tsx",
       "variables": {
         "TPL_COMPONENT_NAME": {},
         "TPL_DESTRUCTURED_PROPS": {},

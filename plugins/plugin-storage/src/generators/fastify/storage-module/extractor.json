@@ -1,58 +1,57 @@
 {
   "name": "fastify/storage-module",
   "templates": {
-    "module/adapters/index.ts": {
-      "name": "adapters-index",
+    "adapters-index": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
       "group": "adapters",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/adapters/index.ts",
+      "sourceFile": "module/adapters/index.ts",
       "variables": {}
     },
-    "module/adapters/s3.ts": {
-      "name": "adapters-s-3",
+    "adapters-s-3": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
       "group": "adapters",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/adapters/s3.ts",
+      "sourceFile": "module/adapters/s3.ts",
       "variables": {}
     },
-    "module/adapters/types.ts": {
-      "name": "adapters-types",
+    "adapters-types": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
       "group": "adapters",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/adapters/types.ts",
+      "sourceFile": "module/adapters/types.ts",
       "variables": {}
     },
-    "module/adapters/url.ts": {
-      "name": "adapters-url",
+    "adapters-url": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
       "group": "adapters",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/adapters/url.ts",
+      "sourceFile": "module/adapters/url.ts",
       "variables": {}
     },
-    "module/constants/adapters.ts": {
-      "name": "constants-adapters",
+    "constants-adapters": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
       "group": "constants",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/constants/adapters.ts",
+      "sourceFile": "module/constants/adapters.ts",
       "variables": { "TPL_ADAPTERS": {} }
     },
-    "module/constants/file-categories.ts": {
-      "name": "constants-file-categories",
+    "constants-file-categories": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
@@ -64,14 +63,14 @@
         }
       },
       "pathRootRelativePath": "{module-root}/constants/file-categories.ts",
+      "sourceFile": "module/constants/file-categories.ts",
       "variables": {
         "TPL_FILE_CATEGORIES": {},
         "TPL_FILE_COUNT_OUTPUT_TYPE": {},
         "TPL_FILE_MODEL_TYPE": {}
       }
     },
-    "module/schema/file-upload.input-type.ts": {
-      "name": "schema-file-upload-input-type",
+    "schema-file-upload-input-type": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
@@ -83,10 +82,10 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/file-upload.input-type.ts",
+      "sourceFile": "module/schema/file-upload.input-type.ts",
       "variables": {}
     },
-    "module/schema/hosted-url.field.ts": {
-      "name": "schema-hosted-url-field",
+    "schema-hosted-url-field": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
@@ -98,10 +97,10 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/hosted-url.field.ts",
+      "sourceFile": "module/schema/hosted-url.field.ts",
       "variables": { "TPL_FILE_OBJECT_TYPE": {} }
     },
-    "module/schema/presigned.mutations.ts": {
-      "name": "schema-presigned-mutations",
+    "schema-presigned-mutations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
@@ -113,10 +112,10 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/presigned.mutations.ts",
+      "sourceFile": "module/schema/presigned.mutations.ts",
       "variables": { "TPL_FILE_OBJECT_TYPE": {} }
     },
-    "module/services/create-presigned-download-url.ts": {
-      "name": "services-create-presigned-download-url",
+    "services-create-presigned-download-url": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
@@ -133,10 +132,10 @@
       },
       "pathRootRelativePath": "{module-root}/services/create-presigned-download-url.ts",
       "projectExports": { "createPresignedDownloadUrl": {} },
+      "sourceFile": "module/services/create-presigned-download-url.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
-    "module/services/create-presigned-upload-url.ts": {
-      "name": "services-create-presigned-upload-url",
+    "services-create-presigned-upload-url": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
@@ -156,10 +155,10 @@
         "createPresignedUploadUrl": {},
         "CreatePresignedUploadUrlPayload": { "isTypeOnly": true }
       },
+      "sourceFile": "module/services/create-presigned-upload-url.ts",
       "variables": { "TPL_FILE_MODEL": {}, "TPL_FILE_MODEL_TYPE": {} }
     },
-    "module/services/download-file.ts": {
-      "name": "services-download-file",
+    "services-download-file": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
@@ -176,10 +175,10 @@
       },
       "pathRootRelativePath": "{module-root}/services/download-file.ts",
       "projectExports": { "downloadFile": {} },
+      "sourceFile": "module/services/download-file.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
-    "module/services/upload-file.ts": {
-      "name": "services-upload-file",
+    "services-upload-file": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
@@ -196,10 +195,10 @@
       },
       "pathRootRelativePath": "{module-root}/services/upload-file.ts",
       "projectExports": { "uploadFile": {} },
+      "sourceFile": "module/services/upload-file.ts",
       "variables": { "TPL_FILE_MODEL": {}, "TPL_FILE_MODEL_TYPE": {} }
     },
-    "module/services/validate-upload-input.ts": {
-      "name": "services-validate-upload-input",
+    "services-validate-upload-input": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
@@ -223,10 +222,10 @@
         "FileUploadInput": { "isTypeOnly": true },
         "validateFileUploadInput": {}
       },
+      "sourceFile": "module/services/validate-upload-input.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
-    "module/utils/mime.ts": {
-      "name": "utils-mime",
+    "utils-mime": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
@@ -237,20 +236,20 @@
         "getMimeTypeFromContentType": {},
         "validateFileExtensionWithMimeType": {}
       },
+      "sourceFile": "module/utils/mime.ts",
       "variables": {}
     },
-    "module/utils/mime.unit.test.ts": {
-      "name": "utils-mime-unit-test",
+    "utils-mime-unit-test": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/utils/mime.unit.test.ts",
+      "sourceFile": "module/utils/mime.unit.test.ts",
       "variables": {}
     },
-    "module/utils/upload.ts": {
-      "name": "utils-upload",
+    "utils-upload": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
@@ -270,6 +269,7 @@
         "prepareUploadData": {},
         "UploadDataInput": { "isTypeOnly": true }
       },
+      "sourceFile": "module/utils/upload.ts",
       "variables": { "TPL_FILE_CREATE_INPUT": {} }
     }
   }

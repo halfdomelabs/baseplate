@@ -1,178 +1,210 @@
 {
   "name": "core/react-components",
   "templates": {
-    "src/components/alert/alert.tsx": {
-      "name": "alert",
+    "alert": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/alert/alert.tsx",
+      "sourceFile": "src/components/alert/alert.tsx",
       "variables": {}
     },
-    "src/components/button/button.tsx": {
-      "name": "button",
+    "button": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/button/button.tsx",
+      "sourceFile": "src/components/button/button.tsx",
       "variables": {}
     },
-    "src/components/calendar/calendar.tsx": {
-      "name": "calendar",
+    "calendar": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/calendar/calendar.tsx",
+      "sourceFile": "src/components/calendar/calendar.tsx",
       "variables": {}
     },
-    "src/components/card/card.tsx": {
-      "name": "card",
+    "card": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/card/card.tsx",
+      "sourceFile": "src/components/card/card.tsx",
       "variables": {}
     },
-    "src/components/checkbox-field/checkbox-field.tsx": {
-      "name": "checkbox-field",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/checkbox-field/checkbox-field.tsx",
-      "variables": {}
-    },
-    "src/components/checkbox/checkbox.tsx": {
-      "name": "checkbox",
+    "checkbox": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/checkbox/checkbox.tsx",
+      "sourceFile": "src/components/checkbox/checkbox.tsx",
       "variables": {}
     },
-    "src/components/circular-progress/circular-progress.tsx": {
-      "name": "circular-progress",
+    "checkbox-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/checkbox-field/checkbox-field.tsx",
+      "sourceFile": "src/components/checkbox-field/checkbox-field.tsx",
+      "variables": {}
+    },
+    "circular-progress": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/circular-progress/circular-progress.tsx",
+      "sourceFile": "src/components/circular-progress/circular-progress.tsx",
       "variables": {}
     },
-    "src/components/combobox-field/combobox-field.tsx": {
-      "name": "combobox-field",
+    "cn": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
+      "group": "utils",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/combobox-field/combobox-field.tsx",
+      "pathRootRelativePath": "{src-root}/utils/cn.ts",
+      "projectExports": { "cn": {} },
+      "sourceFile": "src/utils/cn.ts",
       "variables": {}
     },
-    "src/components/combobox/combobox.tsx": {
-      "name": "combobox",
+    "combobox": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/combobox/combobox.tsx",
+      "sourceFile": "src/components/combobox/combobox.tsx",
       "variables": {}
     },
-    "src/components/confirm-dialog/confirm-dialog.tsx": {
-      "name": "confirm-dialog",
+    "combobox-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/combobox-field/combobox-field.tsx",
+      "sourceFile": "src/components/combobox-field/combobox-field.tsx",
+      "variables": {}
+    },
+    "confirm-dialog": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/confirm-dialog/confirm-dialog.tsx",
+      "sourceFile": "src/components/confirm-dialog/confirm-dialog.tsx",
       "variables": {}
     },
-    "src/components/date-picker-field/date-picker-field.tsx": {
-      "name": "date-picker-field",
+    "date-picker-field": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/date-picker-field/date-picker-field.tsx",
+      "sourceFile": "src/components/date-picker-field/date-picker-field.tsx",
       "variables": {}
     },
-    "src/components/date-time-picker-field/date-time-picker-field.tsx": {
-      "name": "date-time-picker-field",
+    "date-time-picker-field": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/date-time-picker-field/date-time-picker-field.tsx",
+      "sourceFile": "src/components/date-time-picker-field/date-time-picker-field.tsx",
       "variables": {}
     },
-    "src/components/dialog/dialog.tsx": {
-      "name": "dialog",
+    "dialog": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/dialog/dialog.tsx",
+      "sourceFile": "src/components/dialog/dialog.tsx",
       "variables": {}
     },
-    "src/components/empty-display/empty-display.tsx": {
-      "name": "empty-display",
+    "empty-display": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/empty-display/empty-display.tsx",
+      "sourceFile": "src/components/empty-display/empty-display.tsx",
       "variables": {}
     },
-    "src/components/error-display/error-display.tsx": {
-      "name": "error-display",
+    "error-display": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/error-display/error-display.tsx",
+      "sourceFile": "src/components/error-display/error-display.tsx",
       "variables": {}
     },
-    "src/components/errorable-loader/errorable-loader.tsx": {
-      "name": "errorable-loader",
+    "errorable-loader": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/errorable-loader/errorable-loader.tsx",
+      "sourceFile": "src/components/errorable-loader/errorable-loader.tsx",
       "variables": {}
     },
-    "src/components/form-item/form-item.tsx": {
-      "name": "form-item",
+    "form-item": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/form-item/form-item.tsx",
+      "sourceFile": "src/components/form-item/form-item.tsx",
       "variables": {}
     },
-    "src/components/index.ts": {
-      "name": "index",
+    "hooks-use-controlled-state": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/use-controlled-state.ts",
+      "projectExports": { "useControlledState": {} },
+      "sourceFile": "src/hooks/use-controlled-state.ts",
+      "variables": {}
+    },
+    "hooks-use-controller-merged": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/use-controller-merged.ts",
+      "projectExports": { "useControllerMerged": {} },
+      "sourceFile": "src/hooks/use-controller-merged.ts",
+      "variables": {}
+    },
+    "index": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
@@ -273,217 +305,131 @@
         "TextInput": {},
         "Toaster": {}
       },
+      "sourceFile": "src/components/index.ts",
       "variables": { "TPL_EXPORTS": {} }
     },
-    "src/components/input-field/input-field.tsx": {
-      "name": "input-field",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/input-field/input-field.tsx",
-      "variables": {}
-    },
-    "src/components/input/input.tsx": {
-      "name": "input",
+    "input": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/input/input.tsx",
+      "sourceFile": "src/components/input/input.tsx",
       "variables": {}
     },
-    "src/components/label/label.tsx": {
-      "name": "label",
+    "input-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/input-field/input-field.tsx",
+      "sourceFile": "src/components/input-field/input-field.tsx",
+      "variables": {}
+    },
+    "label": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/label/label.tsx",
+      "sourceFile": "src/components/label/label.tsx",
       "variables": {}
     },
-    "src/components/loader/loader.tsx": {
-      "name": "loader",
+    "loader": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/loader/loader.tsx",
+      "sourceFile": "src/components/loader/loader.tsx",
       "variables": {}
     },
-    "src/components/navigation-menu/navigation-menu.tsx": {
-      "name": "navigation-menu",
+    "merge-refs": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "utils",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/utils/merge-refs.ts",
+      "projectExports": { "mergeRefs": {} },
+      "sourceFile": "src/utils/merge-refs.ts",
+      "variables": {}
+    },
+    "navigation-menu": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/navigation-menu/navigation-menu.tsx",
+      "sourceFile": "src/components/navigation-menu/navigation-menu.tsx",
       "variables": {}
     },
-    "src/components/not-found-card/not-found-card.tsx": {
-      "name": "not-found-card",
+    "not-found-card": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/not-found-card/not-found-card.tsx",
+      "sourceFile": "src/components/not-found-card/not-found-card.tsx",
       "variables": {}
     },
-    "src/components/popover/popover.tsx": {
-      "name": "popover",
+    "popover": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/popover/popover.tsx",
+      "sourceFile": "src/components/popover/popover.tsx",
       "variables": {}
     },
-    "src/components/scroll-area/scroll-area.tsx": {
-      "name": "scroll-area",
+    "scroll-area": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/scroll-area/scroll-area.tsx",
+      "sourceFile": "src/components/scroll-area/scroll-area.tsx",
       "variables": {}
     },
-    "src/components/select-field/select-field.tsx": {
-      "name": "select-field",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/select-field/select-field.tsx",
-      "variables": {}
-    },
-    "src/components/select/select.tsx": {
-      "name": "select",
+    "select": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/select/select.tsx",
+      "sourceFile": "src/components/select/select.tsx",
       "variables": {}
     },
-    "src/components/sidebar-layout/sidebar-layout.tsx": {
-      "name": "sidebar-layout",
+    "select-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/select-field/select-field.tsx",
+      "sourceFile": "src/components/select-field/select-field.tsx",
+      "variables": {}
+    },
+    "sidebar-layout": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/sidebar-layout/sidebar-layout.tsx",
+      "sourceFile": "src/components/sidebar-layout/sidebar-layout.tsx",
       "variables": {}
     },
-    "src/components/switch-field/switch-field.tsx": {
-      "name": "switch-field",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/switch-field/switch-field.tsx",
-      "variables": {}
-    },
-    "src/components/switch/switch.tsx": {
-      "name": "switch-component",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/switch/switch.tsx",
-      "variables": {}
-    },
-    "src/components/table/table.tsx": {
-      "name": "table",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/table/table.tsx",
-      "variables": {}
-    },
-    "src/components/textarea-field/textarea-field.tsx": {
-      "name": "textarea-field",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/textarea-field/textarea-field.tsx",
-      "variables": {}
-    },
-    "src/components/textarea/textarea.tsx": {
-      "name": "textarea",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/textarea/textarea.tsx",
-      "variables": {}
-    },
-    "src/components/toaster/toaster.tsx": {
-      "name": "toaster",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/toaster/toaster.tsx",
-      "variables": {}
-    },
-    "src/hooks/use-confirm-dialog.ts": {
-      "name": "use-confirm-dialog",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "hooks",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/hooks/use-confirm-dialog.ts",
-      "projectExports": {
-        "useConfirmDialog": {},
-        "UseConfirmDialogRequestOptions": { "isTypeOnly": true },
-        "useConfirmDialogState": {}
-      },
-      "variables": {}
-    },
-    "src/hooks/use-controlled-state.ts": {
-      "name": "hooks-use-controlled-state",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "hooks",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/hooks/use-controlled-state.ts",
-      "projectExports": { "useControlledState": {} },
-      "variables": {}
-    },
-    "src/hooks/use-controller-merged.ts": {
-      "name": "hooks-use-controller-merged",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "hooks",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/hooks/use-controller-merged.ts",
-      "projectExports": { "useControllerMerged": {} },
-      "variables": {}
-    },
-    "src/styles/button.ts": {
-      "name": "styles-button",
+    "styles-button": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
@@ -491,10 +437,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/styles/button.ts",
       "projectExports": { "buttonVariants": {} },
+      "sourceFile": "src/styles/button.ts",
       "variables": {}
     },
-    "src/styles/input.ts": {
-      "name": "styles-input",
+    "styles-input": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
@@ -502,10 +448,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/styles/input.ts",
       "projectExports": { "inputVariants": {} },
+      "sourceFile": "src/styles/input.ts",
       "variables": {}
     },
-    "src/styles/select.ts": {
-      "name": "styles-select",
+    "styles-select": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
@@ -518,10 +464,70 @@
         "selectItemVariants": {},
         "selectTriggerVariants": {}
       },
+      "sourceFile": "src/styles/select.ts",
       "variables": {}
     },
-    "src/types/form.ts": {
-      "name": "types-form",
+    "switch-component": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/switch/switch.tsx",
+      "sourceFile": "src/components/switch/switch.tsx",
+      "variables": {}
+    },
+    "switch-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/switch-field/switch-field.tsx",
+      "sourceFile": "src/components/switch-field/switch-field.tsx",
+      "variables": {}
+    },
+    "table": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/table/table.tsx",
+      "sourceFile": "src/components/table/table.tsx",
+      "variables": {}
+    },
+    "textarea": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/textarea/textarea.tsx",
+      "sourceFile": "src/components/textarea/textarea.tsx",
+      "variables": {}
+    },
+    "textarea-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/textarea-field/textarea-field.tsx",
+      "sourceFile": "src/components/textarea-field/textarea-field.tsx",
+      "variables": {}
+    },
+    "toaster": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/react-generators#core/react-components",
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/components/toaster/toaster.tsx",
+      "sourceFile": "src/components/toaster/toaster.tsx",
+      "variables": {}
+    },
+    "types-form": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
@@ -534,10 +540,10 @@
         "MultiSelectOptionProps": { "isTypeOnly": true },
         "SelectOptionProps": { "isTypeOnly": true }
       },
+      "sourceFile": "src/types/form.ts",
       "variables": {}
     },
-    "src/types/icon.ts": {
-      "name": "types-icon",
+    "types-icon": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
@@ -545,28 +551,22 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/types/icon.ts",
       "projectExports": { "IconElement": { "isTypeOnly": true } },
+      "sourceFile": "src/types/icon.ts",
       "variables": {}
     },
-    "src/utils/cn.ts": {
-      "name": "cn",
+    "use-confirm-dialog": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "utils",
+      "group": "hooks",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/utils/cn.ts",
-      "projectExports": { "cn": {} },
-      "variables": {}
-    },
-    "src/utils/merge-refs.ts": {
-      "name": "merge-refs",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "utils",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/utils/merge-refs.ts",
-      "projectExports": { "mergeRefs": {} },
+      "pathRootRelativePath": "{src-root}/hooks/use-confirm-dialog.ts",
+      "projectExports": {
+        "useConfirmDialog": {},
+        "UseConfirmDialogRequestOptions": { "isTypeOnly": true },
+        "useConfirmDialogState": {}
+      },
+      "sourceFile": "src/hooks/use-confirm-dialog.ts",
       "variables": {}
     }
   }

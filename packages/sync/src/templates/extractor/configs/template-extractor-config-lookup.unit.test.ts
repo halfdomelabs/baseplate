@@ -15,10 +15,6 @@ describe('TemplateExtractorConfigLookup - Cache and Lookup Behavior', () => {
     ['@test/package1', '/packages/package1'],
     ['@test/package2', '/packages/package2'],
   ]);
-  const mockFileIdMap = new Map([
-    ['@test/package1#test-generator:template.ts', 'file1'],
-    ['@test/package2#other-generator:config.ts', 'file2'],
-  ]);
 
   // Mock data that would be returned by indexTemplateConfigs
   const mockExtractorEntries = [
@@ -27,8 +23,8 @@ describe('TemplateExtractorConfigLookup - Cache and Lookup Behavior', () => {
       config: {
         name: 'test-generator',
         templates: {
-          'template1.ts': { name: 'template1', type: 'ts' },
-          'template2.ts': { name: 'template2', type: 'ts' },
+          template1: { sourceFile: 'template1.ts', type: 'ts' },
+          template2: { sourceFile: 'template2.ts', type: 'ts' },
         },
         extractors: {
           ts: { includeComments: true },
@@ -46,7 +42,7 @@ describe('TemplateExtractorConfigLookup - Cache and Lookup Behavior', () => {
       config: {
         name: 'other-generator',
         templates: {
-          'config.ts': { name: 'config', type: 'ts' },
+          config: { sourceFile: 'config.ts', type: 'ts' },
         },
       } as ExtractorConfig,
       generatorDirectory: '/packages/package2/generators/other',
@@ -93,7 +89,7 @@ describe('TemplateExtractorConfigLookup - Cache and Lookup Behavior', () => {
       providerEntries: mockProviderEntries,
     });
 
-    lookup = new TemplateExtractorConfigLookup(mockPackageMap, mockFileIdMap);
+    lookup = new TemplateExtractorConfigLookup(mockPackageMap);
     await lookup.initialize();
   });
 
@@ -157,7 +153,7 @@ describe('TemplateExtractorConfigLookup - Cache and Lookup Behavior', () => {
   describe('getTemplatesForGenerator', () => {
     it('should return templates of specified type', () => {
       const schema = z.object({
-        name: z.string(),
+        sourceFile: z.string(),
         type: z.literal('ts'),
       });
 
@@ -168,28 +164,10 @@ describe('TemplateExtractorConfigLookup - Cache and Lookup Behavior', () => {
       );
 
       expect(results).toHaveLength(2);
-      expect(results[0].path).toBe('template1.ts');
-      expect(results[0].config.name).toBe('template1');
-      expect(results[1].path).toBe('template2.ts');
-      expect(results[1].config.name).toBe('template2');
-    });
-  });
-
-  describe('getOutputRelativePathForTemplate', () => {
-    it('should return file path from fileIdMap', () => {
-      const result = lookup.getOutputRelativePathForTemplate(
-        '@test/package1#test-generator',
-        'template.ts',
-      );
-      expect(result).toBe('file1');
-    });
-
-    it('should return undefined for non-existent template', () => {
-      const result = lookup.getOutputRelativePathForTemplate(
-        'non-existent#generator',
-        'template.ts',
-      );
-      expect(result).toBeUndefined();
+      expect(results[0].name).toBe('template1');
+      expect(results[0].config.sourceFile).toBe('template1.ts');
+      expect(results[1].name).toBe('template2');
+      expect(results[1].config.sourceFile).toBe('template2.ts');
     });
   });
 
@@ -261,7 +239,6 @@ describe('TemplateExtractorConfigLookup - Cache and Lookup Behavior', () => {
     it('should throw when methods are called before initialization', () => {
       const uninitializedLookup = new TemplateExtractorConfigLookup(
         mockPackageMap,
-        mockFileIdMap,
       );
 
       expect(() =>

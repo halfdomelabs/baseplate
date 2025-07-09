@@ -2,8 +2,8 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface CoreServiceContextPaths {
-  testHelper: string;
   serviceContext: string;
+  testHelper: string;
 }
 
 const coreServiceContextPaths = createProviderType<CoreServiceContextPaths>(

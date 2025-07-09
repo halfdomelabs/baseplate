@@ -4,10 +4,10 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
 export interface CoreReactRouterPaths {
-  rootRoute: string;
   placeholderIndex: string;
-  router: string;
+  rootRoute: string;
   routeTree: string;
+  router: string;
 }
 
 const coreReactRouterPaths = createProviderType<CoreReactRouterPaths>(

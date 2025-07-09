@@ -4,14 +4,14 @@ import path from 'node:path';
 
 import type { FileData } from '#src/output/generator-task-output.js';
 
-import type { TemplateFileMetadataBase } from './metadata.js';
+import type { TemplateInfo } from './metadata.js';
 
-import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
+import { TEMPLATES_INFO_FILENAME } from '../constants.js';
 
-type DirectoryMetadata = Record<string, TemplateFileMetadataBase>;
+type DirectoryMetadata = Record<string, TemplateInfo>;
 
 /**
- * Groups files by their directory and collects their template metadata
+ * Groups files by their directory and collects their template infos
  */
 function groupFilesByDirectory(
   files: Map<string, FileData>,
@@ -19,47 +19,47 @@ function groupFilesByDirectory(
   const directoryMap = new Map<string, DirectoryMetadata>();
 
   for (const [filePath, fileData] of files) {
-    if (!fileData.options?.templateMetadata) {
+    if (!fileData.options?.templateInfo) {
       continue;
     }
 
     const dirPath = path.dirname(filePath);
     const fileName = path.basename(filePath);
 
-    const existingMetadata = directoryMap.get(dirPath) ?? {};
-    existingMetadata[fileName] = fileData.options.templateMetadata;
-    directoryMap.set(dirPath, existingMetadata);
+    const existingTemplateInfoEntries = directoryMap.get(dirPath) ?? {};
+    existingTemplateInfoEntries[fileName] = fileData.options.templateInfo;
+    directoryMap.set(dirPath, existingTemplateInfoEntries);
   }
 
   return directoryMap;
 }
 
 /**
- * Writes template metadata files to each directory containing files with metadata
+ * Writes templates info files to each directory containing files with template metadata
  *
  * @param files - Map of file paths to file data
  * @param outputDirectory - Base directory where files are being written
- * @returns Promise that resolves when all metadata files are written
+ * @returns Promise that resolves when all templates info files are written
  */
-export async function writeTemplateMetadata(
+export async function writeTemplateInfoFiles(
   files: Map<string, FileData>,
   outputDirectory: string,
 ): Promise<void> {
-  const directoryMetadataMap = groupFilesByDirectory(files);
+  const directoryInfoMap = groupFilesByDirectory(files);
 
   const writePromises: Promise<void>[] = [];
 
-  for (const [dirPath, metadata] of directoryMetadataMap) {
+  for (const [dirPath, info] of directoryInfoMap) {
     // Skip if no metadata to write
-    if (Object.keys(metadata).length === 0) {
+    if (Object.keys(info).length === 0) {
       continue;
     }
 
     const fullDirPath = path.join(outputDirectory, dirPath);
-    const metadataPath = path.join(fullDirPath, TEMPLATE_METADATA_FILENAME);
+    const infoPath = path.join(fullDirPath, TEMPLATES_INFO_FILENAME);
 
-    const sortedMetadata = Object.fromEntries(
-      Object.entries(metadata).sort(([a], [b]) => a.localeCompare(b)),
+    const sortedInfoEntries = Object.fromEntries(
+      Object.entries(info).sort(([a], [b]) => a.localeCompare(b)),
     );
 
     // Ensure directory exists
@@ -68,8 +68,8 @@ export async function writeTemplateMetadata(
         .mkdir(fullDirPath, { recursive: true })
         .then(() =>
           fs.writeFile(
-            metadataPath,
-            stringifyPrettyStable(sortedMetadata),
+            infoPath,
+            stringifyPrettyStable(sortedInfoEntries),
             'utf8',
           ),
         ),

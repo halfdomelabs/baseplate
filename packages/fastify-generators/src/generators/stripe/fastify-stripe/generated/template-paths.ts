@@ -2,10 +2,10 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface StripeFastifyStripePaths {
-  pluginsWebhookTest: string;
   pluginsWebhook: string;
-  serviceEvents: string;
+  pluginsWebhookTest: string;
   service: string;
+  serviceEvents: string;
 }
 
 const stripeFastifyStripePaths = createProviderType<StripeFastifyStripePaths>(

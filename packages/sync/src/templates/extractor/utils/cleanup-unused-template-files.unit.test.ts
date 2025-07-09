@@ -40,7 +40,7 @@ describe('cleanupUnusedTemplateFiles', () => {
       name: 'test-generator',
       generatorDirectory,
       templates: {
-        'used-template.ts': { name: 'used-template', type: 'ts' },
+        'used-template': { sourceFile: 'used-template.ts', type: 'ts' },
       },
     });
 
@@ -107,7 +107,7 @@ describe('cleanupUnusedTemplateFiles', () => {
       name: 'test-generator',
       generatorDirectory,
       templates: {
-        'keep/used.ts': { name: 'used-template', type: 'ts' },
+        'used-template': { sourceFile: 'keep/used.ts', type: 'ts' },
       },
     });
 
@@ -174,7 +174,7 @@ describe('cleanupUnusedTemplateFiles', () => {
       name: 'gen1',
       generatorDirectory: generator1Directory,
       templates: {
-        'used1.ts': { name: 'used1', type: 'ts' },
+        used1: { sourceFile: 'used1.ts', type: 'ts' },
       },
     });
 
@@ -182,7 +182,7 @@ describe('cleanupUnusedTemplateFiles', () => {
       name: 'gen2',
       generatorDirectory: generator2Directory,
       templates: {
-        'used2.ts': { name: 'used2', type: 'ts' },
+        used2: { sourceFile: 'used2.ts', type: 'ts' },
       },
     });
 

@@ -1,26 +1,7 @@
 {
   "name": "pothos/pothos-scalar",
   "templates": {
-    "module/scalars/date-time.ts": {
-      "name": "date-time",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
-      "importMapProviders": {
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
-        },
-        "pothosImportsProvider": {
-          "importName": "pothosImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{module-root}/scalars/date-time.ts",
-      "variables": {}
-    },
-    "module/scalars/date.ts": {
-      "name": "date",
+    "date": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
@@ -35,10 +16,28 @@
         }
       },
       "pathRootRelativePath": "{module-root}/scalars/date.ts",
+      "sourceFile": "module/scalars/date.ts",
       "variables": {}
     },
-    "module/scalars/uuid.ts": {
-      "name": "uuid",
+    "date-time": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
+      "importMapProviders": {
+        "errorHandlerServiceImportsProvider": {
+          "importName": "errorHandlerServiceImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/scalars/date-time.ts",
+      "sourceFile": "module/scalars/date-time.ts",
+      "variables": {}
+    },
+    "uuid": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
@@ -53,6 +52,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/scalars/uuid.ts",
+      "sourceFile": "module/scalars/uuid.ts",
       "variables": {}
     }
   }

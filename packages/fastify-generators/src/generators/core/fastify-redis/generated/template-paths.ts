@@ -2,8 +2,8 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface CoreFastifyRedisPaths {
-  redis: string;
   mockRedis: string;
+  redis: string;
 }
 
 const coreFastifyRedisPaths = createProviderType<CoreFastifyRedisPaths>(
