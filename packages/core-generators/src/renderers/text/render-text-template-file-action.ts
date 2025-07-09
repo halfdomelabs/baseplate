@@ -6,6 +6,7 @@ import { escapeRegExp } from 'es-toolkit';
 import type {
   InferTextTemplateVariablesFromTemplate,
   TextTemplateFile,
+  TextTemplateInstanceData,
 } from './types.js';
 
 import {
@@ -143,7 +144,11 @@ export function renderTextTemplateFileAction<
         templateInfo: {
           template: template.name,
           generator: builder.generatorInfo.name,
-          instanceData: shouldWriteMetadata ? { variables } : undefined,
+          instanceData: shouldWriteMetadata
+            ? ({
+                variables: variables ?? {},
+              } satisfies TextTemplateInstanceData)
+            : undefined,
         },
       });
     },
