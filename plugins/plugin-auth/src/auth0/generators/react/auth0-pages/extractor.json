@@ -1,0 +1,20 @@
+{
+  "name": "auth0/auth0-pages",
+  "templates": {
+    "routes/login.tsx": {
+      "name": "login",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#auth0/auth0-pages",
+      "group": "pages",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/login.tsx",
+      "variables": {}
+    }
+  }
+}

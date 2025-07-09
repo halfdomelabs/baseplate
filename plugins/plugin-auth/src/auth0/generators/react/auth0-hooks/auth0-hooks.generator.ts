@@ -4,7 +4,6 @@ import {
 } from '@baseplate-dev/core-generators';
 import {
   generatedGraphqlImportsProvider,
-  reactApolloProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
@@ -26,7 +25,6 @@ export const auth0HooksGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
-        reactApollo: reactApolloProvider,
         reactErrorImports: reactErrorImportsProvider,
         generatedGraphqlImports: generatedGraphqlImportsProvider,
         paths: AUTH0_AUTH0_HOOKS_GENERATED.paths.provider,
@@ -35,7 +33,6 @@ export const auth0HooksGenerator = createGenerator({
         typescriptFile,
         reactErrorImports,
         generatedGraphqlImports,
-        reactApollo,
         paths,
       }) {
         return {
@@ -66,8 +63,6 @@ export const auth0HooksGenerator = createGenerator({
                 },
               }),
             );
-
-            reactApollo.registerGqlFile(paths.useCurrentUserGql);
           },
         };
       },

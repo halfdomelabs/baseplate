@@ -18,7 +18,7 @@ import {
 import {
   deserializeSchemaWithTransformedReferences,
   fixRefDeletions,
-  serializeSchemaFromRefPayload,
+  serializeSchema,
 } from '#src/references/index.js';
 import { createProjectDefinitionSchema } from '#src/schema/index.js';
 
@@ -100,9 +100,15 @@ export class ProjectDefinitionContainer {
    * @returns The serialized contents of the project definition
    */
   toSerializedContents(): string {
-    return stringifyPrettyStable(
-      serializeSchemaFromRefPayload(this.refPayload),
+    const serializedContents = serializeSchema(
+      createProjectDefinitionSchema,
+      this.definition,
+      {
+        defaultMode: 'strip',
+        plugins: this.pluginStore,
+      },
     );
+    return stringifyPrettyStable(serializedContents);
   }
 
   /**

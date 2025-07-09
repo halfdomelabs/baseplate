@@ -2,19 +2,22 @@
 
 import type { ReactElement } from 'react';
 
-import { useCreateBullBoardAuthCodeMutation } from '%generatedGraphqlImports';
+import { CreateBullBoardAuthCodeDocument } from '%generatedGraphqlImports';
 import { ErrorableLoader } from '%reactComponentsImports';
 import { config } from '%reactConfigImports';
 import { logAndFormatError } from '%reactErrorImports';
+import { useMutation } from '@apollo/client';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
-export const Route = createFileRoute('/bull-board/')({
+export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: BullBoardPage,
 });
 
 function BullBoardPage(): ReactElement {
-  const [createBullBoardAuthCode] = useCreateBullBoardAuthCodeMutation();
+  const [createBullBoardAuthCode] = useMutation(
+    CreateBullBoardAuthCodeDocument,
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

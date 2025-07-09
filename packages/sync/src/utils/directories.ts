@@ -68,19 +68,19 @@ export async function removeEmptyAncestorDirectories(
   const uniqueParentDirs = [
     ...new Set(filePaths.map((filePath) => path.dirname(filePath))),
   ];
-  const parsedDirs = new Set();
+
+  // Sort by path length in descending order to process deeper directories first
+  const sortedParentDirs = uniqueParentDirs.sort((a, b) => b.length - a.length);
 
   // Process each directory
-  for (const dir of uniqueParentDirs) {
+  for (const dir of sortedParentDirs) {
     let currentDir = dir;
 
     // Continue until we hit the stop directory or root
     while (
       currentDir !== stopAt &&
-      currentDir !== path.parse(currentDir).root &&
-      !parsedDirs.has(currentDir)
+      currentDir !== path.parse(currentDir).root
     ) {
-      parsedDirs.add(currentDir);
       try {
         if (await isDirectoryEmpty(currentDir, options)) {
           // Directory is empty (or only contains ignored files), remove it

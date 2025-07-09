@@ -79,10 +79,13 @@ export function createForeignDataDependency({
     ],
     loader: {
       loader: tsCodeFragment(
-        `const { data: ${loaderValueName}, error: ${loaderErrorName} } = useGet${dataName}Query();`,
-        tsImportBuilder([`useGet${dataName}Query`]).from(
-          reactApollo.getGeneratedFilePath(),
-        ),
+        `const { data: ${loaderValueName}, error: ${loaderErrorName} } = useQuery(Get${dataName}Document);`,
+        [
+          tsImportBuilder([`useQuery`]).from('@apollo/client'),
+          tsImportBuilder([`Get${dataName}Document`]).from(
+            reactApollo.getGeneratedFilePath(),
+          ),
+        ],
       ),
       loaderErrorName,
       loaderValueName,

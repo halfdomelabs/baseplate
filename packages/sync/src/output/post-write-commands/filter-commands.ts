@@ -1,3 +1,5 @@
+import micromatch from 'micromatch';
+
 import { normalizePathToOutputPath } from '#src/utils/canonical-path.js';
 
 import type { PostWriteCommand } from './types.js';
@@ -29,8 +31,11 @@ export function filterPostWriteCommands(
 
     return (
       command.options?.onlyIfChanged == null ||
-      onlyIfChangedArr.some((file) =>
-        modifiedRelativePaths.has(normalizePathToOutputPath(file)),
+      onlyIfChangedArr.some((pattern) =>
+        // Check if any modified path matches the pattern (supports globs)
+        [...modifiedRelativePaths].some((modifiedPath) =>
+          micromatch.isMatch(normalizePathToOutputPath(modifiedPath), pattern),
+        ),
       ) ||
       rerunCommands.includes(command.command)
     );

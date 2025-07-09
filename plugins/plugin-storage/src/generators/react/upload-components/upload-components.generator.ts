@@ -6,7 +6,6 @@ import {
 } from '@baseplate-dev/core-generators';
 import {
   generatedGraphqlImportsProvider,
-  reactApolloProvider,
   reactComponentsImportsProvider,
   reactComponentsProvider,
   reactErrorImportsProvider,
@@ -45,7 +44,6 @@ export const uploadComponentsGenerator = createGenerator({
         reactComponents: reactComponentsProvider,
         reactComponentsImports: reactComponentsImportsProvider,
         generatedGraphqlImports: generatedGraphqlImportsProvider,
-        reactApollo: reactApolloProvider,
         paths: REACT_UPLOAD_COMPONENTS_GENERATED.paths.provider,
       },
       run({
@@ -53,15 +51,12 @@ export const uploadComponentsGenerator = createGenerator({
         typescriptFile,
         reactComponentsImports,
         generatedGraphqlImports,
-        reactApollo,
         reactComponents,
         paths,
       }) {
         reactComponents.registerComponent({
           name: 'file-input',
         });
-
-        reactApollo.registerGqlFile(paths.fileInputUploadGql);
 
         return {
           build: async (builder) => {

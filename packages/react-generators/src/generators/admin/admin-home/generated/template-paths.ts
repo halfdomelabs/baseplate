@@ -14,7 +14,7 @@ const adminAdminHomePathsTask = createGeneratorTask({
   dependencies: { reactRoutes: reactRoutesProvider },
   exports: { adminAdminHomePaths: adminAdminHomePaths.export() },
   run({ reactRoutes }) {
-    const routesRoot = reactRoutes.getDirectoryBase();
+    const routesRoot = reactRoutes.getOutputRelativePath();
 
     return {
       providers: {

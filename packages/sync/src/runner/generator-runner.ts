@@ -1,4 +1,4 @@
-import { mapGroupBy } from '@baseplate-dev/utils';
+import { enhanceErrorWithContext, mapGroupBy } from '@baseplate-dev/utils';
 import { keyBy, mapValues } from 'es-toolkit';
 
 import { sortTaskPhases } from '#src/phases/sort-task-phases.js';
@@ -24,7 +24,6 @@ import {
   resolveTaskDependenciesForPhase,
 } from './dependency-map.js';
 import { getSortedRunSteps } from './dependency-sort.js';
-import { GeneratorTaskStepError } from './errors.js';
 import { runInRunnerContext } from './runner-context.js';
 import { flattenGeneratorTaskEntriesAndPhases } from './utils.js';
 
@@ -267,11 +266,9 @@ export async function executeGeneratorEntry(
         }
       } catch (error) {
         const { generatorInfo } = taskEntriesById[taskId];
-        throw new GeneratorTaskStepError(
+        throw enhanceErrorWithContext(
           error,
-          taskId,
-          action,
-          generatorInfo.name,
+          `Error in the ${action} step of the ${generatorInfo.name} generator task`,
         );
       }
     }

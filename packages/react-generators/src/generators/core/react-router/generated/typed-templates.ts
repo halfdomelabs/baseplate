@@ -3,19 +3,6 @@ import path from 'node:path';
 
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
 
-const appRoutes = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {
-    reactComponentsImports: reactComponentsImportsProvider,
-  },
-  name: 'app-routes',
-  projectExports: { AppRoutes: {}, router: {} },
-  source: {
-    path: path.join(import.meta.dirname, '../templates/src/app/app-routes.tsx'),
-  },
-  variables: { TPL_RENDER_HEADER: {} },
-});
-
 const placeholderIndex = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
@@ -34,7 +21,7 @@ const rootRoute = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/__root.tsx'),
   },
-  variables: { TPL_ROOT_ROUTE_OPTIONS: {} },
+  variables: { TPL_ROOT_ROUTE_CONTEXT: {}, TPL_ROOT_ROUTE_OPTIONS: {} },
 });
 
 const routeTree = createTsTemplateFile({
@@ -46,9 +33,28 @@ const routeTree = createTsTemplateFile({
   variables: {},
 });
 
+const router = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {
+    reactComponentsImports: reactComponentsImportsProvider,
+  },
+  name: 'router',
+  projectExports: { AppRoutes: {}, router: {} },
+  source: {
+    path: path.join(import.meta.dirname, '../templates/src/app/router.tsx'),
+  },
+  variables: {
+    TPL_ADDITIONAL_ROUTER_OPTIONS: {},
+    TPL_COMPONENT_BODY: {},
+    TPL_COMPONENT_SETUP: {},
+    TPL_ROUTER_CONTEXT: {},
+    TPL_ROUTER_PROVIDER: {},
+  },
+});
+
 export const CORE_REACT_ROUTER_TEMPLATES = {
   rootRoute,
   placeholderIndex,
-  appRoutes,
+  router,
   routeTree,
 };

@@ -19,7 +19,7 @@ const useCurrentUser = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/hooks/useCurrentUser.ts',
+      '../templates/src/hooks/use-current-user.ts',
     ),
   },
   variables: { TPL_USER: {} },
@@ -32,7 +32,10 @@ const useLogOut = createTsTemplateFile({
   name: 'use-log-out',
   projectExports: { useLogOut: {} },
   source: {
-    path: path.join(import.meta.dirname, '../templates/src/hooks/useLogOut.ts'),
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-log-out.ts',
+    ),
   },
   variables: {},
 });
@@ -46,7 +49,7 @@ const useRequiredUserId = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/hooks/useRequiredUserId.ts',
+      '../templates/src/hooks/use-required-user-id.ts',
     ),
   },
   variables: {},
@@ -61,7 +64,7 @@ const useSession = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/hooks/useSession.ts',
+      '../templates/src/hooks/use-session.ts',
     ),
   },
   variables: {},
@@ -80,7 +83,7 @@ const useCurrentUserGql = createTextTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/hooks/useCurrentUser.gql',
+      '../templates/src/hooks/use-current-user.gql',
     ),
   },
   variables: {

@@ -19,6 +19,16 @@ export interface AdminAdminHomeRenderers {
       >,
     ) => BuilderAction;
   };
+  rootIndex: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof ADMIN_ADMIN_HOME_TEMPLATES.rootIndex
+        >,
+        'importMapProviders' | 'template'
+      >,
+    ) => BuilderAction;
+  };
 }
 
 const adminAdminHomeRenderers = createProviderType<AdminAdminHomeRenderers>(
@@ -46,6 +56,13 @@ const adminAdminHomeRenderersTask = createGeneratorTask({
                   authHooksImports,
                   reactComponentsImports,
                 },
+                ...options,
+              }),
+          },
+          rootIndex: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: ADMIN_ADMIN_HOME_TEMPLATES.rootIndex,
                 ...options,
               }),
           },

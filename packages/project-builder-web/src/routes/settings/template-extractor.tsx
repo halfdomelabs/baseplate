@@ -39,7 +39,10 @@ export const Route = createFileRoute('/settings/template-extractor')({
  */
 function TemplateExtractorSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
-  const defaultValues = definition.settings.templateExtractor;
+  const defaultValues = definition.settings.templateExtractor ?? {
+    writeMetadata: false,
+    fileIdRegexWhitelist: '',
+  };
   const templateExtractorSchema = useDefinitionSchema(
     createTemplateExtractorSchema,
   );

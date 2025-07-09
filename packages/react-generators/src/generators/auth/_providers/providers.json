@@ -12,15 +12,5 @@
         "useSession": {}
       }
     }
-  },
-  "auth-components.ts": {
-    "authComponentsImportsProvider": {
-      "type": "ts-imports",
-      "providerExport": "authComponentsImportsProvider",
-      "schemaExport": "authComponentsImportsSchema",
-      "projectExports": {
-        "RequireAuth": {}
-      }
-    }
   }
 }

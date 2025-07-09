@@ -1,7 +1,4 @@
-import {
-  createTextTemplateFile,
-  createTsTemplateFile,
-} from '@baseplate-dev/core-generators';
+import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
 const appApolloProvider = createTsTemplateFile({
@@ -11,7 +8,7 @@ const appApolloProvider = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/app/AppApolloProvider.tsx',
+      '../templates/src/app/app-apollo-provider.tsx',
     ),
   },
   variables: {
@@ -35,13 +32,15 @@ const cache = createTsTemplateFile({
   variables: {},
 });
 
-const codegenYml = createTextTemplateFile({
+const codegenConfig = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  name: 'codegen-yml',
+  importMapProviders: {},
+  name: 'codegen-config',
+  projectExports: { config: {} },
   source: {
-    path: path.join(import.meta.dirname, '../templates/package/codegen.yml'),
+    path: path.join(import.meta.dirname, '../templates/package/codegen.ts'),
   },
-  variables: { TPL_SCHEMA_LOCATION: { description: 'Location of the schema' } },
+  variables: { TPL_BACKEND_SCHEMA: {} },
 });
 
 const graphql = createTsTemplateFile({
@@ -72,7 +71,7 @@ const service = createTsTemplateFile({
 });
 
 export const APOLLO_REACT_APOLLO_TEMPLATES = {
-  codegenYml,
+  codegenConfig,
   appApolloProvider,
   graphql,
   cache,

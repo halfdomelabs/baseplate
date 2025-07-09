@@ -10,16 +10,6 @@ import { CORE_REACT_ROUTER_PATHS } from './template-paths.js';
 import { CORE_REACT_ROUTER_TEMPLATES } from './typed-templates.js';
 
 export interface CoreReactRouterRenderers {
-  appRoutes: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof CORE_REACT_ROUTER_TEMPLATES.appRoutes
-        >,
-        'destination' | 'importMapProviders' | 'template'
-      >,
-    ) => BuilderAction;
-  };
   placeholderIndex: {
     render: (
       options: Omit<
@@ -35,6 +25,16 @@ export interface CoreReactRouterRenderers {
       options: Omit<
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_ROUTER_TEMPLATES.rootRoute
+        >,
+        'destination' | 'importMapProviders' | 'template'
+      >,
+    ) => BuilderAction;
+  };
+  router: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof CORE_REACT_ROUTER_TEMPLATES.router
         >,
         'destination' | 'importMapProviders' | 'template'
       >,
@@ -67,17 +67,6 @@ const coreReactRouterRenderersTask = createGeneratorTask({
     return {
       providers: {
         coreReactRouterRenderers: {
-          appRoutes: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: CORE_REACT_ROUTER_TEMPLATES.appRoutes,
-                destination: paths.appRoutes,
-                importMapProviders: {
-                  reactComponentsImports,
-                },
-                ...options,
-              }),
-          },
           placeholderIndex: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
@@ -91,6 +80,17 @@ const coreReactRouterRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: CORE_REACT_ROUTER_TEMPLATES.rootRoute,
                 destination: paths.rootRoute,
+                ...options,
+              }),
+          },
+          router: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: CORE_REACT_ROUTER_TEMPLATES.router,
+                destination: paths.router,
+                importMapProviders: {
+                  reactComponentsImports,
+                },
                 ...options,
               }),
           },

@@ -91,4 +91,45 @@ describe('filterPostWriteCommands', () => {
 
     expect(filtered).toEqual([]);
   });
+
+  it('should support glob patterns in onlyIfChanged', () => {
+    const commands: PostWriteCommand[] = [
+      {
+        command: 'run on any src file',
+        options: { onlyIfChanged: 'src/**/*.ts' },
+      },
+      {
+        command: 'run on root files',
+        options: { onlyIfChanged: '*.json' },
+      },
+      { command: 'always run' },
+    ];
+
+    const filtered = filterPostWriteCommands(commands, {
+      modifiedRelativePaths: new Set(['src/utils/helper.ts', 'package.json']),
+      rerunCommands: [],
+    });
+
+    expect(filtered.map((c) => c.command)).toEqual([
+      'run on any src file',
+      'run on root files',
+      'always run',
+    ]);
+  });
+
+  it('should support a mix of globs and exact paths', () => {
+    const commands: PostWriteCommand[] = [
+      {
+        command: 'run on src or lockfile',
+        options: { onlyIfChanged: ['src/**/*.ts', 'yarn.lock'] },
+      },
+    ];
+
+    const filtered = filterPostWriteCommands(commands, {
+      modifiedRelativePaths: new Set(['src/index.ts', 'yarn.lock']),
+      rerunCommands: [],
+    });
+
+    expect(filtered).toEqual(commands);
+  });
 });

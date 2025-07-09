@@ -30,6 +30,8 @@ export interface PostWriteCommandOptions {
   priority?: keyof typeof POST_WRITE_COMMAND_PRIORITY | number;
   /**
    * Only run command if the provided files were changed
+   *
+   * Supports glob patterns (micromatch syntax)
    */
   onlyIfChanged?: string | string[];
   /**

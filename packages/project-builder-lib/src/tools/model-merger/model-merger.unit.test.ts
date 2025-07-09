@@ -570,7 +570,7 @@ describe('GraphQL support', () => {
       current,
       desired,
     );
-    expect(serializedDefinition.models[0].graphql?.objectType.fields).toEqual([
+    expect(serializedDefinition.models[0].graphql?.objectType?.fields).toEqual([
       'id',
       'name',
     ]);
@@ -813,18 +813,18 @@ describe('GraphQL support', () => {
       (m) => m.name === 'Post',
     );
 
-    expect(authorModelResult?.graphql?.objectType.fields).toEqual([
+    expect(authorModelResult?.graphql?.objectType?.fields).toEqual([
       'id',
       'name',
     ]);
-    expect(authorModelResult?.graphql?.objectType.foreignRelations).toEqual([
+    expect(authorModelResult?.graphql?.objectType?.foreignRelations).toEqual([
       'posts',
     ]);
-    expect(postModelResult?.graphql?.objectType.fields).toEqual([
+    expect(postModelResult?.graphql?.objectType?.fields).toEqual([
       'id',
       'title',
     ]);
-    expect(postModelResult?.graphql?.objectType.localRelations).toEqual([
+    expect(postModelResult?.graphql?.objectType?.localRelations).toEqual([
       'author',
     ]);
   });

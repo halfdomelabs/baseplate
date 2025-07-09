@@ -60,9 +60,10 @@ export const adminCrudListGenerator = createGenerator({
         reactErrorImports,
       }) {
         const routePrefix = reactRoutes.getRoutePrefix();
+        const routeFilePath = reactRoutes.getRouteFilePath();
         const columns: AdminCrudColumn[] = [];
-        const listPagePath = `${reactRoutes.getDirectoryBase()}/index.tsx`;
-        const tableComponentPath = `${reactRoutes.getDirectoryBase()}/-components/${kebabCase(modelName)}-table.tsx`;
+        const listPagePath = `${reactRoutes.getOutputRelativePath()}/index.tsx`;
+        const tableComponentPath = `${reactRoutes.getOutputRelativePath()}/-components/${kebabCase(modelName)}-table.tsx`;
         const tableComponentName = `${modelName}Table`;
 
         const listInfo = adminCrudQueries.getListQueryHookInfo();
@@ -96,8 +97,13 @@ export const adminCrudListGenerator = createGenerator({
 
             const inputLoaders = dataDependencies.map((d) => d.loader);
 
+            const useQuery = TsCodeUtils.importFragment(
+              'useQuery',
+              '@apollo/client',
+            );
+
             const listPageLoader: DataLoader = {
-              loader: tsTemplate`const { data, error } = ${listInfo.hookExpression}();`,
+              loader: tsTemplate`const { data, error } = ${useQuery}(${listInfo.documentExpression});`,
               loaderErrorName: 'error',
               loaderValueName: 'data',
             };
@@ -129,10 +135,10 @@ export const adminCrudListGenerator = createGenerator({
                 template: ADMIN_ADMIN_CRUD_LIST_GENERATED.templates.listPage,
                 destination: listPagePath,
                 variables: {
-                  TPL_ROUTE_VALUE: quot(`${routePrefix}/`),
+                  TPL_ROUTE_PATH: quot(`${routeFilePath}/`),
                   TPL_PAGE_NAME: listPageComponentName,
                   TPL_DELETE_FUNCTION: deleteInfo.fieldName,
-                  TPL_DELETE_MUTATION: deleteInfo.hookExpression,
+                  TPL_DELETE_MUTATION: deleteInfo.documentExpression,
                   TPL_ROW_FRAGMENT_NAME:
                     adminCrudQueries.getRowFragmentExpression(),
                   TPL_PLURAL_MODEL: titleizeCamel(pluralize(modelName)),

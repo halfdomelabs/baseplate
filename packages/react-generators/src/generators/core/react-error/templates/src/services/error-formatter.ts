@@ -2,11 +2,7 @@
 
 import { logError } from './error-logger.js';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getFormattedErrorSuffix(error: unknown): string {
-  TPL_ERROR_FORMATTERS;
-  return 'Please try again later.';
-}
+TPL_GET_FORMATTED_ERROR_SUFFIX;
 
 export function formatError(
   error: unknown,

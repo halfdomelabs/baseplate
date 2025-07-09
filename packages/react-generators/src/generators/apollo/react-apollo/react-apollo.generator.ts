@@ -10,12 +10,12 @@ import {
   extractPackageVersions,
   packageScope,
   prettierProvider,
-  renderTextTemplateFileAction,
   tsCodeFragment,
   TsCodeUtils,
   tsHoistedFragment,
   tsImportBuilder,
   tsTemplate,
+  tsTemplateWithImports,
   tsTypeImportBuilder,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
@@ -27,10 +27,11 @@ import {
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@baseplate-dev/sync';
-import { notEmpty, toposortLocal } from '@baseplate-dev/utils';
+import { notEmpty, quot, toposortLocal } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
+import { reactTypescriptProvider } from '#src/generators/core/index.js';
 import { reactAppConfigProvider } from '#src/generators/core/react-app/index.js';
 import {
   reactConfigImportsProvider,
@@ -38,6 +39,7 @@ import {
 } from '#src/generators/core/react-config/index.js';
 import { reactErrorConfigProvider } from '#src/generators/core/react-error/index.js';
 import { reactProxyProvider } from '#src/generators/core/react-proxy/index.js';
+import { reactRouterConfigProvider } from '#src/generators/core/react-router/index.js';
 
 import { APOLLO_REACT_APOLLO_GENERATED } from './generated/index.js';
 
@@ -156,13 +158,6 @@ export { reactApolloConfigProvider };
 
 export interface ReactApolloProvider {
   /**
-   * Register a gql file so that any changes to this file will
-   * trigger a regeneration of the generated graphql file
-   *
-   * @param filePath - The path to the gql file
-   */
-  registerGqlFile(filePath: string): void;
-  /**
    * Get the path to the generated graphql file
    *
    * @returns The path to the generated graphql file
@@ -190,7 +185,8 @@ export const reactApolloGenerator = createGenerator({
         '@graphql-codegen/cli',
         '@graphql-codegen/typescript',
         '@graphql-codegen/typescript-operations',
-        '@graphql-codegen/typescript-react-apollo',
+        '@graphql-codegen/typed-document-node',
+        '@graphql-typed-document-node/core',
         '@parcel/watcher',
       ]),
     }),
@@ -203,6 +199,12 @@ export const reactApolloGenerator = createGenerator({
         'graphql-codegen',
       );
     }),
+    reactTypescript: createProviderTask(
+      reactTypescriptProvider,
+      (reactTypescript) => {
+        reactTypescript.addNodeTsFile('codegen.ts');
+      },
+    ),
     websocketPackages: enableSubscriptions
       ? createNodePackagesTask({
           prod: extractPackageVersions(REACT_PACKAGES, ['graphql-ws']),
@@ -243,12 +245,37 @@ export const reactApolloGenerator = createGenerator({
         reactAppConfig.renderWrappers.set('react-apollo', {
           wrap: (contents) =>
             TsCodeUtils.templateWithImports(
-              tsImportBuilder()
-                .default('AppApolloProvider')
-                .from(paths.appApolloProvider),
+              tsImportBuilder(['AppApolloProvider']).from(
+                paths.appApolloProvider,
+              ),
             )`<AppApolloProvider>${contents}</AppApolloProvider>`,
           type: 'data',
         });
+      },
+    }),
+    routerContext: createGeneratorTask({
+      dependencies: {
+        reactRouterConfig: reactRouterConfigProvider,
+      },
+      run({ reactRouterConfig }) {
+        reactRouterConfig.rootContextFields.add({
+          name: 'apolloClient',
+          type: tsTemplateWithImports([
+            tsImportBuilder(['ApolloClient']).typeOnly().from('@apollo/client'),
+          ])`ApolloClient<object>`,
+          optional: false,
+          routerProviderInitializer: {
+            code: tsTemplate`apolloClient`,
+            dependencies: ['apolloClient'],
+          },
+        });
+
+        reactRouterConfig.routerSetupFragments.set(
+          'apollo-client',
+          tsTemplateWithImports([
+            tsImportBuilder(['useApolloClient']).from('@apollo/client'),
+          ])`const apolloClient = useApolloClient();`,
+        );
       },
     }),
     main: createGeneratorTask({
@@ -271,14 +298,9 @@ export const reactApolloGenerator = createGenerator({
         },
         paths,
       }) {
-        const gqlFiles: string[] = [];
-
         return {
           providers: {
             reactApollo: {
-              registerGqlFile(filePath) {
-                gqlFiles.push(filePath);
-              },
               getGeneratedFilePath() {
                 return paths.graphql;
               },
@@ -491,13 +513,13 @@ export const reactApolloGenerator = createGenerator({
               }),
             );
 
-            // codegen.yml
+            // codegen.ts
             await builder.apply(
-              renderTextTemplateFileAction({
-                template: APOLLO_REACT_APOLLO_GENERATED.templates.codegenYml,
-                destination: 'codegen.yml',
+              typescriptFile.renderTemplateFile({
+                template: APOLLO_REACT_APOLLO_GENERATED.templates.codegenConfig,
+                destination: paths.codegenConfig,
                 variables: {
-                  TPL_SCHEMA_LOCATION: schemaLocation,
+                  TPL_BACKEND_SCHEMA: quot(schemaLocation),
                 },
               }),
             );
@@ -545,7 +567,7 @@ export const reactApolloGenerator = createGenerator({
 
             builder.addPostWriteCommand('pnpm generate', {
               priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
-              onlyIfChanged: [...gqlFiles, 'codegen.yml'],
+              onlyIfChanged: ['codegen.ts', 'src/**/*.gql'],
             });
           },
         };

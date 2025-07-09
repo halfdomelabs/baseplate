@@ -3,15 +3,16 @@
 import type { ReactElement } from 'react';
 
 import { ErrorableLoader } from '%reactComponentsImports';
+import { useMutation } from '@apollo/client';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute(TPL_ROUTE_VALUE)({
+export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: TPL_PAGE_NAME,
 });
 
 function TPL_PAGE_NAME(): ReactElement {
   TPL_DATA_LOADER;
-  const [TPL_DELETE_FUNCTION] = TPL_DELETE_MUTATION({
+  const [TPL_DELETE_FUNCTION] = useMutation(TPL_DELETE_MUTATION, {
     refetchQueries: [
       {
         query: TPL_REFETCH_DOCUMENT,

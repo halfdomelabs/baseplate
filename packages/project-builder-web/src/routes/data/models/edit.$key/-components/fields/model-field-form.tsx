@@ -110,7 +110,7 @@ function ModelFieldForm({
   const [relationId, setRelationId] = useState<string | undefined>();
 
   return (
-    <div className={clsx('items-start', className)}>
+    <div className={clsx('items-center', className)}>
       <div>
         <InputFieldController
           control={control}

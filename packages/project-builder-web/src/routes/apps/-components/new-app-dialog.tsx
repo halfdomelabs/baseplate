@@ -46,7 +46,7 @@ function NewAppDialog({
   const { control, handleSubmit, reset } = useForm({
     resolver: zodResolver(baseAppSchema),
     defaultValues: {
-      id: appEntityType.generateNewId(),
+      id: '',
       name: '',
       type: 'backend' as const,
     },
@@ -58,10 +58,17 @@ function NewAppDialog({
     { label: 'Admin App', value: 'admin' },
   ];
 
-  const onSubmit = handleSubmit((data) =>
-    saveDefinitionWithFeedback(
+  const onSubmit = handleSubmit((data) => {
+    const newId = appEntityType.generateNewId();
+    return saveDefinitionWithFeedback(
       (draftConfig) => {
-        const newApps = [...draftConfig.apps, data];
+        const newApps = [
+          ...draftConfig.apps,
+          {
+            ...data,
+            id: newId,
+          },
+        ];
         draftConfig.apps = sortBy(newApps, [(app) => app.name]) as AppConfig[];
       },
       {
@@ -70,12 +77,12 @@ function NewAppDialog({
           setIsOpen(false);
           reset();
           navigate({
-            to: `/apps/edit/${appEntityType.keyFromId(data.id)}`,
+            to: `/apps/edit/${appEntityType.keyFromId(newId)}`,
           }).catch(logAndFormatError);
         },
       },
-    ),
-  );
+    );
+  });
 
   const handleOpenChange = (newOpen: boolean): void => {
     setIsOpen(newOpen);
@@ -108,6 +115,7 @@ function NewAppDialog({
             name="name"
             placeholder="e.g. backend, web, admin"
             description="The name of the app, such as 'backend' or 'web'"
+            autoComplete="off"
           />
           <SelectFieldController
             label="Type"

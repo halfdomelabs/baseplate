@@ -1,16 +1,17 @@
 import type { ReactElement } from 'react';
 
+import { useQuery } from '@apollo/client';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { ErrorableLoader } from '@src/components';
-import { useGetBlogPostsQuery } from '@src/generated/graphql';
+import { GetBlogPostsDocument} from '@src/generated/graphql';
 
 export const Route = createFileRoute('/')({
   component: HomePage,
 });
 
 function HomePage(): ReactElement {
-  const { data, error } = useGetBlogPostsQuery();
+  const { data, error } = useQuery(GetBlogPostsDocument);
 
   if (!data) {
     return <ErrorableLoader error={error} />;

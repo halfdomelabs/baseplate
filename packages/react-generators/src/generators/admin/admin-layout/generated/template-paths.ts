@@ -19,7 +19,7 @@ const adminAdminLayoutPathsTask = createGeneratorTask({
   },
   exports: { adminAdminLayoutPaths: adminAdminLayoutPaths.export() },
   run({ packageInfo, reactRoutes }) {
-    const routesRoot = reactRoutes.getDirectoryBase();
+    const routesRoot = reactRoutes.getOutputRelativePath();
     const srcRoot = packageInfo.getPackageSrcPath();
 
     return {

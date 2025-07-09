@@ -36,7 +36,7 @@ const bullBoardPage = createTsTemplateFile({
       '../templates/routes/bull-board/index.tsx',
     ),
   },
-  variables: {},
+  variables: { TPL_ROUTE_PATH: {} },
 });
 
 export const ADMIN_ADMIN_BULL_BOARD_TEMPLATES = { bullBoard, bullBoardPage };

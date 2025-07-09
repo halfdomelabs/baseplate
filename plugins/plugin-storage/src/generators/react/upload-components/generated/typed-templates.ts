@@ -61,7 +61,10 @@ const hooksUseUpload = createTsTemplateFile({
   name: 'hooks-use-upload',
   projectExports: { useUpload: {} },
   source: {
-    path: path.join(import.meta.dirname, '../templates/src/hooks/useUpload.ts'),
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-upload.ts',
+    ),
   },
   variables: {},
 });

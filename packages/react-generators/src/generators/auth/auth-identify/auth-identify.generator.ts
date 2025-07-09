@@ -17,7 +17,7 @@ import { z } from 'zod';
 
 import { reactRouterConfigProvider } from '#src/generators/core/react-router/index.js';
 
-import { authHooksImportsProvider } from '../_providers/auth-hooks.js';
+import { authContextTask } from '../_tasks/auth-context.js';
 
 const descriptorSchema = z.object({});
 
@@ -37,15 +37,15 @@ export const authIdentifyGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
+    authContext: authContextTask,
     main: createGeneratorTask({
       dependencies: {
         reactRouterConfig: reactRouterConfigProvider,
-        authHooksImports: authHooksImportsProvider,
       },
       exports: {
         authIdentify: authIdentifyProvider.export(packageScope),
       },
-      run({ reactRouterConfig, authHooksImports }) {
+      run({ reactRouterConfig }) {
         const fieldMap = createConfigFieldMap(configSchema);
         return {
           providers: {
@@ -54,14 +54,11 @@ export const authIdentifyGenerator = createGenerator({
           build: () => {
             const { identifyFragments } = fieldMap.getValues();
             if (identifyFragments.size > 0) {
-              reactRouterConfig.renderHeaders.set(
+              reactRouterConfig.routerSetupFragments.set(
                 'auth-identify',
                 TsCodeUtils.templateWithImports([
-                  authHooksImports.useSession.declaration(),
                   tsImportBuilder(['useEffect']).from('react'),
                 ])`
-                const { userId } = useSession();
-
                 useEffect(() => {
                   if (!userId) return;
                   

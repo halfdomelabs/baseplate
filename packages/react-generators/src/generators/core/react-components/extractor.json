@@ -180,9 +180,16 @@
       "pathRootRelativePath": "{src-root}/components/index.ts",
       "projectExports": {
         "Alert": {},
+        "AlertDescription": {},
+        "AlertTitle": {},
         "Button": {},
         "Calendar": {},
         "Card": {},
+        "CardContent": {},
+        "CardDescription": {},
+        "CardFooter": {},
+        "CardHeader": {},
+        "CardTitle": {},
         "Checkbox": {},
         "CheckboxField": {},
         "CheckboxFieldController": {},
@@ -473,21 +480,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-controller-merged.ts",
       "projectExports": { "useControllerMerged": {} },
-      "variables": {}
-    },
-    "src/hooks/useStatus.ts": {
-      "name": "use-status",
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "hooks",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/hooks/useStatus.ts",
-      "projectExports": {
-        "Status": { "isTypeOnly": true },
-        "StatusType": { "isTypeOnly": true },
-        "useStatus": {}
-      },
       "variables": {}
     },
     "src/styles/button.ts": {

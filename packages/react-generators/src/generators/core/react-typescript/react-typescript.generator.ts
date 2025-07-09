@@ -1,11 +1,23 @@
 import {
+  packageScope,
   typescriptSetupProvider,
   writeJsonToBuilder,
 } from '@baseplate-dev/core-generators';
-import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import {
+  createGenerator,
+  createGeneratorTask,
+  createProviderType,
+} from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});
+
+export interface ReactTypescriptProvider {
+  addNodeTsFile(filePath: string): void;
+}
+
+export const reactTypescriptProvider =
+  createProviderType<ReactTypescriptProvider>('react-typescript');
 
 export const reactTypescriptGenerator = createGenerator({
   name: 'core/react-typescript',
@@ -16,7 +28,11 @@ export const reactTypescriptGenerator = createGenerator({
       dependencies: {
         typescriptSetup: typescriptSetupProvider,
       },
+      exports: {
+        reactTypescript: reactTypescriptProvider.export(packageScope),
+      },
       run({ typescriptSetup }) {
+        const nodeTsFiles: string[] = ['vite.config.ts'];
         typescriptSetup.compilerOptions.set(
           {
             /* Compilation */
@@ -50,6 +66,13 @@ export const reactTypescriptGenerator = createGenerator({
         typescriptSetup.include.push('src');
         typescriptSetup.tsconfigPath.set('tsconfig.app.json');
         return {
+          providers: {
+            reactTypescript: {
+              addNodeTsFile: (filePath: string) => {
+                nodeTsFiles.push(filePath);
+              },
+            },
+          },
           build: (builder) => {
             writeJsonToBuilder(builder, {
               id: 'tsconfig-root',
@@ -87,7 +110,7 @@ export const reactTypescriptGenerator = createGenerator({
                   noFallthroughCasesInSwitch: true,
                   noUncheckedSideEffectImports: true,
                 },
-                include: ['vite.config.ts'],
+                include: nodeTsFiles.toSorted(),
               },
             });
           },

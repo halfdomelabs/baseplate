@@ -14,7 +14,7 @@ const errorFormatter = createTsTemplateFile({
       '../templates/src/services/error-formatter.ts',
     ),
   },
-  variables: { TPL_ERROR_FORMATTERS: {} },
+  variables: { TPL_GET_FORMATTED_ERROR_SUFFIX: {} },
 });
 
 const errorLogger = createTsTemplateFile({

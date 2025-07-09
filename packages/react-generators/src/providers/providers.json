@@ -5,7 +5,7 @@
       "pathRoots": [
         {
           "name": "routes-root",
-          "method": "getDirectoryBase"
+          "method": "getOutputRelativePath"
         }
       ]
     }

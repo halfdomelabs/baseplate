@@ -6,12 +6,15 @@
     ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^\"'`]*)(?:'|\"|`)"]
   ],
   "files.readonlyInclude": {
-    "**/route-tree.gen.ts": true
+    "**/route-tree.gen.ts": true,
+    "**/baseplate/generated/**": true
   },
   "files.watcherExclude": {
-    "**/route-tree.gen.ts": true
+    "**/route-tree.gen.ts": true,
+    "**/baseplate/generated/**": true
   },
   "search.exclude": {
-    "**/route-tree.gen.ts": true
+    "**/route-tree.gen.ts": true,
+    "**/baseplate/generated/**": true
   }
 }

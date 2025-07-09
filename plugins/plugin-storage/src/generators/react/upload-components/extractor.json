@@ -49,13 +49,13 @@
       "pathRootRelativePath": "{src-root}/components/file-input/upload.gql",
       "variables": { "TPL_FILE_TYPE": {} }
     },
-    "src/hooks/useUpload.ts": {
+    "src/hooks/use-upload.ts": {
       "name": "hooks-use-upload",
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-storage#react/upload-components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/hooks/useUpload.ts",
+      "pathRootRelativePath": "{src-root}/hooks/use-upload.ts",
       "projectExports": { "useUpload": {} },
       "variables": {}
     }

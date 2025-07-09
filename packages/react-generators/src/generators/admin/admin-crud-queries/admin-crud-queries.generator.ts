@@ -42,7 +42,7 @@ interface AdminCrudQueriesConfig {
 }
 
 interface ApolloHookInfo {
-  hookExpression: TsCodeFragment;
+  documentExpression: TsCodeFragment;
   fieldName: string;
 }
 
@@ -118,12 +118,12 @@ export const adminCrudQueriesGenerator = createGenerator({
         }
 
         function getHookInfo(
-          hookName: string,
+          documentName: string,
           fieldName: string,
         ): ApolloHookInfo {
           return {
             fieldName,
-            hookExpression: getGeneratedImport(hookName),
+            documentExpression: getGeneratedImport(documentName),
           };
         }
 
@@ -181,27 +181,27 @@ export const adminCrudQueriesGenerator = createGenerator({
               getEditFragmentExpression: () =>
                 getGeneratedTypeImport(`${editFragmentName}Fragment`),
               getListQueryHookInfo: () =>
-                getHookInfo(`use${listQueryName}Query`, listFieldName),
+                getHookInfo(`${listQueryName}Document`, listFieldName),
               getEditQueryHookInfo: () =>
-                getHookInfo(`use${editQueryName}Query`, editFieldName),
+                getHookInfo(`${editQueryName}Document`, editFieldName),
               getCreateHookInfo: () => {
                 config.generateCreate = true;
                 return getHookInfo(
-                  `useCreate${modelName}Mutation`,
+                  `Create${modelName}Document`,
                   createFieldName,
                 );
               },
               getUpdateHookInfo: () => {
                 config.generateUpdate = true;
                 return getHookInfo(
-                  `useUpdate${modelName}Mutation`,
+                  `Update${modelName}Document`,
                   updateFieldName,
                 );
               },
               getDeleteHookInfo: () => {
                 config.generateDelete = true;
                 return getHookInfo(
-                  `useDelete${modelName}Mutation`,
+                  `Delete${modelName}Document`,
                   deleteFieldName,
                 );
               },
@@ -318,10 +318,9 @@ export const adminCrudQueriesGenerator = createGenerator({
 
             if (queries.length > 0) {
               const filePath = path.join(
-                reactRoutes.getDirectoryBase(),
+                reactRoutes.getOutputRelativePath(),
                 'queries.gql',
               );
-              reactApollo.registerGqlFile(filePath);
               builder.writeFile({
                 id: `${modelId}-crud-queries`,
                 destination: filePath,

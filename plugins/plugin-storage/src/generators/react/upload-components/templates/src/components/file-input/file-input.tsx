@@ -2,7 +2,7 @@
 
 import type { ReactElement } from 'react';
 
-import { useCreateUploadUrlMutation } from '%generatedGraphqlImports';
+import { CreateUploadUrlDocument } from '%generatedGraphqlImports';
 import {
   Button,
   CircularProgress,
@@ -10,11 +10,12 @@ import {
   FormMessage,
 } from '%reactComponentsImports';
 import { formatError, logError } from '%reactErrorImports';
+import { useMutation } from '@apollo/client';
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
 
-import { useUpload } from '../../hooks/useUpload.js';
+import { useUpload } from '../../hooks/use-upload.js';
 
 export interface FileUploadInput {
   id: string;
@@ -56,7 +57,7 @@ export function FileInput({
   imagePreview,
   accept,
 }: FileInputProps): ReactElement {
-  const [createUploadUrl] = useCreateUploadUrlMutation();
+  const [createUploadUrl] = useMutation(CreateUploadUrlDocument);
 
   const { isUploading, error, progress, uploadFile, cancelUpload } =
     useUpload<FileUploadInput>({

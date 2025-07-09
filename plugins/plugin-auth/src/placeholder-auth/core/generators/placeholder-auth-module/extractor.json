@@ -1,0 +1,32 @@
+{
+  "name": "placeholder-auth/core/placeholder-auth-module",
+  "extractors": {
+    "ts": {
+      "importProviders": [
+        "@baseplate-dev/fastify-generators:userSessionServiceImportsProvider"
+      ],
+      "skipDefaultImportMap": true
+    }
+  },
+  "templates": {
+    "module/services/user-session.service.ts": {
+      "name": "user-session-service",
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-auth#placeholder-auth/core/placeholder-auth-module",
+      "importMapProviders": {
+        "authContextImportsProvider": {
+          "importName": "authContextImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-context/generated/ts-import-providers.ts"
+        },
+        "userSessionTypesImportsProvider": {
+          "importName": "userSessionTypesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/user-session-types/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
+      "projectExports": { "userSessionService": {} },
+      "variables": {}
+    }
+  }
+}

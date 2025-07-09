@@ -9,7 +9,6 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/services/password-hasher.service.ts",
       "projectExports": { "createPasswordHash": {}, "verifyPasswordHash": {} },
-      "template": "password-hasher.service.ts",
       "variables": {}
     }
   }
