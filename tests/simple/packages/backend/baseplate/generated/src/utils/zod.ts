@@ -18,8 +18,14 @@ import { BadRequestError } from './http-errors.js';
  */
 export const handleZodRequestValidationError = (error: unknown): never => {
   if (error instanceof ZodError) {
-    throw new BadRequestError('Validation failed', 'ZOD_VALIDATION_ERROR', {
-      errors: error.errors,
+    const formattedErrors = error.errors.map((err) => ({
+      path: err.path.join('.'),
+      message: err.message,
+      code: err.code,
+    }));
+
+    throw new BadRequestError('Validation failed', 'VALIDATION_ERROR', {
+      errors: formattedErrors,
     });
   }
 

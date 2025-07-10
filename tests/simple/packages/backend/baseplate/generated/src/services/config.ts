@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const configSchema = z.object({
   // Environment the app is running in
-  APP_ENVIRONMENT: z.enum(['development', 'test', 'staging', 'production']),
+  APP_ENVIRONMENT: z.enum(['dev', 'test', 'stage', 'prod']),
   // Connection URL of the database
   DATABASE_URL: z.string().min(1),
   // Sentry DSN

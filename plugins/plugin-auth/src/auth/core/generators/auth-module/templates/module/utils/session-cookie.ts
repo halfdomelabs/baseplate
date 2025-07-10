@@ -17,7 +17,7 @@ const COOKIE_NAME = 'user-session';
 export function getUserSessionCookieName(
   headers: FastifyRequest['headers'],
 ): string {
-  if (config.APP_ENVIRONMENT !== 'development') {
+  if (config.APP_ENVIRONMENT !== 'dev') {
     return `__Host-${COOKIE_NAME}`;
   }
   // in development, localhost does not support the __Host prefix and should be scoped to port

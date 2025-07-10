@@ -1,7 +1,7 @@
 import { logError } from './error-logger';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getFormattedErrorSuffix(error: unknown): string {
+function getFormattedErrorSuffix(_error: unknown): string {
   return 'Please try again later.';
 }
 

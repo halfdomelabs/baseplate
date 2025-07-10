@@ -33,7 +33,7 @@ interface SessionCookieValue {
 const COOKIE_OPTIONS: CookieSerializeOptions = {
   httpOnly: true,
   sameSite: 'lax',
-  secure: config.APP_ENVIRONMENT !== 'development',
+  secure: config.APP_ENVIRONMENT !== 'dev',
   maxAge: USER_SESSION_DURATION_SEC,
   path: '/',
 };
