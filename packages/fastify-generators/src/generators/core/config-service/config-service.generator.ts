@@ -57,10 +57,10 @@ const [setupTask, configServiceProvider, configServiceConfigValuesProvider] =
         APP_ENVIRONMENT: {
           comment: 'Environment the app is running in',
           validator: tsCodeFragment(
-            `z.enum(['development', 'test', 'staging', 'production'])`,
+            `z.enum(['dev', 'test', 'stage', 'prod'])`,
             tsImportBuilder().named('z').from('zod'),
           ),
-          exampleValue: 'development',
+          exampleValue: 'dev',
         },
       }),
     }),

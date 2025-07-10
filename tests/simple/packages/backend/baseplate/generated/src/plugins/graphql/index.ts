@@ -20,7 +20,7 @@ import { useSentry } from './use-sentry.js';
 
 import '@src/modules/index.js';
 
-const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
+const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'dev';
 
 const schema = builder.toSchema();
 

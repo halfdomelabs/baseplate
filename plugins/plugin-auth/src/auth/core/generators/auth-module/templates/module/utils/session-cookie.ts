@@ -8,7 +8,7 @@ const COOKIE_NAME = 'user-session';
 
 /**
  * Retrieves the name of the session cookie based on the provided request.
- * If the application environment is not 'development', the cookie name will be prefixed with '__Host-'.
+ * If the application environment is not 'dev', the cookie name will be prefixed with '__Host-'.
  * In development, the cookie name will be suffixed with the port number.
  *
  * @param req - The FastifyRequest object representing the incoming request.
@@ -17,7 +17,7 @@ const COOKIE_NAME = 'user-session';
 export function getUserSessionCookieName(
   headers: FastifyRequest['headers'],
 ): string {
-  if (config.APP_ENVIRONMENT !== 'development') {
+  if (config.APP_ENVIRONMENT !== 'dev') {
     return `__Host-${COOKIE_NAME}`;
   }
   // in development, localhost does not support the __Host prefix and should be scoped to port
