@@ -17,7 +17,6 @@ const rootRoute = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'root-route',
-  projectExports: { Route: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/__root.tsx'),
   },

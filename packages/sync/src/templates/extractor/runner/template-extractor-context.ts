@@ -23,7 +23,7 @@ export class TemplateExtractorContext<
   }: {
     configLookup: TemplateExtractorConfigLookup;
     logger: Logger;
-    outputDirectory: string;
+    outputDirectory?: string;
     plugins: Map<string, unknown>;
     fileContainer: TemplateExtractorFileContainer;
   }) {
@@ -58,8 +58,11 @@ export class TemplateExtractorContext<
 
   /**
    * The output directory of the package.
+   *
+   * If undefined, it means that the extractor is running with metadata-only extraction (without
+   * the use of any generated project)
    */
-  outputDirectory: string;
+  outputDirectory?: string;
 
   /**
    * The plugins available to the context.

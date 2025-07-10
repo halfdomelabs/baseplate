@@ -313,10 +313,6 @@ export async function generateTemplateFiles(
       continue;
     }
 
-    logger.info(
-      `Generating files for ${templateType} templates from generators: ${generatorNames.join(', ')}`,
-    );
-
     const api = new TemplateExtractorApi(context, templateType);
     await extractor.writeGeneratedFiles(generatorNames, context, api);
   }

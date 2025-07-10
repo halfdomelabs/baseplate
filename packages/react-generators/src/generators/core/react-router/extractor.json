@@ -16,7 +16,6 @@
       "generator": "@baseplate-dev/react-generators#core/react-router",
       "importMapProviders": {},
       "pathRootRelativePath": "{routes-root}/__root.tsx",
-      "projectExports": { "Route": {} },
       "sourceFile": "routes/__root.tsx",
       "variables": {
         "TPL_ROOT_ROUTE_CONTEXT": {},
