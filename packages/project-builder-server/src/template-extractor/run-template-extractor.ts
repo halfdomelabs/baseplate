@@ -75,7 +75,7 @@ export async function runTemplateExtractorsForProject(
   logger.info('Template extraction complete!');
 }
 
-export async function generatedTypedTemplateFiles(
+export async function generateTypedTemplateFiles(
   directory: string | undefined,
   defaultPlugins: PluginMetadataWithPaths[],
   logger: Logger,

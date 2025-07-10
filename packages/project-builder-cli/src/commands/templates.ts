@@ -235,7 +235,7 @@ async function handleGenerateTemplates(
   directory: string | undefined,
   options: GenerateTemplatesOptions,
 ): Promise<void> {
-  const { generatedTypedTemplateFiles } = await import(
+  const { generateTypedTemplateFiles } = await import(
     '@baseplate-dev/project-builder-server/template-extractor'
   );
 
@@ -244,7 +244,7 @@ async function handleGenerateTemplates(
     : undefined;
   const defaultPlugins = await getDefaultPlugins(logger);
 
-  await generatedTypedTemplateFiles(resolvedDirectory, defaultPlugins, logger, {
+  await generateTypedTemplateFiles(resolvedDirectory, defaultPlugins, logger, {
     skipClean: options.skipClean,
   });
 }
