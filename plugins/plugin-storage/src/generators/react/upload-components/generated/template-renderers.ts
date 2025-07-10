@@ -1,7 +1,13 @@
-import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTextTemplateFileActionInput,
+  RenderTsTemplateFileActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
-import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import {
+  renderTextTemplateFileAction,
+  typescriptFileProvider,
+} from '@baseplate-dev/core-generators';
 import {
   generatedGraphqlImportsProvider,
   reactComponentsImportsProvider,
@@ -30,6 +36,16 @@ export interface ReactUploadComponentsRenderers {
           typeof REACT_UPLOAD_COMPONENTS_TEMPLATES.fileInputField
         >,
         'destination' | 'importMapProviders' | 'template'
+      >,
+    ) => BuilderAction;
+  };
+  fileInputUploadGql: {
+    render: (
+      options: Omit<
+        RenderTextTemplateFileActionInput<
+          typeof REACT_UPLOAD_COMPONENTS_TEMPLATES.fileInputUploadGql
+        >,
+        'destination' | 'template'
       >,
     ) => BuilderAction;
   };
@@ -92,6 +108,14 @@ const reactUploadComponentsRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   reactComponentsImports,
                 },
+                ...options,
+              }),
+          },
+          fileInputUploadGql: {
+            render: (options) =>
+              renderTextTemplateFileAction({
+                template: REACT_UPLOAD_COMPONENTS_TEMPLATES.fileInputUploadGql,
+                destination: paths.fileInputUploadGql,
                 ...options,
               }),
           },

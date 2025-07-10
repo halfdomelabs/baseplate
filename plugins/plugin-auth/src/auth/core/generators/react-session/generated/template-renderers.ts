@@ -1,7 +1,13 @@
-import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTextTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
-import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import {
+  renderTextTemplateFileAction,
+  typescriptFileProvider,
+} from '@baseplate-dev/core-generators';
 import {
   generatedGraphqlImportsProvider,
   reactUtilsImportsProvider,
@@ -19,6 +25,16 @@ export interface AuthCoreReactSessionRenderers {
           typeof AUTH_CORE_REACT_SESSION_TEMPLATES.mainGroup
         >,
         'importMapProviders' | 'group' | 'paths'
+      >,
+    ) => BuilderAction;
+  };
+  userSessionCheckGql: {
+    render: (
+      options: Omit<
+        RenderTextTemplateFileActionInput<
+          typeof AUTH_CORE_REACT_SESSION_TEMPLATES.userSessionCheckGql
+        >,
+        'destination' | 'template'
       >,
     ) => BuilderAction;
   };
@@ -52,6 +68,14 @@ const authCoreReactSessionRenderersTask = createGeneratorTask({
                   generatedGraphqlImports,
                   reactUtilsImports,
                 },
+                ...options,
+              }),
+          },
+          userSessionCheckGql: {
+            render: (options) =>
+              renderTextTemplateFileAction({
+                template: AUTH_CORE_REACT_SESSION_TEMPLATES.userSessionCheckGql,
+                destination: paths.userSessionCheckGql,
                 ...options,
               }),
           },

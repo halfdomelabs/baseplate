@@ -1,7 +1,13 @@
-import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTextTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
-import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import {
+  renderTextTemplateFileAction,
+  typescriptFileProvider,
+} from '@baseplate-dev/core-generators';
 import {
   apolloErrorImportsProvider,
   generatedGraphqlImportsProvider,
@@ -23,6 +29,16 @@ export interface AuthCoreAuthRoutesRenderers {
           typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.mainGroup
         >,
         'importMapProviders' | 'group' | 'paths'
+      >,
+    ) => BuilderAction;
+  };
+  queriesGql: {
+    render: (
+      options: Omit<
+        RenderTextTemplateFileActionInput<
+          typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.queriesGql
+        >,
+        'destination' | 'template'
       >,
     ) => BuilderAction;
   };
@@ -70,6 +86,14 @@ const authCoreAuthRoutesRenderersTask = createGeneratorTask({
                   reactErrorImports,
                   reactSessionImports,
                 },
+                ...options,
+              }),
+          },
+          queriesGql: {
+            render: (options) =>
+              renderTextTemplateFileAction({
+                template: AUTH_CORE_AUTH_ROUTES_TEMPLATES.queriesGql,
+                destination: paths.queriesGql,
                 ...options,
               }),
           },

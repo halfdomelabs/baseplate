@@ -12,11 +12,12 @@ interface RenderRawTemplateFileActionInputBase<
   options?: Omit<WriteFileOptions, 'templateInfo'>;
 }
 
-type RenderRawTemplateFileActionInput<TTemplateFile extends RawTemplateFile> =
-  RenderRawTemplateFileActionInputBase<TTemplateFile> &
-    (TTemplateFile['fileOptions']['kind'] extends 'singleton'
-      ? { id?: undefined }
-      : { id: string });
+export type RenderRawTemplateFileActionInput<
+  TTemplateFile extends RawTemplateFile,
+> = RenderRawTemplateFileActionInputBase<TTemplateFile> &
+  (TTemplateFile['fileOptions']['kind'] extends 'singleton'
+    ? { id?: undefined }
+    : { id: string });
 
 export function renderRawTemplateFileAction<
   TTemplateFile extends RawTemplateFile,

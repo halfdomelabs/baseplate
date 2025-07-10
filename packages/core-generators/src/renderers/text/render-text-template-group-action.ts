@@ -30,7 +30,7 @@ interface RenderTextTemplateGroupActionInputBase<T extends TextTemplateGroup> {
   };
 }
 
-type RenderTextTemplateGroupActionInput<
+export type RenderTextTemplateGroupActionInput<
   T extends TextTemplateGroup = TextTemplateGroup,
 > = RenderTextTemplateGroupActionInputBase<T> &
   (keyof InferTextTemplateVariablesFromTemplateGroup<T> extends never

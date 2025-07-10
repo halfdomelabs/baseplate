@@ -1,7 +1,13 @@
-import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTextTemplateFileActionInput,
+  RenderTsTemplateFileActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
-import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import {
+  renderTextTemplateFileAction,
+  typescriptFileProvider,
+} from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { generatedGraphqlImportsProvider } from '#src/generators/apollo/react-apollo/providers/generated-graphql.js';
@@ -13,6 +19,16 @@ import { ADMIN_ADMIN_BULL_BOARD_PATHS } from './template-paths.js';
 import { ADMIN_ADMIN_BULL_BOARD_TEMPLATES } from './typed-templates.js';
 
 export interface AdminAdminBullBoardRenderers {
+  bullBoard: {
+    render: (
+      options: Omit<
+        RenderTextTemplateFileActionInput<
+          typeof ADMIN_ADMIN_BULL_BOARD_TEMPLATES.bullBoard
+        >,
+        'destination' | 'template'
+      >,
+    ) => BuilderAction;
+  };
   bullBoardPage: {
     render: (
       options: Omit<
@@ -53,6 +69,14 @@ const adminAdminBullBoardRenderersTask = createGeneratorTask({
     return {
       providers: {
         adminAdminBullBoardRenderers: {
+          bullBoard: {
+            render: (options) =>
+              renderTextTemplateFileAction({
+                template: ADMIN_ADMIN_BULL_BOARD_TEMPLATES.bullBoard,
+                destination: paths.bullBoard,
+                ...options,
+              }),
+          },
           bullBoardPage: {
             render: (options) =>
               typescriptFile.renderTemplateFile({

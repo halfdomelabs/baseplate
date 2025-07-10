@@ -1,18 +1,44 @@
-import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderRawTemplateFileActionInput,
+  RenderTextTemplateGroupActionInput,
+  RenderTsTemplateFileActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
-import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import {
+  renderRawTemplateFileAction,
+  renderTextTemplateGroupAction,
+  typescriptFileProvider,
+} from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { CORE_REACT_PATHS } from './template-paths.js';
 import { CORE_REACT_TEMPLATES } from './typed-templates.js';
 
 export interface CoreReactRenderers {
+  favicon: {
+    render: (
+      options: Omit<
+        RenderRawTemplateFileActionInput<typeof CORE_REACT_TEMPLATES.favicon>,
+        'destination' | 'template'
+      >,
+    ) => BuilderAction;
+  };
   main: {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof CORE_REACT_TEMPLATES.main>,
         'destination' | 'importMapProviders' | 'template'
+      >,
+    ) => BuilderAction;
+  };
+  staticGroup: {
+    render: (
+      options: Omit<
+        RenderTextTemplateGroupActionInput<
+          typeof CORE_REACT_TEMPLATES.staticGroup
+        >,
+        'group' | 'paths'
       >,
     ) => BuilderAction;
   };
@@ -40,11 +66,27 @@ const coreReactRenderersTask = createGeneratorTask({
     return {
       providers: {
         coreReactRenderers: {
+          favicon: {
+            render: (options) =>
+              renderRawTemplateFileAction({
+                template: CORE_REACT_TEMPLATES.favicon,
+                destination: paths.favicon,
+                ...options,
+              }),
+          },
           main: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
                 template: CORE_REACT_TEMPLATES.main,
                 destination: paths.main,
+                ...options,
+              }),
+          },
+          staticGroup: {
+            render: (options) =>
+              renderTextTemplateGroupAction({
+                group: CORE_REACT_TEMPLATES.staticGroup,
+                paths,
                 ...options,
               }),
           },

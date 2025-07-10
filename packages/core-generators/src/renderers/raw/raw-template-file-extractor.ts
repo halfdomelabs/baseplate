@@ -10,17 +10,23 @@ import pLimit from 'p-limit';
 import type { RawTemplateMetadata } from './types.js';
 
 import { templatePathsPlugin } from '../extractor/plugins/template-paths/template-paths.plugin.js';
+import { templateRenderersPlugin } from '../extractor/plugins/template-renderers/template-renderers.plugin.js';
 import { typedTemplatesFilePlugin } from '../extractor/plugins/typed-templates-file.js';
 import { deduplicateTemplateFileExtractorSourceFiles } from '../extractor/utils/deduplicate-templates.js';
 import { resolvePackagePathSpecifier } from '../extractor/utils/package-path-specifier.js';
 import { TsCodeUtils, tsImportBuilder } from '../typescript/index.js';
+import { renderRawTemplateRenderers } from './render-raw-template-renderers.js';
 import { rawTemplateMetadataSchema } from './types.js';
 
 const limit = pLimit(getGenerationConcurrencyLimit());
 
 export const RawTemplateFileExtractor = createTemplateFileExtractor({
   name: 'raw',
-  pluginDependencies: [templatePathsPlugin, typedTemplatesFilePlugin],
+  pluginDependencies: [
+    templatePathsPlugin,
+    templateRenderersPlugin,
+    typedTemplatesFilePlugin,
+  ],
   templateMetadataSchema: rawTemplateMetadataSchema,
   extractTemplateMetadataEntries: (files, context) => {
     const deduplicatedFiles =
@@ -82,6 +88,7 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
   },
   writeGeneratedFiles: (generatorNames, context) => {
     const templatePathsPlugin = context.getPlugin('template-paths');
+    const templateRenderersPlugin = context.getPlugin('template-renderers');
     const typedTemplatesPlugin = context.getPlugin('typed-templates-file');
 
     for (const generatorName of generatorNames) {
@@ -92,6 +99,8 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
         rawTemplateMetadataSchema,
         'raw',
       );
+
+      // Add the typed templates to the typed templates plugin
       for (const { name, config } of templates) {
         const sourceFilePath = config.sourceFile;
         const exportName = camelCase(name);
@@ -123,6 +132,18 @@ export const RawTemplateFileExtractor = createTemplateFileExtractor({
             config.pathRootRelativePath,
           );
         }
+      }
+
+      // Add the template renderer entries to the template renderers plugin
+      const templateRenderers = renderRawTemplateRenderers(templates, {
+        generatorPackageName: generatorConfig.packageName,
+        generatorName,
+      });
+      for (const templateRenderer of templateRenderers) {
+        templateRenderersPlugin.addTemplateRenderer(
+          generatorName,
+          templateRenderer,
+        );
       }
     }
   },
