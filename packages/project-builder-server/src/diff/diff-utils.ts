@@ -92,6 +92,10 @@ export async function compareFiles(
       ? Buffer.isBuffer(workingContent)
       : false;
 
+    if (fileData.options?.skipWriting) {
+      continue;
+    }
+
     if (workingContent === null) {
       // File only exists in generated output
       diffs.push({

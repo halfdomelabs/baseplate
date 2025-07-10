@@ -1,5 +1,8 @@
 import path from 'node:path';
 
+import type { Logger } from '#src/utils/index.js';
+
+import type { GeneratorOutputFormatter } from '../formatter.js';
 import type { FileData } from '../generator-task-output.js';
 import type {
   GeneratorFileOperationResult,
@@ -50,15 +53,25 @@ function areBufferStringsEqual(
  *
  * @param relativePath - Relative path of the file
  * @param data - File data
- * @param context - Generator output file writer context
+ * @param context - Context
+ * @param context.outputDirectory - Output directory
+ * @param context.formatters - Formatters to use
+ * @param context.logger - Logger to use
  * @returns Formatted contents of the file
  */
-async function formatContents(
+export async function formatOutputFileContents(
   relativePath: string,
   data: FileData,
-  context: GeneratorOutputFileWriterContext,
+  {
+    outputDirectory,
+    formatters,
+    logger,
+  }: {
+    outputDirectory: string;
+    formatters: GeneratorOutputFormatter[];
+    logger: Logger;
+  },
 ): Promise<Buffer | string> {
-  const { formatters } = context;
   const { options, contents } = data;
 
   if (options?.skipFormatting) return contents;
@@ -86,8 +99,8 @@ async function formatContents(
   if (!formatter) return contents;
 
   try {
-    const filePath = path.join(context.outputDirectory, relativePath);
-    return await formatter.format(contents, filePath, context.logger);
+    const filePath = path.join(outputDirectory, relativePath);
+    return await formatter.format(contents, filePath, logger);
   } catch (error) {
     throw new FormatterError(error, contents, relativePath);
   }
@@ -194,7 +207,7 @@ async function mergeStringContents({
     // do not format if there is a conflict
     const formattedMergeResult = mergeResult.hasConflict
       ? mergeResult.mergedText
-      : await formatContents(
+      : await formatOutputFileContents(
           relativePath,
           { ...data, contents: mergeResult.mergedText },
           context,
@@ -317,7 +330,11 @@ export async function prepareGeneratorFile({
     context,
   );
 
-  const formattedContents = await formatContents(relativePath, data, context);
+  const formattedContents = await formatOutputFileContents(
+    relativePath,
+    data,
+    context,
+  );
 
   // if the file should never overwrite and there is a previous relative path,
   // we use the working file version

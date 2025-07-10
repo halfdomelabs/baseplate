@@ -12,6 +12,7 @@ import {
 import {
   buildGeneratorEntry,
   executeGeneratorEntry,
+  formatGeneratorOutput,
 } from '@baseplate-dev/sync';
 import {
   enhanceErrorWithContext,
@@ -169,10 +170,16 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
         templateMetadataOptions: createTemplateMetadataOptions(projectJson),
       });
 
+      // Format the output
+      const formattedGeneratorOutput = await formatGeneratorOutput(
+        generatorOutput,
+        { outputDirectory: appDirectory },
+      );
+
       // Compare generated output with working directory
       const diffSummary = await compareFiles(
         appDirectory,
-        generatorOutput,
+        formattedGeneratorOutput,
         globPatterns,
       );
 

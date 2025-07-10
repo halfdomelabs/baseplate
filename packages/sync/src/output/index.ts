@@ -1,6 +1,7 @@
 export * from './builder-action-test-helpers.js';
 export * from './builder-action.js';
 export * from './codebase-file-reader.js';
+export * from './format-generator-output.js';
 export type * from './formatter.js';
 export * from './generator-task-output.js';
 export * from './post-write-commands/types.js';
