@@ -538,6 +538,9 @@ importers:
       chokidar:
         specifier: 4.0.3
         version: 4.0.3
+      diff:
+        specifier: ^8.0.2
+        version: 8.0.2
       es-toolkit:
         specifier: 1.31.0
         version: 1.31.0
@@ -559,6 +562,12 @@ importers:
       inflection:
         specifier: 3.0.0
         version: 3.0.0
+      isbinaryfile:
+        specifier: ^5.0.4
+        version: 5.0.4
+      micromatch:
+        specifier: ^4.0.8
+        version: 4.0.8
       mime:
         specifier: ^4.0.3
         version: 4.0.3
@@ -575,6 +584,12 @@ importers:
       '@baseplate-dev/tools':
         specifier: workspace:*
         version: link:../tools
+      '@types/diff':
+        specifier: ^6.0.0
+        version: 6.0.0
+      '@types/micromatch':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/node':
         specifier: 'catalog:'
         version: 22.14.1
@@ -3668,6 +3683,9 @@ packages:
   '@types/culori@2.1.1':
     resolution: {integrity: sha512-NzLYD0vNHLxTdPp8+RlvGbR2NfOZkwxcYGFwxNtm+WH2NuUNV8785zv1h0sulFQ5aFQ9n/jNDUuJeo3Bh7+oFA==}
 
+  '@types/diff@6.0.0':
+    resolution: {integrity: sha512-dhVCYGv3ZSbzmQaBSagrv1WJ6rXCdkyTcDyoNu1MD8JohI7pR7k8wdZEm+mvdxRKXyHVwckFzWU1vJc+Z29MlA==}
+
   '@types/docker-modem@3.0.6':
     resolution: {integrity: sha512-yKpAGEuKRSS8wwx0joknWxsmLha78wNMe9R2S3UNsVOkZded8UqOrV8KoeDXoXsjndxwyF3eIhyClGbO1SEhEg==}
 
@@ -5613,6 +5631,10 @@ packages:
 
   isarray@2.0.5:
     resolution: {integrity: sha512-xHjhDr3cNBK0BzdUJSPXZntQUx/mwMS5Rw4A7lPJ90XGAO6ISP/ePDNuo0vhqOZU+UD5JoodwCAAoZQd3FeAKw==}
+
+  isbinaryfile@5.0.4:
+    resolution: {integrity: sha512-YKBKVkKhty7s8rxddb40oOkuP0NbaeXrQvLin6QMHL7Ypiy2RW9LwOVrVgZRyOrhQlayMd9t+D8yDy8MKFTSDQ==}
+    engines: {node: '>= 18.0.0'}
 
   isbot@5.1.28:
     resolution: {integrity: sha512-qrOp4g3xj8YNse4biorv6O5ZShwsJM0trsoda4y7j/Su7ZtTTfVXFzbKkpgcSoDrHS8FcTuUwcU04YimZlZOxw==}
@@ -10156,6 +10178,8 @@ snapshots:
 
   '@types/culori@2.1.1': {}
 
+  '@types/diff@6.0.0': {}
+
   '@types/docker-modem@3.0.6':
     dependencies:
       '@types/node': 22.14.1
@@ -12345,6 +12369,8 @@ snapshots:
   isarray@1.0.0: {}
 
   isarray@2.0.5: {}
+
+  isbinaryfile@5.0.4: {}
 
   isbot@5.1.28: {}
 

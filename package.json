@@ -31,7 +31,7 @@
     "project:generate": "pnpm --filter @baseplate-dev/project-builder-cli project:generate",
     "release": "pnpm build && pnpm changeset publish",
     "run:morpher": "pnpm --filter @baseplate-dev/code-morph run:morpher",
-    "serve": "turbo run @baseplate-dev/project-builder-cli:start serve",
+    "start": "pnpm run --filter @baseplate-dev/project-builder-cli start",
     "storybook:build": "turbo run storybook:build --filter=@baseplate-dev/ui-components",
     "templates:extract": "pnpm --filter @baseplate-dev/project-builder-cli templates:extract",
     "templates:generate": "pnpm --filter @baseplate-dev/project-builder-cli templates:generate",

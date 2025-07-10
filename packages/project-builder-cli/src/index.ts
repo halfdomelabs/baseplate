@@ -2,6 +2,7 @@ import { program } from 'commander';
 
 import { addBuildCommand } from './commands/build.js';
 import { addConfigCommand } from './commands/config.js';
+import { addDiffCommand } from './commands/diff.js';
 import { addServeCommand } from './commands/server.js';
 import { addTemplatesCommand } from './commands/templates.js';
 import { getEnabledFeatureFlags } from './services/feature-flags.js';
@@ -22,6 +23,7 @@ export async function runCli(): Promise<void> {
   }
 
   addBuildCommand(program);
+  addDiffCommand(program);
   addServeCommand(program);
   addConfigCommand(program);
 
