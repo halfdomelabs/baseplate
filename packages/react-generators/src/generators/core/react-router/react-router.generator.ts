@@ -294,18 +294,7 @@ export const reactRouterGenerator = createGenerator({
               await builder.apply(renderers.placeholderIndex.render({}));
             }
 
-            // Write a pseudo-file so that the template extractor can infer metadata for the
-            // generated route tree file
-            builder.writeFile({
-              id: 'route-tree',
-              destination: '@/src/route-tree.gen.ts',
-              contents: '',
-              options: { skipWriting: true },
-              templateInfo: {
-                generator: builder.generatorInfo.name,
-                template: 'route-tree',
-              },
-            });
+            await builder.apply(renderers.routeTree.render({}));
           },
         };
       },

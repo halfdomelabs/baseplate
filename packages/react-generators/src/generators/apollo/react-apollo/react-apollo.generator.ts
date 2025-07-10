@@ -17,7 +17,6 @@ import {
   tsTemplate,
   tsTemplateWithImports,
   tsTypeImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
@@ -175,6 +174,7 @@ export const reactApolloGenerator = createGenerator({
   buildTasks: ({ devApiEndpoint, schemaLocation, enableSubscriptions }) => ({
     paths: APOLLO_REACT_APOLLO_GENERATED.paths.task,
     imports: APOLLO_REACT_APOLLO_GENERATED.imports.task,
+    renderers: APOLLO_REACT_APOLLO_GENERATED.renderers.task,
     setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
@@ -281,22 +281,22 @@ export const reactApolloGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         reactConfigImports: reactConfigImportsProvider,
-        typescriptFile: typescriptFileProvider,
         reactApolloConfigValues: reactApolloConfigValuesProvider,
         paths: APOLLO_REACT_APOLLO_GENERATED.paths.provider,
+        renderers: APOLLO_REACT_APOLLO_GENERATED.renderers.provider,
       },
       exports: {
         reactApollo: reactApolloProvider.export(packageScope),
       },
       run({
         reactConfigImports,
-        typescriptFile,
         reactApolloConfigValues: {
           createApolloClientArguments,
           apolloLinks,
           websocketOptions,
         },
         paths,
+        renderers,
       }) {
         return {
           providers: {
@@ -461,9 +461,7 @@ export const reactApolloGenerator = createGenerator({
 
             // services/apollo/index.ts
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: APOLLO_REACT_APOLLO_GENERATED.templates.service,
-                destination: paths.service,
+              renderers.service.render({
                 variables: {
                   TPL_CREATE_ARGS:
                     createApolloClientArguments.length === 0
@@ -506,18 +504,11 @@ export const reactApolloGenerator = createGenerator({
             );
 
             // services/apollo/cache.ts
-            await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: APOLLO_REACT_APOLLO_GENERATED.templates.cache,
-                destination: paths.cache,
-              }),
-            );
+            await builder.apply(renderers.cache.render({}));
 
             // codegen.ts
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: APOLLO_REACT_APOLLO_GENERATED.templates.codegenConfig,
-                destination: paths.codegenConfig,
+              renderers.codegenConfig.render({
                 variables: {
                   TPL_BACKEND_SCHEMA: quot(schemaLocation),
                 },
@@ -526,10 +517,7 @@ export const reactApolloGenerator = createGenerator({
 
             // app/AppApolloProvider.tsx
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  APOLLO_REACT_APOLLO_GENERATED.templates.appApolloProvider,
-                destination: paths.appApolloProvider,
+              renderers.appApolloProvider.render({
                 variables: {
                   TPL_RENDER_BODY: TsCodeUtils.mergeFragmentsPresorted(
                     createApolloClientArguments.map(
@@ -554,16 +542,7 @@ export const reactApolloGenerator = createGenerator({
             // generated graphql file
 
             // generated/graphql.tsx
-            builder.writeFile({
-              id: 'graphql',
-              destination: '@/src/generated/graphql.tsx',
-              contents: '',
-              options: { skipWriting: true },
-              templateInfo: {
-                template: 'graphql',
-                generator: builder.generatorInfo.name,
-              },
-            });
+            await builder.apply(renderers.graphql.render({}));
 
             builder.addPostWriteCommand('pnpm generate', {
               priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,

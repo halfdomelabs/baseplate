@@ -124,6 +124,10 @@ export interface TsTemplateFile<
    * The options for the template file
    */
   fileOptions: TemplateFileOptions;
+  /**
+   * Whether the template is only exporting types and this file should not be written.
+   */
+  projectExportsOnly?: boolean;
 }
 
 export type TsTemplateFileVariableValue = TsCodeFragment | string;

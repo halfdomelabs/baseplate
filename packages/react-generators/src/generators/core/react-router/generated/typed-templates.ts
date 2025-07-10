@@ -26,9 +26,8 @@ const rootRoute = createTsTemplateFile({
 const routeTree = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   name: 'route-tree',
-  source: {
-    path: path.join(import.meta.dirname, '../templates/src/route-tree.gen.ts'),
-  },
+  projectExportsOnly: true,
+  source: { contents: '' },
   variables: {},
 });
 
