@@ -15,6 +15,7 @@ const descriptorSchema = z.object({
     .object({
       port: z.number().default(5432),
       password: z.string().optional(),
+      database: z.string().optional(),
     })
     .nullish(),
   redis: z
@@ -49,6 +50,8 @@ export const dockerComposeGenerator = createGenerator({
             generatePostgresDockerCompose({
               port: postgres.port.toString(),
               password: postgres.password ?? `${projectName}-password`,
+              database: postgres.database ?? projectName,
+              projectName,
             }),
           );
         }
@@ -58,12 +61,14 @@ export const dockerComposeGenerator = createGenerator({
             generateRedisDockerCompose({
               port: redis.port.toString(),
               password: redis.password ?? `${projectName}-password`,
+              projectName,
             }),
           );
         }
 
         const dockerComposePath = path.join(dockerFolder, 'docker-compose.yml');
         const dockerEnvPath = path.join(dockerFolder, '.env');
+        const dockerEnvExamplePath = path.join(dockerFolder, '.env.example');
 
         const serviceEntries = outputs.flatMap((output) => output.services);
         const volumeEntries = outputs.flatMap((output) => output.volumes);
@@ -76,13 +81,55 @@ ${serviceEntries.join('\n')}`.trim();
 volumes:
 ${volumeEntries.join('\n')}`.trim();
 
+        const networks = `
+networks:
+  backend:
+    driver: bridge`.trim();
+
         const entries = [
           ...(serviceEntries.length > 0 ? [services] : []),
           ...(volumeEntries.length > 0 ? [volumes] : []),
+          ...(serviceEntries.length > 0 ? [networks] : []), // Add network if we have services
         ];
 
         if (serviceEntries.length === 0) {
           throw new Error('No services defined for Docker Compose file');
+        }
+
+        // Generate environment variable documentation
+        const envVars = [`COMPOSE_PROJECT_NAME=${projectName}-dev`];
+        const envExampleVars = [
+          '# Docker Compose Project Configuration',
+          `COMPOSE_PROJECT_NAME=${projectName}-dev`,
+          '',
+        ];
+
+        if (postgres) {
+          envVars.push(
+            `POSTGRES_PORT=${postgres.port}`,
+            `POSTGRES_PASSWORD=${postgres.password ?? `${projectName}-password`}`,
+            `POSTGRES_DB=${postgres.database ?? projectName}`,
+          );
+          envExampleVars.push(
+            '# PostgreSQL Configuration',
+            `POSTGRES_PORT=${postgres.port}`,
+            `POSTGRES_PASSWORD=${postgres.password ?? `${projectName}-password`}`,
+            `POSTGRES_DB=${postgres.database ?? projectName}`,
+            '',
+          );
+        }
+
+        if (redis) {
+          envVars.push(
+            `REDIS_PORT=${redis.port}`,
+            `REDIS_PASSWORD=${redis.password ?? `${projectName}-password`}`,
+          );
+          envExampleVars.push(
+            '# Redis Configuration',
+            `REDIS_PORT=${redis.port}`,
+            `REDIS_PASSWORD=${redis.password ?? `${projectName}-password`}`,
+            '',
+          );
         }
 
         return {
@@ -97,7 +144,13 @@ ${entries.join('\n')}`.trim()}\n`,
             builder.writeFile({
               id: 'docker-env',
               destination: dockerEnvPath,
-              contents: `COMPOSE_PROJECT_NAME=${projectName}-dev\n`,
+              contents: `${envVars.join('\n')}\n`,
+            });
+
+            builder.writeFile({
+              id: 'docker-env-example',
+              destination: dockerEnvExamplePath,
+              contents: `${envExampleVars.join('\n')}\n`,
             });
           },
         };
