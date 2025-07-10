@@ -29,6 +29,7 @@ import type { PackageSyncResult, SyncStatus } from '../sync/index.js';
 import type { SyncMetadataController } from './sync-metadata-controller.js';
 
 import { generateForDirectory } from '../sync/generate-for-directory.js';
+import { createTemplateMetadataOptions } from './template-metadata-utils.js';
 import { getPackageSyncStatusFromResult } from './utils.js';
 
 async function loadProjectJson(
@@ -210,33 +211,12 @@ export async function buildProject({
         const metadata = await syncMetadataController?.getMetadata();
         const packageInfo = metadata?.packages[app.id];
 
-        const fileIdRegexWhitelist =
-          projectJson.settings.templateExtractor?.fileIdRegexWhitelist.split(
-            '\n',
-          ) ?? [];
-
         newResult = await generateForDirectory({
           baseDirectory: directory,
           appEntry: app,
           logger,
-          writeTemplateMetadataOptions: projectJson.settings.templateExtractor
-            ?.writeMetadata
-            ? {
-                includeTemplateMetadata: true,
-                shouldGenerateMetadata: (context) => {
-                  // always write metadata for non-instance files
-                  if (!context.isInstance) return true;
-                  return fileIdRegexWhitelist
-                    .filter((x) => x.trim() !== '')
-                    .some((pattern) => {
-                      const regex = new RegExp(pattern);
-                      return regex.test(
-                        `${context.generatorName}:${context.fileId}`,
-                      );
-                    });
-                },
-              }
-            : undefined,
+          writeTemplateMetadataOptions:
+            createTemplateMetadataOptions(projectJson),
           userConfig,
           previousPackageSyncResult: packageInfo?.result,
           abortSignal,
