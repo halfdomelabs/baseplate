@@ -2,8 +2,8 @@ import { reactRoutesProvider } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface AuthCoreAuthRoutesPaths {
-  queriesGql: string;
   login: string;
+  queriesGql: string;
   register: string;
   route: string;
 }

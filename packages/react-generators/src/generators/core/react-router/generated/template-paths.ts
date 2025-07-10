@@ -6,8 +6,8 @@ import { reactRoutesProvider } from '#src/providers/routes.js';
 export interface CoreReactRouterPaths {
   placeholderIndex: string;
   rootRoute: string;
-  routeTree: string;
   router: string;
+  routeTree: string;
 }
 
 const coreReactRouterPaths = createProviderType<CoreReactRouterPaths>(

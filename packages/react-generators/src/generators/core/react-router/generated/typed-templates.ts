@@ -54,6 +54,6 @@ const router = createTsTemplateFile({
 export const CORE_REACT_ROUTER_TEMPLATES = {
   placeholderIndex,
   rootRoute,
-  routeTree,
   router,
+  routeTree,
 };

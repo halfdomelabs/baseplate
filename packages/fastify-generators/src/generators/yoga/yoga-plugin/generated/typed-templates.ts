@@ -82,7 +82,7 @@ const useGraphLogger = createTsTemplateFile({
 });
 
 export const YOGA_YOGA_PLUGIN_TEMPLATES = {
-  subscriptionsGroup,
   graphqlPlugin,
+  subscriptionsGroup,
   useGraphLogger,
 };

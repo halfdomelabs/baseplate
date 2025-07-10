@@ -2,8 +2,8 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface AuthCoreAuthHooksPaths {
-  useCurrentUserGql: string;
   useCurrentUser: string;
+  useCurrentUserGql: string;
   useLogOut: string;
   useRequiredUserId: string;
   useSession: string;

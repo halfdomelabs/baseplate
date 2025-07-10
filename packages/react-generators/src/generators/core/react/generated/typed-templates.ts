@@ -71,4 +71,4 @@ const viteConfig = createTsTemplateFile({
   variables: { TPL_CONFIG: {} },
 });
 
-export const CORE_REACT_TEMPLATES = { staticGroup, main, viteConfig, favicon };
+export const CORE_REACT_TEMPLATES = { favicon, main, staticGroup, viteConfig };

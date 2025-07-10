@@ -2,11 +2,11 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface AuthCoreReactSessionPaths {
-  userSessionCheckGql: string;
-  useUserSessionClient: string;
   userSessionCheck: string;
+  userSessionCheckGql: string;
   userSessionClient: string;
   userSessionProvider: string;
+  useUserSessionClient: string;
 }
 
 const authCoreReactSessionPaths = createProviderType<AuthCoreReactSessionPaths>(

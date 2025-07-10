@@ -126,7 +126,8 @@ function createPathsTask(
           variableName: camelCase(root.name),
           methodName: root.method,
         })),
-    }));
+    }))
+    .toSorted((a, b) => a.providerName.localeCompare(b.providerName));
 
   const dependencies = TsCodeUtils.mergeFragmentsAsObject(
     Object.fromEntries(
@@ -229,9 +230,9 @@ export async function writePathMapFile(
     templateContents: GENERATED_PATHS_TEMPLATE,
     variables: {
       TPL_PATHS_TYPE_NAME: interfaceName,
-      TPL_PATHS_CONTENTS: [...pathMap]
-        .map(([templateName]) => `'${templateName}': string`)
-        .join(',\n'),
+      TPL_PATHS_CONTENTS: TsCodeUtils.mergeFragmentsAsInterfaceContent(
+        new Map([...pathMap].map(([templateName]) => [templateName, 'string'])),
+      ),
       TPL_PATHS_PROVIDER_EXPORT: providerExportName,
       TPL_PATHS_PROVIDER_NAME: getGeneratedTemplateProviderName(
         generatorName,

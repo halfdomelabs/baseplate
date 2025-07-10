@@ -227,7 +227,6 @@ export async function runTemplateFileExtractors(
  */
 export async function generateTemplateFiles(
   templateFileExtractors: AnyTemplateFileExtractor[],
-  outputDirectory: string,
   generatorPackageMap: Map<string, string>,
   logger: Logger,
   options?: GenerateTemplateFilesOptions,
@@ -243,7 +242,6 @@ export async function generateTemplateFiles(
   const initializerContext = new TemplateExtractorContext({
     configLookup,
     logger,
-    outputDirectory,
     plugins: new Map(),
     fileContainer,
   });
@@ -262,7 +260,6 @@ export async function generateTemplateFiles(
   const context = new TemplateExtractorContext({
     configLookup,
     logger,
-    outputDirectory,
     plugins: pluginMap,
     fileContainer,
   });

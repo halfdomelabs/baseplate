@@ -17,8 +17,8 @@ export interface CoreReactComponentsPaths {
   dateTimePickerField: string;
   dialog: string;
   emptyDisplay: string;
-  errorDisplay: string;
   errorableLoader: string;
+  errorDisplay: string;
   formItem: string;
   hooksUseControlledState: string;
   hooksUseControllerMerged: string;

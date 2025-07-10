@@ -75,51 +75,26 @@ export async function runTemplateExtractorsForProject(
   logger.info('Template extraction complete!');
 }
 
-export async function generateTemplateFilesForProject(
-  directory: string,
-  app: string,
+export async function generatedTypedTemplateFiles(
+  directory: string | undefined,
   defaultPlugins: PluginMetadataWithPaths[],
   logger: Logger,
   options?: GenerateTemplateFilesOptions,
 ): Promise<void> {
-  const availablePlugins = await discoverPlugins(directory, logger);
-  const syncMetadata = await readSyncMetadata(directory);
-
-  if (
-    syncMetadata.status === 'not-started' ||
-    Object.keys(syncMetadata.packages).length === 0
-  ) {
-    throw new Error(
-      `No sync metadata found for ${directory}. Please run the sync command first.`,
-    );
-  }
+  const availablePlugins = directory
+    ? await discoverPlugins(directory, logger)
+    : [];
 
   const generatorPackageMap = await buildGeneratorPackageMap([
     ...defaultPlugins,
     ...availablePlugins,
   ]);
-  logger.info(
-    `Generating template files for ${directory}${
-      app ? ` for app ${app}` : ''
-    }...`,
-  );
-  const appDirectories = Object.values(syncMetadata.packages)
-    .filter((packageInfo) => packageInfo.name.includes(app))
-    .map((packageInfo) => packageInfo.path);
-  if (appDirectories.length === 0) {
-    throw new Error(`No app directories found for ${app}`);
-  }
-  if (appDirectories.length > 1) {
-    throw new Error(
-      `Found multiple app directories for ${app}: ${appDirectories.join(', ')}`,
-    );
-  }
+  logger.info(`Generating typed template files...`);
   await generateTemplateFiles(
     TEMPLATE_EXTRACTORS,
-    appDirectories[0],
     generatorPackageMap,
     logger,
     options,
   );
-  logger.info('Template file generation complete!');
+  logger.info('Typed template file generation complete!');
 }
