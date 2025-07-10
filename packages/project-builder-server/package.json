@@ -77,7 +77,6 @@
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
-    "@types/diff": "^6.0.0",
     "@types/micromatch": "^4.0.9",
     "@types/node": "catalog:",
     "eslint": "catalog:",

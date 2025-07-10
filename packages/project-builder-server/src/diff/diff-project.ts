@@ -14,13 +14,9 @@ import {
   executeGeneratorEntry,
   formatGeneratorOutput,
 } from '@baseplate-dev/sync';
-import {
-  enhanceErrorWithContext,
-  hashWithSHA256,
-  stringifyPrettyStable,
-} from '@baseplate-dev/utils';
+import { enhanceErrorWithContext, hashWithSHA256 } from '@baseplate-dev/utils';
 import { fileExists } from '@baseplate-dev/utils/node';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
@@ -59,9 +55,8 @@ async function loadProjectJson(
       projectJson as ProjectDefinition,
     );
     if (appliedMigrations.length > 0) {
-      await writeFile(
-        projectJsonPath,
-        stringifyPrettyStable(migratedDefinition),
+      console.warn(
+        `Note: ${appliedMigrations.length} migrations would be applied to project definition`,
       );
     }
 
@@ -190,8 +185,7 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
           ? formatCompactDiff(diffSummary)
           : formatUnifiedDiff(diffSummary);
 
-        // eslint-disable-next-line no-console
-        console.log(output);
+        console.info(output);
         totalDiffs += diffSummary.totalFiles;
       } else {
         logger.info(`No differences found for ${app.name}`);

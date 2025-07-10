@@ -584,9 +584,6 @@ importers:
       '@baseplate-dev/tools':
         specifier: workspace:*
         version: link:../tools
-      '@types/diff':
-        specifier: ^6.0.0
-        version: 6.0.0
       '@types/micromatch':
         specifier: ^4.0.9
         version: 4.0.9
@@ -3682,9 +3679,6 @@ packages:
 
   '@types/culori@2.1.1':
     resolution: {integrity: sha512-NzLYD0vNHLxTdPp8+RlvGbR2NfOZkwxcYGFwxNtm+WH2NuUNV8785zv1h0sulFQ5aFQ9n/jNDUuJeo3Bh7+oFA==}
-
-  '@types/diff@6.0.0':
-    resolution: {integrity: sha512-dhVCYGv3ZSbzmQaBSagrv1WJ6rXCdkyTcDyoNu1MD8JohI7pR7k8wdZEm+mvdxRKXyHVwckFzWU1vJc+Z29MlA==}
 
   '@types/docker-modem@3.0.6':
     resolution: {integrity: sha512-yKpAGEuKRSS8wwx0joknWxsmLha78wNMe9R2S3UNsVOkZded8UqOrV8KoeDXoXsjndxwyF3eIhyClGbO1SEhEg==}
@@ -10177,8 +10171,6 @@ snapshots:
   '@types/braces@3.0.5': {}
 
   '@types/culori@2.1.1': {}
-
-  '@types/diff@6.0.0': {}
 
   '@types/docker-modem@3.0.6':
     dependencies:

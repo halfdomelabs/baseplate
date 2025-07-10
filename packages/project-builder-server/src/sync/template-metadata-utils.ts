@@ -17,17 +17,26 @@ export function createTemplateMetadataOptions(
   const fileIdRegexWhitelist =
     projectJson.settings.templateExtractor.fileIdRegexWhitelist.split('\n');
 
+  const compiledPatterns = fileIdRegexWhitelist
+    .filter((x) => x.trim() !== '')
+    .map((pattern) => {
+      try {
+        return new RegExp(pattern);
+      } catch (err) {
+        console.warn(`Invalid regex pattern: ${pattern}`, err);
+        return null;
+      }
+    })
+    .filter((regex): regex is RegExp => regex !== null);
+
   return {
     includeTemplateMetadata: true,
     shouldGenerateMetadata: (context) => {
       // always write metadata for non-instance files
       if (!context.isInstance) return true;
-      return fileIdRegexWhitelist
-        .filter((x) => x.trim() !== '')
-        .some((pattern) => {
-          const regex = new RegExp(pattern);
-          return regex.test(`${context.generatorName}:${context.fileId}`);
-        });
+      return compiledPatterns.some((regex) =>
+        regex.test(`${context.generatorName}:${context.fileId}`),
+      );
     },
   };
 }
