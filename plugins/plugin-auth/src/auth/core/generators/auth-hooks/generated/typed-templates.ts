@@ -95,4 +95,4 @@ const useCurrentUserGql = createTextTemplateFile({
   variables: {},
 });
 
-export const AUTH_CORE_AUTH_HOOKS_TEMPLATES = { useCurrentUserGql, hooksGroup };
+export const AUTH_CORE_AUTH_HOOKS_TEMPLATES = { hooksGroup, useCurrentUserGql };

@@ -61,9 +61,9 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
     const barrelExportPlugin = context.getPlugin(
       templateExtractorBarrelExportPlugin.name,
     );
-    const templatePathRoots = await discoverTemplatePathRoots(
-      context.outputDirectory,
-    );
+    const templatePathRoots = context.outputDirectory
+      ? await discoverTemplatePathRoots(context.outputDirectory)
+      : undefined;
     // Key: Generator name, Value: Map of template name to path root relative path
     const pathMapByGenerator = new Map<string, Map<string, string>>();
 
@@ -85,6 +85,11 @@ export const templatePathsPlugin = createTemplateExtractorPlugin({
      * @returns The relative path of the template file to the closest file path root.
      */
     function getPathRootRelativePath(absolutePath: string): string {
+      if (!context.outputDirectory || !templatePathRoots) {
+        throw new Error(
+          'Template paths are not supported when running with metadata-only extraction',
+        );
+      }
       const outputRelativePath = path.relative(
         context.outputDirectory,
         absolutePath,

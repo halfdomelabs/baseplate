@@ -68,7 +68,7 @@ const zod = createTsTemplateFile({
 export const utilsGroup = { httpErrors, zod };
 
 export const CORE_ERROR_HANDLER_SERVICE_TEMPLATES = {
-  utilsGroup,
   errorHandlerPlugin,
   errorLogger,
+  utilsGroup,
 };

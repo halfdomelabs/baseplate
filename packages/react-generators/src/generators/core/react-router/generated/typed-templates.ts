@@ -17,7 +17,6 @@ const rootRoute = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'root-route',
-  projectExports: { Route: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/__root.tsx'),
   },
@@ -27,9 +26,8 @@ const rootRoute = createTsTemplateFile({
 const routeTree = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   name: 'route-tree',
-  source: {
-    path: path.join(import.meta.dirname, '../templates/src/route-tree.gen.ts'),
-  },
+  projectExportsOnly: true,
+  source: { contents: '' },
   variables: {},
 });
 
@@ -55,6 +53,6 @@ const router = createTsTemplateFile({
 export const CORE_REACT_ROUTER_TEMPLATES = {
   placeholderIndex,
   rootRoute,
-  routeTree,
   router,
+  routeTree,
 };

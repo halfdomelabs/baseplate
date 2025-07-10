@@ -21,7 +21,7 @@ interface RenderTextTemplateFileActionInputBase<T extends TextTemplateFile> {
   options?: Omit<WriteFileOptions, 'templateMetadata'>;
 }
 
-type RenderTextTemplateFileActionInput<
+export type RenderTextTemplateFileActionInput<
   T extends TextTemplateFile = TextTemplateFile,
 > = RenderTextTemplateFileActionInputBase<T> &
   (keyof InferTextTemplateVariablesFromTemplate<T> extends never

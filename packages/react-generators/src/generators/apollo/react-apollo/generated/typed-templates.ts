@@ -47,12 +47,8 @@ const graphql = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   name: 'graphql',
   projectExports: { '*': {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/generated/graphql.tsx',
-    ),
-  },
+  projectExportsOnly: true,
+  source: { contents: '' },
   variables: {},
 });
 

@@ -87,6 +87,6 @@ const useCurrentUserGql = createTextTemplateFile({
 });
 
 export const PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES = {
-  useCurrentUserGql,
   hooksGroup,
+  useCurrentUserGql,
 };

@@ -74,4 +74,4 @@ const queriesGql = createTextTemplateFile({
   variables: {},
 });
 
-export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = { queriesGql, mainGroup };
+export const AUTH_CORE_AUTH_ROUTES_TEMPLATES = { mainGroup, queriesGql };

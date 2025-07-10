@@ -99,7 +99,7 @@ const stripQueryMutationPlugin = createTsTemplateFile({
 });
 
 export const POTHOS_POTHOS_TEMPLATES = {
-  fieldWithInputPayloadGroup,
   builder,
+  fieldWithInputPayloadGroup,
   stripQueryMutationPlugin,
 };

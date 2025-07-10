@@ -2,9 +2,9 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface ReactUploadComponentsPaths {
-  fileInputUploadGql: string;
   fileInputComponent: string;
   fileInputField: string;
+  fileInputUploadGql: string;
   hooksUseUpload: string;
 }
 

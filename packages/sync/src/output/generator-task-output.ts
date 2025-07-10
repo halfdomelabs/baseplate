@@ -280,12 +280,14 @@ export class GeneratorTaskOutputBuilder {
   }
 
   /**
-   * Applies an action to the builder
+   * Applies one or more actions to the builder
    *
-   * @param action The action to apply
+   * @param actions The actions to apply
    */
-  async apply(action: BuilderAction): Promise<void> {
-    await action.execute(this);
+  async apply(...actions: BuilderAction[]): Promise<void> {
+    for (const action of actions) {
+      await action.execute(this);
+    }
   }
 
   /**

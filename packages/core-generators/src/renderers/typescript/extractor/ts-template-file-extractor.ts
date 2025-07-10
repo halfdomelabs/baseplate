@@ -92,9 +92,15 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
       string,
       Map<string, string[]>
     >();
+    const { outputDirectory } = context;
+    if (!outputDirectory) {
+      throw new Error(
+        'Write template files requires a project output directory',
+      );
+    }
     for (const file of allFiles) {
       const outputRelativePath = path.relative(
-        context.outputDirectory,
+        outputDirectory,
         file.absolutePath,
       );
       const { generator } = file.templateInfo;
@@ -134,11 +140,11 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
         const writeContext: WriteTsTemplateFileContext = {
           generatorName,
           projectExportMap,
-          outputDirectory: context.outputDirectory,
+          outputDirectory,
           internalOutputRelativePaths: [
             ...generatorOutputRelativePathMap.values(),
           ].flat(),
-          resolver: getResolverFactory(context.outputDirectory),
+          resolver: getResolverFactory(outputDirectory),
         };
 
         await Promise.all(

@@ -2,11 +2,11 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface PlaceholderAuthCorePlaceholderAuthHooksPaths {
-  useCurrentUserGql: string;
   useCurrentUser: string;
+  useCurrentUserGql: string;
   useLogOut: string;
-  useSession: string;
   useRequiredUserId: string;
+  useSession: string;
 }
 
 const placeholderAuthCorePlaceholderAuthHooksPaths =

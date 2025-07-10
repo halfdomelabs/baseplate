@@ -135,7 +135,10 @@ export function renderTsTemplateFileAction<
         id: id ?? template.name,
         destination,
         contents: renderedTemplate,
-        options: writeOptions,
+        options: {
+          ...writeOptions,
+          skipWriting: template.projectExportsOnly ?? writeOptions?.skipWriting,
+        },
         templateInfo: {
           template: template.name,
           generator: generatorInfo.name,

@@ -27,9 +27,11 @@ function renderTsTypedTemplate(
   const createOptions = TsCodeUtils.mergeFragmentsAsObject({
     name: quot(templateName),
     group: metadata.group ? quot(metadata.group) : undefined,
-    source: TsCodeUtils.templateWithImports([
-      tsImportBuilder().default('path').from('node:path'),
-    ])`{
+    source: metadata.projectExportsOnly
+      ? `{ contents: '' }`
+      : TsCodeUtils.templateWithImports([
+          tsImportBuilder().default('path').from('node:path'),
+        ])`{
       path: path.join(import.meta.dirname, '../templates/${templatePath}'),
     }`,
     fileOptions: JSON.stringify(sortObjectKeys(metadata.fileOptions)),
@@ -53,6 +55,7 @@ function renderTsTypedTemplate(
           ),
         ),
       ),
+    projectExportsOnly: metadata.projectExportsOnly ? 'true' : undefined,
   });
   const fragment = TsCodeUtils.templateWithImports([
     tsImportBuilder(['createTsTemplateFile']).from(

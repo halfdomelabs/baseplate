@@ -1,7 +1,13 @@
-import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTextTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
-import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import {
+  renderTextTemplateFileAction,
+  typescriptFileProvider,
+} from '@baseplate-dev/core-generators';
 import { generatedGraphqlImportsProvider } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
@@ -16,6 +22,16 @@ export interface PlaceholderAuthCorePlaceholderAuthHooksRenderers {
           typeof PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES.hooksGroup
         >,
         'importMapProviders' | 'group' | 'paths'
+      >,
+    ) => BuilderAction;
+  };
+  useCurrentUserGql: {
+    render: (
+      options: Omit<
+        RenderTextTemplateFileActionInput<
+          typeof PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES.useCurrentUserGql
+        >,
+        'destination' | 'template'
       >,
     ) => BuilderAction;
   };
@@ -50,6 +66,15 @@ const placeholderAuthCorePlaceholderAuthHooksRenderersTask =
                   importMapProviders: {
                     generatedGraphqlImports,
                   },
+                  ...options,
+                }),
+            },
+            useCurrentUserGql: {
+              render: (options) =>
+                renderTextTemplateFileAction({
+                  template:
+                    PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES.useCurrentUserGql,
+                  destination: paths.useCurrentUserGql,
                   ...options,
                 }),
             },

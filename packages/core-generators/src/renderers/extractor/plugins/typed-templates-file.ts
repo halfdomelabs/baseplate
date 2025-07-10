@@ -76,7 +76,7 @@ export const typedTemplatesFilePlugin = createTemplateExtractorPlugin({
           templateContents: TS_TEMPLATE,
           variables: {
             TPL_TEMPLATE_FRAGMENTS: templatesFragment,
-            TPL_TEMPLATE_EXPORTS: `{ ${templateExports.join(', ')} }`,
+            TPL_TEMPLATE_EXPORTS: `{ ${templateExports.toSorted((a, b) => a.localeCompare(b)).join(', ')} }`,
             TPL_EXPORT_NAME: exportName,
           },
           options: {

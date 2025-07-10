@@ -1,7 +1,13 @@
-import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTextTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
-import { typescriptFileProvider } from '@baseplate-dev/core-generators';
+import {
+  renderTextTemplateFileAction,
+  typescriptFileProvider,
+} from '@baseplate-dev/core-generators';
 import {
   generatedGraphqlImportsProvider,
   reactErrorImportsProvider,
@@ -21,6 +27,16 @@ export interface AuthCoreAuthHooksRenderers {
           typeof AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGroup
         >,
         'importMapProviders' | 'group' | 'paths'
+      >,
+    ) => BuilderAction;
+  };
+  useCurrentUserGql: {
+    render: (
+      options: Omit<
+        RenderTextTemplateFileActionInput<
+          typeof AUTH_CORE_AUTH_HOOKS_TEMPLATES.useCurrentUserGql
+        >,
+        'destination' | 'template'
       >,
     ) => BuilderAction;
   };
@@ -60,6 +76,14 @@ const authCoreAuthHooksRenderersTask = createGeneratorTask({
                   reactErrorImports,
                   reactSessionImports,
                 },
+                ...options,
+              }),
+          },
+          useCurrentUserGql: {
+            render: (options) =>
+              renderTextTemplateFileAction({
+                template: AUTH_CORE_AUTH_HOOKS_TEMPLATES.useCurrentUserGql,
+                destination: paths.useCurrentUserGql,
                 ...options,
               }),
           },

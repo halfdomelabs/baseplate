@@ -88,9 +88,9 @@ export function addTemplatesCommand(program: Command): void {
 
   // Templates generate subcommand
   templatesCommand
-    .command('generate <directory> <app>')
+    .command('generate [directory]')
     .description(
-      'Generate template files from existing extractor.json configurations without running extraction',
+      'Generate typed template files from existing extractor.json configurations',
     )
     .option(
       '--skip-clean',
@@ -99,11 +99,10 @@ export function addTemplatesCommand(program: Command): void {
     )
     .action(
       async (
-        directory: string,
-        app: string,
+        directory: string | undefined,
         options: GenerateTemplatesOptions,
       ) => {
-        await handleGenerateTemplates(directory, app, options);
+        await handleGenerateTemplates(directory, options);
       },
     );
 }
@@ -233,24 +232,19 @@ async function handleExtractTemplates(
 }
 
 async function handleGenerateTemplates(
-  directory: string,
-  app: string,
+  directory: string | undefined,
   options: GenerateTemplatesOptions,
 ): Promise<void> {
-  const { generateTemplateFilesForProject } = await import(
+  const { generateTypedTemplateFiles } = await import(
     '@baseplate-dev/project-builder-server/template-extractor'
   );
 
-  const resolvedDirectory = expandPathWithTilde(directory);
+  const resolvedDirectory = directory
+    ? expandPathWithTilde(directory)
+    : undefined;
   const defaultPlugins = await getDefaultPlugins(logger);
 
-  await generateTemplateFilesForProject(
-    resolvedDirectory,
-    app,
-    defaultPlugins,
-    logger,
-    {
-      skipClean: options.skipClean,
-    },
-  );
+  await generateTypedTemplateFiles(resolvedDirectory, defaultPlugins, logger, {
+    skipClean: options.skipClean,
+  });
 }
