@@ -79,9 +79,7 @@ export const appModuleGenerator = createGenerator({
         typescriptFile: typescriptFileProvider,
         appModuleConfigValues: appModuleConfigValuesProvider,
         appModuleSetupImports: appModuleSetupImportsProvider,
-        appModule: isRoot
-          ? undefined
-          : appModuleProvider.dependency().parentScopeOnly(),
+        appModule: appModuleProvider.dependency().optional().parentScopeOnly(),
       },
       exports: {
         appModule: appModuleProvider.export(
