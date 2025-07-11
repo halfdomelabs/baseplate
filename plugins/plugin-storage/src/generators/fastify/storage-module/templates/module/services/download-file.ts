@@ -38,11 +38,5 @@ export async function downloadFile(
   const adapter =
     STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
 
-  if (!adapter.downloadFile) {
-    throw new Error(
-      `Storage adapter ${file.adapter} does not support downloading`,
-    );
-  }
-
   return adapter.downloadFile(file.path);
 }

@@ -3,8 +3,10 @@
 import type { Readable } from 'node:stream';
 
 import {
+  DeleteObjectCommand,
   DeleteObjectsCommand,
   GetObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
@@ -12,73 +14,103 @@ import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 import type {
-  AdapterPresignedUploadUrlInput,
-  AdapterPresignedUploadUrlPayload,
+  CreatePresignedUploadOptions,
+  FileMetadata,
+  PresignedUploadUrl,
   StorageAdapter,
 } from './types.js';
 
+/** Options for the S3 adapter. */
 interface S3AdapterOptions {
+  /** AWS region of the bucket. */
   region?: string;
-  /**
-   * Publicly hosted URL for the S3 bucket, e.g. https://uploads.example.com
-   */
-  hostedUrl?: string;
+  /** Name of the S3 bucket. */
   bucket: string;
+  /** Publicly hosted URL for the S3 bucket, e.g. https://uploads.example.com */
+  publicUrl?: string;
 }
 
 const PRESIGNED_S3_EXPIRATION_SECONDS = 600;
 
+/**
+ * Create a new S3 adapter.
+ *
+ * @param options - Options for the S3 adapter.
+ * @returns A new S3 adapter.
+ */
 export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
-  const { region, hostedUrl, bucket } = options;
+  const { region, publicUrl, bucket } = options;
 
   const client = new S3Client({ region });
 
   async function createPresignedUploadUrl(
-    input: AdapterPresignedUploadUrlInput,
-  ): Promise<AdapterPresignedUploadUrlPayload> {
-    const { path, contentType, minFileSize, maxFileSize } = input;
+    options: CreatePresignedUploadOptions,
+  ): Promise<PresignedUploadUrl> {
+    const { path, contentType, contentLengthRange, expiresIn } = options;
+    const [minFileSize, maxFileSize] = contentLengthRange ?? [
+      0,
+      1024 * 1024 * 100,
+    ]; // Default 100MB max
+    const expirationSeconds = expiresIn ?? PRESIGNED_S3_EXPIRATION_SECONDS;
 
     const { url, fields } = await createPresignedPost(client, {
       Bucket: bucket,
       Key: path,
       Conditions: [
-        ['content-length-range', minFileSize ?? 0, maxFileSize],
+        ['content-length-range', minFileSize, maxFileSize],
         { bucket },
         { key: path },
         ...(contentType ? [{ 'Content-Type': contentType }] : []),
       ],
-      Expires: PRESIGNED_S3_EXPIRATION_SECONDS,
+      Expires: expirationSeconds,
     });
 
     return {
       method: 'POST',
       url,
-      fields: Object.entries(fields).map(([name, value]) => ({ name, value })),
+      fields,
+      expiresAt: new Date(Date.now() + expirationSeconds * 1000),
     };
   }
 
-  async function createPresignedDownloadUrl(path: string): Promise<string> {
+  async function createPresignedDownloadUrl(
+    path: string,
+    expiresIn?: number,
+  ): Promise<string> {
     const command = new GetObjectCommand({
       Bucket: bucket,
       Key: path,
     });
 
     return getSignedUrl(client, command, {
-      expiresIn: PRESIGNED_S3_EXPIRATION_SECONDS,
+      expiresIn: expiresIn ?? PRESIGNED_S3_EXPIRATION_SECONDS,
     });
   }
 
-  function getHostedUrl(path: string): string | null {
-    if (!hostedUrl) {
+  function getPublicUrl(path: string): string | null {
+    if (!publicUrl) {
       return null;
     }
-    return `${hostedUrl.replace(/\/$/, '')}/${path}`;
+    return `${publicUrl.replace(/\/$/, '')}/${path}`;
   }
 
-  async function deleteFiles(paths: string[]): Promise<void> {
+  async function deleteFile(path: string): Promise<void> {
+    const command = new DeleteObjectCommand({
+      Bucket: bucket,
+      Key: path,
+    });
+
+    await client.send(command);
+  }
+
+  async function deleteFiles(paths: string[]): Promise<{
+    succeeded: string[];
+    failed: { path: string; error: Error }[];
+  }> {
     if (paths.length > 1000) {
       throw new Error('Cannot delete more than 1000 files at once');
     }
+
     const command = new DeleteObjectsCommand({
       Bucket: bucket,
       Delete: {
@@ -87,29 +119,93 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
     });
 
     const response = await client.send(command);
+    const succeeded: string[] = [];
+    const failed: { path: string; error: Error }[] = [];
 
-    // for now, if we encounter a single error, throw the entire operation
-    // TODO: handle partial failures
-    if (response.Errors?.length) {
-      const error = response.Errors[0];
-      throw new Error(
-        `Unable to delete key: ${error.Key ?? ''}, ${error.Message ?? ''}`,
+    if (response.Deleted) {
+      succeeded.push(
+        ...response.Deleted.map((obj) => obj.Key ?? '').filter(Boolean),
       );
+    }
+
+    if (response.Errors) {
+      failed.push(
+        ...response.Errors.map((error) => ({
+          path: error.Key ?? '',
+          error: new Error(error.Message ?? 'Unknown error'),
+        })),
+      );
+    }
+
+    return { succeeded, failed };
+  }
+
+  async function fileExists(path: string): Promise<boolean> {
+    try {
+      const command = new HeadObjectCommand({
+        Bucket: bucket,
+        Key: path,
+      });
+      await client.send(command);
+      return true;
+    } catch (error: unknown) {
+      const err = error as {
+        name?: string;
+        $metadata?: { httpStatusCode?: number };
+      };
+      if (err.name === 'NotFound' || err.$metadata?.httpStatusCode === 404) {
+        return false;
+      }
+      throw error;
+    }
+  }
+
+  async function getFileMetadata(path: string): Promise<FileMetadata | null> {
+    try {
+      const command = new HeadObjectCommand({
+        Bucket: bucket,
+        Key: path,
+      });
+      const response = await client.send(command);
+
+      return {
+        size: response.ContentLength ?? 0,
+        contentType: response.ContentType ?? 'application/octet-stream',
+        lastModified: response.LastModified ?? new Date(),
+        etag: response.ETag?.replace(/"/g, ''),
+      };
+    } catch (error: unknown) {
+      const err = error as {
+        name?: string;
+        $metadata?: { httpStatusCode?: number };
+      };
+      if (err.name === 'NotFound' || err.$metadata?.httpStatusCode === 404) {
+        return null;
+      }
+      throw error;
     }
   }
 
   async function uploadFile(
     path: string,
-    contents: Buffer | ReadableStream | string,
-  ): Promise<void> {
-    await client.send(
-      new PutObjectCommand({
-        Bucket: bucket,
-        Key: path,
-        Body: contents,
-        ServerSideEncryption: 'AES256',
-      }),
-    );
+    contents: Buffer | Readable,
+  ): Promise<FileMetadata> {
+    const command = new PutObjectCommand({
+      Bucket: bucket,
+      Key: path,
+      Body: contents,
+      ServerSideEncryption: 'AES256',
+    });
+
+    await client.send(command);
+
+    // Get metadata after upload to return accurate information
+    const metadata = await getFileMetadata(path);
+    if (!metadata) {
+      throw new Error('Failed to get file metadata after upload');
+    }
+
+    return metadata;
   }
 
   async function downloadFile(path: string): Promise<Readable> {
@@ -120,14 +216,21 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
 
     const response = await client.send(command);
 
+    if (!response.Body) {
+      throw new Error(`File ${path} not found or empty`);
+    }
+
     return response.Body as Readable;
   }
 
   return {
     createPresignedUploadUrl,
     createPresignedDownloadUrl,
-    getHostedUrl,
+    getPublicUrl,
+    deleteFile,
     deleteFiles,
+    fileExists,
+    getFileMetadata,
     uploadFile,
     downloadFile,
   };

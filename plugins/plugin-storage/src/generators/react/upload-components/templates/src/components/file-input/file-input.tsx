@@ -20,7 +20,7 @@ import { useUpload } from '../../hooks/use-upload.js';
 export interface FileUploadInput {
   id: string;
   name: string;
-  hostedUrl?: string | null;
+  publicUrl?: string | null;
 }
 
 export interface FileInputProps {
@@ -88,7 +88,7 @@ export function FileInput({
           onChange({
             name: uploadedFile.name,
             id: uploadedFile.id,
-            hostedUrl: uploadedFile.hostedUrl,
+            publicUrl: uploadedFile.publicUrl,
           });
         }
       },
@@ -140,24 +140,24 @@ export function FileInput({
             >
               <div />
               <div className="flex items-center">
-                {imagePreview && value.hostedUrl && (
+                {imagePreview && value.publicUrl && (
                   <a
-                    href={value.hostedUrl}
+                    href={value.publicUrl}
                     target="_blank"
                     rel="noreferrer"
                     aria-label={`Preview ${value.name}`}
                   >
                     <img
-                      src={value.hostedUrl}
+                      src={value.publicUrl}
                       className="mr-4 h-8 w-8 rounded-lg bg-muted object-cover"
                       alt={`Preview of ${value.name}`}
                     />
                   </a>
                 )}
                 <div className="text-sm font-medium">
-                  {value.hostedUrl ? (
+                  {value.publicUrl ? (
                     <a
-                      href={value.hostedUrl}
+                      href={value.publicUrl}
                       className="text-foreground hover:underline"
                       target="_blank"
                       rel="noreferrer"

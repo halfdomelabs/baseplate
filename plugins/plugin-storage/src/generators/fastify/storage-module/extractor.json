@@ -85,21 +85,6 @@
       "sourceFile": "module/schema/file-upload.input-type.ts",
       "variables": {}
     },
-    "schema-hosted-url-field": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
-      "group": "schema",
-      "importMapProviders": {
-        "pothosImportsProvider": {
-          "importName": "pothosImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
-        }
-      },
-      "pathRootRelativePath": "{module-root}/schema/hosted-url.field.ts",
-      "sourceFile": "module/schema/hosted-url.field.ts",
-      "variables": { "TPL_FILE_OBJECT_TYPE": {} }
-    },
     "schema-presigned-mutations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -113,6 +98,21 @@
       },
       "pathRootRelativePath": "{module-root}/schema/presigned.mutations.ts",
       "sourceFile": "module/schema/presigned.mutations.ts",
+      "variables": { "TPL_FILE_OBJECT_TYPE": {} }
+    },
+    "schema-public-url-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+      "group": "schema",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/public-url.field.ts",
+      "sourceFile": "module/schema/public-url.field.ts",
       "variables": { "TPL_FILE_OBJECT_TYPE": {} }
     },
     "services-create-presigned-download-url": {
@@ -184,10 +184,6 @@
       "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
       "group": "services",
       "importMapProviders": {
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
-        },
         "serviceContextImportsProvider": {
           "importName": "serviceContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/service-context/generated/ts-import-providers.ts"

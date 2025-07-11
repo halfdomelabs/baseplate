@@ -2,8 +2,6 @@
 
 import type { ServiceContext } from '%serviceContextImports';
 
-import { BadRequestError } from '%errorHandlerServiceImports';
-
 import type { UploadDataInput } from '../utils/upload.js';
 
 import { prepareUploadData } from '../utils/upload.js';
@@ -16,16 +14,7 @@ export async function uploadFile(
   input: UploadFileInput,
   context: ServiceContext,
 ): Promise<TPL_FILE_MODEL_TYPE> {
-  const { data, fileCategory, adapter } = await prepareUploadData(
-    input,
-    context,
-  );
-
-  if (!adapter.uploadFile) {
-    throw new BadRequestError(
-      `Adapter for ${fileCategory.name} does not support uploadFile`,
-    );
-  }
+  const { data, adapter } = await prepareUploadData(input, context);
 
   const file = await TPL_FILE_MODEL.create({ data });
 

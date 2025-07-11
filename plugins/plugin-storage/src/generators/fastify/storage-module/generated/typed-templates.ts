@@ -112,20 +112,6 @@ const schemaFileUploadInputType = createTsTemplateFile({
   variables: {},
 });
 
-const schemaHostedUrlField = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'schema',
-  importMapProviders: { pothosImports: pothosImportsProvider },
-  name: 'schema-hosted-url-field',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/schema/hosted-url.field.ts',
-    ),
-  },
-  variables: { TPL_FILE_OBJECT_TYPE: {} },
-});
-
 const schemaPresignedMutations = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'schema',
@@ -140,10 +126,24 @@ const schemaPresignedMutations = createTsTemplateFile({
   variables: { TPL_FILE_OBJECT_TYPE: {} },
 });
 
+const schemaPublicUrlField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'schema',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-public-url-field',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/public-url.field.ts',
+    ),
+  },
+  variables: { TPL_FILE_OBJECT_TYPE: {} },
+});
+
 export const schemaGroup = {
   schemaFileUploadInputType,
-  schemaHostedUrlField,
   schemaPresignedMutations,
+  schemaPublicUrlField,
 };
 
 const servicesCreatePresignedDownloadUrl = createTsTemplateFile({
@@ -206,10 +206,7 @@ const servicesDownloadFile = createTsTemplateFile({
 const servicesUploadFile = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'services',
-  importMapProviders: {
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    serviceContextImports: serviceContextImportsProvider,
-  },
+  importMapProviders: { serviceContextImports: serviceContextImportsProvider },
   name: 'services-upload-file',
   projectExports: { uploadFile: {} },
   source: {

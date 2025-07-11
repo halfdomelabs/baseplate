@@ -9,8 +9,8 @@ export interface FastifyStorageModulePaths {
   constantsAdapters: string;
   constantsFileCategories: string;
   schemaFileUploadInputType: string;
-  schemaHostedUrlField: string;
   schemaPresignedMutations: string;
+  schemaPublicUrlField: string;
   servicesCreatePresignedDownloadUrl: string;
   servicesCreatePresignedUploadUrl: string;
   servicesDownloadFile: string;
@@ -41,8 +41,8 @@ const fastifyStorageModulePathsTask = createGeneratorTask({
           constantsAdapters: `${moduleRoot}/constants/adapters.ts`,
           constantsFileCategories: `${moduleRoot}/constants/file-categories.ts`,
           schemaFileUploadInputType: `${moduleRoot}/schema/file-upload.input-type.ts`,
-          schemaHostedUrlField: `${moduleRoot}/schema/hosted-url.field.ts`,
           schemaPresignedMutations: `${moduleRoot}/schema/presigned.mutations.ts`,
+          schemaPublicUrlField: `${moduleRoot}/schema/public-url.field.ts`,
           servicesCreatePresignedDownloadUrl: `${moduleRoot}/services/create-presigned-download-url.ts`,
           servicesCreatePresignedUploadUrl: `${moduleRoot}/services/create-presigned-upload-url.ts`,
           servicesDownloadFile: `${moduleRoot}/services/download-file.ts`,

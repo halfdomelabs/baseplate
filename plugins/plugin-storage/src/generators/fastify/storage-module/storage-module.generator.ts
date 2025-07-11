@@ -209,7 +209,7 @@ export const storageModuleGenerator = createGenerator({
                   pothosImports,
                 },
                 variables: {
-                  schemaHostedUrlField: {
+                  schemaPublicUrlField: {
                     TPL_FILE_OBJECT_TYPE: fileObjectRef.fragment,
                   },
                   schemaPresignedMutations: {
@@ -281,7 +281,7 @@ export const storageModuleGenerator = createGenerator({
               const adapterOptions = TsCodeUtils.mergeFragmentsAsObject({
                 bucket: `config.${adapter.bucketConfigVar}`,
                 region: `config.AWS_DEFAULT_REGION`,
-                hostedUrl: adapter.hostedUrlConfigVar
+                publicUrl: adapter.hostedUrlConfigVar
                   ? `config.${adapter.hostedUrlConfigVar}`
                   : undefined,
               });
