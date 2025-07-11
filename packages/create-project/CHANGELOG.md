@@ -1,5 +1,12 @@
 # @baseplate-dev/create-project
 
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes

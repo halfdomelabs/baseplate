@@ -1,5 +1,18 @@
 # @baseplate-dev/project-builder-web
 
+## 0.2.3
+
+### Patch Changes
+
+- [#595](https://github.com/halfdomelabs/baseplate/pull/595) [`a506e88`](https://github.com/halfdomelabs/baseplate/commit/a506e88893bf395916ef3fbf6dd9dd7c0ff17acb) Thanks [@kingston](https://github.com/kingston)! - Fix bug in app creation that was re-using the same ID
+
+- [#595](https://github.com/halfdomelabs/baseplate/pull/595) [`a506e88`](https://github.com/halfdomelabs/baseplate/commit/a506e88893bf395916ef3fbf6dd9dd7c0ff17acb) Thanks [@kingston](https://github.com/kingston)! - Upgrade react-hook-form to 7.60.0
+
+- Updated dependencies [[`903e2d8`](https://github.com/halfdomelabs/baseplate/commit/903e2d898c47e6559f55f023eb89a0b524098f3a), [`a506e88`](https://github.com/halfdomelabs/baseplate/commit/a506e88893bf395916ef3fbf6dd9dd7c0ff17acb)]:
+  - @baseplate-dev/ui-components@0.2.3
+  - @baseplate-dev/project-builder-lib@0.2.3
+  - @baseplate-dev/utils@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes

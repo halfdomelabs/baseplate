@@ -1,5 +1,56 @@
 # @baseplate-dev/project-builder-server
 
+## 0.2.3
+
+### Patch Changes
+
+- [#600](https://github.com/halfdomelabs/baseplate/pull/600) [`09f804e`](https://github.com/halfdomelabs/baseplate/commit/09f804e430180f42177d1fe34a2891618a04df16) Thanks [@kingston](https://github.com/kingston)! - Add command to diff generated output from actual output
+
+  Adds a new `baseplate diff` command that shows the difference between what would be generated and what currently exists in the working directory. This helps developers avoid losing code when they write in generated files and then revert to test generation.
+
+  Features:
+
+  - Shows unified diff format by default
+  - Supports `--compact` flag for summary format with change counts
+  - Supports `--app` flag to filter by specific applications
+  - Supports `--glob` flag to filter files by glob patterns
+  - Handles binary files using isbinaryfile package
+  - Modular design with separate utilities for diffing, formatting, and comparison
+
+- [#604](https://github.com/halfdomelabs/baseplate/pull/604) [`228a3be`](https://github.com/halfdomelabs/baseplate/commit/228a3be02e514188da1c0a03ea9f1ba8d5383668) Thanks [@kingston](https://github.com/kingston)! - Change generated CRUD service file naming from model-service.ts to model.crud.ts pattern
+
+  This change updates the service file generation to use explicit `.crud.ts` naming instead of the previous `-service.ts` pattern. This provides better separation between generated CRUD operations and future hand-written business logic files, supporting the planned architectural split between generated and manual code.
+
+  Example changes:
+
+  - `user-service.ts` → `user.crud.ts`
+  - `todo-item-service.ts` → `todo-item.crud.ts`
+
+- [#596](https://github.com/halfdomelabs/baseplate/pull/596) [`059edf7`](https://github.com/halfdomelabs/baseplate/commit/059edf771755f1ff846494f238d777a9d1f7f5d7) Thanks [@kingston](https://github.com/kingston)! - Simplify template metadata system by consolidating template definitions in extractor.json
+
+  - Consolidate template definitions in extractor.json using template names as keys instead of file paths
+  - Rename .template-metadata.json to .templates-info.json with simplified instance tracking
+  - Remove file-id-map.json dependency and related file ID mapping logic
+  - Update TemplateExtractorConfigLookup to work without file ID mapping
+  - Update all template extractors and tests to use new metadata format
+  - Add migration script to convert existing extractor.json files to new format
+
+- [#596](https://github.com/halfdomelabs/baseplate/pull/596) [`059edf7`](https://github.com/halfdomelabs/baseplate/commit/059edf771755f1ff846494f238d777a9d1f7f5d7) Thanks [@kingston](https://github.com/kingston)! - Add templates generate CLI command for regenerating template files without extraction
+
+  - Add `templates generate <directory> <app>` CLI command to regenerate template files from existing extractor.json configurations
+  - Add `--skip-clean` option to skip cleaning output directories
+  - Add `generateTemplateFiles` function in sync package that initializes plugins and writes generated files without running extraction
+  - Add `generateTemplateFilesForProject` wrapper function in project-builder-server
+  - Command allows manual modification of extractor.json followed by regeneration without full extraction process
+
+- Updated dependencies [[`f3bd169`](https://github.com/halfdomelabs/baseplate/commit/f3bd169b8debc52628179ca6ebd93c20b8a6f841), [`a506e88`](https://github.com/halfdomelabs/baseplate/commit/a506e88893bf395916ef3fbf6dd9dd7c0ff17acb), [`3107a1b`](https://github.com/halfdomelabs/baseplate/commit/3107a1b6917c3b2d14c7e91e2972b06955ebb4ea), [`69eea11`](https://github.com/halfdomelabs/baseplate/commit/69eea11c3662fbad9b8d2283d5127195c8379c07), [`903e2d8`](https://github.com/halfdomelabs/baseplate/commit/903e2d898c47e6559f55f023eb89a0b524098f3a), [`de9e1b4`](https://github.com/halfdomelabs/baseplate/commit/de9e1b4f3a8a7dcf6b962781a0aa589eb970c7a8), [`f0cb763`](https://github.com/halfdomelabs/baseplate/commit/f0cb7632f04bfb487722785fac7218d76d3b7e3b), [`a506e88`](https://github.com/halfdomelabs/baseplate/commit/a506e88893bf395916ef3fbf6dd9dd7c0ff17acb), [`059edf7`](https://github.com/halfdomelabs/baseplate/commit/059edf771755f1ff846494f238d777a9d1f7f5d7), [`059edf7`](https://github.com/halfdomelabs/baseplate/commit/059edf771755f1ff846494f238d777a9d1f7f5d7), [`de9e1b4`](https://github.com/halfdomelabs/baseplate/commit/de9e1b4f3a8a7dcf6b962781a0aa589eb970c7a8)]:
+  - @baseplate-dev/core-generators@0.2.3
+  - @baseplate-dev/sync@0.2.3
+  - @baseplate-dev/react-generators@0.2.3
+  - @baseplate-dev/fastify-generators@0.2.3
+  - @baseplate-dev/project-builder-lib@0.2.3
+  - @baseplate-dev/utils@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes
