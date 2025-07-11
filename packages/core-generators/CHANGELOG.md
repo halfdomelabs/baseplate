@@ -1,5 +1,81 @@
 # @baseplate-dev/core-generators
 
+## 0.2.3
+
+### Patch Changes
+
+- [#601](https://github.com/halfdomelabs/baseplate/pull/601) [`f3bd169`](https://github.com/halfdomelabs/baseplate/commit/f3bd169b8debc52628179ca6ebd93c20b8a6f841) Thanks [@kingston](https://github.com/kingston)! - Add template renderers for text and raw templates
+
+  This adds corresponding template renderers for text and raw templates, following the same pattern as TypeScript template renderers. The new renderers provide consistent APIs for generating template rendering functions that can be used in generator code.
+
+  Key features:
+
+  - Text template renderers support both individual templates and template groups
+  - Raw template renderers support individual templates (no groups needed)
+  - Full TypeScript type safety with proper action input types
+  - Integration with the template renderers plugin system
+  - Consistent API design across all template types (TypeScript, text, raw)
+
+  The renderers are automatically integrated with their respective file extractors and will be available for use in generated code.
+
+- [#602](https://github.com/halfdomelabs/baseplate/pull/602) [`f0cb763`](https://github.com/halfdomelabs/baseplate/commit/f0cb7632f04bfb487722785fac7218d76d3b7e3b) Thanks [@kingston](https://github.com/kingston)! - Improve Docker Compose generation with security, resource management, and developer experience enhancements
+
+  ## Version Upgrades
+
+  - Upgrade PostgreSQL from 16.2 to 17.5-alpine
+  - Upgrade Redis from 7.2.4 to 8.0-alpine
+  - For existing projects, follow the upgrade guide at https://docs.baseplate.dev/guides/upgrading-postgres/
+
+  ## Security Improvements
+
+  - Use environment variables for all sensitive data (passwords, usernames)
+  - Add `security_opt: no-new-privileges:true` to prevent privilege escalation
+  - Fix Redis healthcheck to include authentication
+
+  ## Networking
+
+  - Create custom bridge network for better isolation
+  - All services communicate over internal network
+
+  ## Database Configuration
+
+  - Add PostgreSQL environment variables: `POSTGRES_DB`, `POSTGRES_INITDB_ARGS`
+  - Use default `postgres` user for simplicity in local development
+  - Add container names for easier management
+  - Improve volume configuration
+
+  ## Redis Configuration
+
+  - Add Redis memory limits (256MB) and eviction policy (no-eviction for BullMQ)
+  - Configure maxmemory and maxmemory-policy
+
+  ## Developer Experience
+
+  - Add logging configuration to prevent disk filling (10MB max, 3 files)
+  - Generate `.env.example` file with all available variables
+  - Improve health checks with start periods
+  - Better default values using project name
+  - Fix interface bug in redis.ts (PostgresConfig → RedisConfig)
+
+  ## Breaking Changes
+
+  - PostgreSQL generator now requires additional config parameters (database, projectName)
+  - Redis generator now requires projectName parameter
+  - Generated Docker Compose files now use custom bridge network
+
+- [#596](https://github.com/halfdomelabs/baseplate/pull/596) [`059edf7`](https://github.com/halfdomelabs/baseplate/commit/059edf771755f1ff846494f238d777a9d1f7f5d7) Thanks [@kingston](https://github.com/kingston)! - Simplify template metadata system by consolidating template definitions in extractor.json
+
+  - Consolidate template definitions in extractor.json using template names as keys instead of file paths
+  - Rename .template-metadata.json to .templates-info.json with simplified instance tracking
+  - Remove file-id-map.json dependency and related file ID mapping logic
+  - Update TemplateExtractorConfigLookup to work without file ID mapping
+  - Update all template extractors and tests to use new metadata format
+  - Add migration script to convert existing extractor.json files to new format
+
+- Updated dependencies [[`a506e88`](https://github.com/halfdomelabs/baseplate/commit/a506e88893bf395916ef3fbf6dd9dd7c0ff17acb), [`059edf7`](https://github.com/halfdomelabs/baseplate/commit/059edf771755f1ff846494f238d777a9d1f7f5d7), [`059edf7`](https://github.com/halfdomelabs/baseplate/commit/059edf771755f1ff846494f238d777a9d1f7f5d7), [`de9e1b4`](https://github.com/halfdomelabs/baseplate/commit/de9e1b4f3a8a7dcf6b962781a0aa589eb970c7a8)]:
+  - @baseplate-dev/sync@0.2.3
+  - @baseplate-dev/utils@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes

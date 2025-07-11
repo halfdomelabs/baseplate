@@ -1,5 +1,23 @@
 # @baseplate-dev/ui-components
 
+## 0.2.3
+
+### Patch Changes
+
+- [#597](https://github.com/halfdomelabs/baseplate/pull/597) [`903e2d8`](https://github.com/halfdomelabs/baseplate/commit/903e2d898c47e6559f55f023eb89a0b524098f3a) Thanks [@kingston](https://github.com/kingston)! - Enable tailwind-merge in cn utility by default
+
+  Updated the cn utility function to use tailwind-merge for better class merging behavior. This change:
+
+  - Adds tailwind-merge dependency to ui-components and react-generators packages
+  - Updates cn function to use twMerge(clsx(inputs)) instead of just clsx(inputs)
+  - Simplifies input styling by removing unnecessary rightPadding variant
+  - Improves class conflict resolution in component styling
+
+- [#595](https://github.com/halfdomelabs/baseplate/pull/595) [`a506e88`](https://github.com/halfdomelabs/baseplate/commit/a506e88893bf395916ef3fbf6dd9dd7c0ff17acb) Thanks [@kingston](https://github.com/kingston)! - Upgrade react-hook-form to 7.60.0
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.2.3
+
 ## 0.2.2
 
 ### Patch Changes
