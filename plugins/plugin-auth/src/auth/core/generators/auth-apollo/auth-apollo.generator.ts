@@ -7,7 +7,7 @@ import { reactApolloConfigProvider } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { reactSessionImportsProvider } from '../react-session';
+import { reactSessionImportsProvider } from '../react-session/index.js';
 
 const descriptorSchema = z.object({});
 
