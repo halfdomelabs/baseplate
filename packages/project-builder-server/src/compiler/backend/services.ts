@@ -21,6 +21,7 @@ import {
   undefinedIfEmpty,
 } from '@baseplate-dev/project-builder-lib';
 import { notEmpty } from '@baseplate-dev/utils';
+import { kebabCase } from 'change-case';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
@@ -99,6 +100,7 @@ function buildServiceForModel(
   return serviceFileGenerator({
     name: `${model.name}Service`,
     id: `prisma-crud-service:${model.name}`,
+    fileName: `${kebabCase(model.name)}.crud`,
     children: {
       $crud: prismaCrudServiceGenerator({
         modelName: model.name,
