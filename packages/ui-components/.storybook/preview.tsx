@@ -10,7 +10,7 @@ import { DARK_MODE_EVENT_NAME } from 'storybook-dark-mode';
 
 import { Toaster } from '../src/components/toaster/toaster.js';
 import CustomTheme from './custom-theme.js';
-import { isDarkModeEnabled, setDarkModeEnabled } from './dark-mode';
+import { isDarkModeEnabled, setDarkModeEnabled } from './dark-mode.js';
 
 import '../src/styles.css';
 
