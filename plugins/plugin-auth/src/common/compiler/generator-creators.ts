@@ -9,7 +9,7 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import { authIdentifyGenerator } from '@baseplate-dev/react-generators';
 
-import type { AuthRoleDefinition } from '../roles';
+import type { AuthRoleDefinition } from '../roles/index.js';
 
 type BackendAuthGenerators =
   | 'authContext'

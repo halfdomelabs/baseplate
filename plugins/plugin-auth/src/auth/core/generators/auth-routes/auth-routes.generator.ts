@@ -2,7 +2,7 @@ import { renderTextTemplateFileAction } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { AUTH_CORE_AUTH_ROUTES_GENERATED as GENERATED_TEMPLATES } from './generated';
+import { AUTH_CORE_AUTH_ROUTES_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 

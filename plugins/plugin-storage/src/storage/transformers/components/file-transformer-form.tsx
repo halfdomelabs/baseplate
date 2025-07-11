@@ -7,7 +7,7 @@ import { SelectFieldController } from '@baseplate-dev/ui-components';
 
 import type { StoragePluginDefinition } from '#src/storage/core/schema/plugin-definition.js';
 
-import type { FileTransformerConfig } from '../types';
+import type { FileTransformerConfig } from '../types.js';
 
 import '#src/styles.css';
 

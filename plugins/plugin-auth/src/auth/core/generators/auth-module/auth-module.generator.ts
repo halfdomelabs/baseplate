@@ -12,7 +12,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated';
+import { AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({
   userSessionModelName: z.string().min(1),
