@@ -1,7 +1,7 @@
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated';
+import { PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 

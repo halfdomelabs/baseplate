@@ -9,7 +9,7 @@ import { MdChevronLeft, MdChevronRight, MdExpandMore } from 'react-icons/md';
 import { buttonVariants } from '#src/styles/button.js';
 import { cn } from '#src/utils/index.js';
 
-import { Button } from '../button/button';
+import { Button } from '../button/button.js';
 
 /* eslint-disable react/prop-types -- needed for subcomponents */
 

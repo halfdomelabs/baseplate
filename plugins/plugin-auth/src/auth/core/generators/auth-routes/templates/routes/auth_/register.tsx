@@ -59,6 +59,7 @@ function RegisterPage(): React.JSX.Element {
     setError: setFormError,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    reValidateMode: 'onBlur',
   });
   const [registerWithEmailPassword, { loading }] = useMutation(
     RegisterWithEmailPasswordDocument,

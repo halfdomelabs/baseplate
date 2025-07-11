@@ -23,7 +23,7 @@ import { z } from 'zod';
 
 import { AUTH0_PACKAGES } from '#src/auth0/constants/packages.js';
 
-import { AUTH0_REACT_AUTH0_GENERATED } from './generated';
+import { AUTH0_REACT_AUTH0_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
