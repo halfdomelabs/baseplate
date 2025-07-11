@@ -134,9 +134,6 @@ export const reactConfigGenerator = createGenerator({
                 id: 'development-env',
                 destination: '.env.development',
                 contents: developmentEnvFile,
-                options: {
-                  shouldNeverOverwrite: true,
-                },
               });
             }
           },

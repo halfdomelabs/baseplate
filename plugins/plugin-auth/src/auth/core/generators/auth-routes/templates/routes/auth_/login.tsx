@@ -60,6 +60,7 @@ function LoginPage(): React.JSX.Element {
     setError: setFormError,
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    reValidateMode: 'onBlur',
   });
   const [loginWithEmailPassword, { loading }] = useMutation(
     LoginWithEmailPasswordDocument,

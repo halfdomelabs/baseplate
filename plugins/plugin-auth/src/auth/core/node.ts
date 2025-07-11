@@ -19,6 +19,7 @@ import {
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
+import { authApolloGenerator } from './generators/auth-apollo/auth-apollo.generator.js';
 import { authEmailPasswordGenerator } from './generators/auth-email-password/auth-email-password.generator.js';
 import { authHooksGenerator } from './generators/auth-hooks/auth-hooks.generator.js';
 import { authRoutesGenerator } from './generators/auth-routes/auth-routes.generator.js';
@@ -65,6 +66,7 @@ export default createPlatformPluginExport({
 
     const sharedWebGenerators = {
       ...createCommonWebAuthGenerators(),
+      authApollo: authApolloGenerator({}),
       reactAuth: reactAuthGenerator({}),
       authHooks: authHooksGenerator({}),
       reactSession: reactSessionGenerator({}),
