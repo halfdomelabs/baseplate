@@ -205,7 +205,7 @@ export function FileInput({
                       min={0}
                       gaugePrimaryColor="var(--primary)"
                       gaugeSecondaryColor="var(--muted)"
-                      size="sm"
+                      size="xs"
                       className="h-8 w-8"
                     />
                     <Button
