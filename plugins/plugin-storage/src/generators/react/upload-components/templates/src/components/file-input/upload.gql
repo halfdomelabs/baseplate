@@ -1,6 +1,6 @@
 fragment FileInput on TPL_FILE_TYPE {
   id
-  name
+  filename
   publicUrl
 }
 
