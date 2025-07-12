@@ -37,7 +37,7 @@ const descriptorSchema = z.object({
   ),
 });
 
-interface FileCategoriesProvider {
+export interface FileCategoriesProvider {
   getFileCategoryImportFragment(name: string): TsCodeFragment;
 }
 
