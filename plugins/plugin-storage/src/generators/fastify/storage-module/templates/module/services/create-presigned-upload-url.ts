@@ -4,11 +4,9 @@ import type { ServiceContext } from '%serviceContextImports';
 
 import { BadRequestError } from '%errorHandlerServiceImports';
 
-import type { UploadDataInput } from '../utils/upload.js';
+import type { FileUploadOptions } from '../utils/validate-file-upload-options.js';
 
-import { prepareUploadData } from '../utils/upload.js';
-
-type CreatePresignedUploadUrlInput = UploadDataInput;
+import { validateFileUploadOptions } from '../utils/validate-file-upload-options.js';
 
 export interface CreatePresignedUploadUrlPayload {
   url: string;
@@ -19,13 +17,11 @@ export interface CreatePresignedUploadUrlPayload {
 }
 
 export async function createPresignedUploadUrl(
-  input: CreatePresignedUploadUrlInput,
+  input: FileUploadOptions,
   context: ServiceContext,
 ): Promise<CreatePresignedUploadUrlPayload> {
-  const { data, fileCategory, adapter } = await prepareUploadData(
-    input,
-    context,
-  );
+  const { fileCreateInput, fileCategory, adapter } =
+    await validateFileUploadOptions(input, context);
 
   if (!adapter.createPresignedUploadUrl) {
     throw new BadRequestError(
@@ -33,15 +29,15 @@ export async function createPresignedUploadUrl(
     );
   }
 
-  const file = await TPL_FILE_MODEL.create({ data });
+  const file = await TPL_FILE_MODEL.create({ data: fileCreateInput });
 
   const result = await adapter.createPresignedUploadUrl({
-    path: data.path,
+    path: file.storagePath,
     contentLengthRange: [
       fileCategory.minFileSize ?? 0,
       fileCategory.maxFileSize,
     ],
-    contentType: data.mimeType,
+    contentType: input.contentType,
   });
 
   return {

@@ -18,7 +18,7 @@ import type {
   FileMetadata,
   PresignedUploadUrl,
   StorageAdapter,
-} from './types.js';
+} from '../types/adapter.js';
 
 /** Options for the S3 adapter. */
 interface S3AdapterOptions {
@@ -62,6 +62,9 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
         { key: path },
         ...(contentType ? [{ 'Content-Type': contentType }] : []),
       ],
+      Fields: {
+        'If-None-Match': '*',
+      },
       Expires: expirationSeconds,
     });
 

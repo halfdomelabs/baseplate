@@ -5,24 +5,18 @@ import {
   extractPackageVersions,
   tsCodeFragment,
   TsCodeUtils,
-  tsImportBuilder,
   tsTemplate,
   tsTypeImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
   configServiceImportsProvider,
   configServiceProvider,
   createPothosTypeReference,
-  errorHandlerServiceImportsProvider,
   pothosConfigProvider,
-  pothosImportsProvider,
   pothosSchemaProvider,
   pothosTypeOutputProvider,
   prismaOutputProvider,
-  prismaUtilsImportsProvider,
-  serviceContextImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import {
   createGenerator,
@@ -30,12 +24,13 @@ import {
   createProviderTask,
 } from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
-import path from 'node:path';
+import { constantCase } from 'es-toolkit';
 import { z } from 'zod';
 
 import { STORAGE_PACKAGES } from '#src/constants/index.js';
 
 import { FASTIFY_STORAGE_MODULE_GENERATED } from './generated/index.js';
+import { storageModuleImportsProvider } from './generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({
   /**
@@ -82,6 +77,7 @@ export const storageModuleGenerator = createGenerator({
   buildTasks: ({ fileModel, s3Adapters, categories = [] }) => ({
     paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.task,
     imports: FASTIFY_STORAGE_MODULE_GENERATED.imports.task,
+    renderers: FASTIFY_STORAGE_MODULE_GENERATED.renderers.task,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(STORAGE_PACKAGES, [
         '@aws-sdk/client-s3',
@@ -93,24 +89,56 @@ export const storageModuleGenerator = createGenerator({
     }),
     setupFileInputSchema: createGeneratorTask({
       dependencies: {
-        appModule: appModuleProvider,
         pothosConfig: pothosConfigProvider,
+        paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.provider,
       },
-      run({ pothosConfig, appModule }) {
-        const moduleFolder = appModule.getModuleFolder();
+      run({ pothosConfig, paths }) {
         pothosConfig.inputTypes.set(
           'FileUploadInput',
           createPothosTypeReference({
             name: 'FileUploadInput',
-            exportName: 'fileUploadInputInputType',
-            moduleSpecifier: path.posix.join(
-              moduleFolder,
-              'schema/file-upload.input-type.js',
-            ),
+            exportName: 'fileInputInputType',
+            moduleSpecifier: paths.schemaFileInput,
           }),
         );
 
         return {};
+      },
+    }),
+    renderSchema: createGeneratorTask({
+      dependencies: {
+        appModule: appModuleProvider,
+        renderers: FASTIFY_STORAGE_MODULE_GENERATED.renderers.provider,
+        pothosSchema: pothosSchemaProvider,
+        fileObjectType: pothosTypeOutputProvider
+          .dependency()
+          .reference(`prisma-object-type:${fileModel}`),
+        paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.provider,
+      },
+      run({ appModule, pothosSchema, renderers, fileObjectType, paths }) {
+        const { schemaGroup } = FASTIFY_STORAGE_MODULE_GENERATED.templates;
+        for (const template of Object.keys(schemaGroup)) {
+          const renderedPath = paths[template as keyof typeof schemaGroup];
+          appModule.moduleImports.push(renderedPath);
+          pothosSchema.registerSchemaFile(renderedPath);
+        }
+        return {
+          build: async (builder) => {
+            const fileObjectRef = fileObjectType.getTypeReference();
+            await builder.apply(
+              renderers.schemaGroup.render({
+                variables: {
+                  schemaPresignedMutations: {
+                    TPL_FILE_OBJECT_TYPE: fileObjectRef.fragment,
+                  },
+                  schemaPublicUrl: {
+                    TPL_FILE_OBJECT_TYPE: fileObjectRef.fragment,
+                  },
+                },
+              }),
+            );
+          },
+        };
       },
     }),
     config: createProviderTask(configServiceProvider, (configService) => {
@@ -150,88 +178,24 @@ export const storageModuleGenerator = createGenerator({
     }),
     build: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        pothosSchema: pothosSchemaProvider,
-        pothosImports: pothosImportsProvider,
-        appModule: appModuleProvider,
-        serviceContextImports: serviceContextImportsProvider,
-        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         prismaOutput: prismaOutputProvider,
         configServiceImports: configServiceImportsProvider,
-        prismaUtilsImports: prismaUtilsImportsProvider,
-        fileObjectType: pothosTypeOutputProvider
-          .dependency()
-          .reference(`prisma-object-type:${fileModel}`),
-        paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.provider,
+        renderers: FASTIFY_STORAGE_MODULE_GENERATED.renderers.provider,
+        storageModuleImports: storageModuleImportsProvider,
       },
       run({
-        typescriptFile,
-        appModule,
-        pothosSchema,
-        pothosImports,
-        serviceContextImports,
-        errorHandlerServiceImports,
         prismaOutput,
         configServiceImports,
-        prismaUtilsImports,
-        fileObjectType,
-        paths,
+        renderers,
+        storageModuleImports,
       }) {
-        const moduleFolder = appModule.getModuleFolder();
-
         return {
           build: async (builder) => {
-            // Copy adapters
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_GENERATED.templates.adaptersGroup,
-                paths,
-              }),
-            );
-
-            // Copy schema
-            const fileObjectRef = fileObjectType.getTypeReference();
-            const { schemaGroup } = FASTIFY_STORAGE_MODULE_GENERATED.templates;
-            for (const template of Object.keys(schemaGroup)) {
-              appModule.moduleImports.push(
-                paths[template as keyof typeof schemaGroup],
-              );
-              pothosSchema.registerSchemaFile(
-                paths[template as keyof typeof schemaGroup],
-              );
-            }
-
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_GENERATED.templates.schemaGroup,
-                paths,
-                importMapProviders: {
-                  pothosImports,
-                },
-                variables: {
-                  schemaPublicUrlField: {
-                    TPL_FILE_OBJECT_TYPE: fileObjectRef.fragment,
-                  },
-                  schemaPresignedMutations: {
-                    TPL_FILE_OBJECT_TYPE: fileObjectRef.fragment,
-                  },
-                },
-              }),
-            );
-
-            // Copy services
             const model = prismaOutput.getPrismaModelFragment(fileModel);
             const modelType = prismaOutput.getModelTypeFragment(fileModel);
-
+            // Render module
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_GENERATED.templates.servicesGroup,
-                paths,
-                importMapProviders: {
-                  errorHandlerServiceImports,
-                  serviceContextImports,
-                  prismaUtilsImports,
-                },
+              renderers.mainGroup.render({
                 variables: {
                   servicesCreatePresignedDownloadUrl: {
                     TPL_FILE_MODEL: model,
@@ -243,28 +207,20 @@ export const storageModuleGenerator = createGenerator({
                   servicesDownloadFile: {
                     TPL_FILE_MODEL: model,
                   },
-                  servicesValidateUploadInput: {
-                    TPL_FILE_MODEL: model,
-                  },
                   servicesUploadFile: {
                     TPL_FILE_MODEL: model,
                     TPL_FILE_MODEL_TYPE: modelType,
                   },
-                },
-              }),
-            );
-
-            // Copy utils
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_GENERATED.templates.utilsGroup,
-                paths,
-                importMapProviders: {
-                  serviceContextImports,
-                  errorHandlerServiceImports,
-                },
-                variables: {
-                  utilsUpload: {
+                  servicesValidateFileInput: {
+                    TPL_FILE_MODEL: model,
+                  },
+                  typesFileCategory: {
+                    TPL_FILE_COUNT_OUTPUT_TYPE: tsCodeFragment(
+                      `Prisma.${fileModel}CountOutputType`,
+                      tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
+                    ),
+                  },
+                  utilsValidateFileUploadOptions: {
                     TPL_FILE_CREATE_INPUT: tsCodeFragment(
                       `Prisma.${fileModel}CreateInput`,
                       tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
@@ -274,7 +230,7 @@ export const storageModuleGenerator = createGenerator({
               }),
             );
 
-            // Copy constants
+            // Render adapters config
             const adapterMap = new Map<string, TsCodeFragment>();
 
             for (const adapter of s3Adapters) {
@@ -289,9 +245,7 @@ export const storageModuleGenerator = createGenerator({
               adapterMap.set(
                 adapter.name,
                 TsCodeUtils.templateWithImports([
-                  tsImportBuilder(['createS3Adapter']).from(
-                    path.posix.join(moduleFolder, 'adapters/index.js'),
-                  ),
+                  storageModuleImports.createS3Adapter.declaration(),
                   configServiceImports.config.declaration(),
                 ])`createS3Adapter(${adapterOptions})`,
               );
@@ -301,53 +255,50 @@ export const storageModuleGenerator = createGenerator({
               'url',
               tsCodeFragment(
                 'createUrlAdapter()',
-                tsImportBuilder(['createUrlAdapter']).from(
-                  path.posix.join(moduleFolder, 'adapters/index.js'),
-                ),
+                storageModuleImports.createUrlAdapter.declaration(),
               ),
             );
+
+            await builder.apply(
+              renderers.configAdapters.render({
+                variables: {
+                  TPL_ADAPTERS: TsCodeUtils.mergeFragmentsAsObject(adapterMap),
+                },
+              }),
+            );
+
+            // Copy constants
 
             const categoriesMap = new Map<string, TsCodeFragment>();
             for (const category of categories) {
               categoriesMap.set(
                 category.name,
-                TsCodeUtils.mergeFragmentsAsObject({
-                  name: quot(category.name),
-                  authorizeUpload:
-                    category.uploadRoles.length > 0
-                      ? tsTemplate`({ auth }) => auth.hasSomeRole(${TsCodeUtils.mergeFragmentsAsArrayPresorted(
-                          category.uploadRoles.map(quot).sort(),
-                        )})`
-                      : undefined,
-                  defaultAdapter: quot(category.defaultAdapter),
-                  maxFileSize: `${category.maxFileSize ?? 100} * MEGABYTE`,
-                  usedByRelation: quot(category.usedByRelation),
-                }),
+                tsTemplate`
+                ${storageModuleImports.createFileCategory.fragment()}(${TsCodeUtils.mergeFragmentsAsObject(
+                  {
+                    // TODO [2025-06-02]: Remove once validation kicks in and add allowed Mime Types
+                    name: quot(constantCase(category.name)),
+                    maxFileSize: tsTemplate`${storageModuleImports.FileSize.fragment()}.MB(${category.maxFileSize?.toString() ?? '100'})`,
+                    authorize:
+                      category.uploadRoles.length > 0
+                        ? tsTemplate`{
+                          upload: ({ auth }) => auth.hasSomeRole(${TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                            category.uploadRoles.map(quot).sort(),
+                          )})
+                        }`
+                        : undefined,
+                    adapter: quot(category.defaultAdapter),
+                    referencedByRelation: quot(category.usedByRelation),
+                  },
+                )})`,
               );
             }
 
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group:
-                  FASTIFY_STORAGE_MODULE_GENERATED.templates.constantsGroup,
-                paths,
-                importMapProviders: {
-                  serviceContextImports,
-                },
+              renderers.configCategories.render({
                 variables: {
-                  constantsAdapters: {
-                    TPL_ADAPTERS:
-                      TsCodeUtils.mergeFragmentsAsObject(adapterMap),
-                  },
-                  constantsFileCategories: {
-                    TPL_FILE_CATEGORIES:
-                      TsCodeUtils.mergeFragmentsAsArray(categoriesMap),
-                    TPL_FILE_COUNT_OUTPUT_TYPE: tsCodeFragment(
-                      `Prisma.${fileModel}CountOutputType`,
-                      tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
-                    ),
-                    TPL_FILE_MODEL_TYPE: modelType,
-                  },
+                  TPL_FILE_CATEGORIES:
+                    TsCodeUtils.mergeFragmentsAsArray(categoriesMap),
                 },
               }),
             );

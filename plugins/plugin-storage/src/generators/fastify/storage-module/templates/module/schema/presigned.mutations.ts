@@ -4,6 +4,7 @@ import { builder } from '%pothosImports';
 
 import { createPresignedDownloadUrl } from '../services/create-presigned-download-url.js';
 import { createPresignedUploadUrl } from '../services/create-presigned-upload-url.js';
+import { fileCategoryEnumType } from './file-category.enum.js';
 
 export const presignedUrlFieldObjectType = builder.simpleObject(
   'PresignedUrlField',
@@ -19,10 +20,10 @@ builder.mutationField('createPresignedUploadUrl', (t) =>
   t.fieldWithInputPayload({
     authorize: 'user',
     input: {
-      category: t.input.string({ required: true }),
+      category: t.input.field({ type: fileCategoryEnumType, required: true }),
       contentType: t.input.string({ required: true }),
-      fileName: t.input.string({ required: true }),
-      fileSize: t.input.int({ required: true }),
+      filename: t.input.string({ required: true }),
+      size: t.input.int({ required: true }),
     },
     payload: {
       url: t.payload.string(),

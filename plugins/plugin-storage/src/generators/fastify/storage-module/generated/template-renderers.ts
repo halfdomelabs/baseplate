@@ -1,4 +1,7 @@
-import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTsTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
@@ -14,21 +17,31 @@ import { FASTIFY_STORAGE_MODULE_PATHS } from './template-paths.js';
 import { FASTIFY_STORAGE_MODULE_TEMPLATES } from './typed-templates.js';
 
 export interface FastifyStorageModuleRenderers {
-  adaptersGroup: {
+  configAdapters: {
     render: (
       options: Omit<
-        RenderTsTemplateGroupActionInput<
-          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.adaptersGroup
+        RenderTsTemplateFileActionInput<
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.configAdapters
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'destination' | 'importMapProviders' | 'template'
       >,
     ) => BuilderAction;
   };
-  constantsGroup: {
+  configCategories: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.configCategories
+        >,
+        'destination' | 'importMapProviders' | 'template'
+      >,
+    ) => BuilderAction;
+  };
+  mainGroup: {
     render: (
       options: Omit<
         RenderTsTemplateGroupActionInput<
-          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.constantsGroup
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.mainGroup
         >,
         'importMapProviders' | 'group' | 'paths'
       >,
@@ -39,26 +52,6 @@ export interface FastifyStorageModuleRenderers {
       options: Omit<
         RenderTsTemplateGroupActionInput<
           typeof FASTIFY_STORAGE_MODULE_TEMPLATES.schemaGroup
-        >,
-        'importMapProviders' | 'group' | 'paths'
-      >,
-    ) => BuilderAction;
-  };
-  servicesGroup: {
-    render: (
-      options: Omit<
-        RenderTsTemplateGroupActionInput<
-          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.servicesGroup
-        >,
-        'importMapProviders' | 'group' | 'paths'
-      >,
-    ) => BuilderAction;
-  };
-  utilsGroup: {
-    render: (
-      options: Omit<
-        RenderTsTemplateGroupActionInput<
-          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.utilsGroup
         >,
         'importMapProviders' | 'group' | 'paths'
       >,
@@ -94,20 +87,30 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
     return {
       providers: {
         fastifyStorageModuleRenderers: {
-          adaptersGroup: {
+          configAdapters: {
             render: (options) =>
-              typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_TEMPLATES.adaptersGroup,
-                paths,
+              typescriptFile.renderTemplateFile({
+                template: FASTIFY_STORAGE_MODULE_TEMPLATES.configAdapters,
+                destination: paths.configAdapters,
                 ...options,
               }),
           },
-          constantsGroup: {
+          configCategories: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: FASTIFY_STORAGE_MODULE_TEMPLATES.configCategories,
+                destination: paths.configCategories,
+                ...options,
+              }),
+          },
+          mainGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_TEMPLATES.constantsGroup,
+                group: FASTIFY_STORAGE_MODULE_TEMPLATES.mainGroup,
                 paths,
                 importMapProviders: {
+                  errorHandlerServiceImports,
+                  prismaUtilsImports,
                   serviceContextImports,
                 },
                 ...options,
@@ -120,31 +123,6 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                 paths,
                 importMapProviders: {
                   pothosImports,
-                },
-                ...options,
-              }),
-          },
-          servicesGroup: {
-            render: (options) =>
-              typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_TEMPLATES.servicesGroup,
-                paths,
-                importMapProviders: {
-                  errorHandlerServiceImports,
-                  prismaUtilsImports,
-                  serviceContextImports,
-                },
-                ...options,
-              }),
-          },
-          utilsGroup: {
-            render: (options) =>
-              typescriptFile.renderTemplateGroup({
-                group: FASTIFY_STORAGE_MODULE_TEMPLATES.utilsGroup,
-                paths,
-                importMapProviders: {
-                  errorHandlerServiceImports,
-                  serviceContextImports,
                 },
                 ...options,
               }),

@@ -4,8 +4,8 @@ import type { ServiceContext } from '%serviceContextImports';
 
 import { ForbiddenError } from '%errorHandlerServiceImports';
 
-import { STORAGE_ADAPTERS } from '../constants/adapters.js';
-import { FILE_CATEGORIES } from '../constants/file-categories.js';
+import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
+import { getCategoryByNameOrThrow } from '../config/categories.config.js';
 
 interface CreatePresignedDownloadUrlInput {
   fileId: string;
@@ -23,13 +23,11 @@ export async function createPresignedDownloadUrl(
     where: { id: fileId },
   });
 
-  const category = FILE_CATEGORIES.find((c) => c.name === file.category);
-  if (!category) {
-    throw new Error(`Invalid file category ${file.category}`);
-  }
+  const category = getCategoryByNameOrThrow(file.category);
 
   const isAuthorizedToRead =
-    !category.authorizeRead || (await category.authorizeRead(file, context));
+    !category.authorize?.presignedRead ||
+    (await category.authorize.presignedRead(file, context));
 
   if (!isAuthorizedToRead) {
     throw new ForbiddenError('You are not authorized to read this file');
@@ -47,7 +45,7 @@ export async function createPresignedDownloadUrl(
     );
   }
 
-  const url = await adapter.createPresignedDownloadUrl(file.path);
+  const url = await adapter.createPresignedDownloadUrl(file.storagePath);
 
   return { url };
 }

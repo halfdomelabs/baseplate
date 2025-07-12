@@ -2,23 +2,24 @@ import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface FastifyStorageModulePaths {
-  adaptersIndex: string;
   adaptersS_3: string;
-  adaptersTypes: string;
   adaptersUrl: string;
-  constantsAdapters: string;
-  constantsFileCategories: string;
-  schemaFileUploadInputType: string;
+  configAdapters: string;
+  configCategories: string;
+  schemaFileCategory: string;
+  schemaFileInput: string;
   schemaPresignedMutations: string;
-  schemaPublicUrlField: string;
+  schemaPublicUrl: string;
   servicesCreatePresignedDownloadUrl: string;
   servicesCreatePresignedUploadUrl: string;
   servicesDownloadFile: string;
   servicesUploadFile: string;
-  servicesValidateUploadInput: string;
+  servicesValidateFileInput: string;
+  typesAdapter: string;
+  typesFileCategory: string;
+  utilsCreateFileCategory: string;
   utilsMime: string;
-  utilsMimeUnitTest: string;
-  utilsUpload: string;
+  utilsValidateFileUploadOptions: string;
 }
 
 const fastifyStorageModulePaths = createProviderType<FastifyStorageModulePaths>(
@@ -34,23 +35,24 @@ const fastifyStorageModulePathsTask = createGeneratorTask({
     return {
       providers: {
         fastifyStorageModulePaths: {
-          adaptersIndex: `${moduleRoot}/adapters/index.ts`,
           adaptersS_3: `${moduleRoot}/adapters/s3.ts`,
-          adaptersTypes: `${moduleRoot}/adapters/types.ts`,
           adaptersUrl: `${moduleRoot}/adapters/url.ts`,
-          constantsAdapters: `${moduleRoot}/constants/adapters.ts`,
-          constantsFileCategories: `${moduleRoot}/constants/file-categories.ts`,
-          schemaFileUploadInputType: `${moduleRoot}/schema/file-upload.input-type.ts`,
+          configAdapters: `${moduleRoot}/config/adapters.config.ts`,
+          configCategories: `${moduleRoot}/config/categories.config.ts`,
+          schemaFileCategory: `${moduleRoot}/schema/file-category.enum.ts`,
+          schemaFileInput: `${moduleRoot}/schema/file-input.input-type.ts`,
           schemaPresignedMutations: `${moduleRoot}/schema/presigned.mutations.ts`,
-          schemaPublicUrlField: `${moduleRoot}/schema/public-url.field.ts`,
+          schemaPublicUrl: `${moduleRoot}/schema/public-url.field.ts`,
           servicesCreatePresignedDownloadUrl: `${moduleRoot}/services/create-presigned-download-url.ts`,
           servicesCreatePresignedUploadUrl: `${moduleRoot}/services/create-presigned-upload-url.ts`,
           servicesDownloadFile: `${moduleRoot}/services/download-file.ts`,
           servicesUploadFile: `${moduleRoot}/services/upload-file.ts`,
-          servicesValidateUploadInput: `${moduleRoot}/services/validate-upload-input.ts`,
+          servicesValidateFileInput: `${moduleRoot}/services/validate-file-input.ts`,
+          typesAdapter: `${moduleRoot}/types/adapter.ts`,
+          typesFileCategory: `${moduleRoot}/types/file-category.ts`,
+          utilsCreateFileCategory: `${moduleRoot}/utils/create-file-category.ts`,
           utilsMime: `${moduleRoot}/utils/mime.ts`,
-          utilsMimeUnitTest: `${moduleRoot}/utils/mime.unit.test.ts`,
-          utilsUpload: `${moduleRoot}/utils/upload.ts`,
+          utilsValidateFileUploadOptions: `${moduleRoot}/utils/validate-file-upload-options.ts`,
         },
       },
     };

@@ -4,7 +4,7 @@ import type { Readable } from 'node:stream';
 
 import axios from 'axios';
 
-import type { StorageAdapter } from './types.js';
+import type { StorageAdapter } from '../types/adapter.js';
 
 /**
  * Minimal adapter that just converts path to URL directly.

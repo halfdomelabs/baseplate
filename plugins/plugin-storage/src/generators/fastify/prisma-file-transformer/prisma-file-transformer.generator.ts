@@ -64,14 +64,14 @@ export const prismaFileTransformerGenerator = createGenerator({
             const isFieldOptional =
               operationType === 'update' || foreignRelation.isOptional;
             const transformer = tsCodeFragment(
-              `await validateFileUploadInput(${name}, ${quot(category)}, context${
+              `await validateFileInput(${name}, ${quot(category)}, context${
                 operationType === 'create'
                   ? ''
                   : `, existingItem${
                       operationType === 'upsert' ? '?' : ''
                     }.${foreignRelationFieldName}`
               })`,
-              storageModuleImports.validateFileUploadInput.declaration(),
+              storageModuleImports.validateFileInput.declaration(),
             );
 
             const prefix = isFieldOptional
