@@ -24,7 +24,6 @@ import type { StoragePluginDefinitionInput } from '../schema/plugin-definition.j
 import { createStorageModels } from '../schema/models.js';
 import { createStoragePluginDefinitionSchema } from '../schema/plugin-definition.js';
 import AdapterEditorForm from './adapter-editor-form.js';
-import CategoryEditorForm from './category-editor-form.js';
 
 export function StorageConfig({
   definition: pluginMetadata,
@@ -52,7 +51,6 @@ export function StorageConfig({
         'storage',
       ),
       s3Adapters: [],
-      categories: [],
     } satisfies StoragePluginDefinitionInput;
   }, [definition, pluginMetadata?.config]);
 
@@ -149,7 +147,6 @@ export function StorageConfig({
           />
         </div>
         <AdapterEditorForm control={control} />
-        <CategoryEditorForm control={control} />
         <Button type="submit" disabled={formState.isSubmitting}>
           Save
         </Button>

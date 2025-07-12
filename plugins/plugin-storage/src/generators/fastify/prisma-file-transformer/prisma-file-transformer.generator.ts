@@ -1,20 +1,26 @@
 import type { PrismaOutputRelationField } from '@baseplate-dev/fastify-generators';
 
-import { tsCodeFragment, tsTemplate } from '@baseplate-dev/core-generators';
+import {
+  tsCodeFragment,
+  tsTemplate,
+  tsTemplateWithImports,
+} from '@baseplate-dev/core-generators';
 import {
   prismaCrudServiceSetupProvider,
   prismaOutputProvider,
   prismaUtilsImportsProvider,
 } from '@baseplate-dev/fastify-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
-import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
+
+import { fileCategoriesProvider } from '#src/storage/core/generators/file-categories/file-categories.generator.js';
 
 import { storageModuleImportsProvider } from '../storage-module/index.js';
 
 const descriptorSchema = z.object({
   name: z.string(),
   category: z.string(),
+  featureId: z.string(),
 });
 
 export const prismaFileTransformerGenerator = createGenerator({
@@ -22,13 +28,16 @@ export const prismaFileTransformerGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.name,
-  buildTasks: ({ name, category }) => ({
+  buildTasks: ({ name, category, featureId }) => ({
     main: createGeneratorTask({
       dependencies: {
         prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
         storageModuleImports: storageModuleImportsProvider,
         prismaOutput: prismaOutputProvider,
         prismaUtilsImports: prismaUtilsImportsProvider,
+        fileCategories: fileCategoriesProvider
+          .dependency()
+          .reference(featureId),
       },
       exports: {},
       run({
@@ -36,6 +45,7 @@ export const prismaFileTransformerGenerator = createGenerator({
         prismaCrudServiceSetup,
         storageModuleImports,
         prismaUtilsImports,
+        fileCategories,
       }) {
         const modelName = prismaCrudServiceSetup.getModelName();
         const model = prismaOutput.getPrismaModel(modelName);
@@ -63,16 +73,15 @@ export const prismaFileTransformerGenerator = createGenerator({
           buildTransformer: ({ operationType }) => {
             const isFieldOptional =
               operationType === 'update' || foreignRelation.isOptional;
-            const transformer = tsCodeFragment(
-              `await validateFileInput(${name}, ${quot(category)}, context${
-                operationType === 'create'
-                  ? ''
-                  : `, existingItem${
-                      operationType === 'upsert' ? '?' : ''
-                    }.${foreignRelationFieldName}`
-              })`,
+            const transformer = tsTemplateWithImports([
               storageModuleImports.validateFileInput.declaration(),
-            );
+            ])`await validateFileInput(${name}, ${fileCategories.getFileCategoryImportFragment(category)}, context${
+              operationType === 'create'
+                ? ''
+                : `, existingItem${
+                    operationType === 'upsert' ? '?' : ''
+                  }.${foreignRelationFieldName}`
+            })`;
 
             const prefix = isFieldOptional
               ? `${name} == null ? ${name} : `

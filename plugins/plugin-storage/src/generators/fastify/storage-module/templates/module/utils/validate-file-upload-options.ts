@@ -14,12 +14,12 @@ import { getCategoryByNameOrThrow } from '../config/categories.config.js';
 import {
   getEncodingFromContentType,
   getMimeTypeFromContentType,
-  InvalidExtensionError,
+  InvalidMimeTypeError,
   validateFileExtensionWithMimeType,
 } from './mime.js';
 
 // Constants
-const MAX_filename_LENGTH = 128;
+const MAX_FILENAME_LENGTH = 128;
 
 /**
  * There are a set of unsafe characters that should be replaced
@@ -27,7 +27,7 @@ const MAX_filename_LENGTH = 128;
  * https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
  *
  */
-function makefilenameSafe(filename: string): string {
+function makeFilenameSafe(filename: string): string {
   return filename.replaceAll(/[^a-zA-Z0-9!\-_.*'()]/g, '_');
 }
 
@@ -35,8 +35,8 @@ const fileUploadOptionsSchema = z.object({
   /** The file name */
   filename: z
     .string({ required_error: 'File name is required and must be a string' })
-    .max(MAX_filename_LENGTH, {
-      message: `File name is too long (max ${MAX_filename_LENGTH} characters)`,
+    .max(MAX_FILENAME_LENGTH, {
+      message: `File name is too long (max ${MAX_FILENAME_LENGTH} characters)`,
     }),
   /** The file size in bytes */
   size: z
@@ -93,7 +93,7 @@ function validateMimeType(
   try {
     validateFileExtensionWithMimeType(mimeType, filename);
   } catch (error) {
-    if (error instanceof InvalidExtensionError) {
+    if (error instanceof InvalidMimeTypeError) {
       throw new BadRequestError(error.message, 'INVALID_FILE_EXTENSION', {
         expectedFileExtensions: error.expectedFileExtensions,
       });
@@ -138,9 +138,9 @@ export async function validateFileUploadOptions(
 
   // Only system users or users with upload permission can upload files
   if (
-    context.auth.roles.includes('system') ||
-    !fileCategory.authorize?.upload ||
-    !(await Promise.resolve(fileCategory.authorize.upload(context)))
+    !context.auth.roles.includes('system') &&
+    (!fileCategory.authorize?.upload ||
+      !(await Promise.resolve(fileCategory.authorize.upload(context))))
   ) {
     throw new ForbiddenError(
       `You are not authorized to upload files to category: ${fileCategory.name}`,
@@ -155,20 +155,20 @@ export async function validateFileUploadOptions(
   const encoding = getEncodingFromContentType(contentType);
 
   // Process and clean filename
-  const cleanedfilename = makefilenameSafe(filename);
+  const cleanedFilename = makeFilenameSafe(filename);
 
   // Generate unique storage path
   const pathPrefix =
     fileCategory.pathPrefix ??
     fileCategory.name.toLowerCase().replaceAll('_', '-');
-  const storagePath = `${pathPrefix}/${nanoid(14)}/${cleanedfilename}`;
+  const storagePath = `${pathPrefix}/${nanoid(14)}/${cleanedFilename}`;
 
   // Get storage adapter
   const adapter = STORAGE_ADAPTERS[fileCategory.adapter];
 
   // Prepare file record data
   const fileCreateInput = {
-    filename: cleanedfilename,
+    filename: cleanedFilename,
     storagePath,
     category: fileCategory.name,
     adapter: fileCategory.adapter,

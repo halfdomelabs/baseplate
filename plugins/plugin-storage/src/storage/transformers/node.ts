@@ -3,21 +3,17 @@ import type { ModelTransformerCompiler } from '@baseplate-dev/project-builder-li
 import {
   createPlatformPluginExport,
   modelTransformerCompilerSpec,
-  PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 
 import { prismaFileTransformerGenerator } from '#src/generators/fastify/index.js';
 
-import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
-import type { FileTransformerConfig } from './types.js';
+import type { FileTransformerDefinition } from './schema/file-transformer.schema.js';
 
-function buildFileTransformerCompiler(
-  pluginId: string,
-): ModelTransformerCompiler<FileTransformerConfig> {
+function buildFileTransformerCompiler(): ModelTransformerCompiler<FileTransformerDefinition> {
   return {
     name: 'file',
-    compileTransformer(definition, { definitionContainer, model }) {
-      const { fileRelationRef } = definition;
+    compileTransformer(definition, { model }) {
+      const { fileRelationRef, category } = definition;
 
       const foreignRelation = model.model.relations?.find(
         (relation) => relation.id === fileRelationRef,
@@ -29,24 +25,10 @@ function buildFileTransformerCompiler(
         );
       }
 
-      const storageDefinition = PluginUtils.configByIdOrThrow(
-        definitionContainer.definition,
-        pluginId,
-      ) as StoragePluginDefinition;
-
-      const category = storageDefinition.categories.find(
-        (c) => c.usedByRelationRef === foreignRelation.foreignId,
-      );
-
-      if (!category) {
-        throw new Error(
-          `Could not find category for relation ${foreignRelation.name}`,
-        );
-      }
-
       return prismaFileTransformerGenerator({
         category: category.name,
         name: foreignRelation.name,
+        featureId: model.featureRef,
       });
     },
   };
@@ -57,9 +39,9 @@ export default createPlatformPluginExport({
     transformerCompiler: modelTransformerCompilerSpec,
   },
   exports: {},
-  initialize: ({ transformerCompiler }, { pluginId }) => {
+  initialize: ({ transformerCompiler }) => {
     transformerCompiler.registerTransformerCompiler(
-      buildFileTransformerCompiler(pluginId),
+      buildFileTransformerCompiler(),
     );
     return {};
   },

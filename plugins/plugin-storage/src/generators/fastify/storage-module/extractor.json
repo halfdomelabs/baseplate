@@ -258,7 +258,7 @@
       "projectExports": {
         "getEncodingFromContentType": {},
         "getMimeTypeFromContentType": {},
-        "InvalidExtensionError": {},
+        "InvalidMimeTypeError": {},
         "validateFileExtensionWithMimeType": {}
       },
       "sourceFile": "module/utils/mime.ts",

@@ -3,9 +3,9 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import {
   createNodePackagesTask,
   extractPackageVersions,
+  packageScope,
   tsCodeFragment,
   TsCodeUtils,
-  tsTemplate,
   tsTypeImportBuilder,
 } from '@baseplate-dev/core-generators';
 import {
@@ -19,12 +19,11 @@ import {
   prismaOutputProvider,
 } from '@baseplate-dev/fastify-generators';
 import {
+  createConfigProviderTask,
   createGenerator,
   createGeneratorTask,
   createProviderTask,
 } from '@baseplate-dev/sync';
-import { quot } from '@baseplate-dev/utils';
-import { constantCase } from 'es-toolkit';
 import { z } from 'zod';
 
 import { STORAGE_PACKAGES } from '#src/constants/index.js';
@@ -53,31 +52,34 @@ const descriptorSchema = z.object({
       hostedUrlConfigVar: z.string().optional(),
     }),
   ),
-  /**
-   * The categories to use for the storage module.
-   */
-  categories: z.array(
-    z.object({
-      /**
-       * The name of the category.
-       */
-      name: z.string().min(1),
-      defaultAdapter: z.string().min(1),
-      maxFileSize: z.number().optional(),
-      usedByRelation: z.string().min(1),
-      uploadRoles: z.array(z.string().min(1)),
-    }),
-  ),
 });
+
+const [
+  configTask,
+  storageModuleConfigProvider,
+  storageModuleConfigValuesProvider,
+] = createConfigProviderTask(
+  (t) => ({
+    /** Map of file category name to the config fragment for the file category. */
+    fileCategories: t.map<string, TsCodeFragment>(),
+  }),
+  {
+    prefix: 'storage-module',
+    configScope: packageScope,
+  },
+);
+
+export { storageModuleConfigProvider };
 
 export const storageModuleGenerator = createGenerator({
   name: 'fastify/storage-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ fileModel, s3Adapters, categories = [] }) => ({
+  buildTasks: ({ fileModel, s3Adapters }) => ({
     paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.task,
     imports: FASTIFY_STORAGE_MODULE_GENERATED.imports.task,
     renderers: FASTIFY_STORAGE_MODULE_GENERATED.renderers.task,
+    config: configTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(STORAGE_PACKAGES, [
         '@aws-sdk/client-s3',
@@ -141,53 +143,58 @@ export const storageModuleGenerator = createGenerator({
         };
       },
     }),
-    config: createProviderTask(configServiceProvider, (configService) => {
-      configService.configFields.mergeObj({
-        AWS_ACCESS_KEY_ID: {
-          comment: 'AWS access key ID',
-          validator: tsCodeFragment('z.string().min(1)'),
-          seedValue: 'AWS_ACCESS_KEY_ID',
-        },
-        AWS_SECRET_ACCESS_KEY: {
-          comment: 'AWS secret access key',
-          validator: tsCodeFragment('z.string().min(1)'),
-          seedValue: 'AWS_SECRET_ACCESS_KEY',
-        },
-        AWS_DEFAULT_REGION: {
-          comment: 'AWS default region',
-          validator: tsCodeFragment('z.string().min(1)'),
-          seedValue: 'AWS_DEFAULT_REGION',
-        },
-      });
-
-      for (const adapter of s3Adapters) {
-        configService.configFields.set(adapter.bucketConfigVar, {
-          comment: `S3 bucket for ${adapter.name}`,
-          validator: tsCodeFragment('z.string().min(1)'),
-          seedValue: adapter.bucketConfigVar,
+    configService: createProviderTask(
+      configServiceProvider,
+      (configService) => {
+        configService.configFields.mergeObj({
+          AWS_ACCESS_KEY_ID: {
+            comment: 'AWS access key ID',
+            validator: tsCodeFragment('z.string().min(1)'),
+            seedValue: 'AWS_ACCESS_KEY_ID',
+          },
+          AWS_SECRET_ACCESS_KEY: {
+            comment: 'AWS secret access key',
+            validator: tsCodeFragment('z.string().min(1)'),
+            seedValue: 'AWS_SECRET_ACCESS_KEY',
+          },
+          AWS_DEFAULT_REGION: {
+            comment: 'AWS default region',
+            validator: tsCodeFragment('z.string().min(1)'),
+            seedValue: 'AWS_DEFAULT_REGION',
+          },
         });
 
-        if (adapter.hostedUrlConfigVar) {
-          configService.configFields.set(adapter.hostedUrlConfigVar, {
-            comment: `Hosted URL prefix for ${adapter.name}, e.g. https://uploads.example.com`,
+        for (const adapter of s3Adapters) {
+          configService.configFields.set(adapter.bucketConfigVar, {
+            comment: `S3 bucket for ${adapter.name}`,
             validator: tsCodeFragment('z.string().min(1)'),
-            seedValue: adapter.hostedUrlConfigVar,
+            seedValue: adapter.bucketConfigVar,
           });
+
+          if (adapter.hostedUrlConfigVar) {
+            configService.configFields.set(adapter.hostedUrlConfigVar, {
+              comment: `Hosted URL prefix for ${adapter.name}, e.g. https://uploads.example.com`,
+              validator: tsCodeFragment('z.string().min(1)'),
+              seedValue: adapter.hostedUrlConfigVar,
+            });
+          }
         }
-      }
-    }),
+      },
+    ),
     build: createGeneratorTask({
       dependencies: {
         prismaOutput: prismaOutputProvider,
         configServiceImports: configServiceImportsProvider,
         renderers: FASTIFY_STORAGE_MODULE_GENERATED.renderers.provider,
         storageModuleImports: storageModuleImportsProvider,
+        storageModuleConfigValues: storageModuleConfigValuesProvider,
       },
       run({
         prismaOutput,
         configServiceImports,
         renderers,
         storageModuleImports,
+        storageModuleConfigValues,
       }) {
         return {
           build: async (builder) => {
@@ -269,30 +276,7 @@ export const storageModuleGenerator = createGenerator({
 
             // Copy constants
 
-            const categoriesMap = new Map<string, TsCodeFragment>();
-            for (const category of categories) {
-              categoriesMap.set(
-                category.name,
-                tsTemplate`
-                ${storageModuleImports.createFileCategory.fragment()}(${TsCodeUtils.mergeFragmentsAsObject(
-                  {
-                    // TODO [2025-07-13]: Remove once validation kicks in and add allowed Mime Types
-                    name: quot(constantCase(category.name)),
-                    maxFileSize: tsTemplate`${storageModuleImports.FileSize.fragment()}.MB(${category.maxFileSize?.toString() ?? '100'})`,
-                    authorize:
-                      category.uploadRoles.length > 0
-                        ? tsTemplate`{
-                          upload: ({ auth }) => auth.hasSomeRole(${TsCodeUtils.mergeFragmentsAsArrayPresorted(
-                            category.uploadRoles.map(quot).sort(),
-                          )})
-                        }`
-                        : undefined,
-                    adapter: quot(category.defaultAdapter),
-                    referencedByRelation: quot(category.usedByRelation),
-                  },
-                )})`,
-              );
-            }
+            const categoriesMap = storageModuleConfigValues.fileCategories;
 
             await builder.apply(
               renderers.configCategories.render({

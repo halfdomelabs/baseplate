@@ -4,7 +4,6 @@
   "display": "Vite React Library",
   "compilerOptions": {
     "allowImportingTsExtensions": false,
-    /* Make sure we use NodeNext for mixed-Node/React libraries */
     "module": "NodeNext",
     "moduleResolution": "Node16",
 

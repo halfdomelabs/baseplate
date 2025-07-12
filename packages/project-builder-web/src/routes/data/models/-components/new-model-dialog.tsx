@@ -72,7 +72,7 @@ export function NewModelDialog({
   children,
   open,
   onOpenChange,
-}: NewModelDialogProps): React.JSX.Element {
+}: NewModelDialogProps): React.ReactElement {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
   // memoize it to keep the same key when resetting

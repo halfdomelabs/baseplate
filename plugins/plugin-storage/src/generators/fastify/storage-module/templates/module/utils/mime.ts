@@ -20,7 +20,7 @@ export function getEncodingFromContentType(
   return Buffer.isEncoding(charset) ? charset : 'utf-8';
 }
 
-export class InvalidExtensionError extends Error {
+export class InvalidMimeTypeError extends Error {
   constructor(
     message: string,
     public readonly expectedFileExtensions: string[],
@@ -54,7 +54,7 @@ export function validateFileExtensionWithMimeType(
   }
 
   if (!extensions.includes(extension)) {
-    throw new InvalidExtensionError(
+    throw new InvalidMimeTypeError(
       `File extension ".${extension}" does not match mime type "${mimeType}". Expected one of: ${extensions.map((ext) => `.${ext}`).join(', ')}`,
       extensions,
     );

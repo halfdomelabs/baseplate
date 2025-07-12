@@ -4,23 +4,19 @@ import {
   adminCrudInputCompilerSpec,
   createPlatformPluginExport,
   ModelFieldUtils,
-  PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 
 import { adminCrudFileInputGenerator } from '#src/generators/react/admin-crud-file-input/index.js';
 
-import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
-import type { FileTransformerConfig } from '../transformers/types.js';
+import type { FileTransformerDefinition } from '../transformers/schema/file-transformer.schema.js';
 import type { AdminCrudFileInputConfig } from './types.js';
 
-function buildFileTransformerCompiler(
-  pluginId: string,
-): AdminCrudInputCompiler<AdminCrudFileInputConfig> {
+function buildFileTransformerCompiler(): AdminCrudInputCompiler<AdminCrudFileInputConfig> {
   return {
     name: 'file',
     compileInput(definition, { order, definitionContainer, model }) {
       const transformer = model.service.transformers.find(
-        (t): t is FileTransformerConfig =>
+        (t): t is FileTransformerDefinition =>
           t.id === definition.modelRelationRef && t.type === 'file',
       );
       const relation = model.model.relations?.find(
@@ -33,13 +29,7 @@ function buildFileTransformerCompiler(
         );
       }
 
-      const storageDefinition = PluginUtils.configByIdOrThrow(
-        definitionContainer.definition,
-        pluginId,
-      ) as StoragePluginDefinition;
-      const category = storageDefinition.categories.find(
-        (c) => c.usedByRelationRef === relation.foreignId,
-      );
+      const category = transformer?.category;
 
       if (!category) {
         throw new Error(
@@ -67,10 +57,8 @@ export default createPlatformPluginExport({
     adminCrudInputCompiler: adminCrudInputCompilerSpec,
   },
   exports: {},
-  initialize: ({ adminCrudInputCompiler }, { pluginId }) => {
-    adminCrudInputCompiler.registerCompiler(
-      buildFileTransformerCompiler(pluginId),
-    );
+  initialize: ({ adminCrudInputCompiler }) => {
+    adminCrudInputCompiler.registerCompiler(buildFileTransformerCompiler());
     return {};
   },
 });

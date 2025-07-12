@@ -9,9 +9,10 @@ import {
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import { modelTransformerWebSpec } from '@baseplate-dev/project-builder-lib/web';
+import { constantCase } from 'es-toolkit';
 
 import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
-import type { FileTransformerConfig } from './types.js';
+import type { FileTransformerDefinition } from './schema/file-transformer.schema.js';
 
 import { FileTransformerForm } from './components/file-transformer-form.js';
 
@@ -28,7 +29,7 @@ function findNonTransformedFileRelations(
   ) as StoragePluginDefinition;
   const { transformers } = modelConfig.service ?? {};
   const fileTransformers = transformers?.filter(
-    (transformer): transformer is FileTransformerConfig =>
+    (transformer): transformer is FileTransformerDefinition =>
       transformer.type === 'file',
   );
   return (
@@ -50,7 +51,7 @@ export default createPlatformPluginExport({
   },
   exports: {},
   initialize: ({ transformerWeb }, { pluginId }) => {
-    transformerWeb.registerTransformerWebConfig<FileTransformerConfig>({
+    transformerWeb.registerTransformerWebConfig<FileTransformerDefinition>({
       name: 'file',
       label: 'File',
       description: 'Validates and associates file ID to field',
@@ -71,10 +72,29 @@ export default createPlatformPluginExport({
           modelConfig,
           pluginId,
         );
+        const fileRelationId = fileRelationIds[0];
+        const relation = modelConfig.model.relations?.find(
+          (r) => r.id === fileRelationId,
+        );
+        if (!relation) {
+          throw new Error(`Could not find relation ${fileRelationId}`);
+        }
+        const storageDefinition = PluginUtils.configByIdOrThrow(
+          definition,
+          pluginId,
+        ) as StoragePluginDefinition;
         return {
           id: modelTransformerEntityType.generateNewId(),
-          type: 'file',
+          type: 'file' as const,
           fileRelationRef: fileRelationIds[0],
+          category: {
+            name: constantCase(relation.foreignRelationName),
+            maxFileSizeMb: 20,
+            authorize: {
+              uploadRoles: ['user'],
+            },
+            adapterRef: storageDefinition.s3Adapters[0]?.id ?? '',
+          },
         };
       },
       getSummary: (definition, definitionContainer) => [

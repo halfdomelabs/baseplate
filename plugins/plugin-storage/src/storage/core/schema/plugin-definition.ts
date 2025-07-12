@@ -1,12 +1,10 @@
 import type { def } from '@baseplate-dev/project-builder-lib';
 
 import {
-  authRoleEntityType,
   createEntityType,
   definitionSchema,
   featureEntityType,
   modelEntityType,
-  modelForeignRelationEntityType,
   VALIDATORS,
 } from '@baseplate-dev/project-builder-lib';
 import z from 'zod';
@@ -38,30 +36,6 @@ export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
           }),
           { type: storageAdapterEntityType },
         ),
-      ),
-      categories: z.array(
-        z.object({
-          name: z.string().min(1),
-          defaultAdapterRef: ctx.withRef({
-            type: storageAdapterEntityType,
-            onDelete: 'RESTRICT',
-          }),
-          maxFileSize: z.preprocess(
-            (a) => a && Number.parseInt(a as string, 10),
-            z.number().positive().optional(),
-          ),
-          usedByRelationRef: ctx.withRef({
-            type: modelForeignRelationEntityType,
-            onDelete: 'RESTRICT',
-            parentPath: { context: 'fileModel' },
-          }),
-          uploadRoles: z.array(
-            ctx.withRef({
-              type: authRoleEntityType,
-              onDelete: 'DELETE',
-            }),
-          ),
-        }),
       ),
     }),
     (builder) => {
