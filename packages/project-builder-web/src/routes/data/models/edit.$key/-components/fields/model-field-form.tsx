@@ -48,12 +48,13 @@ function ModelFieldForm({
     (model) => model.model.relations,
   );
 
-  const model = useEditedModelConfig((model) => model.model);
-  const isPartOfPrimaryKey = model.primaryKeyFieldRefs.includes(
-    watchedField.id,
+  const primaryKeyFieldRefs = useEditedModelConfig(
+    (model) => model.model.primaryKeyFieldRefs,
   );
-  const hasCompositePrimaryKey = model.primaryKeyFieldRefs.length > 1;
-  const uniqueConstraints = model.uniqueConstraints ?? [];
+  const uniqueConstraints =
+    useEditedModelConfig((model) => model.model.uniqueConstraints) ?? [];
+  const isPartOfPrimaryKey = primaryKeyFieldRefs.includes(watchedField.id);
+  const hasCompositePrimaryKey = primaryKeyFieldRefs.length > 1;
 
   const ownUniqueConstraints = uniqueConstraints.filter((uc) =>
     uc.fields.some((f) => f.fieldRef === watchedField.id),
@@ -76,7 +77,7 @@ function ModelFieldForm({
     }
     // check unique constraints
     if (
-      model.uniqueConstraints?.some((constraint) =>
+      uniqueConstraints.some((constraint) =>
         constraint.fields.some((f) => f.fieldRef === watchedField.id),
       )
     ) {
