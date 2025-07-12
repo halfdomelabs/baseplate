@@ -219,6 +219,10 @@ export function generateTypescriptEslintConfig(options = []) {
 
         // Prevents returning undefined from functions which Typescript assumes is void
         'unicorn/no-useless-undefined': 'off',
+
+        // Allow usage of utf-8 text encoding since it's consistent with the WHATWG spec
+        // and autofixing can cause unexpected changes (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1926)
+        'unicorn/text-encoding-identifier-case': 'off',
       },
     },
 
