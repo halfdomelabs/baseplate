@@ -4,18 +4,29 @@ import type React from 'react';
 import {
   createAndApplyModelMergerResults,
   createModelMergerResults,
+  doesModelMergerResultsHaveChanges,
   FeatureUtils,
   ModelUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
+  FeatureComboboxFieldController,
+  ModelComboboxFieldController,
   ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
-import { Button, ComboboxFieldController } from '@baseplate-dev/ui-components';
+import {
+  FormActionBar,
+  SectionList,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
+} from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
@@ -25,7 +36,7 @@ import { createStorageModels } from '../schema/models.js';
 import { createStoragePluginDefinitionSchema } from '../schema/plugin-definition.js';
 import AdapterEditorForm from './adapter-editor-form.js';
 
-export function StorageConfig({
+export function StorageDefinitionEditor({
   definition: pluginMetadata,
   metadata,
   onSave,
@@ -54,11 +65,11 @@ export function StorageConfig({
     } satisfies StoragePluginDefinitionInput;
   }, [definition, pluginMetadata?.config]);
 
-  const { control, handleSubmit, formState, watch, reset } =
-    useResettableForm<StoragePluginDefinitionInput>({
-      resolver: zodResolver(storagePluginDefinitionSchema),
-      defaultValues,
-    });
+  const form = useResettableForm({
+    resolver: zodResolver(storagePluginDefinitionSchema),
+    defaultValues,
+  });
+  const { control, reset, handleSubmit, watch } = form;
 
   const modelRefs = watch('modelRefs');
   const storageFeatureRef = watch('storageFeatureRef');
@@ -69,12 +80,11 @@ export function StorageConfig({
       definitionContainer,
     );
 
-    const result = createModelMergerResults(
+    return createModelMergerResults(
       modelRefs,
       desiredModels,
       definitionContainer,
     );
-    return result;
   }, [definitionContainer, storageFeatureRef, modelRefs]);
 
   const onSubmit = handleSubmit((data) =>
@@ -114,43 +124,57 @@ export function StorageConfig({
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
-  const modelOptions = definition.models.map((m) => ({
-    label: m.name,
-    value: m.id,
-  }));
-
-  const featureOptions = definition.features.map((m) => ({
-    label: m.name,
-    value: m.id,
-  }));
-
   return (
-    <div className="space-y-4">
-      <form onSubmit={onSubmit} className="storage:max-w-4xl storage:space-y-4">
-        <ModelMergerResultAlert pendingModelChanges={pendingModelChanges} />
-        <div className="storage:flex storage:gap-4">
-          <ComboboxFieldController
-            label="File Model"
-            options={modelOptions}
-            name="modelRefs.file"
-            control={control}
-            className="storage:flex-1"
-            description="The model to use for file storage."
-          />
-          <ComboboxFieldController
-            label="Storage Feature Path"
-            options={featureOptions}
-            name="storageFeatureRef"
-            control={control}
-            className="storage:flex-1"
-            description="The feature to use for storage functionality."
-          />
-        </div>
-        <AdapterEditorForm control={control} />
-        <Button type="submit" disabled={formState.isSubmitting}>
-          Save
-        </Button>
-      </form>
-    </div>
+    <form
+      onSubmit={onSubmit}
+      className="storage:mb-[--action-bar-height] storage:max-w-6xl"
+    >
+      <div className="storage:pb-16">
+        <SectionList>
+          <SectionListSection>
+            <SectionListSectionHeader>
+              <SectionListSectionTitle>
+                Storage Configuration
+              </SectionListSectionTitle>
+              <SectionListSectionDescription>
+                Configure your storage settings, file models, and S3 adapters.
+              </SectionListSectionDescription>
+            </SectionListSectionHeader>
+            <SectionListSectionContent className="storage:space-y-6">
+              <ModelMergerResultAlert
+                pendingModelChanges={pendingModelChanges}
+              />
+
+              <div className="storage:grid storage:grid-cols-1 storage:gap-6 storage:md:grid-cols-2">
+                <ModelComboboxFieldController
+                  label="File Model"
+                  name="modelRefs.file"
+                  control={control}
+                  canCreate
+                  description="The model to use for file storage"
+                />
+                <FeatureComboboxFieldController
+                  label="Storage Feature Path"
+                  name="storageFeatureRef"
+                  control={control}
+                  canCreate
+                  description="Specify the feature path where storage endpoints will be generated"
+                />
+              </div>
+            </SectionListSectionContent>
+          </SectionListSection>
+
+          <AdapterEditorForm control={control} />
+        </SectionList>
+      </div>
+
+      <FormActionBar
+        form={form}
+        allowSaveWithoutDirty={
+          !pluginMetadata ||
+          doesModelMergerResultsHaveChanges(pendingModelChanges)
+        }
+      />
+    </form>
   );
 }

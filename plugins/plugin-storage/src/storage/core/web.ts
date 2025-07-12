@@ -3,7 +3,7 @@ import {
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
-import { StorageConfig } from './components/storage-config.js';
+import { StorageDefinitionEditor } from './components/storage-definition-editor.js';
 
 import '../../styles.css';
 
@@ -13,7 +13,7 @@ export default createPlatformPluginExport({
   },
   exports: {},
   initialize: ({ webConfig }, { pluginId }) => {
-    webConfig.registerWebConfigComponent(pluginId, StorageConfig);
+    webConfig.registerWebConfigComponent(pluginId, StorageDefinitionEditor);
     return {};
   },
 });
