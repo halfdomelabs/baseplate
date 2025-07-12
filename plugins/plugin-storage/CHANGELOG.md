@@ -1,5 +1,48 @@
 # @baseplate-dev/plugin-storage
 
+## 1.0.4
+
+### Patch Changes
+
+- [#606](https://github.com/halfdomelabs/baseplate/pull/606) [`ffe791f`](https://github.com/halfdomelabs/baseplate/commit/ffe791f6ab44e82c8481f3a18df9262dec71cff6) Thanks [@kingston](https://github.com/kingston)! - Refactor storage plugin file category system to use registry-based pattern
+
+  This change modernizes the file category system by moving from a centralized configuration array to a modular registry-based pattern with individual category files. Key improvements include:
+
+  **New Architecture:**
+
+  - Individual category files for better modularity and maintainability
+  - `createFileCategory` utility with FileSize and MimeTypes helpers
+  - Registry pattern with `FILE_CATEGORY_REGISTRY` for type-safe category lookup
+  - GraphQL enum type for file categories with strict validation
+
+  **Enhanced Features:**
+
+  - If-None-Match header support for S3 uploads to prevent file overwrites
+  - Improved authorization patterns with separate upload/read permissions
+  - Better error messages and validation feedback
+  - Type-safe category name validation using CONSTANT_CASE convention
+
+  **Breaking Changes:**
+
+  - File categories are now imported from individual files instead of centralized array
+  - GraphQL schema now uses enum type instead of string for category field
+  - Authorization interface updated with separate upload/read functions
+
+  **Migration:**
+
+  - Existing file categories are preserved with same functionality
+  - Services updated to use new registry lookup functions
+  - Database schema remains compatible
+
+- Updated dependencies [[`ffe791f`](https://github.com/halfdomelabs/baseplate/commit/ffe791f6ab44e82c8481f3a18df9262dec71cff6), [`ffe791f`](https://github.com/halfdomelabs/baseplate/commit/ffe791f6ab44e82c8481f3a18df9262dec71cff6)]:
+  - @baseplate-dev/utils@0.2.4
+  - @baseplate-dev/react-generators@0.2.4
+  - @baseplate-dev/core-generators@0.2.4
+  - @baseplate-dev/fastify-generators@0.2.4
+  - @baseplate-dev/project-builder-lib@0.2.4
+  - @baseplate-dev/sync@0.2.4
+  - @baseplate-dev/ui-components@0.2.4
+
 ## 1.0.3
 
 ### Patch Changes
