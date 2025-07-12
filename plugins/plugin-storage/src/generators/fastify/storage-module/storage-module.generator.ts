@@ -276,7 +276,7 @@ export const storageModuleGenerator = createGenerator({
                 tsTemplate`
                 ${storageModuleImports.createFileCategory.fragment()}(${TsCodeUtils.mergeFragmentsAsObject(
                   {
-                    // TODO [2025-06-02]: Remove once validation kicks in and add allowed Mime Types
+                    // TODO [2025-07-13]: Remove once validation kicks in and add allowed Mime Types
                     name: quot(constantCase(category.name)),
                     maxFileSize: tsTemplate`${storageModuleImports.FileSize.fragment()}.MB(${category.maxFileSize?.toString() ?? '100'})`,
                     authorize:
