@@ -2,34 +2,30 @@
 
 import type { ServiceContext } from '%serviceContextImports';
 
-import { BadRequestError } from '%errorHandlerServiceImports';
+import type { FileUploadOptions } from '../utils/validate-file-upload-options.js';
 
-import type { UploadDataInput } from '../utils/upload.js';
+import { validateFileUploadOptions } from '../utils/validate-file-upload-options.js';
 
-import { prepareUploadData } from '../utils/upload.js';
-
-interface UploadFileInput extends UploadDataInput {
-  contents: Buffer;
-}
-
+/**
+ * Uploads a file to storage
+ * @param contents - The file contents
+ * @param options - The file upload options
+ * @param context - The service context
+ * @returns The uploaded file
+ */
 export async function uploadFile(
-  input: UploadFileInput,
+  contents: Buffer,
+  options: FileUploadOptions,
   context: ServiceContext,
 ): Promise<TPL_FILE_MODEL_TYPE> {
-  const { data, fileCategory, adapter } = await prepareUploadData(
-    input,
+  const { fileCreateInput, adapter } = await validateFileUploadOptions(
+    options,
     context,
   );
 
-  if (!adapter.uploadFile) {
-    throw new BadRequestError(
-      `Adapter for ${fileCategory.name} does not support uploadFile`,
-    );
-  }
+  const file = await TPL_FILE_MODEL.create({ data: fileCreateInput });
 
-  const file = await TPL_FILE_MODEL.create({ data });
-
-  await adapter.uploadFile(file.path, input.contents);
+  await adapter.uploadFile(file.storagePath, contents);
 
   return file;
 }

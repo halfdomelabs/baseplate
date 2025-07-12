@@ -8,7 +8,7 @@ interface CircularProgressProps {
   min: number;
   gaugePrimaryColor: string;
   gaugeSecondaryColor: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   className?: string;
 }
 
@@ -27,6 +27,10 @@ export function CircularProgress({
   className,
 }: CircularProgressProps): React.ReactElement {
   const sizeConfig = {
+    xs: {
+      containerSize: 'size-8',
+      textSize: 'text-xs',
+    },
     sm: {
       containerSize: 'size-12',
       textSize: 'text-sm',

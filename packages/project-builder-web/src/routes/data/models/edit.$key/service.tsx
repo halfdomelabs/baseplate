@@ -35,7 +35,7 @@ export const Route = createFileRoute('/data/models/edit/$key/service')({
 
 function ModelEditServicePage(): React.JSX.Element {
   const { key } = Route.useParams();
-  const { form, onSubmit, defaultValues } = useModelForm({
+  const { form, onSubmit, originalModel } = useModelForm({
     omit: ['name', 'featureRef'],
     modelKey: key,
   });
@@ -45,7 +45,7 @@ function ModelEditServicePage(): React.JSX.Element {
 
   return (
     <EditedModelContextProvider
-      initialModel={defaultValues}
+      originalModel={originalModel}
       getValues={getValues}
       watch={watch}
     >

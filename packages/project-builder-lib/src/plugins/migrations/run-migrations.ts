@@ -30,6 +30,7 @@ export function runPluginMigrations(
           try {
             pluginDefinition.config = migration.migrate(
               pluginDefinition.config,
+              draft,
             );
           } catch (error) {
             throw new Error(

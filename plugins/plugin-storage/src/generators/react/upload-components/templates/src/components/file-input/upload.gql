@@ -1,7 +1,7 @@
 fragment FileInput on TPL_FILE_TYPE {
   id
-  name
-  hostedUrl
+  filename
+  publicUrl
 }
 
 mutation CreateUploadUrl($input: CreatePresignedUploadUrlInput!) {

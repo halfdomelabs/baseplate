@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { FileCategory } from '%generatedGraphqlImports';
 import type { ReactElement } from 'react';
 
 import { CreateUploadUrlDocument } from '%generatedGraphqlImports';
@@ -19,8 +20,8 @@ import { useUpload } from '../../hooks/use-upload.js';
 
 export interface FileUploadInput {
   id: string;
-  name: string;
-  hostedUrl?: string | null;
+  filename: string;
+  publicUrl?: string | null;
 }
 
 export interface FileInputProps {
@@ -30,7 +31,7 @@ export interface FileInputProps {
   onChange?: (value: FileUploadInput | null) => void;
   value?: FileUploadInput;
   placeholder?: string;
-  category: string;
+  category: FileCategory;
   imagePreview?: boolean;
   accept?: Record<string, string[]>;
 }
@@ -62,14 +63,13 @@ export function FileInput({
   const { isUploading, error, progress, uploadFile, cancelUpload } =
     useUpload<FileUploadInput>({
       getUploadParameters: async (fileToUpload) => {
-        const contentType = fileToUpload.type;
+        const contentType = fileToUpload.type || 'application/octet-stream';
         const { data } = await createUploadUrl({
           variables: {
             input: {
               category,
-              fileName: fileToUpload.name,
-              fileSize: fileToUpload.size,
-              // TODO: Figure out what to do if type is blank
+              filename: fileToUpload.name,
+              size: fileToUpload.size,
               contentType,
             },
           },
@@ -86,9 +86,9 @@ export function FileInput({
         const uploadedFile = file.meta;
         if (onChange) {
           onChange({
-            name: uploadedFile.name,
+            filename: uploadedFile.filename,
             id: uploadedFile.id,
-            hostedUrl: uploadedFile.hostedUrl,
+            publicUrl: uploadedFile.publicUrl,
           });
         }
       },
@@ -136,36 +136,36 @@ export function FileInput({
             <div
               className="flex h-12 w-full max-w-md items-center justify-between rounded-md border bg-background px-3 py-2 shadow-sm"
               role="group"
-              aria-label={`Uploaded file: ${value.name}`}
+              aria-label={`Uploaded file: ${value.filename}`}
             >
               <div />
               <div className="flex items-center">
-                {imagePreview && value.hostedUrl && (
+                {imagePreview && value.publicUrl && (
                   <a
-                    href={value.hostedUrl}
+                    href={value.publicUrl}
                     target="_blank"
                     rel="noreferrer"
-                    aria-label={`Preview ${value.name}`}
+                    aria-label={`Preview ${value.filename}`}
                   >
                     <img
-                      src={value.hostedUrl}
+                      src={value.publicUrl}
                       className="mr-4 h-8 w-8 rounded-lg bg-muted object-cover"
-                      alt={`Preview of ${value.name}`}
+                      alt={`Preview of ${value.filename}`}
                     />
                   </a>
                 )}
                 <div className="text-sm font-medium">
-                  {value.hostedUrl ? (
+                  {value.publicUrl ? (
                     <a
-                      href={value.hostedUrl}
+                      href={value.publicUrl}
                       className="text-foreground hover:underline"
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {truncateFilenameWithExtension(value.name)}
+                      {truncateFilenameWithExtension(value.filename)}
                     </a>
                   ) : (
-                    truncateFilenameWithExtension(value.name)
+                    truncateFilenameWithExtension(value.filename)
                   )}
                 </div>
               </div>
@@ -205,7 +205,7 @@ export function FileInput({
                       min={0}
                       gaugePrimaryColor="var(--primary)"
                       gaugeSecondaryColor="var(--muted)"
-                      size="sm"
+                      size="xs"
                       className="h-8 w-8"
                     />
                     <Button

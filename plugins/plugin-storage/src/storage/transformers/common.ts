@@ -3,7 +3,7 @@ import {
   modelTransformerSpec,
 } from '@baseplate-dev/project-builder-lib';
 
-import { createFileTransformerSchema } from './types.js';
+import { createFileTransformerSchema } from './schema/file-transformer.schema.js';
 
 export default createPlatformPluginExport({
   dependencies: {

@@ -12,6 +12,25 @@ const FILE_MODEL_FIELDS: ModelMergerScalarFieldInput[] = [
     type: 'uuid',
     options: { genUuid: true },
   },
+  // Core fields
+  {
+    name: 'filename',
+    type: 'string',
+  },
+  {
+    name: 'mimeType',
+    type: 'string',
+  },
+  {
+    name: 'encoding',
+    type: 'string',
+    isOptional: true,
+  },
+  {
+    name: 'size',
+    type: 'int',
+  },
+  // Storage info
   {
     name: 'category',
     type: 'string',
@@ -21,43 +40,35 @@ const FILE_MODEL_FIELDS: ModelMergerScalarFieldInput[] = [
     type: 'string',
   },
   {
-    name: 'path',
+    name: 'storagePath',
     type: 'string',
   },
+  // Status tracking via timestamps
   {
-    name: 'mimeType',
-    type: 'string',
+    name: 'referencedAt',
+    type: 'dateTime',
+    isOptional: true,
   },
   {
-    name: 'size',
-    type: 'int',
+    name: 'expiredAt',
+    type: 'dateTime',
+    isOptional: true,
   },
-  {
-    name: 'name',
-    type: 'string',
-  },
-  {
-    name: 'shouldDelete',
-    type: 'boolean',
-  },
-  {
-    name: 'isUsed',
-    type: 'boolean',
-  },
+  // Relations
   {
     name: 'uploaderId',
     type: 'uuid',
-    isOptional: true,
+  },
+  // Timestamps
+  {
+    name: 'createdAt',
+    type: 'dateTime',
+    options: { defaultToNow: true },
   },
   {
     name: 'updatedAt',
     type: 'dateTime',
     options: { defaultToNow: true, updatedAt: true },
-  },
-  {
-    name: 'createdAt',
-    type: 'dateTime',
-    options: { defaultToNow: true },
   },
 ];
 
@@ -96,7 +107,7 @@ export function createStorageModels(
       graphql: {
         objectType: {
           enabled: true,
-          fields: ['id', 'name'],
+          fields: ['id', 'filename'],
         },
       },
     },

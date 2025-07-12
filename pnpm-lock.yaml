@@ -1318,6 +1318,9 @@ importers:
       '@hookform/resolvers':
         specifier: 5.0.1
         version: 5.0.1(react-hook-form@7.60.0(react@19.1.0))
+      es-toolkit:
+        specifier: 1.31.0
+        version: 1.31.0
       inflection:
         specifier: 3.0.0
         version: 3.0.0

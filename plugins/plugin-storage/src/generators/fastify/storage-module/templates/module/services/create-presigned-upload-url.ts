@@ -4,26 +4,24 @@ import type { ServiceContext } from '%serviceContextImports';
 
 import { BadRequestError } from '%errorHandlerServiceImports';
 
-import type { AdapterPresignedUploadUrlPayload } from '../adapters/index.js';
-import type { UploadDataInput } from '../utils/upload.js';
+import type { FileUploadOptions } from '../utils/validate-file-upload-options.js';
 
-import { prepareUploadData } from '../utils/upload.js';
+import { validateFileUploadOptions } from '../utils/validate-file-upload-options.js';
 
-type CreatePresignedUploadUrlInput = UploadDataInput;
-
-export interface CreatePresignedUploadUrlPayload
-  extends AdapterPresignedUploadUrlPayload {
+export interface CreatePresignedUploadUrlPayload {
+  url: string;
+  method: string;
+  fields?: { name: string; value: string }[];
+  expiresAt: Date;
   file: TPL_FILE_MODEL_TYPE;
 }
 
 export async function createPresignedUploadUrl(
-  input: CreatePresignedUploadUrlInput,
+  input: FileUploadOptions,
   context: ServiceContext,
 ): Promise<CreatePresignedUploadUrlPayload> {
-  const { data, fileCategory, adapter } = await prepareUploadData(
-    input,
-    context,
-  );
+  const { fileCreateInput, fileCategory, adapter } =
+    await validateFileUploadOptions(input, context);
 
   if (!adapter.createPresignedUploadUrl) {
     throw new BadRequestError(
@@ -31,17 +29,25 @@ export async function createPresignedUploadUrl(
     );
   }
 
-  const file = await TPL_FILE_MODEL.create({ data });
+  const file = await TPL_FILE_MODEL.create({ data: fileCreateInput });
 
   const result = await adapter.createPresignedUploadUrl({
-    path: data.path,
-    minFileSize: fileCategory.minFileSize,
-    maxFileSize: fileCategory.maxFileSize,
-    contentType: data.mimeType,
+    path: file.storagePath,
+    contentLengthRange: [
+      fileCategory.minFileSize ?? 0,
+      fileCategory.maxFileSize,
+    ],
+    contentType: input.contentType,
   });
 
   return {
-    ...result,
+    url: result.url,
+    method: result.method,
+    fields: Object.entries(result.fields).map(([name, value]) => ({
+      name,
+      value,
+    })),
+    expiresAt: result.expiresAt,
     file,
   };
 }

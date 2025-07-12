@@ -7,148 +7,69 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
 
-const adaptersIndex = createTsTemplateFile({
+const configAdapters = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'adapters',
   importMapProviders: {},
-  name: 'adapters-index',
+  name: 'config-adapters',
+  projectExports: {
+    STORAGE_ADAPTERS: {},
+    StorageAdapterKey: { isTypeOnly: true },
+  },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/adapters/index.ts',
+      '../templates/module/config/adapters.config.ts',
     ),
   },
-  variables: {},
+  variables: { TPL_ADAPTERS: {} },
+});
+
+const configCategories = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  importMapProviders: {},
+  name: 'config-categories',
+  projectExports: {
+    FILE_CATEGORIES: {},
+    FileCategoryName: { isTypeOnly: true },
+    getCategoryByName: {},
+    getCategoryByNameOrThrow: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/config/categories.config.ts',
+    ),
+  },
+  variables: { TPL_FILE_CATEGORIES: {} },
 });
 
 const adaptersS_3 = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'adapters',
+  group: 'main',
   importMapProviders: {},
   name: 'adapters-s-3',
+  projectExports: { createS3Adapter: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/module/adapters/s3.ts'),
   },
   variables: {},
 });
 
-const adaptersTypes = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'adapters',
-  importMapProviders: {},
-  name: 'adapters-types',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/adapters/types.ts',
-    ),
-  },
-  variables: {},
-});
-
 const adaptersUrl = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'adapters',
+  group: 'main',
   importMapProviders: {},
   name: 'adapters-url',
+  projectExports: { createUrlAdapter: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/module/adapters/url.ts'),
   },
   variables: {},
 });
 
-export const adaptersGroup = {
-  adaptersIndex,
-  adaptersS_3,
-  adaptersTypes,
-  adaptersUrl,
-};
-
-const constantsAdapters = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'constants',
-  importMapProviders: {},
-  name: 'constants-adapters',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/constants/adapters.ts',
-    ),
-  },
-  variables: { TPL_ADAPTERS: {} },
-});
-
-const constantsFileCategories = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'constants',
-  importMapProviders: { serviceContextImports: serviceContextImportsProvider },
-  name: 'constants-file-categories',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/constants/file-categories.ts',
-    ),
-  },
-  variables: {
-    TPL_FILE_CATEGORIES: {},
-    TPL_FILE_COUNT_OUTPUT_TYPE: {},
-    TPL_FILE_MODEL_TYPE: {},
-  },
-});
-
-export const constantsGroup = { constantsAdapters, constantsFileCategories };
-
-const schemaFileUploadInputType = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'schema',
-  importMapProviders: { pothosImports: pothosImportsProvider },
-  name: 'schema-file-upload-input-type',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/schema/file-upload.input-type.ts',
-    ),
-  },
-  variables: {},
-});
-
-const schemaHostedUrlField = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'schema',
-  importMapProviders: { pothosImports: pothosImportsProvider },
-  name: 'schema-hosted-url-field',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/schema/hosted-url.field.ts',
-    ),
-  },
-  variables: { TPL_FILE_OBJECT_TYPE: {} },
-});
-
-const schemaPresignedMutations = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'schema',
-  importMapProviders: { pothosImports: pothosImportsProvider },
-  name: 'schema-presigned-mutations',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/module/schema/presigned.mutations.ts',
-    ),
-  },
-  variables: { TPL_FILE_OBJECT_TYPE: {} },
-});
-
-export const schemaGroup = {
-  schemaFileUploadInputType,
-  schemaHostedUrlField,
-  schemaPresignedMutations,
-};
-
 const servicesCreatePresignedDownloadUrl = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'services',
+  group: 'main',
   importMapProviders: {
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
@@ -166,16 +87,13 @@ const servicesCreatePresignedDownloadUrl = createTsTemplateFile({
 
 const servicesCreatePresignedUploadUrl = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'services',
+  group: 'main',
   importMapProviders: {
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
   },
   name: 'services-create-presigned-upload-url',
-  projectExports: {
-    createPresignedUploadUrl: {},
-    CreatePresignedUploadUrlPayload: { isTypeOnly: true },
-  },
+  projectExports: { createPresignedUploadUrl: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -187,7 +105,7 @@ const servicesCreatePresignedUploadUrl = createTsTemplateFile({
 
 const servicesDownloadFile = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'services',
+  group: 'main',
   importMapProviders: {
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
@@ -205,13 +123,10 @@ const servicesDownloadFile = createTsTemplateFile({
 
 const servicesUploadFile = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'services',
-  importMapProviders: {
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    serviceContextImports: serviceContextImportsProvider,
-  },
+  group: 'main',
+  importMapProviders: { serviceContextImports: serviceContextImportsProvider },
   name: 'services-upload-file',
-  projectExports: { uploadFile: {} },
+  projectExports: {},
   source: {
     path: path.join(
       import.meta.dirname,
@@ -221,43 +136,87 @@ const servicesUploadFile = createTsTemplateFile({
   variables: { TPL_FILE_MODEL: {}, TPL_FILE_MODEL_TYPE: {} },
 });
 
-const servicesValidateUploadInput = createTsTemplateFile({
+const servicesValidateFileInput = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'services',
+  group: 'main',
   importMapProviders: {
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     prismaUtilsImports: prismaUtilsImportsProvider,
     serviceContextImports: serviceContextImportsProvider,
   },
-  name: 'services-validate-upload-input',
+  name: 'services-validate-file-input',
   projectExports: {
     FileUploadInput: { isTypeOnly: true },
-    validateFileUploadInput: {},
+    validateFileInput: {},
   },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/services/validate-upload-input.ts',
+      '../templates/module/services/validate-file-input.ts',
     ),
   },
   variables: { TPL_FILE_MODEL: {} },
 });
 
-export const servicesGroup = {
-  servicesCreatePresignedDownloadUrl,
-  servicesCreatePresignedUploadUrl,
-  servicesDownloadFile,
-  servicesUploadFile,
-  servicesValidateUploadInput,
-};
+const typesAdapter = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'types-adapter',
+  projectExports: {
+    CreatePresignedUploadOptions: { isTypeOnly: true },
+    FileMetadata: { isTypeOnly: true },
+    PresignedUploadUrl: { isTypeOnly: true },
+    StorageAdapter: { isTypeOnly: true },
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/types/adapter.ts',
+    ),
+  },
+  variables: {},
+});
+
+const typesFileCategory = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: { serviceContextImports: serviceContextImportsProvider },
+  name: 'types-file-category',
+  projectExports: { FileCategory: { isTypeOnly: true } },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/types/file-category.ts',
+    ),
+  },
+  variables: { TPL_FILE_COUNT_OUTPUT_TYPE: {} },
+});
+
+const utilsCreateFileCategory = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'utils-create-file-category',
+  projectExports: { createFileCategory: {}, FileSize: {}, MimeTypes: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/utils/create-file-category.ts',
+    ),
+  },
+  variables: {},
+});
 
 const utilsMime = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'utils',
+  group: 'main',
   importMapProviders: {},
   name: 'utils-mime',
   projectExports: {
+    getEncodingFromContentType: {},
     getMimeTypeFromContentType: {},
+    InvalidExtensionError: {},
     validateFileExtensionWithMimeType: {},
   },
   source: {
@@ -266,44 +225,112 @@ const utilsMime = createTsTemplateFile({
   variables: {},
 });
 
-const utilsMimeUnitTest = createTsTemplateFile({
+const utilsValidateFileUploadOptions = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'utils',
-  importMapProviders: {},
-  name: 'utils-mime-unit-test',
+  group: 'main',
+  importMapProviders: {
+    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    serviceContextImports: serviceContextImportsProvider,
+  },
+  name: 'utils-validate-file-upload-options',
+  projectExports: {
+    FileUploadOptions: { isTypeOnly: true },
+    validateFileUploadOptions: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/module/utils/mime.unit.test.ts',
+      '../templates/module/utils/validate-file-upload-options.ts',
+    ),
+  },
+  variables: { TPL_FILE_CREATE_INPUT: {} },
+});
+
+export const mainGroup = {
+  adaptersS_3,
+  adaptersUrl,
+  servicesCreatePresignedDownloadUrl,
+  servicesCreatePresignedUploadUrl,
+  servicesDownloadFile,
+  servicesUploadFile,
+  servicesValidateFileInput,
+  typesAdapter,
+  typesFileCategory,
+  utilsCreateFileCategory,
+  utilsMime,
+  utilsValidateFileUploadOptions,
+};
+
+const schemaFileCategory = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'schema',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-file-category',
+  projectExports: {},
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/file-category.enum.ts',
     ),
   },
   variables: {},
 });
 
-const utilsUpload = createTsTemplateFile({
+const schemaFileInput = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'utils',
-  importMapProviders: {
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    serviceContextImports: serviceContextImportsProvider,
-  },
-  name: 'utils-upload',
-  projectExports: {
-    prepareUploadData: {},
-    UploadDataInput: { isTypeOnly: true },
-  },
+  group: 'schema',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-file-input',
+  projectExports: { fileInputInputType: {} },
   source: {
-    path: path.join(import.meta.dirname, '../templates/module/utils/upload.ts'),
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/file-input.input-type.ts',
+    ),
   },
-  variables: { TPL_FILE_CREATE_INPUT: {} },
+  variables: {},
 });
 
-export const utilsGroup = { utilsMime, utilsMimeUnitTest, utilsUpload };
+const schemaPresignedMutations = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'schema',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-presigned-mutations',
+  projectExports: {},
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/presigned.mutations.ts',
+    ),
+  },
+  variables: { TPL_FILE_OBJECT_TYPE: {} },
+});
+
+const schemaPublicUrl = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'schema',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'schema-public-url',
+  projectExports: {},
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/public-url.field.ts',
+    ),
+  },
+  variables: { TPL_FILE_OBJECT_TYPE: {} },
+});
+
+export const schemaGroup = {
+  schemaFileCategory,
+  schemaFileInput,
+  schemaPresignedMutations,
+  schemaPublicUrl,
+};
 
 export const FASTIFY_STORAGE_MODULE_TEMPLATES = {
-  adaptersGroup,
-  constantsGroup,
+  configAdapters,
+  configCategories,
+  mainGroup,
   schemaGroup,
-  servicesGroup,
-  utilsGroup,
 };

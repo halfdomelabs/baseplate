@@ -50,6 +50,16 @@ export const REACT_ESLINT_RULES = tsCodeFragment(
     rules: {
       // We use replace since it is not supported by ES2020
       'unicorn/prefer-string-replace-all': 'off',
+      // Support kebab case with - prefix to support ignored files in routes and $ prefix for Tanstack camelCase files
+      'unicorn/filename-case': [
+        'error',
+        {
+          cases: {
+            kebabCase: true,
+          },
+          ignore: [String.raw\`^-[a-z0-9\\-\\.]+$\`, String.raw\`^\\$[a-zA-Z0-9\\.]+$\`],
+        },
+      ],
     },
   },
 `,

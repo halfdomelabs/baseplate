@@ -9,7 +9,6 @@ import {
   createModelBaseSchema,
   FeatureUtils,
   modelEntityType,
-  modelScalarFieldEntityType,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
@@ -19,81 +18,37 @@ import {
 } from '@baseplate-dev/project-builder-lib/web';
 import { toast, useEventCallback } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from '@tanstack/react-router';
 import { sortBy } from 'es-toolkit';
 import { useMemo, useRef } from 'react';
-
-import { logAndFormatError } from '#src/services/error-formatter.js';
-import { NotFoundError } from '#src/utils/error.js';
 
 interface UseModelFormOptions {
   schema?: z.ZodTypeAny;
   omit?: string[];
   onSubmitSuccess?: () => void;
-  isCreate?: boolean;
-  modelKey: string | undefined;
+  modelKey: string;
 }
 
-function createNewModel(): ModelConfig {
-  const idFieldId = modelScalarFieldEntityType.generateNewId();
-  return {
-    id: modelEntityType.generateNewId(),
-    name: '',
-    featureRef: '',
-    service: {
-      create: { enabled: false },
-      update: { enabled: false },
-      delete: { enabled: false },
-      transformers: [],
-    },
-    model: {
-      primaryKeyFieldRefs: [idFieldId],
-      fields: [
-        {
-          id: idFieldId,
-          name: 'id',
-          type: 'uuid',
-          isOptional: false,
-          options: {
-            default: '',
-            genUuid: true,
-          },
-        },
-      ],
-    },
-  };
-}
-
+/**
+ * Unifies logic for editing an existing model and updating it.
+ */
 export function useModelForm({
   onSubmitSuccess,
-  isCreate,
   omit,
   modelKey,
 }: UseModelFormOptions): {
   form: UseFormReturn<ModelConfigInput>;
   onSubmit: () => Promise<void>;
-  originalModel?: ModelConfig;
+  originalModel: ModelConfig;
   defaultValues: ModelConfigInput;
 } {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
-  const navigate = useNavigate();
 
-  const urlModelId = isCreate ? undefined : modelEntityType.idFromKey(modelKey);
-  const model = urlModelId
-    ? ModelUtils.byIdOrThrow(definition, urlModelId)
-    : undefined;
-
-  if (!isCreate && !model) {
-    throw new NotFoundError(
-      'The model you were looking for could not be found.',
-    );
-  }
-
-  // memoize it to keep the same key when resetting
-  const newModel = useMemo(() => createNewModel(), []);
+  const urlModelId = modelEntityType.idFromKey(modelKey);
+  const model = ModelUtils.byIdOrThrow(definition, urlModelId);
 
   const baseModelSchema = useDefinitionSchema(createModelBaseSchema);
 
+  // These should remain constant throughout the form's lifecycle
   const fieldsToOmit = useRef(omit);
 
   const finalSchema = useMemo(() => {
@@ -108,12 +63,14 @@ export function useModelForm({
     return baseModelSchema;
   }, [baseModelSchema]);
 
-  const defaultValues = useMemo(() => {
-    const modelToUse = model ?? newModel;
-    return fieldsToOmit.current
-      ? (finalSchema.parse(modelToUse) as ModelConfigInput)
-      : modelToUse;
-  }, [model, newModel, finalSchema]);
+  // Make sure strip out unused fields
+  const defaultValues = useMemo(
+    () =>
+      fieldsToOmit.current
+        ? (finalSchema.parse(model) as ModelConfigInput)
+        : model,
+    [model, finalSchema],
+  );
 
   const form = useResettableForm<ModelConfigInput, unknown, ModelConfig>({
     resolver: zodResolver(finalSchema),
@@ -130,8 +87,6 @@ export function useModelForm({
         const updatedModel = {
           ...model,
           ...data,
-          // generate new ID if new
-          id: model?.id ?? modelEntityType.generateNewId(),
         };
         if (updatedModel.model.fields.length === 0) {
           toast.error('Model must have at least one field.');
@@ -221,19 +176,9 @@ export function useModelForm({
             );
           },
           {
-            successMessage: isCreate
-              ? 'Successfully created model!'
-              : 'Successfully saved model!',
+            successMessage: 'Successfully saved model!',
             onSuccess: () => {
-              if (isCreate) {
-                navigate({
-                  to: '/data/models/edit/$key',
-                  params: { key: modelEntityType.keyFromId(updatedModel.id) },
-                }).catch(logAndFormatError);
-                reset(newModel);
-              } else {
-                reset(data);
-              }
+              reset(data);
               handleSubmitSuccess?.();
             },
           },
@@ -244,11 +189,8 @@ export function useModelForm({
       setError,
       handleSubmit,
       saveDefinitionWithFeedback,
-      isCreate,
-      navigate,
       handleSubmitSuccess,
       definition,
-      newModel,
       model,
     ],
   );

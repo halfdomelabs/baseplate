@@ -6,8 +6,7 @@ import type React from 'react';
 import type { UseFormGetValues, UseFormWatch } from 'react-hook-form';
 import type { StoreApi } from 'zustand';
 
-import { ModelUtils } from '@baseplate-dev/project-builder-lib';
-import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
+import { jsonDeepClone } from '@baseplate-dev/utils';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { createStore, useStore } from 'zustand';
 
@@ -24,41 +23,40 @@ const EditedModelContext = createContext<
 >(undefined);
 
 export function EditedModelContextProvider({
+  originalModel,
   children,
   watch,
-  initialModel,
   getValues,
 }: {
+  originalModel: ModelConfig;
   children: React.ReactNode;
   watch: UseFormWatch<ModelConfigInput>;
   getValues: UseFormGetValues<ModelConfigInput>;
-  initialModel: ModelConfigInput;
 }): React.JSX.Element {
-  const { definition } = useProjectDefinition();
-  const existingModel = ModelUtils.byIdOrThrow(definition, initialModel.id);
   const store = useMemo(
     () =>
       createStore<ModelConfigStore>((set) => ({
         model: {
-          ...existingModel,
-          ...initialModel,
+          ...originalModel,
+          ...getValues(),
         },
         setModel: (model) => {
           set({
             model: {
-              ...existingModel,
+              ...originalModel,
               ...model,
             },
           });
         },
         getValues,
       })),
-    [initialModel, getValues, existingModel],
+    [originalModel, getValues],
   );
 
   useEffect(() => {
     const { unsubscribe } = watch((data) => {
-      store.getState().setModel(data as ModelConfig);
+      // We need to clone the data since React hook form data store is not immutable
+      store.getState().setModel(jsonDeepClone(data as ModelConfigInput));
     });
     return unsubscribe;
   }, [watch, store]);

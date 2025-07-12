@@ -19,7 +19,7 @@ export const Route = createFileRoute('/data/models/edit/$key/graphql')({
 
 function ModelEditGraphQLPage(): React.JSX.Element {
   const { key } = Route.useParams();
-  const { form, onSubmit, defaultValues } = useModelForm({
+  const { form, onSubmit, originalModel } = useModelForm({
     omit: ['name', 'featureRef'],
     modelKey: key,
   });
@@ -30,7 +30,7 @@ function ModelEditGraphQLPage(): React.JSX.Element {
 
   return (
     <EditedModelContextProvider
-      initialModel={defaultValues}
+      originalModel={originalModel}
       getValues={getValues}
       watch={watch}
     >

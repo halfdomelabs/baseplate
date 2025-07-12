@@ -6,9 +6,15 @@ import type { Readable } from 'node:stream';
 
 import { ForbiddenError } from '%errorHandlerServiceImports';
 
-import { STORAGE_ADAPTERS } from '../constants/adapters.js';
-import { FILE_CATEGORIES } from '../constants/file-categories.js';
+import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
+import { getCategoryByNameOrThrow } from '../config/categories.config.js';
 
+/**
+ * Downloads a file from storage
+ * @param fileIdOrFile - The file ID or file object
+ * @param context - The service context
+ * @returns The file contents as a stream
+ */
 export async function downloadFile(
   fileIdOrFile: string | File,
   context: ServiceContext,
@@ -20,13 +26,12 @@ export async function downloadFile(
         })
       : fileIdOrFile;
 
-  const category = FILE_CATEGORIES.find((c) => c.name === file.category);
-  if (!category) {
-    throw new Error(`Invalid file category ${file.category}`);
-  }
+  const category = getCategoryByNameOrThrow(file.category);
 
   const isAuthorizedToRead =
-    !category.authorizeRead || (await category.authorizeRead(file, context));
+    context.auth.roles.includes('system') ||
+    !category.authorize?.presignedRead ||
+    (await category.authorize.presignedRead(file, context));
 
   if (!isAuthorizedToRead) {
     throw new ForbiddenError('You are not authorized to read this file');
@@ -38,11 +43,5 @@ export async function downloadFile(
   const adapter =
     STORAGE_ADAPTERS[file.adapter as keyof typeof STORAGE_ADAPTERS];
 
-  if (!adapter.downloadFile) {
-    throw new Error(
-      `Storage adapter ${file.adapter} does not support downloading`,
-    );
-  }
-
-  return adapter.downloadFile(file.path);
+  return adapter.downloadFile(file.storagePath);
 }
