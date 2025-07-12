@@ -1,5 +1,11 @@
 # @baseplate-dev/tools
 
+## 0.2.4
+
+### Patch Changes
+
+- [#606](https://github.com/halfdomelabs/baseplate/pull/606) [`ffe791f`](https://github.com/halfdomelabs/baseplate/commit/ffe791f6ab44e82c8481f3a18df9262dec71cff6) Thanks [@kingston](https://github.com/kingston)! - Add exception for filename casing for $ and - router paths
+
 ## 0.2.3
 
 ## 0.2.2
