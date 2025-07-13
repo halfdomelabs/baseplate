@@ -10,6 +10,34 @@ import path from 'node:path';
 
 import { reactSessionImportsProvider } from '#src/auth/core/generators/react-session/generated/ts-import-providers.js';
 
+const useCurrentUserGql = createTextTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'hooks-gql',
+  name: 'use-current-user-gql',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-current-user.gql',
+    ),
+  },
+  variables: {},
+});
+
+const useLogOutGql = createTextTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'hooks-gql',
+  name: 'use-log-out-gql',
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-log-out.gql',
+    ),
+  },
+  variables: {},
+});
+
+export const hooksGqlGroup = { useCurrentUserGql, useLogOutGql };
+
 const useCurrentUser = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'hooks',
@@ -83,16 +111,4 @@ export const hooksGroup = {
   useSession,
 };
 
-const useCurrentUserGql = createTextTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  name: 'use-current-user-gql',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/hooks/use-current-user.gql',
-    ),
-  },
-  variables: {},
-});
-
-export const AUTH_CORE_AUTH_HOOKS_TEMPLATES = { hooksGroup, useCurrentUserGql };
+export const AUTH_CORE_AUTH_HOOKS_TEMPLATES = { hooksGqlGroup, hooksGroup };

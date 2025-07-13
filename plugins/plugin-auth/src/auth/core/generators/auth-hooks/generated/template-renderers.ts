@@ -1,11 +1,11 @@
 import type {
-  RenderTextTemplateFileActionInput,
+  RenderTextTemplateGroupActionInput,
   RenderTsTemplateGroupActionInput,
 } from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import {
-  renderTextTemplateFileAction,
+  renderTextTemplateGroupAction,
   typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
@@ -20,6 +20,16 @@ import { AUTH_CORE_AUTH_HOOKS_PATHS } from './template-paths.js';
 import { AUTH_CORE_AUTH_HOOKS_TEMPLATES } from './typed-templates.js';
 
 export interface AuthCoreAuthHooksRenderers {
+  hooksGqlGroup: {
+    render: (
+      options: Omit<
+        RenderTextTemplateGroupActionInput<
+          typeof AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGqlGroup
+        >,
+        'group' | 'paths'
+      >,
+    ) => BuilderAction;
+  };
   hooksGroup: {
     render: (
       options: Omit<
@@ -27,16 +37,6 @@ export interface AuthCoreAuthHooksRenderers {
           typeof AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGroup
         >,
         'importMapProviders' | 'group' | 'paths'
-      >,
-    ) => BuilderAction;
-  };
-  useCurrentUserGql: {
-    render: (
-      options: Omit<
-        RenderTextTemplateFileActionInput<
-          typeof AUTH_CORE_AUTH_HOOKS_TEMPLATES.useCurrentUserGql
-        >,
-        'destination' | 'template'
       >,
     ) => BuilderAction;
   };
@@ -66,6 +66,14 @@ const authCoreAuthHooksRenderersTask = createGeneratorTask({
     return {
       providers: {
         authCoreAuthHooksRenderers: {
+          hooksGqlGroup: {
+            render: (options) =>
+              renderTextTemplateGroupAction({
+                group: AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGqlGroup,
+                paths,
+                ...options,
+              }),
+          },
           hooksGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
@@ -76,14 +84,6 @@ const authCoreAuthHooksRenderersTask = createGeneratorTask({
                   reactErrorImports,
                   reactSessionImports,
                 },
-                ...options,
-              }),
-          },
-          useCurrentUserGql: {
-            render: (options) =>
-              renderTextTemplateFileAction({
-                template: AUTH_CORE_AUTH_HOOKS_TEMPLATES.useCurrentUserGql,
-                destination: paths.useCurrentUserGql,
                 ...options,
               }),
           },
