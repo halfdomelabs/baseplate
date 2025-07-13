@@ -7,14 +7,14 @@ import { expandPathWithTilde } from '#src/utils/path.js';
 import { logger } from '../services/logger.js';
 
 /**
- * Adds a build command to the program.
+ * Adds a sync command to the program.
  * @param program - The program to add the command to.
  */
-export function addBuildCommand(program: Command): void {
+export function addSyncCommand(program: Command): void {
   program
-    .command('generate [directory]')
+    .command('sync [directory]')
     .description(
-      'Builds project from project-definition.json in baseplate/ directory',
+      'Syncs project from project-definition.json in baseplate/ directory',
     )
     .action(async (directory: string | undefined) => {
       const { syncProject, SyncMetadataController } = await import(
