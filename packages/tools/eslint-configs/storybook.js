@@ -21,7 +21,8 @@ export const storybookTypescriptEslintOptions = {
 
 export const storybookEslintConfig = tsEslint.config(
   // Storybook
-  ...storybook.configs['flat/recommended'],
+  // @ts-ignore -- TypeScript resolution bug where it expects a named export called default
+  storybook.configs['flat/recommended'],
 
   // Ignores
   {
