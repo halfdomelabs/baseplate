@@ -24,7 +24,7 @@ import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js
 import { compileApplications } from '#src/compiler/index.js';
 
 import { createTemplateMetadataOptions } from '../sync/template-metadata-utils.js';
-import { compareFiles } from './diff-utils.js';
+import { compareFiles, loadIgnorePatterns } from './diff-utils.js';
 import { formatCompactDiff, formatUnifiedDiff } from './formatters.js';
 
 /**
@@ -111,6 +111,10 @@ export interface DiffProjectOptions {
    * Filter files by glob patterns.
    */
   globPatterns?: string[];
+  /**
+   * Whether to use .baseplateignore file for filtering.
+   */
+  useIgnoreFile?: boolean;
 }
 
 /**
@@ -125,6 +129,7 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
     compact = false,
     appFilter,
     globPatterns,
+    useIgnoreFile = true,
   } = options;
 
   try {
@@ -133,6 +138,11 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
       directory,
       context,
     );
+
+    // Load ignore patterns if enabled
+    const ignorePatterns = useIgnoreFile
+      ? await loadIgnorePatterns(directory)
+      : undefined;
 
     logger.info('Compiling applications...');
     const apps = compileApplications(projectJson, context);
@@ -176,6 +186,7 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
         appDirectory,
         formattedGeneratorOutput,
         globPatterns,
+        ignorePatterns,
       );
 
       if (diffSummary.totalFiles > 0) {

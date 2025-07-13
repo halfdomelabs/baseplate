@@ -556,6 +556,9 @@ importers:
       fastify-type-provider-zod:
         specifier: 4.0.1
         version: 4.0.1(fastify@5.3.2)(zod@3.24.1)
+      ignore:
+        specifier: ^7.0.5
+        version: 7.0.5
       immer:
         specifier: 10.1.1
         version: 10.1.1
@@ -5388,6 +5391,10 @@ packages:
 
   ignore@6.0.2:
     resolution: {integrity: sha512-InwqeHHN2XpumIkMvpl/DCJVrAHgCsG5+cn1XlnLWGwtZBm8QJfSusItfrwx81CTp5agNZqpKU2J/ccC5nGT4A==}
+    engines: {node: '>= 4'}
+
+  ignore@7.0.5:
+    resolution: {integrity: sha512-Hs59xBNfUIunMFgWAbGX5cq6893IbWg4KnrjbYwX3tx0ztorVgTDA6B2sxf8ejHJ4wz8BqGUMYlnzNBer5NvGg==}
     engines: {node: '>= 4'}
 
   immer@10.1.1:
@@ -12157,6 +12164,8 @@ snapshots:
   ignore@5.3.2: {}
 
   ignore@6.0.2: {}
+
+  ignore@7.0.5: {}
 
   immer@10.1.1: {}
 

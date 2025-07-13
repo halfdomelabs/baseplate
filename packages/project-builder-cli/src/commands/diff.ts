@@ -19,6 +19,7 @@ export function addDiffCommand(program: Command): void {
     .option('--compact', 'Show compact diff format instead of unified diff')
     .option('--app <apps...>', 'Filter by specific app names')
     .option('--glob <patterns...>', 'Filter files by glob patterns')
+    .option('--no-ignore-file', 'Disable .baseplateignore file filtering')
     .action(
       async (
         directory: string | undefined,
@@ -26,6 +27,7 @@ export function addDiffCommand(program: Command): void {
           compact?: boolean;
           app?: string[];
           glob?: string[];
+          ignoreFile?: boolean;
         },
       ) => {
         const { diffProject } = await import(
@@ -45,6 +47,7 @@ export function addDiffCommand(program: Command): void {
           compact: options.compact ?? false,
           appFilter: options.app,
           globPatterns: options.glob,
+          useIgnoreFile: options.ignoreFile ?? true,
         });
       },
     );

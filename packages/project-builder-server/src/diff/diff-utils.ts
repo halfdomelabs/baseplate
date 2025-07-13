@@ -1,6 +1,7 @@
 import type { GeneratorOutput } from '@baseplate-dev/sync';
 
 import * as diff from 'diff';
+import ignore from 'ignore';
 import { isBinaryFile } from 'isbinaryfile';
 import micromatch from 'micromatch';
 import { readFile } from 'node:fs/promises';
@@ -9,12 +10,51 @@ import path from 'node:path';
 import type { DiffSummary, FileDiff } from './types.js';
 
 /**
- * Checks if a file path should be included based on glob patterns
+ * Loads ignore patterns from .baseplateignore file
+ */
+export async function loadIgnorePatterns(
+  directory: string,
+): Promise<ignore.Ignore> {
+  const ignoreFilePath = path.join(directory, '.baseplateignore');
+  const ig = ignore();
+
+  // Add default patterns
+  ig.add([
+    '.env',
+    '.env.*',
+    '*.log',
+    'node_modules/',
+    'dist/',
+    'build/',
+    '.DS_Store',
+    'Thumbs.db',
+    '.paths-metadata.json',
+  ]);
+
+  try {
+    const content = await readFile(ignoreFilePath, 'utf8');
+    ig.add(content);
+  } catch {
+    // File doesn't exist, use defaults only
+  }
+
+  return ig;
+}
+
+/**
+ * Checks if a file path should be included based on ignore and glob patterns
  */
 export function shouldIncludeFile(
   filePath: string,
   globPatterns?: string[],
+  ignoreInstance?: ignore.Ignore,
 ): boolean {
+  // Check ignore patterns first
+  if (ignoreInstance?.ignores(filePath)) {
+    return false;
+  }
+
+  // Then check glob patterns
   if (!globPatterns || globPatterns.length === 0) {
     return true;
   }
@@ -73,13 +113,14 @@ export async function compareFiles(
   directory: string,
   generatorOutput: GeneratorOutput,
   globPatterns?: string[],
+  ignoreInstance?: ignore.Ignore,
 ): Promise<DiffSummary> {
   const diffs: FileDiff[] = [];
   const processedFiles = new Set<string>();
 
   // Process generated files
   for (const [filePath, fileData] of generatorOutput.files) {
-    if (!shouldIncludeFile(filePath, globPatterns)) {
+    if (!shouldIncludeFile(filePath, globPatterns, ignoreInstance)) {
       continue;
     }
 
