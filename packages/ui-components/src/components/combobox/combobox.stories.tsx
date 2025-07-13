@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import {
   Combobox,
@@ -10,6 +10,7 @@ import {
 } from './combobox.js';
 
 const meta: Meta<typeof Combobox> = {
+  title: 'components/Combobox',
   component: Combobox,
   tags: ['autodocs'],
   argTypes: {},

@@ -1,8 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { TextareaField } from './textarea-field.js';
 
 const meta = {
+  title: 'components/TextareaField',
   component: TextareaField,
   tags: ['autodocs'],
   argTypes: {

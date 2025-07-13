@@ -1,12 +1,12 @@
 import type { DocsContainerProps } from '@storybook/addon-docs';
-import type { Preview } from '@storybook/react';
+import type { Preview } from '@storybook/react-vite';
 
 import { DocsContainer } from '@storybook/addon-docs';
-import { addons } from '@storybook/preview-api';
-import { themes } from '@storybook/theming';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { DARK_MODE_EVENT_NAME } from 'storybook-dark-mode';
+import { addons } from 'storybook/preview-api';
+import { themes } from 'storybook/theming';
 
 import { Toaster } from '../src/components/toaster/toaster.js';
 import CustomTheme from './custom-theme.js';
@@ -43,7 +43,6 @@ const channel = addons.getChannel();
 
 const preview: Preview = {
   parameters: {
-    actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
       matchers: {
         color: /(background|color)$/i,

@@ -1,8 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Loader } from './loader.js';
 
 const meta = {
+  title: 'components/Loader',
   component: Loader,
 } satisfies Meta<typeof Loader>;
 

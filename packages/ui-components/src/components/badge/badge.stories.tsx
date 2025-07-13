@@ -1,8 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Badge } from './badge.js';
 
 const meta = {
+  title: 'components/Badge',
   component: Badge,
   tags: ['autodocs'],
   argTypes: {

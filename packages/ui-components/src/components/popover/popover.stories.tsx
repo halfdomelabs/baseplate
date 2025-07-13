@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import type React from 'react';
 
 import { Button, Input } from '../index.js';
@@ -6,6 +6,7 @@ import { Label } from '../label/label.js';
 import { Popover, PopoverContent, PopoverTrigger } from './popover.js';
 
 const meta = {
+  title: 'components/Popover',
   component: Popover,
   tags: ['autodocs'],
   argTypes: {},

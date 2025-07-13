@@ -1,8 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { CheckboxField } from './checkbox-field.js';
 
 const meta = {
+  title: 'components/CheckboxField',
   component: CheckboxField,
   tags: ['autodocs'],
   argTypes: {

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import {
   Breadcrumb,
@@ -11,6 +11,7 @@ import {
 } from './breadcrumb.js';
 
 const meta = {
+  title: 'components/Breadcrumb',
   component: Breadcrumb,
   tags: ['autodocs'],
   argTypes: {},

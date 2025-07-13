@@ -1,8 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { EmptyDisplay } from './empty-display.js';
 
 const meta = {
+  title: 'components/EmptyDisplay',
   component: EmptyDisplay,
   tags: ['autodocs'],
   argTypes: {

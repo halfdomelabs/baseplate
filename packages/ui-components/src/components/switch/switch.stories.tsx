@@ -1,8 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Switch } from './switch.js';
 
 const meta = {
+  title: 'components/Switch',
   component: Switch,
   tags: ['autodocs'],
   argTypes: {

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { DateRange } from 'react-day-picker';
 
 import { useState } from 'react';
@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Calendar } from './calendar.js';
 
 const meta = {
+  title: 'components/Calendar',
   component: Calendar,
   tags: ['autodocs'],
   argTypes: {

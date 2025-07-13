@@ -1,10 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { useState } from 'react';
 
 import { SelectField } from './select-field.js';
 
 const meta: Meta<typeof SelectField> = {
+  title: 'components/SelectField',
   component: SelectField,
   tags: ['autodocs'],
   argTypes: {

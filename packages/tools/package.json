@@ -67,7 +67,7 @@
     "eslint-plugin-perfectionist": "4.12.3",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "5.2.0",
-    "eslint-plugin-storybook": "0.12.0",
+    "eslint-plugin-storybook": "9.0.16",
     "eslint-plugin-unicorn": "59.0.1",
     "prettier-plugin-packagejson": "2.5.11",
     "prettier-plugin-tailwindcss": "0.6.11",
