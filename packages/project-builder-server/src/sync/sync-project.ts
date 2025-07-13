@@ -83,9 +83,9 @@ async function loadProjectJson(
 }
 
 /**
- * Options for building the project.
+ * Options for syncing the project.
  */
-export interface BuildProjectOptions {
+export interface SyncProjectOptions {
   /**
    * The directory to build the project in.
    */
@@ -122,21 +122,21 @@ export interface BuildProjectOptions {
 }
 
 /**
- * The result of building the project.
+ * The result of syncing the project.
  */
-export interface BuildProjectResult {
+export interface SyncProjectResult {
   /**
-   * The status of the build.
+   * The status of the sync.
    */
   status: SyncStatus;
 }
 
 /**
- * Builds the project in the given directory.
+ * Syncs the project in the given directory.
  *
- * @param options - The options for building the project.
+ * @param options - The options for syncing the project.
  */
-export async function buildProject({
+export async function syncProject({
   directory,
   logger,
   context,
@@ -145,7 +145,7 @@ export async function buildProject({
   abortSignal,
   skipCommands,
   cliFilePath,
-}: BuildProjectOptions): Promise<BuildProjectResult> {
+}: SyncProjectOptions): Promise<SyncProjectResult> {
   await syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
     status: 'in-progress',
@@ -270,9 +270,9 @@ export async function buildProject({
     }));
 
     if (wasCancelled) {
-      logger.info('Project build cancelled.');
+      logger.info('Project sync cancelled.');
     } else if (hasErrors) {
-      logger.error('Project build failed.');
+      logger.error('Project sync failed.');
     } else {
       logger.info(`Project written to ${directory}!`);
     }
@@ -285,7 +285,7 @@ export async function buildProject({
       completedAt: new Date().toISOString(),
       globalErrors: [String(err)],
     }));
-    logger.error('Project build failed.');
+    logger.error('Project sync failed.');
     throw err;
   }
 }

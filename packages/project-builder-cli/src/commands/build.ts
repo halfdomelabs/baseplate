@@ -17,7 +17,7 @@ export function addBuildCommand(program: Command): void {
       'Builds project from project-definition.json in baseplate/ directory',
     )
     .action(async (directory: string | undefined) => {
-      const { buildProject, SyncMetadataController } = await import(
+      const { syncProject, SyncMetadataController } = await import(
         '@baseplate-dev/project-builder-server'
       );
       const resolvedDirectory = directory
@@ -29,13 +29,18 @@ export function addBuildCommand(program: Command): void {
         resolvedDirectory,
         logger,
       );
-      await buildProject({
-        directory: resolvedDirectory,
-        logger,
-        context,
-        userConfig,
-        cliFilePath: process.argv[1],
-        syncMetadataController,
-      });
+      try {
+        await syncProject({
+          directory: resolvedDirectory,
+          logger,
+          context,
+          userConfig,
+          cliFilePath: process.argv[1],
+          syncMetadataController,
+        });
+      } catch (error) {
+        logger.error('Sync failed:', error);
+        throw error;
+      }
     });
 }

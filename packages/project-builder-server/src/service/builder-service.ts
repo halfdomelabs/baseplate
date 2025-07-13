@@ -27,7 +27,7 @@ import {
   discoverPlugins,
 } from '#src/plugins/index.js';
 import { ConflictFileMonitor } from '#src/sync/conflict-file-monitor.js';
-import { buildProject } from '#src/sync/index.js';
+import { syncProject } from '#src/sync/index.js';
 import { SyncMetadataController } from '#src/sync/sync-metadata-controller.js';
 import { getPackageSyncStatusFromResult } from '#src/sync/utils.js';
 
@@ -359,7 +359,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       this.currentSyncConsoleOutput = [];
       this.emit('sync-started', { id: this.id });
 
-      await buildProject({
+      await syncProject({
         directory: this.directory,
         logger: this.logger,
         context: await this.getSchemaParserContext(),
