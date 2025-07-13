@@ -3,6 +3,7 @@ import type React from 'react';
 
 import {
   pluginEntityType,
+  PluginUtils,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
@@ -60,19 +61,13 @@ export function PluginCard({
     }
     saveDefinitionWithFeedbackSync(
       (draft) => {
-        draft.plugins = [
-          ...(draft.plugins ?? []).filter(
-            (p) =>
-              p.packageName !== plugin.packageName || p.name !== plugin.name,
-          ),
-          {
-            id: pluginEntityType.idFromKey(plugin.id),
-            packageName: plugin.packageName,
-            name: plugin.name,
-            version: plugin.version,
-            config: {},
-          },
-        ];
+        // Remove any existing instance of this plugin
+        draft.plugins = (draft.plugins ?? []).filter(
+          (p) => p.packageName !== plugin.packageName || p.name !== plugin.name,
+        );
+
+        // Add the plugin with proper schema version
+        PluginUtils.setPluginConfig(draft, plugin, {}, implementations);
       },
       {
         successMessage: `Enabled ${plugin.displayName}!`,
