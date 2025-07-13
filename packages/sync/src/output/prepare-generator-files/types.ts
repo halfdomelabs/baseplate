@@ -48,6 +48,10 @@ export interface GeneratorOutputFileWriterContext {
    * See https://git-scm.com/docs/gitattributes#_defining_a_custom_merge_driver
    */
   readonly mergeDriver?: GitMergeDriverConfig;
+  /**
+   * Whether to force overwrite existing files without merge conflict detection.
+   */
+  readonly forceOverwrite?: boolean;
 }
 
 /**

@@ -347,6 +347,16 @@ export async function prepareGeneratorFile({
     };
   }
 
+  // If force overwrite is enabled, bypass all merge logic and use generated content directly
+  if (context.forceOverwrite) {
+    return {
+      relativePath,
+      mergedContents: normalizeBufferString(formattedContents),
+      generatedContents: normalizeBufferString(formattedContents),
+      previousRelativePath,
+    };
+  }
+
   // If we haven't modified the generated version of the file,
   // we use the previous working file version
   const previousGeneratedBuffer =

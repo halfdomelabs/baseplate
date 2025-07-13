@@ -60,6 +60,10 @@ export interface WriteGeneratorOutputOptions {
    * Whether to skip running commands.
    */
   skipCommands?: boolean;
+  /**
+   * Whether to force overwrite existing files without merge conflict detection.
+   */
+  forceOverwrite?: boolean;
 }
 
 /**
@@ -120,6 +124,7 @@ export async function writeGeneratorOutput(
     rerunCommands = [],
     logger = console,
     abortSignal,
+    forceOverwrite = false,
   } = options ?? {};
   // write files
   try {
@@ -132,6 +137,7 @@ export async function writeGeneratorOutput(
       previousGeneratedPayload,
       previousWorkingCodebase: workingCodebase,
       mergeDriver: options?.mergeDriver,
+      forceOverwrite,
     };
 
     const { files, fileIdToRelativePathMap } = await prepareGeneratorFiles({

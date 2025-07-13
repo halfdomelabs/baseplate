@@ -16,31 +16,41 @@ export function addSyncCommand(program: Command): void {
     .description(
       'Syncs project from project-definition.json in baseplate/ directory',
     )
-    .action(async (directory: string | undefined) => {
-      const { syncProject, SyncMetadataController } = await import(
-        '@baseplate-dev/project-builder-server'
-      );
-      const resolvedDirectory = directory
-        ? expandPathWithTilde(directory)
-        : '.';
-      const context = await createSchemaParserContext(resolvedDirectory);
-      const userConfig = await getUserConfig();
-      const syncMetadataController = new SyncMetadataController(
-        resolvedDirectory,
-        logger,
-      );
-      try {
-        await syncProject({
-          directory: resolvedDirectory,
+    .option(
+      '--force-overwrite',
+      'Force overwrite existing files without merge conflict detection',
+    )
+    .action(
+      async (
+        directory: string | undefined,
+        options: { forceOverwrite?: boolean },
+      ) => {
+        const { syncProject, SyncMetadataController } = await import(
+          '@baseplate-dev/project-builder-server'
+        );
+        const resolvedDirectory = directory
+          ? expandPathWithTilde(directory)
+          : '.';
+        const context = await createSchemaParserContext(resolvedDirectory);
+        const userConfig = await getUserConfig();
+        const syncMetadataController = new SyncMetadataController(
+          resolvedDirectory,
           logger,
-          context,
-          userConfig,
-          cliFilePath: process.argv[1],
-          syncMetadataController,
-        });
-      } catch (error) {
-        logger.error('Sync failed:', error);
-        throw error;
-      }
-    });
+        );
+        try {
+          await syncProject({
+            directory: resolvedDirectory,
+            logger,
+            context,
+            userConfig,
+            cliFilePath: process.argv[1],
+            syncMetadataController,
+            forceOverwrite: options.forceOverwrite ?? false,
+          });
+        } catch (error) {
+          logger.error('Sync failed:', error);
+          throw error;
+        }
+      },
+    );
 }

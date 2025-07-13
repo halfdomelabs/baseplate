@@ -43,6 +43,7 @@ interface GenerateForDirectoryOptions {
   operations?: GeneratorOperations;
   abortSignal?: AbortSignal;
   skipCommands?: boolean;
+  forceOverwrite?: boolean;
 }
 
 export interface GeneratorOperations {
@@ -63,7 +64,7 @@ const defaultGeneratorOperations: GeneratorOperations = {
   executeGeneratorEntry,
   getPreviousGeneratedPayload,
   writeGeneratorOutput,
-  writeMetadata: async (project, output, projectDirectory) => {
+  writeMetadata: async (_project, output, projectDirectory) => {
     await deleteMetadataFiles(projectDirectory);
     await writeTemplateInfoFiles(output.files, projectDirectory);
   },
@@ -101,6 +102,7 @@ export async function generateForDirectory({
   operations = defaultGeneratorOperations,
   abortSignal,
   skipCommands,
+  forceOverwrite,
 }: GenerateForDirectoryOptions): Promise<PackageSyncResult> {
   const { appDirectory, name, generatorBundle } = appEntry;
 
@@ -149,6 +151,7 @@ export async function generateForDirectory({
           : undefined,
         abortSignal,
         skipCommands,
+        forceOverwrite,
       });
 
     // write metadata to the generated directory

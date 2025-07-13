@@ -119,6 +119,10 @@ export interface SyncProjectOptions {
    * This is used by the VSCode extension to find the command to trigger additional commands.
    */
   cliFilePath?: string;
+  /**
+   * Whether to force overwrite existing files without merge conflict detection.
+   */
+  forceOverwrite?: boolean;
 }
 
 /**
@@ -145,6 +149,7 @@ export async function syncProject({
   abortSignal,
   skipCommands,
   cliFilePath,
+  forceOverwrite,
 }: SyncProjectOptions): Promise<SyncProjectResult> {
   await syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
@@ -221,6 +226,7 @@ export async function syncProject({
           previousPackageSyncResult: packageInfo?.result,
           abortSignal,
           skipCommands,
+          forceOverwrite,
         });
       } catch (err) {
         if (err instanceof CancelledSyncError) {
