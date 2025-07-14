@@ -1,5 +1,6 @@
 import { tsCodeFragment } from '@baseplate-dev/core-generators';
 import {
+  appModuleProvider,
   configServiceProvider,
   createPothosPrismaObjectTypeOutputName,
   pothosTypeOutputProvider,
@@ -37,6 +38,18 @@ export const authModuleGenerator = createGenerator({
         seedValue: 'a-secret-key-1234567890',
         exampleValue: '<AUTH_SECRET>',
       });
+    }),
+    appModule: createGeneratorTask({
+      dependencies: {
+        paths: GENERATED_TEMPLATES.paths.provider,
+        appModule: appModuleProvider,
+      },
+      run({ paths, appModule }) {
+        appModule.moduleImports.push(
+          paths.schemaUserSessionMutations,
+          paths.schemaUserSessionQueries,
+        );
+      },
     }),
     main: createGeneratorTask({
       dependencies: {
