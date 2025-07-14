@@ -10,8 +10,8 @@ const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
   addons: [
     getAbsolutePath('@storybook/addon-links'),
-    getAbsolutePath('storybook-dark-mode'),
     getAbsolutePath('@storybook/addon-docs'),
+    getAbsolutePath('@storybook/addon-themes'),
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
