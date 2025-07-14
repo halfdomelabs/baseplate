@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import {
   SidebarLayout,
@@ -7,6 +7,7 @@ import {
 } from './sidebar-layout.js';
 
 const meta = {
+  title: 'components/SidebarLayout',
   component: SidebarLayout,
   tags: ['autodocs'],
   argTypes: {},

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import {
   MultiCombobox,
@@ -10,6 +10,7 @@ import {
 } from './multi-combobox.js';
 
 const meta: Meta<typeof MultiCombobox> = {
+  title: 'components/MultiCombobox',
   component: MultiCombobox,
   tags: ['autodocs'],
   argTypes: {},

@@ -1,8 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { NavigationTabs, NavigationTabsItem } from './navigation-tabs.js';
 
 const meta = {
+  title: 'components/NavigationTabs',
   component: NavigationTabs,
   tags: ['autodocs'],
   argTypes: {},

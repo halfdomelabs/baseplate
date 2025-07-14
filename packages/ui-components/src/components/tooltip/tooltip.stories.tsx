@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Button } from '../button/button.js';
 import {
@@ -9,6 +9,7 @@ import {
 } from './tooltip.js';
 
 const meta = {
+  title: 'components/Tooltip',
   component: Tooltip,
   tags: ['autodocs'],
   argTypes: {},

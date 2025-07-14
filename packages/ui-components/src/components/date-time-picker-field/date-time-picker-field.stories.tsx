@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { parseISO } from 'date-fns';
 import { useState } from 'react';
@@ -10,6 +10,7 @@ import {
 } from './date-time-picker-field.js';
 
 const meta = {
+  title: 'components/DateTimePickerField',
   component: DateTimePickerField,
   tags: ['autodocs'],
   argTypes: {

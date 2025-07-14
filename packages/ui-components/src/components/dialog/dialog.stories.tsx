@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import type React from 'react';
 
 import { useState } from 'react';
@@ -16,6 +16,7 @@ import {
 } from './dialog.js';
 
 const meta = {
+  title: 'components/Dialog',
   component: Dialog,
   tags: ['autodocs'],
   argTypes: {},

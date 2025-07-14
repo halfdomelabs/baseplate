@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import type React from 'react';
 
 import type { IconElement } from '#src/types/react.js';
@@ -18,6 +18,7 @@ interface StoryProps {
 }
 
 const meta = {
+  title: 'components/Alert',
   component: Alert,
   tags: ['autodocs'],
   argTypes: {

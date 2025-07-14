@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import {
   Select,
@@ -11,6 +11,7 @@ import {
 } from './select.js';
 
 const meta: Meta<typeof Select> = {
+  title: 'components/Select',
   component: Select,
   tags: ['autodocs'],
   argTypes: {

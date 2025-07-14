@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import type React from 'react';
 import type { ReactElement } from 'react';
 
@@ -19,6 +19,7 @@ import {
  */
 
 const meta = {
+  title: 'components/NavigationMenu',
   component: NavigationMenu,
   tags: ['autodocs'],
   argTypes: {},

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import type React from 'react';
 import type { ExternalToast } from 'sonner';
 
@@ -55,6 +55,7 @@ function Toast({
 }
 
 const meta = {
+  title: 'components/Toaster',
   component: Toast,
   tags: ['autodocs'],
   argTypes: {

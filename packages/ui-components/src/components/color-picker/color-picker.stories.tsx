@@ -1,8 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { ColorPicker } from './color-picker.js';
 
 const meta = {
+  title: 'components/ColorPicker',
   component: ColorPicker,
   tags: ['autodocs'],
   argTypes: {
