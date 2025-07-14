@@ -4,19 +4,25 @@ import type { PluginSpecImplementation } from './types.js';
 
 import { createPluginSpec } from './types.js';
 
+export interface PluginMigrationResult {
+  updatedConfig?: unknown;
+  updateProjectDefinition?: (draft: unknown) => void;
+}
+
 export interface PluginConfigMigration {
   version: number;
   name: string;
   /**
-   * The function to migrate the plugin config.
-   *
-   * TODO: We should figure out a better way of mutating the project definition
+   * The function to migrate the plugin config and optionally update the project definition.
    *
    * @param config - The plugin config to migrate
-   * @param projectDefinition - The project definition (it is mutable but be careful)
-   * @returns The migrated plugin config
+   * @param projectDefinition - The project definition (read-only)
+   * @returns Migration result with optional config and project definition updates
    */
-  migrate: (config: unknown, projectDefinition: unknown) => unknown;
+  migrate: (
+    config: unknown,
+    projectDefinition: unknown,
+  ) => PluginMigrationResult;
 }
 
 /**

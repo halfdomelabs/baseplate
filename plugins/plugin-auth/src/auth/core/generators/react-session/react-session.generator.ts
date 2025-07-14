@@ -1,4 +1,9 @@
-import { renderTextTemplateFileAction } from '@baseplate-dev/core-generators';
+import {
+  renderTextTemplateFileAction,
+  TsCodeUtils,
+  tsImportBuilder,
+} from '@baseplate-dev/core-generators';
+import { reactAppConfigProvider } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
@@ -17,6 +22,23 @@ export const reactSessionGenerator = createGenerator({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
+    reactAppConfig: createGeneratorTask({
+      dependencies: {
+        reactAppConfig: reactAppConfigProvider,
+        paths: GENERATED_TEMPLATES.paths.provider,
+      },
+      run({ reactAppConfig, paths }) {
+        reactAppConfig.renderWrappers.set('react-session', {
+          wrap: (contents) =>
+            TsCodeUtils.templateWithImports([
+              tsImportBuilder(['UserSessionProvider']).from(
+                paths.userSessionProvider,
+              ),
+            ])`<UserSessionProvider>${contents}</UserSessionProvider>`,
+          type: 'auth',
+        });
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         renderers: GENERATED_TEMPLATES.renderers.provider,

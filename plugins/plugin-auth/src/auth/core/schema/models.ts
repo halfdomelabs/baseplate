@@ -110,7 +110,7 @@ export function createAuthModels({
             name: 'user',
             references: [{ localRef: 'userId', foreignRef: 'id' }],
             modelRef: modelRefs.user,
-            foreignRelationName: 'authProviders',
+            foreignRelationName: 'accounts',
             onDelete: 'Cascade',
             onUpdate: 'Restrict',
           },

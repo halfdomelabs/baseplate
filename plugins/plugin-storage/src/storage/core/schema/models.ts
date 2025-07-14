@@ -58,6 +58,7 @@ const FILE_MODEL_FIELDS: ModelMergerScalarFieldInput[] = [
   {
     name: 'uploaderId',
     type: 'uuid',
+    isOptional: true,
   },
   // Timestamps
   {

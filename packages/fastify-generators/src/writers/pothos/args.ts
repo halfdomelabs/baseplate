@@ -21,7 +21,7 @@ function writePothosArgFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
   options: PothosWriterOptions,
 ): TsCodeFragment {
-  const { methodName = 'arg', type } = getPothosMethodAndTypeForScalar(
+  const { methodName = '', type } = getPothosMethodAndTypeForScalar(
     field,
     options,
   );
@@ -30,7 +30,7 @@ function writePothosArgFromDtoScalarField(
     type,
   });
 
-  return tsTemplate`${options.fieldBuilder}.${methodName}(${argOptions ?? ''})`;
+  return tsTemplate`${options.fieldBuilder}.arg${methodName ? `.${methodName}` : ''}(${argOptions ?? ''})`;
 }
 
 function writePothosArgFromDtoNestedField(

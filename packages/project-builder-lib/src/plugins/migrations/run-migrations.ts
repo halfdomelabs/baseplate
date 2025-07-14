@@ -1,4 +1,4 @@
-import { produce, setAutoFreeze } from 'immer';
+import { produce } from 'immer';
 
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
@@ -14,7 +14,6 @@ export function runPluginMigrations(
 ): ProjectDefinition {
   const pluginConfigService =
     pluginImplementationStore.getPluginSpec(pluginConfigSpec);
-  setAutoFreeze(false);
   return produce(projectDefinition, (draft) => {
     for (const pluginDefinition of draft.plugins ?? []) {
       const pluginMigrations = pluginConfigService.getMigrations(
@@ -28,10 +27,18 @@ export function runPluginMigrations(
       for (const migration of pluginMigrations) {
         if (migration.version > currentSchemaVersion) {
           try {
-            pluginDefinition.config = migration.migrate(
+            const migrationResult = migration.migrate(
               pluginDefinition.config,
               draft,
             );
+
+            if (migrationResult.updatedConfig !== undefined) {
+              pluginDefinition.config = migrationResult.updatedConfig;
+            }
+
+            if (migrationResult.updateProjectDefinition) {
+              migrationResult.updateProjectDefinition(draft);
+            }
           } catch (error) {
             throw new Error(
               `Error migrating plugin ${pluginDefinition.id} to version ${migration.version}: ${String(error)}`,
