@@ -1,6 +1,7 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import {
+  CORE_PACKAGES,
   createNodePackagesTask,
   extractPackageVersions,
   packageScope,
@@ -81,12 +82,15 @@ export const storageModuleGenerator = createGenerator({
     renderers: FASTIFY_STORAGE_MODULE_GENERATED.renderers.task,
     config: configTask,
     nodePackages: createNodePackagesTask({
-      prod: extractPackageVersions(STORAGE_PACKAGES, [
-        '@aws-sdk/client-s3',
-        '@aws-sdk/s3-presigned-post',
-        '@aws-sdk/s3-request-presigner',
-        'mime-types',
-      ]),
+      prod: {
+        ...extractPackageVersions(CORE_PACKAGES, ['axios']),
+        ...extractPackageVersions(STORAGE_PACKAGES, [
+          '@aws-sdk/client-s3',
+          '@aws-sdk/s3-presigned-post',
+          '@aws-sdk/s3-request-presigner',
+          'mime-types',
+        ]),
+      },
       dev: extractPackageVersions(STORAGE_PACKAGES, ['@types/mime-types']),
     }),
     setupFileInputSchema: createGeneratorTask({

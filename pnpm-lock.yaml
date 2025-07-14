@@ -6,6 +6,9 @@ settings:
 
 catalogs:
   default:
+    '@eslint/js':
+      specifier: 9.26.0
+      version: 9.26.0
     '@tailwindcss/vite':
       specifier: 4.1.6
       version: 4.1.6
@@ -39,6 +42,9 @@ catalogs:
     tailwindcss:
       specifier: 4.1.6
       version: 4.1.6
+    tsx:
+      specifier: 4.19.3
+      version: 4.19.3
     typescript:
       specifier: 5.7.3
       version: 5.7.3
