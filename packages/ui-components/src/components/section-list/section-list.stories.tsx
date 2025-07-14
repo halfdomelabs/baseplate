@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import {
   SectionList,
@@ -10,6 +10,7 @@ import {
 } from './section-list.js';
 
 const meta = {
+  title: 'components/SectionList',
   component: SectionList,
   tags: ['autodocs'],
   argTypes: {},

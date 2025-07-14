@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { MdDelete, MdEdit } from 'react-icons/md';
 
@@ -11,6 +11,7 @@ import {
 } from './record-view.js';
 
 const meta = {
+  title: 'components/RecordView',
   component: RecordView,
   tags: ['autodocs'],
   argTypes: {},

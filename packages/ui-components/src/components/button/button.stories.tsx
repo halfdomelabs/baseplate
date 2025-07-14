@@ -1,10 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { STORYBOOK_ICON_SELECT } from '#src/stories/button-icons.js';
 
 import { Button } from './button.js';
 
 const meta = {
+  title: 'components/Button',
   component: Button,
   tags: ['autodocs'],
   argTypes: {

@@ -1,10 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { useState } from 'react';
 
 import { ComboboxField } from './combobox-field.js';
 
 const meta: Meta<typeof ComboboxField> = {
+  title: 'components/ComboboxField',
   component: ComboboxField,
   tags: ['autodocs'],
   argTypes: {
