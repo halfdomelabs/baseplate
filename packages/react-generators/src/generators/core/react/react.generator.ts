@@ -6,6 +6,7 @@ import {
   nodeGitIgnoreProvider,
   packageInfoProvider,
   packageScope,
+  pathRootsProvider,
   renderRawTemplateFileAction,
   renderTextTemplateGroupAction,
   tsCodeFragment,
@@ -20,6 +21,8 @@ import {
   createProviderTask,
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
+
+import { reactPathsProvider } from '#src/providers/react-paths.js';
 
 import { CORE_REACT_GENERATED } from './generated/index.js';
 import { viteNodeTask } from './node.js';
@@ -56,6 +59,25 @@ export const reactGenerator = createGenerator({
       nodeConfig.isEsm.set(true);
     }),
     viteNode: viteNodeTask,
+    reactPaths: createGeneratorTask({
+      dependencies: {
+        pathRoots: pathRootsProvider,
+      },
+      exports: {
+        reactPaths: reactPathsProvider.export(packageScope),
+      },
+      run({ pathRoots }) {
+        pathRoots.registerPathRoot('components-root', '@/src/components');
+
+        return {
+          providers: {
+            reactPaths: {
+              getComponentsFolder: () => `@/src/components`,
+            },
+          },
+        };
+      },
+    }),
     gitIgnore: createProviderTask(nodeGitIgnoreProvider, (nodeGitIgnore) => {
       nodeGitIgnore.exclusions.set('react', [
         '# production',

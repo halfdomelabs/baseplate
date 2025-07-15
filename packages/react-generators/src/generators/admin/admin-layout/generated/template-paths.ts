@@ -1,6 +1,6 @@
-import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { reactPathsProvider } from '#src/providers/react-paths.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 
 export interface AdminAdminLayoutPaths {
@@ -14,18 +14,18 @@ const adminAdminLayoutPaths = createProviderType<AdminAdminLayoutPaths>(
 
 const adminAdminLayoutPathsTask = createGeneratorTask({
   dependencies: {
-    packageInfo: packageInfoProvider,
+    reactPaths: reactPathsProvider,
     reactRoutes: reactRoutesProvider,
   },
   exports: { adminAdminLayoutPaths: adminAdminLayoutPaths.export() },
-  run({ packageInfo, reactRoutes }) {
+  run({ reactPaths, reactRoutes }) {
+    const componentsRoot = reactPaths.getComponentsFolder();
     const routesRoot = reactRoutes.getOutputRelativePath();
-    const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
       providers: {
         adminAdminLayoutPaths: {
-          adminLayout: `${srcRoot}/components/admin-layout/admin-layout.tsx`,
+          adminLayout: `${componentsRoot}/admin-layout/admin-layout.tsx`,
           adminRoute: `${routesRoot}/route.tsx`,
         },
       },

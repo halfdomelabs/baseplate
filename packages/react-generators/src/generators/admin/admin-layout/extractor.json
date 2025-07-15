@@ -15,8 +15,8 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/components/admin-layout/admin-layout.tsx",
-      "sourceFile": "src/components/admin-layout/admin-layout.tsx",
+      "pathRootRelativePath": "{components-root}/admin-layout/admin-layout.tsx",
+      "sourceFile": "components/admin-layout/admin-layout.tsx",
       "variables": { "TPL_SIDEBAR_LINKS": {} }
     },
     "admin-route": {

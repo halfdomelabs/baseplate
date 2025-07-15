@@ -14,7 +14,7 @@ const adminLayout = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/admin-layout/admin-layout.tsx',
+      '../templates/components/admin-layout/admin-layout.tsx',
     ),
   },
   variables: { TPL_SIDEBAR_LINKS: {} },

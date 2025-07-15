@@ -21,7 +21,7 @@ const fileInputComponent = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/file-input/file-input.tsx',
+      '../templates/components/file-input/file-input.tsx',
     ),
   },
   variables: {},
@@ -37,7 +37,7 @@ const fileInputField = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/file-input-field/file-input-field.tsx',
+      '../templates/components/file-input-field/file-input-field.tsx',
     ),
   },
   variables: {},
@@ -49,7 +49,7 @@ const fileInputUploadGql = createTextTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/file-input/upload.gql',
+      '../templates/components/file-input/upload.gql',
     ),
   },
   variables: { TPL_FILE_TYPE: {} },
