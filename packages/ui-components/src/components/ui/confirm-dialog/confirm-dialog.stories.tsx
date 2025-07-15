@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type React from 'react';
 
-import { useConfirmDialog } from '../../hooks/use-confirm-dialog.js';
+import { useConfirmDialog } from '#src/hooks/use-confirm-dialog.js';
+
 import { Button } from '../index.js';
 import { ConfirmDialog } from './confirm-dialog.js';
 

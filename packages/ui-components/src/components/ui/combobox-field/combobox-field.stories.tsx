@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { useState } from 'react';
 
-import { SelectField } from './select-field.js';
+import { ComboboxField } from './combobox-field.js';
 
-const meta: Meta<typeof SelectField> = {
-  title: 'components/SelectField',
-  component: SelectField,
+const meta: Meta<typeof ComboboxField> = {
+  title: 'components/ComboboxField',
+  component: ComboboxField,
   tags: ['autodocs'],
   argTypes: {
     label: { control: { type: 'text' } },
@@ -27,7 +27,7 @@ const meta: Meta<typeof SelectField> = {
         <Story
           args={{
             ...ctx.args,
-            value: value ? value : ctx.args.value,
+            value: value ?? ctx.args.value ?? null,
             onChange,
           }}
         />
@@ -46,8 +46,8 @@ export const Default: Story = {
       { label: 'Option 2', value: '2' },
       { label: 'Option 3', value: '3' },
     ],
-    getOptionLabel: (option: { label: string }) => option.label,
-    getOptionValue: (option: { value: string }) => option.value,
+    getOptionLabel: (option) => (option as { label: string }).label,
+    getOptionValue: (option) => (option as { value: string }).value,
     className: 'w-96',
   },
 };
@@ -59,10 +59,10 @@ export const Labelled: Story = {
       { label: 'Option 2', value: '2' },
       { label: 'Option 3', value: '3' },
     ],
-    label: 'What option would you like to select?',
+    label: 'What option would you like to combobox?',
     description: 'We will never judge you for your choice.',
-    getOptionLabel: (option: { label: string }) => option.label,
-    getOptionValue: (option: { value: string }) => option.value,
+    getOptionLabel: (option) => (option as { label: string }).label,
+    getOptionValue: (option) => (option as { value: string }).value,
     className: 'w-96',
   },
 };

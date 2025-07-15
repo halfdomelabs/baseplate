@@ -7,10 +7,10 @@ import { HexColorInput, HexColorPicker } from 'react-colorful';
 
 import type { FormFieldProps } from '#src/types/form.js';
 
+import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
 import { buttonVariants, inputVariants } from '#src/styles/index.js';
 import { cn } from '#src/utils/index.js';
 
-import { useControllerMerged } from '../../hooks/use-controller-merged.js';
 import {
   FormControl,
   FormDescription,

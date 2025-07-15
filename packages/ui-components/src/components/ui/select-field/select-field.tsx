@@ -8,7 +8,8 @@ import type {
   SelectOptionProps,
 } from '#src/types/form.js';
 
-import { useControllerMerged } from '../../hooks/use-controller-merged.js';
+import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
+
 import {
   FormControl,
   FormDescription,

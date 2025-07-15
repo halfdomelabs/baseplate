@@ -5,10 +5,10 @@ import type { ComponentPropsWithRef } from 'react';
 
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 
+import { useControlledState } from '#src/hooks/use-controlled-state.js';
 import { inputVariants } from '#src/styles/index.js';
 import { cn } from '#src/utils/index.js';
 
-import { useControlledState } from '../../hooks/use-controlled-state.js';
 import { Popover, PopoverContent, PopoverTrigger } from '../popover/popover.js';
 
 export interface ColorFieldProps

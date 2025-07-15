@@ -10,10 +10,10 @@ import type {
   MultiSelectOptionProps,
 } from '#src/types/form.js';
 
+import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
 import { cn } from '#src/utils/cn.js';
 import { genericForwardRef } from '#src/utils/generic-forward-ref.js';
 
-import { useControllerMerged } from '../../hooks/use-controller-merged.js';
 import {
   FormDescription,
   FormItem,

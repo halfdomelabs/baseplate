@@ -4,11 +4,11 @@ import type React from 'react';
 
 import { useEffect, useRef } from 'react';
 
+import type { UseConfirmDialogRequestOptions } from '#src/hooks/use-confirm-dialog.js';
+
 import { useComponentStrings } from '#src/contexts/component-strings.js';
+import { useConfirmDialogState } from '#src/hooks/use-confirm-dialog.js';
 
-import type { UseConfirmDialogRequestOptions } from '../../hooks/use-confirm-dialog.js';
-
-import { useConfirmDialogState } from '../../hooks/use-confirm-dialog.js';
 import { Button } from '../button/button.js';
 import {
   Dialog,

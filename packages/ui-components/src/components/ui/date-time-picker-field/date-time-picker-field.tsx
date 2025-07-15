@@ -8,9 +8,9 @@ import { MdSchedule } from 'react-icons/md';
 
 import type { FormFieldProps } from '#src/types/form.js';
 
+import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
 import { cn } from '#src/utils/index.js';
 
-import { useControllerMerged } from '../../hooks/use-controller-merged.js';
 import { Button } from '../button/button.js';
 import { Calendar } from '../calendar/calendar.js';
 import {

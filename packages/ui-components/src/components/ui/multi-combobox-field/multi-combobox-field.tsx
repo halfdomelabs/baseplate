@@ -10,8 +10,8 @@ import type {
 } from '#src/types/form.js';
 
 import { useComponentStrings } from '#src/contexts/component-strings.js';
+import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
 
-import { useControllerMerged } from '../../hooks/use-controller-merged.js';
 import {
   FormControl,
   FormDescription,

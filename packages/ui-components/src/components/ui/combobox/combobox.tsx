@@ -5,6 +5,7 @@ import { Popover, ScrollArea as ScrollAreaPrimitive } from 'radix-ui';
 import * as React from 'react';
 import { MdCheck, MdUnfoldMore } from 'react-icons/md';
 
+import { useControlledState } from '#src/hooks/use-controlled-state.js';
 import {
   inputVariants,
   selectCheckVariants,
@@ -13,7 +14,6 @@ import {
 } from '#src/styles/index.js';
 import { cn, mergeRefs } from '#src/utils/index.js';
 
-import { useControlledState } from '../../hooks/use-controlled-state.js';
 import { Button } from '../button/button.js';
 import { ScrollBar } from '../scroll-area/scroll-area.js';
 

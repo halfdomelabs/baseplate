@@ -5,9 +5,9 @@ import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import type { FormFieldProps } from '#src/types/form.js';
 
+import { useControllerMerged } from '#src/hooks/use-controller-merged.js';
 import { cn } from '#src/utils/index.js';
 
-import { useControllerMerged } from '../../hooks/use-controller-merged.js';
 import {
   FormControl,
   FormDescription,
