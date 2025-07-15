@@ -6,6 +6,7 @@ const alert = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'alert',
+  projectExports: { Alert: {}, AlertTitle: {}, AlertDescription: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -20,6 +21,7 @@ const button = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'button',
+  projectExports: { Button: {}, LinkButton: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -34,6 +36,7 @@ const calendar = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'calendar',
+  projectExports: { Calendar: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -48,6 +51,14 @@ const card = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'card',
+  projectExports: {
+    Card: {},
+    CardHeader: {},
+    CardFooter: {},
+    CardTitle: {},
+    CardDescription: {},
+    CardContent: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -62,6 +73,7 @@ const checkbox = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'checkbox',
+  projectExports: { Checkbox: {}, CheckedInput: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -76,6 +88,7 @@ const checkboxField = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'checkbox-field',
+  projectExports: { CheckboxField: {}, CheckboxFieldController: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -90,6 +103,7 @@ const circularProgress = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'circular-progress',
+  projectExports: { CircularProgress: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -104,6 +118,7 @@ const combobox = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'combobox',
+  projectExports: { Combobox: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -118,6 +133,7 @@ const comboboxField = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'combobox-field',
+  projectExports: { ComboboxField: {}, ComboboxFieldController: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -132,6 +148,7 @@ const confirmDialog = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'confirm-dialog',
+  projectExports: { ConfirmDialog: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -146,6 +163,11 @@ const datePickerField = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'date-picker-field',
+  projectExports: {
+    DatePickerField: {},
+    DatePickerFieldController: {},
+    ReactDatePickerInput: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -160,6 +182,10 @@ const dateTimePickerField = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'date-time-picker-field',
+  projectExports: {
+    DateTimePickerField: {},
+    DateTimePickerFieldController: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -174,6 +200,20 @@ const dialog = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'dialog',
+  projectExports: {
+    Dialog: {},
+    DialogTrigger: {},
+    DialogPortal: {},
+    DialogOverlay: {},
+    DialogClose: {},
+    DialogContent: {},
+    DialogHeader: {},
+    DialogFooter: {},
+    DialogTitle: {},
+    DialogDescription: {},
+    DialogWidth: { isTypeOnly: true },
+    Modal: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -188,6 +228,7 @@ const emptyDisplay = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'empty-display',
+  projectExports: { EmptyDisplay: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -202,6 +243,7 @@ const errorableLoader = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'errorable-loader',
+  projectExports: { ErrorableLoader: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -216,6 +258,7 @@ const errorDisplay = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'error-display',
+  projectExports: { ErrorDisplay: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -230,6 +273,13 @@ const formItem = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'form-item',
+  projectExports: {
+    FormItem: {},
+    FormLabel: {},
+    FormControl: {},
+    FormDescription: {},
+    FormMessage: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -244,6 +294,7 @@ const input = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'input',
+  projectExports: { Input: {}, TextInput: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -258,6 +309,7 @@ const inputField = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'input-field',
+  projectExports: { InputField: {}, InputFieldController: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -272,6 +324,7 @@ const label = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'label',
+  projectExports: { Label: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -286,6 +339,7 @@ const loader = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'loader',
+  projectExports: { Loader: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -300,6 +354,18 @@ const navigationMenu = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'navigation-menu',
+  projectExports: {
+    NavigationMenu: {},
+    NavigationMenuList: {},
+    NavigationMenuItem: {},
+    NavigationMenuContent: {},
+    NavigationMenuTrigger: {},
+    NavigationMenuLink: {},
+    NavigationMenuIndicator: {},
+    NavigationMenuViewport: {},
+    navigationMenuTriggerStyle: {},
+    NavigationMenuItemWithLink: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -314,6 +380,7 @@ const notFoundCard = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'not-found-card',
+  projectExports: { NotFoundCard: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -328,6 +395,12 @@ const popover = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'popover',
+  projectExports: {
+    Popover: {},
+    PopoverTrigger: {},
+    PopoverContent: {},
+    PopoverAnchor: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -342,6 +415,7 @@ const scrollArea = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'scroll-area',
+  projectExports: { ScrollArea: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -356,6 +430,7 @@ const select = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'select',
+  projectExports: { Select: {}, SelectInput: {}, ReactSelectInput: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -370,6 +445,7 @@ const selectField = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'select-field',
+  projectExports: { SelectField: {}, SelectFieldController: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -384,6 +460,11 @@ const sidebarLayout = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'sidebar-layout',
+  projectExports: {
+    SidebarLayout: {},
+    SidebarLayoutSidebar: {},
+    SidebarLayoutContent: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -398,6 +479,7 @@ const switchComponent = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'switch-component',
+  projectExports: { Switch: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -412,6 +494,7 @@ const switchField = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'switch-field',
+  projectExports: { SwitchField: {}, SwitchFieldController: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -426,6 +509,16 @@ const table = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'table',
+  projectExports: {
+    Table: {},
+    TableHeader: {},
+    TableBody: {},
+    TableFooter: {},
+    TableHead: {},
+    TableRow: {},
+    TableCell: {},
+    TableCaption: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -440,6 +533,7 @@ const textarea = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'textarea',
+  projectExports: { Textarea: {}, TextAreaInput: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -454,6 +548,7 @@ const textareaField = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'textarea-field',
+  projectExports: { TextareaField: {}, TextareaFieldController: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -468,6 +563,7 @@ const toaster = createTsTemplateFile({
   group: 'components',
   importMapProviders: {},
   name: 'toaster',
+  projectExports: { Toaster: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -569,114 +665,6 @@ export const hooksGroup = {
   useConfirmDialog,
 };
 
-const index = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  importMapProviders: {},
-  name: 'index',
-  projectExports: {
-    Alert: {},
-    AlertDescription: {},
-    AlertTitle: {},
-    Button: {},
-    Calendar: {},
-    Card: {},
-    CardContent: {},
-    CardDescription: {},
-    CardFooter: {},
-    CardHeader: {},
-    CardTitle: {},
-    Checkbox: {},
-    CheckboxField: {},
-    CheckboxFieldController: {},
-    CheckedInput: {},
-    CircularProgress: {},
-    Combobox: {},
-    ComboboxField: {},
-    ComboboxFieldController: {},
-    ConfirmDialog: {},
-    DatePickerField: {},
-    DatePickerFieldController: {},
-    DateTimePickerField: {},
-    DateTimePickerFieldController: {},
-    Dialog: {},
-    DialogClose: {},
-    DialogContent: {},
-    DialogDescription: {},
-    DialogFooter: {},
-    DialogHeader: {},
-    DialogOverlay: {},
-    DialogPortal: {},
-    DialogTitle: {},
-    DialogTrigger: {},
-    DialogWidth: { isTypeOnly: true },
-    EmptyDisplay: {},
-    ErrorableLoader: {},
-    ErrorDisplay: {},
-    FormControl: {},
-    FormDescription: {},
-    FormItem: {},
-    FormLabel: {},
-    FormMessage: {},
-    Input: {},
-    InputField: {},
-    InputFieldController: {},
-    Label: {},
-    LinkButton: {},
-    ListGroup: {},
-    Loader: {},
-    Modal: {},
-    NavigationMenu: {},
-    NavigationMenuContent: {},
-    NavigationMenuIndicator: {},
-    NavigationMenuItem: {},
-    NavigationMenuItemWithLink: {},
-    NavigationMenuLink: {},
-    NavigationMenuList: {},
-    NavigationMenuTrigger: {},
-    navigationMenuTriggerStyle: {},
-    NavigationMenuViewport: {},
-    NotFoundCard: {},
-    Popover: {},
-    PopoverAnchor: {},
-    PopoverContent: {},
-    PopoverTrigger: {},
-    ReactDatePickerInput: {},
-    ReactSelectInput: {},
-    ScrollArea: {},
-    Select: {},
-    SelectField: {},
-    SelectFieldController: {},
-    SelectInput: {},
-    SidebarLayout: {},
-    SidebarLayoutContent: {},
-    SidebarLayoutSidebar: {},
-    Switch: {},
-    SwitchField: {},
-    SwitchFieldController: {},
-    Table: {},
-    TableBody: {},
-    TableCaption: {},
-    TableCell: {},
-    TableFooter: {},
-    TableHead: {},
-    TableHeader: {},
-    TableRow: {},
-    Textarea: {},
-    TextareaField: {},
-    TextareaFieldController: {},
-    TextAreaInput: {},
-    TextInput: {},
-    Toaster: {},
-  },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/components/index.ts',
-    ),
-  },
-  variables: { TPL_EXPORTS: {} },
-});
-
 const stylesButton = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'styles',
@@ -707,10 +695,10 @@ const stylesSelect = createTsTemplateFile({
   importMapProviders: {},
   name: 'styles-select',
   projectExports: {
-    selectCheckVariants: {},
+    selectTriggerVariants: {},
     selectContentVariants: {},
     selectItemVariants: {},
-    selectTriggerVariants: {},
+    selectCheckVariants: {},
   },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/styles/select.ts'),
@@ -781,7 +769,6 @@ export const utilsGroup = { cn, mergeRefs, typesForm, typesIcon };
 export const CORE_REACT_COMPONENTS_TEMPLATES = {
   componentsGroup,
   hooksGroup,
-  index,
   stylesGroup,
   utilsGroup,
 };

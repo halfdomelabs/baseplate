@@ -7,7 +7,6 @@ import {
 import {
   generatedGraphqlImportsProvider,
   reactComponentsImportsProvider,
-  reactComponentsProvider,
   reactErrorImportsProvider,
 } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
@@ -41,7 +40,6 @@ export const uploadComponentsGenerator = createGenerator({
       dependencies: {
         reactErrorImports: reactErrorImportsProvider,
         typescriptFile: typescriptFileProvider,
-        reactComponents: reactComponentsProvider,
         reactComponentsImports: reactComponentsImportsProvider,
         generatedGraphqlImports: generatedGraphqlImportsProvider,
         paths: REACT_UPLOAD_COMPONENTS_GENERATED.paths.provider,
@@ -51,13 +49,8 @@ export const uploadComponentsGenerator = createGenerator({
         typescriptFile,
         reactComponentsImports,
         generatedGraphqlImports,
-        reactComponents,
         paths,
       }) {
-        reactComponents.registerComponent({
-          name: 'file-input',
-        });
-
         return {
           build: async (builder) => {
             await builder.apply(

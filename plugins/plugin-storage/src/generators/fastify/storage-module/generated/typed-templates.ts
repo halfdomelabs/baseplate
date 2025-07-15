@@ -216,7 +216,7 @@ const utilsMime = createTsTemplateFile({
   projectExports: {
     getEncodingFromContentType: {},
     getMimeTypeFromContentType: {},
-    InvalidExtensionError: {},
+    InvalidMimeTypeError: {},
     validateFileExtensionWithMimeType: {},
   },
   source: {

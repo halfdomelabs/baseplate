@@ -9,7 +9,12 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/alert/alert.tsx",
       "sourceFile": "src/components/alert/alert.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Alert": {},
+        "AlertTitle": {},
+        "AlertDescription": {}
+      }
     },
     "button": {
       "type": "ts",
@@ -19,7 +24,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/button/button.tsx",
       "sourceFile": "src/components/button/button.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Button": {},
+        "LinkButton": {}
+      }
     },
     "calendar": {
       "type": "ts",
@@ -29,7 +38,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/calendar/calendar.tsx",
       "sourceFile": "src/components/calendar/calendar.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Calendar": {}
+      }
     },
     "card": {
       "type": "ts",
@@ -39,7 +51,15 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/card/card.tsx",
       "sourceFile": "src/components/card/card.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Card": {},
+        "CardHeader": {},
+        "CardFooter": {},
+        "CardTitle": {},
+        "CardDescription": {},
+        "CardContent": {}
+      }
     },
     "checkbox": {
       "type": "ts",
@@ -49,7 +69,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/checkbox/checkbox.tsx",
       "sourceFile": "src/components/checkbox/checkbox.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Checkbox": {},
+        "CheckedInput": {}
+      }
     },
     "checkbox-field": {
       "type": "ts",
@@ -59,7 +83,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/checkbox-field/checkbox-field.tsx",
       "sourceFile": "src/components/checkbox-field/checkbox-field.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "CheckboxField": {},
+        "CheckboxFieldController": {}
+      }
     },
     "circular-progress": {
       "type": "ts",
@@ -69,7 +97,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/circular-progress/circular-progress.tsx",
       "sourceFile": "src/components/circular-progress/circular-progress.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "CircularProgress": {}
+      }
     },
     "cn": {
       "type": "ts",
@@ -90,7 +121,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/combobox/combobox.tsx",
       "sourceFile": "src/components/combobox/combobox.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Combobox": {}
+      }
     },
     "combobox-field": {
       "type": "ts",
@@ -100,7 +134,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/combobox-field/combobox-field.tsx",
       "sourceFile": "src/components/combobox-field/combobox-field.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "ComboboxField": {},
+        "ComboboxFieldController": {}
+      }
     },
     "confirm-dialog": {
       "type": "ts",
@@ -110,7 +148,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/confirm-dialog/confirm-dialog.tsx",
       "sourceFile": "src/components/confirm-dialog/confirm-dialog.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "ConfirmDialog": {}
+      }
     },
     "date-picker-field": {
       "type": "ts",
@@ -120,7 +161,12 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/date-picker-field/date-picker-field.tsx",
       "sourceFile": "src/components/date-picker-field/date-picker-field.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "DatePickerField": {},
+        "DatePickerFieldController": {},
+        "ReactDatePickerInput": {}
+      }
     },
     "date-time-picker-field": {
       "type": "ts",
@@ -130,7 +176,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/date-time-picker-field/date-time-picker-field.tsx",
       "sourceFile": "src/components/date-time-picker-field/date-time-picker-field.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "DateTimePickerField": {},
+        "DateTimePickerFieldController": {}
+      }
     },
     "dialog": {
       "type": "ts",
@@ -140,7 +190,21 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/dialog/dialog.tsx",
       "sourceFile": "src/components/dialog/dialog.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Dialog": {},
+        "DialogTrigger": {},
+        "DialogPortal": {},
+        "DialogOverlay": {},
+        "DialogClose": {},
+        "DialogContent": {},
+        "DialogHeader": {},
+        "DialogFooter": {},
+        "DialogTitle": {},
+        "DialogDescription": {},
+        "DialogWidth": { "isTypeOnly": true },
+        "Modal": {}
+      }
     },
     "empty-display": {
       "type": "ts",
@@ -150,7 +214,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/empty-display/empty-display.tsx",
       "sourceFile": "src/components/empty-display/empty-display.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "EmptyDisplay": {}
+      }
     },
     "error-display": {
       "type": "ts",
@@ -160,7 +227,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/error-display/error-display.tsx",
       "sourceFile": "src/components/error-display/error-display.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "ErrorDisplay": {}
+      }
     },
     "errorable-loader": {
       "type": "ts",
@@ -170,7 +240,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/errorable-loader/errorable-loader.tsx",
       "sourceFile": "src/components/errorable-loader/errorable-loader.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "ErrorableLoader": {}
+      }
     },
     "form-item": {
       "type": "ts",
@@ -180,7 +253,14 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/form-item/form-item.tsx",
       "sourceFile": "src/components/form-item/form-item.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "FormItem": {},
+        "FormLabel": {},
+        "FormControl": {},
+        "FormDescription": {},
+        "FormMessage": {}
+      }
     },
     "hooks-use-controlled-state": {
       "type": "ts",
@@ -204,110 +284,6 @@
       "sourceFile": "src/hooks/use-controller-merged.ts",
       "variables": {}
     },
-    "index": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/components/index.ts",
-      "projectExports": {
-        "Alert": {},
-        "AlertDescription": {},
-        "AlertTitle": {},
-        "Button": {},
-        "Calendar": {},
-        "Card": {},
-        "CardContent": {},
-        "CardDescription": {},
-        "CardFooter": {},
-        "CardHeader": {},
-        "CardTitle": {},
-        "Checkbox": {},
-        "CheckboxField": {},
-        "CheckboxFieldController": {},
-        "CheckedInput": {},
-        "CircularProgress": {},
-        "Combobox": {},
-        "ComboboxField": {},
-        "ComboboxFieldController": {},
-        "ConfirmDialog": {},
-        "DatePickerField": {},
-        "DatePickerFieldController": {},
-        "DateTimePickerField": {},
-        "DateTimePickerFieldController": {},
-        "Dialog": {},
-        "DialogClose": {},
-        "DialogContent": {},
-        "DialogDescription": {},
-        "DialogFooter": {},
-        "DialogHeader": {},
-        "DialogOverlay": {},
-        "DialogPortal": {},
-        "DialogTitle": {},
-        "DialogTrigger": {},
-        "DialogWidth": { "isTypeOnly": true },
-        "EmptyDisplay": {},
-        "ErrorableLoader": {},
-        "ErrorDisplay": {},
-        "FormControl": {},
-        "FormDescription": {},
-        "FormItem": {},
-        "FormLabel": {},
-        "FormMessage": {},
-        "Input": {},
-        "InputField": {},
-        "InputFieldController": {},
-        "Label": {},
-        "LinkButton": {},
-        "ListGroup": {},
-        "Loader": {},
-        "Modal": {},
-        "NavigationMenu": {},
-        "NavigationMenuContent": {},
-        "NavigationMenuIndicator": {},
-        "NavigationMenuItem": {},
-        "NavigationMenuItemWithLink": {},
-        "NavigationMenuLink": {},
-        "NavigationMenuList": {},
-        "NavigationMenuTrigger": {},
-        "navigationMenuTriggerStyle": {},
-        "NavigationMenuViewport": {},
-        "NotFoundCard": {},
-        "Popover": {},
-        "PopoverAnchor": {},
-        "PopoverContent": {},
-        "PopoverTrigger": {},
-        "ReactDatePickerInput": {},
-        "ReactSelectInput": {},
-        "ScrollArea": {},
-        "Select": {},
-        "SelectField": {},
-        "SelectFieldController": {},
-        "SelectInput": {},
-        "SidebarLayout": {},
-        "SidebarLayoutContent": {},
-        "SidebarLayoutSidebar": {},
-        "Switch": {},
-        "SwitchField": {},
-        "SwitchFieldController": {},
-        "Table": {},
-        "TableBody": {},
-        "TableCaption": {},
-        "TableCell": {},
-        "TableFooter": {},
-        "TableHead": {},
-        "TableHeader": {},
-        "TableRow": {},
-        "Textarea": {},
-        "TextareaField": {},
-        "TextareaFieldController": {},
-        "TextAreaInput": {},
-        "TextInput": {},
-        "Toaster": {}
-      },
-      "sourceFile": "src/components/index.ts",
-      "variables": { "TPL_EXPORTS": {} }
-    },
     "input": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -316,7 +292,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/input/input.tsx",
       "sourceFile": "src/components/input/input.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Input": {},
+        "TextInput": {}
+      }
     },
     "input-field": {
       "type": "ts",
@@ -326,7 +306,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/input-field/input-field.tsx",
       "sourceFile": "src/components/input-field/input-field.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "InputField": {},
+        "InputFieldController": {}
+      }
     },
     "label": {
       "type": "ts",
@@ -336,7 +320,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/label/label.tsx",
       "sourceFile": "src/components/label/label.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Label": {}
+      }
     },
     "loader": {
       "type": "ts",
@@ -346,7 +333,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/loader/loader.tsx",
       "sourceFile": "src/components/loader/loader.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Loader": {}
+      }
     },
     "merge-refs": {
       "type": "ts",
@@ -367,7 +357,19 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/navigation-menu/navigation-menu.tsx",
       "sourceFile": "src/components/navigation-menu/navigation-menu.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "NavigationMenu": {},
+        "NavigationMenuList": {},
+        "NavigationMenuItem": {},
+        "NavigationMenuContent": {},
+        "NavigationMenuTrigger": {},
+        "NavigationMenuLink": {},
+        "NavigationMenuIndicator": {},
+        "NavigationMenuViewport": {},
+        "navigationMenuTriggerStyle": {},
+        "NavigationMenuItemWithLink": {}
+      }
     },
     "not-found-card": {
       "type": "ts",
@@ -377,7 +379,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/not-found-card/not-found-card.tsx",
       "sourceFile": "src/components/not-found-card/not-found-card.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "NotFoundCard": {}
+      }
     },
     "popover": {
       "type": "ts",
@@ -387,7 +392,13 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/popover/popover.tsx",
       "sourceFile": "src/components/popover/popover.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Popover": {},
+        "PopoverTrigger": {},
+        "PopoverContent": {},
+        "PopoverAnchor": {}
+      }
     },
     "scroll-area": {
       "type": "ts",
@@ -397,7 +408,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/scroll-area/scroll-area.tsx",
       "sourceFile": "src/components/scroll-area/scroll-area.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "ScrollArea": {}
+      }
     },
     "select": {
       "type": "ts",
@@ -407,7 +421,12 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/select/select.tsx",
       "sourceFile": "src/components/select/select.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Select": {},
+        "SelectInput": {},
+        "ReactSelectInput": {}
+      }
     },
     "select-field": {
       "type": "ts",
@@ -417,7 +436,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/select-field/select-field.tsx",
       "sourceFile": "src/components/select-field/select-field.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "SelectField": {},
+        "SelectFieldController": {}
+      }
     },
     "sidebar-layout": {
       "type": "ts",
@@ -427,7 +450,12 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/sidebar-layout/sidebar-layout.tsx",
       "sourceFile": "src/components/sidebar-layout/sidebar-layout.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "SidebarLayout": {},
+        "SidebarLayoutSidebar": {},
+        "SidebarLayoutContent": {}
+      }
     },
     "styles-button": {
       "type": "ts",
@@ -459,10 +487,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/styles/select.ts",
       "projectExports": {
-        "selectCheckVariants": {},
+        "selectTriggerVariants": {},
         "selectContentVariants": {},
         "selectItemVariants": {},
-        "selectTriggerVariants": {}
+        "selectCheckVariants": {}
       },
       "sourceFile": "src/styles/select.ts",
       "variables": {}
@@ -475,7 +503,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/switch/switch.tsx",
       "sourceFile": "src/components/switch/switch.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Switch": {}
+      }
     },
     "switch-field": {
       "type": "ts",
@@ -485,7 +516,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/switch-field/switch-field.tsx",
       "sourceFile": "src/components/switch-field/switch-field.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "SwitchField": {},
+        "SwitchFieldController": {}
+      }
     },
     "table": {
       "type": "ts",
@@ -495,7 +530,17 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/table/table.tsx",
       "sourceFile": "src/components/table/table.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Table": {},
+        "TableHeader": {},
+        "TableBody": {},
+        "TableFooter": {},
+        "TableHead": {},
+        "TableRow": {},
+        "TableCell": {},
+        "TableCaption": {}
+      }
     },
     "textarea": {
       "type": "ts",
@@ -505,7 +550,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/textarea/textarea.tsx",
       "sourceFile": "src/components/textarea/textarea.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Textarea": {},
+        "TextAreaInput": {}
+      }
     },
     "textarea-field": {
       "type": "ts",
@@ -515,7 +564,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/textarea-field/textarea-field.tsx",
       "sourceFile": "src/components/textarea-field/textarea-field.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "TextareaField": {},
+        "TextareaFieldController": {}
+      }
     },
     "toaster": {
       "type": "ts",
@@ -525,7 +578,10 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/components/toaster/toaster.tsx",
       "sourceFile": "src/components/toaster/toaster.tsx",
-      "variables": {}
+      "variables": {},
+      "projectExports": {
+        "Toaster": {}
+      }
     },
     "types-form": {
       "type": "ts",
