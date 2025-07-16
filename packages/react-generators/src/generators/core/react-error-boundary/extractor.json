@@ -15,7 +15,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{components-root}/error-boundary/error-boundary.tsx",
+      "pathRootRelativePath": "{components-root}/ui/error-boundary/error-boundary.tsx",
       "sourceFile": "components/error-boundary/error-boundary.tsx",
       "variables": {}
     }
