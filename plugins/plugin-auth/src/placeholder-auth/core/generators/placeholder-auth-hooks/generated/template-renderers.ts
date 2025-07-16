@@ -66,6 +66,7 @@ const placeholderAuthCorePlaceholderAuthHooksRenderersTask =
                   importMapProviders: {
                     generatedGraphqlImports,
                   },
+                  generatorPaths: paths,
                   ...options,
                 }),
             },
