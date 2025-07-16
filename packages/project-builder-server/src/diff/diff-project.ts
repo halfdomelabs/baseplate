@@ -13,6 +13,7 @@ import {
   buildGeneratorEntry,
   executeGeneratorEntry,
   formatGeneratorOutput,
+  loadIgnorePatterns,
 } from '@baseplate-dev/sync';
 import { enhanceErrorWithContext, hashWithSHA256 } from '@baseplate-dev/utils';
 import { fileExists } from '@baseplate-dev/utils/node';
@@ -111,6 +112,10 @@ export interface DiffProjectOptions {
    * Filter files by glob patterns.
    */
   globPatterns?: string[];
+  /**
+   * Whether to use .baseplateignore file for filtering.
+   */
+  useIgnoreFile?: boolean;
 }
 
 /**
@@ -125,6 +130,7 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
     compact = false,
     appFilter,
     globPatterns,
+    useIgnoreFile = true,
   } = options;
 
   try {
@@ -133,6 +139,8 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
       directory,
       context,
     );
+
+    // Note: ignore patterns will be loaded per app directory
 
     logger.info('Compiling applications...');
     const apps = compileApplications(projectJson, context);
@@ -159,6 +167,11 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
 
       logger.info(`Generating for app: ${app.name} (${app.appDirectory})`);
 
+      // Load ignore patterns for this app directory
+      const ignorePatterns = useIgnoreFile
+        ? await loadIgnorePatterns(appDirectory)
+        : undefined;
+
       // Generate the output without writing files
       const generatorEntry = await buildGeneratorEntry(app.generatorBundle);
       const generatorOutput = await executeGeneratorEntry(generatorEntry, {
@@ -176,6 +189,7 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
         appDirectory,
         formattedGeneratorOutput,
         globPatterns,
+        ignorePatterns,
       );
 
       if (diffSummary.totalFiles > 0) {

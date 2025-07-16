@@ -19,4 +19,5 @@ export interface DiffOptions {
   compact?: boolean;
   appFilter?: string[];
   globPatterns?: string[];
+  useIgnoreFile?: boolean;
 }

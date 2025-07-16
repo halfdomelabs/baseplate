@@ -22,6 +22,7 @@ function createMockContext(
     outputDirectory: '/test/output',
     previousGeneratedPayload: undefined,
     previousWorkingCodebase: undefined,
+    forceOverwrite: false,
     ...overrides,
   };
 }
@@ -491,6 +492,158 @@ describe('prepareGeneratorFile', () => {
       previousRelativePath: undefined,
       mergedContents: undefined,
       generatedContents: Buffer.from('content'),
+    });
+  });
+
+  describe('force overwrite functionality', () => {
+    it('should bypass merge when forceOverwrite is enabled with different content', async () => {
+      const workingFiles = new Map([
+        ['file.txt', Buffer.from('working content')],
+      ]);
+
+      const previousFiles = new Map([
+        ['file.txt', Buffer.from('previous content')],
+      ]);
+
+      const mockPreviousPayload: PreviousGeneratedPayload = {
+        fileReader: createCodebaseReaderFromMemory(previousFiles),
+        fileIdToRelativePathMap: new Map([['test-id', 'file.txt']]),
+      };
+
+      const result = await prepareGeneratorFile({
+        relativePath: 'file.txt',
+        data: createMockFileData({
+          contents: 'new generated content',
+        }),
+        context: createMockContext({
+          forceOverwrite: true,
+          previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+          previousGeneratedPayload: mockPreviousPayload,
+        }),
+      });
+
+      expect(result).toEqual({
+        relativePath: 'file.txt',
+        previousRelativePath: 'file.txt',
+        mergedContents: Buffer.from('new generated content'),
+        generatedContents: Buffer.from('new generated content'),
+      });
+    });
+
+    it('should bypass merge when forceOverwrite is enabled with conflicting content', async () => {
+      const workingFiles = new Map([
+        ['file.txt', Buffer.from('modified working content')],
+      ]);
+
+      const previousFiles = new Map([
+        ['file.txt', Buffer.from('original content')],
+      ]);
+
+      const mockPreviousPayload: PreviousGeneratedPayload = {
+        fileReader: createCodebaseReaderFromMemory(previousFiles),
+        fileIdToRelativePathMap: new Map([['test-id', 'file.txt']]),
+      };
+
+      const result = await prepareGeneratorFile({
+        relativePath: 'file.txt',
+        data: createMockFileData({
+          contents: 'completely different generated content',
+        }),
+        context: createMockContext({
+          forceOverwrite: true,
+          previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+          previousGeneratedPayload: mockPreviousPayload,
+        }),
+      });
+
+      expect(result).toEqual({
+        relativePath: 'file.txt',
+        previousRelativePath: 'file.txt',
+        mergedContents: Buffer.from('completely different generated content'),
+        generatedContents: Buffer.from(
+          'completely different generated content',
+        ),
+      });
+    });
+
+    it('should force overwrite even when files are identical', async () => {
+      const content = 'identical content';
+      const workingFiles = new Map([['file.txt', Buffer.from(content)]]);
+
+      const result = await prepareGeneratorFile({
+        relativePath: 'file.txt',
+        data: createMockFileData({
+          contents: content,
+        }),
+        context: createMockContext({
+          forceOverwrite: true,
+          previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+        }),
+      });
+
+      expect(result).toEqual({
+        relativePath: 'file.txt',
+        previousRelativePath: 'file.txt',
+        mergedContents: Buffer.from(content), // force overwrite bypasses optimizations
+        generatedContents: Buffer.from(content),
+      });
+    });
+
+    it('should force overwrite even when generated content is unchanged from previous generation', async () => {
+      const content = 'unchanged generated content';
+      const workingFiles = new Map([
+        ['file.txt', Buffer.from('modified by user')],
+      ]);
+      const previousFiles = new Map([['file.txt', Buffer.from(content)]]);
+
+      const mockPreviousPayload: PreviousGeneratedPayload = {
+        fileReader: createCodebaseReaderFromMemory(previousFiles),
+        fileIdToRelativePathMap: new Map([['test-id', 'file.txt']]),
+      };
+
+      const result = await prepareGeneratorFile({
+        relativePath: 'file.txt',
+        data: createMockFileData({
+          contents: content, // same as previous generation
+        }),
+        context: createMockContext({
+          forceOverwrite: true,
+          previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+          previousGeneratedPayload: mockPreviousPayload,
+        }),
+      });
+
+      expect(result).toEqual({
+        relativePath: 'file.txt',
+        previousRelativePath: 'file.txt',
+        mergedContents: Buffer.from(content), // force overwrite even when unchanged
+        generatedContents: Buffer.from(content),
+      });
+    });
+
+    it('should respect other options like shouldNeverOverwrite even with forceOverwrite', async () => {
+      const workingFiles = new Map([
+        ['existing-file.txt', Buffer.from('existing content')],
+      ]);
+
+      const result = await prepareGeneratorFile({
+        relativePath: 'existing-file.txt',
+        data: createMockFileData({
+          contents: 'new content',
+          options: { shouldNeverOverwrite: true },
+        }),
+        context: createMockContext({
+          forceOverwrite: true,
+          previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+        }),
+      });
+
+      expect(result).toEqual({
+        relativePath: 'existing-file.txt',
+        previousRelativePath: 'existing-file.txt',
+        mergedContents: undefined,
+        generatedContents: Buffer.from('new content'),
+      });
     });
   });
 });

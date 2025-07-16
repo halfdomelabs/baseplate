@@ -1,5 +1,7 @@
 import type { GeneratorOutput } from '@baseplate-dev/sync';
+import type ignore from 'ignore';
 
+import { shouldIncludeFile as shouldIncludeFileIgnore } from '@baseplate-dev/sync';
 import * as diff from 'diff';
 import { isBinaryFile } from 'isbinaryfile';
 import micromatch from 'micromatch';
@@ -9,12 +11,19 @@ import path from 'node:path';
 import type { DiffSummary, FileDiff } from './types.js';
 
 /**
- * Checks if a file path should be included based on glob patterns
+ * Checks if a file path should be included based on ignore and glob patterns
  */
 export function shouldIncludeFile(
   filePath: string,
   globPatterns?: string[],
+  ignoreInstance?: ignore.Ignore,
 ): boolean {
+  // Check ignore patterns first using shared function
+  if (!shouldIncludeFileIgnore(filePath, ignoreInstance)) {
+    return false;
+  }
+
+  // Then check glob patterns
   if (!globPatterns || globPatterns.length === 0) {
     return true;
   }
@@ -73,13 +82,14 @@ export async function compareFiles(
   directory: string,
   generatorOutput: GeneratorOutput,
   globPatterns?: string[],
+  ignoreInstance?: ignore.Ignore,
 ): Promise<DiffSummary> {
   const diffs: FileDiff[] = [];
   const processedFiles = new Set<string>();
 
   // Process generated files
   for (const [filePath, fileData] of generatorOutput.files) {
-    if (!shouldIncludeFile(filePath, globPatterns)) {
+    if (!shouldIncludeFile(filePath, globPatterns, ignoreInstance)) {
       continue;
     }
 

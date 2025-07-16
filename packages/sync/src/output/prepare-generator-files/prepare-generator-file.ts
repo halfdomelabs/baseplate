@@ -1,3 +1,5 @@
+import type { Ignore } from 'ignore';
+
 import path from 'node:path';
 
 import type { Logger } from '#src/utils/index.js';
@@ -298,6 +300,10 @@ interface PrepareGeneratorFileInput {
    * Generator output file writer context
    */
   context: GeneratorOutputFileWriterContext;
+  /**
+   * Optional ignore patterns to not overwrite when force-overwrite is enabled
+   */
+  overwriteIgnorePatterns?: Ignore;
 }
 
 /**
@@ -310,6 +316,7 @@ export async function prepareGeneratorFile({
   relativePath,
   data,
   context,
+  overwriteIgnorePatterns,
 }: PrepareGeneratorFileInput): Promise<GeneratorFileOperationResult> {
   const { options } = data;
   const { previousWorkingCodebase, previousGeneratedPayload } = context;
@@ -342,6 +349,19 @@ export async function prepareGeneratorFile({
     return {
       relativePath,
       mergedContents: undefined,
+      generatedContents: normalizeBufferString(formattedContents),
+      previousRelativePath,
+    };
+  }
+
+  // If force overwrite is enabled, bypass all merge logic and use generated content directly
+  if (
+    context.forceOverwrite &&
+    !overwriteIgnorePatterns?.ignores(relativePath)
+  ) {
+    return {
+      relativePath,
+      mergedContents: normalizeBufferString(formattedContents),
       generatedContents: normalizeBufferString(formattedContents),
       previousRelativePath,
     };

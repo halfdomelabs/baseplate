@@ -1,9 +1,9 @@
 import { program } from 'commander';
 
-import { addBuildCommand } from './commands/build.js';
 import { addConfigCommand } from './commands/config.js';
 import { addDiffCommand } from './commands/diff.js';
 import { addServeCommand } from './commands/server.js';
+import { addSyncCommand } from './commands/sync.js';
 import { addTemplatesCommand } from './commands/templates.js';
 import { getEnabledFeatureFlags } from './services/feature-flags.js';
 import { getPackageVersion } from './utils/version.js';
@@ -22,7 +22,7 @@ export async function runCli(): Promise<void> {
     addTemplatesCommand(program);
   }
 
-  addBuildCommand(program);
+  addSyncCommand(program);
   addDiffCommand(program);
   addServeCommand(program);
   addConfigCommand(program);

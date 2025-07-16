@@ -1,26 +1,31 @@
-import type { BuildProjectResult } from '@baseplate-dev/project-builder-server';
+import type { SyncProjectResult } from '@baseplate-dev/project-builder-server';
 
 import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
 import {
-  buildProject,
   createNodeSchemaParserContext,
+  syncProject,
 } from '@baseplate-dev/project-builder-server';
 
 import { logger } from '#src/utils/console.js';
 
 export async function generateProject(
   projectDirectory: string,
-): Promise<BuildProjectResult> {
+): Promise<SyncProjectResult> {
   const defaultPlugins = await getDefaultPlugins(logger);
   const nodeSchemaParserContext = await createNodeSchemaParserContext(
     projectDirectory,
     logger,
     defaultPlugins,
   );
-  return buildProject({
-    directory: projectDirectory,
-    logger,
-    context: nodeSchemaParserContext,
-    userConfig: {},
-  });
+  try {
+    return await syncProject({
+      directory: projectDirectory,
+      logger,
+      context: nodeSchemaParserContext,
+      userConfig: {},
+    });
+  } catch (error) {
+    logger.error('Project sync failed:', error);
+    throw error;
+  }
 }

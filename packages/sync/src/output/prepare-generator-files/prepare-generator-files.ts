@@ -1,3 +1,5 @@
+import type { Ignore } from 'ignore';
+
 import pLimit from 'p-limit';
 
 import { getGenerationConcurrencyLimit } from '#src/utils/concurrency.js';
@@ -23,6 +25,10 @@ interface PrepareGeneratorFilesInput {
    * Context for the generator output file writer
    */
   context: GeneratorOutputFileWriterContext;
+  /**
+   * Optional ignore patterns to not overwrite when force-overwrite is enabled
+   */
+  overwriteIgnorePatterns?: Ignore;
 }
 
 /**
@@ -48,6 +54,7 @@ interface PrepareGeneratorFilesResult {
 export async function prepareGeneratorFiles({
   files,
   context,
+  overwriteIgnorePatterns,
 }: PrepareGeneratorFilesInput): Promise<PrepareGeneratorFilesResult> {
   const writeLimit = pLimit(getGenerationConcurrencyLimit());
   const fileResults = await Promise.all(
@@ -57,6 +64,7 @@ export async function prepareGeneratorFiles({
           relativePath: filename,
           data: file,
           context,
+          overwriteIgnorePatterns,
         }).catch((err: unknown) => ({
           relativePath: filename,
           cause: err,
