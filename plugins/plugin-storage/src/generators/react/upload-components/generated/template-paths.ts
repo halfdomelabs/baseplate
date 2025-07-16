@@ -27,9 +27,9 @@ const reactUploadComponentsPathsTask = createGeneratorTask({
     return {
       providers: {
         reactUploadComponentsPaths: {
-          fileInputComponent: `${componentsRoot}/file-input/file-input.tsx`,
-          fileInputField: `${componentsRoot}/file-input-field/file-input-field.tsx`,
-          fileInputUploadGql: `${componentsRoot}/file-input/upload.gql`,
+          fileInputComponent: `${componentsRoot}/ui/file-input/file-input.tsx`,
+          fileInputField: `${componentsRoot}/ui/file-input-field/file-input-field.tsx`,
+          fileInputUploadGql: `${componentsRoot}/ui/file-input/upload.gql`,
           hooksUseUpload: `${srcRoot}/hooks/use-upload.ts`,
         },
       },
