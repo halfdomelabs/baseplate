@@ -55,6 +55,13 @@ function renderTsTypedTemplate(
           ),
         ),
       ),
+    referencedGeneratorTemplates: metadata.referencedGeneratorTemplates
+      ? JSON.stringify(
+          Object.fromEntries(
+            metadata.referencedGeneratorTemplates.map((key) => [key, {}]),
+          ),
+        )
+      : undefined,
     projectExportsOnly: metadata.projectExportsOnly ? 'true' : undefined,
   });
   const fragment = TsCodeUtils.templateWithImports([

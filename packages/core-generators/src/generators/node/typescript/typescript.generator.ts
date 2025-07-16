@@ -15,7 +15,7 @@ import { safeMergeAll } from '@baseplate-dev/utils';
 import path from 'node:path';
 import { z } from 'zod';
 
-import type { RenderTsTemplateGroupActionInput as RenderTsTemplateGroupActionInputV2 } from '#src/renderers/typescript/actions/render-ts-template-group-action.js';
+import type { RenderTsTemplateGroupActionInput } from '#src/renderers/typescript/actions/render-ts-template-group-action.js';
 import type {
   RenderTsCodeFileTemplateOptions,
   RenderTsFragmentActionInput,
@@ -90,7 +90,7 @@ export interface TypescriptFileProvider {
    * @returns The action for the template group
    */
   addLazyTemplateGroup<T extends TsTemplateGroup = TsTemplateGroup>(
-    payload: RenderTsTemplateGroupActionInputV2<T> & {
+    payload: RenderTsTemplateGroupActionInput<T> & {
       generatorInfo: GeneratorInfo;
     },
     options?: Omit<LazyTemplateFileEntry, 'payload'>,
@@ -116,7 +116,7 @@ export interface TypescriptFileProvider {
   renderTemplateGroup<
     T extends Record<string, TsTemplateFile> = Record<string, TsTemplateFile>,
   >(
-    payload: RenderTsTemplateGroupActionInputV2<T>,
+    payload: RenderTsTemplateGroupActionInput<T>,
   ): BuilderAction;
   /**
    * Marks an import as used

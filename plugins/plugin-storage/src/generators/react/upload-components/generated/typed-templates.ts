@@ -18,6 +18,7 @@ const fileInputComponent = createTsTemplateFile({
   },
   name: 'file-input-component',
   projectExports: { FileInput: { exportedAs: 'default' } },
+  referencedGeneratorTemplates: { 'hooks-use-upload': {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -34,6 +35,7 @@ const fileInputField = createTsTemplateFile({
   },
   name: 'file-input-field',
   projectExports: { FileInputField: {}, FileInputFieldController: {} },
+  referencedGeneratorTemplates: { 'file-input-component': {} },
   source: {
     path: path.join(
       import.meta.dirname,

@@ -37,7 +37,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/calendar/calendar.tsx",
       "projectExports": { "Calendar": {} },
-      "referencedGeneratorTemplates": ["styles-button", "cn", "button"],
+      "referencedGeneratorTemplates": ["cn", "styles-button", "button"],
       "sourceFile": "components/calendar/calendar.tsx",
       "variables": {}
     },
@@ -82,9 +82,9 @@
       "projectExports": { "CheckboxField": {}, "CheckboxFieldController": {} },
       "referencedGeneratorTemplates": [
         "types-form",
+        "hooks-use-controller-merged",
         "cn",
         "form-item",
-        "hooks-use-controller-merged",
         "checkbox"
       ],
       "sourceFile": "components/checkbox-field/checkbox-field.tsx",
@@ -127,8 +127,8 @@
         "cn",
         "merge-refs",
         "button",
-        "hooks-use-controlled-state",
-        "scroll-area"
+        "scroll-area",
+        "hooks-use-controlled-state"
       ],
       "sourceFile": "components/combobox/combobox.tsx",
       "variables": {}
@@ -159,8 +159,8 @@
       "pathRootRelativePath": "{components-root}/confirm-dialog/confirm-dialog.tsx",
       "projectExports": { "ConfirmDialog": {} },
       "referencedGeneratorTemplates": [
-        "use-confirm-dialog",
         "button",
+        "use-confirm-dialog",
         "dialog"
       ],
       "sourceFile": "components/confirm-dialog/confirm-dialog.tsx",
@@ -183,9 +183,9 @@
         "cn",
         "hooks-use-controller-merged",
         "button",
-        "calendar",
         "form-item",
-        "popover"
+        "popover",
+        "calendar"
       ],
       "sourceFile": "components/date-picker-field/date-picker-field.tsx",
       "variables": {}
@@ -206,10 +206,10 @@
         "cn",
         "hooks-use-controller-merged",
         "button",
-        "calendar",
         "form-item",
         "input",
-        "popover"
+        "popover",
+        "calendar"
       ],
       "sourceFile": "components/date-time-picker-field/date-time-picker-field.tsx",
       "variables": {}
@@ -339,8 +339,8 @@
       "referencedGeneratorTemplates": [
         "types-form",
         "cn",
-        "merge-refs",
         "form-item",
+        "merge-refs",
         "input"
       ],
       "sourceFile": "components/input-field/input-field.tsx",
@@ -471,8 +471,8 @@
       "projectExports": { "SelectField": {}, "SelectFieldController": {} },
       "referencedGeneratorTemplates": [
         "types-form",
-        "hooks-use-controller-merged",
         "form-item",
+        "hooks-use-controller-merged",
         "select"
       ],
       "sourceFile": "components/select-field/select-field.tsx",
@@ -557,8 +557,8 @@
         "types-form",
         "cn",
         "form-item",
-        "hooks-use-controller-merged",
-        "switch-component"
+        "switch-component",
+        "hooks-use-controller-merged"
       ],
       "sourceFile": "components/switch-field/switch-field.tsx",
       "variables": {}
@@ -604,7 +604,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/textarea-field/textarea-field.tsx",
       "projectExports": { "TextareaField": {}, "TextareaFieldController": {} },
-      "referencedGeneratorTemplates": ["types-form", "form-item", "textarea"],
+      "referencedGeneratorTemplates": ["types-form", "textarea", "form-item"],
       "sourceFile": "components/textarea-field/textarea-field.tsx",
       "variables": {}
     },
