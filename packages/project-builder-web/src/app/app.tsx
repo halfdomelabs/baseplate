@@ -13,7 +13,7 @@ import {
 import { RouterProvider } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-import { ErrorBoundary, RefIssueDialog } from '#src/components/index.js';
+import { ErrorBoundary } from '#src/components/index.js';
 import { router } from '#src/router.js';
 import {
   formatError,
@@ -53,7 +53,6 @@ export function App(): React.ReactElement {
             <ProjectSelectorGate>
               <ProjectDefinitionProvider>
                 <AppRoutes />
-                <RefIssueDialog />
               </ProjectDefinitionProvider>
             </ProjectSelectorGate>
           </ClientVersionProvider>

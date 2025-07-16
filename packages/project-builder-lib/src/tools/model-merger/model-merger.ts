@@ -227,6 +227,7 @@ function deserializeModelMergerModelInput(
   input: ModelMergerModelInput,
   resolveForeignFieldRef: (modelId: string, fieldName: string) => string,
   resolveForeignRelationRef: (relationName: string) => string,
+  resolveModelRef: (modelRef: string) => string,
 ): Pick<ModelConfigInput, 'model' | 'graphql'> {
   const inputWithIds = attachIdsToModelMergerModelInput(input);
   const resolveLocalFieldName = (name: string): string => {
@@ -249,6 +250,7 @@ function deserializeModelMergerModelInput(
       ...inputWithIds.model,
       relations: inputWithIds.model.relations?.map((relation) => ({
         ...relation,
+        modelRef: resolveModelRef(relation.modelRef),
         references: relation.references.map((reference) => ({
           ...reference,
           localRef: resolveLocalFieldName(reference.localRef),
@@ -302,9 +304,10 @@ function deserializeModelMergerModelInput(
 function createNewModelConfigInput(
   name: string,
   featureRef: string,
+  id: string,
 ): ModelConfigInput {
   return {
-    id: modelEntityType.generateNewId(),
+    id,
     name,
     featureRef,
     model: {
@@ -345,7 +348,12 @@ export function createModelMergerResult(
   { siblingModels = [] }: ModelMergerOptions = {},
 ): ModelMergerModelDiffResult | undefined {
   const currentModel =
-    current ?? createNewModelConfigInput(desired.name, desired.featureRef);
+    current ??
+    createNewModelConfigInput(
+      desired.name,
+      desired.featureRef,
+      modelEntityType.generateNewId(),
+    );
   // resolves all the names of the current model config input
   const resolvedCurrent = serializeModelMergerModelInput(
     currentModel,
@@ -431,7 +439,9 @@ export function applyModelMergerDiff(
     ...deserializeModelMergerModelInput(
       patchedCurrent,
       (modelId, fieldName) => {
-        const siblingModel = siblingModels.find((m) => m.id === modelId);
+        const siblingModel = siblingModels.find(
+          (m) => m.id === modelId || m.name === modelId,
+        );
         if (siblingModel) {
           const field = siblingModel.model.fields.find(
             (f) => f.name === fieldName,
@@ -488,22 +498,29 @@ export function applyModelMergerDiff(
         }
         return relation.relation.foreignId;
       },
+      (modelRef) => {
+        const siblingModel = siblingModels.find(
+          (m) => m.id === modelRef || m.name === modelRef,
+        );
+        if (siblingModel) {
+          return siblingModel.id;
+        }
+
+        return modelRef;
+      },
     ),
   };
 }
 
 export function applyModelMergerResultInPlace(
   draftConfig: ProjectDefinition,
+  currentModel: ModelConfigInput,
   result: ModelMergerModelDiffResult,
   definitionContainer: ProjectDefinitionContainer,
   { siblingModels = [] }: ModelMergerOptions = {},
 ): string {
-  const model = result.isNewModel
-    ? createNewModelConfigInput(result.name, result.featureRef)
-    : ModelUtils.byIdOrThrow(definitionContainer.definition, result.id);
-
   const newModel = applyModelMergerDiff(
-    model,
+    currentModel,
     result.changes,
     definitionContainer,
     siblingModels,
@@ -535,14 +552,35 @@ export function createAndApplyModelMergerResults<
     definitionContainer,
     { siblingModels },
   );
-  return mapValues(results, (result, key) =>
-    result
-      ? applyModelMergerResultInPlace(
-          draftConfig,
-          result,
-          definitionContainer,
-          { siblingModels },
-        )
-      : desired[key].name,
-  );
+  const newModels: ModelConfigInput[] = [];
+  const resultIds: Record<keyof T, string> = {} as Record<keyof T, string>;
+
+  // Apply model mergers in order
+  for (const [key, result] of Object.entries(results) as [
+    keyof T,
+    ModelMergerModelDiffResult | undefined,
+  ][]) {
+    if (result) {
+      const model = result.isNewModel
+        ? createNewModelConfigInput(result.name, result.featureRef, result.id)
+        : ModelUtils.byIdOrThrow(definitionContainer.definition, result.id);
+      applyModelMergerResultInPlace(
+        draftConfig,
+        model,
+        result,
+        definitionContainer,
+        {
+          siblingModels: newModels,
+        },
+      );
+      const newModel = draftConfig.models.find((m) => m.id === result.id);
+      if (newModel) {
+        newModels.push(newModel);
+      }
+      resultIds[key] = model.id;
+    } else {
+      resultIds[key] = desired[key].name;
+    }
+  }
+  return resultIds;
 }
