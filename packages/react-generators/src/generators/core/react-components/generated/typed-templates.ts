@@ -11,7 +11,7 @@ const alert = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/alert/alert.tsx',
+      '../templates/components/ui/alert/alert.tsx',
     ),
   },
   variables: {},
@@ -23,11 +23,11 @@ const button = createTsTemplateFile({
   importMapProviders: {},
   name: 'button',
   projectExports: { Button: {}, LinkButton: {} },
-  referencedGeneratorTemplates: { cn: {}, stylesButton: {} },
+  referencedGeneratorTemplates: { stylesButton: {}, cn: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/button/button.tsx',
+      '../templates/components/ui/button/button.tsx',
     ),
   },
   variables: {},
@@ -43,7 +43,7 @@ const calendar = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/calendar/calendar.tsx',
+      '../templates/components/ui/calendar/calendar.tsx',
     ),
   },
   variables: {},
@@ -66,7 +66,7 @@ const card = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/card/card.tsx',
+      '../templates/components/ui/card/card.tsx',
     ),
   },
   variables: {},
@@ -82,7 +82,7 @@ const checkbox = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/checkbox/checkbox.tsx',
+      '../templates/components/ui/checkbox/checkbox.tsx',
     ),
   },
   variables: {},
@@ -96,15 +96,15 @@ const checkboxField = createTsTemplateFile({
   projectExports: { CheckboxField: {}, CheckboxFieldController: {} },
   referencedGeneratorTemplates: {
     typesForm: {},
-    hooksUseControllerMerged: {},
     cn: {},
+    hooksUseControllerMerged: {},
     formItem: {},
     checkbox: {},
   },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/checkbox-field/checkbox-field.tsx',
+      '../templates/components/ui/checkbox-field/checkbox-field.tsx',
     ),
   },
   variables: {},
@@ -120,7 +120,7 @@ const circularProgress = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/circular-progress/circular-progress.tsx',
+      '../templates/components/ui/circular-progress/circular-progress.tsx',
     ),
   },
   variables: {},
@@ -133,18 +133,18 @@ const combobox = createTsTemplateFile({
   name: 'combobox',
   projectExports: { Combobox: {} },
   referencedGeneratorTemplates: {
-    hooksUseControlledState: {},
     stylesInput: {},
     stylesSelect: {},
-    cn: {},
     mergeRefs: {},
     button: {},
     scrollArea: {},
+    hooksUseControlledState: {},
+    cn: {},
   },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/combobox/combobox.tsx',
+      '../templates/components/ui/combobox/combobox.tsx',
     ),
   },
   variables: {},
@@ -159,13 +159,13 @@ const comboboxField = createTsTemplateFile({
   referencedGeneratorTemplates: {
     typesForm: {},
     hooksUseControllerMerged: {},
-    formItem: {},
     combobox: {},
+    formItem: {},
   },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/combobox-field/combobox-field.tsx',
+      '../templates/components/ui/combobox-field/combobox-field.tsx',
     ),
   },
   variables: {},
@@ -178,14 +178,14 @@ const confirmDialog = createTsTemplateFile({
   name: 'confirm-dialog',
   projectExports: { ConfirmDialog: {} },
   referencedGeneratorTemplates: {
-    useConfirmDialog: {},
     button: {},
+    useConfirmDialog: {},
     dialog: {},
   },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/confirm-dialog/confirm-dialog.tsx',
+      '../templates/components/ui/confirm-dialog/confirm-dialog.tsx',
     ),
   },
   variables: {},
@@ -203,17 +203,17 @@ const datePickerField = createTsTemplateFile({
   },
   referencedGeneratorTemplates: {
     typesForm: {},
-    cn: {},
     hooksUseControllerMerged: {},
-    calendar: {},
+    cn: {},
     button: {},
+    calendar: {},
     formItem: {},
     popover: {},
   },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/date-picker-field/date-picker-field.tsx',
+      '../templates/components/ui/date-picker-field/date-picker-field.tsx',
     ),
   },
   variables: {},
@@ -230,18 +230,18 @@ const dateTimePickerField = createTsTemplateFile({
   },
   referencedGeneratorTemplates: {
     typesForm: {},
-    cn: {},
     hooksUseControllerMerged: {},
+    cn: {},
     button: {},
-    formItem: {},
-    input: {},
     calendar: {},
+    formItem: {},
     popover: {},
+    input: {},
   },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/date-time-picker-field/date-time-picker-field.tsx',
+      '../templates/components/ui/date-time-picker-field/date-time-picker-field.tsx',
     ),
   },
   variables: {},
@@ -270,7 +270,7 @@ const dialog = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/dialog/dialog.tsx',
+      '../templates/components/ui/dialog/dialog.tsx',
     ),
   },
   variables: {},
@@ -282,11 +282,11 @@ const emptyDisplay = createTsTemplateFile({
   importMapProviders: {},
   name: 'empty-display',
   projectExports: { EmptyDisplay: {} },
-  referencedGeneratorTemplates: { cn: {}, typesIcon: {} },
+  referencedGeneratorTemplates: { typesIcon: {}, cn: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/empty-display/empty-display.tsx',
+      '../templates/components/ui/empty-display/empty-display.tsx',
     ),
   },
   variables: {},
@@ -302,7 +302,7 @@ const errorableLoader = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/errorable-loader/errorable-loader.tsx',
+      '../templates/components/ui/errorable-loader/errorable-loader.tsx',
     ),
   },
   variables: {},
@@ -318,7 +318,7 @@ const errorDisplay = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/error-display/error-display.tsx',
+      '../templates/components/ui/error-display/error-display.tsx',
     ),
   },
   variables: {},
@@ -340,7 +340,7 @@ const formItem = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/form-item/form-item.tsx',
+      '../templates/components/ui/form-item/form-item.tsx',
     ),
   },
   variables: {},
@@ -356,7 +356,7 @@ const input = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/input/input.tsx',
+      '../templates/components/ui/input/input.tsx',
     ),
   },
   variables: {},
@@ -378,7 +378,7 @@ const inputField = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/input-field/input-field.tsx',
+      '../templates/components/ui/input-field/input-field.tsx',
     ),
   },
   variables: {},
@@ -394,7 +394,7 @@ const label = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/label/label.tsx',
+      '../templates/components/ui/label/label.tsx',
     ),
   },
   variables: {},
@@ -410,7 +410,7 @@ const loader = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/loader/loader.tsx',
+      '../templates/components/ui/loader/loader.tsx',
     ),
   },
   variables: {},
@@ -437,7 +437,7 @@ const navigationMenu = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/navigation-menu/navigation-menu.tsx',
+      '../templates/components/ui/navigation-menu/navigation-menu.tsx',
     ),
   },
   variables: {},
@@ -449,11 +449,11 @@ const notFoundCard = createTsTemplateFile({
   importMapProviders: {},
   name: 'not-found-card',
   projectExports: { NotFoundCard: {} },
-  referencedGeneratorTemplates: { errorDisplay: {}, button: {} },
+  referencedGeneratorTemplates: { button: {}, errorDisplay: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/not-found-card/not-found-card.tsx',
+      '../templates/components/ui/not-found-card/not-found-card.tsx',
     ),
   },
   variables: {},
@@ -474,7 +474,7 @@ const popover = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/popover/popover.tsx',
+      '../templates/components/ui/popover/popover.tsx',
     ),
   },
   variables: {},
@@ -490,7 +490,7 @@ const scrollArea = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/scroll-area/scroll-area.tsx',
+      '../templates/components/ui/scroll-area/scroll-area.tsx',
     ),
   },
   variables: {},
@@ -506,7 +506,7 @@ const select = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/select/select.tsx',
+      '../templates/components/ui/select/select.tsx',
     ),
   },
   variables: {},
@@ -527,7 +527,7 @@ const selectField = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/select-field/select-field.tsx',
+      '../templates/components/ui/select-field/select-field.tsx',
     ),
   },
   variables: {},
@@ -547,7 +547,7 @@ const sidebarLayout = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/sidebar-layout/sidebar-layout.tsx',
+      '../templates/components/ui/sidebar-layout/sidebar-layout.tsx',
     ),
   },
   variables: {},
@@ -563,7 +563,7 @@ const switchComponent = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/switch/switch.tsx',
+      '../templates/components/ui/switch/switch.tsx',
     ),
   },
   variables: {},
@@ -577,15 +577,15 @@ const switchField = createTsTemplateFile({
   projectExports: { SwitchField: {}, SwitchFieldController: {} },
   referencedGeneratorTemplates: {
     typesForm: {},
+    hooksUseControllerMerged: {},
     cn: {},
     formItem: {},
     switchComponent: {},
-    hooksUseControllerMerged: {},
   },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/switch-field/switch-field.tsx',
+      '../templates/components/ui/switch-field/switch-field.tsx',
     ),
   },
   variables: {},
@@ -610,7 +610,7 @@ const table = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/table/table.tsx',
+      '../templates/components/ui/table/table.tsx',
     ),
   },
   variables: {},
@@ -626,7 +626,7 @@ const textarea = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/textarea/textarea.tsx',
+      '../templates/components/ui/textarea/textarea.tsx',
     ),
   },
   variables: {},
@@ -638,11 +638,11 @@ const textareaField = createTsTemplateFile({
   importMapProviders: {},
   name: 'textarea-field',
   projectExports: { TextareaField: {}, TextareaFieldController: {} },
-  referencedGeneratorTemplates: { typesForm: {}, textarea: {}, formItem: {} },
+  referencedGeneratorTemplates: { typesForm: {}, formItem: {}, textarea: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/textarea-field/textarea-field.tsx',
+      '../templates/components/ui/textarea-field/textarea-field.tsx',
     ),
   },
   variables: {},
@@ -658,7 +658,7 @@ const toaster = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/toaster/toaster.tsx',
+      '../templates/components/ui/toaster/toaster.tsx',
     ),
   },
   variables: {},

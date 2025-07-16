@@ -14,7 +14,7 @@ const component = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/error-boundary/error-boundary.tsx',
+      '../templates/components/ui/error-boundary/error-boundary.tsx',
     ),
   },
   variables: {},

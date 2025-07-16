@@ -19,7 +19,7 @@ const embeddedListField = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/embedded-list-field/embedded-list-field.tsx',
+      '../templates/components/admin/embedded-list-field/embedded-list-field.tsx',
     ),
   },
   variables: {},
@@ -40,7 +40,7 @@ const embeddedListInput = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/embedded-list-input/embedded-list-input.tsx',
+      '../templates/components/admin/embedded-list-input/embedded-list-input.tsx',
     ),
   },
   variables: {},
@@ -62,7 +62,7 @@ const embeddedObjectField = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/embedded-object-field/embedded-object-field.tsx',
+      '../templates/components/admin/embedded-object-field/embedded-object-field.tsx',
     ),
   },
   variables: {},
@@ -82,7 +82,7 @@ const embeddedObjectInput = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/components/embedded-object-input/embedded-object-input.tsx',
+      '../templates/components/admin/embedded-object-input/embedded-object-input.tsx',
     ),
   },
   variables: {},

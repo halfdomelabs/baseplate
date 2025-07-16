@@ -22,7 +22,7 @@
       "pathRootRelativePath": "{components-root}/ui/file-input/file-input.tsx",
       "projectExports": { "FileInput": { "exportedAs": "default" } },
       "referencedGeneratorTemplates": ["hooks-use-upload"],
-      "sourceFile": "components/file-input/file-input.tsx",
+      "sourceFile": "components/ui/file-input/file-input.tsx",
       "variables": {}
     },
     "file-input-field": {
@@ -41,14 +41,14 @@
         "FileInputFieldController": {}
       },
       "referencedGeneratorTemplates": ["file-input-component"],
-      "sourceFile": "components/file-input-field/file-input-field.tsx",
+      "sourceFile": "components/ui/file-input-field/file-input-field.tsx",
       "variables": {}
     },
     "file-input-upload-gql": {
       "type": "text",
       "fileOptions": { "kind": "singleton" },
       "pathRootRelativePath": "{components-root}/ui/file-input/upload.gql",
-      "sourceFile": "components/file-input/upload.gql",
+      "sourceFile": "components/ui/file-input/upload.gql",
       "variables": { "TPL_FILE_TYPE": {} }
     },
     "hooks-use-upload": {
