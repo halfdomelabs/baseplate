@@ -22,7 +22,7 @@ const coreReactErrorBoundaryPathsTask = createGeneratorTask({
     return {
       providers: {
         coreReactErrorBoundaryPaths: {
-          component: `${componentsRoot}/ui/error-boundary/error-boundary.tsx`,
+          component: `${componentsRoot}/ui/error-boundary.tsx`,
         },
       },
     };

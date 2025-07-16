@@ -19,7 +19,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{components-root}/ui/file-input/file-input.tsx",
+      "pathRootRelativePath": "{components-root}/ui/file-input.tsx",
       "projectExports": { "FileInput": { "exportedAs": "default" } },
       "referencedGeneratorTemplates": ["hooks-use-upload"],
       "sourceFile": "components/ui/file-input/file-input.tsx",
@@ -35,7 +35,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{components-root}/ui/file-input-field/file-input-field.tsx",
+      "pathRootRelativePath": "{components-root}/ui/file-input-field.tsx",
       "projectExports": {
         "FileInputField": {},
         "FileInputFieldController": {}
@@ -47,7 +47,7 @@
     "file-input-upload-gql": {
       "type": "text",
       "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{components-root}/ui/file-input/upload.gql",
+      "pathRootRelativePath": "{components-root}/ui/file-input.gql",
       "sourceFile": "components/ui/file-input/upload.gql",
       "variables": { "TPL_FILE_TYPE": {} }
     },

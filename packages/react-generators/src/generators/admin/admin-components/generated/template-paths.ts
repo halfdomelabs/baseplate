@@ -22,10 +22,10 @@ const adminAdminComponentsPathsTask = createGeneratorTask({
     return {
       providers: {
         adminAdminComponentsPaths: {
-          embeddedListField: `${componentsRoot}/admin/embedded-list-field/embedded-list-field.tsx`,
-          embeddedListInput: `${componentsRoot}/admin/embedded-list-input/embedded-list-input.tsx`,
-          embeddedObjectField: `${componentsRoot}/admin/embedded-object-field/embedded-object-field.tsx`,
-          embeddedObjectInput: `${componentsRoot}/admin/embedded-object-input/embedded-object-input.tsx`,
+          embeddedListField: `${componentsRoot}/admin/embedded-list-field.tsx`,
+          embeddedListInput: `${componentsRoot}/admin/embedded-list-input.tsx`,
+          embeddedObjectField: `${componentsRoot}/admin/embedded-object-field.tsx`,
+          embeddedObjectInput: `${componentsRoot}/admin/embedded-object-input.tsx`,
         },
       },
     };
