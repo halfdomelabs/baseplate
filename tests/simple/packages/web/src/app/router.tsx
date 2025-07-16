@@ -4,9 +4,9 @@ import { useApolloClient } from '@apollo/client';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef } from 'react';
 
-import { Button } from '../components/ui/button/button';
-import { ErrorDisplay } from '../components/ui/error-display/error-display';
-import { NotFoundCard } from '../components/ui/not-found-card/not-found-card';
+import { Button } from '../components/ui/button';
+import { ErrorDisplay } from '../components/ui/error-display';
+import { NotFoundCard } from '../components/ui/not-found-card';
 import { routeTree } from '../route-tree.gen';
 import { logError } from '../services/error-logger';
 
