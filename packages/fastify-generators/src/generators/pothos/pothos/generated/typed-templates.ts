@@ -27,6 +27,10 @@ const fieldWithInputGlobalTypes = createTsTemplateFile({
   group: 'field-with-input-payload',
   importMapProviders: {},
   name: 'field-with-input-global-types',
+  referencedGeneratorTemplates: {
+    fieldWithInputPlugin: {},
+    fieldWithInputTypes: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,

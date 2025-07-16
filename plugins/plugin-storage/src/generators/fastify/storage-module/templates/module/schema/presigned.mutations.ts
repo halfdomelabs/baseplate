@@ -1,10 +1,9 @@
 // @ts-nocheck
 
+import { fileCategoryEnumType } from '$schemaFileCategory';
+import { createPresignedDownloadUrl } from '$servicesCreatePresignedDownloadUrl';
+import { createPresignedUploadUrl } from '$servicesCreatePresignedUploadUrl';
 import { builder } from '%pothosImports';
-
-import { createPresignedDownloadUrl } from '../services/create-presigned-download-url.js';
-import { createPresignedUploadUrl } from '../services/create-presigned-upload-url.js';
-import { fileCategoryEnumType } from './file-category.enum.js';
 
 export const presignedUrlFieldObjectType = builder.simpleObject(
   'PresignedUrlField',

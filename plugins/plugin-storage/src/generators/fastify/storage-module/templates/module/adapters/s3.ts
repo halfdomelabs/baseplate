@@ -1,5 +1,11 @@
 // @ts-nocheck
 
+import type {
+  CreatePresignedUploadOptions,
+  FileMetadata,
+  PresignedUploadUrl,
+  StorageAdapter,
+} from '$typesAdapter';
 import type { Readable } from 'node:stream';
 
 import {
@@ -12,13 +18,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-
-import type {
-  CreatePresignedUploadOptions,
-  FileMetadata,
-  PresignedUploadUrl,
-  StorageAdapter,
-} from '../types/adapter.js';
 
 /** Options for the S3 adapter. */
 interface S3AdapterOptions {

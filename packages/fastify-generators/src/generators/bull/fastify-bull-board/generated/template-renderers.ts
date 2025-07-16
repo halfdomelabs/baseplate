@@ -60,6 +60,7 @@ const bullFastifyBullBoardRenderersTask = createGeneratorTask({
                   fastifyRedisImports,
                   pothosImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

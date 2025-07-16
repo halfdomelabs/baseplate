@@ -22,6 +22,10 @@
       "group": "field-with-input-payload",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldWithInputPayloadPlugin/global-types.ts",
+      "referencedGeneratorTemplates": [
+        "field-with-input-plugin",
+        "field-with-input-types"
+      ],
       "sourceFile": "src/plugins/graphql/FieldWithInputPayloadPlugin/global-types.ts",
       "variables": {}
     },

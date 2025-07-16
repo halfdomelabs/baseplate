@@ -48,6 +48,7 @@ const authAuthContextRenderersTask = createGeneratorTask({
                   authRolesImports,
                   errorHandlerServiceImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

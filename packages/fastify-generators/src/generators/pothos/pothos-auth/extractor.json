@@ -8,6 +8,10 @@
       "group": "field-authorize-plugin",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/global-types.ts",
+      "referencedGeneratorTemplates": [
+        "field-authorize-types",
+        "field-authorize-plugin"
+      ],
       "sourceFile": "src/plugins/graphql/FieldAuthorizePlugin/global-types.ts",
       "variables": {}
     },
@@ -23,6 +27,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/index.ts",
+      "referencedGeneratorTemplates": ["field-authorize-types"],
       "sourceFile": "src/plugins/graphql/FieldAuthorizePlugin/index.ts",
       "variables": {}
     },

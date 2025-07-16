@@ -45,6 +45,7 @@ const prismaPrismaRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: PRISMA_PRISMA_TEMPLATES.seed,
                 destination: paths.seed,
+                generatorPaths: paths,
                 ...options,
               }),
           },

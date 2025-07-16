@@ -60,6 +60,7 @@ const prismaPrismaUtilsRenderersTask = createGeneratorTask({
                   serviceContextImports,
                   tsUtilsImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

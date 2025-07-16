@@ -4,7 +4,6 @@ import {
   packageScope,
   tsCodeFragment,
   TsCodeUtils,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
@@ -14,7 +13,6 @@ import {
 import { z } from 'zod';
 
 import { authRolesImportsProvider } from '#src/generators/auth/index.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 
 import { pothosConfigProvider, pothosSchemaProvider } from '../pothos/index.js';
 import { POTHOS_POTHOS_AUTH_GENERATED } from './generated/index.js';
@@ -47,6 +45,7 @@ export const pothosAuthGenerator = createGenerator({
   descriptorSchema,
   buildTasks: ({ requireOnRootFields }) => ({
     paths: POTHOS_POTHOS_AUTH_GENERATED.paths.task,
+    renderers: POTHOS_POTHOS_AUTH_GENERATED.renderers.task,
     pothosConfig: createGeneratorTask({
       dependencies: {
         pothosConfig: pothosConfigProvider,
@@ -78,24 +77,12 @@ export const pothosAuthGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         pothosSchema: pothosSchemaProvider,
-        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-        typescriptFile: typescriptFileProvider,
-        paths: POTHOS_POTHOS_AUTH_GENERATED.paths.provider,
+        renderers: POTHOS_POTHOS_AUTH_GENERATED.renderers.provider,
       },
-      run({ errorHandlerServiceImports, typescriptFile, pothosSchema, paths }) {
+      run({ pothosSchema, renderers }) {
         return {
           build: async (builder) => {
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group:
-                  POTHOS_POTHOS_AUTH_GENERATED.templates
-                    .fieldAuthorizePluginGroup,
-                paths,
-                importMapProviders: {
-                  errorHandlerServiceImports,
-                },
-              }),
-            );
+            await builder.apply(renderers.fieldAuthorizePluginGroup.render({}));
 
             pothosSchema.registerSchemaFile(
               `'@src/plugins/graphql/FieldAuthorizePlugin/index.ts`,

@@ -1,13 +1,11 @@
 // @ts-nocheck
 
+import type { FileCategory } from '$typesFileCategory';
 import type { DataPipeOutput } from '%prismaUtilsImports';
 import type { ServiceContext } from '%serviceContextImports';
 
+import { STORAGE_ADAPTERS } from '$configAdapters';
 import { BadRequestError } from '%errorHandlerServiceImports';
-
-import type { FileCategory } from '../types/file-category.js';
-
-import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
 
 export interface FileUploadInput {
   id: string;

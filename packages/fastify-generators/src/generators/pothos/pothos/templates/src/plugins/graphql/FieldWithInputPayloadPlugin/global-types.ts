@@ -1,5 +1,10 @@
 // @ts-nocheck
 
+import type { PothosFieldWithInputPayloadPlugin } from '$fieldWithInputPlugin';
+import type {
+  MutationWithInputPayloadOptions,
+  OutputShapeFromFields,
+} from '$fieldWithInputTypes';
 import type {
   ArgumentRef,
   FieldKind,
@@ -11,12 +16,6 @@ import type {
   ShapeFromTypeParam,
   TypeParam,
 } from '@pothos/core';
-
-import type { PothosFieldWithInputPayloadPlugin } from './index.js';
-import type {
-  MutationWithInputPayloadOptions,
-  OutputShapeFromFields,
-} from './types.js';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

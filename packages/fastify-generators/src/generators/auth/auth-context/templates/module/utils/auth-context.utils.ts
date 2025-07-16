@@ -1,10 +1,10 @@
 // @ts-nocheck
 
+import type { AuthContext } from '$authContextTypes';
+import type { AuthSessionInfo } from '$authSessionTypes';
+
 import { DEFAULT_PUBLIC_ROLES } from '%authRolesImports';
 import { UnauthorizedError } from '%errorHandlerServiceImports';
-
-import type { AuthContext } from '../types/auth-context.types.js';
-import type { AuthSessionInfo } from '../types/auth-session.types.js';
 
 export function createAuthContextFromSessionInfo(
   session: AuthSessionInfo | undefined,

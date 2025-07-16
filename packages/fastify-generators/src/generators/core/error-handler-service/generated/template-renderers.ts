@@ -74,6 +74,7 @@ const coreErrorHandlerServiceRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   configServiceImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },
@@ -93,6 +94,7 @@ const coreErrorHandlerServiceRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateGroup({
                 group: CORE_ERROR_HANDLER_SERVICE_TEMPLATES.utilsGroup,
                 paths,
+                generatorPaths: paths,
                 ...options,
               }),
           },

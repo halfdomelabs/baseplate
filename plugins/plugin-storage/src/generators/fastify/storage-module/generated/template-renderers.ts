@@ -100,6 +100,7 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: FASTIFY_STORAGE_MODULE_TEMPLATES.configCategories,
                 destination: paths.configCategories,
+                generatorPaths: paths,
                 ...options,
               }),
           },
@@ -113,6 +114,7 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                   prismaUtilsImports,
                   serviceContextImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },
@@ -124,6 +126,7 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   pothosImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

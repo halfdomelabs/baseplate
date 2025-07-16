@@ -45,6 +45,7 @@ const pothosPothosAuthRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   errorHandlerServiceImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

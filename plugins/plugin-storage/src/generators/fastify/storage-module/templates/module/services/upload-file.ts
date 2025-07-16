@@ -1,10 +1,9 @@
 // @ts-nocheck
 
+import type { FileUploadOptions } from '$utilsValidateFileUploadOptions';
 import type { ServiceContext } from '%serviceContextImports';
 
-import type { FileUploadOptions } from '../utils/validate-file-upload-options.js';
-
-import { validateFileUploadOptions } from '../utils/validate-file-upload-options.js';
+import { validateFileUploadOptions } from '$utilsValidateFileUploadOptions';
 
 /**
  * Uploads a file to storage

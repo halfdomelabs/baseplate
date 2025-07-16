@@ -81,6 +81,7 @@ const nodeTsUtilsRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: NODE_TS_UTILS_TEMPLATES.nulls,
                 destination: paths.nulls,
+                generatorPaths: paths,
                 ...options,
               }),
           },

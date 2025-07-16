@@ -75,6 +75,7 @@ const pothosPothosRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   tsUtilsImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

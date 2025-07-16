@@ -62,6 +62,7 @@ const embeddedOneToMany = createTsTemplateFile({
     createOneToManyCreateData: {},
     createOneToManyUpsertData: {},
   },
+  referencedGeneratorTemplates: { dataPipes: {}, embeddedTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -80,6 +81,7 @@ const embeddedOneToOne = createTsTemplateFile({
     createOneToOneCreateData: {},
     createOneToOneUpsertData: {},
   },
+  referencedGeneratorTemplates: { dataPipes: {}, embeddedTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,

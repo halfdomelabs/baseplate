@@ -28,6 +28,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/nulls.ts",
       "projectExports": { "restrictObjectNulls": {} },
+      "referencedGeneratorTemplates": ["normalize-types"],
       "sourceFile": "src/utils/nulls.ts",
       "variables": {}
     },

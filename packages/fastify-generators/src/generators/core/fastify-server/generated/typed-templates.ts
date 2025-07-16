@@ -11,6 +11,7 @@ const index = createTsTemplateFile({
     loggerServiceImports: loggerServiceImportsProvider,
   },
   name: 'index',
+  referencedGeneratorTemplates: { server: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/index.ts'),
   },

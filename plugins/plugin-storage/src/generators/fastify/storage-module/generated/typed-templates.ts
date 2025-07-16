@@ -34,6 +34,7 @@ const configCategories = createTsTemplateFile({
     getCategoryByName: {},
     getCategoryByNameOrThrow: {},
   },
+  referencedGeneratorTemplates: { typesFileCategory: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -49,6 +50,7 @@ const adaptersS_3 = createTsTemplateFile({
   importMapProviders: {},
   name: 'adapters-s-3',
   projectExports: { createS3Adapter: {} },
+  referencedGeneratorTemplates: { typesAdapter: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/module/adapters/s3.ts'),
   },
@@ -61,6 +63,7 @@ const adaptersUrl = createTsTemplateFile({
   importMapProviders: {},
   name: 'adapters-url',
   projectExports: { createUrlAdapter: {} },
+  referencedGeneratorTemplates: { typesAdapter: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/module/adapters/url.ts'),
   },
@@ -76,6 +79,7 @@ const servicesCreatePresignedDownloadUrl = createTsTemplateFile({
   },
   name: 'services-create-presigned-download-url',
   projectExports: { createPresignedDownloadUrl: {} },
+  referencedGeneratorTemplates: { configAdapters: {}, configCategories: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -94,6 +98,7 @@ const servicesCreatePresignedUploadUrl = createTsTemplateFile({
   },
   name: 'services-create-presigned-upload-url',
   projectExports: { createPresignedUploadUrl: {} },
+  referencedGeneratorTemplates: { utilsValidateFileUploadOptions: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -112,6 +117,7 @@ const servicesDownloadFile = createTsTemplateFile({
   },
   name: 'services-download-file',
   projectExports: { downloadFile: {} },
+  referencedGeneratorTemplates: { configCategories: {}, configAdapters: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -127,6 +133,7 @@ const servicesUploadFile = createTsTemplateFile({
   importMapProviders: { serviceContextImports: serviceContextImportsProvider },
   name: 'services-upload-file',
   projectExports: {},
+  referencedGeneratorTemplates: { utilsValidateFileUploadOptions: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -149,6 +156,7 @@ const servicesValidateFileInput = createTsTemplateFile({
     FileUploadInput: { isTypeOnly: true },
     validateFileInput: {},
   },
+  referencedGeneratorTemplates: { typesFileCategory: {}, configAdapters: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -184,6 +192,7 @@ const typesFileCategory = createTsTemplateFile({
   importMapProviders: { serviceContextImports: serviceContextImportsProvider },
   name: 'types-file-category',
   projectExports: { FileCategory: { isTypeOnly: true } },
+  referencedGeneratorTemplates: { configAdapters: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -199,6 +208,7 @@ const utilsCreateFileCategory = createTsTemplateFile({
   importMapProviders: {},
   name: 'utils-create-file-category',
   projectExports: { createFileCategory: {}, FileSize: {}, MimeTypes: {} },
+  referencedGeneratorTemplates: { typesFileCategory: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -237,6 +247,13 @@ const utilsValidateFileUploadOptions = createTsTemplateFile({
     FileUploadOptions: { isTypeOnly: true },
     validateFileUploadOptions: {},
   },
+  referencedGeneratorTemplates: {
+    typesAdapter: {},
+    typesFileCategory: {},
+    configAdapters: {},
+    configCategories: {},
+    utilsMime: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -267,6 +284,7 @@ const schemaFileCategory = createTsTemplateFile({
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-file-category',
   projectExports: {},
+  referencedGeneratorTemplates: { configCategories: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -297,6 +315,11 @@ const schemaPresignedMutations = createTsTemplateFile({
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-presigned-mutations',
   projectExports: {},
+  referencedGeneratorTemplates: {
+    servicesCreatePresignedDownloadUrl: {},
+    servicesCreatePresignedUploadUrl: {},
+    schemaFileCategory: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -312,6 +335,7 @@ const schemaPublicUrl = createTsTemplateFile({
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-public-url',
   projectExports: {},
+  referencedGeneratorTemplates: { configAdapters: {} },
   source: {
     path: path.join(
       import.meta.dirname,

@@ -1,12 +1,10 @@
 // @ts-nocheck
 
+import type { FileUploadOptions } from '$utilsValidateFileUploadOptions';
 import type { ServiceContext } from '%serviceContextImports';
 
+import { validateFileUploadOptions } from '$utilsValidateFileUploadOptions';
 import { BadRequestError } from '%errorHandlerServiceImports';
-
-import type { FileUploadOptions } from '../utils/validate-file-upload-options.js';
-
-import { validateFileUploadOptions } from '../utils/validate-file-upload-options.js';
 
 export interface CreatePresignedUploadUrlPayload {
   url: string;

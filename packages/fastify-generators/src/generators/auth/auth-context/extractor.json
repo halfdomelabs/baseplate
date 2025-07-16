@@ -14,6 +14,7 @@
       },
       "pathRootRelativePath": "{module-root}/types/auth-context.types.ts",
       "projectExports": { "AuthContext": { "isTypeOnly": true } },
+      "referencedGeneratorTemplates": ["auth-session-types"],
       "sourceFile": "module/types/auth-context.types.ts",
       "variables": {}
     },
@@ -34,6 +35,10 @@
       },
       "pathRootRelativePath": "{module-root}/utils/auth-context.utils.ts",
       "projectExports": { "createAuthContextFromSessionInfo": {} },
+      "referencedGeneratorTemplates": [
+        "auth-session-types",
+        "auth-context-types"
+      ],
       "sourceFile": "module/utils/auth-context.utils.ts",
       "variables": {}
     },

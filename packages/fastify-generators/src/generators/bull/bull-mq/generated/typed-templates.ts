@@ -29,6 +29,7 @@ const scriptsSynchronizeRepeatJobs = createTsTemplateFile({
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
   },
   name: 'scripts-synchronize-repeat-jobs',
+  referencedGeneratorTemplates: { serviceIndex: {} },
   source: {
     path: path.join(
       import.meta.dirname,

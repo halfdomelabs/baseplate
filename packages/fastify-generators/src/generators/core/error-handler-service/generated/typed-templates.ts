@@ -8,6 +8,7 @@ const errorHandlerPlugin = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: { configServiceImports: configServiceImportsProvider },
   name: 'error-handler-plugin',
+  referencedGeneratorTemplates: { errorLogger: {}, httpErrors: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -59,6 +60,7 @@ const zod = createTsTemplateFile({
   importMapProviders: {},
   name: 'zod',
   projectExports: { handleZodRequestValidationError: {} },
+  referencedGeneratorTemplates: { httpErrors: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/utils/zod.ts'),
   },

@@ -1,10 +1,9 @@
 // @ts-nocheck
 
+import type { DataPipeOutput } from '$dataPipes';
+import type { UpsertPayload } from '$embeddedTypes';
 import type { ServiceContext } from '%serviceContextImports';
 import type { Prisma } from '@prisma/client';
-
-import type { DataPipeOutput } from '../data-pipes.js';
-import type { UpsertPayload } from './embedded-types.js';
 
 // Create Helpers
 

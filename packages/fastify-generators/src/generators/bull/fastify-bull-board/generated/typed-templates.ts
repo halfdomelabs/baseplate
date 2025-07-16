@@ -10,6 +10,7 @@ const index = createTsTemplateFile({
   group: 'module',
   importMapProviders: {},
   name: 'index',
+  referencedGeneratorTemplates: { pluginsBullBoard: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -26,6 +27,7 @@ const pluginsBullBoard = createTsTemplateFile({
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
   },
   name: 'plugins-bull-board',
+  referencedGeneratorTemplates: { servicesAuthService: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -40,6 +42,7 @@ const schemaAuthenticateMutations = createTsTemplateFile({
   group: 'module',
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-authenticate-mutations',
+  referencedGeneratorTemplates: { servicesAuthService: {} },
   source: {
     path: path.join(
       import.meta.dirname,

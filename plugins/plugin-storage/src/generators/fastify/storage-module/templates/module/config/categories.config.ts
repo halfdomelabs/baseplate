@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { FileCategory } from '../types/file-category.js';
+import type { FileCategory } from '$typesFileCategory';
 
 // Collected registry for all file categories
 export const FILE_CATEGORIES = TPL_FILE_CATEGORIES as const;

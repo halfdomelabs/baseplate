@@ -59,6 +59,7 @@ const coreFastifyServerRenderersTask = createGeneratorTask({
                   configServiceImports,
                   loggerServiceImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

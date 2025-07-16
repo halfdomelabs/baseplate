@@ -66,6 +66,7 @@ const bullBullMqRenderersTask = createGeneratorTask({
                   errorHandlerServiceImports,
                   loggerServiceImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

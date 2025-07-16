@@ -5,7 +5,6 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
@@ -14,9 +13,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { configServiceImportsProvider } from '../config-service/index.js';
 import { fastifyServerConfigProvider } from '../fastify-server/index.js';
-import { loggerServiceImportsProvider } from '../logger-service/index.js';
 import { CORE_ERROR_HANDLER_SERVICE_GENERATED } from './generated/index.js';
 import { errorHandlerServiceImportsProvider } from './generated/ts-import-providers.js';
 
@@ -41,23 +38,21 @@ export const errorHandlerServiceGenerator = createGenerator({
   name: 'core/error-handler-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-
   buildTasks: () => ({
     paths: CORE_ERROR_HANDLER_SERVICE_GENERATED.paths.task,
     imports: CORE_ERROR_HANDLER_SERVICE_GENERATED.imports.task,
+    renderers: CORE_ERROR_HANDLER_SERVICE_GENERATED.renderers.task,
     fastifyPlugin: createGeneratorTask({
       dependencies: {
         fastifyServerConfig: fastifyServerConfigProvider,
-        typescriptFile: typescriptFileProvider,
-        configServiceImports: configServiceImportsProvider,
         errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         paths: CORE_ERROR_HANDLER_SERVICE_GENERATED.paths.provider,
+        renderers: CORE_ERROR_HANDLER_SERVICE_GENERATED.renderers.provider,
       },
       run({
         fastifyServerConfig,
-        typescriptFile,
-        configServiceImports,
         errorHandlerServiceImports,
+        renderers,
         paths,
       }) {
         fastifyServerConfig.plugins.set('errorHandlerPlugin', {
@@ -76,18 +71,7 @@ export const errorHandlerServiceGenerator = createGenerator({
 
         return {
           build: async (builder) => {
-            await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  CORE_ERROR_HANDLER_SERVICE_GENERATED.templates
-                    .errorHandlerPlugin,
-                destination: paths.errorHandlerPlugin,
-                variables: {},
-                importMapProviders: {
-                  configServiceImports,
-                },
-              }),
-            );
+            await builder.apply(renderers.errorHandlerPlugin.render({}));
           },
         };
       },
@@ -95,26 +79,18 @@ export const errorHandlerServiceGenerator = createGenerator({
     configTask,
     errorLogger: createGeneratorTask({
       dependencies: {
-        loggerServiceImports: loggerServiceImportsProvider,
-        typescriptFile: typescriptFileProvider,
         errorHandlerServiceConfigValues:
           errorHandlerServiceConfigValuesProvider,
-        paths: CORE_ERROR_HANDLER_SERVICE_GENERATED.paths.provider,
+        renderers: CORE_ERROR_HANDLER_SERVICE_GENERATED.renderers.provider,
       },
       run({
-        loggerServiceImports,
-        typescriptFile,
         errorHandlerServiceConfigValues: { contextActions, loggerActions },
-        paths,
+        renderers,
       }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  CORE_ERROR_HANDLER_SERVICE_GENERATED.templates.errorLogger,
-                destination: paths.errorLogger,
-                importMapProviders: { loggerServiceImports },
+              renderers.errorLogger.render({
                 variables: {
                   TPL_CONTEXT_ACTIONS: TsCodeUtils.mergeFragments(
                     contextActions,
@@ -133,19 +109,12 @@ export const errorHandlerServiceGenerator = createGenerator({
     }),
     utils: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        paths: CORE_ERROR_HANDLER_SERVICE_GENERATED.paths.provider,
+        renderers: CORE_ERROR_HANDLER_SERVICE_GENERATED.renderers.provider,
       },
-      run({ typescriptFile, paths }) {
+      run({ renderers }) {
         return {
           build: async (builder) => {
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group:
-                  CORE_ERROR_HANDLER_SERVICE_GENERATED.templates.utilsGroup,
-                paths,
-              }),
-            );
+            await builder.apply(renderers.utilsGroup.render({}));
           },
         };
       },

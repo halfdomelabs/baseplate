@@ -69,6 +69,7 @@ const stripeFastifyStripeRenderersTask = createGeneratorTask({
                   configServiceImports,
                   errorHandlerServiceImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },
