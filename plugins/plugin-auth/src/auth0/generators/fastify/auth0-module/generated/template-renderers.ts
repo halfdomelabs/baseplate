@@ -20,7 +20,7 @@ export interface Auth0Auth0ModuleRenderers {
         RenderTsTemplateFileActionInput<
           typeof AUTH0_AUTH0_MODULE_TEMPLATES.management
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -30,7 +30,7 @@ export interface Auth0Auth0ModuleRenderers {
         RenderTsTemplateFileActionInput<
           typeof AUTH0_AUTH0_MODULE_TEMPLATES.userSessionService
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

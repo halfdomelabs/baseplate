@@ -14,7 +14,7 @@ export interface NodeTsUtilsRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof NODE_TS_UTILS_TEMPLATES.arrays>,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -24,7 +24,7 @@ export interface NodeTsUtilsRenderers {
         RenderTsTemplateFileActionInput<
           typeof NODE_TS_UTILS_TEMPLATES.normalizeTypes
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -32,7 +32,7 @@ export interface NodeTsUtilsRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof NODE_TS_UTILS_TEMPLATES.nulls>,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -40,7 +40,7 @@ export interface NodeTsUtilsRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof NODE_TS_UTILS_TEMPLATES.string>,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

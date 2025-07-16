@@ -17,7 +17,7 @@ export interface CoreFastifyServerRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_FASTIFY_SERVER_TEMPLATES.index
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -27,7 +27,7 @@ export interface CoreFastifyServerRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_FASTIFY_SERVER_TEMPLATES.server
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

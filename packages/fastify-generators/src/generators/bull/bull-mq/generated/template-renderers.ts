@@ -18,7 +18,7 @@ export interface BullBullMqRenderers {
         RenderTsTemplateGroupActionInput<
           typeof BULL_BULL_MQ_TEMPLATES.scriptsGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -28,7 +28,7 @@ export interface BullBullMqRenderers {
         RenderTsTemplateGroupActionInput<
           typeof BULL_BULL_MQ_TEMPLATES.serviceGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

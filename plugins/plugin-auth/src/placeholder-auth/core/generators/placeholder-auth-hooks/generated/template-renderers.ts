@@ -21,7 +21,7 @@ export interface PlaceholderAuthCorePlaceholderAuthHooksRenderers {
         RenderTsTemplateGroupActionInput<
           typeof PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_HOOKS_TEMPLATES.hooksGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

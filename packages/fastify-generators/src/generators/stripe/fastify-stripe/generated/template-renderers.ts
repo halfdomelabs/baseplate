@@ -18,7 +18,7 @@ export interface StripeFastifyStripeRenderers {
         RenderTsTemplateGroupActionInput<
           typeof STRIPE_FASTIFY_STRIPE_TEMPLATES.pluginsGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -28,7 +28,7 @@ export interface StripeFastifyStripeRenderers {
         RenderTsTemplateGroupActionInput<
           typeof STRIPE_FASTIFY_STRIPE_TEMPLATES.servicesGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

@@ -23,7 +23,7 @@ export interface YogaYogaPluginRenderers {
         RenderTsTemplateFileActionInput<
           typeof YOGA_YOGA_PLUGIN_TEMPLATES.graphqlPlugin
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -33,7 +33,7 @@ export interface YogaYogaPluginRenderers {
         RenderTsTemplateGroupActionInput<
           typeof YOGA_YOGA_PLUGIN_TEMPLATES.subscriptionsGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -43,7 +43,7 @@ export interface YogaYogaPluginRenderers {
         RenderTsTemplateFileActionInput<
           typeof YOGA_YOGA_PLUGIN_TEMPLATES.useGraphLogger
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

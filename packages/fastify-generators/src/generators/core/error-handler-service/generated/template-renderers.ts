@@ -20,7 +20,7 @@ export interface CoreErrorHandlerServiceRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_ERROR_HANDLER_SERVICE_TEMPLATES.errorHandlerPlugin
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -30,7 +30,7 @@ export interface CoreErrorHandlerServiceRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_ERROR_HANDLER_SERVICE_TEMPLATES.errorLogger
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -40,7 +40,7 @@ export interface CoreErrorHandlerServiceRenderers {
         RenderTsTemplateGroupActionInput<
           typeof CORE_ERROR_HANDLER_SERVICE_TEMPLATES.utilsGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

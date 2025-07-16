@@ -18,7 +18,7 @@ export interface PothosPothosRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof POTHOS_POTHOS_TEMPLATES.builder>,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -28,7 +28,7 @@ export interface PothosPothosRenderers {
         RenderTsTemplateGroupActionInput<
           typeof POTHOS_POTHOS_TEMPLATES.fieldWithInputPayloadGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -38,7 +38,7 @@ export interface PothosPothosRenderers {
         RenderTsTemplateFileActionInput<
           typeof POTHOS_POTHOS_TEMPLATES.stripQueryMutationPlugin
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

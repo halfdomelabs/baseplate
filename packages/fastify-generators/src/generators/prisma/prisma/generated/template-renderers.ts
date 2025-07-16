@@ -12,7 +12,7 @@ export interface PrismaPrismaRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof PRISMA_PRISMA_TEMPLATES.seed>,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -20,7 +20,7 @@ export interface PrismaPrismaRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof PRISMA_PRISMA_TEMPLATES.service>,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

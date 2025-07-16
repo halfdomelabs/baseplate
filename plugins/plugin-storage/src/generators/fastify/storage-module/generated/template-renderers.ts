@@ -23,7 +23,7 @@ export interface FastifyStorageModuleRenderers {
         RenderTsTemplateFileActionInput<
           typeof FASTIFY_STORAGE_MODULE_TEMPLATES.configAdapters
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -33,7 +33,7 @@ export interface FastifyStorageModuleRenderers {
         RenderTsTemplateFileActionInput<
           typeof FASTIFY_STORAGE_MODULE_TEMPLATES.configCategories
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -43,7 +43,7 @@ export interface FastifyStorageModuleRenderers {
         RenderTsTemplateGroupActionInput<
           typeof FASTIFY_STORAGE_MODULE_TEMPLATES.mainGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -53,7 +53,7 @@ export interface FastifyStorageModuleRenderers {
         RenderTsTemplateGroupActionInput<
           typeof FASTIFY_STORAGE_MODULE_TEMPLATES.schemaGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

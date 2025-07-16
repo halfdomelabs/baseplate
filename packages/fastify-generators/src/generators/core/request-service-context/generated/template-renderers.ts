@@ -16,7 +16,7 @@ export interface CoreRequestServiceContextRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REQUEST_SERVICE_CONTEXT_TEMPLATES.requestServiceContext
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

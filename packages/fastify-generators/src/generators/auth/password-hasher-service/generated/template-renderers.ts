@@ -14,7 +14,7 @@ export interface AuthPasswordHasherServiceRenderers {
         RenderTsTemplateFileActionInput<
           typeof AUTH_PASSWORD_HASHER_SERVICE_TEMPLATES.passwordHasherService
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

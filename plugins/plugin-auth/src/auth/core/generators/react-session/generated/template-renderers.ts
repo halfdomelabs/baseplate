@@ -24,7 +24,7 @@ export interface AuthCoreReactSessionRenderers {
         RenderTsTemplateGroupActionInput<
           typeof AUTH_CORE_REACT_SESSION_TEMPLATES.mainGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

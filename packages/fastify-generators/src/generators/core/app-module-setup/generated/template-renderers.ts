@@ -14,7 +14,7 @@ export interface CoreAppModuleSetupRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_APP_MODULE_SETUP_TEMPLATES.appModules
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

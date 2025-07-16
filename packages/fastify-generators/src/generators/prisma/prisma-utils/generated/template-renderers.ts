@@ -20,7 +20,7 @@ export interface PrismaPrismaUtilsRenderers {
         RenderTsTemplateGroupActionInput<
           typeof PRISMA_PRISMA_UTILS_TEMPLATES.utilsGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

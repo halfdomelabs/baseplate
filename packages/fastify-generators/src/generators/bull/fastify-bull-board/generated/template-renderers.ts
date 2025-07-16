@@ -18,7 +18,7 @@ export interface BullFastifyBullBoardRenderers {
         RenderTsTemplateGroupActionInput<
           typeof BULL_FASTIFY_BULL_BOARD_TEMPLATES.moduleGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

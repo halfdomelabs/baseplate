@@ -18,7 +18,7 @@ export interface AuthAuthPluginRenderers {
         RenderTsTemplateFileActionInput<
           typeof AUTH_AUTH_PLUGIN_TEMPLATES.authPlugin
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

@@ -16,7 +16,7 @@ export interface AuthUserSessionTypesRenderers {
         RenderTsTemplateFileActionInput<
           typeof AUTH_USER_SESSION_TYPES_TEMPLATES.userSessionTypes
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

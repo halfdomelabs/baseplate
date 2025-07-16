@@ -14,7 +14,7 @@ export interface PothosPothosSentryRenderers {
         RenderTsTemplateFileActionInput<
           typeof POTHOS_POTHOS_SENTRY_TEMPLATES.useSentry
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
