@@ -139,10 +139,7 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
       context,
     );
 
-    // Load ignore patterns if enabled
-    const ignorePatterns = useIgnoreFile
-      ? await loadIgnorePatterns(directory)
-      : undefined;
+    // Note: ignore patterns will be loaded per app directory
 
     logger.info('Compiling applications...');
     const apps = compileApplications(projectJson, context);
@@ -168,6 +165,11 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
       const appDirectory = path.join(directory, app.appDirectory);
 
       logger.info(`Generating for app: ${app.name} (${app.appDirectory})`);
+
+      // Load ignore patterns for this app directory
+      const ignorePatterns = useIgnoreFile
+        ? await loadIgnorePatterns(appDirectory)
+        : undefined;
 
       // Generate the output without writing files
       const generatorEntry = await buildGeneratorEntry(app.generatorBundle);
