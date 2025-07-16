@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { TEMPLATES_INFO_FILENAME } from '#src/templates/constants.js';
 import { removeEmptyAncestorDirectories } from '#src/utils/directories.js';
 
 import { cleanDeletedFiles } from './clean-deleted-files.js';
@@ -184,7 +185,7 @@ describe('cleanDeletedFiles', () => {
       ],
       outputDirectory,
       {
-        ignoreFiles: ['.template-metadata.json'],
+        ignoreFiles: [TEMPLATES_INFO_FILENAME],
       },
     );
   });
