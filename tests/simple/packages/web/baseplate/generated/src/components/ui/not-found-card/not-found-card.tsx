@@ -2,7 +2,8 @@ import type React from 'react';
 
 import { Link } from '@tanstack/react-router';
 
-import { Button, ErrorDisplay } from '..';
+import { Button } from '../button/button';
+import { ErrorDisplay } from '../error-display/error-display';
 
 export function NotFoundCard(): React.JSX.Element {
   return (

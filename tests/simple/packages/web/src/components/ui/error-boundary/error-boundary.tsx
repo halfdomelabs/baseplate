@@ -8,7 +8,8 @@ import {
 
 import { logError } from '@src/services/error-logger';
 
-import { Button, ErrorDisplay } from '..';
+import { Button } from '../button/button';
+import { ErrorDisplay } from '../error-display/error-display';
 
 interface ErrorBoundaryProps {
   children?: React.ReactNode;

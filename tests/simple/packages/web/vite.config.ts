@@ -29,7 +29,6 @@ export default defineConfig(({ mode }) => {
         ? {
             '/api': {
               target: envVars.DEV_BACKEND_HOST,
-              changeOrigin: true,
               rewrite: (path) => path.replace(/^\/api/, ''),
             },
           }

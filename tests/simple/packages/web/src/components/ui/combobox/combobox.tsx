@@ -224,11 +224,7 @@ function ComboboxInput({
           }}
           value={searchQuery}
           onValueChange={setSearchQuery}
-          className={cn(
-            inputVariants({ rightPadding: 'none' }),
-            'pr-8',
-            className,
-          )}
+          className={cn(inputVariants(), 'pr-8', className)}
           placeholder={selectedLabel ? undefined : placeholder}
           onClick={() => {
             if (disabled) {
