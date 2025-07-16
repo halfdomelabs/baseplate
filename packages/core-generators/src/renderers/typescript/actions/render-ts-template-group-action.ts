@@ -11,6 +11,7 @@ import path from 'node:path';
 
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
 import type {
+  InferGeneratorPathsFromReferencedGeneratorMap,
   InferImportMapProvidersFromProviderTypeMap,
   InferTsTemplateVariablesFromMap,
   TsTemplateFile,
@@ -48,6 +49,13 @@ type InferImportMapProvidersFromTemplateGroup<T extends TsTemplateGroup> =
     >;
   }>;
 
+type InferGeneratorPathsFromTemplateGroup<T extends TsTemplateGroup> =
+  IntersectionOfValues<{
+    [K in keyof T]: InferGeneratorPathsFromReferencedGeneratorMap<
+      T[K]['referencedGeneratorTemplates']
+    >;
+  }>;
+
 interface RenderTsTemplateGroupActionInputBase<T extends TsTemplateGroup> {
   group: T;
   paths: {
@@ -74,7 +82,14 @@ export type RenderTsTemplateGroupActionInput<
     ? {
         importMapProviders?: never;
       }
-    : { importMapProviders: InferImportMapProvidersFromTemplateGroup<T> });
+    : { importMapProviders: InferImportMapProvidersFromTemplateGroup<T> }) &
+  (keyof InferGeneratorPathsFromTemplateGroup<T> extends never
+    ? {
+        generatorPaths?: never;
+      }
+    : {
+        generatorPaths: InferGeneratorPathsFromTemplateGroup<T>;
+      });
 
 /**
  * Extracts the template file inputs from a template group
@@ -90,6 +105,7 @@ export function extractTsTemplateFileInputsFromTemplateGroup<
   importMapProviders,
   writeOptions,
   renderOptions,
+  generatorPaths,
 }: RenderTsTemplateGroupActionInput<T>): RenderTsTemplateFileActionInput[] {
   const fileActionInputs: RenderTsTemplateFileActionInput[] = [];
   const typedImportMapProviders =
@@ -124,6 +140,7 @@ export function extractTsTemplateFileInputsFromTemplateGroup<
           : undefined,
       writeOptions: writeOptions?.[key],
       importMapProviders: templateSpecificProviders,
+      generatorPaths: generatorPaths ?? {},
       renderOptions: {
         ...renderOptions,
         resolveModule: (specifier) => {

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { logError } from './error-logger.js';
+import { logError } from '$errorLogger';
 
 TPL_GET_FORMATTED_ERROR_SUFFIX;
 

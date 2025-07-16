@@ -3,7 +3,6 @@ import {
   extractPackageVersions,
   tsCodeFragment,
   tsImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
@@ -13,13 +12,8 @@ import {
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import {
-  configServiceImportsProvider,
-  configServiceProvider,
-} from '#src/generators/core/config-service/index.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
+import { configServiceProvider } from '#src/generators/core/config-service/index.js';
 import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/index.js';
-import { loggerServiceImportsProvider } from '#src/generators/core/logger-service/index.js';
 
 import { STRIPE_FASTIFY_STRIPE_GENERATED } from './generated/index.js';
 
@@ -34,6 +28,7 @@ export const fastifyStripeGenerator = createGenerator({
   buildTasks: () => ({
     paths: STRIPE_FASTIFY_STRIPE_GENERATED.paths.task,
     imports: STRIPE_FASTIFY_STRIPE_GENERATED.imports.task,
+    renderers: STRIPE_FASTIFY_STRIPE_GENERATED.renderers.task,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
         'stripe',
@@ -76,41 +71,13 @@ export const fastifyStripeGenerator = createGenerator({
     ),
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        configServiceImports: configServiceImportsProvider,
-        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-        loggerServiceImports: loggerServiceImportsProvider,
-        paths: STRIPE_FASTIFY_STRIPE_GENERATED.paths.provider,
+        renderers: STRIPE_FASTIFY_STRIPE_GENERATED.renderers.provider,
       },
-      run({
-        typescriptFile,
-        configServiceImports,
-        errorHandlerServiceImports,
-        loggerServiceImports,
-        paths,
-      }) {
+      run({ renderers }) {
         return {
           build: async (builder) => {
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: STRIPE_FASTIFY_STRIPE_GENERATED.templates.pluginsGroup,
-                paths,
-                importMapProviders: {
-                  configServiceImports,
-                  errorHandlerServiceImports,
-                },
-              }),
-            );
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: STRIPE_FASTIFY_STRIPE_GENERATED.templates.servicesGroup,
-                paths,
-                importMapProviders: {
-                  configServiceImports,
-                  loggerServiceImports,
-                },
-              }),
-            );
+            await builder.apply(renderers.pluginsGroup.render({}));
+            await builder.apply(renderers.servicesGroup.render({}));
           },
         };
       },

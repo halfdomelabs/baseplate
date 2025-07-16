@@ -25,6 +25,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/tests/helpers/service-context.test-helper.ts",
       "projectExports": { "createTestServiceContext": {} },
+      "referencedGeneratorTemplates": ["service-context"],
       "sourceFile": "src/tests/helpers/service-context.test-helper.ts",
       "variables": { "TPL_CREATE_TEST_ARGS": {}, "TPL_CREATE_TEST_OBJECT": {} }
     }

@@ -15,7 +15,7 @@ export interface AdminAdminHomeRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof ADMIN_ADMIN_HOME_TEMPLATES.home>,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -25,7 +25,7 @@ export interface AdminAdminHomeRenderers {
         RenderTsTemplateFileActionInput<
           typeof ADMIN_ADMIN_HOME_TEMPLATES.rootIndex
         >,
-        'importMapProviders' | 'template'
+        'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

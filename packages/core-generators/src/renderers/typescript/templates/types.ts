@@ -69,6 +69,10 @@ export const tsTemplateMetadataSchema = templateConfigSchema.extend({
     .record(z.string(), tsTemplateFileImportProviderSchema)
     .optional(),
   /**
+   * The generator templates that are referenced by the template.
+   */
+  referencedGeneratorTemplates: z.array(z.string()).optional(),
+  /**
    * Whether the template is only exporting types and we should not attempt to extract
    * the contents of the template.
    */
@@ -99,6 +103,10 @@ export interface TsTemplateFile<
     never,
     ProviderType
   >,
+  TReferencedGeneratorTemplates extends Record<
+    string,
+    Record<never, never>
+  > = Record<never, Record<never, never>>,
 > extends TemplateFileBase {
   /**
    * The variables for the template.
@@ -113,6 +121,10 @@ export interface TsTemplateFile<
    * Import map providers that will be used to resolve imports for the template.
    */
   importMapProviders?: TImportMapProviders;
+  /**
+   * The generator templates that are referenced by the template.
+   */
+  referencedGeneratorTemplates?: TReferencedGeneratorTemplates;
   /**
    * The exports of the file that are unique across the project.
    */
@@ -147,6 +159,15 @@ export type InferImportMapProvidersFromProviderTypeMap<
   undefined
 >;
 
+export type InferGeneratorPathsFromReferencedGeneratorMap<
+  T extends Record<string, Record<never, never>> | undefined,
+> = Exclude<
+  {
+    [K in keyof T]: string;
+  },
+  undefined
+>;
+
 export function createTsTemplateFile<
   TVariables extends TsTemplateVariableMap = Record<
     never,
@@ -156,9 +177,21 @@ export function createTsTemplateFile<
     never,
     ProviderType
   >,
+  TReferencedGeneratorTemplates extends Record<
+    string,
+    Record<never, never>
+  > = Record<never, Record<never, never>>,
 >(
-  file: TsTemplateFile<TVariables, TImportMapProviders>,
-): TsTemplateFile<TVariables, TImportMapProviders> {
+  file: TsTemplateFile<
+    TVariables,
+    TImportMapProviders,
+    TReferencedGeneratorTemplates
+  >,
+): TsTemplateFile<
+  TVariables,
+  TImportMapProviders,
+  TReferencedGeneratorTemplates
+> {
   return file;
 }
 

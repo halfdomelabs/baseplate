@@ -9,8 +9,6 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-  tsUtilsImportsProvider,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
@@ -93,6 +91,7 @@ export const pothosGenerator = createGenerator({
   buildTasks: () => ({
     paths: POTHOS_POTHOS_GENERATED.paths.task,
     imports: POTHOS_POTHOS_GENERATED.imports.task,
+    renderers: POTHOS_POTHOS_GENERATED.renderers.task,
     setup: setupTask,
     schema: createGeneratorTask({
       dependencies: {
@@ -150,24 +149,21 @@ export const pothosGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
         paths: POTHOS_POTHOS_GENERATED.paths.provider,
         requestServiceContextImports: requestServiceContextImportsProvider,
         prettier: prettierProvider,
         appModuleImports: appModuleImportsProvider,
         yogaPluginConfig: yogaPluginConfigProvider,
-        tsUtilsImports: tsUtilsImportsProvider,
         pothosSchemaOutput: pothosSchemaOutputProvider,
         pothosConfigValues: pothosConfigValuesProvider,
+        renderers: POTHOS_POTHOS_GENERATED.renderers.provider,
       },
       run({
-        typescriptFile,
         paths,
         requestServiceContextImports,
         prettier,
         appModuleImports,
         yogaPluginConfig,
-        tsUtilsImports,
         pothosConfigValues: {
           pothosPlugins,
           schemaTypeOptions,
@@ -175,6 +171,7 @@ export const pothosGenerator = createGenerator({
           customScalars,
         },
         pothosSchemaOutput: { schemaFiles },
+        renderers,
       }) {
         // ignore prettier for schema.graphql
         prettier.addPrettierIgnore('/schema.graphql');
@@ -241,9 +238,7 @@ export const pothosGenerator = createGenerator({
             });
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: POTHOS_POTHOS_GENERATED.templates.builder,
-                destination: paths.builder,
+              renderers.builder.render({
                 variables: {
                   TPL_SCHEMA_TYPE_OPTIONS: schemaTypeOptionsFragment,
                   TPL_SCHEMA_BUILDER_OPTIONS: schemaOptionsFragment,
@@ -303,23 +298,10 @@ if (IS_DEVELOPMENT && process.env.NODE_ENV !== 'test') {
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group:
-                  POTHOS_POTHOS_GENERATED.templates.fieldWithInputPayloadGroup,
-                paths,
-                importMapProviders: {
-                  tsUtilsImports,
-                },
-              }),
+              renderers.fieldWithInputPayloadGroup.render({}),
             );
 
-            await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  POTHOS_POTHOS_GENERATED.templates.stripQueryMutationPlugin,
-                destination: paths.stripQueryMutationPlugin,
-              }),
-            );
+            await builder.apply(renderers.stripQueryMutationPlugin.render({}));
 
             builder.addPostWriteCommand('pnpm generate:schema', {
               priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,

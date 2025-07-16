@@ -16,7 +16,7 @@ export interface PothosPothosAuthRenderers {
         RenderTsTemplateGroupActionInput<
           typeof POTHOS_POTHOS_AUTH_TEMPLATES.fieldAuthorizePluginGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -45,6 +45,7 @@ const pothosPothosAuthRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   errorHandlerServiceImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

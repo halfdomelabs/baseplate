@@ -22,16 +22,20 @@ export async function renderTsTemplateFile(
   contents: string;
   variables: TsTemplateVariableMap;
   importProviders: Record<string, TsTemplateFileImportProvider>;
+  referencedGeneratorTemplates: Set<string>;
 }> {
   const { content: contentsWithVariables, variables } =
     extractTsTemplateVariables(contents);
 
-  const { usedProjectExports, contents: organizedContents } =
-    await organizeTsTemplateImports(
-      sourceAbsolutePath,
-      contentsWithVariables,
-      context,
-    );
+  const {
+    usedProjectExports,
+    contents: organizedContents,
+    referencedGeneratorTemplates,
+  } = await organizeTsTemplateImports(
+    sourceAbsolutePath,
+    contentsWithVariables,
+    context,
+  );
 
   const importProviders = mapValuesOfMap(
     mapKeyBy(
@@ -57,5 +61,6 @@ export async function renderTsTemplateFile(
     contents: processedContent,
     variables,
     importProviders: Object.fromEntries(importProviders),
+    referencedGeneratorTemplates,
   };
 }

@@ -8,7 +8,6 @@ import {
   TsCodeUtils,
   tsImportBuilder,
   tsTypeImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
@@ -23,11 +22,7 @@ import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 import { appModuleConfigProvider } from '../app-module-setup/index.js';
 import { appModuleImportsProvider } from '../app-module/index.js';
-import {
-  configServiceImportsProvider,
-  configServiceProvider,
-} from '../config-service/index.js';
-import { loggerServiceImportsProvider } from '../logger-service/index.js';
+import { configServiceProvider } from '../config-service/index.js';
 import { CORE_FASTIFY_SERVER_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
@@ -77,6 +72,7 @@ export const fastifyServerGenerator = createGenerator({
   descriptorSchema,
   buildTasks: (descriptor) => ({
     paths: CORE_FASTIFY_SERVER_GENERATED.paths.task,
+    renderers: CORE_FASTIFY_SERVER_GENERATED.renderers.task,
     setupTask,
     appModuleConfig: createGeneratorTask({
       dependencies: {
@@ -119,21 +115,11 @@ export const fastifyServerGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        loggerServiceImports: loggerServiceImportsProvider,
-        configServiceImports: configServiceImportsProvider,
         appModuleImports: appModuleImportsProvider,
-        typescriptFile: typescriptFileProvider,
         fastifyServerConfigValues: fastifyServerConfigValuesProvider,
-        paths: CORE_FASTIFY_SERVER_GENERATED.paths.provider,
+        renderers: CORE_FASTIFY_SERVER_GENERATED.renderers.provider,
       },
-      run({
-        loggerServiceImports,
-        configServiceImports,
-        appModuleImports,
-        typescriptFile,
-        fastifyServerConfigValues,
-        paths,
-      }) {
+      run({ appModuleImports, fastifyServerConfigValues, renderers }) {
         const {
           plugins,
           prePluginFragments,
@@ -152,15 +138,9 @@ export const fastifyServerGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: CORE_FASTIFY_SERVER_GENERATED.templates.index,
-                destination: paths.index,
+              renderers.index.render({
                 variables: {
                   TPL_LOG_ERROR: TsCodeUtils.template`${errorHandlerFunction}(err)`,
-                },
-                importMapProviders: {
-                  loggerServiceImports,
-                  configServiceImports,
                 },
                 positionedHoistedFragments: [
                   ...initializerFragments.entries(),
@@ -183,9 +163,7 @@ export const fastifyServerGenerator = createGenerator({
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: CORE_FASTIFY_SERVER_GENERATED.templates.server,
-                destination: paths.server,
+              renderers.server.render({
                 variables: {
                   TPL_ROOT_MODULE: appModuleImports.getModuleFragment(),
                   TPL_PRE_PLUGIN_FRAGMENTS:

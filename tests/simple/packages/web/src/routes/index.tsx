@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import { useQuery } from '@apollo/client';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { ErrorableLoader } from '@src/components';
+import { ErrorableLoader } from '@src/components/ui/errorable-loader';
 import { GetBlogPostsDocument} from '@src/generated/graphql';
 
 export const Route = createFileRoute('/')({

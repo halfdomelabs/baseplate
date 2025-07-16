@@ -116,6 +116,11 @@ function createTypeScriptRenderFunctionForTemplate(
     ),
   )`${typedTemplatesExportName}.${camelCase(templateName)}`;
 
+  const usesGeneratorPaths = !!(
+    templateConfig.referencedGeneratorTemplates &&
+    templateConfig.referencedGeneratorTemplates.length > 0
+  );
+
   return {
     name: camelCase(templateName),
     renderType: tsTemplateWithImports([
@@ -129,7 +134,7 @@ function createTypeScriptRenderFunctionForTemplate(
         ),
     ])`(options: Omit<RenderTsTemplateFileActionInput<typeof ${
       templateExpression
-    }>, ${isSingleton ? "'destination' | " : ''}'importMapProviders' | 'template'>) => ${builderActionTypeImport}`,
+    }>, ${isSingleton ? "'destination' | " : ''}'importMapProviders' | 'template' | 'generatorPaths'>) => ${builderActionTypeImport}`,
     renderFunction: tsTemplate`
       (options) => typescriptFile.renderTemplateFile(${TsCodeUtils.mergeFragmentsAsObjectPresorted(
         {
@@ -138,6 +143,7 @@ function createTypeScriptRenderFunctionForTemplate(
             ? `paths.${camelCase(templateName)}`
             : undefined,
           importMapProviders: importMapProvidersExpression,
+          generatorPaths: usesGeneratorPaths ? 'paths' : undefined,
           '...': 'options',
         },
       )})
@@ -146,7 +152,7 @@ function createTypeScriptRenderFunctionForTemplate(
       ...createTypeScriptTaskDependencies(
         context.generatorName,
         context.generatorPackageName,
-        templateConfig.fileOptions.kind === 'singleton',
+        templateConfig.fileOptions.kind === 'singleton' || usesGeneratorPaths,
       ),
       ...createImportProviderTaskDependencies(templateConfig, context),
     ],
@@ -167,6 +173,12 @@ function createTypeScriptRenderFunctionForTemplateGroup(
     ),
   )`${typedTemplatesExportName}.${camelCase(groupName)}`;
 
+  const usesGeneratorPaths = !!templateConfigs.some(
+    (t) =>
+      t.referencedGeneratorTemplates &&
+      t.referencedGeneratorTemplates.length > 0,
+  );
+
   return {
     name: camelCase(groupName),
     renderType: tsTemplateWithImports([
@@ -178,13 +190,14 @@ function createTypeScriptRenderFunctionForTemplateGroup(
             context.generatorPackageName,
           ),
         ),
-    ])`(options: Omit<RenderTsTemplateGroupActionInput<typeof ${templatesExpression}>, 'importMapProviders' | 'group' | 'paths'>) => ${builderActionTypeImport}`,
+    ])`(options: Omit<RenderTsTemplateGroupActionInput<typeof ${templatesExpression}>, 'importMapProviders' | 'group' | 'paths' | 'generatorPaths'>) => ${builderActionTypeImport}`,
     renderFunction: tsTemplate`
       (options) => typescriptFile.renderTemplateGroup(${TsCodeUtils.mergeFragmentsAsObjectPresorted(
         {
           group: templatesExpression,
           paths: `paths`,
           importMapProviders: getImportMapProvidersExpression(templateConfigs),
+          generatorPaths: usesGeneratorPaths ? 'paths' : undefined,
           '...': 'options',
         },
       )})

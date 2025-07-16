@@ -15,6 +15,7 @@ const userSessionCheck = createTsTemplateFile({
     generatedGraphqlImports: generatedGraphqlImportsProvider,
   },
   name: 'user-session-check',
+  referencedGeneratorTemplates: { useUserSessionClient: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -50,6 +51,10 @@ const userSessionProvider = createTsTemplateFile({
   group: 'main',
   importMapProviders: {},
   name: 'user-session-provider',
+  referencedGeneratorTemplates: {
+    useUserSessionClient: {},
+    userSessionClient: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -69,6 +74,7 @@ const useUserSessionClient = createTsTemplateFile({
     UserSessionClientContextValue: { isTypeOnly: true },
     useUserSessionClient: {},
   },
+  referencedGeneratorTemplates: { userSessionClient: {} },
   source: {
     path: path.join(
       import.meta.dirname,

@@ -14,7 +14,7 @@ export interface CoreReactUtilsRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_UTILS_TEMPLATES.safeLocalStorage
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

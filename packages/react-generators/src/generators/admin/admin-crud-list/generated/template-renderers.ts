@@ -16,7 +16,7 @@ export interface AdminAdminCrudListRenderers {
         RenderTsTemplateFileActionInput<
           typeof ADMIN_ADMIN_CRUD_LIST_TEMPLATES.listPage
         >,
-        'importMapProviders' | 'template'
+        'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -26,7 +26,7 @@ export interface AdminAdminCrudListRenderers {
         RenderTsTemplateFileActionInput<
           typeof ADMIN_ADMIN_CRUD_LIST_TEMPLATES.table
         >,
-        'importMapProviders' | 'template'
+        'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

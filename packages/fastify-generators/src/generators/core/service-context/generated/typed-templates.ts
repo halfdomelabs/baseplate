@@ -27,6 +27,7 @@ const testHelper = createTsTemplateFile({
   importMapProviders: {},
   name: 'test-helper',
   projectExports: { createTestServiceContext: {} },
+  referencedGeneratorTemplates: { serviceContext: {} },
   source: {
     path: path.join(
       import.meta.dirname,

@@ -5,6 +5,7 @@ const seed = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'seed',
+  referencedGeneratorTemplates: { service: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/prisma/seed.ts'),
   },

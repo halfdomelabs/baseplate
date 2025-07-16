@@ -2,7 +2,6 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
@@ -11,12 +10,10 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { loggerServiceConfigProvider } from '#src/generators/core/index.js';
 import { requestServiceContextConfigProvider } from '#src/generators/core/request-service-context/index.js';
 import { serviceContextConfigProvider } from '#src/generators/core/service-context/index.js';
 
-import { authRolesImportsProvider } from '../auth-roles/index.js';
 import { AUTH_AUTH_CONTEXT_GENERATED } from './generated/index.js';
 import { authContextImportsProvider } from './generated/ts-import-providers.js';
 
@@ -29,6 +26,7 @@ export const authContextGenerator = createGenerator({
   buildTasks: () => ({
     paths: AUTH_AUTH_CONTEXT_GENERATED.paths.task,
     imports: AUTH_AUTH_CONTEXT_GENERATED.imports.task,
+    renderers: AUTH_AUTH_CONTEXT_GENERATED.renderers.task,
     requestServiceContextConfig: createProviderTask(
       requestServiceContextConfigProvider,
       (requestServiceContextConfig) => {
@@ -57,32 +55,13 @@ export const authContextGenerator = createGenerator({
     main: createGeneratorTask({
       dependencies: {
         serviceContextConfig: serviceContextConfigProvider,
-        authRolesImports: authRolesImportsProvider,
-        typescriptFile: typescriptFileProvider,
         authContextImports: authContextImportsProvider,
-        paths: AUTH_AUTH_CONTEXT_GENERATED.paths.provider,
-        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+        renderers: AUTH_AUTH_CONTEXT_GENERATED.renderers.provider,
       },
-      run({
-        serviceContextConfig,
-        typescriptFile,
-        authContextImports,
-        paths,
-        errorHandlerServiceImports,
-        authRolesImports,
-      }) {
+      run({ serviceContextConfig, authContextImports, renderers }) {
         return {
           build: async (builder) => {
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: AUTH_AUTH_CONTEXT_GENERATED.templates.mainGroup,
-                paths,
-                importMapProviders: {
-                  authRolesImports,
-                  errorHandlerServiceImports,
-                },
-              }),
-            );
+            await builder.apply(renderers.mainGroup.render({}));
 
             serviceContextConfig.contextFields.set('auth', {
               type: authContextImports.AuthContext.typeFragment(),
@@ -101,5 +80,3 @@ export const authContextGenerator = createGenerator({
     }),
   }),
 });
-
-// Re-export provider is now handled by the new imports system

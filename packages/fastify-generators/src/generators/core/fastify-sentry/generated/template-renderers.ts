@@ -17,7 +17,7 @@ export interface CoreFastifySentryRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_FASTIFY_SENTRY_TEMPLATES.instrument
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -27,7 +27,7 @@ export interface CoreFastifySentryRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_FASTIFY_SENTRY_TEMPLATES.sentry
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

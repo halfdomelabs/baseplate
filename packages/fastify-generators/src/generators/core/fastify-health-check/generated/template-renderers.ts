@@ -14,7 +14,7 @@ export interface CoreFastifyHealthCheckRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_FASTIFY_HEALTH_CHECK_TEMPLATES.healthCheck
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

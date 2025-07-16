@@ -32,6 +32,7 @@ const nulls = createTsTemplateFile({
   importMapProviders: {},
   name: 'nulls',
   projectExports: { restrictObjectNulls: {} },
+  referencedGeneratorTemplates: { normalizeTypes: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/utils/nulls.ts'),
   },

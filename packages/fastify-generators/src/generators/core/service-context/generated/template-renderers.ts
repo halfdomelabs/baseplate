@@ -14,7 +14,7 @@ export interface CoreServiceContextRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_SERVICE_CONTEXT_TEMPLATES.serviceContext
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -24,7 +24,7 @@ export interface CoreServiceContextRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_SERVICE_CONTEXT_TEMPLATES.testHelper
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -60,6 +60,7 @@ const coreServiceContextRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: CORE_SERVICE_CONTEXT_TEMPLATES.testHelper,
                 destination: paths.testHelper,
+                generatorPaths: paths,
                 ...options,
               }),
           },

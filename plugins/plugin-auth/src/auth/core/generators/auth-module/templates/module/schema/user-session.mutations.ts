@@ -1,8 +1,7 @@
 // @ts-nocheck
 
+import { userSessionService } from '$userSessionService';
 import { builder } from '%pothosImports';
-
-import { userSessionService } from '../services/user-session.service.js';
 
 builder.mutationField('logOut', (t) =>
   t.fieldWithInputPayload({

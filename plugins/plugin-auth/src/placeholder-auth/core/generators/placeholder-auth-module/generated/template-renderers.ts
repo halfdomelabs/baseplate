@@ -18,7 +18,7 @@ export interface PlaceholderAuthCorePlaceholderAuthModuleRenderers {
         RenderTsTemplateFileActionInput<
           typeof PLACEHOLDER_AUTH_CORE_PLACEHOLDER_AUTH_MODULE_TEMPLATES.userSessionService
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

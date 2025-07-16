@@ -4,7 +4,6 @@ import {
   packageScope,
   TsCodeUtils,
   tsTemplate,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
@@ -13,7 +12,6 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { reactLoggerImportsProvider } from '../react-logger/index.js';
 import { CORE_REACT_ERROR_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -41,32 +39,24 @@ export const reactErrorGenerator = createGenerator({
     setup: setupTask,
     paths: CORE_REACT_ERROR_GENERATED.paths.task,
     imports: CORE_REACT_ERROR_GENERATED.imports.task,
+    renderers: CORE_REACT_ERROR_GENERATED.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        reactLoggerImports: reactLoggerImportsProvider,
         reactErrorConfigValues: reactErrorConfigValuesProvider,
-        paths: CORE_REACT_ERROR_GENERATED.paths.provider,
+        renderers: CORE_REACT_ERROR_GENERATED.renderers.provider,
       },
       run({
-        typescriptFile,
-        reactLoggerImports,
         reactErrorConfigValues: {
           errorFormatters,
           errorReporters,
           contextActions,
         },
-        paths,
+        renderers,
       }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: CORE_REACT_ERROR_GENERATED.templates.errorLogger,
-                destination: paths.errorLogger,
-                importMapProviders: {
-                  reactLoggerImports,
-                },
+              renderers.errorLogger.render({
                 variables: {
                   TPL_CONTEXT_ACTIONS:
                     TsCodeUtils.mergeFragments(contextActions),
@@ -84,9 +74,7 @@ export const reactErrorGenerator = createGenerator({
               }
                   `;
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: CORE_REACT_ERROR_GENERATED.templates.errorFormatter,
-                destination: paths.errorFormatter,
+              renderers.errorFormatter.render({
                 variables: {
                   TPL_GET_FORMATTED_ERROR_SUFFIX: getFormattedErrorSuffix,
                 },

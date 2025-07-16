@@ -1,9 +1,8 @@
 // @ts-nocheck
 
+import { buildServer } from '$server';
 import { config } from '%configServiceImports';
 import { logger } from '%loggerServiceImports';
-
-import { buildServer } from './server.js';
 
 async function startServer(): Promise<void> {
   const fastify = await buildServer({

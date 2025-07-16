@@ -8,6 +8,7 @@
       "group": "module",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/bull-board/index.ts",
+      "referencedGeneratorTemplates": ["plugins-bull-board"],
       "sourceFile": "module/bull-board/index.ts",
       "variables": {}
     },
@@ -23,6 +24,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/bull-board/plugins/bull-board.ts",
+      "referencedGeneratorTemplates": ["services-auth-service"],
       "sourceFile": "module/bull-board/plugins/bull-board.ts",
       "variables": { "TPL_QUEUES": {} }
     },
@@ -38,6 +40,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/bull-board/schema/authenticate.mutations.ts",
+      "referencedGeneratorTemplates": ["services-auth-service"],
       "sourceFile": "module/bull-board/schema/authenticate.mutations.ts",
       "variables": {}
     },

@@ -1,15 +1,14 @@
 // @ts-nocheck
 
+import type {
+  AuthorizeRoleRuleFunction,
+  AuthorizeRoleRuleOption,
+} from '$fieldAuthorizeTypes';
 import type { PothosOutputFieldConfig, SchemaTypes } from '@pothos/core';
 import type { GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql';
 
 import { ForbiddenError } from '%errorHandlerServiceImports';
 import SchemaBuilder, { BasePlugin } from '@pothos/core';
-
-import type {
-  AuthorizeRoleRuleFunction,
-  AuthorizeRoleRuleOption,
-} from './types.js';
 
 import './global-types.js';
 

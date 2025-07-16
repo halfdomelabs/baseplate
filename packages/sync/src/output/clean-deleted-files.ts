@@ -98,7 +98,7 @@ export async function cleanDeletedFiles({
     ),
     outputDirectory,
     {
-      ignoreFiles: ['.template-metadata.json'],
+      ignoreFiles: ['.templates-info.json'],
     },
   );
 

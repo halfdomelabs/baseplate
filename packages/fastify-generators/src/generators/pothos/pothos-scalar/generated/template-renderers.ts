@@ -17,7 +17,7 @@ export interface PothosPothosScalarRenderers {
         RenderTsTemplateFileActionInput<
           typeof POTHOS_POTHOS_SCALAR_TEMPLATES.date
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -27,7 +27,7 @@ export interface PothosPothosScalarRenderers {
         RenderTsTemplateFileActionInput<
           typeof POTHOS_POTHOS_SCALAR_TEMPLATES.dateTime
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -37,7 +37,7 @@ export interface PothosPothosScalarRenderers {
         RenderTsTemplateFileActionInput<
           typeof POTHOS_POTHOS_SCALAR_TEMPLATES.uuid
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

@@ -1,10 +1,9 @@
 // @ts-nocheck
 
+import { useUserSessionClient } from '$useUserSessionClient';
 import { GetCurrentUserSessionDocument } from '%generatedGraphqlImports';
 import { useQuery } from '@apollo/client';
 import { useEffect } from 'react';
-
-import { useUserSessionClient } from '../hooks/use-user-session-client.js';
 
 /**
  * Checks if the user session matches the loaded ID on first page load.

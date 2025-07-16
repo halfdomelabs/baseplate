@@ -13,6 +13,7 @@
         "UserSessionClientContextValue": { "isTypeOnly": true },
         "useUserSessionClient": {}
       },
+      "referencedGeneratorTemplates": ["user-session-client"],
       "sourceFile": "src/hooks/use-user-session-client.ts",
       "variables": {}
     },
@@ -28,6 +29,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/app/user-session-check.tsx",
+      "referencedGeneratorTemplates": ["use-user-session-client"],
       "sourceFile": "src/app/user-session-check.tsx",
       "variables": {}
     },
@@ -67,6 +69,10 @@
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/app/user-session-provider.tsx",
+      "referencedGeneratorTemplates": [
+        "use-user-session-client",
+        "user-session-client"
+      ],
       "sourceFile": "src/app/user-session-provider.tsx",
       "variables": {}
     }

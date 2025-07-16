@@ -1,8 +1,7 @@
 // @ts-nocheck
 
+import { cn } from '$cn';
 import { cva } from 'class-variance-authority';
-
-import { cn } from '../utils/cn.js';
 
 export const inputVariants = cva(
   cn(

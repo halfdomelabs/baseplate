@@ -5,6 +5,7 @@ const appApolloProvider = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {},
   name: 'app-apollo-provider',
+  referencedGeneratorTemplates: { service: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -57,6 +58,7 @@ const service = createTsTemplateFile({
   importMapProviders: {},
   name: 'service',
   projectExports: { createApolloClient: {} },
+  referencedGeneratorTemplates: { cache: {} },
   source: {
     path: path.join(
       import.meta.dirname,

@@ -13,6 +13,7 @@ const pluginsWebhook = createTsTemplateFile({
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
   },
   name: 'plugins-webhook',
+  referencedGeneratorTemplates: { serviceEvents: {}, service: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -27,6 +28,11 @@ const pluginsWebhookTest = createTsTemplateFile({
   group: 'plugins',
   importMapProviders: {},
   name: 'plugins-webhook-test',
+  referencedGeneratorTemplates: {
+    serviceEvents: {},
+    service: {},
+    pluginsWebhook: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,

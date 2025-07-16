@@ -31,6 +31,7 @@ const schemaUserSessionMutations = createTsTemplateFile({
   group: 'module',
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-user-session-mutations',
+  referencedGeneratorTemplates: { userSessionService: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -60,6 +61,7 @@ const schemaUserSessionQueries = createTsTemplateFile({
   group: 'module',
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-user-session-queries',
+  referencedGeneratorTemplates: { schemaUserSessionPayloadObjectType: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -87,6 +89,12 @@ const userSessionService = createTsTemplateFile({
   },
   name: 'user-session-service',
   projectExports: { userSessionService: {} },
+  referencedGeneratorTemplates: {
+    cookieSigner: {},
+    sessionCookie: {},
+    userSessionConstants: {},
+    verifyRequestOrigin: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,

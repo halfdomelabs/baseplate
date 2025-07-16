@@ -2,10 +2,9 @@
 
 import type { CurrentUserFragment } from '%generatedGraphqlImports';
 
+import { useSession } from '$useSession';
 import { GetUserByIdDocument } from '%generatedGraphqlImports';
 import { useQuery } from '@apollo/client';
-
-import { useSession } from './use-session.js';
 
 /**
  * Result returned by useCurrentUser hook

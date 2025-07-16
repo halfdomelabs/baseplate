@@ -7,6 +7,8 @@ import { transformTsImportsWithMap } from './transform-ts-imports-with-map.js';
 import { createTsImportMap, createTsImportMapSchema } from './ts-import-map.js';
 
 describe('transformImportsWithMap', () => {
+  const generatorPaths: Record<string, string> = {};
+
   it('should return unchanged imports when no $ prefix is present', () => {
     const imports: TsImportDeclaration[] = [
       {
@@ -15,7 +17,11 @@ describe('transformImportsWithMap', () => {
       },
     ];
 
-    const result = transformTsImportsWithMap(imports, new Map());
+    const result = transformTsImportsWithMap(
+      imports,
+      new Map(),
+      generatorPaths,
+    );
     expect(result).toEqual(imports);
   });
 
@@ -27,9 +33,9 @@ describe('transformImportsWithMap', () => {
       },
     ];
 
-    expect(() => transformTsImportsWithMap(imports, new Map())).toThrow(
-      'Import map not found for %unknown',
-    );
+    expect(() =>
+      transformTsImportsWithMap(imports, new Map(), generatorPaths),
+    ).toThrow('Import map not found for %unknown');
   });
 
   describe('for a test import map', () => {
@@ -66,7 +72,9 @@ describe('transformImportsWithMap', () => {
         },
       ];
 
-      expect(() => transformTsImportsWithMap(imports, testImportMaps)).toThrow(
+      expect(() =>
+        transformTsImportsWithMap(imports, testImportMaps, generatorPaths),
+      ).toThrow(
         'Import map does not support namespace or default imports: %test',
       );
     });
@@ -79,7 +87,9 @@ describe('transformImportsWithMap', () => {
         },
       ];
 
-      expect(() => transformTsImportsWithMap(imports, testImportMaps)).toThrow(
+      expect(() =>
+        transformTsImportsWithMap(imports, testImportMaps, generatorPaths),
+      ).toThrow(
         'Import map does not support namespace or default imports: %test',
       );
     });
@@ -92,9 +102,9 @@ describe('transformImportsWithMap', () => {
         },
       ];
 
-      expect(() => transformTsImportsWithMap(imports, testImportMaps)).toThrow(
-        'Import map entry not found for unknown',
-      );
+      expect(() =>
+        transformTsImportsWithMap(imports, testImportMaps, generatorPaths),
+      ).toThrow('Import map entry not found for unknown');
     });
 
     it('should transform named imports using import map', () => {
@@ -105,7 +115,11 @@ describe('transformImportsWithMap', () => {
         },
       ];
 
-      const result = transformTsImportsWithMap(imports, testImportMaps);
+      const result = transformTsImportsWithMap(
+        imports,
+        testImportMaps,
+        generatorPaths,
+      );
       expect(result).toEqual([
         {
           moduleSpecifier: 'test-package',
@@ -127,7 +141,11 @@ describe('transformImportsWithMap', () => {
         },
       ];
 
-      const result = transformTsImportsWithMap(imports, testImportMaps);
+      const result = transformTsImportsWithMap(
+        imports,
+        testImportMaps,
+        generatorPaths,
+      );
       expect(result).toEqual([
         {
           moduleSpecifier: 'test-package',
@@ -154,7 +172,11 @@ describe('transformImportsWithMap', () => {
         },
       ];
 
-      const result = transformTsImportsWithMap(imports, testImportMaps);
+      const result = transformTsImportsWithMap(
+        imports,
+        testImportMaps,
+        generatorPaths,
+      );
       expect(result).toEqual([
         {
           moduleSpecifier: 'test-package',
@@ -193,7 +215,11 @@ describe('transformImportsWithMap', () => {
       ],
     ]);
 
-    const result = transformTsImportsWithMap(imports, importMaps);
+    const result = transformTsImportsWithMap(
+      imports,
+      importMaps,
+      generatorPaths,
+    );
     expect(result).toEqual([
       {
         moduleSpecifier: 'test-package1',
@@ -204,5 +230,77 @@ describe('transformImportsWithMap', () => {
         namedImports: [{ name: 'test2' }],
       },
     ]);
+  });
+
+  describe('generator paths', () => {
+    const testGeneratorPaths: Record<string, string> = {
+      react: '@src/components/react',
+      utils: '@src/utils',
+    };
+
+    it('should transform generator path imports correctly', () => {
+      const imports: TsImportDeclaration[] = [
+        {
+          moduleSpecifier: '$react',
+          namedImports: [{ name: 'Component' }],
+        },
+        {
+          moduleSpecifier: '$utils',
+          namedImports: [{ name: 'formatDate' }],
+        },
+      ];
+
+      const result = transformTsImportsWithMap(
+        imports,
+        new Map(),
+        testGeneratorPaths,
+      );
+      expect(result).toEqual([
+        {
+          moduleSpecifier: '@src/components/react',
+          namedImports: [{ name: 'Component' }],
+        },
+        {
+          moduleSpecifier: '@src/utils',
+          namedImports: [{ name: 'formatDate' }],
+        },
+      ]);
+    });
+
+    it('should throw error when generator path is not found', () => {
+      const imports: TsImportDeclaration[] = [
+        {
+          moduleSpecifier: '$unknown',
+          namedImports: [{ name: 'test' }],
+        },
+      ];
+
+      expect(() =>
+        transformTsImportsWithMap(imports, new Map(), testGeneratorPaths),
+      ).toThrow('Generator path not found for $unknown');
+    });
+
+    it('should preserve other properties when transforming generator paths', () => {
+      const imports: TsImportDeclaration[] = [
+        {
+          moduleSpecifier: '$react',
+          namedImports: [{ name: 'Component', isTypeOnly: true }],
+          isTypeOnly: true,
+        },
+      ];
+
+      const result = transformTsImportsWithMap(
+        imports,
+        new Map(),
+        testGeneratorPaths,
+      );
+      expect(result).toEqual([
+        {
+          moduleSpecifier: '@src/components/react',
+          namedImports: [{ name: 'Component', isTypeOnly: true }],
+          isTypeOnly: true,
+        },
+      ]);
+    });
   });
 });

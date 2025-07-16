@@ -9,5 +9,16 @@
         }
       ]
     }
+  },
+  "react-paths.ts": {
+    "reactPathsProvider": {
+      "type": "path",
+      "pathRoots": [
+        {
+          "name": "components-root",
+          "method": "getComponentsFolder"
+        }
+      ]
+    }
   }
 }

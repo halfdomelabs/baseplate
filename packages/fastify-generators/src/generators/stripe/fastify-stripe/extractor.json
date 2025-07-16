@@ -17,6 +17,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.ts",
+      "referencedGeneratorTemplates": ["service-events", "service"],
       "sourceFile": "src/plugins/stripe-webhook.ts",
       "variables": {}
     },
@@ -27,6 +28,11 @@
       "group": "plugins",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/stripe-webhook.int.test.ts",
+      "referencedGeneratorTemplates": [
+        "service-events",
+        "service",
+        "plugins-webhook"
+      ],
       "sourceFile": "src/plugins/stripe-webhook.int.test.ts",
       "variables": {}
     },

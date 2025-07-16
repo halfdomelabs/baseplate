@@ -32,6 +32,7 @@
         }
       },
       "pathRootRelativePath": "{package-root}/scripts/synchronize-repeat-jobs.ts",
+      "referencedGeneratorTemplates": ["service-index"],
       "sourceFile": "package/scripts/synchronize-repeat-jobs.ts",
       "variables": { "TPL_REPEAT_JOBS": {} }
     },

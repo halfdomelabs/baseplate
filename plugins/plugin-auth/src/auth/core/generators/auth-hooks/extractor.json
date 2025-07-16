@@ -22,6 +22,7 @@
       },
       "pathRootRelativePath": "{src-root}/hooks/use-current-user.ts",
       "projectExports": { "useCurrentUser": {} },
+      "referencedGeneratorTemplates": ["use-session"],
       "sourceFile": "src/hooks/use-current-user.ts",
       "variables": {}
     },
@@ -73,6 +74,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-user-id-or-throw.ts",
       "projectExports": { "useRequiredUserId": {} },
+      "referencedGeneratorTemplates": ["use-session"],
       "sourceFile": "src/hooks/use-user-id-or-throw.ts",
       "variables": {}
     },

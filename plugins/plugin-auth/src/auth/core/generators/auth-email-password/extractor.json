@@ -28,6 +28,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/user-password.mutations.ts",
+      "referencedGeneratorTemplates": ["services-user-password"],
       "sourceFile": "module/schema/user-password.mutations.ts",
       "variables": {}
     },
@@ -67,6 +68,7 @@
         "authenticateUserWithEmailAndPassword": {},
         "createUserWithEmailAndPassword": {}
       },
+      "referencedGeneratorTemplates": ["constants-password"],
       "sourceFile": "module/services/user-password.service.ts",
       "variables": {}
     }

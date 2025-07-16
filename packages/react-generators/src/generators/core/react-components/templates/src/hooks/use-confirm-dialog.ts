@@ -1,9 +1,9 @@
 // @ts-nocheck
 
+import type { ButtonProps } from '$button';
+
 import { useCallback } from 'react';
 import { create } from 'zustand';
-
-import type { ButtonProps } from '../components/button/button.js';
 
 export interface UseConfirmDialogRequestOptions {
   title: string;

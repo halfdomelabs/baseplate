@@ -16,7 +16,7 @@ export interface VitestPrismaVitestRenderers {
         RenderTsTemplateFileActionInput<
           typeof VITEST_PRISMA_VITEST_TEMPLATES.dbTestHelper
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -26,7 +26,7 @@ export interface VitestPrismaVitestRenderers {
         RenderTsTemplateFileActionInput<
           typeof VITEST_PRISMA_VITEST_TEMPLATES.prismaTestHelper
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

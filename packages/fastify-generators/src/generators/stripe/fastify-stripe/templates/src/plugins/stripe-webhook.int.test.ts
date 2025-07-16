@@ -2,13 +2,12 @@
 
 import type { Stripe } from 'stripe';
 
+import { stripeWebhookPlugin } from '$pluginsWebhook';
+import { stripe } from '$service';
+import { stripeEventService } from '$serviceEvents';
 import Fastify from 'fastify';
 import rawBodyPlugin from 'fastify-raw-body';
 import { describe, expect, it, vi } from 'vitest';
-
-import { stripeEventService } from '../services/stripe-events.js';
-import { stripe } from '../services/stripe.js';
-import { stripeWebhookPlugin } from './stripe-webhook.js';
 
 vi.mock('@src/services/stripe');
 

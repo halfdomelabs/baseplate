@@ -1,14 +1,12 @@
 // @ts-nocheck
 
+import type { UserSessionData } from '$userSessionClient';
+import type { UserSessionClientContextValue } from '$useUserSessionClient';
 import type React from 'react';
 
+import { createUserSessionClient } from '$userSessionClient';
+import { UserSessionClientContext } from '$useUserSessionClient';
 import { useEffect, useMemo, useState } from 'react';
-
-import type { UserSessionClientContextValue } from '../hooks/use-user-session-client.js';
-import type { UserSessionData } from '../services/user-session-client.js';
-
-import { UserSessionClientContext } from '../hooks/use-user-session-client.js';
-import { createUserSessionClient } from '../services/user-session-client.js';
 
 interface UserSessionProviderProps {
   children: React.ReactNode;

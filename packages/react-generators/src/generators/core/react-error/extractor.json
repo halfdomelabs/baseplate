@@ -8,6 +8,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/services/error-formatter.ts",
       "projectExports": { "formatError": {}, "logAndFormatError": {} },
+      "referencedGeneratorTemplates": ["error-logger"],
       "sourceFile": "src/services/error-formatter.ts",
       "variables": { "TPL_GET_FORMATTED_ERROR_SUFFIX": {} }
     },

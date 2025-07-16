@@ -14,7 +14,7 @@ export interface AuthAuthRolesRenderers {
         RenderTsTemplateFileActionInput<
           typeof AUTH_AUTH_ROLES_TEMPLATES.authRoles
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

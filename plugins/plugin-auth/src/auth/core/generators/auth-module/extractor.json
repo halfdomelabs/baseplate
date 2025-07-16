@@ -30,6 +30,7 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/user-session.mutations.ts",
+      "referencedGeneratorTemplates": ["user-session-service"],
       "sourceFile": "module/schema/user-session.mutations.ts",
       "variables": {}
     },
@@ -61,6 +62,9 @@
         }
       },
       "pathRootRelativePath": "{module-root}/schema/user-session.queries.ts",
+      "referencedGeneratorTemplates": [
+        "schema-user-session-payload-object-type"
+      ],
       "sourceFile": "module/schema/user-session.queries.ts",
       "variables": {}
     },
@@ -121,6 +125,12 @@
       },
       "pathRootRelativePath": "{module-root}/services/user-session.service.ts",
       "projectExports": { "userSessionService": {} },
+      "referencedGeneratorTemplates": [
+        "cookie-signer",
+        "session-cookie",
+        "user-session-constants",
+        "verify-request-origin"
+      ],
       "sourceFile": "module/services/user-session.service.ts",
       "variables": { "TPL_PRISMA_USER_SESSION": {} }
     },

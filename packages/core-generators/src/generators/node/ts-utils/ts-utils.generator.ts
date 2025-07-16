@@ -30,6 +30,7 @@ export const tsUtilsGenerator = createGenerator({
                 template,
                 destination: paths[key as TsUtilKey],
                 generatorInfo: builder.generatorInfo,
+                generatorPaths: paths as unknown as Record<'', string>,
               });
             }
           },

@@ -13,7 +13,7 @@ export interface CoreAppModuleRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof CORE_APP_MODULE_TEMPLATES.index>,
-        'importMapProviders' | 'template'
+        'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

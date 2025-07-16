@@ -35,6 +35,7 @@ function mergeImportsAndHoistedFragments(
   hoistedFragments: TsHoistedFragment[],
   importMaps: Map<string, TsImportMap>,
   positionedHoistedFragments: TsPositionedHoistedFragment[],
+  generatorPaths: Record<string, string>,
   {
     resolveModule,
     importSortOptions,
@@ -52,6 +53,7 @@ function mergeImportsAndHoistedFragments(
         convertTsMorphImportDeclarationToTsImportDeclaration,
       ),
       importMaps,
+      generatorPaths,
     ),
     ...imports,
   ];
@@ -144,6 +146,7 @@ interface RenderTsCodeFileTemplateInput {
   variables?: Record<string, TsTemplateFileVariableValue>;
   importMapProviders?: Record<string, unknown>;
   positionedHoistedFragments?: TsPositionedHoistedFragment[];
+  generatorPaths?: Record<string, string>;
   options?: RenderTsCodeFileTemplateOptions;
 }
 
@@ -152,6 +155,7 @@ export function renderTsCodeFileTemplate({
   variables = {},
   importMapProviders = {},
   positionedHoistedFragments = [],
+  generatorPaths = {},
   options = {},
 }: RenderTsCodeFileTemplateInput): string {
   // Render the template into a code fragment
@@ -164,6 +168,7 @@ export function renderTsCodeFileTemplate({
   if (
     !imports?.length &&
     !hoistedFragments?.length &&
+    Object.keys(generatorPaths).length === 0 &&
     Object.keys(importMapProviders).length === 0 &&
     !/^import\s+/gm.test(contents)
   ) {
@@ -183,6 +188,7 @@ export function renderTsCodeFileTemplate({
     hoistedFragments ?? [],
     new Map(Object.entries(importMapProviders) as [string, TsImportMap][]),
     positionedHoistedFragments,
+    generatorPaths,
     options,
   );
 

@@ -16,7 +16,7 @@ export interface AdminAdminComponentsRenderers {
         RenderTsTemplateGroupActionInput<
           typeof ADMIN_ADMIN_COMPONENTS_TEMPLATES.componentsGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -48,6 +48,7 @@ const adminAdminComponentsRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   reactComponentsImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

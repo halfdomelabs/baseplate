@@ -17,7 +17,7 @@ export interface CoreReactErrorBoundaryRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_ERROR_BOUNDARY_TEMPLATES.component
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

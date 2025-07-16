@@ -18,10 +18,11 @@ const fileInputComponent = createTsTemplateFile({
   },
   name: 'file-input-component',
   projectExports: { FileInput: { exportedAs: 'default' } },
+  referencedGeneratorTemplates: { hooksUseUpload: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/file-input/file-input.tsx',
+      '../templates/components/ui/file-input.tsx',
     ),
   },
   variables: {},
@@ -34,10 +35,11 @@ const fileInputField = createTsTemplateFile({
   },
   name: 'file-input-field',
   projectExports: { FileInputField: {}, FileInputFieldController: {} },
+  referencedGeneratorTemplates: { fileInputComponent: {} },
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/file-input-field/file-input-field.tsx',
+      '../templates/components/ui/file-input-field.tsx',
     ),
   },
   variables: {},
@@ -49,7 +51,7 @@ const fileInputUploadGql = createTextTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/file-input/upload.gql',
+      '../templates/components/ui/file-input.gql',
     ),
   },
   variables: { TPL_FILE_TYPE: {} },

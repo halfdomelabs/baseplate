@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @ts-nocheck
 
-import { prisma } from '../services/prisma.js';
+import { prisma } from '$service';
 
 async function main(): Promise<void> {
   try {

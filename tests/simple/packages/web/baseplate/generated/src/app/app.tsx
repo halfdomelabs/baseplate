@@ -1,7 +1,8 @@
 import type { ReactElement } from 'react';
 
-import { ConfirmDialog, Toaster } from '../components';
-import { ErrorBoundary } from '../components/error-boundary/error-boundary';
+import { ConfirmDialog } from '../components/ui/confirm-dialog';
+import { ErrorBoundary } from '../components/ui/error-boundary';
+import { Toaster } from '../components/ui/toaster';
 import { AppApolloProvider } from './app-apollo-provider';
 import { AppRoutes } from './router';
 

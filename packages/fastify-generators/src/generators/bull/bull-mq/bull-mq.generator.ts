@@ -25,6 +25,7 @@ export const bullMqGenerator = createGenerator({
   buildTasks: () => ({
     paths: BULL_BULL_MQ_GENERATED.paths.task,
     imports: BULL_BULL_MQ_GENERATED.imports.task,
+    renderers: BULL_BULL_MQ_GENERATED.renderers.task,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, ['bullmq']),
     }),
@@ -57,6 +58,7 @@ export const bullMqGenerator = createGenerator({
         fastifyRedisImports: fastifyRedisImportsProvider,
         typescriptFile: typescriptFileProvider,
         paths: BULL_BULL_MQ_GENERATED.paths.provider,
+        renderers: BULL_BULL_MQ_GENERATED.renderers.provider,
       },
       run({
         errorHandlerServiceImports,
@@ -64,17 +66,12 @@ export const bullMqGenerator = createGenerator({
         fastifyRedisImports,
         typescriptFile,
         paths,
+        renderers,
       }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: BULL_BULL_MQ_GENERATED.templates.scriptsGroup,
-                paths,
-                importMapProviders: {
-                  errorHandlerServiceImports,
-                  loggerServiceImports,
-                },
+              renderers.scriptsGroup.render({
                 variables: {
                   scriptsRunWorkers: {
                     TPL_WORKERS: tsCodeFragment('[]'),

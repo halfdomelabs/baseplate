@@ -1,9 +1,8 @@
 // @ts-nocheck
 
+import type { StorageAdapterKey } from '$configAdapters';
 import type { ServiceContext } from '%serviceContextImports';
 import type { File } from '@prisma/client';
-
-import type { StorageAdapterKey } from '../config/adapters.config.js';
 
 /**
  * Configuration for a file category that specifies how files for a

@@ -17,7 +17,7 @@ export interface CoreFastifyGracefulShutdownRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_FASTIFY_GRACEFUL_SHUTDOWN_TEMPLATES.gracefulShutdown
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
