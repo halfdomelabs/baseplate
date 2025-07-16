@@ -19,7 +19,7 @@
         "EmbeddedListFieldProps": { "isTypeOnly": true }
       },
       "referencedGeneratorTemplates": ["embedded-list-input"],
-      "sourceFile": "components/admin/embedded-list-field/embedded-list-field.tsx",
+      "sourceFile": "components/admin/embedded-list-field.tsx",
       "variables": {}
     },
     "embedded-list-input": {
@@ -39,7 +39,7 @@
         "EmbeddedListInput": {},
         "EmbeddedListTableProps": { "isTypeOnly": true }
       },
-      "sourceFile": "components/admin/embedded-list-input/embedded-list-input.tsx",
+      "sourceFile": "components/admin/embedded-list-input.tsx",
       "variables": {}
     },
     "embedded-object-field": {
@@ -60,7 +60,7 @@
         "EmbeddedObjectFieldProps": { "isTypeOnly": true }
       },
       "referencedGeneratorTemplates": ["embedded-object-input"],
-      "sourceFile": "components/admin/embedded-object-field/embedded-object-field.tsx",
+      "sourceFile": "components/admin/embedded-object-field.tsx",
       "variables": {}
     },
     "embedded-object-input": {
@@ -79,7 +79,7 @@
         "EmbeddedObjectFormProps": { "isTypeOnly": true },
         "EmbeddedObjectInput": {}
       },
-      "sourceFile": "components/admin/embedded-object-input/embedded-object-input.tsx",
+      "sourceFile": "components/admin/embedded-object-input.tsx",
       "variables": {}
     }
   }
