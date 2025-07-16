@@ -84,6 +84,7 @@ const authCoreAuthHooksRenderersTask = createGeneratorTask({
                   reactErrorImports,
                   reactSessionImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

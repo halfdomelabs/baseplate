@@ -29,7 +29,7 @@ const authContextUtils = createTsTemplateFile({
   },
   name: 'auth-context-utils',
   projectExports: { createAuthContextFromSessionInfo: {} },
-  referencedGeneratorTemplates: { authSessionTypes: {}, authContextTypes: {} },
+  referencedGeneratorTemplates: { authContextTypes: {}, authSessionTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,

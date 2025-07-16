@@ -9,8 +9,8 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/plugins/graphql/FieldAuthorizePlugin/global-types.ts",
       "referencedGeneratorTemplates": [
-        "field-authorize-types",
-        "field-authorize-plugin"
+        "field-authorize-plugin",
+        "field-authorize-types"
       ],
       "sourceFile": "src/plugins/graphql/FieldAuthorizePlugin/global-types.ts",
       "variables": {}

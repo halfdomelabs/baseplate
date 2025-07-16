@@ -112,6 +112,7 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   pothosImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },
@@ -128,6 +129,7 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
                   requestServiceContextImports,
                   userSessionTypesImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

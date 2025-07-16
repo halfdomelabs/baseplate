@@ -36,8 +36,8 @@
       "pathRootRelativePath": "{module-root}/utils/auth-context.utils.ts",
       "projectExports": { "createAuthContextFromSessionInfo": {} },
       "referencedGeneratorTemplates": [
-        "auth-session-types",
-        "auth-context-types"
+        "auth-context-types",
+        "auth-session-types"
       ],
       "sourceFile": "module/utils/auth-context.utils.ts",
       "variables": {}

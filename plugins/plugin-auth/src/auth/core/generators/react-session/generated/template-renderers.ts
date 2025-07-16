@@ -68,6 +68,7 @@ const authCoreReactSessionRenderersTask = createGeneratorTask({
                   generatedGraphqlImports,
                   reactUtilsImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

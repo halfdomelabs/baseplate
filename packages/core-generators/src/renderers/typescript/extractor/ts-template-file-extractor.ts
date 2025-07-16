@@ -183,7 +183,7 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
                   importMapProviders: result.importProviders,
                   referencedGeneratorTemplates:
                     result.referencedGeneratorTemplates.size > 0
-                      ? [...result.referencedGeneratorTemplates]
+                      ? [...result.referencedGeneratorTemplates].toSorted()
                       : undefined,
                 } as TsTemplateMetadata,
               );

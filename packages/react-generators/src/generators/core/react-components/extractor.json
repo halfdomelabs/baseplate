@@ -25,7 +25,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/button/button.tsx",
       "projectExports": { "Button": {}, "LinkButton": {} },
-      "referencedGeneratorTemplates": ["styles-button", "cn"],
+      "referencedGeneratorTemplates": ["cn", "styles-button"],
       "sourceFile": "components/ui/button/button.tsx",
       "variables": {}
     },
@@ -37,7 +37,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/calendar/calendar.tsx",
       "projectExports": { "Calendar": {} },
-      "referencedGeneratorTemplates": ["styles-button", "cn", "button"],
+      "referencedGeneratorTemplates": ["button", "cn", "styles-button"],
       "sourceFile": "components/ui/calendar/calendar.tsx",
       "variables": {}
     },
@@ -81,11 +81,11 @@
       "pathRootRelativePath": "{components-root}/ui/checkbox-field/checkbox-field.tsx",
       "projectExports": { "CheckboxField": {}, "CheckboxFieldController": {} },
       "referencedGeneratorTemplates": [
-        "types-form",
+        "checkbox",
         "cn",
-        "hooks-use-controller-merged",
         "form-item",
-        "checkbox"
+        "hooks-use-controller-merged",
+        "types-form"
       ],
       "sourceFile": "components/ui/checkbox-field/checkbox-field.tsx",
       "variables": {}
@@ -122,13 +122,13 @@
       "pathRootRelativePath": "{components-root}/ui/combobox/combobox.tsx",
       "projectExports": { "Combobox": {} },
       "referencedGeneratorTemplates": [
-        "styles-input",
-        "styles-select",
-        "merge-refs",
         "button",
-        "scroll-area",
+        "cn",
         "hooks-use-controlled-state",
-        "cn"
+        "merge-refs",
+        "scroll-area",
+        "styles-input",
+        "styles-select"
       ],
       "sourceFile": "components/ui/combobox/combobox.tsx",
       "variables": {}
@@ -142,10 +142,10 @@
       "pathRootRelativePath": "{components-root}/ui/combobox-field/combobox-field.tsx",
       "projectExports": { "ComboboxField": {}, "ComboboxFieldController": {} },
       "referencedGeneratorTemplates": [
-        "types-form",
-        "hooks-use-controller-merged",
         "combobox",
-        "form-item"
+        "form-item",
+        "hooks-use-controller-merged",
+        "types-form"
       ],
       "sourceFile": "components/ui/combobox-field/combobox-field.tsx",
       "variables": {}
@@ -160,8 +160,8 @@
       "projectExports": { "ConfirmDialog": {} },
       "referencedGeneratorTemplates": [
         "button",
-        "use-confirm-dialog",
-        "dialog"
+        "dialog",
+        "use-confirm-dialog"
       ],
       "sourceFile": "components/ui/confirm-dialog/confirm-dialog.tsx",
       "variables": {}
@@ -179,13 +179,13 @@
         "ReactDatePickerInput": {}
       },
       "referencedGeneratorTemplates": [
-        "types-form",
-        "hooks-use-controller-merged",
-        "cn",
         "button",
         "calendar",
+        "cn",
         "form-item",
-        "popover"
+        "hooks-use-controller-merged",
+        "popover",
+        "types-form"
       ],
       "sourceFile": "components/ui/date-picker-field/date-picker-field.tsx",
       "variables": {}
@@ -202,14 +202,14 @@
         "DateTimePickerFieldController": {}
       },
       "referencedGeneratorTemplates": [
-        "types-form",
-        "hooks-use-controller-merged",
-        "cn",
         "button",
         "calendar",
+        "cn",
         "form-item",
+        "hooks-use-controller-merged",
+        "input",
         "popover",
-        "input"
+        "types-form"
       ],
       "sourceFile": "components/ui/date-time-picker-field/date-time-picker-field.tsx",
       "variables": {}
@@ -247,7 +247,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/empty-display/empty-display.tsx",
       "projectExports": { "EmptyDisplay": {} },
-      "referencedGeneratorTemplates": ["types-icon", "cn"],
+      "referencedGeneratorTemplates": ["cn", "types-icon"],
       "sourceFile": "components/ui/empty-display/empty-display.tsx",
       "variables": {}
     },
@@ -337,11 +337,11 @@
       "pathRootRelativePath": "{components-root}/ui/input-field/input-field.tsx",
       "projectExports": { "InputField": {}, "InputFieldController": {} },
       "referencedGeneratorTemplates": [
-        "types-form",
         "cn",
-        "merge-refs",
         "form-item",
-        "input"
+        "input",
+        "merge-refs",
+        "types-form"
       ],
       "sourceFile": "components/ui/input-field/input-field.tsx",
       "variables": {}
@@ -457,7 +457,7 @@
         "Select": {},
         "SelectInput": {}
       },
-      "referencedGeneratorTemplates": ["styles-select", "cn", "scroll-area"],
+      "referencedGeneratorTemplates": ["cn", "scroll-area", "styles-select"],
       "sourceFile": "components/ui/select/select.tsx",
       "variables": {}
     },
@@ -470,10 +470,10 @@
       "pathRootRelativePath": "{components-root}/ui/select-field/select-field.tsx",
       "projectExports": { "SelectField": {}, "SelectFieldController": {} },
       "referencedGeneratorTemplates": [
-        "types-form",
-        "hooks-use-controller-merged",
         "form-item",
-        "select"
+        "hooks-use-controller-merged",
+        "select",
+        "types-form"
       ],
       "sourceFile": "components/ui/select-field/select-field.tsx",
       "variables": {}
@@ -554,11 +554,11 @@
       "pathRootRelativePath": "{components-root}/ui/switch-field/switch-field.tsx",
       "projectExports": { "SwitchField": {}, "SwitchFieldController": {} },
       "referencedGeneratorTemplates": [
-        "types-form",
-        "hooks-use-controller-merged",
         "cn",
         "form-item",
-        "switch-component"
+        "hooks-use-controller-merged",
+        "switch-component",
+        "types-form"
       ],
       "sourceFile": "components/ui/switch-field/switch-field.tsx",
       "variables": {}
@@ -604,7 +604,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/ui/textarea-field/textarea-field.tsx",
       "projectExports": { "TextareaField": {}, "TextareaFieldController": {} },
-      "referencedGeneratorTemplates": ["types-form", "form-item", "textarea"],
+      "referencedGeneratorTemplates": ["form-item", "textarea", "types-form"],
       "sourceFile": "components/ui/textarea-field/textarea-field.tsx",
       "variables": {}
     },

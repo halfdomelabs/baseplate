@@ -83,6 +83,7 @@ const authCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                   userSessionServiceImports,
                   userSessionTypesImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

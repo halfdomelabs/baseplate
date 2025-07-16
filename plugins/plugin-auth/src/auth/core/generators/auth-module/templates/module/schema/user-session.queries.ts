@@ -1,8 +1,7 @@
 // @ts-nocheck
 
+import { userSessionPayload } from '$schemaUserSessionPayloadObjectType';
 import { builder } from '%pothosImports';
-
-import { userSessionPayload } from './user-session-payload.object-type.js';
 
 builder.queryField('currentUserSession', (t) =>
   t.field({

@@ -1,11 +1,8 @@
 // @ts-nocheck
 
-import { createContext, useContext } from 'react';
+import type { UserSessionClient, UserSessionData } from '$userSessionClient';
 
-import type {
-  UserSessionClient,
-  UserSessionData,
-} from '../services/user-session-client.js';
+import { createContext, useContext } from 'react';
 
 export interface UserSessionClientContextValue {
   client: UserSessionClient;

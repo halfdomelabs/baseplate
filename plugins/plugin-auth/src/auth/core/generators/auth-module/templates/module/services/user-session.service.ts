@@ -10,20 +10,19 @@ import type {
 import type { CookieSerializeOptions } from '@fastify/cookie';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
+import { signObject, unsignObject } from '$cookieSigner';
+import { getUserSessionCookieName } from '$sessionCookie';
+import {
+  USER_SESSION_DURATION_SEC,
+  USER_SESSION_MAX_LIFETIME_SEC,
+  USER_SESSION_RENEWAL_THRESHOLD_SEC,
+} from '$userSessionConstants';
+import { verifyRequestOrigin } from '$verifyRequestOrigin';
 import { InvalidSessionError } from '%authContextImports';
 import { DEFAULT_USER_ROLES } from '%authRolesImports';
 import { config } from '%configServiceImports';
 import { ForbiddenError } from '%errorHandlerServiceImports';
 import { randomBytes } from 'node:crypto';
-
-import {
-  USER_SESSION_DURATION_SEC,
-  USER_SESSION_MAX_LIFETIME_SEC,
-  USER_SESSION_RENEWAL_THRESHOLD_SEC,
-} from '../constants/user-session.constants.js';
-import { signObject, unsignObject } from '../utils/cookie-signer.js';
-import { getUserSessionCookieName } from '../utils/session-cookie.js';
-import { verifyRequestOrigin } from '../utils/verify-request-origin.js';
 
 interface SessionCookieValue {
   // Session token

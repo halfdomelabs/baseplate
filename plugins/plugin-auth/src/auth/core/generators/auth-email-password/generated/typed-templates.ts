@@ -35,6 +35,7 @@ const schemaUserPasswordMutations = createTsTemplateFile({
     pothosImports: pothosImportsProvider,
   },
   name: 'schema-user-password-mutations',
+  referencedGeneratorTemplates: { servicesUserPassword: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -60,6 +61,7 @@ const servicesUserPassword = createTsTemplateFile({
     authenticateUserWithEmailAndPassword: {},
     createUserWithEmailAndPassword: {},
   },
+  referencedGeneratorTemplates: { constantsPassword: {} },
   source: {
     path: path.join(
       import.meta.dirname,
