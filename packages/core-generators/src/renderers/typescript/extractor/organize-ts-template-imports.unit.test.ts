@@ -174,7 +174,7 @@ export function test() {
 
     // Check that the output contains the organized imports
     expect(result.contents).toContain('import { A, B, F } from "%testImports"');
-    expect(result.contents).toContain('import { C } from "./module2.js"');
+    expect(result.contents).toContain('import { C } from "$module2"');
     expect(result.contents).toContain('import { D } from "external-package"');
 
     // Check that unused imports are removed

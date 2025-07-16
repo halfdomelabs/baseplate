@@ -2,8 +2,8 @@
 
 import type React from 'react';
 
-import { ErrorDisplay } from '../error-display/error-display.js';
-import { Loader } from '../loader/loader.js';
+import { ErrorDisplay } from '$errorDisplay';
+import { Loader } from '$loader';
 
 interface ErrorableLoaderProps {
   /**

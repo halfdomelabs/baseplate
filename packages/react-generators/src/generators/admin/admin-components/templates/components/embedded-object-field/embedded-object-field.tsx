@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { EmbeddedObjectInputProps } from '$embeddedObjectInput';
 import type { ReactElement } from 'react';
 import type {
   Control,
@@ -8,6 +9,7 @@ import type {
   FieldValues,
 } from 'react-hook-form';
 
+import { EmbeddedObjectInput } from '$embeddedObjectInput';
 import {
   FormControl,
   FormItem,
@@ -15,10 +17,6 @@ import {
   FormMessage,
 } from '%reactComponentsImports';
 import { useController } from 'react-hook-form';
-
-import type { EmbeddedObjectInputProps } from '../embedded-object-input/embedded-object-input.js';
-
-import { EmbeddedObjectInput } from '../embedded-object-input/embedded-object-input.js';
 
 export interface EmbeddedObjectFieldProps<InputType>
   extends EmbeddedObjectInputProps<InputType> {

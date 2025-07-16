@@ -2,22 +2,21 @@
 
 'use client';
 
-import { Command } from 'cmdk';
-import { Popover, ScrollArea as ScrollAreaPrimitive } from 'radix-ui';
-import * as React from 'react';
-import { MdCheck, MdUnfoldMore } from 'react-icons/md';
-
-import { useControlledState } from '../../hooks/use-controlled-state.js';
-import { inputVariants } from '../../styles/input.js';
+import { Button } from '$button';
+import { cn } from '$cn';
+import { useControlledState } from '$hooksUseControlledState';
+import { mergeRefs } from '$mergeRefs';
+import { ScrollBar } from '$scrollArea';
+import { inputVariants } from '$stylesInput';
 import {
   selectCheckVariants,
   selectContentVariants,
   selectItemVariants,
-} from '../../styles/select.js';
-import { cn } from '../../utils/cn.js';
-import { mergeRefs } from '../../utils/merge-refs.js';
-import { Button } from '../button/button.js';
-import { ScrollBar } from '../scroll-area/scroll-area.js';
+} from '$stylesSelect';
+import { Command } from 'cmdk';
+import { Popover, ScrollArea as ScrollAreaPrimitive } from 'radix-ui';
+import * as React from 'react';
+import { MdCheck, MdUnfoldMore } from 'react-icons/md';
 
 interface ComboboxContextValue {
   selectedValue: string | undefined | null;

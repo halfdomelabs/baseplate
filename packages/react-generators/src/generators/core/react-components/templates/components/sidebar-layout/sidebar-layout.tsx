@@ -2,9 +2,8 @@
 
 import type React from 'react';
 
+import { cn } from '$cn';
 import { clsx } from 'clsx';
-
-import { cn } from '../../utils/cn.js';
 
 export interface SidebarLayoutProps {
   className?: string;

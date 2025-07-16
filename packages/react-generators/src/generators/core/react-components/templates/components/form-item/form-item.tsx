@@ -4,11 +4,10 @@
 
 import type { Label as LabelPrimitive } from 'radix-ui';
 
+import { cn } from '$cn';
+import { Label } from '$label';
 import { Slot } from 'radix-ui';
 import * as React from 'react';
-
-import { cn } from '../../utils/cn.js';
-import { Label } from '../label/label.js';
 
 interface FormItemContextValue {
   id: string;

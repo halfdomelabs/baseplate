@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { EmbeddedListInputProps } from '$embeddedListInput';
 import type { ReactElement } from 'react';
 import type {
   Control,
@@ -8,6 +9,7 @@ import type {
   FieldValues,
 } from 'react-hook-form';
 
+import { EmbeddedListInput } from '$embeddedListInput';
 import {
   FormControl,
   FormItem,
@@ -15,10 +17,6 @@ import {
   FormMessage,
 } from '%reactComponentsImports';
 import { useController } from 'react-hook-form';
-
-import type { EmbeddedListInputProps } from '../embedded-list-input/embedded-list-input.js';
-
-import { EmbeddedListInput } from '../embedded-list-input/embedded-list-input.js';
 
 export interface EmbeddedListFieldProps<InputType>
   extends EmbeddedListInputProps<InputType> {

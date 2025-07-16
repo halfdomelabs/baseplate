@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { FormFieldProps } from '$typesForm';
 import type React from 'react';
 import type {
   Control,
@@ -10,20 +11,17 @@ import type {
   UseFormRegisterReturn,
 } from 'react-hook-form';
 
-import { get, useFormState } from 'react-hook-form';
-
-import type { FormFieldProps } from '../../types/form.js';
-
-import { cn } from '../../utils/cn.js';
-import { mergeRefs } from '../../utils/merge-refs.js';
+import { cn } from '$cn';
 import {
   FormControl,
   FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../form-item/form-item.js';
-import { Input } from '../input/input.js';
+} from '$formItem';
+import { Input } from '$input';
+import { mergeRefs } from '$mergeRefs';
+import { get, useFormState } from 'react-hook-form';
 
 export interface InputFieldProps
   extends Omit<React.ComponentPropsWithRef<'input'>, 'onChange' | 'value'>,

@@ -2,31 +2,30 @@
 
 'use client';
 
-import type React from 'react';
-import type { Control, FieldPath, FieldValues } from 'react-hook-form';
-
+import type { ComboboxProps } from '$combobox';
 import type {
   AddOptionRequiredFields,
   FormFieldProps,
   SelectOptionProps,
-} from '../../types/form.js';
-import type { ComboboxProps } from '../combobox/combobox.js';
+} from '$typesForm';
+import type React from 'react';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { useControllerMerged } from '../../hooks/use-controller-merged.js';
 import {
   Combobox,
   ComboboxContent,
   ComboboxEmpty,
   ComboboxInput,
   ComboboxItem,
-} from '../combobox/combobox.js';
+} from '$combobox';
 import {
   FormControl,
   FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../form-item/form-item.js';
+} from '$formItem';
+import { useControllerMerged } from '$hooksUseControllerMerged';
 
 export interface ComboboxFieldProps<OptionType>
   extends Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,

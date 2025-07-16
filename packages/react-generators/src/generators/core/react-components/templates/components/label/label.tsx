@@ -4,9 +4,8 @@
 
 import type * as React from 'react';
 
+import { cn } from '$cn';
 import { Label as LabelPrimitive } from 'radix-ui';
-
-import { cn } from '../../utils/cn.js';
 
 /**
  * Renders an accessible label associated with controls.

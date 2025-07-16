@@ -2,14 +2,10 @@
 
 'use client';
 
+import type { UseConfirmDialogRequestOptions } from '$useConfirmDialog';
 import type React from 'react';
 
-import { useEffect, useRef } from 'react';
-
-import type { UseConfirmDialogRequestOptions } from '../../hooks/use-confirm-dialog.js';
-
-import { useConfirmDialogState } from '../../hooks/use-confirm-dialog.js';
-import { Button } from '../button/button.js';
+import { Button } from '$button';
 import {
   Dialog,
   DialogContent,
@@ -17,7 +13,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../dialog/dialog.js';
+} from '$dialog';
+import { useConfirmDialogState } from '$useConfirmDialog';
+import { useEffect, useRef } from 'react';
 
 /**
  * A confirm dialog that is placed at the top level of the page

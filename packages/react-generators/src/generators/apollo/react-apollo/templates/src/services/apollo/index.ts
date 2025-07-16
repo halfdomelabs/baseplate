@@ -2,9 +2,8 @@
 
 import type { NormalizedCacheObject } from '@apollo/client';
 
+import { createApolloCache } from '$cache';
 import { ApolloClient, from } from '@apollo/client';
-
-import { createApolloCache } from './cache.js';
 
 export function createApolloClient(
   TPL_CREATE_ARGS,

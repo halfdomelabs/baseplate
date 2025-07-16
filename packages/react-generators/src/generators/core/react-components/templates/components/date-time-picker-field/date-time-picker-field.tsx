@@ -2,27 +2,25 @@
 
 'use client';
 
+import type { FormFieldProps } from '$typesForm';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { format, parseISO, set } from 'date-fns';
-import { useId, useState } from 'react';
-import { MdSchedule } from 'react-icons/md';
-
-import type { FormFieldProps } from '../../types/form.js';
-
-import { useControllerMerged } from '../../hooks/use-controller-merged.js';
-import { cn } from '../../utils/cn.js';
-import { Button } from '../button/button.js';
-import { Calendar } from '../calendar/calendar.js';
+import { Button } from '$button';
+import { Calendar } from '$calendar';
+import { cn } from '$cn';
 import {
   FormControl,
   FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../form-item/form-item.js';
-import { Input } from '../input/input.js';
-import { Popover, PopoverContent, PopoverTrigger } from '../popover/popover.js';
+} from '$formItem';
+import { useControllerMerged } from '$hooksUseControllerMerged';
+import { Input } from '$input';
+import { Popover, PopoverContent, PopoverTrigger } from '$popover';
+import { format, parseISO, set } from 'date-fns';
+import { useId, useState } from 'react';
+import { MdSchedule } from 'react-icons/md';
 
 export interface DateTimePickerFieldProps extends FormFieldProps {
   className?: string;

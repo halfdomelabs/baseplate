@@ -1,8 +1,7 @@
 // @ts-nocheck
 
+import { AdminLayout } from '$adminLayout';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-
-import { AdminLayout } from '../../components/admin-layout/admin-layout.js';
 
 export const Route = createFileRoute(TPL_ROUTE_PATH)({
   beforeLoad: ({ context: { userId }, location }) => {

@@ -40,6 +40,7 @@ export function renderTsTemplateToTsCodeFragment(
 ): TsCodeFragment {
   // strip any ts-nocheck from header
   let renderedTemplate = template.replace(/^\/\/ @ts-nocheck\n/m, '');
+
   // Replace variables with their values
   const prefix = options.prefix ?? 'TPL_';
   const includeMetadata = options.includeMetadata ?? false;

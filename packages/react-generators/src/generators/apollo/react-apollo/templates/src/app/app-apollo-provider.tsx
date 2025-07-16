@@ -2,10 +2,9 @@
 
 import type { ReactElement } from 'react';
 
+import { createApolloClient } from '$service';
 import { ApolloProvider } from '@apollo/client';
 import { useMemo } from 'react';
-
-import { createApolloClient } from '../services/apollo/index.js';
 
 interface Props {
   children: React.ReactNode;

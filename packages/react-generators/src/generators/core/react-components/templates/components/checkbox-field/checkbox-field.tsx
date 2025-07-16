@@ -2,22 +2,21 @@
 
 'use client';
 
+import type { FormFieldProps } from '$typesForm';
 import type React from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import type { FormFieldProps } from '../../types/form.js';
-
-import { useControllerMerged } from '../../hooks/use-controller-merged.js';
-import { cn } from '../../utils/cn.js';
-import { Checkbox } from '../checkbox/checkbox.js';
+import { Checkbox } from '$checkbox';
+import { cn } from '$cn';
 import {
   FormControl,
   FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../form-item/form-item.js';
+} from '$formItem';
+import { useControllerMerged } from '$hooksUseControllerMerged';
 
 interface CheckboxFieldProps
   extends Omit<

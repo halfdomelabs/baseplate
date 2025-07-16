@@ -4,9 +4,8 @@
 
 import type * as React from 'react';
 
+import { cn } from '$cn';
 import { ScrollArea as ScrollAreaPrimitive } from 'radix-ui';
-
-import { cn } from '../../utils/cn.js';
 
 /**
  * Augments native scroll functionality for custom, cross-browser styling.

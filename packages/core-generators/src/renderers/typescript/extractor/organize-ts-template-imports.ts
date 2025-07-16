@@ -1,6 +1,7 @@
 import type { ResolverFactory } from 'oxc-resolver';
 import type { SourceFile } from 'ts-morph';
 
+import { camelCase } from 'es-toolkit';
 import { isBuiltin } from 'node:module';
 import path from 'node:path';
 import { Node, Project, SyntaxKind } from 'ts-morph';
@@ -218,15 +219,10 @@ export async function organizeTsTemplateImports(
         internalOutputRelativePaths.get(relativeOutputPath);
       if (internalTemplateName) {
         referencedGeneratorTemplates.add(internalTemplateName);
-        const relativeImportPath = path
-          .relative(path.dirname(filePath), resolvedPath)
-          .replace(/\.(t|j)sx?$/, '.js');
         const fixedImportDeclaration: TsImportDeclaration = {
           ...importDeclaration,
-          // convert to relative path
-          moduleSpecifier: relativeImportPath.startsWith('.')
-            ? relativeImportPath
-            : `./${relativeImportPath}`,
+          // convert to internal template name
+          moduleSpecifier: `$${camelCase(internalTemplateName)}`,
         };
         return [fixedImportDeclaration];
       }

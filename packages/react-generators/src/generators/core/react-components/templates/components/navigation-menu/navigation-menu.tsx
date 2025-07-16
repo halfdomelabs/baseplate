@@ -3,11 +3,10 @@
 import type { VariantProps } from 'class-variance-authority';
 import type * as React from 'react';
 
+import { cn } from '$cn';
 import { cva } from 'class-variance-authority';
 import { NavigationMenu as NavigationMenuPrimitive } from 'radix-ui';
 import { MdExpandMore } from 'react-icons/md';
-
-import { cn } from '../../utils/cn.js';
 
 /**
  * A collection of links for navigating websites.

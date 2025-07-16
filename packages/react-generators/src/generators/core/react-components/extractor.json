@@ -25,7 +25,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/button/button.tsx",
       "projectExports": { "Button": {}, "LinkButton": {} },
-      "referencedGeneratorTemplates": ["styles-button", "cn"],
+      "referencedGeneratorTemplates": ["cn", "styles-button"],
       "sourceFile": "components/button/button.tsx",
       "variables": {}
     },
@@ -122,13 +122,13 @@
       "pathRootRelativePath": "{components-root}/combobox/combobox.tsx",
       "projectExports": { "Combobox": {} },
       "referencedGeneratorTemplates": [
+        "hooks-use-controlled-state",
         "styles-input",
         "styles-select",
         "cn",
         "merge-refs",
         "button",
-        "scroll-area",
-        "hooks-use-controlled-state"
+        "scroll-area"
       ],
       "sourceFile": "components/combobox/combobox.tsx",
       "variables": {}
@@ -182,8 +182,8 @@
         "types-form",
         "cn",
         "hooks-use-controller-merged",
-        "button",
         "calendar",
+        "button",
         "form-item",
         "popover"
       ],
@@ -208,8 +208,8 @@
         "button",
         "form-item",
         "input",
-        "popover",
-        "calendar"
+        "calendar",
+        "popover"
       ],
       "sourceFile": "components/date-time-picker-field/date-time-picker-field.tsx",
       "variables": {}
@@ -412,7 +412,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/not-found-card/not-found-card.tsx",
       "projectExports": { "NotFoundCard": {} },
-      "referencedGeneratorTemplates": ["button", "error-display"],
+      "referencedGeneratorTemplates": ["error-display", "button"],
       "sourceFile": "components/not-found-card/not-found-card.tsx",
       "variables": {}
     },
@@ -457,7 +457,7 @@
         "Select": {},
         "SelectInput": {}
       },
-      "referencedGeneratorTemplates": ["cn", "styles-select", "scroll-area"],
+      "referencedGeneratorTemplates": ["styles-select", "cn", "scroll-area"],
       "sourceFile": "components/select/select.tsx",
       "variables": {}
     },
@@ -471,8 +471,8 @@
       "projectExports": { "SelectField": {}, "SelectFieldController": {} },
       "referencedGeneratorTemplates": [
         "types-form",
-        "form-item",
         "hooks-use-controller-merged",
+        "form-item",
         "select"
       ],
       "sourceFile": "components/select-field/select-field.tsx",
@@ -554,8 +554,8 @@
       "pathRootRelativePath": "{components-root}/switch-field/switch-field.tsx",
       "projectExports": { "SwitchField": {}, "SwitchFieldController": {} },
       "referencedGeneratorTemplates": [
-        "cn",
         "types-form",
+        "cn",
         "form-item",
         "switch-component",
         "hooks-use-controller-merged"

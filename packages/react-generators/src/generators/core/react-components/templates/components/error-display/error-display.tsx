@@ -1,9 +1,8 @@
 // @ts-nocheck
 
+import { cn } from '$cn';
 import React from 'react';
 import { MdOutlineErrorOutline } from 'react-icons/md';
-
-import { cn } from '../../utils/cn.js';
 
 interface ErrorDisplayProps {
   /**

@@ -105,6 +105,7 @@ export function extractTsTemplateFileInputsFromTemplateGroup<
   importMapProviders,
   writeOptions,
   renderOptions,
+  generatorPaths,
 }: RenderTsTemplateGroupActionInput<T>): RenderTsTemplateFileActionInput[] {
   const fileActionInputs: RenderTsTemplateFileActionInput[] = [];
   const typedImportMapProviders =
@@ -139,6 +140,7 @@ export function extractTsTemplateFileInputsFromTemplateGroup<
           : undefined,
       writeOptions: writeOptions?.[key],
       importMapProviders: templateSpecificProviders,
+      generatorPaths: generatorPaths ?? {},
       renderOptions: {
         ...renderOptions,
         resolveModule: (specifier) => {

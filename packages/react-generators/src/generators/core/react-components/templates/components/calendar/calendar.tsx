@@ -4,13 +4,12 @@
 
 import type { DayButton } from 'react-day-picker';
 
+import { Button } from '$button';
+import { cn } from '$cn';
+import { buttonVariants } from '$stylesButton';
 import * as React from 'react';
 import { DayPicker, getDefaultClassNames } from 'react-day-picker';
 import { MdChevronLeft, MdChevronRight, MdExpandMore } from 'react-icons/md';
-
-import { buttonVariants } from '../../styles/button.js';
-import { cn } from '../../utils/cn.js';
-import { Button } from '../button/button.js';
 
 /* eslint-disable react/prop-types -- needed for subcomponents */
 

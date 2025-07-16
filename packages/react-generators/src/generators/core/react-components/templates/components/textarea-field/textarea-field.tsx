@@ -2,6 +2,7 @@
 
 'use client';
 
+import type { FormFieldProps } from '$typesForm';
 import type { ComponentPropsWithRef } from 'react';
 import type {
   Control,
@@ -12,18 +13,15 @@ import type {
   UseFormRegisterReturn,
 } from 'react-hook-form';
 
-import { get, useFormState } from 'react-hook-form';
-
-import type { FormFieldProps } from '../../types/form.js';
-
 import {
   FormControl,
   FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../form-item/form-item.js';
-import { Textarea } from '../textarea/textarea.js';
+} from '$formItem';
+import { Textarea } from '$textarea';
+import { get, useFormState } from 'react-hook-form';
 
 export interface TextareaFieldProps
   extends Omit<ComponentPropsWithRef<'textarea'>, 'onChange' | 'value'>,

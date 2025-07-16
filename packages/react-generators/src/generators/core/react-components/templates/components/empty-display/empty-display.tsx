@@ -2,13 +2,11 @@
 
 'use client';
 
+import type { IconElement } from '$typesIcon';
 import type React from 'react';
 
+import { cn } from '$cn';
 import { MdFormatListBulleted } from 'react-icons/md';
-
-import type { IconElement } from '../../types/icon.js';
-
-import { cn } from '../../utils/cn.js';
 
 interface EmptyDisplayProps {
   /**

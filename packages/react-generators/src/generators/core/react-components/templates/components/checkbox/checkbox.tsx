@@ -4,10 +4,9 @@
 
 import type * as React from 'react';
 
+import { cn } from '$cn';
 import { Checkbox as CheckboxPrimitive } from 'radix-ui';
 import { MdCheck } from 'react-icons/md';
-
-import { cn } from '../../utils/cn.js';
 
 /**
  * A control that allows the user to toggle between checked and not checked.

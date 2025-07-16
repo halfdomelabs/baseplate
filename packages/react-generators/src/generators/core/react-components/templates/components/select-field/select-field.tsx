@@ -2,22 +2,21 @@
 
 'use client';
 
-import type { Control, FieldPath, FieldValues } from 'react-hook-form';
-
 import type {
   AddOptionRequiredFields,
   FormFieldProps,
   SelectOptionProps,
-} from '../../types/form.js';
+} from '$typesForm';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { useControllerMerged } from '../../hooks/use-controller-merged.js';
 import {
   FormControl,
   FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../form-item/form-item.js';
+} from '$formItem';
+import { useControllerMerged } from '$hooksUseControllerMerged';
 import {
   Select,
   SelectContent,
@@ -25,7 +24,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../select/select.js';
+} from '$select';
 
 export interface SelectFieldProps<OptionType>
   extends SelectOptionProps<OptionType>,

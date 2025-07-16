@@ -2,7 +2,7 @@
 
 import type React from 'react';
 
-import { cn } from '../../utils/cn.js';
+import { cn } from '$cn';
 
 interface LoaderProps {
   className?: string;

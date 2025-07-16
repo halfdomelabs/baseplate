@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { cn } from '../../utils/cn.js';
+import { cn } from '$cn';
 
 interface CircularProgressProps {
   max: number;

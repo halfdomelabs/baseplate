@@ -19,8 +19,25 @@ import type { TsImportMap } from './types.js';
 export function transformTsImportsWithMap(
   imports: TsImportDeclaration[],
   importMaps: Map<string, TsImportMap>,
+  generatorPaths: Record<string, string>,
 ): TsImportDeclaration[] {
   return imports.flatMap((importDeclaration) => {
+    if (importDeclaration.moduleSpecifier.startsWith('$')) {
+      const generatorPath =
+        generatorPaths[importDeclaration.moduleSpecifier.slice(1)];
+      if (!generatorPath) {
+        throw new Error(
+          `Generator path not found for ${importDeclaration.moduleSpecifier}`,
+        );
+      }
+      return [
+        {
+          ...importDeclaration,
+          moduleSpecifier: generatorPath,
+        },
+      ];
+    }
+
     if (!importDeclaration.moduleSpecifier.startsWith('%')) {
       return [importDeclaration];
     }

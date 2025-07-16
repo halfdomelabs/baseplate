@@ -2,7 +2,7 @@
 
 import type * as React from 'react';
 
-import { cn } from '../../utils/cn.js';
+import { cn } from '$cn';
 
 /**
  * A responsive table component.

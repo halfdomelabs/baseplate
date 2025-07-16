@@ -23,7 +23,7 @@ const button = createTsTemplateFile({
   importMapProviders: {},
   name: 'button',
   projectExports: { Button: {}, LinkButton: {} },
-  referencedGeneratorTemplates: { stylesButton: {}, cn: {} },
+  referencedGeneratorTemplates: { cn: {}, stylesButton: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -133,13 +133,13 @@ const combobox = createTsTemplateFile({
   name: 'combobox',
   projectExports: { Combobox: {} },
   referencedGeneratorTemplates: {
+    hooksUseControlledState: {},
     stylesInput: {},
     stylesSelect: {},
     cn: {},
     mergeRefs: {},
     button: {},
     scrollArea: {},
-    hooksUseControlledState: {},
   },
   source: {
     path: path.join(
@@ -205,8 +205,8 @@ const datePickerField = createTsTemplateFile({
     typesForm: {},
     cn: {},
     hooksUseControllerMerged: {},
-    button: {},
     calendar: {},
+    button: {},
     formItem: {},
     popover: {},
   },
@@ -235,8 +235,8 @@ const dateTimePickerField = createTsTemplateFile({
     button: {},
     formItem: {},
     input: {},
-    popover: {},
     calendar: {},
+    popover: {},
   },
   source: {
     path: path.join(
@@ -449,7 +449,7 @@ const notFoundCard = createTsTemplateFile({
   importMapProviders: {},
   name: 'not-found-card',
   projectExports: { NotFoundCard: {} },
-  referencedGeneratorTemplates: { button: {}, errorDisplay: {} },
+  referencedGeneratorTemplates: { errorDisplay: {}, button: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -502,7 +502,7 @@ const select = createTsTemplateFile({
   importMapProviders: {},
   name: 'select',
   projectExports: { ReactSelectInput: {}, Select: {}, SelectInput: {} },
-  referencedGeneratorTemplates: { cn: {}, stylesSelect: {}, scrollArea: {} },
+  referencedGeneratorTemplates: { stylesSelect: {}, cn: {}, scrollArea: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -520,8 +520,8 @@ const selectField = createTsTemplateFile({
   projectExports: { SelectField: {}, SelectFieldController: {} },
   referencedGeneratorTemplates: {
     typesForm: {},
-    formItem: {},
     hooksUseControllerMerged: {},
+    formItem: {},
     select: {},
   },
   source: {
@@ -576,8 +576,8 @@ const switchField = createTsTemplateFile({
   name: 'switch-field',
   projectExports: { SwitchField: {}, SwitchFieldController: {} },
   referencedGeneratorTemplates: {
-    cn: {},
     typesForm: {},
+    cn: {},
     formItem: {},
     switchComponent: {},
     hooksUseControllerMerged: {},

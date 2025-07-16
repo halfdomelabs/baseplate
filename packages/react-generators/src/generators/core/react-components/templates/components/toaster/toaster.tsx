@@ -4,9 +4,8 @@
 
 import type React from 'react';
 
+import { buttonVariants } from '$stylesButton';
 import { Toaster as Sonner } from 'sonner';
-
-import { buttonVariants } from '../../styles/button.js';
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 

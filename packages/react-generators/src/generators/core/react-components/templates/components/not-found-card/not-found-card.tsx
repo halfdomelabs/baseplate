@@ -2,10 +2,9 @@
 
 import type React from 'react';
 
+import { Button } from '$button';
+import { ErrorDisplay } from '$errorDisplay';
 import { Link } from '@tanstack/react-router';
-
-import { Button } from '../button/button.js';
-import { ErrorDisplay } from '../error-display/error-display.js';
 
 export function NotFoundCard(): React.JSX.Element {
   return (

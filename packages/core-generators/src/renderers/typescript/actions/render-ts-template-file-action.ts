@@ -90,6 +90,7 @@ export function renderTsTemplateFileAction<
   importMapProviders,
   renderOptions,
   positionedHoistedFragments,
+  generatorPaths,
   generatorInfo: providedGeneratorInfo,
 }: RenderTsTemplateFileActionInput<T>): BuilderAction {
   return {
@@ -139,6 +140,7 @@ export function renderTsTemplateFileAction<
         variables: variableValues,
         importMapProviders,
         positionedHoistedFragments,
+        generatorPaths: generatorPaths ?? {},
         options: {
           ...renderOptions,
           includeMetadata: shouldIncludeMetadata,

@@ -3,10 +3,9 @@
 import type { VariantProps } from 'class-variance-authority';
 import type * as React from 'react';
 
+import { cn } from '$cn';
+import { buttonVariants } from '$stylesButton';
 import { Slot } from 'radix-ui';
-
-import { buttonVariants } from '../../styles/button.js';
-import { cn } from '../../utils/cn.js';
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,

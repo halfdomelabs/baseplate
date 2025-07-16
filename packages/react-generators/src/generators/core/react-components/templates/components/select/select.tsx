@@ -4,20 +4,19 @@
 
 import type * as React from 'react';
 
-import {
-  ScrollArea as ScrollAreaPrimitive,
-  Select as SelectPrimitive,
-} from 'radix-ui';
-import { MdCheck, MdUnfoldMore } from 'react-icons/md';
-
+import { cn } from '$cn';
+import { ScrollBar } from '$scrollArea';
 import {
   selectCheckVariants,
   selectContentVariants,
   selectItemVariants,
   selectTriggerVariants,
-} from '../../styles/select.js';
-import { cn } from '../../utils/cn.js';
-import { ScrollBar } from '../scroll-area/scroll-area.js';
+} from '$stylesSelect';
+import {
+  ScrollArea as ScrollAreaPrimitive,
+  Select as SelectPrimitive,
+} from 'radix-ui';
+import { MdCheck, MdUnfoldMore } from 'react-icons/md';
 
 /**
  * Select component

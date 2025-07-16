@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { useSession } from './use-session.js';
+import { useSession } from '$useSession';
 
 export function useRequiredUserId(): string {
   const { userId } = useSession();

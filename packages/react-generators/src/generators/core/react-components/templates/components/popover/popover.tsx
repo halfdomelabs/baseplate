@@ -4,9 +4,8 @@
 
 import type * as React from 'react';
 
+import { cn } from '$cn';
 import { Popover as PopoverPrimitive } from 'radix-ui';
-
-import { cn } from '../../utils/cn.js';
 
 /**
  * Displays rich content in a portal, triggered by a button.

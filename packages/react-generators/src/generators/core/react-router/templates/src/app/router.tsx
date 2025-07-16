@@ -2,10 +2,9 @@
 
 import type { ErrorRouteComponent } from '@tanstack/react-router';
 
+import { routeTree } from '$routeTree';
 import { Button, ErrorDisplay, NotFoundCard } from '%reactComponentsImports';
 import { createRouter } from '@tanstack/react-router';
-
-import { routeTree } from '../route-tree.gen.js';
 
 const ErrorComponent: ErrorRouteComponent = ({
   error,

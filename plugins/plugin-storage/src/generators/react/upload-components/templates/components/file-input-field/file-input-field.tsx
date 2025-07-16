@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import type { FileInputProps, FileUploadInput } from '$fileInputComponent';
 import type { FormFieldProps } from '%reactComponentsImports';
 import type React from 'react';
 import type {
@@ -9,6 +10,7 @@ import type {
   FieldValues,
 } from 'react-hook-form';
 
+import { FileInput } from '$fileInputComponent';
 import {
   cn,
   FormControl,
@@ -18,13 +20,6 @@ import {
   FormMessage,
 } from '%reactComponentsImports';
 import { useController } from 'react-hook-form';
-
-import type {
-  FileInputProps,
-  FileUploadInput,
-} from '../file-input/file-input.js';
-
-import { FileInput } from '../file-input/file-input.js';
 
 interface FileInputFieldProps
   extends Omit<FileInputProps, 'onChange' | 'value'>,

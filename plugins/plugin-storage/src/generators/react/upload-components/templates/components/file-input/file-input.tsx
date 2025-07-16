@@ -3,6 +3,7 @@
 import type { FileCategory } from '%generatedGraphqlImports';
 import type { ReactElement } from 'react';
 
+import { useUpload } from '$hooksUseUpload';
 import { CreateUploadUrlDocument } from '%generatedGraphqlImports';
 import {
   Button,
@@ -15,8 +16,6 @@ import { useMutation } from '@apollo/client';
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
-
-import { useUpload } from '../../hooks/use-upload.js';
 
 export interface FileUploadInput {
   id: string;

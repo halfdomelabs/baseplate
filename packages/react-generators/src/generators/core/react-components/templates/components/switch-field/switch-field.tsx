@@ -2,21 +2,20 @@
 
 'use client';
 
+import type { FormFieldProps } from '$typesForm';
 import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import type { FormFieldProps } from '../../types/form.js';
-
-import { useControllerMerged } from '../../hooks/use-controller-merged.js';
-import { cn } from '../../utils/cn.js';
+import { cn } from '$cn';
 import {
   FormControl,
   FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
-} from '../form-item/form-item.js';
-import { Switch } from '../switch/switch.js';
+} from '$formItem';
+import { useControllerMerged } from '$hooksUseControllerMerged';
+import { Switch } from '$switchComponent';
 
 export interface SwitchFieldProps
   extends Omit<
