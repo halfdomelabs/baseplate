@@ -1,45 +1,14 @@
 import type { GeneratorOutput } from '@baseplate-dev/sync';
+import type ignore from 'ignore';
 
+import { shouldIncludeFile as shouldIncludeFileIgnore } from '@baseplate-dev/sync';
 import * as diff from 'diff';
-import ignore from 'ignore';
 import { isBinaryFile } from 'isbinaryfile';
 import micromatch from 'micromatch';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { DiffSummary, FileDiff } from './types.js';
-
-/**
- * Loads ignore patterns from .baseplateignore file
- */
-export async function loadIgnorePatterns(
-  directory: string,
-): Promise<ignore.Ignore> {
-  const ignoreFilePath = path.join(directory, '.baseplateignore');
-  const ig = ignore();
-
-  // Add default patterns
-  ig.add([
-    '.env',
-    '.env.*',
-    '*.log',
-    'node_modules/',
-    'dist/',
-    'build/',
-    '.DS_Store',
-    'Thumbs.db',
-    '.paths-metadata.json',
-  ]);
-
-  try {
-    const content = await readFile(ignoreFilePath, 'utf8');
-    ig.add(content);
-  } catch {
-    // File doesn't exist, use defaults only
-  }
-
-  return ig;
-}
 
 /**
  * Checks if a file path should be included based on ignore and glob patterns
@@ -49,8 +18,8 @@ export function shouldIncludeFile(
   globPatterns?: string[],
   ignoreInstance?: ignore.Ignore,
 ): boolean {
-  // Check ignore patterns first
-  if (ignoreInstance?.ignores(filePath)) {
+  // Check ignore patterns first using shared function
+  if (!shouldIncludeFileIgnore(filePath, ignoreInstance)) {
     return false;
   }
 

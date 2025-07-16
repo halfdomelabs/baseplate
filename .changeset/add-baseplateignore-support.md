@@ -3,9 +3,11 @@
 '@baseplate-dev/project-builder-cli': patch
 ---
 
-Add .baseplateignore support to diff command
+Add .baseplateignore support and sync command with force-overwrite
 
 Enhance the `baseplate diff` command to support ignore patterns via a `.baseplateignore` file, similar to `.gitignore`. This reduces noise in diff output by filtering out expected differences like environment files, logs, and build artifacts.
+
+Additionally, introduces a new `baseplate sync` command (replacing `build`) with a `--force-overwrite` flag that respects ignore patterns when overwriting files.
 
 Features:
 

@@ -13,6 +13,7 @@ import {
   buildGeneratorEntry,
   executeGeneratorEntry,
   formatGeneratorOutput,
+  loadIgnorePatterns,
 } from '@baseplate-dev/sync';
 import { enhanceErrorWithContext, hashWithSHA256 } from '@baseplate-dev/utils';
 import { fileExists } from '@baseplate-dev/utils/node';
@@ -24,7 +25,7 @@ import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js
 import { compileApplications } from '#src/compiler/index.js';
 
 import { createTemplateMetadataOptions } from '../sync/template-metadata-utils.js';
-import { compareFiles, loadIgnorePatterns } from './diff-utils.js';
+import { compareFiles } from './diff-utils.js';
 import { formatCompactDiff, formatUnifiedDiff } from './formatters.js';
 
 /**

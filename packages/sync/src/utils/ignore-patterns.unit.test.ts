@@ -1,15 +1,11 @@
 import { vol } from 'memfs';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { loadIgnorePatterns, shouldIncludeFile } from './ignore-patterns.js';
 
 vi.mock('node:fs/promises');
 
 describe('ignore-patterns', () => {
-  beforeEach(() => {
-    vol.reset();
-  });
-
   afterEach(() => {
     vol.reset();
   });
