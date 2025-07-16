@@ -4,10 +4,9 @@ import type { ServiceContext } from '%serviceContextImports';
 import type { File } from '@prisma/client';
 import type { Readable } from 'node:stream';
 
+import { STORAGE_ADAPTERS } from '$configAdapters';
+import { getCategoryByNameOrThrow } from '$configCategories';
 import { ForbiddenError } from '%errorHandlerServiceImports';
-
-import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
-import { getCategoryByNameOrThrow } from '../config/categories.config.js';
 
 /**
  * Downloads a file from storage

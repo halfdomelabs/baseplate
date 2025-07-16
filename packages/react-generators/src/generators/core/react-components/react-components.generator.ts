@@ -1,23 +1,20 @@
 import {
   createNodePackagesTask,
   extractPackageVersions,
-  packageScope,
   tsCodeFragment,
-  tsImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
   createGeneratorTask,
   createProviderType,
 } from '@baseplate-dev/sync';
-import { kebabCase } from 'es-toolkit';
 import { z } from 'zod';
 
 import { REACT_PACKAGES } from '#src/constants/react-packages.js';
 
 import { reactAppConfigProvider } from '../react-app/index.js';
 import { CORE_REACT_COMPONENTS_GENERATED } from './generated/index.js';
+import { reactComponentsImportsProvider } from './generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({});
 
@@ -26,12 +23,6 @@ export interface ReactComponentEntry {
 }
 
 export interface ReactComponentsProvider {
-  /**
-   * Registers component entry so it gets exported by root index component
-   *
-   * @param entry Component entry to register
-   */
-  registerComponent(entry: ReactComponentEntry): void;
   /**
    * Get the canonical path to the components folder, e.g. `@/src/components`
    */
@@ -64,32 +55,20 @@ export const reactComponentsGenerator = createGenerator({
     }),
     paths: CORE_REACT_COMPONENTS_GENERATED.paths.task,
     imports: CORE_REACT_COMPONENTS_GENERATED.imports.task,
+    renderers: CORE_REACT_COMPONENTS_GENERATED.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
+        renderers: CORE_REACT_COMPONENTS_GENERATED.renderers.provider,
         reactAppConfig: reactAppConfigProvider,
-        paths: CORE_REACT_COMPONENTS_GENERATED.paths.provider,
+        reactComponentsImports: reactComponentsImportsProvider,
       },
-      exports: {
-        reactComponents: reactComponentsProvider.export(packageScope),
-      },
-      run({ typescriptFile, reactAppConfig, paths }) {
-        const coreReactComponents = Object.keys(
-          CORE_REACT_COMPONENTS_GENERATED.templates.componentsGroup,
-        ).map(
-          (name): ReactComponentEntry => ({
-            name: kebabCase(name).replace('-component', ''),
-          }),
-        );
-
-        const allReactComponents = [...coreReactComponents];
-
+      run({ renderers, reactAppConfig, reactComponentsImports }) {
         // add toaster root sibling component
         reactAppConfig.renderSiblings.set(
           'toaster',
           tsCodeFragment(
             '<Toaster />',
-            tsImportBuilder(['Toaster']).from(paths.index),
+            reactComponentsImports.Toaster.declaration(),
           ),
         );
 
@@ -98,67 +77,22 @@ export const reactComponentsGenerator = createGenerator({
           'react-components',
           tsCodeFragment(
             '<ConfirmDialog />',
-            tsImportBuilder(['ConfirmDialog']).from(paths.index),
+            reactComponentsImports.ConfirmDialog.declaration(),
           ),
         );
 
         return {
           providers: {
             reactComponents: {
-              registerComponent: (entry) => allReactComponents.push(entry),
               getComponentsFolder: () => `@/src/components`,
             },
           },
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group:
-                  CORE_REACT_COMPONENTS_GENERATED.templates.componentsGroup,
-                paths,
-              }),
-            );
-
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: CORE_REACT_COMPONENTS_GENERATED.templates.hooksGroup,
-                paths,
-              }),
-            );
-
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: CORE_REACT_COMPONENTS_GENERATED.templates.stylesGroup,
-                paths,
-              }),
-            );
-
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: CORE_REACT_COMPONENTS_GENERATED.templates.utilsGroup,
-                paths,
-              }),
-            );
-
-            // build component index
-            const getComponentPath = (a: ReactComponentEntry): string =>
-              `./${a.name}/${a.name}.js`;
-
-            const sortedComponentPaths = allReactComponents
-              .map(getComponentPath)
-              .toSorted();
-
-            // build component index
-            const componentIndex = sortedComponentPaths
-              .map((path) => `export * from '${path}';`)
-              .join('\n');
-            await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: CORE_REACT_COMPONENTS_GENERATED.templates.index,
-                destination: paths.index,
-                variables: {
-                  TPL_EXPORTS: componentIndex,
-                },
-              }),
+              renderers.componentsGroup.render({}),
+              renderers.hooksGroup.render({}),
+              renderers.stylesGroup.render({}),
+              renderers.utilsGroup.render({}),
             );
           },
         };

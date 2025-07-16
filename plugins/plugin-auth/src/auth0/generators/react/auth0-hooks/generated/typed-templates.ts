@@ -16,6 +16,7 @@ const useCurrentUser = createTsTemplateFile({
   },
   name: 'use-current-user',
   projectExports: { useCurrentUser: {} },
+  referencedGeneratorTemplates: { useSession: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -46,6 +47,7 @@ const useRequiredUserId = createTsTemplateFile({
   importMapProviders: {},
   name: 'use-required-user-id',
   projectExports: { useRequiredUserId: {} },
+  referencedGeneratorTemplates: { useSession: {} },
   source: {
     path: path.join(
       import.meta.dirname,

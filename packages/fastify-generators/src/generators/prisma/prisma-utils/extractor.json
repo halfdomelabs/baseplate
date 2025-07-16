@@ -67,6 +67,7 @@
         "createOneToManyCreateData": {},
         "createOneToManyUpsertData": {}
       },
+      "referencedGeneratorTemplates": ["data-pipes", "embedded-types"],
       "sourceFile": "src/utils/embedded-pipes/embedded-one-to-many.ts",
       "variables": {}
     },
@@ -86,6 +87,7 @@
         "createOneToOneCreateData": {},
         "createOneToOneUpsertData": {}
       },
+      "referencedGeneratorTemplates": ["data-pipes", "embedded-types"],
       "sourceFile": "src/utils/embedded-pipes/embedded-one-to-one.ts",
       "variables": {}
     },

@@ -1,5 +1,10 @@
 // @ts-nocheck
 
+import type { PothosAuthorizeByRolesPlugin } from '$fieldAuthorizePlugin';
+import type {
+  AuthorizeRolePluginOptions,
+  AuthorizeRoleRuleOption,
+} from '$fieldAuthorizeTypes';
 import type {
   FieldNullability,
   InputFieldMap,
@@ -7,12 +12,6 @@ import type {
   SchemaTypes,
   TypeParam,
 } from '@pothos/core';
-
-import type { PothosAuthorizeByRolesPlugin } from './index.js';
-import type {
-  AuthorizeRolePluginOptions,
-  AuthorizeRoleRuleOption,
-} from './types.js';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 

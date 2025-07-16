@@ -183,6 +183,10 @@ export default tsEslint.config(
 
       // Can be too strict if you prefer to have shorter cases for negated conditions
       'unicorn/no-negated-condition': 'off',
+
+      // Allow usage of utf-8 text encoding since it's consistent with the WHATWG spec
+      // and autofixing can cause unexpected changes (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1926)
+      'unicorn/text-encoding-identifier-case': 'off',
     },
   },
 

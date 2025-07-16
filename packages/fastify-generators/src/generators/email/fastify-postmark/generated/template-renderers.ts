@@ -16,7 +16,7 @@ export interface EmailFastifyPostmarkRenderers {
         RenderTsTemplateFileActionInput<
           typeof EMAIL_FASTIFY_POSTMARK_TEMPLATES.postmark
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

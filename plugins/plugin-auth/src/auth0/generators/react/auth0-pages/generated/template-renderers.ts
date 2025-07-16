@@ -15,7 +15,7 @@ export interface Auth0Auth0PagesRenderers {
         RenderTsTemplateGroupActionInput<
           typeof AUTH0_AUTH0_PAGES_TEMPLATES.pagesGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

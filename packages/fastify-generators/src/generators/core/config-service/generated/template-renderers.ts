@@ -14,7 +14,7 @@ export interface CoreConfigServiceRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_CONFIG_SERVICE_TEMPLATES.config
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

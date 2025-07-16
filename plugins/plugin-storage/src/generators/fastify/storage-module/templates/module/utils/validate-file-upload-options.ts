@@ -1,22 +1,20 @@
 // @ts-nocheck
 
+import type { StorageAdapter } from '$typesAdapter';
+import type { FileCategory } from '$typesFileCategory';
 import type { ServiceContext } from '%serviceContextImports';
 
-import { BadRequestError, ForbiddenError } from '%errorHandlerServiceImports';
-import { nanoid } from 'nanoid';
-import { z } from 'zod';
-
-import type { StorageAdapter } from '../types/adapter.js';
-import type { FileCategory } from '../types/file-category.js';
-
-import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
-import { getCategoryByNameOrThrow } from '../config/categories.config.js';
+import { STORAGE_ADAPTERS } from '$configAdapters';
+import { getCategoryByNameOrThrow } from '$configCategories';
 import {
   getEncodingFromContentType,
   getMimeTypeFromContentType,
   InvalidMimeTypeError,
   validateFileExtensionWithMimeType,
-} from './mime.js';
+} from '$utilsMime';
+import { BadRequestError, ForbiddenError } from '%errorHandlerServiceImports';
+import { nanoid } from 'nanoid';
+import { z } from 'zod';
 
 // Constants
 const MAX_FILENAME_LENGTH = 128;

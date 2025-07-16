@@ -14,7 +14,7 @@ export interface CoreReactConfigRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_CONFIG_TEMPLATES.config
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

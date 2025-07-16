@@ -40,6 +40,7 @@ export const prismaUtilsGenerator = createGenerator({
               group: PRISMA_PRISMA_UTILS_GENERATED.templates.utilsGroup,
               generatorInfo: builder.generatorInfo,
               paths,
+              generatorPaths: paths,
               importMapProviders: {
                 serviceContextImports,
                 tsUtilsImports,

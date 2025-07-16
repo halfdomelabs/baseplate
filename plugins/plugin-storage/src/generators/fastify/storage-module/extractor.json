@@ -8,6 +8,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/adapters/s3.ts",
       "projectExports": { "createS3Adapter": {} },
+      "referencedGeneratorTemplates": ["types-adapter"],
       "sourceFile": "module/adapters/s3.ts",
       "variables": {}
     },
@@ -18,6 +19,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/adapters/url.ts",
       "projectExports": { "createUrlAdapter": {} },
+      "referencedGeneratorTemplates": ["types-adapter"],
       "sourceFile": "module/adapters/url.ts",
       "variables": {}
     },
@@ -44,6 +46,7 @@
         "getCategoryByName": {},
         "getCategoryByNameOrThrow": {}
       },
+      "referencedGeneratorTemplates": ["types-file-category"],
       "sourceFile": "module/config/categories.config.ts",
       "variables": { "TPL_FILE_CATEGORIES": {} }
     },
@@ -59,6 +62,7 @@
       },
       "pathRootRelativePath": "{module-root}/schema/file-category.enum.ts",
       "projectExports": {},
+      "referencedGeneratorTemplates": ["config-categories"],
       "sourceFile": "module/schema/file-category.enum.ts",
       "variables": {}
     },
@@ -89,6 +93,11 @@
       },
       "pathRootRelativePath": "{module-root}/schema/presigned.mutations.ts",
       "projectExports": {},
+      "referencedGeneratorTemplates": [
+        "services-create-presigned-download-url",
+        "services-create-presigned-upload-url",
+        "schema-file-category"
+      ],
       "sourceFile": "module/schema/presigned.mutations.ts",
       "variables": { "TPL_FILE_OBJECT_TYPE": {} }
     },
@@ -104,6 +113,7 @@
       },
       "pathRootRelativePath": "{module-root}/schema/public-url.field.ts",
       "projectExports": {},
+      "referencedGeneratorTemplates": ["config-adapters"],
       "sourceFile": "module/schema/public-url.field.ts",
       "variables": { "TPL_FILE_OBJECT_TYPE": {} }
     },
@@ -123,6 +133,7 @@
       },
       "pathRootRelativePath": "{module-root}/services/create-presigned-download-url.ts",
       "projectExports": { "createPresignedDownloadUrl": {} },
+      "referencedGeneratorTemplates": ["config-adapters", "config-categories"],
       "sourceFile": "module/services/create-presigned-download-url.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
@@ -142,6 +153,7 @@
       },
       "pathRootRelativePath": "{module-root}/services/create-presigned-upload-url.ts",
       "projectExports": { "createPresignedUploadUrl": {} },
+      "referencedGeneratorTemplates": ["utils-validate-file-upload-options"],
       "sourceFile": "module/services/create-presigned-upload-url.ts",
       "variables": { "TPL_FILE_MODEL": {}, "TPL_FILE_MODEL_TYPE": {} }
     },
@@ -161,6 +173,7 @@
       },
       "pathRootRelativePath": "{module-root}/services/download-file.ts",
       "projectExports": { "downloadFile": {} },
+      "referencedGeneratorTemplates": ["config-categories", "config-adapters"],
       "sourceFile": "module/services/download-file.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
@@ -176,6 +189,7 @@
       },
       "pathRootRelativePath": "{module-root}/services/upload-file.ts",
       "projectExports": {},
+      "referencedGeneratorTemplates": ["utils-validate-file-upload-options"],
       "sourceFile": "module/services/upload-file.ts",
       "variables": { "TPL_FILE_MODEL": {}, "TPL_FILE_MODEL_TYPE": {} }
     },
@@ -202,6 +216,10 @@
         "FileUploadInput": { "isTypeOnly": true },
         "validateFileInput": {}
       },
+      "referencedGeneratorTemplates": [
+        "types-file-category",
+        "config-adapters"
+      ],
       "sourceFile": "module/services/validate-file-input.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
@@ -232,6 +250,7 @@
       },
       "pathRootRelativePath": "{module-root}/types/file-category.ts",
       "projectExports": { "FileCategory": { "isTypeOnly": true } },
+      "referencedGeneratorTemplates": ["config-adapters"],
       "sourceFile": "module/types/file-category.ts",
       "variables": { "TPL_FILE_COUNT_OUTPUT_TYPE": {} }
     },
@@ -246,6 +265,7 @@
         "FileSize": {},
         "MimeTypes": {}
       },
+      "referencedGeneratorTemplates": ["types-file-category"],
       "sourceFile": "module/utils/create-file-category.ts",
       "variables": {}
     },
@@ -283,6 +303,13 @@
         "FileUploadOptions": { "isTypeOnly": true },
         "validateFileUploadOptions": {}
       },
+      "referencedGeneratorTemplates": [
+        "types-adapter",
+        "types-file-category",
+        "config-adapters",
+        "config-categories",
+        "utils-mime"
+      ],
       "sourceFile": "module/utils/validate-file-upload-options.ts",
       "variables": { "TPL_FILE_CREATE_INPUT": {} }
     }

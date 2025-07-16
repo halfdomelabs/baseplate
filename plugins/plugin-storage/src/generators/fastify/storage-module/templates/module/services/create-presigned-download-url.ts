@@ -2,10 +2,9 @@
 
 import type { ServiceContext } from '%serviceContextImports';
 
+import { STORAGE_ADAPTERS } from '$configAdapters';
+import { getCategoryByNameOrThrow } from '$configCategories';
 import { ForbiddenError } from '%errorHandlerServiceImports';
-
-import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
-import { getCategoryByNameOrThrow } from '../config/categories.config.js';
 
 interface CreatePresignedDownloadUrlInput {
   fileId: string;

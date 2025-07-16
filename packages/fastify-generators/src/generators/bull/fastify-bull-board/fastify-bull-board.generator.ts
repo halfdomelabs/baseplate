@@ -8,7 +8,6 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
@@ -20,13 +19,8 @@ import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import { appModuleProvider } from '#src/generators/core/app-module/index.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
-import { fastifyRedisImportsProvider } from '#src/generators/core/fastify-redis/index.js';
 import { fastifyServerConfigProvider } from '#src/generators/core/fastify-server/index.js';
-import {
-  pothosImportsProvider,
-  pothosSchemaProvider,
-} from '#src/generators/pothos/pothos/index.js';
+import { pothosSchemaProvider } from '#src/generators/pothos/pothos/index.js';
 
 import { BULL_FASTIFY_BULL_BOARD_GENERATED } from './generated/index.js';
 
@@ -54,6 +48,7 @@ export const fastifyBullBoardGenerator = createGenerator({
   descriptorSchema,
   buildTasks: () => ({
     paths: BULL_FASTIFY_BULL_BOARD_GENERATED.paths.task,
+    renderers: BULL_FASTIFY_BULL_BOARD_GENERATED.renderers.task,
     setup: setupTask,
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(FASTIFY_PACKAGES, [
@@ -68,24 +63,16 @@ export const fastifyBullBoardGenerator = createGenerator({
     }),
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        paths: BULL_FASTIFY_BULL_BOARD_GENERATED.paths.provider,
-        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-        fastifyRedisImports: fastifyRedisImportsProvider,
         pothosSchema: pothosSchemaProvider,
-        pothosImports: pothosImportsProvider,
         appModule: appModuleProvider,
         fastifyBullBoardConfigValues: fastifyBullBoardConfigValuesProvider,
+        renderers: BULL_FASTIFY_BULL_BOARD_GENERATED.renderers.provider,
       },
       run({
-        typescriptFile,
-        paths,
-        errorHandlerServiceImports,
-        fastifyRedisImports,
         pothosSchema,
-        pothosImports,
         appModule,
         fastifyBullBoardConfigValues: { queuesToTrack },
+        renderers,
       }) {
         const moduleFolder = path.posix.join(
           appModule.getModuleFolder(),
@@ -99,14 +86,7 @@ export const fastifyBullBoardGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: BULL_FASTIFY_BULL_BOARD_GENERATED.templates.moduleGroup,
-                paths,
-                importMapProviders: {
-                  fastifyRedisImports,
-                  errorHandlerServiceImports,
-                  pothosImports,
-                },
+              renderers.moduleGroup.render({
                 variables: {
                   pluginsBullBoard: {
                     TPL_QUEUES:

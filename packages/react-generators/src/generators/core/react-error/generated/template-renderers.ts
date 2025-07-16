@@ -16,7 +16,7 @@ export interface CoreReactErrorRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_ERROR_TEMPLATES.errorFormatter
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -26,7 +26,7 @@ export interface CoreReactErrorRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_ERROR_TEMPLATES.errorLogger
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -52,6 +52,7 @@ const coreReactErrorRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: CORE_REACT_ERROR_TEMPLATES.errorFormatter,
                 destination: paths.errorFormatter,
+                generatorPaths: paths,
                 ...options,
               }),
           },

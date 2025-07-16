@@ -1,10 +1,9 @@
 // @ts-nocheck
 
+import type { StorageAdapterKey } from '$configAdapters';
+
+import { STORAGE_ADAPTERS } from '$configAdapters';
 import { builder } from '%pothosImports';
-
-import type { StorageAdapterKey } from '../config/adapters.config.js';
-
-import { STORAGE_ADAPTERS } from '../config/adapters.config.js';
 
 builder.objectField(TPL_FILE_OBJECT_TYPE, 'publicUrl', (t) =>
   t.string({

@@ -28,7 +28,7 @@ export interface AuthCoreAuthRoutesRenderers {
         RenderTsTemplateGroupActionInput<
           typeof AUTH_CORE_AUTH_ROUTES_TEMPLATES.mainGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

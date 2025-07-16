@@ -2,12 +2,11 @@
 
 import type { Stripe } from 'stripe';
 
+import { stripe } from '$service';
+import { stripeEventService } from '$serviceEvents';
 import { config } from '%configServiceImports';
 import { BadRequestError, logError } from '%errorHandlerServiceImports';
 import fp from 'fastify-plugin';
-
-import { stripeEventService } from '../services/stripe-events.js';
-import { stripe } from '../services/stripe.js';
 
 async function getStripeEvent(
   rawBody: string | Buffer = '',

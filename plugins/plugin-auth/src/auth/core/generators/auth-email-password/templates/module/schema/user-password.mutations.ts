@@ -1,12 +1,11 @@
 // @ts-nocheck
 
-import { userSessionPayload } from '%authModuleImports';
-import { builder } from '%pothosImports';
-
 import {
   authenticateUserWithEmailAndPassword,
   createUserWithEmailAndPassword,
-} from '../services/user-password.service.js';
+} from '$servicesUserPassword';
+import { userSessionPayload } from '%authModuleImports';
+import { builder } from '%pothosImports';
 
 builder.mutationField('registerWithEmailPassword', (t) =>
   t.fieldWithInputPayload({

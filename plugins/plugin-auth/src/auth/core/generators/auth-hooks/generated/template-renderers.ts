@@ -36,7 +36,7 @@ export interface AuthCoreAuthHooksRenderers {
         RenderTsTemplateGroupActionInput<
           typeof AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -84,6 +84,7 @@ const authCoreAuthHooksRenderersTask = createGeneratorTask({
                   reactErrorImports,
                   reactSessionImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

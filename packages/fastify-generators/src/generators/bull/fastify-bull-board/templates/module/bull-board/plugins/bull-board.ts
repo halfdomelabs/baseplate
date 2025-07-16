@@ -4,6 +4,11 @@ import type { Queue } from 'bullmq';
 import type { FastifyPluginAsync } from 'fastify';
 
 import {
+  authenticateBullBoardUser,
+  BULL_BOARD_ACCESS_TOKEN_EXPIRY,
+  validateBullBoardAccessToken,
+} from '$servicesAuthService';
+import {
   HttpError,
   logError,
   UnauthorizedError,
@@ -11,12 +16,6 @@ import {
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { FastifyAdapter } from '@bull-board/fastify';
-
-import {
-  authenticateBullBoardUser,
-  BULL_BOARD_ACCESS_TOKEN_EXPIRY,
-  validateBullBoardAccessToken,
-} from '../services/auth.service.js';
 
 function getQueuesToTrack(): Queue[] {
   return TPL_QUEUES;

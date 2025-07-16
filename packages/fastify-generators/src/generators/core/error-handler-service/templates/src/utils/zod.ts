@@ -1,8 +1,7 @@
 // @ts-nocheck
 
+import { BadRequestError } from '$httpErrors';
 import { ZodError } from 'zod';
-
-import { BadRequestError } from './http-errors.js';
 
 /**
  * Handles errors that occur during Zod request validation.

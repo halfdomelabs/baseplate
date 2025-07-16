@@ -187,6 +187,10 @@ export default tsEslint.config(
 
       // Can be too strict if you prefer to have shorter cases for negated conditions
       'unicorn/no-negated-condition': 'off',
+
+      // Allow usage of utf-8 text encoding since it's consistent with the WHATWG spec
+      // and autofixing can cause unexpected changes (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1926)
+      'unicorn/text-encoding-identifier-case': 'off',
     },
   },
 
@@ -275,6 +279,19 @@ export default tsEslint.config(
     rules: {
       // We use replace since it is not supported by ES2020
       'unicorn/prefer-string-replace-all': 'off',
+      // Support kebab case with - prefix to support ignored files in routes and $ prefix for Tanstack camelCase files
+      'unicorn/filename-case': [
+        'error',
+        {
+          cases: {
+            kebabCase: true,
+          },
+          ignore: [
+            String.raw`^-[a-z0-9\-\.]+$`,
+            String.raw`^\$[a-zA-Z0-9\.]+$`,
+          ],
+        },
+      ],
     },
   },
 

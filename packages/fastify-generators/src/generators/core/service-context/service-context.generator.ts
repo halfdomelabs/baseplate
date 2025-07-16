@@ -1,10 +1,6 @@
 import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
-import {
-  packageScope,
-  TsCodeUtils,
-  typescriptFileProvider,
-} from '@baseplate-dev/core-generators';
+import { packageScope, TsCodeUtils } from '@baseplate-dev/core-generators';
 import {
   createConfigProviderTask,
   createGenerator,
@@ -71,18 +67,14 @@ export const serviceContextGenerator = createGenerator({
   buildTasks: () => ({
     paths: CORE_SERVICE_CONTEXT_GENERATED.paths.task,
     imports: CORE_SERVICE_CONTEXT_GENERATED.imports.task,
+    renderers: CORE_SERVICE_CONTEXT_GENERATED.renderers.task,
     setup: setupTask,
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
         serviceContextConfigValues: serviceContextConfigValuesProvider,
-        paths: CORE_SERVICE_CONTEXT_GENERATED.paths.provider,
+        renderers: CORE_SERVICE_CONTEXT_GENERATED.renderers.provider,
       },
-      run({
-        typescriptFile,
-        serviceContextConfigValues: { contextFields },
-        paths,
-      }) {
+      run({ serviceContextConfigValues: { contextFields }, renderers }) {
         return {
           build: async (builder) => {
             const orderedContextArgs = sortBy(
@@ -124,10 +116,7 @@ export const serviceContextGenerator = createGenerator({
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  CORE_SERVICE_CONTEXT_GENERATED.templates.serviceContext,
-                destination: paths.serviceContext,
+              renderers.serviceContext.render({
                 variables: {
                   TPL_CONTEXT_INTERFACE: contextInterface,
                   TPL_CONTEXT_OBJECT: contextObject,
@@ -151,9 +140,7 @@ export const serviceContextGenerator = createGenerator({
                   );
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template: CORE_SERVICE_CONTEXT_GENERATED.templates.testHelper,
-                destination: paths.testHelper,
+              renderers.testHelper.render({
                 variables: {
                   TPL_CREATE_TEST_ARGS:
                     orderedContextArgs.length === 0

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { bullBoardPlugin } from './plugins/bull-board.js';
+import { bullBoardPlugin } from '$pluginsBullBoard';
 
 import './schema/authenticate.mutations.js';
 

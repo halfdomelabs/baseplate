@@ -16,6 +16,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/index.ts",
+      "referencedGeneratorTemplates": ["server"],
       "sourceFile": "src/index.ts",
       "variables": { "TPL_LOG_ERROR": {} }
     },

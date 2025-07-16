@@ -14,7 +14,7 @@ export interface CoreLoggerServiceRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_LOGGER_SERVICE_TEMPLATES.logger
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

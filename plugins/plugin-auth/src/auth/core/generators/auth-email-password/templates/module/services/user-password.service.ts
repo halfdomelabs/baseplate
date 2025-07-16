@@ -3,6 +3,7 @@
 import type { RequestServiceContext } from '%requestServiceContextImports';
 import type { UserSessionPayload } from '%userSessionTypesImports';
 
+import { PASSWORD_MIN_LENGTH } from '$constantsPassword';
 import {
   BadRequestError,
   handleZodRequestValidationError,
@@ -14,8 +15,6 @@ import {
 import { prisma } from '%prismaImports';
 import { userSessionService } from '%userSessionServiceImports';
 import z from 'zod';
-
-import { PASSWORD_MIN_LENGTH } from '../constants/password.constants.js';
 
 const PROVIDER_ID = 'email-password';
 

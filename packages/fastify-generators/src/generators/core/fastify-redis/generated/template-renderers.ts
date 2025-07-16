@@ -16,7 +16,7 @@ export interface CoreFastifyRedisRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_FASTIFY_REDIS_TEMPLATES.mockRedis
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -26,7 +26,7 @@ export interface CoreFastifyRedisRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_FASTIFY_REDIS_TEMPLATES.redis
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

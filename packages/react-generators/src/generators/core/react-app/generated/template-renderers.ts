@@ -12,7 +12,7 @@ export interface CoreReactAppRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof CORE_REACT_APP_TEMPLATES.app>,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

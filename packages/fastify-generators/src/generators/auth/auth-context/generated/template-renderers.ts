@@ -17,7 +17,7 @@ export interface AuthAuthContextRenderers {
         RenderTsTemplateGroupActionInput<
           typeof AUTH_AUTH_CONTEXT_TEMPLATES.mainGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -48,6 +48,7 @@ const authAuthContextRenderersTask = createGeneratorTask({
                   authRolesImports,
                   errorHandlerServiceImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

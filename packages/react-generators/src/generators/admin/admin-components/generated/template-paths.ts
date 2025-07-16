@@ -1,5 +1,6 @@
-import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
+
+import { reactPathsProvider } from '#src/providers/react-paths.js';
 
 export interface AdminAdminComponentsPaths {
   embeddedListField: string;
@@ -13,18 +14,18 @@ const adminAdminComponentsPaths = createProviderType<AdminAdminComponentsPaths>(
 );
 
 const adminAdminComponentsPathsTask = createGeneratorTask({
-  dependencies: { packageInfo: packageInfoProvider },
+  dependencies: { reactPaths: reactPathsProvider },
   exports: { adminAdminComponentsPaths: adminAdminComponentsPaths.export() },
-  run({ packageInfo }) {
-    const srcRoot = packageInfo.getPackageSrcPath();
+  run({ reactPaths }) {
+    const componentsRoot = reactPaths.getComponentsFolder();
 
     return {
       providers: {
         adminAdminComponentsPaths: {
-          embeddedListField: `${srcRoot}/components/embedded-list-field/embedded-list-field.tsx`,
-          embeddedListInput: `${srcRoot}/components/embedded-list-input/embedded-list-input.tsx`,
-          embeddedObjectField: `${srcRoot}/components/embedded-object-field/embedded-object-field.tsx`,
-          embeddedObjectInput: `${srcRoot}/components/embedded-object-input/embedded-object-input.tsx`,
+          embeddedListField: `${componentsRoot}/admin/embedded-list-field.tsx`,
+          embeddedListInput: `${componentsRoot}/admin/embedded-list-input.tsx`,
+          embeddedObjectField: `${componentsRoot}/admin/embedded-object-field.tsx`,
+          embeddedObjectInput: `${componentsRoot}/admin/embedded-object-input.tsx`,
         },
       },
     };

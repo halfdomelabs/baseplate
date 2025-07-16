@@ -12,7 +12,7 @@ export interface CoreAxiosRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof CORE_AXIOS_TEMPLATES.axios>,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

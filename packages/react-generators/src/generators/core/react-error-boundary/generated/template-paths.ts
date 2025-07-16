@@ -1,5 +1,6 @@
-import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
+
+import { reactPathsProvider } from '#src/providers/react-paths.js';
 
 export interface CoreReactErrorBoundaryPaths {
   component: string;
@@ -11,17 +12,17 @@ const coreReactErrorBoundaryPaths =
   );
 
 const coreReactErrorBoundaryPathsTask = createGeneratorTask({
-  dependencies: { packageInfo: packageInfoProvider },
+  dependencies: { reactPaths: reactPathsProvider },
   exports: {
     coreReactErrorBoundaryPaths: coreReactErrorBoundaryPaths.export(),
   },
-  run({ packageInfo }) {
-    const srcRoot = packageInfo.getPackageSrcPath();
+  run({ reactPaths }) {
+    const componentsRoot = reactPaths.getComponentsFolder();
 
     return {
       providers: {
         coreReactErrorBoundaryPaths: {
-          component: `${srcRoot}/components/error-boundary/error-boundary.tsx`,
+          component: `${componentsRoot}/ui/error-boundary.tsx`,
         },
       },
     };

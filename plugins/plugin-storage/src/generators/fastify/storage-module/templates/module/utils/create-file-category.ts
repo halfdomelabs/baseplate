@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { FileCategory } from '../types/file-category.js';
+import type { FileCategory } from '$typesFileCategory';
 
 // Helper for common file size constraints
 export const FileSize = {

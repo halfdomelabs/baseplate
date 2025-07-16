@@ -16,7 +16,7 @@ export interface CoreReactRouterRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_ROUTER_TEMPLATES.placeholderIndex
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -26,7 +26,7 @@ export interface CoreReactRouterRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_ROUTER_TEMPLATES.rootRoute
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -36,7 +36,7 @@ export interface CoreReactRouterRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_ROUTER_TEMPLATES.router
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -46,7 +46,7 @@ export interface CoreReactRouterRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_ROUTER_TEMPLATES.routeTree
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -91,6 +91,7 @@ const coreReactRouterRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   reactComponentsImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

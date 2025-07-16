@@ -8,6 +8,10 @@ const fieldAuthorizeGlobalTypes = createTsTemplateFile({
   group: 'field-authorize-plugin',
   importMapProviders: {},
   name: 'field-authorize-global-types',
+  referencedGeneratorTemplates: {
+    fieldAuthorizePlugin: {},
+    fieldAuthorizeTypes: {},
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -24,6 +28,7 @@ const fieldAuthorizePlugin = createTsTemplateFile({
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
   },
   name: 'field-authorize-plugin',
+  referencedGeneratorTemplates: { fieldAuthorizeTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,

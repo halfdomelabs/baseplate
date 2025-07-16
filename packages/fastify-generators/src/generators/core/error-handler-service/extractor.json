@@ -12,6 +12,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/plugins/error-handler.ts",
+      "referencedGeneratorTemplates": ["error-logger", "http-errors"],
       "sourceFile": "src/plugins/error-handler.ts",
       "variables": {}
     },
@@ -56,6 +57,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/utils/zod.ts",
       "projectExports": { "handleZodRequestValidationError": {} },
+      "referencedGeneratorTemplates": ["http-errors"],
       "sourceFile": "src/utils/zod.ts",
       "variables": {}
     }

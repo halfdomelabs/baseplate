@@ -25,7 +25,7 @@ export interface AuthCoreAuthEmailPasswordRenderers {
         RenderTsTemplateGroupActionInput<
           typeof AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.moduleGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -83,6 +83,7 @@ const authCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
                   userSessionServiceImports,
                   userSessionTypesImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

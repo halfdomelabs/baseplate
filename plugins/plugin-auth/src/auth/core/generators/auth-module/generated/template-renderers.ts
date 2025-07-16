@@ -26,7 +26,7 @@ export interface AuthCoreAuthModuleRenderers {
         RenderTsTemplateGroupActionInput<
           typeof AUTH_CORE_AUTH_MODULE_TEMPLATES.constantsGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -36,7 +36,7 @@ export interface AuthCoreAuthModuleRenderers {
         RenderTsTemplateGroupActionInput<
           typeof AUTH_CORE_AUTH_MODULE_TEMPLATES.moduleGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -46,7 +46,7 @@ export interface AuthCoreAuthModuleRenderers {
         RenderTsTemplateFileActionInput<
           typeof AUTH_CORE_AUTH_MODULE_TEMPLATES.userSessionService
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -56,7 +56,7 @@ export interface AuthCoreAuthModuleRenderers {
         RenderTsTemplateGroupActionInput<
           typeof AUTH_CORE_AUTH_MODULE_TEMPLATES.utilsGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -112,6 +112,7 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   pothosImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },
@@ -128,6 +129,7 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
                   requestServiceContextImports,
                   userSessionTypesImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

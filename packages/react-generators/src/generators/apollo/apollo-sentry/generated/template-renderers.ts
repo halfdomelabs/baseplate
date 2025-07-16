@@ -17,7 +17,7 @@ export interface ApolloApolloSentryRenderers {
         RenderTsTemplateFileActionInput<
           typeof APOLLO_APOLLO_SENTRY_TEMPLATES.apolloSentryLink
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

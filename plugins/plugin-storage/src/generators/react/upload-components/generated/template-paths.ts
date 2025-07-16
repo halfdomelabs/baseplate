@@ -1,4 +1,5 @@
 import { packageInfoProvider } from '@baseplate-dev/core-generators';
+import { reactPathsProvider } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface ReactUploadComponentsPaths {
@@ -14,17 +15,21 @@ const reactUploadComponentsPaths =
   );
 
 const reactUploadComponentsPathsTask = createGeneratorTask({
-  dependencies: { packageInfo: packageInfoProvider },
+  dependencies: {
+    packageInfo: packageInfoProvider,
+    reactPaths: reactPathsProvider,
+  },
   exports: { reactUploadComponentsPaths: reactUploadComponentsPaths.export() },
-  run({ packageInfo }) {
+  run({ packageInfo, reactPaths }) {
+    const componentsRoot = reactPaths.getComponentsFolder();
     const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
       providers: {
         reactUploadComponentsPaths: {
-          fileInputComponent: `${srcRoot}/components/file-input/file-input.tsx`,
-          fileInputField: `${srcRoot}/components/file-input-field/file-input-field.tsx`,
-          fileInputUploadGql: `${srcRoot}/components/file-input/upload.gql`,
+          fileInputComponent: `${componentsRoot}/ui/file-input.tsx`,
+          fileInputField: `${componentsRoot}/ui/file-input-field.tsx`,
+          fileInputUploadGql: `${componentsRoot}/ui/file-input.gql`,
           hooksUseUpload: `${srcRoot}/hooks/use-upload.ts`,
         },
       },

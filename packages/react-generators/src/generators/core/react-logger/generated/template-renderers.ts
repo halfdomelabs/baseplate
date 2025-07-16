@@ -14,7 +14,7 @@ export interface CoreReactLoggerRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_LOGGER_TEMPLATES.logger
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

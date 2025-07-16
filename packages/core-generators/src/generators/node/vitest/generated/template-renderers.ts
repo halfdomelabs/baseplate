@@ -16,7 +16,7 @@ export interface NodeVitestRenderers {
         RenderTsTemplateFileActionInput<
           typeof NODE_VITEST_TEMPLATES.globalSetup
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -26,7 +26,7 @@ export interface NodeVitestRenderers {
         RenderTsTemplateFileActionInput<
           typeof NODE_VITEST_TEMPLATES.vitestConfig
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

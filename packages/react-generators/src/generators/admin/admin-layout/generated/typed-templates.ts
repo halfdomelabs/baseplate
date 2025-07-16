@@ -14,7 +14,7 @@ const adminLayout = createTsTemplateFile({
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/components/admin-layout/admin-layout.tsx',
+      '../templates/components/layouts/admin-layout.tsx',
     ),
   },
   variables: { TPL_SIDEBAR_LINKS: {} },
@@ -25,6 +25,7 @@ const adminRoute = createTsTemplateFile({
   importMapProviders: {},
   name: 'admin-route',
   projectExports: { Route: {} },
+  referencedGeneratorTemplates: { adminLayout: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/routes/route.tsx'),
   },

@@ -1,7 +1,4 @@
-import type {
-  RenderTsTemplateFileActionInput,
-  RenderTsTemplateGroupActionInput,
-} from '@baseplate-dev/core-generators';
+import type { RenderTsTemplateGroupActionInput } from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
@@ -17,7 +14,7 @@ export interface CoreReactComponentsRenderers {
         RenderTsTemplateGroupActionInput<
           typeof CORE_REACT_COMPONENTS_TEMPLATES.componentsGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -27,17 +24,7 @@ export interface CoreReactComponentsRenderers {
         RenderTsTemplateGroupActionInput<
           typeof CORE_REACT_COMPONENTS_TEMPLATES.hooksGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
-      >,
-    ) => BuilderAction;
-  };
-  index: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof CORE_REACT_COMPONENTS_TEMPLATES.index
-        >,
-        'destination' | 'importMapProviders' | 'template'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -47,7 +34,7 @@ export interface CoreReactComponentsRenderers {
         RenderTsTemplateGroupActionInput<
           typeof CORE_REACT_COMPONENTS_TEMPLATES.stylesGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -57,7 +44,7 @@ export interface CoreReactComponentsRenderers {
         RenderTsTemplateGroupActionInput<
           typeof CORE_REACT_COMPONENTS_TEMPLATES.utilsGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -85,6 +72,7 @@ const coreReactComponentsRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateGroup({
                 group: CORE_REACT_COMPONENTS_TEMPLATES.componentsGroup,
                 paths,
+                generatorPaths: paths,
                 ...options,
               }),
           },
@@ -93,14 +81,7 @@ const coreReactComponentsRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateGroup({
                 group: CORE_REACT_COMPONENTS_TEMPLATES.hooksGroup,
                 paths,
-                ...options,
-              }),
-          },
-          index: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: CORE_REACT_COMPONENTS_TEMPLATES.index,
-                destination: paths.index,
+                generatorPaths: paths,
                 ...options,
               }),
           },
@@ -109,6 +90,7 @@ const coreReactComponentsRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateGroup({
                 group: CORE_REACT_COMPONENTS_TEMPLATES.stylesGroup,
                 paths,
+                generatorPaths: paths,
                 ...options,
               }),
           },

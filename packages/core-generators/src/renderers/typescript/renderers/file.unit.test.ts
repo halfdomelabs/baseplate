@@ -227,4 +227,36 @@ describe('renderTsCodeFileTemplate', () => {
             "
     `);
   });
+
+  describe('generatorPaths integration', () => {
+    it('should pass generatorPaths to mergeImportsAndHoistedFragments', () => {
+      const template = `
+        import { Utils } from '$utils';
+        import { Config } from '$config';
+        
+        export function setup() {
+          return Utils.configure(Config);
+        }
+      `;
+
+      const result = renderTsCodeFileTemplate({
+        templateContents: template,
+        generatorPaths: {
+          utils: './utils/index.ts',
+          config: './config.ts',
+        },
+      });
+
+      expect(result).toMatchInlineSnapshot(`
+        "import { Config } from "./config.ts";
+        import { Utils } from "./utils/index.ts";
+
+
+                                export function setup() {
+                  return Utils.configure(Config);
+                }
+              "
+      `);
+    });
+  });
 });

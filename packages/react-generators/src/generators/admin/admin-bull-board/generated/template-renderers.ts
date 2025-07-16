@@ -35,7 +35,7 @@ export interface AdminAdminBullBoardRenderers {
         RenderTsTemplateFileActionInput<
           typeof ADMIN_ADMIN_BULL_BOARD_TEMPLATES.bullBoardPage
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

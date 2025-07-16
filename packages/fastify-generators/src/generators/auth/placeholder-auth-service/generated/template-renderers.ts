@@ -17,7 +17,7 @@ export interface AuthPlaceholderAuthServiceRenderers {
         RenderTsTemplateFileActionInput<
           typeof AUTH_PLACEHOLDER_AUTH_SERVICE_TEMPLATES.userSessionService
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

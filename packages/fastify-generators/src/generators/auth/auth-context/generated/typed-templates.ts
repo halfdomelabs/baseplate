@@ -10,6 +10,7 @@ const authContextTypes = createTsTemplateFile({
   importMapProviders: { authRolesImports: authRolesImportsProvider },
   name: 'auth-context-types',
   projectExports: { AuthContext: { isTypeOnly: true } },
+  referencedGeneratorTemplates: { authSessionTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -28,6 +29,7 @@ const authContextUtils = createTsTemplateFile({
   },
   name: 'auth-context-utils',
   projectExports: { createAuthContextFromSessionInfo: {} },
+  referencedGeneratorTemplates: { authContextTypes: {}, authSessionTypes: {} },
   source: {
     path: path.join(
       import.meta.dirname,

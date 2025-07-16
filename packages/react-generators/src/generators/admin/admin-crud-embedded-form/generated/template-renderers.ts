@@ -16,7 +16,7 @@ export interface AdminAdminCrudEmbeddedFormRenderers {
         RenderTsTemplateFileActionInput<
           typeof ADMIN_ADMIN_CRUD_EMBEDDED_FORM_TEMPLATES.embeddedForm
         >,
-        'importMapProviders' | 'template'
+        'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

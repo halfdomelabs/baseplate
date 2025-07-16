@@ -48,7 +48,7 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "tsc:watch": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --noEmit",
     "watch": "pnpm build:css --watch"
   },
   "browserslist": {

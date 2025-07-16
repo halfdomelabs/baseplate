@@ -12,13 +12,14 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/components/embedded-list-field/embedded-list-field.tsx",
+      "pathRootRelativePath": "{components-root}/admin/embedded-list-field.tsx",
       "projectExports": {
         "EmbeddedListField": {},
         "EmbeddedListFieldController": {},
         "EmbeddedListFieldProps": { "isTypeOnly": true }
       },
-      "sourceFile": "src/components/embedded-list-field/embedded-list-field.tsx",
+      "referencedGeneratorTemplates": ["embedded-list-input"],
+      "sourceFile": "components/admin/embedded-list-field.tsx",
       "variables": {}
     },
     "embedded-list-input": {
@@ -32,13 +33,13 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/components/embedded-list-input/embedded-list-input.tsx",
+      "pathRootRelativePath": "{components-root}/admin/embedded-list-input.tsx",
       "projectExports": {
         "EmbeddedListFormProps": { "isTypeOnly": true },
         "EmbeddedListInput": {},
         "EmbeddedListTableProps": { "isTypeOnly": true }
       },
-      "sourceFile": "src/components/embedded-list-input/embedded-list-input.tsx",
+      "sourceFile": "components/admin/embedded-list-input.tsx",
       "variables": {}
     },
     "embedded-object-field": {
@@ -52,13 +53,14 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/components/embedded-object-field/embedded-object-field.tsx",
+      "pathRootRelativePath": "{components-root}/admin/embedded-object-field.tsx",
       "projectExports": {
         "EmbeddedObjectField": {},
         "EmbeddedObjectFieldController": {},
         "EmbeddedObjectFieldProps": { "isTypeOnly": true }
       },
-      "sourceFile": "src/components/embedded-object-field/embedded-object-field.tsx",
+      "referencedGeneratorTemplates": ["embedded-object-input"],
+      "sourceFile": "components/admin/embedded-object-field.tsx",
       "variables": {}
     },
     "embedded-object-input": {
@@ -72,12 +74,12 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
-      "pathRootRelativePath": "{src-root}/components/embedded-object-input/embedded-object-input.tsx",
+      "pathRootRelativePath": "{components-root}/admin/embedded-object-input.tsx",
       "projectExports": {
         "EmbeddedObjectFormProps": { "isTypeOnly": true },
         "EmbeddedObjectInput": {}
       },
-      "sourceFile": "src/components/embedded-object-input/embedded-object-input.tsx",
+      "sourceFile": "components/admin/embedded-object-input.tsx",
       "variables": {}
     }
   }
