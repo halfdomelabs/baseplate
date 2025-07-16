@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { TEMPLATE_METADATA_FILENAME } from '../constants.js';
+import { TEMPLATES_INFO_FILENAME } from '../constants.js';
 import { deleteMetadataFiles } from './delete-metadata.js';
 
 vi.mock('node:fs');
@@ -15,8 +15,8 @@ describe('deleteMetadataFiles', () => {
     // Initialize the virtual file system with test files
     vol.fromJSON({
       [testDirectory]: null,
-      [`${testDirectory}/src/controllers/${TEMPLATE_METADATA_FILENAME}`]: '{}',
-      [`${testDirectory}/src/models/${TEMPLATE_METADATA_FILENAME}`]: '{}',
+      [`${testDirectory}/src/controllers/${TEMPLATES_INFO_FILENAME}`]: '{}',
+      [`${testDirectory}/src/models/${TEMPLATES_INFO_FILENAME}`]: '{}',
       [`${testDirectory}/src/controllers/user-controller.ts`]: '// some code',
       [`${testDirectory}/src/models/user-model.ts`]: '// some code',
     });
@@ -28,12 +28,12 @@ describe('deleteMetadataFiles', () => {
     // Verify template metadata files are deleted
     expect(() =>
       vol.readFileSync(
-        `${testDirectory}/src/controllers/${TEMPLATE_METADATA_FILENAME}`,
+        `${testDirectory}/src/controllers/${TEMPLATES_INFO_FILENAME}`,
       ),
     ).toThrow();
     expect(() =>
       vol.readFileSync(
-        `${testDirectory}/src/models/${TEMPLATE_METADATA_FILENAME}`,
+        `${testDirectory}/src/models/${TEMPLATES_INFO_FILENAME}`,
       ),
     ).toThrow();
 
