@@ -28,6 +28,7 @@
     "use-current-user-gql": {
       "type": "text",
       "fileOptions": { "kind": "singleton" },
+      "group": "hooks-gql",
       "pathRootRelativePath": "{src-root}/hooks/use-current-user.gql",
       "sourceFile": "src/hooks/use-current-user.gql",
       "variables": {}
@@ -54,6 +55,14 @@
       "pathRootRelativePath": "{src-root}/hooks/use-log-out.ts",
       "projectExports": { "useLogOut": {} },
       "sourceFile": "src/hooks/use-log-out.ts",
+      "variables": {}
+    },
+    "use-log-out-gql": {
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "group": "hooks-gql",
+      "pathRootRelativePath": "{src-root}/hooks/use-log-out.gql",
+      "sourceFile": "src/hooks/use-log-out.gql",
       "variables": {}
     },
     "use-required-user-id": {

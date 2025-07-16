@@ -1,9 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import type React from 'react';
 
 import { Separator } from './separator.js';
 
 const meta = {
+  title: 'components/Separator',
   component: Separator,
   tags: ['autodocs'],
   argTypes: {

@@ -55,7 +55,6 @@ export const reactProxyGenerator = createGenerator({
           ? {
               '/api': {
                 target: envVars.DEV_BACKEND_HOST,
-                changeOrigin: true,
                 rewrite: (path) => path.replace(/^\\/api/, ''),
                 ${enableWebsocket ? 'ws: true,' : ''}
               },

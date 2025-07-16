@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { UseFormReturn } from 'react-hook-form';
 
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { Label } from '../label/label.js';
 import { FormActionBar } from './form-action-bar.js';
 
 const meta = {
+  title: 'components/FormActionBar',
   component: FormActionBar,
   tags: ['autodocs'],
   argTypes: {

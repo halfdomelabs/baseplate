@@ -91,10 +91,6 @@ export default {
     'packages/ui-components': {
       entry: ['src/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
-      ignoreDependencies: [
-        // mdx files - https://github.com/webpro-nl/knip/issues/494
-        '@storybook/blocks',
-      ],
       paths: {
         '#src/*': ['./src/*'],
       },

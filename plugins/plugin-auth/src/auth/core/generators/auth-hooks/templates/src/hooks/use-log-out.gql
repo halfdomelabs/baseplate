@@ -1,0 +1,5 @@
+mutation logOut {
+  logOut {
+    success
+  }
+}

@@ -1,8 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { ErrorDisplay } from './error-display.js';
 
 const meta = {
+  title: 'components/ErrorDisplay',
   component: ErrorDisplay,
   tags: ['autodocs'],
   argTypes: {

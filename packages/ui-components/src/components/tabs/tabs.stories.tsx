@@ -1,8 +1,9 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs.js';
 
 const meta = {
+  title: 'components/Tabs',
   component: Tabs,
   tags: ['autodocs'],
   argTypes: {},

@@ -4,7 +4,7 @@
  * @typedef {import('./typescript.js').GenerateTypescriptEslintConfigOptions} GenerateTypescriptEslintConfigOptions
  */
 
-import storybookPlugin from 'eslint-plugin-storybook';
+import storybook from 'eslint-plugin-storybook';
 import tsEslint from 'typescript-eslint';
 
 /** @type {GenerateTypescriptEslintConfigOptions} */
@@ -21,13 +21,11 @@ export const storybookTypescriptEslintOptions = {
 
 export const storybookEslintConfig = tsEslint.config(
   // Storybook
-  {
-    files: ['**/*.stories.{ts,tsx,js,jsx,mjs,cjs}'],
-    extends: storybookPlugin.configs['flat/recommended'],
-  },
+  // @ts-ignore -- TypeScript resolution bug where it expects a named export called default
+  storybook.configs['flat/recommended'],
 
   // Ignores
   {
-    ignores: ['storybook-static'],
+    ignores: ['storybook-static', '!.storybook'],
   },
 );

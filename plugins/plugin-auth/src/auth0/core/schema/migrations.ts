@@ -7,10 +7,12 @@ export const AUTH0_PLUGIN_CONFIG_MIGRATIONS: PluginConfigMigration[] = [
     migrate: (config) => {
       const typedConfig = config as { userAccountModelRef: string };
       return {
-        ...typedConfig,
-        userAccountModelRef: undefined,
-        modelRefs: {
-          user: typedConfig.userAccountModelRef,
+        updatedConfig: {
+          ...typedConfig,
+          userAccountModelRef: undefined,
+          modelRefs: {
+            user: typedConfig.userAccountModelRef,
+          },
         },
       };
     },

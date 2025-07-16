@@ -14,7 +14,7 @@ import {
 } from '@baseplate-dev/sync';
 import { CASE_VALIDATORS, quot } from '@baseplate-dev/utils';
 import { posixJoin } from '@baseplate-dev/utils/node';
-import { camelCase, constantCase } from 'es-toolkit';
+import { camelCase } from 'es-toolkit';
 import { z } from 'zod';
 
 import {
@@ -104,8 +104,7 @@ export const fileCategoriesGenerator = createGenerator({
                 tsTemplate`
               export const ${getFileCategoryExportName(category.name)} = ${storageModuleImports.createFileCategory.fragment()}(${TsCodeUtils.mergeFragmentsAsObject(
                 {
-                  // TODO [2025-07-13]: Remove once validation kicks in and add allowed Mime Types
-                  name: quot(constantCase(category.name)),
+                  name: quot(category.name),
                   maxFileSize: tsTemplate`${storageModuleImports.FileSize.fragment()}.MB(${category.maxFileSizeMb.toString()})`,
                   authorize:
                     category.authorize.uploadRoles.length > 0
