@@ -28,7 +28,7 @@ export interface CoreReactRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof CORE_REACT_TEMPLATES.main>,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -46,7 +46,7 @@ export interface CoreReactRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<typeof CORE_REACT_TEMPLATES.viteConfig>,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

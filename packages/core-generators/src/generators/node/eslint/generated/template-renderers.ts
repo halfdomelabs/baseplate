@@ -16,7 +16,7 @@ export interface NodeEslintRenderers {
         RenderTsTemplateFileActionInput<
           typeof NODE_ESLINT_TEMPLATES.eslintConfig
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

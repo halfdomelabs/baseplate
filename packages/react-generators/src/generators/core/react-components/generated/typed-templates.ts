@@ -23,7 +23,7 @@ const button = createTsTemplateFile({
   importMapProviders: {},
   name: 'button',
   projectExports: { Button: {}, LinkButton: {} },
-  referencedGeneratorTemplates: { 'styles-button': {}, cn: {} },
+  referencedGeneratorTemplates: { stylesButton: {}, cn: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -39,7 +39,7 @@ const calendar = createTsTemplateFile({
   importMapProviders: {},
   name: 'calendar',
   projectExports: { Calendar: {} },
-  referencedGeneratorTemplates: { cn: {}, 'styles-button': {}, button: {} },
+  referencedGeneratorTemplates: { stylesButton: {}, cn: {}, button: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -95,10 +95,10 @@ const checkboxField = createTsTemplateFile({
   name: 'checkbox-field',
   projectExports: { CheckboxField: {}, CheckboxFieldController: {} },
   referencedGeneratorTemplates: {
-    'types-form': {},
-    'hooks-use-controller-merged': {},
+    typesForm: {},
+    hooksUseControllerMerged: {},
     cn: {},
-    'form-item': {},
+    formItem: {},
     checkbox: {},
   },
   source: {
@@ -133,13 +133,13 @@ const combobox = createTsTemplateFile({
   name: 'combobox',
   projectExports: { Combobox: {} },
   referencedGeneratorTemplates: {
-    'styles-input': {},
-    'styles-select': {},
+    stylesInput: {},
+    stylesSelect: {},
     cn: {},
-    'merge-refs': {},
+    mergeRefs: {},
     button: {},
-    'scroll-area': {},
-    'hooks-use-controlled-state': {},
+    scrollArea: {},
+    hooksUseControlledState: {},
   },
   source: {
     path: path.join(
@@ -157,9 +157,9 @@ const comboboxField = createTsTemplateFile({
   name: 'combobox-field',
   projectExports: { ComboboxField: {}, ComboboxFieldController: {} },
   referencedGeneratorTemplates: {
-    'types-form': {},
-    'hooks-use-controller-merged': {},
-    'form-item': {},
+    typesForm: {},
+    hooksUseControllerMerged: {},
+    formItem: {},
     combobox: {},
   },
   source: {
@@ -178,8 +178,8 @@ const confirmDialog = createTsTemplateFile({
   name: 'confirm-dialog',
   projectExports: { ConfirmDialog: {} },
   referencedGeneratorTemplates: {
+    useConfirmDialog: {},
     button: {},
-    'use-confirm-dialog': {},
     dialog: {},
   },
   source: {
@@ -202,13 +202,13 @@ const datePickerField = createTsTemplateFile({
     ReactDatePickerInput: {},
   },
   referencedGeneratorTemplates: {
-    'types-form': {},
+    typesForm: {},
     cn: {},
-    'hooks-use-controller-merged': {},
+    hooksUseControllerMerged: {},
     button: {},
-    'form-item': {},
-    popover: {},
     calendar: {},
+    formItem: {},
+    popover: {},
   },
   source: {
     path: path.join(
@@ -229,11 +229,11 @@ const dateTimePickerField = createTsTemplateFile({
     DateTimePickerFieldController: {},
   },
   referencedGeneratorTemplates: {
-    'types-form': {},
+    typesForm: {},
     cn: {},
-    'hooks-use-controller-merged': {},
+    hooksUseControllerMerged: {},
     button: {},
-    'form-item': {},
+    formItem: {},
     input: {},
     popover: {},
     calendar: {},
@@ -282,7 +282,7 @@ const emptyDisplay = createTsTemplateFile({
   importMapProviders: {},
   name: 'empty-display',
   projectExports: { EmptyDisplay: {} },
-  referencedGeneratorTemplates: { cn: {}, 'types-icon': {} },
+  referencedGeneratorTemplates: { cn: {}, typesIcon: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -298,7 +298,7 @@ const errorableLoader = createTsTemplateFile({
   importMapProviders: {},
   name: 'errorable-loader',
   projectExports: { ErrorableLoader: {} },
-  referencedGeneratorTemplates: { 'error-display': {}, loader: {} },
+  referencedGeneratorTemplates: { errorDisplay: {}, loader: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -352,7 +352,7 @@ const input = createTsTemplateFile({
   importMapProviders: {},
   name: 'input',
   projectExports: { Input: {}, TextInput: {} },
-  referencedGeneratorTemplates: { cn: {}, 'styles-input': {} },
+  referencedGeneratorTemplates: { cn: {}, stylesInput: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -369,10 +369,10 @@ const inputField = createTsTemplateFile({
   name: 'input-field',
   projectExports: { InputField: {}, InputFieldController: {} },
   referencedGeneratorTemplates: {
-    'types-form': {},
+    typesForm: {},
     cn: {},
-    'form-item': {},
-    'merge-refs': {},
+    mergeRefs: {},
+    formItem: {},
     input: {},
   },
   source: {
@@ -449,7 +449,7 @@ const notFoundCard = createTsTemplateFile({
   importMapProviders: {},
   name: 'not-found-card',
   projectExports: { NotFoundCard: {} },
-  referencedGeneratorTemplates: { button: {}, 'error-display': {} },
+  referencedGeneratorTemplates: { button: {}, errorDisplay: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -502,11 +502,7 @@ const select = createTsTemplateFile({
   importMapProviders: {},
   name: 'select',
   projectExports: { ReactSelectInput: {}, Select: {}, SelectInput: {} },
-  referencedGeneratorTemplates: {
-    cn: {},
-    'scroll-area': {},
-    'styles-select': {},
-  },
+  referencedGeneratorTemplates: { cn: {}, stylesSelect: {}, scrollArea: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -523,9 +519,9 @@ const selectField = createTsTemplateFile({
   name: 'select-field',
   projectExports: { SelectField: {}, SelectFieldController: {} },
   referencedGeneratorTemplates: {
-    'types-form': {},
-    'form-item': {},
-    'hooks-use-controller-merged': {},
+    typesForm: {},
+    formItem: {},
+    hooksUseControllerMerged: {},
     select: {},
   },
   source: {
@@ -580,11 +576,11 @@ const switchField = createTsTemplateFile({
   name: 'switch-field',
   projectExports: { SwitchField: {}, SwitchFieldController: {} },
   referencedGeneratorTemplates: {
-    'types-form': {},
     cn: {},
-    'form-item': {},
-    'switch-component': {},
-    'hooks-use-controller-merged': {},
+    typesForm: {},
+    formItem: {},
+    switchComponent: {},
+    hooksUseControllerMerged: {},
   },
   source: {
     path: path.join(
@@ -642,11 +638,7 @@ const textareaField = createTsTemplateFile({
   importMapProviders: {},
   name: 'textarea-field',
   projectExports: { TextareaField: {}, TextareaFieldController: {} },
-  referencedGeneratorTemplates: {
-    'types-form': {},
-    textarea: {},
-    'form-item': {},
-  },
+  referencedGeneratorTemplates: { typesForm: {}, textarea: {}, formItem: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -662,7 +654,7 @@ const toaster = createTsTemplateFile({
   importMapProviders: {},
   name: 'toaster',
   projectExports: { Toaster: {} },
-  referencedGeneratorTemplates: { 'styles-button': {} },
+  referencedGeneratorTemplates: { stylesButton: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -730,7 +722,7 @@ const hooksUseControllerMerged = createTsTemplateFile({
   importMapProviders: {},
   name: 'hooks-use-controller-merged',
   projectExports: { useControllerMerged: {} },
-  referencedGeneratorTemplates: { 'merge-refs': {} },
+  referencedGeneratorTemplates: { mergeRefs: {} },
   source: {
     path: path.join(
       import.meta.dirname,

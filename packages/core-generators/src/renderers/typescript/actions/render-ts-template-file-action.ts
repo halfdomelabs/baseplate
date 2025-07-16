@@ -14,6 +14,7 @@ import { differenceSet } from '@baseplate-dev/utils';
 import type { TsPositionedHoistedFragment } from '../fragments/types.js';
 import type { RenderTsCodeFileTemplateOptions } from '../renderers/file.js';
 import type {
+  InferGeneratorPathsFromReferencedGeneratorMap,
   InferImportMapProvidersFromProviderTypeMap,
   InferTsTemplateVariablesFromMap,
   TsTemplateFile,
@@ -58,11 +59,25 @@ type RenderTsTemplateFileActionImportMapProvidersInput<
       >;
     };
 
+type RenderTsTemplateFileActionReferencedGeneratorTemplatesInput<
+  T extends TsTemplateFile,
+> = keyof Exclude<T['referencedGeneratorTemplates'], undefined> extends never
+  ? Partial<{
+      // Slightly awkward hack to force Typescript to enforce the keys for an empty generator paths object
+      generatorPaths: Partial<Record<'', string>>;
+    }>
+  : {
+      generatorPaths: InferGeneratorPathsFromReferencedGeneratorMap<
+        T['referencedGeneratorTemplates']
+      >;
+    };
+
 export type RenderTsTemplateFileActionInput<
   T extends TsTemplateFile = TsTemplateFile,
 > = RenderTsTemplateFileActionInputBase<T> &
   RenderTsTemplateFileActionVariablesInput<T> &
-  RenderTsTemplateFileActionImportMapProvidersInput<T>;
+  RenderTsTemplateFileActionImportMapProvidersInput<T> &
+  RenderTsTemplateFileActionReferencedGeneratorTemplatesInput<T>;
 
 export function renderTsTemplateFileAction<
   T extends TsTemplateFile = TsTemplateFile,

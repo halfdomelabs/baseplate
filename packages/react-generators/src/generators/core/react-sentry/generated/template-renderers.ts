@@ -17,7 +17,7 @@ export interface CoreReactSentryRenderers {
         RenderTsTemplateFileActionInput<
           typeof CORE_REACT_SENTRY_TEMPLATES.sentry
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

@@ -8,7 +8,7 @@ const errorFormatter = createTsTemplateFile({
   importMapProviders: {},
   name: 'error-formatter',
   projectExports: { formatError: {}, logAndFormatError: {} },
-  referencedGeneratorTemplates: { 'error-logger': {} },
+  referencedGeneratorTemplates: { errorLogger: {} },
   source: {
     path: path.join(
       import.meta.dirname,

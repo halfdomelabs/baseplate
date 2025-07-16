@@ -2,7 +2,6 @@ import {
   createNodePackagesTask,
   extractPackageVersions,
   tsCodeFragment,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
@@ -56,14 +55,14 @@ export const reactComponentsGenerator = createGenerator({
     }),
     paths: CORE_REACT_COMPONENTS_GENERATED.paths.task,
     imports: CORE_REACT_COMPONENTS_GENERATED.imports.task,
+    renderers: CORE_REACT_COMPONENTS_GENERATED.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
+        renderers: CORE_REACT_COMPONENTS_GENERATED.renderers.provider,
         reactAppConfig: reactAppConfigProvider,
-        paths: CORE_REACT_COMPONENTS_GENERATED.paths.provider,
         reactComponentsImports: reactComponentsImportsProvider,
       },
-      run({ typescriptFile, reactAppConfig, paths, reactComponentsImports }) {
+      run({ renderers, reactAppConfig, reactComponentsImports }) {
         // add toaster root sibling component
         reactAppConfig.renderSiblings.set(
           'toaster',
@@ -90,32 +89,10 @@ export const reactComponentsGenerator = createGenerator({
           },
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group:
-                  CORE_REACT_COMPONENTS_GENERATED.templates.componentsGroup,
-                paths,
-              }),
-            );
-
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: CORE_REACT_COMPONENTS_GENERATED.templates.hooksGroup,
-                paths,
-              }),
-            );
-
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: CORE_REACT_COMPONENTS_GENERATED.templates.stylesGroup,
-                paths,
-              }),
-            );
-
-            await builder.apply(
-              typescriptFile.renderTemplateGroup({
-                group: CORE_REACT_COMPONENTS_GENERATED.templates.utilsGroup,
-                paths,
-              }),
+              renderers.componentsGroup.render({}),
+              renderers.hooksGroup.render({}),
+              renderers.stylesGroup.render({}),
+              renderers.utilsGroup.render({}),
             );
           },
         };

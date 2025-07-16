@@ -38,7 +38,7 @@ const router = createTsTemplateFile({
   },
   name: 'router',
   projectExports: { AppRoutes: {}, router: {} },
-  referencedGeneratorTemplates: { 'route-tree': {} },
+  referencedGeneratorTemplates: { routeTree: {} },
   source: {
     path: path.join(import.meta.dirname, '../templates/src/app/router.tsx'),
   },

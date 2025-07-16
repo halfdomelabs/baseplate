@@ -14,7 +14,7 @@ export interface ApolloReactApolloRenderers {
         RenderTsTemplateFileActionInput<
           typeof APOLLO_REACT_APOLLO_TEMPLATES.appApolloProvider
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -24,7 +24,7 @@ export interface ApolloReactApolloRenderers {
         RenderTsTemplateFileActionInput<
           typeof APOLLO_REACT_APOLLO_TEMPLATES.cache
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -34,7 +34,7 @@ export interface ApolloReactApolloRenderers {
         RenderTsTemplateFileActionInput<
           typeof APOLLO_REACT_APOLLO_TEMPLATES.codegenConfig
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -44,7 +44,7 @@ export interface ApolloReactApolloRenderers {
         RenderTsTemplateFileActionInput<
           typeof APOLLO_REACT_APOLLO_TEMPLATES.graphql
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -54,7 +54,7 @@ export interface ApolloReactApolloRenderers {
         RenderTsTemplateFileActionInput<
           typeof APOLLO_REACT_APOLLO_TEMPLATES.service
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -80,6 +80,7 @@ const apolloReactApolloRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: APOLLO_REACT_APOLLO_TEMPLATES.appApolloProvider,
                 destination: paths.appApolloProvider,
+                generatorPaths: paths,
                 ...options,
               }),
           },
@@ -112,6 +113,7 @@ const apolloReactApolloRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: APOLLO_REACT_APOLLO_TEMPLATES.service,
                 destination: paths.service,
+                generatorPaths: paths,
                 ...options,
               }),
           },

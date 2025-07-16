@@ -14,7 +14,7 @@ export interface ApolloApolloErrorRenderers {
         RenderTsTemplateFileActionInput<
           typeof APOLLO_APOLLO_ERROR_TEMPLATES.apolloError
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

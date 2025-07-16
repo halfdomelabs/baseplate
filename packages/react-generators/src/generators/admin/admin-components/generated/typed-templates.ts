@@ -15,7 +15,7 @@ const embeddedListField = createTsTemplateFile({
     EmbeddedListFieldController: {},
     EmbeddedListFieldProps: { isTypeOnly: true },
   },
-  referencedGeneratorTemplates: { 'embedded-list-input': {} },
+  referencedGeneratorTemplates: { embeddedListInput: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -58,7 +58,7 @@ const embeddedObjectField = createTsTemplateFile({
     EmbeddedObjectFieldController: {},
     EmbeddedObjectFieldProps: { isTypeOnly: true },
   },
-  referencedGeneratorTemplates: { 'embedded-object-input': {} },
+  referencedGeneratorTemplates: { embeddedObjectInput: {} },
   source: {
     path: path.join(
       import.meta.dirname,

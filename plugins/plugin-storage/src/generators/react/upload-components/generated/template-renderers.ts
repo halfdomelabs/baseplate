@@ -25,7 +25,7 @@ export interface ReactUploadComponentsRenderers {
         RenderTsTemplateFileActionInput<
           typeof REACT_UPLOAD_COMPONENTS_TEMPLATES.fileInputComponent
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -35,7 +35,7 @@ export interface ReactUploadComponentsRenderers {
         RenderTsTemplateFileActionInput<
           typeof REACT_UPLOAD_COMPONENTS_TEMPLATES.fileInputField
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -55,7 +55,7 @@ export interface ReactUploadComponentsRenderers {
         RenderTsTemplateFileActionInput<
           typeof REACT_UPLOAD_COMPONENTS_TEMPLATES.hooksUseUpload
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -97,6 +97,7 @@ const reactUploadComponentsRenderersTask = createGeneratorTask({
                   reactComponentsImports,
                   reactErrorImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },
@@ -108,6 +109,7 @@ const reactUploadComponentsRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   reactComponentsImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

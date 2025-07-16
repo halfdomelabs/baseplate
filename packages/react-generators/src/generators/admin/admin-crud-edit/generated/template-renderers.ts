@@ -16,7 +16,7 @@ export interface AdminAdminCrudEditRenderers {
         RenderTsTemplateFileActionInput<
           typeof ADMIN_ADMIN_CRUD_EDIT_TEMPLATES.createPage
         >,
-        'importMapProviders' | 'template'
+        'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -26,7 +26,7 @@ export interface AdminAdminCrudEditRenderers {
         RenderTsTemplateFileActionInput<
           typeof ADMIN_ADMIN_CRUD_EDIT_TEMPLATES.editForm
         >,
-        'importMapProviders' | 'template'
+        'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -36,7 +36,7 @@ export interface AdminAdminCrudEditRenderers {
         RenderTsTemplateFileActionInput<
           typeof ADMIN_ADMIN_CRUD_EDIT_TEMPLATES.editPage
         >,
-        'importMapProviders' | 'template'
+        'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -46,7 +46,7 @@ export interface AdminAdminCrudEditRenderers {
         RenderTsTemplateFileActionInput<
           typeof ADMIN_ADMIN_CRUD_EDIT_TEMPLATES.schema
         >,
-        'importMapProviders' | 'template'
+        'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

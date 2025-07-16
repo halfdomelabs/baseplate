@@ -17,7 +17,7 @@ export interface AdminAdminLayoutRenderers {
         RenderTsTemplateFileActionInput<
           typeof ADMIN_ADMIN_LAYOUT_TEMPLATES.adminLayout
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -27,7 +27,7 @@ export interface AdminAdminLayoutRenderers {
         RenderTsTemplateFileActionInput<
           typeof ADMIN_ADMIN_LAYOUT_TEMPLATES.adminRoute
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -66,6 +66,7 @@ const adminAdminLayoutRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: ADMIN_ADMIN_LAYOUT_TEMPLATES.adminRoute,
                 destination: paths.adminRoute,
+                generatorPaths: paths,
                 ...options,
               }),
           },

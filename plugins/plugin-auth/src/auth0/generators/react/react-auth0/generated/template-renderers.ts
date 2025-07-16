@@ -18,7 +18,7 @@ export interface Auth0ReactAuth0Renderers {
         RenderTsTemplateFileActionInput<
           typeof AUTH0_REACT_AUTH0_TEMPLATES.authLoadedGate
         >,
-        'destination' | 'importMapProviders' | 'template'
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };

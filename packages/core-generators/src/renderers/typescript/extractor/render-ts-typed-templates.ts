@@ -58,7 +58,10 @@ function renderTsTypedTemplate(
     referencedGeneratorTemplates: metadata.referencedGeneratorTemplates
       ? JSON.stringify(
           Object.fromEntries(
-            metadata.referencedGeneratorTemplates.map((key) => [key, {}]),
+            metadata.referencedGeneratorTemplates.map((key) => [
+              camelCase(key),
+              {},
+            ]),
           ),
         )
       : undefined,

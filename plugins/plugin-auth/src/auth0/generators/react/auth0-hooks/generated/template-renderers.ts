@@ -24,7 +24,7 @@ export interface Auth0Auth0HooksRenderers {
         RenderTsTemplateGroupActionInput<
           typeof AUTH0_AUTH0_HOOKS_TEMPLATES.hooksGroup
         >,
-        'importMapProviders' | 'group' | 'paths'
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -65,6 +65,7 @@ const auth0Auth0HooksRenderersTask = createGeneratorTask({
                   generatedGraphqlImports,
                   reactErrorImports,
                 },
+                generatorPaths: paths,
                 ...options,
               }),
           },

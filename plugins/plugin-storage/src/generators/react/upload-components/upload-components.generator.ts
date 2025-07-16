@@ -1,14 +1,7 @@
 import {
   CORE_PACKAGES,
   createNodePackagesTask,
-  renderTextTemplateFileAction,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
-import {
-  generatedGraphqlImportsProvider,
-  reactComponentsImportsProvider,
-  reactErrorImportsProvider,
-} from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { capitalize } from 'inflection';
 import { z } from 'zod';
@@ -36,65 +29,25 @@ export const uploadComponentsGenerator = createGenerator({
     }),
     paths: REACT_UPLOAD_COMPONENTS_GENERATED.paths.task,
     imports: REACT_UPLOAD_COMPONENTS_GENERATED.imports.task,
+    renderers: REACT_UPLOAD_COMPONENTS_GENERATED.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        reactErrorImports: reactErrorImportsProvider,
-        typescriptFile: typescriptFileProvider,
-        reactComponentsImports: reactComponentsImportsProvider,
-        generatedGraphqlImports: generatedGraphqlImportsProvider,
-        paths: REACT_UPLOAD_COMPONENTS_GENERATED.paths.provider,
+        renderers: REACT_UPLOAD_COMPONENTS_GENERATED.renderers.provider,
       },
-      run({
-        reactErrorImports,
-        typescriptFile,
-        reactComponentsImports,
-        generatedGraphqlImports,
-        paths,
-      }) {
+      run({ renderers }) {
         return {
           build: async (builder) => {
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  REACT_UPLOAD_COMPONENTS_GENERATED.templates
-                    .fileInputComponent,
-                destination: paths.fileInputComponent,
-                importMapProviders: {
-                  reactErrorImports,
-                  reactComponentsImports,
-                  generatedGraphqlImports,
-                },
-              }),
+              renderers.fileInputComponent.render({}),
+              renderers.fileInputField.render({}),
+              renderers.hooksUseUpload.render({}),
             );
 
             await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  REACT_UPLOAD_COMPONENTS_GENERATED.templates.fileInputField,
-                destination: paths.fileInputField,
-                importMapProviders: {
-                  reactComponentsImports,
-                },
-              }),
-            );
-
-            await builder.apply(
-              renderTextTemplateFileAction({
-                template:
-                  REACT_UPLOAD_COMPONENTS_GENERATED.templates
-                    .fileInputUploadGql,
-                destination: paths.fileInputUploadGql,
+              renderers.fileInputUploadGql.render({
                 variables: {
                   TPL_FILE_TYPE: capitalize(fileModelName),
                 },
-              }),
-            );
-
-            await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  REACT_UPLOAD_COMPONENTS_GENERATED.templates.hooksUseUpload,
-                destination: paths.hooksUseUpload,
               }),
             );
           },

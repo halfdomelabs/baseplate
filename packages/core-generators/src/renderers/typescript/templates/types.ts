@@ -159,12 +159,14 @@ export type InferImportMapProvidersFromProviderTypeMap<
   undefined
 >;
 
-export type InferGeneratorPathsFromTemplateFile<T extends TsTemplateFile> =
-  T['referencedGeneratorTemplates'] extends Record<string, Record<never, never>>
-    ? {
-        [K in keyof T['referencedGeneratorTemplates']]: string;
-      }
-    : undefined;
+export type InferGeneratorPathsFromReferencedGeneratorMap<
+  T extends Record<string, Record<never, never>> | undefined,
+> = Exclude<
+  {
+    [K in keyof T]: string;
+  },
+  undefined
+>;
 
 export function createTsTemplateFile<
   TVariables extends TsTemplateVariableMap = Record<

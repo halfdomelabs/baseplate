@@ -37,7 +37,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/calendar/calendar.tsx",
       "projectExports": { "Calendar": {} },
-      "referencedGeneratorTemplates": ["cn", "styles-button", "button"],
+      "referencedGeneratorTemplates": ["styles-button", "cn", "button"],
       "sourceFile": "components/calendar/calendar.tsx",
       "variables": {}
     },
@@ -159,8 +159,8 @@
       "pathRootRelativePath": "{components-root}/confirm-dialog/confirm-dialog.tsx",
       "projectExports": { "ConfirmDialog": {} },
       "referencedGeneratorTemplates": [
-        "button",
         "use-confirm-dialog",
+        "button",
         "dialog"
       ],
       "sourceFile": "components/confirm-dialog/confirm-dialog.tsx",
@@ -183,9 +183,9 @@
         "cn",
         "hooks-use-controller-merged",
         "button",
+        "calendar",
         "form-item",
-        "popover",
-        "calendar"
+        "popover"
       ],
       "sourceFile": "components/date-picker-field/date-picker-field.tsx",
       "variables": {}
@@ -339,8 +339,8 @@
       "referencedGeneratorTemplates": [
         "types-form",
         "cn",
-        "form-item",
         "merge-refs",
+        "form-item",
         "input"
       ],
       "sourceFile": "components/input-field/input-field.tsx",
@@ -457,7 +457,7 @@
         "Select": {},
         "SelectInput": {}
       },
-      "referencedGeneratorTemplates": ["cn", "scroll-area", "styles-select"],
+      "referencedGeneratorTemplates": ["cn", "styles-select", "scroll-area"],
       "sourceFile": "components/select/select.tsx",
       "variables": {}
     },
@@ -554,8 +554,8 @@
       "pathRootRelativePath": "{components-root}/switch-field/switch-field.tsx",
       "projectExports": { "SwitchField": {}, "SwitchFieldController": {} },
       "referencedGeneratorTemplates": [
-        "types-form",
         "cn",
+        "types-form",
         "form-item",
         "switch-component",
         "hooks-use-controller-merged"
