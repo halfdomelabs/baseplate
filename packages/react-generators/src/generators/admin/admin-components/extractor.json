@@ -18,6 +18,7 @@
         "EmbeddedListFieldController": {},
         "EmbeddedListFieldProps": { "isTypeOnly": true }
       },
+      "referencedGeneratorTemplates": ["embedded-list-input"],
       "sourceFile": "components/embedded-list-field/embedded-list-field.tsx",
       "variables": {}
     },
@@ -58,6 +59,7 @@
         "EmbeddedObjectFieldController": {},
         "EmbeddedObjectFieldProps": { "isTypeOnly": true }
       },
+      "referencedGeneratorTemplates": ["embedded-object-input"],
       "sourceFile": "components/embedded-object-field/embedded-object-field.tsx",
       "variables": {}
     },

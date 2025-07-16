@@ -13,6 +13,7 @@
         "AlertDescription": {},
         "AlertTitle": {}
       },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/alert/alert.tsx",
       "variables": {}
     },
@@ -24,6 +25,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/button/button.tsx",
       "projectExports": { "Button": {}, "LinkButton": {} },
+      "referencedGeneratorTemplates": ["styles-button", "cn"],
       "sourceFile": "components/button/button.tsx",
       "variables": {}
     },
@@ -35,6 +37,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/calendar/calendar.tsx",
       "projectExports": { "Calendar": {} },
+      "referencedGeneratorTemplates": ["styles-button", "cn", "button"],
       "sourceFile": "components/calendar/calendar.tsx",
       "variables": {}
     },
@@ -53,6 +56,7 @@
         "CardHeader": {},
         "CardTitle": {}
       },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/card/card.tsx",
       "variables": {}
     },
@@ -64,6 +68,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/checkbox/checkbox.tsx",
       "projectExports": { "Checkbox": {}, "CheckedInput": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/checkbox/checkbox.tsx",
       "variables": {}
     },
@@ -75,6 +80,13 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/checkbox-field/checkbox-field.tsx",
       "projectExports": { "CheckboxField": {}, "CheckboxFieldController": {} },
+      "referencedGeneratorTemplates": [
+        "types-form",
+        "cn",
+        "form-item",
+        "hooks-use-controller-merged",
+        "checkbox"
+      ],
       "sourceFile": "components/checkbox-field/checkbox-field.tsx",
       "variables": {}
     },
@@ -86,6 +98,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/circular-progress/circular-progress.tsx",
       "projectExports": { "CircularProgress": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/circular-progress/circular-progress.tsx",
       "variables": {}
     },
@@ -108,6 +121,15 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/combobox/combobox.tsx",
       "projectExports": { "Combobox": {} },
+      "referencedGeneratorTemplates": [
+        "styles-input",
+        "styles-select",
+        "cn",
+        "merge-refs",
+        "button",
+        "hooks-use-controlled-state",
+        "scroll-area"
+      ],
       "sourceFile": "components/combobox/combobox.tsx",
       "variables": {}
     },
@@ -119,6 +141,12 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/combobox-field/combobox-field.tsx",
       "projectExports": { "ComboboxField": {}, "ComboboxFieldController": {} },
+      "referencedGeneratorTemplates": [
+        "types-form",
+        "hooks-use-controller-merged",
+        "form-item",
+        "combobox"
+      ],
       "sourceFile": "components/combobox-field/combobox-field.tsx",
       "variables": {}
     },
@@ -130,6 +158,11 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/confirm-dialog/confirm-dialog.tsx",
       "projectExports": { "ConfirmDialog": {} },
+      "referencedGeneratorTemplates": [
+        "use-confirm-dialog",
+        "button",
+        "dialog"
+      ],
       "sourceFile": "components/confirm-dialog/confirm-dialog.tsx",
       "variables": {}
     },
@@ -145,6 +178,15 @@
         "DatePickerFieldController": {},
         "ReactDatePickerInput": {}
       },
+      "referencedGeneratorTemplates": [
+        "types-form",
+        "cn",
+        "hooks-use-controller-merged",
+        "button",
+        "calendar",
+        "form-item",
+        "popover"
+      ],
       "sourceFile": "components/date-picker-field/date-picker-field.tsx",
       "variables": {}
     },
@@ -159,6 +201,16 @@
         "DateTimePickerField": {},
         "DateTimePickerFieldController": {}
       },
+      "referencedGeneratorTemplates": [
+        "types-form",
+        "cn",
+        "hooks-use-controller-merged",
+        "button",
+        "calendar",
+        "form-item",
+        "input",
+        "popover"
+      ],
       "sourceFile": "components/date-time-picker-field/date-time-picker-field.tsx",
       "variables": {}
     },
@@ -183,6 +235,7 @@
         "DialogWidth": { "isTypeOnly": true },
         "Modal": {}
       },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/dialog/dialog.tsx",
       "variables": {}
     },
@@ -194,6 +247,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/empty-display/empty-display.tsx",
       "projectExports": { "EmptyDisplay": {} },
+      "referencedGeneratorTemplates": ["cn", "types-icon"],
       "sourceFile": "components/empty-display/empty-display.tsx",
       "variables": {}
     },
@@ -205,6 +259,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/error-display/error-display.tsx",
       "projectExports": { "ErrorDisplay": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/error-display/error-display.tsx",
       "variables": {}
     },
@@ -216,6 +271,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/errorable-loader/errorable-loader.tsx",
       "projectExports": { "ErrorableLoader": {} },
+      "referencedGeneratorTemplates": ["error-display", "loader"],
       "sourceFile": "components/errorable-loader/errorable-loader.tsx",
       "variables": {}
     },
@@ -233,6 +289,7 @@
         "FormLabel": {},
         "FormMessage": {}
       },
+      "referencedGeneratorTemplates": ["cn", "label"],
       "sourceFile": "components/form-item/form-item.tsx",
       "variables": {}
     },
@@ -255,6 +312,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-controller-merged.ts",
       "projectExports": { "useControllerMerged": {} },
+      "referencedGeneratorTemplates": ["merge-refs"],
       "sourceFile": "src/hooks/use-controller-merged.ts",
       "variables": {}
     },
@@ -266,6 +324,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/input/input.tsx",
       "projectExports": { "Input": {}, "TextInput": {} },
+      "referencedGeneratorTemplates": ["cn", "styles-input"],
       "sourceFile": "components/input/input.tsx",
       "variables": {}
     },
@@ -277,6 +336,13 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/input-field/input-field.tsx",
       "projectExports": { "InputField": {}, "InputFieldController": {} },
+      "referencedGeneratorTemplates": [
+        "types-form",
+        "cn",
+        "merge-refs",
+        "form-item",
+        "input"
+      ],
       "sourceFile": "components/input-field/input-field.tsx",
       "variables": {}
     },
@@ -288,6 +354,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/label/label.tsx",
       "projectExports": { "Label": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/label/label.tsx",
       "variables": {}
     },
@@ -299,6 +366,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/loader/loader.tsx",
       "projectExports": { "Loader": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/loader/loader.tsx",
       "variables": {}
     },
@@ -332,6 +400,7 @@
         "navigationMenuTriggerStyle": {},
         "NavigationMenuViewport": {}
       },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/navigation-menu/navigation-menu.tsx",
       "variables": {}
     },
@@ -343,6 +412,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/not-found-card/not-found-card.tsx",
       "projectExports": { "NotFoundCard": {} },
+      "referencedGeneratorTemplates": ["button", "error-display"],
       "sourceFile": "components/not-found-card/not-found-card.tsx",
       "variables": {}
     },
@@ -359,6 +429,7 @@
         "PopoverContent": {},
         "PopoverTrigger": {}
       },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/popover/popover.tsx",
       "variables": {}
     },
@@ -370,6 +441,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/scroll-area/scroll-area.tsx",
       "projectExports": { "ScrollArea": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/scroll-area/scroll-area.tsx",
       "variables": {}
     },
@@ -385,6 +457,7 @@
         "Select": {},
         "SelectInput": {}
       },
+      "referencedGeneratorTemplates": ["cn", "scroll-area", "styles-select"],
       "sourceFile": "components/select/select.tsx",
       "variables": {}
     },
@@ -396,6 +469,12 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/select-field/select-field.tsx",
       "projectExports": { "SelectField": {}, "SelectFieldController": {} },
+      "referencedGeneratorTemplates": [
+        "types-form",
+        "hooks-use-controller-merged",
+        "form-item",
+        "select"
+      ],
       "sourceFile": "components/select-field/select-field.tsx",
       "variables": {}
     },
@@ -411,6 +490,7 @@
         "SidebarLayoutContent": {},
         "SidebarLayoutSidebar": {}
       },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/sidebar-layout/sidebar-layout.tsx",
       "variables": {}
     },
@@ -433,6 +513,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/styles/input.ts",
       "projectExports": { "inputVariants": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "src/styles/input.ts",
       "variables": {}
     },
@@ -460,6 +541,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/switch/switch.tsx",
       "projectExports": { "Switch": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/switch/switch.tsx",
       "variables": {}
     },
@@ -471,6 +553,13 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/switch-field/switch-field.tsx",
       "projectExports": { "SwitchField": {}, "SwitchFieldController": {} },
+      "referencedGeneratorTemplates": [
+        "types-form",
+        "cn",
+        "form-item",
+        "hooks-use-controller-merged",
+        "switch-component"
+      ],
       "sourceFile": "components/switch-field/switch-field.tsx",
       "variables": {}
     },
@@ -491,6 +580,7 @@
         "TableHeader": {},
         "TableRow": {}
       },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/table/table.tsx",
       "variables": {}
     },
@@ -502,6 +592,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/textarea/textarea.tsx",
       "projectExports": { "Textarea": {}, "TextAreaInput": {} },
+      "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/textarea/textarea.tsx",
       "variables": {}
     },
@@ -513,6 +604,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/textarea-field/textarea-field.tsx",
       "projectExports": { "TextareaField": {}, "TextareaFieldController": {} },
+      "referencedGeneratorTemplates": ["types-form", "form-item", "textarea"],
       "sourceFile": "components/textarea-field/textarea-field.tsx",
       "variables": {}
     },
@@ -524,6 +616,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{components-root}/toaster/toaster.tsx",
       "projectExports": { "Toaster": {} },
+      "referencedGeneratorTemplates": ["styles-button"],
       "sourceFile": "components/toaster/toaster.tsx",
       "variables": {}
     },
@@ -566,6 +659,7 @@
         "UseConfirmDialogRequestOptions": { "isTypeOnly": true },
         "useConfirmDialogState": {}
       },
+      "referencedGeneratorTemplates": ["button"],
       "sourceFile": "src/hooks/use-confirm-dialog.ts",
       "variables": {}
     }

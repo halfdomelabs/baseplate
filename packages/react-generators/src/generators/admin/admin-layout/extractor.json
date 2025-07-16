@@ -26,6 +26,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{routes-root}/route.tsx",
       "projectExports": { "Route": {} },
+      "referencedGeneratorTemplates": ["admin-layout"],
       "sourceFile": "routes/route.tsx",
       "variables": { "TPL_LOGIN_URL_PATH": {}, "TPL_ROUTE_PATH": {} }
     }

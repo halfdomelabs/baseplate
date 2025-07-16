@@ -42,6 +42,7 @@
       },
       "pathRootRelativePath": "{src-root}/app/router.tsx",
       "projectExports": { "AppRoutes": {}, "router": {} },
+      "referencedGeneratorTemplates": ["route-tree"],
       "sourceFile": "src/app/router.tsx",
       "variables": {
         "TPL_ADDITIONAL_ROUTER_OPTIONS": {},

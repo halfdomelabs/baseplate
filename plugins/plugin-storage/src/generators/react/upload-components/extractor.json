@@ -21,6 +21,7 @@
       },
       "pathRootRelativePath": "{components-root}/file-input/file-input.tsx",
       "projectExports": { "FileInput": { "exportedAs": "default" } },
+      "referencedGeneratorTemplates": ["hooks-use-upload"],
       "sourceFile": "components/file-input/file-input.tsx",
       "variables": {}
     },
@@ -39,6 +40,7 @@
         "FileInputField": {},
         "FileInputFieldController": {}
       },
+      "referencedGeneratorTemplates": ["file-input-component"],
       "sourceFile": "components/file-input-field/file-input-field.tsx",
       "variables": {}
     },

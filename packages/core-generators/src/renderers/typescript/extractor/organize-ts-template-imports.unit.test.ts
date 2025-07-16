@@ -55,7 +55,7 @@ export function capitalizeString(str: string) {
     const context = {
       projectExportMap: new Map(),
       outputDirectory: '/project-root',
-      internalOutputRelativePaths: ['/project-root/test.ts'],
+      internalOutputRelativePaths: new Map([['/project-root/test.ts', 'test']]),
       resolver: mockResolver,
     };
 
@@ -82,7 +82,7 @@ export function capitalizeString(str: string) {
     const context = {
       projectExportMap: new Map(),
       outputDirectory: '/project-root',
-      internalOutputRelativePaths: ['/project-root/test.ts'],
+      internalOutputRelativePaths: new Map([['/project-root/test.ts', 'test']]),
       resolver: mockResolver,
     };
 
@@ -108,7 +108,7 @@ export function capitalizeString(str: string) {
     const context = {
       projectExportMap: new Map(),
       outputDirectory: '/project-root',
-      internalOutputRelativePaths: ['/project-root/test.ts'],
+      internalOutputRelativePaths: new Map([['/project-root/test.ts', 'test']]),
       resolver: mockResolver,
     };
 
@@ -166,7 +166,7 @@ export function test() {
     const context = {
       projectExportMap,
       outputDirectory: '/project-root',
-      internalOutputRelativePaths: ['module2.ts'],
+      internalOutputRelativePaths: new Map([['module2.ts', 'module2']]),
       resolver: mockResolver,
     };
 
@@ -185,6 +185,10 @@ export function test() {
     expect(result.usedProjectExports[0]).toBe(projectExportA);
     expect(result.usedProjectExports[1]).toBe(projectExportB);
     expect(result.usedProjectExports[2]).toBe(projectExportC);
+
+    // Check that the used generator files are returned
+    expect(result.referencedGeneratorTemplates.size).toBe(1);
+    expect(result.referencedGeneratorTemplates.has('module2')).toBe(true);
   });
 
   it('should throw error for namespace imports', async () => {
@@ -199,7 +203,7 @@ Module.A;
     const context = {
       projectExportMap: new Map(),
       outputDirectory: '/project-root',
-      internalOutputRelativePaths: [],
+      internalOutputRelativePaths: new Map(),
       resolver: mockResolver,
     };
 
@@ -220,7 +224,7 @@ console.log(A);
     const context = {
       projectExportMap: new Map(),
       outputDirectory: '/project-root',
-      internalOutputRelativePaths: [],
+      internalOutputRelativePaths: new Map(),
       resolver: mockResolver,
     };
 

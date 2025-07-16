@@ -137,13 +137,21 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
           );
         }
 
+        const internalOutputRelativePaths = new Map<string, string>();
+        for (const [
+          templateName,
+          outputRelativePaths,
+        ] of generatorOutputRelativePathMap) {
+          // We skip templates that have multiple output relative paths
+          if (outputRelativePaths.length !== 1) continue;
+          internalOutputRelativePaths.set(outputRelativePaths[0], templateName);
+        }
+
         const writeContext: WriteTsTemplateFileContext = {
           generatorName,
           projectExportMap,
           outputDirectory,
-          internalOutputRelativePaths: [
-            ...generatorOutputRelativePathMap.values(),
-          ].flat(),
+          internalOutputRelativePaths,
           resolver: getResolverFactory(outputDirectory),
         };
 
@@ -173,6 +181,10 @@ export const TsTemplateFileExtractor = createTemplateFileExtractor({
                   ...file.metadata,
                   variables: result.variables,
                   importMapProviders: result.importProviders,
+                  referencedGeneratorTemplates:
+                    result.referencedGeneratorTemplates.size > 0
+                      ? [...result.referencedGeneratorTemplates]
+                      : undefined,
                 } as TsTemplateMetadata,
               );
               return result;
