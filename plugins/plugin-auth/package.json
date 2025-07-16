@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-auth",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Contains the auth plugin for Baseplate",
   "keywords": [
     "authentication",

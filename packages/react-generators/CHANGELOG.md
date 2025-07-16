@@ -1,5 +1,44 @@
 # @baseplate-dev/react-generators
 
+## 0.2.5
+
+### Patch Changes
+
+- [#613](https://github.com/halfdomelabs/baseplate/pull/613) [`2aae451`](https://github.com/halfdomelabs/baseplate/commit/2aae45107cb6331234d14d8a6491b55e7f6d9f33) Thanks [@kingston](https://github.com/kingston)! - Reorganize components folder structure in generated codebases
+
+  The components folder structure has been reorganized to improve organization and reduce bundle size:
+
+  **Breaking Changes:**
+
+  - Removed bundle export at `components/index.ts` to prevent importing all components at once
+  - Moved all UI components from `components/` to `components/ui/` folder
+
+  **New Structure:**
+
+  ```
+  components/
+  ├── ui/           # UI components
+  │   ├── button.tsx
+  │   ├── input.tsx
+  │   └── ...
+  └── [other-components]  # Custom application components
+  ```
+
+  **Migration:**
+
+  - Replace `import { Button } from '@src/components'` with `import { Button } from '@src/components/ui/button'`
+  - Update imports to use specific component paths instead of barrel exports
+  - UI components are now co-located in the `ui/` subfolder for better organization
+
+  This change improves tree-shaking, reduces bundle size, and provides clearer separation between UI library components and custom application components.
+
+- [#608](https://github.com/halfdomelabs/baseplate/pull/608) [`01c47c7`](https://github.com/halfdomelabs/baseplate/commit/01c47c77f039a463de03271de6461cd969d5a8e8) Thanks [@kingston](https://github.com/kingston)! - Remove changeOrigin: true from vite proxy to allow custom auth plugin to work
+
+- Updated dependencies [[`e0d690c`](https://github.com/halfdomelabs/baseplate/commit/e0d690c1e139f93a8ff60c9e0c90bc72cdf705a4), [`2aae451`](https://github.com/halfdomelabs/baseplate/commit/2aae45107cb6331234d14d8a6491b55e7f6d9f33)]:
+  - @baseplate-dev/sync@0.2.5
+  - @baseplate-dev/core-generators@0.2.5
+  - @baseplate-dev/utils@0.2.5
+
 ## 0.2.4
 
 ### Patch Changes

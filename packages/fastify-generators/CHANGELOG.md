@@ -1,5 +1,16 @@
 # @baseplate-dev/fastify-generators
 
+## 0.2.5
+
+### Patch Changes
+
+- [#608](https://github.com/halfdomelabs/baseplate/pull/608) [`01c47c7`](https://github.com/halfdomelabs/baseplate/commit/01c47c77f039a463de03271de6461cd969d5a8e8) Thanks [@kingston](https://github.com/kingston)! - Fix pothos writer to write typed args correctly (t.arg.string instead of t.string)
+
+- Updated dependencies [[`e0d690c`](https://github.com/halfdomelabs/baseplate/commit/e0d690c1e139f93a8ff60c9e0c90bc72cdf705a4), [`2aae451`](https://github.com/halfdomelabs/baseplate/commit/2aae45107cb6331234d14d8a6491b55e7f6d9f33)]:
+  - @baseplate-dev/sync@0.2.5
+  - @baseplate-dev/core-generators@0.2.5
+  - @baseplate-dev/utils@0.2.5
+
 ## 0.2.4
 
 ### Patch Changes

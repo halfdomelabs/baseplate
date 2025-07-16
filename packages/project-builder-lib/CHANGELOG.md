@@ -1,5 +1,36 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.2.5
+
+### Patch Changes
+
+- [#608](https://github.com/halfdomelabs/baseplate/pull/608) [`01c47c7`](https://github.com/halfdomelabs/baseplate/commit/01c47c77f039a463de03271de6461cd969d5a8e8) Thanks [@kingston](https://github.com/kingston)! - Refactor plugin migration system to separate config and project definition changes
+
+  Previously, plugin migrations had mixed responsibilities - both transforming plugin config and mutating the project definition in the same unclear contract. This made the system hard to test and reason about.
+
+  **New Migration Interface:**
+
+  - `PluginMigrationResult` with explicit `updatedConfig` and `updateProjectDefinition` properties
+  - Clear separation between config transformations and project definition updates
+  - Better type safety and testability
+
+  **Schema Version Bug Fix:**
+
+  - Fixed bug where enabling plugins via UI didn't set `configSchemaVersion`
+  - Plugin card now uses `PluginUtils.setPluginConfig` to automatically set correct schema version
+  - Prevents unnecessary migrations when enabling new plugins
+
+  **Migration Updates:**
+
+  - All existing migrations updated to use new interface
+  - Auth plugin migration: simple config-only transformation
+  - Storage plugin migrations: migration #1 (config-only), migration #2 (config + project updates)
+
+- Updated dependencies [[`e0d690c`](https://github.com/halfdomelabs/baseplate/commit/e0d690c1e139f93a8ff60c9e0c90bc72cdf705a4)]:
+  - @baseplate-dev/sync@0.2.5
+  - @baseplate-dev/ui-components@0.2.5
+  - @baseplate-dev/utils@0.2.5
+
 ## 0.2.4
 
 ### Patch Changes
