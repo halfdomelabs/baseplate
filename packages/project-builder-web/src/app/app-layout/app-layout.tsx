@@ -13,6 +13,7 @@ import { MdMenu } from 'react-icons/md';
 import { ErrorBoundary } from '#src/components/error-boundary/error-boundary.js';
 import { BlockerDialog } from '#src/components/index.js';
 
+import { RefIssueDialog } from '../../components/ref-issue-dialog/ref-issue-dialog.jsx';
 import ProjectSyncModal from '../project-sync-modal/project-sync-modal.js';
 import { AppBreadcrumbs } from './app-breadcrumbs.js';
 import { AppDesktopSidebar } from './app-desktop-sidebar.js';
@@ -75,6 +76,7 @@ export function AppLayout({ className }: AppLayoutProps): React.JSX.Element {
         </main>
       </div>
       <BlockerDialog />
+      <RefIssueDialog />
     </div>
   );
 }
