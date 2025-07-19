@@ -36,31 +36,35 @@ export const createWebAppSchema = definitionSchema((ctx) =>
     includeAuth: z.boolean().optional(),
     title: z.string().optional(),
     description: z.string().optional(),
-    allowedRoles: z
-      .array(
+    allowedRoles: ctx.withDefault(
+      z.array(
         ctx.withRef({
           type: authRoleEntityType,
           onDelete: 'DELETE',
         }),
-      )
-      .optional(),
-    includeUploadComponents: z.boolean().optional(),
-    enableSubscriptions: z.boolean().optional(),
-    adminConfig: z
-      .object({
-        enabled: z.boolean(),
-        pathPrefix: z.string().default('/admin'),
-        allowedRoles: z
-          .array(
-            ctx.withRef({
-              type: authRoleEntityType,
-              onDelete: 'DELETE',
-            }),
-          )
-          .optional(),
-        sections: z.array(createWebAdminSectionSchema(ctx)).optional(),
-      })
-      .optional(),
+      ),
+      [],
+    ),
+    includeUploadComponents: ctx.withDefault(z.boolean(), false),
+    enableSubscriptions: ctx.withDefault(z.boolean(), false),
+    adminConfig: ctx.withDefault(
+      z
+        .object({
+          enabled: z.boolean(),
+          pathPrefix: z.string().default('/admin'),
+          allowedRoles: z
+            .array(
+              ctx.withRef({
+                type: authRoleEntityType,
+                onDelete: 'DELETE',
+              }),
+            )
+            .optional(),
+          sections: z.array(createWebAdminSectionSchema(ctx)).optional(),
+        })
+        .optional(),
+      undefined,
+    ),
   }),
 );
 
