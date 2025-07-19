@@ -33,9 +33,9 @@ export const createWebAppSchema = definitionSchema((ctx) =>
   z.object({
     ...baseAppValidators,
     type: z.literal('web'),
-    includeAuth: z.boolean().optional(),
-    title: z.string().optional(),
-    description: z.string().optional(),
+    includeAuth: ctx.withDefault(z.boolean(), false),
+    title: z.string().default(''),
+    description: z.string().default(''),
     allowedRoles: ctx.withDefault(
       z.array(
         ctx.withRef({
@@ -48,22 +48,24 @@ export const createWebAppSchema = definitionSchema((ctx) =>
     includeUploadComponents: ctx.withDefault(z.boolean(), false),
     enableSubscriptions: ctx.withDefault(z.boolean(), false),
     adminConfig: ctx.withDefault(
-      z
-        .object({
-          enabled: z.boolean(),
-          pathPrefix: z.string().default('/admin'),
-          allowedRoles: z
-            .array(
-              ctx.withRef({
-                type: authRoleEntityType,
-                onDelete: 'DELETE',
-              }),
-            )
-            .optional(),
-          sections: z.array(createWebAdminSectionSchema(ctx)).optional(),
-        })
-        .optional(),
-      undefined,
+      z.object({
+        enabled: z.boolean(),
+        pathPrefix: z.string().default('/admin'),
+        allowedRoles: ctx.withDefault(
+          z.array(
+            ctx.withRef({
+              type: authRoleEntityType,
+              onDelete: 'DELETE',
+            }),
+          ),
+          [],
+        ),
+        sections: ctx.withDefault(
+          z.array(createWebAdminSectionSchema(ctx)),
+          [],
+        ),
+      }),
+      { enabled: false, pathPrefix: '/admin' },
     ),
   }),
 );
