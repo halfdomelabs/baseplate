@@ -1,2 +1,2 @@
-export * from './app.js';
+export * from './admin.js';
 export * from './sections/index.js';

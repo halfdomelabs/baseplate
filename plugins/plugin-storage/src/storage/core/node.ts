@@ -1,5 +1,4 @@
 import {
-  adminAppEntryType,
   appCompilerSpec,
   backendAppEntryType,
   createPlatformPluginExport,
@@ -106,28 +105,9 @@ export default createPlatformPluginExport({
         appCompiler,
         appDefinition,
       }) => {
-        if (!appDefinition.includeUploadComponents) {
+        if (!appDefinition.includeUploadComponents || appDefinition.adminApp) {
           return;
         }
-        const storage = PluginUtils.configByIdOrThrow(
-          projectDefinition,
-          pluginId,
-        ) as StoragePluginDefinition;
-
-        appCompiler.addRootChildren({
-          uploadComponents: uploadComponentsGenerator({
-            fileModelName: definitionContainer.nameFromId(
-              storage.modelRefs.file,
-            ),
-          }),
-        });
-      },
-    });
-
-    appCompiler.registerAppCompiler({
-      pluginId,
-      appType: adminAppEntryType,
-      compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
         const storage = PluginUtils.configByIdOrThrow(
           projectDefinition,
           pluginId,

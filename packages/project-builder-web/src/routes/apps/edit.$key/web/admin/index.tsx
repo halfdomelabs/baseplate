@@ -60,8 +60,11 @@ function WebAdminPage(): React.JSX.Element {
   const webAppSchema = useDefinitionSchema(createWebAppSchema);
   const adminSectionSchema = useDefinitionSchema(createWebAdminSectionSchema);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-  const [sectionToEdit, setSectionToEdit] = useState<any>();
+  const [sectionToEdit, setSectionToEdit] = useState<{
+    id?: string;
+    name?: string;
+    type?: string;
+  }>();
   const [isEditingSection, setIsEditingSection] = useState(false);
 
   const formProps = useResettableForm({
@@ -72,7 +75,7 @@ function WebAdminPage(): React.JSX.Element {
 
   const sectionFormProps = useResettableForm({
     resolver: zodResolver(adminSectionSchema),
-    values: sectionToEdit, // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+    values: sectionToEdit,
     defaultValues: { type: 'crud' },
   });
 
@@ -92,25 +95,25 @@ function WebAdminPage(): React.JSX.Element {
       );
       if (webApp?.type !== 'web') return;
 
-      webApp.adminConfig ??= {
+      webApp.adminApp ??= {
         enabled: true,
         pathPrefix: '/admin',
         sections: [],
       };
 
-      const existingIndex = webApp.adminConfig.sections?.findIndex(
+      const existingIndex = webApp.adminApp.sections?.findIndex(
         (section) => section.id === data.id,
       );
 
       if (
         existingIndex !== undefined &&
         existingIndex >= 0 &&
-        webApp.adminConfig.sections
+        webApp.adminApp.sections
       ) {
-        webApp.adminConfig.sections[existingIndex] = { ...data, id };
+        webApp.adminApp.sections[existingIndex] = { ...data, id };
       } else {
-        webApp.adminConfig.sections = sortBy(
-          [...(webApp.adminConfig.sections ?? []), { ...data, id }],
+        webApp.adminApp.sections = sortBy(
+          [...(webApp.adminApp.sections ?? []), { ...data, id }],
           [(section) => section.name],
         );
       }
@@ -134,8 +137,8 @@ function WebAdminPage(): React.JSX.Element {
       value: role.id,
     }));
 
-  const adminEnabled = watch('adminConfig.enabled');
-  const sections = watch('adminConfig.sections') ?? [];
+  const adminEnabled = watch('adminApp.enabled');
+  const sections = watch('adminApp.sections') ?? [];
 
   function handleDeleteSection(sectionId: string): void {
     const section = sections.find((s) => s.id === sectionId);
@@ -147,9 +150,9 @@ function WebAdminPage(): React.JSX.Element {
           const webApp = draftConfig.apps.find(
             (app) => app.id === webDefinition.id,
           );
-          if (webApp?.type !== 'web' || !webApp.adminConfig) return;
+          if (webApp?.type !== 'web' || !webApp.adminApp) return;
 
-          webApp.adminConfig.sections = webApp.adminConfig.sections?.filter(
+          webApp.adminApp.sections = webApp.adminApp.sections?.filter(
             (s) => s.id !== sectionId,
           );
         });
@@ -180,7 +183,7 @@ function WebAdminPage(): React.JSX.Element {
                 label="Enable Admin Panel"
                 description="Add administrative interface to your web application"
                 control={control}
-                name="adminConfig.enabled"
+                name="adminApp.enabled"
               />
 
               {adminEnabled && (
@@ -190,7 +193,7 @@ function WebAdminPage(): React.JSX.Element {
                     placeholder="/admin"
                     description="URL prefix for admin routes (e.g. /admin)"
                     control={control}
-                    name="adminConfig.pathPrefix"
+                    name="adminApp.pathPrefix"
                   />
 
                   {roleOptions && (
@@ -199,7 +202,7 @@ function WebAdminPage(): React.JSX.Element {
                       description="Which roles can access the admin panel"
                       control={control}
                       options={roleOptions}
-                      name="adminConfig.allowedRoles"
+                      name="adminApp.allowedRoles"
                     />
                   )}
                 </>
@@ -292,7 +295,7 @@ function WebAdminPage(): React.JSX.Element {
           <SheetHeader>
             <SheetTitle>
               {sectionToEdit?.id &&
-              sections.some((s: any) => s.id === sectionToEdit.id) // eslint-disable-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+              sections.some((s) => s.id === sectionToEdit.id)
                 ? 'Edit Admin Section'
                 : 'Add Admin Section'}
             </SheetTitle>

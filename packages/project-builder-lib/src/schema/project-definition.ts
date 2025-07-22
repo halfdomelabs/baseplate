@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 import type { def } from './creator/index.js';
 
-import { createAdminAppSchema } from './apps/admin/index.js';
 import { createBackendAppSchema } from './apps/backend/index.js';
 import { createWebAppSchema } from './apps/index.js';
 import { appEntityType } from './apps/types.js';
@@ -18,7 +17,6 @@ export const createAppSchema = definitionSchema((ctx) =>
     z.discriminatedUnion('type', [
       createBackendAppSchema(ctx),
       createWebAppSchema(ctx),
-      createAdminAppSchema(ctx),
     ]),
     (builder) => {
       builder.addEntity({

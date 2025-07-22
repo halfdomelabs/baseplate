@@ -1,5 +1,4 @@
 import {
-  adminAppEntryType,
   appCompilerSpec,
   backendAppEntryType,
   createPlatformPluginExport,
@@ -52,32 +51,23 @@ export default createPlatformPluginExport({
       },
     });
 
-    const sharedWebGenerators = {
-      ...createCommonWebAuthGenerators(),
-      auth: reactAuth0Generator({}),
-      authHooks: auth0HooksGenerator({}),
-      auth0Apollo: auth0ApolloGenerator({}),
-      auth0Callback: reactRoutesGenerator({
-        name: 'auth',
-        children: {
-          auth: auth0PagesGenerator({}),
-        },
-      }),
-    };
-
     // register web compiler
     appCompiler.registerAppCompiler({
       pluginId,
       appType: webAppEntryType,
       compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren(sharedWebGenerators);
-      },
-    });
-    appCompiler.registerAppCompiler({
-      pluginId,
-      appType: adminAppEntryType,
-      compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren(sharedWebGenerators);
+        appCompiler.addRootChildren({
+          ...createCommonWebAuthGenerators(),
+          auth: reactAuth0Generator({}),
+          authHooks: auth0HooksGenerator({}),
+          auth0Apollo: auth0ApolloGenerator({}),
+          auth0Callback: reactRoutesGenerator({
+            name: 'auth',
+            children: {
+              auth: auth0PagesGenerator({}),
+            },
+          }),
+        });
       },
     });
 
