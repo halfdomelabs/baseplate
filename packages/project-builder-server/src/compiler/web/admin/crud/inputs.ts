@@ -1,5 +1,4 @@
 import type {
-  AdminAppConfig,
   AdminCrudEmbeddedInputConfig,
   AdminCrudEmbeddedLocalInputConfig,
   AdminCrudEnumInputConfig,
@@ -9,6 +8,7 @@ import type {
   AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
   ModelScalarFieldConfig,
+  WebAppConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
@@ -224,7 +224,7 @@ const builtInCompilers = [
 export function compileAdminCrudInput(
   field: AdminCrudInputDefinition,
   modelId: string,
-  builder: AppEntryBuilder<AdminAppConfig>,
+  builder: AppEntryBuilder<WebAppConfig>,
   crudSectionId: string,
   order: number,
 ): GeneratorBundle {

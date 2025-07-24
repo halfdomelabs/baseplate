@@ -1,9 +1,6 @@
 import type React from 'react';
 
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   NavigationTabs,
   NavigationTabsItem,
 } from '@baseplate-dev/ui-components';
@@ -14,34 +11,27 @@ import {
   redirect,
 } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/apps/edit/$key/admin')({
-  component: AdminAppEditLayout,
+export const Route = createFileRoute('/apps/edit/$key/web')({
+  component: WebAppLayout,
   beforeLoad: ({ context: { app }, params: { key } }) => {
-    if (app?.type !== 'admin') {
+    if (app?.type !== 'web') {
       throw redirect({ to: '/apps/edit/$key', params: { key } });
     }
+
     return {
-      adminDefinition: app,
+      webDefinition: app,
     };
   },
 });
 
-function AdminAppEditLayout(): React.JSX.Element {
+function WebAppLayout(): React.JSX.Element {
   const { key } = Route.useParams();
   return (
     <div className="p-4">
-      <Alert variant="warning" className="mb-4">
-        <AlertTitle>⚠️ Development Preview</AlertTitle>
-        <AlertDescription>
-          The admin app functionality will likely be fully rewritten in future
-          versions. This is provided for preview purposes only and should not be
-          relied upon for production use.
-        </AlertDescription>
-      </Alert>
       <NavigationTabs>
         <NavigationTabsItem asChild>
           <Link
-            to="/apps/edit/$key/admin"
+            to="/apps/edit/$key/web"
             from="/"
             params={{ key }}
             activeOptions={{ exact: true }}
@@ -50,11 +40,12 @@ function AdminAppEditLayout(): React.JSX.Element {
           </Link>
         </NavigationTabsItem>
         <NavigationTabsItem asChild>
-          <Link to="/apps/edit/$key/admin/sections" params={{ key }}>
-            Sections
+          <Link to="/apps/edit/$key/web/admin" params={{ key }}>
+            Admin
           </Link>
         </NavigationTabsItem>
       </NavigationTabs>
+
       <div className="mt-4 border-t">
         <Outlet />
       </div>

@@ -7,7 +7,6 @@ import type {
 import { ProjectDefinitionContainer } from '@baseplate-dev/project-builder-lib';
 import { sortBy } from 'es-toolkit';
 
-import { compileAdmin } from './admin/index.js';
 import { compileBackend } from './backend/index.js';
 import { compileWeb } from './web/index.js';
 
@@ -31,9 +30,6 @@ export function compileApplications(
       }
       case 'web': {
         return compileWeb(definitionContainer, app);
-      }
-      case 'admin': {
-        return compileAdmin(definitionContainer, app);
       }
       default: {
         throw new Error(`Unknown app type: ${(app as BaseAppConfig).type}`);

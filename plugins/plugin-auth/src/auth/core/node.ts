@@ -3,7 +3,6 @@ import {
   passwordHasherServiceGenerator,
 } from '@baseplate-dev/fastify-generators';
 import {
-  adminAppEntryType,
   appCompilerSpec,
   backendAppEntryType,
   createPlatformPluginExport,
@@ -64,28 +63,19 @@ export default createPlatformPluginExport({
       },
     });
 
-    const sharedWebGenerators = {
-      ...createCommonWebAuthGenerators(),
-      authApollo: authApolloGenerator({}),
-      reactAuth: reactAuthGenerator({}),
-      authHooks: authHooksGenerator({}),
-      reactSession: reactSessionGenerator({}),
-      authRoutes: authRoutesGenerator({}),
-    };
-
     // register web compiler
     appCompiler.registerAppCompiler({
       pluginId,
       appType: webAppEntryType,
       compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren(sharedWebGenerators);
-      },
-    });
-    appCompiler.registerAppCompiler({
-      pluginId,
-      appType: adminAppEntryType,
-      compile: ({ appCompiler }) => {
-        appCompiler.addRootChildren(sharedWebGenerators);
+        appCompiler.addRootChildren({
+          ...createCommonWebAuthGenerators(),
+          authApollo: authApolloGenerator({}),
+          reactAuth: reactAuthGenerator({}),
+          authHooks: authHooksGenerator({}),
+          reactSession: reactSessionGenerator({}),
+          authRoutes: authRoutesGenerator({}),
+        });
       },
     });
 

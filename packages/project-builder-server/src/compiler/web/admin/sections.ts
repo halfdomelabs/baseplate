@@ -1,20 +1,21 @@
-import type { AdminAppConfig } from '@baseplate-dev/project-builder-lib';
+import type { WebAppConfig } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import { FeatureUtils } from '@baseplate-dev/project-builder-lib';
 import { reactRoutesGenerator } from '@baseplate-dev/react-generators';
 import { notEmpty } from '@baseplate-dev/utils';
 
-import type { AppEntryBuilder } from '../app-entry-builder.js';
+import type { AppEntryBuilder } from '../../app-entry-builder.js';
 
 import { compileAdminCrudSection } from './crud/index.js';
 
 function compileAdminSections(
   featureId: string,
-  builder: AppEntryBuilder<AdminAppConfig>,
+  builder: AppEntryBuilder<WebAppConfig>,
   sectionsId: string,
 ): GeneratorBundle[] | undefined {
-  const sections = builder.appConfig.sections?.filter(
+  const { adminApp } = builder.appConfig;
+  const sections = adminApp?.sections?.filter(
     (s) => s.featureRef === featureId,
   );
 
@@ -32,7 +33,7 @@ function compileAdminSections(
 
 function compileAdminFeatureRecursive(
   featureId: string,
-  builder: AppEntryBuilder<AdminAppConfig>,
+  builder: AppEntryBuilder<WebAppConfig>,
 ): GeneratorBundle | undefined {
   const { projectDefinition } = builder;
   const feature = FeatureUtils.getFeatureByIdOrThrow(
@@ -82,7 +83,7 @@ function compileAdminFeatureRecursive(
 }
 
 export function compileAdminFeatures(
-  builder: AppEntryBuilder<AdminAppConfig>,
+  builder: AppEntryBuilder<WebAppConfig>,
 ): GeneratorBundle[] {
   const { projectDefinition } = builder;
   const rootFeatures = FeatureUtils.getRootFeatures(projectDefinition);

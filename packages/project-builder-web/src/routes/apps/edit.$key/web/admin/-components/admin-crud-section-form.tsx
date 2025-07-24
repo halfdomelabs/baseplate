@@ -1,4 +1,4 @@
-import type { AdminCrudSectionConfigInput } from '@baseplate-dev/project-builder-lib';
+import type { WebAdminSectionConfigInput } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control, UseFormReturn } from 'react-hook-form';
 
@@ -23,7 +23,7 @@ import CrudTableColumnsForm from './crud-table-columns-form.js';
 
 interface Props {
   className?: string;
-  formProps: UseFormReturn<AdminCrudSectionConfigInput>;
+  formProps: UseFormReturn<WebAdminSectionConfigInput>;
 }
 
 function AdminCrudSectionForm({

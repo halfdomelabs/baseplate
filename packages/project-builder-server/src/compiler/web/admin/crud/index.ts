@@ -1,7 +1,7 @@
 import type {
-  AdminAppConfig,
   AdminCrudEmbeddedFormConfig,
   AdminCrudSectionConfig,
+  WebAppConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
@@ -24,7 +24,7 @@ import { compileAdminCrudDisplay } from './displays.js';
 import { compileAdminCrudInput } from './inputs.js';
 
 function compileAdminCrudEmbeddedForm(
-  builder: AppEntryBuilder<AdminAppConfig>,
+  builder: AppEntryBuilder<WebAppConfig>,
   form: AdminCrudEmbeddedFormConfig,
   crudSectionId: string,
 ): GeneratorBundle {
@@ -96,7 +96,7 @@ function compileAdminCrudEmbeddedForm(
 
 export function compileAdminCrudSection(
   crudSection: AdminCrudSectionConfig,
-  builder: AppEntryBuilder<AdminAppConfig>,
+  builder: AppEntryBuilder<WebAppConfig>,
   parentId: string,
 ): GeneratorBundle {
   const sectionName = inflection.camelize(

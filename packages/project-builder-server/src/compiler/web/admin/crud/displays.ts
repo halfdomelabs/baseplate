@@ -1,8 +1,8 @@
 import type {
-  AdminAppConfig,
   AdminCrudDisplayConfig,
   AdminCrudForeignDisplayConfig,
   AdminCrudTextDisplayConfig,
+  WebAppConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
 
@@ -18,7 +18,7 @@ import {
 import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
 
 function compileAdminCrudForeignDisplay(
-  builder: AppEntryBuilder<AdminAppConfig>,
+  builder: AppEntryBuilder<WebAppConfig>,
   field: AdminCrudForeignDisplayConfig,
   modelId: string,
 ): GeneratorBundle {
@@ -50,7 +50,7 @@ function compileAdminCrudForeignDisplay(
 }
 
 function compileAdminCrudTextDisplay(
-  builder: AppEntryBuilder<AdminAppConfig>,
+  builder: AppEntryBuilder<WebAppConfig>,
   field: AdminCrudTextDisplayConfig,
   modelId: string,
 ): GeneratorBundle {
@@ -69,7 +69,7 @@ function compileAdminCrudTextDisplay(
 }
 
 export function compileAdminCrudDisplay(
-  builder: AppEntryBuilder<AdminAppConfig>,
+  builder: AppEntryBuilder<WebAppConfig>,
   field: AdminCrudDisplayConfig,
   modelId: string,
 ): GeneratorBundle {

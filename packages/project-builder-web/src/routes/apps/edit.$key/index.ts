@@ -4,9 +4,6 @@ export const Route = createFileRoute('/apps/edit/$key/')({
   loader: ({ params: { key }, context: { app } }) => {
     if (!app) throw notFound();
     const appType = app.type as string;
-    if (appType === 'admin') {
-      throw redirect({ to: '/apps/edit/$key/admin', params: { key } });
-    }
     if (appType === 'backend') {
       throw redirect({ to: '/apps/edit/$key/backend', params: { key } });
     }

@@ -1,5 +1,4 @@
 import type {
-  AdminAppConfig,
   AppCompiler,
   AppEntry,
   AppEntryType,
@@ -65,7 +64,5 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
     };
   }
 }
-
-export type AdminAppEntryBuilder = AppEntryBuilder<AdminAppConfig>;
 
 export type BackendAppEntryBuilder = AppEntryBuilder<BackendAppConfig>;
