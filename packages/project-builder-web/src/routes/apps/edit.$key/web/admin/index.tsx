@@ -1,3 +1,4 @@
+import type { WebAdminSectionConfig } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
@@ -60,11 +61,9 @@ function WebAdminPage(): React.JSX.Element {
   const webAppSchema = useDefinitionSchema(createWebAppSchema);
   const adminSectionSchema = useDefinitionSchema(createWebAdminSectionSchema);
 
-  const [sectionToEdit, setSectionToEdit] = useState<{
-    id?: string;
-    name?: string;
-    type?: string;
-  }>();
+  const [sectionToEdit, setSectionToEdit] = useState<
+    WebAdminSectionConfig | undefined
+  >();
   const [isEditingSection, setIsEditingSection] = useState(false);
 
   const formProps = useResettableForm({
@@ -245,8 +244,10 @@ function WebAdminPage(): React.JSX.Element {
                         title="Edit"
                         aria-label="Edit section"
                         onClick={() => {
-                          setSectionToEdit(section);
-                          sectionFormProps.reset(section);
+                          setSectionToEdit(section as WebAdminSectionConfig);
+                          sectionFormProps.reset(
+                            section as WebAdminSectionConfig,
+                          );
                           setIsEditingSection(true);
                         }}
                       >
@@ -271,12 +272,19 @@ function WebAdminPage(): React.JSX.Element {
                   variant="secondary"
                   size="sm"
                   onClick={() => {
-                    setSectionToEdit({
+                    const defaultFeature = featureOptions[0]?.value ?? '';
+                    const defaultSection: WebAdminSectionConfig = {
                       id: adminSectionEntityType.generateNewId(),
                       name: '',
                       type: 'crud',
-                    });
-                    sectionFormProps.reset({ type: 'crud' });
+                      featureRef: defaultFeature,
+                      icon: '',
+                      modelRef: '',
+                      form: { fields: [] },
+                      table: { columns: [] },
+                    };
+                    setSectionToEdit(defaultSection);
+                    sectionFormProps.reset(defaultSection);
                     setIsEditingSection(true);
                   }}
                 >

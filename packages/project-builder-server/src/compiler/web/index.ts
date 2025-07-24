@@ -33,6 +33,7 @@ import { safeMerge } from '@baseplate-dev/utils';
 import { dasherizeCamel, titleizeCamel } from '#src/utils/case.js';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
+import { compileAdminSections } from './admin/index.js';
 import { compileWebFeatures } from './features.js';
 
 function buildAdminNavigationLinks(
@@ -99,8 +100,7 @@ function buildAdminRoutes(
             bullBoardUrl: `http://localhost:${generalSettings.portOffset + 1}`,
           })
         : undefined,
-      // TODO: Implement admin sections compilation
-      // routes: compileAdminSections(builder),
+      routes: compileAdminSections(builder),
     },
   });
 }
@@ -132,7 +132,7 @@ function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
       children: {
         reactRouter: reactRouterGenerator({
           children: routerChildren,
-          renderPlaceholderIndex: true,
+          renderPlaceholderIndex: adminRoutes ? false : true,
         }),
         reactComponents: reactComponentsGenerator({}),
         reactTailwind: reactTailwindGenerator({}),

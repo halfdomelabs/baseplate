@@ -105,7 +105,10 @@ export default createPlatformPluginExport({
         appCompiler,
         appDefinition,
       }) => {
-        if (!appDefinition.includeUploadComponents || appDefinition.adminApp) {
+        if (
+          !appDefinition.includeUploadComponents &&
+          !appDefinition.adminApp?.enabled
+        ) {
           return;
         }
         const storage = PluginUtils.configByIdOrThrow(
