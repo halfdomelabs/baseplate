@@ -317,6 +317,7 @@ function WebAdminPage(): React.JSX.Element {
                 label="Name"
                 control={sectionFormProps.control}
                 name="name"
+                autoComplete="off"
               />
               <ComboboxFieldController
                 label="Feature"
