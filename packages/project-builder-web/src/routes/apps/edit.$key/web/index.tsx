@@ -1,9 +1,6 @@
 import type React from 'react';
 
-import {
-  authConfigSpec,
-  createWebAppSchema,
-} from '@baseplate-dev/project-builder-lib';
+import { createWebAppSchema } from '@baseplate-dev/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
@@ -13,7 +10,6 @@ import {
 import {
   FormActionBar,
   InputFieldController,
-  MultiComboboxFieldController,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -40,8 +36,6 @@ function WebAppGeneralForm(): React.JSX.Element {
   });
   const { control, handleSubmit, reset } = formProps;
 
-  const { definition, pluginContainer } = useProjectDefinition();
-
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback((draftConfig) => {
       draftConfig.apps = draftConfig.apps.map((app) =>
@@ -51,14 +45,6 @@ function WebAppGeneralForm(): React.JSX.Element {
   );
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
-
-  const roleOptions = pluginContainer
-    .getPluginSpecOptional(authConfigSpec)
-    ?.getAuthRoles(definition)
-    .map((role) => ({
-      label: role.name,
-      value: role.id,
-    }));
 
   return (
     <form onSubmit={onSubmit} className="w-full max-w-7xl space-y-4 p-4">
@@ -114,15 +100,6 @@ function WebAppGeneralForm(): React.JSX.Element {
               control={control}
               name="enableSubscriptions"
             />
-            {roleOptions && (
-              <MultiComboboxFieldController
-                label="Allowed Roles"
-                description="Which roles can access the web application"
-                control={control}
-                options={roleOptions}
-                name="allowedRoles"
-              />
-            )}
           </SectionListSectionContent>
         </SectionListSection>
       </SectionList>
