@@ -21,7 +21,7 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
-import { sortBy } from 'es-toolkit';
+import { sortBy, startCase } from 'es-toolkit';
 import { useForm } from 'react-hook-form';
 
 import { logAndFormatError } from '#src/services/error-formatter.js';
@@ -55,7 +55,6 @@ function NewAppDialog({
   const appTypeOptions = [
     { label: 'Backend App', value: 'backend' },
     { label: 'Web App', value: 'web' },
-    { label: 'Admin App', value: 'admin' },
   ];
 
   const onSubmit = handleSubmit((data) => {
@@ -67,6 +66,10 @@ function NewAppDialog({
           {
             ...data,
             id: newId,
+            ...(data.type === 'web' && {
+              title: startCase(data.name),
+              description: `A ${data.type} application`,
+            }),
           },
         ];
         draftConfig.apps = sortBy(newApps, [(app) => app.name]) as AppConfig[];
@@ -122,7 +125,7 @@ function NewAppDialog({
             control={control}
             name="type"
             options={appTypeOptions}
-            description="Backend apps provide APIs, web apps are client applications, and admin apps manage data"
+            description="Backend apps provide APIs, web apps are client applications"
           />
           <DialogFooter>
             <Button
