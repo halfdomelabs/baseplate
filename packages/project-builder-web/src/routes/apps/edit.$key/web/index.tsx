@@ -95,11 +95,6 @@ function WebAppGeneralForm(): React.JSX.Element {
               control={control}
               name="includeUploadComponents"
             />
-            <SwitchFieldController
-              label="Enable Subscriptions?"
-              control={control}
-              name="enableSubscriptions"
-            />
           </SectionListSectionContent>
         </SectionListSection>
       </SectionList>
