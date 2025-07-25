@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/sync",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Library for syncing Baseplate descriptions",
   "keywords": [
     "code-generation",
