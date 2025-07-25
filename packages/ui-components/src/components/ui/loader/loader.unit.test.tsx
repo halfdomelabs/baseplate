@@ -1,6 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { act } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Loader } from './loader.js';
 
@@ -21,7 +20,7 @@ describe('Loader', () => {
     expect(loaderContainer?.children).toHaveLength(0);
   });
 
-  it('should show loader after default delay of 300ms', async () => {
+  it('should show loader after default delay of 300ms', () => {
     render(<Loader />);
 
     // Initially hidden - no progressbar role
@@ -40,7 +39,7 @@ describe('Loader', () => {
     ).toBeInTheDocument();
   });
 
-  it('should show loader after custom delay', async () => {
+  it('should show loader after custom delay', () => {
     render(<Loader delay={500} />);
 
     // Initially hidden
@@ -75,7 +74,7 @@ describe('Loader', () => {
   });
 
   it('should cleanup timer on unmount', () => {
-    const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
 
     const { unmount } = render(<Loader delay={1000} />);
 
