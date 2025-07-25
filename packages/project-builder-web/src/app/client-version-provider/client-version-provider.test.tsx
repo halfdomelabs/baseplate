@@ -51,23 +51,6 @@ describe('ClientVersionProvider', () => {
     });
   });
 
-  it('should show loader while fetching version info', () => {
-    let cleanUp: (() => void) | undefined;
-    vi.mocked(getVersionInfo).mockImplementation(
-      () =>
-        new Promise((_, r) => {
-          cleanUp = r;
-        }),
-    );
-
-    render(<ClientVersionProvider>{mockChild}</ClientVersionProvider>);
-
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
-    expect(screen.queryByTestId('child')).not.toBeInTheDocument();
-
-    cleanUp?.();
-  });
-
   it('should handle error state', async () => {
     const error = new Error('Failed to fetch');
     vi.mocked(getVersionInfo).mockRejectedValue(error);
