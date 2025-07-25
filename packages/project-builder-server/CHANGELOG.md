@@ -1,5 +1,17 @@
 # @baseplate-dev/project-builder-server
 
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies [[`541db59`](https://github.com/halfdomelabs/baseplate/commit/541db59ccf868b6a6fcc8fa756eab0dfa560d193), [`e639251`](https://github.com/halfdomelabs/baseplate/commit/e639251f25094bb17f126e8604e505b1037b5640), [`cc6cd6c`](https://github.com/halfdomelabs/baseplate/commit/cc6cd6cce6bd0d97a68d7bd5b46408e0877d990b)]:
+  - @baseplate-dev/react-generators@0.2.6
+  - @baseplate-dev/project-builder-lib@0.2.6
+  - @baseplate-dev/core-generators@0.2.6
+  - @baseplate-dev/fastify-generators@0.2.6
+  - @baseplate-dev/sync@0.2.6
+  - @baseplate-dev/utils@0.2.6
+
 ## 0.2.5
 
 ### Patch Changes

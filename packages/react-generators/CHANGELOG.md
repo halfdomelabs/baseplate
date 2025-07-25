@@ -1,5 +1,16 @@
 # @baseplate-dev/react-generators
 
+## 0.2.6
+
+### Patch Changes
+
+- [#618](https://github.com/halfdomelabs/baseplate/pull/618) [`541db59`](https://github.com/halfdomelabs/baseplate/commit/541db59ccf868b6a6fcc8fa756eab0dfa560d193) Thanks [@kingston](https://github.com/kingston)! - Add 300ms delay to loader component
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.2.6
+  - @baseplate-dev/sync@0.2.6
+  - @baseplate-dev/utils@0.2.6
+
 ## 0.2.5
 
 ### Patch Changes
