@@ -1,4 +1,5 @@
 import type { GeneratorOutput } from '@baseplate-dev/sync';
+import type { Ignore } from 'ignore';
 
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -8,16 +9,24 @@ import {
   createUnifiedDiff,
   isContentBinary,
   readWorkingFile,
+  scanWorkingDirectory,
   shouldIncludeFile,
 } from './diff-utils.js';
 
 // Mock the file system
 vi.mock('node:fs/promises');
 vi.mock('isbinaryfile');
+vi.mock('globby');
 
 describe('diff-utils', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vol.reset();
+    // Reset all mocks
+    vi.clearAllMocks();
+
+    // Default mock for globby to return empty array
+    const { globby } = await import('globby');
+    vi.mocked(globby).mockResolvedValue([]);
   });
 
   describe('shouldIncludeFile', () => {
@@ -104,6 +113,66 @@ describe('diff-utils', () => {
       expect(diff).toContain('--- test.txt');
       expect(diff).toContain('+++ test.txt');
       expect(diff).toContain('+New content');
+    });
+  });
+
+  describe('scanWorkingDirectory', () => {
+    it('should scan all files when no glob patterns provided', async () => {
+      const { globby } = await import('globby');
+      vi.mocked(globby).mockResolvedValue([
+        'file1.ts',
+        'file2.js',
+        'dir/file3.txt',
+      ]);
+
+      const result = await scanWorkingDirectory('/test');
+
+      expect(globby).toHaveBeenCalledWith(
+        ['**/*'],
+        expect.objectContaining({
+          cwd: '/test',
+          onlyFiles: true,
+          gitignore: true,
+          absolute: false,
+        }),
+      );
+      expect(result).toEqual(['file1.ts', 'file2.js', 'dir/file3.txt']);
+    });
+
+    it('should use provided glob patterns', async () => {
+      const { globby } = await import('globby');
+      vi.mocked(globby).mockResolvedValue(['file1.ts', 'file2.ts']);
+
+      const result = await scanWorkingDirectory('/test', ['**/*.ts']);
+
+      expect(globby).toHaveBeenCalledWith(
+        ['**/*.ts'],
+        expect.objectContaining({
+          cwd: '/test',
+          onlyFiles: true,
+          gitignore: true,
+          absolute: false,
+        }),
+      );
+      expect(result).toEqual(['file1.ts', 'file2.ts']);
+    });
+
+    it('should filter files using ignore patterns', async () => {
+      const { globby } = await import('globby');
+      vi.mocked(globby).mockResolvedValue([
+        'file1.ts',
+        'node_modules/lib.js',
+        'file2.ts',
+      ]);
+
+      // Mock ignore instance
+      const mockIgnore = {
+        ignores: vi.fn((path: string) => path.includes('node_modules')),
+      } as unknown as Ignore;
+
+      const result = await scanWorkingDirectory('/test', undefined, mockIgnore);
+
+      expect(result).toEqual(['file1.ts', 'file2.ts']);
     });
   });
 
@@ -210,6 +279,78 @@ describe('diff-utils', () => {
 
       expect(result.totalFiles).toBe(1);
       expect(result.diffs[0].path).toBe('file.ts');
+    });
+
+    it('should detect deleted files', async () => {
+      const { isBinaryFile } = await import('isbinaryfile');
+      const { globby } = await import('globby');
+
+      vi.mocked(isBinaryFile).mockResolvedValue(false);
+      vi.mocked(globby).mockResolvedValue(['old-file.ts', 'shared-file.ts']);
+
+      vol.fromJSON({
+        '/test/old-file.ts': 'export const old = "value";',
+        '/test/shared-file.ts': 'export const shared = "value";',
+      });
+
+      const generatorOutput: GeneratorOutput = {
+        files: new Map([
+          [
+            'shared-file.ts',
+            { id: '1', contents: 'export const shared = "value";' },
+          ],
+          // old-file.ts is not in generated output, so it should be detected as deleted
+        ]),
+        postWriteCommands: [],
+        globalFormatters: [],
+      };
+
+      const result = await compareFiles('/test', generatorOutput);
+
+      expect(result.totalFiles).toBe(1);
+      expect(result.deletedFiles).toBe(1);
+      expect(result.diffs[0]).toMatchObject({
+        path: 'old-file.ts',
+        type: 'deleted',
+        isBinary: false,
+      });
+    });
+
+    it('should detect both modified and deleted files', async () => {
+      const { isBinaryFile } = await import('isbinaryfile');
+      const { globby } = await import('globby');
+
+      vi.mocked(isBinaryFile).mockResolvedValue(false);
+      vi.mocked(globby).mockResolvedValue(['existing-file.ts', 'old-file.ts']);
+
+      vol.fromJSON({
+        '/test/existing-file.ts': 'export const foo = "old";',
+        '/test/old-file.ts': 'export const old = "value";',
+      });
+
+      const generatorOutput: GeneratorOutput = {
+        files: new Map([
+          [
+            'existing-file.ts',
+            { id: '1', contents: 'export const foo = "new";' },
+          ],
+          // old-file.ts is not in generated output, so it should be detected as deleted
+        ]),
+        postWriteCommands: [],
+        globalFormatters: [],
+      };
+
+      const result = await compareFiles('/test', generatorOutput);
+
+      expect(result.totalFiles).toBe(2);
+      expect(result.modifiedFiles).toBe(1);
+      expect(result.deletedFiles).toBe(1);
+
+      const modifiedFile = result.diffs.find((d) => d.type === 'modified');
+      const deletedFile = result.diffs.find((d) => d.type === 'deleted');
+
+      expect(modifiedFile?.path).toBe('existing-file.ts');
+      expect(deletedFile?.path).toBe('old-file.ts');
     });
   });
 });

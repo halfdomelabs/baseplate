@@ -3,8 +3,10 @@ import type ignore from 'ignore';
 
 import { shouldIncludeFile as shouldIncludeFileIgnore } from '@baseplate-dev/sync';
 import * as diff from 'diff';
+import { globby } from 'globby';
 import { isBinaryFile } from 'isbinaryfile';
 import micromatch from 'micromatch';
+import fsAdapter from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -73,6 +75,32 @@ export function createUnifiedDiff(
     'generated',
   );
   return patch;
+}
+
+/**
+ * Scans the working directory for all files, respecting ignore and glob patterns
+ */
+export async function scanWorkingDirectory(
+  directory: string,
+  globPatterns?: string[],
+  ignoreInstance?: ignore.Ignore,
+): Promise<string[]> {
+  // Create glob pattern to match all files
+  const patterns =
+    globPatterns && globPatterns.length > 0 ? globPatterns : ['**/*'];
+
+  const files = await globby(patterns, {
+    cwd: directory,
+    onlyFiles: true,
+    fs: fsAdapter,
+    gitignore: true,
+    absolute: false, // Return relative paths
+  });
+
+  // Filter files using ignore patterns and glob patterns
+  return files.filter((filePath) =>
+    shouldIncludeFile(filePath, globPatterns, ignoreInstance),
+  );
 }
 
 /**
@@ -151,9 +179,34 @@ export async function compareFiles(
     }
   }
 
-  // TODO: Check for files that exist in working directory but not in generated output
-  // This would require scanning the working directory, which might be expensive
-  // For now, we'll focus on differences in generated files
+  // Check for files that exist in working directory but not in generated output
+  const workingDirectoryFiles = await scanWorkingDirectory(
+    directory,
+    globPatterns,
+    ignoreInstance,
+  );
+
+  // Find files that exist in working directory but not in generated output
+  for (const workingFilePath of workingDirectoryFiles) {
+    if (!processedFiles.has(workingFilePath)) {
+      // This file exists in working directory but not in generated output
+      const workingContent = await readWorkingFile(directory, workingFilePath);
+
+      if (workingContent !== null) {
+        const workingIsBinary = Buffer.isBuffer(workingContent);
+
+        diffs.push({
+          path: workingFilePath,
+          type: 'deleted',
+          workingContent,
+          isBinary: workingIsBinary,
+          unifiedDiff: workingIsBinary
+            ? undefined
+            : createUnifiedDiff(workingFilePath, workingContent.toString(), ''),
+        });
+      }
+    }
+  }
 
   const summary: DiffSummary = {
     totalFiles: diffs.length,
