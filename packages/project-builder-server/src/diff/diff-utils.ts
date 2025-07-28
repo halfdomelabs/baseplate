@@ -142,18 +142,18 @@ export async function compareFiles(
     }
 
     if (workingContent === null) {
-      // File only exists in generated output
+      // File only exists in generated output - generator should not create this file
       if (generatedIsBinary) {
         diffs.push({
           path: filePath,
-          type: 'added',
+          type: 'deleted',
           isBinary: true,
           generatedContent,
         });
       } else {
         diffs.push({
           path: filePath,
-          type: 'added',
+          type: 'deleted',
           generatedContent,
           isBinary: false,
           unifiedDiff: createUnifiedDiff(filePath, generatedContent, ''),
@@ -203,7 +203,7 @@ export async function compareFiles(
   // Find files that exist in working directory but not in generated output
   for (const workingFilePath of workingDirectoryFiles) {
     if (!processedFiles.has(workingFilePath)) {
-      // This file exists in working directory but not in generated output
+      // This file exists in working directory but not in generated output - generator should create this file
       const workingContent = await readWorkingFile(directory, workingFilePath);
 
       if (workingContent !== null) {
@@ -212,14 +212,14 @@ export async function compareFiles(
         if (workingIsBinary) {
           diffs.push({
             path: workingFilePath,
-            type: 'deleted',
+            type: 'added',
             workingContent,
             isBinary: true,
           });
         } else {
           diffs.push({
             path: workingFilePath,
-            type: 'deleted',
+            type: 'added',
             workingContent,
             isBinary: workingIsBinary,
             unifiedDiff: createUnifiedDiff(workingFilePath, '', workingContent),

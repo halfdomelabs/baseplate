@@ -181,7 +181,7 @@ describe('diff-utils', () => {
   });
 
   describe('compareFiles', () => {
-    it('should detect added files', async () => {
+    it('should detect deleted files (generator creates file that should not exist)', async () => {
       const { isBinaryFile } = await import('isbinaryfile');
       vi.mocked(isBinaryFile).mockResolvedValue(false);
 
@@ -196,10 +196,10 @@ describe('diff-utils', () => {
       const result = await compareFiles('/test', generatorOutput);
 
       expect(result.totalFiles).toBe(1);
-      expect(result.addedFiles).toBe(1);
+      expect(result.deletedFiles).toBe(1);
       expect(result.diffs[0]).toMatchObject({
         path: 'new-file.ts',
-        type: 'added',
+        type: 'deleted',
         isBinary: false,
       });
     });
@@ -285,7 +285,7 @@ describe('diff-utils', () => {
       expect(result.diffs[0].path).toBe('file.ts');
     });
 
-    it('should detect deleted files', async () => {
+    it('should detect added files (working file that generator should create)', async () => {
       const { isBinaryFile } = await import('isbinaryfile');
       const { globby } = await import('globby');
 
@@ -303,7 +303,7 @@ describe('diff-utils', () => {
             'shared-file.ts',
             { id: '1', contents: 'export const shared = "value";' },
           ],
-          // old-file.ts is not in generated output, so it should be detected as deleted
+          // old-file.ts is not in generated output, so it should be detected as added (generator should create it)
         ]),
         postWriteCommands: [],
         globalFormatters: [],
@@ -312,15 +312,15 @@ describe('diff-utils', () => {
       const result = await compareFiles('/test', generatorOutput);
 
       expect(result.totalFiles).toBe(1);
-      expect(result.deletedFiles).toBe(1);
+      expect(result.addedFiles).toBe(1);
       expect(result.diffs[0]).toMatchObject({
         path: 'old-file.ts',
-        type: 'deleted',
+        type: 'added',
         isBinary: false,
       });
     });
 
-    it('should detect both modified and deleted files', async () => {
+    it('should detect both modified and added files', async () => {
       const { isBinaryFile } = await import('isbinaryfile');
       const { globby } = await import('globby');
 
@@ -338,7 +338,7 @@ describe('diff-utils', () => {
             'existing-file.ts',
             { id: '1', contents: 'export const foo = "new";' },
           ],
-          // old-file.ts is not in generated output, so it should be detected as deleted
+          // old-file.ts is not in generated output, so it should be detected as added (generator should create it)
         ]),
         postWriteCommands: [],
         globalFormatters: [],
@@ -348,13 +348,13 @@ describe('diff-utils', () => {
 
       expect(result.totalFiles).toBe(2);
       expect(result.modifiedFiles).toBe(1);
-      expect(result.deletedFiles).toBe(1);
+      expect(result.addedFiles).toBe(1);
 
       const modifiedFile = result.diffs.find((d) => d.type === 'modified');
-      const deletedFile = result.diffs.find((d) => d.type === 'deleted');
+      const addedFile = result.diffs.find((d) => d.type === 'added');
 
       expect(modifiedFile?.path).toBe('existing-file.ts');
-      expect(deletedFile?.path).toBe('old-file.ts');
+      expect(addedFile?.path).toBe('old-file.ts');
     });
   });
 });

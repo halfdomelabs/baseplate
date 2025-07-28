@@ -5,14 +5,14 @@ interface BaseFileDiff {
 interface AddedFileDiff extends BaseFileDiff {
   type: 'added';
   isBinary: false;
-  generatedContent: string;
+  workingContent: string;
   unifiedDiff: string;
 }
 
 interface AddedFileBinaryDiff extends BaseFileDiff {
   type: 'added';
   isBinary: true;
-  generatedContent: Buffer;
+  workingContent: Buffer;
 }
 
 interface ModifiedFileDiff extends BaseFileDiff {
@@ -33,14 +33,14 @@ interface ModifiedFileBinaryDiff extends BaseFileDiff {
 interface DeletedFileDiff extends BaseFileDiff {
   type: 'deleted';
   isBinary: false;
-  workingContent: string;
+  generatedContent: string;
   unifiedDiff: string;
 }
 
 interface DeletedFileBinaryDiff extends BaseFileDiff {
   type: 'deleted';
   isBinary: true;
-  workingContent: Buffer;
+  generatedContent: Buffer;
 }
 
 export type FileDiff =
