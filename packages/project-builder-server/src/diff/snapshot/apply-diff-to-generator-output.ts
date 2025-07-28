@@ -24,13 +24,14 @@ export async function applySnapshotToGeneratorOutput(
         `File not found in generator output: ${fileEntry.path}. Please run fix-diff to fix the diffs.`,
       );
     }
-    const diffFile = await readFile(
-      path.join(diffDirectory, fileEntry.path),
-      'utf-8',
-    ).catch(handleFileNotFoundError);
+    const diffFilePath = path.join(diffDirectory, fileEntry.diffFile);
+    const diffFile = await readFile(diffFilePath, 'utf-8').catch(
+      handleFileNotFoundError,
+    );
     if (!diffFile) {
-      throw new Error(`Diff file not found: ${fileEntry.path}`);
+      throw new Error(`Diff file not found: ${diffFilePath}`);
     }
+
     const newContents = applyPatch(fileData.contents.toString(), diffFile);
     if (!newContents) {
       throw new Error(

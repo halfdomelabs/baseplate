@@ -61,10 +61,11 @@ export async function addFilesToSnapshot(
       throw new Error(`App ${appName} not found`);
     }
 
-    const snapshotDirectories = resolveSnapshotDirectory(
-      compiledApp.appDirectory,
-      { snapshotDir: snapshotDirectory },
-    );
+    const appDirectory = path.join(projectDirectory, compiledApp.appDirectory);
+
+    const snapshotDirectories = resolveSnapshotDirectory(appDirectory, {
+      snapshotDir: snapshotDirectory,
+    });
 
     logger.info(`Generating project to create snapshot...`);
 
@@ -82,7 +83,7 @@ export async function addFilesToSnapshot(
       initializeSnapshotManifest();
 
     for (const relativePath of relativePaths) {
-      const absolutePath = path.resolve(compiledApp.appDirectory, relativePath);
+      const absolutePath = path.join(appDirectory, relativePath);
 
       if (isDeleted) {
         if (!generatedFiles.get(relativePath)) {
@@ -101,7 +102,7 @@ export async function addFilesToSnapshot(
 
         if (!workingContent) {
           throw new Error(
-            `File not found: ${relativePath}. Use --deleted flag for deleted files.`,
+            `File not found: ${absolutePath}. Use --deleted flag for deleted files.`,
           );
         }
 
@@ -111,6 +112,12 @@ export async function addFilesToSnapshot(
             throw new TypeError(
               `Diffing binary contents is not currently supported.`,
             );
+          }
+          if (generatedContent === workingContent) {
+            logger.warn(
+              `File ${relativePath} is unchanged. Skipping snapshot generation.`,
+            );
+            continue;
           }
           const diffFileName = await saveSnapshotDiffFile(
             snapshotDirectories,

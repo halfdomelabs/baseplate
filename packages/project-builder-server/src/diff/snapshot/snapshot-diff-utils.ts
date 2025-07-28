@@ -1,10 +1,10 @@
 import { handleFileNotFoundError } from '@baseplate-dev/utils/node';
+import { createPatch } from 'diff';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { SnapshotDirectory } from './snapshot-types.js';
 
-import { createUnifiedDiff } from '../diff-utils.js';
 import { pathToSafeDiffFilename } from './snapshot-utils.js';
 
 /**
@@ -16,10 +16,10 @@ export async function saveSnapshotDiffFile(
   generatedContent: string,
   workingContent: string,
 ): Promise<string> {
-  const diffContent = createUnifiedDiff(
+  const diffContent = createPatch(
     relativePath,
-    workingContent,
     generatedContent,
+    workingContent,
   );
   const diffFileName = pathToSafeDiffFilename(relativePath);
   const diffFilePath = path.join(snapshotDirectory.diffsPath, diffFileName);
