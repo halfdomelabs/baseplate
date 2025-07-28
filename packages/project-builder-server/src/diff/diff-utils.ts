@@ -55,7 +55,7 @@ export async function readWorkingFile(
 /**
  * Determines if content is binary (for generated content)
  */
-export function isContentBinary(content: string | Buffer): boolean {
+export function isContentBinary(content: string | Buffer): content is Buffer {
   return Buffer.isBuffer(content);
 }
 
@@ -103,6 +103,13 @@ export async function scanWorkingDirectory(
   );
 }
 
+function normalizeAsBuffer(content: string | Buffer): Buffer {
+  if (Buffer.isBuffer(content)) {
+    return content;
+  }
+  return Buffer.from(content);
+}
+
 /**
  * Compares generated output with working directory files
  */
@@ -136,15 +143,22 @@ export async function compareFiles(
 
     if (workingContent === null) {
       // File only exists in generated output
-      diffs.push({
-        path: filePath,
-        type: 'added',
-        generatedContent,
-        isBinary: generatedIsBinary,
-        unifiedDiff: generatedIsBinary
-          ? undefined
-          : createUnifiedDiff(filePath, '', generatedContent.toString()),
-      });
+      if (generatedIsBinary) {
+        diffs.push({
+          path: filePath,
+          type: 'added',
+          isBinary: true,
+          generatedContent,
+        });
+      } else {
+        diffs.push({
+          path: filePath,
+          type: 'added',
+          generatedContent,
+          isBinary: false,
+          unifiedDiff: createUnifiedDiff(filePath, '', generatedContent),
+        });
+      }
     } else if (generatedIsBinary || workingIsBinary) {
       // Binary file comparison
       const areEqual =
@@ -156,9 +170,9 @@ export async function compareFiles(
         diffs.push({
           path: filePath,
           type: 'modified',
-          generatedContent,
-          workingContent,
           isBinary: true,
+          generatedContent: normalizeAsBuffer(generatedContent),
+          workingContent: normalizeAsBuffer(workingContent),
         });
       }
     } else {
@@ -169,10 +183,10 @@ export async function compareFiles(
       if (generatedText !== workingText) {
         diffs.push({
           path: filePath,
-          type: 'modified',
-          generatedContent,
-          workingContent,
           isBinary: false,
+          type: 'modified',
+          generatedContent: generatedText,
+          workingContent: workingText,
           unifiedDiff: createUnifiedDiff(filePath, workingText, generatedText),
         });
       }
@@ -193,17 +207,24 @@ export async function compareFiles(
       const workingContent = await readWorkingFile(directory, workingFilePath);
 
       if (workingContent !== null) {
-        const workingIsBinary = Buffer.isBuffer(workingContent);
+        const workingIsBinary = isContentBinary(workingContent);
 
-        diffs.push({
-          path: workingFilePath,
-          type: 'deleted',
-          workingContent,
-          isBinary: workingIsBinary,
-          unifiedDiff: workingIsBinary
-            ? undefined
-            : createUnifiedDiff(workingFilePath, workingContent.toString(), ''),
-        });
+        if (workingIsBinary) {
+          diffs.push({
+            path: workingFilePath,
+            type: 'deleted',
+            workingContent,
+            isBinary: true,
+          });
+        } else {
+          diffs.push({
+            path: workingFilePath,
+            type: 'deleted',
+            workingContent,
+            isBinary: workingIsBinary,
+            unifiedDiff: createUnifiedDiff(workingFilePath, workingContent, ''),
+          });
+        }
       }
     }
   }

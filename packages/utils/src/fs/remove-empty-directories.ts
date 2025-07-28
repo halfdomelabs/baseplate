@@ -18,6 +18,6 @@ export async function removeEmptyDirectories(directory: string): Promise<void> {
   // Check if directory is now empty
   const remainingEntries = await fs.readdir(directory);
   if (remainingEntries.length === 0) {
-    await fs.rmdir(directory);
+    await fs.rm(directory, { recursive: true });
   }
 }

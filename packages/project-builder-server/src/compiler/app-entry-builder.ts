@@ -12,6 +12,7 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import {
   appCompilerSpec,
+  AppUtils,
   createAppCompiler,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -57,9 +58,7 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
     return {
       id: this.appConfig.id,
       name: `${this.projectDefinition.settings.general.name}-${this.appConfig.name}`,
-      appDirectory: this.appConfig.packageLocation
-        ? this.appConfig.packageLocation
-        : `packages/${this.appConfig.name}`,
+      appDirectory: AppUtils.getAppDirectory(this.appConfig),
       generatorBundle: rootBundle,
     };
   }

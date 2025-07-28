@@ -3,6 +3,7 @@ import { program } from 'commander';
 import { addConfigCommand } from './commands/config.js';
 import { addDiffCommand } from './commands/diff.js';
 import { addServeCommand } from './commands/server.js';
+import { addSnapshotCommand } from './commands/snapshot.js';
 import { addSyncCommand } from './commands/sync.js';
 import { addTemplatesCommand } from './commands/templates.js';
 import { getEnabledFeatureFlags } from './services/feature-flags.js';
@@ -20,6 +21,7 @@ export async function runCli(): Promise<void> {
 
   if (enabledFlags.includes('TEMPLATE_EXTRACTOR')) {
     addTemplatesCommand(program);
+    addSnapshotCommand(program);
   }
 
   addSyncCommand(program);

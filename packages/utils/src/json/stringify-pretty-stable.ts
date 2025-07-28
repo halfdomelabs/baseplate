@@ -10,7 +10,7 @@ import { stringifyPrettyCompact } from './stringify-pretty-compact.js';
  * @param value - The value to stringify.
  * @returns The stringified value.
  */
-export function stringifyPrettyStable(value: Record<string, unknown>): string {
+export function stringifyPrettyStable(value: object): string {
   const sortedValue = sortKeys(value, {
     deep: true,
   });

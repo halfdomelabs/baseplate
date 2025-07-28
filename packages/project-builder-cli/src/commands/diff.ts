@@ -14,7 +14,7 @@ export function addDiffCommand(program: Command): void {
   program
     .command('diff [directory]')
     .description(
-      'Shows diff between generated output and current working directory',
+      'Show diff between generated output and current working directory',
     )
     .option('--compact', 'Show compact diff format instead of unified diff')
     .option('--app <apps...>', 'Filter by specific app names')

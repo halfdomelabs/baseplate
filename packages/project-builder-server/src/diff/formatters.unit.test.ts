@@ -35,6 +35,8 @@ describe('formatters', () => {
           type: 'added',
           isBinary: false,
           generatedContent: 'content',
+          unifiedDiff:
+            '--- new-file.ts\n<insert> new-file.ts\n@@ -0,0 +1 @@\n+content',
         },
         {
           path: 'modified-file.ts',
@@ -42,6 +44,8 @@ describe('formatters', () => {
           isBinary: false,
           generatedContent: 'new content',
           workingContent: 'old content',
+          unifiedDiff:
+            '--- modified-file.ts\n+++ modified-file.ts\n@@ -1 +1 @@\n-old content\n+new content',
         },
         {
           path: 'binary-file.png',
