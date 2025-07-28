@@ -95,11 +95,15 @@ describe('diff-utils', () => {
   });
 
   describe('createUnifiedDiff', () => {
-    it('should create a unified diff for text changes', () => {
-      const oldContent = 'Hello, world!\nThis is line 2.';
-      const newContent = 'Hello, universe!\nThis is line 2.';
+    it('should create a unified diff for text changes (generated → working)', () => {
+      const generatedContent = 'Hello, world!\nThis is line 2.';
+      const workingContent = 'Hello, universe!\nThis is line 2.';
 
-      const diff = createUnifiedDiff('test.txt', oldContent, newContent);
+      const diff = createUnifiedDiff(
+        'test.txt',
+        generatedContent,
+        workingContent,
+      );
 
       expect(diff).toContain('--- test.txt');
       expect(diff).toContain('+++ test.txt');
@@ -108,11 +112,11 @@ describe('diff-utils', () => {
     });
 
     it('should handle empty content', () => {
-      const diff = createUnifiedDiff('test.txt', '', 'New content');
+      const diff = createUnifiedDiff('test.txt', 'Old content', '');
 
       expect(diff).toContain('--- test.txt');
       expect(diff).toContain('+++ test.txt');
-      expect(diff).toContain('+New content');
+      expect(diff).toContain('-Old content');
     });
   });
 

@@ -60,19 +60,19 @@ export function isContentBinary(content: string | Buffer): content is Buffer {
 }
 
 /**
- * Creates a unified diff for text files
+ * Creates a unified diff for text files (generated → working)
  */
 export function createUnifiedDiff(
   filePath: string,
-  oldContent: string,
-  newContent: string,
+  generatedContent: string,
+  workingContent: string,
 ): string {
   const patch = diff.createPatch(
     filePath,
-    oldContent,
-    newContent,
-    'working',
+    generatedContent,
+    workingContent,
     'generated',
+    'working',
   );
   return patch;
 }
@@ -156,7 +156,7 @@ export async function compareFiles(
           type: 'added',
           generatedContent,
           isBinary: false,
-          unifiedDiff: createUnifiedDiff(filePath, '', generatedContent),
+          unifiedDiff: createUnifiedDiff(filePath, generatedContent, ''),
         });
       }
     } else if (generatedIsBinary || workingIsBinary) {
@@ -187,7 +187,7 @@ export async function compareFiles(
           type: 'modified',
           generatedContent: generatedText,
           workingContent: workingText,
-          unifiedDiff: createUnifiedDiff(filePath, workingText, generatedText),
+          unifiedDiff: createUnifiedDiff(filePath, generatedText, workingText),
         });
       }
     }
@@ -222,7 +222,7 @@ export async function compareFiles(
             type: 'deleted',
             workingContent,
             isBinary: workingIsBinary,
-            unifiedDiff: createUnifiedDiff(workingFilePath, workingContent, ''),
+            unifiedDiff: createUnifiedDiff(workingFilePath, '', workingContent),
           });
         }
       }
