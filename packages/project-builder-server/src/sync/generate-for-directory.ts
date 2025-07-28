@@ -1,24 +1,12 @@
 import type { AppEntry } from '@baseplate-dev/project-builder-lib';
 import type {
   FileWithConflict,
-  GeneratorEntry,
-  GeneratorOutput,
   Logger,
-  PreviousGeneratedPayload,
   TemplateMetadataOptions,
 } from '@baseplate-dev/sync';
 
-import {
-  buildGeneratorEntry,
-  CancelledSyncError,
-  createCodebaseFileReaderFromDirectory,
-  deleteMetadataFiles,
-  executeGeneratorEntry,
-  writeGeneratorOutput,
-  writeTemplateInfoFiles,
-} from '@baseplate-dev/sync';
+import { CancelledSyncError } from '@baseplate-dev/sync';
 import { randomKey } from '@baseplate-dev/utils';
-import { dirExists } from '@baseplate-dev/utils/node';
 import chalk from 'chalk';
 import { mkdir, rename, rm } from 'node:fs/promises';
 import path from 'node:path';
@@ -26,12 +14,10 @@ import path from 'node:path';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import type { PackageSyncResult } from './sync-metadata.js';
+import type { GeneratorOperations } from './types.js';
 
-import {
-  getPreviousGeneratedFileIdMap,
-  writeGeneratedFileIdMap,
-} from './file-id-map.js';
-import { writeGeneratorSteps } from './generator-steps-writer.js';
+import { writeGeneratedFileIdMap } from './file-id-map.js';
+import { DEFAULT_GENERATOR_OPERATIONS } from './types.js';
 
 interface GenerateForDirectoryOptions {
   baseDirectory: string;
@@ -43,54 +29,10 @@ interface GenerateForDirectoryOptions {
   operations?: GeneratorOperations;
   abortSignal?: AbortSignal;
   skipCommands?: boolean;
-  forceOverwrite?: boolean;
+  overwrite?: boolean;
 }
-
-export interface GeneratorOperations {
-  buildGeneratorEntry: typeof buildGeneratorEntry;
-  executeGeneratorEntry: typeof executeGeneratorEntry;
-  getPreviousGeneratedPayload: typeof getPreviousGeneratedPayload;
-  writeGeneratorOutput: typeof writeGeneratorOutput;
-  writeMetadata: (
-    project: GeneratorEntry,
-    output: GeneratorOutput,
-    projectDirectory: string,
-  ) => Promise<void>;
-  writeGeneratorSteps: typeof writeGeneratorSteps;
-}
-
-const defaultGeneratorOperations: GeneratorOperations = {
-  buildGeneratorEntry,
-  executeGeneratorEntry,
-  getPreviousGeneratedPayload,
-  writeGeneratorOutput,
-  writeMetadata: async (_project, output, projectDirectory) => {
-    await deleteMetadataFiles(projectDirectory);
-    await writeTemplateInfoFiles(output.files, projectDirectory);
-  },
-  writeGeneratorSteps,
-};
 
 const GENERATED_DIRECTORY = 'baseplate/generated';
-
-async function getPreviousGeneratedPayload(
-  projectDirectory: string,
-): Promise<PreviousGeneratedPayload | undefined> {
-  const generatedDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
-
-  const generatedDirectoryExists = await dirExists(generatedDirectory);
-
-  if (!generatedDirectoryExists) {
-    return undefined;
-  }
-
-  const fileIdMap = await getPreviousGeneratedFileIdMap(projectDirectory);
-
-  return {
-    fileReader: createCodebaseFileReaderFromDirectory(generatedDirectory),
-    fileIdToRelativePathMap: fileIdMap,
-  };
-}
 
 export async function generateForDirectory({
   baseDirectory,
@@ -99,10 +41,10 @@ export async function generateForDirectory({
   writeTemplateMetadataOptions,
   userConfig,
   previousPackageSyncResult,
-  operations = defaultGeneratorOperations,
+  operations = DEFAULT_GENERATOR_OPERATIONS,
   abortSignal,
   skipCommands,
-  forceOverwrite,
+  overwrite,
 }: GenerateForDirectoryOptions): Promise<PackageSyncResult> {
   const { appDirectory, name, generatorBundle } = appEntry;
 
@@ -151,7 +93,7 @@ export async function generateForDirectory({
           : undefined,
         abortSignal,
         skipCommands,
-        forceOverwrite,
+        forceOverwrite: overwrite,
       });
 
     // write metadata to the generated directory
