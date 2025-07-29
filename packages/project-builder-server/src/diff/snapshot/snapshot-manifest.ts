@@ -3,7 +3,8 @@ import {
   handleFileNotFoundError,
   readJsonWithSchema,
 } from '@baseplate-dev/utils/node';
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 
 import type { SnapshotDirectory, SnapshotManifest } from './snapshot-types.js';
 
@@ -41,6 +42,9 @@ export async function saveSnapshotManifest(
     },
   };
   const manifestContent = stringifyPrettyStable(sortedManifest);
+  await mkdir(path.dirname(snapshotDirectory.manifestPath), {
+    recursive: true,
+  });
   await writeFile(snapshotDirectory.manifestPath, manifestContent, 'utf8');
 }
 
