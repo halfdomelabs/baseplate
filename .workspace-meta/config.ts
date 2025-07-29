@@ -18,10 +18,6 @@ function getProjectJsonDependencyKeys(packageJson: PackageJson): string[] {
   ];
 }
 
-function isPluginPackage(packageJson: PackageJson): boolean {
-  return packageJson.name?.startsWith('@baseplate-dev/plugin-') ?? false;
-}
-
 // False positives for the Typescript project references
 const IGNORED_PACKAGES = new Set([
   '@baseplate-dev/project-builder-web',
@@ -94,9 +90,6 @@ export default defineWorkspaceMetaConfig({
           if (packageJson.bin) {
             packageJson.files.push('bin/**/*');
           }
-
-          if (isPluginPackage(packageJson))
-            packageJson.files.push('manifest.json');
         }
       }
 
