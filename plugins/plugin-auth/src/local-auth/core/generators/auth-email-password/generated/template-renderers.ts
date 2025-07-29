@@ -13,7 +13,7 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { authModuleImportsProvider } from '#src/auth/core/generators/auth-module/generated/ts-import-providers.js';
+import { authModuleImportsProvider } from '#src/local-auth/core/generators/auth-module/generated/ts-import-providers.js';
 
 import { AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS } from './template-paths.js';
 import { AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES } from './typed-templates.js';

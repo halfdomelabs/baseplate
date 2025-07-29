@@ -16,7 +16,7 @@ import {
 } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { reactSessionImportsProvider } from '#src/auth/core/generators/react-session/generated/ts-import-providers.js';
+import { reactSessionImportsProvider } from '#src/local-auth/core/generators/react-session/generated/ts-import-providers.js';
 
 import { AUTH_CORE_AUTH_ROUTES_PATHS } from './template-paths.js';
 import { AUTH_CORE_AUTH_ROUTES_TEMPLATES } from './typed-templates.js';

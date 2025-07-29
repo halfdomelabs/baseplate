@@ -10,7 +10,7 @@ import {
 } from '@baseplate-dev/react-generators';
 import path from 'node:path';
 
-import { reactSessionImportsProvider } from '#src/auth/core/generators/react-session/generated/ts-import-providers.js';
+import { reactSessionImportsProvider } from '#src/local-auth/core/generators/react-session/generated/ts-import-providers.js';
 
 const login = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },

@@ -10,7 +10,7 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import path from 'node:path';
 
-import { authModuleImportsProvider } from '#src/auth/core/generators/auth-module/generated/ts-import-providers.js';
+import { authModuleImportsProvider } from '#src/local-auth/core/generators/auth-module/generated/ts-import-providers.js';
 
 const constantsPassword = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
