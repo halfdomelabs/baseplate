@@ -12,9 +12,9 @@ export default createPlatformPluginExport({
     webConfig: webConfigSpec,
   },
   exports: {},
-  initialize: ({ webConfig }, { pluginId }) => {
+  initialize: ({ webConfig }, { pluginKey }) => {
     webConfig.registerWebConfigComponent(
-      pluginId,
+      pluginKey,
       PlaceholderAuthDefinitionEditor,
     );
     return {};

@@ -14,7 +14,7 @@ export interface AdminCrudInputWebFormProps {
   formProps: UseFormReturn<any>;
   name: string;
   model: ModelConfig;
-  pluginId: string | undefined;
+  pluginKey: string | undefined;
   embeddedFormOptions: { label: string; value: string }[];
 }
 
@@ -22,7 +22,7 @@ export interface AdminCrudInputWebConfig<
   T extends AdminCrudInputDefinition = AdminCrudInputDefinition,
 > {
   name: string;
-  pluginId: string | undefined;
+  pluginKey: string | undefined;
   label: string;
   Form?: React.ComponentType<AdminCrudInputWebFormProps>;
   getNewInput: () => T;

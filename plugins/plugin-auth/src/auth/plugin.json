@@ -1,0 +1,8 @@
+{
+  "name": "auth",
+  "displayName": "Authentication",
+  "icon": "icon.svg",
+  "description": "Manages user authentication and authorization for your application. This is a base plugin that requires an authentication implementation (Local Auth, Auth0, etc.)",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"]
+}

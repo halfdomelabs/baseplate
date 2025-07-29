@@ -20,15 +20,15 @@ export default createPlatformPluginExport({
     appCompiler: appCompilerSpec,
   },
   exports: {},
-  initialize: ({ appCompiler }, { pluginId }) => {
+  initialize: ({ appCompiler }, { pluginKey }) => {
     // register backend compilers
     appCompiler.registerAppCompiler({
-      pluginId,
+      pluginKey,
       appType: backendAppEntryType,
       compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
-        const storage = PluginUtils.configByIdOrThrow(
+        const storage = PluginUtils.configByKeyOrThrow(
           projectDefinition,
-          pluginId,
+          pluginKey,
         ) as StoragePluginDefinition;
 
         // add feature providers
@@ -97,7 +97,7 @@ export default createPlatformPluginExport({
 
     // register web compilers
     appCompiler.registerAppCompiler({
-      pluginId,
+      pluginKey,
       appType: webAppEntryType,
       compile: ({
         projectDefinition,
@@ -111,9 +111,9 @@ export default createPlatformPluginExport({
         ) {
           return;
         }
-        const storage = PluginUtils.configByIdOrThrow(
+        const storage = PluginUtils.configByKeyOrThrow(
           projectDefinition,
-          pluginId,
+          pluginKey,
         ) as StoragePluginDefinition;
 
         appCompiler.addRootChildren({

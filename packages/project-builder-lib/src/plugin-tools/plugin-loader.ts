@@ -1,19 +1,45 @@
+import {
+  handleFileNotFoundError,
+  readJsonWithSchema,
+} from '@baseplate-dev/utils/node';
 import { globby } from 'globby';
+import fsAdapter from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { z } from 'zod';
 
 import type {
-  PluginManifestJson,
   PluginMetadata,
   PluginMetadataWithPaths,
 } from '../plugins/index.js';
 
-import {
-  pluginManifestJsonSchema,
-  pluginMetadataSchema,
-} from '../plugins/index.js';
+import { pluginMetadataSchema } from '../plugins/index.js';
 
-class PluginLoaderError extends Error {
+/**
+ * Schema for baseplate configuration in package.json
+ */
+const baseplatePackageConfigSchema = z
+  .object({
+    baseplate: z
+      .object({
+        /**
+         * Glob patterns to search for plugin.json files.
+         * Defaults to built plugins only if not specified.
+         */
+        pluginGlobs: z.array(z.string()).optional(),
+        /**
+         * Web build directory relative to package root.
+         * Defaults to dist/web if not specified.
+         */
+        webBuildDirectory: z.string().optional(),
+      })
+      .optional(),
+  })
+  .optional();
+
+type BaseplatePackageConfig = z.infer<typeof baseplatePackageConfigSchema>;
+
+export class PluginLoaderError extends Error {
   constructor(
     message: string,
     public innerError?: unknown,
@@ -32,36 +58,45 @@ async function fileExists(path: string): Promise<boolean> {
     .catch(() => false);
 }
 
-async function readManifestJson(
-  pluginPackagePath: string,
-): Promise<PluginManifestJson> {
-  const manifestJsonPath = path.join(pluginPackagePath, 'manifest.json');
+/**
+ * Read baseplate configuration from package.json
+ */
+async function readBaseplatePackageConfig(
+  pluginPackageDirectory: string,
+): Promise<BaseplatePackageConfig | undefined> {
+  const packageJsonPath = path.join(pluginPackageDirectory, 'package.json');
 
-  if (!(await fileExists(manifestJsonPath))) {
-    throw new Error(
-      `Package ${pluginPackagePath} does not have a valid manifest.json file.`,
-    );
+  try {
+    const packageConfig = await readJsonWithSchema(
+      packageJsonPath,
+      baseplatePackageConfigSchema,
+    ).catch(handleFileNotFoundError);
+
+    return packageConfig;
+  } catch {
+    // If package.json doesn't exist or is invalid, return undefined (use defaults)
+    return undefined;
   }
-
-  return await fs
-    .readFile(manifestJsonPath, 'utf8')
-    .then((data) => pluginManifestJsonSchema.parse(JSON.parse(data)));
 }
 
-async function readMetadataJson(directory: string): Promise<PluginMetadata> {
-  const metadataJsonFilename = path.join(directory, 'metadata.json');
+async function readPluginMetadata(directory: string): Promise<PluginMetadata> {
+  const pluginJsonFilename = path.join(directory, 'plugin.json');
   try {
-    if (!(await fileExists(metadataJsonFilename))) {
+    const pluginJsonContent = await readJsonWithSchema(
+      pluginJsonFilename,
+      pluginMetadataSchema,
+    ).catch(handleFileNotFoundError);
+
+    if (!pluginJsonContent) {
       throw new Error(
-        `Plugin metadata file not found: ${metadataJsonFilename}`,
+        `Plugin configuration file not found: ${pluginJsonFilename}`,
       );
     }
-    return await fs
-      .readFile(metadataJsonFilename, 'utf8')
-      .then((data) => pluginMetadataSchema.parse(JSON.parse(data)));
+
+    return pluginJsonContent;
   } catch (error) {
     throw new PluginLoaderError(
-      `Unable to read plugin metadata ${metadataJsonFilename}`,
+      `Unable to read plugin configuration ${pluginJsonFilename}`,
       error,
     );
   }
@@ -163,12 +198,13 @@ async function populatePluginMetadataWithPaths(
     );
     return {
       ...metadata,
-      // URL safe ID
-      id: `${packageName
+      // URL safe key
+      key: `${packageName
         .replace(/^@/, '')
         .replace(/[^a-z0-9/]+/g, '-')
         .replace(/\//g, '_')}_${metadata.name.replace(/[^a-z0-9]+/g, '-')}`,
       packageName,
+      fullyQualifiedName: `${packageName}:${metadata.name}`,
       pluginDirectory,
       webBuildDirectory,
       nodeModulePaths: nodeEntrypoints.map((e) => e.path),
@@ -184,19 +220,45 @@ async function populatePluginMetadataWithPaths(
   }
 }
 
-async function getPluginDirectories(
+/**
+ * Discover plugin directories by scanning for plugin.json files
+ */
+async function discoverPluginDirectories(
   pluginPackageDirectory: string,
-  plugins: string | string[],
+  pluginGlobs: string[] = ['dist/*/plugin.json'],
 ): Promise<string[]> {
-  const pluginDirectories = await globby(plugins, {
+  const pluginJsonFiles = await globby(pluginGlobs, {
     cwd: pluginPackageDirectory,
-    onlyDirectories: true,
     expandDirectories: false,
+    fs: fsAdapter,
   });
 
-  return pluginDirectories.map((pluginDirectory) =>
-    path.join(pluginPackageDirectory, pluginDirectory),
+  return pluginJsonFiles.map((pluginJsonFile) =>
+    path.join(pluginPackageDirectory, path.dirname(pluginJsonFile)),
   );
+}
+
+/**
+ * Gets the web build directory for a plugin package, using package.json config or defaults
+ */
+async function getWebBuildDirectory(
+  pluginPackageDirectory: string,
+): Promise<string> {
+  const packageConfig = await readBaseplatePackageConfig(
+    pluginPackageDirectory,
+  );
+  const webBuildDirectory =
+    packageConfig?.baseplate?.webBuildDirectory ?? 'dist/web';
+  return path.join(pluginPackageDirectory, webBuildDirectory);
+}
+
+export interface LoadPluginsInPackageOptions {
+  /**
+   * Glob patterns to search for plugin.json files.
+   * Defaults to built plugins only.
+   * For development, can include both src and dist directories.
+   */
+  pluginGlobs?: string[];
 }
 
 /**
@@ -205,23 +267,43 @@ async function getPluginDirectories(
 export async function loadPluginsInPackage(
   pluginPackageDirectory: string,
   packageName: string,
+  options: LoadPluginsInPackageOptions = {},
 ): Promise<PluginMetadataWithPaths[]> {
-  // Look for manifest.json file
-  const manifest = await readManifestJson(pluginPackageDirectory);
-  const pluginDirectories = await getPluginDirectories(
+  // Read package.json configuration for defaults
+  const packageConfig = await readBaseplatePackageConfig(
     pluginPackageDirectory,
-    manifest.plugins,
   );
+  const defaultPluginGlobs = packageConfig?.baseplate?.pluginGlobs ?? [
+    'dist/*/plugin.json',
+  ];
+
+  const { pluginGlobs = defaultPluginGlobs } = options;
+
+  // Discover plugin directories using configurable globs
+  const pluginDirectories = await discoverPluginDirectories(
+    pluginPackageDirectory,
+    pluginGlobs,
+  );
+
+  if (pluginDirectories.length === 0) {
+    throw new PluginLoaderError(
+      `No plugins found in package ${packageName}. Searched with globs: ${pluginGlobs.join(', ')}`,
+      undefined,
+    );
+  }
+
+  // Use configured or conventional web build directory
+  const webBuildDirectory = await getWebBuildDirectory(pluginPackageDirectory);
 
   // Load the plugins
   const plugins = await Promise.all(
     pluginDirectories.map(async (directory) => {
-      const metadata = await readMetadataJson(directory);
+      const metadata = await readPluginMetadata(directory);
       return populatePluginMetadataWithPaths(
         metadata,
         packageName,
         directory,
-        path.join(pluginPackageDirectory, manifest.webBuild),
+        webBuildDirectory,
       );
     }),
   );
@@ -272,15 +354,30 @@ export async function getModuleFederationTargets(
   options: GetModuleFederationTargetsOptions = {},
 ): Promise<Record<string, string>> {
   const { rewritePluginDirectory } = options;
-  const manifest = await readManifestJson(pluginPackageDirectory);
-  const pluginDirectories = await getPluginDirectories(
+
+  // Read package.json configuration for plugin globs
+  const packageConfig = await readBaseplatePackageConfig(
     pluginPackageDirectory,
-    manifest.plugins.map((plugin) =>
-      rewritePluginDirectory ? rewritePluginDirectory(plugin) : plugin,
-    ),
   );
-  const rewrittenPluginDirectories = rewritePluginDirectory
-    ? pluginDirectories.map((directory) => {
+  const pluginGlobs = packageConfig?.baseplate?.pluginGlobs ?? [
+    'dist/*/plugin.json',
+  ];
+
+  // Discover plugin directories using configured globs
+  const discoveredDirectories = await discoverPluginDirectories(
+    pluginPackageDirectory,
+    pluginGlobs,
+  );
+
+  if (discoveredDirectories.length === 0) {
+    throw new Error(
+      `No plugins found in ${pluginPackageDirectory}. Looked for plugin.json files.`,
+    );
+  }
+
+  // Apply rewrite if needed
+  const pluginDirectories = rewritePluginDirectory
+    ? discoveredDirectories.map((directory) => {
         const relativeDirectory = path.relative(
           pluginPackageDirectory,
           directory,
@@ -290,10 +387,11 @@ export async function getModuleFederationTargets(
           rewritePluginDirectory(relativeDirectory),
         );
       })
-    : pluginDirectories;
+    : discoveredDirectories;
+
   const targets = await Promise.all(
-    rewrittenPluginDirectories.map(async (directory) => {
-      const metadata = await readMetadataJson(directory);
+    pluginDirectories.map(async (directory) => {
+      const metadata = await readPluginMetadata(directory);
       return getModuleFederationTargetsForPlugin(
         metadata,
         directory,

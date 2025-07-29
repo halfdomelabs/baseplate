@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-auth",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Contains the auth plugin for Baseplate",
   "keywords": [
     "authentication",
@@ -25,12 +25,11 @@
     "CHANGELOG",
     "dist/**/*",
     "!dist/**/*.d.ts.map",
-    "!dist/**/*.tsbuildinfo",
-    "manifest.json"
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
-    "build:static": "cpx \"src/**/{templates/**,static/**,metadata.json}\" \"dist/\" --clean",
+    "build:static": "cpx \"src/**/{templates/**,static/**,plugin.json}\" \"dist/\" --clean",
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:vite": "vite build",
     "clean": "rm -rf ./dist",
@@ -50,6 +49,7 @@
     "@baseplate-dev/ui-components": "workspace:*",
     "@hookform/lenses": "0.7.1",
     "@hookform/resolvers": "5.0.1",
+    "@tanstack/react-router": "1.124.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "7.60.0",

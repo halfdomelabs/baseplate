@@ -1,5 +1,14 @@
 # @baseplate-dev/fastify-generators
 
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.2.6
+  - @baseplate-dev/sync@0.2.6
+  - @baseplate-dev/utils@0.2.6
+
 ## 0.2.5
 
 ### Patch Changes

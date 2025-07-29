@@ -35,7 +35,7 @@ function AdminCrudEnumInputForm({
 export const adminCrudEnumInputWebConfig =
   createAdminCrudInputWebConfig<AdminCrudEnumInputConfig>({
     name: 'enum',
-    pluginId: undefined,
+    pluginKey: undefined,
     label: 'Enum',
     getNewInput: () => ({ label: '', type: 'enum', modelFieldRef: '' }),
     Form: AdminCrudEnumInputForm,

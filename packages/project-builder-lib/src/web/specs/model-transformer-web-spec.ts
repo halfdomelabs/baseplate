@@ -12,14 +12,14 @@ export interface ModelTransformerWebFormProps {
   formProps: UseFormReturn<any>;
   name: string;
   originalModel: ModelConfigInput;
-  pluginId: string | undefined;
+  pluginKey: string | undefined;
 }
 
 export interface ModelTransformerWebConfig<
   T extends TransformerConfig = TransformerConfig,
 > {
   name: string;
-  pluginId: string | undefined;
+  pluginKey: string | undefined;
   label: string;
   description: string;
   instructions?: string;

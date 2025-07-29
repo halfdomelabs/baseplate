@@ -105,11 +105,11 @@ export function pluginDevServerPlugin(): Plugin {
                 req.url,
               );
             if (urlMatch) {
-              const pluginId = urlMatch[2];
+              const pluginKey = urlMatch[2];
               const assetPath = urlMatch[3];
 
               const pluginMatch = plugins.find((plugin) =>
-                pluginId.startsWith(plugin.id),
+                pluginKey.startsWith(plugin.id),
               );
 
               if (!pluginMatch) {

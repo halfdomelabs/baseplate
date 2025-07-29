@@ -1,37 +1,29 @@
 import type { AppEntry } from '@baseplate-dev/project-builder-lib';
 import type {
   FileWithConflict,
-  GeneratorEntry,
-  GeneratorOutput,
   Logger,
-  PreviousGeneratedPayload,
+  OverwriteOptions,
   TemplateMetadataOptions,
 } from '@baseplate-dev/sync';
 
-import {
-  buildGeneratorEntry,
-  CancelledSyncError,
-  createCodebaseFileReaderFromDirectory,
-  deleteMetadataFiles,
-  executeGeneratorEntry,
-  writeGeneratorOutput,
-  writeTemplateInfoFiles,
-} from '@baseplate-dev/sync';
+import { CancelledSyncError, loadIgnorePatterns } from '@baseplate-dev/sync';
 import { randomKey } from '@baseplate-dev/utils';
-import { dirExists } from '@baseplate-dev/utils/node';
 import chalk from 'chalk';
 import { mkdir, rename, rm } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
-import type { PackageSyncResult } from './sync-metadata.js';
+import { applySnapshotToFileContents } from '#src/diff/index.js';
 
-import {
-  getPreviousGeneratedFileIdMap,
-  writeGeneratedFileIdMap,
-} from './file-id-map.js';
-import { writeGeneratorSteps } from './generator-steps-writer.js';
+import type { PackageSyncResult } from './sync-metadata.js';
+import type { GeneratorOperations } from './types.js';
+
+import { loadSnapshotManifest } from '../diff/snapshot/snapshot-manifest.js';
+import { resolveSnapshotDirectory } from '../diff/snapshot/snapshot-utils.js';
+import { writeGeneratedFileIdMap } from './file-id-map.js';
+import { GENERATED_DIRECTORY } from './get-previous-generated-payload.js';
+import { DEFAULT_GENERATOR_OPERATIONS } from './types.js';
 
 interface GenerateForDirectoryOptions {
   baseDirectory: string;
@@ -43,53 +35,8 @@ interface GenerateForDirectoryOptions {
   operations?: GeneratorOperations;
   abortSignal?: AbortSignal;
   skipCommands?: boolean;
-  forceOverwrite?: boolean;
-}
-
-export interface GeneratorOperations {
-  buildGeneratorEntry: typeof buildGeneratorEntry;
-  executeGeneratorEntry: typeof executeGeneratorEntry;
-  getPreviousGeneratedPayload: typeof getPreviousGeneratedPayload;
-  writeGeneratorOutput: typeof writeGeneratorOutput;
-  writeMetadata: (
-    project: GeneratorEntry,
-    output: GeneratorOutput,
-    projectDirectory: string,
-  ) => Promise<void>;
-  writeGeneratorSteps: typeof writeGeneratorSteps;
-}
-
-const defaultGeneratorOperations: GeneratorOperations = {
-  buildGeneratorEntry,
-  executeGeneratorEntry,
-  getPreviousGeneratedPayload,
-  writeGeneratorOutput,
-  writeMetadata: async (_project, output, projectDirectory) => {
-    await deleteMetadataFiles(projectDirectory);
-    await writeTemplateInfoFiles(output.files, projectDirectory);
-  },
-  writeGeneratorSteps,
-};
-
-const GENERATED_DIRECTORY = 'baseplate/generated';
-
-async function getPreviousGeneratedPayload(
-  projectDirectory: string,
-): Promise<PreviousGeneratedPayload | undefined> {
-  const generatedDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
-
-  const generatedDirectoryExists = await dirExists(generatedDirectory);
-
-  if (!generatedDirectoryExists) {
-    return undefined;
-  }
-
-  const fileIdMap = await getPreviousGeneratedFileIdMap(projectDirectory);
-
-  return {
-    fileReader: createCodebaseFileReaderFromDirectory(generatedDirectory),
-    fileIdToRelativePathMap: fileIdMap,
-  };
+  overwrite?: boolean;
+  snapshotDirectory?: string;
 }
 
 export async function generateForDirectory({
@@ -99,10 +46,11 @@ export async function generateForDirectory({
   writeTemplateMetadataOptions,
   userConfig,
   previousPackageSyncResult,
-  operations = defaultGeneratorOperations,
+  operations = DEFAULT_GENERATOR_OPERATIONS,
   abortSignal,
   skipCommands,
-  forceOverwrite,
+  overwrite,
+  snapshotDirectory,
 }: GenerateForDirectoryOptions): Promise<PackageSyncResult> {
   const { appDirectory, name, generatorBundle } = appEntry;
 
@@ -116,6 +64,12 @@ export async function generateForDirectory({
   });
 
   if (abortSignal?.aborted) throw new CancelledSyncError();
+
+  const resolvedSnapshotDirectory = resolveSnapshotDirectory(projectDirectory, {
+    snapshotDir: snapshotDirectory,
+  });
+
+  const snapshot = await loadSnapshotManifest(resolvedSnapshotDirectory);
 
   logger.info('Project built! Writing output....');
 
@@ -134,6 +88,45 @@ export async function generateForDirectory({
 
   await mkdir(generatedTemporaryDirectory, { recursive: true });
 
+  const ignorePatterns = await loadIgnorePatterns(projectDirectory).catch(
+    (error: unknown) => {
+      logger.warn(
+        `Failed to load .baseplateignore patterns, proceeding without ignore filtering: ${String(error)}`,
+      );
+      return undefined;
+    },
+  );
+
+  if (overwrite && snapshot) {
+    logger.info(`Applying snapshot to generator output for ${name}...`);
+  }
+
+  const overwriteOptions: OverwriteOptions = {
+    enabled: !!overwrite,
+    applyDiff:
+      snapshot &&
+      (async (relativePath, generatedContents) => {
+        const result = await applySnapshotToFileContents(
+          relativePath,
+          generatedContents,
+          snapshot,
+          resolvedSnapshotDirectory.diffsPath,
+        );
+        if (result === false) {
+          logger.warn(
+            `Snapshot for ${relativePath} was not applied because the patch was invalid. Please verify the new output and run snapshot add once the changes have been verified.`,
+          );
+        }
+        return result;
+      }),
+    skipFile: (relativePath) => {
+      if (!ignorePatterns) {
+        return false;
+      }
+      return ignorePatterns.ignores(relativePath);
+    },
+  };
+
   try {
     const { failedCommands, filesWithConflicts, fileIdToRelativePathMap } =
       await operations.writeGeneratorOutput(output, projectDirectory, {
@@ -151,7 +144,7 @@ export async function generateForDirectory({
           : undefined,
         abortSignal,
         skipCommands,
-        forceOverwrite,
+        overwriteOptions,
       });
 
     // write metadata to the generated directory

@@ -72,8 +72,9 @@ describe('discoverPlugins', () => {
     // Mock loadPluginsInPackage to return some test data
     const mockPluginData: PluginMetadataWithPaths[] = [
       {
-        id: 'test-plugin',
+        key: 'baseplate-dev_plugin-test_test-plugin',
         packageName: 'baseplate-plugin-test',
+        fullyQualifiedName: '@baseplate-dev/plugin-test:test-plugin',
         displayName: 'Test Plugin',
         description: 'A test plugin',
         version: '1.0.0',

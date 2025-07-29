@@ -1,6 +1,5 @@
 import type { z } from 'zod';
 
-import { statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -100,9 +99,7 @@ export function createGenerator<
   config: CreateGeneratorConfig<DescriptorSchema, TaskConfigs>,
 ): GeneratorBundleCreator<z.input<DescriptorSchema>, TaskConfigs> {
   const generatorFilePath = fileURLToPath(config.generatorFileUrl);
-  const generatorDirectory = statSync(generatorFilePath).isFile()
-    ? path.dirname(generatorFilePath)
-    : generatorFilePath;
+  const generatorDirectory = path.dirname(generatorFilePath);
 
   return ({ children, ...rest }) => {
     const validatedDescriptor =

@@ -1,5 +1,14 @@
 # @baseplate-dev/ui-components
 
+## 0.2.6
+
+### Patch Changes
+
+- [#618](https://github.com/halfdomelabs/baseplate/pull/618) [`541db59`](https://github.com/halfdomelabs/baseplate/commit/541db59ccf868b6a6fcc8fa756eab0dfa560d193) Thanks [@kingston](https://github.com/kingston)! - Add 300ms delay to loader component
+
+- Updated dependencies []:
+  - @baseplate-dev/utils@0.2.6
+
 ## 0.2.5
 
 ### Patch Changes
@@ -21,7 +30,6 @@
 - [#597](https://github.com/halfdomelabs/baseplate/pull/597) [`903e2d8`](https://github.com/halfdomelabs/baseplate/commit/903e2d898c47e6559f55f023eb89a0b524098f3a) Thanks [@kingston](https://github.com/kingston)! - Enable tailwind-merge in cn utility by default
 
   Updated the cn utility function to use tailwind-merge for better class merging behavior. This change:
-
   - Adds tailwind-merge dependency to ui-components and react-generators packages
   - Updates cn function to use twMerge(clsx(inputs)) instead of just clsx(inputs)
   - Simplifies input styling by removing unnecessary rightPadding variant

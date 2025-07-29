@@ -41,11 +41,7 @@ import { extractPackageVersions } from '#src/utils/extract-packages.js';
 import type { TypescriptCompilerOptions } from './compiler-types.js';
 
 import { writeJsonToBuilder } from '../../../writers/index.js';
-import {
-  createNodePackagesTask,
-  createNodeTask,
-  nodeProvider,
-} from '../node/index.js';
+import { createNodePackagesTask, nodeProvider } from '../node/index.js';
 
 const typescriptGeneratorDescriptorSchema = z.object({});
 
@@ -158,6 +154,7 @@ const [setupTask, typescriptSetupProvider, typescriptSetupValuesProvider] =
       compilerOptions: t.scalar<TypescriptCompilerOptions>(
         DEFAULT_COMPILER_OPTIONS,
       ),
+      isComposite: t.scalar<boolean>(false),
       include: t.array<string>(['src'], { stripDuplicates: true }),
       exclude: t.array<string>(['**/node_modules', '**/dist', '**/lib']),
       references: t.array<TypescriptConfigReference>(),
@@ -190,8 +187,19 @@ export const typescriptGenerator = createGenerator({
     nodePackages: createNodePackagesTask({
       dev: extractPackageVersions(CORE_PACKAGES, ['typescript']),
     }),
-    node: createNodeTask((node) => {
-      node.scripts.set('typecheck', 'tsc --noEmit');
+    node: createGeneratorTask({
+      dependencies: {
+        typescriptConfig: typescriptSetupValuesProvider,
+        node: nodeProvider,
+      },
+      run({ typescriptConfig, node }) {
+        const { isComposite } = typescriptConfig;
+        if (isComposite) {
+          node.scripts.set('typecheck', 'tsc -b --noEmit');
+        } else {
+          node.scripts.set('typecheck', 'tsc --noEmit');
+        }
+      },
     }),
     tsconfig: createGeneratorTask({
       dependencies: {

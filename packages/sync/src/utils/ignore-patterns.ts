@@ -22,6 +22,10 @@ export async function loadIgnorePatterns(
     '.DS_Store',
     'Thumbs.db',
     '.paths-metadata.json',
+    'baseplate/**/*',
+    'prisma/migrations/**/*',
+    'prisma/migrations_file.txt',
+    'schema.graphql',
   ]);
 
   try {

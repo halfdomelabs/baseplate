@@ -18,7 +18,6 @@ function createMockContext(
     outputDirectory: '/test/output',
     previousGeneratedPayload: undefined,
     previousWorkingCodebase: undefined,
-    forceOverwrite: false,
     ...overrides,
   };
 }

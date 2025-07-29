@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/core-generators",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Core generators for Baseplate",
   "keywords": [
     "code-generation",
@@ -69,7 +69,7 @@
     "oxc-resolver": "5.2.0",
     "p-limit": "6.1.0",
     "prettier": "catalog:",
-    "prettier-plugin-packagejson": "2.5.11",
+    "prettier-plugin-packagejson": "2.5.19",
     "resolve-from": "5.0.0",
     "semver": "^7.5.4",
     "sort-package-json": "2.10.1",

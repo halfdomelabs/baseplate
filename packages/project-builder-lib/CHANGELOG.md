@@ -1,5 +1,18 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.2.6
+
+### Patch Changes
+
+- [#615](https://github.com/halfdomelabs/baseplate/pull/615) [`e639251`](https://github.com/halfdomelabs/baseplate/commit/e639251f25094bb17f126e8604e505b1037b5640) Thanks [@kingston](https://github.com/kingston)! - Fix model merger not being able to create new models from scratch
+
+- [#617](https://github.com/halfdomelabs/baseplate/pull/617) [`cc6cd6c`](https://github.com/halfdomelabs/baseplate/commit/cc6cd6cce6bd0d97a68d7bd5b46408e0877d990b) Thanks [@kingston](https://github.com/kingston)! - Add schema migration for web admin configuration support. This migration converts existing admin apps to web apps with adminConfig enabled, and adds the adminConfig field to existing web apps. This enables backward compatibility when upgrading projects to the unified web admin interface.
+
+- Updated dependencies [[`541db59`](https://github.com/halfdomelabs/baseplate/commit/541db59ccf868b6a6fcc8fa756eab0dfa560d193)]:
+  - @baseplate-dev/ui-components@0.2.6
+  - @baseplate-dev/sync@0.2.6
+  - @baseplate-dev/utils@0.2.6
+
 ## 0.2.5
 
 ### Patch Changes
@@ -9,19 +22,16 @@
   Previously, plugin migrations had mixed responsibilities - both transforming plugin config and mutating the project definition in the same unclear contract. This made the system hard to test and reason about.
 
   **New Migration Interface:**
-
   - `PluginMigrationResult` with explicit `updatedConfig` and `updateProjectDefinition` properties
   - Clear separation between config transformations and project definition updates
   - Better type safety and testability
 
   **Schema Version Bug Fix:**
-
   - Fixed bug where enabling plugins via UI didn't set `configSchemaVersion`
   - Plugin card now uses `PluginUtils.setPluginConfig` to automatically set correct schema version
   - Prevents unnecessary migrations when enabling new plugins
 
   **Migration Updates:**
-
   - All existing migrations updated to use new interface
   - Auth plugin migration: simple config-only transformation
   - Storage plugin migrations: migration #1 (config-only), migration #2 (config + project updates)
@@ -54,7 +64,6 @@
 ### Patch Changes
 
 - [#587](https://github.com/halfdomelabs/baseplate/pull/587) [`b6bc11f`](https://github.com/halfdomelabs/baseplate/commit/b6bc11fdf199c8de40832eb88ea6f6cfc83aa5d7) Thanks [@kingston](https://github.com/kingston)! - Migrate reference system from ZodRef to transform-based architecture
-
   - Complete migration from legacy ZodRef system to new transform-based reference processing using marker classes and schema transformations
   - Implement `deserializeSchemaWithTransformedReferences` for integration testing with real-world usage patterns
   - Replace `fixRefDeletions` implementation to use new transform system with `parseSchemaWithTransformedReferences`

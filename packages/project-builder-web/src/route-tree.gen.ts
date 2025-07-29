@@ -25,7 +25,7 @@ import { Route as DataModelsRouteRouteImport } from './routes/data/models/route'
 import { Route as DataEnumsRouteRouteImport } from './routes/data/enums/route'
 import { Route as DataModelsIndexRouteImport } from './routes/data/models/index'
 import { Route as DataEnumsIndexRouteImport } from './routes/data/enums/index'
-import { Route as PluginsEditIdRouteImport } from './routes/plugins/edit.$id'
+import { Route as PluginsEditKeyRouteImport } from './routes/plugins/edit.$key'
 import { Route as AppsEditKeyRouteRouteImport } from './routes/apps/edit.$key/route'
 import { Route as AppsEditKeyIndexRouteImport } from './routes/apps/edit.$key/index'
 import { Route as AppsEditKeyBackendRouteImport } from './routes/apps/edit.$key/backend'
@@ -120,9 +120,9 @@ const DataEnumsIndexRoute = DataEnumsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DataEnumsRouteRoute,
 } as any)
-const PluginsEditIdRoute = PluginsEditIdRouteImport.update({
-  id: '/edit/$id',
-  path: '/edit/$id',
+const PluginsEditKeyRoute = PluginsEditKeyRouteImport.update({
+  id: '/edit/$key',
+  path: '/edit/$key',
   getParentRoute: () => PluginsRouteRoute,
 } as any)
 const AppsEditKeyRouteRoute = AppsEditKeyRouteRouteImport.update({
@@ -205,7 +205,7 @@ export interface FileRoutesByFullPath {
   '/plugins/': typeof PluginsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/apps/edit/$key': typeof AppsEditKeyRouteRouteWithChildren
-  '/plugins/edit/$id': typeof PluginsEditIdRoute
+  '/plugins/edit/$key': typeof PluginsEditKeyRoute
   '/data/enums/': typeof DataEnumsIndexRoute
   '/data/models/': typeof DataModelsIndexRoute
   '/apps/edit/$key/web': typeof AppsEditKeyWebRouteRouteWithChildren
@@ -229,7 +229,7 @@ export interface FileRoutesByTo {
   '/data': typeof DataIndexRoute
   '/plugins': typeof PluginsIndexRoute
   '/settings': typeof SettingsIndexRoute
-  '/plugins/edit/$id': typeof PluginsEditIdRoute
+  '/plugins/edit/$key': typeof PluginsEditKeyRoute
   '/data/enums': typeof DataEnumsIndexRoute
   '/data/models': typeof DataModelsIndexRoute
   '/apps/edit/$key/backend': typeof AppsEditKeyBackendRoute
@@ -258,7 +258,7 @@ export interface FileRoutesById {
   '/plugins/': typeof PluginsIndexRoute
   '/settings/': typeof SettingsIndexRoute
   '/apps/edit/$key': typeof AppsEditKeyRouteRouteWithChildren
-  '/plugins/edit/$id': typeof PluginsEditIdRoute
+  '/plugins/edit/$key': typeof PluginsEditKeyRoute
   '/data/enums/': typeof DataEnumsIndexRoute
   '/data/models/': typeof DataModelsIndexRoute
   '/apps/edit/$key/web': typeof AppsEditKeyWebRouteRouteWithChildren
@@ -291,7 +291,7 @@ export interface FileRouteTypes {
     | '/plugins/'
     | '/settings/'
     | '/apps/edit/$key'
-    | '/plugins/edit/$id'
+    | '/plugins/edit/$key'
     | '/data/enums/'
     | '/data/models/'
     | '/apps/edit/$key/web'
@@ -315,7 +315,7 @@ export interface FileRouteTypes {
     | '/data'
     | '/plugins'
     | '/settings'
-    | '/plugins/edit/$id'
+    | '/plugins/edit/$key'
     | '/data/enums'
     | '/data/models'
     | '/apps/edit/$key/backend'
@@ -343,7 +343,7 @@ export interface FileRouteTypes {
     | '/plugins/'
     | '/settings/'
     | '/apps/edit/$key'
-    | '/plugins/edit/$id'
+    | '/plugins/edit/$key'
     | '/data/enums/'
     | '/data/models/'
     | '/apps/edit/$key/web'
@@ -481,11 +481,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DataEnumsIndexRouteImport
       parentRoute: typeof DataEnumsRouteRoute
     }
-    '/plugins/edit/$id': {
-      id: '/plugins/edit/$id'
-      path: '/edit/$id'
-      fullPath: '/plugins/edit/$id'
-      preLoaderRoute: typeof PluginsEditIdRouteImport
+    '/plugins/edit/$key': {
+      id: '/plugins/edit/$key'
+      path: '/edit/$key'
+      fullPath: '/plugins/edit/$key'
+      preLoaderRoute: typeof PluginsEditKeyRouteImport
       parentRoute: typeof PluginsRouteRoute
     }
     '/apps/edit/$key': {
@@ -694,12 +694,12 @@ const DataRouteRouteWithChildren = DataRouteRoute._addFileChildren(
 
 interface PluginsRouteRouteChildren {
   PluginsIndexRoute: typeof PluginsIndexRoute
-  PluginsEditIdRoute: typeof PluginsEditIdRoute
+  PluginsEditKeyRoute: typeof PluginsEditKeyRoute
 }
 
 const PluginsRouteRouteChildren: PluginsRouteRouteChildren = {
   PluginsIndexRoute: PluginsIndexRoute,
-  PluginsEditIdRoute: PluginsEditIdRoute,
+  PluginsEditKeyRoute: PluginsEditKeyRoute,
 }
 
 const PluginsRouteRouteWithChildren = PluginsRouteRoute._addFileChildren(

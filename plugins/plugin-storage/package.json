@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-storage",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Contains the storage plugin for Baseplate",
   "keywords": [
     "storage",
@@ -28,12 +28,11 @@
     "CHANGELOG",
     "dist/**/*",
     "!dist/**/*.d.ts.map",
-    "!dist/**/*.tsbuildinfo",
-    "manifest.json"
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
-    "build:static": "cpx \"src/**/{templates/**,static/**,metadata.json}\" \"dist/\" --clean",
+    "build:static": "cpx \"src/**/{templates/**,static/**,plugin.json}\" \"dist/\" --clean",
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:vite": "vite build",
     "clean": "rm -rf ./dist",

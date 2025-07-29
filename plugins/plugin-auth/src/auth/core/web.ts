@@ -12,8 +12,8 @@ export default createPlatformPluginExport({
     webConfig: webConfigSpec,
   },
   exports: {},
-  initialize: ({ webConfig }, { pluginId }) => {
-    webConfig.registerWebConfigComponent(pluginId, AuthDefinitionEditor);
+  initialize: ({ webConfig }, { pluginKey }) => {
+    webConfig.registerWebConfigComponent(pluginKey, AuthDefinitionEditor);
     return {};
   },
 });

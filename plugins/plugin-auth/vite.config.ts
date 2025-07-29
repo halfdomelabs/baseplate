@@ -43,6 +43,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
             version: '*',
           },
           '@baseplate-dev/ui-components': { version: '*' },
+          '@tanstack/react-router': { version: '*' },
         },
       }),
       react(),

@@ -10,7 +10,7 @@ import { vol } from 'memfs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { GeneratorOperations } from './generate-for-directory.js';
+import type { GeneratorOperations } from './types.js';
 
 import { generateForDirectory } from './generate-for-directory.js';
 

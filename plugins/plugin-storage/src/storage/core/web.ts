@@ -12,8 +12,8 @@ export default createPlatformPluginExport({
     webConfig: webConfigSpec,
   },
   exports: {},
-  initialize: ({ webConfig }, { pluginId }) => {
-    webConfig.registerWebConfigComponent(pluginId, StorageDefinitionEditor);
+  initialize: ({ webConfig }, { pluginKey }) => {
+    webConfig.registerWebConfigComponent(pluginKey, StorageDefinitionEditor);
     return {};
   },
 });

@@ -24,10 +24,18 @@ describe('ignore-patterns', () => {
       expect(ig.ignores('.DS_Store')).toBe(true);
       expect(ig.ignores('Thumbs.db')).toBe(true);
       expect(ig.ignores('.paths-metadata.json')).toBe(true);
+      expect(ig.ignores('baseplate/project-definition.json')).toBe(true);
+      expect(ig.ignores('baseplate/some-file.ts')).toBe(true);
+      expect(ig.ignores('prisma/migrations/20231201_init/migration.sql')).toBe(
+        true,
+      );
+      expect(ig.ignores('prisma/migrations/some-migration/up.sql')).toBe(true);
 
       // Test that normal files are not ignored
       expect(ig.ignores('src/file.ts')).toBe(false);
       expect(ig.ignores('package.json')).toBe(false);
+      expect(ig.ignores('prisma/schema.prisma')).toBe(false);
+      expect(ig.ignores('prisma/seed.ts')).toBe(false);
     });
 
     it('should load custom patterns from .baseplateignore file', async () => {
@@ -90,7 +98,14 @@ describe('ignore-patterns', () => {
       expect(shouldIncludeFile('.env', ig)).toBe(false);
       expect(shouldIncludeFile('node_modules/package/file.js', ig)).toBe(false);
       expect(shouldIncludeFile('dist/bundle.js', ig)).toBe(false);
+      expect(shouldIncludeFile('baseplate/project-definition.json', ig)).toBe(
+        false,
+      );
+      expect(
+        shouldIncludeFile('prisma/migrations/001_init/migration.sql', ig),
+      ).toBe(false);
       expect(shouldIncludeFile('src/component.tsx', ig)).toBe(true);
+      expect(shouldIncludeFile('prisma/schema.prisma', ig)).toBe(true);
     });
   });
 });
