@@ -7,11 +7,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 import { reactRoutesGenerator } from '@baseplate-dev/react-generators';
 
-import {
-  createCommonBackendAuthModuleGenerators,
-  createCommonBackendAuthRootGenerators,
-  createCommonWebAuthGenerators,
-} from '#src/common/index.js';
+import { getAuthPluginDefinition } from '#src/auth/utils/get-auth-plugin-definition.js';
 
 import type { Auth0PluginDefinition } from './schema/plugin-definition.js';
 
@@ -28,36 +24,36 @@ export default createPlatformPluginExport({
     appCompiler: appCompilerSpec,
   },
   exports: {},
-  initialize: ({ appCompiler }, { pluginId }) => {
+  initialize: ({ appCompiler }, { pluginKey }) => {
     // register backend compiler
     appCompiler.registerAppCompiler({
-      pluginId,
+      pluginKey,
       appType: backendAppEntryType,
       compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
-        const auth = PluginUtils.configByIdOrThrow(
+        const auth0PluginDefinition = PluginUtils.configByKeyOrThrow(
           projectDefinition,
-          pluginId,
+          pluginKey,
         ) as Auth0PluginDefinition;
 
+        const auth = getAuthPluginDefinition(projectDefinition);
+
         appCompiler.addChildrenToFeature(auth.authFeatureRef, {
-          ...createCommonBackendAuthModuleGenerators({ roles: auth.roles }),
           auth0Module: auth0ModuleGenerator({
-            userModelName: definitionContainer.nameFromId(auth.modelRefs.user),
+            userModelName: definitionContainer.nameFromId(
+              auth0PluginDefinition.modelRefs.user,
+            ),
             includeManagement: true,
           }),
         });
-
-        appCompiler.addRootChildren(createCommonBackendAuthRootGenerators());
       },
     });
 
     // register web compiler
     appCompiler.registerAppCompiler({
-      pluginId,
+      pluginKey,
       appType: webAppEntryType,
       compile: ({ appCompiler }) => {
         appCompiler.addRootChildren({
-          ...createCommonWebAuthGenerators(),
           auth: reactAuth0Generator({}),
           authHooks: auth0HooksGenerator({}),
           auth0Apollo: auth0ApolloGenerator({}),

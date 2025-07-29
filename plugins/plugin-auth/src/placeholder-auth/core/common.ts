@@ -1,5 +1,5 @@
 import {
-  authConfigSpec,
+  authModelConfigSpec,
   createPlatformPluginExport,
   pluginConfigSpec,
   PluginUtils,
@@ -17,28 +17,21 @@ export default createPlatformPluginExport({
     config: pluginConfigSpec,
   },
   exports: {
-    authConfig: authConfigSpec,
+    authModelConfig: authModelConfigSpec,
   },
-  initialize: ({ config }, { pluginId }) => {
+  initialize: ({ config }, { pluginKey }) => {
     config.registerSchemaCreator(
-      pluginId,
+      pluginKey,
       createPlaceholderAuthPluginDefinitionSchema,
     );
     return {
-      authConfig: {
+      authModelConfig: {
         getUserModel: (definition) => {
-          const pluginConfig = PluginUtils.configByIdOrThrow(
+          const pluginConfig = PluginUtils.configByKeyOrThrow(
             definition,
-            pluginId,
+            pluginKey,
           ) as PlaceholderAuthPluginDefinition;
           return pluginConfig.modelRefs.user;
-        },
-        getAuthRoles: (definition) => {
-          const pluginConfig = PluginUtils.configByIdOrThrow(
-            definition,
-            pluginId,
-          ) as PlaceholderAuthPluginDefinition;
-          return pluginConfig.roles;
         },
       },
     };

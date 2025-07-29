@@ -3,32 +3,16 @@ import type { def } from '@baseplate-dev/project-builder-lib';
 import {
   definitionSchema,
   featureEntityType,
-  modelEntityType,
 } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
-import { createAuthRolesSchema } from '#src/common/roles/index.js';
+import { createAuthRolesSchema } from './roles/index.js';
 
 export const createAuthPluginDefinitionSchema = definitionSchema((ctx) =>
   z.object({
-    modelRefs: z.object({
-      user: ctx.withRef({
-        type: modelEntityType,
-        onDelete: 'RESTRICT',
-      }),
-      userAccount: ctx.withRef({
-        type: modelEntityType,
-        onDelete: 'RESTRICT',
-      }),
-      userRole: ctx.withRef({
-        type: modelEntityType,
-        onDelete: 'RESTRICT',
-      }),
-      userSession: ctx.withRef({
-        type: modelEntityType,
-        onDelete: 'RESTRICT',
-      }),
-    }),
+    implementationPluginKey: z
+      .string()
+      .min(1, 'Auth implementation plugin must be selected'),
     authFeatureRef: ctx.withRef({
       type: featureEntityType,
       onDelete: 'RESTRICT',

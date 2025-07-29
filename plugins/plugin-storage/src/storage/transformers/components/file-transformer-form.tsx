@@ -22,7 +22,7 @@ export function FileTransformerForm({
   name,
   formProps: { control },
   originalModel,
-  pluginId,
+  pluginKey,
 }: ModelTransformerWebFormProps): React.JSX.Element {
   const prefix = name as 'prefix';
   const controlTyped = control as Control<{
@@ -30,9 +30,9 @@ export function FileTransformerForm({
   }>;
   const { definition, pluginContainer } = useProjectDefinition();
 
-  const storageConfig = PluginUtils.configByIdOrThrow(
+  const storageConfig = PluginUtils.configByKeyOrThrow(
     definition,
-    pluginId ?? '',
+    pluginKey ?? '',
   ) as StoragePluginDefinition;
 
   const fileRelations =

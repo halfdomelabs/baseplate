@@ -63,11 +63,11 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
     useWSS: true,
   } satisfies FastifyTRPCPluginOptions<AppRouter>);
 
-  fastify.get('/api/plugins/:projectId/:pluginId/static/*', {
+  fastify.get('/api/plugins/:projectId/:pluginKey/static/*', {
     schema: {
       params: z.object({
         projectId: z.string().min(1),
-        pluginId: z.string().min(1),
+        pluginKey: z.string().min(1),
         '*': z.string(),
       }),
     },
@@ -80,7 +80,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
       }
       const plugins = await service.getAvailablePlugins();
       const plugin = plugins.find(
-        (plugin) => plugin.id === req.params.pluginId,
+        (plugin) => plugin.key === req.params.pluginKey,
       );
       if (!plugin) {
         reply.status(404).send('No plugin with provided ID found');
@@ -105,11 +105,11 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
   });
 
   // serve remoteEntry.js for plugins
-  fastify.get('/api/plugins/:projectId/:pluginId/web/*', {
+  fastify.get('/api/plugins/:projectId/:pluginKey/web/*', {
     schema: {
       params: z.object({
         projectId: z.string().min(1),
-        pluginId: z.string().min(1),
+        pluginKey: z.string().min(1),
         '*': z.string(),
       }),
     },
@@ -122,7 +122,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
       }
       const plugins = await service.getAvailablePlugins();
       const plugin = plugins.find(
-        (plugin) => plugin.id === req.params.pluginId,
+        (plugin) => plugin.key === req.params.pluginKey,
       );
       if (!plugin) {
         reply.status(404).send('No plugin with provided ID found');

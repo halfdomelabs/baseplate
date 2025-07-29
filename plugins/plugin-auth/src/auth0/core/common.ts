@@ -1,5 +1,5 @@
 import {
-  authConfigSpec,
+  authModelConfigSpec,
   createPlatformPluginExport,
   pluginConfigSpec,
   PluginUtils,
@@ -10,31 +10,27 @@ import type { Auth0PluginDefinition } from './schema/plugin-definition.js';
 import { AUTH0_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations.js';
 import { createAuth0PluginDefinitionSchema } from './schema/plugin-definition.js';
 
+// necessary for Typescript to infer the return type of the initialize function
+export type { PluginPlatformModule } from '@baseplate-dev/project-builder-lib';
+
 export default createPlatformPluginExport({
   dependencies: {
     config: pluginConfigSpec,
   },
   exports: {
-    authConfig: authConfigSpec,
+    authModelConfig: authModelConfigSpec,
   },
-  initialize: ({ config }, { pluginId }) => {
-    config.registerSchemaCreator(pluginId, createAuth0PluginDefinitionSchema);
-    config.registerMigrations(pluginId, AUTH0_PLUGIN_CONFIG_MIGRATIONS);
+  initialize: ({ config }, { pluginKey }) => {
+    config.registerSchemaCreator(pluginKey, createAuth0PluginDefinitionSchema);
+    config.registerMigrations(pluginKey, AUTH0_PLUGIN_CONFIG_MIGRATIONS);
     return {
-      authConfig: {
+      authModelConfig: {
         getUserModel: (definition) => {
-          const pluginConfig = PluginUtils.configByIdOrThrow(
+          const pluginConfig = PluginUtils.configByKeyOrThrow(
             definition,
-            pluginId,
+            pluginKey,
           ) as Auth0PluginDefinition;
           return pluginConfig.modelRefs.user;
-        },
-        getAuthRoles: (definition) => {
-          const pluginConfig = PluginUtils.configByIdOrThrow(
-            definition,
-            pluginId,
-          ) as Auth0PluginDefinition;
-          return pluginConfig.roles;
         },
       },
     };

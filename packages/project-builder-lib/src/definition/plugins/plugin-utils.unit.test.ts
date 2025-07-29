@@ -14,7 +14,7 @@ describe('PluginUtils.setPluginConfig', () => {
     const projectDefinition = createTestProjectDefinition();
 
     const mockPlugin = createTestPluginMetadata({
-      id: 'test-plugin',
+      key: 'test-plugin',
       name: 'TestPlugin',
       packageName: '@test/plugin',
     });
@@ -50,7 +50,7 @@ describe('PluginUtils.setPluginConfig', () => {
     const projectDefinition = createTestProjectDefinition();
 
     const mockPlugin = createTestPluginMetadata({
-      id: 'no-migrations-plugin',
+      key: 'no-migrations-plugin',
       name: 'NoMigrationsPlugin',
       packageName: '@test/no-migrations',
     });
@@ -92,7 +92,7 @@ describe('PluginUtils.setPluginConfig', () => {
     });
 
     const mockPlugin = createTestPluginMetadata({
-      id: 'existing-plugin',
+      key: 'existing-plugin',
       name: 'ExistingPlugin',
       packageName: '@test/existing',
     });

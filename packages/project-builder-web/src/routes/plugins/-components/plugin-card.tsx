@@ -2,7 +2,7 @@ import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib
 import type React from 'react';
 
 import {
-  pluginEntityType,
+  createPluginImplementationStoreWithNewPlugins,
   PluginUtils,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
@@ -22,18 +22,18 @@ import { useProjects } from '#src/hooks/use-projects.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 import { getPluginStaticUrl } from '#src/services/plugins.js';
 
-import { loadPluginImplementationStoreWithNewPlugin } from './utils.js';
-
 interface PluginCardProps {
   className?: string;
   plugin: PluginMetadataWithPaths;
   isActive: boolean;
+  managerPlugin?: PluginMetadataWithPaths;
 }
 
 export function PluginCard({
   className,
   plugin,
   isActive,
+  managerPlugin,
 }: PluginCardProps): React.JSX.Element {
   const { currentProjectId } = useProjects();
   const {
@@ -46,17 +46,17 @@ export function PluginCard({
   const navigate = useNavigate();
 
   function enablePlugin(): void {
-    const implementations = loadPluginImplementationStoreWithNewPlugin(
+    const implementations = createPluginImplementationStoreWithNewPlugins(
       schemaParserContext.pluginStore,
-      plugin,
+      [plugin],
       definitionContainer.definition,
     );
     const webConfigImplementation =
       implementations.getPluginSpec(webConfigSpec);
-    const webConfig = webConfigImplementation.getWebConfigComponent(plugin.id);
+    const webConfig = webConfigImplementation.getWebConfigComponent(plugin.key);
     if (webConfig) {
       // redirect to plugin config page
-      navigate({ to: `/plugins/edit/${plugin.id}` }).catch(logAndFormatError);
+      navigate({ to: `/plugins/edit/${plugin.key}` }).catch(logAndFormatError);
       return;
     }
     saveDefinitionWithFeedbackSync(
@@ -78,9 +78,7 @@ export function PluginCard({
   function disablePlugin(): void {
     saveDefinitionWithFeedbackSync(
       (draft) => {
-        draft.plugins = (draft.plugins ?? []).filter(
-          (p) => p.id !== pluginEntityType.idFromKey(plugin.id),
-        );
+        PluginUtils.disablePlugin(draft, plugin.key, schemaParserContext);
       },
       {
         successMessage: `Disabled ${plugin.displayName}!`,
@@ -89,7 +87,12 @@ export function PluginCard({
   }
 
   const webConfigImplementation = pluginContainer.getPluginSpec(webConfigSpec);
-  const webConfig = webConfigImplementation.getWebConfigComponent(plugin.id);
+  const webConfig = webConfigImplementation.getWebConfigComponent(plugin.key);
+
+  // For managed plugins, check if the manager plugin has a web config
+  const managerWebConfig = managerPlugin
+    ? webConfigImplementation.getWebConfigComponent(managerPlugin.key)
+    : null;
 
   return (
     <Card className={className}>
@@ -101,7 +104,7 @@ export function PluginCard({
                 <img
                   src={getPluginStaticUrl(
                     currentProjectId,
-                    plugin.id,
+                    plugin.key,
                     plugin.icon,
                   )}
                   className="size-12 rounded-xl bg-muted"
@@ -118,6 +121,24 @@ export function PluginCard({
           </div>
           <div>
             {(() => {
+              // Managed plugins cannot be enabled/disabled directly
+              if (managerPlugin) {
+                return managerWebConfig && isActive ? (
+                  <Link
+                    to={`/plugins/edit/$key`}
+                    from="/"
+                    params={{ key: managerPlugin.key }}
+                  >
+                    <Button variant="secondary">Configure</Button>
+                  </Link>
+                ) : (
+                  <Button variant="secondary" disabled>
+                    {isActive ? 'Managed' : 'Disabled'}
+                  </Button>
+                );
+              }
+
+              // Regular plugin logic
               if (!isActive) {
                 return (
                   <Button
@@ -131,9 +152,9 @@ export function PluginCard({
               } else if (webConfig) {
                 return (
                   <Link
-                    to={`/plugins/edit/$id`}
+                    to={`/plugins/edit/$key`}
                     from="/"
-                    params={{ id: plugin.id }}
+                    params={{ key: plugin.key }}
                   >
                     <Button variant="secondary">Configure</Button>
                   </Link>

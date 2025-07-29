@@ -69,6 +69,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "eslint": "catalog:",
+    "memfs": "4.15.1",
     "prettier": "catalog:",
     "type-fest": "4.41.0",
     "typescript": "catalog:",

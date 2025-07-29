@@ -19,21 +19,14 @@ export default createPlatformPluginExport({
   exports: {
     authConfig: authConfigSpec,
   },
-  initialize: ({ config }, { pluginId }) => {
-    config.registerSchemaCreator(pluginId, createAuthPluginDefinitionSchema);
+  initialize: ({ config }, { pluginKey }) => {
+    config.registerSchemaCreator(pluginKey, createAuthPluginDefinitionSchema);
     return {
       authConfig: {
-        getUserModel: (definition) => {
-          const pluginConfig = PluginUtils.configByIdOrThrow(
-            definition,
-            pluginId,
-          ) as AuthPluginDefinition;
-          return pluginConfig.modelRefs.user;
-        },
         getAuthRoles: (definition) => {
-          const pluginConfig = PluginUtils.configByIdOrThrow(
+          const pluginConfig = PluginUtils.configByKeyOrThrow(
             definition,
-            pluginId,
+            pluginKey,
           ) as AuthPluginDefinition;
           return pluginConfig.roles;
         },

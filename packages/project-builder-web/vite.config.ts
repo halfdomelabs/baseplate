@@ -40,6 +40,8 @@ export default defineConfig(({ mode }) => {
             version: '*',
           },
           '@baseplate-dev/ui-components': { version: '*' },
+          '@baseplate-dev/utils': { version: '*' },
+          '@tanstack/react-router': { version: '*' },
         },
       }),
       pluginDevServerPlugin(),

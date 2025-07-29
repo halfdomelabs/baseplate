@@ -19,9 +19,10 @@ export function createTestPluginMetadata(
   const defaultId = overrides.name ?? 'test-plugin';
 
   return {
-    id: defaultId,
+    key: defaultId,
     name: defaultId,
     packageName: `@test/${defaultId}`,
+    fullyQualifiedName: `@test/${defaultId}:${defaultId}`,
     version: '1.0.0',
     displayName: `Test ${defaultId}`,
     description: `A test plugin for ${defaultId}`,

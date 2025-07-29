@@ -21,11 +21,11 @@ import '../../styles.css';
 function findNonTransformedFileRelations(
   definition: ProjectDefinition,
   modelConfig: ModelConfigInput,
-  pluginId: string,
+  pluginKey: string,
 ): string[] {
-  const storageDefinition = PluginUtils.configByIdOrThrow(
+  const storageDefinition = PluginUtils.configByKeyOrThrow(
     definition,
-    pluginId,
+    pluginKey,
   ) as StoragePluginDefinition;
   const { transformers } = modelConfig.service ?? {};
   const fileTransformers = transformers?.filter(
@@ -50,18 +50,18 @@ export default createPlatformPluginExport({
     transformerWeb: modelTransformerWebSpec,
   },
   exports: {},
-  initialize: ({ transformerWeb }, { pluginId }) => {
+  initialize: ({ transformerWeb }, { pluginKey }) => {
     transformerWeb.registerTransformerWebConfig<FileTransformerDefinition>({
       name: 'file',
       label: 'File',
       description: 'Validates and associates file ID to field',
       instructions: 'Select a file relation to transform',
-      pluginId,
+      pluginKey,
       Form: FileTransformerForm,
       allowNewTransformer(projectContainer, modelConfig) {
         const { definition } = projectContainer;
         return (
-          findNonTransformedFileRelations(definition, modelConfig, pluginId)
+          findNonTransformedFileRelations(definition, modelConfig, pluginKey)
             .length > 0
         );
       },
@@ -70,7 +70,7 @@ export default createPlatformPluginExport({
         const fileRelationIds = findNonTransformedFileRelations(
           definition,
           modelConfig,
-          pluginId,
+          pluginKey,
         );
         const fileRelationId = fileRelationIds[0];
         const relation = modelConfig.model.relations?.find(
@@ -79,9 +79,9 @@ export default createPlatformPluginExport({
         if (!relation) {
           throw new Error(`Could not find relation ${fileRelationId}`);
         }
-        const storageDefinition = PluginUtils.configByIdOrThrow(
+        const storageDefinition = PluginUtils.configByKeyOrThrow(
           definition,
-          pluginId,
+          pluginKey,
         ) as StoragePluginDefinition;
         return {
           id: modelTransformerEntityType.generateNewId(),

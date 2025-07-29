@@ -1,4 +1,0 @@
-{
-  "plugins": ["dist/auth", "dist/auth0", "dist/placeholder-auth"],
-  "webBuild": "dist/web"
-}

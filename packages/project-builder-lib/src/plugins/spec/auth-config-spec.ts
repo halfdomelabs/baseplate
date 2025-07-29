@@ -9,14 +9,12 @@ export interface AuthRole {
   name: string;
 }
 
-type UserAccountModelGetter = (definition: ProjectDefinition) => string;
 type AuthRolesGetter = (definition: ProjectDefinition) => AuthRole[];
 
 /**
  * Spec for allowing plugins to declare standard auth configurations
  */
 export interface AuthConfigSpec extends PluginSpecImplementation {
-  getUserModel: UserAccountModelGetter;
   getAuthRoles: AuthRolesGetter;
 }
 

@@ -484,6 +484,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.32.0(jiti@2.4.2)
+      memfs:
+        specifier: 4.15.1
+        version: 4.15.1
       prettier:
         specifier: 'catalog:'
         version: 3.6.2
@@ -1221,6 +1224,9 @@ importers:
       '@hookform/resolvers':
         specifier: 5.0.1
         version: 5.0.1(react-hook-form@7.60.0(react@19.1.0))
+      '@tanstack/react-router':
+        specifier: 1.124.0
+        version: 1.124.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       react:
         specifier: 'catalog:'
         version: 19.1.0

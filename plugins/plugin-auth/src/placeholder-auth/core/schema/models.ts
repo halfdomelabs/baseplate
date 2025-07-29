@@ -1,11 +1,13 @@
 import type { ModelMergerModelInput } from '@baseplate-dev/project-builder-lib';
 
+import type { AuthPluginDefinition } from '#src/auth/core/schema/plugin-definition.js';
+
 import type { PlaceholderAuthPluginDefinition } from './plugin-definition.js';
 
-export function createAuthModels({
-  authFeatureRef,
-  modelRefs,
-}: Pick<PlaceholderAuthPluginDefinition, 'authFeatureRef' | 'modelRefs'>): {
+export function createAuthModels(
+  { modelRefs }: Pick<PlaceholderAuthPluginDefinition, 'modelRefs'>,
+  { authFeatureRef }: AuthPluginDefinition,
+): {
   user: ModelMergerModelInput;
 } {
   return {

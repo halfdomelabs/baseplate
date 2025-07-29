@@ -2,17 +2,10 @@ import {
   appCompilerSpec,
   backendAppEntryType,
   createPlatformPluginExport,
-  PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
 
-import {
-  createCommonBackendAuthModuleGenerators,
-  createCommonBackendAuthRootGenerators,
-  createCommonWebAuthGenerators,
-} from '#src/common/index.js';
-
-import type { PlaceholderAuthPluginDefinition } from './schema/plugin-definition.js';
+import { getAuthPluginDefinition } from '#src/auth/index.js';
 
 import {
   placeholderAuthHooksGenerator,
@@ -25,33 +18,26 @@ export default createPlatformPluginExport({
     appCompiler: appCompilerSpec,
   },
   exports: {},
-  initialize: ({ appCompiler }, { pluginId }) => {
+  initialize: ({ appCompiler }, { pluginKey }) => {
     // register backend compiler
     appCompiler.registerAppCompiler({
-      pluginId,
+      pluginKey,
       appType: backendAppEntryType,
       compile: ({ projectDefinition, appCompiler }) => {
-        const auth = PluginUtils.configByIdOrThrow(
-          projectDefinition,
-          pluginId,
-        ) as PlaceholderAuthPluginDefinition;
+        const authDefinition = getAuthPluginDefinition(projectDefinition);
 
-        appCompiler.addChildrenToFeature(auth.authFeatureRef, {
-          ...createCommonBackendAuthModuleGenerators({ roles: auth.roles }),
+        appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {
           authModule: placeholderAuthModuleGenerator({}),
         });
-
-        appCompiler.addRootChildren(createCommonBackendAuthRootGenerators());
       },
     });
 
     // register web compiler
     appCompiler.registerAppCompiler({
-      pluginId,
+      pluginKey,
       appType: webAppEntryType,
       compile: ({ appCompiler }) => {
         appCompiler.addRootChildren({
-          ...createCommonWebAuthGenerators(),
           reactAuth: placeholderReactAuthGenerator({}),
           authHooks: placeholderAuthHooksGenerator({}),
         });
