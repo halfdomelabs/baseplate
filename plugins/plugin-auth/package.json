@@ -25,12 +25,11 @@
     "CHANGELOG",
     "dist/**/*",
     "!dist/**/*.d.ts.map",
-    "!dist/**/*.tsbuildinfo",
-    "manifest.json"
+    "!dist/**/*.tsbuildinfo"
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
-    "build:static": "cpx \"src/**/{templates/**,static/**,metadata.json}\" \"dist/\" --clean",
+    "build:static": "cpx \"src/**/{templates/**,static/**,plugin.json}\" \"dist/\" --clean",
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:vite": "vite build",
     "clean": "rm -rf ./dist",
