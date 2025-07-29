@@ -111,13 +111,13 @@ describe('toposort', () => {
   });
 
   it('should throw ToposortCyclicalDependencyError for a simple cycle', () => {
-    const nodes = ['a', 'b'];
+    const nodes = ['b', 'a'];
     const edges: [string, string][] = [
       ['a', 'b'],
       ['b', 'a'],
     ];
     try {
-      toposort(nodes.reverse(), edges);
+      toposort(nodes, edges);
     } catch (e) {
       expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
       // Depending on traversal order, the reported cycle might start at 'b'
@@ -144,7 +144,7 @@ describe('toposort', () => {
       ['d', 'b'],
     ]; // Cycle: b -> c -> d -> b
     try {
-      toposort(nodes.reverse(), edges);
+      toposort(nodes, edges);
     } catch (e) {
       expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
       expect((e as ToposortCyclicalDependencyError).cyclePath).toEqual([

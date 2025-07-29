@@ -165,7 +165,7 @@ describe('toposortLocal', () => {
       ['b', 'a'],
     ];
     try {
-      toposortLocal(nodes.reverse(), edges);
+      toposortLocal(nodes, edges);
     } catch (e) {
       expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
       // Depending on traversal order, the reported cycle might start at 'b'
@@ -192,7 +192,7 @@ describe('toposortLocal', () => {
       ['d', 'b'],
     ]; // Cycle: d -> b -> c -> d
     try {
-      toposortLocal(nodes.reverse(), edges);
+      toposortLocal(nodes, edges);
     } catch (e) {
       expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
       expect((e as ToposortCyclicalDependencyError).cyclePath).toEqual([

@@ -17,7 +17,7 @@ export const REACT_PACKAGES = {
   // Tailwind
   '@tailwindcss/vite': '4.1.6',
   tailwindcss: '4.1.6',
-  'prettier-plugin-tailwindcss': '0.6.11',
+  'prettier-plugin-tailwindcss': '0.6.14',
   'tw-animate-css': '1.2.9',
   'tailwind-merge': '3.3.1',
 

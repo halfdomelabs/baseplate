@@ -194,8 +194,8 @@ export function toposortLocal<T>(
   // Check for cycles
   if (reverseResult.length !== nodes.length) {
     const cyclePath = detectCycle(nodes, visited, inboundEdgesMap);
-    throw new ToposortCyclicalDependencyError(cyclePath.reverse());
+    throw new ToposortCyclicalDependencyError(cyclePath.toReversed());
   }
 
-  return reverseResult.reverse();
+  return reverseResult.toReversed();
 }
