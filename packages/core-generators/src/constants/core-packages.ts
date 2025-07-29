@@ -3,9 +3,9 @@ export const CORE_PACKAGES = {
   typescript: '5.7.3',
 
   // Linting
-  '@eslint/js': '9.26.0',
+  '@eslint/js': '9.32.0',
   '@vitest/eslint-plugin': '1.3.4',
-  eslint: '9.26.0',
+  eslint: '9.32.0',
   'eslint-config-prettier': '10.1.8',
   'eslint-import-resolver-typescript': '4.4.4',
   'eslint-plugin-import-x': '4.16.1',
@@ -17,7 +17,7 @@ export const CORE_PACKAGES = {
   'typescript-eslint': '8.38.0',
 
   // Formatting
-  prettier: '3.5.3',
+  prettier: '3.6.2',
   'prettier-plugin-packagejson': '2.5.19',
 
   // Testing
