@@ -10,3 +10,5 @@ Refactor plugin metadata system to use single plugin.json files with configurabl
 - Allow runtime configuration overrides for plugin discovery
 - Add comprehensive test suite using memfs for realistic filesystem testing
 - Update plugin packages to use new metadata system with automatic build copying
+- **BREAKING**: Rename `id` to `key` in `PluginMetadataWithPaths` for consistency with model entity patterns
+- Update all plugin metadata references to use the new `key` property for URL-safe identifiers

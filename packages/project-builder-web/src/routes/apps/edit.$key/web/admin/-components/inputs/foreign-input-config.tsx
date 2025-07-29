@@ -63,7 +63,7 @@ function AdminCrudForeignInputForm({
 export const adminCrudForeignInputWebConfig =
   createAdminCrudInputWebConfig<AdminCrudForeignInputConfig>({
     name: 'foreign',
-    pluginId: undefined,
+    pluginKey: undefined,
     label: 'Foreign',
     getNewInput: () => ({
       label: '',

@@ -5,7 +5,10 @@ import type {
   ProjectDefinition,
 } from '@baseplate-dev/project-builder-lib';
 
-import { createPluginImplementationStore } from '@baseplate-dev/project-builder-lib';
+import {
+  createPluginImplementationStore,
+  pluginEntityType,
+} from '@baseplate-dev/project-builder-lib';
 
 export function loadPluginImplementationStoreWithNewPlugin(
   pluginStore: PluginStore,
@@ -17,7 +20,7 @@ export function loadPluginImplementationStoreWithNewPlugin(
     plugins: [
       ...(projectDefinition.plugins ?? []),
       {
-        id: plugin.id,
+        id: pluginEntityType.idFromKey(plugin.key),
         version: plugin.version,
         name: plugin.name,
         packageName: plugin.packageName,

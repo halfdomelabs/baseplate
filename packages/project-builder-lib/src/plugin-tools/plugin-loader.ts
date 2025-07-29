@@ -198,12 +198,13 @@ async function populatePluginMetadataWithPaths(
     );
     return {
       ...metadata,
-      // URL safe ID
-      id: `${packageName
+      // URL safe key
+      key: `${packageName
         .replace(/^@/, '')
         .replace(/[^a-z0-9/]+/g, '-')
         .replace(/\//g, '_')}_${metadata.name.replace(/[^a-z0-9]+/g, '-')}`,
       packageName,
+      fullyQualifiedName: `${packageName}:${metadata.name}`,
       pluginDirectory,
       webBuildDirectory,
       nodeModulePaths: nodeEntrypoints.map((e) => e.path),

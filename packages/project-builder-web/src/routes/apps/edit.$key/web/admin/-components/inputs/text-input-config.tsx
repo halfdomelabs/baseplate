@@ -43,7 +43,7 @@ function AdminCrudTextInputForm({
 export const adminCrudTextInputWebConfig =
   createAdminCrudInputWebConfig<AdminCrudTextInputConfig>({
     name: 'text',
-    pluginId: undefined,
+    pluginKey: undefined,
     label: 'Text',
     getNewInput: () => ({ label: '', type: 'text', modelFieldRef: '' }),
     Form: AdminCrudTextInputForm,

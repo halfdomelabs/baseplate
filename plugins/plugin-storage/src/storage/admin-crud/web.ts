@@ -12,10 +12,10 @@ export default createPlatformPluginExport({
     adminCrudInputWeb: adminCrudInputWebSpec,
   },
   exports: {},
-  initialize: ({ adminCrudInputWeb }, { pluginId }) => {
+  initialize: ({ adminCrudInputWeb }, { pluginKey }) => {
     adminCrudInputWeb.registerInputWebConfig<AdminCrudFileInputConfig>({
       name: 'file',
-      pluginId,
+      pluginKey,
       label: 'File',
       getNewInput: () => ({ label: '', type: 'file', modelRelationRef: '' }),
       Form: AdminCrudFileInputForm,

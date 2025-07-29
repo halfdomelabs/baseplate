@@ -20,22 +20,22 @@ export default createPlatformPluginExport({
   exports: {
     authConfig: authConfigSpec,
   },
-  initialize: ({ config }, { pluginId }) => {
-    config.registerSchemaCreator(pluginId, createAuth0PluginDefinitionSchema);
-    config.registerMigrations(pluginId, AUTH0_PLUGIN_CONFIG_MIGRATIONS);
+  initialize: ({ config }, { pluginKey }) => {
+    config.registerSchemaCreator(pluginKey, createAuth0PluginDefinitionSchema);
+    config.registerMigrations(pluginKey, AUTH0_PLUGIN_CONFIG_MIGRATIONS);
     return {
       authConfig: {
         getUserModel: (definition) => {
-          const pluginConfig = PluginUtils.configByIdOrThrow(
+          const pluginConfig = PluginUtils.configByKeyOrThrow(
             definition,
-            pluginId,
+            pluginKey,
           ) as Auth0PluginDefinition;
           return pluginConfig.modelRefs.user;
         },
         getAuthRoles: (definition) => {
-          const pluginConfig = PluginUtils.configByIdOrThrow(
+          const pluginConfig = PluginUtils.configByKeyOrThrow(
             definition,
-            pluginId,
+            pluginKey,
           ) as Auth0PluginDefinition;
           return pluginConfig.roles;
         },

@@ -1,11 +1,7 @@
 import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import {
-  pluginEntityType,
-  PluginUtils,
-  webConfigSpec,
-} from '@baseplate-dev/project-builder-lib';
+import { PluginUtils, webConfigSpec } from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
@@ -53,10 +49,10 @@ export function PluginCard({
     );
     const webConfigImplementation =
       implementations.getPluginSpec(webConfigSpec);
-    const webConfig = webConfigImplementation.getWebConfigComponent(plugin.id);
+    const webConfig = webConfigImplementation.getWebConfigComponent(plugin.key);
     if (webConfig) {
       // redirect to plugin config page
-      navigate({ to: `/plugins/edit/${plugin.id}` }).catch(logAndFormatError);
+      navigate({ to: `/plugins/edit/${plugin.key}` }).catch(logAndFormatError);
       return;
     }
     saveDefinitionWithFeedbackSync(
@@ -78,9 +74,7 @@ export function PluginCard({
   function disablePlugin(): void {
     saveDefinitionWithFeedbackSync(
       (draft) => {
-        draft.plugins = (draft.plugins ?? []).filter(
-          (p) => p.id !== pluginEntityType.idFromKey(plugin.id),
-        );
+        PluginUtils.disablePlugin(draft, plugin.key, schemaParserContext);
       },
       {
         successMessage: `Disabled ${plugin.displayName}!`,
@@ -89,7 +83,7 @@ export function PluginCard({
   }
 
   const webConfigImplementation = pluginContainer.getPluginSpec(webConfigSpec);
-  const webConfig = webConfigImplementation.getWebConfigComponent(plugin.id);
+  const webConfig = webConfigImplementation.getWebConfigComponent(plugin.key);
 
   return (
     <Card className={className}>
@@ -101,7 +95,7 @@ export function PluginCard({
                 <img
                   src={getPluginStaticUrl(
                     currentProjectId,
-                    plugin.id,
+                    plugin.key,
                     plugin.icon,
                   )}
                   className="size-12 rounded-xl bg-muted"
@@ -131,9 +125,9 @@ export function PluginCard({
               } else if (webConfig) {
                 return (
                   <Link
-                    to={`/plugins/edit/$id`}
+                    to={`/plugins/edit/$key`}
                     from="/"
-                    params={{ id: plugin.id }}
+                    params={{ key: plugin.key }}
                   >
                     <Button variant="secondary">Configure</Button>
                   </Link>

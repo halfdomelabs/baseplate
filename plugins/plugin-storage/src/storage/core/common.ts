@@ -11,9 +11,12 @@ export default createPlatformPluginExport({
     config: pluginConfigSpec,
   },
   exports: {},
-  initialize: ({ config }, { pluginId }) => {
-    config.registerSchemaCreator(pluginId, createStoragePluginDefinitionSchema);
-    config.registerMigrations(pluginId, STORAGE_PLUGIN_CONFIG_MIGRATIONS);
+  initialize: ({ config }, { pluginKey }) => {
+    config.registerSchemaCreator(
+      pluginKey,
+      createStoragePluginDefinitionSchema,
+    );
+    config.registerMigrations(pluginKey, STORAGE_PLUGIN_CONFIG_MIGRATIONS);
     return {};
   },
 });

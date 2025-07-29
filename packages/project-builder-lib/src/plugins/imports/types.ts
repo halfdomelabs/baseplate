@@ -13,7 +13,7 @@ export type ExtractPluginImplementationFromSpecMap<T extends PluginSpecMap> = {
 };
 
 export interface PluginInitializerContext {
-  pluginId: string;
+  pluginKey: string;
 }
 
 export interface PluginPlatformModule<

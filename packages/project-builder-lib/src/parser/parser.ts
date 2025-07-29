@@ -80,7 +80,7 @@ export function createPluginImplementationStore(
       throw new Error(`Unable to find plugin ${pluginName}!`);
     }
     return {
-      id: plugin.metadata.id,
+      key: plugin.metadata.key,
       name: pluginName,
       pluginModules: plugin.modules,
     };

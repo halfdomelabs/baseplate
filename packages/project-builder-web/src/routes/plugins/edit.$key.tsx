@@ -1,7 +1,7 @@
 import type React from 'react';
 
 import {
-  pluginEntityType,
+  getPluginMetadataByKey,
   PluginUtils,
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
@@ -24,20 +24,22 @@ import { logAndFormatError } from '#src/services/error-formatter.js';
 
 import { loadPluginImplementationStoreWithNewPlugin } from './-components/utils.js';
 
-export const Route = createFileRoute('/plugins/edit/$id')({
+export const Route = createFileRoute('/plugins/edit/$key')({
   component: PluginConfigPage,
-  beforeLoad: ({ params: { id }, context: { schemaParserContext } }) => {
-    const { availablePlugins } = schemaParserContext.pluginStore;
-    const plugin = availablePlugins.find((p) => p.metadata.id === id);
-    if (!plugin) return {};
+  beforeLoad: ({ params: { key }, context: { schemaParserContext } }) => {
+    const pluginMetadata = getPluginMetadataByKey(
+      schemaParserContext.pluginStore,
+      key,
+    );
+    if (!pluginMetadata) return {};
     return {
-      getTitle: () => plugin.metadata.displayName,
-      plugin,
+      getTitle: () => pluginMetadata.displayName,
+      pluginMetadata,
     };
   },
-  loader: ({ context: { plugin } }) => {
-    if (!plugin) throw notFound();
-    return { plugin };
+  loader: ({ context: { pluginMetadata } }) => {
+    if (!pluginMetadata) throw notFound();
+    return { pluginMetadata };
   },
 });
 
@@ -49,35 +51,42 @@ function PluginConfigPage(): React.JSX.Element {
     saveDefinitionWithFeedbackSync,
     isSavingDefinition,
   } = useProjectDefinition();
-  const { id } = Route.useParams();
+  const { key } = Route.useParams();
   const { requestConfirm } = useConfirmDialog();
   const navigate = useNavigate({ from: Route.fullPath });
-  const { plugin } = Route.useLoaderData();
+  const { pluginMetadata } = Route.useLoaderData();
 
-  const pluginDefinition = PluginUtils.byId(definitionContainer.definition, id);
+  const pluginDefinition = PluginUtils.byKey(
+    definitionContainer.definition,
+    key,
+  );
 
   const Container = useMemo(() => {
-    if (!id) {
+    if (!key) {
       return;
     }
 
     const pluginSpec = pluginContainer.getPluginSpec(webConfigSpec);
-    const webConfigComponent = pluginSpec.getWebConfigComponent(id);
+    const webConfigComponent = pluginSpec.getWebConfigComponent(key);
     if (webConfigComponent) {
       return webConfigComponent;
     }
     const newPluginContainer = loadPluginImplementationStoreWithNewPlugin(
       schemaParserContext.pluginStore,
-      plugin.metadata,
+      pluginMetadata,
       definitionContainer.definition,
     );
 
     return newPluginContainer
       .getPluginSpec(webConfigSpec)
-      .getWebConfigComponent(id);
-  }, [id, schemaParserContext, definitionContainer, pluginContainer, plugin]);
-
-  const { metadata } = plugin;
+      .getWebConfigComponent(key);
+  }, [
+    key,
+    schemaParserContext,
+    definitionContainer,
+    pluginContainer,
+    pluginMetadata,
+  ]);
 
   if (!Container) {
     return <NotFoundCard />;
@@ -86,12 +95,14 @@ function PluginConfigPage(): React.JSX.Element {
   function onDisablePlugin(): void {
     saveDefinitionWithFeedbackSync(
       (draft) => {
-        draft.plugins = (draft.plugins ?? []).filter(
-          (p) => p.id !== pluginEntityType.idFromKey(metadata.id),
+        PluginUtils.disablePlugin(
+          draft,
+          pluginMetadata.key,
+          schemaParserContext,
         );
       },
       {
-        successMessage: `Disabled ${metadata.displayName}!`,
+        successMessage: `Disabled ${pluginMetadata.displayName}!`,
         onSuccess: () => {
           navigate({ to: '/plugins' }).catch(logAndFormatError);
         },
@@ -109,7 +120,7 @@ function PluginConfigPage(): React.JSX.Element {
     <div className="relative flex h-full flex-1 flex-col gap-4 overflow-hidden">
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
         <div className="flex items-center justify-between">
-          <h1>{metadata.displayName} Plugin</h1>
+          <h1>{pluginMetadata.displayName} Plugin</h1>
           {pluginDefinition && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -124,7 +135,7 @@ function PluginConfigPage(): React.JSX.Element {
                     onSelect={() => {
                       requestConfirm({
                         title: 'Disable Plugin',
-                        content: `Are you sure you want to disable the ${metadata.displayName} plugin?`,
+                        content: `Are you sure you want to disable the ${pluginMetadata.displayName} plugin?`,
                         onConfirm: onDisablePlugin,
                       });
                     }}
@@ -138,7 +149,7 @@ function PluginConfigPage(): React.JSX.Element {
         </div>
         <Container
           definition={pluginDefinition}
-          metadata={metadata}
+          metadata={pluginMetadata}
           onSave={onSave}
         />
       </div>

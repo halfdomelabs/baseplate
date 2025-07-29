@@ -45,6 +45,14 @@ export const pluginMetadataSchema = z.object({
    */
   description: z.string(),
   /**
+   * The fully qualified name of the plugin that manages this plugin,
+   * e.g. "@baseplate-dev/plugin-auth:auth0" would be managed by the "@baseplate-dev/plugin-auth:auth" plugin.
+   *
+   * Managed plugins do not appear in the plugin list but are managed by the base plugin. If the base
+   * plugin is disabled, the managed plugins will also be disabled.
+   */
+  managedBy: z.string().optional(),
+  /**
    * The version of the plugin using semver
    */
   version: versionSchema,
@@ -81,13 +89,17 @@ export type PluginJson = PluginMetadata;
 
 export interface PluginMetadataWithPaths extends PluginMetadata {
   /**
-   * The unique ID of the plugin generated for the project
+   * The unique key of the plugin generated for the project (URL-safe, globally unique)
    */
-  id: string;
+  key: string;
   /**
    * The name of the plugin package
    */
   packageName: string;
+  /**
+   * The fully qualified name of the plugin, e.g. "@baseplate-dev/plugin-auth:auth0"
+   */
+  fullyQualifiedName: string;
   /**
    * The path to the plugin directory
    */

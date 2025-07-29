@@ -33,7 +33,7 @@ function PluginsLayout(): React.JSX.Element {
   const enabledPlugins = (definition.plugins ?? [])
     .map((plugin) => {
       const pluginWithMetadata = availablePlugins.find(
-        (p) => p.metadata.id === pluginEntityType.keyFromId(plugin.id),
+        (p) => p.metadata.key === pluginEntityType.keyFromId(plugin.id),
       );
       return pluginWithMetadata?.metadata;
     })
@@ -51,11 +51,11 @@ function PluginsLayout(): React.JSX.Element {
         <NavigationMenu orientation="vertical">
           <NavigationMenuList>
             {enabledPlugins.map((plugin) => (
-              <NavigationMenuLink key={plugin.id} asChild>
+              <NavigationMenuLink key={plugin.key} asChild>
                 <Link
-                  to={`/plugins/edit/$id`}
+                  to={`/plugins/edit/$key`}
                   from="/"
-                  params={{ id: plugin.id }}
+                  params={{ key: plugin.key }}
                 >
                   {plugin.displayName}
                 </Link>

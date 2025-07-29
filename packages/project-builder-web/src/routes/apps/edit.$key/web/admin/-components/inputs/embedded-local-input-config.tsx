@@ -47,7 +47,7 @@ function AdminCrudEmbeddedLocalInputForm({
 export const adminCrudEmbeddedLocalInputWebConfig =
   createAdminCrudInputWebConfig<AdminCrudEmbeddedLocalInputConfig>({
     name: 'embeddedLocal',
-    pluginId: undefined,
+    pluginKey: undefined,
     label: 'Embedded Local',
     getNewInput: () => ({
       label: '',

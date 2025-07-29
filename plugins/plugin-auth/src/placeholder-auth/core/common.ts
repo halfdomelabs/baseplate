@@ -19,24 +19,24 @@ export default createPlatformPluginExport({
   exports: {
     authConfig: authConfigSpec,
   },
-  initialize: ({ config }, { pluginId }) => {
+  initialize: ({ config }, { pluginKey }) => {
     config.registerSchemaCreator(
-      pluginId,
+      pluginKey,
       createPlaceholderAuthPluginDefinitionSchema,
     );
     return {
       authConfig: {
         getUserModel: (definition) => {
-          const pluginConfig = PluginUtils.configByIdOrThrow(
+          const pluginConfig = PluginUtils.configByKeyOrThrow(
             definition,
-            pluginId,
+            pluginKey,
           ) as PlaceholderAuthPluginDefinition;
           return pluginConfig.modelRefs.user;
         },
         getAuthRoles: (definition) => {
-          const pluginConfig = PluginUtils.configByIdOrThrow(
+          const pluginConfig = PluginUtils.configByKeyOrThrow(
             definition,
-            pluginId,
+            pluginKey,
           ) as PlaceholderAuthPluginDefinition;
           return pluginConfig.roles;
         },

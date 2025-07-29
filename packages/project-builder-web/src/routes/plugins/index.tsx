@@ -86,7 +86,7 @@ function PluginsHomePage(): React.JSX.Element {
         <>
           <h3>Active Plugins ({installedPlugins.length})</h3>
           {installedPlugins.map((plugin) => (
-            <PluginCard key={plugin.id} plugin={plugin} isActive />
+            <PluginCard key={plugin.key} plugin={plugin} isActive />
           ))}
         </>
       )}
@@ -94,7 +94,7 @@ function PluginsHomePage(): React.JSX.Element {
         <>
           <h3>Available Plugins ({uninstalledPlugins.length})</h3>
           {uninstalledPlugins.map((plugin) => (
-            <PluginCard key={plugin.id} plugin={plugin} isActive={false} />
+            <PluginCard key={plugin.key} plugin={plugin} isActive={false} />
           ))}
         </>
       )}

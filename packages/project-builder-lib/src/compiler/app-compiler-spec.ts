@@ -58,7 +58,7 @@ interface PluginAppCompilerOptions<TAppDefinition> {
 }
 
 interface PluginAppCompiler<TAppDefinition = AppConfig> {
-  pluginId: string;
+  pluginKey: string;
   appType: AppEntryType<TAppDefinition>;
   compile: (options: PluginAppCompilerOptions<TAppDefinition>) => void;
 }

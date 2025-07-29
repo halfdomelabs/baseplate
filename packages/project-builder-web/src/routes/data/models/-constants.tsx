@@ -23,7 +23,7 @@ export const BUILT_IN_TRANSFORMER_WEB_CONFIGS = [
       );
     },
     getSummary: () => [],
-    pluginId: undefined,
+    pluginKey: undefined,
   }),
 ];
 

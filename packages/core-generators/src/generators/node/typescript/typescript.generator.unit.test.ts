@@ -12,6 +12,7 @@ describe('typescriptGenerator', () => {
   describe('fileTask', () => {
     const typescriptBundle = typescriptGenerator({});
     const typescriptConfig = {
+      isComposite: false,
       compilerOptions: {
         paths: {
           '@src/*': ['src/*'],

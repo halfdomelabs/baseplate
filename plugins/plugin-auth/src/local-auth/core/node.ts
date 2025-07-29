@@ -30,15 +30,15 @@ export default createPlatformPluginExport({
     appCompiler: appCompilerSpec,
   },
   exports: {},
-  initialize: ({ appCompiler }, { pluginId }) => {
+  initialize: ({ appCompiler }, { pluginKey }) => {
     // register backend compiler
     appCompiler.registerAppCompiler({
-      pluginId,
+      pluginKey,
       appType: backendAppEntryType,
       compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
-        const auth = PluginUtils.configByIdOrThrow(
+        const auth = PluginUtils.configByKeyOrThrow(
           projectDefinition,
-          pluginId,
+          pluginKey,
         ) as AuthPluginDefinition;
 
         appCompiler.addChildrenToFeature(auth.authFeatureRef, {
@@ -65,7 +65,7 @@ export default createPlatformPluginExport({
 
     // register web compiler
     appCompiler.registerAppCompiler({
-      pluginId,
+      pluginKey,
       appType: webAppEntryType,
       compile: ({ appCompiler }) => {
         appCompiler.addRootChildren({

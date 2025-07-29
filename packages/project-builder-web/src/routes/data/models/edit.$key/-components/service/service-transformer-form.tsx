@@ -30,7 +30,7 @@ interface ServiceTransformerFormProps {
 
 export function ServiceTransformerForm({
   className,
-  webConfig: { Form, pluginId },
+  webConfig: { Form, pluginKey },
   transformer,
   onUpdate,
   isCreate,
@@ -81,7 +81,7 @@ export function ServiceTransformerForm({
         formProps={formProps}
         name="transformer"
         originalModel={originalModel}
-        pluginId={pluginId}
+        pluginKey={pluginKey}
       />
       <DialogFooter>
         <DialogClose asChild>

@@ -84,7 +84,7 @@ function FieldForm({
           name={`form.fields.${idx}`}
           model={model}
           embeddedFormOptions={embeddedFormOptions}
-          pluginId={inputWebConfig.pluginId}
+          pluginKey={inputWebConfig.pluginKey}
         />
       )}
     </div>

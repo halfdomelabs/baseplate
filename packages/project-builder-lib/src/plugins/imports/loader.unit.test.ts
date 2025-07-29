@@ -22,7 +22,7 @@ function createPlugin({
   initialize,
 }: { idx: number } & Partial<PluginPlatformModule>): PluginWithPlatformModules {
   return {
-    id: `plugin-${idx}`,
+    key: `plugin-${idx}`,
     name: `Plugin ${idx}`,
     pluginModules: [
       {

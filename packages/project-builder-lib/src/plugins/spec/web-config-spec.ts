@@ -8,7 +8,7 @@ import type { PluginSpecImplementation } from './types.js';
 import { createPluginSpec } from './types.js';
 
 export interface WebConfigProps {
-  definition: BasePluginDefinition | null;
+  definition: BasePluginDefinition | undefined;
   metadata: PluginMetadataWithPaths;
   onSave: () => void;
 }
@@ -18,11 +18,11 @@ export interface WebConfigProps {
  */
 export interface WebConfigSpec extends PluginSpecImplementation {
   registerWebConfigComponent: (
-    pluginId: string,
+    pluginKey: string,
     ConfigComponent: React.FC<WebConfigProps>,
   ) => void;
   getWebConfigComponent: (
-    pluginId: string,
+    pluginKey: string,
   ) => React.FC<WebConfigProps> | undefined;
 }
 
@@ -30,16 +30,16 @@ export function createWebConfigImplementation(): WebConfigSpec {
   const components = new Map<string, React.FC<WebConfigProps>>();
 
   return {
-    registerWebConfigComponent(pluginId, ConfigComponent) {
-      if (components.has(pluginId)) {
+    registerWebConfigComponent(pluginKey, ConfigComponent) {
+      if (components.has(pluginKey)) {
         throw new Error(
-          `Web config component for plugin ${pluginId} is already registered`,
+          `Web config component for plugin ${pluginKey} is already registered`,
         );
       }
-      components.set(pluginId, ConfigComponent);
+      components.set(pluginKey, ConfigComponent);
     },
-    getWebConfigComponent(pluginId) {
-      return components.get(pluginId);
+    getWebConfigComponent(pluginKey) {
+      return components.get(pluginKey);
     },
   };
 }

@@ -184,5 +184,5 @@ export const embeddedRelationTransformerWebConfig: ModelTransformerWebConfig<Emb
       modelRef: '',
     }),
     Form: ServiceEmbeddedRelationForm,
-    pluginId: undefined,
+    pluginKey: undefined,
   };

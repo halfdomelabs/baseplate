@@ -9,7 +9,7 @@ import type { KeyedPluginPlatformModule } from './types.js';
 import { PluginImplementationStore } from '../schema/store.js';
 
 export interface PluginWithPlatformModules {
-  id: string;
+  key: string;
   name: string;
   pluginModules: KeyedPluginPlatformModule[];
 }
@@ -17,7 +17,7 @@ export interface PluginWithPlatformModules {
 interface KeyedPlatformModuleWithPlugin extends KeyedPluginPlatformModule {
   id: string;
   name: string;
-  pluginId: string;
+  pluginKey: string;
   pluginName: string;
 }
 
@@ -27,9 +27,9 @@ export function extractPlatformModulesFromPlugins(
   return plugins.flatMap((plugin) =>
     plugin.pluginModules.map((m) => ({
       ...m,
-      id: `${plugin.id}/${m.key}`,
+      id: `${plugin.key}/${m.key}`,
       name: `${plugin.name}/${m.key}`,
-      pluginId: plugin.id,
+      pluginKey: plugin.key,
       pluginName: plugin.name,
     })),
   );
@@ -94,7 +94,7 @@ export function initializeOrderedPluginModules(
 ): Partial<Record<string, PluginSpecImplementation>> {
   const specImplementations = { ...initialSpecImplementations };
 
-  for (const { name, module, pluginId } of orderedPluginModules) {
+  for (const { name, module, pluginKey } of orderedPluginModules) {
     const dependencies = module.dependencies
       ? stripUndefinedValues(
           mapValues(module.dependencies, (dep) => {
@@ -106,7 +106,7 @@ export function initializeOrderedPluginModules(
           }),
         )
       : {};
-    const context = { pluginId };
+    const context = { pluginKey };
     const exports = module.initialize(dependencies, context);
     Object.entries(module.exports ?? {}).map(([key, spec]) => {
       const exportedImplementation = exports[key] as

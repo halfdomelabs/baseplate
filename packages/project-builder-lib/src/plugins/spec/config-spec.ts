@@ -38,8 +38,8 @@ export interface PluginConfigSpec extends PluginSpecImplementation {
     migrations: PluginConfigMigration[],
   ) => void;
   getSchemaCreator(pluginKey: string): DefinitionSchemaCreator | undefined;
-  getMigrations(pluginId: string): PluginConfigMigration[] | undefined;
-  getLastMigrationVersion(pluginId: string): number | undefined;
+  getMigrations(pluginKey: string): PluginConfigMigration[] | undefined;
+  getLastMigrationVersion(pluginKey: string): number | undefined;
 }
 
 function sortAndValidateMigrations(

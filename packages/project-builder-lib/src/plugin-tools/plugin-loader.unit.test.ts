@@ -54,6 +54,8 @@ describe('plugin-loader', () => {
         expect.objectContaining({
           name: 'test-plugin',
           displayName: 'Test Plugin',
+          key: `test_plugin-example_test-plugin`,
+          fullyQualifiedName: '@test/plugin-example:test-plugin',
           packageName: mockPackageName,
           pluginDirectory: path.join(mockPackageDirectory, 'dist/test-plugin'),
           webBuildDirectory: path.join(mockPackageDirectory, 'dist/web'),
@@ -101,6 +103,8 @@ describe('plugin-loader', () => {
       expect(result[0]).toEqual(
         expect.objectContaining({
           name: 'custom-plugin',
+          key: `test_custom-package_custom-plugin`,
+          fullyQualifiedName: '@test/custom-package:custom-plugin',
           pluginDirectory: path.join(
             mockPackageDirectory,
             'custom/custom-plugin',
