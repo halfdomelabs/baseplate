@@ -48,6 +48,7 @@ export const authModuleGenerator = createGenerator({
         appModule.moduleImports.push(
           paths.schemaUserSessionMutations,
           paths.schemaUserSessionQueries,
+          paths.schemaUserSessionPayloadObjectType,
         );
       },
     }),
