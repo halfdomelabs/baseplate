@@ -196,10 +196,10 @@ describe('toposortLocal', () => {
     } catch (e) {
       expect(e).toBeInstanceOf(ToposortCyclicalDependencyError);
       expect((e as ToposortCyclicalDependencyError).cyclePath).toEqual([
-        'd',
         'b',
         'c',
         'd',
+        'b',
       ]);
     }
   });

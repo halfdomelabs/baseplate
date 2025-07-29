@@ -46,59 +46,72 @@ function makeNodeOutDegrees(
 }
 
 /**
- * Detects cycles in a graph by checking if all nodes are included in the topological sort
+ * Detects a cycle in a graph and returns the path of the first cycle found.
  */
 function detectCycle<T>(
   nodes: T[],
-  visited: Set<number>,
+  // Set of nodes already processed by a prior algorithm (e.g., a topological sort).
+  // This function will only search for cycles among the remaining nodes.
+  initialVisited: Set<number>,
   edges: Map<number, Set<number>>,
 ): T[] {
-  // If all nodes were visited, no cycle exists
-  if (visited.size === nodes.length) {
-    return [];
+  // Tracks nodes visited by ANY DFS traversal within this function.
+  const cycleCheckVisited = new Set<number>();
+
+  for (let i = 0; i < nodes.length; i++) {
+    if (!initialVisited.has(i) && !cycleCheckVisited.has(i)) {
+      const path: number[] = [];
+      const recursionStack = new Set<number>();
+
+      const cyclePath = dfs(i, path, recursionStack);
+
+      if (cyclePath) {
+        // A cycle was found, convert indices to nodes and return immediately.
+        return cyclePath.map((idx) => nodes[idx]);
+      }
+    }
   }
 
-  // Run DFS from any unvisited node to find a cycle
-  const path: number[] = [];
-  const visitSet = new Set<number>();
+  // No cycles were found in any of the graph's components.
+  return [];
 
-  function dfs(node: number): boolean {
-    if (visitSet.has(node)) {
-      path.push(node);
-      return true;
-    }
-
-    if (visited.has(node)) {
-      return false;
-    }
-
-    visitSet.add(node);
+  /**
+   * Performs a DFS from a starting node to find a cycle.
+   * @returns The cycle path as an array of indices if found, otherwise null.
+   */
+  function dfs(
+    node: number,
+    path: number[],
+    recursionStack: Set<number>,
+  ): number[] | null {
     path.push(node);
+    recursionStack.add(node);
+    cycleCheckVisited.add(node);
 
     const neighbors = edges.get(node) ?? new Set<number>();
     for (const neighbor of neighbors) {
-      if (dfs(neighbor)) {
-        return true;
+      if (recursionStack.has(neighbor)) {
+        const cycleStartIndex = path.indexOf(neighbor);
+        const cycle = path.slice(cycleStartIndex);
+        cycle.push(neighbor);
+        return cycle;
+      }
+
+      // If the neighbor hasn't been visited by any DFS run yet, recurse.
+      if (!cycleCheckVisited.has(neighbor)) {
+        const result = dfs(neighbor, path, recursionStack);
+        if (result) {
+          // A cycle was found deeper in the traversal; propagate the result up.
+          return result;
+        }
       }
     }
 
+    // Backtrack: No cycle found from this node.
+    recursionStack.delete(node);
     path.pop();
-    visitSet.delete(node);
-    return false;
+    return null;
   }
-
-  // For cycle detection, we need to find nodes that weren't visited
-  const unvistedNodeIdx = nodes.findIndex((node, idx) => !visited.has(idx));
-
-  if (unvistedNodeIdx === -1) {
-    return [];
-  }
-
-  // Start DFS from any unvisited node
-  dfs(unvistedNodeIdx);
-
-  // Convert path indices to actual nodes
-  return path.map((idx) => nodes[idx]);
 }
 
 /**
