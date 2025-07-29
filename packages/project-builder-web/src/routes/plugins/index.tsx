@@ -53,14 +53,19 @@ function PluginsHomePage(): React.JSX.Element {
   }
 
   const pluginConfig = definition.plugins ?? [];
-  const installedPlugins = plugins.filter((plugin) =>
+
+  // Filter out managed plugins from main sections
+  const mainPlugins = plugins.filter((plugin) => !plugin.managedBy);
+  const managedPlugins = plugins.filter((plugin) => plugin.managedBy);
+
+  const installedPlugins = mainPlugins.filter((plugin) =>
     pluginConfig.some(
       (config) =>
         config.packageName === plugin.packageName &&
         config.name === plugin.name,
     ),
   );
-  const uninstalledPlugins = plugins.filter(
+  const uninstalledPlugins = mainPlugins.filter(
     (plugin) =>
       !plugin.hidden &&
       !pluginConfig.some(
@@ -69,6 +74,21 @@ function PluginsHomePage(): React.JSX.Element {
           config.name === plugin.name,
       ),
   );
+
+  // Group managed plugins by their manager
+  const managedPluginsByManager = new Map<string, typeof managedPlugins>();
+  for (const managedPlugin of managedPlugins) {
+    const managerName = managedPlugin.managedBy;
+    if (!managerName) continue;
+
+    if (!managedPluginsByManager.has(managerName)) {
+      managedPluginsByManager.set(managerName, []);
+    }
+    const existingPlugins = managedPluginsByManager.get(managerName);
+    if (existingPlugins) {
+      existingPlugins.push(managedPlugin);
+    }
+  }
 
   return (
     <div className="max-w-2xl space-y-4 p-4">
@@ -96,6 +116,48 @@ function PluginsHomePage(): React.JSX.Element {
           {uninstalledPlugins.map((plugin) => (
             <PluginCard key={plugin.key} plugin={plugin} isActive={false} />
           ))}
+        </>
+      )}
+      {managedPluginsByManager.size === 0 ? null : (
+        <>
+          <h3>Managed Plugins</h3>
+          <p className="text-sm text-muted-foreground">
+            These plugins are managed by their parent plugins and cannot be
+            configured directly.
+          </p>
+          {[...managedPluginsByManager.entries()].map(
+            ([managerName, managedPlugins]) => {
+              // Find the manager plugin to get its display name
+              const managerPlugin = plugins.find(
+                (p) => p.fullyQualifiedName === managerName,
+              );
+              const managerDisplayName =
+                managerPlugin?.displayName ?? managerName;
+
+              return (
+                <div key={managerName} className="space-y-2">
+                  <h4 className="text-sm font-medium text-muted-foreground">
+                    Managed by {managerDisplayName}
+                  </h4>
+                  {managedPlugins.map((plugin) => {
+                    const isActive = pluginConfig.some(
+                      (config) =>
+                        config.packageName === plugin.packageName &&
+                        config.name === plugin.name,
+                    );
+                    return (
+                      <PluginCard
+                        key={plugin.key}
+                        plugin={plugin}
+                        isActive={isActive}
+                        managerPlugin={managerPlugin}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            },
+          )}
         </>
       )}
     </div>

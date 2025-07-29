@@ -24,12 +24,14 @@ interface PluginCardProps {
   className?: string;
   plugin: PluginMetadataWithPaths;
   isActive: boolean;
+  managerPlugin?: PluginMetadataWithPaths;
 }
 
 export function PluginCard({
   className,
   plugin,
   isActive,
+  managerPlugin,
 }: PluginCardProps): React.JSX.Element {
   const { currentProjectId } = useProjects();
   const {
@@ -85,6 +87,11 @@ export function PluginCard({
   const webConfigImplementation = pluginContainer.getPluginSpec(webConfigSpec);
   const webConfig = webConfigImplementation.getWebConfigComponent(plugin.key);
 
+  // For managed plugins, check if the manager plugin has a web config
+  const managerWebConfig = managerPlugin
+    ? webConfigImplementation.getWebConfigComponent(managerPlugin.key)
+    : null;
+
   return (
     <Card className={className}>
       <CardHeader>
@@ -112,6 +119,24 @@ export function PluginCard({
           </div>
           <div>
             {(() => {
+              // Managed plugins cannot be enabled/disabled directly
+              if (managerPlugin) {
+                return managerWebConfig && isActive ? (
+                  <Link
+                    to={`/plugins/edit/$key`}
+                    from="/"
+                    params={{ key: managerPlugin.key }}
+                  >
+                    <Button variant="secondary">Configure</Button>
+                  </Link>
+                ) : (
+                  <Button variant="secondary" disabled>
+                    {isActive ? 'Managed' : 'Disabled'}
+                  </Button>
+                );
+              }
+
+              // Regular plugin logic
               if (!isActive) {
                 return (
                   <Button
