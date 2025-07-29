@@ -5,12 +5,10 @@ import {
   createAndApplyModelMergerResults,
   createModelMergerResults,
   doesModelMergerResultsHaveChanges,
-  FeatureUtils,
   ModelUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
-  FeatureComboboxFieldController,
   ModelComboboxFieldController,
   ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
@@ -27,22 +25,20 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
 } from '@baseplate-dev/ui-components';
-import { useLens } from '@hookform/lenses';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
+import { getAuthPluginDefinition } from '#src/auth/utils/get-auth-plugin-definition.js';
 import { AuthConfigTabs } from '#src/common/components/auth-config-tabs.js';
-import { RoleEditorForm } from '#src/common/roles/components/index.js';
-import { createDefaultAuthRoles } from '#src/common/roles/index.js';
 
-import type { AuthPluginDefinitionInput } from '../schema/plugin-definition.js';
+import type { LocalAuthPluginDefinitionInput } from '../schema/plugin-definition.js';
 
 import { createAuthModels } from '../schema/models.js';
-import { createAuthPluginDefinitionSchema } from '../schema/plugin-definition.js';
+import { createLocalAuthPluginDefinitionSchema } from '../schema/plugin-definition.js';
 
 import '#src/styles.css';
 
-export function AuthDefinitionEditor({
+export function LocalAuthDefinitionEditor({
   definition: pluginMetadata,
   metadata,
   onSave,
@@ -51,12 +47,13 @@ export function AuthDefinitionEditor({
     useProjectDefinition();
 
   const authPluginDefinitionSchema = useDefinitionSchema(
-    createAuthPluginDefinitionSchema,
+    createLocalAuthPluginDefinitionSchema,
   );
+  const authDefinition = getAuthPluginDefinition(definition);
 
   const defaultValues = useMemo(() => {
     if (pluginMetadata?.config) {
-      return pluginMetadata.config as AuthPluginDefinitionInput;
+      return pluginMetadata.config as LocalAuthPluginDefinitionInput;
     }
 
     return {
@@ -72,12 +69,7 @@ export function AuthDefinitionEditor({
           'UserSession',
         ),
       },
-      authFeatureRef: FeatureUtils.getFeatureIdByNameOrDefault(
-        definition,
-        'auth',
-      ),
-      roles: createDefaultAuthRoles(),
-    } satisfies AuthPluginDefinitionInput;
+    } satisfies LocalAuthPluginDefinitionInput;
   }, [definition, pluginMetadata?.config]);
 
   const form = useResettableForm({
@@ -87,33 +79,27 @@ export function AuthDefinitionEditor({
   const { control, reset, handleSubmit, watch } = form;
 
   const modelRefs = watch('modelRefs');
-  const authFeatureRef = watch('authFeatureRef');
 
   const pendingModelChanges = useMemo(() => {
-    const desiredModels = createAuthModels({ modelRefs, authFeatureRef });
+    const desiredModels = createAuthModels({ modelRefs }, authDefinition);
 
     return createModelMergerResults(
       modelRefs,
       desiredModels,
       definitionContainer,
     );
-  }, [definitionContainer, authFeatureRef, modelRefs]);
+  }, [definitionContainer, authDefinition, modelRefs]);
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
       (draftConfig) => {
-        const featureRef = FeatureUtils.ensureFeatureByNameRecursively(
-          draftConfig,
-          data.authFeatureRef,
-        );
         const updatedData = {
           ...data,
-          authFeatureRef: featureRef,
         };
         updatedData.modelRefs = createAndApplyModelMergerResults(
           draftConfig,
           updatedData.modelRefs,
-          createAuthModels(updatedData),
+          createAuthModels(updatedData, authDefinition),
           definitionContainer,
         );
         PluginUtils.setPluginConfig(
@@ -134,8 +120,6 @@ export function AuthDefinitionEditor({
 
   useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
-  const lens = useLens({ control });
-
   return (
     <div className="auth:relative auth:flex auth:h-full auth:flex-1 auth:flex-col auth:gap-4 auth:overflow-hidden">
       <AuthConfigTabs />
@@ -153,11 +137,10 @@ export function AuthDefinitionEditor({
               <SectionListSection>
                 <SectionListSectionHeader>
                   <SectionListSectionTitle>
-                    Local Authentication Configuration
+                    Local Auth User Models
                   </SectionListSectionTitle>
                   <SectionListSectionDescription>
-                    Configure your local authentication settings, user models,
-                    and role definitions.
+                    Configure your local authentication user models.
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="auth:space-y-6">
@@ -195,20 +178,8 @@ export function AuthDefinitionEditor({
                       description="Model for managing user sessions"
                     />
                   </div>
-
-                  <div className="auth:space-y-2">
-                    <FeatureComboboxFieldController
-                      label="Auth Feature Path"
-                      name="authFeatureRef"
-                      control={control}
-                      canCreate
-                      description="Specify the feature path where authentication endpoints will be generated"
-                    />
-                  </div>
                 </SectionListSectionContent>
               </SectionListSection>
-
-              <RoleEditorForm lens={lens.focus('roles')} />
             </SectionList>
           </div>
 

@@ -137,7 +137,7 @@ export function AuthDefinitionEditor({
         }
       },
       {
-        successMessage: 'Successfully saved auth plugin!',
+        successMessage: `Successfully saved auth plugin! ${selectedImplementationUrl && !isSelectedImplementationActive ? `Please configure the provider plugin before syncing.` : ''}`,
         onSuccess: () => {
           onSave();
 

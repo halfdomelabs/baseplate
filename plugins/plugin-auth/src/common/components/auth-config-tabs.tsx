@@ -33,6 +33,10 @@ export function AuthConfigTabs(): React.ReactElement | null {
       (p) => p.metadata.key === implementationPluginKey,
     );
 
+  if (!authImplementationPlugin) {
+    return null;
+  }
+
   return (
     <NavigationTabs>
       <NavigationTabsItem asChild>
@@ -45,16 +49,14 @@ export function AuthConfigTabs(): React.ReactElement | null {
           Auth
         </Link>
       </NavigationTabsItem>
-      {authImplementationPlugin && (
-        <NavigationTabsItem asChild>
-          <Link
-            to={`/plugins/edit/${authImplementationPlugin.metadata.key}`}
-            activeOptions={{ exact: true }}
-          >
-            {authImplementationPlugin.metadata.displayName}
-          </Link>
-        </NavigationTabsItem>
-      )}
+      <NavigationTabsItem asChild>
+        <Link
+          to={`/plugins/edit/${authImplementationPlugin.metadata.key}`}
+          activeOptions={{ exact: true }}
+        >
+          {authImplementationPlugin.metadata.displayName}
+        </Link>
+      </NavigationTabsItem>
     </NavigationTabs>
   );
 }

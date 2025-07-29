@@ -4,7 +4,7 @@ import type {
   ProjectDefinitionContainer,
 } from '@baseplate-dev/project-builder-lib';
 
-import { authConfigSpec } from '@baseplate-dev/project-builder-lib';
+import { authModelConfigSpec } from '@baseplate-dev/project-builder-lib';
 
 const FILE_MODEL_FIELDS: ModelMergerScalarFieldInput[] = [
   {
@@ -77,9 +77,9 @@ export function createStorageModels(
   { storageFeatureRef }: { storageFeatureRef: string },
   projectDefinitionContainer: ProjectDefinitionContainer,
 ): { file: ModelMergerModelInput } {
-  const authSpec =
-    projectDefinitionContainer.pluginStore.getPluginSpec(authConfigSpec);
-  const userAccountModel = authSpec.getUserModel(
+  const authModelConfig =
+    projectDefinitionContainer.pluginStore.getPluginSpec(authModelConfigSpec);
+  const userAccountModel = authModelConfig.getUserModel(
     projectDefinitionContainer.definition,
   );
   if (!userAccountModel) {

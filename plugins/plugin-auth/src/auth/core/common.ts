@@ -1,7 +1,11 @@
 import {
+  authConfigSpec,
   createPlatformPluginExport,
   pluginConfigSpec,
+  PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
+
+import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
 import { createAuthPluginDefinitionSchema } from './schema/plugin-definition.js';
 
@@ -12,8 +16,21 @@ export default createPlatformPluginExport({
   dependencies: {
     config: pluginConfigSpec,
   },
+  exports: {
+    authConfig: authConfigSpec,
+  },
   initialize: ({ config }, { pluginKey }) => {
     config.registerSchemaCreator(pluginKey, createAuthPluginDefinitionSchema);
-    return {};
+    return {
+      authConfig: {
+        getAuthRoles: (definition) => {
+          const pluginConfig = PluginUtils.configByKeyOrThrow(
+            definition,
+            pluginKey,
+          ) as AuthPluginDefinition;
+          return pluginConfig.roles;
+        },
+      },
+    };
   },
 });

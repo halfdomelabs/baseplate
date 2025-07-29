@@ -2,14 +2,11 @@ import type { def } from '@baseplate-dev/project-builder-lib';
 
 import {
   definitionSchema,
-  featureEntityType,
   modelEntityType,
 } from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
 
-import { createAuthRolesSchema } from '#src/common/roles/index.js';
-
-export const createAuthPluginDefinitionSchema = definitionSchema((ctx) =>
+export const createLocalAuthPluginDefinitionSchema = definitionSchema((ctx) =>
   z.object({
     modelRefs: z.object({
       user: ctx.withRef({
@@ -29,18 +26,13 @@ export const createAuthPluginDefinitionSchema = definitionSchema((ctx) =>
         onDelete: 'RESTRICT',
       }),
     }),
-    authFeatureRef: ctx.withRef({
-      type: featureEntityType,
-      onDelete: 'RESTRICT',
-    }),
-    roles: createAuthRolesSchema(ctx),
   }),
 );
 
-export type AuthPluginDefinition = def.InferOutput<
-  typeof createAuthPluginDefinitionSchema
+export type LocalAuthPluginDefinition = def.InferOutput<
+  typeof createLocalAuthPluginDefinitionSchema
 >;
 
-export type AuthPluginDefinitionInput = def.InferInput<
-  typeof createAuthPluginDefinitionSchema
+export type LocalAuthPluginDefinitionInput = def.InferInput<
+  typeof createLocalAuthPluginDefinitionSchema
 >;

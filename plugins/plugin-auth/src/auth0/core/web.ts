@@ -3,7 +3,7 @@ import {
   webConfigSpec,
 } from '@baseplate-dev/project-builder-lib';
 
-import { LocalAuthDefinitionEditor } from './components/local-auth-definition-editor.js';
+import { Auth0DefinitionEditor } from './components/auth0-definition-editor.js';
 
 import '../../styles.css';
 
@@ -13,7 +13,7 @@ export default createPlatformPluginExport({
   },
   exports: {},
   initialize: ({ webConfig }, { pluginKey }) => {
-    webConfig.registerWebConfigComponent(pluginKey, LocalAuthDefinitionEditor);
+    webConfig.registerWebConfigComponent(pluginKey, Auth0DefinitionEditor);
     return {};
   },
 });

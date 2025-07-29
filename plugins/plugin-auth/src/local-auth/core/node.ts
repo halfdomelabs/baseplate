@@ -10,13 +10,9 @@ import {
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
 
-import {
-  createCommonBackendAuthModuleGenerators,
-  createCommonBackendAuthRootGenerators,
-  createCommonWebAuthGenerators,
-} from '#src/common/index.js';
+import { getAuthPluginDefinition } from '#src/auth/index.js';
 
-import type { AuthPluginDefinition } from './schema/plugin-definition.js';
+import type { LocalAuthPluginDefinition } from './schema/plugin-definition.js';
 
 import { authApolloGenerator } from './generators/auth-apollo/auth-apollo.generator.js';
 import { authEmailPasswordGenerator } from './generators/auth-email-password/auth-email-password.generator.js';
@@ -36,18 +32,21 @@ export default createPlatformPluginExport({
       pluginKey,
       appType: backendAppEntryType,
       compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
-        const auth = PluginUtils.configByKeyOrThrow(
+        const localAuthDefinition = PluginUtils.configByKeyOrThrow(
           projectDefinition,
           pluginKey,
-        ) as AuthPluginDefinition;
+        ) as LocalAuthPluginDefinition;
 
-        appCompiler.addChildrenToFeature(auth.authFeatureRef, {
-          ...createCommonBackendAuthModuleGenerators({ roles: auth.roles }),
+        const authDefinition = getAuthPluginDefinition(projectDefinition);
+
+        appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {
           authModule: authModuleGenerator({
             userSessionModelName: definitionContainer.nameFromId(
-              auth.modelRefs.userSession,
+              localAuthDefinition.modelRefs.userSession,
             ),
-            userModelName: definitionContainer.nameFromId(auth.modelRefs.user),
+            userModelName: definitionContainer.nameFromId(
+              localAuthDefinition.modelRefs.user,
+            ),
           }),
           emailPassword: appModuleGenerator({
             id: 'email-password',
@@ -58,8 +57,6 @@ export default createPlatformPluginExport({
             },
           }),
         });
-
-        appCompiler.addRootChildren(createCommonBackendAuthRootGenerators());
       },
     });
 
@@ -69,7 +66,6 @@ export default createPlatformPluginExport({
       appType: webAppEntryType,
       compile: ({ appCompiler }) => {
         appCompiler.addRootChildren({
-          ...createCommonWebAuthGenerators(),
           authApollo: authApolloGenerator({}),
           reactAuth: reactAuthGenerator({}),
           authHooks: authHooksGenerator({}),
