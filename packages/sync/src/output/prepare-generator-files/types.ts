@@ -18,6 +18,29 @@ export interface PreviousGeneratedPayload {
   readonly fileIdToRelativePathMap: Map<string, string>;
 }
 
+export interface OverwriteOptions {
+  /**
+   * Whether to overwrite files without attempting to merge into working codebase.
+   */
+  enabled: boolean;
+  /**
+   * Whether to apply snapshots to the generated output.
+   *
+   * If undefined is returned, we will skip the generation of that file (assume it was purposely deleted)
+   *
+   * If false is returned, we will apply the standard 3-way merge skipping the overwrite option.
+   * Useful if there is an error with the patch application.
+   */
+  applyDiff?: (
+    relativePath: string,
+    generatedContents: string | Buffer,
+  ) => Promise<string | Buffer | undefined | false>;
+  /**
+   * Whether to skip the overwrite operation for a particular file.
+   */
+  skipFile?: (relativePath: string) => boolean;
+}
+
 /**
  * Context for the file writer functions
  */
@@ -49,9 +72,9 @@ export interface GeneratorOutputFileWriterContext {
    */
   readonly mergeDriver?: GitMergeDriverConfig;
   /**
-   * Whether to force overwrite existing files without merge conflict detection.
+   * Options for overwriting files.
    */
-  readonly forceOverwrite?: boolean;
+  readonly overwriteOptions?: OverwriteOptions;
 }
 
 /**
