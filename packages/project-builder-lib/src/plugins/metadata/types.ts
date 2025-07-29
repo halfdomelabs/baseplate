@@ -81,12 +81,6 @@ export const pluginMetadataSchema = z.object({
 
 export type PluginMetadata = z.infer<typeof pluginMetadataSchema>;
 
-/**
- * Alias for plugin.json schema - same as pluginMetadataSchema
- */
-export const pluginJsonSchema = pluginMetadataSchema;
-export type PluginJson = PluginMetadata;
-
 export interface PluginMetadataWithPaths extends PluginMetadata {
   /**
    * The unique key of the plugin generated for the project (URL-safe, globally unique)
