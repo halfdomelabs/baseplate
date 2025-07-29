@@ -22,7 +22,7 @@ function createMockContext(
     outputDirectory: '/test/output',
     previousGeneratedPayload: undefined,
     previousWorkingCodebase: undefined,
-    forceOverwrite: false,
+    overwriteOptions: undefined,
     ...overrides,
   };
 }
@@ -495,8 +495,8 @@ describe('prepareGeneratorFile', () => {
     });
   });
 
-  describe('force overwrite functionality', () => {
-    it('should bypass merge when forceOverwrite is enabled with different content', async () => {
+  describe('overwrite options functionality', () => {
+    it('should bypass merge when overwrite is enabled with different content', async () => {
       const workingFiles = new Map([
         ['file.txt', Buffer.from('working content')],
       ]);
@@ -516,7 +516,7 @@ describe('prepareGeneratorFile', () => {
           contents: 'new generated content',
         }),
         context: createMockContext({
-          forceOverwrite: true,
+          overwriteOptions: { enabled: true },
           previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
           previousGeneratedPayload: mockPreviousPayload,
         }),
@@ -530,7 +530,7 @@ describe('prepareGeneratorFile', () => {
       });
     });
 
-    it('should bypass merge when forceOverwrite is enabled with conflicting content', async () => {
+    it('should bypass merge when overwrite is enabled with conflicting content', async () => {
       const workingFiles = new Map([
         ['file.txt', Buffer.from('modified working content')],
       ]);
@@ -550,7 +550,7 @@ describe('prepareGeneratorFile', () => {
           contents: 'completely different generated content',
         }),
         context: createMockContext({
-          forceOverwrite: true,
+          overwriteOptions: { enabled: true },
           previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
           previousGeneratedPayload: mockPreviousPayload,
         }),
@@ -566,7 +566,7 @@ describe('prepareGeneratorFile', () => {
       });
     });
 
-    it('should force overwrite even when generated content is unchanged from previous generation', async () => {
+    it('should overwrite even when generated content is unchanged from previous generation', async () => {
       const content = 'unchanged generated content';
       const workingFiles = new Map([
         ['file.txt', Buffer.from('modified by user')],
@@ -584,7 +584,7 @@ describe('prepareGeneratorFile', () => {
           contents: content, // same as previous generation
         }),
         context: createMockContext({
-          forceOverwrite: true,
+          overwriteOptions: { enabled: true },
           previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
           previousGeneratedPayload: mockPreviousPayload,
         }),
@@ -593,12 +593,12 @@ describe('prepareGeneratorFile', () => {
       expect(result).toEqual({
         relativePath: 'file.txt',
         previousRelativePath: 'file.txt',
-        mergedContents: Buffer.from(content), // force overwrite even when unchanged
+        mergedContents: Buffer.from(content), // overwrite even when unchanged
         generatedContents: Buffer.from(content),
       });
     });
 
-    it('should respect other options like shouldNeverOverwrite even with forceOverwrite', async () => {
+    it('should respect other options like shouldNeverOverwrite even with overwrite enabled', async () => {
       const workingFiles = new Map([
         ['existing-file.txt', Buffer.from('existing content')],
       ]);
@@ -610,7 +610,7 @@ describe('prepareGeneratorFile', () => {
           options: { shouldNeverOverwrite: true },
         }),
         context: createMockContext({
-          forceOverwrite: true,
+          overwriteOptions: { enabled: true },
           previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
         }),
       });
@@ -620,6 +620,132 @@ describe('prepareGeneratorFile', () => {
         previousRelativePath: 'existing-file.txt',
         mergedContents: undefined,
         generatedContents: Buffer.from('new content'),
+      });
+    });
+
+    it('should use applyDiff when provided in overwriteOptions', async () => {
+      const workingFiles = new Map([
+        ['file.txt', Buffer.from('working content')],
+      ]);
+
+      const mockApplyDiff = (
+        relativePath: string,
+        generatedContents: string | Buffer,
+      ): Promise<string | Buffer | undefined | false> => {
+        if (relativePath === 'file.txt') {
+          return Promise.resolve(`modified: ${String(generatedContents)}`);
+        }
+        return Promise.resolve(generatedContents);
+      };
+
+      const result = await prepareGeneratorFile({
+        relativePath: 'file.txt',
+        data: createMockFileData({
+          contents: 'generated content',
+        }),
+        context: createMockContext({
+          overwriteOptions: { enabled: true, applyDiff: mockApplyDiff },
+          previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+        }),
+      });
+
+      expect(result).toEqual({
+        relativePath: 'file.txt',
+        previousRelativePath: 'file.txt',
+        mergedContents: Buffer.from('modified: generated content'),
+        generatedContents: Buffer.from('generated content'),
+      });
+    });
+
+    it('should skip generation when applyDiff returns undefined', async () => {
+      const workingFiles = new Map([
+        ['file.txt', Buffer.from('working content')],
+      ]);
+
+      const mockApplyDiff = (): Promise<string | Buffer | undefined | false> =>
+        Promise.resolve(undefined);
+
+      const result = await prepareGeneratorFile({
+        relativePath: 'file.txt',
+        data: createMockFileData({
+          contents: 'generated content',
+        }),
+        context: createMockContext({
+          overwriteOptions: { enabled: true, applyDiff: mockApplyDiff },
+          previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+        }),
+      });
+
+      expect(result).toEqual({
+        relativePath: 'file.txt',
+        previousRelativePath: 'file.txt',
+        mergedContents: undefined,
+        generatedContents: Buffer.from('generated content'),
+      });
+    });
+
+    it('should skip file when skipFile returns true', async () => {
+      const workingFiles = new Map([
+        ['file.txt', Buffer.from('working content')],
+      ]);
+
+      const mockSkipFile = (relativePath: string): boolean =>
+        relativePath === 'file.txt';
+
+      const previousFiles = new Map([
+        ['file.txt', Buffer.from('previous content')],
+      ]);
+
+      const mockPreviousPayload: PreviousGeneratedPayload = {
+        fileReader: createCodebaseReaderFromMemory(previousFiles),
+        fileIdToRelativePathMap: new Map([['test-id', 'file.txt']]),
+      };
+
+      const result = await prepareGeneratorFile({
+        relativePath: 'file.txt',
+        data: createMockFileData({
+          contents: 'generated content',
+        }),
+        context: createMockContext({
+          overwriteOptions: { enabled: true, skipFile: mockSkipFile },
+          previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+          previousGeneratedPayload: mockPreviousPayload,
+        }),
+      });
+
+      // Should fall back to normal merge behavior when file is skipped
+      expect(result.mergedContents).toBeDefined();
+      expect(result.generatedContents).toEqual(
+        Buffer.from('generated content'),
+      );
+    });
+
+    it('should skip overwrite when file content is identical after applyDiff', async () => {
+      const content = 'identical content';
+      const workingFiles = new Map([['file.txt', Buffer.from(content)]]);
+
+      const mockApplyDiff = (
+        _relativePath: string,
+        generatedContents: string | Buffer,
+      ): Promise<string | Buffer | undefined | false> =>
+        Promise.resolve(generatedContents); // returns same content
+
+      const result = await prepareGeneratorFile({
+        relativePath: 'file.txt',
+        data: createMockFileData({
+          contents: content,
+        }),
+        context: createMockContext({
+          overwriteOptions: { enabled: true, applyDiff: mockApplyDiff },
+          previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+        }),
+      });
+
+      expect(result).toEqual({
+        relativePath: 'file.txt',
+        previousRelativePath: 'file.txt',
+        mergedContents: undefined,
+        generatedContents: Buffer.from(content),
       });
     });
   });
