@@ -1,29 +1,15 @@
-import type {
-  ProjectDefinition,
-  SchemaParserContext,
-} from '@baseplate-dev/project-builder-lib';
+import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
-import {
-  createPluginImplementationStore,
-  runPluginMigrations,
-  runSchemaMigrations,
-} from '@baseplate-dev/project-builder-lib';
 import { CancelledSyncError } from '@baseplate-dev/sync';
-import {
-  enhanceErrorWithContext,
-  hashWithSHA256,
-  stringifyPrettyStable,
-} from '@baseplate-dev/utils';
-import { fileExists } from '@baseplate-dev/utils/node';
 import { mapValues } from 'es-toolkit';
-import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
 
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import { compileApplications } from '#src/compiler/index.js';
+import { loadProjectDefinition } from '#src/project-definition/load-project-definition.js';
 
 import type { PackageSyncResult, SyncStatus } from '../sync/index.js';
 import type { SyncMetadataController } from './sync-metadata-controller.js';
@@ -31,56 +17,6 @@ import type { SyncMetadataController } from './sync-metadata-controller.js';
 import { generateForDirectory } from '../sync/generate-for-directory.js';
 import { createTemplateMetadataOptions } from './template-metadata-utils.js';
 import { getPackageSyncStatusFromResult } from './utils.js';
-
-async function loadProjectJson(
-  directory: string,
-  context: SchemaParserContext,
-): Promise<{ definition: ProjectDefinition; hash: string }> {
-  const projectJsonPath = path.join(
-    directory,
-    'baseplate/project-definition.json',
-  );
-
-  const projectJsonExists = await fileExists(projectJsonPath);
-
-  if (!projectJsonExists) {
-    throw new Error(`Could not find definition file at ${projectJsonPath}`);
-  }
-
-  try {
-    const projectJsonContents = await readFile(projectJsonPath, 'utf8');
-    const hash = await hashWithSHA256(projectJsonContents);
-
-    const projectJson: unknown = JSON.parse(projectJsonContents);
-
-    const { migratedDefinition, appliedMigrations } = runSchemaMigrations(
-      projectJson as ProjectDefinition,
-    );
-    if (appliedMigrations.length > 0) {
-      await writeFile(
-        projectJsonPath,
-        stringifyPrettyStable(migratedDefinition),
-      );
-    }
-
-    const pluginImplementationStore = createPluginImplementationStore(
-      context.pluginStore,
-      migratedDefinition,
-    );
-
-    const definitionWithPluginMigrations = runPluginMigrations(
-      migratedDefinition,
-      pluginImplementationStore,
-    );
-
-    return { definition: definitionWithPluginMigrations, hash };
-  } catch (err) {
-    throw enhanceErrorWithContext(
-      err,
-      `Error parsing project definition at ${projectJsonPath}`,
-    );
-  }
-}
 
 /**
  * Options for syncing the project.
@@ -120,9 +56,13 @@ export interface SyncProjectOptions {
    */
   cliFilePath?: string;
   /**
-   * Whether to force overwrite existing files without merge conflict detection.
+   * Whether to force overwrite existing files and apply snapshot.
    */
-  forceOverwrite?: boolean;
+  overwrite?: boolean;
+  /**
+   * Directory containing snapshot to use when generating.
+   */
+  snapshotDirectory?: string;
 }
 
 /**
@@ -149,7 +89,8 @@ export async function syncProject({
   abortSignal,
   skipCommands,
   cliFilePath,
-  forceOverwrite,
+  overwrite,
+  snapshotDirectory,
 }: SyncProjectOptions): Promise<SyncProjectResult> {
   await syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
@@ -164,7 +105,7 @@ export async function syncProject({
   }));
 
   try {
-    const { definition: projectJson } = await loadProjectJson(
+    const { definition: projectJson } = await loadProjectDefinition(
       directory,
       context,
     );
@@ -226,7 +167,8 @@ export async function syncProject({
           previousPackageSyncResult: packageInfo?.result,
           abortSignal,
           skipCommands,
-          forceOverwrite,
+          overwrite,
+          snapshotDirectory,
         });
       } catch (err) {
         if (err instanceof CancelledSyncError) {

@@ -17,13 +17,21 @@ export function addSyncCommand(program: Command): void {
       'Syncs project from project-definition.json in baseplate/ directory',
     )
     .option(
-      '--force-overwrite',
-      'Force overwrite existing files without merge conflict detection',
+      '--overwrite',
+      'Force overwrite existing files and apply snapshots automatically',
+    )
+    .option(
+      '--snapshot <directory>',
+      'Apply diffs from snapshot directory (requires --overwrite)',
+      '.baseplate-snapshot',
     )
     .action(
       async (
         directory: string | undefined,
-        options: { forceOverwrite?: boolean },
+        options: {
+          overwrite?: boolean;
+          snapshot?: string;
+        },
       ) => {
         const { syncProject, SyncMetadataController } = await import(
           '@baseplate-dev/project-builder-server'
@@ -31,6 +39,15 @@ export function addSyncCommand(program: Command): void {
         const resolvedDirectory = directory
           ? expandPathWithTilde(directory)
           : '.';
+        // Validate that --snapshot requires --overwrite
+        if (options.snapshot && !options.overwrite) {
+          logger.error('Error: --snapshot option requires --overwrite flag');
+          logger.error(
+            'Snapshots are only applied when overwriting files, not during normal merging.',
+          );
+          throw new Error('--snapshot option requires --overwrite flag');
+        }
+
         const context = await createSchemaParserContext(resolvedDirectory);
         const userConfig = await getUserConfig();
         const syncMetadataController = new SyncMetadataController(
@@ -45,7 +62,8 @@ export function addSyncCommand(program: Command): void {
             userConfig,
             cliFilePath: process.argv[1],
             syncMetadataController,
-            forceOverwrite: options.forceOverwrite ?? false,
+            overwrite: options.overwrite ?? false,
+            snapshotDirectory: options.overwrite ? options.snapshot : undefined,
           });
         } catch (error) {
           logger.error('Sync failed:', error);

@@ -566,29 +566,6 @@ describe('prepareGeneratorFile', () => {
       });
     });
 
-    it('should force overwrite even when files are identical', async () => {
-      const content = 'identical content';
-      const workingFiles = new Map([['file.txt', Buffer.from(content)]]);
-
-      const result = await prepareGeneratorFile({
-        relativePath: 'file.txt',
-        data: createMockFileData({
-          contents: content,
-        }),
-        context: createMockContext({
-          forceOverwrite: true,
-          previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
-        }),
-      });
-
-      expect(result).toEqual({
-        relativePath: 'file.txt',
-        previousRelativePath: 'file.txt',
-        mergedContents: Buffer.from(content), // force overwrite bypasses optimizations
-        generatedContents: Buffer.from(content),
-      });
-    });
-
     it('should force overwrite even when generated content is unchanged from previous generation', async () => {
       const content = 'unchanged generated content';
       const workingFiles = new Map([

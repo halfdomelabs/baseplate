@@ -359,6 +359,19 @@ export async function prepareGeneratorFile({
     context.forceOverwrite &&
     !overwriteIgnorePatterns?.ignores(relativePath)
   ) {
+    const previousWorkingBuffer = await previousWorkingCodebase?.readFile(
+      previousRelativePath ?? relativePath,
+    );
+    if (
+      previousWorkingBuffer?.equals(normalizeBufferString(formattedContents))
+    ) {
+      return {
+        relativePath,
+        mergedContents: undefined,
+        generatedContents: normalizeBufferString(formattedContents),
+        previousRelativePath,
+      };
+    }
     return {
       relativePath,
       mergedContents: normalizeBufferString(formattedContents),

@@ -3,8 +3,10 @@ import type ignore from 'ignore';
 
 import { shouldIncludeFile as shouldIncludeFileIgnore } from '@baseplate-dev/sync';
 import * as diff from 'diff';
+import { globby } from 'globby';
 import { isBinaryFile } from 'isbinaryfile';
 import micromatch from 'micromatch';
+import fsAdapter from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -53,26 +55,59 @@ export async function readWorkingFile(
 /**
  * Determines if content is binary (for generated content)
  */
-export function isContentBinary(content: string | Buffer): boolean {
+export function isContentBinary(content: string | Buffer): content is Buffer {
   return Buffer.isBuffer(content);
 }
 
 /**
- * Creates a unified diff for text files
+ * Creates a unified diff for text files (generated → working)
  */
 export function createUnifiedDiff(
   filePath: string,
-  oldContent: string,
-  newContent: string,
+  generatedContent: string,
+  workingContent: string,
 ): string {
   const patch = diff.createPatch(
     filePath,
-    oldContent,
-    newContent,
-    'working',
+    generatedContent,
+    workingContent,
     'generated',
+    'working',
   );
   return patch;
+}
+
+/**
+ * Scans the working directory for all files, respecting ignore and glob patterns
+ */
+export async function scanWorkingDirectory(
+  directory: string,
+  globPatterns?: string[],
+  ignoreInstance?: ignore.Ignore,
+): Promise<string[]> {
+  // Create glob pattern to match all files
+  const patterns =
+    globPatterns && globPatterns.length > 0 ? globPatterns : ['**/*'];
+
+  const files = await globby(patterns, {
+    cwd: directory,
+    onlyFiles: true,
+    fs: fsAdapter,
+    gitignore: true,
+    absolute: false, // Return relative paths
+  });
+
+  // Filter files using ignore patterns and glob patterns
+  return files.filter((filePath) =>
+    shouldIncludeFile(filePath, globPatterns, ignoreInstance),
+  );
+}
+
+function normalizeAsBuffer(content: string | Buffer): Buffer {
+  if (Buffer.isBuffer(content)) {
+    return content;
+  }
+  return Buffer.from(content);
 }
 
 /**
@@ -107,16 +142,23 @@ export async function compareFiles(
     }
 
     if (workingContent === null) {
-      // File only exists in generated output
-      diffs.push({
-        path: filePath,
-        type: 'added',
-        generatedContent,
-        isBinary: generatedIsBinary,
-        unifiedDiff: generatedIsBinary
-          ? undefined
-          : createUnifiedDiff(filePath, '', generatedContent.toString()),
-      });
+      // File only exists in generated output - generator should not create this file
+      if (generatedIsBinary) {
+        diffs.push({
+          path: filePath,
+          type: 'deleted',
+          isBinary: true,
+          generatedContent,
+        });
+      } else {
+        diffs.push({
+          path: filePath,
+          type: 'deleted',
+          generatedContent,
+          isBinary: false,
+          unifiedDiff: createUnifiedDiff(filePath, generatedContent, ''),
+        });
+      }
     } else if (generatedIsBinary || workingIsBinary) {
       // Binary file comparison
       const areEqual =
@@ -128,9 +170,9 @@ export async function compareFiles(
         diffs.push({
           path: filePath,
           type: 'modified',
-          generatedContent,
-          workingContent,
           isBinary: true,
+          generatedContent: normalizeAsBuffer(generatedContent),
+          workingContent: normalizeAsBuffer(workingContent),
         });
       }
     } else {
@@ -141,19 +183,51 @@ export async function compareFiles(
       if (generatedText !== workingText) {
         diffs.push({
           path: filePath,
-          type: 'modified',
-          generatedContent,
-          workingContent,
           isBinary: false,
-          unifiedDiff: createUnifiedDiff(filePath, workingText, generatedText),
+          type: 'modified',
+          generatedContent: generatedText,
+          workingContent: workingText,
+          unifiedDiff: createUnifiedDiff(filePath, generatedText, workingText),
         });
       }
     }
   }
 
-  // TODO: Check for files that exist in working directory but not in generated output
-  // This would require scanning the working directory, which might be expensive
-  // For now, we'll focus on differences in generated files
+  // Check for files that exist in working directory but not in generated output
+  const workingDirectoryFiles = await scanWorkingDirectory(
+    directory,
+    globPatterns,
+    ignoreInstance,
+  );
+
+  // Find files that exist in working directory but not in generated output
+  for (const workingFilePath of workingDirectoryFiles) {
+    if (!processedFiles.has(workingFilePath)) {
+      // This file exists in working directory but not in generated output - generator should create this file
+      const workingContent = await readWorkingFile(directory, workingFilePath);
+
+      if (workingContent !== null) {
+        const workingIsBinary = isContentBinary(workingContent);
+
+        if (workingIsBinary) {
+          diffs.push({
+            path: workingFilePath,
+            type: 'added',
+            workingContent,
+            isBinary: true,
+          });
+        } else {
+          diffs.push({
+            path: workingFilePath,
+            type: 'added',
+            workingContent,
+            isBinary: workingIsBinary,
+            unifiedDiff: createUnifiedDiff(workingFilePath, '', workingContent),
+          });
+        }
+      }
+    }
+  }
 
   const summary: DiffSummary = {
     totalFiles: diffs.length,

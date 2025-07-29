@@ -1,6 +1,7 @@
 import type {
   AppConfig,
   BackendAppConfig,
+  BaseAppConfig,
   ProjectDefinition,
 } from '#src/schema/index.js';
 
@@ -28,17 +29,25 @@ function getBackendApp(projectDefinition: ProjectDefinition): BackendAppConfig {
   return backendApp;
 }
 
+/**
+ * Given an app config, get the relative directory of the app
+ *
+ * @param appConfig The app config
+ * @returns The directory of the app
+ */
+function getAppDirectory(appConfig: BaseAppConfig): string {
+  return appConfig.packageLocation
+    ? appConfig.packageLocation
+    : `packages/${appConfig.name}`;
+}
+
 export function getBackendRelativePath(
   appConfig: AppConfig,
   backendApp: BackendAppConfig,
 ): string {
   const backendRelativePath = computeRelativePath(
-    appConfig.packageLocation
-      ? appConfig.packageLocation
-      : `packages/${appConfig.name}`,
-    backendApp.packageLocation
-      ? backendApp.packageLocation
-      : `packages/${backendApp.name}`,
+    getAppDirectory(appConfig),
+    getAppDirectory(backendApp),
   );
 
   return backendRelativePath;
@@ -48,4 +57,5 @@ export const AppUtils = {
   byId,
   getBackendApp,
   getBackendRelativePath,
+  getAppDirectory,
 };

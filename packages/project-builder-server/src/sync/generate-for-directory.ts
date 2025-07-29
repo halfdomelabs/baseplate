@@ -1,24 +1,12 @@
 import type { AppEntry } from '@baseplate-dev/project-builder-lib';
 import type {
   FileWithConflict,
-  GeneratorEntry,
-  GeneratorOutput,
   Logger,
-  PreviousGeneratedPayload,
   TemplateMetadataOptions,
 } from '@baseplate-dev/sync';
 
-import {
-  buildGeneratorEntry,
-  CancelledSyncError,
-  createCodebaseFileReaderFromDirectory,
-  deleteMetadataFiles,
-  executeGeneratorEntry,
-  writeGeneratorOutput,
-  writeTemplateInfoFiles,
-} from '@baseplate-dev/sync';
+import { CancelledSyncError } from '@baseplate-dev/sync';
 import { randomKey } from '@baseplate-dev/utils';
-import { dirExists } from '@baseplate-dev/utils/node';
 import chalk from 'chalk';
 import { mkdir, rename, rm } from 'node:fs/promises';
 import path from 'node:path';
@@ -26,12 +14,14 @@ import path from 'node:path';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import type { PackageSyncResult } from './sync-metadata.js';
+import type { GeneratorOperations } from './types.js';
 
-import {
-  getPreviousGeneratedFileIdMap,
-  writeGeneratedFileIdMap,
-} from './file-id-map.js';
-import { writeGeneratorSteps } from './generator-steps-writer.js';
+import { applySnapshotToGeneratorOutput } from '../diff/snapshot/apply-diff-to-generator-output.js';
+import { loadSnapshotManifest } from '../diff/snapshot/snapshot-manifest.js';
+import { resolveSnapshotDirectory } from '../diff/snapshot/snapshot-utils.js';
+import { writeGeneratedFileIdMap } from './file-id-map.js';
+import { GENERATED_DIRECTORY } from './get-previous-generated-payload.js';
+import { DEFAULT_GENERATOR_OPERATIONS } from './types.js';
 
 interface GenerateForDirectoryOptions {
   baseDirectory: string;
@@ -43,53 +33,8 @@ interface GenerateForDirectoryOptions {
   operations?: GeneratorOperations;
   abortSignal?: AbortSignal;
   skipCommands?: boolean;
-  forceOverwrite?: boolean;
-}
-
-export interface GeneratorOperations {
-  buildGeneratorEntry: typeof buildGeneratorEntry;
-  executeGeneratorEntry: typeof executeGeneratorEntry;
-  getPreviousGeneratedPayload: typeof getPreviousGeneratedPayload;
-  writeGeneratorOutput: typeof writeGeneratorOutput;
-  writeMetadata: (
-    project: GeneratorEntry,
-    output: GeneratorOutput,
-    projectDirectory: string,
-  ) => Promise<void>;
-  writeGeneratorSteps: typeof writeGeneratorSteps;
-}
-
-const defaultGeneratorOperations: GeneratorOperations = {
-  buildGeneratorEntry,
-  executeGeneratorEntry,
-  getPreviousGeneratedPayload,
-  writeGeneratorOutput,
-  writeMetadata: async (_project, output, projectDirectory) => {
-    await deleteMetadataFiles(projectDirectory);
-    await writeTemplateInfoFiles(output.files, projectDirectory);
-  },
-  writeGeneratorSteps,
-};
-
-const GENERATED_DIRECTORY = 'baseplate/generated';
-
-async function getPreviousGeneratedPayload(
-  projectDirectory: string,
-): Promise<PreviousGeneratedPayload | undefined> {
-  const generatedDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
-
-  const generatedDirectoryExists = await dirExists(generatedDirectory);
-
-  if (!generatedDirectoryExists) {
-    return undefined;
-  }
-
-  const fileIdMap = await getPreviousGeneratedFileIdMap(projectDirectory);
-
-  return {
-    fileReader: createCodebaseFileReaderFromDirectory(generatedDirectory),
-    fileIdToRelativePathMap: fileIdMap,
-  };
+  overwrite?: boolean;
+  snapshotDirectory?: string;
 }
 
 export async function generateForDirectory({
@@ -99,10 +44,11 @@ export async function generateForDirectory({
   writeTemplateMetadataOptions,
   userConfig,
   previousPackageSyncResult,
-  operations = defaultGeneratorOperations,
+  operations = DEFAULT_GENERATOR_OPERATIONS,
   abortSignal,
   skipCommands,
-  forceOverwrite,
+  overwrite,
+  snapshotDirectory,
 }: GenerateForDirectoryOptions): Promise<PackageSyncResult> {
   const { appDirectory, name, generatorBundle } = appEntry;
 
@@ -111,11 +57,41 @@ export async function generateForDirectory({
   logger.info(`Generating project ${name} in ${projectDirectory}...`);
 
   const project = await operations.buildGeneratorEntry(generatorBundle);
-  const output = await operations.executeGeneratorEntry(project, {
+  let output = await operations.executeGeneratorEntry(project, {
     templateMetadataOptions: writeTemplateMetadataOptions,
   });
 
   if (abortSignal?.aborted) throw new CancelledSyncError();
+
+  // Apply snapshot if overwrite is enabled and snapshots exist
+  if (overwrite) {
+    const resolvedSnapshotDirectory = snapshotDirectory
+      ? resolveSnapshotDirectory(projectDirectory, {
+          snapshotDir: snapshotDirectory,
+        })
+      : resolveSnapshotDirectory(projectDirectory);
+
+    const snapshot = await loadSnapshotManifest(resolvedSnapshotDirectory);
+
+    if (snapshot) {
+      logger.info(`Applying snapshot to generator output for ${name}...`);
+      try {
+        output = await applySnapshotToGeneratorOutput(
+          output,
+          snapshot,
+          resolvedSnapshotDirectory.diffsPath,
+        );
+      } catch (error) {
+        logger.error(
+          `Failed to apply snapshot to generator output for ${name}: ${error instanceof Error ? error.message : String(error)}`,
+        );
+        logger.error(
+          'Please run `baseplate snapshot fix-diffs` to resolve conflicts and try again.',
+        );
+        throw error;
+      }
+    }
+  }
 
   logger.info('Project built! Writing output....');
 
@@ -151,7 +127,7 @@ export async function generateForDirectory({
           : undefined,
         abortSignal,
         skipCommands,
-        forceOverwrite,
+        forceOverwrite: overwrite,
       });
 
     // write metadata to the generated directory

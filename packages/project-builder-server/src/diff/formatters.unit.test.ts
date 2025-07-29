@@ -34,7 +34,9 @@ describe('formatters', () => {
           path: 'new-file.ts',
           type: 'added',
           isBinary: false,
-          generatedContent: 'content',
+          workingContent: 'content',
+          unifiedDiff:
+            '--- new-file.ts\n<insert> new-file.ts\n@@ -0,0 +1 @@\n+content',
         },
         {
           path: 'modified-file.ts',
@@ -42,6 +44,8 @@ describe('formatters', () => {
           isBinary: false,
           generatedContent: 'new content',
           workingContent: 'old content',
+          unifiedDiff:
+            '--- modified-file.ts\n+++ modified-file.ts\n@@ -1 +1 @@\n-old content\n+new content',
         },
         {
           path: 'binary-file.png',
@@ -79,7 +83,7 @@ describe('formatters', () => {
         path: 'new-file.ts',
         type: 'added',
         isBinary: false,
-        generatedContent: 'export const foo = "bar";',
+        workingContent: 'export const foo = "bar";',
         unifiedDiff:
           '--- new-file.ts\n+++ new-file.ts\n@@ -0,0 +1 @@\n+export const foo = "bar";',
       };
@@ -128,7 +132,7 @@ describe('formatters', () => {
         path: 'deleted-file.ts',
         type: 'deleted',
         isBinary: false,
-        workingContent: 'export const foo = "bar";',
+        generatedContent: 'export const foo = "bar";',
         unifiedDiff:
           '--- deleted-file.ts\n+++ deleted-file.ts\n@@ -1 +0,0 @@\n-export const foo = "bar";',
       };
@@ -161,7 +165,7 @@ describe('formatters', () => {
           path: 'file1.ts',
           type: 'added',
           isBinary: false,
-          generatedContent: 'content1',
+          workingContent: 'content1',
           unifiedDiff: '--- file1.ts\n+++ file1.ts\n@@ -0,0 +1 @@\n+content1',
         },
         {

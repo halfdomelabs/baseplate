@@ -17,6 +17,7 @@ import {
 } from '@baseplate-dev/sync';
 import { enhanceErrorWithContext, hashWithSHA256 } from '@baseplate-dev/utils';
 import { fileExists } from '@baseplate-dev/utils/node';
+import ignore from 'ignore';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -27,6 +28,9 @@ import { compileApplications } from '#src/compiler/index.js';
 import { createTemplateMetadataOptions } from '../sync/template-metadata-utils.js';
 import { compareFiles } from './diff-utils.js';
 import { formatCompactDiff, formatUnifiedDiff } from './formatters.js';
+import { applySnapshotToGeneratorOutput } from './snapshot/apply-diff-to-generator-output.js';
+import { loadSnapshotManifest } from './snapshot/snapshot-manifest.js';
+import { resolveSnapshotDirectory } from './snapshot/snapshot-utils.js';
 
 /**
  * Load and parse project definition (extracted from build-project.ts)
@@ -167,11 +171,6 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
 
       logger.info(`Generating for app: ${app.name} (${app.appDirectory})`);
 
-      // Load ignore patterns for this app directory
-      const ignorePatterns = useIgnoreFile
-        ? await loadIgnorePatterns(appDirectory)
-        : undefined;
-
       // Generate the output without writing files
       const generatorEntry = await buildGeneratorEntry(app.generatorBundle);
       const generatorOutput = await executeGeneratorEntry(generatorEntry, {
@@ -184,10 +183,36 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
         { outputDirectory: appDirectory },
       );
 
+      // Apply snapshot to generator output
+      const snapshotDirectory = resolveSnapshotDirectory(appDirectory);
+      const snapshot = await loadSnapshotManifest(snapshotDirectory);
+
+      if (snapshot) {
+        logger.info(`Applying snapshot to generator output for ${app.name}...`);
+      }
+
+      const diffedGeneratorOutput = snapshot
+        ? await applySnapshotToGeneratorOutput(
+            formattedGeneratorOutput,
+            snapshot,
+            snapshotDirectory.diffsPath,
+          )
+        : formattedGeneratorOutput;
+
+      // Load ignore patterns for this app directory
+      const ignorePatterns = useIgnoreFile
+        ? await loadIgnorePatterns(appDirectory)
+        : ignore();
+
+      // Add added files to ignore pattern
+      if (snapshot) {
+        ignorePatterns.add(snapshot.files.added);
+      }
+
       // Compare generated output with working directory
       const diffSummary = await compareFiles(
         appDirectory,
-        formattedGeneratorOutput,
+        diffedGeneratorOutput,
         globPatterns,
         ignorePatterns,
       );
