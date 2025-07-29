@@ -90,6 +90,7 @@ export async function syncProject({
   skipCommands,
   cliFilePath,
   overwrite,
+  snapshotDirectory,
 }: SyncProjectOptions): Promise<SyncProjectResult> {
   await syncMetadataController?.updateMetadata((metadata) => ({
     ...metadata,
@@ -167,6 +168,7 @@ export async function syncProject({
           abortSignal,
           skipCommands,
           overwrite,
+          snapshotDirectory,
         });
       } catch (err) {
         if (err instanceof CancelledSyncError) {

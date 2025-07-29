@@ -16,6 +16,9 @@ import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js
 import type { PackageSyncResult } from './sync-metadata.js';
 import type { GeneratorOperations } from './types.js';
 
+import { applySnapshotToGeneratorOutput } from '../diff/snapshot/apply-diff-to-generator-output.js';
+import { loadSnapshotManifest } from '../diff/snapshot/snapshot-manifest.js';
+import { resolveSnapshotDirectory } from '../diff/snapshot/snapshot-utils.js';
 import { writeGeneratedFileIdMap } from './file-id-map.js';
 import { DEFAULT_GENERATOR_OPERATIONS } from './types.js';
 
@@ -30,6 +33,7 @@ interface GenerateForDirectoryOptions {
   abortSignal?: AbortSignal;
   skipCommands?: boolean;
   overwrite?: boolean;
+  snapshotDirectory?: string;
 }
 
 const GENERATED_DIRECTORY = 'baseplate/generated';
@@ -45,6 +49,7 @@ export async function generateForDirectory({
   abortSignal,
   skipCommands,
   overwrite,
+  snapshotDirectory,
 }: GenerateForDirectoryOptions): Promise<PackageSyncResult> {
   const { appDirectory, name, generatorBundle } = appEntry;
 
@@ -53,11 +58,41 @@ export async function generateForDirectory({
   logger.info(`Generating project ${name} in ${projectDirectory}...`);
 
   const project = await operations.buildGeneratorEntry(generatorBundle);
-  const output = await operations.executeGeneratorEntry(project, {
+  let output = await operations.executeGeneratorEntry(project, {
     templateMetadataOptions: writeTemplateMetadataOptions,
   });
 
   if (abortSignal?.aborted) throw new CancelledSyncError();
+
+  // Apply snapshot if overwrite is enabled and snapshots exist
+  if (overwrite) {
+    const resolvedSnapshotDirectory = snapshotDirectory
+      ? resolveSnapshotDirectory(projectDirectory, {
+          snapshotDir: snapshotDirectory,
+        })
+      : resolveSnapshotDirectory(projectDirectory);
+
+    const snapshot = await loadSnapshotManifest(resolvedSnapshotDirectory);
+
+    if (snapshot) {
+      logger.info(`Applying snapshot to generator output for ${name}...`);
+      try {
+        output = await applySnapshotToGeneratorOutput(
+          output,
+          snapshot,
+          resolvedSnapshotDirectory.diffsPath,
+        );
+      } catch (error) {
+        logger.error(
+          `Failed to apply snapshot to generator output for ${name}: ${error instanceof Error ? error.message : String(error)}`,
+        );
+        logger.error(
+          'Please run `baseplate snapshot fix-diffs` to resolve conflicts and try again.',
+        );
+        throw error;
+      }
+    }
+  }
 
   logger.info('Project built! Writing output....');
 
