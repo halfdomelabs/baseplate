@@ -10,7 +10,7 @@ import type { GeneratorOperations } from '#src/sync/types.js';
 
 import { compileApplications } from '#src/compiler/index.js';
 import { getSingleAppDirectoryForProject } from '#src/project-definition/get-single-app-directory-for-project.js';
-import { loadProjectDefinition } from '#src/project-definition/load-project-definition.js';
+import { loadProjectDefinition } from '#src/project-definition/index.js';
 import { createTemplateMetadataOptions } from '#src/sync/template-metadata-utils.js';
 import { DEFAULT_GENERATOR_OPERATIONS } from '#src/sync/types.js';
 

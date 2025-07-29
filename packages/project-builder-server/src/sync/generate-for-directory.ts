@@ -20,6 +20,7 @@ import { applySnapshotToGeneratorOutput } from '../diff/snapshot/apply-diff-to-g
 import { loadSnapshotManifest } from '../diff/snapshot/snapshot-manifest.js';
 import { resolveSnapshotDirectory } from '../diff/snapshot/snapshot-utils.js';
 import { writeGeneratedFileIdMap } from './file-id-map.js';
+import { GENERATED_DIRECTORY } from './get-previous-generated-payload.js';
 import { DEFAULT_GENERATOR_OPERATIONS } from './types.js';
 
 interface GenerateForDirectoryOptions {
@@ -35,8 +36,6 @@ interface GenerateForDirectoryOptions {
   overwrite?: boolean;
   snapshotDirectory?: string;
 }
-
-const GENERATED_DIRECTORY = 'baseplate/generated';
 
 export async function generateForDirectory({
   baseDirectory,

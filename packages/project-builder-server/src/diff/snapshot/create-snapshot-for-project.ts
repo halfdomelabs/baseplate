@@ -12,7 +12,7 @@ import path from 'node:path';
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import { compileApplications } from '#src/compiler/index.js';
-import { loadProjectDefinition } from '#src/project-definition/load-project-definition.js';
+import { loadProjectDefinition } from '#src/project-definition/index.js';
 import { createTemplateMetadataOptions } from '#src/sync/template-metadata-utils.js';
 
 import { saveSnapshot } from './save-snapshot.js';
