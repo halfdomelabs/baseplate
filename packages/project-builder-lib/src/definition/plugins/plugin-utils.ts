@@ -36,6 +36,14 @@ function byKeyOrThrow(
   return plugin;
 }
 
+function configByKey(
+  projectDefinition: ProjectDefinition,
+  key: string,
+): unknown | undefined {
+  const def = byKey(projectDefinition, key);
+  return def?.config;
+}
+
 function configByKeyOrThrow(
   projectDefinition: ProjectDefinition,
   key: string,
@@ -115,6 +123,7 @@ function disablePlugin(
 export const PluginUtils = {
   byKey,
   byKeyOrThrow,
+  configByKey,
   setPluginConfig,
   configByKeyOrThrow,
   disablePlugin,

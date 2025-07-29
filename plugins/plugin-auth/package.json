@@ -49,6 +49,7 @@
     "@baseplate-dev/ui-components": "workspace:*",
     "@hookform/lenses": "0.7.1",
     "@hookform/resolvers": "5.0.1",
+    "@tanstack/react-router": "1.124.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "7.60.0",

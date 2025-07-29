@@ -1,6 +1,7 @@
 import type React from 'react';
 
 import {
+  createPluginImplementationStoreWithNewPlugins,
   getPluginMetadataByKey,
   PluginUtils,
   webConfigSpec,
@@ -21,8 +22,6 @@ import { HiDotsVertical } from 'react-icons/hi';
 
 import { NotFoundCard } from '#src/components/index.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
-
-import { loadPluginImplementationStoreWithNewPlugin } from './-components/utils.js';
 
 export const Route = createFileRoute('/plugins/edit/$key')({
   component: PluginConfigPage,
@@ -71,9 +70,9 @@ function PluginConfigPage(): React.JSX.Element {
     if (webConfigComponent) {
       return webConfigComponent;
     }
-    const newPluginContainer = loadPluginImplementationStoreWithNewPlugin(
+    const newPluginContainer = createPluginImplementationStoreWithNewPlugins(
       schemaParserContext.pluginStore,
-      pluginMetadata,
+      [pluginMetadata],
       definitionContainer.definition,
     );
 

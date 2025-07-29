@@ -5,6 +5,7 @@ import type { PluginStore } from '#src/plugins/imports/types.js';
 import type {
   InitializedPluginSpec,
   PluginImplementationStore,
+  PluginMetadataWithPaths,
   PluginSpecImplementation,
   PluginSpecWithInitializer,
 } from '#src/plugins/index.js';
@@ -21,6 +22,7 @@ import {
   adminCrudInputSpec,
   createDefinitionSchemaParserContext,
   modelTransformerSpec,
+  pluginEntityType,
 } from '#src/schema/index.js';
 import { basePluginDefinitionSchema } from '#src/schema/plugins/definition.js';
 import { createProjectDefinitionSchema } from '#src/schema/project-definition.js';
@@ -86,6 +88,41 @@ export function createPluginImplementationStore(
     };
   });
   return initializePlugins(pluginsWithModules, specImplementations);
+}
+
+/**
+ * Creates a plugin implementation store with the given plugins added to the project definition.
+ *
+ * @param pluginStore The plugin store to use
+ * @param plugins The plugins to add to the project definition
+ * @param projectDefinition The project definition to use
+ * @returns The plugin implementation store
+ */
+export function createPluginImplementationStoreWithNewPlugins(
+  pluginStore: PluginStore,
+  plugins: PluginMetadataWithPaths[],
+  projectDefinition: ProjectDefinition,
+): PluginImplementationStore {
+  const newProjectDefinition: ProjectDefinition = {
+    ...projectDefinition,
+    plugins: [
+      ...(projectDefinition.plugins ?? []),
+      ...plugins
+        .filter(
+          (p) =>
+            !projectDefinition.plugins?.some(
+              (p2) => p2.id === pluginEntityType.idFromKey(p.key),
+            ),
+        )
+        .map((p) => ({
+          id: pluginEntityType.idFromKey(p.key),
+          version: p.version,
+          name: p.name,
+          packageName: p.packageName,
+        })),
+    ],
+  };
+  return createPluginImplementationStore(pluginStore, newProjectDefinition);
 }
 
 /**

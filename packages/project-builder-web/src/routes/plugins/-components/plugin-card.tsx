@@ -1,7 +1,11 @@
 import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
-import { PluginUtils, webConfigSpec } from '@baseplate-dev/project-builder-lib';
+import {
+  createPluginImplementationStoreWithNewPlugins,
+  PluginUtils,
+  webConfigSpec,
+} from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
@@ -17,8 +21,6 @@ import { MdExtension } from 'react-icons/md';
 import { useProjects } from '#src/hooks/use-projects.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 import { getPluginStaticUrl } from '#src/services/plugins.js';
-
-import { loadPluginImplementationStoreWithNewPlugin } from './utils.js';
 
 interface PluginCardProps {
   className?: string;
@@ -44,9 +46,9 @@ export function PluginCard({
   const navigate = useNavigate();
 
   function enablePlugin(): void {
-    const implementations = loadPluginImplementationStoreWithNewPlugin(
+    const implementations = createPluginImplementationStoreWithNewPlugins(
       schemaParserContext.pluginStore,
-      plugin,
+      [plugin],
       definitionContainer.definition,
     );
     const webConfigImplementation =

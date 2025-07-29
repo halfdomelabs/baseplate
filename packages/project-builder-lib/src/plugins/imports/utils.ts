@@ -34,3 +34,13 @@ export function getPluginMetadataByKeyOrThrow(
   }
   return metadata;
 }
+
+export function getManagedPluginsForPlugin(
+  pluginStore: PluginStore,
+  pluginKey: string,
+): PluginMetadataWithPaths[] {
+  const plugin = getPluginMetadataByKeyOrThrow(pluginStore, pluginKey);
+  return pluginStore.availablePlugins
+    .filter((p) => p.metadata.managedBy === plugin.fullyQualifiedName)
+    .map((p) => p.metadata);
+}

@@ -1,6 +1,9 @@
 import type React from 'react';
 
-import { pluginEntityType } from '@baseplate-dev/project-builder-lib';
+import {
+  getPluginMetadataByKeyOrThrow,
+  pluginEntityType,
+} from '@baseplate-dev/project-builder-lib';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   Button,
@@ -31,6 +34,13 @@ function PluginsLayout(): React.JSX.Element {
   const { availablePlugins } = schemaParserContext.pluginStore;
 
   const enabledPlugins = (definition.plugins ?? [])
+    .filter(
+      (plugin) =>
+        !getPluginMetadataByKeyOrThrow(
+          schemaParserContext.pluginStore,
+          pluginEntityType.keyFromId(plugin.id),
+        ).managedBy,
+    )
     .map((plugin) => {
       const pluginWithMetadata = availablePlugins.find(
         (p) => p.metadata.key === pluginEntityType.keyFromId(plugin.id),
