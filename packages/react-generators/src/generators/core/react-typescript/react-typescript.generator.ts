@@ -63,6 +63,7 @@ export const reactTypescriptGenerator = createGenerator({
           },
           'react',
         );
+        typescriptSetup.isComposite.set(true);
         typescriptSetup.include.push('src');
         typescriptSetup.tsconfigPath.set('tsconfig.app.json');
         return {

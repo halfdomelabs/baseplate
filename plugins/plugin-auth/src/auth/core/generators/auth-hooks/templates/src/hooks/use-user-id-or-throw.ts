@@ -9,7 +9,7 @@ import { useSession } from '$useSession';
  */
 export function useUserIdOrThrow(): string {
   const session = useSession();
-  if (!session) {
+  if (!session.userId) {
     throw new Error('User not authenticated');
   }
   return session.userId;

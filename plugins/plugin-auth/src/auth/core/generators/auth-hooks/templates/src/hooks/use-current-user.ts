@@ -23,13 +23,13 @@ export interface UseCurrentUserResult {
  * @returns A result containing the current user or an error if the user is not authenticated
  */
 export function useCurrentUser(): UseCurrentUserResult {
-  const session = useSession();
+  const { userId } = useSession();
   const { data, loading, error } = useQuery(GetUserByIdDocument, {
-    variables: { id: session?.userId ?? '' },
-    skip: !session,
+    variables: { id: userId ?? '' },
+    skip: !userId,
   });
 
-  const noUserError = !session ? new Error('No user logged in') : undefined;
+  const noUserError = !userId ? new Error('No user logged in') : undefined;
 
   return {
     user: data?.user,

@@ -37,6 +37,12 @@ export const reactSessionGenerator = createGenerator({
             ])`<UserSessionProvider>${contents}</UserSessionProvider>`,
           type: 'auth',
         });
+        reactAppConfig.renderSiblings.set(
+          'user-seession-check',
+          TsCodeUtils.templateWithImports([
+            tsImportBuilder(['UserSessionCheck']).from(paths.userSessionCheck),
+          ])`<UserSessionCheck />`,
+        );
       },
     }),
     main: createGeneratorTask({
