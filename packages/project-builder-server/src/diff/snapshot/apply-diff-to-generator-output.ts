@@ -21,7 +21,7 @@ export async function applySnapshotToGeneratorOutput(
     const fileData = generatorFiles.get(fileEntry.path);
     if (!fileData) {
       throw new Error(
-        `File not found in generator output: ${fileEntry.path}. Please run fix-diff to fix the diffs.`,
+        `File not found in generator output: ${fileEntry.path}. Please run snapshot fix-diff to fix the diffs.`,
       );
     }
     const diffFilePath = path.join(diffDirectory, fileEntry.diffFile);
@@ -35,7 +35,7 @@ export async function applySnapshotToGeneratorOutput(
     const newContents = applyPatch(fileData.contents.toString(), diffFile);
     if (!newContents) {
       throw new Error(
-        `Failed to apply patch to file ${fileEntry.path}. The patch may be invalid. Please run fix-diff to fix the diffs.`,
+        `Failed to apply patch to file ${fileEntry.path}. The patch may be invalid. Please run snapshot fix-diff to fix the diffs.`,
       );
     }
     fileData.contents = newContents;

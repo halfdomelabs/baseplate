@@ -3,12 +3,12 @@ import path from 'node:path';
 import type { Logger } from '#src/utils/evented-logger.js';
 
 import { CancelledSyncError } from '#src/errors.js';
-import { loadIgnorePatterns } from '#src/utils/ignore-patterns.js';
 
 import type { GeneratorOutput } from './generator-task-output.js';
 import type { FailedCommandInfo } from './post-write-commands/index.js';
 import type {
   GeneratorOutputFileWriterContext,
+  OverwriteOptions,
   PreviousGeneratedPayload,
 } from './prepare-generator-files/index.js';
 
@@ -62,9 +62,9 @@ export interface WriteGeneratorOutputOptions {
    */
   skipCommands?: boolean;
   /**
-   * Whether to force overwrite existing files without merge conflict detection.
+   * Options for overwriting files.
    */
-  forceOverwrite?: boolean;
+  overwriteOptions?: OverwriteOptions;
 }
 
 /**
@@ -125,7 +125,7 @@ export async function writeGeneratorOutput(
     rerunCommands = [],
     logger = console,
     abortSignal,
-    forceOverwrite = false,
+    overwriteOptions,
   } = options ?? {};
   // write files
   try {
@@ -138,23 +138,12 @@ export async function writeGeneratorOutput(
       previousGeneratedPayload,
       previousWorkingCodebase: workingCodebase,
       mergeDriver: options?.mergeDriver,
-      forceOverwrite,
+      overwriteOptions,
     };
-
-    // Load ignore patterns when force overwrite is enabled
-    const ignorePatterns = forceOverwrite
-      ? await loadIgnorePatterns(outputDirectory).catch((err: unknown) => {
-          logger.warn(
-            `Failed to load .baseplateignore patterns, proceeding without ignore filtering: ${String(err)}`,
-          );
-          return undefined;
-        })
-      : undefined;
 
     const { files, fileIdToRelativePathMap } = await prepareGeneratorFiles({
       files: output.files,
       context: fileWriterContext,
-      overwriteIgnorePatterns: ignorePatterns,
     });
 
     if (abortSignal?.aborted) throw new CancelledSyncError();

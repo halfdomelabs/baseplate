@@ -34,7 +34,6 @@
 - [#595](https://github.com/halfdomelabs/baseplate/pull/595) [`a506e88`](https://github.com/halfdomelabs/baseplate/commit/a506e88893bf395916ef3fbf6dd9dd7c0ff17acb) Thanks [@kingston](https://github.com/kingston)! - Add support for globs in onlyIfChanged command filter
 
 - [#596](https://github.com/halfdomelabs/baseplate/pull/596) [`059edf7`](https://github.com/halfdomelabs/baseplate/commit/059edf771755f1ff846494f238d777a9d1f7f5d7) Thanks [@kingston](https://github.com/kingston)! - Simplify template metadata system by consolidating template definitions in extractor.json
-
   - Consolidate template definitions in extractor.json using template names as keys instead of file paths
   - Rename .template-metadata.json to .templates-info.json with simplified instance tracking
   - Remove file-id-map.json dependency and related file ID mapping logic
@@ -43,7 +42,6 @@
   - Add migration script to convert existing extractor.json files to new format
 
 - [#596](https://github.com/halfdomelabs/baseplate/pull/596) [`059edf7`](https://github.com/halfdomelabs/baseplate/commit/059edf771755f1ff846494f238d777a9d1f7f5d7) Thanks [@kingston](https://github.com/kingston)! - Add templates generate CLI command for regenerating template files without extraction
-
   - Add `templates generate <directory> <app>` CLI command to regenerate template files from existing extractor.json configurations
   - Add `--skip-clean` option to skip cleaning output directories
   - Add `generateTemplateFiles` function in sync package that initializes plugins and writes generated files without running extraction

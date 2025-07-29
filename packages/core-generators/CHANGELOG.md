@@ -17,7 +17,6 @@
   Templates can now reference other templates within the same generator using the `$templateName` syntax. This enables templates to access file paths of other templates in the same generator during generation.
 
   Key features:
-
   - Use `$templateName` in template files to reference other generator templates
   - Kebab-case template names are automatically converted to camelCase (e.g., `session-constants` → `sessionConstants`)
   - Configure referenced templates using the `referencedGeneratorTemplates` field in extractor.json
@@ -63,7 +62,6 @@
   This adds corresponding template renderers for text and raw templates, following the same pattern as TypeScript template renderers. The new renderers provide consistent APIs for generating template rendering functions that can be used in generator code.
 
   Key features:
-
   - Text template renderers support both individual templates and template groups
   - Raw template renderers support individual templates (no groups needed)
   - Full TypeScript type safety with proper action input types
@@ -75,36 +73,30 @@
 - [#602](https://github.com/halfdomelabs/baseplate/pull/602) [`f0cb763`](https://github.com/halfdomelabs/baseplate/commit/f0cb7632f04bfb487722785fac7218d76d3b7e3b) Thanks [@kingston](https://github.com/kingston)! - Improve Docker Compose generation with security, resource management, and developer experience enhancements
 
   ## Version Upgrades
-
   - Upgrade PostgreSQL from 16.2 to 17.5-alpine
   - Upgrade Redis from 7.2.4 to 8.0-alpine
   - For existing projects, follow the upgrade guide at https://docs.baseplate.dev/guides/upgrading-postgres/
 
   ## Security Improvements
-
   - Use environment variables for all sensitive data (passwords, usernames)
   - Add `security_opt: no-new-privileges:true` to prevent privilege escalation
   - Fix Redis healthcheck to include authentication
 
   ## Networking
-
   - Create custom bridge network for better isolation
   - All services communicate over internal network
 
   ## Database Configuration
-
   - Add PostgreSQL environment variables: `POSTGRES_DB`, `POSTGRES_INITDB_ARGS`
   - Use default `postgres` user for simplicity in local development
   - Add container names for easier management
   - Improve volume configuration
 
   ## Redis Configuration
-
   - Add Redis memory limits (256MB) and eviction policy (no-eviction for BullMQ)
   - Configure maxmemory and maxmemory-policy
 
   ## Developer Experience
-
   - Add logging configuration to prevent disk filling (10MB max, 3 files)
   - Generate `.env.example` file with all available variables
   - Improve health checks with start periods
@@ -112,13 +104,11 @@
   - Fix interface bug in redis.ts (PostgresConfig → RedisConfig)
 
   ## Breaking Changes
-
   - PostgreSQL generator now requires additional config parameters (database, projectName)
   - Redis generator now requires projectName parameter
   - Generated Docker Compose files now use custom bridge network
 
 - [#596](https://github.com/halfdomelabs/baseplate/pull/596) [`059edf7`](https://github.com/halfdomelabs/baseplate/commit/059edf771755f1ff846494f238d777a9d1f7f5d7) Thanks [@kingston](https://github.com/kingston)! - Simplify template metadata system by consolidating template definitions in extractor.json
-
   - Consolidate template definitions in extractor.json using template names as keys instead of file paths
   - Rename .template-metadata.json to .templates-info.json with simplified instance tracking
   - Remove file-id-map.json dependency and related file ID mapping logic
@@ -139,7 +129,6 @@
   This new plugin reduces template rendering boilerplate by 70-80% by automatically generating pre-configured rendering functions. It follows the same architectural pattern as the typed templates system, with a TypeScript-specific renderer function (`renderTsTemplateRenderers`) that generates generic definitions consumed by the plugin.
 
   **Key Features:**
-
   - **Simplified API**: Reduces complex `renderTemplate`/`renderTemplateGroup` calls to simple `renderers.templateName.render()` calls
   - **Automatic Dependency Resolution**: Import map providers and task dependencies are automatically resolved
   - **Type Safety**: Generated interfaces provide full TypeScript type safety

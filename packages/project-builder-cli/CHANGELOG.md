@@ -22,7 +22,6 @@
   Additionally, introduces a new `baseplate sync` command (replacing `build`) with a `--force-overwrite` flag that respects ignore patterns when overwriting files.
 
   Features:
-
   - Uses `.baseplateignore` file in project root with gitignore-style syntax
   - Includes sensible default patterns (.env, \*.log, node_modules/, dist/, build/, .DS_Store, Thumbs.db)
   - Can be disabled with `--no-ignore-file` flag
@@ -62,7 +61,6 @@
   Adds a new `baseplate diff` command that shows the difference between what would be generated and what currently exists in the working directory. This helps developers avoid losing code when they write in generated files and then revert to test generation.
 
   Features:
-
   - Shows unified diff format by default
   - Supports `--compact` flag for summary format with change counts
   - Supports `--app` flag to filter by specific applications
@@ -71,7 +69,6 @@
   - Modular design with separate utilities for diffing, formatting, and comparison
 
 - [#596](https://github.com/halfdomelabs/baseplate/pull/596) [`059edf7`](https://github.com/halfdomelabs/baseplate/commit/059edf771755f1ff846494f238d777a9d1f7f5d7) Thanks [@kingston](https://github.com/kingston)! - Add templates generate CLI command for regenerating template files without extraction
-
   - Add `templates generate <directory> <app>` CLI command to regenerate template files from existing extractor.json configurations
   - Add `--skip-clean` option to skip cleaning output directories
   - Add `generateTemplateFiles` function in sync package that initializes plugins and writes generated files without running extraction

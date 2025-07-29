@@ -23,7 +23,6 @@ export function addSyncCommand(program: Command): void {
     .option(
       '--snapshot <directory>',
       'Apply diffs from snapshot directory (requires --overwrite)',
-      '.baseplate-snapshot',
     )
     .action(
       async (
