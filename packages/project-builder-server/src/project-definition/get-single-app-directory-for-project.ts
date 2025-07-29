@@ -16,19 +16,13 @@ export function getSingleAppDirectoryForProject(
   projectDefinition: ProjectDefinition,
   app: string,
 ): string {
-  const matchedApps = projectDefinition.apps.filter((a) =>
-    a.name.includes(app),
-  );
+  const matchedApps = projectDefinition.apps.find((a) => a.name === app);
 
-  if (matchedApps.length === 0) {
-    throw new Error(`Unable to find app ${app} in project definition`);
-  }
-
-  if (matchedApps.length > 1) {
+  if (!matchedApps) {
     throw new Error(
-      `Found multiple apps matching ${app}: ${matchedApps.map((a) => a.name).join(', ')}`,
+      `Unable to find app ${app} in project definition. Available apps: ${projectDefinition.apps.map((a) => a.name).join(', ')}`,
     );
   }
 
-  return path.join(projectDirectory, AppUtils.getAppDirectory(matchedApps[0]));
+  return path.join(projectDirectory, AppUtils.getAppDirectory(matchedApps));
 }

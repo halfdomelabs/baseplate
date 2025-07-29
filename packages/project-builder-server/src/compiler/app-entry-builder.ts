@@ -57,7 +57,7 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   buildProjectEntry(rootBundle: GeneratorBundle): AppEntry {
     return {
       id: this.appConfig.id,
-      name: `${this.projectDefinition.settings.general.name}-${this.appConfig.name}`,
+      name: this.appConfig.name,
       appDirectory: AppUtils.getAppDirectory(this.appConfig),
       generatorBundle: rootBundle,
     };
