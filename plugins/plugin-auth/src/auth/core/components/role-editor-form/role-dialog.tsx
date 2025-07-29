@@ -16,9 +16,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 
-import type { AuthRoleInput } from '#src/common/roles/schema.js';
+import type { AuthRoleInput } from '../../schema/roles/schema.js';
 
-import { createAuthRoleSchema } from '#src/common/roles/schema.js';
+import { createAuthRoleSchema } from '../../schema/roles/schema.js';
 
 interface RoleDialogProps {
   open?: boolean;

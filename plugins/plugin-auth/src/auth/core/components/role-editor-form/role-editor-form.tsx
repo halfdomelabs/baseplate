@@ -21,9 +21,8 @@ import { useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
-import type { AuthRoleInput } from '#src/common/roles/index.js';
-
 import type { AuthPluginDefinitionInput } from '../../schema/plugin-definition.js';
+import type { AuthRoleInput } from '../../schema/roles/schema.js';
 
 import { RoleDialog } from './role-dialog.js';
 

@@ -39,7 +39,7 @@ function byKeyOrThrow(
 function configByKey(
   projectDefinition: ProjectDefinition,
   key: string,
-): unknown | undefined {
+): unknown {
   const def = byKey(projectDefinition, key);
   return def?.config;
 }

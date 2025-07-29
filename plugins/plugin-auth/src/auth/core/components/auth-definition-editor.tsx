@@ -31,11 +31,11 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
 import { AuthConfigTabs } from '#src/common/components/auth-config-tabs.js';
-import { createDefaultAuthRoles } from '#src/common/roles/index.js';
 
 import type { AuthPluginDefinitionInput } from '../schema/plugin-definition.js';
 
 import { createAuthPluginDefinitionSchema } from '../schema/plugin-definition.js';
+import { createDefaultAuthRoles } from '../schema/roles/constants.js';
 import { RoleEditorForm } from './role-editor-form/role-editor-form.js';
 
 import '#src/styles.css';
