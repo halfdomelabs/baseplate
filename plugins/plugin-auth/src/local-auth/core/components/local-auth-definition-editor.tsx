@@ -18,6 +18,7 @@ import {
 } from '@baseplate-dev/project-builder-lib/web';
 import {
   FormActionBar,
+  MultiComboboxFieldController,
   SectionList,
   SectionListSection,
   SectionListSectionContent,
@@ -50,6 +51,10 @@ export function LocalAuthDefinitionEditor({
     createLocalAuthPluginDefinitionSchema,
   );
   const authDefinition = getAuthPluginDefinition(definition);
+  const roles = authDefinition.roles.map((role) => ({
+    label: role.name,
+    value: role.id,
+  }));
 
   const defaultValues = useMemo(() => {
     if (pluginMetadata?.config) {
@@ -69,6 +74,7 @@ export function LocalAuthDefinitionEditor({
           'UserSession',
         ),
       },
+      initialUserRoles: [],
     } satisfies LocalAuthPluginDefinitionInput;
   }, [definition, pluginMetadata?.config]);
 
@@ -178,6 +184,29 @@ export function LocalAuthDefinitionEditor({
                       description="Model for managing user sessions"
                     />
                   </div>
+                </SectionListSectionContent>
+              </SectionListSection>
+              <SectionListSection>
+                <SectionListSectionHeader>
+                  <SectionListSectionTitle>
+                    Initial User Setup
+                  </SectionListSectionTitle>
+                  <SectionListSectionDescription>
+                    In order to access the admin panel, an initial user must be
+                    created. To make it easier, the plugin will automatically
+                    add a seed script to create the initial user provided a
+                    .seed.env exists with the INTIIAL_USER_EMAIL and
+                    INTIIAL_USER_PASSWORD variables.
+                  </SectionListSectionDescription>
+                </SectionListSectionHeader>
+                <SectionListSectionContent className="auth:space-y-6">
+                  <MultiComboboxFieldController
+                    label="Initial User Roles"
+                    name="initialUserRoles"
+                    control={control}
+                    options={roles}
+                    description="The roles that will be assigned to the initial user."
+                  />
                 </SectionListSectionContent>
               </SectionListSection>
             </SectionList>

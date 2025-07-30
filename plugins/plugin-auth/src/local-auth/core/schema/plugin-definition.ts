@@ -1,6 +1,7 @@
 import type { def } from '@baseplate-dev/project-builder-lib';
 
 import {
+  authRoleEntityType,
   definitionSchema,
   modelEntityType,
 } from '@baseplate-dev/project-builder-lib';
@@ -26,6 +27,15 @@ export const createLocalAuthPluginDefinitionSchema = definitionSchema((ctx) =>
         onDelete: 'RESTRICT',
       }),
     }),
+    initialUserRoles: ctx.withDefault(
+      z.array(
+        ctx.withRef({
+          type: authRoleEntityType,
+          onDelete: 'DELETE',
+        }),
+      ),
+      [],
+    ),
   }),
 );
 

@@ -18,6 +18,7 @@ import {
   createReadOnlyProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@baseplate-dev/sync';
+import { sortBy } from 'es-toolkit';
 import { createRequire } from 'node:module';
 import { z } from 'zod';
 
@@ -67,6 +68,20 @@ export interface PrismaOutputProvider {
 export const prismaOutputProvider =
   createReadOnlyProviderType<PrismaOutputProvider>('prisma-output');
 
+interface PrismaSeedEnvField {
+  name: string;
+  exampleValue: string;
+}
+
+export interface PrismaSeedProvider {
+  getSeedDirectory(): string;
+  addSeedEnvField(field: PrismaSeedEnvField): void;
+  addSeedFragment(name: string, fragment: TsCodeFragment): void;
+}
+
+export const prismaSeedProvider =
+  createProviderType<PrismaSeedProvider>('prisma-seed');
+
 const internalRequire = createRequire(import.meta.url);
 
 export const prismaGenerator = createGenerator({
@@ -80,9 +95,8 @@ export const prismaGenerator = createGenerator({
     node: createGeneratorTask({
       dependencies: {
         node: nodeProvider,
-        fastifyOutput: fastifyOutputProvider,
       },
-      run({ node, fastifyOutput }) {
+      run({ node }) {
         node.packages.addPackages({
           prod: extractPackageVersions(FASTIFY_PACKAGES, ['@prisma/client']),
           dev: extractPackageVersions(FASTIFY_PACKAGES, ['prisma']),
@@ -91,11 +105,79 @@ export const prismaGenerator = createGenerator({
         node.scripts.mergeObj({
           postinstall: 'prisma generate',
         });
+      },
+    }),
+    seed: createGeneratorTask({
+      dependencies: {
+        node: nodeProvider,
+        fastifyOutput: fastifyOutputProvider,
+        renderers: PRISMA_PRISMA_GENERATED.renderers.provider,
+      },
+      exports: {
+        prismaSeed: prismaSeedProvider.export(packageScope),
+      },
+      run({ node, fastifyOutput, renderers }) {
         node.extraProperties.merge({
           prisma: {
-            seed: `tsx ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} src/prisma/seed.ts`,
+            seed: `tsx ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} --env-file-if-exists=.seed.env src/prisma/seed.ts`,
           },
         });
+
+        const seedEnvFields = new Map<string, PrismaSeedEnvField>();
+        const seedFragments = new Map<string, TsCodeFragment>();
+
+        return {
+          providers: {
+            prismaSeed: {
+              getSeedDirectory: () => `@/src/prisma`,
+              addSeedEnvField: (field) => {
+                if (seedEnvFields.has(field.name)) {
+                  throw new Error(
+                    `Seed env field ${field.name} already exists`,
+                  );
+                }
+                seedEnvFields.set(field.name, field);
+              },
+              addSeedFragment: (name, fragment) => {
+                if (seedFragments.has(name)) {
+                  throw new Error(`Seed fragment ${name} already exists`);
+                }
+                seedFragments.set(name, fragment);
+              },
+            },
+          },
+          build: async (builder) => {
+            if (seedEnvFields.size > 0) {
+              const envFileContents = sortBy(
+                [...seedEnvFields],
+                [([key]) => key],
+              )
+                .map(([key, field]) => `${key}=${field.exampleValue}`)
+                .join('\n');
+              builder.writeFile({
+                id: 'prisma-seed-env',
+                destination: '.seed.env',
+                contents: envFileContents,
+                options: {
+                  shouldNeverOverwrite: true,
+                },
+              });
+              builder.writeFile({
+                id: 'prisma-seed-env-example',
+                destination: '.seed.env.example',
+                contents: envFileContents,
+              });
+            }
+
+            await builder.apply(
+              renderers.seed.render({
+                variables: {
+                  TPL_SEED_BODY: TsCodeUtils.mergeFragments(seedFragments),
+                },
+              }),
+            );
+          },
+        };
       },
     }),
     configService: createGeneratorTask({
@@ -125,14 +207,6 @@ export const prismaGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(renderers.service.render({}));
-
-            await builder.apply(
-              renderers.seed.render({
-                writeOptions: {
-                  shouldNeverOverwrite: true,
-                },
-              }),
-            );
           },
         };
       },
