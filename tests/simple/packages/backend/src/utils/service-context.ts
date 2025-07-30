@@ -10,5 +10,5 @@ export function createServiceContext(): ServiceContext {
  * Creates a service context for the system user.
  */
 export function createSystemServiceContext(): ServiceContext {
-  return createServiceContext({});
+  return createServiceContext();
 }

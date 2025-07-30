@@ -119,11 +119,17 @@ export const serviceContextGenerator = createGenerator({
               mapValuesOfMap(contextFields, (field) => field.setter),
             );
 
-            const systemContextObject = TsCodeUtils.mergeFragmentsAsObject(
-              Object.fromEntries(
-                orderedContextArgs.map((arg) => [arg.name, arg.systemValue]),
-              ),
-            );
+            const systemContextObject =
+              orderedContextArgs.length === 0
+                ? ''
+                : TsCodeUtils.mergeFragmentsAsObject(
+                    Object.fromEntries(
+                      orderedContextArgs.map((arg) => [
+                        arg.name,
+                        arg.systemValue,
+                      ]),
+                    ),
+                  );
 
             await builder.apply(
               renderers.serviceContext.render({
