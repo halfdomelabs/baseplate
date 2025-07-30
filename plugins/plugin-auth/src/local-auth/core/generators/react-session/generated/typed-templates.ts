@@ -103,7 +103,7 @@ const userSessionCheckGql = createTextTemplateFile({
   variables: {},
 });
 
-export const AUTH_CORE_REACT_SESSION_TEMPLATES = {
+export const LOCAL_AUTH_CORE_REACT_SESSION_TEMPLATES = {
   mainGroup,
   userSessionCheckGql,
 };

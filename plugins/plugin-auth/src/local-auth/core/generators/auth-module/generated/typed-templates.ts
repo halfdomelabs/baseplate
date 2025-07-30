@@ -148,7 +148,7 @@ const verifyRequestOrigin = createTsTemplateFile({
 
 export const utilsGroup = { cookieSigner, sessionCookie, verifyRequestOrigin };
 
-export const AUTH_CORE_AUTH_MODULE_TEMPLATES = {
+export const LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES = {
   constantsGroup,
   moduleGroup,
   userSessionService,

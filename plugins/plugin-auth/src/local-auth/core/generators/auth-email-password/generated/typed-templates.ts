@@ -77,4 +77,4 @@ export const moduleGroup = {
   servicesUserPassword,
 };
 
-export const AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES = { moduleGroup };
+export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES = { moduleGroup };

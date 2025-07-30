@@ -1,5 +1,5 @@
 {
-  "name": "auth/core/auth-module",
+  "name": "local-auth/core/auth-module",
   "extractors": {
     "ts": {
       "importProviders": [
@@ -11,7 +11,7 @@
     "cookie-signer": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/utils/cookie-signer.ts",
@@ -21,7 +21,7 @@
     "schema-user-session-mutations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "module",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -37,7 +37,7 @@
     "schema-user-session-payload-object-type": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "module",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -53,7 +53,7 @@
     "schema-user-session-queries": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "module",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -71,7 +71,7 @@
     "session-cookie": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "utils",
       "importMapProviders": {
         "configServiceImportsProvider": {
@@ -86,7 +86,7 @@
     "user-session-constants": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "constants",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/constants/user-session.constants.ts",
@@ -96,7 +96,7 @@
     "user-session-service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "importMapProviders": {
         "authContextImportsProvider": {
           "importName": "authContextImportsProvider",
@@ -137,7 +137,7 @@
     "verify-request-origin": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/utils/verify-request-origin.ts",

@@ -8,17 +8,18 @@ import {
 } from '@baseplate-dev/react-generators';
 import { createGeneratorTask } from '@baseplate-dev/sync';
 
-import { AUTH_CORE_AUTH_HOOKS_PATHS } from './template-paths.js';
+import { LOCAL_AUTH_CORE_AUTH_HOOKS_PATHS } from './template-paths.js';
 
-const authCoreAuthHooksImportsTask = createGeneratorTask({
+const localAuthCoreAuthHooksImportsTask = createGeneratorTask({
   dependencies: {
-    paths: AUTH_CORE_AUTH_HOOKS_PATHS.provider,
+    paths: LOCAL_AUTH_CORE_AUTH_HOOKS_PATHS.provider,
   },
   exports: { authHooksImports: authHooksImportsProvider.export(packageScope) },
   run({ paths }) {
     return {
       providers: {
         authHooksImports: createTsImportMap(authHooksImportsSchema, {
+          AuthRole: paths.useSession,
           SessionData: paths.useSession,
           useCurrentUser: paths.useCurrentUser,
           useLogOut: paths.useLogOut,
@@ -30,6 +31,6 @@ const authCoreAuthHooksImportsTask = createGeneratorTask({
   },
 });
 
-export const AUTH_CORE_AUTH_HOOKS_IMPORTS = {
-  task: authCoreAuthHooksImportsTask,
+export const LOCAL_AUTH_CORE_AUTH_HOOKS_IMPORTS = {
+  task: localAuthCoreAuthHooksImportsTask,
 };

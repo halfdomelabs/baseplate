@@ -12,7 +12,7 @@ import { reactSessionImportsProvider } from '../react-session/index.js';
 const descriptorSchema = z.object({});
 
 export const authApolloGenerator = createGenerator({
-  name: 'auth/core/auth-apollo',
+  name: 'local-auth/core/auth-apollo',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({

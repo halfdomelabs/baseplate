@@ -1,7 +1,7 @@
 import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-export interface AuthCoreAuthModulePaths {
+export interface LocalAuthCoreAuthModulePaths {
   cookieSigner: string;
   schemaUserSessionMutations: string;
   schemaUserSessionPayloadObjectType: string;
@@ -12,19 +12,22 @@ export interface AuthCoreAuthModulePaths {
   verifyRequestOrigin: string;
 }
 
-const authCoreAuthModulePaths = createProviderType<AuthCoreAuthModulePaths>(
-  'auth-core-auth-module-paths',
-);
+const localAuthCoreAuthModulePaths =
+  createProviderType<LocalAuthCoreAuthModulePaths>(
+    'local-auth-core-auth-module-paths',
+  );
 
-const authCoreAuthModulePathsTask = createGeneratorTask({
+const localAuthCoreAuthModulePathsTask = createGeneratorTask({
   dependencies: { appModule: appModuleProvider },
-  exports: { authCoreAuthModulePaths: authCoreAuthModulePaths.export() },
+  exports: {
+    localAuthCoreAuthModulePaths: localAuthCoreAuthModulePaths.export(),
+  },
   run({ appModule }) {
     const moduleRoot = appModule.getModuleFolder();
 
     return {
       providers: {
-        authCoreAuthModulePaths: {
+        localAuthCoreAuthModulePaths: {
           cookieSigner: `${moduleRoot}/utils/cookie-signer.ts`,
           schemaUserSessionMutations: `${moduleRoot}/schema/user-session.mutations.ts`,
           schemaUserSessionPayloadObjectType: `${moduleRoot}/schema/user-session-payload.object-type.ts`,
@@ -39,7 +42,7 @@ const authCoreAuthModulePathsTask = createGeneratorTask({
   },
 });
 
-export const AUTH_CORE_AUTH_MODULE_PATHS = {
-  provider: authCoreAuthModulePaths,
-  task: authCoreAuthModulePathsTask,
+export const LOCAL_AUTH_CORE_AUTH_MODULE_PATHS = {
+  provider: localAuthCoreAuthModulePaths,
+  task: localAuthCoreAuthModulePathsTask,
 };

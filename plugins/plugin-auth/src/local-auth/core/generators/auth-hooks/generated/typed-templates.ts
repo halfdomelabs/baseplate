@@ -96,7 +96,11 @@ const useSession = createTsTemplateFile({
   group: 'hooks',
   importMapProviders: { reactSessionImports: reactSessionImportsProvider },
   name: 'use-session',
-  projectExports: { SessionData: { isTypeOnly: true }, useSession: {} },
+  projectExports: {
+    SessionData: { isTypeOnly: true },
+    useSession: {},
+    AuthRole: { isTypeOnly: true },
+  },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -113,4 +117,7 @@ export const hooksGroup = {
   useSession,
 };
 
-export const AUTH_CORE_AUTH_HOOKS_TEMPLATES = { hooksGqlGroup, hooksGroup };
+export const LOCAL_AUTH_CORE_AUTH_HOOKS_TEMPLATES = {
+  hooksGqlGroup,
+  hooksGroup,
+};

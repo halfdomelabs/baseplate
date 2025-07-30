@@ -14,15 +14,15 @@ import {
 } from '@baseplate-dev/react-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { AUTH_CORE_REACT_SESSION_PATHS } from './template-paths.js';
-import { AUTH_CORE_REACT_SESSION_TEMPLATES } from './typed-templates.js';
+import { LOCAL_AUTH_CORE_REACT_SESSION_PATHS } from './template-paths.js';
+import { LOCAL_AUTH_CORE_REACT_SESSION_TEMPLATES } from './typed-templates.js';
 
-export interface AuthCoreReactSessionRenderers {
+export interface LocalAuthCoreReactSessionRenderers {
   mainGroup: {
     render: (
       options: Omit<
         RenderTsTemplateGroupActionInput<
-          typeof AUTH_CORE_REACT_SESSION_TEMPLATES.mainGroup
+          typeof LOCAL_AUTH_CORE_REACT_SESSION_TEMPLATES.mainGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
@@ -32,7 +32,7 @@ export interface AuthCoreReactSessionRenderers {
     render: (
       options: Omit<
         RenderTextTemplateFileActionInput<
-          typeof AUTH_CORE_REACT_SESSION_TEMPLATES.userSessionCheckGql
+          typeof LOCAL_AUTH_CORE_REACT_SESSION_TEMPLATES.userSessionCheckGql
         >,
         'destination' | 'template'
       >,
@@ -40,29 +40,30 @@ export interface AuthCoreReactSessionRenderers {
   };
 }
 
-const authCoreReactSessionRenderers =
-  createProviderType<AuthCoreReactSessionRenderers>(
-    'auth-core-react-session-renderers',
+const localAuthCoreReactSessionRenderers =
+  createProviderType<LocalAuthCoreReactSessionRenderers>(
+    'local-auth-core-react-session-renderers',
   );
 
-const authCoreReactSessionRenderersTask = createGeneratorTask({
+const localAuthCoreReactSessionRenderersTask = createGeneratorTask({
   dependencies: {
     generatedGraphqlImports: generatedGraphqlImportsProvider,
-    paths: AUTH_CORE_REACT_SESSION_PATHS.provider,
+    paths: LOCAL_AUTH_CORE_REACT_SESSION_PATHS.provider,
     reactUtilsImports: reactUtilsImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
-    authCoreReactSessionRenderers: authCoreReactSessionRenderers.export(),
+    localAuthCoreReactSessionRenderers:
+      localAuthCoreReactSessionRenderers.export(),
   },
   run({ generatedGraphqlImports, paths, reactUtilsImports, typescriptFile }) {
     return {
       providers: {
-        authCoreReactSessionRenderers: {
+        localAuthCoreReactSessionRenderers: {
           mainGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
-                group: AUTH_CORE_REACT_SESSION_TEMPLATES.mainGroup,
+                group: LOCAL_AUTH_CORE_REACT_SESSION_TEMPLATES.mainGroup,
                 paths,
                 importMapProviders: {
                   generatedGraphqlImports,
@@ -75,7 +76,8 @@ const authCoreReactSessionRenderersTask = createGeneratorTask({
           userSessionCheckGql: {
             render: (options) =>
               renderTextTemplateFileAction({
-                template: AUTH_CORE_REACT_SESSION_TEMPLATES.userSessionCheckGql,
+                template:
+                  LOCAL_AUTH_CORE_REACT_SESSION_TEMPLATES.userSessionCheckGql,
                 destination: paths.userSessionCheckGql,
                 ...options,
               }),
@@ -86,7 +88,7 @@ const authCoreReactSessionRenderersTask = createGeneratorTask({
   },
 });
 
-export const AUTH_CORE_REACT_SESSION_RENDERERS = {
-  provider: authCoreReactSessionRenderers,
-  task: authCoreReactSessionRenderersTask,
+export const LOCAL_AUTH_CORE_REACT_SESSION_RENDERERS = {
+  provider: localAuthCoreReactSessionRenderers,
+  task: localAuthCoreReactSessionRenderersTask,
 };

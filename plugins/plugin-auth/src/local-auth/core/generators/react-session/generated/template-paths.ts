@@ -1,7 +1,7 @@
 import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-export interface AuthCoreReactSessionPaths {
+export interface LocalAuthCoreReactSessionPaths {
   userSessionCheck: string;
   userSessionCheckGql: string;
   userSessionClient: string;
@@ -9,19 +9,22 @@ export interface AuthCoreReactSessionPaths {
   useUserSessionClient: string;
 }
 
-const authCoreReactSessionPaths = createProviderType<AuthCoreReactSessionPaths>(
-  'auth-core-react-session-paths',
-);
+const localAuthCoreReactSessionPaths =
+  createProviderType<LocalAuthCoreReactSessionPaths>(
+    'local-auth-core-react-session-paths',
+  );
 
-const authCoreReactSessionPathsTask = createGeneratorTask({
+const localAuthCoreReactSessionPathsTask = createGeneratorTask({
   dependencies: { packageInfo: packageInfoProvider },
-  exports: { authCoreReactSessionPaths: authCoreReactSessionPaths.export() },
+  exports: {
+    localAuthCoreReactSessionPaths: localAuthCoreReactSessionPaths.export(),
+  },
   run({ packageInfo }) {
     const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
       providers: {
-        authCoreReactSessionPaths: {
+        localAuthCoreReactSessionPaths: {
           userSessionCheck: `${srcRoot}/app/user-session-check.tsx`,
           userSessionCheckGql: `${srcRoot}/app/user-session-check.gql`,
           userSessionClient: `${srcRoot}/services/user-session-client.ts`,
@@ -33,7 +36,7 @@ const authCoreReactSessionPathsTask = createGeneratorTask({
   },
 });
 
-export const AUTH_CORE_REACT_SESSION_PATHS = {
-  provider: authCoreReactSessionPaths,
-  task: authCoreReactSessionPathsTask,
+export const LOCAL_AUTH_CORE_REACT_SESSION_PATHS = {
+  provider: localAuthCoreReactSessionPaths,
+  task: localAuthCoreReactSessionPathsTask,
 };

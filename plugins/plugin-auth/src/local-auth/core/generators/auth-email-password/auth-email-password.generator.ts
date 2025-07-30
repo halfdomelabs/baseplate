@@ -2,7 +2,7 @@ import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { AUTH_CORE_AUTH_EMAIL_PASSWORD_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
+import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -10,7 +10,7 @@ const descriptorSchema = z.object({});
  * Sets up email / password authentication
  */
 export const authEmailPasswordGenerator = createGenerator({
-  name: 'auth/core/auth-email-password',
+  name: 'local-auth/core/auth-email-password',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({

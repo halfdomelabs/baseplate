@@ -59,7 +59,11 @@ const useSession = createTsTemplateFile({
   group: 'hooks',
   importMapProviders: {},
   name: 'use-session',
-  projectExports: { SessionData: { isTypeOnly: true }, useSession: {} },
+  projectExports: {
+    SessionData: { isTypeOnly: true },
+    useSession: {},
+    AuthRole: { isTypeOnly: true },
+  },
   source: {
     path: path.join(
       import.meta.dirname,

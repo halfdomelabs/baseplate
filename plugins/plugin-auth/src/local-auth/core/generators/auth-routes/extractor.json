@@ -4,7 +4,7 @@
     "login": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-routes",
       "group": "main",
       "importMapProviders": {
         "apolloErrorImportsProvider": {
@@ -25,7 +25,7 @@
         },
         "reactSessionImportsProvider": {
           "importName": "reactSessionImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/auth/core/generators/react-session/generated/ts-import-providers.ts"
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/react-session/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{routes-root}/auth_/login.tsx",
@@ -42,7 +42,7 @@
     "register": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-routes",
       "group": "main",
       "importMapProviders": {
         "apolloErrorImportsProvider": {
@@ -63,7 +63,7 @@
         },
         "reactSessionImportsProvider": {
           "importName": "reactSessionImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/auth/core/generators/react-session/generated/ts-import-providers.ts"
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/react-session/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{routes-root}/auth_/register.tsx",
@@ -73,7 +73,7 @@
     "route": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-routes",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-routes",
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{routes-root}/auth_/route.tsx",

@@ -16,15 +16,15 @@ import {
 } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { AUTH_CORE_AUTH_MODULE_PATHS } from './template-paths.js';
-import { AUTH_CORE_AUTH_MODULE_TEMPLATES } from './typed-templates.js';
+import { LOCAL_AUTH_CORE_AUTH_MODULE_PATHS } from './template-paths.js';
+import { LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES } from './typed-templates.js';
 
-export interface AuthCoreAuthModuleRenderers {
+export interface LocalAuthCoreAuthModuleRenderers {
   constantsGroup: {
     render: (
       options: Omit<
         RenderTsTemplateGroupActionInput<
-          typeof AUTH_CORE_AUTH_MODULE_TEMPLATES.constantsGroup
+          typeof LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.constantsGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
@@ -34,7 +34,7 @@ export interface AuthCoreAuthModuleRenderers {
     render: (
       options: Omit<
         RenderTsTemplateGroupActionInput<
-          typeof AUTH_CORE_AUTH_MODULE_TEMPLATES.moduleGroup
+          typeof LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.moduleGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
@@ -44,7 +44,7 @@ export interface AuthCoreAuthModuleRenderers {
     render: (
       options: Omit<
         RenderTsTemplateFileActionInput<
-          typeof AUTH_CORE_AUTH_MODULE_TEMPLATES.userSessionService
+          typeof LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.userSessionService
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
       >,
@@ -54,7 +54,7 @@ export interface AuthCoreAuthModuleRenderers {
     render: (
       options: Omit<
         RenderTsTemplateGroupActionInput<
-          typeof AUTH_CORE_AUTH_MODULE_TEMPLATES.utilsGroup
+          typeof LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.utilsGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
@@ -62,25 +62,25 @@ export interface AuthCoreAuthModuleRenderers {
   };
 }
 
-const authCoreAuthModuleRenderers =
-  createProviderType<AuthCoreAuthModuleRenderers>(
-    'auth-core-auth-module-renderers',
+const localAuthCoreAuthModuleRenderers =
+  createProviderType<LocalAuthCoreAuthModuleRenderers>(
+    'local-auth-core-auth-module-renderers',
   );
 
-const authCoreAuthModuleRenderersTask = createGeneratorTask({
+const localAuthCoreAuthModuleRenderersTask = createGeneratorTask({
   dependencies: {
     authContextImports: authContextImportsProvider,
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
-    paths: AUTH_CORE_AUTH_MODULE_PATHS.provider,
+    paths: LOCAL_AUTH_CORE_AUTH_MODULE_PATHS.provider,
     pothosImports: pothosImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
     typescriptFile: typescriptFileProvider,
     userSessionTypesImports: userSessionTypesImportsProvider,
   },
   exports: {
-    authCoreAuthModuleRenderers: authCoreAuthModuleRenderers.export(),
+    localAuthCoreAuthModuleRenderers: localAuthCoreAuthModuleRenderers.export(),
   },
   run({
     authContextImports,
@@ -95,11 +95,11 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
   }) {
     return {
       providers: {
-        authCoreAuthModuleRenderers: {
+        localAuthCoreAuthModuleRenderers: {
           constantsGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
-                group: AUTH_CORE_AUTH_MODULE_TEMPLATES.constantsGroup,
+                group: LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.constantsGroup,
                 paths,
                 ...options,
               }),
@@ -107,7 +107,7 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
           moduleGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
-                group: AUTH_CORE_AUTH_MODULE_TEMPLATES.moduleGroup,
+                group: LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.moduleGroup,
                 paths,
                 importMapProviders: {
                   pothosImports,
@@ -119,7 +119,8 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
           userSessionService: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
-                template: AUTH_CORE_AUTH_MODULE_TEMPLATES.userSessionService,
+                template:
+                  LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.userSessionService,
                 destination: paths.userSessionService,
                 importMapProviders: {
                   authContextImports,
@@ -136,7 +137,7 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
           utilsGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
-                group: AUTH_CORE_AUTH_MODULE_TEMPLATES.utilsGroup,
+                group: LOCAL_AUTH_CORE_AUTH_MODULE_TEMPLATES.utilsGroup,
                 paths,
                 importMapProviders: {
                   configServiceImports,
@@ -150,7 +151,7 @@ const authCoreAuthModuleRenderersTask = createGeneratorTask({
   },
 });
 
-export const AUTH_CORE_AUTH_MODULE_RENDERERS = {
-  provider: authCoreAuthModuleRenderers,
-  task: authCoreAuthModuleRenderersTask,
+export const LOCAL_AUTH_CORE_AUTH_MODULE_RENDERERS = {
+  provider: localAuthCoreAuthModuleRenderers,
+  task: localAuthCoreAuthModuleRenderersTask,
 };

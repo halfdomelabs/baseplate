@@ -1,10 +1,10 @@
 {
-  "name": "auth/core/react-session",
+  "name": "local-auth/core/react-session",
   "templates": {
     "use-user-session-client": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-user-session-client.ts",
@@ -20,7 +20,7 @@
     "user-session-check": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
       "group": "main",
       "importMapProviders": {
         "generatedGraphqlImportsProvider": {
@@ -43,7 +43,7 @@
     "user-session-client": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
       "group": "main",
       "importMapProviders": {
         "reactUtilsImportsProvider": {
@@ -65,7 +65,7 @@
     "user-session-provider": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/react-session",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
       "group": "main",
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/app/user-session-provider.tsx",

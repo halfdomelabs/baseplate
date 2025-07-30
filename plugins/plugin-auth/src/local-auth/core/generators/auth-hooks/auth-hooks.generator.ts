@@ -1,7 +1,7 @@
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { AUTH_CORE_AUTH_HOOKS_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
+import { LOCAL_AUTH_CORE_AUTH_HOOKS_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -11,7 +11,7 @@ const descriptorSchema = z.object({});
  * Useful for creating a test auth implementation.
  */
 export const authHooksGenerator = createGenerator({
-  name: 'auth/core/auth-hooks',
+  name: 'local-auth/core/auth-hooks',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({

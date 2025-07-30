@@ -10,7 +10,7 @@ import {
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
 
-import { AUTH_CORE_REACT_SESSION_PATHS } from './template-paths.js';
+import { LOCAL_AUTH_CORE_REACT_SESSION_PATHS } from './template-paths.js';
 
 const reactSessionImportsSchema = createTsImportMapSchema({
   createUserSessionClient: {},
@@ -32,9 +32,9 @@ export const reactSessionImportsProvider =
     'react-session-imports',
   );
 
-const authCoreReactSessionImportsTask = createGeneratorTask({
+const localAuthCoreReactSessionImportsTask = createGeneratorTask({
   dependencies: {
-    paths: AUTH_CORE_REACT_SESSION_PATHS.provider,
+    paths: LOCAL_AUTH_CORE_REACT_SESSION_PATHS.provider,
   },
   exports: {
     reactSessionImports: reactSessionImportsProvider.export(packageScope),
@@ -57,6 +57,6 @@ const authCoreReactSessionImportsTask = createGeneratorTask({
   },
 });
 
-export const AUTH_CORE_REACT_SESSION_IMPORTS = {
-  task: authCoreReactSessionImportsTask,
+export const LOCAL_AUTH_CORE_REACT_SESSION_IMPORTS = {
+  task: localAuthCoreReactSessionImportsTask,
 };

@@ -16,15 +16,15 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { reactSessionImportsProvider } from '#src/local-auth/core/generators/react-session/generated/ts-import-providers.js';
 
-import { AUTH_CORE_AUTH_HOOKS_PATHS } from './template-paths.js';
-import { AUTH_CORE_AUTH_HOOKS_TEMPLATES } from './typed-templates.js';
+import { LOCAL_AUTH_CORE_AUTH_HOOKS_PATHS } from './template-paths.js';
+import { LOCAL_AUTH_CORE_AUTH_HOOKS_TEMPLATES } from './typed-templates.js';
 
-export interface AuthCoreAuthHooksRenderers {
+export interface LocalAuthCoreAuthHooksRenderers {
   hooksGqlGroup: {
     render: (
       options: Omit<
         RenderTextTemplateGroupActionInput<
-          typeof AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGqlGroup
+          typeof LOCAL_AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGqlGroup
         >,
         'group' | 'paths'
       >,
@@ -34,7 +34,7 @@ export interface AuthCoreAuthHooksRenderers {
     render: (
       options: Omit<
         RenderTsTemplateGroupActionInput<
-          typeof AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGroup
+          typeof LOCAL_AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
@@ -42,20 +42,22 @@ export interface AuthCoreAuthHooksRenderers {
   };
 }
 
-const authCoreAuthHooksRenderers =
-  createProviderType<AuthCoreAuthHooksRenderers>(
-    'auth-core-auth-hooks-renderers',
+const localAuthCoreAuthHooksRenderers =
+  createProviderType<LocalAuthCoreAuthHooksRenderers>(
+    'local-auth-core-auth-hooks-renderers',
   );
 
-const authCoreAuthHooksRenderersTask = createGeneratorTask({
+const localAuthCoreAuthHooksRenderersTask = createGeneratorTask({
   dependencies: {
     generatedGraphqlImports: generatedGraphqlImportsProvider,
-    paths: AUTH_CORE_AUTH_HOOKS_PATHS.provider,
+    paths: LOCAL_AUTH_CORE_AUTH_HOOKS_PATHS.provider,
     reactErrorImports: reactErrorImportsProvider,
     reactSessionImports: reactSessionImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
-  exports: { authCoreAuthHooksRenderers: authCoreAuthHooksRenderers.export() },
+  exports: {
+    localAuthCoreAuthHooksRenderers: localAuthCoreAuthHooksRenderers.export(),
+  },
   run({
     generatedGraphqlImports,
     paths,
@@ -65,11 +67,11 @@ const authCoreAuthHooksRenderersTask = createGeneratorTask({
   }) {
     return {
       providers: {
-        authCoreAuthHooksRenderers: {
+        localAuthCoreAuthHooksRenderers: {
           hooksGqlGroup: {
             render: (options) =>
               renderTextTemplateGroupAction({
-                group: AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGqlGroup,
+                group: LOCAL_AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGqlGroup,
                 paths,
                 ...options,
               }),
@@ -77,7 +79,7 @@ const authCoreAuthHooksRenderersTask = createGeneratorTask({
           hooksGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
-                group: AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGroup,
+                group: LOCAL_AUTH_CORE_AUTH_HOOKS_TEMPLATES.hooksGroup,
                 paths,
                 importMapProviders: {
                   generatedGraphqlImports,
@@ -94,7 +96,7 @@ const authCoreAuthHooksRenderersTask = createGeneratorTask({
   },
 });
 
-export const AUTH_CORE_AUTH_HOOKS_RENDERERS = {
-  provider: authCoreAuthHooksRenderers,
-  task: authCoreAuthHooksRenderersTask,
+export const LOCAL_AUTH_CORE_AUTH_HOOKS_RENDERERS = {
+  provider: localAuthCoreAuthHooksRenderers,
+  task: localAuthCoreAuthHooksRenderersTask,
 };
