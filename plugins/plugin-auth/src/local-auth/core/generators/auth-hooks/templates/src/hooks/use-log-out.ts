@@ -3,21 +3,18 @@
 import { LogOutDocument } from '%generatedGraphqlImports';
 import { logAndFormatError, logError } from '%reactErrorImports';
 import { userSessionClient } from '%reactSessionImports';
-import { useApolloClient, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
 export function useLogOut(): () => void {
   const [logOut] = useMutation(LogOutDocument);
-  const apolloClient = useApolloClient();
   const navigate = useNavigate();
 
   return () => {
     logOut()
       .then(() => {
         userSessionClient.signOut();
-        // Make sure to reset the Apollo client to clear any cached data
-        apolloClient.clearStore().catch(logError);
         toast.success('You have been successfully logged out!');
         navigate({ to: '/' }).catch(logError);
       })
