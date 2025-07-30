@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { AuthRole } from '%generatedGraphqlImports';
+import type { AuthRole } from '%authHooksImports';
 
 import { AdminLayout } from '$adminLayout';
 import { InvalidRoleError } from '%authErrorsImports';
@@ -18,7 +18,10 @@ export const Route = createFileRoute(TPL_ROUTE_PATH)({
         },
       });
     }
-    if (!session.roles.some((role) => REQUIRED_ROLES.has(role))) {
+    if (
+      REQUIRED_ROLES.size > 0 &&
+      !session.roles.some((role) => REQUIRED_ROLES.has(role))
+    ) {
       throw new InvalidRoleError('You are not authorized to access this page.');
     }
   },

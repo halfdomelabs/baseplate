@@ -1,11 +1,11 @@
 import {
   createNodeTask,
-  tsCodeFragment,
-  tsImportBuilder,
-  vitestConfigProvider,
+  extractPackageVersions,
 } from '@baseplate-dev/core-generators';
-import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
+import { createGenerator } from '@baseplate-dev/sync';
 import { z } from 'zod';
+
+import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 
 const descriptorSchema = z.object({});
 
@@ -19,22 +19,9 @@ export const fastifyVitestGenerator = createGenerator({
         test: 'vitest run',
         'test:unit': 'cross-env TEST_MODE=unit vitest run .unit.',
       });
-    }),
-    main: createGeneratorTask({
-      dependencies: {
-        vitestConfig: vitestConfigProvider,
-      },
-      run({ vitestConfig }) {
-        // add config to vitest setup
-
-        vitestConfig.globalSetupOperations.set(
-          'dotenv',
-          tsCodeFragment(
-            'config()',
-            tsImportBuilder(['config']).from('dotenv'),
-          ),
-        );
-      },
+      node.packages.addDevPackages(
+        extractPackageVersions(FASTIFY_PACKAGES, ['cross-env']),
+      );
     }),
   }),
 });
