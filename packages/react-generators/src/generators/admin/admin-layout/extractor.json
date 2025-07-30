@@ -28,9 +28,9 @@
           "importName": "authErrorsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/auth-errors/generated/ts-import-providers.ts"
         },
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        "authHooksImportsProvider": {
+          "importName": "authHooksImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-hooks.ts"
         }
       },
       "pathRootRelativePath": "{routes-root}/route.tsx",

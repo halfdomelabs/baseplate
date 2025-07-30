@@ -83,18 +83,17 @@ export const configServiceGenerator = createGenerator({
   buildTasks: () => ({
     paths: CORE_CONFIG_SERVICE_GENERATED.paths.task,
     imports: CORE_CONFIG_SERVICE_GENERATED.imports.task,
-    // add the dotenv config to the fastify config
+    // add the env file config to the fastify config
     fastify: createProviderTask(fastifyProvider, (fastify) => {
-      fastify.nodeFlags.set('dotenv', {
-        flag: '-r dotenv/config',
+      fastify.nodeFlags.set('env-file', {
+        flag: '--env-file-if-exists=.env',
         useCase: 'dev-env',
         targetEnvironment: 'dev',
       });
     }),
     // add the node packages
     nodePackages: createNodePackagesTask({
-      prod: extractPackageVersions(FASTIFY_PACKAGES, ['zod', 'cross-env']),
-      dev: extractPackageVersions(FASTIFY_PACKAGES, ['dotenv']),
+      prod: extractPackageVersions(FASTIFY_PACKAGES, ['zod']),
     }),
     // add exclusions to the gitignore
     nodeGitIgnore: createProviderTask(
