@@ -26,7 +26,7 @@ export const Route = createFileRoute(
   '/admin-sections/$appKey/edit/$sectionKey',
 )({
   component: EditAdminSectionPage,
-  beforeLoad: ({ params: { sectionKey }, context: { adminApp, app } }) => {
+  beforeLoad: ({ params: { sectionKey }, context: { adminApp } }) => {
     if (!adminApp) return {};
 
     const section = adminApp.sections?.find(
