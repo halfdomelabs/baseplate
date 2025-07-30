@@ -46,6 +46,8 @@ const router = createTsTemplateFile({
     TPL_ADDITIONAL_ROUTER_OPTIONS: {},
     TPL_COMPONENT_BODY: {},
     TPL_COMPONENT_SETUP: {},
+    TPL_ERROR_COMPONENT_BODY: {},
+    TPL_ERROR_COMPONENT_HEADER: {},
     TPL_ROUTER_CONTEXT: {},
     TPL_ROUTER_PROVIDER: {},
   },

@@ -10,7 +10,7 @@ import {
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
 
-import { AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS } from './template-paths.js';
+import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS } from './template-paths.js';
 
 const authEmailPasswordImportsSchema = createTsImportMapSchema({
   authenticateUserWithEmailAndPassword: {},
@@ -27,9 +27,9 @@ export const authEmailPasswordImportsProvider =
     'auth-email-password-imports',
   );
 
-const authCoreAuthEmailPasswordImportsTask = createGeneratorTask({
+const localAuthCoreAuthEmailPasswordImportsTask = createGeneratorTask({
   dependencies: {
-    paths: AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS.provider,
+    paths: LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS.provider,
   },
   exports: {
     authEmailPasswordImports:
@@ -51,6 +51,6 @@ const authCoreAuthEmailPasswordImportsTask = createGeneratorTask({
   },
 });
 
-export const AUTH_CORE_AUTH_EMAIL_PASSWORD_IMPORTS = {
-  task: authCoreAuthEmailPasswordImportsTask,
+export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_IMPORTS = {
+  task: localAuthCoreAuthEmailPasswordImportsTask,
 };

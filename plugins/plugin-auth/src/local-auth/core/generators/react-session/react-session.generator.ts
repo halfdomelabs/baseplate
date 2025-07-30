@@ -1,13 +1,9 @@
-import {
-  renderTextTemplateFileAction,
-  TsCodeUtils,
-  tsImportBuilder,
-} from '@baseplate-dev/core-generators';
+import { TsCodeUtils, tsImportBuilder } from '@baseplate-dev/core-generators';
 import { reactAppConfigProvider } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { AUTH_CORE_REACT_SESSION_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
+import { LOCAL_AUTH_CORE_REACT_SESSION_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -15,7 +11,7 @@ const descriptorSchema = z.object({});
  * Generator for React session management
  */
 export const reactSessionGenerator = createGenerator({
-  name: 'auth/core/react-session',
+  name: 'local-auth/core/react-session',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
@@ -35,22 +31,15 @@ export const reactSessionGenerator = createGenerator({
                 paths.userSessionProvider,
               ),
             ])`<UserSessionProvider>${contents}</UserSessionProvider>`,
-          type: 'auth',
+          type: 'router',
         });
-        reactAppConfig.renderSiblings.set(
-          'user-seession-check',
-          TsCodeUtils.templateWithImports([
-            tsImportBuilder(['UserSessionCheck']).from(paths.userSessionCheck),
-          ])`<UserSessionCheck />`,
-        );
       },
     }),
     main: createGeneratorTask({
       dependencies: {
         renderers: GENERATED_TEMPLATES.renderers.provider,
-        paths: GENERATED_TEMPLATES.paths.provider,
       },
-      run({ renderers, paths }) {
+      run({ renderers }) {
         return {
           build: async (builder) => {
             await builder.apply(
@@ -58,13 +47,7 @@ export const reactSessionGenerator = createGenerator({
                 variables: {},
               }),
             );
-            await builder.apply(
-              renderTextTemplateFileAction({
-                destination: paths.userSessionCheckGql,
-                template: GENERATED_TEMPLATES.templates.userSessionCheckGql,
-                variables: {},
-              }),
-            );
+            await builder.apply(renderers.userSessionProviderGql.render({}));
           },
         };
       },

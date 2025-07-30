@@ -5,6 +5,7 @@ import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { authContextImportsProvider } from '#src/generators/auth/auth-context/generated/ts-import-providers.js';
+import { authRolesImportsProvider } from '#src/generators/auth/auth-roles/generated/ts-import-providers.js';
 
 import { AUTH_USER_SESSION_TYPES_PATHS } from './template-paths.js';
 import { AUTH_USER_SESSION_TYPES_TEMPLATES } from './typed-templates.js';
@@ -30,13 +31,14 @@ const authUserSessionTypesRenderers =
 const authUserSessionTypesRenderersTask = createGeneratorTask({
   dependencies: {
     authContextImports: authContextImportsProvider,
+    authRolesImports: authRolesImportsProvider,
     paths: AUTH_USER_SESSION_TYPES_PATHS.provider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
     authUserSessionTypesRenderers: authUserSessionTypesRenderers.export(),
   },
-  run({ authContextImports, paths, typescriptFile }) {
+  run({ authContextImports, authRolesImports, paths, typescriptFile }) {
     return {
       providers: {
         authUserSessionTypesRenderers: {
@@ -47,6 +49,7 @@ const authUserSessionTypesRenderersTask = createGeneratorTask({
                 destination: paths.userSessionTypes,
                 importMapProviders: {
                   authContextImports,
+                  authRolesImports,
                 },
                 ...options,
               }),

@@ -65,7 +65,8 @@
       "pathRootRelativePath": "{src-root}/hooks/use-session.ts",
       "projectExports": {
         "SessionData": { "isTypeOnly": true },
-        "useSession": {}
+        "useSession": {},
+        "AuthRole": { "isTypeOnly": true }
       },
       "sourceFile": "src/hooks/use-session.ts",
       "variables": {}

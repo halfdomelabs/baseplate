@@ -1,0 +1,15 @@
+{
+  "name": "auth/auth-errors",
+  "templates": {
+    "auth-errors": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/utils/auth-errors.ts",
+      "projectExports": { "InvalidRoleError": {} },
+      "sourceFile": "src/utils/auth-errors.ts",
+      "variables": {}
+    }
+  }
+}

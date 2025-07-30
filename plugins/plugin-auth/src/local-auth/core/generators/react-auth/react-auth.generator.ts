@@ -9,7 +9,7 @@ const descriptorSchema = z.object({});
  * Generator for basic React auth integrations
  */
 export const reactAuthGenerator = createGenerator({
-  name: 'react/react-auth',
+  name: 'local-auth/core/react-auth',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({

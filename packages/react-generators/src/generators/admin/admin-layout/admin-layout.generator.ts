@@ -20,6 +20,7 @@ export type AdminLayoutLinkItem = z.infer<typeof linkItemSchema>;
 
 const descriptorSchema = z.object({
   links: z.array(linkItemSchema).optional(),
+  requiredRoles: z.array(z.string()),
 });
 
 const ICON_CATEGORY_REGEX = /^[A-Z][a-z]*/;
@@ -36,7 +37,7 @@ export const adminLayoutGenerator = createGenerator({
   name: 'admin/admin-layout',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ links = [] }) => ({
+  buildTasks: ({ links = [], requiredRoles }) => ({
     paths: ADMIN_ADMIN_LAYOUT_GENERATED.paths.task,
     renderers: ADMIN_ADMIN_LAYOUT_GENERATED.renderers.task,
     route: createGeneratorTask({
@@ -53,6 +54,10 @@ export const adminLayoutGenerator = createGenerator({
                 variables: {
                   TPL_ROUTE_PATH: quot(reactRoutes.getRouteFilePath()),
                   TPL_LOGIN_URL_PATH: quot(reactAuth.getLoginUrlPath()),
+                  TPL_REQUIRED_ROLES:
+                    TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                      requiredRoles.toSorted().map((role) => quot(role)),
+                    ),
                 },
               }),
             );

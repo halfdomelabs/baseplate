@@ -23,6 +23,13 @@ export const tsExtractorConfigSchema = z
      */
     importProviders: z.array(z.string()).optional(),
     /**
+     * Optional, the name of the default import provider to use (must end with 'ImportsProvider'). Defaults to the generator name with ImportsProvider suffix.
+     */
+    defaultImportProviderName: z
+      .string()
+      .endsWith('ImportsProvider')
+      .optional(),
+    /**
      * Optional, whether to skip the default import map generation
      */
     skipDefaultImportMap: z.boolean().default(false),

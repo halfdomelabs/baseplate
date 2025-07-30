@@ -14,7 +14,7 @@ import {
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
 
-import { AUTH_CORE_AUTH_MODULE_PATHS } from './template-paths.js';
+import { LOCAL_AUTH_CORE_AUTH_MODULE_PATHS } from './template-paths.js';
 
 const authModuleImportsSchema = createTsImportMapSchema({
   userSessionPayload: {},
@@ -27,9 +27,9 @@ export type AuthModuleImportsProvider = TsImportMapProviderFromSchema<
 export const authModuleImportsProvider =
   createReadOnlyProviderType<AuthModuleImportsProvider>('auth-module-imports');
 
-const authCoreAuthModuleImportsTask = createGeneratorTask({
+const localAuthCoreAuthModuleImportsTask = createGeneratorTask({
   dependencies: {
-    paths: AUTH_CORE_AUTH_MODULE_PATHS.provider,
+    paths: LOCAL_AUTH_CORE_AUTH_MODULE_PATHS.provider,
   },
   exports: {
     authModuleImports: authModuleImportsProvider.export(packageScope),
@@ -51,6 +51,6 @@ const authCoreAuthModuleImportsTask = createGeneratorTask({
   },
 });
 
-export const AUTH_CORE_AUTH_MODULE_IMPORTS = {
-  task: authCoreAuthModuleImportsTask,
+export const LOCAL_AUTH_CORE_AUTH_MODULE_IMPORTS = {
+  task: localAuthCoreAuthModuleImportsTask,
 };

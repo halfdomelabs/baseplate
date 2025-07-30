@@ -12,7 +12,7 @@ import {
   InputFieldController,
 } from '%reactComponentsImports';
 import { logAndFormatError, logError } from '%reactErrorImports';
-import { useUserSessionClient } from '%reactSessionImports';
+import { userSessionClient } from '%reactSessionImports';
 import { useMutation } from '@apollo/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -64,7 +64,6 @@ function RegisterPage(): React.JSX.Element {
   const [registerWithEmailPassword, { loading }] = useMutation(
     RegisterWithEmailPasswordDocument,
   );
-  const { client } = useUserSessionClient();
   const navigate = useNavigate();
   const { return_to } = Route.useSearch();
 
@@ -82,7 +81,7 @@ function RegisterPage(): React.JSX.Element {
           throw new Error('No data returned from login mutation');
         }
         const { userId } = data.registerWithEmailPassword.session;
-        client.signIn(userId);
+        userSessionClient.signIn(userId);
 
         navigate({ to: return_to ?? '/', replace: true }).catch(logError);
       })

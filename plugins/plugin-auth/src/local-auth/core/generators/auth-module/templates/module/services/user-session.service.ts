@@ -22,6 +22,7 @@ import { InvalidSessionError } from '%authContextImports';
 import { DEFAULT_USER_ROLES } from '%authRolesImports';
 import { config } from '%configServiceImports';
 import { ForbiddenError } from '%errorHandlerServiceImports';
+import { prisma } from '%prismaImports';
 import { randomBytes } from 'node:crypto';
 
 interface SessionCookieValue {
@@ -116,12 +117,23 @@ export class CookieUserSessionService implements UserSessionService {
       },
     });
 
+    // Fetch user roles to include in the session payload
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { roles: true },
+    });
+
+    const roles: readonly AuthRole[] = [
+      ...DEFAULT_USER_ROLES,
+      ...user.roles.map((role) => role.role as AuthRole),
+    ];
+
     const cookieName = getUserSessionCookieName(context.reqInfo.headers);
     const cookieValue = signObject({ token }, config.AUTH_SECRET);
 
     context.cookieStore.set(cookieName, cookieValue, COOKIE_OPTIONS);
 
-    return { userId, expiresAt };
+    return { userId, expiresAt, roles };
   }
 
   /**

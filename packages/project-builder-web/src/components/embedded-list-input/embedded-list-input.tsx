@@ -9,6 +9,8 @@ import type {
 
 import {
   Alert,
+  AlertDescription,
+  AlertTitle,
   Button,
   Dialog,
   DialogContent,
@@ -99,7 +101,10 @@ export function EmbeddedListInput<InputType>({
           },
         })
       ) : (
-        <Alert variant="default">No items currently</Alert>
+        <Alert variant="default">
+          <AlertTitle>No items currently</AlertTitle>
+          <AlertDescription>Add an item to get started.</AlertDescription>
+        </Alert>
       )}
       <Dialog
         open={!!valueToEdit}

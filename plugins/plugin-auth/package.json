@@ -47,6 +47,7 @@
     "@baseplate-dev/fastify-generators": "workspace:*",
     "@baseplate-dev/react-generators": "workspace:*",
     "@baseplate-dev/ui-components": "workspace:*",
+    "@baseplate-dev/utils": "workspace:*",
     "@hookform/lenses": "0.7.1",
     "@hookform/resolvers": "5.0.1",
     "@tanstack/react-router": "1.124.0",

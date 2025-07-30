@@ -61,7 +61,7 @@ function buildAdminRoutes(
   builder: AppEntryBuilder<WebAppConfig>,
 ): GeneratorBundle | undefined {
   const { adminApp } = builder.appConfig;
-  const { projectDefinition } = builder;
+  const { projectDefinition, definitionContainer } = builder;
 
   if (!adminApp?.enabled) {
     return undefined;
@@ -93,6 +93,10 @@ function buildAdminRoutes(
               ]
             : []),
         ],
+        requiredRoles:
+          adminApp.allowedRoles?.map((roleId) =>
+            definitionContainer.nameFromId(roleId),
+          ) ?? [],
       }),
       admin: adminHomeGenerator({}),
       adminRoutes: backendApp.enableBullQueue

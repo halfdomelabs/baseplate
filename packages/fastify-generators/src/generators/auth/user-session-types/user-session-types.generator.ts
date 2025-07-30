@@ -1,8 +1,6 @@
-import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { authContextImportsProvider } from '../auth-context/index.js';
 import { AUTH_USER_SESSION_TYPES_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({});
@@ -14,25 +12,15 @@ export const userSessionTypesGenerator = createGenerator({
   buildTasks: () => ({
     paths: AUTH_USER_SESSION_TYPES_GENERATED.paths.task,
     imports: AUTH_USER_SESSION_TYPES_GENERATED.imports.task,
+    renderers: AUTH_USER_SESSION_TYPES_GENERATED.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
-        paths: AUTH_USER_SESSION_TYPES_GENERATED.paths.provider,
-        authContextImports: authContextImportsProvider,
+        renderers: AUTH_USER_SESSION_TYPES_GENERATED.renderers.provider,
       },
-      run({ typescriptFile, paths, authContextImports }) {
+      run({ renderers }) {
         return {
           build: async (builder) => {
-            await builder.apply(
-              typescriptFile.renderTemplateFile({
-                template:
-                  AUTH_USER_SESSION_TYPES_GENERATED.templates.userSessionTypes,
-                destination: paths.userSessionTypes,
-                importMapProviders: {
-                  authContextImports,
-                },
-              }),
-            );
+            await builder.apply(renderers.userSessionTypes.render({}));
           },
         };
       },

@@ -22,7 +22,6 @@ export const REACT_PACKAGES = {
   'tailwind-merge': '3.3.1',
 
   // Components
-  '@headlessui/react': '2.2.2',
   '@hookform/resolvers': '5.0.1',
   clsx: '2.1.1',
   'react-hook-form': '7.60.0',

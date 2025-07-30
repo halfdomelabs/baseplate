@@ -39,7 +39,6 @@ export const reactComponentsGenerator = createGenerator({
   buildTasks: () => ({
     nodePackages: createNodePackagesTask({
       prod: extractPackageVersions(REACT_PACKAGES, [
-        '@headlessui/react',
         '@hookform/resolvers',
         'clsx',
         'react-hook-form',

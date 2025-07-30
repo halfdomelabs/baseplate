@@ -2,6 +2,7 @@ mutation RegisterWithEmailPassword($input: RegisterWithEmailPasswordInput!) {
   registerWithEmailPassword(input: $input) {
     session {
       userId
+      roles
     }
   }
 }
@@ -10,6 +11,7 @@ mutation LoginWithEmailPassword($input: LoginWithEmailPasswordInput!) {
   loginWithEmailPassword(input: $input) {
     session {
       userId
+      roles
     }
   }
 }

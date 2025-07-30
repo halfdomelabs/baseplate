@@ -15,15 +15,15 @@ import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { authModuleImportsProvider } from '#src/local-auth/core/generators/auth-module/generated/ts-import-providers.js';
 
-import { AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS } from './template-paths.js';
-import { AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES } from './typed-templates.js';
+import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS } from './template-paths.js';
+import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES } from './typed-templates.js';
 
-export interface AuthCoreAuthEmailPasswordRenderers {
+export interface LocalAuthCoreAuthEmailPasswordRenderers {
   moduleGroup: {
     render: (
       options: Omit<
         RenderTsTemplateGroupActionInput<
-          typeof AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.moduleGroup
+          typeof LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.moduleGroup
         >,
         'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
@@ -31,17 +31,17 @@ export interface AuthCoreAuthEmailPasswordRenderers {
   };
 }
 
-const authCoreAuthEmailPasswordRenderers =
-  createProviderType<AuthCoreAuthEmailPasswordRenderers>(
-    'auth-core-auth-email-password-renderers',
+const localAuthCoreAuthEmailPasswordRenderers =
+  createProviderType<LocalAuthCoreAuthEmailPasswordRenderers>(
+    'local-auth-core-auth-email-password-renderers',
   );
 
-const authCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
+const localAuthCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
   dependencies: {
     authModuleImports: authModuleImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     passwordHasherServiceImports: passwordHasherServiceImportsProvider,
-    paths: AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS.provider,
+    paths: LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_PATHS.provider,
     pothosImports: pothosImportsProvider,
     prismaImports: prismaImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
@@ -50,8 +50,8 @@ const authCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
     userSessionTypesImports: userSessionTypesImportsProvider,
   },
   exports: {
-    authCoreAuthEmailPasswordRenderers:
-      authCoreAuthEmailPasswordRenderers.export(),
+    localAuthCoreAuthEmailPasswordRenderers:
+      localAuthCoreAuthEmailPasswordRenderers.export(),
   },
   run({
     authModuleImports,
@@ -67,11 +67,12 @@ const authCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
   }) {
     return {
       providers: {
-        authCoreAuthEmailPasswordRenderers: {
+        localAuthCoreAuthEmailPasswordRenderers: {
           moduleGroup: {
             render: (options) =>
               typescriptFile.renderTemplateGroup({
-                group: AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.moduleGroup,
+                group:
+                  LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_TEMPLATES.moduleGroup,
                 paths,
                 importMapProviders: {
                   authModuleImports,
@@ -93,7 +94,7 @@ const authCoreAuthEmailPasswordRenderersTask = createGeneratorTask({
   },
 });
 
-export const AUTH_CORE_AUTH_EMAIL_PASSWORD_RENDERERS = {
-  provider: authCoreAuthEmailPasswordRenderers,
-  task: authCoreAuthEmailPasswordRenderersTask,
+export const LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_RENDERERS = {
+  provider: localAuthCoreAuthEmailPasswordRenderers,
+  task: localAuthCoreAuthEmailPasswordRenderersTask,
 };

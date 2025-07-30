@@ -12,7 +12,10 @@ import {
   PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
-import { authIdentifyGenerator } from '@baseplate-dev/react-generators';
+import {
+  authErrorsGenerator,
+  authIdentifyGenerator,
+} from '@baseplate-dev/react-generators';
 
 import type { AuthPluginDefinition } from './schema/plugin-definition.js';
 
@@ -58,6 +61,7 @@ export default createPlatformPluginExport({
       compile: ({ appCompiler }) => {
         appCompiler.addRootChildren({
           authIdentify: authIdentifyGenerator({}),
+          authErrors: authErrorsGenerator({}),
         });
       },
     });

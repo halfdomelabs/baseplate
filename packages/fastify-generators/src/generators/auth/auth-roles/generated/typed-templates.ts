@@ -6,6 +6,7 @@ const authRoles = createTsTemplateFile({
   importMapProviders: {},
   name: 'auth-roles',
   projectExports: {
+    AUTH_ROLE_CONFIG: {},
     AuthRole: { isTypeOnly: true },
     DEFAULT_PUBLIC_ROLES: {},
     DEFAULT_USER_ROLES: {},

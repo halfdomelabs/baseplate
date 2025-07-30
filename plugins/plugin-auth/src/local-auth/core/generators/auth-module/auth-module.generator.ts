@@ -13,7 +13,7 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
-import { AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
+import { LOCAL_AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({
   userSessionModelName: z.string().min(1),
@@ -21,7 +21,7 @@ const descriptorSchema = z.object({
 });
 
 export const authModuleGenerator = createGenerator({
-  name: 'auth/core/auth-module',
+  name: 'local-auth/core/auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: ({ userSessionModelName, userModelName }) => ({
@@ -49,6 +49,7 @@ export const authModuleGenerator = createGenerator({
           paths.schemaUserSessionMutations,
           paths.schemaUserSessionQueries,
           paths.schemaUserSessionPayloadObjectType,
+          paths.authRoleEnum,
         );
       },
     }),

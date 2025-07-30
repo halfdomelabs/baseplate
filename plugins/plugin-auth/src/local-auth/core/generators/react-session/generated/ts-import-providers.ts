@@ -10,17 +10,11 @@ import {
   createReadOnlyProviderType,
 } from '@baseplate-dev/sync';
 
-import { AUTH_CORE_REACT_SESSION_PATHS } from './template-paths.js';
+import { LOCAL_AUTH_CORE_REACT_SESSION_PATHS } from './template-paths.js';
 
 const reactSessionImportsSchema = createTsImportMapSchema({
-  createUserSessionClient: {},
-  SessionChangeCallback: { isTypeOnly: true },
+  userSessionClient: {},
   UserSessionClient: {},
-  UserSessionClientConfig: { isTypeOnly: true },
-  UserSessionClientContext: {},
-  UserSessionClientContextValue: { isTypeOnly: true },
-  UserSessionData: { isTypeOnly: true },
-  useUserSessionClient: {},
 });
 
 export type ReactSessionImportsProvider = TsImportMapProviderFromSchema<
@@ -32,9 +26,9 @@ export const reactSessionImportsProvider =
     'react-session-imports',
   );
 
-const authCoreReactSessionImportsTask = createGeneratorTask({
+const localAuthCoreReactSessionImportsTask = createGeneratorTask({
   dependencies: {
-    paths: AUTH_CORE_REACT_SESSION_PATHS.provider,
+    paths: LOCAL_AUTH_CORE_REACT_SESSION_PATHS.provider,
   },
   exports: {
     reactSessionImports: reactSessionImportsProvider.export(packageScope),
@@ -43,20 +37,14 @@ const authCoreReactSessionImportsTask = createGeneratorTask({
     return {
       providers: {
         reactSessionImports: createTsImportMap(reactSessionImportsSchema, {
-          createUserSessionClient: paths.userSessionClient,
-          SessionChangeCallback: paths.userSessionClient,
+          userSessionClient: paths.userSessionClient,
           UserSessionClient: paths.userSessionClient,
-          UserSessionClientConfig: paths.userSessionClient,
-          UserSessionClientContext: paths.useUserSessionClient,
-          UserSessionClientContextValue: paths.useUserSessionClient,
-          UserSessionData: paths.userSessionClient,
-          useUserSessionClient: paths.useUserSessionClient,
         }),
       },
     };
   },
 });
 
-export const AUTH_CORE_REACT_SESSION_IMPORTS = {
-  task: authCoreReactSessionImportsTask,
+export const LOCAL_AUTH_CORE_REACT_SESSION_IMPORTS = {
+  task: localAuthCoreReactSessionImportsTask,
 };

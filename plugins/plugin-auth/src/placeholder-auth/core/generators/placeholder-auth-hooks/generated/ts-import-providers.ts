@@ -19,6 +19,7 @@ const placeholderAuthCorePlaceholderAuthHooksImportsTask = createGeneratorTask({
     return {
       providers: {
         authHooksImports: createTsImportMap(authHooksImportsSchema, {
+          AuthRole: paths.useSession,
           SessionData: paths.useSession,
           useCurrentUser: paths.useCurrentUser,
           useLogOut: paths.useLogOut,

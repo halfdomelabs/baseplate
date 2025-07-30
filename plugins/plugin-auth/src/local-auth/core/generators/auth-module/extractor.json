@@ -1,5 +1,5 @@
 {
-  "name": "auth/core/auth-module",
+  "name": "local-auth/core/auth-module",
   "extractors": {
     "ts": {
       "importProviders": [
@@ -8,10 +8,29 @@
     }
   },
   "templates": {
+    "auth-role-enum": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "module",
+      "importMapProviders": {
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        },
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/auth-role.enum.ts",
+      "projectExports": {},
+      "sourceFile": "module/schema/auth-role.enum.ts",
+      "variables": {}
+    },
     "cookie-signer": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/utils/cookie-signer.ts",
@@ -21,7 +40,7 @@
     "schema-user-session-mutations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "module",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -37,7 +56,7 @@
     "schema-user-session-payload-object-type": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "module",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -47,13 +66,14 @@
       },
       "pathRootRelativePath": "{module-root}/schema/user-session-payload.object-type.ts",
       "projectExports": { "userSessionPayload": {} },
+      "referencedGeneratorTemplates": ["auth-role-enum"],
       "sourceFile": "module/schema/user-session-payload.object-type.ts",
       "variables": { "TPL_PRISMA_USER": {}, "TPL_USER_OBJECT_TYPE": {} }
     },
     "schema-user-session-queries": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "module",
       "importMapProviders": {
         "pothosImportsProvider": {
@@ -71,7 +91,7 @@
     "session-cookie": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "utils",
       "importMapProviders": {
         "configServiceImportsProvider": {
@@ -86,7 +106,7 @@
     "user-session-constants": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "constants",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/constants/user-session.constants.ts",
@@ -96,7 +116,7 @@
     "user-session-service": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "importMapProviders": {
         "authContextImportsProvider": {
           "importName": "authContextImportsProvider",
@@ -113,6 +133,10 @@
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
         },
         "requestServiceContextImportsProvider": {
           "importName": "requestServiceContextImportsProvider",
@@ -137,7 +161,7 @@
     "verify-request-origin": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-module",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
       "group": "utils",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/utils/verify-request-origin.ts",

@@ -3,40 +3,22 @@ import {
   createTsTemplateFile,
 } from '@baseplate-dev/core-generators';
 import {
+  authHooksImportsProvider,
   generatedGraphqlImportsProvider,
+  reactComponentsImportsProvider,
+  reactErrorImportsProvider,
   reactUtilsImportsProvider,
 } from '@baseplate-dev/react-generators';
 import path from 'node:path';
 
-const userSessionCheck = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {
-    generatedGraphqlImports: generatedGraphqlImportsProvider,
-  },
-  name: 'user-session-check',
-  referencedGeneratorTemplates: { useUserSessionClient: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/app/user-session-check.tsx',
-    ),
-  },
-  variables: {},
-});
+import { localAuthHooksImportsProvider } from '#src/local-auth/core/generators/auth-hooks/generated/ts-import-providers.js';
 
 const userSessionClient = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
   importMapProviders: { reactUtilsImports: reactUtilsImportsProvider },
   name: 'user-session-client',
-  projectExports: {
-    createUserSessionClient: {},
-    SessionChangeCallback: { isTypeOnly: true },
-    UserSessionClient: {},
-    UserSessionClientConfig: { isTypeOnly: true },
-    UserSessionData: { isTypeOnly: true },
-  },
+  projectExports: { userSessionClient: {}, UserSessionClient: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -49,12 +31,15 @@ const userSessionClient = createTsTemplateFile({
 const userSessionProvider = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
-  importMapProviders: {},
-  name: 'user-session-provider',
-  referencedGeneratorTemplates: {
-    useUserSessionClient: {},
-    userSessionClient: {},
+  importMapProviders: {
+    authHooksImports: authHooksImportsProvider,
+    generatedGraphqlImports: generatedGraphqlImportsProvider,
+    localAuthHooksImports: localAuthHooksImportsProvider,
+    reactComponentsImports: reactComponentsImportsProvider,
+    reactErrorImports: reactErrorImportsProvider,
   },
+  name: 'user-session-provider',
+  referencedGeneratorTemplates: { userSessionClient: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -64,46 +49,21 @@ const userSessionProvider = createTsTemplateFile({
   variables: {},
 });
 
-const useUserSessionClient = createTsTemplateFile({
+export const mainGroup = { userSessionClient, userSessionProvider };
+
+const userSessionProviderGql = createTextTemplateFile({
   fileOptions: { kind: 'singleton' },
-  group: 'main',
-  importMapProviders: {},
-  name: 'use-user-session-client',
-  projectExports: {
-    UserSessionClientContext: {},
-    UserSessionClientContextValue: { isTypeOnly: true },
-    useUserSessionClient: {},
-  },
-  referencedGeneratorTemplates: { userSessionClient: {} },
+  name: 'user-session-provider-gql',
   source: {
     path: path.join(
       import.meta.dirname,
-      '../templates/src/hooks/use-user-session-client.ts',
+      '../templates/src/app/user-session-provider.gql',
     ),
   },
   variables: {},
 });
 
-export const mainGroup = {
-  userSessionCheck,
-  userSessionClient,
-  userSessionProvider,
-  useUserSessionClient,
-};
-
-const userSessionCheckGql = createTextTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  name: 'user-session-check-gql',
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/src/app/user-session-check.gql',
-    ),
-  },
-  variables: {},
-});
-
-export const AUTH_CORE_REACT_SESSION_TEMPLATES = {
+export const LOCAL_AUTH_CORE_REACT_SESSION_TEMPLATES = {
   mainGroup,
-  userSessionCheckGql,
+  userSessionProviderGql,
 };

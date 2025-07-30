@@ -13,7 +13,6 @@ import {
   useResettableForm,
 } from '@baseplate-dev/project-builder-lib/web';
 import {
-  Badge,
   Button,
   ComboboxFieldController,
   FormActionBar,
@@ -229,7 +228,7 @@ function WebAdminPage(): React.JSX.Element {
                         </div>
                       </RecordViewItem>
                       <RecordViewItem title="Type">
-                        <Badge variant="secondary">{section.type}</Badge>
+                        {section.type}
                       </RecordViewItem>
                       <RecordViewItem title="Icon">
                         {section.icon ?? (
@@ -317,6 +316,7 @@ function WebAdminPage(): React.JSX.Element {
                 label="Name"
                 control={sectionFormProps.control}
                 name="name"
+                autoComplete="off"
               />
               <ComboboxFieldController
                 label="Feature"

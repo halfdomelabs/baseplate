@@ -2,10 +2,14 @@ import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
 import { authContextImportsProvider } from '#src/generators/auth/auth-context/generated/ts-import-providers.js';
+import { authRolesImportsProvider } from '#src/generators/auth/auth-roles/generated/ts-import-providers.js';
 
 const userSessionTypes = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
-  importMapProviders: { authContextImports: authContextImportsProvider },
+  importMapProviders: {
+    authContextImports: authContextImportsProvider,
+    authRolesImports: authRolesImportsProvider,
+  },
   name: 'user-session-types',
   projectExports: {
     UserSessionPayload: { isTypeOnly: true },

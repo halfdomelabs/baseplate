@@ -1,11 +1,14 @@
 // @ts-nocheck
 
-import type { UserSessionData } from '$userSessionClient';
-import type { UserSessionClientContextValue } from '$useUserSessionClient';
+import type { SessionData } from '%authHooksImports';
 import type React from 'react';
 
-import { createUserSessionClient } from '$userSessionClient';
-import { UserSessionClientContext } from '$useUserSessionClient';
+import { userSessionClient } from '$userSessionClient';
+import { GetCurrentUserSessionDocument } from '%generatedGraphqlImports';
+import { AuthSessionContext } from '%localAuthHooksImports';
+import { ErrorableLoader } from '%reactComponentsImports';
+import { logAndFormatError } from '%reactErrorImports';
+import { useQuery } from '@apollo/client';
 import { useEffect, useMemo, useState } from 'react';
 
 interface UserSessionProviderProps {
@@ -15,31 +18,57 @@ interface UserSessionProviderProps {
 export function UserSessionProvider({
   children,
 }: UserSessionProviderProps): React.JSX.Element {
-  const [userSessionClient] = useState(() => createUserSessionClient());
-  const [session, setSession] = useState<UserSessionData | undefined>(
-    userSessionClient.getSession(),
+  const [cachedUserId, setCachedUserId] = useState<string | undefined>(
+    userSessionClient.getUserId(),
   );
 
-  // Subscribe to session changes
-  useEffect(
-    () =>
-      userSessionClient.onSessionChange((newSession) => {
-        setSession(newSession);
-      }),
-    [userSessionClient],
-  );
+  const {
+    data: sessionQueryData,
+    error: sessionError,
+    refetch: refetchSession,
+  } = useQuery(GetCurrentUserSessionDocument, {
+    notifyOnNetworkStatusChange: true,
+  });
 
-  const contextValue: UserSessionClientContextValue = useMemo(
-    () => ({
-      client: userSessionClient,
-      session,
-    }),
-    [userSessionClient, session],
-  );
+  const session = useMemo((): SessionData | undefined => {
+    if (!sessionQueryData && cachedUserId) {
+      // wait for server to fetch before loading session
+      return undefined;
+    }
+    if (!sessionQueryData?.currentUserSession) {
+      return {
+        userId: undefined,
+        isAuthenticated: false,
+        roles: ['public'],
+      };
+    }
+    return {
+      userId: sessionQueryData.currentUserSession.userId,
+      isAuthenticated: true,
+      roles: sessionQueryData.currentUserSession.roles,
+    };
+  }, [sessionQueryData, cachedUserId]);
+
+  useEffect(() => {
+    const unsubscribe = userSessionClient.onUserIdChange((newUserId) => {
+      if (newUserId !== cachedUserId) {
+        setCachedUserId(newUserId);
+        refetchSession().catch((err: unknown) => {
+          logAndFormatError(err);
+        });
+      }
+    });
+
+    return unsubscribe;
+  }, [cachedUserId, refetchSession]);
+
+  if (!session) {
+    return <ErrorableLoader error={sessionError} />;
+  }
 
   return (
-    <UserSessionClientContext.Provider value={contextValue}>
+    <AuthSessionContext.Provider value={session}>
       {children}
-    </UserSessionClientContext.Provider>
+    </AuthSessionContext.Provider>
   );
 }

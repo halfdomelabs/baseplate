@@ -267,7 +267,10 @@ export function renderTsImportProviders(
       generatorBarrelExports: TemplateExtractorGeneratedBarrelExport[];
     }
   | undefined {
-  const importProviderNames = getDefaultImportProviderNames(generatorName);
+  const importProviderNames = getDefaultImportProviderNames(
+    generatorName,
+    extractorConfig?.defaultImportProviderName,
+  );
 
   const projectExportArray = templates.flatMap((template) =>
     Object.entries(template.config.projectExports ?? {}).map(

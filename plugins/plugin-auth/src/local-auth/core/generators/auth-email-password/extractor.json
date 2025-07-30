@@ -1,10 +1,10 @@
 {
-  "name": "auth/core/auth-email-password",
+  "name": "local-auth/core/auth-email-password",
   "templates": {
     "constants-password": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-email-password",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
       "group": "module",
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/constants/password.constants.ts",
@@ -15,12 +15,12 @@
     "schema-user-password-mutations": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-email-password",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
       "group": "module",
       "importMapProviders": {
         "authModuleImportsProvider": {
           "importName": "authModuleImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/auth/core/generators/auth-module/generated/ts-import-providers.ts"
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-module/generated/ts-import-providers.ts"
         },
         "pothosImportsProvider": {
           "importName": "pothosImportsProvider",
@@ -35,7 +35,7 @@
     "services-user-password": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#auth/core/auth-email-password",
+      "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
       "group": "module",
       "importMapProviders": {
         "errorHandlerServiceImportsProvider": {

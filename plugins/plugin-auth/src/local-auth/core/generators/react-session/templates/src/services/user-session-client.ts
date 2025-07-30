@@ -3,28 +3,9 @@
 import { getSafeLocalStorage } from '%reactUtilsImports';
 
 /**
- * Session data returned by the user session client
+ * Callback function for user ID change events
  */
-export interface UserSessionData {
-  userId: string;
-}
-
-/**
- * Callback function for session change events
- */
-export type SessionChangeCallback = (
-  session: UserSessionData | undefined,
-) => void;
-
-/**
- * Configuration options for creating the user session client
- */
-export interface UserSessionClientConfig {
-  /**
-   * Optional initial session data
-   */
-  initialSession?: UserSessionData;
-}
+type UserIdChangeCallback = (userId: string | undefined) => void;
 
 /**
  * User session client for managing session persistence using localStorage
@@ -33,26 +14,12 @@ export interface UserSessionClientConfig {
 export class UserSessionClient {
   private static readonly USER_ID_STORAGE_KEY = 'APP_USER_ID';
   private readonly storage = getSafeLocalStorage();
-  private readonly callbacks = new Set<SessionChangeCallback>();
+  private readonly callbacks = new Set<UserIdChangeCallback>();
   private cleanupListener?: () => void;
 
-  constructor(config?: UserSessionClientConfig) {
+  constructor() {
     // Initialize storage listener for cross-tab synchronization
     this.setupStorageListener();
-
-    // Set initial session if provided
-    if (config?.initialSession?.userId) {
-      this.setUserId(config.initialSession.userId);
-    }
-  }
-
-  /**
-   * Get the current session data
-   * @returns Current session information
-   */
-  getSession(): UserSessionData | undefined {
-    const userId = this.getUserId();
-    return userId ? { userId } : undefined;
   }
 
   /**
@@ -73,11 +40,11 @@ export class UserSessionClient {
   }
 
   /**
-   * Subscribe to session changes
-   * @param callback - Function to call when session changes
+   * Subscribe to user ID changes
+   * @param callback - Function to call when user ID changes
    * @returns Cleanup function to unsubscribe
    */
-  onSessionChange(callback: SessionChangeCallback): () => void {
+  onUserIdChange(callback: UserIdChangeCallback): () => void {
     this.callbacks.add(callback);
     return () => {
       this.callbacks.delete(callback);
@@ -96,8 +63,10 @@ export class UserSessionClient {
    * Get the current user ID from storage
    * @returns User ID or null if not authenticated
    */
-  private getUserId(): string | null {
-    return this.storage.getItem(UserSessionClient.USER_ID_STORAGE_KEY);
+  getUserId(): string | undefined {
+    return (
+      this.storage.getItem(UserSessionClient.USER_ID_STORAGE_KEY) ?? undefined
+    );
   }
 
   /**
@@ -134,20 +103,14 @@ export class UserSessionClient {
    * Notify all registered callbacks of session changes
    */
   private notifyCallbacks(): void {
-    const session = this.getSession();
+    const userId = this.getUserId();
     for (const callback of this.callbacks) {
-      callback(session);
+      callback(userId);
     }
   }
 }
 
 /**
- * Factory function to create a user session client
- * @param config - Optional configuration for the client
- * @returns New UserSessionClient instance
+ * Global user session client instance
  */
-export function createUserSessionClient(
-  config?: UserSessionClientConfig,
-): UserSessionClient {
-  return new UserSessionClient(config);
-}
+export const userSessionClient = new UserSessionClient();

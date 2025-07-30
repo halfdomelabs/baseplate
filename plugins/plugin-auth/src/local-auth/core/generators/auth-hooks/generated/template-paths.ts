@@ -1,7 +1,7 @@
 import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-export interface AuthCoreAuthHooksPaths {
+export interface LocalAuthCoreAuthHooksPaths {
   useCurrentUser: string;
   useCurrentUserGql: string;
   useLogOut: string;
@@ -10,19 +10,22 @@ export interface AuthCoreAuthHooksPaths {
   useSession: string;
 }
 
-const authCoreAuthHooksPaths = createProviderType<AuthCoreAuthHooksPaths>(
-  'auth-core-auth-hooks-paths',
-);
+const localAuthCoreAuthHooksPaths =
+  createProviderType<LocalAuthCoreAuthHooksPaths>(
+    'local-auth-core-auth-hooks-paths',
+  );
 
-const authCoreAuthHooksPathsTask = createGeneratorTask({
+const localAuthCoreAuthHooksPathsTask = createGeneratorTask({
   dependencies: { packageInfo: packageInfoProvider },
-  exports: { authCoreAuthHooksPaths: authCoreAuthHooksPaths.export() },
+  exports: {
+    localAuthCoreAuthHooksPaths: localAuthCoreAuthHooksPaths.export(),
+  },
   run({ packageInfo }) {
     const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
       providers: {
-        authCoreAuthHooksPaths: {
+        localAuthCoreAuthHooksPaths: {
           useCurrentUser: `${srcRoot}/hooks/use-current-user.ts`,
           useCurrentUserGql: `${srcRoot}/hooks/use-current-user.gql`,
           useLogOut: `${srcRoot}/hooks/use-log-out.ts`,
@@ -35,7 +38,7 @@ const authCoreAuthHooksPathsTask = createGeneratorTask({
   },
 });
 
-export const AUTH_CORE_AUTH_HOOKS_PATHS = {
-  provider: authCoreAuthHooksPaths,
-  task: authCoreAuthHooksPathsTask,
+export const LOCAL_AUTH_CORE_AUTH_HOOKS_PATHS = {
+  provider: localAuthCoreAuthHooksPaths,
+  task: localAuthCoreAuthHooksPathsTask,
 };

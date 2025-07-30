@@ -1,11 +1,20 @@
 // @ts-nocheck
 
-import { useUserSessionClient } from '%reactSessionImports';
+import type { AuthRole } from '%generatedGraphqlImports';
+
+import { createContext, useContext } from 'react';
+
+export { type AuthRole } from '@src/generated/graphql';
 
 export interface SessionData {
   userId: string | undefined;
   isAuthenticated: boolean;
+  roles: AuthRole[];
 }
+
+export const AuthSessionContext = createContext<SessionData | undefined>(
+  undefined,
+);
 
 /**
  * Provides the current session data such as the user id and whether the user is authenticated
@@ -13,15 +22,11 @@ export interface SessionData {
  * @returns Current session data with computed isAuthenticated
  */
 export function useSession(): SessionData {
-  const { session } = useUserSessionClient();
+  const contextValue = useContext(AuthSessionContext);
 
-  return session
-    ? {
-        userId: session.userId,
-        isAuthenticated: true,
-      }
-    : {
-        userId: undefined,
-        isAuthenticated: false,
-      };
+  if (!contextValue) {
+    throw new Error('useSession must be used within a AuthSessionProvider');
+  }
+
+  return contextValue;
 }
