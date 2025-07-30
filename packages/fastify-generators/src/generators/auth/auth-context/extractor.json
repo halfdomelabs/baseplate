@@ -34,7 +34,11 @@
         }
       },
       "pathRootRelativePath": "{module-root}/utils/auth-context.utils.ts",
-      "projectExports": { "createAuthContextFromSessionInfo": {} },
+      "projectExports": {
+        "createAnonymousAuthContext": {},
+        "createAuthContextFromSessionInfo": {},
+        "createSystemAuthContext": {}
+      },
       "referencedGeneratorTemplates": [
         "auth-context-types",
         "auth-session-types"

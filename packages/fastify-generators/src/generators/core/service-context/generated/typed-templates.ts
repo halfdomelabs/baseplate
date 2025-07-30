@@ -7,6 +7,7 @@ const serviceContext = createTsTemplateFile({
   name: 'service-context',
   projectExports: {
     createServiceContext: {},
+    createSystemServiceContext: {},
     ServiceContext: { isTypeOnly: true },
   },
   source: {
@@ -19,6 +20,7 @@ const serviceContext = createTsTemplateFile({
     TPL_CONTEXT_INTERFACE: {},
     TPL_CONTEXT_OBJECT: {},
     TPL_CREATE_CONTEXT_ARGS: {},
+    TPL_SYSTEM_CONTEXT_OBJECT: {},
   },
 });
 

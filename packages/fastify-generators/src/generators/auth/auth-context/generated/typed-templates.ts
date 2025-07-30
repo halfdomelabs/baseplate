@@ -28,7 +28,11 @@ const authContextUtils = createTsTemplateFile({
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
   },
   name: 'auth-context-utils',
-  projectExports: { createAuthContextFromSessionInfo: {} },
+  projectExports: {
+    createAnonymousAuthContext: {},
+    createAuthContextFromSessionInfo: {},
+    createSystemAuthContext: {},
+  },
   referencedGeneratorTemplates: { authContextTypes: {}, authSessionTypes: {} },
   source: {
     path: path.join(
