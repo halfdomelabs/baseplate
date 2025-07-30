@@ -71,11 +71,12 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{src-root}/hooks/use-session.ts",
       "projectExports": {
+        "AuthRole": { "isTypeOnly": true },
         "SessionData": { "isTypeOnly": true },
         "useSession": {}
       },
       "sourceFile": "src/hooks/use-session.ts",
-      "variables": {}
+      "variables": { "TPL_AUTH_ROLES": {} }
     }
   }
 }

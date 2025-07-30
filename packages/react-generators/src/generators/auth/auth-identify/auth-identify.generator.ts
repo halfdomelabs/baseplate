@@ -5,6 +5,7 @@ import {
   packageScope,
   TsCodeUtils,
   tsImportBuilder,
+  tsTemplate,
 } from '@baseplate-dev/core-generators';
 import {
   createConfigFieldMap,
@@ -17,7 +18,7 @@ import { z } from 'zod';
 
 import { reactRouterConfigProvider } from '#src/generators/core/react-router/index.js';
 
-import { authContextTask } from '../_tasks/auth-context.js';
+import { authHooksImportsProvider } from '../_providers/auth-hooks.js';
 
 const descriptorSchema = z.object({});
 
@@ -37,7 +38,36 @@ export const authIdentifyGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks: () => ({
-    authContext: authContextTask,
+    authContext: createGeneratorTask({
+      dependencies: {
+        reactRouterConfig: reactRouterConfigProvider,
+        authHooksImports: authHooksImportsProvider,
+      },
+      run({ reactRouterConfig, authHooksImports }) {
+        reactRouterConfig.routerSetupFragments.set(
+          'auth-context',
+          tsTemplate`const session = ${authHooksImports.useSession.fragment()}();\nconst { userId } = session;`,
+        );
+        reactRouterConfig.rootContextFields.add({
+          name: 'userId',
+          type: tsTemplate`string | undefined`,
+          optional: true,
+          routerProviderInitializer: {
+            code: tsTemplate`userId`,
+            dependencies: ['userId'],
+          },
+        });
+        reactRouterConfig.rootContextFields.add({
+          name: 'session',
+          type: authHooksImports.SessionData.typeFragment(),
+          optional: false,
+          routerProviderInitializer: {
+            code: tsTemplate`session`,
+            dependencies: ['session'],
+          },
+        });
+      },
+    }),
     main: createGeneratorTask({
       dependencies: {
         reactRouterConfig: reactRouterConfigProvider,

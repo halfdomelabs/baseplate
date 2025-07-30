@@ -66,6 +66,10 @@ const [setupTask, reactRouterConfigProvider, reactRouterConfigValuesProvider] =
       rootLayoutComponent: t.scalar<TsCodeFragment>(),
       /* The fields in the root route context */
       rootContextFields: t.namedArray<RootRouteContextField>(),
+      /* Any fragments in the ErrorComponent header */
+      errorComponentHeaderFragments: t.map<string, TsCodeFragment>(),
+      /* Any fragments in the ErrorComponent body */
+      errorComponentBodyFragments: t.map<string, TsCodeFragment>(),
     }),
     {
       prefix: 'react-router',
@@ -168,6 +172,8 @@ export const reactRouterGenerator = createGenerator({
           routerBodyFragments,
           rootLayoutComponent,
           rootContextFields,
+          errorComponentHeaderFragments,
+          errorComponentBodyFragments,
         },
         renderers,
         reactErrorImports,
@@ -232,6 +238,14 @@ export const reactRouterGenerator = createGenerator({
             await builder.apply(
               renderers.router.render({
                 variables: {
+                  TPL_ERROR_COMPONENT_HEADER: TsCodeUtils.mergeFragments(
+                    errorComponentHeaderFragments,
+                    '\n\n',
+                  ),
+                  TPL_ERROR_COMPONENT_BODY: TsCodeUtils.mergeFragments(
+                    errorComponentBodyFragments,
+                    '\n\n',
+                  ),
                   TPL_ADDITIONAL_ROUTER_OPTIONS:
                     rootContextFields.length > 0
                       ? tsTemplate`

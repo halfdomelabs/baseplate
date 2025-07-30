@@ -6,15 +6,21 @@ import { routeTree } from '$routeTree';
 import { Button, ErrorDisplay, NotFoundCard } from '%reactComponentsImports';
 import { createRouter } from '@tanstack/react-router';
 
-const ErrorComponent: ErrorRouteComponent = ({
+function ErrorComponent({
   error,
   reset,
-}: React.ComponentProps<ErrorRouteComponent>) => (
-  <ErrorDisplay
-    error={error}
-    actions={<Button onClick={reset}>Reset</Button>}
-  />
-);
+}: React.ComponentProps<ErrorRouteComponent>): React.ReactElement {
+  TPL_ERROR_COMPONENT_HEADER;
+
+  TPL_ERROR_COMPONENT_BODY;
+
+  return (
+    <ErrorDisplay
+      error={error}
+      actions={<Button onClick={reset}>Reset</Button>}
+    />
+  );
+}
 
 export const router = createRouter({
   routeTree,

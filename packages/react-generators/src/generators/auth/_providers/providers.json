@@ -9,7 +9,8 @@
         "useCurrentUser": {},
         "useLogOut": {},
         "useRequiredUserId": {},
-        "useSession": {}
+        "useSession": {},
+        "AuthRole": { "isTypeOnly": true }
       }
     }
   }

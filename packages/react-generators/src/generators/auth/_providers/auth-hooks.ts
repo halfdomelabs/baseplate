@@ -9,6 +9,7 @@ export const authHooksImportsSchema = createTsImportMapSchema({
   useLogOut: {},
   useRequiredUserId: {},
   useSession: {},
+  AuthRole: { isTypeOnly: true },
 });
 
 export type AuthHooksImportsProvider = TsImportMapProviderFromSchema<

@@ -5,6 +5,7 @@ import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
+import { authErrorsImportsProvider } from '#src/generators/auth/auth-errors/generated/ts-import-providers.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
 
 import { ADMIN_ADMIN_LAYOUT_PATHS } from './template-paths.js';
@@ -39,13 +40,20 @@ const adminAdminLayoutRenderers = createProviderType<AdminAdminLayoutRenderers>(
 
 const adminAdminLayoutRenderersTask = createGeneratorTask({
   dependencies: {
+    authErrorsImports: authErrorsImportsProvider,
     authHooksImports: authHooksImportsProvider,
     paths: ADMIN_ADMIN_LAYOUT_PATHS.provider,
     reactComponentsImports: reactComponentsImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: { adminAdminLayoutRenderers: adminAdminLayoutRenderers.export() },
-  run({ authHooksImports, paths, reactComponentsImports, typescriptFile }) {
+  run({
+    authErrorsImports,
+    authHooksImports,
+    paths,
+    reactComponentsImports,
+    typescriptFile,
+  }) {
     return {
       providers: {
         adminAdminLayoutRenderers: {
@@ -66,6 +74,10 @@ const adminAdminLayoutRenderersTask = createGeneratorTask({
               typescriptFile.renderTemplateFile({
                 template: ADMIN_ADMIN_LAYOUT_TEMPLATES.adminRoute,
                 destination: paths.adminRoute,
+                importMapProviders: {
+                  authErrorsImports,
+                  authHooksImports,
+                },
                 generatorPaths: paths,
                 ...options,
               }),

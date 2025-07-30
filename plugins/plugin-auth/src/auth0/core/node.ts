@@ -52,10 +52,14 @@ export default createPlatformPluginExport({
     appCompiler.registerAppCompiler({
       pluginKey,
       appType: webAppEntryType,
-      compile: ({ appCompiler }) => {
+      compile: ({ appCompiler, projectDefinition }) => {
+        const auth = getAuthPluginDefinition(projectDefinition);
+
         appCompiler.addRootChildren({
           auth: reactAuth0Generator({}),
-          authHooks: auth0HooksGenerator({}),
+          authHooks: auth0HooksGenerator({
+            authRoles: auth.roles.map((role) => role.name),
+          }),
           auth0Apollo: auth0ApolloGenerator({}),
           auth0Callback: reactRoutesGenerator({
             name: 'auth',

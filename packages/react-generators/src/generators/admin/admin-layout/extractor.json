@@ -23,12 +23,25 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#admin/admin-layout",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "authErrorsImportsProvider": {
+          "importName": "authErrorsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/auth-errors/generated/ts-import-providers.ts"
+        },
+        "authHooksImportsProvider": {
+          "importName": "authHooksImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-hooks.ts"
+        }
+      },
       "pathRootRelativePath": "{routes-root}/route.tsx",
       "projectExports": { "Route": {} },
       "referencedGeneratorTemplates": ["admin-layout"],
       "sourceFile": "routes/route.tsx",
-      "variables": { "TPL_LOGIN_URL_PATH": {}, "TPL_ROUTE_PATH": {} }
+      "variables": {
+        "TPL_LOGIN_URL_PATH": {},
+        "TPL_REQUIRED_ROLES": {},
+        "TPL_ROUTE_PATH": {}
+      }
     }
   }
 }
