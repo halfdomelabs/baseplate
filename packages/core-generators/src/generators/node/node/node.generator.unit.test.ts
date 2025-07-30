@@ -139,7 +139,6 @@ describe('nodeGenerator', () => {
           node.packages.addPackages({
             prod: {
               express: '^4.18.2',
-              dotenv: '^16.0.3',
             },
             dev: {
               typescript: '^5.0.0',
@@ -158,7 +157,6 @@ describe('nodeGenerator', () => {
       expect(packageJson).toMatchObject({
         dependencies: {
           express: '^4.18.2',
-          dotenv: '^16.0.3',
         },
         devDependencies: {
           typescript: '^5.0.0',
