@@ -94,9 +94,9 @@
       "pathRootRelativePath": "{module-root}/schema/presigned.mutations.ts",
       "projectExports": {},
       "referencedGeneratorTemplates": [
+        "schema-file-category",
         "services-create-presigned-download-url",
-        "services-create-presigned-upload-url",
-        "schema-file-category"
+        "services-create-presigned-upload-url"
       ],
       "sourceFile": "module/schema/presigned.mutations.ts",
       "variables": { "TPL_FILE_OBJECT_TYPE": {} }
@@ -173,7 +173,7 @@
       },
       "pathRootRelativePath": "{module-root}/services/download-file.ts",
       "projectExports": { "downloadFile": {} },
-      "referencedGeneratorTemplates": ["config-categories", "config-adapters"],
+      "referencedGeneratorTemplates": ["config-adapters", "config-categories"],
       "sourceFile": "module/services/download-file.ts",
       "variables": { "TPL_FILE_MODEL": {} }
     },
@@ -217,8 +217,8 @@
         "validateFileInput": {}
       },
       "referencedGeneratorTemplates": [
-        "types-file-category",
-        "config-adapters"
+        "config-adapters",
+        "types-file-category"
       ],
       "sourceFile": "module/services/validate-file-input.ts",
       "variables": { "TPL_FILE_MODEL": {} }
@@ -304,10 +304,10 @@
         "validateFileUploadOptions": {}
       },
       "referencedGeneratorTemplates": [
-        "types-adapter",
-        "types-file-category",
         "config-adapters",
         "config-categories",
+        "types-adapter",
+        "types-file-category",
         "utils-mime"
       ],
       "sourceFile": "module/utils/validate-file-upload-options.ts",

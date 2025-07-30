@@ -117,7 +117,7 @@ const servicesDownloadFile = createTsTemplateFile({
   },
   name: 'services-download-file',
   projectExports: { downloadFile: {} },
-  referencedGeneratorTemplates: { configCategories: {}, configAdapters: {} },
+  referencedGeneratorTemplates: { configAdapters: {}, configCategories: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -156,7 +156,7 @@ const servicesValidateFileInput = createTsTemplateFile({
     FileUploadInput: { isTypeOnly: true },
     validateFileInput: {},
   },
-  referencedGeneratorTemplates: { typesFileCategory: {}, configAdapters: {} },
+  referencedGeneratorTemplates: { configAdapters: {}, typesFileCategory: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -248,10 +248,10 @@ const utilsValidateFileUploadOptions = createTsTemplateFile({
     validateFileUploadOptions: {},
   },
   referencedGeneratorTemplates: {
-    typesAdapter: {},
-    typesFileCategory: {},
     configAdapters: {},
     configCategories: {},
+    typesAdapter: {},
+    typesFileCategory: {},
     utilsMime: {},
   },
   source: {
@@ -316,9 +316,9 @@ const schemaPresignedMutations = createTsTemplateFile({
   name: 'schema-presigned-mutations',
   projectExports: {},
   referencedGeneratorTemplates: {
+    schemaFileCategory: {},
     servicesCreatePresignedDownloadUrl: {},
     servicesCreatePresignedUploadUrl: {},
-    schemaFileCategory: {},
   },
   source: {
     path: path.join(
