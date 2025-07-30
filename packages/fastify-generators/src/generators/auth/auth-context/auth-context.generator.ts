@@ -2,6 +2,7 @@ import {
   tsCodeFragment,
   TsCodeUtils,
   tsImportBuilder,
+  tsTemplate,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
@@ -71,6 +72,7 @@ export const authContextGenerator = createGenerator({
                   name: 'auth',
                   type: authContextImports.AuthContext.typeFragment(),
                   testDefault: TsCodeUtils.template`${authContextImports.createAuthContextFromSessionInfo.fragment()}(undefined)`,
+                  systemValue: tsTemplate`${authContextImports.createSystemAuthContext.fragment()}()`,
                 },
               ],
             });

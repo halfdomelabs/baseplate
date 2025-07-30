@@ -10,15 +10,17 @@ import { NotFoundCard } from '../components/ui/not-found-card';
 import { routeTree } from '../route-tree.gen';
 import { logError } from '../services/error-logger';
 
-const ErrorComponent: ErrorRouteComponent = ({
+function ErrorComponent({
   error,
   reset,
-}: React.ComponentProps<ErrorRouteComponent>) => (
-  <ErrorDisplay
-    error={error}
-    actions={<Button onClick={reset}>Reset</Button>}
-  />
-);
+}: React.ComponentProps<ErrorRouteComponent>): React.ReactElement {
+  return (
+    <ErrorDisplay
+      error={error}
+      actions={<Button onClick={reset}>Reset</Button>}
+    />
+  );
+}
 
 export const router = createRouter({
   routeTree,

@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@apollo/client": "3.13.8",
-    "@headlessui/react": "2.2.2",
     "@hookform/resolvers": "5.0.1",
     "@sentry/react": "9.17.0",
     "@tanstack/react-router": "1.130.8",

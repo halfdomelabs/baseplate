@@ -27,6 +27,10 @@ interface ServiceContextFieldCreatorArgument {
    * The default value of the argument, e.g. createAuthContextFromSessionInfo(undefined).
    */
   testDefault?: TsCodeFragment;
+  /**
+   * The value of the argument for the system user, e.g. createSystemAuthContext().
+   */
+  systemValue?: TsCodeFragment;
 }
 
 export interface ServiceContextField {
@@ -115,12 +119,25 @@ export const serviceContextGenerator = createGenerator({
               mapValuesOfMap(contextFields, (field) => field.setter),
             );
 
+            const systemContextObject =
+              orderedContextArgs.length === 0
+                ? ''
+                : TsCodeUtils.mergeFragmentsAsObject(
+                    Object.fromEntries(
+                      orderedContextArgs.map((arg) => [
+                        arg.name,
+                        arg.systemValue,
+                      ]),
+                    ),
+                  );
+
             await builder.apply(
               renderers.serviceContext.render({
                 variables: {
                   TPL_CONTEXT_INTERFACE: contextInterface,
                   TPL_CONTEXT_OBJECT: contextObject,
                   TPL_CREATE_CONTEXT_ARGS: createContextArgs(false),
+                  TPL_SYSTEM_CONTEXT_OBJECT: systemContextObject,
                 },
               }),
             );

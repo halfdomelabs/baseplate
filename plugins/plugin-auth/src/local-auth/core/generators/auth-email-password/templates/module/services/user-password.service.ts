@@ -2,6 +2,7 @@
 
 import type { RequestServiceContext } from '%requestServiceContextImports';
 import type { UserSessionPayload } from '%userSessionTypesImports';
+import type { User } from '@prisma/client';
 
 import { PASSWORD_MIN_LENGTH } from '$constantsPassword';
 import {
@@ -31,14 +32,12 @@ const emailPasswordSchema = z.object({
 
 export async function createUserWithEmailAndPassword({
   input,
-  context,
 }: {
   input: {
     email: string;
     password: string;
   };
-  context: RequestServiceContext;
-}): Promise<{ session: UserSessionPayload }> {
+}): Promise<User> {
   const { email, password } = await emailPasswordSchema
     .parseAsync(input)
     .catch(handleZodRequestValidationError);
@@ -70,9 +69,23 @@ export async function createUserWithEmailAndPassword({
     },
   });
 
+  return user;
+}
+
+export async function registerUserWithEmailAndPassword({
+  input,
+  context,
+}: {
+  input: {
+    email: string;
+    password: string;
+  };
+  context: RequestServiceContext;
+}): Promise<{ session: UserSessionPayload; user: User }> {
+  const user = await createUserWithEmailAndPassword({ input });
   const session = await userSessionService.createSession(user.id, context);
 
-  return { session };
+  return { session, user };
 }
 
 export async function authenticateUserWithEmailAndPassword({

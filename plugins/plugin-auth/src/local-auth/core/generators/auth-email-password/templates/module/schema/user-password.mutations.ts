@@ -2,7 +2,7 @@
 
 import {
   authenticateUserWithEmailAndPassword,
-  createUserWithEmailAndPassword,
+  registerUserWithEmailAndPassword,
 } from '$servicesUserPassword';
 import { userSessionPayload } from '%authModuleImports';
 import { builder } from '%pothosImports';
@@ -18,7 +18,7 @@ builder.mutationField('registerWithEmailPassword', (t) =>
       password: t.input.field({ required: true, type: 'String' }),
     },
     resolve: async (root, { input }, context) =>
-      createUserWithEmailAndPassword({
+      registerUserWithEmailAndPassword({
         input,
         context,
       }),

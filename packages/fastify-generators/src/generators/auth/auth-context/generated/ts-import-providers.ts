@@ -16,7 +16,9 @@ const authContextImportsSchema = createTsImportMapSchema({
   AuthContext: { isTypeOnly: true },
   AuthSessionInfo: { isTypeOnly: true },
   AuthUserSessionInfo: { isTypeOnly: true },
+  createAnonymousAuthContext: {},
   createAuthContextFromSessionInfo: {},
+  createSystemAuthContext: {},
   InvalidSessionError: {},
 });
 
@@ -43,7 +45,9 @@ const authAuthContextImportsTask = createGeneratorTask({
           AuthContext: paths.authContextTypes,
           AuthSessionInfo: paths.authSessionTypes,
           AuthUserSessionInfo: paths.authSessionTypes,
+          createAnonymousAuthContext: paths.authContextUtils,
           createAuthContextFromSessionInfo: paths.authContextUtils,
+          createSystemAuthContext: paths.authContextUtils,
           InvalidSessionError: paths.authSessionTypes,
         }),
       },

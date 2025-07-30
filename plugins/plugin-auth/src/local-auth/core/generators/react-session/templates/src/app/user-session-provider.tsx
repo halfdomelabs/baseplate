@@ -7,8 +7,8 @@ import { userSessionClient } from '$userSessionClient';
 import { GetCurrentUserSessionDocument } from '%generatedGraphqlImports';
 import { AuthSessionContext } from '%localAuthHooksImports';
 import { ErrorableLoader } from '%reactComponentsImports';
-import { logAndFormatError } from '%reactErrorImports';
-import { useQuery } from '@apollo/client';
+import { logError } from '%reactErrorImports';
+import { useApolloClient, useQuery } from '@apollo/client';
 import { useEffect, useMemo, useState } from 'react';
 
 interface UserSessionProviderProps {
@@ -21,14 +21,14 @@ export function UserSessionProvider({
   const [cachedUserId, setCachedUserId] = useState<string | undefined>(
     userSessionClient.getUserId(),
   );
+  const apolloClient = useApolloClient();
 
-  const {
-    data: sessionQueryData,
-    error: sessionError,
-    refetch: refetchSession,
-  } = useQuery(GetCurrentUserSessionDocument, {
-    notifyOnNetworkStatusChange: true,
-  });
+  const { data: sessionQueryData, error: sessionError } = useQuery(
+    GetCurrentUserSessionDocument,
+    {
+      notifyOnNetworkStatusChange: true,
+    },
+  );
 
   const session = useMemo((): SessionData | undefined => {
     if (!sessionQueryData && cachedUserId) {
@@ -53,14 +53,13 @@ export function UserSessionProvider({
     const unsubscribe = userSessionClient.onUserIdChange((newUserId) => {
       if (newUserId !== cachedUserId) {
         setCachedUserId(newUserId);
-        refetchSession().catch((err: unknown) => {
-          logAndFormatError(err);
-        });
+        // Make sure to reset the Apollo client to clear any cached data
+        apolloClient.resetStore().catch(logError);
       }
     });
 
     return unsubscribe;
-  }, [cachedUserId, refetchSession]);
+  }, [cachedUserId, apolloClient]);
 
   if (!session) {
     return <ErrorableLoader error={sessionError} />;

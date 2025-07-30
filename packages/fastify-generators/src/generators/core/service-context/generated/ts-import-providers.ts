@@ -14,6 +14,7 @@ import { CORE_SERVICE_CONTEXT_PATHS } from './template-paths.js';
 
 const serviceContextImportsSchema = createTsImportMapSchema({
   createServiceContext: {},
+  createSystemServiceContext: {},
   createTestServiceContext: {},
   ServiceContext: { isTypeOnly: true },
 });
@@ -39,6 +40,7 @@ const coreServiceContextImportsTask = createGeneratorTask({
       providers: {
         serviceContextImports: createTsImportMap(serviceContextImportsSchema, {
           createServiceContext: paths.serviceContext,
+          createSystemServiceContext: paths.serviceContext,
           createTestServiceContext: paths.testHelper,
           ServiceContext: paths.serviceContext,
         }),

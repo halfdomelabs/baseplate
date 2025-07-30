@@ -90,6 +90,6 @@
     "node": "22.14.0"
   },
   "prisma": {
-    "seed": "tsx -r dotenv/config src/prisma/seed.ts"
+    "seed": "tsx -r dotenv/config --env-file-if-exists=.seed.env src/prisma/seed.ts"
   }
 }

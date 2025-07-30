@@ -5,7 +5,8 @@ import { prisma } from '$service';
 
 async function main(): Promise<void> {
   try {
-    // your seed script goes here
+    TPL_SEED_BODY;
+    // any additional seed logic goes here
     await prisma.$queryRaw`SELECT 1;`;
   } finally {
     await prisma.$disconnect();

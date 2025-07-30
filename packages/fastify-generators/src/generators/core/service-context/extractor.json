@@ -9,13 +9,15 @@
       "pathRootRelativePath": "{src-root}/utils/service-context.ts",
       "projectExports": {
         "createServiceContext": {},
+        "createSystemServiceContext": {},
         "ServiceContext": { "isTypeOnly": true }
       },
       "sourceFile": "src/utils/service-context.ts",
       "variables": {
         "TPL_CONTEXT_INTERFACE": {},
         "TPL_CONTEXT_OBJECT": {},
-        "TPL_CREATE_CONTEXT_ARGS": {}
+        "TPL_CREATE_CONTEXT_ARGS": {},
+        "TPL_SYSTEM_CONTEXT_OBJECT": {}
       }
     },
     "test-helper": {

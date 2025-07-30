@@ -9,7 +9,7 @@ const seed = createTsTemplateFile({
   source: {
     path: path.join(import.meta.dirname, '../templates/src/prisma/seed.ts'),
   },
-  variables: {},
+  variables: { TPL_SEED_BODY: {} },
 });
 
 const service = createTsTemplateFile({

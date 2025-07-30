@@ -16,6 +16,7 @@ const authEmailPasswordImportsSchema = createTsImportMapSchema({
   authenticateUserWithEmailAndPassword: {},
   createUserWithEmailAndPassword: {},
   PASSWORD_MIN_LENGTH: {},
+  registerUserWithEmailAndPassword: {},
 });
 
 export type AuthEmailPasswordImportsProvider = TsImportMapProviderFromSchema<
@@ -44,6 +45,7 @@ const localAuthCoreAuthEmailPasswordImportsTask = createGeneratorTask({
             authenticateUserWithEmailAndPassword: paths.servicesUserPassword,
             createUserWithEmailAndPassword: paths.servicesUserPassword,
             PASSWORD_MIN_LENGTH: paths.constantsPassword,
+            registerUserWithEmailAndPassword: paths.servicesUserPassword,
           },
         ),
       },

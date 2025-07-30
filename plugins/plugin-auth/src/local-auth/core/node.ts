@@ -18,7 +18,11 @@ import { authApolloGenerator } from './generators/auth-apollo/auth-apollo.genera
 import { authEmailPasswordGenerator } from './generators/auth-email-password/auth-email-password.generator.js';
 import { authHooksGenerator } from './generators/auth-hooks/auth-hooks.generator.js';
 import { authRoutesGenerator } from './generators/auth-routes/auth-routes.generator.js';
-import { authModuleGenerator, reactAuthGenerator } from './generators/index.js';
+import {
+  authModuleGenerator,
+  reactAuthGenerator,
+  seedInitialUserGenerator,
+} from './generators/index.js';
 import { reactSessionGenerator } from './generators/react-session/react-session.generator.js';
 
 export default createPlatformPluginExport({
@@ -40,6 +44,12 @@ export default createPlatformPluginExport({
         const authDefinition = getAuthPluginDefinition(projectDefinition);
 
         appCompiler.addChildrenToFeature(authDefinition.authFeatureRef, {
+          seedInitialUser: seedInitialUserGenerator({
+            initialUserRoles:
+              localAuthDefinition.initialUserRoles?.map((role) =>
+                definitionContainer.nameFromId(role),
+              ) ?? [],
+          }),
           authModule: authModuleGenerator({
             userSessionModelName: definitionContainer.nameFromId(
               localAuthDefinition.modelRefs.userSession,

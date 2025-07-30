@@ -9,7 +9,7 @@
       "pathRootRelativePath": "{src-root}/prisma/seed.ts",
       "referencedGeneratorTemplates": ["service"],
       "sourceFile": "src/prisma/seed.ts",
-      "variables": {}
+      "variables": { "TPL_SEED_BODY": {} }
     },
     "service": {
       "type": "ts",
