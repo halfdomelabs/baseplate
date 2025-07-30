@@ -1,6 +1,7 @@
 import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
+import { generatedGraphqlImportsProvider } from '#src/generators/apollo/react-apollo/providers/generated-graphql.js';
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
 import { authErrorsImportsProvider } from '#src/generators/auth/auth-errors/generated/ts-import-providers.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
@@ -25,7 +26,7 @@ const adminRoute = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   importMapProviders: {
     authErrorsImports: authErrorsImportsProvider,
-    authHooksImports: authHooksImportsProvider,
+    generatedGraphqlImports: generatedGraphqlImportsProvider,
   },
   name: 'admin-route',
   projectExports: { Route: {} },

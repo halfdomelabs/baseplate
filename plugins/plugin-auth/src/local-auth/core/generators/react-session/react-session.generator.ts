@@ -1,8 +1,4 @@
-import {
-  renderTextTemplateFileAction,
-  TsCodeUtils,
-  tsImportBuilder,
-} from '@baseplate-dev/core-generators';
+import { TsCodeUtils, tsImportBuilder } from '@baseplate-dev/core-generators';
 import { reactAppConfigProvider } from '@baseplate-dev/react-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
@@ -35,22 +31,15 @@ export const reactSessionGenerator = createGenerator({
                 paths.userSessionProvider,
               ),
             ])`<UserSessionProvider>${contents}</UserSessionProvider>`,
-          type: 'auth',
+          type: 'router',
         });
-        reactAppConfig.renderSiblings.set(
-          'user-seession-check',
-          TsCodeUtils.templateWithImports([
-            tsImportBuilder(['UserSessionCheck']).from(paths.userSessionCheck),
-          ])`<UserSessionCheck />`,
-        );
       },
     }),
     main: createGeneratorTask({
       dependencies: {
         renderers: GENERATED_TEMPLATES.renderers.provider,
-        paths: GENERATED_TEMPLATES.paths.provider,
       },
-      run({ renderers, paths }) {
+      run({ renderers }) {
         return {
           build: async (builder) => {
             await builder.apply(
@@ -58,13 +47,7 @@ export const reactSessionGenerator = createGenerator({
                 variables: {},
               }),
             );
-            await builder.apply(
-              renderTextTemplateFileAction({
-                destination: paths.userSessionCheckGql,
-                template: GENERATED_TEMPLATES.templates.userSessionCheckGql,
-                variables: {},
-              }),
-            );
+            await builder.apply(renderers.userSessionProviderGql.render({}));
           },
         };
       },

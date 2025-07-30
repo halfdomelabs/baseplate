@@ -99,7 +99,10 @@ export function buildTsProjectExportMap(
       }) ?? [];
 
     // Figure out the default import provider
-    const importProviderNames = getDefaultImportProviderNames(generatorName);
+    const importProviderNames = getDefaultImportProviderNames(
+      generatorName,
+      config.defaultImportProviderName,
+    );
 
     const relativeGeneratorDirectory = path.relative(
       packagePath,

@@ -30,13 +30,17 @@ export interface TsImportProviderNames {
  * Gets the names of the default import provider.
  *
  * @param generatorName - The name of the generator.
+ * @param defaultImportProviderName - The name of the default import provider if provided.
  * @returns The names of the import provider.
  */
 export function getDefaultImportProviderNames(
   generatorName: string,
+  defaultImportProviderName: string | undefined,
 ): TsImportProviderNames {
   const parsedGeneratorName = parseGeneratorName(generatorName);
-  const { generatorBasename } = parsedGeneratorName;
+  const generatorBasename =
+    defaultImportProviderName?.replace(/ImportsProvider$/, '') ??
+    parsedGeneratorName.generatorBasename;
   const providerTypeName = `${pascalCase(generatorBasename)}ImportsProvider`;
   const providerExportName = `${camelCase(generatorBasename)}ImportsProvider`;
   const providerSchemaName = `${camelCase(generatorBasename)}ImportsSchema`;

@@ -1,45 +1,6 @@
 {
   "name": "local-auth/core/react-session",
   "templates": {
-    "use-user-session-client": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
-      "group": "main",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{src-root}/hooks/use-user-session-client.ts",
-      "projectExports": {
-        "UserSessionClientContext": {},
-        "UserSessionClientContextValue": { "isTypeOnly": true },
-        "useUserSessionClient": {}
-      },
-      "referencedGeneratorTemplates": ["user-session-client"],
-      "sourceFile": "src/hooks/use-user-session-client.ts",
-      "variables": {}
-    },
-    "user-session-check": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
-      "group": "main",
-      "importMapProviders": {
-        "generatedGraphqlImportsProvider": {
-          "importName": "generatedGraphqlImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
-        }
-      },
-      "pathRootRelativePath": "{src-root}/app/user-session-check.tsx",
-      "referencedGeneratorTemplates": ["use-user-session-client"],
-      "sourceFile": "src/app/user-session-check.tsx",
-      "variables": {}
-    },
-    "user-session-check-gql": {
-      "type": "text",
-      "fileOptions": { "kind": "singleton" },
-      "pathRootRelativePath": "{src-root}/app/user-session-check.gql",
-      "sourceFile": "src/app/user-session-check.gql",
-      "variables": {}
-    },
     "user-session-client": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -52,13 +13,7 @@
         }
       },
       "pathRootRelativePath": "{src-root}/services/user-session-client.ts",
-      "projectExports": {
-        "createUserSessionClient": {},
-        "SessionChangeCallback": { "isTypeOnly": true },
-        "UserSessionClient": {},
-        "UserSessionClientConfig": { "isTypeOnly": true },
-        "UserSessionData": { "isTypeOnly": true }
-      },
+      "projectExports": { "userSessionClient": {}, "UserSessionClient": {} },
       "sourceFile": "src/services/user-session-client.ts",
       "variables": {}
     },
@@ -67,13 +22,38 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
       "group": "main",
-      "importMapProviders": {},
+      "importMapProviders": {
+        "authHooksImportsProvider": {
+          "importName": "authHooksImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-hooks.ts"
+        },
+        "generatedGraphqlImportsProvider": {
+          "importName": "generatedGraphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        },
+        "localAuthHooksImportsProvider": {
+          "importName": "localAuthHooksImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/auth-hooks/generated/ts-import-providers.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        },
+        "reactErrorImportsProvider": {
+          "importName": "reactErrorImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
+        }
+      },
       "pathRootRelativePath": "{src-root}/app/user-session-provider.tsx",
-      "referencedGeneratorTemplates": [
-        "use-user-session-client",
-        "user-session-client"
-      ],
+      "referencedGeneratorTemplates": ["user-session-client"],
       "sourceFile": "src/app/user-session-provider.tsx",
+      "variables": {}
+    },
+    "user-session-provider-gql": {
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{src-root}/app/user-session-provider.gql",
+      "sourceFile": "src/app/user-session-provider.gql",
       "variables": {}
     }
   }

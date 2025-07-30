@@ -28,6 +28,7 @@ type CodeFragmentWrapper = (contents: TsCodeFragment) => TsCodeFragment;
  *
  * - `auth`: Wrapper for authentication
  * - `data`: Wrapper for data fetching
+ * - `router`: Wrapper for routing
  */
 type RenderWrapperType = 'auth' | 'data' | 'router';
 

@@ -2,10 +2,10 @@
   "name": "local-auth/core/auth-hooks",
   "extractors": {
     "ts": {
+      "defaultImportProviderName": "localAuthHooksImportsProvider",
       "importProviders": [
         "@baseplate-dev/react-generators:authHooksImportsProvider"
-      ],
-      "skipDefaultImportMap": true
+      ]
     }
   },
   "templates": {
@@ -84,16 +84,17 @@
       "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
       "group": "hooks",
       "importMapProviders": {
-        "reactSessionImportsProvider": {
-          "importName": "reactSessionImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/plugin-auth:src/local-auth/core/generators/react-session/generated/ts-import-providers.ts"
+        "generatedGraphqlImportsProvider": {
+          "importName": "generatedGraphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
         }
       },
       "pathRootRelativePath": "{src-root}/hooks/use-session.ts",
       "projectExports": {
+        "AuthRole": {},
+        "AuthSessionContext": {},
         "SessionData": { "isTypeOnly": true },
-        "useSession": {},
-        "AuthRole": { "isTypeOnly": true }
+        "useSession": {}
       },
       "sourceFile": "src/hooks/use-session.ts",
       "variables": {}

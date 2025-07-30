@@ -4,6 +4,7 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
+import { generatedGraphqlImportsProvider } from '#src/generators/apollo/react-apollo/providers/generated-graphql.js';
 import { authHooksImportsProvider } from '#src/generators/auth/_providers/auth-hooks.js';
 import { authErrorsImportsProvider } from '#src/generators/auth/auth-errors/generated/ts-import-providers.js';
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
@@ -42,6 +43,7 @@ const adminAdminLayoutRenderersTask = createGeneratorTask({
   dependencies: {
     authErrorsImports: authErrorsImportsProvider,
     authHooksImports: authHooksImportsProvider,
+    generatedGraphqlImports: generatedGraphqlImportsProvider,
     paths: ADMIN_ADMIN_LAYOUT_PATHS.provider,
     reactComponentsImports: reactComponentsImportsProvider,
     typescriptFile: typescriptFileProvider,
@@ -50,6 +52,7 @@ const adminAdminLayoutRenderersTask = createGeneratorTask({
   run({
     authErrorsImports,
     authHooksImports,
+    generatedGraphqlImports,
     paths,
     reactComponentsImports,
     typescriptFile,
@@ -76,7 +79,7 @@ const adminAdminLayoutRenderersTask = createGeneratorTask({
                 destination: paths.adminRoute,
                 importMapProviders: {
                   authErrorsImports,
-                  authHooksImports,
+                  generatedGraphqlImports,
                 },
                 generatorPaths: paths,
                 ...options,

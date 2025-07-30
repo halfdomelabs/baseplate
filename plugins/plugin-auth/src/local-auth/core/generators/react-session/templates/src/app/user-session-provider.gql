@@ -2,5 +2,6 @@ query GetCurrentUserSession {
   currentUserSession {
     userId
     expiresAt
+    roles
   }
 }

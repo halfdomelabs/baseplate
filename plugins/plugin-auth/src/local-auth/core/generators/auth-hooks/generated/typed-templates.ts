@@ -94,12 +94,15 @@ const useRequiredUserId = createTsTemplateFile({
 const useSession = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'hooks',
-  importMapProviders: { reactSessionImports: reactSessionImportsProvider },
+  importMapProviders: {
+    generatedGraphqlImports: generatedGraphqlImportsProvider,
+  },
   name: 'use-session',
   projectExports: {
+    AuthRole: {},
+    AuthSessionContext: {},
     SessionData: { isTypeOnly: true },
     useSession: {},
-    AuthRole: { isTypeOnly: true },
   },
   source: {
     path: path.join(

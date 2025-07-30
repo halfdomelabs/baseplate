@@ -22,15 +22,6 @@ export const authApolloGenerator = createGenerator({
         reactSession: reactSessionImportsProvider,
       },
       run({ reactApolloConfig, reactSession }) {
-        reactApolloConfig.createApolloClientArguments.add({
-          name: 'userSessionClient',
-          type: reactSession.UserSessionClient.typeFragment(),
-          reactRenderBody: tsCodeFragment(
-            'const { client: userSessionClient } = useUserSessionClient();',
-            reactSession.useUserSessionClient.declaration(),
-          ),
-        });
-
         return {
           providers: {
             authApollo: {},
@@ -48,6 +39,7 @@ export const authApolloGenerator = createGenerator({
               name: 'sessionErrorLink',
               bodyFragment: tsCodeFragment(sessionErrorLink, [
                 tsImportBuilder(['onError']).from('@apollo/client/link/error'),
+                reactSession.userSessionClient.declaration(),
               ]),
               priority: 'error',
             });
