@@ -5,3 +5,10 @@ export interface ServiceContext {
 export function createServiceContext(): ServiceContext {
   return {};
 }
+
+/**
+ * Creates a service context for the system user.
+ */
+export function createSystemServiceContext(): ServiceContext {
+  return createServiceContext({});
+}
