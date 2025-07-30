@@ -32,7 +32,6 @@ function WebAppLayout(): React.JSX.Element {
         <NavigationTabsItem asChild>
           <Link
             to="/apps/edit/$key/web"
-            from="/"
             params={{ key }}
             activeOptions={{ exact: true }}
           >

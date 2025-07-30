@@ -2,6 +2,7 @@
   "apps": [
     { "id": "app:mR1UDTfwWdRw", "name": "backend", "type": "backend" },
     {
+      "adminApp": { "enabled": false, "pathPrefix": "/admin" },
       "description": "",
       "enableDatadog": false,
       "enableSubscriptions": false,
@@ -72,7 +73,7 @@
       "name": "BlogPost"
     }
   ],
-  "schemaVersion": 15,
+  "schemaVersion": 17,
   "settings": { "general": { "name": "simple", "portOffset": 3000 } },
   "version": "0.1.0"
 }

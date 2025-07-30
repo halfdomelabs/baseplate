@@ -36,13 +36,11 @@ function SidebarNavigationIcon({
 const SidebarNavigationLink = createLink(SidebarNavigationIcon);
 
 export function AppDesktopSidebar(): React.JSX.Element {
-  // Need 'from="/"' to avoid false positive warnings (https://github.com/TanStack/router/issues/4010)
   return (
     <nav className="flex h-full flex-col items-center justify-between px-2 pt-2.5 pb-4">
       <div className="space-y-8">
         <Link
           to="/"
-          from="/"
           className="group flex shrink-0 items-center justify-center"
         >
           <img
@@ -52,27 +50,15 @@ export function AppDesktopSidebar(): React.JSX.Element {
           />
         </Link>
         <div className="space-y-2">
-          <SidebarNavigationLink
-            to="/apps"
-            from="/"
-            icon={MdApps}
-            label="Apps"
-          />
-          <SidebarNavigationLink
-            to="/data"
-            from="/"
-            icon={HiDatabase}
-            label="Data"
-          />
+          <SidebarNavigationLink to="/apps" icon={MdApps} label="Apps" />
+          <SidebarNavigationLink to="/data" icon={HiDatabase} label="Data" />
           <SidebarNavigationLink
             to="/plugins"
-            from="/"
             icon={MdWidgets}
             label="Plugins"
           />
           <SidebarNavigationLink
             to="/settings"
-            from="/"
             icon={MdOutlineSettings}
             label="Settings"
           />
