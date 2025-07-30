@@ -126,7 +126,6 @@ export function PluginCard({
                 return managerWebConfig && isActive ? (
                   <Link
                     to={`/plugins/edit/$key`}
-                    from="/"
                     params={{ key: managerPlugin.key }}
                   >
                     <Button variant="secondary">Configure</Button>
@@ -151,11 +150,7 @@ export function PluginCard({
                 );
               } else if (webConfig) {
                 return (
-                  <Link
-                    to={`/plugins/edit/$key`}
-                    from="/"
-                    params={{ key: plugin.key }}
-                  >
+                  <Link to={`/plugins/edit/$key`} params={{ key: plugin.key }}>
                     <Button variant="secondary">Configure</Button>
                   </Link>
                 );

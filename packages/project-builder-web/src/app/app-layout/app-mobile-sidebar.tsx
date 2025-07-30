@@ -36,7 +36,6 @@ function SidebarNavigationIcon({
 const SidebarNavigationLink = createLink(SidebarNavigationIcon);
 
 export function AppMobileSidebar(): React.JSX.Element {
-  // Need 'from="/"' to avoid false positive warnings (https://github.com/TanStack/router/issues/4010)
   return (
     <nav className="grid gap-6 text-lg font-medium">
       <div className="flex items-center space-x-2">
@@ -46,7 +45,6 @@ export function AppMobileSidebar(): React.JSX.Element {
       <div>
         <SidebarNavigationLink
           to="/"
-          from="/"
           icon={MdHome}
           label="Home"
           activeOptions={{ exact: true }}
@@ -54,19 +52,12 @@ export function AppMobileSidebar(): React.JSX.Element {
         <SidebarNavigationLink to="/apps" icon={MdApps} label="Apps" />
         <SidebarNavigationLink
           to="/data/models"
-          from="/"
           icon={HiDatabase}
           label="Models"
         />
-        <SidebarNavigationLink
-          to="/plugins"
-          from="/"
-          icon={MdWidgets}
-          label="Plugins"
-        />
+        <SidebarNavigationLink to="/plugins" icon={MdWidgets} label="Plugins" />
         <SidebarNavigationLink
           to="/settings"
-          from="/"
           icon={MdOutlineSettings}
           label="Settings"
         />

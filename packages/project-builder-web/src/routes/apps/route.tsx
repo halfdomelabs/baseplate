@@ -47,7 +47,6 @@ function AppsLayout(): React.JSX.Element {
               <NavigationMenuItemWithLink key={app.id} asChild>
                 <Link
                   to="/apps/edit/$key"
-                  from="/"
                   params={{ key: appEntityType.keyFromId(app.id) }}
                 >
                   {app.name}
