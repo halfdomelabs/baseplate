@@ -5,9 +5,13 @@ import type { Control, UseFormReturn } from 'react-hook-form';
 import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import {
   CheckboxFieldController,
-  SelectFieldController,
+  ComboboxFieldController,
+  SectionListSection,
+  SectionListSectionContent,
+  SectionListSectionDescription,
+  SectionListSectionHeader,
+  SectionListSectionTitle,
 } from '@baseplate-dev/ui-components';
-import clsx from 'clsx';
 import { useWatch } from 'react-hook-form';
 
 import { EmbeddedListInput } from '#src/components/index.js';
@@ -22,14 +26,10 @@ import CrudFormFieldsForm from './crud-form-fields-form.js';
 import CrudTableColumnsForm from './crud-table-columns-form.js';
 
 interface Props {
-  className?: string;
   formProps: UseFormReturn<WebAdminSectionConfigInput>;
 }
 
-function AdminCrudSectionForm({
-  className,
-  formProps,
-}: Props): React.JSX.Element {
+function AdminCrudSectionForm({ formProps }: Props): React.JSX.Element {
   const { control } = formProps;
   const { definition } = useProjectDefinition();
 
@@ -52,43 +52,85 @@ function AdminCrudSectionForm({
   // TODO: Update embedded form names when form is added/removed
 
   return (
-    <div className={clsx('space-y-4', className)}>
-      <SelectFieldController
-        label="Model"
-        control={control}
-        options={modelOptions}
-        name="modelRef"
-      />
-      <CheckboxFieldController
-        label="Disable Create?"
-        control={control}
-        name="disableCreate"
-      />
-      <h2>Table</h2>
-      <CrudTableColumnsForm
-        control={control as unknown as Control<AdminCrudTableConfig>}
-      />
-      <h2>Form</h2>
-      <CrudFormFieldsForm
-        formProps={
-          formProps as unknown as UseFormReturn<AdminCrudFormConfigInput>
-        }
-        embeddedFormOptions={embeddedFormOptions}
-      />
-      <h2>Embedded Forms</h2>
-      <EmbeddedListInput.LabelledController
-        control={control}
-        name="embeddedForms"
-        renderForm={(formProps) => (
-          <AdminCrudEmbeddedForm
-            {...formProps}
+    <>
+      <SectionListSection>
+        <SectionListSectionHeader>
+          <SectionListSectionTitle>Model Configuration</SectionListSectionTitle>
+          <SectionListSectionDescription>
+            Configure the data model and basic settings for this CRUD section.
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
+        <SectionListSectionContent className="space-y-6">
+          <ComboboxFieldController
+            label="Model"
+            control={control}
+            options={modelOptions}
+            name="modelRef"
+          />
+          <CheckboxFieldController
+            label="Disable Create?"
+            control={control}
+            name="disableCreate"
+          />
+        </SectionListSectionContent>
+      </SectionListSection>
+
+      <SectionListSection>
+        <SectionListSectionHeader>
+          <SectionListSectionTitle>Table Configuration</SectionListSectionTitle>
+          <SectionListSectionDescription>
+            Configure which columns to display in the data table.
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
+        <SectionListSectionContent>
+          <CrudTableColumnsForm
+            control={control as unknown as Control<AdminCrudTableConfig>}
+          />
+        </SectionListSectionContent>
+      </SectionListSection>
+
+      <SectionListSection>
+        <SectionListSectionHeader>
+          <SectionListSectionTitle>Form Configuration</SectionListSectionTitle>
+          <SectionListSectionDescription>
+            Configure the form fields for creating and editing records.
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
+        <SectionListSectionContent>
+          <CrudFormFieldsForm
+            formProps={
+              formProps as unknown as UseFormReturn<AdminCrudFormConfigInput>
+            }
             embeddedFormOptions={embeddedFormOptions}
           />
-        )}
-        renderTable={(tableProps) => <AdminCrudEmbeddedTable {...tableProps} />}
-        defaultValue={{ type: 'object' }}
-      />
-    </div>
+        </SectionListSectionContent>
+      </SectionListSection>
+
+      <SectionListSection>
+        <SectionListSectionHeader>
+          <SectionListSectionTitle>Embedded Forms</SectionListSectionTitle>
+          <SectionListSectionDescription>
+            Configure embedded forms for related data objects.
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
+        <SectionListSectionContent>
+          <EmbeddedListInput.LabelledController
+            control={control}
+            name="embeddedForms"
+            renderForm={(formProps) => (
+              <AdminCrudEmbeddedForm
+                {...formProps}
+                embeddedFormOptions={embeddedFormOptions}
+              />
+            )}
+            renderTable={(tableProps) => (
+              <AdminCrudEmbeddedTable {...tableProps} />
+            )}
+            defaultValue={{ type: 'object' }}
+          />
+        </SectionListSectionContent>
+      </SectionListSection>
+    </>
   );
 }
 

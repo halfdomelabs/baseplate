@@ -1,5 +1,6 @@
 import type React from 'react';
 
+import { adminSectionEntityType } from '@baseplate-dev/project-builder-lib';
 import { Button, Card, EmptyDisplay } from '@baseplate-dev/ui-components';
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { MdSettings } from 'react-icons/md';
@@ -46,10 +47,6 @@ function AdminSectionsIndexPage(): React.JSX.Element {
         </p>
       </div>
 
-      <NewAdminSectionDialog appId={app.id} appKey={appKey}>
-        <Button>New Section</Button>
-      </NewAdminSectionDialog>
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {sections.map((section) => (
           <Card key={section.id} className="p-4">
@@ -69,7 +66,7 @@ function AdminSectionsIndexPage(): React.JSX.Element {
                 to="/admin-sections/$appKey/edit/$sectionKey"
                 params={{
                   appKey,
-                  sectionKey: section.id || '',
+                  sectionKey: adminSectionEntityType.keyFromId(section.id),
                 }}
                 className="inline-block"
               >
