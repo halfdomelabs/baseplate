@@ -17,6 +17,7 @@ builder.queryField('currentUserSession', (t) =>
       return {
         expiresAt: auth.session.expiresAt?.toISOString(),
         userId: auth.session.userId,
+        roles: auth.roles,
       };
     },
   }),

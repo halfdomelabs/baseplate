@@ -9,6 +9,10 @@
         "authContextImportsProvider": {
           "importName": "authContextImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-context/generated/ts-import-providers.ts"
+        },
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{module-root}/types/user-session.types.ts",

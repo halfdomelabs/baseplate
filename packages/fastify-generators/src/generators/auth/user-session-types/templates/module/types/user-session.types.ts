@@ -1,11 +1,13 @@
 // @ts-nocheck
 
 import type { AuthUserSessionInfo } from '%authContextImports';
+import type { AuthRole } from '%authRolesImports';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
 export interface UserSessionPayload {
   userId: string;
   expiresAt: Date;
+  roles: readonly AuthRole[];
 }
 
 export interface UserSessionService {

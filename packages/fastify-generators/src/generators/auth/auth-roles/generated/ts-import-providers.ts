@@ -13,6 +13,7 @@ import {
 import { AUTH_AUTH_ROLES_PATHS } from './template-paths.js';
 
 const authRolesImportsSchema = createTsImportMapSchema({
+  AUTH_ROLE_CONFIG: {},
   AuthRole: { isTypeOnly: true },
   DEFAULT_PUBLIC_ROLES: {},
   DEFAULT_USER_ROLES: {},
@@ -35,6 +36,7 @@ const authAuthRolesImportsTask = createGeneratorTask({
     return {
       providers: {
         authRolesImports: createTsImportMap(authRolesImportsSchema, {
+          AUTH_ROLE_CONFIG: paths.authRoles,
           AuthRole: paths.authRoles,
           DEFAULT_PUBLIC_ROLES: paths.authRoles,
           DEFAULT_USER_ROLES: paths.authRoles,

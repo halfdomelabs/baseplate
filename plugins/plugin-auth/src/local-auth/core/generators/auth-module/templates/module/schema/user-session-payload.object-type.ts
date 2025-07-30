@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import { authRoleEnum } from '$authRoleEnum';
 import { builder } from '%pothosImports';
 
 export const userSessionPayload = builder.simpleObject(
@@ -8,6 +9,7 @@ export const userSessionPayload = builder.simpleObject(
     fields: (t) => ({
       expiresAt: t.field({ type: 'DateTime', nullable: true }),
       userId: t.field({ type: 'Uuid' }),
+      roles: t.field({ type: [authRoleEnum] }),
     }),
   },
   (t) => ({

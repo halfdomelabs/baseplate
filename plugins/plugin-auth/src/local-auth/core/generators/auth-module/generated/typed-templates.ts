@@ -5,6 +5,7 @@ import {
   configServiceImportsProvider,
   errorHandlerServiceImportsProvider,
   pothosImportsProvider,
+  prismaImportsProvider,
   requestServiceContextImportsProvider,
   userSessionTypesImportsProvider,
 } from '@baseplate-dev/fastify-generators';
@@ -25,6 +26,24 @@ const userSessionConstants = createTsTemplateFile({
 });
 
 export const constantsGroup = { userSessionConstants };
+
+const authRoleEnum = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'module',
+  importMapProviders: {
+    authRolesImports: authRolesImportsProvider,
+    pothosImports: pothosImportsProvider,
+  },
+  name: 'auth-role-enum',
+  projectExports: {},
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/auth-role.enum.ts',
+    ),
+  },
+  variables: {},
+});
 
 const schemaUserSessionMutations = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
@@ -47,6 +66,7 @@ const schemaUserSessionPayloadObjectType = createTsTemplateFile({
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-user-session-payload-object-type',
   projectExports: { userSessionPayload: {} },
+  referencedGeneratorTemplates: { authRoleEnum: {} },
   source: {
     path: path.join(
       import.meta.dirname,
@@ -72,6 +92,7 @@ const schemaUserSessionQueries = createTsTemplateFile({
 });
 
 export const moduleGroup = {
+  authRoleEnum,
   schemaUserSessionMutations,
   schemaUserSessionPayloadObjectType,
   schemaUserSessionQueries,
@@ -84,6 +105,7 @@ const userSessionService = createTsTemplateFile({
     authRolesImports: authRolesImportsProvider,
     configServiceImports: configServiceImportsProvider,
     errorHandlerServiceImports: errorHandlerServiceImportsProvider,
+    prismaImports: prismaImportsProvider,
     requestServiceContextImports: requestServiceContextImportsProvider,
     userSessionTypesImports: userSessionTypesImportsProvider,
   },

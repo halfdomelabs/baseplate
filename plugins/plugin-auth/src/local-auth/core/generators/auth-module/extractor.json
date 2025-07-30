@@ -8,6 +8,25 @@
     }
   },
   "templates": {
+    "auth-role-enum": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "module",
+      "importMapProviders": {
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        },
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/auth-role.enum.ts",
+      "projectExports": {},
+      "sourceFile": "module/schema/auth-role.enum.ts",
+      "variables": {}
+    },
     "cookie-signer": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -47,6 +66,7 @@
       },
       "pathRootRelativePath": "{module-root}/schema/user-session-payload.object-type.ts",
       "projectExports": { "userSessionPayload": {} },
+      "referencedGeneratorTemplates": ["auth-role-enum"],
       "sourceFile": "module/schema/user-session-payload.object-type.ts",
       "variables": { "TPL_PRISMA_USER": {}, "TPL_USER_OBJECT_TYPE": {} }
     },
@@ -113,6 +133,10 @@
         "errorHandlerServiceImportsProvider": {
           "importName": "errorHandlerServiceImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
         },
         "requestServiceContextImportsProvider": {
           "importName": "requestServiceContextImportsProvider",

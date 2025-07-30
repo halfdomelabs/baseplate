@@ -2,6 +2,7 @@ import { appModuleProvider } from '@baseplate-dev/fastify-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface LocalAuthCoreAuthModulePaths {
+  authRoleEnum: string;
   cookieSigner: string;
   schemaUserSessionMutations: string;
   schemaUserSessionPayloadObjectType: string;
@@ -28,6 +29,7 @@ const localAuthCoreAuthModulePathsTask = createGeneratorTask({
     return {
       providers: {
         localAuthCoreAuthModulePaths: {
+          authRoleEnum: `${moduleRoot}/schema/auth-role.enum.ts`,
           cookieSigner: `${moduleRoot}/utils/cookie-signer.ts`,
           schemaUserSessionMutations: `${moduleRoot}/schema/user-session.mutations.ts`,
           schemaUserSessionPayloadObjectType: `${moduleRoot}/schema/user-session-payload.object-type.ts`,

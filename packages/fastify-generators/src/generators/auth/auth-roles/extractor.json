@@ -8,6 +8,7 @@
       "importMapProviders": {},
       "pathRootRelativePath": "{module-root}/constants/auth-roles.constants.ts",
       "projectExports": {
+        "AUTH_ROLE_CONFIG": {},
         "AuthRole": { "isTypeOnly": true },
         "DEFAULT_PUBLIC_ROLES": {},
         "DEFAULT_USER_ROLES": {},
