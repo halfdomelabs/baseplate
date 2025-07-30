@@ -97,7 +97,6 @@ export function ModelsSidebarList({
               <NavigationMenuItemWithLink key={model.id} asChild>
                 <Link
                   to="/data/models/edit/$key"
-                  from="/"
                   params={{ key: modelEntityType.keyFromId(model.id) }}
                 >
                   {model.name}
