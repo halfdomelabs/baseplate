@@ -60,6 +60,7 @@ const servicesUserPassword = createTsTemplateFile({
   projectExports: {
     authenticateUserWithEmailAndPassword: {},
     createUserWithEmailAndPassword: {},
+    registerUserWithEmailAndPassword: {},
   },
   referencedGeneratorTemplates: { constantsPassword: {} },
   source: {
