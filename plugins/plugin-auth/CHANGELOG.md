@@ -1,5 +1,65 @@
 # @baseplate-dev/plugin-auth
 
+## 2.0.0
+
+### Major Changes
+
+- [#622](https://github.com/halfdomelabs/baseplate/pull/622) [`85e6413`](https://github.com/halfdomelabs/baseplate/commit/85e6413f8e3ad0043daca3bb9fa3ca5a27843a65) Thanks [@kingston](https://github.com/kingston)! - This major refactor splits the monolithic auth plugin into a managed plugin architecture:
+
+  ## Plugin Structure Changes
+  - **Base auth plugin** (`auth`): Manages common functionality, roles, and provider selection
+  - **Implementation plugins** (managed):
+    - `local-auth`: Email/password authentication (renamed from original `auth` plugin)
+    - `auth0`: Auth0 integration
+    - `placeholder-auth`: Development/testing placeholder
+
+  ## Key Changes
+
+  ### Plugin Metadata System
+  - **BREAKING**: Replace `manifest.json` with `plugin.json` for all plugins
+  - **BREAKING**: Rename `id` to `key` in plugin metadata for URL consistency
+  - Add `managedBy` field to plugin metadata for managed plugin relationships
+  - Implement package.json-based plugin discovery configuration
+
+  ### Managed Plugin Pattern
+  - Implementation plugins are hidden from main plugin list
+  - Base plugin automatically manages lifecycle of implementation plugins
+  - UI shows "Managed Plugins" section grouped by manager
+  - Configure buttons on managed plugins redirect to manager's config page
+
+  ### Configuration Schema
+  - Base auth plugin config includes `implementationPluginKey` to specify active provider
+  - Roles configuration moved to base plugin (shared across implementations)
+  - Provider-specific configs remain in implementation plugins
+
+  ### UI Improvements
+  - Add tabbed navigation (`AuthConfigTabs`) across all auth plugin interfaces
+  - Dynamic provider selection within base plugin configuration
+  - Consistent UX patterns between all auth implementation plugins
+
+  ### Migration Support
+  - Automatic migration of existing `plugin-auth` configs to new structure
+  - Rename existing `plugin-auth_auth` to `plugin-auth_local-auth`
+  - Auto-enable base auth plugin when implementation plugins are detected
+  - Preserve all existing configuration without code changes needed
+
+### Patch Changes
+
+- [#623](https://github.com/halfdomelabs/baseplate/pull/623) [`82cee71`](https://github.com/halfdomelabs/baseplate/commit/82cee7183ef384e1777e7a563656441ff108e2b3) Thanks [@kingston](https://github.com/kingston)! - Support validating users on admin app based off their roles
+
+- [#624](https://github.com/halfdomelabs/baseplate/pull/624) [`d0b08b8`](https://github.com/halfdomelabs/baseplate/commit/d0b08b89a07b9aa845212ec90e2a6123fbecbbe5) Thanks [@kingston](https://github.com/kingston)! - Upgrade Tanstack Router to 1.130.8 and revert from="/" workaround for Link bug
+
+- [#625](https://github.com/halfdomelabs/baseplate/pull/625) [`96a3099`](https://github.com/halfdomelabs/baseplate/commit/96a3099ff9eba05fc3b3618b54407014cc555dc2) Thanks [@kingston](https://github.com/kingston)! - Add ability to set Prisma seed scripts and add seed script for local auth users
+
+- Updated dependencies [[`aaf8634`](https://github.com/halfdomelabs/baseplate/commit/aaf8634abcf76d938072c7afc43e6e99a2519b13), [`82cee71`](https://github.com/halfdomelabs/baseplate/commit/82cee7183ef384e1777e7a563656441ff108e2b3), [`687a47e`](https://github.com/halfdomelabs/baseplate/commit/687a47e5e39abc5138ba3fc2d0db9cfee6e4dbfe), [`85e6413`](https://github.com/halfdomelabs/baseplate/commit/85e6413f8e3ad0043daca3bb9fa3ca5a27843a65), [`8ec33fc`](https://github.com/halfdomelabs/baseplate/commit/8ec33fcdc8fea9cb20e79586b854bf075270ab53), [`d0b08b8`](https://github.com/halfdomelabs/baseplate/commit/d0b08b89a07b9aa845212ec90e2a6123fbecbbe5), [`fbde70f`](https://github.com/halfdomelabs/baseplate/commit/fbde70ffbcae025318480e9607924978847fba2b), [`96a3099`](https://github.com/halfdomelabs/baseplate/commit/96a3099ff9eba05fc3b3618b54407014cc555dc2)]:
+  - @baseplate-dev/ui-components@0.3.0
+  - @baseplate-dev/react-generators@0.3.0
+  - @baseplate-dev/sync@0.3.0
+  - @baseplate-dev/project-builder-lib@0.3.0
+  - @baseplate-dev/fastify-generators@0.3.0
+  - @baseplate-dev/core-generators@0.3.0
+  - @baseplate-dev/utils@0.3.0
+
 ## 1.0.6
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/ui-components",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "description": "Shared UI component library",
   "keywords": [
     "react",
