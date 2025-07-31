@@ -103,4 +103,4 @@ function ReactIconComboboxController<
   );
 }
 
-export { ReactIconCombobox, ReactIconComboboxController };
+export { ReactIconComboboxController };
