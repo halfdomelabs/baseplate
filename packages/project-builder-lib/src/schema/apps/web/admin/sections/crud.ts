@@ -140,7 +140,7 @@ export const createAdminCrudSectionSchema = definitionSchema((ctx) =>
           type: modelEntityType,
           onDelete: 'RESTRICT',
         }),
-        disableCreate: z.boolean().optional(),
+        disableCreate: ctx.withDefault(z.boolean(), false),
         table: z.object({
           columns: z.array(createAdminCrudTableColumnSchema(ctx)),
         }),
