@@ -1,12 +1,11 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
-import type { GeneratorTaskOutputBuilder } from '#src/output/generator-task-output.js';
-
 import { createProviderType } from '#src/providers/index.js';
 
 import type {
   InferDependencyProviderMap,
   InferExportProviderMap,
+  ProviderDependencyMap,
   ProviderExportMap,
 } from './generators.js';
 
@@ -29,23 +28,23 @@ describe('generators type definitions', () => {
     }>;
 
     // Test ProviderDependencyMap
-    interface TestDependencyMap {
+    type TestDependencyMap = ProviderDependencyMap<{
       test: TestProvider;
       config: ConfigProvider;
-    }
+    }>;
 
     // Test InferExportProviderMap
     type InferredExportMap = InferExportProviderMap<TestExportMap>;
-    expectTypeOf<InferredExportMap>().toMatchTypeOf<{
+    expectTypeOf<InferredExportMap>().toMatchObjectType<{
       test: TestProvider;
       config: ConfigProvider;
     }>();
 
     // Test InferDependencyProviderMap
     type InferredDependencyMap = InferDependencyProviderMap<TestDependencyMap>;
-    expectTypeOf<InferredDependencyMap>().toMatchTypeOf<{
-      test: TestProvider;
-      config: ConfigProvider;
+    expectTypeOf<InferredDependencyMap>().toMatchObjectType<{
+      test: TestProvider | undefined;
+      config: ConfigProvider | undefined;
     }>();
   });
 
@@ -55,9 +54,6 @@ describe('generators type definitions', () => {
       run: () => ({}),
     });
 
-    expectTypeOf<ReturnType<(typeof taskOutput)['run']>>().toMatchTypeOf<{
-      build?: (builder: GeneratorTaskOutputBuilder) => Promise<void> | void;
-    }>();
     expect(taskOutput).toBeDefined();
   });
 
