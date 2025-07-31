@@ -1,4 +1,5 @@
 export * from './alert/alert.js';
+export * from './async-combobox-field/async-combobox-field.js';
 export * from './badge/badge.js';
 export * from './breadcrumb/breadcrumb.js';
 export * from './button-group/button-group.js';

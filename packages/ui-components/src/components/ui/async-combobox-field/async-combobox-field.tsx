@@ -106,6 +106,8 @@ function AsyncComboboxField<OptionType>({
   loadOptionsRef.current = loadOptions;
   const initialOptionsRef = useRef(initialOptions);
   initialOptionsRef.current = initialOptions;
+  const formatErrorRef = useRef(formatError);
+  formatErrorRef.current = formatError;
 
   // Handle external value changes and try to resolve the option
   useEffect(() => {
@@ -157,19 +159,7 @@ function AsyncComboboxField<OptionType>({
   ]);
 
   useEffect(() => {
-    const query =
-      debouncedSearchQuery === '' && initialOptionsRef.current.length === 0
-        ? ''
-        : debouncedSearchQuery;
-
     let isAborted = false;
-
-    // Early return for queries below minimum length
-    if (query.length < minSearchLength) {
-      setOptions(initialOptionsRef.current);
-      setLoadError(null);
-      return;
-    }
 
     // Clear any previous error state
     setLoadError(null);
@@ -181,7 +171,7 @@ function AsyncComboboxField<OptionType>({
 
     // Execute the async request
     loadOptionsRef
-      .current(query)
+      .current(debouncedSearchQuery)
       .then((newOptions) => {
         if (!isAborted) {
           setOptions(newOptions);
@@ -189,8 +179,8 @@ function AsyncComboboxField<OptionType>({
       })
       .catch((err: unknown) => {
         if (!isAborted) {
-          const errorMessage = formatError
-            ? formatError(err)
+          const errorMessage = formatErrorRef.current
+            ? formatErrorRef.current(err)
             : err instanceof Error
               ? err.message
               : 'Failed to load options';
@@ -199,6 +189,7 @@ function AsyncComboboxField<OptionType>({
         }
       })
       .finally(() => {
+        clearTimeout(loadingTimeout);
         setIsLoading(false);
       });
 
@@ -207,7 +198,7 @@ function AsyncComboboxField<OptionType>({
       clearTimeout(loadingTimeout);
       isAborted = true;
     };
-  }, [debouncedSearchQuery, minSearchLength, loadingDelay, formatError]);
+  }, [debouncedSearchQuery, minSearchLength, loadingDelay]);
 
   const selectedOption = useMemo(() => {
     if (value === null || value === undefined) return null;

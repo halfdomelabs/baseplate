@@ -27,7 +27,6 @@ import {
   SectionListSectionDescription,
   SectionListSectionHeader,
   SectionListSectionTitle,
-  SelectFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router';
@@ -36,6 +35,7 @@ import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
 import AdminCrudSectionForm from './-components/admin-crud-section-form.js';
+import { ReactIconComboboxController } from './-components/react-icon-combobox.js';
 
 export const Route = createFileRoute(
   '/admin-sections/$appKey/edit/$sectionKey',
@@ -204,16 +204,11 @@ function EditAdminSectionPage(): React.JSX.Element {
                   options={featureOptions}
                   name="featureRef"
                 />
-                <InputFieldController
+                <ReactIconComboboxController
                   label="Icon"
                   control={control}
                   name="icon"
-                />
-                <SelectFieldController
-                  label="Type"
-                  control={control}
-                  name="type"
-                  options={[{ label: 'CRUD', value: 'crud' }]}
+                  description="Choose an icon to represent this section"
                 />
               </SectionListSectionContent>
             </SectionListSection>
