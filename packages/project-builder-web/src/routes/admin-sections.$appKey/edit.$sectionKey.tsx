@@ -90,7 +90,7 @@ function EditAdminSectionPage(): React.JSX.Element {
       if (webApp?.type !== 'web' || !webApp.adminApp) return;
 
       const existingIndex = webApp.adminApp.sections?.findIndex(
-        (s) => s.id === sectionKey,
+        (s) => s.id === adminSectionEntityType.idFromKey(sectionKey),
       );
 
       if (
@@ -100,7 +100,7 @@ function EditAdminSectionPage(): React.JSX.Element {
       ) {
         webApp.adminApp.sections[existingIndex] = {
           ...sectionData,
-          id: sectionKey,
+          id: section.id,
         };
       }
     });

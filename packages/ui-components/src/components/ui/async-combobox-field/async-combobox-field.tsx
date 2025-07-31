@@ -161,6 +161,14 @@ function AsyncComboboxField<OptionType>({
   useEffect(() => {
     let isAborted = false;
 
+    // Skip loading if search query is shorter than minimum length
+    if (debouncedSearchQuery.length < minSearchLength) {
+      setOptions(initialOptions);
+      setLoadError(null);
+      setIsLoading(false);
+      return;
+    }
+
     // Clear any previous error state
     setLoadError(null);
 
