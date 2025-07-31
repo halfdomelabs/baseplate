@@ -365,6 +365,23 @@ function ComboboxEmpty({
   return <Command.Empty className={cn('p-2 text-sm', className)} {...props} />;
 }
 
+type ComboboxLoadingProps = React.HTMLAttributes<HTMLDivElement>;
+
+function ComboboxLoading({
+  className,
+  ...props
+}: ComboboxLoadingProps): React.ReactElement {
+  return (
+    <Command.Loading
+      className={cn(
+        'flex items-center justify-center p-4 text-sm text-muted-foreground',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 const ComboboxGroup = Command.Group;
 
 interface ComboboxItemProps
@@ -452,4 +469,5 @@ export {
   ComboboxGroup,
   ComboboxInput,
   ComboboxItem,
+  ComboboxLoading,
 };
