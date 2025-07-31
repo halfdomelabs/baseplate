@@ -1,5 +1,38 @@
 # @baseplate-dev/project-builder-cli
 
+## 0.3.0
+
+### Patch Changes
+
+- [#626](https://github.com/halfdomelabs/baseplate/pull/626) [`8ec33fc`](https://github.com/halfdomelabs/baseplate/commit/8ec33fcdc8fea9cb20e79586b854bf075270ab53) Thanks [@kingston](https://github.com/kingston)! - Remove dotenv references and replace with native node --env-file option
+
+- [#619](https://github.com/halfdomelabs/baseplate/pull/619) [`687a47e`](https://github.com/halfdomelabs/baseplate/commit/687a47e5e39abc5138ba3fc2d0db9cfee6e4dbfe) Thanks [@kingston](https://github.com/kingston)! - Add comprehensive snapshot management CLI commands for granular control of project differences
+
+  This adds a complete suite of snapshot commands to manage persistent differences between generated and working codebases:
+
+  **New Commands:**
+  - `baseplate snapshot save <project-directory> <app>` - Save snapshot of current differences (with confirmation prompt)
+  - `baseplate snapshot add <project-directory> <app> <files...>` - Add specific files to snapshot tracking
+  - `baseplate snapshot add --deleted <project-directory> <app> <files...>` - Mark files as intentionally deleted
+  - `baseplate snapshot remove <project-directory> <app> <files...>` - Remove files from snapshot tracking
+  - `baseplate snapshot show <project-directory> <app>` - Display current snapshot contents
+
+  **Features:**
+  - Granular file-level snapshot management following established CLI patterns
+  - Integration with existing snapshot storage system (`.baseplate-snapshot/` directory)
+  - Automatic snapshot directory resolution with `--snapshot-dir` option
+  - Comprehensive error handling and user confirmation for destructive operations
+  - Support for tracking both modified and intentionally deleted files
+
+  These commands enable the generator development workflow described in the design doc, allowing developers to maintain persistent baselines of expected differences while iterating on generator templates.
+
+- Updated dependencies [[`687a47e`](https://github.com/halfdomelabs/baseplate/commit/687a47e5e39abc5138ba3fc2d0db9cfee6e4dbfe), [`85e6413`](https://github.com/halfdomelabs/baseplate/commit/85e6413f8e3ad0043daca3bb9fa3ca5a27843a65), [`aaf8634`](https://github.com/halfdomelabs/baseplate/commit/aaf8634abcf76d938072c7afc43e6e99a2519b13), [`687a47e`](https://github.com/halfdomelabs/baseplate/commit/687a47e5e39abc5138ba3fc2d0db9cfee6e4dbfe), [`d0b08b8`](https://github.com/halfdomelabs/baseplate/commit/d0b08b89a07b9aa845212ec90e2a6123fbecbbe5), [`687a47e`](https://github.com/halfdomelabs/baseplate/commit/687a47e5e39abc5138ba3fc2d0db9cfee6e4dbfe)]:
+  - @baseplate-dev/project-builder-server@0.3.0
+  - @baseplate-dev/project-builder-lib@0.3.0
+  - @baseplate-dev/project-builder-web@0.3.0
+  - @baseplate-dev/project-builder-common@0.3.0
+  - @baseplate-dev/utils@0.3.0
+
 ## 0.2.6
 
 ### Patch Changes

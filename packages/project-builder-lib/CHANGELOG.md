@@ -1,5 +1,55 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.3.0
+
+### Minor Changes
+
+- [#622](https://github.com/halfdomelabs/baseplate/pull/622) [`85e6413`](https://github.com/halfdomelabs/baseplate/commit/85e6413f8e3ad0043daca3bb9fa3ca5a27843a65) Thanks [@kingston](https://github.com/kingston)! - This major refactor splits the monolithic auth plugin into a managed plugin architecture:
+
+  ## Plugin Structure Changes
+  - **Base auth plugin** (`auth`): Manages common functionality, roles, and provider selection
+  - **Implementation plugins** (managed):
+    - `local-auth`: Email/password authentication (renamed from original `auth` plugin)
+    - `auth0`: Auth0 integration
+    - `placeholder-auth`: Development/testing placeholder
+
+  ## Key Changes
+
+  ### Plugin Metadata System
+  - **BREAKING**: Replace `manifest.json` with `plugin.json` for all plugins
+  - **BREAKING**: Rename `id` to `key` in plugin metadata for URL consistency
+  - Add `managedBy` field to plugin metadata for managed plugin relationships
+  - Implement package.json-based plugin discovery configuration
+
+  ### Managed Plugin Pattern
+  - Implementation plugins are hidden from main plugin list
+  - Base plugin automatically manages lifecycle of implementation plugins
+  - UI shows "Managed Plugins" section grouped by manager
+  - Configure buttons on managed plugins redirect to manager's config page
+
+  ### Configuration Schema
+  - Base auth plugin config includes `implementationPluginKey` to specify active provider
+  - Roles configuration moved to base plugin (shared across implementations)
+  - Provider-specific configs remain in implementation plugins
+
+  ### UI Improvements
+  - Add tabbed navigation (`AuthConfigTabs`) across all auth plugin interfaces
+  - Dynamic provider selection within base plugin configuration
+  - Consistent UX patterns between all auth implementation plugins
+
+  ### Migration Support
+  - Automatic migration of existing `plugin-auth` configs to new structure
+  - Rename existing `plugin-auth_auth` to `plugin-auth_local-auth`
+  - Auto-enable base auth plugin when implementation plugins are detected
+  - Preserve all existing configuration without code changes needed
+
+### Patch Changes
+
+- Updated dependencies [[`aaf8634`](https://github.com/halfdomelabs/baseplate/commit/aaf8634abcf76d938072c7afc43e6e99a2519b13), [`687a47e`](https://github.com/halfdomelabs/baseplate/commit/687a47e5e39abc5138ba3fc2d0db9cfee6e4dbfe)]:
+  - @baseplate-dev/ui-components@0.3.0
+  - @baseplate-dev/sync@0.3.0
+  - @baseplate-dev/utils@0.3.0
+
 ## 0.2.6
 
 ### Patch Changes

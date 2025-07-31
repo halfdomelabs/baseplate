@@ -1,5 +1,18 @@
 # @baseplate-dev/fastify-generators
 
+## 0.3.0
+
+### Patch Changes
+
+- [#626](https://github.com/halfdomelabs/baseplate/pull/626) [`8ec33fc`](https://github.com/halfdomelabs/baseplate/commit/8ec33fcdc8fea9cb20e79586b854bf075270ab53) Thanks [@kingston](https://github.com/kingston)! - Remove dotenv references and replace with native node --env-file option
+
+- [#625](https://github.com/halfdomelabs/baseplate/pull/625) [`96a3099`](https://github.com/halfdomelabs/baseplate/commit/96a3099ff9eba05fc3b3618b54407014cc555dc2) Thanks [@kingston](https://github.com/kingston)! - Add ability to set Prisma seed scripts and add seed script for local auth users
+
+- Updated dependencies [[`687a47e`](https://github.com/halfdomelabs/baseplate/commit/687a47e5e39abc5138ba3fc2d0db9cfee6e4dbfe), [`8ec33fc`](https://github.com/halfdomelabs/baseplate/commit/8ec33fcdc8fea9cb20e79586b854bf075270ab53), [`fbde70f`](https://github.com/halfdomelabs/baseplate/commit/fbde70ffbcae025318480e9607924978847fba2b)]:
+  - @baseplate-dev/sync@0.3.0
+  - @baseplate-dev/core-generators@0.3.0
+  - @baseplate-dev/utils@0.3.0
+
 ## 0.2.6
 
 ### Patch Changes

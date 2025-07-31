@@ -1,5 +1,21 @@
 # @baseplate-dev/core-generators
 
+## 0.3.0
+
+### Patch Changes
+
+- [#626](https://github.com/halfdomelabs/baseplate/pull/626) [`8ec33fc`](https://github.com/halfdomelabs/baseplate/commit/8ec33fcdc8fea9cb20e79586b854bf075270ab53) Thanks [@kingston](https://github.com/kingston)! - Remove dotenv references and replace with native node --env-file option
+
+- [#621](https://github.com/halfdomelabs/baseplate/pull/621) [`fbde70f`](https://github.com/halfdomelabs/baseplate/commit/fbde70ffbcae025318480e9607924978847fba2b) Thanks [@kingston](https://github.com/kingston)! - Update package versions to match latest dependencies from main repo
+  - Update ESLint and related plugins to latest versions
+  - Update TypeScript ESLint to 8.38.0
+  - Update Prettier plugins to latest versions
+  - Update Tailwind CSS Prettier plugin to 0.6.14
+
+- Updated dependencies [[`687a47e`](https://github.com/halfdomelabs/baseplate/commit/687a47e5e39abc5138ba3fc2d0db9cfee6e4dbfe)]:
+  - @baseplate-dev/sync@0.3.0
+  - @baseplate-dev/utils@0.3.0
+
 ## 0.2.6
 
 ### Patch Changes

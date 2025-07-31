@@ -1,5 +1,26 @@
 # @baseplate-dev/react-generators
 
+## 0.3.0
+
+### Patch Changes
+
+- [#623](https://github.com/halfdomelabs/baseplate/pull/623) [`82cee71`](https://github.com/halfdomelabs/baseplate/commit/82cee7183ef384e1777e7a563656441ff108e2b3) Thanks [@kingston](https://github.com/kingston)! - Remove @headlessui/react package
+
+- [#626](https://github.com/halfdomelabs/baseplate/pull/626) [`8ec33fc`](https://github.com/halfdomelabs/baseplate/commit/8ec33fcdc8fea9cb20e79586b854bf075270ab53) Thanks [@kingston](https://github.com/kingston)! - Remove dotenv references and replace with native node --env-file option
+
+- [#624](https://github.com/halfdomelabs/baseplate/pull/624) [`d0b08b8`](https://github.com/halfdomelabs/baseplate/commit/d0b08b89a07b9aa845212ec90e2a6123fbecbbe5) Thanks [@kingston](https://github.com/kingston)! - Upgrade Tanstack Router to 1.130.8 and revert from="/" workaround for Link bug
+
+- [#621](https://github.com/halfdomelabs/baseplate/pull/621) [`fbde70f`](https://github.com/halfdomelabs/baseplate/commit/fbde70ffbcae025318480e9607924978847fba2b) Thanks [@kingston](https://github.com/kingston)! - Update package versions to match latest dependencies from main repo
+  - Update ESLint and related plugins to latest versions
+  - Update TypeScript ESLint to 8.38.0
+  - Update Prettier plugins to latest versions
+  - Update Tailwind CSS Prettier plugin to 0.6.14
+
+- Updated dependencies [[`687a47e`](https://github.com/halfdomelabs/baseplate/commit/687a47e5e39abc5138ba3fc2d0db9cfee6e4dbfe), [`8ec33fc`](https://github.com/halfdomelabs/baseplate/commit/8ec33fcdc8fea9cb20e79586b854bf075270ab53), [`fbde70f`](https://github.com/halfdomelabs/baseplate/commit/fbde70ffbcae025318480e9607924978847fba2b)]:
+  - @baseplate-dev/sync@0.3.0
+  - @baseplate-dev/core-generators@0.3.0
+  - @baseplate-dev/utils@0.3.0
+
 ## 0.2.6
 
 ### Patch Changes
