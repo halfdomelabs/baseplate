@@ -59,6 +59,14 @@ const fastifyConfigSchema = createFieldMapSchemaBuilder((t) => ({
    * Flags to pass to the node command when running
    */
   nodeFlags: t.map<string, FastifyNodeFlag>(),
+  /**
+   * Whether the dev command should run dev:* scripts in parallel. For example,
+   * if you have a dev:workers script, enable this flag so that it will be run
+   * when the user runs pnpm dev.
+   *
+   * Otherwise, the dev command will only run the server script.
+   */
+  enableParallelDevCommand: t.scalar<boolean>(),
 }));
 
 export type FastifyProvider = InferFieldMapSchemaFromBuilder<
@@ -72,6 +80,11 @@ export interface FastifyOutputProvider {
   getNodeFlagsDev(useCase?: FastifyNodeFlagUseCase): string[];
   getNodeFlagsProd(useCase?: FastifyNodeFlagUseCase): string[];
   getDevOutputFormatter(): string | undefined;
+  getNodeCommand(
+    script: string,
+    targetEnvironment: 'dev' | 'prod',
+    options?: { executable?: string },
+  ): string;
 }
 
 export const fastifyOutputProvider =
@@ -127,7 +140,8 @@ export const fastifyGenerator = createGenerator({
           },
           build() {
             // add scripts
-            const { devOutputFormatter, nodeFlags } = fastifyConfig.getValues();
+            const { devOutputFormatter, nodeFlags, enableParallelDevCommand } =
+              fastifyConfig.getValues();
 
             const USE_CASE_ORDER: Record<FastifyNodeFlagUseCase, number> = {
               'dev-env': 0,
@@ -140,32 +154,53 @@ export const fastifyGenerator = createGenerator({
               [([, flag]) => USE_CASE_ORDER[flag.useCase], ([name]) => name],
             ).map(([, flag]) => flag);
 
-            const outputFormatter = devOutputFormatter
-              ? `| ${devOutputFormatter}`
-              : '';
-            const devCommand = [
-              'tsx watch --clear-screen=false',
-              ...sortedNodeFlags
-                .filter((f) => f.targetEnvironment === 'dev')
-                .map((f) => f.flag),
-              'src/index.ts',
-              outputFormatter,
-            ]
-              .filter(Boolean)
-              .join(' ');
-            const startCommand = [
-              'node',
-              ...sortedNodeFlags
-                .filter((f) => f.targetEnvironment === 'prod')
-                .map((f) => f.flag),
-              'dist/index.js',
-            ].join(' ');
+            function getNodeCommand(
+              script: string,
+              targetEnvironment: 'dev' | 'prod',
+              {
+                executable: executableOverride,
+              }: {
+                executable?: string;
+              } = {},
+            ): string {
+              const executable =
+                executableOverride ??
+                (targetEnvironment === 'prod'
+                  ? 'node'
+                  : 'tsx watch --clear-screen=false');
+              const outputFormatter =
+                devOutputFormatter && targetEnvironment === 'dev'
+                  ? `| ${devOutputFormatter}`
+                  : '';
+
+              return [
+                executable,
+                ...sortedNodeFlags
+                  .filter((f) => f.targetEnvironment === targetEnvironment)
+                  .map((f) => f.flag),
+                script,
+                outputFormatter,
+              ]
+                .filter(Boolean)
+                .join(' ');
+            }
+            const devCommand = getNodeCommand('src/index.ts', 'dev');
+            const startCommand = getNodeCommand('dist/index.js', 'prod');
 
             node.scripts.mergeObj({
               build: 'tsc && tsc-alias',
               start: startCommand,
-              dev: devCommand,
             });
+
+            if (enableParallelDevCommand) {
+              node.scripts.set(
+                'dev',
+                'FORCE_COLOR=1 pnpm run --reporter-hide-prefix --parallel "/^dev:/"',
+              );
+              node.scripts.set('dev:server', devCommand);
+            } else {
+              node.scripts.set('dev', devCommand);
+            }
 
             return {
               fastifyOutput: {
@@ -187,6 +222,7 @@ export const fastifyGenerator = createGenerator({
                     )
                     .map((f) => f.flag),
                 getDevOutputFormatter: () => devOutputFormatter,
+                getNodeCommand,
               },
             };
           },

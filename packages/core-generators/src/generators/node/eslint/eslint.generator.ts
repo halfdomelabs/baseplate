@@ -104,7 +104,10 @@ export const eslintGenerator = createGenerator({
             ? {}
             : extractPackageVersions(CORE_PACKAGES, ['@vitest/eslint-plugin'])),
         });
-        node.scripts.set('lint', 'eslint .');
+        node.scripts.mergeObj({
+          lint: 'eslint .',
+          'lint:fix': 'eslint . --fix',
+        });
       },
     }),
     main: createGeneratorTask({
