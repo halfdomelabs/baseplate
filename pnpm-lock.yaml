@@ -1306,18 +1306,9 @@ importers:
       '@baseplate-dev/fastify-generators':
         specifier: workspace:*
         version: link:../../packages/fastify-generators
-      '@baseplate-dev/react-generators':
-        specifier: workspace:*
-        version: link:../../packages/react-generators
       '@baseplate-dev/ui-components':
         specifier: workspace:*
         version: link:../../packages/ui-components
-      '@baseplate-dev/utils':
-        specifier: workspace:*
-        version: link:../../packages/utils
-      '@hookform/lenses':
-        specifier: 0.7.1
-        version: 0.7.1(react-hook-form@7.60.0(react@19.1.0))(react@19.1.0)
       '@hookform/resolvers':
         specifier: 5.0.1
         version: 5.0.1(react-hook-form@7.60.0(react@19.1.0))
@@ -1333,9 +1324,6 @@ importers:
       react-hook-form:
         specifier: 7.60.0
         version: 7.60.0(react@19.1.0)
-      react-icons:
-        specifier: 5.5.0
-        version: 5.5.0(react@19.1.0)
       zod:
         specifier: 'catalog:'
         version: 3.24.1
