@@ -25,16 +25,10 @@
       "path": "../../packages/project-builder-lib/tsconfig.build.json"
     },
     {
-      "path": "../../packages/react-generators/tsconfig.build.json"
-    },
-    {
       "path": "../../packages/sync/tsconfig.build.json"
     },
     {
       "path": "../../packages/ui-components/tsconfig.build.json"
-    },
-    {
-      "path": "../../packages/utils/tsconfig.build.json"
     }
   ]
 }

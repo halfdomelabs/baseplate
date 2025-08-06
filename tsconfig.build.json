@@ -35,10 +35,10 @@
       "path": "./plugins/plugin-auth/tsconfig.build.json"
     },
     {
-      "path": "./plugins/plugin-storage/tsconfig.build.json"
+      "path": "./plugins/plugin-queue/tsconfig.build.json"
     },
     {
-      "path": "./plugins/plugin-queue/tsconfig.build.json"
+      "path": "./plugins/plugin-storage/tsconfig.build.json"
     }
   ],
   "compilerOptions": {}
