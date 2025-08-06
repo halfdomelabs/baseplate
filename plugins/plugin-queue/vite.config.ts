@@ -42,7 +42,6 @@ export default defineConfig(async (): Promise<UserConfig> => {
           '@baseplate-dev/project-builder-lib/web': {
             version: '*',
           },
-          '@baseplate-dev/utils': { version: '*' },
           '@baseplate-dev/ui-components': { version: '*' },
           '@tanstack/react-router': { version: '*' },
         },
