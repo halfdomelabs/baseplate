@@ -1,0 +1,30 @@
+{
+  "name": "queue/core/queues",
+  "templates": {
+    "queue-registry": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/constants/queues.constants.ts",
+      "projectExports": { "QUEUE_REGISTRY": {} },
+      "referencedGeneratorTemplates": ["queue-types"],
+      "sourceFile": "src/constants/queues.constants.ts",
+      "variables": { "TPL_QUEUE_LIST": {} }
+    },
+    "queue-types": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/types/queue.types.ts",
+      "projectExports": {
+        "EnqueueOptions": { "isTypeOnly": true },
+        "Queue": { "isTypeOnly": true },
+        "QueueDefinition": { "isTypeOnly": true },
+        "QueueJob": { "isTypeOnly": true },
+        "RepeatableConfig": { "isTypeOnly": true }
+      },
+      "sourceFile": "src/types/queue.types.ts",
+      "variables": {}
+    }
+  }
+}

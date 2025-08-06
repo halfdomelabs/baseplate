@@ -1,0 +1,9 @@
+{
+  "name": "pg-boss",
+  "displayName": "pg-boss",
+  "icon": "icon.svg",
+  "description": "PostgreSQL-based job queue implementation using pg-boss for reliable background processing.",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"],
+  "managedBy": "@baseplate-dev/plugin-queue:queue"
+}

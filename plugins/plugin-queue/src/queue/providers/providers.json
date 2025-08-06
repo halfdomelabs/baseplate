@@ -1,0 +1,12 @@
+{
+  "queue-service.provider.ts": {
+    "queueServiceImportsProvider": {
+      "type": "ts-imports",
+      "providerExport": "queueServiceImportsProvider",
+      "schemaExport": "queueServiceImportsSchema",
+      "projectExports": {
+        "createQueue": {}
+      }
+    }
+  }
+}

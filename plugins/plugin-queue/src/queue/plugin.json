@@ -1,0 +1,8 @@
+{
+  "name": "queue",
+  "displayName": "Queue",
+  "icon": "icon.svg",
+  "description": "Manages background job processing and task queues for your application. This is a base plugin that requires a queue implementation (pg-boss, BullMQ, etc.)",
+  "version": "0.1.0",
+  "moduleDirectories": ["core"]
+}

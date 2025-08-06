@@ -39,8 +39,8 @@ export const fastifyScriptsGenerator = createGenerator({
       },
       run({ node, fastifyOutput, paths }) {
         node.scripts.mergeObj({
-          'run:script': ['tsx', ...fastifyOutput.getNodeFlagsDev()].join(' '),
-          'dev:script': [
+          'script:run': ['tsx', ...fastifyOutput.getNodeFlagsDev()].join(' '),
+          'script:dev': [
             `tsx watch --respawn`,
             ...fastifyOutput.getNodeFlagsDev(),
           ].join(' '),
