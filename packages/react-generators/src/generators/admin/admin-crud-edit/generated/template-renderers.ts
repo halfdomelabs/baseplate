@@ -40,6 +40,16 @@ export interface AdminAdminCrudEditRenderers {
       >,
     ) => BuilderAction;
   };
+  route: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof ADMIN_ADMIN_CRUD_EDIT_TEMPLATES.route
+        >,
+        'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   schema: {
     render: (
       options: Omit<
@@ -98,6 +108,13 @@ const adminAdminCrudEditRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   reactErrorImports,
                 },
+                ...options,
+              }),
+          },
+          route: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: ADMIN_ADMIN_CRUD_EDIT_TEMPLATES.route,
                 ...options,
               }),
           },

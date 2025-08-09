@@ -34,6 +34,7 @@ export function createTemplateMetadataOptions(
     shouldGenerateMetadata: (context) => {
       // always write metadata for non-instance files
       if (!context.isInstance) return true;
+      if (compiledPatterns.length === 0) return true;
       return compiledPatterns.some((regex) =>
         regex.test(`${context.generatorName}:${context.fileId}`),
       );

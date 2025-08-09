@@ -82,6 +82,17 @@
         "TPL_UPDATE_MUTATION": {}
       }
     },
+    "route": {
+      "type": "ts",
+      "fileOptions": {
+        "generatorTemplatePath": "route.tsx",
+        "kind": "instance"
+      },
+      "importMapProviders": {},
+      "projectExports": {},
+      "sourceFile": "route.tsx",
+      "variables": { "TPL_CRUMB": {}, "TPL_ROUTE": {} }
+    },
     "schema": {
       "type": "ts",
       "fileOptions": {

@@ -66,6 +66,17 @@ const editPage = createTsTemplateFile({
   },
 });
 
+const route = createTsTemplateFile({
+  fileOptions: { generatorTemplatePath: 'route.tsx', kind: 'instance' },
+  importMapProviders: {},
+  name: 'route',
+  projectExports: {},
+  source: {
+    path: path.join(import.meta.dirname, '../templates/route.tsx'),
+  },
+  variables: { TPL_CRUMB: {}, TPL_ROUTE: {} },
+});
+
 const schema = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'schema.ts', kind: 'instance' },
   importMapProviders: {},
@@ -84,5 +95,6 @@ export const ADMIN_ADMIN_CRUD_EDIT_TEMPLATES = {
   createPage,
   editForm,
   editPage,
+  route,
   schema,
 };
