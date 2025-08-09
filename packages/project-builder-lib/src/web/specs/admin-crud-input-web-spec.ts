@@ -4,6 +4,7 @@ import type { UseFormReturn } from 'react-hook-form';
 import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
 import type {
   AdminCrudInputDefinition,
+  AdminCrudInputInput,
   ModelConfig,
 } from '#src/schema/index.js';
 
@@ -19,7 +20,7 @@ export interface AdminCrudInputWebFormProps {
 }
 
 export interface AdminCrudInputWebConfig<
-  T extends AdminCrudInputDefinition = AdminCrudInputDefinition,
+  T extends AdminCrudInputInput = AdminCrudInputInput,
 > {
   name: string;
   pluginKey: string | undefined;
@@ -38,7 +39,7 @@ export function createAdminCrudInputWebConfig<
  * Spec for registering input compilers
  */
 export interface AdminCrudInputWebSpec extends PluginSpecImplementation {
-  registerInputWebConfig: <T extends AdminCrudInputDefinition>(
+  registerInputWebConfig: <T extends AdminCrudInputInput>(
     input: AdminCrudInputWebConfig<T>,
   ) => void;
   getInputWebConfig: (

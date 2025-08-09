@@ -5,7 +5,7 @@ import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
 import { SelectFieldController } from '@baseplate-dev/ui-components';
 
 import type { FileTransformerDefinition } from '../transformers/schema/file-transformer.schema.js';
-import type { AdminCrudFileInputConfig } from './types.js';
+import type { AdminCrudFileInputInput } from './types.js';
 
 export function AdminCrudFileInputForm({
   formProps,
@@ -21,7 +21,7 @@ export function AdminCrudFileInputForm({
     }));
   const prefix = name as 'prefix';
   const controlTyped = formProps.control as Control<{
-    prefix: AdminCrudFileInputConfig;
+    prefix: AdminCrudFileInputInput;
   }>;
 
   return (

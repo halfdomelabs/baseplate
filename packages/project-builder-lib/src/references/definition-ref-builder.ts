@@ -394,8 +394,17 @@ export class DefinitionRefBuilder<TInput>
     // Resolve the name: if getNameResolver is provided, use it to build the name resolver; otherwise,
     // use the default name resolver.
     const getNameResolver =
-      entity.getNameResolver ?? ((value) => get(value, 'name') as string);
+      entity.getNameResolver ??
+      ((value) => get(value, 'name') as string | undefined);
     const nameResolver = getNameResolver(stripRefMarkers(this.data));
+
+    if (!nameResolver) {
+      throw new Error(
+        `No name resolver found for entity ${entity.type.name} at ${path.join(
+          '.',
+        )}`,
+      );
+    }
 
     // Base entity definition shared between regular entities and those with a name reference.
     const entityBase = {

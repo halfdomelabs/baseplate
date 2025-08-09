@@ -12,6 +12,7 @@ import {
 import { createBaseAdminSectionValidators } from './base.js';
 import { createAdminCrudInputSchema } from './crud-form/admin-crud-input.js';
 import { adminCrudEmbeddedFormEntityType } from './crud-form/types.js';
+import { adminCrudSectionColumnEntityType } from './types.js';
 
 // Table Columns
 export const createAdminCrudForeignDisplaySchema = definitionSchema((ctx) =>
@@ -61,11 +62,31 @@ export type AdminCrudDisplayConfig = def.InferOutput<
 >;
 
 export const createAdminCrudTableColumnSchema = definitionSchema((ctx) =>
-  z.object({
-    label: z.string().min(1),
-    display: createAdminCrudDisplaySchema(ctx),
-  }),
+  ctx.withEnt(
+    z.object({
+      id: z
+        .string()
+        .default(() => adminCrudSectionColumnEntityType.generateNewId()),
+      label: z.string().min(1),
+      display: createAdminCrudDisplaySchema(ctx),
+    }),
+    {
+      type: adminCrudSectionColumnEntityType,
+      parentPath: {
+        context: 'admin-section',
+      },
+      getNameResolver: (value) => value.id ?? '',
+    },
+  ),
 );
+
+export type AdminCrudTableColumnDefinition = def.InferOutput<
+  typeof createAdminCrudTableColumnSchema
+>;
+
+export type AdminCrudTableColumnDefinitionInput = def.InferInput<
+  typeof createAdminCrudTableColumnSchema
+>;
 
 // Embedded Crud
 export const createAdminCrudEmbeddedObjectSchema = definitionSchema((ctx) =>
