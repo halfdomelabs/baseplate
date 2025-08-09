@@ -554,22 +554,6 @@
       "sourceFile": "components/ui/sidebar.tsx",
       "variables": {}
     },
-    "sidebar-layout": {
-      "type": "ts",
-      "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
-      "group": "components",
-      "importMapProviders": {},
-      "pathRootRelativePath": "{components-root}/ui/sidebar-layout.tsx",
-      "projectExports": {
-        "SidebarLayout": {},
-        "SidebarLayoutContent": {},
-        "SidebarLayoutSidebar": {}
-      },
-      "referencedGeneratorTemplates": ["cn"],
-      "sourceFile": "components/ui/sidebar-layout.tsx",
-      "variables": {}
-    },
     "skeleton": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

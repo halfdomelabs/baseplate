@@ -38,7 +38,6 @@ export interface CoreReactComponentsPaths {
   separator: string;
   sheet: string;
   sidebar: string;
-  sidebarLayout: string;
   skeleton: string;
   stylesButton: string;
   stylesInput: string;
@@ -107,7 +106,6 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           separator: `${componentsRoot}/ui/separator.tsx`,
           sheet: `${componentsRoot}/ui/sheet.tsx`,
           sidebar: `${componentsRoot}/ui/sidebar.tsx`,
-          sidebarLayout: `${componentsRoot}/ui/sidebar-layout.tsx`,
           skeleton: `${componentsRoot}/ui/skeleton.tsx`,
           stylesButton: `${srcRoot}/styles/button.ts`,
           stylesInput: `${srcRoot}/styles/input.ts`,

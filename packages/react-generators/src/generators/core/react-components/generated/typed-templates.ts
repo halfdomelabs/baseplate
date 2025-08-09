@@ -621,26 +621,6 @@ const sidebar = createTsTemplateFile({
   variables: {},
 });
 
-const sidebarLayout = createTsTemplateFile({
-  fileOptions: { kind: 'singleton' },
-  group: 'components',
-  importMapProviders: {},
-  name: 'sidebar-layout',
-  projectExports: {
-    SidebarLayout: {},
-    SidebarLayoutContent: {},
-    SidebarLayoutSidebar: {},
-  },
-  referencedGeneratorTemplates: { cn: {} },
-  source: {
-    path: path.join(
-      import.meta.dirname,
-      '../templates/components/ui/sidebar-layout.tsx',
-    ),
-  },
-  variables: {},
-});
-
 const skeleton = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -820,7 +800,6 @@ export const componentsGroup = {
   separator,
   sheet,
   sidebar,
-  sidebarLayout,
   skeleton,
   switchComponent,
   switchField,
