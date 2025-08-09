@@ -17,6 +17,30 @@ const alert = createTsTemplateFile({
   variables: {},
 });
 
+const breadcrumb = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'breadcrumb',
+  projectExports: {
+    Breadcrumb: {},
+    BreadcrumbEllipsis: {},
+    BreadcrumbItem: {},
+    BreadcrumbLink: {},
+    BreadcrumbList: {},
+    BreadcrumbPage: {},
+    BreadcrumbSeparator: {},
+  },
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/breadcrumb.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const button = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -268,6 +292,38 @@ const dialog = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/components/ui/dialog.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const dropdown = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'dropdown',
+  projectExports: {
+    DropdownMenu: {},
+    DropdownMenuCheckboxItem: {},
+    DropdownMenuContent: {},
+    DropdownMenuGroup: {},
+    DropdownMenuItem: {},
+    DropdownMenuLabel: {},
+    DropdownMenuPortal: {},
+    DropdownMenuRadioGroup: {},
+    DropdownMenuRadioItem: {},
+    DropdownMenuSeparator: {},
+    DropdownMenuShortcut: {},
+    DropdownMenuSub: {},
+    DropdownMenuSubContent: {},
+    DropdownMenuSubTrigger: {},
+    DropdownMenuTrigger: {},
+  },
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/dropdown.tsx',
     ),
   },
   variables: {},
@@ -771,6 +827,7 @@ const tooltip = createTsTemplateFile({
 
 export const componentsGroup = {
   alert,
+  breadcrumb,
   button,
   calendar,
   card,
@@ -783,6 +840,7 @@ export const componentsGroup = {
   datePickerField,
   dateTimePickerField,
   dialog,
+  dropdown,
   emptyDisplay,
   errorableLoader,
   errorDisplay,

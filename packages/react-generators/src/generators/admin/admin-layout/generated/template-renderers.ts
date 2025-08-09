@@ -1,4 +1,7 @@
-import type { RenderTsTemplateFileActionInput } from '@baseplate-dev/core-generators';
+import type {
+  RenderTsTemplateFileActionInput,
+  RenderTsTemplateGroupActionInput,
+} from '@baseplate-dev/core-generators';
 import type { BuilderAction } from '@baseplate-dev/sync';
 
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
@@ -12,16 +15,6 @@ import { ADMIN_ADMIN_LAYOUT_PATHS } from './template-paths.js';
 import { ADMIN_ADMIN_LAYOUT_TEMPLATES } from './typed-templates.js';
 
 export interface AdminAdminLayoutRenderers {
-  adminLayout: {
-    render: (
-      options: Omit<
-        RenderTsTemplateFileActionInput<
-          typeof ADMIN_ADMIN_LAYOUT_TEMPLATES.adminLayout
-        >,
-        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
-      >,
-    ) => BuilderAction;
-  };
   adminRoute: {
     render: (
       options: Omit<
@@ -29,6 +22,16 @@ export interface AdminAdminLayoutRenderers {
           typeof ADMIN_ADMIN_LAYOUT_TEMPLATES.adminRoute
         >,
         'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  mainGroup: {
+    render: (
+      options: Omit<
+        RenderTsTemplateGroupActionInput<
+          typeof ADMIN_ADMIN_LAYOUT_TEMPLATES.mainGroup
+        >,
+        'importMapProviders' | 'group' | 'paths' | 'generatorPaths'
       >,
     ) => BuilderAction;
   };
@@ -57,18 +60,6 @@ const adminAdminLayoutRenderersTask = createGeneratorTask({
     return {
       providers: {
         adminAdminLayoutRenderers: {
-          adminLayout: {
-            render: (options) =>
-              typescriptFile.renderTemplateFile({
-                template: ADMIN_ADMIN_LAYOUT_TEMPLATES.adminLayout,
-                destination: paths.adminLayout,
-                importMapProviders: {
-                  authHooksImports,
-                  reactComponentsImports,
-                },
-                ...options,
-              }),
-          },
           adminRoute: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
@@ -77,6 +68,19 @@ const adminAdminLayoutRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   authErrorsImports,
                   authHooksImports,
+                },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          mainGroup: {
+            render: (options) =>
+              typescriptFile.renderTemplateGroup({
+                group: ADMIN_ADMIN_LAYOUT_TEMPLATES.mainGroup,
+                paths,
+                importMapProviders: {
+                  authHooksImports,
+                  reactComponentsImports,
                 },
                 generatorPaths: paths,
                 ...options,

@@ -5,6 +5,7 @@ import { reactPathsProvider } from '#src/providers/react-paths.js';
 
 export interface CoreReactComponentsPaths {
   alert: string;
+  breadcrumb: string;
   button: string;
   calendar: string;
   card: string;
@@ -18,6 +19,7 @@ export interface CoreReactComponentsPaths {
   datePickerField: string;
   dateTimePickerField: string;
   dialog: string;
+  dropdown: string;
   emptyDisplay: string;
   errorableLoader: string;
   errorDisplay: string;
@@ -73,6 +75,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
       providers: {
         coreReactComponentsPaths: {
           alert: `${componentsRoot}/ui/alert.tsx`,
+          breadcrumb: `${componentsRoot}/ui/breadcrumb.tsx`,
           button: `${componentsRoot}/ui/button.tsx`,
           calendar: `${componentsRoot}/ui/calendar.tsx`,
           card: `${componentsRoot}/ui/card.tsx`,
@@ -86,6 +89,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           datePickerField: `${componentsRoot}/ui/date-picker-field.tsx`,
           dateTimePickerField: `${componentsRoot}/ui/date-time-picker-field.tsx`,
           dialog: `${componentsRoot}/ui/dialog.tsx`,
+          dropdown: `${componentsRoot}/ui/dropdown.tsx`,
           emptyDisplay: `${componentsRoot}/ui/empty-display.tsx`,
           errorableLoader: `${componentsRoot}/ui/errorable-loader.tsx`,
           errorDisplay: `${componentsRoot}/ui/error-display.tsx`,

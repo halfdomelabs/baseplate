@@ -17,6 +17,25 @@
       "sourceFile": "components/ui/alert.tsx",
       "variables": {}
     },
+    "breadcrumb": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/breadcrumb.tsx",
+      "projectExports": {
+        "Breadcrumb": {},
+        "BreadcrumbEllipsis": {},
+        "BreadcrumbItem": {},
+        "BreadcrumbLink": {},
+        "BreadcrumbList": {},
+        "BreadcrumbPage": {},
+        "BreadcrumbSeparator": {}
+      },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/breadcrumb.tsx",
+      "variables": {}
+    },
     "button": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -237,6 +256,33 @@
       },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/dialog.tsx",
+      "variables": {}
+    },
+    "dropdown": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/dropdown.tsx",
+      "projectExports": {
+        "DropdownMenu": {},
+        "DropdownMenuCheckboxItem": {},
+        "DropdownMenuContent": {},
+        "DropdownMenuGroup": {},
+        "DropdownMenuItem": {},
+        "DropdownMenuLabel": {},
+        "DropdownMenuPortal": {},
+        "DropdownMenuRadioGroup": {},
+        "DropdownMenuRadioItem": {},
+        "DropdownMenuSeparator": {},
+        "DropdownMenuShortcut": {},
+        "DropdownMenuSub": {},
+        "DropdownMenuSubContent": {},
+        "DropdownMenuSubTrigger": {},
+        "DropdownMenuTrigger": {}
+      },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/dropdown.tsx",
       "variables": {}
     },
     "empty-display": {

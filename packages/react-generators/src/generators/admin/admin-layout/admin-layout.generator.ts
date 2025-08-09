@@ -94,9 +94,11 @@ export const adminLayoutGenerator = createGenerator({
             );
 
             await builder.apply(
-              renderers.adminLayout.render({
+              renderers.mainGroup.render({
                 variables: {
-                  TPL_SIDEBAR_LINKS: TsCodeUtils.mergeFragments(navEntries),
+                  appSidebar: {
+                    TPL_SIDEBAR_LINKS: TsCodeUtils.mergeFragments(navEntries),
+                  },
                 },
               }),
             );
