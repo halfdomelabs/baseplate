@@ -530,6 +530,97 @@ const selectField = createTsTemplateFile({
   variables: {},
 });
 
+const separator = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'separator',
+  projectExports: { Separator: {} },
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/separator.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const sheet = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'sheet',
+  projectExports: {
+    Sheet: {},
+    SheetClose: {},
+    SheetContent: {},
+    SheetDescription: {},
+    SheetFooter: {},
+    SheetHeader: {},
+    SheetTitle: {},
+    SheetTrigger: {},
+  },
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/sheet.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const sidebar = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'sidebar',
+  projectExports: {
+    Sidebar: {},
+    SidebarContent: {},
+    SidebarFooter: {},
+    SidebarGroup: {},
+    SidebarGroupAction: {},
+    SidebarGroupContent: {},
+    SidebarGroupLabel: {},
+    SidebarHeader: {},
+    SidebarInput: {},
+    SidebarInset: {},
+    SidebarMenu: {},
+    SidebarMenuAction: {},
+    SidebarMenuBadge: {},
+    SidebarMenuButton: {},
+    SidebarMenuItem: {},
+    SidebarMenuSkeleton: {},
+    SidebarMenuSub: {},
+    SidebarMenuSubButton: {},
+    SidebarMenuSubItem: {},
+    SidebarProvider: {},
+    SidebarRail: {},
+    SidebarSeparator: {},
+    SidebarTrigger: {},
+    useSidebar: {},
+  },
+  referencedGeneratorTemplates: {
+    button: {},
+    cn: {},
+    input: {},
+    separator: {},
+    sheet: {},
+    skeleton: {},
+    tooltip: {},
+    useMobile: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/sidebar.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const sidebarLayout = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -545,6 +636,22 @@ const sidebarLayout = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/components/ui/sidebar-layout.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const skeleton = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'skeleton',
+  projectExports: { Skeleton: {} },
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/skeleton.tsx',
     ),
   },
   variables: {},
@@ -661,6 +768,27 @@ const toaster = createTsTemplateFile({
   variables: {},
 });
 
+const tooltip = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'tooltip',
+  projectExports: {
+    Tooltip: {},
+    TooltipContent: {},
+    TooltipProvider: {},
+    TooltipTrigger: {},
+  },
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/tooltip.tsx',
+    ),
+  },
+  variables: {},
+});
+
 export const componentsGroup = {
   alert,
   button,
@@ -689,13 +817,18 @@ export const componentsGroup = {
   scrollArea,
   select,
   selectField,
+  separator,
+  sheet,
+  sidebar,
   sidebarLayout,
+  skeleton,
   switchComponent,
   switchField,
   table,
   textarea,
   textareaField,
   toaster,
+  tooltip,
 };
 
 const hooksUseControlledState = createTsTemplateFile({
@@ -749,10 +882,26 @@ const useConfirmDialog = createTsTemplateFile({
   variables: {},
 });
 
+const useMobile = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'hooks',
+  importMapProviders: {},
+  name: 'use-mobile',
+  projectExports: { useIsMobile: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/src/hooks/use-mobile.ts',
+    ),
+  },
+  variables: {},
+});
+
 export const hooksGroup = {
   hooksUseControlledState,
   hooksUseControllerMerged,
   useConfirmDialog,
+  useMobile,
 };
 
 const stylesButton = createTsTemplateFile({

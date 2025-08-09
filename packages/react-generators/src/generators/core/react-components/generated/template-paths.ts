@@ -35,7 +35,11 @@ export interface CoreReactComponentsPaths {
   scrollArea: string;
   select: string;
   selectField: string;
+  separator: string;
+  sheet: string;
+  sidebar: string;
   sidebarLayout: string;
+  skeleton: string;
   stylesButton: string;
   stylesInput: string;
   stylesSelect: string;
@@ -45,9 +49,11 @@ export interface CoreReactComponentsPaths {
   textarea: string;
   textareaField: string;
   toaster: string;
+  tooltip: string;
   typesForm: string;
   typesIcon: string;
   useConfirmDialog: string;
+  useMobile: string;
 }
 
 const coreReactComponentsPaths = createProviderType<CoreReactComponentsPaths>(
@@ -98,7 +104,11 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           scrollArea: `${componentsRoot}/ui/scroll-area.tsx`,
           select: `${componentsRoot}/ui/select.tsx`,
           selectField: `${componentsRoot}/ui/select-field.tsx`,
+          separator: `${componentsRoot}/ui/separator.tsx`,
+          sheet: `${componentsRoot}/ui/sheet.tsx`,
+          sidebar: `${componentsRoot}/ui/sidebar.tsx`,
           sidebarLayout: `${componentsRoot}/ui/sidebar-layout.tsx`,
+          skeleton: `${componentsRoot}/ui/skeleton.tsx`,
           stylesButton: `${srcRoot}/styles/button.ts`,
           stylesInput: `${srcRoot}/styles/input.ts`,
           stylesSelect: `${srcRoot}/styles/select.ts`,
@@ -108,9 +118,11 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           textarea: `${componentsRoot}/ui/textarea.tsx`,
           textareaField: `${componentsRoot}/ui/textarea-field.tsx`,
           toaster: `${componentsRoot}/ui/toaster.tsx`,
+          tooltip: `${componentsRoot}/ui/tooltip.tsx`,
           typesForm: `${srcRoot}/types/form.ts`,
           typesIcon: `${srcRoot}/types/icon.ts`,
           useConfirmDialog: `${srcRoot}/hooks/use-confirm-dialog.ts`,
+          useMobile: `${srcRoot}/hooks/use-mobile.ts`,
         },
       },
     };
