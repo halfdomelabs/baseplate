@@ -31,7 +31,7 @@ const adminLayout = createTsTemplateFile({
     reactComponentsImports: reactComponentsImportsProvider,
   },
   name: 'admin-layout',
-  referencedGeneratorTemplates: { appSidebar: {} },
+  referencedGeneratorTemplates: { appBreadcrumbs: {}, appSidebar: {} },
   source: {
     path: path.join(
       import.meta.dirname,

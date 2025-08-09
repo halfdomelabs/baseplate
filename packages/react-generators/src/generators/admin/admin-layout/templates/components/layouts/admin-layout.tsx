@@ -2,8 +2,13 @@
 
 import type { ReactElement } from 'react';
 
+import { AppBreadcrumbs } from '$appBreadcrumbs';
 import { AppSidebar } from '$appSidebar';
-import { SidebarProvider, SidebarTrigger } from '%reactComponentsImports';
+import {
+  Separator,
+  SidebarProvider,
+  SidebarTrigger,
+} from '%reactComponentsImports';
 import { Outlet } from '@tanstack/react-router';
 
 interface Props {
@@ -15,9 +20,13 @@ export function AdminLayout({ className }: Props): ReactElement {
     <SidebarProvider className={className}>
       <AppSidebar />
       <div className="flex h-full flex-col">
-        <header className="flex h-16 items-center px-6">
+        <header className="flex h-16 items-center gap-2 px-6">
           <SidebarTrigger />
-          <h1 className="ml-4 text-lg font-semibold">Admin Dashboard</h1>
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+          <AppBreadcrumbs />
         </header>
         <main className="flex-1 p-4">
           <Outlet />

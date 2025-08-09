@@ -25,5 +25,8 @@ export const Route = createFileRoute(TPL_ROUTE_PATH)({
       throw new InvalidRoleError('You are not authorized to access this page.');
     }
   },
+  loader: () => ({
+    crumb: 'Dashboard',
+  }),
   component: AdminLayout,
 });

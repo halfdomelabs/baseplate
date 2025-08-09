@@ -13,7 +13,7 @@
         }
       },
       "pathRootRelativePath": "{components-root}/layouts/admin-layout.tsx",
-      "referencedGeneratorTemplates": ["app-sidebar"],
+      "referencedGeneratorTemplates": ["app-breadcrumbs", "app-sidebar"],
       "sourceFile": "components/layouts/admin-layout.tsx",
       "variables": {}
     },

@@ -35,7 +35,9 @@ export function AppBreadcrumbs(): React.JSX.Element {
           <Fragment key={crumb.id}>
             {index !== 0 && <BreadcrumbSeparator />}
             {index === crumbs.length - 1 ? (
-              <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+              <BreadcrumbPage className="font-medium">
+                {crumb.label}
+              </BreadcrumbPage>
             ) : (
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
