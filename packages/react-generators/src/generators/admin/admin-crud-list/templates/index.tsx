@@ -29,7 +29,7 @@ function TPL_PAGE_NAME(): ReactElement {
   };
 
   return (
-    <div className="flex max-w-6xl flex-col space-y-4">
+    <div className="flex max-w-4xl flex-col space-y-4">
       <div className="flex items-center justify-between gap-4">
         <h1>
           <TPL_TITLE />
