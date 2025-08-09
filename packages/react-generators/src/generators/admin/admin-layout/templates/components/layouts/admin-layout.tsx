@@ -19,7 +19,7 @@ export function AdminLayout({ className }: Props): ReactElement {
   return (
     <SidebarProvider className={className}>
       <AppSidebar />
-      <div className="flex h-full flex-col">
+      <div className="flex h-full w-full flex-col">
         <header className="flex h-16 items-center gap-2 px-6">
           <SidebarTrigger />
           <Separator

@@ -141,7 +141,7 @@ export const adminCrudListGenerator = createGenerator({
                   TPL_DELETE_MUTATION: deleteInfo.documentExpression,
                   TPL_ROW_FRAGMENT_NAME:
                     adminCrudQueries.getRowFragmentExpression(),
-                  TPL_PLURAL_MODEL: titleizeCamel(pluralize(modelName)),
+                  TPL_TITLE: `${titleizeCamel(modelName)} Management`,
                   TPL_TABLE_COMPONENT: tsCodeFragment(
                     `<${tableComponentName} deleteItem={handleDeleteItem} items={data.${listInfo.fieldName}} ${tableLoaderExtraProps} />`,
                     TsCodeUtils.importBuilder([tableComponentName]).from(
@@ -156,13 +156,17 @@ export const adminCrudListGenerator = createGenerator({
                         `
             <div className="block">
             <Link to="${routePrefix}/new">
-              <Button>Create ${titleizeCamel(modelName)}</Button>
+              <Button>
+                <MdAdd />
+                Create ${titleizeCamel(modelName)}
+              </Button>
             </Link>
           </div>`,
                         [
                           tsImportBuilder(['Link']).from(
                             '@tanstack/react-router',
                           ),
+                          tsImportBuilder(['MdAdd']).from('react-icons/md'),
                           reactComponentsImports.Button.declaration(),
                           reactComponentsImports.ErrorableLoader.declaration(),
                         ],
