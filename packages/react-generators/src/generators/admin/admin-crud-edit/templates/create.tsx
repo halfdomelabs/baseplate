@@ -9,6 +9,9 @@ import { toast } from 'sonner';
 
 export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: TPL_COMPONENT_NAME,
+  loader: () => ({
+    crumb: 'New',
+  }),
 });
 
 function TPL_COMPONENT_NAME(): ReactElement {
