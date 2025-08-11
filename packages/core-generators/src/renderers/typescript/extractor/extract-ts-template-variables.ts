@@ -2,6 +2,8 @@ import { sortObjectKeys } from '@baseplate-dev/utils';
 
 import type { TsTemplateFileVariable } from '../templates/types.js';
 
+import { applySimpleReplacements } from './apply-simple-replacements.js';
+import { parseInlineReplacements } from './parse-inline-replacements.js';
 import { preprocessCodeForExtractionHack } from './preprocess-code-for-extraction-hack.js';
 
 const VARIABLE_REGEX =
@@ -21,14 +23,15 @@ interface ExtractedTemplateVariables {
 }
 
 /**
- * Extracts template variables from a Typescript template file and returns both the processed content
+ * Extracts template variables from a TypeScript template file and returns both the processed content
  * and the discovered variables.
- * - Replaces TPL variable blocks with placeholders `TPL_VAR`.
- * - Removes HOISTED blocks.
- * - Discovers all template variables used in the content.
+ * - Phase 1: Parses and applies inline replacement comments like TPL_VAR=value
+ * - Phase 2: Replaces TPL variable blocks with placeholders `TPL_VAR`
+ * - Removes HOISTED blocks
+ * - Discovers all template variables used in the content
  *
- * @param content - The raw file content.
- * @returns An object containing the processed content and discovered variables.
+ * @param content - The raw file content
+ * @returns An object containing the processed content and discovered variables
  */
 export function extractTsTemplateVariables(
   content: string,
@@ -36,10 +39,26 @@ export function extractTsTemplateVariables(
   let processedContent = content;
   const discoveredVariables: Record<string, TsTemplateFileVariable> = {};
 
+  // Phase 1: Parse and apply inline replacement comments
+  const { content: afterInlineReplacements, replacements } =
+    parseInlineReplacements(content);
+
+  processedContent = afterInlineReplacements;
+
+  // Apply simple replacements if any were found
+  if (Object.keys(replacements).length > 0) {
+    processedContent = applySimpleReplacements(processedContent, replacements);
+
+    // Track variables introduced by inline replacements
+    for (const variable of Object.values(replacements)) {
+      discoveredVariables[variable] = {};
+    }
+  }
+
   // Preprocess the content to handle the extraction hack
   processedContent = preprocessCodeForExtractionHack(processedContent);
 
-  // Extract and process TPL variable blocks
+  // Phase 2: Extract and process delimiter-based TPL variable blocks
   const processVariableBlock = (
     varName: string,
     formatName: (name: string) => string,
