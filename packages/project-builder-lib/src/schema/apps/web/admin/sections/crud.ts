@@ -161,6 +161,19 @@ export const createAdminCrudSectionSchema = definitionSchema((ctx) =>
           type: modelEntityType,
           onDelete: 'RESTRICT',
         }),
+        /* The field that will be used to display the name of the entity in the form */
+        nameFieldRef: ctx.withDefault(
+          ctx
+            .withRef({
+              type: modelScalarFieldEntityType,
+              onDelete: 'RESTRICT',
+              parentPath: {
+                context: 'modelRef',
+              },
+            })
+            .nullable(),
+          null,
+        ),
         disableCreate: ctx.withDefault(z.boolean(), false),
         table: z.object({
           columns: z.array(createAdminCrudTableColumnSchema(ctx)),

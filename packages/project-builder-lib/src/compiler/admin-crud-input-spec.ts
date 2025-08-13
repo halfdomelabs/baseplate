@@ -2,15 +2,12 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
-import type {
-  AdminCrudInputDefinition,
-  ModelConfig,
-} from '#src/schema/index.js';
+import type { AdminCrudInputInput, ModelConfig } from '#src/schema/index.js';
 
 import { createPluginSpec } from '#src/plugins/spec/types.js';
 
 export interface AdminCrudInputCompiler<
-  T extends AdminCrudInputDefinition = AdminCrudInputDefinition,
+  T extends AdminCrudInputInput = AdminCrudInputInput,
 > {
   name: string;
   compileInput: (
