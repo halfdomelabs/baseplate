@@ -29,38 +29,50 @@ export function applySimpleReplacements(
       );
     }
 
-    // Use word boundary matching for identifiers to prevent incorrect replacements
-    // For example, "User" shouldn't match in "UserProfile" or "CurrentUser"
-    const escapedValue = escapeRegExp(value);
-
-    // Different replacement strategies based on the type of value
-    if (isStringLiteral(value)) {
-      // For string literals (like paths), match them within quotes
-      // This handles both single and double quotes, and template literals
-      const patterns = [
-        new RegExp(`(?<!^\\s*import .+)'${escapedValue}'`, 'gm'),
-        new RegExp(`(?<!^\\s*import .+)"${escapedValue}"`, 'gm'),
-        new RegExp(`(?<!^\\s*import .+)\`${escapedValue}\``, 'gm'),
-      ];
-
-      for (const pattern of patterns) {
-        result = result.replace(pattern, (match) => {
-          const quote = match[0];
-          return `${quote}${variable}${quote}`;
-        });
-      }
-    } else {
-      // For other values, do exact matching with word boundaries where possible
-      // We want to skip import statements to ensure that our unused import logic remains correct
-      const regex = new RegExp(
-        `(?<!^\\s*import .+)\\b${escapedValue}\\b`,
-        'gm',
-      );
-      result = result.replace(regex, variable);
-    }
+    // Process all lines with the current replacement
+    const lines = result.split('\n');
+    const processedLines = lines.map((line) =>
+      processLine(line, value, variable),
+    );
+    result = processedLines.join('\n');
   }
 
   return result;
+}
+
+/**
+ * Processes a single line with the given replacement value and variable
+ */
+function processLine(line: string, value: string, variable: string): string {
+  // Skip import and export lines to preserve unused import detection
+  if (/^\s*(import|export\s+.*from)\s+/.test(line)) {
+    return line;
+  }
+
+  const escapedValue = escapeRegExp(value);
+
+  if (isStringLiteral(value)) {
+    // For string literals (like paths), match them within quotes
+    // This handles both single and double quotes, and template literals
+    const patterns = [
+      new RegExp(`'${escapedValue}'`, 'g'),
+      new RegExp(`"${escapedValue}"`, 'g'),
+      new RegExp(`\`${escapedValue}\``, 'g'),
+    ];
+
+    let processedLine = line;
+    for (const pattern of patterns) {
+      processedLine = processedLine.replace(pattern, (match) => {
+        const quote = match[0];
+        return `${quote}${variable}${quote}`;
+      });
+    }
+    return processedLine;
+  } else {
+    // For other values, do exact matching with word boundaries where possible
+    const regex = new RegExp(`\\b${escapedValue}\\b`, 'g');
+    return line.replace(regex, variable);
+  }
 }
 
 /**
