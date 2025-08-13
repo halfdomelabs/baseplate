@@ -1,4 +1,5 @@
 import { escapeRegExp } from 'es-toolkit';
+import { Node, Project } from 'ts-morph';
 
 /**
  * Applies simple find-and-replace operations on TypeScript content.
@@ -13,42 +14,75 @@ export function applySimpleReplacements(
   content: string,
   replacements: Record<string, string>,
 ): string {
-  let result = content;
-
   // Sort replacements by length (longest first) to avoid substring issues
   // For example, we want to replace "UserEditPage" before "User"
   const sortedReplacements = Object.entries(replacements).sort(
     ([a], [b]) => b.length - a.length,
   );
 
+  // Validate all replacements upfront
   for (const [value, variable] of sortedReplacements) {
-    // Validate that the variable name follows TPL_ convention
     if (!variable.startsWith('TPL_')) {
       throw new Error(
         `Template variable must start with TPL_: ${variable} (for value: ${value})`,
       );
     }
-
-    // Process all lines with the current replacement
-    const lines = result.split('\n');
-    const processedLines = lines.map((line) =>
-      processLine(line, value, variable),
-    );
-    result = processedLines.join('\n');
   }
 
-  return result;
+  // Create a temporary ts-morph project to parse the content
+  const project = new Project({
+    compilerOptions: {
+      allowJs: true,
+      jsx: 1, // JsxEmit.React
+    },
+    useInMemoryFileSystem: true,
+  });
+
+  const sourceFile = project.createSourceFile('temp.ts', content, {
+    overwrite: true,
+  });
+
+  // Process each statement in the source file
+  const statements = sourceFile.getStatements();
+  const processedStatements: string[] = [];
+
+  for (const statement of statements) {
+    if (Node.isImportDeclaration(statement)) {
+      // Skip import statements - preserve them as-is
+      processedStatements.push(statement.getFullText());
+    } else {
+      // Process non-import statements with replacements
+      let statementText = statement.getFullText();
+
+      for (const [value, variable] of sortedReplacements) {
+        statementText = applyReplacementToText(statementText, value, variable);
+      }
+
+      processedStatements.push(statementText);
+    }
+  }
+
+  // Handle any leading trivia (comments, whitespace) before the first statement
+  let leadingTrivia = '';
+  if (statements.length > 0) {
+    const firstStatement = statements[0];
+    const startPos = firstStatement.getPos();
+    if (startPos > 0) {
+      leadingTrivia = content.slice(0, startPos);
+    }
+  }
+
+  return leadingTrivia + processedStatements.join('');
 }
 
 /**
- * Processes a single line with the given replacement value and variable
+ * Applies a single replacement to the given text
  */
-function processLine(line: string, value: string, variable: string): string {
-  // Skip import and export lines to preserve unused import detection
-  if (/^\s*(import|export\s+.*from)\s+/.test(line)) {
-    return line;
-  }
-
+function applyReplacementToText(
+  text: string,
+  value: string,
+  variable: string,
+): string {
   const escapedValue = escapeRegExp(value);
 
   if (isStringLiteral(value)) {
@@ -60,18 +94,18 @@ function processLine(line: string, value: string, variable: string): string {
       new RegExp(`\`${escapedValue}\``, 'g'),
     ];
 
-    let processedLine = line;
+    let result = text;
     for (const pattern of patterns) {
-      processedLine = processedLine.replace(pattern, (match) => {
+      result = result.replace(pattern, (match) => {
         const quote = match[0];
         return `${quote}${variable}${quote}`;
       });
     }
-    return processedLine;
+    return result;
   } else {
     // For other values, do exact matching with word boundaries where possible
     const regex = new RegExp(`\\b${escapedValue}\\b`, 'g');
-    return line.replace(regex, variable);
+    return text.replace(regex, variable);
   }
 }
 

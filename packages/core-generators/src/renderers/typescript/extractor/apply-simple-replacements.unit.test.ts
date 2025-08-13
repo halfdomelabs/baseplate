@@ -215,4 +215,47 @@ import type { UserName } from './user-name.ts';
     expect(result).toContain('const data: TPL_USER_DATA_TYPE');
     expect(result).toContain('let result: TPL_UPDATE_RESULT_TYPE');
   });
+
+  it('should handle multi-line import statements correctly', () => {
+    const content = `
+      import {
+        UserDocument,
+        UpdateUserDocument,
+        DeleteUserDocument
+      } from './user-document';
+      
+      import type {
+        UserType,
+        UserFormData
+      } from './types';
+      
+      function useUser(): UserType {
+        const [updateUser] = useMutation(UpdateUserDocument);
+        return updateUser;
+      }
+    `;
+
+    const replacements = {
+      UserDocument: 'TPL_QUERY_DOCUMENT',
+      UpdateUserDocument: 'TPL_UPDATE_MUTATION',
+      DeleteUserDocument: 'TPL_DELETE_MUTATION',
+      UserType: 'TPL_USER_TYPE',
+      UserFormData: 'TPL_FORM_DATA',
+      updateUser: 'TPL_MUTATION_NAME',
+    };
+
+    const result = applySimpleReplacements(content, replacements);
+
+    // Import statements should remain unchanged (with original identifiers)
+    expect(result).toContain('UserDocument,');
+    expect(result).toContain('UpdateUserDocument,');
+    expect(result).toContain('DeleteUserDocument');
+    expect(result).toContain('UserType,');
+    expect(result).toContain('UserFormData');
+
+    // But usage outside imports should be replaced
+    expect(result).toContain('function useUser(): TPL_USER_TYPE');
+    expect(result).toContain('useMutation(TPL_UPDATE_MUTATION)');
+    expect(result).toContain('const [TPL_MUTATION_NAME]');
+  });
 });
