@@ -14,6 +14,7 @@ import { migration014MigratePluginIds } from './migration-014-migrate-plugin-ids
 import { migration015NullParentRefs } from './migration-015-null-parent-refs.js';
 import { migration016WebAdminConfig } from './migration-016-web-admin-config.js';
 import { migration017RenameAuthPlugin } from './migration-017-rename-auth-plugin.js';
+import { migration018CrudNameFieldRef } from './migration-018-crud-name-field-ref.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -29,6 +30,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration015NullParentRefs,
   migration016WebAdminConfig,
   migration017RenameAuthPlugin,
+  migration018CrudNameFieldRef,
 ];
 
 export function isMigrateableProjectDefinition(

@@ -84,6 +84,7 @@ function AdminCrudSectionForm({ formProps }: Props): React.JSX.Element {
             label="Name Field"
             control={control}
             options={nameFieldOptions}
+            description="The field to use as the name of the record (used in breadcrumbs/title of edit page)"
             name="nameFieldRef"
           />
           <CheckboxFieldController
