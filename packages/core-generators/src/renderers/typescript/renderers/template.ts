@@ -4,7 +4,7 @@ import type {
   TsTemplateFileVariableValue,
 } from '../templates/types.js';
 
-import { generateInlineReplacementComments } from '../extractor/parse-inline-replacements.js';
+import { generateSimpleReplacementComments } from '../extractor/parse-simple-replacements.js';
 import { flattenImportsAndHoistedFragments } from '../fragments/utils.js';
 
 export interface RenderTsTemplateOptions {
@@ -35,15 +35,15 @@ function escapeReplacement(replacement: string): string {
 }
 
 /**
- * Adds inline replacement comments to a template when metadata is enabled.
+ * Adds simple replacement comments to a template when metadata is enabled.
  *
  * @param template - The original template content
  * @param renderedTemplate - The template content after variable substitution
  * @param variables - The variables and their values
  * @param options - Rendering options including variableMetadata
- * @returns The template with inline replacement comments added
+ * @returns The template with simple replacement comments added
  */
-export function addInlineReplacementComments(
+export function addSimpleReplacementComments(
   template: string,
   renderedTemplate: string,
   variables: Record<string, TsTemplateFileVariableValue>,
@@ -93,7 +93,7 @@ export function addInlineReplacementComments(
 
   if (Object.keys(replacementVariables).length > 0) {
     const replacementComments =
-      generateInlineReplacementComments(replacementVariables);
+      generateSimpleReplacementComments(replacementVariables);
 
     // Find the position after imports to insert replacement comments
     const importEndPattern =
@@ -317,8 +317,8 @@ export function renderTsTemplateToTsCodeFragment(
     Object.values(variables).filter((val) => typeof val !== 'string'),
   );
 
-  // Add inline replacement comments if needed
-  renderedTemplate = addInlineReplacementComments(
+  // Add simple replacement comments if needed
+  renderedTemplate = addSimpleReplacementComments(
     template,
     renderedTemplate,
     variables,

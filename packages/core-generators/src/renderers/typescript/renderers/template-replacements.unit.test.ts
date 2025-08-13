@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { renderTsTemplateToTsCodeFragment } from './template.js';
 
 describe('renderTsTemplateToTsCodeFragment with replacement variables', () => {
-  it('should generate inline replacement comments when metadata is included', () => {
+  it('should generate simple replacement comments when metadata is included', () => {
     const template = `
 import { UserDocument } from './types.js';
 

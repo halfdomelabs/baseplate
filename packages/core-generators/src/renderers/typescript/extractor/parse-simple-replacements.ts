@@ -1,14 +1,14 @@
 /**
- * Parser for inline TPL replacement comments in TypeScript templates.
+ * Parser for simple TPL replacement comments in TypeScript templates.
  *
  * Extracts comments in the format: `/* TPL_VAR_NAME=value *\/`
  * and returns a mapping for simple replacements.
  */
 
-const INLINE_REPLACEMENT_REGEX = /\/\* TPL_([A-Z0-9_]+)=([^*]*?) \*\/\n*/g;
+const SIMPLE_REPLACEMENT_REGEX = /\/\* TPL_([A-Z0-9_]+)=([^*]*?) \*\/\n*/g;
 const ALLOWED_VALUE_PATTERN = /^[a-zA-Z0-9_$/./-]+$/;
 
-export interface ParseInlineReplacementsResult {
+export interface ParseSimpleReplacementsResult {
   /** Content with replacement comments removed */
   content: string;
   /** Map of values to TPL variable names for replacement */
@@ -16,19 +16,19 @@ export interface ParseInlineReplacementsResult {
 }
 
 /**
- * Parses inline replacement comments from TypeScript template content.
+ * Parses simple replacement comments from TypeScript template content.
  *
  * @param content - The template content to parse
  * @returns Object with cleaned content and replacement mappings
  * @throws Error if replacement values contain unsupported characters
  */
-export function parseInlineReplacements(
+export function parseSimpleReplacements(
   content: string,
-): ParseInlineReplacementsResult {
+): ParseSimpleReplacementsResult {
   const replacements: Record<string, string> = {};
 
   const cleanedContent = content.replaceAll(
-    INLINE_REPLACEMENT_REGEX,
+    SIMPLE_REPLACEMENT_REGEX,
     (match, varName: string, value: string) => {
       // Validate that the variable name is valid (already captured by regex, but double-check)
       if (!/^[A-Z0-9_]+$/.test(varName)) {
@@ -76,12 +76,12 @@ export function parseInlineReplacements(
 }
 
 /**
- * Generates sorted inline replacement comments for writing to template files.
+ * Generates sorted simple replacement comments for writing to template files.
  *
  * @param replacements - Map of values to TPL variable names
  * @returns Array of comment strings, sorted alphabetically by variable name
  */
-export function generateInlineReplacementComments(
+export function generateSimpleReplacementComments(
   replacements: Record<string, string>,
 ): string[] {
   return Object.entries(replacements)
@@ -94,11 +94,30 @@ export function generateInlineReplacementComments(
 }
 
 /**
- * Validates that a replacement value is supported for inline replacements.
+ * Validates that a replacement value is supported for simple replacements.
  *
  * @param value - The value to validate
- * @returns true if the value is valid for inline replacement
+ * @returns true if the value is valid for simple replacement
  */
-export function isValidInlineReplacementValue(value: string): boolean {
+export function isValidSimpleReplacementValue(value: string): boolean {
   return ALLOWED_VALUE_PATTERN.test(value);
+}
+
+/**
+ * Suggests the appropriate replacement type based on the value content.
+ *
+ * @param value - The value to analyze
+ * @returns 'simple' for values that can use simple replacements, 'delimiter' otherwise
+ */
+export function suggestReplacementType(value: string): 'simple' | 'delimiter' {
+  // Check if value is simple enough for simple replacements
+  if (
+    value &&
+    value.length <= 100 && // Keep reasonable length limit
+    !value.includes('\n') && // No multiline
+    ALLOWED_VALUE_PATTERN.test(value)
+  ) {
+    return 'simple';
+  }
+  return 'delimiter';
 }

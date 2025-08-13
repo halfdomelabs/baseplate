@@ -3,7 +3,7 @@ import { sortObjectKeys } from '@baseplate-dev/utils';
 import type { TsTemplateFileVariable } from '../templates/types.js';
 
 import { applySimpleReplacements } from './apply-simple-replacements.js';
-import { parseInlineReplacements } from './parse-inline-replacements.js';
+import { parseSimpleReplacements } from './parse-simple-replacements.js';
 import { preprocessCodeForExtractionHack } from './preprocess-code-for-extraction-hack.js';
 
 const VARIABLE_REGEX =
@@ -25,7 +25,7 @@ interface ExtractedTemplateVariables {
 /**
  * Extracts template variables from a TypeScript template file and returns both the processed content
  * and the discovered variables.
- * - Phase 1: Parses and applies inline replacement comments like TPL_VAR=value
+ * - Phase 1: Parses and applies simple replacement comments like TPL_VAR=value
  * - Phase 2: Replaces TPL variable blocks with placeholders `TPL_VAR`
  * - Removes HOISTED blocks
  * - Discovers all template variables used in the content
@@ -39,17 +39,17 @@ export function extractTsTemplateVariables(
   let processedContent = content;
   const discoveredVariables: Record<string, TsTemplateFileVariable> = {};
 
-  // Phase 1: Parse and apply inline replacement comments
-  const { content: afterInlineReplacements, replacements } =
-    parseInlineReplacements(content);
+  // Phase 1: Parse and apply simple replacement comments
+  const { content: afterSimpleReplacements, replacements } =
+    parseSimpleReplacements(content);
 
-  processedContent = afterInlineReplacements;
+  processedContent = afterSimpleReplacements;
 
   // Apply simple replacements if any were found
   if (Object.keys(replacements).length > 0) {
     processedContent = applySimpleReplacements(processedContent, replacements);
 
-    // Track variables introduced by inline replacements
+    // Track variables introduced by simple replacements
     for (const variable of Object.values(replacements)) {
       discoveredVariables[variable] = {
         type: 'replacement',

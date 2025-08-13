@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { addInlineReplacementComments } from './template.js';
+import { addSimpleReplacementComments } from './template.js';
 
-describe('addInlineReplacementComments', () => {
+describe('addSimpleReplacementComments', () => {
   it('should return template unchanged when metadata is not enabled', () => {
     const template = 'const x = 5;';
     const renderedTemplate = 'const x = 5;';
@@ -14,7 +14,7 @@ describe('addInlineReplacementComments', () => {
       },
     };
 
-    const result = addInlineReplacementComments(
+    const result = addSimpleReplacementComments(
       template,
       renderedTemplate,
       variables,
@@ -32,7 +32,7 @@ describe('addInlineReplacementComments', () => {
       includeMetadata: true,
     };
 
-    const result = addInlineReplacementComments(
+    const result = addSimpleReplacementComments(
       template,
       renderedTemplate,
       variables,
@@ -61,7 +61,7 @@ const name = 'John';
       },
     };
 
-    const result = addInlineReplacementComments(
+    const result = addSimpleReplacementComments(
       template,
       renderedTemplate,
       variables,
@@ -84,7 +84,7 @@ const name = 'John';
       },
     };
 
-    const result = addInlineReplacementComments(
+    const result = addSimpleReplacementComments(
       template,
       renderedTemplate,
       variables,
@@ -105,7 +105,7 @@ const name = 'John';
       },
     };
 
-    const result = addInlineReplacementComments(
+    const result = addSimpleReplacementComments(
       template,
       renderedTemplate,
       variables,
@@ -137,7 +137,7 @@ const b = valueB;
       },
     };
 
-    const result = addInlineReplacementComments(
+    const result = addSimpleReplacementComments(
       template,
       renderedTemplate,
       variables,
@@ -170,7 +170,7 @@ const b = sameValue;
     };
 
     expect(() =>
-      addInlineReplacementComments(
+      addSimpleReplacementComments(
         template,
         renderedTemplate,
         variables,
@@ -205,7 +205,7 @@ function UserEditPage(): ReactElement {
     };
 
     expect(() =>
-      addInlineReplacementComments(
+      addSimpleReplacementComments(
         template,
         renderedTemplate,
         variables,
@@ -239,7 +239,7 @@ function UserCard() {
       },
     };
 
-    const result = addInlineReplacementComments(
+    const result = addSimpleReplacementComments(
       template,
       renderedTemplate,
       variables,
@@ -274,7 +274,7 @@ const b = valueB;
       },
     };
 
-    const result = addInlineReplacementComments(
+    const result = addSimpleReplacementComments(
       template,
       renderedTemplate,
       variables,

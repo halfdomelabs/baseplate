@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { extractTsTemplateVariables } from './extract-ts-template-variables.js';
 
-describe('extractTsTemplateVariables with inline replacements', () => {
-  it('should extract both inline and delimiter-based variables', () => {
+describe('extractTsTemplateVariables with simple replacements', () => {
+  it('should extract both simple and delimiter-based variables', () => {
     const content = `
       // @ts-nocheck
       
@@ -35,7 +35,7 @@ describe('extractTsTemplateVariables with inline replacements', () => {
 
     const result = extractTsTemplateVariables(content);
 
-    // Check that inline replacement variables are tracked
+    // Check that simple replacement variables are tracked
     expect(result.variables).toHaveProperty('TPL_COMPONENT_NAME');
     expect(result.variables).toHaveProperty('TPL_MUTATION_NAME');
     expect(result.variables).toHaveProperty('TPL_QUERY_DOCUMENT');
@@ -53,7 +53,7 @@ describe('extractTsTemplateVariables with inline replacements', () => {
     expect(result.content).toContain('TPL_UPDATE_MUTATION');
     expect(result.content).toContain('TPL_DATA_LOADER');
 
-    // Inline replacement comments should be removed
+    // Simple replacement comments should be removed
     expect(result.content).not.toContain(
       '/* TPL_COMPONENT_NAME=UserEditPage */',
     );
@@ -64,7 +64,7 @@ describe('extractTsTemplateVariables with inline replacements', () => {
     expect(result.content).not.toContain('/* TPL_DATA_LOADER:END */');
   });
 
-  it('should work with only inline replacements', () => {
+  it('should work with only simple replacements', () => {
     const content = `
       import { User } from './types.js';
       
@@ -123,7 +123,7 @@ describe('extractTsTemplateVariables with inline replacements', () => {
     expect(result.variables).toHaveProperty('TPL_COMPONENT_NAME');
     expect(result.variables).toHaveProperty('TPL_COMPLEX_LOGIC');
 
-    // Inline replacement should be applied
+    // Simple replacement should be applied
     expect(result.content).toContain('function TPL_COMPONENT_NAME()');
 
     // Complex logic should be collapsed
@@ -180,7 +180,7 @@ describe('extractTsTemplateVariables with inline replacements', () => {
     expect(result.variables).toHaveProperty('TPL_VAR');
   });
 
-  it('should validate inline replacement values', () => {
+  it('should validate simple replacement values', () => {
     const invalidContent = `
       /* TPL_COMPLEX_EXPR=data?.user?.email */
       function Component() {}
