@@ -9,7 +9,10 @@ import type {
 import type { TsImportMap } from '../import-maps/types.js';
 import type { SortImportDeclarationsOptions } from '../imports/index.js';
 import type { TsImportDeclaration } from '../imports/types.js';
-import type { TsTemplateFileVariableValue } from '../templates/types.js';
+import type {
+  TsTemplateFileVariable,
+  TsTemplateFileVariableValue,
+} from '../templates/types.js';
 import type { RenderTsTemplateOptions } from './template.js';
 
 import { transformTsImportsWithMap } from '../import-maps/transform-ts-imports-with-map.js';
@@ -144,6 +147,7 @@ function mergeImportsAndHoistedFragments(
 interface RenderTsCodeFileTemplateInput {
   templateContents: string;
   variables?: Record<string, TsTemplateFileVariableValue>;
+  variableMetadata?: Record<string, TsTemplateFileVariable>;
   importMapProviders?: Record<string, unknown>;
   positionedHoistedFragments?: TsPositionedHoistedFragment[];
   generatorPaths?: Record<string, string>;
@@ -153,6 +157,7 @@ interface RenderTsCodeFileTemplateInput {
 export function renderTsCodeFileTemplate({
   templateContents,
   variables = {},
+  variableMetadata,
   importMapProviders = {},
   positionedHoistedFragments = [],
   generatorPaths = {},
@@ -163,6 +168,7 @@ export function renderTsCodeFileTemplate({
     renderTsTemplateToTsCodeFragment(templateContents, variables, {
       prefix: options.prefix,
       ...options,
+      variableMetadata,
     });
 
   if (

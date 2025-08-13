@@ -40,7 +40,7 @@ const editForm = createTsTemplateFile({
     TPL_DESTRUCTURED_PROPS: {},
     TPL_EDIT_SCHEMA: {},
     TPL_EXTRA_PROPS: {},
-    TPL_FORM_DATA_NAME: {},
+    TPL_FORM_DATA_NAME: { type: 'replacement' },
     TPL_HEADER: {},
     TPL_INPUTS: {},
   },

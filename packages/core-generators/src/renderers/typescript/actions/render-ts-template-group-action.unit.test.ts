@@ -35,7 +35,7 @@ describe('renderTsTemplateGroupAction', () => {
           name: 'greeting',
           source: { path: greetingsPath },
           variables: {
-            TPL_GREETING: { description: 'The greeting to use' },
+            TPL_GREETING: {},
           },
           fileOptions: { kind: 'singleton' },
         }),
@@ -43,7 +43,7 @@ describe('renderTsTemplateGroupAction', () => {
           name: 'name',
           source: { path: namePath },
           variables: {
-            TPL_NAME: { description: 'The name to use' },
+            TPL_NAME: {},
           },
           fileOptions: { kind: 'singleton' },
         }),
@@ -308,7 +308,7 @@ describe('renderTsTemplateGroupAction', () => {
             contents: 'const value = TPL_VALUE;',
           },
           variables: {
-            TPL_VALUE: { description: 'A value' },
+            TPL_VALUE: {},
           },
           fileOptions: { kind: 'singleton' },
         }),

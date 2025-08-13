@@ -22,9 +22,11 @@ describe('extractTsTemplateVariables with inline replacements', () => {
       
       function UserEditPage(): ReactElement {
         const [updateUser] = useMutation(UpdateUserDocument);
+        const { data } = useQuery(UserEditByIdDocument);
         
         /* TPL_DATA_LOADER:START */
-        const { data } = useQuery(UserEditByIdDocument);
+        // Some other data loading logic
+        const loading = true;
         /* TPL_DATA_LOADER:END */
         
         return <div>{data?.user.email}</div>;

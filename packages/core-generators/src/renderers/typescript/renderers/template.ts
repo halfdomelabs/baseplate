@@ -1,6 +1,10 @@
 import type { TsCodeFragment } from '../fragments/types.js';
-import type { TsTemplateFileVariableValue } from '../templates/types.js';
+import type {
+  TsTemplateFileVariable,
+  TsTemplateFileVariableValue,
+} from '../templates/types.js';
 
+import { generateInlineReplacementComments } from '../extractor/parse-inline-replacements.js';
 import { flattenImportsAndHoistedFragments } from '../fragments/utils.js';
 
 export interface RenderTsTemplateOptions {
@@ -12,6 +16,10 @@ export interface RenderTsTemplateOptions {
    * The prefix to use for the template variables.
    */
   prefix?: string;
+  /**
+   * Optional metadata about variables (e.g., their type).
+   */
+  variableMetadata?: Record<string, TsTemplateFileVariable>;
 }
 
 /**
@@ -24,6 +32,84 @@ export interface RenderTsTemplateOptions {
  */
 function escapeReplacement(replacement: string): string {
   return replacement.replaceAll('$', '$$$$');
+}
+
+/**
+ * Adds inline replacement comments to a template when metadata is enabled.
+ *
+ * @param template - The original template content
+ * @param renderedTemplate - The template content after variable substitution
+ * @param variables - The variables and their values
+ * @param options - Rendering options including variableMetadata
+ * @returns The template with inline replacement comments added
+ */
+export function addInlineReplacementComments(
+  template: string,
+  renderedTemplate: string,
+  variables: Record<string, TsTemplateFileVariableValue>,
+  options: RenderTsTemplateOptions,
+): string {
+  const { includeMetadata, variableMetadata } = options;
+
+  // Only process if metadata is enabled and we have variable metadata
+  if (!includeMetadata || !variableMetadata) {
+    return renderedTemplate;
+  }
+
+  const replacementVariables: Record<string, string> = {};
+
+  for (const [key, value] of Object.entries(variables)) {
+    const metadata = variableMetadata[key];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (metadata?.type === 'replacement') {
+      const contents = typeof value === 'string' ? value : value.contents;
+      // Only add as replacement if it's a simple value
+      if (contents && /^[a-zA-Z0-9_$/./-]+$/.test(contents)) {
+        // Check for duplicate values which would prevent correct extraction
+        if (contents in replacementVariables) {
+          throw new Error(
+            `Duplicate replacement value "${contents}" for ${key}. ` +
+              `Value is already used for ${replacementVariables[contents]}. Each value must be unique when metadata is included.`,
+          );
+        }
+
+        // Check if the value already exists in the template (would prevent extraction)
+        // We check the original template, not the processed one
+        const valuePattern = new RegExp(
+          `\\b${contents.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)}\\b`,
+        );
+        if (valuePattern.test(template)) {
+          throw new Error(
+            `The template contents contain the value "${contents}" which would prevent ` +
+              'template extraction from working correctly. Please ensure that replacement variable values ' +
+              'are not present in the original template file.',
+          );
+        }
+
+        replacementVariables[contents] = key;
+      }
+    }
+  }
+
+  if (Object.keys(replacementVariables).length > 0) {
+    const replacementComments =
+      generateInlineReplacementComments(replacementVariables);
+
+    // Find the position after imports to insert replacement comments
+    const importEndPattern =
+      /^((?:import\s+.*?;\n|import\s+.*?from\s+.*?;\n|\n)*)(.*)$/ms;
+    const match = importEndPattern.exec(renderedTemplate);
+
+    if (match) {
+      const [, importsSection, restOfCode] = match;
+      return `${importsSection}\n${replacementComments.join('\n')}\n\n${restOfCode}`;
+    } else {
+      // No imports found, add at the beginning
+      return `${replacementComments.join('\n')}\n\n${renderedTemplate}`;
+    }
+  }
+
+  return renderedTemplate;
 }
 
 /**
@@ -209,11 +295,16 @@ export function renderTsTemplateToTsCodeFragment(
   // Resolve inline markers
   for (const [marker, { key, value }] of inlineMarkers.entries()) {
     const contents = typeof value === 'string' ? value : value.contents;
-    const replacement = includeMetadata
-      ? contents.trim() === ''
-        ? `/* ${key}:INLINE */`
-        : `/* ${key}:START */ ${contents.trim()} /* ${key}:END */`
-      : contents;
+    // Check if this is a replacement variable (should be rendered as plain value)
+    const isReplacement =
+      options.variableMetadata?.[key]?.type === 'replacement';
+
+    const replacement =
+      includeMetadata && !isReplacement
+        ? contents.trim() === ''
+          ? `/* ${key}:INLINE */`
+          : `/* ${key}:START */ ${contents.trim()} /* ${key}:END */`
+        : contents;
 
     // Use replace instead of replaceAll as markers are unique
     renderedTemplate = renderedTemplate.replace(
@@ -224,6 +315,14 @@ export function renderTsTemplateToTsCodeFragment(
 
   const { imports, hoistedFragments } = flattenImportsAndHoistedFragments(
     Object.values(variables).filter((val) => typeof val !== 'string'),
+  );
+
+  // Add inline replacement comments if needed
+  renderedTemplate = addInlineReplacementComments(
+    template,
+    renderedTemplate,
+    variables,
+    options,
   );
 
   return {

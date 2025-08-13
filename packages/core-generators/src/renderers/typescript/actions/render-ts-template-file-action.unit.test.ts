@@ -32,7 +32,7 @@ describe('renderTsTemplateFileAction', () => {
           path: testPath,
         },
         variables: {
-          TPL_GREETING: { description: 'The greeting to use' },
+          TPL_GREETING: {},
         },
         fileOptions: { kind: 'singleton' },
       }),
@@ -75,7 +75,7 @@ describe('renderTsTemplateFileAction', () => {
           contents: 'const greeting = TPL_GREETING;',
         },
         variables: {
-          TPL_GREETING: { description: 'The greeting to use' },
+          TPL_GREETING: {},
         },
         fileOptions: { kind: 'singleton' },
       }),
@@ -107,8 +107,8 @@ describe('renderTsTemplateFileAction', () => {
           contents: 'const greeting = TPL_GREETING;',
         },
         variables: {
-          TPL_GREETING: { description: 'The greeting to use' },
-          TPL_NAME: { description: 'The name to greet' },
+          TPL_GREETING: {},
+          TPL_NAME: {},
         },
         fileOptions: { kind: 'singleton' },
       }),
@@ -160,7 +160,7 @@ describe('renderTsTemplateFileAction', () => {
           `,
         },
         variables: {
-          TPL_GREETING: { description: 'The greeting to use' },
+          TPL_GREETING: {},
         },
         importMapProviders: {
           testImport1: createProviderType('test-import-1'),

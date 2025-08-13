@@ -51,7 +51,9 @@ export function extractTsTemplateVariables(
 
     // Track variables introduced by inline replacements
     for (const variable of Object.values(replacements)) {
-      discoveredVariables[variable] = {};
+      discoveredVariables[variable] = {
+        type: 'replacement',
+      };
     }
   }
 

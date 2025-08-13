@@ -15,7 +15,9 @@ import {
 
 export const TS_TEMPLATE_TYPE = 'ts';
 
-const tsTemplateFileVariableSchema = z.object({});
+const tsTemplateFileVariableSchema = z.object({
+  type: z.enum(['delimited', 'replacement']).optional(),
+});
 
 const tsTemplateFileImportProviderSchema = z.object({
   importName: z.string(),
@@ -90,7 +92,9 @@ export const tsTemplateMetadataSchema = templateConfigSchema.extend({
 
 export type TsTemplateMetadata = z.infer<typeof tsTemplateMetadataSchema>;
 
-export interface TsTemplateFileVariable {}
+export type TsTemplateFileVariable = z.infer<
+  typeof tsTemplateFileVariableSchema
+>;
 
 export type TsTemplateVariableMap = Record<string, TsTemplateFileVariable>;
 
