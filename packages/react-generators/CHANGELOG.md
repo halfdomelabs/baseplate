@@ -1,5 +1,16 @@
 # @baseplate-dev/react-generators
 
+## 0.3.2
+
+### Patch Changes
+
+- [#631](https://github.com/halfdomelabs/baseplate/pull/631) [`b4c15b9`](https://github.com/halfdomelabs/baseplate/commit/b4c15b98a518c53828f81624764ba693def85faf) Thanks [@kingston](https://github.com/kingston)! - Update admin generators to use new admin layout with breadcrumbs
+
+- Updated dependencies [[`b4c15b9`](https://github.com/halfdomelabs/baseplate/commit/b4c15b98a518c53828f81624764ba693def85faf)]:
+  - @baseplate-dev/core-generators@0.3.2
+  - @baseplate-dev/sync@0.3.2
+  - @baseplate-dev/utils@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes
