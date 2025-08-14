@@ -1,4 +1,4 @@
-import { tsCodeFragment } from '@baseplate-dev/core-generators';
+import { tsCodeFragment, TsCodeUtils } from '@baseplate-dev/core-generators';
 import {
   appModuleProvider,
   configServiceProvider,
@@ -11,6 +11,7 @@ import {
   createGeneratorTask,
   createProviderTask,
 } from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { LOCAL_AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
@@ -18,13 +19,14 @@ import { LOCAL_AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './
 const descriptorSchema = z.object({
   userSessionModelName: z.string().min(1),
   userModelName: z.string().min(1),
+  userAdminRoles: z.array(z.string()).default([]),
 });
 
 export const authModuleGenerator = createGenerator({
   name: 'local-auth/core/auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ userSessionModelName, userModelName }) => ({
+  buildTasks: ({ userSessionModelName, userModelName, userAdminRoles }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
@@ -49,6 +51,7 @@ export const authModuleGenerator = createGenerator({
           paths.schemaUserSessionMutations,
           paths.schemaUserSessionQueries,
           paths.schemaUserSessionPayloadObjectType,
+          paths.userRolesMutations,
           paths.authRoleEnum,
         );
       },
@@ -83,6 +86,13 @@ export const authModuleGenerator = createGenerator({
                   schemaUserSessionPayloadObjectType: {
                     TPL_PRISMA_USER:
                       prismaOutput.getPrismaModelFragment(userModelName),
+                    TPL_USER_OBJECT_TYPE:
+                      userObjectType.getTypeReference().fragment,
+                  },
+                  userRolesMutations: {
+                    TPL_ADMIN_ROLES: TsCodeUtils.mergeFragmentsAsArrayPresorted(
+                      userAdminRoles.map(quot).sort(),
+                    ),
                     TPL_USER_OBJECT_TYPE:
                       userObjectType.getTypeReference().fragment,
                   },

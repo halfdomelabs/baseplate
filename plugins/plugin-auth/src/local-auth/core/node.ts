@@ -57,6 +57,10 @@ export default createPlatformPluginExport({
             userModelName: definitionContainer.nameFromId(
               localAuthDefinition.modelRefs.user,
             ),
+            userAdminRoles:
+              localAuthDefinition.userAdminRoles?.map((role) =>
+                definitionContainer.nameFromId(role),
+              ) ?? [],
           }),
           emailPassword: appModuleGenerator({
             id: 'email-password',

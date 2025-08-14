@@ -8,6 +8,8 @@ export interface LocalAuthCoreAuthModulePaths {
   schemaUserSessionPayloadObjectType: string;
   schemaUserSessionQueries: string;
   sessionCookie: string;
+  userRolesMutations: string;
+  userRolesService: string;
   userSessionConstants: string;
   userSessionService: string;
   verifyRequestOrigin: string;
@@ -35,6 +37,8 @@ const localAuthCoreAuthModulePathsTask = createGeneratorTask({
           schemaUserSessionPayloadObjectType: `${moduleRoot}/schema/user-session-payload.object-type.ts`,
           schemaUserSessionQueries: `${moduleRoot}/schema/user-session.queries.ts`,
           sessionCookie: `${moduleRoot}/utils/session-cookie.ts`,
+          userRolesMutations: `${moduleRoot}/schema/user-roles.mutations.ts`,
+          userRolesService: `${moduleRoot}/services/user-roles.service.ts`,
           userSessionConstants: `${moduleRoot}/constants/user-session.constants.ts`,
           userSessionService: `${moduleRoot}/services/user-session.service.ts`,
           verifyRequestOrigin: `${moduleRoot}/utils/verify-request-origin.ts`,
