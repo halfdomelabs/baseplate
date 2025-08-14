@@ -1,5 +1,17 @@
 # @baseplate-dev/project-builder-test
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-server@0.3.2
+  - @baseplate-dev/project-builder-common@0.3.2
+  - @baseplate-dev/project-builder-web@0.3.2
+  - @baseplate-dev/project-builder-lib@0.3.2
+  - @baseplate-dev/sync@0.3.2
+  - @baseplate-dev/utils@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes
