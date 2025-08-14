@@ -4,7 +4,6 @@ import {
   TsCodeUtils,
   tsImportBuilder,
   tsTemplate,
-  typescriptFileProvider,
 } from '@baseplate-dev/core-generators';
 import {
   createGenerator,
@@ -13,11 +12,10 @@ import {
 } from '@baseplate-dev/sync';
 import { notEmpty, quot } from '@baseplate-dev/utils';
 import { kebabCase, sortBy } from 'es-toolkit';
-import { dasherize, underscore } from 'inflection';
+import { dasherize, pluralize, underscore } from 'inflection';
 import { z } from 'zod';
 
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
-import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { lowerCaseFirst, titleizeCamel } from '#src/utils/case.js';
 import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
@@ -29,12 +27,13 @@ import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-
 import { printDataLoaders } from '../_providers/admin-loader.js';
 import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
 import { adminCrudQueriesProvider } from '../admin-crud-queries/index.js';
-import { ADMIN_ADMIN_CRUD_EDIT_GENERATED } from './generated/index.js';
+import { ADMIN_ADMIN_CRUD_EDIT_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({
   modelId: z.string(),
   modelName: z.string(),
   disableCreate: z.boolean().optional(),
+  nameField: z.string(),
 });
 
 export interface AdminCrudEmbeddedForm {
@@ -55,25 +54,24 @@ export const adminCrudEditGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelName,
-  buildTasks: ({ modelId, modelName, disableCreate }) => ({
+  buildTasks: ({ modelId, modelName, disableCreate, nameField }) => ({
+    renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
       dependencies: {
-        typescriptFile: typescriptFileProvider,
         reactRoutes: reactRoutesProvider,
         adminCrudQueries: adminCrudQueriesProvider,
         reactComponentsImports: reactComponentsImportsProvider,
-        reactErrorImports: reactErrorImportsProvider,
+        renderers: GENERATED_TEMPLATES.renderers.provider,
       },
       exports: {
         adminCrudEdit: adminCrudEditProvider.export(),
         adminCrudInputContainer: adminCrudInputContainerProvider.export(),
       },
       run({
-        typescriptFile,
         adminCrudQueries,
         reactRoutes,
         reactComponentsImports,
-        reactErrorImports,
+        renderers,
       }) {
         const routeFilePath = reactRoutes.getRouteFilePath();
         const editSchemaPath = `${reactRoutes.getOutputRelativePath()}/-schemas/${lowerCaseFirst(
@@ -104,6 +102,8 @@ export const adminCrudEditGenerator = createGenerator({
 
         const createPagePath = `${reactRoutes.getOutputRelativePath()}/new.tsx`;
         const createPageName = `${modelName}CreatePage`;
+
+        const routePath = `${reactRoutes.getOutputRelativePath()}/route.tsx`;
 
         const editQueryInfo = adminCrudQueries.getEditQueryHookInfo();
         const updateInfo = adminCrudQueries.getUpdateHookInfo();
@@ -150,9 +150,8 @@ export const adminCrudEditGenerator = createGenerator({
 
             const validations = inputFields.flatMap((c) => c.validation);
             await builder.apply(
-              typescriptFile.renderTemplateFile({
+              renderers.schema.render({
                 id: `edit-schema-${modelId}`,
-                template: ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.schema,
                 destination: editSchemaPath,
                 variables: {
                   TPL_SCHEMA_NAME: editSchemaName,
@@ -168,9 +167,8 @@ export const adminCrudEditGenerator = createGenerator({
 
             const sortedInputs = sortBy(inputFields, [(i) => i.order]);
             await builder.apply(
-              typescriptFile.renderTemplateFile({
+              renderers.editForm.render({
                 id: `edit-form-${modelId}`,
-                template: ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.editForm,
                 destination: editFormComponentPath,
                 variables: {
                   TPL_COMPONENT_NAME: editFormComponentName,
@@ -199,10 +197,6 @@ export const adminCrudEditGenerator = createGenerator({
                     ${dataDependencies.map((d) => d.propName).join(',\n')}
                   }`,
                 },
-                importMapProviders: {
-                  reactComponentsImports,
-                  reactErrorImports,
-                },
               }),
             );
 
@@ -229,14 +223,9 @@ export const adminCrudEditGenerator = createGenerator({
             if (!disableCreate) {
               const createInfo = adminCrudQueries.getCreateHookInfo();
               await builder.apply(
-                typescriptFile.renderTemplateFile({
+                renderers.createPage.render({
                   id: `create-${modelId}`,
-                  template:
-                    ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.createPage,
                   destination: createPagePath,
-                  importMapProviders: {
-                    reactErrorImports,
-                  },
                   variables: {
                     TPL_ROUTE_PATH: quot(`${routeFilePath}/new`),
                     TPL_COMPONENT_NAME: createPageName,
@@ -285,14 +274,14 @@ export const adminCrudEditGenerator = createGenerator({
               reactComponentsImports,
             );
 
+            const nameFieldExpression = `data.${editQueryInfo.fieldName}.${nameField}`;
+            const modelNameExpression = titleizeCamel(modelName);
+            const crumbExpression = `${nameFieldExpression} ? ${nameFieldExpression} : 'Unnamed ${modelNameExpression}'`;
+
             await builder.apply(
-              typescriptFile.renderTemplateFile({
+              renderers.editPage.render({
                 id: `edit-${modelId}`,
-                template: ADMIN_ADMIN_CRUD_EDIT_GENERATED.templates.editPage,
                 destination: editPagePath,
-                importMapProviders: {
-                  reactErrorImports,
-                },
                 variables: {
                   TPL_ROUTE_PATH: quot(`${routeFilePath}/$id`),
                   TPL_COMPONENT_NAME: editPageName,
@@ -300,9 +289,21 @@ export const adminCrudEditGenerator = createGenerator({
                   TPL_UPDATE_MUTATION: updateInfo.documentExpression,
                   TPL_MUTATION_NAME: updateInfo.fieldName,
                   TPL_FORM_DATA_NAME: formDataExpression,
-                  TPL_MODEL_NAME: titleizeCamel(modelName),
                   TPL_DATA_LOADER: editPageLoaderOutput.loader,
                   TPL_DATA_GATE: editPageLoaderOutput.gate,
+                  TPL_CRUMB_EXPRESSION: crumbExpression,
+                  TPL_USER_QUERY: editQueryInfo.documentExpression,
+                },
+              }),
+            );
+
+            await builder.apply(
+              renderers.route.render({
+                id: `route-${modelId}`,
+                destination: routePath,
+                variables: {
+                  TPL_ROUTE: quot(routeFilePath),
+                  TPL_CRUMB: quot(pluralize(titleizeCamel(modelName))),
                 },
               }),
             );

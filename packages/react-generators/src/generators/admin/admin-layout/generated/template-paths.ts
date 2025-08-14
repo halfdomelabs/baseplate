@@ -6,6 +6,8 @@ import { reactRoutesProvider } from '#src/providers/routes.js';
 export interface AdminAdminLayoutPaths {
   adminLayout: string;
   adminRoute: string;
+  appBreadcrumbs: string;
+  appSidebar: string;
 }
 
 const adminAdminLayoutPaths = createProviderType<AdminAdminLayoutPaths>(
@@ -27,6 +29,8 @@ const adminAdminLayoutPathsTask = createGeneratorTask({
         adminAdminLayoutPaths: {
           adminLayout: `${componentsRoot}/layouts/admin-layout.tsx`,
           adminRoute: `${routesRoot}/route.tsx`,
+          appBreadcrumbs: `${componentsRoot}/layouts/app-breadcrumbs.tsx`,
+          appSidebar: `${componentsRoot}/layouts/app-sidebar.tsx`,
         },
       },
     };

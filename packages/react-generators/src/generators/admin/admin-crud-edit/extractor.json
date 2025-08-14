@@ -51,7 +51,7 @@
         "TPL_DESTRUCTURED_PROPS": {},
         "TPL_EDIT_SCHEMA": {},
         "TPL_EXTRA_PROPS": {},
-        "TPL_FORM_DATA_NAME": {},
+        "TPL_FORM_DATA_NAME": { "type": "replacement" },
         "TPL_HEADER": {},
         "TPL_INPUTS": {}
       }
@@ -71,16 +71,28 @@
       },
       "sourceFile": "edit.tsx",
       "variables": {
-        "TPL_COMPONENT_NAME": {},
+        "TPL_COMPONENT_NAME": { "type": "replacement" },
+        "TPL_CRUMB_EXPRESSION": {},
         "TPL_DATA_GATE": {},
         "TPL_DATA_LOADER": {},
         "TPL_EDIT_FORM": {},
-        "TPL_FORM_DATA_NAME": {},
-        "TPL_MODEL_NAME": {},
+        "TPL_FORM_DATA_NAME": { "type": "replacement" },
         "TPL_MUTATION_NAME": {},
         "TPL_ROUTE_PATH": {},
-        "TPL_UPDATE_MUTATION": {}
+        "TPL_UPDATE_MUTATION": {},
+        "TPL_USER_QUERY": { "type": "replacement" }
       }
+    },
+    "route": {
+      "type": "ts",
+      "fileOptions": {
+        "generatorTemplatePath": "route.tsx",
+        "kind": "instance"
+      },
+      "importMapProviders": {},
+      "projectExports": {},
+      "sourceFile": "route.tsx",
+      "variables": { "TPL_CRUMB": {}, "TPL_ROUTE": {} }
     },
     "schema": {
       "type": "ts",

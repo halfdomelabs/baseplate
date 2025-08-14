@@ -29,11 +29,13 @@ function TPL_PAGE_NAME(): ReactElement {
   };
 
   return (
-    <div className="space-y-4">
-      <h1>
-        <TPL_PLURAL_MODEL />
-      </h1>
-      <TPL_CREATE_BUTTON />
+    <div className="flex max-w-4xl flex-col space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <h1>
+          <TPL_TITLE />
+        </h1>
+        <TPL_CREATE_BUTTON />
+      </div>
       {TPL_DATA_PARTS ? (
         <ErrorableLoader error={TPL_ERROR_PARTS} />
       ) : (

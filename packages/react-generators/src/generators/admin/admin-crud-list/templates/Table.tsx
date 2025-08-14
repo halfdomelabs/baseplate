@@ -9,12 +9,14 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableHeader,
   TableRow,
   useConfirmDialog,
 } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
 import { Link } from '@tanstack/react-router';
+import { MdDelete, MdEdit } from 'react-icons/md';
 import { toast } from 'sonner';
 
 interface Props {
@@ -60,27 +62,29 @@ export function TPL_COMPONENT_NAME(
       <TableHeader>
         <TableRow>
           <TPL_HEADERS />
-          <TableCell>Actions</TableCell>
+          <TableHead className="w-12">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {items.map((item) => (
           <TableRow key={item.id}>
             <TPL_CELLS />
-            <TableCell className="space-x-4">
+            <TableCell className="flex items-center gap-2">
               <Link to={TPL_EDIT_ROUTE} params={{ id: item.id }}>
-                <Button variant="link" size="none">
-                  Edit
+                <Button variant="ghost" size="icon">
+                  <MdEdit />
+                  <span className="sr-only">Edit</span>
                 </Button>
               </Link>
               <Button
-                variant="linkDestructive"
+                variant="ghost"
+                size="icon"
                 onClick={() => {
                   handleDelete(item);
                 }}
-                size="none"
               >
-                Delete
+                <MdDelete />
+                <span className="sr-only">Delete</span>
               </Button>
             </TableCell>
           </TableRow>

@@ -1,7 +1,7 @@
 import { createPlatformPluginExport } from '@baseplate-dev/project-builder-lib';
 import { adminCrudInputWebSpec } from '@baseplate-dev/project-builder-lib/web';
 
-import type { AdminCrudFileInputConfig } from './types.js';
+import type { AdminCrudFileInputInput } from './types.js';
 
 import { AdminCrudFileInputForm } from './admin-crud-input-form.js';
 
@@ -13,7 +13,7 @@ export default createPlatformPluginExport({
   },
   exports: {},
   initialize: ({ adminCrudInputWeb }, { pluginKey }) => {
-    adminCrudInputWeb.registerInputWebConfig<AdminCrudFileInputConfig>({
+    adminCrudInputWeb.registerInputWebConfig<AdminCrudFileInputInput>({
       name: 'file',
       pluginKey,
       label: 'File',

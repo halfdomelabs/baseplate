@@ -13,11 +13,12 @@ import type { AdminCrudInputType } from './types.js';
 
 import {
   adminCrudEmbeddedFormEntityType,
+  baseAdminCrudInputSchema,
   createAdminCrudInputType,
 } from './types.js';
 
 export const createAdminCrudTextInputSchema = definitionSchema((ctx) =>
-  z.object({
+  baseAdminCrudInputSchema.extend({
     type: z.literal('text'),
     label: z.string().min(1),
     modelFieldRef: ctx.withRef({
@@ -29,7 +30,7 @@ export const createAdminCrudTextInputSchema = definitionSchema((ctx) =>
   }),
 );
 
-export type AdminCrudTextInputConfig = def.InferOutput<
+export type AdminCrudTextInputConfig = def.InferInput<
   typeof createAdminCrudTextInputSchema
 >;
 
@@ -39,7 +40,7 @@ const adminCrudTextInputType = createAdminCrudInputType({
 });
 
 export const createAdminCrudForeignInputSchema = definitionSchema((ctx) =>
-  z.object({
+  baseAdminCrudInputSchema.extend({
     type: z.literal('foreign'),
     label: z.string().min(1),
     localRelationRef: ctx.withRef({
@@ -54,7 +55,7 @@ export const createAdminCrudForeignInputSchema = definitionSchema((ctx) =>
   }),
 );
 
-export type AdminCrudForeignInputConfig = def.InferOutput<
+export type AdminCrudForeignInputConfig = def.InferInput<
   typeof createAdminCrudForeignInputSchema
 >;
 
@@ -64,7 +65,7 @@ const adminCrudForeignInputType = createAdminCrudInputType({
 });
 
 export const createAdminCrudEnumInputSchema = definitionSchema((ctx) =>
-  z.object({
+  baseAdminCrudInputSchema.extend({
     type: z.literal('enum'),
     label: z.string().min(1),
     modelFieldRef: ctx.withRef({
@@ -75,7 +76,7 @@ export const createAdminCrudEnumInputSchema = definitionSchema((ctx) =>
   }),
 );
 
-export type AdminCrudEnumInputConfig = def.InferOutput<
+export type AdminCrudEnumInputConfig = def.InferInput<
   typeof createAdminCrudEnumInputSchema
 >;
 
@@ -85,7 +86,7 @@ const adminCrudEnumInputType = createAdminCrudInputType({
 });
 
 export const createAdminCrudEmbeddedInputSchema = definitionSchema((ctx) =>
-  z.object({
+  baseAdminCrudInputSchema.extend({
     type: z.literal('embedded'),
     label: z.string().min(1),
     modelRelationRef: ctx.withRef({
@@ -101,7 +102,7 @@ export const createAdminCrudEmbeddedInputSchema = definitionSchema((ctx) =>
   }),
 );
 
-export type AdminCrudEmbeddedInputConfig = def.InferOutput<
+export type AdminCrudEmbeddedInputConfig = def.InferInput<
   typeof createAdminCrudEmbeddedInputSchema
 >;
 
@@ -111,7 +112,7 @@ export const adminCrudEmbeddedInputType = createAdminCrudInputType({
 });
 
 export const createAdminCrudEmbeddedLocalInputSchema = definitionSchema((ctx) =>
-  z.object({
+  baseAdminCrudInputSchema.extend({
     type: z.literal('embeddedLocal'),
     label: z.string().min(1),
     localRelationRef: ctx.withRef({
@@ -127,7 +128,7 @@ export const createAdminCrudEmbeddedLocalInputSchema = definitionSchema((ctx) =>
   }),
 );
 
-export type AdminCrudEmbeddedLocalInputConfig = def.InferOutput<
+export type AdminCrudEmbeddedLocalInputConfig = def.InferInput<
   typeof createAdminCrudEmbeddedLocalInputSchema
 >;
 
@@ -137,13 +138,13 @@ export const adminCrudEmbeddedLocalInputType = createAdminCrudInputType({
 });
 
 export const createAdminCrudPasswordInputSchema = definitionSchema(() =>
-  z.object({
+  baseAdminCrudInputSchema.extend({
     type: z.literal('password'),
     label: z.string().min(1),
   }),
 );
 
-export type AdminCrudPasswordInputConfig = def.InferOutput<
+export type AdminCrudPasswordInputConfig = def.InferInput<
   typeof createAdminCrudPasswordInputSchema
 >;
 

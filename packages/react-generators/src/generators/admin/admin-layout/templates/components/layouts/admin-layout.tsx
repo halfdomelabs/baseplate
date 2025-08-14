@@ -2,14 +2,12 @@
 
 import type { ReactElement } from 'react';
 
-import { useLogOut } from '%authHooksImports';
+import { AppBreadcrumbs } from '$appBreadcrumbs';
+import { AppSidebar } from '$appSidebar';
 import {
-  NavigationMenu,
-  NavigationMenuItemWithLink,
-  NavigationMenuList,
-  SidebarLayout,
-  SidebarLayoutContent,
-  SidebarLayoutSidebar,
+  Separator,
+  SidebarProvider,
+  SidebarTrigger,
 } from '%reactComponentsImports';
 import { Outlet } from '@tanstack/react-router';
 
@@ -18,33 +16,22 @@ interface Props {
 }
 
 export function AdminLayout({ className }: Props): ReactElement {
-  const logOut = useLogOut();
-
   return (
-    <SidebarLayout className={className}>
-      <SidebarLayoutSidebar>
-        <div className="mb-4">
-          <h1>Admin Dashboard</h1>
-        </div>
-        <NavigationMenu orientation="vertical">
-          <NavigationMenuList>
-            <TPL_SIDEBAR_LINKS />
-            <NavigationMenuItemWithLink asChild>
-              <button
-                className="cursor-pointer text-left"
-                onClick={() => {
-                  logOut();
-                }}
-              >
-                Log Out
-              </button>
-            </NavigationMenuItemWithLink>
-          </NavigationMenuList>
-        </NavigationMenu>
-      </SidebarLayoutSidebar>
-      <SidebarLayoutContent className="p-4">
-        <Outlet />
-      </SidebarLayoutContent>
-    </SidebarLayout>
+    <SidebarProvider className={className}>
+      <AppSidebar />
+      <div className="flex h-full w-full flex-col">
+        <header className="flex h-16 items-center gap-2 px-6">
+          <SidebarTrigger />
+          <Separator
+            orientation="vertical"
+            className="mr-2 data-[orientation=vertical]:h-4"
+          />
+          <AppBreadcrumbs />
+        </header>
+        <main className="flex-1 p-4">
+          <Outlet />
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }

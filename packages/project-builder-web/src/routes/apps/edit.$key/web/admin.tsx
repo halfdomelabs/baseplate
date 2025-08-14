@@ -64,7 +64,6 @@ function WebAdminPage(): React.JSX.Element {
     }));
 
   const adminEnabled = watch('adminApp.enabled');
-  const sections = watch('adminApp.sections') ?? [];
 
   // Get the app key for navigation
   const appKey = appEntityType.keyFromId(webDefinition.id);
@@ -119,12 +118,6 @@ function WebAdminPage(): React.JSX.Element {
               <SectionListSectionTitle>Admin Sections</SectionListSectionTitle>
               <SectionListSectionDescription>
                 Manage CRUD interfaces for your data models.
-                {sections.length > 0 && (
-                  <span className="ml-2 text-sm">
-                    ({sections.length} section{sections.length === 1 ? '' : 's'}{' '}
-                    configured)
-                  </span>
-                )}
               </SectionListSectionDescription>
             </SectionListSectionHeader>
             <SectionListSectionContent>

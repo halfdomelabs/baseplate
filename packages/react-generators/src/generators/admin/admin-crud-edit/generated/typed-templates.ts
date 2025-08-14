@@ -40,7 +40,7 @@ const editForm = createTsTemplateFile({
     TPL_DESTRUCTURED_PROPS: {},
     TPL_EDIT_SCHEMA: {},
     TPL_EXTRA_PROPS: {},
-    TPL_FORM_DATA_NAME: {},
+    TPL_FORM_DATA_NAME: { type: 'replacement' },
     TPL_HEADER: {},
     TPL_INPUTS: {},
   },
@@ -54,16 +54,28 @@ const editPage = createTsTemplateFile({
     path: path.join(import.meta.dirname, '../templates/edit.tsx'),
   },
   variables: {
-    TPL_COMPONENT_NAME: {},
+    TPL_COMPONENT_NAME: { type: 'replacement' },
+    TPL_CRUMB_EXPRESSION: {},
     TPL_DATA_GATE: {},
     TPL_DATA_LOADER: {},
     TPL_EDIT_FORM: {},
-    TPL_FORM_DATA_NAME: {},
-    TPL_MODEL_NAME: {},
+    TPL_FORM_DATA_NAME: { type: 'replacement' },
     TPL_MUTATION_NAME: {},
     TPL_ROUTE_PATH: {},
     TPL_UPDATE_MUTATION: {},
+    TPL_USER_QUERY: { type: 'replacement' },
   },
+});
+
+const route = createTsTemplateFile({
+  fileOptions: { generatorTemplatePath: 'route.tsx', kind: 'instance' },
+  importMapProviders: {},
+  name: 'route',
+  projectExports: {},
+  source: {
+    path: path.join(import.meta.dirname, '../templates/route.tsx'),
+  },
+  variables: { TPL_CRUMB: {}, TPL_ROUTE: {} },
 });
 
 const schema = createTsTemplateFile({
@@ -84,5 +96,6 @@ export const ADMIN_ADMIN_CRUD_EDIT_TEMPLATES = {
   createPage,
   editForm,
   editPage,
+  route,
   schema,
 };

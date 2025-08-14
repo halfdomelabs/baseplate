@@ -21,11 +21,11 @@ const listPage = createTsTemplateFile({
     TPL_DELETE_MUTATION: {},
     TPL_ERROR_PARTS: {},
     TPL_PAGE_NAME: {},
-    TPL_PLURAL_MODEL: {},
     TPL_REFETCH_DOCUMENT: {},
     TPL_ROUTE_PATH: {},
     TPL_ROW_FRAGMENT_NAME: {},
     TPL_TABLE_COMPONENT: {},
+    TPL_TITLE: {},
   },
 });
 

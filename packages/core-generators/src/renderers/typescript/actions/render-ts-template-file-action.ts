@@ -138,6 +138,7 @@ export function renderTsTemplateFileAction<
       const renderedTemplate = renderTsCodeFileTemplate({
         templateContents,
         variables: variableValues,
+        variableMetadata: templateVariables,
         importMapProviders,
         positionedHoistedFragments,
         generatorPaths: generatorPaths ?? {},

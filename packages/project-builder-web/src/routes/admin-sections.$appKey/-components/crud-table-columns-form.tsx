@@ -1,21 +1,24 @@
-import type { AdminCrudSectionConfig } from '@baseplate-dev/project-builder-lib';
+import type {
+  AdminCrudSectionConfig,
+  AdminCrudTableColumnDefinition,
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
 import {
-  adminCrudDisplayTypes,
-  ModelUtils,
-} from '@baseplate-dev/project-builder-lib';
-import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
-import {
   Button,
-  InputFieldController,
-  SelectFieldController,
+  RecordView,
+  RecordViewActions,
+  RecordViewItem,
+  RecordViewItemList,
+  useConfirmDialog,
 } from '@baseplate-dev/ui-components';
 import clsx from 'clsx';
+import { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
+import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
-import { CollapsibleRow } from '#src/components/index.js';
+import { ColumnDialog } from './column-dialog.js';
 
 export type AdminCrudTableConfig = Pick<
   AdminCrudSectionConfig,
@@ -27,123 +30,118 @@ interface Props {
   control: Control<AdminCrudTableConfig>;
 }
 
-function ColumnForm({
-  idx,
-  control,
-  fieldOptions,
-  localRelationOptions,
-}: {
-  idx: number;
-  control: Control<AdminCrudTableConfig>;
-  fieldOptions: { label: string; value: string }[];
-  localRelationOptions: { label: string; value: string }[];
-}): React.JSX.Element {
-  const displayTypeOptions = adminCrudDisplayTypes.map((t) => ({
-    label: t,
-    value: t,
-  }));
-  const type = useWatch({ control, name: `table.columns.${idx}.display.type` });
-  return (
-    <div className="space-y-4">
-      <SelectFieldController
-        label="Type"
-        control={control}
-        options={displayTypeOptions}
-        name={`table.columns.${idx}.display.type`}
-      />
-      <InputFieldController
-        label="Label"
-        control={control}
-        name={`table.columns.${idx}.label`}
-      />
-
-      {type === 'text' && (
-        <SelectFieldController
-          label="Field"
-          control={control}
-          name={`table.columns.${idx}.display.modelFieldRef`}
-          options={fieldOptions}
-        />
-      )}
-      {type === 'foreign' && (
-        <>
-          <SelectFieldController
-            label="Local Relation Name"
-            control={control}
-            name={`table.columns.${idx}.display.localRelationRef`}
-            options={localRelationOptions}
-          />
-          <InputFieldController
-            label="Label Expression (e.g. name)"
-            control={control}
-            name={`table.columns.${idx}.display.labelExpression`}
-          />
-          <InputFieldController
-            label="Value Expression (e.g. id)"
-            control={control}
-            name={`table.columns.${idx}.display.valueExpression`}
-          />
-        </>
-      )}
-    </div>
-  );
-}
-
 function CrudTableColumnsForm({
   className,
   control,
 }: Props): React.JSX.Element {
-  const modelRef = useWatch({ control, name: 'modelRef' });
-  const { definition, definitionContainer } = useProjectDefinition();
-  const model = modelRef
-    ? ModelUtils.byIdOrThrow(definition, modelRef)
-    : undefined;
-  const { fields, append, remove } = useFieldArray({
+  const { requestConfirm } = useConfirmDialog();
+
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: 'table.columns',
   });
+  const [editingColumn, setEditingColumn] = useState<
+    AdminCrudTableColumnDefinition | undefined
+  >(undefined);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
-  const localRelationOptions =
-    model?.model.relations?.map((relation) => ({
-      label: `${relation.name} (${definitionContainer.nameFromId(relation.modelRef)})`,
-      value: relation.id,
-    })) ?? [];
+  function handleDeleteColumn(columnIdx: number): void {
+    const column = fields[columnIdx];
+    requestConfirm({
+      title: 'Delete Column',
+      content: `Are you sure you want to delete the column "${column.label || 'Untitled'}"?`,
+      onConfirm: () => {
+        remove(columnIdx);
+      },
+    });
+  }
 
-  const fieldOptions =
-    model?.model.fields.map((field) => ({
-      label: field.name,
-      value: field.id,
-    })) ?? [];
+  const columns = useWatch({ control, name: 'table.columns' });
+
+  function handleEditColumn(columnIdx: number): void {
+    setEditingColumn(columns[columnIdx]);
+    setIsEditing(true);
+  }
+
+  function handleCreateColumn(): void {
+    setEditingColumn(undefined);
+    setIsCreating(true);
+  }
+
+  function handleSaveColumn(columnData: AdminCrudTableColumnDefinition): void {
+    if (editingColumn) {
+      const existingIndex = columns.findIndex(
+        (field) => field.id === editingColumn.id,
+      );
+      if (existingIndex !== -1) {
+        update(existingIndex, columnData);
+      }
+    } else {
+      append(columnData);
+    }
+  }
 
   return (
     <div className={clsx('space-y-4', className)}>
       {fields.map((field, idx) => (
-        <CollapsibleRow
-          key={field.id}
-          collapsedContents={
-            <div>
-              {field.label} ({field.display.type})
-            </div>
-          }
-          onRemove={() => {
-            remove(idx);
-          }}
-          defaultOpen={!field.label}
-        >
-          <ColumnForm
-            key={field.id}
-            idx={idx}
-            control={control}
-            fieldOptions={fieldOptions}
-            localRelationOptions={localRelationOptions}
-          />
-        </CollapsibleRow>
+        <RecordView key={field.id}>
+          <RecordViewItemList>
+            <RecordViewItem title="Label">
+              <div className="flex items-center gap-2">
+                <span>
+                  {field.label || (
+                    <span className="text-muted-foreground">
+                      Untitled Column
+                    </span>
+                  )}
+                </span>
+              </div>
+            </RecordViewItem>
+            <RecordViewItem title="Type">{field.display.type}</RecordViewItem>
+          </RecordViewItemList>
+          <RecordViewActions>
+            <Button
+              variant="ghost"
+              size="icon"
+              title="Edit"
+              aria-label="Edit column"
+              onClick={() => {
+                handleEditColumn(idx);
+              }}
+            >
+              <MdEdit />
+            </Button>
+            <Button
+              variant="ghostDestructive"
+              size="icon"
+              title="Delete"
+              aria-label="Delete column"
+              onClick={() => {
+                handleDeleteColumn(idx);
+              }}
+            >
+              <MdDeleteOutline />
+            </Button>
+          </RecordViewActions>
+        </RecordView>
       ))}
-      <Button
-        onClick={() => {
-          append({ display: { type: 'text', modelFieldRef: '' }, label: '' });
+      <ColumnDialog
+        open={isEditing || isCreating}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsEditing(false);
+            setIsCreating(false);
+            setEditingColumn(undefined);
+          }
         }}
-      >
+        column={editingColumn}
+        modelRef={useWatch({ control, name: 'modelRef' }) || ''}
+        isNew={isCreating}
+        onSave={handleSaveColumn}
+      />
+      <Button variant="secondary" size="sm" onClick={handleCreateColumn}>
+        <MdAdd />
         Add Column
       </Button>
     </div>

@@ -38,6 +38,19 @@ function AdminCrudSectionForm({ formProps }: Props): React.JSX.Element {
     value: model.id,
   }));
 
+  const modelId = useWatch({
+    control,
+    name: 'modelRef',
+  });
+
+  const nameFieldOptions =
+    definition.models
+      .find((m) => m.id === modelId)
+      ?.model.fields.map((field) => ({
+        label: field.name,
+        value: field.id,
+      })) ?? [];
+
   // TODO: struggles with https://github.com/react-hook-form/react-hook-form/discussions/7354
 
   const embeddedFormOptions =
@@ -66,6 +79,13 @@ function AdminCrudSectionForm({ formProps }: Props): React.JSX.Element {
             control={control}
             options={modelOptions}
             name="modelRef"
+          />
+          <ComboboxFieldController
+            label="Name Field"
+            control={control}
+            options={nameFieldOptions}
+            description="The field to use as the name of the record (used in breadcrumbs/title of edit page)"
+            name="nameFieldRef"
           />
           <CheckboxFieldController
             label="Disable Create?"

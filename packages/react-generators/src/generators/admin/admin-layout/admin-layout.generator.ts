@@ -77,23 +77,28 @@ export const adminLayoutGenerator = createGenerator({
               links.map((link) => [
                 link.path,
                 TsCodeUtils.templateWithImports([
-                  reactComponentsImports.NavigationMenuItemWithLink.declaration(),
+                  reactComponentsImports.SidebarMenuItem.declaration(),
+                  reactComponentsImports.SidebarMenuButton.declaration(),
                   tsImportBuilder(['Link']).from('@tanstack/react-router'),
                 ])`
-                <NavigationMenuItemWithLink asChild>
-                  <Link to="${link.path}" className="flex-row items-center gap-2">
-                    <${TsCodeUtils.importFragment(link.icon, getIconImport(link.icon))} />
-                    ${link.label}
-                  </Link>
-                </NavigationMenuItemWithLink>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link to="${link.path}">
+                      <${TsCodeUtils.importFragment(link.icon, getIconImport(link.icon))} />
+                      <span>${link.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
                 `,
               ]),
             );
 
             await builder.apply(
-              renderers.adminLayout.render({
+              renderers.mainGroup.render({
                 variables: {
-                  TPL_SIDEBAR_LINKS: TsCodeUtils.mergeFragments(navEntries),
+                  appSidebar: {
+                    TPL_SIDEBAR_LINKS: TsCodeUtils.mergeFragments(navEntries),
+                  },
                 },
               }),
             );

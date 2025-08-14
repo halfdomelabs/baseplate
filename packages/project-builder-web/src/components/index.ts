@@ -1,6 +1,5 @@
 export * from './ansi-text/ansi-text.js';
 export * from './blocker-dialog/blocker-dialog.js';
-export * from './collapsible-row/collapsible-row.js';
 export * from './console/console.js';
 export * from './embedded-list-input/embedded-list-input.js';
 export * from './error-boundary/error-boundary.js';

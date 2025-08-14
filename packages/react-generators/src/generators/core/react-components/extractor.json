@@ -17,6 +17,25 @@
       "sourceFile": "components/ui/alert.tsx",
       "variables": {}
     },
+    "breadcrumb": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/breadcrumb.tsx",
+      "projectExports": {
+        "Breadcrumb": {},
+        "BreadcrumbEllipsis": {},
+        "BreadcrumbItem": {},
+        "BreadcrumbLink": {},
+        "BreadcrumbList": {},
+        "BreadcrumbPage": {},
+        "BreadcrumbSeparator": {}
+      },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/breadcrumb.tsx",
+      "variables": {}
+    },
     "button": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -237,6 +256,33 @@
       },
       "referencedGeneratorTemplates": ["cn"],
       "sourceFile": "components/ui/dialog.tsx",
+      "variables": {}
+    },
+    "dropdown": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/dropdown.tsx",
+      "projectExports": {
+        "DropdownMenu": {},
+        "DropdownMenuCheckboxItem": {},
+        "DropdownMenuContent": {},
+        "DropdownMenuGroup": {},
+        "DropdownMenuItem": {},
+        "DropdownMenuLabel": {},
+        "DropdownMenuPortal": {},
+        "DropdownMenuRadioGroup": {},
+        "DropdownMenuRadioItem": {},
+        "DropdownMenuSeparator": {},
+        "DropdownMenuShortcut": {},
+        "DropdownMenuSub": {},
+        "DropdownMenuSubContent": {},
+        "DropdownMenuSubTrigger": {},
+        "DropdownMenuTrigger": {}
+      },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/dropdown.tsx",
       "variables": {}
     },
     "empty-display": {
@@ -478,20 +524,91 @@
       "sourceFile": "components/ui/select-field.tsx",
       "variables": {}
     },
-    "sidebar-layout": {
+    "separator": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
-      "generator": "@baseplate-dev/react-generators#core/react-components",
       "group": "components",
       "importMapProviders": {},
-      "pathRootRelativePath": "{components-root}/ui/sidebar-layout.tsx",
+      "pathRootRelativePath": "{components-root}/ui/separator.tsx",
+      "projectExports": { "Separator": {} },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/separator.tsx",
+      "variables": {}
+    },
+    "sheet": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/sheet.tsx",
       "projectExports": {
-        "SidebarLayout": {},
-        "SidebarLayoutContent": {},
-        "SidebarLayoutSidebar": {}
+        "Sheet": {},
+        "SheetClose": {},
+        "SheetContent": {},
+        "SheetDescription": {},
+        "SheetFooter": {},
+        "SheetHeader": {},
+        "SheetTitle": {},
+        "SheetTrigger": {}
       },
       "referencedGeneratorTemplates": ["cn"],
-      "sourceFile": "components/ui/sidebar-layout.tsx",
+      "sourceFile": "components/ui/sheet.tsx",
+      "variables": {}
+    },
+    "sidebar": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/sidebar.tsx",
+      "projectExports": {
+        "Sidebar": {},
+        "SidebarContent": {},
+        "SidebarFooter": {},
+        "SidebarGroup": {},
+        "SidebarGroupAction": {},
+        "SidebarGroupContent": {},
+        "SidebarGroupLabel": {},
+        "SidebarHeader": {},
+        "SidebarInput": {},
+        "SidebarInset": {},
+        "SidebarMenu": {},
+        "SidebarMenuAction": {},
+        "SidebarMenuBadge": {},
+        "SidebarMenuButton": {},
+        "SidebarMenuItem": {},
+        "SidebarMenuSkeleton": {},
+        "SidebarMenuSub": {},
+        "SidebarMenuSubButton": {},
+        "SidebarMenuSubItem": {},
+        "SidebarProvider": {},
+        "SidebarRail": {},
+        "SidebarSeparator": {},
+        "SidebarTrigger": {},
+        "useSidebar": {}
+      },
+      "referencedGeneratorTemplates": [
+        "button",
+        "cn",
+        "input",
+        "separator",
+        "sheet",
+        "skeleton",
+        "tooltip",
+        "use-mobile"
+      ],
+      "sourceFile": "components/ui/sidebar.tsx",
+      "variables": {}
+    },
+    "skeleton": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/skeleton.tsx",
+      "projectExports": { "Skeleton": {} },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/skeleton.tsx",
       "variables": {}
     },
     "styles-button": {
@@ -620,6 +737,22 @@
       "sourceFile": "components/ui/toaster.tsx",
       "variables": {}
     },
+    "tooltip": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/tooltip.tsx",
+      "projectExports": {
+        "Tooltip": {},
+        "TooltipContent": {},
+        "TooltipProvider": {},
+        "TooltipTrigger": {}
+      },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/tooltip.tsx",
+      "variables": {}
+    },
     "types-form": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -661,6 +794,16 @@
       },
       "referencedGeneratorTemplates": ["button"],
       "sourceFile": "src/hooks/use-confirm-dialog.ts",
+      "variables": {}
+    },
+    "use-mobile": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "hooks",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{src-root}/hooks/use-mobile.ts",
+      "projectExports": { "useIsMobile": {} },
+      "sourceFile": "src/hooks/use-mobile.ts",
       "variables": {}
     }
   }

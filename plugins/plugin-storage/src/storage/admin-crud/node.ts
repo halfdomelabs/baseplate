@@ -9,9 +9,9 @@ import {
 import { adminCrudFileInputGenerator } from '#src/generators/react/admin-crud-file-input/index.js';
 
 import type { FileTransformerDefinition } from '../transformers/schema/file-transformer.schema.js';
-import type { AdminCrudFileInputConfig } from './types.js';
+import type { AdminCrudFileInputDefinition } from './types.js';
 
-function buildFileTransformerCompiler(): AdminCrudInputCompiler<AdminCrudFileInputConfig> {
+function buildFileTransformerCompiler(): AdminCrudInputCompiler<AdminCrudFileInputDefinition> {
   return {
     name: 'file',
     compileInput(definition, { order, definitionContainer, model }) {

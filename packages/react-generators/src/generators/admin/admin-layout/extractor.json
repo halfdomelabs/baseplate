@@ -5,19 +5,17 @@
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/react-generators#admin/admin-layout",
+      "group": "main",
       "importMapProviders": {
-        "authHooksImportsProvider": {
-          "importName": "authHooksImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-hooks.ts"
-        },
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
         }
       },
       "pathRootRelativePath": "{components-root}/layouts/admin-layout.tsx",
+      "referencedGeneratorTemplates": ["app-breadcrumbs", "app-sidebar"],
       "sourceFile": "components/layouts/admin-layout.tsx",
-      "variables": { "TPL_SIDEBAR_LINKS": {} }
+      "variables": {}
     },
     "admin-route": {
       "type": "ts",
@@ -42,6 +40,40 @@
         "TPL_REQUIRED_ROLES": {},
         "TPL_ROUTE_PATH": {}
       }
+    },
+    "app-breadcrumbs": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{components-root}/layouts/app-breadcrumbs.tsx",
+      "projectExports": {},
+      "sourceFile": "components/layouts/app-breadcrumbs.tsx",
+      "variables": {}
+    },
+    "app-sidebar": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "main",
+      "importMapProviders": {
+        "authHooksImportsProvider": {
+          "importName": "authHooksImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/auth/_providers/auth-hooks.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{components-root}/layouts/app-sidebar.tsx",
+      "projectExports": {},
+      "sourceFile": "components/layouts/app-sidebar.tsx",
+      "variables": { "TPL_SIDEBAR_LINKS": {} }
     }
   }
 }

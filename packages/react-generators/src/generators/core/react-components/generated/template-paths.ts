@@ -5,6 +5,7 @@ import { reactPathsProvider } from '#src/providers/react-paths.js';
 
 export interface CoreReactComponentsPaths {
   alert: string;
+  breadcrumb: string;
   button: string;
   calendar: string;
   card: string;
@@ -18,6 +19,7 @@ export interface CoreReactComponentsPaths {
   datePickerField: string;
   dateTimePickerField: string;
   dialog: string;
+  dropdown: string;
   emptyDisplay: string;
   errorableLoader: string;
   errorDisplay: string;
@@ -35,7 +37,10 @@ export interface CoreReactComponentsPaths {
   scrollArea: string;
   select: string;
   selectField: string;
-  sidebarLayout: string;
+  separator: string;
+  sheet: string;
+  sidebar: string;
+  skeleton: string;
   stylesButton: string;
   stylesInput: string;
   stylesSelect: string;
@@ -45,9 +50,11 @@ export interface CoreReactComponentsPaths {
   textarea: string;
   textareaField: string;
   toaster: string;
+  tooltip: string;
   typesForm: string;
   typesIcon: string;
   useConfirmDialog: string;
+  useMobile: string;
 }
 
 const coreReactComponentsPaths = createProviderType<CoreReactComponentsPaths>(
@@ -68,6 +75,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
       providers: {
         coreReactComponentsPaths: {
           alert: `${componentsRoot}/ui/alert.tsx`,
+          breadcrumb: `${componentsRoot}/ui/breadcrumb.tsx`,
           button: `${componentsRoot}/ui/button.tsx`,
           calendar: `${componentsRoot}/ui/calendar.tsx`,
           card: `${componentsRoot}/ui/card.tsx`,
@@ -81,6 +89,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           datePickerField: `${componentsRoot}/ui/date-picker-field.tsx`,
           dateTimePickerField: `${componentsRoot}/ui/date-time-picker-field.tsx`,
           dialog: `${componentsRoot}/ui/dialog.tsx`,
+          dropdown: `${componentsRoot}/ui/dropdown.tsx`,
           emptyDisplay: `${componentsRoot}/ui/empty-display.tsx`,
           errorableLoader: `${componentsRoot}/ui/errorable-loader.tsx`,
           errorDisplay: `${componentsRoot}/ui/error-display.tsx`,
@@ -98,7 +107,10 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           scrollArea: `${componentsRoot}/ui/scroll-area.tsx`,
           select: `${componentsRoot}/ui/select.tsx`,
           selectField: `${componentsRoot}/ui/select-field.tsx`,
-          sidebarLayout: `${componentsRoot}/ui/sidebar-layout.tsx`,
+          separator: `${componentsRoot}/ui/separator.tsx`,
+          sheet: `${componentsRoot}/ui/sheet.tsx`,
+          sidebar: `${componentsRoot}/ui/sidebar.tsx`,
+          skeleton: `${componentsRoot}/ui/skeleton.tsx`,
           stylesButton: `${srcRoot}/styles/button.ts`,
           stylesInput: `${srcRoot}/styles/input.ts`,
           stylesSelect: `${srcRoot}/styles/select.ts`,
@@ -108,9 +120,11 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           textarea: `${componentsRoot}/ui/textarea.tsx`,
           textareaField: `${componentsRoot}/ui/textarea-field.tsx`,
           toaster: `${componentsRoot}/ui/toaster.tsx`,
+          tooltip: `${componentsRoot}/ui/tooltip.tsx`,
           typesForm: `${srcRoot}/types/form.ts`,
           typesIcon: `${srcRoot}/types/icon.ts`,
           useConfirmDialog: `${srcRoot}/hooks/use-confirm-dialog.ts`,
+          useMobile: `${srcRoot}/hooks/use-mobile.ts`,
         },
       },
     };
