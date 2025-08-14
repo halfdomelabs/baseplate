@@ -17,6 +17,27 @@ const alert = createTsTemplateFile({
   variables: {},
 });
 
+const badge = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'badge',
+  projectExports: {
+    Badge: {},
+    badgeVariants: {},
+    BadgeWithIcon: {},
+    BadgeWithIconProps: { isTypeOnly: true },
+  },
+  referencedGeneratorTemplates: { cn: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/badge.tsx',
+    ),
+  },
+  variables: {},
+});
+
 const breadcrumb = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'components',
@@ -187,6 +208,32 @@ const comboboxField = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/components/ui/combobox-field.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const command = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'command',
+  projectExports: {
+    Command: {},
+    CommandDialog: {},
+    CommandEmpty: {},
+    CommandGroup: {},
+    CommandInput: {},
+    CommandItem: {},
+    CommandList: {},
+    CommandSeparator: {},
+    CommandShortcut: {},
+  },
+  referencedGeneratorTemplates: { cn: {}, dialog: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/command.tsx',
     ),
   },
   variables: {},
@@ -464,6 +511,63 @@ const loader = createTsTemplateFile({
     path: path.join(
       import.meta.dirname,
       '../templates/components/ui/loader.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const multiCombobox = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'multi-combobox',
+  projectExports: {
+    MultiCombobox: {},
+    MultiComboboxContent: {},
+    MultiComboboxEmpty: {},
+    MultiComboboxGroup: {},
+    MultiComboboxInput: {},
+    MultiComboboxItem: {},
+    useMultiComboboxContext: {},
+  },
+  referencedGeneratorTemplates: {
+    badge: {},
+    cn: {},
+    command: {},
+    hooksUseControlledState: {},
+    popover: {},
+    stylesInput: {},
+    stylesSelect: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/multi-combobox.tsx',
+    ),
+  },
+  variables: {},
+});
+
+const multiComboboxField = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'components',
+  importMapProviders: {},
+  name: 'multi-combobox-field',
+  projectExports: {
+    MultiComboboxField: {},
+    MultiComboboxFieldController: {},
+    MultiComboboxFieldProps: { isTypeOnly: true },
+  },
+  referencedGeneratorTemplates: {
+    formItem: {},
+    hooksUseControllerMerged: {},
+    multiCombobox: {},
+    typesForm: {},
+  },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/components/ui/multi-combobox-field.tsx',
     ),
   },
   variables: {},
@@ -827,6 +931,7 @@ const tooltip = createTsTemplateFile({
 
 export const componentsGroup = {
   alert,
+  badge,
   breadcrumb,
   button,
   calendar,
@@ -836,6 +941,7 @@ export const componentsGroup = {
   circularProgress,
   combobox,
   comboboxField,
+  command,
   confirmDialog,
   datePickerField,
   dateTimePickerField,
@@ -849,6 +955,8 @@ export const componentsGroup = {
   inputField,
   label,
   loader,
+  multiCombobox,
+  multiComboboxField,
   navigationMenu,
   notFoundCard,
   popover,
