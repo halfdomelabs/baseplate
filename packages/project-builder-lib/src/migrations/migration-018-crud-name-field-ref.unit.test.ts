@@ -31,7 +31,7 @@ describe('migration018CrudNameFieldRef', () => {
                 id: 'section-1',
                 name: 'Users',
                 type: 'crud',
-                modelRef: 'user-model',
+                modelRef: 'User',
               },
             ],
           },
@@ -42,7 +42,7 @@ describe('migration018CrudNameFieldRef', () => {
     const result = migration018CrudNameFieldRef.migrate(oldConfig);
 
     expect(result.apps?.[0]?.adminApp?.sections?.[0]?.nameFieldRef).toBe(
-      'field-2',
+      'name',
     );
   });
 
@@ -74,7 +74,7 @@ describe('migration018CrudNameFieldRef', () => {
                 id: 'section-1',
                 name: 'Posts',
                 type: 'crud',
-                modelRef: 'post-model',
+                modelRef: 'Post',
               },
             ],
           },
@@ -85,7 +85,7 @@ describe('migration018CrudNameFieldRef', () => {
     const result = migration018CrudNameFieldRef.migrate(oldConfig);
 
     expect(result.apps?.[0]?.adminApp?.sections?.[0]?.nameFieldRef).toBe(
-      'field-2',
+      'title',
     );
   });
 
@@ -117,7 +117,7 @@ describe('migration018CrudNameFieldRef', () => {
                 id: 'section-1',
                 name: 'Configs',
                 type: 'crud',
-                modelRef: 'config-model',
+                modelRef: 'Config',
               },
             ],
           },
@@ -127,9 +127,7 @@ describe('migration018CrudNameFieldRef', () => {
 
     const result = migration018CrudNameFieldRef.migrate(oldConfig);
 
-    expect(result.apps?.[0]?.adminApp?.sections?.[0]?.nameFieldRef).toBe(
-      'field-1',
-    );
+    expect(result.apps?.[0]?.adminApp?.sections?.[0]?.nameFieldRef).toBe('id');
   });
 
   it('adds nameFieldRef to CRUD section using first field as fallback', () => {
@@ -160,7 +158,7 @@ describe('migration018CrudNameFieldRef', () => {
                 id: 'section-1',
                 name: 'Data',
                 type: 'crud',
-                modelRef: 'data-model',
+                modelRef: 'Data',
               },
             ],
           },
@@ -171,7 +169,7 @@ describe('migration018CrudNameFieldRef', () => {
     const result = migration018CrudNameFieldRef.migrate(oldConfig);
 
     expect(result.apps?.[0]?.adminApp?.sections?.[0]?.nameFieldRef).toBe(
-      'field-1',
+      'uuid',
     );
   });
 
@@ -203,8 +201,8 @@ describe('migration018CrudNameFieldRef', () => {
                 id: 'section-1',
                 name: 'Users',
                 type: 'crud',
-                modelRef: 'user-model',
-                nameFieldRef: 'field-3', // Already set to email
+                modelRef: 'User',
+                nameFieldRef: 'email',
               },
             ],
           },
@@ -215,7 +213,7 @@ describe('migration018CrudNameFieldRef', () => {
     const result = migration018CrudNameFieldRef.migrate(oldConfig);
 
     expect(result.apps?.[0]?.adminApp?.sections?.[0]?.nameFieldRef).toBe(
-      'field-3',
+      'email',
     );
   });
 
@@ -251,7 +249,7 @@ describe('migration018CrudNameFieldRef', () => {
                 id: 'section-2',
                 name: 'Custom',
                 type: 'custom',
-                modelRef: 'user-model',
+                modelRef: 'User',
               },
             ],
           },
@@ -284,7 +282,7 @@ describe('migration018CrudNameFieldRef', () => {
                 id: 'section-1',
                 name: 'Users',
                 type: 'crud',
-                modelRef: 'user-model',
+                modelRef: 'User',
               },
             ],
           },
