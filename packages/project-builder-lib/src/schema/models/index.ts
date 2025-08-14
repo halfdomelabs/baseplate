@@ -302,7 +302,7 @@ export const createModelBaseSchema = definitionSchema((ctx) =>
       delete: { enabled: false },
       transformers: [],
     }),
-    graphql: createModelGraphqlSchema(ctx).optional(),
+    graphql: ctx.withDefault(createModelGraphqlSchema(ctx).optional(), {}),
   }),
 );
 
