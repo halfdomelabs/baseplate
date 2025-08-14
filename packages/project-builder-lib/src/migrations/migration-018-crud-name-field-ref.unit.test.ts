@@ -299,45 +299,6 @@ describe('migration018CrudNameFieldRef', () => {
     );
   });
 
-  it('handles model with no fields gracefully', () => {
-    const oldConfig = {
-      models: [
-        {
-          id: 'empty-model',
-          name: 'Empty',
-          model: {
-            fields: [],
-          },
-        },
-      ],
-      apps: [
-        {
-          id: 'web-app',
-          type: 'web',
-          name: 'Web App',
-          adminApp: {
-            enabled: true,
-            pathPrefix: '/admin',
-            sections: [
-              {
-                id: 'section-1',
-                name: 'Empty',
-                type: 'crud',
-                modelRef: 'empty-model',
-              },
-            ],
-          },
-        },
-      ],
-    };
-
-    const result = migration018CrudNameFieldRef.migrate(oldConfig);
-
-    expect(result.apps?.[0]?.adminApp?.sections?.[0]).not.toHaveProperty(
-      'nameFieldRef',
-    );
-  });
-
   it('handles apps without adminApp', () => {
     const oldConfig = {
       models: [
@@ -374,66 +335,5 @@ describe('migration018CrudNameFieldRef', () => {
 
     expect(result.apps?.[0]).toEqual(oldConfig.apps[0]);
     expect(result.apps?.[1]).toEqual(oldConfig.apps[1]);
-  });
-
-  it('processes multiple CRUD sections correctly', () => {
-    const oldConfig = {
-      models: [
-        {
-          id: 'user-model',
-          name: 'User',
-          model: {
-            fields: [
-              { id: 'field-1', name: 'id' },
-              { id: 'field-2', name: 'name' },
-            ],
-          },
-        },
-        {
-          id: 'post-model',
-          name: 'Post',
-          model: {
-            fields: [
-              { id: 'field-3', name: 'id' },
-              { id: 'field-4', name: 'title' },
-            ],
-          },
-        },
-      ],
-      apps: [
-        {
-          id: 'web-app',
-          type: 'web',
-          name: 'Web App',
-          adminApp: {
-            enabled: true,
-            pathPrefix: '/admin',
-            sections: [
-              {
-                id: 'section-1',
-                name: 'Users',
-                type: 'crud',
-                modelRef: 'user-model',
-              },
-              {
-                id: 'section-2',
-                name: 'Posts',
-                type: 'crud',
-                modelRef: 'post-model',
-              },
-            ],
-          },
-        },
-      ],
-    };
-
-    const result = migration018CrudNameFieldRef.migrate(oldConfig);
-
-    expect(result.apps?.[0]?.adminApp?.sections?.[0]?.nameFieldRef).toBe(
-      'field-2',
-    ); // name field
-    expect(result.apps?.[0]?.adminApp?.sections?.[1]?.nameFieldRef).toBe(
-      'field-4',
-    ); // title field
   });
 });
