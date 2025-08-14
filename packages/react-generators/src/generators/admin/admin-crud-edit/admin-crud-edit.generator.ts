@@ -33,6 +33,7 @@ const descriptorSchema = z.object({
   modelId: z.string(),
   modelName: z.string(),
   disableCreate: z.boolean().optional(),
+  nameField: z.string(),
 });
 
 export interface AdminCrudEmbeddedForm {
@@ -53,7 +54,7 @@ export const adminCrudEditGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelName,
-  buildTasks: ({ modelId, modelName, disableCreate }) => ({
+  buildTasks: ({ modelId, modelName, disableCreate, nameField }) => ({
     renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
       dependencies: {
@@ -273,6 +274,10 @@ export const adminCrudEditGenerator = createGenerator({
               reactComponentsImports,
             );
 
+            const nameFieldExpression = `data.${editQueryInfo.fieldName}.${nameField}`;
+            const modelNameExpression = titleizeCamel(modelName);
+            const crumbExpression = `${nameFieldExpression} ? ${nameFieldExpression} : 'Unnamed ${modelNameExpression}'`;
+
             await builder.apply(
               renderers.editPage.render({
                 id: `edit-${modelId}`,
@@ -284,9 +289,10 @@ export const adminCrudEditGenerator = createGenerator({
                   TPL_UPDATE_MUTATION: updateInfo.documentExpression,
                   TPL_MUTATION_NAME: updateInfo.fieldName,
                   TPL_FORM_DATA_NAME: formDataExpression,
-                  TPL_MODEL_NAME: titleizeCamel(modelName),
                   TPL_DATA_LOADER: editPageLoaderOutput.loader,
                   TPL_DATA_GATE: editPageLoaderOutput.gate,
+                  TPL_CRUMB_EXPRESSION: crumbExpression,
+                  TPL_USER_QUERY: editQueryInfo.documentExpression,
                 },
               }),
             );

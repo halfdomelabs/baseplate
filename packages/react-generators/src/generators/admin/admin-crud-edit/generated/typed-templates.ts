@@ -54,15 +54,16 @@ const editPage = createTsTemplateFile({
     path: path.join(import.meta.dirname, '../templates/edit.tsx'),
   },
   variables: {
-    TPL_COMPONENT_NAME: {},
+    TPL_COMPONENT_NAME: { type: 'replacement' },
+    TPL_CRUMB_EXPRESSION: {},
     TPL_DATA_GATE: {},
     TPL_DATA_LOADER: {},
     TPL_EDIT_FORM: {},
-    TPL_FORM_DATA_NAME: {},
-    TPL_MODEL_NAME: {},
+    TPL_FORM_DATA_NAME: { type: 'replacement' },
     TPL_MUTATION_NAME: {},
     TPL_ROUTE_PATH: {},
     TPL_UPDATE_MUTATION: {},
+    TPL_USER_QUERY: { type: 'replacement' },
   },
 });
 

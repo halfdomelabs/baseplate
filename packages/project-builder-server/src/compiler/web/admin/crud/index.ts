@@ -115,6 +115,7 @@ export function compileAdminCrudSection(
             modelId: crudSection.modelRef,
             modelName,
             disableCreate,
+            nameField: builder.nameFromId(crudSection.nameFieldRef),
             children: {
               inputs: crudSection.form.fields.map((field, idx) =>
                 compileAdminCrudInput(

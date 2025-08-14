@@ -9,10 +9,21 @@ import { toast } from 'sonner';
 
 export const Route = createFileRoute(TPL_ROUTE_PATH)({
   component: TPL_COMPONENT_NAME,
+  loader: async ({ context: { apolloClient }, params }) => {
+    const { id } = params;
+    const { data } = await apolloClient.query({
+      query: TPL_USER_QUERY,
+      variables: { id },
+    });
+    return {
+      crumb: TPL_CRUMB_EXPRESSION,
+    };
+  },
 });
 
 function TPL_COMPONENT_NAME(): ReactElement {
   const { id } = Route.useParams();
+  const { crumb } = Route.useLoaderData();
 
   TPL_DATA_LOADER;
 
@@ -31,11 +42,7 @@ function TPL_COMPONENT_NAME(): ReactElement {
 
   return (
     <div className="space-y-4">
-      <h1 className="flex space-x-2">
-        <span>
-          Edit <TPL_MODEL_NAME /> ({id})
-        </span>
-      </h1>
+      <h1 className="flex space-x-2">{crumb}</h1>
       <TPL_EDIT_FORM />
     </div>
   );
