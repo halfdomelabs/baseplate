@@ -14,7 +14,7 @@ function isEmpty(value: unknown): boolean {
 
 export type WithDefaultType = <T extends z.ZodTypeAny>(
   schema: T,
-  defaultValue: z.infer<T>,
+  defaultValue: z.input<T>,
 ) => z.ZodEffects<
   z.ZodOptional<T>,
   z.output<z.ZodOptional<T>>,
@@ -37,7 +37,7 @@ export function extendParserContextWithDefaults(
   return {
     withDefault: function withDefault<T extends z.ZodTypeAny>(
       schema: T,
-      defaultValue: z.infer<T>,
+      defaultValue: z.input<T>,
     ): z.ZodEffects<z.ZodOptional<T>, z.output<z.ZodOptional<T>>, z.input<T>> {
       // Auto-add .optional() to the schema
       const optionalSchema = schema.optional();

@@ -10,6 +10,7 @@ import {
 } from '#src/schema/models/index.js';
 
 import { createBaseAdminSectionValidators } from './base.js';
+import { createAdminCrudActionSchema } from './crud-actions/admin-crud-action.js';
 import { createAdminCrudInputSchema } from './crud-form/admin-crud-input.js';
 import { adminCrudEmbeddedFormEntityType } from './crud-form/types.js';
 import { adminCrudSectionColumnEntityType } from './types.js';
@@ -172,6 +173,10 @@ export const createAdminCrudSectionSchema = definitionSchema((ctx) =>
         disableCreate: ctx.withDefault(z.boolean(), false),
         table: z.object({
           columns: z.array(createAdminCrudTableColumnSchema(ctx)),
+          actions: ctx.withDefault(z.array(createAdminCrudActionSchema(ctx)), [
+            { type: 'edit', position: 'inline' },
+            { type: 'delete', position: 'dropdown' },
+          ]),
         }),
         form: z.object({
           fields: z.array(createAdminCrudInputSchema(ctx)),

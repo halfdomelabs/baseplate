@@ -17,12 +17,14 @@ import { useWatch } from 'react-hook-form';
 import { EmbeddedListInput } from '#src/components/index.js';
 
 import type { AdminCrudFormConfigInput } from './crud-form-fields-form.js';
+import type { AdminCrudActionsConfig } from './crud-table-actions-form.js';
 import type { AdminCrudTableConfig } from './crud-table-columns-form.js';
 
 import AdminCrudEmbeddedForm, {
   AdminCrudEmbeddedTable,
 } from './admin-crud-embedded-form.js';
 import CrudFormFieldsForm from './crud-form-fields-form.js';
+import CrudTableActionsForm from './crud-table-actions-form.js';
 import CrudTableColumnsForm from './crud-table-columns-form.js';
 
 interface Props {
@@ -105,6 +107,22 @@ function AdminCrudSectionForm({ formProps }: Props): React.JSX.Element {
         <SectionListSectionContent>
           <CrudTableColumnsForm
             control={control as unknown as Control<AdminCrudTableConfig>}
+          />
+        </SectionListSectionContent>
+      </SectionListSection>
+
+      <SectionListSection>
+        <SectionListSectionHeader>
+          <SectionListSectionTitle>Table Actions</SectionListSectionTitle>
+          <SectionListSectionDescription>
+            Configure actions available for each row in the table. Drag to
+            reorder.
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
+        <SectionListSectionContent>
+          <CrudTableActionsForm
+            control={control as unknown as Control<AdminCrudActionsConfig>}
+            modelRef={modelId}
           />
         </SectionListSectionContent>
       </SectionListSection>
