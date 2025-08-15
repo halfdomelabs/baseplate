@@ -41,13 +41,13 @@ const table = createTsTemplateFile({
   },
   variables: {
     TPL_CELLS: {},
-    TPL_COMPONENT_NAME: {},
+    TPL_COMPONENT_NAME: { type: 'replacement' },
     TPL_DESTRUCTURED_PROPS: {},
     TPL_EDIT_ROUTE: {},
     TPL_EXTRA_PROPS: {},
     TPL_HEADERS: {},
     TPL_PLURAL_MODEL: {},
-    TPL_ROW_FRAGMENT: {},
+    TPL_ROW_FRAGMENT: { type: 'replacement' },
   },
 });
 

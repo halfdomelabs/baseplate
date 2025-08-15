@@ -4,7 +4,10 @@ import type {
   TsTemplateFileVariableValue,
 } from '../templates/types.js';
 
-import { generateSimpleReplacementComments } from '../extractor/parse-simple-replacements.js';
+import {
+  generateSimpleReplacementComments,
+  isValidSimpleReplacementValue,
+} from '../extractor/parse-simple-replacements.js';
 import { flattenImportsAndHoistedFragments } from '../fragments/utils.js';
 
 export interface RenderTsTemplateOptions {
@@ -59,35 +62,43 @@ export function addSimpleReplacementComments(
   const replacementVariables: Record<string, string> = {};
 
   for (const [key, value] of Object.entries(variables)) {
+    if (!(key in variableMetadata)) {
+      continue;
+    }
     const metadata = variableMetadata[key];
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (metadata?.type === 'replacement') {
+    if (metadata.type === 'replacement') {
       const contents = typeof value === 'string' ? value : value.contents;
       // Only add as replacement if it's a simple value
-      if (contents && /^[a-zA-Z0-9_$/./-]+$/.test(contents)) {
-        // Check for duplicate values which would prevent correct extraction
-        if (contents in replacementVariables) {
-          throw new Error(
-            `Duplicate replacement value "${contents}" for ${key}. ` +
-              `Value is already used for ${replacementVariables[contents]}. Each value must be unique when metadata is included.`,
-          );
-        }
-
-        // Check if the value already exists in the template (would prevent extraction)
-        // We check the original template, not the processed one
-        const valuePattern = new RegExp(
-          `\\b${contents.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)}\\b`,
+      if (!isValidSimpleReplacementValue(contents)) {
+        throw new Error(
+          `Invalid replacement value "${contents}" for ${key}. ` +
+            `Values can only contain: a-zA-Z0-9_$/.- ` +
+            `For complex values, use delimiter-based variables instead: ` +
+            `/* TPL_${key}:START */.../* TPL_${key}:END */`,
         );
-        if (valuePattern.test(template)) {
-          throw new Error(
-            `The template contents contain the value "${contents}" which would prevent ` +
-              'template extraction from working correctly. Please ensure that replacement variable values ' +
-              'are not present in the original template file.',
-          );
-        }
-
-        replacementVariables[contents] = key;
       }
+      // Check for duplicate values which would prevent correct extraction
+      if (contents in replacementVariables) {
+        throw new Error(
+          `Duplicate replacement value "${contents}" for ${key}. ` +
+            `Value is already used for ${replacementVariables[contents]}. Each value must be unique when metadata is included.`,
+        );
+      }
+
+      // Check if the value already exists in the template (would prevent extraction)
+      // We check the original template, not the processed one
+      const valuePattern = new RegExp(
+        `\\b${contents.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)}\\b`,
+      );
+      if (valuePattern.test(template)) {
+        throw new Error(
+          `The template contents contain the value "${contents}" which would prevent ` +
+            'template extraction from working correctly. Please ensure that replacement variable values ' +
+            'are not present in the original template file.',
+        );
+      }
+
+      replacementVariables[contents] = key;
     }
   }
 
