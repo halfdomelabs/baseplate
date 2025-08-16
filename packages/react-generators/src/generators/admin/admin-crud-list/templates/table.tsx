@@ -9,7 +9,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
   useConfirmDialog,
@@ -72,7 +71,6 @@ export function TPL_COMPONENT_NAME(
       <TableHeader>
         <TableRow>
           <TPL_HEADERS />
-          <TableHead className="w-12">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

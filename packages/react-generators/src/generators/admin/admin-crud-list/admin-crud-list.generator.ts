@@ -85,8 +85,7 @@ export const adminCrudListGenerator = createGenerator({
             },
           },
           build: async (builder) => {
-            // TODO: Use sortedActions when table template is refactored to support actions provider
-            const _sortedActions = actions.sort((a, b) => a.order - b.order);
+            const sortedActions = actions.sort((a, b) => a.order - b.order);
             const sortedColumns = columns.sort((a, b) => a.order - b.order);
             const dataDependencies = mergeAdminCrudDataDependencies(
               sortedColumns
@@ -185,12 +184,21 @@ export const adminCrudListGenerator = createGenerator({
               }),
             );
 
-            const headers = sortedColumns.map(
-              (column) =>
-                tsTemplateWithImports(
-                  reactComponentsImports.TableHead.declaration(),
-                )`<TableHead>${column.label}</TableHead>`,
-            );
+            const headers = [
+              ...sortedColumns.map(
+                (column) =>
+                  tsTemplateWithImports(
+                    reactComponentsImports.TableHead.declaration(),
+                  )`<TableHead>${column.label}</TableHead>`,
+              ),
+              ...(sortedActions.length > 0
+                ? [
+                    tsTemplateWithImports(
+                      reactComponentsImports.TableHead.declaration(),
+                    )`<TableHead className="w-12">Actions</TableHead>`,
+                  ]
+                : []),
+            ];
             const cells = sortedColumns.map(
               (column) =>
                 tsTemplateWithImports(

@@ -29,7 +29,7 @@
     "table": {
       "type": "ts",
       "fileOptions": {
-        "generatorTemplatePath": "Table.tsx",
+        "generatorTemplatePath": "table.tsx",
         "kind": "instance"
       },
       "generator": "@baseplate-dev/react-generators#admin/admin-crud-list",
@@ -43,7 +43,7 @@
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
-      "sourceFile": "Table.tsx",
+      "sourceFile": "table.tsx",
       "variables": {
         "TPL_CELLS": {},
         "TPL_COMPONENT_NAME": { "type": "replacement" },

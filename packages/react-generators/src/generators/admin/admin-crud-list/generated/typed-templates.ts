@@ -26,14 +26,14 @@ const listPage = createTsTemplateFile({
 });
 
 const table = createTsTemplateFile({
-  fileOptions: { generatorTemplatePath: 'Table.tsx', kind: 'instance' },
+  fileOptions: { generatorTemplatePath: 'table.tsx', kind: 'instance' },
   importMapProviders: {
     reactComponentsImports: reactComponentsImportsProvider,
     reactErrorImports: reactErrorImportsProvider,
   },
   name: 'table',
   source: {
-    path: path.join(import.meta.dirname, '../templates/Table.tsx'),
+    path: path.join(import.meta.dirname, '../templates/table.tsx'),
   },
   variables: {
     TPL_CELLS: {},
