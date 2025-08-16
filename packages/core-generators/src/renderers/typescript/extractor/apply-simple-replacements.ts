@@ -1,5 +1,5 @@
 import { escapeRegExp } from 'es-toolkit';
-import { Node, Project } from 'ts-morph';
+import { Node, Project, ts } from 'ts-morph';
 
 /**
  * Applies simple find-and-replace operations on TypeScript content.
@@ -33,46 +33,37 @@ export function applySimpleReplacements(
   const project = new Project({
     compilerOptions: {
       allowJs: true,
-      jsx: 1, // JsxEmit.React
+      jsx: ts.JsxEmit.ReactJSX,
     },
     useInMemoryFileSystem: true,
   });
 
-  const sourceFile = project.createSourceFile('temp.ts', content, {
-    overwrite: true,
-  });
+  const sourceFile = project.createSourceFile('temp.ts', content);
 
   // Process each statement in the source file
   const statements = sourceFile.getStatements();
-  const processedStatements: string[] = [];
 
   for (const statement of statements) {
-    if (Node.isImportDeclaration(statement)) {
-      // Skip import statements - preserve them as-is
-      processedStatements.push(statement.getFullText());
-    } else {
-      // Process non-import statements with replacements
-      let statementText = statement.getFullText();
+    if (Node.isImportDeclaration(statement)) continue;
 
-      for (const [value, variable] of sortedReplacements) {
-        statementText = applyReplacementToText(statementText, value, variable);
-      }
+    // Process non-import statements with replacements
+    const statementText = statement.getFullText();
+    let newStatementText = statementText;
 
-      processedStatements.push(statementText);
+    for (const [value, variable] of sortedReplacements) {
+      newStatementText = applyReplacementToText(
+        newStatementText,
+        value,
+        variable,
+      );
+    }
+
+    if (newStatementText !== statementText) {
+      statement.replaceWithText(newStatementText);
     }
   }
 
-  // Handle any leading trivia (comments, whitespace) before the first statement
-  let leadingTrivia = '';
-  if (statements.length > 0) {
-    const firstStatement = statements[0];
-    const startPos = firstStatement.getPos();
-    if (startPos > 0) {
-      leadingTrivia = content.slice(0, startPos);
-    }
-  }
-
-  return leadingTrivia + processedStatements.join('');
+  return sourceFile.getFullText();
 }
 
 /**
@@ -88,15 +79,11 @@ function applyReplacementToText(
   if (isStringLiteral(value)) {
     // For string literals (like paths), match them within quotes
     // This handles both single and double quotes, and template literals
-    const patterns = [
-      new RegExp(`'${escapedValue}'`, 'g'),
-      new RegExp(`"${escapedValue}"`, 'g'),
-      new RegExp(`\`${escapedValue}\``, 'g'),
-    ];
+    const patterns = [`'${value}'`, `"${value}"`, `\`${value}\``];
 
     let result = text;
     for (const pattern of patterns) {
-      result = result.replace(pattern, (match) => {
+      result = result.replaceAll(pattern, (match) => {
         const quote = match[0];
         return `${quote}${variable}${quote}`;
       });

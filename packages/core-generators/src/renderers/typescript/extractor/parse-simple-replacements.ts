@@ -6,7 +6,7 @@
  */
 
 const SIMPLE_REPLACEMENT_REGEX = /\/\* TPL_([A-Z0-9_]+)=([^*]*?) \*\/\n*/g;
-const ALLOWED_VALUE_PATTERN = /^[a-zA-Z0-9_$/./-]+$/;
+const ALLOWED_VALUE_PATTERN = /^[a-zA-Z0-9_$/./-?]+$/;
 
 interface ParseSimpleReplacementsResult {
   /** Content with replacement comments removed */

@@ -137,19 +137,13 @@ export const adminCrudListGenerator = createGenerator({
                 variables: {
                   TPL_ROUTE_PATH: quot(`${routeFilePath}/`),
                   TPL_PAGE_NAME: listPageComponentName,
-                  TPL_DELETE_FUNCTION: deleteInfo.fieldName,
-                  TPL_DELETE_MUTATION: deleteInfo.documentExpression,
-                  TPL_ROW_FRAGMENT_NAME:
-                    adminCrudQueries.getRowFragmentExpression(),
                   TPL_TITLE: `${titleizeCamel(modelName)} Management`,
                   TPL_TABLE_COMPONENT: tsCodeFragment(
-                    `<${tableComponentName} deleteItem={handleDeleteItem} items={data.${listInfo.fieldName}} ${tableLoaderExtraProps} />`,
+                    `<${tableComponentName} items={data.${listInfo.fieldName}} ${tableLoaderExtraProps} />`,
                     TsCodeUtils.importBuilder([tableComponentName]).from(
                       tableComponentPath,
                     ),
                   ),
-                  TPL_REFETCH_DOCUMENT:
-                    adminCrudQueries.getListDocumentExpression(),
                   TPL_CREATE_BUTTON: disableCreate
                     ? tsCodeFragment('')
                     : tsCodeFragment(
@@ -217,10 +211,13 @@ export const adminCrudListGenerator = createGenerator({
                   ),
                   TPL_DESTRUCTURED_PROPS: `{
                     items,
-                    deleteItem,
                     ${dataDependencies.map((d) => d.propName).join(',\n')}
                   }`,
                   TPL_EDIT_ROUTE: quot(`${routePrefix}/$id`),
+                  TPL_DELETE_METHOD: deleteInfo.fieldName,
+                  TPL_DELETE_MUTATION: deleteInfo.documentExpression,
+                  TPL_REFETCH_DOCUMENT:
+                    adminCrudQueries.getListDocumentExpression(),
                 },
                 importMapProviders: {
                   reactComponentsImports,

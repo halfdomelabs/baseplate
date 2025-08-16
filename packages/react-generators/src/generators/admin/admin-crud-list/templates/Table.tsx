@@ -15,13 +15,13 @@ import {
   useConfirmDialog,
 } from '%reactComponentsImports';
 import { logAndFormatError } from '%reactErrorImports';
+import { useMutation } from '@apollo/client';
 import { Link } from '@tanstack/react-router';
 import { MdDelete, MdEdit } from 'react-icons/md';
 import { toast } from 'sonner';
 
 interface Props {
   items: TPL_ROW_FRAGMENT[];
-  deleteItem: (item: TPL_ROW_FRAGMENT) => Promise<void>;
   TPL_EXTRA_PROPS;
 }
 
@@ -29,12 +29,22 @@ export function TPL_COMPONENT_NAME(
   TPL_DESTRUCTURED_PROPS: Props,
 ): ReactElement {
   const { requestConfirm } = useConfirmDialog();
+  const [TPL_DELETE_METHOD] = useMutation(TPL_DELETE_MUTATION, {
+    refetchQueries: [{ query: TPL_REFETCH_DOCUMENT }],
+  });
+
+  const handleDeleteItem = async (item: TPL_ROW_FRAGMENT): Promise<void> => {
+    await TPL_DELETE_METHOD({
+      variables: { input: { id: item.id } },
+    });
+  };
+
   function handleDelete(item: TPL_ROW_FRAGMENT): void {
     requestConfirm({
       title: 'Delete Item',
       content: `Are you sure you want to delete this item?`,
       onConfirm: () => {
-        deleteItem(item)
+        handleDeleteItem(item)
           .then(() => {
             toast.success('Successfully deleted the item!');
           })
