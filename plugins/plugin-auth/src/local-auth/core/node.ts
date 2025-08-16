@@ -66,7 +66,15 @@ export default createPlatformPluginExport({
             id: 'email-password',
             name: 'password',
             children: {
-              module: authEmailPasswordGenerator({}),
+              module: authEmailPasswordGenerator({
+                userModelName: definitionContainer.nameFromId(
+                  localAuthDefinition.modelRefs.user,
+                ),
+                adminRoles:
+                  localAuthDefinition.userAdminRoles?.map((role) =>
+                    definitionContainer.nameFromId(role),
+                  ) ?? [],
+              }),
               hasher: passwordHasherServiceGenerator({}),
             },
           }),
