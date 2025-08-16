@@ -28,6 +28,14 @@ import { Slot } from 'radix-ui';
 import * as React from 'react';
 import { MdMenu } from 'react-icons/md';
 
+/**
+ * Sidebar component from ShadCN
+ *
+ * https://ui.shadcn.com/docs/components/sidebar
+ *
+ * - Added functionality to dismiss when button is clicked (https://github.com/shadcn-ui/ui/issues/5561)
+ */
+
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = '16rem';
@@ -542,7 +550,7 @@ function SidebarMenuButton({
   tooltip?: string | React.ComponentProps<typeof TooltipContent>;
 } & VariantProps<typeof sidebarMenuButtonVariants>): React.ReactElement {
   const Comp = asChild ? Slot.Root : 'button';
-  const { isMobile, state } = useSidebar();
+  const { isMobile, state, toggleSidebar } = useSidebar();
 
   const button = (
     <Comp
@@ -551,6 +559,12 @@ function SidebarMenuButton({
       data-size={size}
       data-active={isActive}
       className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+      onClick={(event) => {
+        props.onClick?.(event);
+        if (isMobile && !event.defaultPrevented) {
+          toggleSidebar();
+        }
+      }}
       {...props}
     />
   );
