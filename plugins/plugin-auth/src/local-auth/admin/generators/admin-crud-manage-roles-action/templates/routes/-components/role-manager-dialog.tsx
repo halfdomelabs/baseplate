@@ -11,6 +11,7 @@ import {
   Button,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -95,9 +96,9 @@ export function RoleManagerDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Manage Roles</DialogTitle>
-          <p className="text-sm text-muted-foreground">
+          <DialogDescription>
             Assign roles to {user.name ?? user.email}
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(handleSubmit)}>
