@@ -20,6 +20,7 @@ import inflection from 'inflection';
 
 import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
 
+import { compileAdminCrudAction } from './actions.js';
 import { compileAdminCrudDisplay } from './displays.js';
 import { compileAdminCrudInput } from './inputs.js';
 
@@ -150,6 +151,15 @@ export function compileAdminCrudSection(
                     ),
                   },
                 }),
+              ),
+              actions: crudSection.table.actions?.map((action, idx) =>
+                compileAdminCrudAction(
+                  action,
+                  crudSection.modelRef,
+                  builder,
+                  crudSectionId,
+                  idx,
+                ),
               ),
             },
           }),

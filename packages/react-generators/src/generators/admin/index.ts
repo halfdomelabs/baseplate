@@ -2,6 +2,8 @@ export * from './_providers/index.js';
 export * from './admin-bull-board/index.js';
 export * from './admin-components/index.js';
 export * from './admin-crud-column/index.js';
+export * from './admin-crud-delete-action/index.js';
+export * from './admin-crud-edit-action/index.js';
 export * from './admin-crud-edit/index.js';
 export * from './admin-crud-embedded-form/index.js';
 export * from './admin-crud-embedded-input/index.js';

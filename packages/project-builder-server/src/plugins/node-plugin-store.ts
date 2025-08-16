@@ -7,6 +7,7 @@ import type {
 import type { Logger } from '@baseplate-dev/sync';
 
 import {
+  adminCrudActionCompilerSpec,
   adminCrudInputCompilerSpec,
   appCompilerSpec,
   modelTransformerCompilerSpec,
@@ -19,6 +20,7 @@ import { discoverPlugins } from './plugin-discovery.js';
 const NODE_SPEC_IMPLEMENTATIONS = [
   modelTransformerCompilerSpec,
   adminCrudInputCompilerSpec,
+  adminCrudActionCompilerSpec,
   appCompilerSpec,
 ];
 

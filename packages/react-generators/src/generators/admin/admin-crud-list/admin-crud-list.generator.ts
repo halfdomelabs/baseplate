@@ -20,9 +20,11 @@ import { reactRoutesProvider } from '#src/providers/routes.js';
 import { titleizeCamel } from '#src/utils/case.js';
 import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
 
+import type { AdminCrudAction } from '../_providers/admin-crud-action-container.js';
 import type { AdminCrudColumn } from '../_providers/admin-crud-column-container.js';
 import type { DataLoader } from '../_providers/admin-loader.js';
 
+import { adminCrudActionContainerProvider } from '../_providers/admin-crud-action-container.js';
 import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-column-container.js';
 import { printDataLoaders } from '../_providers/admin-loader.js';
 import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
@@ -50,6 +52,7 @@ export const adminCrudListGenerator = createGenerator({
         reactErrorImports: reactErrorImportsProvider,
       },
       exports: {
+        adminCrudActionContainer: adminCrudActionContainerProvider.export(),
         adminCrudColumnContainer: adminCrudColumnContainerProvider.export(),
       },
       run({
@@ -61,6 +64,7 @@ export const adminCrudListGenerator = createGenerator({
       }) {
         const routePrefix = reactRoutes.getRoutePrefix();
         const routeFilePath = reactRoutes.getRouteFilePath();
+        const actions: AdminCrudAction[] = [];
         const columns: AdminCrudColumn[] = [];
         const listPagePath = `${reactRoutes.getOutputRelativePath()}/index.tsx`;
         const tableComponentPath = `${reactRoutes.getOutputRelativePath()}/-components/${kebabCase(modelName)}-table.tsx`;
@@ -71,12 +75,18 @@ export const adminCrudListGenerator = createGenerator({
 
         return {
           providers: {
+            adminCrudActionContainer: {
+              addAction: (action) => actions.push(action),
+              getModelName: () => modelName,
+            },
             adminCrudColumnContainer: {
               addColumn: (input) => columns.push(input),
               getModelName: () => modelName,
             },
           },
           build: async (builder) => {
+            // TODO: Use sortedActions when table template is refactored to support actions provider
+            const _sortedActions = actions.sort((a, b) => a.order - b.order);
             const sortedColumns = columns.sort((a, b) => a.order - b.order);
             const dataDependencies = mergeAdminCrudDataDependencies(
               sortedColumns
