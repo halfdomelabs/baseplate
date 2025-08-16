@@ -47,7 +47,7 @@ export function TPL_COMPONENT_NAME(
           ))}
         </TableBody>
       </Table>
-      {TPL_ACTION_SIBLING_COMPONENTS}
+      <TPL_ACTION_SIBLING_COMPONENTS />
     </>
   );
 }

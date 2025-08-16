@@ -126,6 +126,7 @@ export const adminCrudListGenerator = createGenerator({
               mergeGraphQLFields([
                 { name: 'id' },
                 ...sortedColumns.flatMap((c) => c.display.graphQLFields),
+                ...sortedActions.flatMap((a) => a.graphQLFields ?? []),
               ]),
             );
             const tableLoaderExtraProps = dataDependencies

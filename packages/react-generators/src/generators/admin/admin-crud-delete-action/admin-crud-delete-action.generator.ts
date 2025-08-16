@@ -106,6 +106,7 @@ export const adminCrudDeleteActionGenerator = createGenerator({
           order,
           hookContent,
           action: actionFragment,
+          graphQLFields: [{ name: 'id' }, { name: nameField }],
         });
         return {};
       },

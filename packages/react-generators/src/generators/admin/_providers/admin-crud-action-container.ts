@@ -2,6 +2,8 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 
 import { createProviderType } from '@baseplate-dev/sync';
 
+import type { GraphQLField } from '#src/writers/graphql/index.js';
+
 export interface AdminCrudAction {
   type: string;
   name: string;
@@ -9,6 +11,7 @@ export interface AdminCrudAction {
   hookContent?: TsCodeFragment;
   siblingContent?: TsCodeFragment;
   action: TsCodeFragment;
+  graphQLFields?: GraphQLField[];
   order: number;
 }
 
