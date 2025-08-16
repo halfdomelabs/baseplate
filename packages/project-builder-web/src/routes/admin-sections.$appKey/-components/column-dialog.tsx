@@ -1,12 +1,15 @@
-import type { AdminCrudTableColumnDefinition } from '@baseplate-dev/project-builder-lib';
+import type {
+  AdminCrudColumnDefinition,
+  AdminCrudColumnInput,
+} from '@baseplate-dev/project-builder-lib';
 import type React from 'react';
 
 import {
-  adminCrudDisplayTypes,
-  createAdminCrudTableColumnSchema,
+  createAdminCrudColumnSchema,
   ModelUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
+  adminCrudColumnWebSpec,
   useDefinitionSchema,
   useProjectDefinition,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -25,13 +28,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
+import { BUILT_IN_ADMIN_CRUD_COLUMN_WEB_CONFIGS } from './columns/index.js';
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  column?: AdminCrudTableColumnDefinition;
+  column?: AdminCrudColumnInput;
   modelRef: string;
   isNew?: boolean;
-  onSave: (column: AdminCrudTableColumnDefinition) => void;
+  onSave: (column: AdminCrudColumnDefinition) => void;
 }
 
 export function ColumnDialog({
@@ -42,21 +47,28 @@ export function ColumnDialog({
   isNew = false,
   onSave,
 }: Props): React.JSX.Element {
-  const { definition, definitionContainer } = useProjectDefinition();
-  const columnSchema = useDefinitionSchema(createAdminCrudTableColumnSchema);
+  const { definition, pluginContainer } = useProjectDefinition();
+  const columnSchema = useDefinitionSchema(createAdminCrudColumnSchema);
 
   const model = modelRef
     ? ModelUtils.byIdOrThrow(definition, modelRef)
     : undefined;
 
+  const columnWeb = pluginContainer.getPluginSpec(adminCrudColumnWebSpec);
+
+  const columnTypeOptions = columnWeb
+    .getColumnWebConfigs(BUILT_IN_ADMIN_CRUD_COLUMN_WEB_CONFIGS)
+    .filter((config) => config.isAvailableForModel(definition, modelRef))
+    .map((config) => ({
+      label: config.label,
+      value: config.name,
+    }));
+
   const form = useForm({
     resolver: zodResolver(columnSchema),
     values: column ?? {
+      type: 'text',
       label: '',
-      display: {
-        type: 'text' as const,
-        modelFieldRef: '',
-      },
     },
   });
 
@@ -66,24 +78,16 @@ export function ColumnDialog({
     formState: { isDirty },
   } = form;
 
-  const displayType = useWatch({ control, name: 'display.type' });
+  const columnType = useWatch({ control, name: 'type' });
 
-  const localRelationOptions =
-    model?.model.relations?.map((relation) => ({
-      label: `${relation.name} (${definitionContainer.nameFromId(relation.modelRef)})`,
-      value: relation.id,
-    })) ?? [];
+  const columnWebConfig = columnType
+    ? columnWeb.getColumnWebConfig(
+        columnType,
+        BUILT_IN_ADMIN_CRUD_COLUMN_WEB_CONFIGS,
+      )
+    : undefined;
 
-  const fieldOptions =
-    model?.model.fields.map((field) => ({
-      label: field.name,
-      value: field.id,
-    })) ?? [];
-
-  const displayTypeOptions = adminCrudDisplayTypes.map((t) => ({
-    label: t,
-    value: t,
-  }));
+  const WebForm = columnWebConfig?.Form;
 
   const onSubmit = handleSubmit((data) => {
     onSave(data);
@@ -114,8 +118,8 @@ export function ColumnDialog({
             <SelectFieldController
               label="Type"
               control={control}
-              options={displayTypeOptions}
-              name="display.type"
+              options={columnTypeOptions}
+              name="type"
             />
             <InputFieldController
               label="Label"
@@ -123,36 +127,14 @@ export function ColumnDialog({
               name="label"
               placeholder="Enter column label"
             />
-
-            {displayType === 'text' && (
-              <SelectFieldController
-                label="Field"
-                control={control}
-                name="display.modelFieldRef"
-                options={fieldOptions}
+            {/* Render column-specific configuration */}
+            {WebForm && model && (
+              <WebForm
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+                formProps={form as any}
+                model={model}
+                pluginKey={columnWebConfig.pluginKey}
               />
-            )}
-            {displayType === 'foreign' && (
-              <>
-                <SelectFieldController
-                  label="Local Relation Name"
-                  control={control}
-                  name="display.localRelationRef"
-                  options={localRelationOptions}
-                />
-                <InputFieldController
-                  label="Label Expression (e.g. name)"
-                  control={control}
-                  name="display.labelExpression"
-                  placeholder="name"
-                />
-                <InputFieldController
-                  label="Value Expression (e.g. id)"
-                  control={control}
-                  name="display.valueExpression"
-                  placeholder="id"
-                />
-              </>
             )}
           </div>
           <DialogFooter>

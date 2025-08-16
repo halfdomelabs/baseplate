@@ -1,6 +1,10 @@
-import type { AdminCrudEmbeddedFormConfigInput } from '@baseplate-dev/project-builder-lib';
+import type {
+  AdminCrudColumnInput,
+  AdminCrudEmbeddedFormConfigInput,
+} from '@baseplate-dev/project-builder-lib';
+import type { Lens } from '@hookform/lenses';
 import type React from 'react';
-import type { Control, UseFormReturn } from 'react-hook-form';
+import type { UseFormReturn } from 'react-hook-form';
 
 import { createAdminCrudEmbeddedFormSchema } from '@baseplate-dev/project-builder-lib';
 import {
@@ -20,6 +24,7 @@ import {
   TableRow,
   toast,
 } from '@baseplate-dev/ui-components';
+import { useLens } from '@hookform/lenses';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { useForm } from 'react-hook-form';
@@ -32,7 +37,6 @@ import type {
 import { logAndFormatError } from '#src/services/error-formatter.js';
 
 import type { AdminCrudFormConfigInput } from './crud-form-fields-form.js';
-import type { AdminCrudTableConfig } from './crud-table-columns-form.js';
 
 import CrudFormFieldsForm from './crud-form-fields-form.js';
 import CrudTableColumnsForm from './crud-table-columns-form.js';
@@ -119,7 +123,8 @@ function AdminCrudEmbeddedForm({
   }));
 
   const type = watch('type');
-
+  const modelRef = watch('modelRef');
+  const lens = useLens({ control });
   const formId = useId();
 
   return (
@@ -155,7 +160,13 @@ function AdminCrudEmbeddedForm({
         <>
           <h2>Table</h2>
           <CrudTableColumnsForm
-            control={control as unknown as Control<AdminCrudTableConfig>}
+            lens={
+              // not sure why but the typings don't work as expected
+              lens.focus('table.columns') as unknown as Lens<
+                AdminCrudColumnInput[]
+              >
+            }
+            modelRef={modelRef}
           />
         </>
       )}

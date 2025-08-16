@@ -20,6 +20,7 @@ import { pluginConfigSpec } from '#src/plugins/index.js';
 import { parseSchemaWithTransformedReferences } from '#src/references/parse-schema-with-references.js';
 import {
   adminCrudActionSpec,
+  adminCrudColumnSpec,
   adminCrudInputSpec,
   createDefinitionSchemaParserContext,
   modelTransformerSpec,
@@ -38,6 +39,7 @@ const COMMON_SPEC_IMPLEMENTATIONS: (
   modelTransformerSpec,
   adminCrudInputSpec,
   adminCrudActionSpec,
+  adminCrudColumnSpec,
 ];
 
 /**

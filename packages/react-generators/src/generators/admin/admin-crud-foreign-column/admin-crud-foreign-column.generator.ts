@@ -8,10 +8,13 @@ import { z } from 'zod';
 
 import { reactApolloProvider } from '#src/generators/apollo/react-apollo/index.js';
 
-import { adminCrudDisplayContainerProvider } from '../_providers/admin-crud-display-container.js';
+import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-column-container.js';
 import { createForeignDataDependency } from '../_utils/foreign-data-dependency.js';
 
 const descriptorSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  order: z.number().int().nonnegative(),
   localField: z.string().min(1),
   isOptional: z.boolean().optional(),
   foreignModelName: z.string().min(1),
@@ -19,19 +22,21 @@ const descriptorSchema = z.object({
   valueExpression: z.string().min(1),
 });
 
-export type AdminCrudForeignDisplayProvider = unknown;
+export type AdminCrudForeignColumnProvider = unknown;
 
-export const adminCrudForeignDisplayProvider =
-  createProviderType<AdminCrudForeignDisplayProvider>(
-    'admin-crud-foreign-display',
+export const adminCrudForeignColumnProvider =
+  createProviderType<AdminCrudForeignColumnProvider>(
+    'admin-crud-foreign-column',
   );
 
-export const adminCrudForeignDisplayGenerator = createGenerator({
-  name: 'admin/admin-crud-foreign-display',
+export const adminCrudForeignColumnGenerator = createGenerator({
+  name: 'admin/admin-crud-foreign-column',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getInstanceName: (descriptor) => descriptor.localField,
+  getInstanceName: (descriptor) => descriptor.id,
   buildTasks: ({
+    label,
+    order,
     localField,
     isOptional,
     foreignModelName,
@@ -40,14 +45,14 @@ export const adminCrudForeignDisplayGenerator = createGenerator({
   }) => ({
     main: createGeneratorTask({
       dependencies: {
-        adminCrudDisplayContainer: adminCrudDisplayContainerProvider,
+        adminCrudColumnContainer: adminCrudColumnContainerProvider,
         reactApollo: reactApolloProvider,
       },
       exports: {
-        adminCrudForeignDisplay: adminCrudForeignDisplayProvider.export(),
+        adminCrudForeignColumn: adminCrudForeignColumnProvider.export(),
       },
-      run({ adminCrudDisplayContainer, reactApollo }) {
-        const modelName = adminCrudDisplayContainer.getModelName();
+      run({ adminCrudColumnContainer, reactApollo }) {
+        const modelName = adminCrudColumnContainer.getModelName();
 
         const { dataDependency, propName } = createForeignDataDependency({
           foreignModelName,
@@ -57,23 +62,27 @@ export const adminCrudForeignDisplayGenerator = createGenerator({
           valueExpression,
         });
 
-        adminCrudDisplayContainer.addDisplay({
-          content: (itemName) => {
-            const optionalClause = isOptional
-              ? `${itemName}.${localField} == null ? "None" : `
-              : '';
-            return tsCodeFragment(`{
+        adminCrudColumnContainer.addColumn({
+          label,
+          order,
+          display: {
+            content: (itemName) => {
+              const optionalClause = isOptional
+                ? `${itemName}.${localField} == null ? "None" : `
+                : '';
+              return tsCodeFragment(`{
             ${optionalClause}
             ${propName}.find(option => option.${valueExpression} === ${itemName}.${localField})?.${labelExpression}
             || "Unknown Item"}`);
+            },
+            graphQLFields: [{ name: localField }],
+            dataDependencies: [dataDependency],
           },
-          graphQLFields: [{ name: localField }],
-          dataDependencies: [dataDependency],
         });
 
         return {
           providers: {
-            adminCrudForeignDisplay: {},
+            adminCrudForeignColumn: {},
           },
         };
       },

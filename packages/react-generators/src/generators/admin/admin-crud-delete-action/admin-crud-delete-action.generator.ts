@@ -80,7 +80,7 @@ export const adminCrudDeleteActionGenerator = createGenerator({
   function handleDelete(item: ${adminCrudQueries.getRowFragmentExpression()}): void {
     requestConfirm({
       title: 'Delete ${modelTitle}',
-      content: \`Are you sure you want to delete ${modelTitle.toLocaleLowerCase()} \${item.${nameField} ? item.${nameField} : 'unnamed ${modelTitle}'}?\`,
+      content: \`Are you sure you want to delete ${modelTitle.toLocaleLowerCase()} \${item.${nameField} ? item.${nameField} : 'unnamed ${modelTitle.toLocaleLowerCase()}'}?\`,
       onConfirm: () => {
         ${adminCrudQueries.getDeleteHookInfo().fieldName}({
           variables: { input: { id: item.id } },

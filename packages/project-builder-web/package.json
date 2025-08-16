@@ -59,6 +59,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.1",
+    "@hookform/lenses": "0.8.1",
     "@hookform/resolvers": "5.0.1",
     "@tanstack/react-router": "1.130.8",
     "@testing-library/dom": "10.4.0",
