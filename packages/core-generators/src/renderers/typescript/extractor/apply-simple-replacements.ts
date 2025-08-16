@@ -41,13 +41,13 @@ export function applySimpleReplacements(
   const sourceFile = project.createSourceFile('temp.ts', content);
 
   // Process each statement in the source file
-  const statements = sourceFile.getStatements();
+  const statements = sourceFile.getStatementsWithComments();
 
   for (const statement of statements) {
     if (Node.isImportDeclaration(statement)) continue;
 
     // Process non-import statements with replacements
-    const statementText = statement.getFullText();
+    const statementText = statement.getText();
     let newStatementText = statementText;
 
     for (const [value, variable] of sortedReplacements) {

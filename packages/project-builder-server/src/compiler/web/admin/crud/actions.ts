@@ -3,6 +3,7 @@ import type {
   AdminCrudActionInput,
   AdminCrudDeleteActionConfig,
   AdminCrudEditActionConfig,
+  AdminCrudSectionConfig,
   WebAppConfig,
 } from '@baseplate-dev/project-builder-lib';
 import type { GeneratorBundle } from '@baseplate-dev/sync';
@@ -28,10 +29,17 @@ const adminCrudEditActionCompiler: AdminCrudActionCompiler<AdminCrudEditActionCo
 const adminCrudDeleteActionCompiler: AdminCrudActionCompiler<AdminCrudDeleteActionConfig> =
   {
     name: 'delete',
-    compileAction: (definition, { order }) =>
+    compileAction: (
+      definition,
+      { order, model, modelCrudSection, definitionContainer },
+    ) =>
       adminCrudDeleteActionGenerator({
         order,
         position: definition.position,
+        modelName: model.name,
+        nameField: definitionContainer.nameFromId(
+          modelCrudSection.nameFieldRef,
+        ),
       }),
   };
 
@@ -44,7 +52,7 @@ export function compileAdminCrudAction(
   action: AdminCrudActionInput,
   modelId: string,
   builder: AppEntryBuilder<WebAppConfig>,
-  crudSectionId: string,
+  modelCrudSection: AdminCrudSectionConfig,
   order: number,
 ): GeneratorBundle {
   const actionCompiler = builder.pluginStore.getPluginSpec(
@@ -62,6 +70,6 @@ export function compileAdminCrudAction(
     order,
     definitionContainer: builder.definitionContainer,
     model,
-    crudSectionId,
+    modelCrudSection,
   });
 }

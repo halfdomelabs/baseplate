@@ -4,8 +4,11 @@ import { createProviderType } from '@baseplate-dev/sync';
 
 export interface AdminCrudAction {
   type: string;
+  name: string;
   position: 'inline' | 'dropdown';
-  content: TsCodeFragment;
+  hookContent?: TsCodeFragment;
+  siblingContent?: TsCodeFragment;
+  action: TsCodeFragment;
   order: number;
 }
 

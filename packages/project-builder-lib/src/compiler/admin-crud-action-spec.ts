@@ -2,7 +2,11 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import type { ProjectDefinitionContainer } from '#src/definition/project-definition-container.js';
 import type { PluginSpecImplementation } from '#src/plugins/spec/types.js';
-import type { AdminCrudActionInput, ModelConfig } from '#src/schema/index.js';
+import type {
+  AdminCrudActionInput,
+  AdminCrudSectionConfig,
+  ModelConfig,
+} from '#src/schema/index.js';
 
 import { createPluginSpec } from '#src/plugins/spec/types.js';
 
@@ -16,7 +20,7 @@ export interface AdminCrudActionCompiler<
       order: number;
       definitionContainer: ProjectDefinitionContainer;
       model: ModelConfig;
-      crudSectionId: string;
+      modelCrudSection: AdminCrudSectionConfig;
     },
   ) => GeneratorBundle;
 }

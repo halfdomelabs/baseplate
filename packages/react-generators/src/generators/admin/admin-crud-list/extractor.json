@@ -37,24 +37,18 @@
         "reactComponentsImportsProvider": {
           "importName": "reactComponentsImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
-        },
-        "reactErrorImportsProvider": {
-          "importName": "reactErrorImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-error/generated/ts-import-providers.ts"
         }
       },
       "sourceFile": "table.tsx",
       "variables": {
+        "TPL_ACTION_HOOKS": {},
+        "TPL_ACTION_SIBLING_COMPONENTS": {},
         "TPL_CELLS": {},
         "TPL_COMPONENT_NAME": { "type": "replacement" },
-        "TPL_DELETE_METHOD": { "type": "replacement" },
-        "TPL_DELETE_MUTATION": { "type": "replacement" },
         "TPL_DESTRUCTURED_PROPS": {},
-        "TPL_EDIT_ROUTE": {},
         "TPL_EXTRA_PROPS": {},
         "TPL_HEADERS": {},
         "TPL_PLURAL_MODEL": {},
-        "TPL_REFETCH_DOCUMENT": { "type": "replacement" },
         "TPL_ROW_FRAGMENT": { "type": "replacement" }
       }
     }

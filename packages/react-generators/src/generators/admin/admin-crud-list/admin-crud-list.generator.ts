@@ -15,7 +15,6 @@ import { pluralize } from 'inflection';
 import { z } from 'zod';
 
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/index.js';
-import { reactErrorImportsProvider } from '#src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '#src/providers/routes.js';
 import { titleizeCamel } from '#src/utils/case.js';
 import { mergeGraphQLFields } from '#src/writers/graphql/index.js';
@@ -43,13 +42,15 @@ export const adminCrudListGenerator = createGenerator({
   descriptorSchema,
   getInstanceName: (descriptor) => descriptor.modelName,
   buildTasks: ({ modelId, modelName, disableCreate }) => ({
+    renderers: ADMIN_ADMIN_CRUD_LIST_GENERATED.renderers.task,
+
     main: createGeneratorTask({
       dependencies: {
         typescriptFile: typescriptFileProvider,
         reactRoutes: reactRoutesProvider,
         adminCrudQueries: adminCrudQueriesProvider,
         reactComponentsImports: reactComponentsImportsProvider,
-        reactErrorImports: reactErrorImportsProvider,
+        renderers: ADMIN_ADMIN_CRUD_LIST_GENERATED.renderers.provider,
       },
       exports: {
         adminCrudActionContainer: adminCrudActionContainerProvider.export(),
@@ -60,7 +61,7 @@ export const adminCrudListGenerator = createGenerator({
         adminCrudQueries,
         reactRoutes,
         reactComponentsImports,
-        reactErrorImports,
+        renderers,
       }) {
         const routePrefix = reactRoutes.getRoutePrefix();
         const routeFilePath = reactRoutes.getRouteFilePath();
@@ -71,7 +72,6 @@ export const adminCrudListGenerator = createGenerator({
         const tableComponentName = `${modelName}Table`;
 
         const listInfo = adminCrudQueries.getListQueryHookInfo();
-        const deleteInfo = adminCrudQueries.getDeleteHookInfo();
 
         return {
           providers: {
@@ -205,10 +205,57 @@ export const adminCrudListGenerator = createGenerator({
                   reactComponentsImports.TableCell.declaration(),
                 )`<TableCell>${column.display.content('item')}</TableCell>`,
             );
+            const inlineActions = sortedActions.filter(
+              (c) => c.position === 'inline',
+            );
+            const dropdownActions = sortedActions.filter(
+              (c) => c.position === 'dropdown',
+            );
+
+            const inlineActionFragment = TsCodeUtils.mergeFragmentsPresorted(
+              inlineActions.map((a) => a.action),
+            );
+
+            const dropdownActionFragment =
+              dropdownActions.length > 0
+                ? tsTemplateWithImports([
+                    reactComponentsImports.DropdownMenu.declaration(),
+                    reactComponentsImports.DropdownMenuTrigger.declaration(),
+                    reactComponentsImports.Button.declaration(),
+                    reactComponentsImports.DropdownMenuContent.declaration(),
+                    tsImportBuilder(['MdMoreVert']).from('react-icons/md'),
+                  ])`
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MdMoreVert />
+                        <span className="sr-only">More actions</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      ${TsCodeUtils.mergeFragmentsPresorted(
+                        dropdownActions.map((a) => a.action),
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+              `
+                : '';
+
+            const actionCellFragment =
+              sortedActions.length > 0
+                ? tsTemplateWithImports([
+                    reactComponentsImports.TableCell.declaration(),
+                  ])`
+              <TableCell className="flex items-center gap-2">
+                ${inlineActionFragment}
+                ${dropdownActionFragment}
+              </TableCell>
+            `
+                : undefined;
+
             await builder.apply(
-              typescriptFile.renderTemplateFile({
+              renderers.table.render({
                 id: `table-${modelId}`,
-                template: ADMIN_ADMIN_CRUD_LIST_GENERATED.templates.table,
                 destination: tableComponentPath,
                 variables: {
                   TPL_COMPONENT_NAME: tableComponentName,
@@ -217,7 +264,10 @@ export const adminCrudListGenerator = createGenerator({
                     headers,
                     '\n',
                   ),
-                  TPL_CELLS: TsCodeUtils.mergeFragmentsPresorted(cells, '\n'),
+                  TPL_CELLS: TsCodeUtils.mergeFragmentsPresorted(
+                    [...cells, actionCellFragment],
+                    '\n',
+                  ),
                   TPL_PLURAL_MODEL: titleizeCamel(pluralize(modelName)),
                   TPL_EXTRA_PROPS: TsCodeUtils.mergeFragmentsAsInterfaceContent(
                     Object.fromEntries(
@@ -231,15 +281,13 @@ export const adminCrudListGenerator = createGenerator({
                     items,
                     ${dataDependencies.map((d) => d.propName).join(',\n')}
                   }`,
-                  TPL_EDIT_ROUTE: quot(`${routePrefix}/$id`),
-                  TPL_DELETE_METHOD: deleteInfo.fieldName,
-                  TPL_DELETE_MUTATION: deleteInfo.documentExpression,
-                  TPL_REFETCH_DOCUMENT:
-                    adminCrudQueries.getListDocumentExpression(),
-                },
-                importMapProviders: {
-                  reactComponentsImports,
-                  reactErrorImports,
+                  TPL_ACTION_HOOKS: TsCodeUtils.mergeFragmentsPresorted(
+                    sortedActions.map((a) => a.hookContent),
+                  ),
+                  TPL_ACTION_SIBLING_COMPONENTS:
+                    TsCodeUtils.mergeFragmentsPresorted(
+                      sortedActions.map((a) => a.siblingContent),
+                    ),
                 },
               }),
             );

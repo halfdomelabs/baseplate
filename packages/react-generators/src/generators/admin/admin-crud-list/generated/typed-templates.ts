@@ -2,7 +2,6 @@ import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
-import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
 
 const listPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'index.tsx', kind: 'instance' },
@@ -29,23 +28,20 @@ const table = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'table.tsx', kind: 'instance' },
   importMapProviders: {
     reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
   },
   name: 'table',
   source: {
     path: path.join(import.meta.dirname, '../templates/table.tsx'),
   },
   variables: {
+    TPL_ACTION_HOOKS: {},
+    TPL_ACTION_SIBLING_COMPONENTS: {},
     TPL_CELLS: {},
     TPL_COMPONENT_NAME: { type: 'replacement' },
-    TPL_DELETE_METHOD: { type: 'replacement' },
-    TPL_DELETE_MUTATION: { type: 'replacement' },
     TPL_DESTRUCTURED_PROPS: {},
-    TPL_EDIT_ROUTE: {},
     TPL_EXTRA_PROPS: {},
     TPL_HEADERS: {},
     TPL_PLURAL_MODEL: {},
-    TPL_REFETCH_DOCUMENT: { type: 'replacement' },
     TPL_ROW_FRAGMENT: { type: 'replacement' },
   },
 });

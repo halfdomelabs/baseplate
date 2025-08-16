@@ -196,6 +196,7 @@ export const adminCrudEditGenerator = createGenerator({
                     submitData,
                     ${dataDependencies.map((d) => d.propName).join(',\n')}
                   }`,
+                  TPL_LIST_ROUTE: reactRoutes.getRoutePrefix(),
                 },
               }),
             );

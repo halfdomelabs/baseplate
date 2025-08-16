@@ -157,7 +157,7 @@ export function compileAdminCrudSection(
                   action,
                   crudSection.modelRef,
                   builder,
-                  crudSectionId,
+                  crudSection,
                   idx,
                 ),
               ),
