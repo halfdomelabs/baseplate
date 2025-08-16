@@ -16,6 +16,12 @@ const descriptorSchema = z.object({
   order: z.number().int().nonnegative(),
   position: z.enum(['inline', 'dropdown']).default('dropdown'),
   userModelName: z.string().min(1),
+  availableRoles: z.array(
+    z.object({
+      name: z.string(),
+      comment: z.string(),
+    }),
+  ),
 });
 
 export const adminCrudManageRolesActionGenerator = createGenerator({
@@ -23,7 +29,7 @@ export const adminCrudManageRolesActionGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   getInstanceName: () => 'manage-roles',
-  buildTasks: ({ order, position, userModelName }) => ({
+  buildTasks: ({ order, position, userModelName, availableRoles }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     main: createGeneratorTask({
@@ -117,7 +123,17 @@ export const adminCrudManageRolesActionGenerator = createGenerator({
         return {
           build: async (builder) => {
             await builder.apply(
-              renderers.roleManagerDialog.render({}),
+              renderers.roleManagerDialog.render({
+                variables: {
+                  TPL_AVAILABLE_ROLES: JSON.stringify(
+                    availableRoles.map((role) => ({
+                      value: role.name,
+                      label: role.name,
+                      description: role.comment,
+                    })),
+                  ),
+                },
+              }),
               renderers.roleManagerDialogGql.render({
                 variables: {
                   TPL_USER_ROW_FRAGMENT: `${userModelName}Row`,

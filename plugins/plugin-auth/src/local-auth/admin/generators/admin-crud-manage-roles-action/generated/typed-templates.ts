@@ -22,7 +22,7 @@ const roleManagerDialog = createTsTemplateFile({
       '../templates/routes/-components/role-manager-dialog.tsx',
     ),
   },
-  variables: {},
+  variables: { TPL_AVAILABLE_ROLES: {} },
 });
 
 const roleManagerDialogGql = createTextTemplateFile({

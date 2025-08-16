@@ -1,7 +1,11 @@
-import type { AdminCrudActionCompiler } from '@baseplate-dev/project-builder-lib';
+import type {
+  AdminCrudActionCompiler,
+  AuthConfigSpec,
+} from '@baseplate-dev/project-builder-lib';
 
 import {
   adminCrudActionCompilerSpec,
+  authConfigSpec,
   createPlatformPluginExport,
 } from '@baseplate-dev/project-builder-lib';
 
@@ -9,7 +13,9 @@ import type { AdminCrudManageRolesActionDefinition } from './schema/manage-role-
 
 import { adminCrudManageRolesActionGenerator } from './generators/admin-crud-manage-roles-action/index.js';
 
-function buildManageRolesActionCompiler(): AdminCrudActionCompiler<AdminCrudManageRolesActionDefinition> {
+function buildManageRolesActionCompiler(
+  authConfig: AuthConfigSpec,
+): AdminCrudActionCompiler<AdminCrudManageRolesActionDefinition> {
   return {
     name: 'manage-roles',
     compileAction(definition, { order, model, definitionContainer }) {
@@ -19,6 +25,9 @@ function buildManageRolesActionCompiler(): AdminCrudActionCompiler<AdminCrudMana
         order,
         position: definition.position,
         userModelName,
+        availableRoles: authConfig
+          .getAuthRoles(definitionContainer.definition)
+          .filter((r) => !r.builtIn),
       });
     },
   };
@@ -27,10 +36,13 @@ function buildManageRolesActionCompiler(): AdminCrudActionCompiler<AdminCrudMana
 export default createPlatformPluginExport({
   dependencies: {
     adminCrudActionCompiler: adminCrudActionCompilerSpec,
+    authConfig: authConfigSpec,
   },
   exports: {},
-  initialize: ({ adminCrudActionCompiler }) => {
-    adminCrudActionCompiler.registerCompiler(buildManageRolesActionCompiler());
+  initialize: ({ adminCrudActionCompiler, authConfig }) => {
+    adminCrudActionCompiler.registerCompiler(
+      buildManageRolesActionCompiler(authConfig),
+    );
     return {};
   },
 });

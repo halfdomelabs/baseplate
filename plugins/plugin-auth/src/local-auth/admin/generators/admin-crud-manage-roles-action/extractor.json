@@ -17,7 +17,7 @@
       "pathRootRelativePath": "{routes-root}/-components/role-manager-dialog.tsx",
       "projectExports": {},
       "sourceFile": "routes/-components/role-manager-dialog.tsx",
-      "variables": {}
+      "variables": { "TPL_AVAILABLE_ROLES": {} }
     },
     "role-manager-dialog-gql": {
       "type": "text",

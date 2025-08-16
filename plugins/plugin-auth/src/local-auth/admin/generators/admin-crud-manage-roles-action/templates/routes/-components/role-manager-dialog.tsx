@@ -36,13 +36,7 @@ interface RoleOption {
 }
 
 // Define available roles (excluding built-in roles)
-const AVAILABLE_ROLES: RoleOption[] = [
-  {
-    value: 'admin',
-    label: 'Administrator',
-    description: 'Full system access and user management',
-  },
-];
+const AVAILABLE_ROLES: RoleOption[] = TPL_AVAILABLE_ROLES;
 
 interface RoleManagerDialogProps {
   user: UserRowFragment;
