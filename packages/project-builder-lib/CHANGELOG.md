@@ -1,5 +1,23 @@
 # @baseplate-dev/project-builder-lib
 
+## 0.3.2
+
+### Patch Changes
+
+- [#633](https://github.com/halfdomelabs/baseplate/pull/633) [`cca138a`](https://github.com/halfdomelabs/baseplate/commit/cca138a84abbb901ab628bf571ae29211a180dbb) Thanks [@kingston](https://github.com/kingston)! - Add admin CRUD action specification system
+
+  Adds a new plugin specification system that allows plugins to register custom table actions for admin CRUD sections. This provides the foundation for plugins to contribute actions like "Manage Roles" to generated admin tables.
+  - Created `AdminCrudActionSpec` plugin specification
+  - Added base action types and schemas for registration
+  - Implemented built-in edit and delete action types
+  - Extended admin CRUD section schema to include optional actions array
+  - Provides type-safe action registration with authorization and model targeting support
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.3.2
+  - @baseplate-dev/ui-components@0.3.2
+  - @baseplate-dev/utils@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes

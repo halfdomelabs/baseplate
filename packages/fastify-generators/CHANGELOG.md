@@ -1,5 +1,26 @@
 # @baseplate-dev/fastify-generators
 
+## 0.3.2
+
+### Patch Changes
+
+- [#635](https://github.com/halfdomelabs/baseplate/pull/635) [`04a4978`](https://github.com/halfdomelabs/baseplate/commit/04a49785642685ca4b56aec27dc0a18520674ef9) Thanks [@kingston](https://github.com/kingston)! - Upgrade GraphQL to 16.11.0
+
+- [#633](https://github.com/halfdomelabs/baseplate/pull/633) [`cca138a`](https://github.com/halfdomelabs/baseplate/commit/cca138a84abbb901ab628bf571ae29211a180dbb) Thanks [@kingston](https://github.com/kingston)! - Upgrade graphql-yoga, envelop, and pothos packages to latest versions
+  - @envelop/core: 5.0.1 → 5.3.0
+  - @envelop/disable-introspection: 6.0.0 → 8.0.0
+  - @envelop/types: 5.0.0 → 5.2.1
+  - graphql-yoga: 5.6.1 → 5.15.1
+  - @pothos/core: 4.3.0 → 4.8.1
+  - @pothos/plugin-simple-objects: 4.1.0 → 4.1.3
+  - @pothos/plugin-relay: 4.3.0 → 4.6.2
+  - @pothos/plugin-prisma: 4.3.1 → 4.10.0
+
+- Updated dependencies [[`b4c15b9`](https://github.com/halfdomelabs/baseplate/commit/b4c15b98a518c53828f81624764ba693def85faf)]:
+  - @baseplate-dev/core-generators@0.3.2
+  - @baseplate-dev/sync@0.3.2
+  - @baseplate-dev/utils@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes
