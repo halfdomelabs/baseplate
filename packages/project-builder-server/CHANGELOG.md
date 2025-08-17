@@ -1,5 +1,17 @@
 # @baseplate-dev/project-builder-server
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.3.3
+  - @baseplate-dev/fastify-generators@0.3.3
+  - @baseplate-dev/project-builder-lib@0.3.3
+  - @baseplate-dev/react-generators@0.3.3
+  - @baseplate-dev/sync@0.3.3
+  - @baseplate-dev/utils@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes
