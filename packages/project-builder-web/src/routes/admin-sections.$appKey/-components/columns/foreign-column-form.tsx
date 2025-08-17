@@ -1,32 +1,26 @@
-import type {
-  AdminCrudForeignColumnDefinition,
-  ModelConfig,
-} from '@baseplate-dev/project-builder-lib';
+import type { AdminCrudForeignColumnInput } from '@baseplate-dev/project-builder-lib';
+import type { AdminCrudColumnWebFormProps } from '@baseplate-dev/project-builder-lib/web';
 import type React from 'react';
-import type { UseFormReturn } from 'react-hook-form';
 
+import { adminCrudColumnEntityType } from '@baseplate-dev/project-builder-lib';
+import {
+  createAdminCrudColumnWebConfig,
+  useProjectDefinition,
+} from '@baseplate-dev/project-builder-lib/web';
 import {
   InputFieldController,
   SelectFieldController,
 } from '@baseplate-dev/ui-components';
 
-import { useProjectDefinition } from '@baseplate-dev/project-builder-lib/web';
-
-interface Props {
-  formProps: UseFormReturn<AdminCrudForeignColumnDefinition>;
-  model: ModelConfig;
-  pluginKey: string | undefined;
-}
-
 export function ForeignColumnForm({
   formProps,
   model,
-}: Props): React.JSX.Element {
+}: AdminCrudColumnWebFormProps<AdminCrudForeignColumnInput>): React.JSX.Element {
   const { control } = formProps;
   const { definitionContainer } = useProjectDefinition();
 
   const localRelationOptions =
-    model?.model.relations?.map((relation) => ({
+    model.model.relations?.map((relation) => ({
       label: `${relation.name} (${definitionContainer.nameFromId(relation.modelRef)})`,
       value: relation.id,
     })) ?? [];
@@ -57,3 +51,24 @@ export function ForeignColumnForm({
     </>
   );
 }
+
+export const adminCrudForeignColumnWebConfig =
+  createAdminCrudColumnWebConfig<AdminCrudForeignColumnInput>({
+    name: 'foreign',
+    pluginKey: undefined,
+    label: 'Foreign Column',
+    isAvailableForModel: (definition, modelId) => {
+      // Foreign columns are available if the model has relations
+      const model = definition.models.find((m) => m.id === modelId);
+      return (model?.model.relations?.length ?? 0) > 0;
+    },
+    Form: ForeignColumnForm,
+    getNewColumn: () => ({
+      id: adminCrudColumnEntityType.generateNewId(),
+      type: 'foreign' as const,
+      label: '',
+      localRelationRef: '',
+      labelExpression: '',
+      valueExpression: '',
+    }),
+  });
