@@ -83,10 +83,9 @@ function applyReplacementToText(
 
     let result = text;
     for (const pattern of patterns) {
-      result = result.replaceAll(pattern, (match) => {
-        const quote = match[0];
-        return `${quote}${variable}${quote}`;
-      });
+      const quote = pattern[0];
+      const replacement = `${quote}${variable}${quote}`;
+      result = result.replaceAll(pattern, replacement);
     }
     return result;
   } else {

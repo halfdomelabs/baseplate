@@ -3,13 +3,19 @@ import { z } from 'zod';
 import type { DefinitionSchemaCreatorOptions } from './types.js';
 
 function isEmpty(value: unknown): boolean {
+  if (value === undefined || value === null) {
+    return true;
+  }
   if (Array.isArray(value)) {
     return value.length === 0;
   }
-  if (typeof value === 'object' && value !== null) {
+  if (typeof value === 'object') {
     return Object.values(value).every((val) => val === undefined);
   }
-  return value === false || value === '';
+  if (typeof value === 'string') {
+    return value === '';
+  }
+  return false;
 }
 
 export type WithDefaultType = <T extends z.ZodTypeAny>(

@@ -172,7 +172,6 @@ export const adminCrudListGenerator = createGenerator({
                           ),
                           tsImportBuilder(['MdAdd']).from('react-icons/md'),
                           reactComponentsImports.Button.declaration(),
-                          reactComponentsImports.ErrorableLoader.declaration(),
                         ],
                       ),
                   TPL_DATA_LOADER: loaderOutput.loader,
