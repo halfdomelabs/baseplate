@@ -15,6 +15,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -150,6 +151,10 @@ function EditAdminSectionPage(): React.JSX.Element {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Delete {section.name}</DialogTitle>
+                <DialogDescription className="sr-only">
+                  Are you sure you want to delete{' '}
+                  <strong>{section.name}</strong>?
+                </DialogDescription>
               </DialogHeader>
               <p>
                 Are you sure you want to delete <strong>{section.name}</strong>?
@@ -159,7 +164,7 @@ function EditAdminSectionPage(): React.JSX.Element {
                 application. This cannot be undone.
               </p>
               <DialogFooter>
-                <DialogClose>
+                <DialogClose asChild>
                   <Button variant="secondary">Cancel</Button>
                 </DialogClose>
                 <Button
