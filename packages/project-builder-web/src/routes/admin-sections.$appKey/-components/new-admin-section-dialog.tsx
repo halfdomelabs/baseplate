@@ -24,6 +24,8 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
+import { useMemo } from 'react';
+import { useWatch } from 'react-hook-form';
 
 import { useDefinitionSchema } from '#src/hooks/use-definition-schema.js';
 
@@ -54,6 +56,11 @@ function NewAdminSectionDialog({
     value: f.id,
   }));
 
+  const modelOptions = definition.models.map((m) => ({
+    label: m.name,
+    value: m.id,
+  }));
+
   const formProps = useResettableForm({
     resolver: zodResolver(adminSectionSchema),
     defaultValues: {
@@ -62,12 +69,29 @@ function NewAdminSectionDialog({
       featureRef: featureOptions[0]?.value ?? '',
       icon: '',
       modelRef: '',
+      nameFieldRef: '',
       form: { fields: [] },
       table: { columns: [] },
     },
   });
 
   const { control, handleSubmit, reset } = formProps;
+
+  const modelRef = useWatch({
+    control,
+    name: 'modelRef',
+  });
+
+  const fieldOptions = useMemo(
+    () =>
+      definition.models
+        .find((m) => m.id === modelRef)
+        ?.model.fields.map((f) => ({
+          label: f.name,
+          value: f.id,
+        })) ?? [],
+    [definition.models, modelRef],
+  );
 
   const onSubmit = handleSubmit((data) => {
     const newId = adminSectionEntityType.generateNewId();
@@ -157,6 +181,20 @@ function NewAdminSectionDialog({
             name="type"
             options={[{ label: 'CRUD', value: 'crud' }]}
             description="The type of admin interface"
+          />
+          <ComboboxFieldController
+            label="Model"
+            control={control}
+            options={modelOptions}
+            name="modelRef"
+            description="The model to use for this section"
+          />
+          <ComboboxFieldController
+            label="Name Field"
+            control={control}
+            options={fieldOptions}
+            name="nameFieldRef"
+            description="The field to use for the name of the section"
           />
           <DialogFooter>
             <Button
