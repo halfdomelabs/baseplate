@@ -30,6 +30,20 @@ export default createPlatformPluginExport({
       getNewAction: () => ({ type: 'manage-roles', position: 'dropdown' }),
     });
 
+    adminCrudActionWeb.registerActionWebConfig({
+      pluginKey,
+      name: 'reset-password',
+      label: 'Reset Password',
+      isAvailableForModel: (definition, modelId) => {
+        const pluginDefinition = PluginUtils.configByKeyOrThrow(
+          definition,
+          pluginKey,
+        ) as LocalAuthPluginDefinition;
+        return modelId === pluginDefinition.modelRefs.user;
+      },
+      getNewAction: () => ({ type: 'reset-password', position: 'dropdown' }),
+    });
+
     adminCrudColumnWeb.registerColumnWebConfig({
       pluginKey,
       name: 'roles',

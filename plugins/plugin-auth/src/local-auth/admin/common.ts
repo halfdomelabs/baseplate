@@ -9,6 +9,7 @@ import {
 } from '@baseplate-dev/project-builder-lib';
 
 import { createAdminCrudManageRolesActionSchema } from './schema/manage-role-action.js';
+import { createAdminCrudResetPasswordActionSchema } from './schema/reset-password-action.js';
 import { createAdminCrudRolesColumnSchema } from './schema/roles-column.js';
 
 export default createPlatformPluginExport({
@@ -23,6 +24,14 @@ export default createPlatformPluginExport({
       createAdminCrudActionType({
         name: 'manage-roles',
         createSchema: createAdminCrudManageRolesActionSchema,
+      }),
+    );
+
+    // Register the reset-password action type
+    adminCrudAction.registerAdminCrudAction(
+      createAdminCrudActionType({
+        name: 'reset-password',
+        createSchema: createAdminCrudResetPasswordActionSchema,
       }),
     );
 

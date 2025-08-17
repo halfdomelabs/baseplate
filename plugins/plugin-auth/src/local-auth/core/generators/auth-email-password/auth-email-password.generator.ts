@@ -53,7 +53,7 @@ export const authEmailPasswordGenerator = createGenerator({
                       adminRoles.map((r) => quot(r)).sort(),
                     ),
                     TPL_USER_OBJECT_TYPE:
-                      userObjectType.getTypeReference().name,
+                      userObjectType.getTypeReference().fragment,
                   },
                 },
               }),
