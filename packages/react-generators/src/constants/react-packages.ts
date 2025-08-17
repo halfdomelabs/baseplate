@@ -40,7 +40,7 @@ export const REACT_PACKAGES = {
 
   // GraphQL
   '@apollo/client': '3.13.8',
-  graphql: '16.9.0',
+  graphql: '16.11.0',
   'graphql-ws': '5.16.0',
   '@graphql-codegen/cli': '5.0.7',
   '@graphql-codegen/typescript': '4.1.6',

@@ -1,10 +1,7 @@
 import type {
-  ArgumentRef,
   FieldKind,
   FieldNullability,
-  FieldRef,
   InputFieldMap,
-  InputFieldRef,
   SchemaTypes,
   ShapeFromTypeParam,
   TypeParam,
@@ -58,14 +55,14 @@ declare global {
       input: InputFieldBuilder<Types, 'InputObject'>;
       payload: RootFieldBuilder<Types, unknown, 'PayloadObject'>;
       fieldWithInputPayload: <
-        InputFields extends Record<string, InputFieldRef<Types>>,
+        InputFields extends InputFieldMap,
         PayloadFields extends Record<
           string,
           FieldRef<Types, unknown, 'PayloadObject'>
         >,
         ResolveShape,
         ResolveReturnShape,
-        Args extends Record<string, ArgumentRef<Types>> = Record<never, never>,
+        Args extends InputFieldMap = Record<never, never>,
       >(
         options: MutationWithInputPayloadOptions<
           Types,

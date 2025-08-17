@@ -2,7 +2,6 @@ import type { FastifyError } from 'fastify';
 
 import * as Sentry from '@sentry/node';
 import { omit } from 'es-toolkit';
-import { GraphQLError } from 'graphql';
 
 import { HttpError } from '../utils/http-errors.js';
 import { config } from './config.js';
@@ -24,12 +23,6 @@ export function shouldLogToSentry(error: unknown): boolean {
   const fastifyError = error as FastifyError;
   if (typeof fastifyError === 'object' && fastifyError.statusCode) {
     return fastifyError.statusCode <= 500;
-  }
-
-  if (error instanceof GraphQLError) {
-    return (
-      !error.extensions.http?.status || error.extensions.http.status >= 500
-    );
   }
 
   return true;
