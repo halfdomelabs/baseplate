@@ -37,7 +37,7 @@ const passwordResetDialogGql = createTextTemplateFile({
       '../templates/routes/-components/password-reset-dialog.gql',
     ),
   },
-  variables: {},
+  variables: { TPL_USER_ROW_FRAGMENT: {} },
 });
 
 export const LOCAL_AUTH_ADMIN_ADMIN_CRUD_RESET_PASSWORD_ACTION_TEMPLATES = {

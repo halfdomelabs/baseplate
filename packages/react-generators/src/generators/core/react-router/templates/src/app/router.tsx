@@ -3,7 +3,12 @@
 import type { ErrorRouteComponent } from '@tanstack/react-router';
 
 import { routeTree } from '$routeTree';
-import { Button, ErrorDisplay, NotFoundCard } from '%reactComponentsImports';
+import {
+  Button,
+  ErrorDisplay,
+  Loader,
+  NotFoundCard,
+} from '%reactComponentsImports';
 import { createRouter } from '@tanstack/react-router';
 
 function ErrorComponent({
@@ -26,6 +31,7 @@ export const router = createRouter({
   routeTree,
   defaultNotFoundComponent: NotFoundCard,
   defaultErrorComponent: ErrorComponent,
+  defaultPendingComponent: Loader,
   TPL_ADDITIONAL_ROUTER_OPTIONS,
 });
 

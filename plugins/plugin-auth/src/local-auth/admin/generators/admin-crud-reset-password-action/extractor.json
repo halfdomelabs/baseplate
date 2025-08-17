@@ -25,7 +25,7 @@
       "fileOptions": { "kind": "singleton" },
       "pathRootRelativePath": "{routes-root}/-components/password-reset-dialog.gql",
       "sourceFile": "routes/-components/password-reset-dialog.gql",
-      "variables": {}
+      "variables": { "TPL_USER_ROW_FRAGMENT": {} }
     }
   }
 }
