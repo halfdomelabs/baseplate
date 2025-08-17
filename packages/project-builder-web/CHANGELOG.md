@@ -1,5 +1,16 @@
 # @baseplate-dev/project-builder-web
 
+## 0.3.3
+
+### Patch Changes
+
+- [#636](https://github.com/halfdomelabs/baseplate/pull/636) [`1815ac5`](https://github.com/halfdomelabs/baseplate/commit/1815ac50cb2d9cc69c8c82187b3d597467b9f367) Thanks [@kingston](https://github.com/kingston)! - Fix creation of admin sections
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-lib@0.3.3
+  - @baseplate-dev/ui-components@0.3.3
+  - @baseplate-dev/utils@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @baseplate-dev/project-builder-common
 
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-lib@0.3.3
+  - @baseplate-dev/project-builder-server@0.3.3
+  - @baseplate-dev/sync@0.3.3
+  - @baseplate-dev/plugin-auth@2.0.3
+  - @baseplate-dev/plugin-queue@0.1.3
+  - @baseplate-dev/plugin-storage@2.0.3
+
 ## 0.3.2
 
 ### Patch Changes
