@@ -6,7 +6,7 @@
  */
 
 const SIMPLE_REPLACEMENT_REGEX = /\/\* TPL_([A-Z0-9_]+)=([^*]*?) \*\/\n*/g;
-const ALLOWED_VALUE_PATTERN = /^[a-zA-Z0-9_$/./-]+$/;
+const ALLOWED_VALUE_PATTERN = /^[a-zA-Z0-9_$/.\-?]+$/;
 
 interface ParseSimpleReplacementsResult {
   /** Content with replacement comments removed */
@@ -101,23 +101,4 @@ export function generateSimpleReplacementComments(
  */
 export function isValidSimpleReplacementValue(value: string): boolean {
   return ALLOWED_VALUE_PATTERN.test(value);
-}
-
-/**
- * Suggests the appropriate replacement type based on the value content.
- *
- * @param value - The value to analyze
- * @returns 'simple' for values that can use simple replacements, 'delimiter' otherwise
- */
-export function suggestReplacementType(value: string): 'simple' | 'delimiter' {
-  // Check if value is simple enough for simple replacements
-  if (
-    value &&
-    value.length <= 100 && // Keep reasonable length limit
-    !value.includes('\n') && // No multiline
-    ALLOWED_VALUE_PATTERN.test(value)
-  ) {
-    return 'simple';
-  }
-  return 'delimiter';
 }

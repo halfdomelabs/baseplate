@@ -5,6 +5,7 @@ import { reactPathsProvider } from '#src/providers/react-paths.js';
 
 export interface CoreReactComponentsPaths {
   alert: string;
+  badge: string;
   breadcrumb: string;
   button: string;
   calendar: string;
@@ -15,6 +16,7 @@ export interface CoreReactComponentsPaths {
   cn: string;
   combobox: string;
   comboboxField: string;
+  command: string;
   confirmDialog: string;
   datePickerField: string;
   dateTimePickerField: string;
@@ -31,6 +33,8 @@ export interface CoreReactComponentsPaths {
   label: string;
   loader: string;
   mergeRefs: string;
+  multiCombobox: string;
+  multiComboboxField: string;
   navigationMenu: string;
   notFoundCard: string;
   popover: string;
@@ -75,6 +79,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
       providers: {
         coreReactComponentsPaths: {
           alert: `${componentsRoot}/ui/alert.tsx`,
+          badge: `${componentsRoot}/ui/badge.tsx`,
           breadcrumb: `${componentsRoot}/ui/breadcrumb.tsx`,
           button: `${componentsRoot}/ui/button.tsx`,
           calendar: `${componentsRoot}/ui/calendar.tsx`,
@@ -85,6 +90,7 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           cn: `${srcRoot}/utils/cn.ts`,
           combobox: `${componentsRoot}/ui/combobox.tsx`,
           comboboxField: `${componentsRoot}/ui/combobox-field.tsx`,
+          command: `${componentsRoot}/ui/command.tsx`,
           confirmDialog: `${componentsRoot}/ui/confirm-dialog.tsx`,
           datePickerField: `${componentsRoot}/ui/date-picker-field.tsx`,
           dateTimePickerField: `${componentsRoot}/ui/date-time-picker-field.tsx`,
@@ -101,6 +107,8 @@ const coreReactComponentsPathsTask = createGeneratorTask({
           label: `${componentsRoot}/ui/label.tsx`,
           loader: `${componentsRoot}/ui/loader.tsx`,
           mergeRefs: `${srcRoot}/utils/merge-refs.ts`,
+          multiCombobox: `${componentsRoot}/ui/multi-combobox.tsx`,
+          multiComboboxField: `${componentsRoot}/ui/multi-combobox-field.tsx`,
           navigationMenu: `${componentsRoot}/ui/navigation-menu.tsx`,
           notFoundCard: `${componentsRoot}/ui/not-found-card.tsx`,
           popover: `${componentsRoot}/ui/popover.tsx`,

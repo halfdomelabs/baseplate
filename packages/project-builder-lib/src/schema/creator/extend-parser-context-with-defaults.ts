@@ -3,18 +3,27 @@ import { z } from 'zod';
 import type { DefinitionSchemaCreatorOptions } from './types.js';
 
 function isEmpty(value: unknown): boolean {
+  if (value === undefined || value === null) {
+    return true;
+  }
   if (Array.isArray(value)) {
     return value.length === 0;
   }
-  if (typeof value === 'object' && value !== null) {
+  if (
+    typeof value === 'object' &&
+    Object.getPrototypeOf(value) === Object.prototype
+  ) {
     return Object.values(value).every((val) => val === undefined);
   }
-  return value === false || value === '';
+  if (typeof value === 'string') {
+    return value === '';
+  }
+  return false;
 }
 
 export type WithDefaultType = <T extends z.ZodTypeAny>(
   schema: T,
-  defaultValue: z.infer<T>,
+  defaultValue: z.input<T>,
 ) => z.ZodEffects<
   z.ZodOptional<T>,
   z.output<z.ZodOptional<T>>,
@@ -37,7 +46,7 @@ export function extendParserContextWithDefaults(
   return {
     withDefault: function withDefault<T extends z.ZodTypeAny>(
       schema: T,
-      defaultValue: z.infer<T>,
+      defaultValue: z.input<T>,
     ): z.ZodEffects<z.ZodOptional<T>, z.output<z.ZodOptional<T>>, z.input<T>> {
       // Auto-add .optional() to the schema
       const optionalSchema = schema.optional();

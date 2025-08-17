@@ -187,12 +187,13 @@ export const TsCodeUtils = {
    * @returns The merged code fragment.
    */
   mergeFragmentsPresorted(
-    fragments: (TsCodeFragment | string)[],
+    fragments: (TsCodeFragment | string | undefined)[],
     separator = '\n',
   ): TsCodeFragment {
     return {
       contents: fragments
-        .map((f) => (typeof f === 'string' ? f : f.contents))
+        .map((f) => (typeof f === 'string' ? f : f?.contents))
+        .filter((x) => x !== undefined)
         .join(separator),
       ...mergeFragmentImportsAndHoistedFragments(
         fragments.filter(isTsCodeFragment),
@@ -378,13 +379,14 @@ export const TsCodeUtils = {
    * @returns The merged code fragment as an array literal.
    */
   mergeFragmentsAsArrayPresorted(
-    fragments: (string | TsCodeFragment)[],
+    fragments: (string | TsCodeFragment | undefined)[],
   ): TsCodeFragment {
     return {
       contents: `[${fragments
         .map((fragment) =>
-          typeof fragment === 'string' ? fragment : fragment.contents,
+          typeof fragment === 'string' ? fragment : fragment?.contents,
         )
+        .filter((x) => x !== undefined)
         .join(',\n')}]`,
       ...mergeFragmentImportsAndHoistedFragments(
         fragments.filter(isTsCodeFragment),

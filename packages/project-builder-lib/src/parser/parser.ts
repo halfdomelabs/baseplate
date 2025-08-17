@@ -19,6 +19,8 @@ import { initializePlugins } from '#src/plugins/imports/loader.js';
 import { pluginConfigSpec } from '#src/plugins/index.js';
 import { parseSchemaWithTransformedReferences } from '#src/references/parse-schema-with-references.js';
 import {
+  adminCrudActionSpec,
+  adminCrudColumnSpec,
   adminCrudInputSpec,
   createDefinitionSchemaParserContext,
   modelTransformerSpec,
@@ -32,7 +34,13 @@ import type { SchemaParserContext } from './types.js';
 const COMMON_SPEC_IMPLEMENTATIONS: (
   | InitializedPluginSpec
   | PluginSpecWithInitializer
-)[] = [pluginConfigSpec, modelTransformerSpec, adminCrudInputSpec];
+)[] = [
+  pluginConfigSpec,
+  modelTransformerSpec,
+  adminCrudInputSpec,
+  adminCrudActionSpec,
+  adminCrudColumnSpec,
+];
 
 /**
  * Creates a plugin implementation store from the project definition and plugin store,

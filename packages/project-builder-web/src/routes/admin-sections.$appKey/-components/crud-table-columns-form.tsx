@@ -1,9 +1,9 @@
 import type {
-  AdminCrudSectionConfig,
-  AdminCrudTableColumnDefinition,
+  AdminCrudColumnDefinition,
+  AdminCrudColumnInput,
 } from '@baseplate-dev/project-builder-lib';
+import type { Lens } from '@hookform/lenses';
 import type React from 'react';
-import type { Control } from 'react-hook-form';
 
 import {
   Button,
@@ -13,35 +13,34 @@ import {
   RecordViewItemList,
   useConfirmDialog,
 } from '@baseplate-dev/ui-components';
+import { useFieldArray } from '@hookform/lenses/rhf';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { useFieldArray, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
+
+import { SortableList } from '#src/components/index.js';
 
 import { ColumnDialog } from './column-dialog.js';
 
-export type AdminCrudTableConfig = Pick<
-  AdminCrudSectionConfig,
-  'table' | 'modelRef'
->;
-
 interface Props {
   className?: string;
-  control: Control<AdminCrudTableConfig>;
+  lens: Lens<AdminCrudColumnInput[]>;
+  modelRef: string;
 }
 
 function CrudTableColumnsForm({
   className,
-  control,
+  lens,
+  modelRef,
 }: Props): React.JSX.Element {
   const { requestConfirm } = useConfirmDialog();
 
-  const { fields, append, remove, update } = useFieldArray({
-    control,
-    name: 'table.columns',
-  });
+  const { fields, append, remove, update, move } = useFieldArray(
+    lens.interop(),
+  );
   const [editingColumn, setEditingColumn] = useState<
-    AdminCrudTableColumnDefinition | undefined
+    AdminCrudColumnInput | undefined
   >(undefined);
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -57,7 +56,7 @@ function CrudTableColumnsForm({
     });
   }
 
-  const columns = useWatch({ control, name: 'table.columns' });
+  const columns = useWatch(lens.interop());
 
   function handleEditColumn(columnIdx: number): void {
     setEditingColumn(columns[columnIdx]);
@@ -69,7 +68,7 @@ function CrudTableColumnsForm({
     setIsCreating(true);
   }
 
-  function handleSaveColumn(columnData: AdminCrudTableColumnDefinition): void {
+  function handleSaveColumn(columnData: AdminCrudColumnDefinition): void {
     if (editingColumn) {
       const existingIndex = columns.findIndex(
         (field) => field.id === editingColumn.id,
@@ -82,50 +81,61 @@ function CrudTableColumnsForm({
     }
   }
 
+  const columnListItems = fields.map((field, idx) => ({
+    id: field.id,
+    element: (
+      <RecordView key={field.id}>
+        <RecordViewItemList>
+          <RecordViewItem title="Label">
+            <div className="flex items-center gap-2">
+              <span>
+                {field.label || (
+                  <span className="text-muted-foreground">Untitled Column</span>
+                )}
+              </span>
+            </div>
+          </RecordViewItem>
+          <RecordViewItem title="Type">{field.type}</RecordViewItem>
+        </RecordViewItemList>
+        <RecordViewActions>
+          <Button
+            variant="ghost"
+            size="icon"
+            title="Edit"
+            aria-label="Edit column"
+            onClick={() => {
+              handleEditColumn(idx);
+            }}
+          >
+            <MdEdit />
+          </Button>
+          <Button
+            variant="ghostDestructive"
+            size="icon"
+            title="Delete"
+            aria-label="Delete column"
+            onClick={() => {
+              handleDeleteColumn(idx);
+            }}
+          >
+            <MdDeleteOutline />
+          </Button>
+        </RecordViewActions>
+      </RecordView>
+    ),
+  }));
+
   return (
     <div className={clsx('space-y-4', className)}>
-      {fields.map((field, idx) => (
-        <RecordView key={field.id}>
-          <RecordViewItemList>
-            <RecordViewItem title="Label">
-              <div className="flex items-center gap-2">
-                <span>
-                  {field.label || (
-                    <span className="text-muted-foreground">
-                      Untitled Column
-                    </span>
-                  )}
-                </span>
-              </div>
-            </RecordViewItem>
-            <RecordViewItem title="Type">{field.display.type}</RecordViewItem>
-          </RecordViewItemList>
-          <RecordViewActions>
-            <Button
-              variant="ghost"
-              size="icon"
-              title="Edit"
-              aria-label="Edit column"
-              onClick={() => {
-                handleEditColumn(idx);
-              }}
-            >
-              <MdEdit />
-            </Button>
-            <Button
-              variant="ghostDestructive"
-              size="icon"
-              title="Delete"
-              aria-label="Delete column"
-              onClick={() => {
-                handleDeleteColumn(idx);
-              }}
-            >
-              <MdDeleteOutline />
-            </Button>
-          </RecordViewActions>
-        </RecordView>
-      ))}
+      {fields.length === 0 ? (
+        <p className="pt-4 text-style-muted">
+          No columns configured. Add columns to display data in your table.
+        </p>
+      ) : (
+        <div className="flex w-full flex-col gap-2">
+          <SortableList listItems={columnListItems} sortItems={move} />
+        </div>
+      )}
       <ColumnDialog
         open={isEditing || isCreating}
         onOpenChange={(open) => {
@@ -136,7 +146,7 @@ function CrudTableColumnsForm({
           }
         }}
         column={editingColumn}
-        modelRef={useWatch({ control, name: 'modelRef' }) || ''}
+        modelRef={modelRef}
         isNew={isCreating}
         onSave={handleSaveColumn}
       />

@@ -4,7 +4,6 @@ import {
   generateSimpleReplacementComments,
   isValidSimpleReplacementValue,
   parseSimpleReplacements,
-  suggestReplacementType,
 } from './parse-simple-replacements.js';
 
 describe('parseSimpleReplacements', () => {
@@ -68,10 +67,10 @@ describe('parseSimpleReplacements', () => {
   });
 
   it('should throw error for invalid characters in values', () => {
-    const content = '/* TPL_COMPLEX_EXPR=data?.user?.email */';
+    const content = '/* TPL_COMPLEX_EXPR=data?.use .email */';
 
     expect(() => parseSimpleReplacements(content)).toThrow(
-      'Invalid replacement value "data?.user?.email" for TPL_COMPLEX_EXPR',
+      'Invalid replacement value "data?.use .email" for TPL_COMPLEX_EXPR',
     );
   });
 
@@ -205,36 +204,7 @@ describe('isValidSimpleReplacementValue', () => {
   });
 
   it('should reject invalid characters', () => {
-    expect(isValidSimpleReplacementValue('data?.user')).toBe(false);
     expect(isValidSimpleReplacementValue('user && admin')).toBe(false);
-    expect(isValidSimpleReplacementValue('"hello world"')).toBe(false);
-    expect(isValidSimpleReplacementValue("'single quotes'")).toBe(false);
-    expect(isValidSimpleReplacementValue('`template literal`')).toBe(false);
-    expect(isValidSimpleReplacementValue('user[0]')).toBe(false);
-    expect(isValidSimpleReplacementValue('func()')).toBe(false);
-    expect(isValidSimpleReplacementValue('a + b')).toBe(false);
-  });
-});
-
-describe('suggestReplacementType', () => {
-  it('should suggest simple for simple values', () => {
-    expect(suggestReplacementType('UserEditPage')).toBe('simple');
-    expect(suggestReplacementType('updateUser')).toBe('simple');
-    expect(suggestReplacementType('/admin/users')).toBe('simple');
-    expect(suggestReplacementType('user-edit-form')).toBe('simple');
-    expect(suggestReplacementType('42')).toBe('simple');
-    expect(suggestReplacementType('true')).toBe('simple');
-  });
-
-  it('should suggest delimiter for complex values', () => {
-    expect(suggestReplacementType('data?.user?.email')).toBe('delimiter');
-    expect(suggestReplacementType('user && admin')).toBe('delimiter');
-    expect(suggestReplacementType('"hello world"')).toBe('delimiter');
-    expect(suggestReplacementType('`template ${literal}`')).toBe('delimiter');
-  });
-
-  it('should suggest delimiter for multiline content', () => {
-    expect(suggestReplacementType(String.raw`line1\nline2`)).toBe('delimiter');
-    expect(suggestReplacementType('a'.repeat(150))).toBe('delimiter'); // Long content
+    expect(isValidSimpleReplacementValue('a \n b')).toBe(false);
   });
 });

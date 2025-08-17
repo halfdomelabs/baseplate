@@ -91,15 +91,17 @@ export function GraphQLMutationsSection({
               )
             </AlertTitle>
             <AlertDescription>
-              Enable the appropriate methods on the{' '}
-              <Link
-                to="/data/models/edit/$key/service"
-                params={{ key: modelKey }}
-                className="font-semibold"
-              >
-                the service tab
-              </Link>{' '}
-              to expose mutations
+              <div>
+                Enable the appropriate methods on the{' '}
+                <Link
+                  to="/data/models/edit/$key/service"
+                  params={{ key: modelKey }}
+                  className="font-semibold"
+                >
+                  the service tab
+                </Link>{' '}
+                to expose mutations
+              </div>
             </AlertDescription>
           </Alert>
         )}

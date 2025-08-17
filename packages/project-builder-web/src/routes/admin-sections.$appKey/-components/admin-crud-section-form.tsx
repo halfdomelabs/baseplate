@@ -1,4 +1,8 @@
-import type { WebAdminSectionConfigInput } from '@baseplate-dev/project-builder-lib';
+import type {
+  AdminCrudColumnInput,
+  AdminCrudSectionConfigInput,
+} from '@baseplate-dev/project-builder-lib';
+import type { Lens } from '@hookform/lenses';
 import type React from 'react';
 import type { Control, UseFormReturn } from 'react-hook-form';
 
@@ -12,26 +16,29 @@ import {
   SectionListSectionHeader,
   SectionListSectionTitle,
 } from '@baseplate-dev/ui-components';
+import { useLens } from '@hookform/lenses';
 import { useWatch } from 'react-hook-form';
 
 import { EmbeddedListInput } from '#src/components/index.js';
 
 import type { AdminCrudFormConfigInput } from './crud-form-fields-form.js';
-import type { AdminCrudTableConfig } from './crud-table-columns-form.js';
+import type { AdminCrudActionsConfig } from './crud-table-actions-form.js';
 
 import AdminCrudEmbeddedForm, {
   AdminCrudEmbeddedTable,
 } from './admin-crud-embedded-form.js';
 import CrudFormFieldsForm from './crud-form-fields-form.js';
+import CrudTableActionsForm from './crud-table-actions-form.js';
 import CrudTableColumnsForm from './crud-table-columns-form.js';
 
 interface Props {
-  formProps: UseFormReturn<WebAdminSectionConfigInput>;
+  formProps: UseFormReturn<AdminCrudSectionConfigInput>;
 }
 
 function AdminCrudSectionForm({ formProps }: Props): React.JSX.Element {
   const { control } = formProps;
   const { definition } = useProjectDefinition();
+  const lens = useLens({ control });
 
   const modelOptions = definition.models.map((model) => ({
     label: model.name,
@@ -50,8 +57,6 @@ function AdminCrudSectionForm({ formProps }: Props): React.JSX.Element {
         label: field.name,
         value: field.id,
       })) ?? [];
-
-  // TODO: struggles with https://github.com/react-hook-form/react-hook-form/discussions/7354
 
   const embeddedFormOptions =
     useWatch({
@@ -104,7 +109,29 @@ function AdminCrudSectionForm({ formProps }: Props): React.JSX.Element {
         </SectionListSectionHeader>
         <SectionListSectionContent>
           <CrudTableColumnsForm
-            control={control as unknown as Control<AdminCrudTableConfig>}
+            lens={
+              // not sure why but the typings don't work as expected
+              lens.focus('table.columns') as unknown as Lens<
+                AdminCrudColumnInput[]
+              >
+            }
+            modelRef={modelId}
+          />
+        </SectionListSectionContent>
+      </SectionListSection>
+
+      <SectionListSection>
+        <SectionListSectionHeader>
+          <SectionListSectionTitle>Table Actions</SectionListSectionTitle>
+          <SectionListSectionDescription>
+            Configure actions available for each row in the table. Drag to
+            reorder.
+          </SectionListSectionDescription>
+        </SectionListSectionHeader>
+        <SectionListSectionContent>
+          <CrudTableActionsForm
+            control={control as unknown as Control<AdminCrudActionsConfig>}
+            modelRef={modelId}
           />
         </SectionListSectionContent>
       </SectionListSection>

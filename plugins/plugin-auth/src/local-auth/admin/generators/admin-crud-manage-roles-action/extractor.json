@@ -1,0 +1,30 @@
+{
+  "name": "local-auth/admin/admin-crud-manage-roles-action",
+  "templates": {
+    "role-manager-dialog": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "generatedGraphqlImportsProvider": {
+          "importName": "generatedGraphqlImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/apollo/react-apollo/providers/generated-graphql.ts"
+        },
+        "reactComponentsImportsProvider": {
+          "importName": "reactComponentsImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/react-generators:src/generators/core/react-components/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{routes-root}/-components/role-manager-dialog.tsx",
+      "projectExports": {},
+      "sourceFile": "routes/-components/role-manager-dialog.tsx",
+      "variables": { "TPL_AVAILABLE_ROLES": {} }
+    },
+    "role-manager-dialog-gql": {
+      "type": "text",
+      "fileOptions": { "kind": "singleton" },
+      "pathRootRelativePath": "{routes-root}/-components/role-manager-dialog.gql",
+      "sourceFile": "routes/-components/role-manager-dialog.gql",
+      "variables": { "TPL_USER_ROW_FRAGMENT": {} }
+    }
+  }
+}

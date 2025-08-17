@@ -7,7 +7,6 @@ import type { GeneratorBundle } from '@baseplate-dev/sync';
 
 import { ModelUtils } from '@baseplate-dev/project-builder-lib';
 import {
-  adminCrudColumnGenerator,
   adminCrudEditGenerator,
   adminCrudEmbeddedFormGenerator,
   adminCrudListGenerator,
@@ -15,18 +14,18 @@ import {
   adminCrudSectionGenerator,
   reactRoutesGenerator,
 } from '@baseplate-dev/react-generators';
-import { makeIdSafe } from '@baseplate-dev/sync';
 import inflection from 'inflection';
 
 import type { AppEntryBuilder } from '#src/compiler/app-entry-builder.js';
 
-import { compileAdminCrudDisplay } from './displays.js';
+import { compileAdminCrudAction } from './actions.js';
+import { compileAdminCrudColumn } from './columns.js';
 import { compileAdminCrudInput } from './inputs.js';
 
 function compileAdminCrudEmbeddedForm(
   builder: AppEntryBuilder<WebAppConfig>,
   form: AdminCrudEmbeddedFormConfig,
-  crudSectionId: string,
+  crudSectionDefinition: AdminCrudSectionConfig,
 ): GeneratorBundle {
   const idFields = ModelUtils.byIdOrThrow(
     builder.projectDefinition,
@@ -50,27 +49,21 @@ function compileAdminCrudEmbeddedForm(
       ...sharedData,
       isList: true,
       children: {
-        columns: form.table.columns.map((c, idx) =>
-          adminCrudColumnGenerator({
-            // TODO: We should use an actual ID on the column
-            id: makeIdSafe(c.label),
-            label: c.label,
-            order: idx,
-            children: {
-              display: compileAdminCrudDisplay(
-                builder,
-                c.display,
-                form.modelRef,
-              ),
-            },
-          }),
+        columns: form.table.columns.map((column, idx) =>
+          compileAdminCrudColumn(
+            column,
+            form.modelRef,
+            builder,
+            crudSectionDefinition,
+            idx,
+          ),
         ),
         inputs: form.form.fields.map((field, idx) =>
           compileAdminCrudInput(
             field,
             form.modelRef,
             builder,
-            crudSectionId,
+            crudSectionDefinition.id,
             idx,
           ),
         ),
@@ -86,7 +79,7 @@ function compileAdminCrudEmbeddedForm(
           field,
           form.modelRef,
           builder,
-          crudSectionId,
+          crudSectionDefinition.id,
           idx,
         ),
       ),
@@ -127,7 +120,7 @@ export function compileAdminCrudSection(
                 ),
               ),
               embeddedForms: crudSection.embeddedForms?.map((form) =>
-                compileAdminCrudEmbeddedForm(builder, form, crudSectionId),
+                compileAdminCrudEmbeddedForm(builder, form, crudSection),
               ),
             },
           }),
@@ -137,19 +130,22 @@ export function compileAdminCrudSection(
             disableCreate,
             children: {
               columns: crudSection.table.columns.map((column, idx) =>
-                adminCrudColumnGenerator({
-                  // TODO: We should use an actual ID on the column
-                  id: makeIdSafe(column.label),
-                  label: column.label,
-                  order: idx,
-                  children: {
-                    display: compileAdminCrudDisplay(
-                      builder,
-                      column.display,
-                      crudSection.modelRef,
-                    ),
-                  },
-                }),
+                compileAdminCrudColumn(
+                  column,
+                  crudSection.modelRef,
+                  builder,
+                  crudSection,
+                  idx,
+                ),
+              ),
+              actions: crudSection.table.actions?.map((action, idx) =>
+                compileAdminCrudAction(
+                  action,
+                  crudSection.modelRef,
+                  builder,
+                  crudSection,
+                  idx,
+                ),
               ),
             },
           }),

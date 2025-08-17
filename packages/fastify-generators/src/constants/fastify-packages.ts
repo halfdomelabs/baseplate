@@ -10,11 +10,11 @@ export const FASTIFY_PACKAGES = {
 
   'altair-fastify-plugin': '8.0.4',
   graphql: '16.9.0',
-  '@envelop/core': '5.0.1',
-  '@envelop/disable-introspection': '6.0.0',
-  'graphql-yoga': '5.6.1',
+  '@envelop/core': '5.3.0',
+  '@envelop/disable-introspection': '8.0.0',
+  'graphql-yoga': '5.15.1',
 
-  '@envelop/types': '5.0.0',
+  '@envelop/types': '5.2.1',
   '@types/ws': '8.5.13',
 
   '@fastify/websocket': '11.0.1',
@@ -24,10 +24,10 @@ export const FASTIFY_PACKAGES = {
   'fastify-raw-body': '5.0.0',
 
   // Pothos
-  '@pothos/core': '4.3.0',
-  '@pothos/plugin-simple-objects': '4.1.0',
-  '@pothos/plugin-relay': '4.3.0',
-  '@pothos/plugin-prisma': '4.3.1',
+  '@pothos/core': '4.8.1',
+  '@pothos/plugin-simple-objects': '4.1.3',
+  '@pothos/plugin-relay': '4.6.2',
+  '@pothos/plugin-prisma': '4.10.0',
 
   '@graphql-yoga/redis-event-target': '2.0.0',
   'graphql-ws': '5.16.0',

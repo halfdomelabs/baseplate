@@ -5,6 +5,8 @@ import type {
 
 import { webConfigSpec } from '@baseplate-dev/project-builder-lib';
 import {
+  adminCrudActionWebSpec,
+  adminCrudColumnWebSpec,
   adminCrudInputWebSpec,
   modelTransformerWebSpec,
 } from '@baseplate-dev/project-builder-lib/web';
@@ -30,6 +32,8 @@ export async function createWebSchemaParserContext(
         webConfigSpec,
         modelTransformerWebSpec,
         adminCrudInputWebSpec,
+        adminCrudActionWebSpec,
+        adminCrudColumnWebSpec,
       ],
     },
   };

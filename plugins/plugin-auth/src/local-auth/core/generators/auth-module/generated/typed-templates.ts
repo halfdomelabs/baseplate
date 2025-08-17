@@ -91,11 +91,47 @@ const schemaUserSessionQueries = createTsTemplateFile({
   variables: {},
 });
 
+const userRolesMutations = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'module',
+  importMapProviders: { pothosImports: pothosImportsProvider },
+  name: 'user-roles-mutations',
+  projectExports: {},
+  referencedGeneratorTemplates: { userRolesService: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/schema/user-roles.mutations.ts',
+    ),
+  },
+  variables: { TPL_ADMIN_ROLES: {}, TPL_USER_OBJECT_TYPE: {} },
+});
+
+const userRolesService = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'module',
+  importMapProviders: {
+    authRolesImports: authRolesImportsProvider,
+    prismaImports: prismaImportsProvider,
+  },
+  name: 'user-roles-service',
+  projectExports: {},
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/user-roles.service.ts',
+    ),
+  },
+  variables: {},
+});
+
 export const moduleGroup = {
   authRoleEnum,
   schemaUserSessionMutations,
   schemaUserSessionPayloadObjectType,
   schemaUserSessionQueries,
+  userRolesMutations,
+  userRolesService,
 };
 
 const userSessionService = createTsTemplateFile({

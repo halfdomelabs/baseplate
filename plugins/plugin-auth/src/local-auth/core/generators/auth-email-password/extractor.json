@@ -30,7 +30,7 @@
       "pathRootRelativePath": "{module-root}/schema/user-password.mutations.ts",
       "referencedGeneratorTemplates": ["services-user-password"],
       "sourceFile": "module/schema/user-password.mutations.ts",
-      "variables": {}
+      "variables": { "TPL_ADMIN_ROLES": {}, "TPL_USER_OBJECT_TYPE": {} }
     },
     "services-user-password": {
       "type": "ts",

@@ -10,7 +10,6 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
-import { fastifySentryConfigProvider } from '#src/generators/core/fastify-sentry/index.js';
 import { yogaPluginConfigProvider } from '#src/generators/yoga/yoga-plugin/index.js';
 
 import { pothosConfigProvider } from '../pothos/index.js';
@@ -54,28 +53,6 @@ export const pothosSentryGenerator = createGenerator({
             );
           },
         };
-      },
-    }),
-    sentry: createGeneratorTask({
-      dependencies: {
-        fastifySentryConfig: fastifySentryConfigProvider.dependency(),
-      },
-      run({ fastifySentryConfig }) {
-        fastifySentryConfig.shouldLogToSentryFragments.set(
-          'graphql',
-          tsCodeFragment(
-            `
-          if (error instanceof GraphQLError) {
-            return (
-              !error.extensions.http?.status || error.extensions.http.status >= 500
-            );
-          }
-          `,
-            tsImportBuilder(['GraphQLError']).from('graphql'),
-          ),
-        );
-
-        return {};
       },
     }),
     pothosPlugin: createGeneratorTask({

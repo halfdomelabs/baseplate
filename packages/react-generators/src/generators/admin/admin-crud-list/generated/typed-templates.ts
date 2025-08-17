@@ -2,7 +2,6 @@ import { createTsTemplateFile } from '@baseplate-dev/core-generators';
 import path from 'node:path';
 
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
-import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
 
 const listPage = createTsTemplateFile({
   fileOptions: { generatorTemplatePath: 'index.tsx', kind: 'instance' },
@@ -17,37 +16,33 @@ const listPage = createTsTemplateFile({
     TPL_CREATE_BUTTON: {},
     TPL_DATA_LOADER: {},
     TPL_DATA_PARTS: {},
-    TPL_DELETE_FUNCTION: {},
-    TPL_DELETE_MUTATION: {},
     TPL_ERROR_PARTS: {},
     TPL_PAGE_NAME: {},
-    TPL_REFETCH_DOCUMENT: {},
     TPL_ROUTE_PATH: {},
-    TPL_ROW_FRAGMENT_NAME: {},
     TPL_TABLE_COMPONENT: {},
     TPL_TITLE: {},
   },
 });
 
 const table = createTsTemplateFile({
-  fileOptions: { generatorTemplatePath: 'Table.tsx', kind: 'instance' },
+  fileOptions: { generatorTemplatePath: 'table.tsx', kind: 'instance' },
   importMapProviders: {
     reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
   },
   name: 'table',
   source: {
-    path: path.join(import.meta.dirname, '../templates/Table.tsx'),
+    path: path.join(import.meta.dirname, '../templates/table.tsx'),
   },
   variables: {
+    TPL_ACTION_HOOKS: {},
+    TPL_ACTION_SIBLING_COMPONENTS: {},
     TPL_CELLS: {},
-    TPL_COMPONENT_NAME: {},
+    TPL_COMPONENT_NAME: { type: 'replacement' },
     TPL_DESTRUCTURED_PROPS: {},
-    TPL_EDIT_ROUTE: {},
     TPL_EXTRA_PROPS: {},
     TPL_HEADERS: {},
     TPL_PLURAL_MODEL: {},
-    TPL_ROW_FRAGMENT: {},
+    TPL_ROW_FRAGMENT: { type: 'replacement' },
   },
 });
 

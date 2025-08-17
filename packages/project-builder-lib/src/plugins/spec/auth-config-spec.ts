@@ -7,6 +7,8 @@ import { createPluginSpec } from './types.js';
 export interface AuthRole {
   id: string;
   name: string;
+  comment: string;
+  builtIn: boolean;
 }
 
 type AuthRolesGetter = (definition: ProjectDefinition) => AuthRole[];

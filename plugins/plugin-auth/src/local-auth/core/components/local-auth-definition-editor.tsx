@@ -51,10 +51,12 @@ export function LocalAuthDefinitionEditor({
     createLocalAuthPluginDefinitionSchema,
   );
   const authDefinition = getAuthPluginDefinition(definition);
-  const roles = authDefinition.roles.map((role) => ({
-    label: role.name,
-    value: role.id,
-  }));
+  const roles = authDefinition.roles
+    .filter((role) => !role.builtIn)
+    .map((role) => ({
+      label: role.name,
+      value: role.id,
+    }));
 
   const defaultValues = useMemo(() => {
     if (pluginMetadata?.config) {
@@ -75,6 +77,7 @@ export function LocalAuthDefinitionEditor({
         ),
       },
       initialUserRoles: [],
+      userAdminRoles: [],
     } satisfies LocalAuthPluginDefinitionInput;
   }, [definition, pluginMetadata?.config]);
 
@@ -206,6 +209,26 @@ export function LocalAuthDefinitionEditor({
                     control={control}
                     options={roles}
                     description="The roles that will be assigned to the initial user."
+                  />
+                </SectionListSectionContent>
+              </SectionListSection>
+              <SectionListSection>
+                <SectionListSectionHeader>
+                  <SectionListSectionTitle>
+                    User Management Permissions
+                  </SectionListSectionTitle>
+                  <SectionListSectionDescription>
+                    Configure which roles can manage users and assign roles to
+                    other users in the admin interface.
+                  </SectionListSectionDescription>
+                </SectionListSectionHeader>
+                <SectionListSectionContent className="auth:space-y-6">
+                  <MultiComboboxFieldController
+                    label="User Admin Roles"
+                    name="userAdminRoles"
+                    control={control}
+                    options={roles}
+                    description="Roles that can manage users and assign roles to other users."
                   />
                 </SectionListSectionContent>
               </SectionListSection>

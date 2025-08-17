@@ -5,88 +5,14 @@ import type { def } from '#src/schema/creator/index.js';
 import { definitionSchema } from '#src/schema/creator/schema-creator.js';
 import {
   modelEntityType,
-  modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '#src/schema/models/index.js';
 
 import { createBaseAdminSectionValidators } from './base.js';
+import { createAdminCrudActionSchema } from './crud-actions/admin-crud-action.js';
+import { createAdminCrudColumnSchema } from './crud-columns/admin-crud-column.js';
 import { createAdminCrudInputSchema } from './crud-form/admin-crud-input.js';
 import { adminCrudEmbeddedFormEntityType } from './crud-form/types.js';
-import { adminCrudSectionColumnEntityType } from './types.js';
-
-// Table Columns
-export const createAdminCrudForeignDisplaySchema = definitionSchema((ctx) =>
-  z.object({
-    type: z.literal('foreign'),
-    localRelationRef: ctx.withRef({
-      type: modelLocalRelationEntityType,
-      onDelete: 'RESTRICT',
-      parentPath: { context: 'model' },
-    }),
-    labelExpression: z.string().min(1),
-    valueExpression: z.string().min(1),
-  }),
-);
-
-export type AdminCrudForeignDisplayConfig = def.InferOutput<
-  typeof createAdminCrudForeignDisplaySchema
->;
-
-export const createAdminCrudTextDisplaySchema = definitionSchema((ctx) =>
-  z.object({
-    type: z.literal('text'),
-    modelFieldRef: ctx.withRef({
-      type: modelScalarFieldEntityType,
-      onDelete: 'RESTRICT',
-      parentPath: { context: 'model' },
-    }),
-  }),
-);
-
-export type AdminCrudTextDisplayConfig = def.InferOutput<
-  typeof createAdminCrudTextDisplaySchema
->;
-
-export const createAdminCrudDisplaySchema = definitionSchema((ctx) =>
-  z.discriminatedUnion('type', [
-    createAdminCrudTextDisplaySchema(ctx),
-    createAdminCrudForeignDisplaySchema(ctx),
-  ]),
-);
-
-// TODO: Improve this to be more dynamic in the future
-export const adminCrudDisplayTypes = ['text', 'foreign'] as const;
-
-export type AdminCrudDisplayConfig = def.InferOutput<
-  typeof createAdminCrudDisplaySchema
->;
-
-export const createAdminCrudTableColumnSchema = definitionSchema((ctx) =>
-  ctx.withEnt(
-    z.object({
-      id: z
-        .string()
-        .default(() => adminCrudSectionColumnEntityType.generateNewId()),
-      label: z.string().min(1),
-      display: createAdminCrudDisplaySchema(ctx),
-    }),
-    {
-      type: adminCrudSectionColumnEntityType,
-      parentPath: {
-        context: 'admin-section',
-      },
-      getNameResolver: (value) => value.id ?? '',
-    },
-  ),
-);
-
-export type AdminCrudTableColumnDefinition = def.InferOutput<
-  typeof createAdminCrudTableColumnSchema
->;
-
-export type AdminCrudTableColumnDefinitionInput = def.InferInput<
-  typeof createAdminCrudTableColumnSchema
->;
 
 // Embedded Crud
 export const createAdminCrudEmbeddedObjectSchema = definitionSchema((ctx) =>
@@ -115,10 +41,8 @@ export const createAdminCrudEmbeddedListSchema = definitionSchema((ctx) =>
     }),
     includeIdField: z.boolean().optional(),
     type: z.literal('list'),
-    // NOTE: These two fields need to be synced with crud section schema
-    // because the web app expects that (TODO)
     table: z.object({
-      columns: z.array(createAdminCrudTableColumnSchema(ctx)),
+      columns: z.array(createAdminCrudColumnSchema(ctx)),
     }),
     form: z.object({
       fields: z.array(createAdminCrudInputSchema(ctx)),
@@ -171,7 +95,11 @@ export const createAdminCrudSectionSchema = definitionSchema((ctx) =>
         }),
         disableCreate: ctx.withDefault(z.boolean(), false),
         table: z.object({
-          columns: z.array(createAdminCrudTableColumnSchema(ctx)),
+          columns: z.array(createAdminCrudColumnSchema(ctx)),
+          actions: ctx.withDefault(z.array(createAdminCrudActionSchema(ctx)), [
+            { type: 'edit', position: 'inline' },
+            { type: 'delete', position: 'dropdown' },
+          ]),
         }),
         form: z.object({
           fields: z.array(createAdminCrudInputSchema(ctx)),

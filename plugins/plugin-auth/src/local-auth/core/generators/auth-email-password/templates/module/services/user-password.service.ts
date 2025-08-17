@@ -8,6 +8,7 @@ import { PASSWORD_MIN_LENGTH } from '$constantsPassword';
 import {
   BadRequestError,
   handleZodRequestValidationError,
+  NotFoundError,
 } from '%errorHandlerServiceImports';
 import {
   createPasswordHash,
@@ -131,4 +132,136 @@ export async function authenticateUserWithEmailAndPassword({
   );
 
   return { session };
+}
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1).max(MAX_VALUE_LENGTH),
+  newPassword: z.string().min(PASSWORD_MIN_LENGTH).max(MAX_VALUE_LENGTH),
+});
+
+/**
+ * Change a user's password after validating their current password.
+ * This is used when a user wants to change their own password.
+ *
+ * @param params - The parameters for changing password
+ * @param params.userId - The ID of the user changing their password
+ * @param params.input - The current and new password
+ * @returns The updated user
+ */
+export async function changeUserPassword({
+  userId,
+  input,
+}: {
+  userId: string;
+  input: {
+    currentPassword: string;
+    newPassword: string;
+  };
+}): Promise<User> {
+  const { currentPassword, newPassword } = await changePasswordSchema
+    .parseAsync(input)
+    .catch(handleZodRequestValidationError);
+
+  // Get the user's account
+  const userAccount = await prisma.userAccount.findFirst({
+    where: {
+      userId,
+      providerId: PROVIDER_ID,
+    },
+  });
+
+  // Verify current password
+  const isValid = await verifyPasswordHash(
+    userAccount?.password ?? '',
+    currentPassword,
+  );
+  if (!isValid || !userAccount) {
+    throw new BadRequestError(
+      'Current password is incorrect',
+      'invalid-current-password',
+    );
+  }
+
+  // Update to new password
+  await prisma.userAccount.update({
+    where: {
+      accountId_providerId: {
+        accountId: userAccount.accountId,
+        providerId: PROVIDER_ID,
+      },
+    },
+    data: {
+      password: await createPasswordHash(newPassword),
+    },
+  });
+
+  return prisma.user.findUniqueOrThrow({
+    where: { id: userId },
+  });
+}
+
+const resetPasswordSchema = z.object({
+  newPassword: z.string().min(PASSWORD_MIN_LENGTH).max(MAX_VALUE_LENGTH),
+});
+
+/**
+ * Reset a user's password without requiring the current password.
+ * This is used by administrators to reset any user's password.
+ *
+ * @param params - The parameters for resetting password
+ * @param params.userId - The ID of the user whose password is being reset
+ * @param params.input - The new password
+ * @returns The updated user
+ */
+export async function resetUserPassword({
+  userId,
+  input,
+}: {
+  userId: string;
+  input: {
+    newPassword: string;
+  };
+}): Promise<User> {
+  const { newPassword } = await resetPasswordSchema
+    .parseAsync(input)
+    .catch(handleZodRequestValidationError);
+
+  // Check if user exists
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (user === null) {
+    throw new NotFoundError('User not found', 'user-not-found');
+  }
+
+  if (!user.email) {
+    throw new BadRequestError('User has no email', 'user-has-no-email');
+  }
+
+  // Get or create the user's password account
+  const passwordHash = await createPasswordHash(newPassword);
+  await prisma.userAccount.upsert({
+    where: {
+      accountId_providerId: {
+        accountId: user.email,
+        providerId: PROVIDER_ID,
+      },
+    },
+    create: {
+      user: {
+        connect: {
+          id: userId,
+        },
+      },
+      accountId: user.email,
+      providerId: PROVIDER_ID,
+      password: passwordHash,
+    },
+    update: {
+      password: passwordHash,
+    },
+  });
+
+  return user;
 }

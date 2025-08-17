@@ -5,7 +5,6 @@ import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 import { reactComponentsImportsProvider } from '#src/generators/core/react-components/generated/ts-import-providers.js';
-import { reactErrorImportsProvider } from '#src/generators/core/react-error/generated/ts-import-providers.js';
 
 import { ADMIN_ADMIN_CRUD_LIST_TEMPLATES } from './typed-templates.js';
 
@@ -40,13 +39,12 @@ const adminAdminCrudListRenderers =
 const adminAdminCrudListRenderersTask = createGeneratorTask({
   dependencies: {
     reactComponentsImports: reactComponentsImportsProvider,
-    reactErrorImports: reactErrorImportsProvider,
     typescriptFile: typescriptFileProvider,
   },
   exports: {
     adminAdminCrudListRenderers: adminAdminCrudListRenderers.export(),
   },
-  run({ reactComponentsImports, reactErrorImports, typescriptFile }) {
+  run({ reactComponentsImports, typescriptFile }) {
     return {
       providers: {
         adminAdminCrudListRenderers: {
@@ -66,7 +64,6 @@ const adminAdminCrudListRenderersTask = createGeneratorTask({
                 template: ADMIN_ADMIN_CRUD_LIST_TEMPLATES.table,
                 importMapProviders: {
                   reactComponentsImports,
-                  reactErrorImports,
                 },
                 ...options,
               }),

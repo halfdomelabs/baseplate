@@ -36,6 +36,15 @@ export const createLocalAuthPluginDefinitionSchema = definitionSchema((ctx) =>
       ),
       [],
     ),
+    userAdminRoles: ctx.withDefault(
+      z.array(
+        ctx.withRef({
+          type: authRoleEntityType,
+          onDelete: 'DELETE',
+        }),
+      ),
+      [],
+    ),
   }),
 );
 

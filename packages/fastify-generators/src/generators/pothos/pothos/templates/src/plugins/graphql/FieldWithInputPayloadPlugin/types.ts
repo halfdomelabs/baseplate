@@ -1,12 +1,12 @@
 // @ts-nocheck
 
 import type {
-  ArgumentRef,
   FieldKind,
   FieldMap,
   FieldOptionsFromKind,
   FieldRef,
   GenericFieldRef,
+  InputFieldMap,
   InputFieldRef,
   InputShapeFromFields,
   NullableToOptional,
@@ -23,8 +23,8 @@ export type MutationWithInputPayloadOptions<
   Types extends SchemaTypes,
   ParentShape,
   Kind extends FieldKind,
-  Args extends Record<string, ArgumentRef<Types>>,
-  InputFields extends Record<string, InputFieldRef<Types>>,
+  Args extends InputFieldMap,
+  InputFields extends InputFieldMap,
   PayloadFields extends Record<string, FieldRef<Types, unknown, 'Object'>>,
   ResolveShape,
   ResolveReturnShape,

@@ -17,6 +17,22 @@
       "sourceFile": "components/ui/alert.tsx",
       "variables": {}
     },
+    "badge": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/badge.tsx",
+      "projectExports": {
+        "Badge": {},
+        "badgeVariants": {},
+        "BadgeWithIcon": {},
+        "BadgeWithIconProps": { "isTypeOnly": true }
+      },
+      "referencedGeneratorTemplates": ["cn"],
+      "sourceFile": "components/ui/badge.tsx",
+      "variables": {}
+    },
     "breadcrumb": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
@@ -167,6 +183,27 @@
         "types-form"
       ],
       "sourceFile": "components/ui/combobox-field.tsx",
+      "variables": {}
+    },
+    "command": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/command.tsx",
+      "projectExports": {
+        "Command": {},
+        "CommandDialog": {},
+        "CommandEmpty": {},
+        "CommandGroup": {},
+        "CommandInput": {},
+        "CommandItem": {},
+        "CommandList": {},
+        "CommandSeparator": {},
+        "CommandShortcut": {}
+      },
+      "referencedGeneratorTemplates": ["cn", "dialog"],
+      "sourceFile": "components/ui/command.tsx",
       "variables": {}
     },
     "confirm-dialog": {
@@ -425,6 +462,53 @@
       "pathRootRelativePath": "{src-root}/utils/merge-refs.ts",
       "projectExports": { "mergeRefs": {} },
       "sourceFile": "src/utils/merge-refs.ts",
+      "variables": {}
+    },
+    "multi-combobox": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/multi-combobox.tsx",
+      "projectExports": {
+        "MultiCombobox": {},
+        "MultiComboboxContent": {},
+        "MultiComboboxEmpty": {},
+        "MultiComboboxGroup": {},
+        "MultiComboboxInput": {},
+        "MultiComboboxItem": {},
+        "useMultiComboboxContext": {}
+      },
+      "referencedGeneratorTemplates": [
+        "badge",
+        "cn",
+        "command",
+        "hooks-use-controlled-state",
+        "popover",
+        "styles-input",
+        "styles-select"
+      ],
+      "sourceFile": "components/ui/multi-combobox.tsx",
+      "variables": {}
+    },
+    "multi-combobox-field": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "components",
+      "importMapProviders": {},
+      "pathRootRelativePath": "{components-root}/ui/multi-combobox-field.tsx",
+      "projectExports": {
+        "MultiComboboxField": {},
+        "MultiComboboxFieldController": {},
+        "MultiComboboxFieldProps": { "isTypeOnly": true }
+      },
+      "referencedGeneratorTemplates": [
+        "form-item",
+        "hooks-use-controller-merged",
+        "multi-combobox",
+        "types-form"
+      ],
+      "sourceFile": "components/ui/multi-combobox-field.tsx",
       "variables": {}
     },
     "navigation-menu": {

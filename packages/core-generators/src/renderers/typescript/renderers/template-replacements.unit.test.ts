@@ -103,7 +103,7 @@ function TPL_COMPONENT_NAME(): ReactElement {
     expect(result.contents).toContain('processComplexData(data)');
   });
 
-  it('should skip replacement comments for complex values', () => {
+  it('should throw error for replacement comments with complex values', () => {
     const template = `
 function TPL_COMPONENT_NAME(): ReactElement {
   const data = TPL_COMPLEX_EXPR;
@@ -113,7 +113,7 @@ function TPL_COMPONENT_NAME(): ReactElement {
 
     const variables = {
       TPL_COMPONENT_NAME: 'UserCard',
-      TPL_COMPLEX_EXPR: 'user?.profile?.email',
+      TPL_COMPLEX_EXPR: '`test\nnewline`',
     };
 
     const variableMetadata = {
@@ -121,21 +121,12 @@ function TPL_COMPONENT_NAME(): ReactElement {
       TPL_COMPLEX_EXPR: { type: 'replacement' as const },
     };
 
-    const result = renderTsTemplateToTsCodeFragment(template, variables, {
-      includeMetadata: true,
-      variableMetadata,
-    });
-
-    // Should include replacement comment for simple value
-    expect(result.contents).toContain('/* TPL_COMPONENT_NAME=UserCard */');
-
-    // Should NOT include replacement comment for complex value (since it has special characters)
-    expect(result.contents).not.toContain('/* TPL_COMPLEX_EXPR=');
-
-    // Complex value marked as replacement should still be rendered as plain value (no delimiters)
-    // since it's marked as replacement type, even though it can't have a replacement comment
-    expect(result.contents).toContain('const data = user?.profile?.email');
-    expect(result.contents).not.toContain('/* TPL_COMPLEX_EXPR:START */');
+    expect(() =>
+      renderTsTemplateToTsCodeFragment(template, variables, {
+        includeMetadata: true,
+        variableMetadata,
+      }),
+    ).toThrow('Invalid replacement value');
   });
 
   it('should throw error for duplicate replacement values', () => {

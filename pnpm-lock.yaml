@@ -705,6 +705,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.1
         version: 3.2.2(react@19.1.0)
+      '@hookform/lenses':
+        specifier: 0.8.1
+        version: 0.8.1(react-hook-form@7.60.0(react@19.1.0))(react@19.1.0)
       '@hookform/resolvers':
         specifier: 5.0.1
         version: 5.0.1(react-hook-form@7.60.0(react@19.1.0))
@@ -1222,8 +1225,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/utils
       '@hookform/lenses':
-        specifier: 0.7.1
-        version: 0.7.1(react-hook-form@7.60.0(react@19.1.0))(react@19.1.0)
+        specifier: 0.8.1
+        version: 0.8.1(react-hook-form@7.60.0(react@19.1.0))(react@19.1.0)
       '@hookform/resolvers':
         specifier: 5.0.1
         version: 5.0.1(react-hook-form@7.60.0(react@19.1.0))
@@ -2025,12 +2028,12 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  '@hookform/lenses@0.7.1':
-    resolution: {integrity: sha512-lURXz2/mzQFGW6taJi+klKxVqMkwSqh/eZGOzA98svLhYC/63rKyJQTX7mK17NCwDo02j9wYxrG1qD85MBTWYg==}
+  '@hookform/lenses@0.8.1':
+    resolution: {integrity: sha512-37ykSGcqLqQsZQggPPeb8iQmcmbRtmxWF2c5Rt8+vtyanL1aOoVTQNPjxXSk2/XQ/S7voCkxvqQg9HIGEPqDjQ==}
     engines: {bun: '>=1.2'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
-      react-hook-form: ^7.0.0
+      react-hook-form: ^7.55.0
 
   '@hookform/resolvers@5.0.1':
     resolution: {integrity: sha512-u/+Jp83luQNx9AdyW2fIPGY6Y7NG68eN2ZW8FOJYL+M0i4s49+refdJdOp/A9n9HFQtQs3HIDHQvX3ZET2o7YA==}
@@ -8186,7 +8189,7 @@ snapshots:
       protobufjs: 7.4.0
       yargs: 17.7.2
 
-  '@hookform/lenses@0.7.1(react-hook-form@7.60.0(react@19.1.0))(react@19.1.0)':
+  '@hookform/lenses@0.8.1(react-hook-form@7.60.0(react@19.1.0))(react@19.1.0)':
     dependencies:
       react: 19.1.0
       react-hook-form: 7.60.0(react@19.1.0)

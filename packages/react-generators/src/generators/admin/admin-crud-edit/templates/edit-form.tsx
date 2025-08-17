@@ -50,7 +50,7 @@ export function TPL_COMPONENT_NAME(
             <Button type="submit" disabled={isUpdating}>
               Save
             </Button>
-            <Link to="/admin/accounts/users">
+            <Link to="TPL_LIST_ROUTE">
               <Button type="button" variant="secondary">
                 Cancel
               </Button>

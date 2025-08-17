@@ -103,6 +103,41 @@
       "sourceFile": "module/utils/session-cookie.ts",
       "variables": {}
     },
+    "user-roles-mutations": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "module",
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/schema/user-roles.mutations.ts",
+      "projectExports": {},
+      "referencedGeneratorTemplates": ["user-roles-service"],
+      "sourceFile": "module/schema/user-roles.mutations.ts",
+      "variables": { "TPL_ADMIN_ROLES": {}, "TPL_USER_OBJECT_TYPE": {} }
+    },
+    "user-roles-service": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "group": "module",
+      "importMapProviders": {
+        "authRolesImportsProvider": {
+          "importName": "authRolesImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/auth/auth-roles/generated/ts-import-providers.ts"
+        },
+        "prismaImportsProvider": {
+          "importName": "prismaImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/prisma/prisma/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/services/user-roles.service.ts",
+      "projectExports": {},
+      "sourceFile": "module/services/user-roles.service.ts",
+      "variables": {}
+    },
     "user-session-constants": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

@@ -43,6 +43,7 @@ const editForm = createTsTemplateFile({
     TPL_FORM_DATA_NAME: { type: 'replacement' },
     TPL_HEADER: {},
     TPL_INPUTS: {},
+    TPL_LIST_ROUTE: { type: 'replacement' },
   },
 });
 
