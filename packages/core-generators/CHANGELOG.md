@@ -1,5 +1,15 @@
 # @baseplate-dev/core-generators
 
+## 0.3.2
+
+### Patch Changes
+
+- [#631](https://github.com/halfdomelabs/baseplate/pull/631) [`b4c15b9`](https://github.com/halfdomelabs/baseplate/commit/b4c15b98a518c53828f81624764ba693def85faf) Thanks [@kingston](https://github.com/kingston)! - Add template replacements support for TypeScript templates to enable dynamic value substitution in generated code
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.3.2
+  - @baseplate-dev/utils@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes

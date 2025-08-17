@@ -1,5 +1,52 @@
 # @baseplate-dev/plugin-auth
 
+## 2.0.2
+
+### Patch Changes
+
+- [#633](https://github.com/halfdomelabs/baseplate/pull/633) [`cca138a`](https://github.com/halfdomelabs/baseplate/commit/cca138a84abbb901ab628bf571ae29211a180dbb) Thanks [@kingston](https://github.com/kingston)! - Add userAdminRoles configuration field to local auth plugin
+
+  Adds a new `userAdminRoles` field to the local auth plugin definition that allows configuring which roles can manage users and assign roles to other users. This provides more granular control over user management permissions in the admin interface.
+  - Added `userAdminRoles` field to plugin definition schema
+  - Updated auth module generator to use configurable admin roles instead of hard-coded 'admin' role
+  - Added UI configuration field in the local auth definition editor
+  - Maintains backward compatibility with default empty array
+
+- [#633](https://github.com/halfdomelabs/baseplate/pull/633) [`cca138a`](https://github.com/halfdomelabs/baseplate/commit/cca138a84abbb901ab628bf571ae29211a180dbb) Thanks [@kingston](https://github.com/kingston)! - Add comprehensive password management capabilities to local auth plugin
+
+  Introduces robust password management functionality for both users and administrators.
+
+  **New Backend Features:**
+  - Added `changeUserPassword` service function for users to change their own passwords (requires current password validation)
+  - Added `resetUserPassword` service function for administrators to reset any user's password (no current password required)
+  - Implemented `changePassword` GraphQL mutation with `['user']` authorization
+  - Implemented `resetUserPassword` GraphQL mutation with admin authorization
+  - Added comprehensive password validation and error handling
+  - Supports creating password accounts for users who don't have password authentication configured
+
+  **New Admin UI Features:**
+  - Added `PasswordResetDialog` component for secure password reset functionality
+  - Integrated password reset action into user management table dropdown menu
+  - Added password confirmation field with client-side validation
+  - Implemented proper form validation with configurable minimum password length
+  - Added GraphQL code generation for new mutations
+
+  **New Generator Framework:**
+  - Created `adminCrudResetPasswordActionGenerator` mirroring the manage roles pattern
+  - Added configurable password reset actions for admin CRUD interfaces
+  - Supports both inline and dropdown action positioning
+  - Includes template variables for password requirements and user model naming
+  - Provides consistent integration with existing admin action containers
+
+- Updated dependencies [[`cca138a`](https://github.com/halfdomelabs/baseplate/commit/cca138a84abbb901ab628bf571ae29211a180dbb), [`1419a96`](https://github.com/halfdomelabs/baseplate/commit/1419a965efd41d2b2dfb86dd18f32e5414a3af85), [`b4c15b9`](https://github.com/halfdomelabs/baseplate/commit/b4c15b98a518c53828f81624764ba693def85faf), [`b4c15b9`](https://github.com/halfdomelabs/baseplate/commit/b4c15b98a518c53828f81624764ba693def85faf), [`04a4978`](https://github.com/halfdomelabs/baseplate/commit/04a49785642685ca4b56aec27dc0a18520674ef9), [`cca138a`](https://github.com/halfdomelabs/baseplate/commit/cca138a84abbb901ab628bf571ae29211a180dbb)]:
+  - @baseplate-dev/project-builder-lib@0.3.2
+  - @baseplate-dev/react-generators@0.3.2
+  - @baseplate-dev/core-generators@0.3.2
+  - @baseplate-dev/fastify-generators@0.3.2
+  - @baseplate-dev/sync@0.3.2
+  - @baseplate-dev/ui-components@0.3.2
+  - @baseplate-dev/utils@0.3.2
+
 ## 2.0.1
 
 ### Patch Changes
