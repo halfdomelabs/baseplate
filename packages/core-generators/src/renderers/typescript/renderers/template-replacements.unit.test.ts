@@ -126,7 +126,7 @@ function TPL_COMPONENT_NAME(): ReactElement {
         includeMetadata: true,
         variableMetadata,
       }),
-    ).toThrow('Cannot have replacement comments with complex values');
+    ).toThrow('Invalid replacement value');
   });
 
   it('should throw error for duplicate replacement values', () => {

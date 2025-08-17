@@ -182,12 +182,12 @@ describe('extractTsTemplateVariables with simple replacements', () => {
 
   it('should validate simple replacement values', () => {
     const invalidContent = `
-      /* TPL_COMPLEX_EXPR=data?.user?.email */
+      /* TPL_COMPLEX_EXPR=data?.user .email */
       function Component() {}
     `;
 
     expect(() => extractTsTemplateVariables(invalidContent)).toThrow(
-      'Invalid replacement value "data?.user?.email"',
+      'Invalid replacement value "data?.user .email"',
     );
   });
 });

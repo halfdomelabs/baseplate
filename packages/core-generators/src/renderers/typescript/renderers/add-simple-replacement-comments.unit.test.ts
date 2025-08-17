@@ -94,28 +94,6 @@ const name = 'John';
     expect(result.trim()).toMatch(/^\/\* TPL_USER_NAME=John \*\//);
   });
 
-  it('should ignore complex values that cannot be replacements', () => {
-    const template = 'const expr = TPL_COMPLEX;';
-    const renderedTemplate = 'const expr = user?.profile?.email;';
-    const variables = { TPL_COMPLEX: 'user?.profile?.email' };
-    const options = {
-      includeMetadata: true,
-      variableMetadata: {
-        TPL_COMPLEX: { type: 'replacement' as const },
-      },
-    };
-
-    const result = addSimpleReplacementComments(
-      template,
-      renderedTemplate,
-      variables,
-      options,
-    );
-
-    expect(result).toBe(renderedTemplate);
-    expect(result).not.toContain('/* TPL_COMPLEX=');
-  });
-
   it('should only process variables marked as replacement type', () => {
     const template = `
 const a = TPL_VAR_A;

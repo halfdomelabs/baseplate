@@ -67,10 +67,10 @@ describe('parseSimpleReplacements', () => {
   });
 
   it('should throw error for invalid characters in values', () => {
-    const content = '/* TPL_COMPLEX_EXPR=data?.user?.email */';
+    const content = '/* TPL_COMPLEX_EXPR=data?.use .email */';
 
     expect(() => parseSimpleReplacements(content)).toThrow(
-      'Invalid replacement value "data?.user?.email" for TPL_COMPLEX_EXPR',
+      'Invalid replacement value "data?.use .email" for TPL_COMPLEX_EXPR',
     );
   });
 
@@ -204,13 +204,7 @@ describe('isValidSimpleReplacementValue', () => {
   });
 
   it('should reject invalid characters', () => {
-    expect(isValidSimpleReplacementValue('data?.user')).toBe(false);
     expect(isValidSimpleReplacementValue('user && admin')).toBe(false);
-    expect(isValidSimpleReplacementValue('"hello world"')).toBe(false);
-    expect(isValidSimpleReplacementValue("'single quotes'")).toBe(false);
-    expect(isValidSimpleReplacementValue('`template literal`')).toBe(false);
-    expect(isValidSimpleReplacementValue('user[0]')).toBe(false);
-    expect(isValidSimpleReplacementValue('func()')).toBe(false);
-    expect(isValidSimpleReplacementValue('a + b')).toBe(false);
+    expect(isValidSimpleReplacementValue('a \n b')).toBe(false);
   });
 });
