@@ -50,7 +50,7 @@ export const adminCrudDeleteActionGenerator = createGenerator({
               handleDelete(item);
             }}>
               <MdDelete />
-              <span className="sr-only">Edit</span>
+              <span className="sr-only">Delete</span>
             </Button>
         `
             : tsTemplateWithImports([

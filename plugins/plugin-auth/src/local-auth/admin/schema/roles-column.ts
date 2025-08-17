@@ -1,14 +1,10 @@
 import type { def } from '@baseplate-dev/project-builder-lib';
 
-import { definitionSchema } from '@baseplate-dev/project-builder-lib';
+import {
+  baseAdminCrudColumnSchema,
+  definitionSchema,
+} from '@baseplate-dev/project-builder-lib';
 import { z } from 'zod';
-
-// For now, define our own base schema since it's not exported
-const baseAdminCrudColumnSchema = z.object({
-  id: z.string().min(1),
-  type: z.string().min(1),
-  label: z.string().min(1),
-});
 
 export const createAdminCrudRolesColumnSchema = definitionSchema(() =>
   baseAdminCrudColumnSchema.extend({
@@ -16,6 +12,6 @@ export const createAdminCrudRolesColumnSchema = definitionSchema(() =>
   }),
 );
 
-export type AdminCrudRolesColumnDefinition = def.InferInput<
+export type AdminCrudRolesColumnDefinition = def.InferOutput<
   typeof createAdminCrudRolesColumnSchema
 >;

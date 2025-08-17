@@ -543,6 +543,7 @@ function SidebarMenuButton({
   size = 'default',
   tooltip,
   className,
+  onClick,
   ...props
 }: React.ComponentProps<'button'> & {
   asChild?: boolean;
@@ -560,7 +561,7 @@ function SidebarMenuButton({
       data-active={isActive}
       className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
       onClick={(event) => {
-        props.onClick?.(event);
+        onClick?.(event);
         if (isMobile && !event.defaultPrevented) {
           toggleSidebar();
         }

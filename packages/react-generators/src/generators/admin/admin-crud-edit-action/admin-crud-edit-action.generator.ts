@@ -35,30 +35,30 @@ export const adminCrudEditActionGenerator = createGenerator({
                 reactComponentsImports.Button.declaration(),
                 tsImportBuilder(['MdEdit']).from('react-icons/md'),
               ])`
-          <Link
-            to="${reactRoutes.getRoutePrefix()}/$id"
-            params={{ id: item.id }}
-          >
-            <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" asChild>
+            <Link
+              to="${reactRoutes.getRoutePrefix()}/$id"
+              params={{ id: item.id }}
+            >
               <MdEdit />
               <span className="sr-only">Edit</span>
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         `
             : tsTemplateWithImports([
                 reactComponentsImports.DropdownMenuItem.declaration(),
                 tsImportBuilder(['Link']).from('@tanstack/react-router'),
                 tsImportBuilder(['MdEdit']).from('react-icons/md'),
               ])`
-        <Link
-            to="${reactRoutes.getRoutePrefix()}/$id"
-            params={{ id: item.id }}
-          >
-          <DropdownMenuItem>
-            <MdEdit className="mr-2 h-4 w-4" />
-            Edit
+          <DropdownMenuItem asChild>
+            <Link
+              to="${reactRoutes.getRoutePrefix()}/$id"
+              params={{ id: item.id }}
+            >
+              <MdEdit className="mr-2 h-4 w-4" />
+              Edit
+            </Link>
           </DropdownMenuItem>
-        </Link>
         `;
         adminCrudActionContainer.addAction({
           name: 'Edit',

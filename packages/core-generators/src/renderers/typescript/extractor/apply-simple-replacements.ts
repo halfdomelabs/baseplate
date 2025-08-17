@@ -38,7 +38,7 @@ export function applySimpleReplacements(
     useInMemoryFileSystem: true,
   });
 
-  const sourceFile = project.createSourceFile('temp.ts', content);
+  const sourceFile = project.createSourceFile('temp.tsx', content);
 
   // Process each statement in the source file
   const statements = sourceFile.getStatementsWithComments();

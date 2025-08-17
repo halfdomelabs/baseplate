@@ -1,3 +1,5 @@
+import { escapeRegExp } from 'es-toolkit';
+
 import type { TsCodeFragment } from '../fragments/types.js';
 import type {
   TsTemplateFileVariable,
@@ -87,9 +89,7 @@ export function addSimpleReplacementComments(
 
       // Check if the value already exists in the template (would prevent extraction)
       // We check the original template, not the processed one
-      const valuePattern = new RegExp(
-        `\\b${contents.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)}\\b`,
-      );
+      const valuePattern = new RegExp(`\\b${escapeRegExp(contents)}\\b`);
       if (valuePattern.test(template)) {
         throw new Error(
           `The template contents contain the value "${contents}" which would prevent ` +
