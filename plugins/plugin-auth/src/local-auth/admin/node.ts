@@ -16,8 +16,8 @@ import type { AdminCrudResetPasswordActionDefinition } from './schema/reset-pass
 import type { AdminCrudRolesColumnDefinition } from './schema/roles-column.js';
 
 import { adminCrudManageRolesActionGenerator } from './generators/admin-crud-manage-roles-action/index.js';
-import { adminCrudResetPasswordActionGenerator } from './generators/admin-crud-reset-password-action/admin-crud-reset-password-action.generator.js';
-import { adminCrudRolesColumnGenerator } from './generators/admin-crud-roles-column/admin-crud-roles-column.generator.js';
+import { adminCrudResetPasswordActionGenerator } from './generators/admin-crud-reset-password-action/index.js';
+import { adminCrudRolesColumnGenerator } from './generators/admin-crud-roles-column/index.js';
 
 function buildRolesColumnCompiler(): AdminCrudColumnCompiler<AdminCrudRolesColumnDefinition> {
   return {
