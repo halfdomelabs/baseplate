@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import { Button } from '../components/ui/button';
 import { ErrorDisplay } from '../components/ui/error-display';
+import { Loader } from '../components/ui/loader';
 import { NotFoundCard } from '../components/ui/not-found-card';
 import { routeTree } from '../route-tree.gen';
 import { logError } from '../services/error-logger';
@@ -26,6 +27,7 @@ export const router = createRouter({
   routeTree,
   defaultNotFoundComponent: NotFoundCard,
   defaultErrorComponent: ErrorComponent,
+  defaultPendingComponent: Loader,
   context: {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- context instantiated in the RouteProvider
     apolloClient: undefined!,
