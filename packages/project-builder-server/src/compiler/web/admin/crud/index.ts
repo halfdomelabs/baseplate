@@ -25,7 +25,7 @@ import { compileAdminCrudInput } from './inputs.js';
 function compileAdminCrudEmbeddedForm(
   builder: AppEntryBuilder<WebAppConfig>,
   form: AdminCrudEmbeddedFormConfig,
-  crudSectionId: string,
+  crudSectionDefinition: AdminCrudSectionConfig,
 ): GeneratorBundle {
   const idFields = ModelUtils.byIdOrThrow(
     builder.projectDefinition,
@@ -54,7 +54,7 @@ function compileAdminCrudEmbeddedForm(
             column,
             form.modelRef,
             builder,
-            {} as AdminCrudSectionConfig, // TODO: Pass proper section config
+            crudSectionDefinition,
             idx,
           ),
         ),
@@ -63,7 +63,7 @@ function compileAdminCrudEmbeddedForm(
             field,
             form.modelRef,
             builder,
-            crudSectionId,
+            crudSectionDefinition.id,
             idx,
           ),
         ),
@@ -79,7 +79,7 @@ function compileAdminCrudEmbeddedForm(
           field,
           form.modelRef,
           builder,
-          crudSectionId,
+          crudSectionDefinition.id,
           idx,
         ),
       ),
@@ -120,7 +120,7 @@ export function compileAdminCrudSection(
                 ),
               ),
               embeddedForms: crudSection.embeddedForms?.map((form) =>
-                compileAdminCrudEmbeddedForm(builder, form, crudSectionId),
+                compileAdminCrudEmbeddedForm(builder, form, crudSection),
               ),
             },
           }),

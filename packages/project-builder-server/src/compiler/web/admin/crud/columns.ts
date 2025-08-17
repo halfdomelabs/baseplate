@@ -77,7 +77,7 @@ const BUILT_IN_COLUMN_COMPILERS = [
 /**
  * Compiles an admin CRUD column definition into generator bundles
  */
-function compileAdminCrudColumn(
+export function compileAdminCrudColumn(
   column: AdminCrudColumnDefinition,
   modelId: string,
   builder: AppEntryBuilder<WebAppConfig>,
@@ -102,18 +102,4 @@ function compileAdminCrudColumn(
     definitionContainer,
     modelCrudSection,
   });
-}
-
-/**
- * Compiles all admin CRUD columns for a model
- */
-export function compileAdminCrudColumns(
-  columns: AdminCrudColumnDefinition[],
-  modelId: string,
-  builder: AppEntryBuilder<WebAppConfig>,
-  modelCrudSection: AdminCrudSectionConfig,
-): GeneratorBundle[] {
-  return columns.map((column, index) =>
-    compileAdminCrudColumn(column, modelId, builder, modelCrudSection, index),
-  );
 }
