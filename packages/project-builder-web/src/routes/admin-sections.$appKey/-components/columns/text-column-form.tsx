@@ -6,7 +6,7 @@ import { adminCrudColumnEntityType } from '@baseplate-dev/project-builder-lib';
 import { createAdminCrudColumnWebConfig } from '@baseplate-dev/project-builder-lib/web';
 import { SelectFieldController } from '@baseplate-dev/ui-components';
 
-export function TextColumnForm({
+function TextColumnForm({
   formProps,
   model,
 }: AdminCrudColumnWebFormProps<AdminCrudTextColumnInput>): React.JSX.Element {

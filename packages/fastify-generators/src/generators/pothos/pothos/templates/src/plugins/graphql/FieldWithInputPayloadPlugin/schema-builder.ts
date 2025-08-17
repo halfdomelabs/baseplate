@@ -80,17 +80,12 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
     });
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return fieldRef;
 };
 
 Object.defineProperty(rootBuilderProto, 'input', {
   get: function getInputBuilder(this: RootFieldBuilder<SchemaTypes, unknown>) {
-    return new InputFieldBuilder(
-      this.builder,
-      'InputObject',
-      `UnnamedWithInputPayload`,
-    );
+    return new InputFieldBuilder(this.builder, 'InputObject');
   },
 });
 

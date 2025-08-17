@@ -77,7 +77,7 @@ const BUILT_IN_COLUMN_COMPILERS = [
 /**
  * Compiles an admin CRUD column definition into generator bundles
  */
-export function compileAdminCrudColumn(
+function compileAdminCrudColumn(
   column: AdminCrudColumnDefinition,
   modelId: string,
   builder: AppEntryBuilder<WebAppConfig>,

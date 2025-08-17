@@ -12,7 +12,7 @@ import {
   SelectFieldController,
 } from '@baseplate-dev/ui-components';
 
-export function ForeignColumnForm({
+function ForeignColumnForm({
   formProps,
   model,
 }: AdminCrudColumnWebFormProps<AdminCrudForeignColumnInput>): React.JSX.Element {
