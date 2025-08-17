@@ -9,7 +9,10 @@ function isEmpty(value: unknown): boolean {
   if (Array.isArray(value)) {
     return value.length === 0;
   }
-  if (typeof value === 'object') {
+  if (
+    typeof value === 'object' &&
+    Object.getPrototypeOf(value) === Object.prototype
+  ) {
     return Object.values(value).every((val) => val === undefined);
   }
   if (typeof value === 'string') {
