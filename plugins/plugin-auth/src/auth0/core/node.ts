@@ -2,14 +2,11 @@ import {
   appCompilerSpec,
   backendAppEntryType,
   createPlatformPluginExport,
-  PluginUtils,
   webAppEntryType,
 } from '@baseplate-dev/project-builder-lib';
 import { reactRoutesGenerator } from '@baseplate-dev/react-generators';
 
 import { getAuthPluginDefinition } from '#src/auth/utils/get-auth-plugin-definition.js';
-
-import type { Auth0PluginDefinition } from './schema/plugin-definition.js';
 
 import {
   auth0ApolloGenerator,
@@ -29,19 +26,11 @@ export default createPlatformPluginExport({
     appCompiler.registerAppCompiler({
       pluginKey,
       appType: backendAppEntryType,
-      compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
-        const auth0PluginDefinition = PluginUtils.configByKeyOrThrow(
-          projectDefinition,
-          pluginKey,
-        ) as Auth0PluginDefinition;
-
+      compile: ({ projectDefinition, appCompiler }) => {
         const auth = getAuthPluginDefinition(projectDefinition);
 
         appCompiler.addChildrenToFeature(auth.authFeatureRef, {
           auth0Module: auth0ModuleGenerator({
-            userModelName: definitionContainer.nameFromId(
-              auth0PluginDefinition.modelRefs.user,
-            ),
             includeManagement: true,
           }),
         });

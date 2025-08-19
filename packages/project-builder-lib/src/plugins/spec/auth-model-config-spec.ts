@@ -1,16 +1,15 @@
+import type { ModelConfig } from '#src/schema/index.js';
 import type { ProjectDefinition } from '#src/schema/project-definition.js';
 
 import type { PluginSpecImplementation } from './types.js';
 
 import { createPluginSpec } from './types.js';
 
-type UserAccountModelGetter = (definition: ProjectDefinition) => string;
-
 /**
  * Spec for allowing plugins to declare user model configurations
  */
 export interface AuthModelConfigSpec extends PluginSpecImplementation {
-  getUserModel: UserAccountModelGetter;
+  getUserModel: (definition: ProjectDefinition) => ModelConfig;
 }
 
 /**

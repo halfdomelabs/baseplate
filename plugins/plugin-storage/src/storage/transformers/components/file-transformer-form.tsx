@@ -14,6 +14,8 @@ import {
 
 import type { StoragePluginDefinition } from '#src/storage/core/schema/plugin-definition.js';
 
+import { STORAGE_MODELS } from '#src/storage/constants/model-names.js';
+
 import type { FileTransformerDefinition } from '../schema/file-transformer.schema.js';
 
 import '#src/styles.css';
@@ -37,7 +39,7 @@ export function FileTransformerForm({
 
   const fileRelations =
     originalModel.model.relations?.filter(
-      (relation) => relation.modelRef === storageConfig.modelRefs.file,
+      (relation) => relation.modelRef === STORAGE_MODELS.file,
     ) ?? [];
 
   const relationOptions = fileRelations.map((relation) => ({

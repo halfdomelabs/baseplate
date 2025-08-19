@@ -6,6 +6,8 @@ import type {
 
 import { authModelConfigSpec } from '@baseplate-dev/project-builder-lib';
 
+import { STORAGE_MODELS } from '#src/storage/constants/model-names.js';
+
 const FILE_MODEL_FIELDS: ModelMergerScalarFieldInput[] = [
   {
     name: 'id',
@@ -76,20 +78,15 @@ const FILE_MODEL_FIELDS: ModelMergerScalarFieldInput[] = [
 export function createStorageModels(
   { storageFeatureRef }: { storageFeatureRef: string },
   projectDefinitionContainer: ProjectDefinitionContainer,
-): { file: ModelMergerModelInput } {
+): Record<keyof typeof STORAGE_MODELS, ModelMergerModelInput> {
   const authModelConfig =
     projectDefinitionContainer.pluginStore.getPluginSpec(authModelConfigSpec);
   const userAccountModel = authModelConfig.getUserModel(
     projectDefinitionContainer.definition,
   );
-  if (!userAccountModel) {
-    throw new Error(
-      'User account model is required for storage plugin. Please enable an auth plugin.',
-    );
-  }
   return {
     file: {
-      name: 'File',
+      name: STORAGE_MODELS.file,
       featureRef: storageFeatureRef,
       model: {
         fields: FILE_MODEL_FIELDS,
@@ -98,7 +95,7 @@ export function createStorageModels(
           {
             name: 'uploader',
             references: [{ localRef: 'uploaderId', foreignRef: 'id' }],
-            modelRef: userAccountModel,
+            modelRef: userAccountModel.name,
             foreignRelationName: 'files',
             onDelete: 'Cascade',
             onUpdate: 'Restrict',

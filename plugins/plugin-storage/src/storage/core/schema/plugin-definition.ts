@@ -4,7 +4,6 @@ import {
   createEntityType,
   definitionSchema,
   featureEntityType,
-  modelEntityType,
   VALIDATORS,
 } from '@baseplate-dev/project-builder-lib';
 import z from 'zod';
@@ -16,12 +15,6 @@ export const storageAdapterEntityType = createEntityType(
 export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
   ctx.withRefBuilder(
     z.object({
-      modelRefs: z.object({
-        file: ctx.withRef({
-          type: modelEntityType,
-          onDelete: 'RESTRICT',
-        }),
-      }),
       storageFeatureRef: ctx.withRef({
         type: featureEntityType,
         onDelete: 'RESTRICT',
@@ -38,8 +31,8 @@ export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
         ),
       ),
     }),
-    (builder) => {
-      builder.addPathToContext('modelRefs.file', modelEntityType, 'fileModel');
+    (_) => {
+      // No model refs to add to context
     },
   ),
 );

@@ -123,6 +123,7 @@ function serializeModelMergerModelInput(
   definitionContainer: ProjectDefinitionContainer,
   siblingModels: ModelConfigInput[],
 ): ModelMergerModelInput {
+  const siblingModelIds = new Map(siblingModels.map((m) => [m.id, m.name]));
   const siblingModelFieldIdMap = new Map([
     ...input.model.fields.map((f) => [f.id, f.name] as const),
     ...siblingModels.flatMap((m) =>
@@ -143,6 +144,8 @@ function serializeModelMergerModelInput(
       ),
     ),
   ]);
+  const modelFromId = (id: string): string =>
+    siblingModelIds.get(id) ?? definitionContainer.nameFromId(id);
   const fieldNameFromId = (id: string): string =>
     siblingModelFieldIdMap.get(id) ?? definitionContainer.nameFromId(id);
   const relationNameFromId = (id: string): string =>
@@ -153,6 +156,7 @@ function serializeModelMergerModelInput(
       ...input.model,
       relations: input.model.relations?.map((r) => ({
         ...r,
+        modelRef: modelFromId(r.modelRef),
         references: r.references.map((reference) => ({
           ...reference,
           localRef: fieldNameFromId(reference.localRef),
@@ -408,7 +412,7 @@ export function createModelMergerResults<T extends ModelMergerModelsInput>(
     createModelMergerResult(
       current[key] && modelEntityType.isId(current[key])
         ? ModelUtils.byIdOrThrow(definitionContainer.definition, current[key])
-        : undefined,
+        : ModelUtils.byName(definitionContainer.definition, current[key] ?? ''),
       desired,
       definitionContainer,
       {

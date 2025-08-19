@@ -5,11 +5,9 @@ import {
   createAndApplyModelMergerResults,
   createModelMergerResults,
   doesModelMergerResultsHaveChanges,
-  ModelUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
-  ModelComboboxFieldController,
   ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
@@ -30,8 +28,9 @@ import { useMemo } from 'react';
 
 import { getAuthPluginDefinition } from '#src/auth/index.js';
 import { AuthConfigTabs } from '#src/common/components/auth-config-tabs.js';
+import { PLACEHOLDER_AUTH_MODELS } from '#src/placeholder-auth/constants/model-names.js';
 
-import type { PlaceholderAuthPluginDefinition } from '../schema/plugin-definition.js';
+import type { PlaceholderAuthPluginDefinitionInput } from '../schema/plugin-definition.js';
 
 import { createAuthModels } from '../schema/models.js';
 import { createPlaceholderAuthPluginDefinitionSchema } from '../schema/plugin-definition.js';
@@ -54,33 +53,27 @@ export function PlaceholderAuthDefinitionEditor({
 
   const defaultValues = useMemo(() => {
     if (pluginMetadata?.config) {
-      return pluginMetadata.config as PlaceholderAuthPluginDefinition;
+      return pluginMetadata.config as PlaceholderAuthPluginDefinitionInput;
     }
 
-    return {
-      modelRefs: {
-        user: ModelUtils.getModelIdByNameOrDefault(definition, 'User'),
-      },
-    } satisfies PlaceholderAuthPluginDefinition;
-  }, [definition, pluginMetadata?.config]);
+    return {} satisfies PlaceholderAuthPluginDefinitionInput;
+  }, [pluginMetadata?.config]);
 
   const form = useResettableForm({
     resolver: zodResolver(authPluginDefinitionSchema),
     defaultValues,
   });
-  const { control, reset, handleSubmit, watch } = form;
-
-  const modelRefs = watch('modelRefs');
+  const { control, reset, handleSubmit } = form;
 
   const pendingModelChanges = useMemo(() => {
-    const desiredModels = createAuthModels({ modelRefs }, authDefinition);
+    const desiredModels = createAuthModels(authDefinition);
 
     return createModelMergerResults(
-      modelRefs,
+      PLACEHOLDER_AUTH_MODELS,
       desiredModels,
       definitionContainer,
     );
-  }, [definitionContainer, authDefinition, modelRefs]);
+  }, [definitionContainer, authDefinition]);
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
@@ -88,10 +81,10 @@ export function PlaceholderAuthDefinitionEditor({
         const updatedData = {
           ...data,
         };
-        updatedData.modelRefs = createAndApplyModelMergerResults(
+        createAndApplyModelMergerResults(
           draftConfig,
-          updatedData.modelRefs,
-          createAuthModels(updatedData, authDefinition),
+          PLACEHOLDER_AUTH_MODELS,
+          createAuthModels(authDefinition),
           definitionContainer,
         );
         PluginUtils.setPluginConfig(
@@ -102,7 +95,7 @@ export function PlaceholderAuthDefinitionEditor({
         );
       },
       {
-        successMessage: 'Successfully saved auth plugin!',
+        successMessage: 'Successfully saved placeholder auth plugin!',
         onSuccess: () => {
           onSave();
         },
@@ -132,24 +125,13 @@ export function PlaceholderAuthDefinitionEditor({
                     Placeholder Auth Configuration
                   </SectionListSectionTitle>
                   <SectionListSectionDescription>
-                    Configure your placeholder auth settings, user model, and
-                    role definitions.
+                    The plugin will automatically configure the models it needs.
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="auth:space-y-6">
                   <ModelMergerResultAlert
                     pendingModelChanges={pendingModelChanges}
                   />
-
-                  <div className="auth:grid auth:grid-cols-1 auth:gap-6 auth:md:grid-cols-2">
-                    <ModelComboboxFieldController
-                      label="User Model"
-                      name="modelRefs.user"
-                      control={control}
-                      canCreate
-                      description="Select or create the model that will store user authentication data"
-                    />
-                  </div>
                 </SectionListSectionContent>
               </SectionListSection>
             </SectionList>

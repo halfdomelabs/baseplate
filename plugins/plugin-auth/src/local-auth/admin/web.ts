@@ -1,13 +1,10 @@
-import {
-  createPlatformPluginExport,
-  PluginUtils,
-} from '@baseplate-dev/project-builder-lib';
+import { createPlatformPluginExport } from '@baseplate-dev/project-builder-lib';
 import {
   adminCrudActionWebSpec,
   adminCrudColumnWebSpec,
 } from '@baseplate-dev/project-builder-lib/web';
 
-import type { LocalAuthPluginDefinition } from '../core/schema/plugin-definition.js';
+import { LOCAL_AUTH_MODELS } from '#src/local-auth/constants/model-names.js';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -20,13 +17,7 @@ export default createPlatformPluginExport({
       pluginKey,
       name: 'manage-roles',
       label: 'Manage Roles',
-      isAvailableForModel: (definition, modelId) => {
-        const pluginDefinition = PluginUtils.configByKeyOrThrow(
-          definition,
-          pluginKey,
-        ) as LocalAuthPluginDefinition;
-        return modelId === pluginDefinition.modelRefs.user;
-      },
+      isAvailableForModel: (_, modelId) => modelId === LOCAL_AUTH_MODELS.user,
       getNewAction: () => ({ type: 'manage-roles', position: 'dropdown' }),
     });
 
@@ -34,13 +25,7 @@ export default createPlatformPluginExport({
       pluginKey,
       name: 'reset-password',
       label: 'Reset Password',
-      isAvailableForModel: (definition, modelId) => {
-        const pluginDefinition = PluginUtils.configByKeyOrThrow(
-          definition,
-          pluginKey,
-        ) as LocalAuthPluginDefinition;
-        return modelId === pluginDefinition.modelRefs.user;
-      },
+      isAvailableForModel: (_, modelId) => modelId === LOCAL_AUTH_MODELS.user,
       getNewAction: () => ({ type: 'reset-password', position: 'dropdown' }),
     });
 
@@ -48,13 +33,7 @@ export default createPlatformPluginExport({
       pluginKey,
       name: 'roles',
       label: 'Roles',
-      isAvailableForModel: (definition, modelId) => {
-        const pluginDefinition = PluginUtils.configByKeyOrThrow(
-          definition,
-          pluginKey,
-        ) as LocalAuthPluginDefinition;
-        return modelId === pluginDefinition.modelRefs.user;
-      },
+      isAvailableForModel: (_, modelId) => modelId === LOCAL_AUTH_MODELS.user,
       getNewColumn: () => ({ type: 'roles', label: 'Roles' }),
     });
     return {};

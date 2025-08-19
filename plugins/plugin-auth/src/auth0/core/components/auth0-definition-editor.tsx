@@ -5,11 +5,9 @@ import {
   createAndApplyModelMergerResults,
   createModelMergerResults,
   doesModelMergerResultsHaveChanges,
-  ModelUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
-  ModelComboboxFieldController,
   ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
@@ -29,6 +27,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
 import { getAuthPluginDefinition } from '#src/auth/utils/get-auth-plugin-definition.js';
+import { AUTH0_MODELS } from '#src/auth0/constants/model-names.js';
 import { AuthConfigTabs } from '#src/common/components/auth-config-tabs.js';
 
 import type { Auth0PluginDefinitionInput } from '../schema/plugin-definition.js';
@@ -55,31 +54,26 @@ export function Auth0DefinitionEditor({
       return pluginMetadata.config as Auth0PluginDefinitionInput;
     }
 
-    return {
-      modelRefs: {
-        user: ModelUtils.getModelIdByNameOrDefault(definition, 'User'),
-      },
-    } satisfies Auth0PluginDefinitionInput;
-  }, [definition, pluginMetadata?.config]);
+    return {} satisfies Auth0PluginDefinitionInput;
+  }, [pluginMetadata?.config]);
 
   const form = useResettableForm({
     resolver: zodResolver(auth0PluginDefinitionSchema),
     defaultValues,
   });
-  const { control, reset, handleSubmit, watch } = form;
+  const { control, reset, handleSubmit } = form;
 
-  const modelRefs = watch('modelRefs');
   const authDefinition = getAuthPluginDefinition(definition);
 
   const pendingModelChanges = useMemo(() => {
-    const desiredModels = createAuth0Models({ modelRefs }, authDefinition);
+    const desiredModels = createAuth0Models(authDefinition);
 
     return createModelMergerResults(
-      modelRefs,
+      AUTH0_MODELS,
       desiredModels,
       definitionContainer,
     );
-  }, [definitionContainer, authDefinition, modelRefs]);
+  }, [definitionContainer, authDefinition]);
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
@@ -89,8 +83,8 @@ export function Auth0DefinitionEditor({
         };
         createAndApplyModelMergerResults(
           draftConfig,
-          updatedData.modelRefs,
-          createAuth0Models(data, authDefinition),
+          AUTH0_MODELS,
+          createAuth0Models(authDefinition),
           definitionContainer,
         );
         PluginUtils.setPluginConfig(
@@ -131,24 +125,13 @@ export function Auth0DefinitionEditor({
                     Auth0 Configuration
                   </SectionListSectionTitle>
                   <SectionListSectionDescription>
-                    Configure your Auth0 authentication settings, user model,
-                    and role definitions.
+                    The plugin will automatically configure the models it needs.
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="auth:space-y-6">
                   <ModelMergerResultAlert
                     pendingModelChanges={pendingModelChanges}
                   />
-
-                  <div className="auth:grid auth:grid-cols-1 auth:gap-6 auth:md:grid-cols-2">
-                    <ModelComboboxFieldController
-                      label="User Model"
-                      name="modelRefs.user"
-                      control={control}
-                      canCreate
-                      description="Select or create the model that will store user authentication data"
-                    />
-                  </div>
                 </SectionListSectionContent>
               </SectionListSection>
             </SectionList>

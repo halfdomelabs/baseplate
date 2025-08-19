@@ -28,15 +28,12 @@ import {
 import { z } from 'zod';
 
 import { STORAGE_PACKAGES } from '#src/constants/index.js';
+import { STORAGE_MODELS } from '#src/storage/constants/model-names.js';
 
 import { FASTIFY_STORAGE_MODULE_GENERATED } from './generated/index.js';
 import { storageModuleImportsProvider } from './generated/ts-import-providers.js';
 
 const descriptorSchema = z.object({
-  /**
-   * The name of the file model to use for the storage module.
-   */
-  fileModel: z.string().min(1),
   /**
    * The S3 adapters to use for the storage module.
    */
@@ -76,7 +73,7 @@ export const storageModuleGenerator = createGenerator({
   name: 'fastify/storage-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ fileModel, s3Adapters }) => ({
+  buildTasks: ({ s3Adapters }) => ({
     paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.task,
     imports: FASTIFY_STORAGE_MODULE_GENERATED.imports.task,
     renderers: FASTIFY_STORAGE_MODULE_GENERATED.renderers.task,
@@ -118,7 +115,7 @@ export const storageModuleGenerator = createGenerator({
         pothosSchema: pothosSchemaProvider,
         fileObjectType: pothosTypeOutputProvider
           .dependency()
-          .reference(`prisma-object-type:${fileModel}`),
+          .reference(`prisma-object-type:${STORAGE_MODELS.file}`),
         paths: FASTIFY_STORAGE_MODULE_GENERATED.paths.provider,
       },
       run({ appModule, pothosSchema, renderers, fileObjectType, paths }) {
@@ -202,8 +199,12 @@ export const storageModuleGenerator = createGenerator({
       }) {
         return {
           build: async (builder) => {
-            const model = prismaOutput.getPrismaModelFragment(fileModel);
-            const modelType = prismaOutput.getModelTypeFragment(fileModel);
+            const model = prismaOutput.getPrismaModelFragment(
+              STORAGE_MODELS.file,
+            );
+            const modelType = prismaOutput.getModelTypeFragment(
+              STORAGE_MODELS.file,
+            );
             // Render module
             await builder.apply(
               renderers.mainGroup.render({
@@ -227,13 +228,13 @@ export const storageModuleGenerator = createGenerator({
                   },
                   typesFileCategory: {
                     TPL_FILE_COUNT_OUTPUT_TYPE: tsCodeFragment(
-                      `Prisma.${fileModel}CountOutputType`,
+                      `Prisma.${STORAGE_MODELS.file}CountOutputType`,
                       tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
                     ),
                   },
                   utilsValidateFileUploadOptions: {
                     TPL_FILE_CREATE_INPUT: tsCodeFragment(
-                      `Prisma.${fileModel}CreateInput`,
+                      `Prisma.${STORAGE_MODELS.file}CreateInput`,
                       tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
                     ),
                   },

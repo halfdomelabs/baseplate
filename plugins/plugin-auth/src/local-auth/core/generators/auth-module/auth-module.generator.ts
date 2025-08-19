@@ -14,11 +14,11 @@ import {
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import { LOCAL_AUTH_MODELS } from '#src/local-auth/constants/model-names.js';
+
 import { LOCAL_AUTH_CORE_AUTH_MODULE_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({
-  userSessionModelName: z.string().min(1),
-  userModelName: z.string().min(1),
   userAdminRoles: z.array(z.string()).default([]),
 });
 
@@ -26,7 +26,7 @@ export const authModuleGenerator = createGenerator({
   name: 'local-auth/core/auth-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ userSessionModelName, userModelName, userAdminRoles }) => ({
+  buildTasks: ({ userAdminRoles }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
@@ -62,7 +62,9 @@ export const authModuleGenerator = createGenerator({
         renderers: GENERATED_TEMPLATES.renderers.provider,
         userObjectType: pothosTypeOutputProvider
           .dependency()
-          .reference(createPothosPrismaObjectTypeOutputName(userModelName)),
+          .reference(
+            createPothosPrismaObjectTypeOutputName(LOCAL_AUTH_MODELS.user),
+          ),
       },
       run({ prismaOutput, renderers, userObjectType }) {
         return {
@@ -73,8 +75,9 @@ export const authModuleGenerator = createGenerator({
             await builder.apply(
               renderers.userSessionService.render({
                 variables: {
-                  TPL_PRISMA_USER_SESSION:
-                    prismaOutput.getPrismaModelFragment(userSessionModelName),
+                  TPL_PRISMA_USER_SESSION: prismaOutput.getPrismaModelFragment(
+                    LOCAL_AUTH_MODELS.userSession,
+                  ),
                 },
               }),
             );
@@ -84,8 +87,9 @@ export const authModuleGenerator = createGenerator({
               renderers.moduleGroup.render({
                 variables: {
                   schemaUserSessionPayloadObjectType: {
-                    TPL_PRISMA_USER:
-                      prismaOutput.getPrismaModelFragment(userModelName),
+                    TPL_PRISMA_USER: prismaOutput.getPrismaModelFragment(
+                      LOCAL_AUTH_MODELS.user,
+                    ),
                     TPL_USER_OBJECT_TYPE:
                       userObjectType.getTypeReference().fragment,
                   },

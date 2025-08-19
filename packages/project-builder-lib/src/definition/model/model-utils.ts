@@ -25,6 +25,24 @@ function byIdOrThrow(
   return model;
 }
 
+function byName(
+  projectDefinition: ProjectDefinition,
+  name: string,
+): ModelConfig | undefined {
+  return projectDefinition.models.find((m) => m.name === name);
+}
+
+function byNameOrThrow(
+  projectDefinition: ProjectDefinition,
+  name: string,
+): ModelConfig {
+  const model = byName(projectDefinition, name);
+  if (!model) {
+    throw new Error(`Could not find model with name ${name}`);
+  }
+  return model;
+}
+
 function getScalarFieldById(
   model: ModelConfig,
   id: string,
@@ -89,6 +107,8 @@ function getModelIdByNameOrDefault(
 export const ModelUtils = {
   byId,
   byIdOrThrow,
+  byName,
+  byNameOrThrow,
   getScalarFieldById,
   getRelationsToModel,
   getModelsForFeature,

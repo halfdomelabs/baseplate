@@ -7,18 +7,17 @@ import { capitalize } from 'inflection';
 import { z } from 'zod';
 
 import { STORAGE_PACKAGES } from '#src/constants/index.js';
+import { STORAGE_MODELS } from '#src/storage/constants/model-names.js';
 
 import { REACT_UPLOAD_COMPONENTS_GENERATED } from './generated/index.js';
 
-const descriptorSchema = z.object({
-  fileModelName: z.string().min(1),
-});
+const descriptorSchema = z.object({});
 
 export const uploadComponentsGenerator = createGenerator({
   name: 'react/upload-components',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ fileModelName }) => ({
+  buildTasks: () => ({
     nodePackages: createNodePackagesTask({
       prod: {
         axios: CORE_PACKAGES.axios,
@@ -46,7 +45,7 @@ export const uploadComponentsGenerator = createGenerator({
             await builder.apply(
               renderers.fileInputUploadGql.render({
                 variables: {
-                  TPL_FILE_TYPE: capitalize(fileModelName),
+                  TPL_FILE_TYPE: capitalize(STORAGE_MODELS.file),
                 },
               }),
             );

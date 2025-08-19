@@ -1,11 +1,11 @@
 import {
   authModelConfigSpec,
   createPlatformPluginExport,
+  ModelUtils,
   pluginConfigSpec,
-  PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 
-import type { LocalAuthPluginDefinition } from './schema/plugin-definition.js';
+import { LOCAL_AUTH_MODELS } from '#src/local-auth/constants/model-names.js';
 
 import { createLocalAuthPluginDefinitionSchema } from './schema/plugin-definition.js';
 
@@ -26,13 +26,8 @@ export default createPlatformPluginExport({
     );
     return {
       authModelConfig: {
-        getUserModel: (definition) => {
-          const pluginConfig = PluginUtils.configByKeyOrThrow(
-            definition,
-            pluginKey,
-          ) as LocalAuthPluginDefinition;
-          return pluginConfig.modelRefs.user;
-        },
+        getUserModel: (definition) =>
+          ModelUtils.byNameOrThrow(definition, LOCAL_AUTH_MODELS.user),
       },
     };
   },

@@ -17,12 +17,20 @@ interface Props {
 
 export function ModelMergerResultAlert({
   pendingModelChanges,
-}: Props): ReactElement | null {
+}: Props): ReactElement {
   const changes = Object.values(pendingModelChanges).filter(
     (change): change is ModelMergerModelDiffResult => change !== undefined,
   );
   if (changes.length === 0) {
-    return null;
+    return (
+      <Alert variant="default">
+        <AlertTitle>Models Up to Date</AlertTitle>
+        <AlertDescription>
+          All required models are already configured correctly. No changes
+          needed.
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (

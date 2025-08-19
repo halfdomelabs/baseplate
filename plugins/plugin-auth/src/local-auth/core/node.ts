@@ -51,12 +51,6 @@ export default createPlatformPluginExport({
               ) ?? [],
           }),
           authModule: authModuleGenerator({
-            userSessionModelName: definitionContainer.nameFromId(
-              localAuthDefinition.modelRefs.userSession,
-            ),
-            userModelName: definitionContainer.nameFromId(
-              localAuthDefinition.modelRefs.user,
-            ),
             userAdminRoles:
               localAuthDefinition.userAdminRoles?.map((role) =>
                 definitionContainer.nameFromId(role),
@@ -67,9 +61,6 @@ export default createPlatformPluginExport({
             name: 'password',
             children: {
               module: authEmailPasswordGenerator({
-                userModelName: definitionContainer.nameFromId(
-                  localAuthDefinition.modelRefs.user,
-                ),
                 adminRoles:
                   localAuthDefinition.userAdminRoles?.map((role) =>
                     definitionContainer.nameFromId(role),
