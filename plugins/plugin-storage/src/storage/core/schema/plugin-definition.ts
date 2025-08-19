@@ -31,9 +31,6 @@ export const createStoragePluginDefinitionSchema = definitionSchema((ctx) =>
         ),
       ),
     }),
-    (_) => {
-      // No model refs to add to context
-    },
   ),
 );
 
