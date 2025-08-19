@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    workspace: ['packages/*', 'plugins/*'],
+    projects: ['packages/*/vitest.config.js', 'plugins/*/vitest.config.js'],
+    watch: false,
   },
 });

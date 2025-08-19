@@ -8,11 +8,12 @@ import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { quot } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
+import { LOCAL_AUTH_MODELS } from '#src/local-auth/constants/model-names.js';
+
 import { LOCAL_AUTH_CORE_AUTH_EMAIL_PASSWORD_GENERATED as GENERATED_TEMPLATES } from './generated/index.js';
 
 const descriptorSchema = z.object({
   adminRoles: z.array(z.string()),
-  userModelName: z.string(),
 });
 
 /**
@@ -22,7 +23,7 @@ export const authEmailPasswordGenerator = createGenerator({
   name: 'local-auth/core/auth-email-password',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ adminRoles, userModelName }) => ({
+  buildTasks: ({ adminRoles }) => ({
     paths: GENERATED_TEMPLATES.paths.task,
     imports: GENERATED_TEMPLATES.imports.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
@@ -40,7 +41,9 @@ export const authEmailPasswordGenerator = createGenerator({
         renderers: GENERATED_TEMPLATES.renderers.provider,
         userObjectType: pothosTypeOutputProvider
           .dependency()
-          .reference(createPothosPrismaObjectTypeOutputName(userModelName)),
+          .reference(
+            createPothosPrismaObjectTypeOutputName(LOCAL_AUTH_MODELS.user),
+          ),
       },
       run({ renderers, userObjectType }) {
         return {

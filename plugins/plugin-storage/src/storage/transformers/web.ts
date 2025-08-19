@@ -1,7 +1,4 @@
-import type {
-  ModelConfigInput,
-  ProjectDefinition,
-} from '@baseplate-dev/project-builder-lib';
+import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
 
 import {
   createPlatformPluginExport,
@@ -11,6 +8,8 @@ import {
 import { modelTransformerWebSpec } from '@baseplate-dev/project-builder-lib/web';
 import { constantCase } from 'es-toolkit';
 
+import { STORAGE_MODELS } from '#src/storage/constants/model-names.js';
+
 import type { StoragePluginDefinition } from '../core/schema/plugin-definition.js';
 import type { FileTransformerDefinition } from './schema/file-transformer.schema.js';
 
@@ -19,14 +18,8 @@ import { FileTransformerForm } from './components/file-transformer-form.js';
 import '../../styles.css';
 
 function findNonTransformedFileRelations(
-  definition: ProjectDefinition,
   modelConfig: ModelConfigInput,
-  pluginKey: string,
 ): string[] {
-  const storageDefinition = PluginUtils.configByKeyOrThrow(
-    definition,
-    pluginKey,
-  ) as StoragePluginDefinition;
   const { transformers } = modelConfig.service ?? {};
   const fileTransformers = transformers?.filter(
     (transformer): transformer is FileTransformerDefinition =>
@@ -36,7 +29,7 @@ function findNonTransformedFileRelations(
     modelConfig.model.relations
       ?.filter(
         (relation) =>
-          relation.modelRef === storageDefinition.modelRefs.file &&
+          relation.modelRef === STORAGE_MODELS.file &&
           !fileTransformers?.some(
             (transformer) => transformer.fileRelationRef === relation.id,
           ),
@@ -58,20 +51,12 @@ export default createPlatformPluginExport({
       instructions: 'Select a file relation to transform',
       pluginKey,
       Form: FileTransformerForm,
-      allowNewTransformer(projectContainer, modelConfig) {
-        const { definition } = projectContainer;
-        return (
-          findNonTransformedFileRelations(definition, modelConfig, pluginKey)
-            .length > 0
-        );
+      allowNewTransformer(_, modelConfig) {
+        return findNonTransformedFileRelations(modelConfig).length > 0;
       },
       getNewTransformer: (projectContainer, modelConfig) => {
         const { definition } = projectContainer;
-        const fileRelationIds = findNonTransformedFileRelations(
-          definition,
-          modelConfig,
-          pluginKey,
-        );
+        const fileRelationIds = findNonTransformedFileRelations(modelConfig);
         const fileRelationId = fileRelationIds[0];
         const relation = modelConfig.model.relations?.find(
           (r) => r.id === fileRelationId,

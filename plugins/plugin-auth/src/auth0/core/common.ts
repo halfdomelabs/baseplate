@@ -1,12 +1,11 @@
 import {
   authModelConfigSpec,
   createPlatformPluginExport,
+  ModelUtils,
   pluginConfigSpec,
-  PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 
-import type { Auth0PluginDefinition } from './schema/plugin-definition.js';
-
+import { AUTH0_MODELS } from '../constants/model-names.js';
 import { AUTH0_PLUGIN_CONFIG_MIGRATIONS } from './schema/migrations.js';
 import { createAuth0PluginDefinitionSchema } from './schema/plugin-definition.js';
 
@@ -25,13 +24,8 @@ export default createPlatformPluginExport({
     config.registerMigrations(pluginKey, AUTH0_PLUGIN_CONFIG_MIGRATIONS);
     return {
       authModelConfig: {
-        getUserModel: (definition) => {
-          const pluginConfig = PluginUtils.configByKeyOrThrow(
-            definition,
-            pluginKey,
-          ) as Auth0PluginDefinition;
-          return pluginConfig.modelRefs.user;
-        },
+        getUserModel: (definition) =>
+          ModelUtils.byNameOrThrow(definition, AUTH0_MODELS.user),
       },
     };
   },

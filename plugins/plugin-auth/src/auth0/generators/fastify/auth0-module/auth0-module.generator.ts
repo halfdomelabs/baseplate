@@ -21,12 +21,12 @@ import {
 } from '@baseplate-dev/sync';
 import { z } from 'zod';
 
+import { AUTH0_MODELS } from '#src/auth0/constants/model-names.js';
 import { AUTH0_PACKAGES } from '#src/auth0/constants/packages.js';
 
 import { AUTH0_AUTH0_MODULE_GENERATED } from './generated/index.js';
 
 const descriptorSchema = z.object({
-  userModelName: z.string().min(1),
   includeManagement: z.boolean().optional(),
 });
 
@@ -34,7 +34,7 @@ export const auth0ModuleGenerator = createGenerator({
   name: 'auth0/auth0-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks: ({ includeManagement, userModelName }) => ({
+  buildTasks: ({ includeManagement }) => ({
     paths: AUTH0_AUTH0_MODULE_GENERATED.paths.task,
     imports: AUTH0_AUTH0_MODULE_GENERATED.imports.task,
     nodeManagementPackage: includeManagement
@@ -112,8 +112,9 @@ export const auth0ModuleGenerator = createGenerator({
                   AUTH0_AUTH0_MODULE_GENERATED.templates.userSessionService,
                 destination: paths.userSessionService,
                 variables: {
-                  TPL_USER_MODEL:
-                    prismaOutput.getPrismaModelFragment(userModelName),
+                  TPL_USER_MODEL: prismaOutput.getPrismaModelFragment(
+                    AUTH0_MODELS.user,
+                  ),
                 },
                 importMapProviders: {
                   authContextImports,

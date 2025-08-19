@@ -9,5 +9,5 @@
       "#src/*": ["./src/*"]
     }
   },
-  "include": ["tests/**/*", "playwright.config.ts"]
+  "include": ["e2e/**/*", "playwright.config.ts"]
 }

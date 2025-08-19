@@ -32,12 +32,8 @@ export default createPlatformPluginExport({
         ) as StoragePluginDefinition;
 
         // add feature providers
-        const fileModelName = definitionContainer.nameFromId(
-          storage.modelRefs.file,
-        );
         appCompiler.addChildrenToFeature(storage.storageFeatureRef, {
           storage: storageModuleGenerator({
-            fileModel: fileModelName,
             s3Adapters: storage.s3Adapters.map((a) => ({
               name: a.name,
               bucketConfigVar: a.bucketConfigVar,
@@ -99,29 +95,16 @@ export default createPlatformPluginExport({
     appCompiler.registerAppCompiler({
       pluginKey,
       appType: webAppEntryType,
-      compile: ({
-        projectDefinition,
-        definitionContainer,
-        appCompiler,
-        appDefinition,
-      }) => {
+      compile: ({ appCompiler, appDefinition }) => {
         if (
           !appDefinition.includeUploadComponents &&
           !appDefinition.adminApp?.enabled
         ) {
           return;
         }
-        const storage = PluginUtils.configByKeyOrThrow(
-          projectDefinition,
-          pluginKey,
-        ) as StoragePluginDefinition;
 
         appCompiler.addRootChildren({
-          uploadComponents: uploadComponentsGenerator({
-            fileModelName: definitionContainer.nameFromId(
-              storage.modelRefs.file,
-            ),
-          }),
+          uploadComponents: uploadComponentsGenerator({}),
         });
       },
     });

@@ -5,11 +5,9 @@ import {
   createAndApplyModelMergerResults,
   createModelMergerResults,
   doesModelMergerResultsHaveChanges,
-  ModelUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
-  ModelComboboxFieldController,
   ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
@@ -31,6 +29,7 @@ import { useMemo } from 'react';
 
 import { getAuthPluginDefinition } from '#src/auth/utils/get-auth-plugin-definition.js';
 import { AuthConfigTabs } from '#src/common/components/auth-config-tabs.js';
+import { LOCAL_AUTH_MODELS } from '#src/local-auth/constants/model-names.js';
 
 import type { LocalAuthPluginDefinitionInput } from '../schema/plugin-definition.js';
 
@@ -64,40 +63,26 @@ export function LocalAuthDefinitionEditor({
     }
 
     return {
-      modelRefs: {
-        user: ModelUtils.getModelIdByNameOrDefault(definition, 'User'),
-        userAccount: ModelUtils.getModelIdByNameOrDefault(
-          definition,
-          'UserAccount',
-        ),
-        userRole: ModelUtils.getModelIdByNameOrDefault(definition, 'UserRole'),
-        userSession: ModelUtils.getModelIdByNameOrDefault(
-          definition,
-          'UserSession',
-        ),
-      },
       initialUserRoles: [],
       userAdminRoles: [],
     } satisfies LocalAuthPluginDefinitionInput;
-  }, [definition, pluginMetadata?.config]);
+  }, [pluginMetadata?.config]);
 
   const form = useResettableForm({
     resolver: zodResolver(authPluginDefinitionSchema),
     defaultValues,
   });
-  const { control, reset, handleSubmit, watch } = form;
-
-  const modelRefs = watch('modelRefs');
+  const { control, reset, handleSubmit } = form;
 
   const pendingModelChanges = useMemo(() => {
-    const desiredModels = createAuthModels({ modelRefs }, authDefinition);
+    const desiredModels = createAuthModels(authDefinition);
 
     return createModelMergerResults(
-      modelRefs,
+      LOCAL_AUTH_MODELS,
       desiredModels,
       definitionContainer,
     );
-  }, [definitionContainer, authDefinition, modelRefs]);
+  }, [definitionContainer, authDefinition]);
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
@@ -105,10 +90,10 @@ export function LocalAuthDefinitionEditor({
         const updatedData = {
           ...data,
         };
-        updatedData.modelRefs = createAndApplyModelMergerResults(
+        createAndApplyModelMergerResults(
           draftConfig,
-          updatedData.modelRefs,
-          createAuthModels(updatedData, authDefinition),
+          LOCAL_AUTH_MODELS,
+          createAuthModels(authDefinition),
           definitionContainer,
         );
         PluginUtils.setPluginConfig(
@@ -149,44 +134,13 @@ export function LocalAuthDefinitionEditor({
                     Local Auth User Models
                   </SectionListSectionTitle>
                   <SectionListSectionDescription>
-                    Configure your local authentication user models.
+                    The plugin will automatically configure the models it needs.
                   </SectionListSectionDescription>
                 </SectionListSectionHeader>
                 <SectionListSectionContent className="auth:space-y-6">
                   <ModelMergerResultAlert
                     pendingModelChanges={pendingModelChanges}
                   />
-
-                  <div className="auth:grid auth:grid-cols-1 auth:gap-6 auth:md:grid-cols-2">
-                    <ModelComboboxFieldController
-                      label="User Model"
-                      name="modelRefs.user"
-                      control={control}
-                      canCreate
-                      description="The main user model for authentication"
-                    />
-                    <ModelComboboxFieldController
-                      label="User Account Model"
-                      name="modelRefs.userAccount"
-                      control={control}
-                      canCreate
-                      description="Model for user account credentials"
-                    />
-                    <ModelComboboxFieldController
-                      label="User Role Model"
-                      name="modelRefs.userRole"
-                      control={control}
-                      canCreate
-                      description="Model for assigning roles to users"
-                    />
-                    <ModelComboboxFieldController
-                      label="User Session Model"
-                      name="modelRefs.userSession"
-                      control={control}
-                      canCreate
-                      description="Model for managing user sessions"
-                    />
-                  </div>
                 </SectionListSectionContent>
               </SectionListSection>
               <SectionListSection>

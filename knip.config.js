@@ -9,7 +9,7 @@ export default {
     'packages/*': {
       entry: ['src/index.{ts,tsx}', 'src/web/index.{ts,tsx}'],
       project: 'src/**/*.{ts,tsx}',
-      ignore: ['src/__mocks__/**'],
+      ignore: ['__mocks__/**'],
       paths: {
         '#src/*': ['./src/*'],
       },
@@ -54,8 +54,8 @@ export default {
       },
     },
     'packages/project-builder-cli': {
-      entry: ['src/index.{ts,tsx}', 'tests/**/*.spec.{ts,tsx}'],
-      project: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
+      entry: ['src/index.{ts,tsx}', 'e2e/**/*.spec.{ts,tsx}'],
+      project: ['src/**/*.{ts,tsx}', 'e2e/**/*.{ts,tsx}'],
       ignoreDependencies: [
         // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
         'pino-pretty',

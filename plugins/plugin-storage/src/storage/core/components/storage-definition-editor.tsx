@@ -6,12 +6,10 @@ import {
   createModelMergerResults,
   doesModelMergerResultsHaveChanges,
   FeatureUtils,
-  ModelUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import {
   FeatureComboboxFieldController,
-  ModelComboboxFieldController,
   ModelMergerResultAlert,
   useBlockUnsavedChangesNavigate,
   useDefinitionSchema,
@@ -29,6 +27,8 @@ import {
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
+
+import { STORAGE_MODELS } from '#src/storage/constants/model-names.js';
 
 import type { StoragePluginDefinitionInput } from '../schema/plugin-definition.js';
 
@@ -54,9 +54,6 @@ export function StorageDefinitionEditor({
     }
 
     return {
-      modelRefs: {
-        file: ModelUtils.getModelIdByNameOrDefault(definition, 'File'),
-      },
       storageFeatureRef: FeatureUtils.getFeatureIdByNameOrDefault(
         definition,
         'storage',
@@ -71,7 +68,6 @@ export function StorageDefinitionEditor({
   });
   const { control, reset, handleSubmit, watch } = form;
 
-  const modelRefs = watch('modelRefs');
   const storageFeatureRef = watch('storageFeatureRef');
 
   const pendingModelChanges = useMemo(() => {
@@ -81,11 +77,11 @@ export function StorageDefinitionEditor({
     );
 
     return createModelMergerResults(
-      modelRefs,
+      STORAGE_MODELS,
       desiredModels,
       definitionContainer,
     );
-  }, [definitionContainer, storageFeatureRef, modelRefs]);
+  }, [definitionContainer, storageFeatureRef]);
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback(
@@ -100,7 +96,7 @@ export function StorageDefinitionEditor({
         };
         createAndApplyModelMergerResults(
           draftConfig,
-          updatedData.modelRefs,
+          STORAGE_MODELS,
           createStorageModels(updatedData, definitionContainer),
           definitionContainer,
         );
@@ -145,22 +141,13 @@ export function StorageDefinitionEditor({
                 pendingModelChanges={pendingModelChanges}
               />
 
-              <div className="storage:grid storage:grid-cols-1 storage:gap-6 storage:md:grid-cols-2">
-                <ModelComboboxFieldController
-                  label="File Model"
-                  name="modelRefs.file"
-                  control={control}
-                  canCreate
-                  description="The model to use for file storage"
-                />
-                <FeatureComboboxFieldController
-                  label="Storage Feature Path"
-                  name="storageFeatureRef"
-                  control={control}
-                  canCreate
-                  description="Specify the feature path where storage endpoints will be generated"
-                />
-              </div>
+              <FeatureComboboxFieldController
+                label="Storage Feature Path"
+                name="storageFeatureRef"
+                control={control}
+                canCreate
+                description="Specify the feature path where storage endpoints will be generated"
+              />
             </SectionListSectionContent>
           </SectionListSection>
 

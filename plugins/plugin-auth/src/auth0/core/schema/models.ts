@@ -2,17 +2,17 @@ import type { ModelMergerModelInput } from '@baseplate-dev/project-builder-lib';
 
 import type { AuthPluginDefinition } from '#src/auth/core/schema/plugin-definition.js';
 
-import type { Auth0PluginDefinition } from './plugin-definition.js';
+import { AUTH0_MODELS } from '#src/auth0/constants/model-names.js';
 
-export function createAuth0Models(
-  { modelRefs }: Pick<Auth0PluginDefinition, 'modelRefs'>,
-  { authFeatureRef }: AuthPluginDefinition,
-): {
-  user: ModelMergerModelInput;
-} {
+export function createAuth0Models({
+  authFeatureRef,
+}: AuthPluginDefinition): Record<
+  keyof typeof AUTH0_MODELS,
+  ModelMergerModelInput
+> {
   return {
     user: {
-      name: modelRefs.user,
+      name: AUTH0_MODELS.user,
       featureRef: authFeatureRef,
       model: {
         fields: [

@@ -1,11 +1,11 @@
 import {
   authModelConfigSpec,
   createPlatformPluginExport,
+  ModelUtils,
   pluginConfigSpec,
-  PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 
-import type { PlaceholderAuthPluginDefinition } from './schema/plugin-definition.js';
+import { PLACEHOLDER_AUTH_MODELS } from '#src/placeholder-auth/constants/model-names.js';
 
 import { createPlaceholderAuthPluginDefinitionSchema } from './schema/plugin-definition.js';
 
@@ -26,13 +26,8 @@ export default createPlatformPluginExport({
     );
     return {
       authModelConfig: {
-        getUserModel: (definition) => {
-          const pluginConfig = PluginUtils.configByKeyOrThrow(
-            definition,
-            pluginKey,
-          ) as PlaceholderAuthPluginDefinition;
-          return pluginConfig.modelRefs.user;
-        },
+        getUserModel: (definition) =>
+          ModelUtils.byNameOrThrow(definition, PLACEHOLDER_AUTH_MODELS.user),
       },
     };
   },

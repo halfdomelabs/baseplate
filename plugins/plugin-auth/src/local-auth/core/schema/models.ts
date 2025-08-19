@@ -2,20 +2,17 @@ import type { ModelMergerModelInput } from '@baseplate-dev/project-builder-lib';
 
 import type { AuthPluginDefinition } from '#src/auth/core/schema/plugin-definition.js';
 
-import type { LocalAuthPluginDefinition } from './plugin-definition.js';
+import { LOCAL_AUTH_MODELS } from '#src/local-auth/constants/model-names.js';
 
-export function createAuthModels(
-  { modelRefs }: Pick<LocalAuthPluginDefinition, 'modelRefs'>,
-  { authFeatureRef }: AuthPluginDefinition,
-): {
-  user: ModelMergerModelInput;
-  userAccount: ModelMergerModelInput;
-  userRole: ModelMergerModelInput;
-  userSession: ModelMergerModelInput;
-} {
+export function createAuthModels({
+  authFeatureRef,
+}: AuthPluginDefinition): Record<
+  keyof typeof LOCAL_AUTH_MODELS,
+  ModelMergerModelInput
+> {
   return {
     user: {
-      name: modelRefs.user,
+      name: LOCAL_AUTH_MODELS.user,
       featureRef: authFeatureRef,
       model: {
         fields: [
@@ -64,7 +61,7 @@ export function createAuthModels(
       },
     },
     userAccount: {
-      name: modelRefs.userAccount,
+      name: LOCAL_AUTH_MODELS.userAccount,
       featureRef: authFeatureRef,
       model: {
         fields: [
@@ -111,7 +108,7 @@ export function createAuthModels(
           {
             name: 'user',
             references: [{ localRef: 'userId', foreignRef: 'id' }],
-            modelRef: modelRefs.user,
+            modelRef: LOCAL_AUTH_MODELS.user,
             foreignRelationName: 'accounts',
             onDelete: 'Cascade',
             onUpdate: 'Restrict',
@@ -120,7 +117,7 @@ export function createAuthModels(
       },
     },
     userRole: {
-      name: modelRefs.userRole,
+      name: LOCAL_AUTH_MODELS.userRole,
       featureRef: authFeatureRef,
       model: {
         fields: [
@@ -148,7 +145,7 @@ export function createAuthModels(
           {
             name: 'user',
             references: [{ localRef: 'userId', foreignRef: 'id' }],
-            modelRef: modelRefs.user,
+            modelRef: LOCAL_AUTH_MODELS.user,
             foreignRelationName: 'roles',
             onDelete: 'Cascade',
             onUpdate: 'Restrict',
@@ -157,7 +154,7 @@ export function createAuthModels(
       },
     },
     userSession: {
-      name: modelRefs.userSession,
+      name: LOCAL_AUTH_MODELS.userSession,
       featureRef: authFeatureRef,
       model: {
         fields: [
@@ -204,7 +201,7 @@ export function createAuthModels(
           {
             name: 'user',
             references: [{ localRef: 'userId', foreignRef: 'id' }],
-            modelRef: modelRefs.user,
+            modelRef: LOCAL_AUTH_MODELS.user,
             foreignRelationName: 'sessions',
             onDelete: 'Cascade',
             onUpdate: 'Restrict',
