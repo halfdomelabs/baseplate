@@ -169,6 +169,12 @@ export class CookieUserSessionService implements UserSessionService {
   ): Promise<AuthUserSessionInfo | undefined> {
     const currentDate = new Date();
 
+    const cookieName = getUserSessionCookieName(req.headers);
+
+    // Check if the session cookie is present
+    const sessionCookieValue = req.cookies[cookieName];
+    if (!sessionCookieValue) return undefined;
+
     // Check Origin header for non-GET/HEAD requests to prevent CSRF attacks
     if (
       (req.method !== 'GET' ||
@@ -178,13 +184,7 @@ export class CookieUserSessionService implements UserSessionService {
     ) {
       throw new ForbiddenError('Invalid Origin header');
     }
-
-    const cookieName = getUserSessionCookieName(req.headers);
     try {
-      // Check if the session cookie is present
-      const sessionCookieValue = req.cookies[cookieName];
-      if (!sessionCookieValue) return undefined;
-
       // Unsign the session cookie
       const sessionCookieResult = unsignObject(
         sessionCookieValue,
