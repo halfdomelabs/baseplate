@@ -8,8 +8,8 @@
       "name": "Debug Current Test File",
       "autoAttachChildProcesses": true,
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
-      "program": "${workspaceRoot}/scripts/run-vitest.js",
-      "args": ["${relativeFile}"],
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["vitest", "${relativeFile}", "--testTimeout", "0"],
       "smartStep": true,
       "console": "integratedTerminal"
     },

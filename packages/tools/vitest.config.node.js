@@ -1,6 +1,6 @@
 // @ts-check
 
-import { defineConfig } from 'vitest/config';
+import { defaultExclude, defineConfig } from 'vitest/config';
 
 import { srcSubpathImportPlugin } from './src-subpath-import-plugin.js';
 
@@ -15,13 +15,13 @@ export function createNodeVitestConfig(dirname) {
     plugins: [srcSubpathImportPlugin(dirname)],
     test: {
       watch: false,
-      root: './src',
       server: {
         deps: {
           inline: ['globby'],
         },
       },
       mockReset: true,
+      exclude: [...defaultExclude, '**/e2e/**'],
     },
   });
 }

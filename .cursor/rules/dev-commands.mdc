@@ -1,8 +1,9 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
+
 ## Build and Test Commands
 
 ### From repository root
@@ -11,7 +12,7 @@ alwaysApply: true
 - Lint affected with auto-fixing: `pnpm lint:only:affected -- --fix`
 - Check types: `pnpm typecheck`
 - Test affected: `pnpm test:affected`
-- Test single file: `./run-vitest.js <path/to/file.unit.test.ts>`
+- Test single file: `pnpm vitest <path/to/file.unit.test.ts>`
 
 ### From package
 

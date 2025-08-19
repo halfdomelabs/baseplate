@@ -29,7 +29,6 @@ export function createReactVitestConfig(dirname) {
     plugins: [srcSubpathImportPlugin(dirname)],
     test: {
       watch: false,
-      root: './src',
       mockReset: true,
       environment: 'jsdom',
       setupFiles: ['./src/tests/setup.ts'],
