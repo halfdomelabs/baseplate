@@ -51,7 +51,7 @@
     "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|html|yml|yaml|json)": "prettier --write"
   },
   "dependencies": {
-    "@changesets/cli": "2.28.1"
+    "@changesets/cli": "2.29.6"
   },
   "devDependencies": {
     "@baseplate-dev/tools": "workspace:*",
