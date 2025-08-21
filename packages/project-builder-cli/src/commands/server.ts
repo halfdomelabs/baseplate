@@ -11,6 +11,7 @@ import { getUserConfig } from '#src/services/user-config.js';
 
 import { getEnabledFeatureFlags } from '../services/feature-flags.js';
 import { logger } from '../services/logger.js';
+import { findExamplesDirectories } from '../utils/find-examples-directories.js';
 import { expandPathWithTilde } from '../utils/path.js';
 import { resolveModule } from '../utils/resolve.js';
 import { getPackageVersion } from '../utils/version.js';
@@ -98,7 +99,22 @@ export function addServeCommand(program: Command): void {
     )
     .action(
       async (directories: string[], { browser, port }: ServeCommandOptions) => {
-        await serveWebServer(directories, { browser, port });
+        let finalDirectories = directories;
+
+        // Check if we should include examples
+        if (process.env.INCLUDE_EXAMPLES === 'true') {
+          const exampleDirectories = await findExamplesDirectories();
+          if (exampleDirectories.length > 0) {
+            finalDirectories = [...exampleDirectories, ...directories];
+            logger.info(
+              `Including ${exampleDirectories.length} example directories: ${exampleDirectories.map((dir) => path.basename(dir)).join(', ')}`,
+            );
+          } else {
+            logger.info('No example directories found to include');
+          }
+        }
+
+        await serveWebServer(finalDirectories, { browser, port });
       },
     );
 }
