@@ -2,22 +2,25 @@ import type { FixRefDeletionError } from '@baseplate-dev/project-builder-lib';
 import type { ZodError } from 'zod';
 
 export class UserVisibleError extends Error {
-  constructor(
-    message: string,
-    public title?: string,
-  ) {
+  public title?: string;
+
+  constructor(message: string, title?: string) {
     super(message);
+    this.title = title;
     this.name = 'UserVisibleError';
   }
 }
 
 export class RefDeleteError extends UserVisibleError {
-  constructor(public issues: FixRefDeletionError[]) {
+  public issues: FixRefDeletionError[];
+
+  constructor(issues: FixRefDeletionError[]) {
     super(
       `Cannot delete because of references: ${issues
         .map((i) => i.ref.path.join('.'))
         .join(', ')}`,
     );
+    this.issues = issues;
   }
 }
 

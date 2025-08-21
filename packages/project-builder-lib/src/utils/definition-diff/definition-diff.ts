@@ -14,12 +14,14 @@ export interface DefinitionDiffOperation<T = unknown> {
 }
 
 abstract class DefinitionDiffField<T = unknown> {
-  constructor(
-    /**
-     * The name of the field to be presented to the user.
-     */
-    public readonly name: string,
-  ) {}
+  /**
+   * The name of the field to be presented to the user.
+   */
+  public readonly name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
 
   abstract diff(current: T, desired: T): DefinitionDiffOperation[];
 
@@ -49,13 +51,17 @@ interface DefinitionDiffKeyedArrayFieldOptions {
 export class DefinitionDiffKeyedArrayField<
   T extends Record<string, unknown>[],
 > extends DefinitionDiffField<T> {
+  public readonly getKey: (item: T[number]) => string;
+  public readonly options: DefinitionDiffKeyedArrayFieldOptions;
+
   constructor(
     name: string,
-    public readonly getKey: (item: T[number]) => string,
-    public readonly options: DefinitionDiffKeyedArrayFieldOptions = {},
+    getKey: (item: T[number]) => string,
+    options: DefinitionDiffKeyedArrayFieldOptions = {},
   ) {
     super(name);
     this.getKey = getKey;
+    this.options = options;
   }
 
   diff(
@@ -178,11 +184,11 @@ export class DefinitionDiffReplacementField<
 export class DefinitionDiffArrayIncludesField<
   T extends unknown[] = string[],
 > extends DefinitionDiffField<T> {
-  constructor(
-    name: string,
-    private readonly getKey?: (item: T[number]) => string,
-  ) {
+  private readonly getKey?: (item: T[number]) => string;
+
+  constructor(name: string, getKey?: (item: T[number]) => string) {
     super(name);
+    this.getKey = getKey;
   }
 
   diff(

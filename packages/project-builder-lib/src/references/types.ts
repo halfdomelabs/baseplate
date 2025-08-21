@@ -7,6 +7,10 @@ export type ReferencePath = (string | number)[];
  */
 export class DefinitionEntityType<THasParent extends boolean = boolean> {
   public readonly prefix: string;
+  public readonly name: string;
+  public readonly parentType?: THasParent extends true
+    ? DefinitionEntityType
+    : undefined;
 
   /**
    * Creates a new entity type.
@@ -16,12 +20,12 @@ export class DefinitionEntityType<THasParent extends boolean = boolean> {
    * @param parentType - The type of the parent entity if any
    */
   constructor(
-    public readonly name: string,
+    name: string,
     prefix?: string,
-    public readonly parentType?: THasParent extends true
-      ? DefinitionEntityType
-      : undefined,
+    parentType?: THasParent extends true ? DefinitionEntityType : undefined,
   ) {
+    this.name = name;
+    this.parentType = parentType;
     this.prefix = prefix ?? name.split('/').pop() ?? name;
   }
 

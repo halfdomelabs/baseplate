@@ -1,9 +1,13 @@
 import type { PluginSpec, PluginSpecImplementation } from '../spec/types.js';
 
 export class PluginImplementationStore {
+  public implementations: Partial<Record<string, PluginSpecImplementation>>;
+
   constructor(
-    public implementations: Partial<Record<string, PluginSpecImplementation>>,
-  ) {}
+    implementations: Partial<Record<string, PluginSpecImplementation>>,
+  ) {
+    this.implementations = implementations;
+  }
 
   getPluginSpec<TImplementation>(
     spec: PluginSpec<TImplementation>,
