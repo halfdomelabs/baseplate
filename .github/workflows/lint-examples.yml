@@ -105,6 +105,10 @@ jobs:
         run: pnpm typecheck
         working-directory: examples/${{ matrix.example }}
 
+      - name: Run Docker setup
+        run: docker compose up -d
+        working-directory: examples/${{ matrix.example }}/packages/backend/docker
+
       - name: Run tests
         run: pnpm test
         working-directory: examples/${{ matrix.example }}
