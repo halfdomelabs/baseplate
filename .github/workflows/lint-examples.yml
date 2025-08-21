@@ -58,6 +58,13 @@ jobs:
         with:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
+      - name: Copy backend/.env secrets
+        run: |
+          echo "$BLOG_WITH_AUTH_BACKEND_ENV" > ./examples/blog-with-auth/packages/backend/.env
+          echo "$TODO_WITH_AUTH0_BACKEND_ENV" > ./examples/todo-with-auth0/packages/backend/.env
+        env:
+          BLOG_WITH_AUTH_BACKEND_ENV: ${{secrets.BLOG_WITH_AUTH_BACKEND_ENV}}
+          TODO_WITH_AUTH0_BACKEND_ENV: ${{secrets.TODO_WITH_AUTH0_BACKEND_ENV}}
 
       - name: Derive appropriate SHAs for base for `turbo --affected` commands
         uses: nrwl/nx-set-shas@v4.3.0
