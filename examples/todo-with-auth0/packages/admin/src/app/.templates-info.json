@@ -1,0 +1,22 @@
+{
+  "app-apollo-provider.tsx": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "app-apollo-provider"
+  },
+  "app.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-app",
+    "instanceData": {},
+    "template": "app"
+  },
+  "auth-loaded-gate.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth0/react-auth0",
+    "instanceData": {},
+    "template": "auth-loaded-gate"
+  },
+  "router.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-router",
+    "instanceData": {},
+    "template": "router"
+  }
+}

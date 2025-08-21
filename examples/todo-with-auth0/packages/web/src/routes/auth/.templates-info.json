@@ -1,0 +1,7 @@
+{
+  "login.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-pages",
+    "instanceData": {},
+    "template": "login"
+  }
+}

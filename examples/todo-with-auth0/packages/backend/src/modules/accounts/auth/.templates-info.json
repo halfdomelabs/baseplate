@@ -1,0 +1,7 @@
+{
+  "index.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/app-module",
+    "instanceData": {},
+    "template": "index"
+  }
+}

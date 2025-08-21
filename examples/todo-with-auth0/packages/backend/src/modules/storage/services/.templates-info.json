@@ -1,0 +1,27 @@
+{
+  "create-presigned-download-url.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "services-create-presigned-download-url"
+  },
+  "create-presigned-upload-url.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "services-create-presigned-upload-url"
+  },
+  "download-file.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "services-download-file"
+  },
+  "upload-file.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "services-upload-file"
+  },
+  "validate-file-input.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "services-validate-file-input"
+  }
+}

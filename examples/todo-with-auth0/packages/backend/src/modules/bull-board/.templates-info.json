@@ -1,0 +1,7 @@
+{
+  "index.ts": {
+    "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
+    "instanceData": {},
+    "template": "index"
+  }
+}

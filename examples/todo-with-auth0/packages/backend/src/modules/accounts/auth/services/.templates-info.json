@@ -1,0 +1,12 @@
+{
+  "management.ts": {
+    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
+    "instanceData": {},
+    "template": "management"
+  },
+  "user-session.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#auth0/auth0-module",
+    "instanceData": {},
+    "template": "user-session-service"
+  }
+}

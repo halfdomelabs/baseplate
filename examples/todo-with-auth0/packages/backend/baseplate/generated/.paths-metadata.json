@@ -1,0 +1,17 @@
+[
+  { "canonicalPath": "@", "pathRootName": "package-root" },
+  { "canonicalPath": "@/src", "pathRootName": "src-root" },
+  { "canonicalPath": "@/src/modules", "pathRootName": "module-root" },
+  { "canonicalPath": "@/src/modules/graphql", "pathRootName": "module-root" },
+  { "canonicalPath": "@/src/modules/todos", "pathRootName": "module-root" },
+  { "canonicalPath": "@/src/modules/storage", "pathRootName": "module-root" },
+  { "canonicalPath": "@/src/modules/accounts", "pathRootName": "module-root" },
+  {
+    "canonicalPath": "@/src/modules/accounts/users",
+    "pathRootName": "module-root"
+  },
+  {
+    "canonicalPath": "@/src/modules/accounts/auth",
+    "pathRootName": "module-root"
+  }
+]

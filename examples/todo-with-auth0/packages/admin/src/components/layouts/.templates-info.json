@@ -1,0 +1,17 @@
+{
+  "admin-layout.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-layout",
+    "instanceData": {},
+    "template": "admin-layout"
+  },
+  "app-breadcrumbs.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-layout",
+    "instanceData": {},
+    "template": "app-breadcrumbs"
+  },
+  "app-sidebar.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-layout",
+    "instanceData": {},
+    "template": "app-sidebar"
+  }
+}

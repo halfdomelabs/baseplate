@@ -1,0 +1,17 @@
+{
+  "apollo-sentry-link.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/apollo-sentry",
+    "instanceData": {},
+    "template": "apollo-sentry-link"
+  },
+  "cache.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "cache"
+  },
+  "index.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "service"
+  }
+}

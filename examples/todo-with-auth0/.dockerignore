@@ -1,0 +1,48 @@
+# Ignore node_modules
+**/node_modules
+
+# Logs
+**/logs
+**/*.log
+
+# Ignore Turbo cache and build artifacts
+.turbo/
+
+# Ignore test and development files
+**/*.test.*
+**/__tests__/
+**/__mocks__/
+.vscode/
+**/vitest.config.ts
+**/.eslintignore
+**/.prettierignore
+**/.prettierrc
+**/*.credentials.json
+**/schema.graphql
+
+**/baseplate
+
+# Ignore Docker and CI/CD files that aren’t required in the image
+.dockerignore
+Dockerfile
+
+# Ignore local environment files
+**/*.env
+**/*.env.*
+
+# Ignore Git-related files
+.git/
+.gitignore
+
+# Ignore OS and editor files
+**/*.swp
+**/*.swo
+**/.DS_Store
+**/*.db
+**/*.bak
+**/*.tmp
+
+# Ignore outputs
+**/dist/
+**/build/
+**/.cache/

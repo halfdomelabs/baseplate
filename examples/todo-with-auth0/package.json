@@ -1,0 +1,44 @@
+{
+  "name": "todo-with-auth0",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Baseplate project",
+  "license": "UNLICENSED",
+  "author": "Kingston",
+  "scripts": {
+    "dev": "turbo run dev watch:gql",
+    "build": "turbo run build",
+    "build:affected": "turbo run build --affected",
+    "lint": "turbo run lint",
+    "lint:affected": "turbo run lint --affected",
+    "prettier:check": "turbo run prettier:check",
+    "prettier:check:affected": "turbo run prettier:check --affected",
+    "prettier:write": "turbo run prettier:write",
+    "versions:check": "check-dependency-version-consistency",
+    "versions:fix": "check-dependency-version-consistency --fix",
+    "baseplate:serve": "baseplate serve",
+    "baseplate:generate": "baseplate generate",
+    "preinstall": "npx only-allow pnpm",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:affected": "turbo run test --affected"
+  },
+  "devDependencies": {
+    "check-dependency-version-consistency": "5.0.0",
+    "prettier-plugin-packagejson": "2.5.19",
+    "prettier-plugin-tailwindcss": "0.6.14",
+    "lint-staged": "16.1.0",
+    "turbo": "2.5.0"
+  },
+  "engines": {
+    "node": "^22.18.0",
+    "pnpm": "^10.15.0"
+  },
+  "volta": {
+    "node": "22.18.0"
+  },
+  "lint-staged": {
+    "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|html|yml|yaml|json)": "prettier --write"
+  },
+  "packageManager": "pnpm@10.15.0"
+}

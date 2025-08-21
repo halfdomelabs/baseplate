@@ -1,0 +1,22 @@
+{
+  "global-types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+    "instanceData": {},
+    "template": "field-with-input-global-types"
+  },
+  "index.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+    "instanceData": {},
+    "template": "field-with-input-plugin"
+  },
+  "schema-builder.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+    "instanceData": {},
+    "template": "field-with-input-schema-builder"
+  },
+  "types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+    "instanceData": {},
+    "template": "field-with-input-types"
+  }
+}

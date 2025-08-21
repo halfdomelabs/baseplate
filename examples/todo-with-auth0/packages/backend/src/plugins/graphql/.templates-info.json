@@ -1,0 +1,27 @@
+{
+  "builder.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+    "instanceData": {},
+    "template": "builder"
+  },
+  "index.ts": {
+    "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
+    "instanceData": {},
+    "template": "graphql-plugin"
+  },
+  "strip-query-mutation-plugin.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos",
+    "instanceData": {},
+    "template": "strip-query-mutation-plugin"
+  },
+  "use-graph-logger.ts": {
+    "generator": "@baseplate-dev/fastify-generators#yoga/yoga-plugin",
+    "instanceData": {},
+    "template": "use-graph-logger"
+  },
+  "use-sentry.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-sentry",
+    "instanceData": {},
+    "template": "use-sentry"
+  }
+}

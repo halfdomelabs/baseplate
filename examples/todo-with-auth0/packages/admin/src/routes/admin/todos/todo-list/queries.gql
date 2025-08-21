@@ -1,0 +1,65 @@
+fragment TodoListUserOption on User {
+  id
+  name
+}
+
+query GetTodoListUserOptions {
+  users {
+    ...TodoListUserOption
+  }
+}
+
+fragment TodoListRow on TodoList {
+  createdAt
+  id
+  name
+  ownerId
+}
+
+query GetTodoLists {
+  todoLists {
+    ...TodoListRow
+  }
+}
+
+fragment TodoListEdit on TodoList {
+  createdAt
+  id
+  name
+  ownerId
+  position
+  status
+  coverPhoto {
+    ...FileInput
+  }
+}
+
+query TodoListEditById($id: Uuid!) {
+  todoList(id: $id) {
+    ...TodoListEdit
+  }
+}
+
+mutation CreateTodoList($input: CreateTodoListInput!) {
+  createTodoList(input: $input) {
+    todoList {
+      ...TodoListEdit
+    }
+  }
+}
+
+mutation UpdateTodoList($input: UpdateTodoListInput!) {
+  updateTodoList(input: $input) {
+    todoList {
+      ...TodoListEdit
+    }
+  }
+}
+
+mutation DeleteTodoList($input: DeleteTodoListInput!) {
+  deleteTodoList(input: $input) {
+    todoList {
+      id
+    }
+  }
+}

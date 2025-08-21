@@ -1,0 +1,12 @@
+{
+  "adapter.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "types-adapter"
+  },
+  "file-category.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "types-file-category"
+  }
+}
