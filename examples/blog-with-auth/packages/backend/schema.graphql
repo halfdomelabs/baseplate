@@ -1,0 +1,174 @@
+enum AuthRole {
+  """Administrator role"""
+  admin
+
+  """All users (including unauthenticated and authenticated users)"""
+  public
+
+  """System processes without a user context, e.g. background jobs"""
+  system
+
+  """All authenticated users"""
+  user
+}
+
+type Blog {
+  id: ID!
+  name: String!
+  userId: Uuid!
+}
+
+"""Input type for changePassword mutation"""
+input ChangePasswordInput {
+  currentPassword: String!
+  newPassword: String!
+}
+
+"""Payload type for changePassword mutation"""
+type ChangePasswordPayload {
+  user: User!
+}
+
+"""Input type for createUser mutation"""
+input CreateUserInput {
+  data: UserCreateData!
+}
+
+"""Payload type for createUser mutation"""
+type CreateUserPayload {
+  user: User!
+}
+
+"""Date custom scalar type"""
+scalar Date
+
+"""Scalar with date and time information"""
+scalar DateTime
+
+"""Input type for deleteUser mutation"""
+input DeleteUserInput {
+  id: Uuid!
+}
+
+"""Payload type for deleteUser mutation"""
+type DeleteUserPayload {
+  user: User!
+}
+
+"""Payload type for logOut mutation"""
+type LogOutPayload {
+  """Whether the logout was successful."""
+  success: Boolean!
+}
+
+"""Input type for loginWithEmailPassword mutation"""
+input LoginWithEmailPasswordInput {
+  email: String!
+  password: String!
+}
+
+"""Payload type for loginWithEmailPassword mutation"""
+type LoginWithEmailPasswordPayload {
+  session: UserSessionPayload!
+}
+
+type Mutation {
+  changePassword(input: ChangePasswordInput!): ChangePasswordPayload!
+  createUser(input: CreateUserInput!): CreateUserPayload!
+  deleteUser(input: DeleteUserInput!): DeleteUserPayload!
+  logOut: LogOutPayload!
+  loginWithEmailPassword(input: LoginWithEmailPasswordInput!): LoginWithEmailPasswordPayload!
+  registerWithEmailPassword(input: RegisterWithEmailPasswordInput!): RegisterWithEmailPasswordPayload!
+  resetUserPassword(input: ResetUserPasswordInput!): ResetUserPasswordPayload!
+  updateUser(input: UpdateUserInput!): UpdateUserPayload!
+  updateUserRoles(input: UpdateUserRolesInput!): UpdateUserRolesPayload!
+}
+
+type Query {
+  blog(id: Uuid!): Blog!
+  blogs: [Blog!]!
+
+  """Get the current user session"""
+  currentUserSession: UserSessionPayload
+  user(id: Uuid!): User!
+  users: [User!]!
+}
+
+"""Input type for registerWithEmailPassword mutation"""
+input RegisterWithEmailPasswordInput {
+  email: String!
+  password: String!
+}
+
+"""Payload type for registerWithEmailPassword mutation"""
+type RegisterWithEmailPasswordPayload {
+  session: UserSessionPayload!
+}
+
+"""Input type for resetUserPassword mutation"""
+input ResetUserPasswordInput {
+  newPassword: String!
+  userId: Uuid!
+}
+
+"""Payload type for resetUserPassword mutation"""
+type ResetUserPasswordPayload {
+  user: User!
+}
+
+"""Input type for updateUser mutation"""
+input UpdateUserInput {
+  data: UserUpdateData!
+  id: Uuid!
+}
+
+"""Payload type for updateUser mutation"""
+type UpdateUserPayload {
+  user: User!
+}
+
+"""Input type for updateUserRoles mutation"""
+input UpdateUserRolesInput {
+  roles: [String!]!
+  userId: Uuid!
+}
+
+"""Payload type for updateUserRoles mutation"""
+type UpdateUserRolesPayload {
+  user: User!
+}
+
+type User {
+  email: String
+  emailVerified: Boolean!
+  id: ID!
+  name: String
+  roles: [UserRole!]!
+}
+
+input UserCreateData {
+  email: String
+  emailVerified: Boolean
+  name: String
+}
+
+type UserRole {
+  role: String!
+  userId: Uuid!
+}
+
+type UserSessionPayload {
+  expiresAt: DateTime
+  roles: [AuthRole!]!
+  user: User!
+  userId: Uuid!
+}
+
+input UserUpdateData {
+  email: String
+  emailVerified: Boolean
+  name: String
+}
+
+"""Scalar representing a UUID"""
+scalar Uuid

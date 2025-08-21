@@ -1,0 +1,22 @@
+{
+  "auth-context.utils.ts": {
+    "generator": "@baseplate-dev/fastify-generators#auth/auth-context",
+    "instanceData": {},
+    "template": "auth-context-utils"
+  },
+  "cookie-signer.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "cookie-signer"
+  },
+  "session-cookie.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "session-cookie"
+  },
+  "verify-request-origin.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "verify-request-origin"
+  }
+}

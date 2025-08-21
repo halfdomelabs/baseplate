@@ -1,0 +1,52 @@
+{
+  "axios.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/axios",
+    "instanceData": {},
+    "template": "axios"
+  },
+  "config.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/config-service",
+    "instanceData": {},
+    "template": "config"
+  },
+  "error-logger.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
+    "instanceData": {},
+    "template": "error-logger"
+  },
+  "logger.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/logger-service",
+    "instanceData": {},
+    "template": "logger"
+  },
+  "postmark.ts": {
+    "generator": "@baseplate-dev/fastify-generators#email/fastify-postmark",
+    "instanceData": {},
+    "template": "postmark"
+  },
+  "prisma.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
+    "instanceData": {},
+    "template": "service"
+  },
+  "redis.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-redis",
+    "instanceData": {},
+    "template": "redis"
+  },
+  "sentry.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
+    "instanceData": {},
+    "template": "sentry"
+  },
+  "stripe-events.ts": {
+    "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+    "instanceData": {},
+    "template": "service-events"
+  },
+  "stripe.ts": {
+    "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+    "instanceData": {},
+    "template": "service"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "apollo-error.ts": {
+    "generator": "@baseplate-dev/react-generators#apollo/apollo-error",
+    "instanceData": {},
+    "template": "apollo-error"
+  },
+  "auth-errors.ts": {
+    "generator": "@baseplate-dev/react-generators#auth/auth-errors",
+    "instanceData": {},
+    "template": "auth-errors"
+  },
+  "cn.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "cn"
+  },
+  "merge-refs.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "merge-refs"
+  }
+}

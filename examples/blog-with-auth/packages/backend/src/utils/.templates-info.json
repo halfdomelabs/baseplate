@@ -1,0 +1,47 @@
+{
+  "app-modules.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/app-module-setup",
+    "instanceData": {},
+    "template": "app-modules"
+  },
+  "crud-service-types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
+    "instanceData": {},
+    "template": "crud-service-types"
+  },
+  "http-errors.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
+    "instanceData": {},
+    "template": "http-errors"
+  },
+  "normalize-types.ts": {
+    "generator": "@baseplate-dev/core-generators#node/ts-utils",
+    "instanceData": {},
+    "template": "normalize-types"
+  },
+  "nulls.ts": {
+    "generator": "@baseplate-dev/core-generators#node/ts-utils",
+    "instanceData": {},
+    "template": "nulls"
+  },
+  "request-service-context.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/request-service-context",
+    "instanceData": {},
+    "template": "request-service-context"
+  },
+  "service-context.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/service-context",
+    "instanceData": {},
+    "template": "service-context"
+  },
+  "string.ts": {
+    "generator": "@baseplate-dev/core-generators#node/ts-utils",
+    "instanceData": {},
+    "template": "string"
+  },
+  "zod.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
+    "instanceData": {},
+    "template": "zod"
+  }
+}

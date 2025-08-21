@@ -1,0 +1,7 @@
+{
+  "queue.types.ts": {
+    "generator": "@baseplate-dev/plugin-queue#queue/core/queues",
+    "instanceData": {},
+    "template": "queue-types"
+  }
+}

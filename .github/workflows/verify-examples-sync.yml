@@ -1,0 +1,116 @@
+name: Verify Examples Sync
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'examples/**'
+      - 'packages/**'
+      - 'plugins/**'
+  push:
+    branches: [main]
+    paths:
+      - 'examples/**'
+      - 'packages/**'
+      - 'plugins/**'
+
+jobs:
+  discover:
+    name: Discover Examples
+    runs-on: ubuntu-latest
+    outputs:
+      examples: ${{ steps.list-examples.outputs.examples }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: List example directories
+        id: list-examples
+        run: |
+          # List directories in examples folder and format as JSON array
+          cd examples
+          directories=($(find . -maxdepth 1 -type d -not -name "." | sed 's|./||' | sort))
+
+          # Create JSON array
+          json_array=()
+          for dir in "${directories[@]}"; do
+            json_array+=("\"$dir\"")
+          done
+
+          # Join array elements with commas
+          json_elements=$(IFS=,; echo "${json_array[*]}")
+          json_output="[${json_elements}]"
+
+          echo "Found examples: $json_output"
+          echo "examples=$json_output" >> "$GITHUB_OUTPUT"
+
+  verify-sync:
+    name: Verify Sync
+    runs-on: ubuntu-latest
+    needs: discover
+    strategy:
+      matrix:
+        example: ${{ fromJSON(needs.discover.outputs.examples) }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
+          fetch-depth: 0
+
+      - name: Derive appropriate SHAs for base for `turbo --affected` commands
+        uses: nrwl/nx-set-shas@v4.3.0
+
+      - name: Set environment variable for Turborepo
+        run: echo "TURBO_SCM_BASE=$NX_BASE" >> $GITHUB_ENV
+
+      - name: Cache turbo build setup
+        uses: rharkor/caching-for-turbo@a1c4079258ae08389be75b57d4d7a70f23c1c66d # 1.8
+        with:
+          cache-prefix: verify-sync-${{ matrix.example }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build affected packages
+        run: pnpm build --filter=@baseplate-dev/project-builder-cli
+
+      - name: Run sync diff for example
+        run: |
+          echo "Verifying that example '${{ matrix.example }}' has no uncommitted generated code differences..."
+
+          # Set environment variables for project discovery
+          export INCLUDE_EXAMPLES=true
+
+          # Run diff command using project name
+          cd packages/project-builder-cli
+
+          # Use the built CLI to check for differences
+          pnpm start diff ${{ matrix.example }} --compact
+
+          if [ $? -eq 0 ]; then
+            echo "✅ Example '${{ matrix.example }}' is in sync with generators"
+          else
+            echo "❌ Example '${{ matrix.example }}' has differences between generated and committed code"
+            echo ""
+            echo "This means the example project is not in sync with the latest generator code."
+            echo "Please run 'pnpm start diff ${{ matrix.example }}' locally to see the differences"
+            echo "and either:"
+            echo "  1. Update the generators to match the current code, or"
+            echo "  2. Regenerate the example code with 'baseplate start sync ${{ matrix.example }}'"
+            exit 1
+          fi

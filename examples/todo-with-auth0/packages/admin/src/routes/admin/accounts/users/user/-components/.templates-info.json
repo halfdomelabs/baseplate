@@ -1,0 +1,22 @@
+{
+  "embedded-customer-form.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-embedded-form",
+    "instanceData": {},
+    "template": "embedded-form"
+  },
+  "embedded-roles-form.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-embedded-form",
+    "instanceData": {},
+    "template": "embedded-form"
+  },
+  "user-edit-form.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
+    "instanceData": {},
+    "template": "edit-form"
+  },
+  "user-table.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-list",
+    "instanceData": {},
+    "template": "table"
+  }
+}

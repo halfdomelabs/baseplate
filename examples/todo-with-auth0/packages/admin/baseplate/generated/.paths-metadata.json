@@ -1,0 +1,39 @@
+[
+  { "canonicalPath": "@/src/routes", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/routes/auth", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/routes/admin", "pathRootName": "routes-root" },
+  {
+    "canonicalPath": "@/src/routes/admin/todos",
+    "pathRootName": "routes-root"
+  },
+  {
+    "canonicalPath": "@/src/routes/admin/todos/todo-list",
+    "pathRootName": "routes-root"
+  },
+  {
+    "canonicalPath": "@/src/routes/admin/accounts",
+    "pathRootName": "routes-root"
+  },
+  {
+    "canonicalPath": "@/src/routes/admin/accounts/users",
+    "pathRootName": "routes-root"
+  },
+  {
+    "canonicalPath": "@/src/routes/admin/accounts/users/user",
+    "pathRootName": "routes-root"
+  },
+  { "canonicalPath": "@/src/routes/todos", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/routes/storage", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/routes/accounts", "pathRootName": "routes-root" },
+  {
+    "canonicalPath": "@/src/routes/accounts/users",
+    "pathRootName": "routes-root"
+  },
+  {
+    "canonicalPath": "@/src/routes/accounts/auth",
+    "pathRootName": "routes-root"
+  },
+  { "canonicalPath": "@/src/components", "pathRootName": "components-root" },
+  { "canonicalPath": "@", "pathRootName": "package-root" },
+  { "canonicalPath": "@/src", "pathRootName": "src-root" }
+]

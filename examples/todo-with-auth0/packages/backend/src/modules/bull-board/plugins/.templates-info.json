@@ -1,0 +1,7 @@
+{
+  "bull-board.ts": {
+    "generator": "@baseplate-dev/fastify-generators#bull/fastify-bull-board",
+    "instanceData": {},
+    "template": "plugins-bull-board"
+  }
+}

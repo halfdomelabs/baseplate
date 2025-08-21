@@ -15,12 +15,42 @@ on:
       - 'examples/**'
 
 jobs:
+  discover:
+    name: Discover Examples
+    runs-on: ubuntu-latest
+    outputs:
+      examples: ${{ steps.list-examples.outputs.examples }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: List example directories
+        id: list-examples
+        run: |
+          # List directories in examples folder and format as JSON array
+          cd examples
+          directories=($(find . -maxdepth 1 -type d -not -name "." | sed 's|./||' | sort))
+
+          # Create JSON array
+          json_array=()
+          for dir in "${directories[@]}"; do
+            json_array+=("\"$dir\"")
+          done
+
+          # Join array elements with commas
+          json_elements=$(IFS=,; echo "${json_array[*]}")
+          json_output="[${json_elements}]"
+
+          echo "Found examples: $json_output"
+          echo "examples=$json_output" >> "$GITHUB_OUTPUT"
+
   lint:
     name: Lint Examples
     runs-on: ubuntu-latest
+    needs: discover
     strategy:
       matrix:
-        example: ['blog-with-auth']
+        example: ${{ fromJSON(needs.discover.outputs.examples) }}
 
     steps:
       - name: Checkout Repo
@@ -28,6 +58,13 @@ jobs:
         with:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
+      - name: Copy backend/.env secrets
+        run: |
+          echo "$BLOG_WITH_AUTH_BACKEND_ENV" > ./examples/blog-with-auth/packages/backend/.env
+          echo "$TODO_WITH_AUTH0_BACKEND_ENV" > ./examples/todo-with-auth0/packages/backend/.env
+        env:
+          BLOG_WITH_AUTH_BACKEND_ENV: ${{secrets.BLOG_WITH_AUTH_BACKEND_ENV}}
+          TODO_WITH_AUTH0_BACKEND_ENV: ${{secrets.TODO_WITH_AUTH0_BACKEND_ENV}}
 
       - name: Derive appropriate SHAs for base for `turbo --affected` commands
         uses: nrwl/nx-set-shas@v4.3.0
@@ -56,12 +93,20 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: examples/${{ matrix.example }}
 
-      - name: Run lint
-        run: pnpm lint
-        working-directory: examples/${{ matrix.example }}
+      - name: Run Docker setup
+        run: docker compose up -d
+        working-directory: examples/${{ matrix.example }}/packages/backend/docker
 
       - name: Run prettier check
         run: pnpm prettier:check
+        working-directory: examples/${{ matrix.example }}
+
+      - name: Run build
+        run: pnpm build
+        working-directory: examples/${{ matrix.example }}
+
+      - name: Run lint
+        run: pnpm lint
         working-directory: examples/${{ matrix.example }}
 
       - name: Run typecheck

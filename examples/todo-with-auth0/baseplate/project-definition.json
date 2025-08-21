@@ -1,0 +1,1571 @@
+{
+  "apps": [
+    {
+      "adminApp": {
+        "allowedRoles": ["admin"],
+        "enabled": true,
+        "pathPrefix": "/admin",
+        "sections": [
+          {
+            "disableCreate": false,
+            "embeddedForms": [],
+            "featureRef": "todos",
+            "form": {
+              "fields": [
+                {
+                  "label": "Full Name",
+                  "modelFieldRef": "name",
+                  "type": "text",
+                  "validation": "z.string().min(1)"
+                },
+                {
+                  "defaultLabel": "option.id",
+                  "label": "Owner",
+                  "labelExpression": "name",
+                  "localRelationRef": "owner",
+                  "type": "foreign",
+                  "valueExpression": "id"
+                },
+                {
+                  "label": "Status",
+                  "modelFieldRef": "status",
+                  "type": "enum"
+                },
+                {
+                  "label": "Cover Photo",
+                  "modelRelationRef": "coverPhoto",
+                  "type": "file"
+                },
+                {
+                  "label": "Created At",
+                  "modelFieldRef": "createdAt",
+                  "type": "text",
+                  "validation": ""
+                },
+                {
+                  "label": "Position",
+                  "modelFieldRef": "position",
+                  "type": "text",
+                  "validation": ""
+                }
+              ]
+            },
+            "icon": "BsCardChecklist",
+            "id": "admin-section:5zyomPGTfpla",
+            "modelRef": "TodoList",
+            "name": "TodoList",
+            "nameFieldRef": "name",
+            "table": {
+              "columns": [
+                {
+                  "label": "Owner ID",
+                  "modelFieldRef": "ownerId",
+                  "type": "text"
+                },
+                { "label": "Name", "modelFieldRef": "name", "type": "text" },
+                {
+                  "label": "Created At",
+                  "modelFieldRef": "createdAt",
+                  "type": "text"
+                }
+              ]
+            },
+            "type": "crud"
+          },
+          {
+            "disableCreate": true,
+            "embeddedForms": [
+              {
+                "form": {
+                  "fields": [
+                    {
+                      "label": "Stripe Customer ID",
+                      "modelFieldRef": "stripeCustomerId",
+                      "type": "text",
+                      "validation": ""
+                    }
+                  ]
+                },
+                "id": "admin-crud-embedded-form:3CvZP5ndTqvj",
+                "includeIdField": false,
+                "modelRef": "Customer",
+                "name": "customer",
+                "type": "object"
+              },
+              {
+                "form": {
+                  "fields": [
+                    {
+                      "label": "Role",
+                      "modelFieldRef": "role",
+                      "type": "text",
+                      "validation": ""
+                    }
+                  ]
+                },
+                "id": "admin-crud-embedded-form:UtuGJ_24FFu7",
+                "modelRef": "UserRole",
+                "name": "roles",
+                "table": {
+                  "columns": [
+                    { "label": "Role", "modelFieldRef": "role", "type": "text" }
+                  ]
+                },
+                "type": "list"
+              }
+            ],
+            "featureRef": "accounts/users",
+            "form": {
+              "fields": [
+                {
+                  "label": "Name",
+                  "modelFieldRef": "name",
+                  "type": "text",
+                  "validation": "z.string().nullish()"
+                },
+                {
+                  "label": "Email",
+                  "modelFieldRef": "email",
+                  "type": "text",
+                  "validation": "z.string().email().min(1)"
+                },
+                {
+                  "embeddedFormRef": "customer",
+                  "label": "Customer",
+                  "modelRelationRef": "customer",
+                  "type": "embedded"
+                },
+                {
+                  "embeddedFormRef": "roles",
+                  "label": "Roles",
+                  "modelRelationRef": "roles",
+                  "type": "embedded"
+                },
+                { "label": "Password", "type": "password" }
+              ]
+            },
+            "icon": "FaUserAlt",
+            "id": "admin-section:fNRQifZdC2LF",
+            "modelRef": "User",
+            "name": "User",
+            "nameFieldRef": "name",
+            "table": {
+              "columns": [
+                { "label": "Name", "modelFieldRef": "name", "type": "text" },
+                { "label": "Email", "modelFieldRef": "email", "type": "text" }
+              ]
+            },
+            "type": "crud"
+          }
+        ]
+      },
+      "description": "admin",
+      "id": "app:NmEolDU3Iggt",
+      "name": "admin",
+      "packageLocation": "packages/admin",
+      "title": "Admin Page",
+      "type": "web"
+    },
+    {
+      "enableAxios": true,
+      "enableBullQueue": true,
+      "enablePostmark": true,
+      "enableRedis": true,
+      "enableStripe": true,
+      "enableSubscriptions": false,
+      "id": "app:OHiu1F64bPmB",
+      "name": "backend",
+      "packageLocation": "packages/backend",
+      "type": "backend"
+    },
+    {
+      "adminApp": { "enabled": false, "pathPrefix": "/admin" },
+      "description": "An app for cool todoers",
+      "id": "app:yYeMVhgQG01I",
+      "includeAuth": true,
+      "name": "web",
+      "packageLocation": "packages/web",
+      "title": "Todoer App",
+      "type": "web"
+    }
+  ],
+  "cliVersion": "0.2.5",
+  "enums": [
+    {
+      "featureRef": "todos",
+      "id": "model-enum:4I1OfJa0epEZ",
+      "isExposed": true,
+      "name": "TodoListStatus",
+      "values": [
+        {
+          "friendlyName": "Active",
+          "id": "model-enum-value:8SQqTpDLRomR",
+          "name": "ACTIVE"
+        },
+        {
+          "friendlyName": "Inactive",
+          "id": "model-enum-value:NZ9grJBhJVfe",
+          "name": "INACTIVE"
+        }
+      ]
+    }
+  ],
+  "features": [
+    { "id": "feature:oULnLSaFWNwh", "name": "accounts" },
+    {
+      "id": "feature:NAlTJq_VdqWk",
+      "name": "accounts/auth",
+      "parentRef": "accounts"
+    },
+    {
+      "id": "feature:uLSMKuAlLWix",
+      "name": "accounts/users",
+      "parentRef": "accounts"
+    },
+    { "id": "feature:d2gEAaWMHAeL", "name": "storage" },
+    { "id": "feature:5yQn3gjSzKEB", "name": "todos" }
+  ],
+  "isInitialized": true,
+  "models": [
+    {
+      "featureRef": "accounts/users",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": ["stripeCustomerId", "id"],
+          "localRelations": ["user"]
+        }
+      },
+      "id": "model:1sOpF6IeE-5r",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:MukxVk8M3L7K",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:g0J7IEJUy1nB",
+            "isOptional": false,
+            "name": "stripeCustomerId",
+            "options": { "default": "" },
+            "type": "string"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:aI77dcz0lMEm",
+            "foreignRelationName": "customer",
+            "id": "model-local-relation:U5ibrPzAbbTb",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "id" }]
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "Customer",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "storage",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            "id",
+            "category",
+            "updatedAt",
+            "createdAt",
+            "mimeType",
+            "filename"
+          ],
+          "localRelations": ["uploader"]
+        },
+        "queries": {
+          "get": { "enabled": true, "roles": ["user", "admin"] },
+          "list": { "enabled": true, "roles": ["user", "admin"] }
+        }
+      },
+      "id": "model:PHb7KKbHSHva",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:e3Hy-g24hMzN",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:TY3btnBWHEsD",
+            "isOptional": false,
+            "name": "filename",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:kP7xXcrblj0K",
+            "isOptional": false,
+            "name": "mimeType",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:lVDgJ2dTRO8N",
+            "isOptional": true,
+            "name": "encoding",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:FrVBptcXqSjZ",
+            "isOptional": false,
+            "name": "size",
+            "options": { "default": "" },
+            "type": "int"
+          },
+          {
+            "id": "model-scalar-field:BZxar0z7M05D",
+            "isOptional": false,
+            "name": "category",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:koEUGjw2_e2u",
+            "isOptional": false,
+            "name": "adapter",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:DzW2L9NHEVKI",
+            "isOptional": false,
+            "name": "storagePath",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:0zurWIYRT21d",
+            "isOptional": true,
+            "name": "referencedAt",
+            "options": { "default": "" },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:GV9yHW82wdmp",
+            "isOptional": true,
+            "name": "expiredAt",
+            "options": { "default": "" },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:3ma5keqv7qYQ",
+            "isOptional": true,
+            "name": "uploaderId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:LzZ9J_n3_JTO",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:lpS5K__i_FfX",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:zsUSoeQ0Efz6",
+            "foreignRelationName": "files",
+            "id": "model-local-relation:yCV4Nw0uAf8p",
+            "modelRef": "User",
+            "name": "uploader",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "uploaderId" }]
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "File",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "todos",
+      "graphql": {
+        "mutations": {
+          "create": { "enabled": true, "roles": ["user"] },
+          "delete": { "enabled": true, "roles": ["user"] },
+          "update": { "enabled": true, "roles": ["user"] }
+        },
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            "id",
+            "todoListId",
+            "position",
+            "text",
+            "done",
+            "updatedAt",
+            "createdAt"
+          ],
+          "foreignRelations": ["attachments"],
+          "localRelations": ["todoList"]
+        },
+        "queries": {
+          "get": { "enabled": true, "roles": ["user"] },
+          "list": { "enabled": true, "roles": ["user"] }
+        }
+      },
+      "id": "model:TJOmePJ61kzF",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:4xWPoMcSMuRn",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:um_I5IonEAyH",
+            "isOptional": false,
+            "name": "todoListId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:pfV3SSBP54Yj",
+            "isOptional": false,
+            "name": "position",
+            "options": { "default": "" },
+            "type": "int"
+          },
+          {
+            "id": "model-scalar-field:2U5uVBPmVTuz",
+            "isOptional": false,
+            "name": "text",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:tNDfs0lDak4T",
+            "isOptional": false,
+            "name": "done",
+            "options": { "default": "" },
+            "type": "boolean"
+          },
+          {
+            "id": "model-scalar-field:3jH4AtQDjHSW",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:IODaTmY6ArZ9",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:cq7L3WkPSg4V",
+            "isOptional": true,
+            "name": "assigneeId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:Nyzl6kpRXO_j",
+            "foreignRelationName": "todoItems",
+            "id": "model-local-relation:vfRtoyzYM6q9",
+            "modelRef": "TodoList",
+            "name": "todoList",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "todoListId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:Vc01UrANX4fQ",
+            "foreignRelationName": "assignedItems",
+            "id": "model-local-relation:vzdanIWeGPNT",
+            "modelRef": "User",
+            "name": "assignee",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "assigneeId" }]
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "TodoItem",
+      "service": {
+        "create": {
+          "enabled": true,
+          "fields": ["todoListId", "position", "text", "done", "assigneeId"],
+          "transformerNames": ["attachments"]
+        },
+        "delete": { "enabled": true },
+        "transformers": [
+          {
+            "embeddedFieldNames": ["position", "url", "id"],
+            "embeddedTransformerNames": ["tags"],
+            "foreignRelationRef": "attachments",
+            "id": "model-transformer:Mtnj8pArKxUi",
+            "modelRef": "TodoItemAttachment",
+            "type": "embeddedRelation"
+          }
+        ],
+        "update": {
+          "enabled": true,
+          "fields": ["position", "text", "done", "assigneeId", "todoListId"],
+          "transformerNames": ["attachments"]
+        }
+      }
+    },
+    {
+      "featureRef": "todos",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            "id",
+            "todoItemId",
+            "position",
+            "url",
+            "updatedAt",
+            "createdAt"
+          ],
+          "foreignRelations": ["tags"],
+          "localRelations": ["todoItem"]
+        }
+      },
+      "id": "model:x2Fv9AGfXo3h",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:iMi94WosiiQH",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:pbp68yz8eZau",
+            "isOptional": false,
+            "name": "todoItemId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:pQJNWGcAWIYH",
+            "isOptional": false,
+            "name": "position",
+            "options": { "default": "" },
+            "type": "int"
+          },
+          {
+            "id": "model-scalar-field:ZcmokJ0_pqT3",
+            "isOptional": false,
+            "name": "url",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:_OAxQ3JQUPaJ",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:8UpAxHEMH0zq",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:9QatXak99Ke8",
+            "foreignRelationName": "attachments",
+            "id": "model-local-relation:aTU0ae8vyUkS",
+            "modelRef": "TodoItem",
+            "name": "todoItem",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "todoItemId" }]
+          }
+        ]
+      },
+      "name": "TodoItemAttachment",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [
+          {
+            "embeddedFieldNames": ["tag"],
+            "foreignRelationRef": "tags",
+            "id": "model-transformer:_dqWIm8tRhcj",
+            "modelRef": "TodoItemAttachmentTag",
+            "type": "embeddedRelation"
+          }
+        ],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "todos",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": ["todoItemAttachmentId", "tag"],
+          "localRelations": ["todoItemAttachment"]
+        }
+      },
+      "id": "model:Z8tn1IzZwHPj",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:mAiiTqTcpWTk",
+            "isOptional": false,
+            "name": "todoItemAttachmentId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:GFUQr6gjhcWP",
+            "isOptional": false,
+            "name": "tag",
+            "options": { "default": "" },
+            "type": "string"
+          }
+        ],
+        "primaryKeyFieldRefs": ["todoItemAttachmentId", "tag"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:JT7Ur9auz2Lg",
+            "foreignRelationName": "tags",
+            "id": "model-local-relation:5prQ9u3yEofJ",
+            "modelRef": "TodoItemAttachment",
+            "name": "todoItemAttachment",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [
+              { "foreignRef": "id", "localRef": "todoItemAttachmentId" }
+            ]
+          }
+        ]
+      },
+      "name": "TodoItemAttachmentTag",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "todos",
+      "graphql": {
+        "mutations": {
+          "create": { "enabled": true, "roles": ["user"] },
+          "delete": { "enabled": true, "roles": ["user"] },
+          "update": { "enabled": true, "roles": ["user"] }
+        },
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            "id",
+            "ownerId",
+            "position",
+            "name",
+            "updatedAt",
+            "createdAt",
+            "status"
+          ],
+          "localRelations": ["owner", "coverPhoto"]
+        },
+        "queries": {
+          "get": { "enabled": true, "roles": ["user"] },
+          "list": { "enabled": true, "roles": ["user"] }
+        }
+      },
+      "id": "model:ONd_Fbo61Tx7",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:C-79Hf4LZI5-",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:GNBj_9ieyOFc",
+            "isOptional": false,
+            "name": "ownerId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:yXRS8PY6c2pK",
+            "isOptional": false,
+            "name": "position",
+            "options": { "default": "" },
+            "type": "int"
+          },
+          {
+            "id": "model-scalar-field:F2Mb9A4wxB7p",
+            "isOptional": false,
+            "name": "name",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:csmaHD2RPRaW",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:VFUjdkUanVAS",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:RcO4g1UYpCiw",
+            "isOptional": true,
+            "name": "status",
+            "options": {
+              "default": "",
+              "defaultEnumValueRef": "ACTIVE",
+              "enumRef": "TodoListStatus"
+            },
+            "type": "enum"
+          },
+          {
+            "id": "model-scalar-field:e7sP7kRUF1GT",
+            "isOptional": true,
+            "name": "coverPhotoId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:dEx6Mm5rmu5G",
+            "foreignRelationName": "todoLists",
+            "id": "model-local-relation:sB3IEISIkip_",
+            "modelRef": "User",
+            "name": "owner",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "ownerId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:5prpaVZClAq5",
+            "foreignRelationName": "todoListCoverPhoto",
+            "id": "model-local-relation:c9fBgkHlQ3Uz",
+            "modelRef": "File",
+            "name": "coverPhoto",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "coverPhotoId" }]
+          }
+        ],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "ownerId" }, { "fieldRef": "name" }],
+            "id": "model-unique-constraint:qLIULy2VW7Ki"
+          }
+        ]
+      },
+      "name": "TodoList",
+      "service": {
+        "create": {
+          "enabled": true,
+          "fields": ["position", "name", "ownerId", "status", "createdAt"],
+          "transformerNames": ["coverPhoto"]
+        },
+        "delete": { "enabled": true },
+        "transformers": [
+          {
+            "category": {
+              "adapterRef": "uploads",
+              "authorize": { "uploadRoles": ["user"] },
+              "maxFileSizeMb": 10,
+              "name": "TODO_LIST_COVER_PHOTO"
+            },
+            "fileRelationRef": "coverPhoto",
+            "id": "model-transformer:Kv0etvmd0wuR",
+            "type": "file"
+          }
+        ],
+        "update": {
+          "enabled": true,
+          "fields": ["position", "name", "ownerId", "status", "createdAt"],
+          "transformerNames": ["coverPhoto"]
+        }
+      }
+    },
+    {
+      "featureRef": "todos",
+      "graphql": {
+        "mutations": {
+          "create": { "enabled": true, "roles": ["user"] },
+          "delete": { "enabled": true, "roles": ["user"] },
+          "update": { "enabled": true, "roles": ["user"] }
+        },
+        "objectType": {
+          "enabled": true,
+          "fields": ["todoListId", "userId", "createdAt", "updatedAt"],
+          "localRelations": ["todoList", "user"]
+        },
+        "queries": {
+          "get": { "enabled": true, "roles": ["user"] },
+          "list": { "enabled": true, "roles": ["user"] }
+        }
+      },
+      "id": "model:nmsOHh3rZMmE",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:YWYJp8Oqc0Mm",
+            "isOptional": false,
+            "name": "todoListId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:6p27da_jaUp5",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:ggaHhb6o9uoP",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:BHLcoCM4ZnYz",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["todoListId", "userId"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:GVLBmqif_Pe9",
+            "foreignRelationName": "todoListShares",
+            "id": "model-local-relation:aGBJMLYL9FKM",
+            "modelRef": "TodoList",
+            "name": "todoList",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "todoListId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:LWZWyV6ql4j3",
+            "foreignRelationName": "todoListShares",
+            "id": "model-local-relation:Vgb8yzYjskve",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "TodoListShare",
+      "service": {
+        "create": {
+          "enabled": true,
+          "fields": ["todoListId", "userId", "updatedAt", "createdAt"],
+          "transformerNames": []
+        },
+        "delete": { "enabled": true },
+        "transformers": [],
+        "update": {
+          "enabled": true,
+          "fields": ["todoListId", "userId", "updatedAt", "createdAt"],
+          "transformerNames": []
+        }
+      }
+    },
+    {
+      "featureRef": "accounts/users",
+      "graphql": {
+        "mutations": {
+          "create": { "enabled": true, "roles": ["admin"] },
+          "delete": { "enabled": true, "roles": ["admin"] },
+          "update": { "enabled": true, "roles": ["admin"] }
+        },
+        "objectType": {
+          "enabled": true,
+          "fields": ["id", "name", "email", "updatedAt", "createdAt"],
+          "foreignRelations": ["roles", "todoLists", "userProfile", "customer"]
+        },
+        "queries": {
+          "get": { "enabled": true, "roles": ["user"] },
+          "list": { "enabled": true, "roles": ["user"] }
+        }
+      },
+      "id": "model:q_whzReugGol",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:qH3SeqMJqoMB",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:v7EXcZWLq4B_",
+            "isOptional": true,
+            "name": "name",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:rOz25DQvjLe0",
+            "isOptional": false,
+            "name": "email",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:0Q9XyNQ-s404",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:KLhZ8CtXE0ek",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:QSC8rlLAMcXq",
+            "isOptional": true,
+            "name": "tokensNotBefore",
+            "options": { "default": "" },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:7IUb_DmKmQNw",
+            "isOptional": true,
+            "name": "passwordHash",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:FUwIsTeqFAVu",
+            "isOptional": true,
+            "name": "auth0Id",
+            "options": { "default": "" },
+            "type": "string"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "auth0Id" }],
+            "id": "model-unique-constraint:hhE3EkJUGT3Y"
+          }
+        ]
+      },
+      "name": "User",
+      "service": {
+        "create": {
+          "enabled": true,
+          "fields": ["name", "email"],
+          "transformerNames": ["roles", "customer", "userProfile", "images"]
+        },
+        "delete": { "enabled": true },
+        "transformers": [
+          {
+            "embeddedFieldNames": ["role"],
+            "foreignRelationRef": "roles",
+            "id": "model-transformer:RyrON6XkHBhF",
+            "modelRef": "UserRole",
+            "type": "embeddedRelation"
+          },
+          {
+            "embeddedFieldNames": ["stripeCustomerId"],
+            "foreignRelationRef": "customer",
+            "id": "model-transformer:oysUVIW3QbY2",
+            "modelRef": "Customer",
+            "type": "embeddedRelation"
+          },
+          {
+            "embeddedFieldNames": ["id", "bio", "birthDay"],
+            "embeddedTransformerNames": ["avatar"],
+            "foreignRelationRef": "userProfile",
+            "id": "model-transformer:Ll9gvoax1ly4",
+            "modelRef": "UserProfile",
+            "type": "embeddedRelation"
+          },
+          {
+            "embeddedFieldNames": ["id", "caption"],
+            "embeddedTransformerNames": ["file"],
+            "foreignRelationRef": "images",
+            "id": "model-transformer:WOmEwc6e0ygN",
+            "modelRef": "UserImage",
+            "type": "embeddedRelation"
+          }
+        ],
+        "update": {
+          "enabled": true,
+          "fields": ["name", "email"],
+          "transformerNames": ["roles", "customer", "userProfile", "images"]
+        }
+      }
+    },
+    {
+      "featureRef": "accounts/users",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": ["id", "userId", "fileId"],
+          "localRelations": ["file"]
+        }
+      },
+      "id": "model:VBQ_nqxAJc7X",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:5Dgu6vVGYWl4",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:U2_vbz2coSuE",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:vyEmASkz_ZtS",
+            "isOptional": false,
+            "name": "fileId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:V2jUWUwG96YA",
+            "isOptional": false,
+            "name": "caption",
+            "options": { "default": "" },
+            "type": "string"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:19m5wAfjoVyr",
+            "foreignRelationName": "userImages",
+            "id": "model-local-relation:ksebeMwoEAQW",
+            "modelRef": "File",
+            "name": "file",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "fileId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:tRDnvE9NJBG9",
+            "foreignRelationName": "images",
+            "id": "model-local-relation:n4K5iKUKcqtd",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "UserImage",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": true },
+        "transformers": [
+          {
+            "category": {
+              "adapterRef": "uploads",
+              "authorize": { "uploadRoles": ["user"] },
+              "maxFileSizeMb": 10,
+              "name": "USER_IMAGE_FILE"
+            },
+            "fileRelationRef": "file",
+            "id": "model-transformer:GBWoZ4NkxkpJ",
+            "type": "file"
+          }
+        ],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "accounts/users",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": [
+            "id",
+            "userId",
+            "bio",
+            "birthDay",
+            "avatarId",
+            "twitterHandle"
+          ],
+          "localRelations": ["user", "avatar"]
+        }
+      },
+      "id": "model:TXFx87PWHTOT",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:HJNidGR8K5N1",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:X3z9DOcV9xfb",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:YPuamLEeJY-Q",
+            "isOptional": true,
+            "name": "bio",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:yxsYmRmHdOhL",
+            "isOptional": true,
+            "name": "birthDay",
+            "options": { "default": "" },
+            "type": "date"
+          },
+          {
+            "id": "model-scalar-field:9stTi6BpANqK",
+            "isOptional": true,
+            "name": "avatarId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:2tBU92L6vW1t",
+            "isOptional": true,
+            "name": "twitterHandle",
+            "options": { "default": "" },
+            "type": "string"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:2Javq9svL0py",
+            "foreignRelationName": "userProfile",
+            "id": "model-local-relation:Dzv3GCSfsN8k",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:6LUuhcjcDxdX",
+            "foreignRelationName": "userProfileAvatar",
+            "id": "model-local-relation:FYsTSzNnhuLq",
+            "modelRef": "File",
+            "name": "avatar",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "avatarId" }]
+          }
+        ],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "userId" }],
+            "id": "model-unique-constraint:iO8CDWHR9LVa"
+          }
+        ]
+      },
+      "name": "UserProfile",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": true },
+        "transformers": [
+          {
+            "category": {
+              "adapterRef": "uploads",
+              "authorize": { "uploadRoles": ["user"] },
+              "maxFileSizeMb": 10,
+              "name": "USER_PROFILE_AVATAR"
+            },
+            "fileRelationRef": "avatar",
+            "id": "model-transformer:cbjBj3IacjKA",
+            "type": "file"
+          }
+        ],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "accounts/users",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": ["userId", "role", "updatedAt", "createdAt"],
+          "localRelations": ["user"]
+        }
+      },
+      "id": "model:BaCMR4fAOCPM",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:sjB8Gmm6eih5",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:RVj3bydpdhOY",
+            "isOptional": false,
+            "name": "role",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:2-zT2hChCDMQ",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:Zgvc6bBe-WDe",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["userId", "role"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:o0CuQRuJEtIs",
+            "foreignRelationName": "roles",
+            "id": "model-local-relation:U9zd4QitPG81",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          }
+        ]
+      },
+      "name": "UserRole",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    }
+  ],
+  "plugins": [
+    {
+      "config": {
+        "modelRefs": { "file": "File" },
+        "s3Adapters": [
+          {
+            "bucketConfigVar": "AWS_UPLOADS_BUCKET",
+            "hostedUrlConfigVar": "AWS_UPLOADS_URL",
+            "id": "storage-adapter:sG0zrvD_Uak9",
+            "name": "uploads"
+          }
+        ],
+        "storageFeatureRef": "storage"
+      },
+      "configSchemaVersion": 2,
+      "id": "plugin:baseplate-dev_plugin-storage_storage",
+      "name": "storage",
+      "packageName": "@baseplate-dev/plugin-storage",
+      "version": "0.1.0"
+    },
+    {
+      "config": {
+        "authFeatureRef": "accounts/auth",
+        "modelRefs": { "user": "User" },
+        "roles": [
+          {
+            "builtIn": true,
+            "comment": "All users (including unauthenticated and authenticated users)",
+            "id": "role:6wrjv_fs5rHf",
+            "name": "public"
+          },
+          {
+            "builtIn": true,
+            "comment": "All authenticated users",
+            "id": "role:zbp8hfo8qDZp",
+            "name": "user"
+          },
+          {
+            "builtIn": true,
+            "comment": "System processes without a user context, e.g. background jobs",
+            "id": "role:_tnnEc4bvDHX",
+            "name": "system"
+          },
+          {
+            "builtIn": false,
+            "comment": "Administrative role",
+            "id": "role:PYGSU4BDOlpQ",
+            "name": "admin"
+          }
+        ]
+      },
+      "configSchemaVersion": 1,
+      "id": "plugin:baseplate-dev_plugin-auth_auth0",
+      "name": "auth0",
+      "packageName": "@baseplate-dev/plugin-auth",
+      "version": "0.1.0"
+    },
+    {
+      "config": {
+        "authFeatureRef": "accounts/auth",
+        "implementationPluginKey": "baseplate-dev_plugin-auth_auth0",
+        "roles": [
+          {
+            "builtIn": true,
+            "comment": "All users (including unauthenticated and authenticated users)",
+            "id": "role:6wrjv_fs5rHf",
+            "name": "public"
+          },
+          {
+            "builtIn": true,
+            "comment": "All authenticated users",
+            "id": "role:zbp8hfo8qDZp",
+            "name": "user"
+          },
+          {
+            "builtIn": true,
+            "comment": "System processes without a user context, e.g. background jobs",
+            "id": "role:_tnnEc4bvDHX",
+            "name": "system"
+          },
+          {
+            "builtIn": false,
+            "comment": "Administrative role",
+            "id": "role:PYGSU4BDOlpQ",
+            "name": "admin"
+          }
+        ]
+      },
+      "id": "plugin:baseplate-dev_plugin-auth_auth",
+      "name": "auth",
+      "packageName": "@baseplate-dev/plugin-auth",
+      "version": "1.0.0"
+    }
+  ],
+  "schemaVersion": 19,
+  "settings": {
+    "general": {
+      "name": "todoer",
+      "packageScope": "prisma-crud",
+      "portOffset": 6000
+    },
+    "templateExtractor": {
+      "fileIdRegexWhitelist": ".*",
+      "writeMetadata": true
+    },
+    "theme": {
+      "colors": {
+        "dark": {
+          "accent": "oklch(0.279 0.037 260.031)",
+          "accentForeground": "oklch(0.968 0.007 247.896)",
+          "background": "oklch(0.129 0.041 264.695)",
+          "border": "oklch(0.279 0.037 260.031)",
+          "card": "oklch(0.129 0.041 264.695)",
+          "cardForeground": "oklch(0.984 0.003 247.858)",
+          "destructive": "oklch(0.396 0.133 25.723)",
+          "destructiveForeground": "oklch(0.984 0.003 247.858)",
+          "destructiveHover": "oklch(0.505 0.190 27.518)",
+          "error": "oklch(0.258 0.089 26.042)",
+          "errorForeground": "oklch(0.577 0.215 27.325)",
+          "foreground": "oklch(0.984 0.003 247.858)",
+          "input": "oklch(0.279 0.037 260.031)",
+          "link": "oklch(0.546 0.215 262.881)",
+          "linkVisited": "oklch(0.488 0.217 264.376)",
+          "muted": "oklch(0.208 0.040 265.755)",
+          "mutedForeground": "oklch(0.711 0.035 256.788)",
+          "popover": "oklch(0.129 0.041 264.695)",
+          "popoverForeground": "oklch(0.984 0.003 247.858)",
+          "primary": "oklch(0.546 0.215 262.881)",
+          "primaryForeground": "oklch(0.984 0.003 247.858)",
+          "primaryHover": "oklch(0.424 0.181 265.638)",
+          "ring": "oklch(0.546 0.215 262.881)",
+          "secondary": "oklch(0.279 0.037 260.031)",
+          "secondaryForeground": "oklch(0.968 0.007 247.896)",
+          "secondaryHover": "oklch(0.446 0.037 257.281)",
+          "success": "oklch(0.262 0.049 172.552)",
+          "successForeground": "oklch(0.596 0.127 163.225)",
+          "warning": "oklch(0.279 0.074 45.635)",
+          "warningForeground": "oklch(0.555 0.146 48.998)"
+        },
+        "light": {
+          "accent": "oklch(0.968 0.007 247.896)",
+          "accentForeground": "oklch(0.372 0.039 257.287)",
+          "background": "oklch(1.000 0.000 0)",
+          "border": "oklch(0.929 0.013 255.508)",
+          "card": "oklch(1.000 0.000 0)",
+          "cardForeground": "oklch(0.129 0.041 264.695)",
+          "destructive": "oklch(0.637 0.208 25.331)",
+          "destructiveForeground": "oklch(0.984 0.003 247.858)",
+          "destructiveHover": "oklch(0.505 0.190 27.518)",
+          "error": "oklch(0.971 0.013 17.380)",
+          "errorForeground": "oklch(0.505 0.190 27.518)",
+          "foreground": "oklch(0.129 0.041 264.695)",
+          "input": "oklch(0.929 0.013 255.508)",
+          "link": "oklch(0.488 0.217 264.376)",
+          "linkVisited": "oklch(0.424 0.181 265.638)",
+          "muted": "oklch(0.968 0.007 247.896)",
+          "mutedForeground": "oklch(0.554 0.041 257.417)",
+          "popover": "oklch(1.000 0.000 0)",
+          "popoverForeground": "oklch(0.129 0.041 264.695)",
+          "primary": "oklch(0.488 0.217 264.376)",
+          "primaryForeground": "oklch(0.984 0.003 247.858)",
+          "primaryHover": "oklch(0.379 0.138 265.522)",
+          "ring": "oklch(0.488 0.217 264.376)",
+          "secondary": "oklch(0.968 0.007 247.896)",
+          "secondaryForeground": "oklch(0.372 0.039 257.287)",
+          "secondaryHover": "oklch(0.869 0.020 252.894)",
+          "success": "oklch(0.979 0.021 166.113)",
+          "successForeground": "oklch(0.508 0.105 165.612)",
+          "warning": "oklch(0.987 0.021 95.277)",
+          "warningForeground": "oklch(0.666 0.157 58.318)"
+        }
+      },
+      "palettes": {
+        "base": {
+          "paletteName": "slate",
+          "shades": {
+            "50": "oklch(0.984 0.003 247.858)",
+            "100": "oklch(0.968 0.007 247.896)",
+            "200": "oklch(0.929 0.013 255.508)",
+            "300": "oklch(0.869 0.020 252.894)",
+            "400": "oklch(0.711 0.035 256.788)",
+            "500": "oklch(0.554 0.041 257.417)",
+            "600": "oklch(0.446 0.037 257.281)",
+            "700": "oklch(0.372 0.039 257.287)",
+            "800": "oklch(0.279 0.037 260.031)",
+            "900": "oklch(0.208 0.040 265.755)",
+            "950": "oklch(0.129 0.041 264.695)"
+          }
+        },
+        "primary": {
+          "customBase": "oklch(0.319 0.158 313.746)",
+          "paletteName": "blue",
+          "shades": {
+            "50": "oklch(0.970 0.014 254.604)",
+            "100": "oklch(0.932 0.032 255.585)",
+            "200": "oklch(0.882 0.057 254.128)",
+            "300": "oklch(0.809 0.096 251.813)",
+            "400": "oklch(0.714 0.143 254.624)",
+            "500": "oklch(0.623 0.188 259.815)",
+            "600": "oklch(0.546 0.215 262.881)",
+            "700": "oklch(0.488 0.217 264.376)",
+            "800": "oklch(0.424 0.181 265.638)",
+            "900": "oklch(0.379 0.138 265.522)",
+            "950": "oklch(0.282 0.087 267.935)"
+          }
+        }
+      }
+    }
+  }
+}

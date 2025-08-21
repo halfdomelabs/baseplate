@@ -1,0 +1,12 @@
+{
+  "global-setup.ts": {
+    "generator": "@baseplate-dev/core-generators#node/vitest",
+    "instanceData": {},
+    "template": "global-setup"
+  },
+  "mock-redis.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-redis",
+    "instanceData": {},
+    "template": "mock-redis"
+  }
+}

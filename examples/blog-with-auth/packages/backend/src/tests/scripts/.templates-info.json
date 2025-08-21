@@ -1,0 +1,7 @@
+{
+  "global-setup.ts": {
+    "generator": "@baseplate-dev/core-generators#node/vitest",
+    "instanceData": {},
+    "template": "global-setup"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "auth-roles.constants.ts": {
+    "generator": "@baseplate-dev/fastify-generators#auth/auth-roles",
+    "instanceData": {},
+    "template": "auth-roles"
+  }
+}

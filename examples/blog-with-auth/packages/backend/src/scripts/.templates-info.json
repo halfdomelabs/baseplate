@@ -1,0 +1,7 @@
+{
+  "run-workers.ts": {
+    "generator": "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss",
+    "instanceData": {},
+    "template": "run-workers"
+  }
+}

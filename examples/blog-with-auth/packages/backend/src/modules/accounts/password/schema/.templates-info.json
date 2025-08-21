@@ -1,0 +1,7 @@
+{
+  "user-password.mutations.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
+    "instanceData": {},
+    "template": "schema-user-password-mutations"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "s3.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "adapters-s-3"
+  },
+  "url.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "adapters-url"
+  }
+}

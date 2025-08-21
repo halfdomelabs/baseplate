@@ -1,0 +1,32 @@
+{
+  "config.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/config-service",
+    "instanceData": {},
+    "template": "config"
+  },
+  "error-logger.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
+    "instanceData": {},
+    "template": "error-logger"
+  },
+  "logger.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/logger-service",
+    "instanceData": {},
+    "template": "logger"
+  },
+  "pg-boss.service.ts": {
+    "generator": "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss",
+    "instanceData": {},
+    "template": "pg-boss-service"
+  },
+  "prisma.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
+    "instanceData": {},
+    "template": "service"
+  },
+  "sentry.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
+    "instanceData": {},
+    "template": "sentry"
+  }
+}

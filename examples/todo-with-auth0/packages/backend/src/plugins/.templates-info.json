@@ -1,0 +1,32 @@
+{
+  "error-handler.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
+    "instanceData": {},
+    "template": "error-handler-plugin"
+  },
+  "graceful-shutdown.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-graceful-shutdown",
+    "instanceData": {},
+    "template": "graceful-shutdown"
+  },
+  "health-check.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-health-check",
+    "instanceData": {},
+    "template": "health-check"
+  },
+  "request-context.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/request-context",
+    "instanceData": {},
+    "template": "request-context"
+  },
+  "stripe-webhook.int.test.ts": {
+    "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+    "instanceData": {},
+    "template": "plugins-webhook-test"
+  },
+  "stripe-webhook.ts": {
+    "generator": "@baseplate-dev/fastify-generators#stripe/fastify-stripe",
+    "instanceData": {},
+    "template": "plugins-webhook"
+  }
+}

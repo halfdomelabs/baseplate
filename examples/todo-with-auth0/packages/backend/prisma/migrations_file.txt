@@ -1,0 +1,10 @@
+     table_name     |     column_name     |        data_type
+--------------------+---------------------+--------------------------
+ _prisma_migrations | finished_at         | timestamp with time zone
+ _prisma_migrations | rolled_back_at      | timestamp with time zone
+ _prisma_migrations | started_at          | timestamp with time zone
+ _prisma_migrations | applied_steps_count | integer
+ _prisma_migrations | logs                | text
+ _prisma_migrations | checksum            | character varying
+ _prisma_migrations | migration_name      | character varying
+ _prisma_migrations | id                  | character varying

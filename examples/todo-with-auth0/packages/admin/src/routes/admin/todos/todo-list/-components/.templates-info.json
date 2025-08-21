@@ -1,0 +1,12 @@
+{
+  "todo-list-edit-form.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
+    "instanceData": {},
+    "template": "edit-form"
+  },
+  "todo-list-table.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-list",
+    "instanceData": {},
+    "template": "table"
+  }
+}

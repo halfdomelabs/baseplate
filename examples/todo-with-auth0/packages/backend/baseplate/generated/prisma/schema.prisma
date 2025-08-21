@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator pothos {
+  provider = "pnpm prisma-pothos-types"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id               String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  stripeCustomerId String @map("stripe_customer_id")
+  user             User   @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("customer")
+}
+
+model File {
+  id                 String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  filename           String
+  mimeType           String        @map("mime_type")
+  encoding           String?
+  size               Int
+  category           String
+  adapter            String
+  storagePath        String        @map("storage_path")
+  referencedAt       DateTime?     @map("referenced_at") @db.Timestamptz(3)
+  expiredAt          DateTime?     @map("expired_at") @db.Timestamptz(3)
+  uploaderId         String?       @map("uploader_id") @db.Uuid
+  updatedAt          DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt          DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  todoListCoverPhoto TodoList[]
+  uploader           User?         @relation(fields: [uploaderId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  userImages         UserImage[]
+  userProfileAvatar  UserProfile[]
+
+  @@map("file")
+}
+
+model TodoItem {
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  todoListId  String               @map("todo_list_id") @db.Uuid
+  position    Int
+  text        String
+  done        Boolean
+  updatedAt   DateTime             @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt   DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  assigneeId  String?              @map("assignee_id") @db.Uuid
+  assignee    User?                @relation(fields: [assigneeId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  attachments TodoItemAttachment[]
+  todoList    TodoList             @relation(fields: [todoListId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("todo_item")
+}
+
+model TodoItemAttachment {
+  id         String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  todoItemId String                  @map("todo_item_id") @db.Uuid
+  position   Int
+  url        String
+  updatedAt  DateTime                @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt  DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  tags       TodoItemAttachmentTag[]
+  todoItem   TodoItem                @relation(fields: [todoItemId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("todo_item_attachment")
+}
+
+model TodoItemAttachmentTag {
+  todoItemAttachmentId String             @map("todo_item_attachment_id") @db.Uuid
+  tag                  String
+  todoItemAttachment   TodoItemAttachment @relation(fields: [todoItemAttachmentId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@id([todoItemAttachmentId, tag])
+  @@map("todo_item_attachment_tag")
+}
+
+model TodoList {
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerId        String          @map("owner_id") @db.Uuid
+  position       Int
+  name           String
+  updatedAt      DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  status         TodoListStatus? @default(ACTIVE)
+  coverPhotoId   String?         @map("cover_photo_id") @db.Uuid
+  coverPhoto     File?           @relation(fields: [coverPhotoId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  owner          User            @relation(fields: [ownerId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  todoItems      TodoItem[]
+  todoListShares TodoListShare[]
+
+  @@unique([ownerId, name])
+  @@map("todo_list")
+}
+
+model TodoListShare {
+  todoListId String   @map("todo_list_id") @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  todoList   TodoList @relation(fields: [todoListId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@id([todoListId, userId])
+  @@map("todo_list_share")
+}
+
+enum TodoListStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String?
+  email           String
+  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  tokensNotBefore DateTime?       @map("tokens_not_before") @db.Timestamptz(3)
+  passwordHash    String?         @map("password_hash")
+  auth0Id         String?         @unique @map("auth0_id")
+  assignedItems   TodoItem[]
+  customer        Customer?
+  files           File[]
+  images          UserImage[]
+  roles           UserRole[]
+  todoLists       TodoList[]
+  todoListShares  TodoListShare[]
+  userProfile     UserProfile?
+
+  @@map("user")
+}
+
+model UserImage {
+  id      String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId  String @map("user_id") @db.Uuid
+  fileId  String @map("file_id") @db.Uuid
+  caption String
+  file    File   @relation(fields: [fileId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("user_image")
+}
+
+model UserProfile {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String    @unique @map("user_id") @db.Uuid
+  bio           String?
+  birthDay      DateTime? @map("birth_day") @db.Date
+  avatarId      String?   @map("avatar_id") @db.Uuid
+  twitterHandle String?   @map("twitter_handle")
+  avatar        File?     @relation(fields: [avatarId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("user_profile")
+}
+
+model UserRole {
+  userId    String   @map("user_id") @db.Uuid
+  role      String
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@id([userId, role])
+  @@map("user_role")
+}

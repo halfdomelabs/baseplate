@@ -1,0 +1,432 @@
+"""Payload type for createBullBoardAuthCode mutation"""
+type CreateBullBoardAuthCodePayload {
+  code: String!
+}
+
+"""Input type for createPresignedDownloadUrl mutation"""
+input CreatePresignedDownloadUrlInput {
+  fileId: Uuid!
+}
+
+"""Payload type for createPresignedDownloadUrl mutation"""
+type CreatePresignedDownloadUrlPayload {
+  url: String!
+}
+
+"""Input type for createPresignedUploadUrl mutation"""
+input CreatePresignedUploadUrlInput {
+  category: FileCategory!
+  contentType: String!
+  filename: String!
+  size: Int!
+}
+
+"""Payload type for createPresignedUploadUrl mutation"""
+type CreatePresignedUploadUrlPayload {
+  fields: [PresignedUrlField!]
+  file: File!
+  method: String!
+  url: String!
+}
+
+"""Input type for createTodoItem mutation"""
+input CreateTodoItemInput {
+  data: TodoItemCreateData!
+}
+
+"""Payload type for createTodoItem mutation"""
+type CreateTodoItemPayload {
+  todoItem: TodoItem!
+}
+
+"""Input type for createTodoList mutation"""
+input CreateTodoListInput {
+  data: TodoListCreateData!
+}
+
+"""Payload type for createTodoList mutation"""
+type CreateTodoListPayload {
+  todoList: TodoList!
+}
+
+"""Input type for createTodoListShare mutation"""
+input CreateTodoListShareInput {
+  data: TodoListShareCreateData!
+}
+
+"""Payload type for createTodoListShare mutation"""
+type CreateTodoListSharePayload {
+  todoListShare: TodoListShare!
+}
+
+"""Input type for createUser mutation"""
+input CreateUserInput {
+  data: UserCreateData!
+}
+
+"""Payload type for createUser mutation"""
+type CreateUserPayload {
+  user: User!
+}
+
+type Customer {
+  id: ID!
+  stripeCustomerId: String!
+  user: User!
+}
+
+"""Date custom scalar type"""
+scalar Date
+
+"""Scalar with date and time information"""
+scalar DateTime
+
+"""Input type for deleteTodoItem mutation"""
+input DeleteTodoItemInput {
+  id: Uuid!
+}
+
+"""Payload type for deleteTodoItem mutation"""
+type DeleteTodoItemPayload {
+  todoItem: TodoItem!
+}
+
+"""Input type for deleteTodoList mutation"""
+input DeleteTodoListInput {
+  id: Uuid!
+}
+
+"""Payload type for deleteTodoList mutation"""
+type DeleteTodoListPayload {
+  todoList: TodoList!
+}
+
+"""Input type for deleteTodoListShare mutation"""
+input DeleteTodoListShareInput {
+  id: TodoListSharePrimaryKey!
+}
+
+"""Payload type for deleteTodoListShare mutation"""
+type DeleteTodoListSharePayload {
+  todoListShare: TodoListShare!
+}
+
+"""Input type for deleteUser mutation"""
+input DeleteUserInput {
+  id: Uuid!
+}
+
+"""Payload type for deleteUser mutation"""
+type DeleteUserPayload {
+  user: User!
+}
+
+type File {
+  category: String!
+  createdAt: DateTime!
+  filename: String!
+  id: ID!
+  mimeType: String!
+
+  """
+  URL of the file where it is publicly hosted. Returns null if it is not publicly available.
+  """
+  publicUrl: String
+  updatedAt: DateTime!
+  uploader: User
+}
+
+enum FileCategory {
+  TODO_LIST_COVER_PHOTO
+  USER_IMAGE_FILE
+  USER_PROFILE_AVATAR
+}
+
+"""Input representing an uploaded file"""
+input FileInput {
+  id: Uuid!
+
+  """Discarded but useful for forms"""
+  name: String
+}
+
+type Mutation {
+  createBullBoardAuthCode: CreateBullBoardAuthCodePayload!
+  createPresignedDownloadUrl(input: CreatePresignedDownloadUrlInput!): CreatePresignedDownloadUrlPayload!
+  createPresignedUploadUrl(input: CreatePresignedUploadUrlInput!): CreatePresignedUploadUrlPayload!
+  createTodoItem(input: CreateTodoItemInput!): CreateTodoItemPayload!
+  createTodoList(input: CreateTodoListInput!): CreateTodoListPayload!
+  createTodoListShare(input: CreateTodoListShareInput!): CreateTodoListSharePayload!
+  createUser(input: CreateUserInput!): CreateUserPayload!
+  deleteTodoItem(input: DeleteTodoItemInput!): DeleteTodoItemPayload!
+  deleteTodoList(input: DeleteTodoListInput!): DeleteTodoListPayload!
+  deleteTodoListShare(input: DeleteTodoListShareInput!): DeleteTodoListSharePayload!
+  deleteUser(input: DeleteUserInput!): DeleteUserPayload!
+  updateTodoItem(input: UpdateTodoItemInput!): UpdateTodoItemPayload!
+  updateTodoList(input: UpdateTodoListInput!): UpdateTodoListPayload!
+  updateTodoListShare(input: UpdateTodoListShareInput!): UpdateTodoListSharePayload!
+  updateUser(input: UpdateUserInput!): UpdateUserPayload!
+}
+
+type PresignedUrlField {
+  name: String!
+  value: String!
+}
+
+type Query {
+  file(id: Uuid!): File!
+  files: [File!]!
+  todoItem(id: Uuid!): TodoItem!
+  todoItems: [TodoItem!]!
+  todoList(id: Uuid!): TodoList!
+  todoListShare(id: TodoListSharePrimaryKey!): TodoListShare!
+  todoListShares: [TodoListShare!]!
+  todoLists: [TodoList!]!
+  user(id: Uuid!): User!
+  users: [User!]!
+}
+
+type TodoItem {
+  attachments: [TodoItemAttachment!]!
+  createdAt: DateTime!
+  done: Boolean!
+  id: ID!
+  position: Int!
+  text: String!
+  todoList: TodoList!
+  todoListId: Uuid!
+  updatedAt: DateTime!
+}
+
+type TodoItemAttachment {
+  createdAt: DateTime!
+  id: ID!
+  position: Int!
+  tags: [TodoItemAttachmentTag!]!
+  todoItem: TodoItem!
+  todoItemId: Uuid!
+  updatedAt: DateTime!
+  url: String!
+}
+
+input TodoItemAttachmentEmbeddedTagsData {
+  tag: String!
+}
+
+type TodoItemAttachmentTag {
+  tag: String!
+  todoItemAttachment: TodoItemAttachment!
+  todoItemAttachmentId: Uuid!
+}
+
+input TodoItemCreateData {
+  assigneeId: Uuid
+  attachments: [TodoItemEmbeddedAttachmentsData!]
+  done: Boolean!
+  position: Int!
+  text: String!
+  todoListId: Uuid!
+}
+
+input TodoItemEmbeddedAttachmentsData {
+  id: Uuid
+  position: Int!
+  tags: [TodoItemAttachmentEmbeddedTagsData!]
+  url: String!
+}
+
+input TodoItemUpdateData {
+  assigneeId: Uuid
+  attachments: [TodoItemEmbeddedAttachmentsData!]
+  done: Boolean
+  position: Int
+  text: String
+  todoListId: Uuid
+}
+
+type TodoList {
+  coverPhoto: File
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  owner: User!
+  ownerId: Uuid!
+  position: Int!
+  status: TodoListStatus
+  updatedAt: DateTime!
+}
+
+input TodoListCreateData {
+  coverPhoto: FileInput
+  createdAt: DateTime
+  name: String!
+  ownerId: Uuid!
+  position: Int!
+  status: TodoListStatus
+}
+
+type TodoListShare {
+  createdAt: DateTime!
+  todoList: TodoList!
+  todoListId: Uuid!
+  updatedAt: DateTime!
+  user: User!
+  userId: Uuid!
+}
+
+input TodoListShareCreateData {
+  createdAt: DateTime
+  todoListId: Uuid!
+  updatedAt: DateTime
+  userId: Uuid!
+}
+
+input TodoListSharePrimaryKey {
+  todoListId: Uuid!
+  userId: Uuid!
+}
+
+input TodoListShareUpdateData {
+  createdAt: DateTime
+  todoListId: Uuid
+  updatedAt: DateTime
+  userId: Uuid
+}
+
+enum TodoListStatus {
+  ACTIVE
+  INACTIVE
+}
+
+input TodoListUpdateData {
+  coverPhoto: FileInput
+  createdAt: DateTime
+  name: String
+  ownerId: Uuid
+  position: Int
+  status: TodoListStatus
+}
+
+"""Input type for updateTodoItem mutation"""
+input UpdateTodoItemInput {
+  data: TodoItemUpdateData!
+  id: Uuid!
+}
+
+"""Payload type for updateTodoItem mutation"""
+type UpdateTodoItemPayload {
+  todoItem: TodoItem!
+}
+
+"""Input type for updateTodoList mutation"""
+input UpdateTodoListInput {
+  data: TodoListUpdateData!
+  id: Uuid!
+}
+
+"""Payload type for updateTodoList mutation"""
+type UpdateTodoListPayload {
+  todoList: TodoList!
+}
+
+"""Input type for updateTodoListShare mutation"""
+input UpdateTodoListShareInput {
+  data: TodoListShareUpdateData!
+  id: TodoListSharePrimaryKey!
+}
+
+"""Payload type for updateTodoListShare mutation"""
+type UpdateTodoListSharePayload {
+  todoListShare: TodoListShare!
+}
+
+"""Input type for updateUser mutation"""
+input UpdateUserInput {
+  data: UserUpdateData!
+  id: Uuid!
+}
+
+"""Payload type for updateUser mutation"""
+type UpdateUserPayload {
+  user: User!
+}
+
+type User {
+  createdAt: DateTime!
+  customer: Customer
+  email: String!
+  id: ID!
+  name: String
+  roles: [UserRole!]!
+  todoLists: [TodoList!]!
+  updatedAt: DateTime!
+  userProfile: UserProfile
+}
+
+input UserCreateData {
+  customer: UserEmbeddedCustomerData
+  email: String!
+  images: [UserEmbeddedImagesData!]
+  name: String
+  roles: [UserEmbeddedRolesData!]
+  userProfile: UserEmbeddedUserProfileData
+}
+
+input UserEmbeddedCustomerData {
+  stripeCustomerId: String!
+}
+
+input UserEmbeddedImagesData {
+  caption: String!
+  file: FileInput!
+  id: Uuid
+}
+
+input UserEmbeddedRolesData {
+  role: String!
+}
+
+input UserEmbeddedUserProfileData {
+  avatar: FileInput
+  bio: String
+  birthDay: Date
+  id: Uuid
+}
+
+type UserImage {
+  file: File!
+  fileId: Uuid!
+  id: ID!
+  userId: Uuid!
+}
+
+type UserProfile {
+  avatar: File
+  avatarId: Uuid
+  bio: String
+  birthDay: Date
+  id: ID!
+  twitterHandle: String
+  user: User!
+  userId: Uuid!
+}
+
+type UserRole {
+  createdAt: DateTime!
+  role: String!
+  updatedAt: DateTime!
+  user: User!
+  userId: Uuid!
+}
+
+input UserUpdateData {
+  customer: UserEmbeddedCustomerData
+  email: String
+  images: [UserEmbeddedImagesData!]
+  name: String
+  roles: [UserEmbeddedRolesData!]
+  userProfile: UserEmbeddedUserProfileData
+}
+
+"""Scalar representing a UUID"""
+scalar Uuid

@@ -1,0 +1,7 @@
+{
+  "seed.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
+    "instanceData": {},
+    "template": "seed"
+  }
+}

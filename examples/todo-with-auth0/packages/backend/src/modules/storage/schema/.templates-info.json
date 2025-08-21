@@ -1,0 +1,22 @@
+{
+  "file-category.enum.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "schema-file-category"
+  },
+  "file-input.input-type.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "schema-file-input"
+  },
+  "presigned.mutations.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "schema-presigned-mutations"
+  },
+  "public-url.field.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "schema-public-url"
+  }
+}

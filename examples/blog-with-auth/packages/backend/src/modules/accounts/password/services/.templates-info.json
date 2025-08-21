@@ -1,0 +1,12 @@
+{
+  "password-hasher.service.ts": {
+    "generator": "@baseplate-dev/fastify-generators#auth/password-hasher-service",
+    "instanceData": {},
+    "template": "password-hasher-service"
+  },
+  "user-password.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
+    "instanceData": {},
+    "template": "services-user-password"
+  }
+}

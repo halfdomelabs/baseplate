@@ -1,0 +1,7 @@
+{
+  "todo-list-schema.ts": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
+    "instanceData": {},
+    "template": "schema"
+  }
+}

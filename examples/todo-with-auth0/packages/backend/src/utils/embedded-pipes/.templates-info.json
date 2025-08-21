@@ -1,0 +1,17 @@
+{
+  "embedded-one-to-many.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
+    "instanceData": {},
+    "template": "embedded-one-to-many"
+  },
+  "embedded-one-to-one.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
+    "instanceData": {},
+    "template": "embedded-one-to-one"
+  },
+  "embedded-types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma-utils",
+    "instanceData": {},
+    "template": "embedded-types"
+  }
+}

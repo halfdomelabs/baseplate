@@ -22,7 +22,7 @@
     "metadata:generate": "workspace-meta generate",
     "metadata:sync": "workspace-meta sync",
     "migrate:extractor-templates": "node migrate-extractor-templates.js",
-    "precheck": "turbo run lint prettier:check typecheck --output-logs=errors-only --affected --continue && pnpm run knip && pnpm metadata:check",
+    "precheck": "turbo run lint prettier:check typecheck test --output-logs=errors-only --affected --continue && pnpm run knip && pnpm metadata:check && pnpm versions:check",
     "prepare": "husky",
     "prettier:check": "turbo run prettier:check --continue",
     "prettier:check:affected": "turbo run prettier:check --affected --continue",

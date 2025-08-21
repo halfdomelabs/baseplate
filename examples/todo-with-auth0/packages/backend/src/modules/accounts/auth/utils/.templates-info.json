@@ -1,0 +1,7 @@
+{
+  "auth-context.utils.ts": {
+    "generator": "@baseplate-dev/fastify-generators#auth/auth-context",
+    "instanceData": {},
+    "template": "auth-context-utils"
+  }
+}

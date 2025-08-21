@@ -12,6 +12,11 @@ import { getUserConfig } from '#src/services/user-config.js';
 import { getEnabledFeatureFlags } from '../services/feature-flags.js';
 import { logger } from '../services/logger.js';
 import { expandPathWithTilde } from '../utils/path.js';
+import {
+  getProjectDirectories,
+  getProjectNames,
+  resolveProjects,
+} from '../utils/project-resolver.js';
 import { resolveModule } from '../utils/resolve.js';
 import { getPackageVersion } from '../utils/version.js';
 
@@ -92,13 +97,35 @@ export function addServeCommand(program: Command): void {
       process.env.PORT ? Number.parseInt(process.env.PORT, 10) : undefined,
     )
     .argument(
-      '[directories...]',
-      'Directories to serve',
+      '[projects...]',
+      'Project names or directories to serve',
       process.env.PROJECT_DIRECTORIES?.split(',') ?? ['.'],
     )
     .action(
-      async (directories: string[], { browser, port }: ServeCommandOptions) => {
-        await serveWebServer(directories, { browser, port });
+      async (projects: string[], { browser, port }: ServeCommandOptions) => {
+        try {
+          const projectMap = await resolveProjects({
+            includeExamples: process.env.INCLUDE_EXAMPLES === 'true',
+            directories: projects,
+            defaultToCwd: true,
+          });
+
+          const finalDirectories = getProjectDirectories(projectMap);
+          const projectNames = getProjectNames(projectMap);
+
+          if (projectNames.length > 0) {
+            logger.info(
+              `Serving ${projectNames.length} project(s): ${projectNames.join(', ')}`,
+            );
+          }
+
+          await serveWebServer(finalDirectories, { browser, port });
+        } catch (error) {
+          logger.error(
+            `Failed to resolve projects: ${error instanceof Error ? error.message : String(error)}`,
+          );
+          throw error;
+        }
       },
     );
 }

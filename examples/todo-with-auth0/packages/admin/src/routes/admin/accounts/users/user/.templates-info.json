@@ -1,0 +1,17 @@
+{
+  "$id.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
+    "instanceData": {},
+    "template": "edit-page"
+  },
+  "index.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-list",
+    "instanceData": {},
+    "template": "list-page"
+  },
+  "route.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
+    "instanceData": {},
+    "template": "route"
+  }
+}

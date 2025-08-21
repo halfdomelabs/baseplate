@@ -1,0 +1,12 @@
+{
+  "bull-board.gql": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-bull-board",
+    "instanceData": { "variables": {} },
+    "template": "bull-board"
+  },
+  "index.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-bull-board",
+    "instanceData": {},
+    "template": "bull-board-page"
+  }
+}

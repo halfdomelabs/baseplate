@@ -1,0 +1,9 @@
+/baseplate
+/build
+/coverage
+/dist
+/lib
+/node_modules
+/src/route-tree.gen.ts
+pnpm-lock.yaml
+src/generated/graphql.tsx

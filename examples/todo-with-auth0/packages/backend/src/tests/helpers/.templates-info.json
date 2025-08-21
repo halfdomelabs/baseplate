@@ -1,0 +1,17 @@
+{
+  "db.test-helper.ts": {
+    "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
+    "instanceData": {},
+    "template": "db-test-helper"
+  },
+  "prisma.test-helper.ts": {
+    "generator": "@baseplate-dev/fastify-generators#vitest/prisma-vitest",
+    "instanceData": {},
+    "template": "prisma-test-helper"
+  },
+  "service-context.test-helper.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/service-context",
+    "instanceData": {},
+    "template": "test-helper"
+  }
+}

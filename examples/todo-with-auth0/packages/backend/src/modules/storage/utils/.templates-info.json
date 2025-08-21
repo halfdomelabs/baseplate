@@ -1,0 +1,17 @@
+{
+  "create-file-category.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "utils-create-file-category"
+  },
+  "mime.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "utils-mime"
+  },
+  "validate-file-upload-options.ts": {
+    "generator": "@baseplate-dev/plugin-storage#fastify/storage-module",
+    "instanceData": {},
+    "template": "utils-validate-file-upload-options"
+  }
+}

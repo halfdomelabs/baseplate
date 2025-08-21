@@ -1,0 +1,27 @@
+{
+  "auth-role.enum.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "auth-role-enum"
+  },
+  "user-roles.mutations.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "user-roles-mutations"
+  },
+  "user-session-payload.object-type.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "schema-user-session-payload-object-type"
+  },
+  "user-session.mutations.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "schema-user-session-mutations"
+  },
+  "user-session.queries.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "schema-user-session-queries"
+  }
+}

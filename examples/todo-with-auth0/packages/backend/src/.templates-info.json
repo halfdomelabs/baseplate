@@ -1,0 +1,17 @@
+{
+  "index.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-server",
+    "instanceData": {},
+    "template": "index"
+  },
+  "instrument.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-sentry",
+    "instanceData": {},
+    "template": "instrument"
+  },
+  "server.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-server",
+    "instanceData": {},
+    "template": "server"
+  }
+}

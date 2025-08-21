@@ -1,0 +1,95 @@
+services:
+  # Stage: Backend Web Service
+  - type: web
+    name: prisma-crud-backend-stage
+    runtime: docker
+    repo: https://github.com/halfdomelabs/prisma-crud.git
+    region: frankfurt
+    plan: free
+    branch: main
+    numInstances: 1
+    healthCheckPath: /healthz
+    autoDeploy: false
+    envVars:
+      - fromGroup: backend-common
+      - fromGroup: backend-stage
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: prisma-crud-redis-stage
+          property: connectionString
+    domains:
+      - prisma-crud-backend-stage.hdlabs.dev
+  # Stage: Admin Web Site
+  - type: web
+    name: prisma-crud-admin-stage
+    runtime: static
+    repo: https://github.com/halfdomelabs/prisma-crud.git
+    buildCommand: ./build.sh @prisma-crud/admin
+    staticPublishPath: ./packages/admin/build
+    autoDeploy: false
+    envVars:
+      - key: SKIP_INSTALL_DEPS
+        value: 'true'
+      - key: VITE_AUTH0_AUDIENCE
+        value: https://api.dev.baseplate.dev
+      - key: VITE_AUTH0_CLIENT_ID
+        value: zgDjssy95zCUEbYLgQbqX6qeKKFqht8R
+      - key: VITE_AUTH0_DOMAIN
+        value: dev-bfd6wdye.auth0.com
+      - key: VITE_BULL_BOARD_BASE
+        value: https://prisma-crud-backend-stage.hdlabs.dev
+      - key: VITE_ENVIRONMENT
+        value: stage
+      - key: VITE_GRAPH_API_ENDPOINT
+        value: /api/graphql
+    routes:
+      - type: rewrite
+        source: /api/graphql
+        destination: https://prisma-crud-backend-stage.hdlabs.dev/graphql
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    domains:
+      - prisma-crud-admin-stage.hdlabs.dev
+  # Stage: Redis
+  - type: redis
+    name: prisma-crud-redis-stage
+    ipAllowList: []
+    region: frankfurt
+    plan: free
+    maxmemoryPolicy: noeviction
+
+envVarGroups:
+  - name: backend-common
+    envVars:
+      - key: SENTRY_DSN
+        value: https://3d18e6fffe0e47ba8cd656c2e706a170@o408472.ingest.sentry.io/6157736
+      - key: SERVER_HOST
+        value: 0.0.0.0
+      - key: SERVER_PORT
+        value: 10000
+  - name: backend-stage
+    envVars:
+      - key: APP_ENVIRONMENT
+        value: stage
+      - key: JWT_SECRET
+        generateValue: true
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_DEFAULT_REGION
+        value: eu-central-1
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_UPLOADS_BUCKET
+        value: prisma-crud-stage-backend-uploads
+      - key: AWS_UPLOADS_URL
+        value: https://uploads.stage.prisma-crud.baseplate.dev
+      - key: STRIPE_ENDPOINT_SECRET
+        value: invalid-secret
+      - key: STRIPE_SECRET_KEY
+        value: invalid-secret-key
+      - key: POSTMARK_API_TOKEN
+        sync: false
+      - key: DATABASE_URL
+        sync: false

@@ -1,0 +1,7 @@
+{
+  "graphql.tsx": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "graphql"
+  }
+}

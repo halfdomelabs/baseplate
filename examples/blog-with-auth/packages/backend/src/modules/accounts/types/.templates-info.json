@@ -1,0 +1,17 @@
+{
+  "auth-context.types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#auth/auth-context",
+    "instanceData": {},
+    "template": "auth-context-types"
+  },
+  "auth-session.types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#auth/auth-context",
+    "instanceData": {},
+    "template": "auth-session-types"
+  },
+  "user-session.types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#auth/user-session-types",
+    "instanceData": {},
+    "template": "user-session-types"
+  }
+}
