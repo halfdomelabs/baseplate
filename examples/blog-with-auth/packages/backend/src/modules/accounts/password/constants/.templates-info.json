@@ -1,0 +1,7 @@
+{
+  "password.constants.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-email-password",
+    "instanceData": {},
+    "template": "constants-password"
+  }
+}

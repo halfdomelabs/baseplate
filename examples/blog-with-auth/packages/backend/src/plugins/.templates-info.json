@@ -1,0 +1,27 @@
+{
+  "error-handler.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/error-handler-service",
+    "instanceData": {},
+    "template": "error-handler-plugin"
+  },
+  "graceful-shutdown.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-graceful-shutdown",
+    "instanceData": {},
+    "template": "graceful-shutdown"
+  },
+  "health-check.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/fastify-health-check",
+    "instanceData": {},
+    "template": "health-check"
+  },
+  "pg-boss.plugin.ts": {
+    "generator": "@baseplate-dev/plugin-queue#pg-boss/core/pg-boss",
+    "instanceData": {},
+    "template": "pg-boss-plugin"
+  },
+  "request-context.ts": {
+    "generator": "@baseplate-dev/fastify-generators#core/request-context",
+    "instanceData": {},
+    "template": "request-context"
+  }
+}

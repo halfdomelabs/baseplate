@@ -1,0 +1,12 @@
+{
+  "seed-initial-user.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/seed-initial-user",
+    "instanceData": {},
+    "template": "seed-initial-user"
+  },
+  "seed.ts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
+    "instanceData": {},
+    "template": "seed"
+  }
+}

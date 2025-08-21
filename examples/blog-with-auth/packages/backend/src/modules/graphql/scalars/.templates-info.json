@@ -1,0 +1,17 @@
+{
+  "date-time.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
+    "instanceData": {},
+    "template": "date-time"
+  },
+  "date.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
+    "instanceData": {},
+    "template": "date"
+  },
+  "uuid.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
+    "instanceData": {},
+    "template": "uuid"
+  }
+}

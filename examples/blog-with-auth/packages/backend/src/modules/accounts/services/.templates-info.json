@@ -1,0 +1,12 @@
+{
+  "user-roles.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "user-roles-service"
+  },
+  "user-session.service.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-module",
+    "instanceData": {},
+    "template": "user-session-service"
+  }
+}

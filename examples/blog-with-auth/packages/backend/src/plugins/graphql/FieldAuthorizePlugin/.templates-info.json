@@ -1,0 +1,17 @@
+{
+  "global-types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
+    "instanceData": {},
+    "template": "field-authorize-global-types"
+  },
+  "index.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
+    "instanceData": {},
+    "template": "field-authorize-plugin"
+  },
+  "types.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-auth",
+    "instanceData": {},
+    "template": "field-authorize-types"
+  }
+}
