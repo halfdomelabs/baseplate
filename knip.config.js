@@ -123,9 +123,21 @@ export default {
         'eslint-import-resolver-typescript',
       ],
     },
+    'packages/create-project': {
+      entry: ['src/index.{ts,tsx}'],
+      project: 'src/**/*.{ts,tsx}',
+      paths: {
+        '#src/*': ['./src/*'],
+      },
+      ignoreDependencies: [
+        // used for versioning
+        '@baseplate-dev/project-builder-cli',
+      ],
+    },
   },
   ignore: [
     'tests/**',
+    'examples/**',
     '**/templates/**',
     '**/morphers/tests/**',
     '**/string-merge-algorithms/tests/**',
