@@ -1,0 +1,52 @@
+{
+  "use-confirm-dialog.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "use-confirm-dialog"
+  },
+  "use-controlled-state.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "hooks-use-controlled-state"
+  },
+  "use-controller-merged.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "hooks-use-controller-merged"
+  },
+  "use-current-user.gql": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
+    "instanceData": { "variables": {} },
+    "template": "use-current-user-gql"
+  },
+  "use-current-user.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
+    "instanceData": {},
+    "template": "use-current-user"
+  },
+  "use-log-out.gql": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
+    "instanceData": { "variables": {} },
+    "template": "use-log-out-gql"
+  },
+  "use-log-out.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
+    "instanceData": {},
+    "template": "use-log-out"
+  },
+  "use-mobile.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-components",
+    "instanceData": {},
+    "template": "use-mobile"
+  },
+  "use-session.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
+    "instanceData": {},
+    "template": "use-session"
+  },
+  "use-user-id-or-throw.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/auth-hooks",
+    "instanceData": {},
+    "template": "use-required-user-id"
+  }
+}

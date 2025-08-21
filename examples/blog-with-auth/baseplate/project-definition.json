@@ -1,0 +1,777 @@
+{
+  "apps": [
+    {
+      "adminApp": {
+        "allowedRoles": ["admin"],
+        "enabled": true,
+        "pathPrefix": "/admin",
+        "sections": [
+          {
+            "featureRef": "accounts",
+            "form": {
+              "fields": [
+                {
+                  "id": "admin-crud-input:ebPR_rgRorj0",
+                  "label": "Name",
+                  "modelFieldRef": "name",
+                  "type": "text",
+                  "validation": ""
+                },
+                {
+                  "id": "admin-crud-input:pc6e_4S4PnyF",
+                  "label": "Email",
+                  "modelFieldRef": "email",
+                  "type": "text",
+                  "validation": ""
+                }
+              ]
+            },
+            "icon": "FaUser",
+            "id": "admin-section:wKrqjFk3OBCI",
+            "modelRef": "User",
+            "name": "Users",
+            "nameFieldRef": "name",
+            "table": {
+              "actions": [
+                {
+                  "id": "admin-crud-action:AsENmhZ7NfZA",
+                  "position": "inline",
+                  "type": "edit"
+                },
+                {
+                  "id": "admin-crud-action:LBR9GWYgS1uk",
+                  "position": "dropdown",
+                  "type": "manage-roles"
+                },
+                {
+                  "id": "admin-crud-action:oW3B3Aerxu76",
+                  "position": "dropdown",
+                  "type": "reset-password"
+                },
+                {
+                  "id": "admin-crud-action:Z8ZyGeeo23AT",
+                  "position": "dropdown",
+                  "type": "delete"
+                }
+              ],
+              "columns": [
+                {
+                  "id": "admin-crud-column:1aNiYy91wq7y",
+                  "label": "Name",
+                  "modelFieldRef": "name",
+                  "type": "text"
+                },
+                {
+                  "id": "admin-crud-column:9tTe3oTiwYjC",
+                  "label": "Email",
+                  "modelFieldRef": "email",
+                  "type": "text"
+                },
+                {
+                  "id": "admin-crud-column:CtwL2qWbWt6v",
+                  "label": "Roles",
+                  "type": "roles"
+                }
+              ]
+            },
+            "type": "crud"
+          }
+        ]
+      },
+      "description": "admin",
+      "id": "app:I3X22H8XDMp1",
+      "name": "admin",
+      "packageLocation": "",
+      "title": "Blog Admin",
+      "type": "web"
+    },
+    {
+      "enableAxios": false,
+      "enableBullQueue": false,
+      "enablePostmark": false,
+      "enableRedis": false,
+      "enableStripe": false,
+      "enableSubscriptions": false,
+      "id": "app:acqRWBqOc6tx",
+      "name": "backend",
+      "packageLocation": "",
+      "type": "backend"
+    }
+  ],
+  "cliVersion": "0.3.1",
+  "features": [
+    { "id": "feature:I_EnFXnHjbGQ", "name": "accounts" },
+    { "id": "feature:c28pJNS_89Oz", "name": "blogs" },
+    { "id": "feature:XM8fb3xFc7ve", "name": "auth" }
+  ],
+  "isInitialized": true,
+  "models": [
+    {
+      "featureRef": "blogs",
+      "graphql": {
+        "objectType": { "enabled": true, "fields": ["name", "userId", "id"] },
+        "queries": {
+          "get": { "enabled": true, "roles": ["public"] },
+          "list": { "enabled": true, "roles": ["public"] }
+        }
+      },
+      "id": "model:h7nbXcuLcUmy",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:PPNcQYjHcLJM",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:5r4qOjWPHo7k",
+            "isOptional": false,
+            "name": "name",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:5r4qOjWPcsk",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:G5ODFua2_9E_",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:fOVkXTd3P1Jy",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:u9Pnxxp4V8vu",
+            "foreignRelationName": "blogs",
+            "id": "model-local-relation:IHWLYwL5Kjut",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "Blog",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "blogs",
+      "id": "model:ZYGsFp93vRhv",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:6AEaW6mjUeMi",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:dLndbykf8h2f",
+            "isOptional": false,
+            "name": "blogId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:PNfjIfpZjmkw",
+            "isOptional": false,
+            "name": "publisherId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:LfIe_qCQqQ42",
+            "isOptional": false,
+            "name": "title",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:p29bxCvmh_n8",
+            "isOptional": false,
+            "name": "content",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:lKjrrVtoNkEP",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:wJJXYvWWcOOS",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:9Py66lkBe9kZ",
+            "foreignRelationName": "blogPosts",
+            "id": "model-local-relation:zGYxunCGWzuo",
+            "modelRef": "User",
+            "name": "publisher",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "publisherId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:9CfhUjafZ9C5",
+            "foreignRelationName": "posts",
+            "id": "model-local-relation:1RporvIaMszO",
+            "modelRef": "Blog",
+            "name": "blog",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "blogId" }]
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "BlogPost",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "blogs",
+      "id": "model:at_hVtN6XVWX",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:EwhSjvGdsL9q",
+            "isOptional": false,
+            "name": "blogId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:HBbSkN0_M0TR",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:vQybRRnJi3TW",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:u0mMHdHGq4u6",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["blogId", "userId"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:Q6NTPciMoZIk",
+            "foreignRelationName": "members",
+            "id": "model-local-relation:aFLgpKFZQS8k",
+            "modelRef": "Blog",
+            "name": "blog",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "blogId" }]
+          },
+          {
+            "foreignId": "model-foreign-relation:NIDv2JcxLNX3",
+            "foreignRelationName": "blogUsers",
+            "id": "model-local-relation:RPZ3vn0kbeEH",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "BlogUser",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "accounts",
+      "graphql": {
+        "mutations": {
+          "create": { "enabled": true, "roles": ["admin"] },
+          "delete": { "enabled": true, "roles": ["admin"] },
+          "update": { "enabled": true, "roles": ["admin"] }
+        },
+        "objectType": {
+          "enabled": true,
+          "fields": ["id", "email", "name", "emailVerified"],
+          "foreignRelations": ["roles"]
+        },
+        "queries": {
+          "get": { "enabled": true, "roles": ["user"] },
+          "list": { "enabled": true, "roles": ["admin"] }
+        }
+      },
+      "id": "model:jZxZ8T0aLW5C",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:iZSakQLjj07M",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:XrDYaOEQ6GZC",
+            "isOptional": true,
+            "name": "email",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:TZkNcyQ_Txvy",
+            "isOptional": false,
+            "name": "isEmailVerified",
+            "options": { "default": "false" },
+            "type": "boolean"
+          },
+          {
+            "id": "model-scalar-field:HQJa_S0ldCJR",
+            "isOptional": true,
+            "name": "phone",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:AETlnfzdbjWt",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:ejT1yp4u8OHD",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:Nt9rwwOeW9zR",
+            "isOptional": true,
+            "name": "name",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:3oj4N7YBdqYo",
+            "isOptional": false,
+            "name": "emailVerified",
+            "options": { "default": "false" },
+            "type": "boolean"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "email" }],
+            "id": "model-unique-constraint:WvWsWRCXbTuy"
+          }
+        ]
+      },
+      "name": "User",
+      "service": {
+        "create": {
+          "enabled": true,
+          "fields": ["name", "emailVerified", "email"]
+        },
+        "delete": { "enabled": true },
+        "transformers": [],
+        "update": {
+          "enabled": true,
+          "fields": ["name", "emailVerified", "email"]
+        }
+      }
+    },
+    {
+      "featureRef": "accounts",
+      "id": "model:brCokD6pIz7E",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:z6JrpgbtlGck",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:aJSc9y1cCfDp",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:98UwMjc3dVa1",
+            "isOptional": false,
+            "name": "providerId",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:fm33dSfRzjKE",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:UKyqtZ6HlWKN",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:zBHXTEcLfpva",
+            "isOptional": false,
+            "name": "accountId",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:9QYbV59Qh4mv",
+            "isOptional": true,
+            "name": "password",
+            "options": { "default": "" },
+            "type": "string"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:KQzLVzVqcNZO",
+            "foreignRelationName": "accounts",
+            "id": "model-local-relation:Cx3_RAwYlZWW",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          }
+        ],
+        "uniqueConstraints": [
+          {
+            "fields": [
+              { "fieldRef": "accountId" },
+              { "fieldRef": "providerId" }
+            ],
+            "id": "model-unique-constraint:CpwfAV4CBvIu"
+          }
+        ]
+      },
+      "name": "UserAccount",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "accounts",
+      "graphql": {
+        "objectType": { "enabled": true, "fields": ["userId", "role"] }
+      },
+      "id": "model:3BNvsyfylc9c",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:7f865kOwXryv",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:1SNeYwyIj_Jy",
+            "isOptional": false,
+            "name": "role",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:SGKA5W77rUL5",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:uT7TyReHg24r",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["userId", "role"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:D_sRTrI_mZBn",
+            "foreignRelationName": "roles",
+            "id": "model-local-relation:nzlLdydMdy6z",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "UserRole",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    },
+    {
+      "featureRef": "accounts",
+      "id": "model:8koW3IyW42e_",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:CjiJr2PTCCeT",
+            "isOptional": false,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:wIR0RC08zqov",
+            "isOptional": false,
+            "name": "token",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:7Y3oZIHFIY2V",
+            "isOptional": false,
+            "name": "userId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:Y1Mg5lJh4IG0",
+            "isOptional": false,
+            "name": "expiresAt",
+            "options": { "default": "" },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:sEIUglst63xV",
+            "isOptional": false,
+            "name": "renewedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": false
+            },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:SFSrsPqRYtLD",
+            "isOptional": false,
+            "name": "createdAt",
+            "options": { "default": "", "defaultToNow": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:__RpraUxczSN",
+            "isOptional": false,
+            "name": "updatedAt",
+            "options": {
+              "default": "",
+              "defaultToNow": true,
+              "updatedAt": true
+            },
+            "type": "dateTime"
+          }
+        ],
+        "primaryKeyFieldRefs": ["id"],
+        "relations": [
+          {
+            "foreignId": "model-foreign-relation:hIykR0rO34ER",
+            "foreignRelationName": "sessions",
+            "id": "model-local-relation:Jvn_fOI14wTq",
+            "modelRef": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreignRef": "id", "localRef": "userId" }]
+          }
+        ],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "fieldRef": "token" }],
+            "id": "model-unique-constraint:4JFxyTcYT1LM"
+          }
+        ]
+      },
+      "name": "UserSession",
+      "service": {
+        "create": { "enabled": false },
+        "delete": { "enabled": false },
+        "transformers": [],
+        "update": { "enabled": false }
+      }
+    }
+  ],
+  "plugins": [
+    {
+      "config": {
+        "initialUserRoles": ["admin"],
+        "modelRefs": {
+          "user": "User",
+          "userAccount": "UserAccount",
+          "userRole": "UserRole",
+          "userSession": "UserSession"
+        },
+        "userAdminRoles": ["admin"]
+      },
+      "id": "plugin:baseplate-dev_plugin-auth_local-auth",
+      "name": "local-auth",
+      "packageName": "@baseplate-dev/plugin-auth",
+      "version": "0.1.0"
+    },
+    {
+      "config": {
+        "authFeatureRef": "accounts",
+        "implementationPluginKey": "baseplate-dev_plugin-auth_local-auth",
+        "roles": [
+          {
+            "builtIn": true,
+            "comment": "All users (including unauthenticated and authenticated users)",
+            "id": "role:SdoAjeUmYZXC",
+            "name": "public"
+          },
+          {
+            "builtIn": true,
+            "comment": "All authenticated users",
+            "id": "role:BDE6HsTbncOA",
+            "name": "user"
+          },
+          {
+            "builtIn": true,
+            "comment": "System processes without a user context, e.g. background jobs",
+            "id": "role:W86r9IpCNx5f",
+            "name": "system"
+          },
+          {
+            "builtIn": false,
+            "comment": "Administrator role",
+            "id": "role:5_w6OYFY3FuY",
+            "name": "admin"
+          }
+        ]
+      },
+      "id": "plugin:baseplate-dev_plugin-auth_auth",
+      "name": "auth",
+      "packageName": "@baseplate-dev/plugin-auth",
+      "version": "1.0.0"
+    },
+    {
+      "config": {
+        "implementationPluginKey": "baseplate-dev_plugin-queue_pg-boss"
+      },
+      "id": "plugin:baseplate-dev_plugin-queue_queue",
+      "name": "queue",
+      "packageName": "@baseplate-dev/plugin-queue",
+      "version": "0.1.0"
+    },
+    {
+      "config": { "pgBossOptions": { "deleteAfterDays": 7 } },
+      "id": "plugin:baseplate-dev_plugin-queue_pg-boss",
+      "name": "pg-boss",
+      "packageName": "@baseplate-dev/plugin-queue",
+      "version": "0.1.0"
+    }
+  ],
+  "schemaVersion": 19,
+  "settings": {
+    "general": {
+      "name": "blog-with-auth",
+      "packageScope": "",
+      "portOffset": 3000
+    },
+    "templateExtractor": { "fileIdRegexWhitelist": "", "writeMetadata": true }
+  }
+}

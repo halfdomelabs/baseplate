@@ -1,0 +1,24 @@
+{
+  "main.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react",
+    "instanceData": {},
+    "template": "main"
+  },
+  "route-tree.gen.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-router",
+    "instanceData": {},
+    "template": "route-tree"
+  },
+  "styles.css": {
+    "generator": "@baseplate-dev/react-generators#core/react-tailwind",
+    "instanceData": {
+      "variables": { "TPL_GLOBAL_STYLES": "/* GLOBAL_STYLES */" }
+    },
+    "template": "styles-css"
+  },
+  "vite-env.d.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react",
+    "instanceData": { "variables": {} },
+    "template": "vite-env"
+  }
+}

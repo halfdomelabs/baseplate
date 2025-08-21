@@ -1,0 +1,22 @@
+{
+  "embedded-list-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-components",
+    "instanceData": {},
+    "template": "embedded-list-field"
+  },
+  "embedded-list-input.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-components",
+    "instanceData": {},
+    "template": "embedded-list-input"
+  },
+  "embedded-object-field.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-components",
+    "instanceData": {},
+    "template": "embedded-object-field"
+  },
+  "embedded-object-input.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-components",
+    "instanceData": {},
+    "template": "embedded-object-input"
+  }
+}

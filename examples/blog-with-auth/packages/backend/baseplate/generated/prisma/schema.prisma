@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator pothos {
+  provider = "pnpm prisma-pothos-types"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Blog {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  userId    String     @map("user_id") @db.Uuid
+  updatedAt DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  members   BlogUser[]
+  posts     BlogPost[]
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("blog")
+}
+
+model BlogPost {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  blogId      String   @map("blog_id") @db.Uuid
+  publisherId String   @map("publisher_id") @db.Uuid
+  title       String
+  content     String
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  blog        Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  publisher   User     @relation(fields: [publisherId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("blog_post")
+}
+
+model BlogUser {
+  blogId    String   @map("blog_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@id([blogId, userId])
+  @@map("blog_user")
+}
+
+model User {
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email           String?       @unique
+  isEmailVerified Boolean       @default(false) @map("is_email_verified")
+  phone           String?
+  updatedAt       DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  name            String?
+  emailVerified   Boolean       @default(false) @map("email_verified")
+  accounts        UserAccount[]
+  blogPosts       BlogPost[]
+  blogs           Blog[]
+  blogUsers       BlogUser[]
+  roles           UserRole[]
+  sessions        UserSession[]
+
+  @@map("user")
+}
+
+model UserAccount {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  providerId String   @map("provider_id")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  accountId  String   @map("account_id")
+  password   String?
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@unique([accountId, providerId])
+  @@map("user_account")
+}
+
+model UserRole {
+  userId    String   @map("user_id") @db.Uuid
+  role      String
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@id([userId, role])
+  @@map("user_role")
+}
+
+model UserSession {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  token     String   @unique
+  userId    String   @map("user_id") @db.Uuid
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+  renewedAt DateTime @default(now()) @map("renewed_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Restrict)
+
+  @@map("user_session")
+}

@@ -1,0 +1,10 @@
+packages:
+  - packages/*
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@sentry-internal/node-cpu-profiler'
+  - '@sentry/profiling-node'
+  - esbuild
+  - prisma

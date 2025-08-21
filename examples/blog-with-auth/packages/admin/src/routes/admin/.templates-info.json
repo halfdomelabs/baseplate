@@ -1,0 +1,12 @@
+{
+  "index.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-home",
+    "instanceData": {},
+    "template": "home"
+  },
+  "route.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-layout",
+    "instanceData": {},
+    "template": "admin-route"
+  }
+}

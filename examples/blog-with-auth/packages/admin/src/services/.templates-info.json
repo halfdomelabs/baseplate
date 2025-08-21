@@ -1,0 +1,32 @@
+{
+  "config.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-config",
+    "instanceData": {},
+    "template": "config"
+  },
+  "error-formatter.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-error",
+    "instanceData": {},
+    "template": "error-formatter"
+  },
+  "error-logger.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-error",
+    "instanceData": {},
+    "template": "error-logger"
+  },
+  "logger.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-logger",
+    "instanceData": {},
+    "template": "logger"
+  },
+  "sentry.ts": {
+    "generator": "@baseplate-dev/react-generators#core/react-sentry",
+    "instanceData": {},
+    "template": "sentry"
+  },
+  "user-session-client.ts": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
+    "instanceData": {},
+    "template": "user-session-client"
+  }
+}
