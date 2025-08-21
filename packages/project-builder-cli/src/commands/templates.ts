@@ -5,6 +5,7 @@ import path from 'node:path';
 
 import { logger } from '#src/services/logger.js';
 import { expandPathWithTilde } from '#src/utils/path.js';
+import { resolveProject } from '#src/utils/project-resolver.js';
 
 interface ListTemplatesOptions {
   json?: boolean;
@@ -62,9 +63,9 @@ export function addTemplatesCommand(program: Command): void {
 
   // Templates extract subcommand
   templatesCommand
-    .command('extract <directory> <app>')
+    .command('extract <project> <app>')
     .description(
-      'Extracts templates from the specified directory and saves them to the templates directory',
+      'Extracts templates from the specified project (name or directory) and saves them to the templates directory',
     )
     .option(
       '--auto-generate-extractor',
@@ -78,11 +79,11 @@ export function addTemplatesCommand(program: Command): void {
     )
     .action(
       async (
-        directory: string,
+        project: string,
         app: string,
         options: ExtractTemplatesOptions,
       ) => {
-        await handleExtractTemplates(directory, app, options);
+        await handleExtractTemplates(project, app, options);
       },
     );
 
@@ -208,27 +209,36 @@ async function handleDeleteTemplate(
 }
 
 async function handleExtractTemplates(
-  directory: string,
+  project: string,
   app: string,
   options: ExtractTemplatesOptions,
 ): Promise<void> {
-  const { runTemplateExtractorsForProject } = await import(
-    '@baseplate-dev/project-builder-server/template-extractor'
-  );
+  try {
+    const { runTemplateExtractorsForProject } = await import(
+      '@baseplate-dev/project-builder-server/template-extractor'
+    );
 
-  const resolvedDirectory = expandPathWithTilde(directory);
-  const defaultPlugins = await getDefaultPlugins(logger);
+    const projectInfo = await resolveProject(project);
+    const defaultPlugins = await getDefaultPlugins(logger);
 
-  await runTemplateExtractorsForProject(
-    resolvedDirectory,
-    app,
-    defaultPlugins,
-    logger,
-    {
-      autoGenerateExtractor: options.autoGenerateExtractor,
-      skipClean: options.skipClean,
-    },
-  );
+    logger.info(`Extracting templates from project: ${projectInfo.name}`);
+
+    await runTemplateExtractorsForProject(
+      projectInfo.path,
+      app,
+      defaultPlugins,
+      logger,
+      {
+        autoGenerateExtractor: options.autoGenerateExtractor,
+        skipClean: options.skipClean,
+      },
+    );
+  } catch (error) {
+    logger.error(
+      `Failed to extract templates: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    throw error;
+  }
 }
 
 async function handleGenerateTemplates(

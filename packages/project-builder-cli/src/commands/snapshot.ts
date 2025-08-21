@@ -5,6 +5,7 @@ import { confirm } from '@inquirer/prompts';
 import { createSchemaParserContext } from '#src/services/schema-parser-context.js';
 import { getUserConfig } from '#src/services/user-config.js';
 import { expandPathWithTilde } from '#src/utils/path.js';
+import { resolveProject } from '#src/utils/project-resolver.js';
 
 import { logger } from '../services/logger.js';
 
@@ -19,7 +20,7 @@ export function addSnapshotCommand(program: Command): void {
 
   // snapshot add command
   snapshotCommand
-    .command('add <project-directory> <app> <files...>')
+    .command('add <project> <app> <files...>')
     .description(
       'Add files to snapshot (use --deleted for intentionally deleted files)',
     )
@@ -31,7 +32,7 @@ export function addSnapshotCommand(program: Command): void {
     )
     .action(
       async (
-        projectDirectory: string,
+        project: string,
         app: string,
         files: string[],
         options: {
@@ -44,7 +45,19 @@ export function addSnapshotCommand(program: Command): void {
             '@baseplate-dev/project-builder-server'
           );
 
-          const resolvedDirectory = expandPathWithTilde(projectDirectory);
+          let resolvedDirectory: string;
+          if (project.includes('/') || project.includes('\\')) {
+            // It's a path, expand it
+            resolvedDirectory = expandPathWithTilde(project);
+          } else {
+            // It's a project name, resolve it
+            const projectInfo = await resolveProject(project);
+            resolvedDirectory = projectInfo.path;
+            logger.info(
+              `Running snapshot add for project: ${projectInfo.name}`,
+            );
+          }
+
           const context = await createSchemaParserContext(resolvedDirectory);
 
           await addFilesToSnapshot(files, !!options.deleted, {
@@ -63,7 +76,7 @@ export function addSnapshotCommand(program: Command): void {
 
   // snapshot remove command
   snapshotCommand
-    .command('remove <project-directory> <app> <files...>')
+    .command('remove <project> <app> <files...>')
     .description('Remove files from snapshot tracking')
     .option(
       '--snapshot-dir <directory>',
@@ -72,7 +85,7 @@ export function addSnapshotCommand(program: Command): void {
     )
     .action(
       async (
-        projectDirectory: string,
+        project: string,
         app: string,
         files: string[],
         options: {
@@ -84,7 +97,19 @@ export function addSnapshotCommand(program: Command): void {
             '@baseplate-dev/project-builder-server'
           );
 
-          const resolvedDirectory = expandPathWithTilde(projectDirectory);
+          let resolvedDirectory: string;
+          if (project.includes('/') || project.includes('\\')) {
+            // It's a path, expand it
+            resolvedDirectory = expandPathWithTilde(project);
+          } else {
+            // It's a project name, resolve it
+            const projectInfo = await resolveProject(project);
+            resolvedDirectory = projectInfo.path;
+            logger.info(
+              `Running snapshot remove for project: ${projectInfo.name}`,
+            );
+          }
+
           const context = await createSchemaParserContext(resolvedDirectory);
 
           await removeFilesFromSnapshot(files, {
@@ -103,7 +128,7 @@ export function addSnapshotCommand(program: Command): void {
 
   // snapshot save command
   snapshotCommand
-    .command('save <project-directory> <app>')
+    .command('save <project> <app>')
     .description(
       'Save snapshot of current differences (overwrites existing snapshot)',
     )
@@ -114,7 +139,7 @@ export function addSnapshotCommand(program: Command): void {
     )
     .action(
       async (
-        projectDirectory: string,
+        project: string,
         app: string,
         options: {
           snapshotDir?: string;
@@ -125,7 +150,19 @@ export function addSnapshotCommand(program: Command): void {
             '@baseplate-dev/project-builder-server'
           );
 
-          const resolvedDirectory = expandPathWithTilde(projectDirectory);
+          let resolvedDirectory: string;
+          if (project.includes('/') || project.includes('\\')) {
+            // It's a path, expand it
+            resolvedDirectory = expandPathWithTilde(project);
+          } else {
+            // It's a project name, resolve it
+            const projectInfo = await resolveProject(project);
+            resolvedDirectory = projectInfo.path;
+            logger.info(
+              `Running snapshot save for project: ${projectInfo.name}`,
+            );
+          }
+
           const context = await createSchemaParserContext(resolvedDirectory);
           const userConfig = await getUserConfig();
 
@@ -165,7 +202,7 @@ export function addSnapshotCommand(program: Command): void {
 
   // snapshot show command
   snapshotCommand
-    .command('show <project-directory> <app>')
+    .command('show <project> <app>')
     .description('Show current snapshot contents')
     .option(
       '--snapshot-dir <directory>',
@@ -174,7 +211,7 @@ export function addSnapshotCommand(program: Command): void {
     )
     .action(
       async (
-        projectDirectory: string,
+        project: string,
         app: string,
         options: {
           snapshotDir?: string;
@@ -185,7 +222,19 @@ export function addSnapshotCommand(program: Command): void {
             '@baseplate-dev/project-builder-server'
           );
 
-          const resolvedDirectory = expandPathWithTilde(projectDirectory);
+          let resolvedDirectory: string;
+          if (project.includes('/') || project.includes('\\')) {
+            // It's a path, expand it
+            resolvedDirectory = expandPathWithTilde(project);
+          } else {
+            // It's a project name, resolve it
+            const projectInfo = await resolveProject(project);
+            resolvedDirectory = projectInfo.path;
+            logger.info(
+              `Running snapshot show for project: ${projectInfo.name}`,
+            );
+          }
+
           const context = await createSchemaParserContext(resolvedDirectory);
 
           await listSnapshotContents({

@@ -11,8 +11,12 @@ import { getUserConfig } from '#src/services/user-config.js';
 
 import { getEnabledFeatureFlags } from '../services/feature-flags.js';
 import { logger } from '../services/logger.js';
-import { findExamplesDirectories } from '../utils/find-examples-directories.js';
 import { expandPathWithTilde } from '../utils/path.js';
+import {
+  getProjectDirectories,
+  getProjectNames,
+  resolveProjects,
+} from '../utils/project-resolver.js';
 import { resolveModule } from '../utils/resolve.js';
 import { getPackageVersion } from '../utils/version.js';
 
@@ -93,28 +97,35 @@ export function addServeCommand(program: Command): void {
       process.env.PORT ? Number.parseInt(process.env.PORT, 10) : undefined,
     )
     .argument(
-      '[directories...]',
-      'Directories to serve',
+      '[projects...]',
+      'Project names or directories to serve',
       process.env.PROJECT_DIRECTORIES?.split(',') ?? ['.'],
     )
     .action(
-      async (directories: string[], { browser, port }: ServeCommandOptions) => {
-        let finalDirectories = directories;
+      async (projects: string[], { browser, port }: ServeCommandOptions) => {
+        try {
+          const projectMap = await resolveProjects({
+            includeExamples: process.env.INCLUDE_EXAMPLES === 'true',
+            directories: projects,
+            defaultToCwd: true,
+          });
 
-        // Check if we should include examples
-        if (process.env.INCLUDE_EXAMPLES === 'true') {
-          const exampleDirectories = await findExamplesDirectories();
-          if (exampleDirectories.length > 0) {
-            finalDirectories = [...exampleDirectories, ...directories];
+          const finalDirectories = getProjectDirectories(projectMap);
+          const projectNames = getProjectNames(projectMap);
+
+          if (projectNames.length > 0) {
             logger.info(
-              `Including ${exampleDirectories.length} example directories: ${exampleDirectories.map((dir) => path.basename(dir)).join(', ')}`,
+              `Serving ${projectNames.length} project(s): ${projectNames.join(', ')}`,
             );
-          } else {
-            logger.info('No example directories found to include');
           }
-        }
 
-        await serveWebServer(finalDirectories, { browser, port });
+          await serveWebServer(finalDirectories, { browser, port });
+        } catch (error) {
+          logger.error(
+            `Failed to resolve projects: ${error instanceof Error ? error.message : String(error)}`,
+          );
+          throw error;
+        }
       },
     );
 }

@@ -2,6 +2,7 @@ import { program } from 'commander';
 
 import { addConfigCommand } from './commands/config.js';
 import { addDiffCommand } from './commands/diff.js';
+import { addProjectsCommand } from './commands/projects.js';
 import { addServeCommand } from './commands/server.js';
 import { addSnapshotCommand } from './commands/snapshot.js';
 import { addSyncCommand } from './commands/sync.js';
@@ -27,6 +28,7 @@ export async function runCli(): Promise<void> {
   addSyncCommand(program);
   addDiffCommand(program);
   addServeCommand(program);
+  addProjectsCommand(program);
   addConfigCommand(program);
 
   await program.parseAsync(process.argv);
