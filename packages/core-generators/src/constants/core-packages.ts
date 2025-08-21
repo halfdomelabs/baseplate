@@ -1,6 +1,6 @@
 export const CORE_PACKAGES = {
   // Typescript
-  typescript: '5.7.3',
+  typescript: '5.8.3',
 
   // Linting
   '@eslint/js': '9.32.0',

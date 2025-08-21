@@ -206,7 +206,7 @@ function AsyncComboboxField<OptionType>({
       clearTimeout(loadingTimeout);
       isAborted = true;
     };
-  }, [debouncedSearchQuery, minSearchLength, loadingDelay]);
+  }, [debouncedSearchQuery, minSearchLength, loadingDelay, initialOptions]);
 
   const selectedOption = useMemo(() => {
     if (value === null || value === undefined) return null;

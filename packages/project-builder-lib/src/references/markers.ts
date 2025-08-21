@@ -11,10 +11,16 @@ type AnyDefinitionReferenceInput = DefinitionReferenceInput<any, any>;
 export type AnyDefinitionEntityInput = DefinitionEntityInput<any, any>;
 
 export class DefinitionReferenceMarker {
+  public value: string | undefined;
+  public reference: AnyDefinitionReferenceInput;
+
   constructor(
-    public value: string | undefined,
-    public reference: AnyDefinitionReferenceInput,
-  ) {}
+    value: string | undefined,
+    reference: AnyDefinitionReferenceInput,
+  ) {
+    this.value = value;
+    this.reference = reference;
+  }
 
   toString(): string {
     return this.value ?? '';

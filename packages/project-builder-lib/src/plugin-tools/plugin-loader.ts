@@ -40,13 +40,13 @@ const baseplatePackageConfigSchema = z
 type BaseplatePackageConfig = z.infer<typeof baseplatePackageConfigSchema>;
 
 export class PluginLoaderError extends Error {
-  constructor(
-    message: string,
-    public innerError?: unknown,
-  ) {
+  public innerError?: unknown;
+
+  constructor(message: string, innerError?: unknown) {
     super(
       `Error loading plugin (${message}): ${innerError instanceof Error ? innerError.message : String(innerError)}`,
     );
+    this.innerError = innerError;
     this.name = 'PluginLoaderError';
   }
 }

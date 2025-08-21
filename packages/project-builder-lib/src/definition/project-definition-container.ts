@@ -34,17 +34,19 @@ export class ProjectDefinitionContainer {
   references: DefinitionReference[];
   entities: DefinitionEntity[];
   parserContext: SchemaParserContext;
+  pluginStore: PluginImplementationStore;
 
   constructor(
     config: ResolvedZodRefPayload<ProjectDefinition>,
     parserContext: SchemaParserContext,
-    public pluginStore: PluginImplementationStore,
+    pluginStore: PluginImplementationStore,
   ) {
     this.refPayload = config;
     this.definition = config.data;
     this.references = config.references;
     this.entities = config.entities;
     this.parserContext = parserContext;
+    this.pluginStore = pluginStore;
   }
 
   /**
