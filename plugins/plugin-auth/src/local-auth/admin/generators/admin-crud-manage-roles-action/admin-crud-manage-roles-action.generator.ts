@@ -117,6 +117,7 @@ export const adminCrudManageRolesActionGenerator = createGenerator({
               name: 'roles',
               fields: [{ name: 'role' }],
             },
+            { name: 'name' },
           ],
         });
 
