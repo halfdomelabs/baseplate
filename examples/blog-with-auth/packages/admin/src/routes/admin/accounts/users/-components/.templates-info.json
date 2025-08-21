@@ -1,0 +1,32 @@
+{
+  "password-reset-dialog.gql": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/admin/admin-crud-reset-password-action",
+    "instanceData": { "variables": { "TPL_USER_ROW_FRAGMENT": "UserRow" } },
+    "template": "password-reset-dialog-gql"
+  },
+  "password-reset-dialog.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/admin/admin-crud-reset-password-action",
+    "instanceData": {},
+    "template": "password-reset-dialog"
+  },
+  "role-manager-dialog.gql": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/admin/admin-crud-manage-roles-action",
+    "instanceData": { "variables": { "TPL_USER_ROW_FRAGMENT": "UserRow" } },
+    "template": "role-manager-dialog-gql"
+  },
+  "role-manager-dialog.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/admin/admin-crud-manage-roles-action",
+    "instanceData": {},
+    "template": "role-manager-dialog"
+  },
+  "user-edit-form.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-edit",
+    "instanceData": {},
+    "template": "edit-form"
+  },
+  "user-table.tsx": {
+    "generator": "@baseplate-dev/react-generators#admin/admin-crud-list",
+    "instanceData": {},
+    "template": "table"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "README.md": {
+    "generator": "@baseplate-dev/fastify-generators#core/readme",
+    "instanceData": {
+      "variables": { "TPL_PROJECT": "blog-with-auth backend" }
+    },
+    "template": "readme"
+  },
+  "eslint.config.mjs": {
+    "generator": "@baseplate-dev/core-generators#node/eslint",
+    "instanceData": {},
+    "template": "eslint-config"
+  },
+  "vitest.config.mts": {
+    "generator": "@baseplate-dev/core-generators#node/vitest",
+    "instanceData": {},
+    "template": "vitest-config"
+  }
+}

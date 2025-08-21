@@ -5,9 +5,8 @@ import { program } from 'commander';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { getLatestCliVersion } from './npm.service.js';
 import { generateBaseplateProject } from './project-creator.js';
-import { getPackageVersion } from './version.js';
+import { getCliVersion, getPackageVersion } from './version.js';
 
 // check if directory contains a package.json file
 async function checkForPackageJson(directory: string): Promise<boolean> {
@@ -63,7 +62,7 @@ async function runMain(): Promise<void> {
     );
   }
 
-  const cliVersion = await getLatestCliVersion();
+  const cliVersion = await getCliVersion();
 
   await generateBaseplateProject({
     packageName,

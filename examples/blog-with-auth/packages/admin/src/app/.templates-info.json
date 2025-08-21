@@ -1,0 +1,27 @@
+{
+  "app-apollo-provider.tsx": {
+    "generator": "@baseplate-dev/react-generators#apollo/react-apollo",
+    "instanceData": {},
+    "template": "app-apollo-provider"
+  },
+  "app.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-app",
+    "instanceData": {},
+    "template": "app"
+  },
+  "router.tsx": {
+    "generator": "@baseplate-dev/react-generators#core/react-router",
+    "instanceData": {},
+    "template": "router"
+  },
+  "user-session-provider.gql": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
+    "instanceData": { "variables": {} },
+    "template": "user-session-provider-gql"
+  },
+  "user-session-provider.tsx": {
+    "generator": "@baseplate-dev/plugin-auth#local-auth/core/react-session",
+    "instanceData": {},
+    "template": "user-session-provider"
+  }
+}

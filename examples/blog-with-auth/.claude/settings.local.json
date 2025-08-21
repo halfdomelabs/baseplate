@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__baseplate-docs__search-documents",
+      "mcp__baseplate-docs__get-document-by-id",
+      "mcp__baseplate-docs__search-rag-documents"
+    ],
+    "deny": []
+  }
+}

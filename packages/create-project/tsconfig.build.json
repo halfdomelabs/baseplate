@@ -16,6 +16,9 @@
   ],
   "references": [
     {
+      "path": "../project-builder-cli/tsconfig.build.json"
+    },
+    {
       "path": "../utils/tsconfig.build.json"
     }
   ]

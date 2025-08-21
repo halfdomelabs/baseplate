@@ -46,8 +46,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@baseplate-dev/project-builder-cli": "workspace:*",
     "@baseplate-dev/utils": "workspace:*",
-    "axios": "^1.8.3",
     "chalk": "5.3.0",
     "commander": "^12.1.0",
     "execa": "9.3.0",

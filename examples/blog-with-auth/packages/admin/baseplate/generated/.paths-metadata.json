@@ -1,0 +1,18 @@
+[
+  { "canonicalPath": "@/src/routes", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/routes/admin", "pathRootName": "routes-root" },
+  {
+    "canonicalPath": "@/src/routes/admin/accounts",
+    "pathRootName": "routes-root"
+  },
+  {
+    "canonicalPath": "@/src/routes/admin/accounts/users",
+    "pathRootName": "routes-root"
+  },
+  { "canonicalPath": "@/src/routes/auth", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/routes/blogs", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/routes/accounts", "pathRootName": "routes-root" },
+  { "canonicalPath": "@/src/components", "pathRootName": "components-root" },
+  { "canonicalPath": "@", "pathRootName": "package-root" },
+  { "canonicalPath": "@/src", "pathRootName": "src-root" }
+]
