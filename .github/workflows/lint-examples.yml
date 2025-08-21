@@ -1,0 +1,77 @@
+name: Lint Examples
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'examples/**'
+  push:
+    branches: [main]
+    paths:
+      - 'examples/**'
+
+jobs:
+  lint:
+    name: Lint Examples
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example: ['blog-with-auth']
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
+          fetch-depth: 0
+
+      - name: Derive appropriate SHAs for base for `turbo --affected` commands
+        uses: nrwl/nx-set-shas@v4.3.0
+
+      - name: Set environment variable for Turborepo
+        run: echo "TURBO_SCM_BASE=$NX_BASE" >> $GITHUB_ENV
+
+      - name: Cache turbo build setup
+        uses: rharkor/caching-for-turbo@a1c4079258ae08389be75b57d4d7a70f23c1c66d # 1.8
+        with:
+          cache-prefix: examples-${{ matrix.example }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.0.0
+        with:
+          package_json_file: examples/${{ matrix.example }}/package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: examples/${{ matrix.example }}/package.json
+          cache: 'pnpm'
+          cache-dependency-path: examples/${{ matrix.example }}/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: examples/${{ matrix.example }}
+
+      - name: Run lint
+        run: pnpm lint
+        working-directory: examples/${{ matrix.example }}
+
+      - name: Run prettier check
+        run: pnpm prettier:check
+        working-directory: examples/${{ matrix.example }}
+
+      - name: Run typecheck
+        run: pnpm typecheck
+        working-directory: examples/${{ matrix.example }}
+
+      - name: Run tests
+        run: pnpm test
+        working-directory: examples/${{ matrix.example }}
+
+      - name: Check versions consistency
+        run: pnpm versions:check
+        working-directory: examples/${{ matrix.example }}
