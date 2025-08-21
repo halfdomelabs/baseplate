@@ -48,7 +48,7 @@
     "watch:tsc:root": "tsc -b tsconfig.build.json --preserveWatchOutput -w"
   },
   "lint-staged": {
-    "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|toml|html|yml|yaml|json)": "prettier --write"
+    "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|html|yml|yaml|json)": "prettier --write"
   },
   "dependencies": {
     "@changesets/cli": "2.28.1"
