@@ -93,21 +93,25 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: examples/${{ matrix.example }}
 
-      - name: Run lint
-        run: pnpm lint
-        working-directory: examples/${{ matrix.example }}
+      - name: Run Docker setup
+        run: docker compose up -d
+        working-directory: examples/${{ matrix.example }}/packages/backend/docker
 
       - name: Run prettier check
         run: pnpm prettier:check
         working-directory: examples/${{ matrix.example }}
 
+      - name: Run build
+        run: pnpm build
+        working-directory: examples/${{ matrix.example }}
+
+      - name: Run lint
+        run: pnpm lint
+        working-directory: examples/${{ matrix.example }}
+
       - name: Run typecheck
         run: pnpm typecheck
         working-directory: examples/${{ matrix.example }}
-
-      - name: Run Docker setup
-        run: docker compose up -d
-        working-directory: examples/${{ matrix.example }}/packages/backend/docker
 
       - name: Run tests
         run: pnpm test
