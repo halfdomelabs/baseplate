@@ -21,7 +21,7 @@ export interface ProjectInfo {
 /**
  * Options for resolving projects
  */
-export interface ResolveProjectsOptions {
+interface ResolveProjectsOptions {
   /** Whether to include example projects (from INCLUDE_EXAMPLES env) */
   includeExamples?: boolean;
   /** Additional directories to include (from PROJECT_DIRECTORIES env or arguments) */
