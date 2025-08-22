@@ -1,29 +1,19 @@
-import type {
-  ProjectDefinition,
-  SchemaParserContext,
-} from '@baseplate-dev/project-builder-lib';
+import type { SchemaParserContext } from '@baseplate-dev/project-builder-lib';
 import type { Logger } from '@baseplate-dev/sync';
 
-import {
-  createPluginImplementationStore,
-  runPluginMigrations,
-  runSchemaMigrations,
-} from '@baseplate-dev/project-builder-lib';
 import {
   buildGeneratorEntry,
   executeGeneratorEntry,
   formatGeneratorOutput,
   loadIgnorePatterns,
 } from '@baseplate-dev/sync';
-import { enhanceErrorWithContext, hashWithSHA256 } from '@baseplate-dev/utils';
-import { fileExists } from '@baseplate-dev/utils/node';
 import ignore from 'ignore';
-import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
 import { compileApplications } from '#src/compiler/index.js';
+import { loadProjectDefinition } from '#src/project-definition/load-project-definition.js';
 
 import { createTemplateMetadataOptions } from '../sync/template-metadata-utils.js';
 import { compareFiles } from './diff-utils.js';
@@ -31,58 +21,6 @@ import { formatCompactDiff, formatUnifiedDiff } from './formatters.js';
 import { applySnapshotToGeneratorOutput } from './snapshot/apply-diff-to-generator-output.js';
 import { loadSnapshotManifest } from './snapshot/snapshot-manifest.js';
 import { resolveSnapshotDirectory } from './snapshot/snapshot-utils.js';
-
-/**
- * Load and parse project definition (extracted from build-project.ts)
- */
-async function loadProjectJson(
-  directory: string,
-  context: SchemaParserContext,
-): Promise<{ definition: ProjectDefinition; hash: string }> {
-  const projectJsonPath = path.join(
-    directory,
-    'baseplate/project-definition.json',
-  );
-
-  const projectJsonExists = await fileExists(projectJsonPath);
-
-  if (!projectJsonExists) {
-    throw new Error(`Could not find definition file at ${projectJsonPath}`);
-  }
-
-  try {
-    const projectJsonContents = await readFile(projectJsonPath, 'utf8');
-    const hash = await hashWithSHA256(projectJsonContents);
-
-    const projectJson: unknown = JSON.parse(projectJsonContents);
-
-    const { migratedDefinition, appliedMigrations } = runSchemaMigrations(
-      projectJson as ProjectDefinition,
-    );
-    if (appliedMigrations.length > 0) {
-      console.warn(
-        `Note: ${appliedMigrations.length} migrations would be applied to project definition`,
-      );
-    }
-
-    const pluginImplementationStore = createPluginImplementationStore(
-      context.pluginStore,
-      migratedDefinition,
-    );
-
-    const definitionWithPluginMigrations = runPluginMigrations(
-      migratedDefinition,
-      pluginImplementationStore,
-    );
-
-    return { definition: definitionWithPluginMigrations, hash };
-  } catch (err) {
-    throw enhanceErrorWithContext(
-      err,
-      `Error parsing project definition at ${projectJsonPath}`,
-    );
-  }
-}
 
 /**
  * Options for diffing the project.
@@ -139,7 +77,7 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
 
   try {
     logger.info('Loading project definition...');
-    const { definition: projectJson } = await loadProjectJson(
+    const { definition: projectJson } = await loadProjectDefinition(
       directory,
       context,
     );
@@ -224,7 +162,7 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
           ? formatCompactDiff(diffSummary)
           : formatUnifiedDiff(diffSummary);
 
-        console.info(output);
+        logger.info(output);
         totalDiffs += diffSummary.totalFiles;
       } else {
         logger.info(`No differences found for ${app.name}`);
