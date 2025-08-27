@@ -1,9 +1,8 @@
 import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
 
-import crypto from 'node:crypto';
-
 import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
 
+import { generateProjectId } from '#src/actions/utils/project-id.js';
 import { ProjectBuilderService } from '#src/service/builder-service.js';
 
 export class BuilderServiceManager {
@@ -31,12 +30,7 @@ export class BuilderServiceManager {
   }
 
   addService(directory: string): ProjectBuilderService {
-    const id = crypto
-      .createHash('shake256', { outputLength: 9 })
-      .update(directory)
-      .digest('base64')
-      .replaceAll('/', '-')
-      .replaceAll('+', '_');
+    const id = generateProjectId(directory);
     const service = new ProjectBuilderService({
       directory,
       id,

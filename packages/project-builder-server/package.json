@@ -25,7 +25,9 @@
   "exports": {
     ".": "./dist/index.js",
     "./template-extractor": "./dist/template-extractor/index.js",
-    "./plugins": "./dist/plugins/index.js"
+    "./plugins": "./dist/plugins/index.js",
+    "./actions": "./dist/actions/index.js",
+    "./dev-server": "./dist/dev-server/index.js"
   },
   "main": "dist/index.js",
   "files": [

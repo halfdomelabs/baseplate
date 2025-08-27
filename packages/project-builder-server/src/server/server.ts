@@ -15,7 +15,7 @@ import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js
 
 import type { BuilderServiceManager } from './builder-service-manager.js';
 
-import { gracefulShutdownPlugin } from './graceful-shutdown.js';
+import { gracefulShutdownPlugin } from '../fastify-plugins/graceful-shutdown.js';
 import { baseplatePlugin } from './plugin.js';
 
 export interface WebServerOptions {

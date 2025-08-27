@@ -1,6 +1,7 @@
 import { program } from 'commander';
 
 import { addConfigCommand } from './commands/config.js';
+import { addDevMcpCommand } from './commands/dev-mcp.js';
 import { addDiffCommand } from './commands/diff.js';
 import { addProjectsCommand } from './commands/projects.js';
 import { addServeCommand } from './commands/server.js';
@@ -28,6 +29,7 @@ export async function runCli(): Promise<void> {
   addSyncCommand(program);
   addDiffCommand(program);
   addServeCommand(program);
+  addDevMcpCommand(program);
   addProjectsCommand(program);
   addConfigCommand(program);
 
