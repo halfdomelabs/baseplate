@@ -1,0 +1,19 @@
+{
+  "name": "Ubuntu",
+
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+    "source=${localWorkspaceFolderBasename}-pnpm,target=/home/vscode/.local/share/pnpm,type=volume"
+  ],
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "mise trust && sudo chown vscode node_modules && sudo chown vscode:vscode /home/vscode/.local/share/pnpm && pnpm install"
+}
