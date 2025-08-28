@@ -1,13 +1,12 @@
 import type { Command } from 'commander';
 
-import { DevServer } from '@baseplate-dev/project-builder-server/dev-server';
 import path from 'node:path';
 
 import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 
 import { logger } from '../services/logger.js';
 
-export function addDevMcpCommand(program: Command): void {
+export function addDevServerCommand(program: Command): void {
   program
     .command('dev-server')
     .description('Start the development server with MCP integration')
@@ -25,6 +24,10 @@ export function addDevMcpCommand(program: Command): void {
       });
 
       const context = await createServiceActionContext();
+
+      const { DevServer } = await import(
+        '@baseplate-dev/project-builder-server/dev-server'
+      );
 
       const devServer = new DevServer({
         cwd,
