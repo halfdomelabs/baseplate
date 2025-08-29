@@ -1,19 +1,19 @@
 FROM ubuntu:noble
 
-ARG TZ
+ARG TZ="America/Los_Angeles"
 ENV TZ="$TZ"
 
 ARG USERNAME=vscode
+ARG USER_UID=1001
+ARG USER_GID=$USER_UID
 
-# Add users
-RUN groupadd $USERNAME && useradd -g $USERNAME -ms /bin/zsh $USERNAME
+# Install system dependencies
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   less \
   git \
   procps \
   sudo \
-  fzf \
   zsh \
   man-db \
   unzip \
@@ -31,6 +31,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   build-essential \
   curl \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Add users
+RUN groupadd --gid $USER_GID $USERNAME \
+  && useradd --uid $USER_UID --gid $USER_GID -m -s /bin/zsh $USERNAME
+
+RUN usermod -aG sudo $USERNAME && \
+  echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME
 
 ENV HOME=/home/$USERNAME
 
@@ -72,3 +79,12 @@ RUN mise install
 
 # Configure pnpm to use a specific store directory within the user's home
 ENV npm_config_store_dir="$HOME/.local/share/pnpm/store"
+
+# Add firewall script
+USER root
+COPY .devcontainer/init-firewall.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/init-firewall.sh && \
+  echo "Defaults secure_path=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\"\n$USERNAME ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/user-firewall && \
+  chmod 0440 /etc/sudoers.d/user-firewall
+
+USER $USERNAME

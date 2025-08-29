@@ -1,0 +1,6 @@
+{
+  "id": "chown",
+  "version": "1.0.0",
+  "name": "Change Ownership of pnpm share",
+  "onCreateCommand": "/usr/local/bin/fix-chown"
+}
