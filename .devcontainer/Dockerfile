@@ -47,11 +47,11 @@ RUN curl -sS https://starship.rs/install.sh | sh -s -- -y
 # Support command history
 
 RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
-    && mkdir /commandhistory \
-    && touch /commandhistory/.bash_history \
-    && chown -R $USERNAME /commandhistory \
-    && echo "$SNIPPET" >> "/home/$USERNAME/.bashrc" \
-    && chown $USERNAME /home/$USERNAME/.bashrc
+  && mkdir /commandhistory \
+  && touch /commandhistory/.bash_history \
+  && chown -R $USERNAME /commandhistory \
+  && echo "$SNIPPET" >> "/home/$USERNAME/.bashrc" \
+  && chown $USERNAME /home/$USERNAME/.bashrc
 
 # Set up zshrc
 COPY .devcontainer/.zshrc /home/$USERNAME/.zshrc
@@ -92,6 +92,16 @@ RUN mise install
 
 # Configure pnpm to use a specific store directory within the user's home
 ENV npm_config_store_dir="$HOME/.local/share/pnpm/store"
+
+# Set the default shell to zsh rather than sh
+ENV SHELL=/bin/zsh
+
+# Set the default editor and visual
+ENV EDITOR=vim
+ENV VISUAL=vim
+
+# Install Claude
+RUN zsh -c "source ${ZDOTDIR-$HOME}/.zshrc && npm install -g @anthropic-ai/claude-code@latest"
 
 # Add firewall script
 USER root
