@@ -14,7 +14,8 @@
 
   "mounts": [
     "source=${localWorkspaceFolderBasename}-pnpm,target=/home/vscode/.local/share/pnpm,type=volume",
-    "source=${localWorkspaceFolderBasename}-node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume"
+    "source=${localWorkspaceFolderBasename}-node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+    "source=${localWorkspaceFolderBasename}-bashhistory,target=/commandhistory,type=volume"
   ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.

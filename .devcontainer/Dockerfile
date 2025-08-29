@@ -44,6 +44,19 @@ ENV HOME=/home/$USERNAME
 # Install starship
 RUN curl -sS https://starship.rs/install.sh | sh -s -- -y
 
+# Support command history
+
+RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
+    && mkdir /commandhistory \
+    && touch /commandhistory/.bash_history \
+    && chown -R $USERNAME /commandhistory \
+    && echo "$SNIPPET" >> "/home/$USERNAME/.bashrc" \
+    && chown $USERNAME /home/$USERNAME/.bashrc
+
+# Set up zshrc
+COPY .devcontainer/.zshrc /home/$USERNAME/.zshrc
+RUN chown $USERNAME /home/$USERNAME/.zshrc
+
 USER $USERNAME
 
 # Install Mise and then install tools from the config file in a single RUN command
