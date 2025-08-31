@@ -1,4 +1,5 @@
 import { diffProjectAction } from './diff/diff-project.action.js';
+import { syncProjectAction } from './sync/index.js';
 import {
   deleteTemplateAction,
   extractTemplatesAction,
@@ -8,6 +9,7 @@ import {
 
 export const ALL_SERVICE_ACTIONS = [
   diffProjectAction,
+  syncProjectAction,
   deleteTemplateAction,
   extractTemplatesAction,
   generateTemplatesAction,
