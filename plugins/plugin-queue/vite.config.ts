@@ -1,9 +1,6 @@
 import type { UserConfig } from 'vite';
 
-import {
-  getModuleFederationTargets,
-  rewriteDistToSrc,
-} from '@baseplate-dev/project-builder-lib/plugin-tools';
+import { getModuleFederationTargets } from '@baseplate-dev/project-builder-lib/plugin-tools';
 import { srcSubpathImportPlugin } from '@baseplate-dev/tools/src-subpath-import-plugin';
 import federation from '@originjs/vite-plugin-federation';
 import tailwindcss from '@tailwindcss/vite';
@@ -12,7 +9,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(async (): Promise<UserConfig> => {
   const viteTargets = await getModuleFederationTargets(__dirname, {
-    rewritePluginDirectory: rewriteDistToSrc,
+    overridePluginGlobs: ['src/*/plugin.json'],
   });
   return {
     build: {
