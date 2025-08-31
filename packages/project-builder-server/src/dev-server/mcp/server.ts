@@ -128,6 +128,8 @@ export function createMcpServer({
     logger: mcpLogger,
   };
 
+  let isActionRunning = false;
+
   for (const action of actions) {
     const typedAction = action as ServiceAction;
     server.registerTool(
@@ -139,21 +141,30 @@ export function createMcpServer({
         outputSchema: typedAction.outputSchema,
       },
       async (input) => {
-        const result = await runActionInWorker(
-          typedAction,
-          input,
-          mcpServiceContext,
-        );
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result),
-              mimeType: 'application/json',
-            },
-          ],
-          structuredContent: result,
-        };
+        if (isActionRunning) {
+          throw new Error('An action is already running');
+        }
+
+        try {
+          isActionRunning = true;
+          const result = await runActionInWorker(
+            typedAction,
+            input,
+            mcpServiceContext,
+          );
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result),
+                mimeType: 'application/json',
+              },
+            ],
+            structuredContent: result,
+          };
+        } finally {
+          isActionRunning = false;
+        }
       },
     );
   }
