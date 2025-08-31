@@ -27,9 +27,11 @@ export async function runActionInWorker<
     const { logger, ...restContext } = context;
 
     // Log when a new action execution begins with input arguments
-    logger.info(
-      `Starting execution of action: ${serviceAction.name} with input ${JSON.stringify(input, null, 2)}`,
-    );
+    logger.info({
+      message: `Starting execution of action: ${serviceAction.name}`,
+      input,
+      name: serviceAction.name,
+    });
 
     const worker = new Worker(
       path.join(import.meta.dirname, 'worker-script.js'),
@@ -53,13 +55,20 @@ export async function runActionInWorker<
       const typedMessage = message as WorkerMessage;
 
       if (typedMessage.type === 'log') {
-        logger[typedMessage.level](typedMessage.message);
+        logger[typedMessage.level](
+          typedMessage.metadata ?? {},
+          typedMessage.message,
+        );
         return;
       }
 
       clearTimeout(timeout);
 
       if (typedMessage.type === 'success') {
+        logger.info({
+          message: `Action ${serviceAction.name} completed successfully`,
+          name: serviceAction.name,
+        });
         resolve(
           typedMessage.result as z.objectInputType<
             TOutputShape,
@@ -68,7 +77,11 @@ export async function runActionInWorker<
           >,
         );
       } else {
-        // Reconstruct error with stack trace
+        logger.error({
+          message: `Action ${serviceAction.name} completed with an error`,
+          name: serviceAction.name,
+          error: typedMessage.error,
+        });
         const error = new Error(typedMessage.error.message);
         error.name = typedMessage.error.name ?? 'Error';
         error.stack = typedMessage.error.stack;

@@ -30,6 +30,7 @@ interface WorkerMessageLog {
   type: 'log';
   level: LogLevel;
   message: string;
+  metadata?: object;
 }
 
 export type WorkerMessage =
@@ -73,6 +74,7 @@ try {
       type: 'log',
       level: message.level,
       message: message.message,
+      metadata: message.metadata,
     });
   });
 
