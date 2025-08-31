@@ -469,6 +469,102 @@ mcp__baseplate -
   });
 ```
 
+#### `snapshot-add`
+
+Add files to snapshot for persistent differences tracking.
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project
+- `app` (required): The app name within the project
+- `files` (required): Array of file paths to add to snapshot
+- `deleted` (optional): Mark files as intentionally deleted in snapshot
+- `snapshotDirectory` (optional): Custom snapshot directory (defaults to .baseplate-snapshot)
+
+**Usage:**
+
+```typescript
+mcp__baseplate -
+  dev -
+  server__snapshot -
+  add({
+    project: 'blog-with-auth',
+    app: 'backend',
+    files: ['src/custom-file.ts'],
+    deleted: false,
+  });
+```
+
+#### `snapshot-remove`
+
+Remove files from snapshot tracking.
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project
+- `app` (required): The app name within the project
+- `files` (required): Array of file paths to remove from snapshot
+- `snapshotDirectory` (optional): Custom snapshot directory (defaults to .baseplate-snapshot)
+
+**Usage:**
+
+```typescript
+mcp__baseplate -
+  dev -
+  server__snapshot -
+  remove({
+    project: 'blog-with-auth',
+    app: 'backend',
+    files: ['src/file-to-untrack.ts'],
+  });
+```
+
+#### `snapshot-save`
+
+Save snapshot of current differences (overwrites existing snapshot).
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project
+- `app` (required): The app name within the project
+- `snapshotDirectory` (optional): Custom snapshot directory (defaults to .baseplate-snapshot)
+- `force` (optional): Skip confirmation prompt and force save snapshot
+
+**Usage:**
+
+```typescript
+mcp__baseplate -
+  dev -
+  server__snapshot -
+  save({
+    project: 'blog-with-auth',
+    app: 'backend',
+    force: true,
+  });
+```
+
+#### `snapshot-show`
+
+Display current snapshot contents and tracked files.
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project
+- `app` (required): The app name within the project
+- `snapshotDirectory` (optional): Custom snapshot directory (defaults to .baseplate-snapshot)
+
+**Usage:**
+
+```typescript
+mcp__baseplate -
+  dev -
+  server__snapshot -
+  show({
+    project: 'blog-with-auth',
+    app: 'backend',
+  });
+```
+
 ### Common Usage Patterns
 
 **Project Development Workflow:**
@@ -598,12 +694,27 @@ Analyze the diff results:
 
 For files with intentional differences that should be preserved:
 
-```bash
-# Save snapshot of intentional differences
-baseplate snapshot add blog-with-auth backend src/specific-file.ts
+```typescript
+// Save snapshot of intentional differences
+mcp__baseplate -
+  dev -
+  server__snapshot -
+  add({
+    project: 'blog-with-auth',
+    app: 'backend',
+    files: ['src/specific-file.ts'],
+  });
 
-# For removed files that should stay removed
-baseplate snapshot add --deleted blog-with-auth backend src/removed-file.ts
+// For removed files that should stay removed
+mcp__baseplate -
+  dev -
+  server__snapshot -
+  add({
+    project: 'blog-with-auth',
+    app: 'backend',
+    files: ['src/removed-file.ts'],
+    deleted: true,
+  });
 ```
 
 #### 8. Code Synchronization
@@ -657,15 +768,35 @@ git commit -m "feat: implement [feature description]"
 
 For complex scenarios with intentional differences:
 
-```bash
-# View current snapshot status
-baseplate snapshot show blog-with-auth backend
+```typescript
+// View current snapshot status
+mcp__baseplate -
+  dev -
+  server__snapshot -
+  show({
+    project: 'blog-with-auth',
+    app: 'backend',
+  });
 
-# Remove files from snapshot (let them be generated normally)
-baseplate snapshot remove blog-with-auth backend src/file.ts
+// Remove files from snapshot (let them be generated normally)
+mcp__baseplate -
+  dev -
+  server__snapshot -
+  remove({
+    project: 'blog-with-auth',
+    app: 'backend',
+    files: ['src/file.ts'],
+  });
 
-# Handle diff conflicts automatically
-baseplate snapshot fix-diffs blog-with-auth backend
+// Save complete snapshot (overwrites existing)
+mcp__baseplate -
+  dev -
+  server__snapshot -
+  save({
+    project: 'blog-with-auth',
+    app: 'backend',
+    force: true,
+  });
 ```
 
 #### Template Management During Development
@@ -707,8 +838,8 @@ mcp__baseplate -
 
 #### Diff Conflicts
 
-- Use `baseplate snapshot fix-diffs` for automatic resolution
-- For manual conflicts, edit files and re-add to snapshot
+- Use `mcp__baseplate-dev-server__snapshot-add` to add resolved files to snapshot
+- For manual conflicts, edit files and re-add to snapshot using the MCP action
 - Consider if differences indicate generator bugs vs. intentional customizations
 
 #### Import Alias Differences
@@ -719,14 +850,18 @@ mcp__baseplate -
 
 ### Command Quick Reference
 
-| Task               | MCP Command                                     | Legacy CLI                      |
-| ------------------ | ----------------------------------------------- | ------------------------------- |
-| Extract templates  | `mcp__baseplate-dev-server__extract-templates`  | `pnpm start templates extract`  |
-| Show differences   | `mcp__baseplate-dev-server__diff-project`       | `pnpm start diff`               |
-| Sync codebase      | `mcp__baseplate-dev-server__sync-project`       | `pnpm start sync`               |
-| List templates     | `mcp__baseplate-dev-server__list-templates`     | `pnpm start templates list`     |
-| Generate templates | `mcp__baseplate-dev-server__generate-templates` | `pnpm start templates generate` |
-| Delete template    | `mcp__baseplate-dev-server__delete-template`    | `pnpm start templates delete`   |
+| Task                 | MCP Command                                     | Legacy CLI                      |
+| -------------------- | ----------------------------------------------- | ------------------------------- |
+| Extract templates    | `mcp__baseplate-dev-server__extract-templates`  | `pnpm start templates extract`  |
+| Show differences     | `mcp__baseplate-dev-server__diff-project`       | `pnpm start diff`               |
+| Sync codebase        | `mcp__baseplate-dev-server__sync-project`       | `pnpm start sync`               |
+| List templates       | `mcp__baseplate-dev-server__list-templates`     | `pnpm start templates list`     |
+| Generate templates   | `mcp__baseplate-dev-server__generate-templates` | `pnpm start templates generate` |
+| Delete template      | `mcp__baseplate-dev-server__delete-template`    | `pnpm start templates delete`   |
+| Add to snapshot      | `mcp__baseplate-dev-server__snapshot-add`       | `baseplate snapshot add`        |
+| Remove from snapshot | `mcp__baseplate-dev-server__snapshot-remove`    | `baseplate snapshot remove`     |
+| Save snapshot        | `mcp__baseplate-dev-server__snapshot-save`      | `baseplate snapshot save`       |
+| Show snapshot        | `mcp__baseplate-dev-server__snapshot-show`      | `baseplate snapshot show`       |
 
 ### Best Practices
 

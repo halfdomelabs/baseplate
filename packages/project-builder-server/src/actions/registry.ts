@@ -1,4 +1,10 @@
 import { diffProjectAction } from './diff/diff-project.action.js';
+import {
+  snapshotAddAction,
+  snapshotRemoveAction,
+  snapshotSaveAction,
+  snapshotShowAction,
+} from './snapshot/index.js';
 import { syncProjectAction } from './sync/index.js';
 import {
   deleteTemplateAction,
@@ -14,4 +20,8 @@ export const ALL_SERVICE_ACTIONS = [
   extractTemplatesAction,
   generateTemplatesAction,
   listTemplatesAction,
+  snapshotAddAction,
+  snapshotRemoveAction,
+  snapshotSaveAction,
+  snapshotShowAction,
 ];
