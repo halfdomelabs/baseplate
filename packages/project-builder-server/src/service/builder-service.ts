@@ -218,22 +218,6 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       },
       this.logger.onLog(emitConsoleEvent),
       this.logger.onError(emitConsoleEvent),
-      this.logger.onMessage((message) => {
-        const logFn =
-          message.level === 'error'
-            ? console.error
-            : message.level === 'warn'
-              ? console.warn
-              : message.level === 'info'
-                ? console.info
-                : console.debug;
-
-        if (message.metadata) {
-          logFn(message.metadata, message.message);
-        } else {
-          logFn(message.message);
-        }
-      }),
       this.syncMetadataController.watchMetadata(),
       this.syncMetadataController.on(
         'sync-metadata-changed',
