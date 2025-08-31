@@ -37,8 +37,6 @@ export type WorkerMessage =
   | WorkerMessageError
   | WorkerMessageLog;
 
-const scriptPath = import.meta.filename;
-
 const { actionName, input, context } = workerData as WorkerData;
 
 function sendMessage(message: WorkerMessage): void {
@@ -51,13 +49,6 @@ function sendMessage(message: WorkerMessage): void {
 }
 
 try {
-  // Register TSX if we're in a TypeScript file
-  if (scriptPath.endsWith('.ts')) {
-    // eslint-disable-next-line import-x/no-extraneous-dependencies -- allow TSX import if we're running in a TypeScript file
-    const { register } = await import('tsx/esm/api');
-    register();
-  }
-
   const actionRegistry = await import('../registry.js');
 
   const action = actionRegistry.ALL_SERVICE_ACTIONS.find(

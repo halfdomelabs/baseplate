@@ -25,6 +25,12 @@ export async function runActionInWorker<
 ): Promise<z.objectInputType<TOutputShape, z.ZodTypeAny, 'strip'>> {
   return new Promise((resolve, reject) => {
     const { logger, ...restContext } = context;
+
+    // Log when a new action execution begins with input arguments
+    logger.info(
+      `Starting execution of action: ${serviceAction.name} with input ${JSON.stringify(input, null, 2)}`,
+    );
+
     const worker = new Worker(
       path.join(import.meta.dirname, 'worker-script.js'),
       {
