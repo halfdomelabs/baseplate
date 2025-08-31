@@ -96,9 +96,7 @@ export function createMcpServer({
     return {};
   });
 
-  const mcpLogger = createEventedLogger({
-    noConsole: true,
-  });
+  const mcpLogger = createEventedLogger();
 
   mcpLogger.onMessage((message) => {
     const mcpLevel = message.level === 'warn' ? 'warning' : message.level;

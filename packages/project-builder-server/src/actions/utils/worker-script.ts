@@ -61,9 +61,7 @@ try {
     );
   }
 
-  const proxyLogger = createEventedLogger({
-    noConsole: true,
-  });
+  const proxyLogger = createEventedLogger();
 
   const contextWithLogger = {
     ...context,

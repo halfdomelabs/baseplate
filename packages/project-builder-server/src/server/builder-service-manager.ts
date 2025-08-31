@@ -1,6 +1,4 @@
-import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
-
-import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
+import type { ServiceActionContext } from '#src/actions/types.js';
 
 import { generateProjectId } from '#src/actions/utils/project-id.js';
 import { ProjectBuilderService } from '#src/service/builder-service.js';
@@ -10,10 +8,7 @@ export class BuilderServiceManager {
 
   constructor(
     protected options: {
-      initialDirectories?: string[];
       cliVersion: string;
-      builtInPlugins: PluginMetadataWithPaths[];
-      userConfig: BaseplateUserConfig;
       /**
        * Whether to skip running commands for use in testing.
        */
@@ -22,9 +17,15 @@ export class BuilderServiceManager {
        * The path to the CLI file that was executed to start the sync.
        */
       cliFilePath?: string;
+      /**
+       * The context for the service actions.
+       */
+      serviceActionContext: ServiceActionContext;
     },
   ) {
-    for (const directory of this.options.initialDirectories ?? []) {
+    for (const directory of this.options.serviceActionContext.projects.map(
+      (project) => project.directory,
+    )) {
       this.addService(directory);
     }
   }
@@ -35,10 +36,9 @@ export class BuilderServiceManager {
       directory,
       id,
       cliVersion: this.options.cliVersion,
-      builtInPlugins: this.options.builtInPlugins,
-      userConfig: this.options.userConfig,
       skipCommands: this.options.skipCommands,
       cliFilePath: this.options.cliFilePath,
+      serviceActionContext: this.options.serviceActionContext,
     });
     service.init();
     this.services.set(id, service);

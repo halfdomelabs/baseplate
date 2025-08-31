@@ -3,7 +3,6 @@ import type { Command } from 'commander';
 import type { FastifyInstance } from 'fastify';
 import type { Logger } from 'pino';
 
-import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
 import { discoverProjects } from '@baseplate-dev/project-builder-server/actions';
 import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
@@ -12,6 +11,7 @@ import { getUserConfig } from '#src/services/user-config.js';
 
 import { getEnabledFeatureFlags } from '../services/feature-flags.js';
 import { logger } from '../services/logger.js';
+import { createServiceActionContext } from '../utils/create-service-action-context.js';
 import { expandPathWithTilde } from '../utils/path.js';
 import { resolveModule } from '../utils/resolve.js';
 import { getPackageVersion } from '../utils/version.js';
@@ -36,10 +36,6 @@ export async function serveWebServer(
   const projectBuilderWebDir = await packageDirectory({
     cwd: resolveModule('@baseplate-dev/project-builder-web/package.json'),
   });
-  const resolvedDirectories = directories.map((dir) =>
-    expandPathWithTilde(dir),
-  );
-  const builtInPlugins = await getDefaultPlugins(logger);
   const version = await getPackageVersion();
 
   if (!projectBuilderWebDir) {
@@ -50,13 +46,13 @@ export async function serveWebServer(
 
   const userConfig = await getUserConfig();
 
+  const context = await createServiceActionContext();
+
   const serviceManager = new BuilderServiceManager({
-    initialDirectories: resolvedDirectories,
     cliVersion: version,
-    builtInPlugins,
-    userConfig,
     skipCommands,
     cliFilePath: process.argv[1],
+    serviceActionContext: context,
   });
 
   const fastifyInstance = await startWebServer({
