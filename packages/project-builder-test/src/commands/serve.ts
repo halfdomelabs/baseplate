@@ -1,4 +1,5 @@
 import type { ProjectDefinitionInput } from '@baseplate-dev/project-builder-lib';
+import type { ServiceActionContext } from '@baseplate-dev/project-builder-server/actions';
 import type { Command } from 'commander';
 
 import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
@@ -8,6 +9,7 @@ import {
   DEFAULT_SERVER_PORT,
   startWebServer,
 } from '@baseplate-dev/project-builder-server';
+import { loadProjectFromDirectory } from '@baseplate-dev/project-builder-server/actions';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pino } from 'pino';
@@ -84,11 +86,18 @@ async function serveWebsite(projectDirectory: string): Promise<void> {
     },
   });
 
-  const serviceManager = new BuilderServiceManager({
-    initialDirectories: [projectDirectory],
-    builtInPlugins,
-    cliVersion,
+  const projectInfo = await loadProjectFromDirectory(projectDirectory);
+
+  const context: ServiceActionContext = {
+    projects: [projectInfo],
+    plugins: builtInPlugins,
+    logger: pinoLogger,
     userConfig: {},
+  };
+
+  const serviceManager = new BuilderServiceManager({
+    serviceActionContext: context,
+    cliVersion,
   });
 
   await startWebServer({
