@@ -5,6 +5,8 @@ import z from 'zod';
 
 import type { ServiceAction, ServiceActionContext } from '../types.js';
 
+import { runActionInWorker } from './run-in-worker.js';
+
 export interface TrpcFromActionBuilder {
   mutation: <
     TInputShape extends z.ZodRawShape,
@@ -42,7 +44,7 @@ export function makeTrpcFromActionBuilder<Ctx extends ServiceActionContext>(
         .input(z.object(action.inputSchema) as z.AnyZodObject)
         .output(z.object(action.outputSchema) as z.AnyZodObject)
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        .mutation(({ input, ctx }) => action.handler(input, ctx)),
+        .mutation(({ input, ctx }) => runActionInWorker(action, input, ctx)),
     query: <
       TInputShape extends z.ZodRawShape,
       TOutputShape extends z.ZodRawShape,
@@ -53,6 +55,6 @@ export function makeTrpcFromActionBuilder<Ctx extends ServiceActionContext>(
         .input(z.object(action.inputSchema) as z.AnyZodObject)
         .output(z.object(action.outputSchema) as z.AnyZodObject)
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        .query(({ input, ctx }) => action.handler(input, ctx)),
+        .query(({ input, ctx }) => runActionInWorker(action, input, ctx)),
   };
 }
