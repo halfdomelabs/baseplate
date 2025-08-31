@@ -105,7 +105,7 @@ export function createMcpServer({
     }
 
     if (message.level === 'error' || forwardAllLogsToConsole) {
-      logger[message.level](message.message);
+      logger[message.level](message.metadata ?? {}, message.message);
     }
 
     server.server
@@ -114,6 +114,7 @@ export function createMcpServer({
         level: mcpLevel,
         data: {
           message: message.message,
+          metadata: message.metadata,
         },
       })
       .catch((err: unknown) => {

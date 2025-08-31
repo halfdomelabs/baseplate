@@ -80,7 +80,7 @@ export async function runActionInWorker<
         logger.error({
           message: `Action ${serviceAction.name} completed with an error`,
           name: serviceAction.name,
-          error: typedMessage.error,
+          err: typedMessage.error,
         });
         const error = new Error(typedMessage.error.message);
         error.name = typedMessage.error.name ?? 'Error';

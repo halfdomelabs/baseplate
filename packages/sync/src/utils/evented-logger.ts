@@ -1,5 +1,16 @@
 import { createTypedEventEmitter } from '@baseplate-dev/utils';
 
+export interface LogMessage {
+  level: LogLevel;
+  message: string;
+  metadata?: {
+    err?: SerializedError;
+    [key: string]: unknown;
+  };
+}
+
+export type LogLevel = 'error' | 'warn' | 'info' | 'debug';
+
 export interface Logger {
   error(message: unknown): void;
   error(obj: object, message?: string): void;
@@ -11,8 +22,6 @@ export interface Logger {
   debug(obj: object, message?: string): void;
 }
 
-export type LogLevel = 'error' | 'warn' | 'info' | 'debug';
-
 export interface SerializedError {
   type: string;
   message: string;
@@ -20,16 +29,6 @@ export interface SerializedError {
   cause?: SerializedError;
   [key: string]: unknown;
 }
-
-export interface LogMessage {
-  level: LogLevel;
-  message: string;
-  metadata?: {
-    err?: SerializedError;
-    [key: string]: unknown;
-  };
-}
-
 export interface EventedLogger extends Logger {
   onMessage(listener: (message: LogMessage) => void): () => void;
   onLog(listener: (message: string) => void): () => void;
