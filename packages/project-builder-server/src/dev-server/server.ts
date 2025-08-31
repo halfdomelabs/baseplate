@@ -57,7 +57,11 @@ async function createServer(
   } satisfies FastifyTRPCPluginOptions<DevServerRouter>);
 
   // Register MCP server
-  const mcpServer = createMcpServer(ALL_SERVICE_ACTIONS, context);
+  const mcpServer = createMcpServer({
+    actions: ALL_SERVICE_ACTIONS,
+    context,
+    forwardAllLogsToConsole: true,
+  });
   await server.register(mcpPlugin, {
     mcpServer,
   });

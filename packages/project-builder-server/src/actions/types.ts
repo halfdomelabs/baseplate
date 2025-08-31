@@ -18,16 +18,18 @@ export interface ServiceActionProject {
 
 /**
  * The context provided to a service action.
+ *
+ * @remarks All properties must be serializable for worker thread communication. (except logger which we proxy)
  */
 export interface ServiceActionContext {
   /** The projects available to the project builder. */
   projects: ServiceActionProject[];
-  /** The logger to write to when executing the service action. */
-  logger: Logger;
   /** The user config for the project builder. */
   userConfig: BaseplateUserConfig;
   /** The plugins available to the project builder. */
   plugins: PluginMetadataWithPaths[];
+  /** The logger to write to when executing the service action. */
+  logger: Logger;
 }
 
 /**

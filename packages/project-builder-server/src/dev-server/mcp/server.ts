@@ -12,6 +12,8 @@ import type {
   ServiceActionContext,
 } from '#src/actions/types.js';
 
+import { runActionInWorker } from '#src/actions/utils/run-in-worker.js';
+
 // List of MCP log levels ordered from most to least verbose
 const LOG_LEVEL_LIST = [
   'debug',
@@ -26,10 +28,22 @@ const LOG_LEVEL_LIST = [
 
 type LogLevel = (typeof LOG_LEVEL_LIST)[number];
 
-export function createMcpServer(
-  actions: AnyServiceAction[],
-  context: ServiceActionContext,
-): McpServer {
+interface CreateMcpServerOptions {
+  context: ServiceActionContext;
+  actions: AnyServiceAction[];
+  /**
+   * Whether to forward all logs to the console. (errors are always forwarded)
+   *
+   * This is important to leave disable in the context of STDIO mode since we can't have the console logs clobbering the output.
+   */
+  forwardAllLogsToConsole?: boolean;
+}
+
+export function createMcpServer({
+  actions,
+  context,
+  forwardAllLogsToConsole,
+}: CreateMcpServerOptions): McpServer {
   const { projects, logger } = context;
 
   const server = new McpServer(
@@ -88,8 +102,12 @@ export function createMcpServer(
 
   mcpLogger.onMessage((message) => {
     const mcpLevel = message.level === 'warn' ? 'warning' : message.level;
-    if (LOG_LEVEL_LIST.indexOf(logLevel) < LOG_LEVEL_LIST.indexOf(mcpLevel)) {
+    if (LOG_LEVEL_LIST.indexOf(logLevel) > LOG_LEVEL_LIST.indexOf(mcpLevel)) {
       return;
+    }
+
+    if (message.level === 'error' || forwardAllLogsToConsole) {
+      logger[message.level](message.message);
     }
 
     server.server
@@ -123,7 +141,11 @@ export function createMcpServer(
         outputSchema: typedAction.outputSchema,
       },
       async (input) => {
-        const result = await typedAction.handler(input, mcpServiceContext);
+        const result = await runActionInWorker(
+          typedAction,
+          input,
+          mcpServiceContext,
+        );
         return {
           content: [
             {
