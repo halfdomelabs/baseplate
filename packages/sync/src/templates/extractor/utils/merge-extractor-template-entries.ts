@@ -3,6 +3,7 @@ import { groupBy } from 'es-toolkit';
 import type { TemplateExtractorContext } from '../runner/template-extractor-context.js';
 import type { TemplateFileExtractorMetadataEntry } from '../runner/template-file-extractor.js';
 
+import { EXTRACTOR_CONFIG_FILENAME } from '../../constants.js';
 import { sortExtractorConfigKeys } from './sort-extractor-config-keys.js';
 
 /**
@@ -29,7 +30,9 @@ export function mergeExtractorTemplateEntries(
   )) {
     const generatorConfig = context.configLookup.getExtractorConfig(generator);
     if (!generatorConfig) {
-      throw new Error(`No 'extractor.json' found for generator: ${generator}`);
+      throw new Error(
+        `No '${EXTRACTOR_CONFIG_FILENAME}' found for generator: ${generator}`,
+      );
     }
 
     // Upsert template entries into the extractor.json file

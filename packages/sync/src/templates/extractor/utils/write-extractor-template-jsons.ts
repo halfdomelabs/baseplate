@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import type { TemplateExtractorContext } from '../runner/template-extractor-context.js';
 
+import { EXTRACTOR_CONFIG_FILENAME } from '../../constants.js';
+
 /**
  * Writes extractor.json files for the specified generators to the file system.
  * This function reads the current configurations from the context and writes them
@@ -19,12 +21,14 @@ export async function writeExtractorTemplateJsons(
   for (const generator of generatorNames) {
     const generatorConfig = context.configLookup.getExtractorConfig(generator);
     if (!generatorConfig) {
-      throw new Error(`No 'extractor.json' found for generator: ${generator}`);
+      throw new Error(
+        `No '${EXTRACTOR_CONFIG_FILENAME}' found for generator: ${generator}`,
+      );
     }
 
     // Write the config to the extractor.json file
     await context.fileContainer.writeFile(
-      path.join(generatorConfig.generatorDirectory, 'extractor.json'),
+      path.join(generatorConfig.generatorDirectory, EXTRACTOR_CONFIG_FILENAME),
       stringifyPrettyCompact(generatorConfig.config),
     );
   }
