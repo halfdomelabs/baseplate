@@ -5,11 +5,12 @@ import {
   extractorConfigSchema,
   sortExtractorConfigKeys,
 } from '@baseplate-dev/sync';
+import { stringifyPrettyCompact } from '@baseplate-dev/utils';
 import {
   handleFileNotFoundError,
   readJsonWithSchema,
-  writeStablePrettyJson,
 } from '@baseplate-dev/utils/node';
+import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 /**
@@ -42,7 +43,7 @@ export async function writeExtractorConfig(
 
   const sortedConfig = sortExtractorConfigKeys(config);
 
-  await writeStablePrettyJson(extractorPath, sortedConfig);
+  await writeFile(extractorPath, `${stringifyPrettyCompact(sortedConfig)}\n`);
 }
 
 /**

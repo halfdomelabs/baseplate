@@ -160,7 +160,7 @@ describe('template-metadata', () => {
         'Button.tsx': {
           template: 'component',
           generator: '@baseplate-dev/react-generators#core/react',
-          instanceData: undefined,
+          instanceData: {},
         },
       });
     });
