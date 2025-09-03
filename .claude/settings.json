@@ -1,0 +1,4 @@
+{
+  "enabledMcpjsonServers": ["baseplate-dev-server"],
+  "enableAllProjectMcpServers": false
+}

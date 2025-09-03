@@ -12,7 +12,7 @@ See @.cursor/rules/code-style.mdc for code style guidelines.
 
 ## UI Development Guidelines
 
-See @.cursor/rules/ui-development.mdc for UI development guidelines.
+See @.cursor/rules/ui-rules.mdc for UI development guidelines.
 
 ### UI Components Quick Reference
 
@@ -203,7 +203,6 @@ Baseplate is organized into several core packages:
 Baseplate consists of two main tiers:
 
 1. **Project Builder**: UI-driven configuration tool that produces a project definition (JSON)
-
    - Allows configuring data models, authentication, etc.
    - Compiles high-level definitions into generator bundles
 
@@ -323,3 +322,551 @@ Usage Examples:
   "documents://engineering/api/auth.md"
 - Quick edits: inline-edit to update specific sections
 - Major updates: edit-document to rewrite entire document
+
+## Baseplate Development Server MCP
+
+Baseplate includes an integrated MCP (Model Context Protocol) server that provides programmatic access to core development operations. The MCP server is configured in `.mcp.json` and can be accessed via Claude Code MCP tools.
+
+### Configuration
+
+The MCP server is configured to run via:
+
+```bash
+pnpm start mcp
+```
+
+### Available MCP Actions
+
+The following actions are available through the Baseplate development server MCP integration:
+
+#### `diff-project`
+
+Generate a diff between what would be generated and what currently exists in the working directory.
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project to diff
+- `compact` (optional): Whether to show compact diff format
+- `packages` (optional): Only show diffs for specific packages
+- `include` (optional): Filter files by glob patterns
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__diff_project({
+  project: 'my-project',
+  compact: true,
+});
+```
+
+#### `sync-project`
+
+Sync the specified project using the baseplate sync engine.
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project to sync
+- `overwrite` (optional): Whether to force overwrite existing files and apply snapshot
+- `skipCommands` (optional): Whether to skip running commands
+- `snapshotDirectory` (optional): Directory containing snapshot to use when generating
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__sync_project({
+  project: 'my-project',
+  overwrite: false,
+});
+```
+
+#### `delete-template`
+
+Delete a template by looking up its metadata from the file path and removing all associated files (template file, metadata, and generated file).
+
+**Parameters:**
+
+- `filePath` (required): Path to file to delete (absolute or relative)
+- `project` (optional): Project name or ID (required for relative paths, optional for absolute)
+
+**Usage:**
+
+```javascript
+// Delete template using absolute path
+mcp__baseplate_dev_server__delete_template({
+  filePath: '/path/to/project/src/components/my-component.tsx',
+});
+
+// Delete template using relative path (requires project)
+mcp__baseplate_dev_server__delete_template({
+  filePath: 'src/components/my-component.tsx',
+  project: 'my-project',
+});
+```
+
+#### `extract-templates`
+
+Extract templates from the specified project and app.
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project to extract templates from
+- `app` (required): The app name to extract templates from
+- `autoGenerateExtractor` (optional, default: true): Auto-generate extractor.json files
+- `skipClean` (optional, default: false): Skip cleaning the output directories
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__extract_templates({
+  project: 'my-project',
+  app: 'my-app',
+});
+```
+
+#### `generate-templates`
+
+Generate typed template files from existing extractor.json configurations.
+
+**Parameters:**
+
+- `project` (optional): Specify the project to source the generators from
+- `skipClean` (optional, default: false): Skip cleaning the output directories
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__generate_templates({
+  project: 'my-project',
+});
+```
+
+#### `list-templates`
+
+List all available generators with their templates.
+
+**Parameters:**
+
+- `project` (optional): Specify the project to source the generators from
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__list_templates({
+  project: 'my-project',
+});
+```
+
+#### `show-template-metadata`
+
+Show template metadata for a file by looking up information from .templates-info.json.
+
+**Parameters:**
+
+- `filePath` (required): Path to file to show metadata for (absolute or relative)
+- `project` (optional): Project name or ID (required for relative paths, optional for absolute)
+
+**Usage:**
+
+```javascript
+// Show metadata using absolute path
+mcp__baseplate_dev_server__show_template_metadata({
+  filePath: '/path/to/project/src/components/my-component.tsx',
+});
+
+// Show metadata using relative path (requires project)
+mcp__baseplate_dev_server__show_template_metadata({
+  filePath: 'src/components/my-component.tsx',
+  project: 'my-project',
+});
+```
+
+#### `snapshot-add`
+
+Add files to snapshot for persistent differences tracking.
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project
+- `app` (required): The app name within the project
+- `files` (required): Array of file paths to add to snapshot
+- `deleted` (optional): Mark files as intentionally deleted in snapshot
+- `snapshotDirectory` (optional): Custom snapshot directory (defaults to .baseplate-snapshot)
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__snapshot_add({
+  project: 'blog-with-auth',
+  app: 'backend',
+  files: ['src/custom-file.ts'],
+  deleted: false,
+});
+```
+
+#### `snapshot-remove`
+
+Remove files from snapshot tracking.
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project
+- `app` (required): The app name within the project
+- `files` (required): Array of file paths to remove from snapshot
+- `snapshotDirectory` (optional): Custom snapshot directory (defaults to .baseplate-snapshot)
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__snapshot_remove({
+  project: 'blog-with-auth',
+  app: 'backend',
+  files: ['src/file-to-untrack.ts'],
+});
+```
+
+#### `snapshot-save`
+
+Save snapshot of current differences (overwrites existing snapshot).
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project
+- `app` (required): The app name within the project
+- `snapshotDirectory` (optional): Custom snapshot directory (defaults to .baseplate-snapshot)
+- `force` (optional): Skip confirmation prompt and force save snapshot
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__snapshot_save({
+  project: 'blog-with-auth',
+  app: 'backend',
+  force: true,
+});
+```
+
+#### `snapshot-show`
+
+Display current snapshot contents and tracked files.
+
+**Parameters:**
+
+- `project` (required): The name or ID of the project
+- `app` (required): The app name within the project
+- `snapshotDirectory` (optional): Custom snapshot directory (defaults to .baseplate-snapshot)
+
+**Usage:**
+
+```javascript
+mcp__baseplate_dev_server__snapshot_show({
+  project: 'blog-with-auth',
+  app: 'backend',
+});
+```
+
+### Common Usage Patterns
+
+**Project Development Workflow:**
+
+1. Use `list-templates` to see available generators and templates
+2. Use `diff-project` to see what changes would be made
+3. Use `sync-project` to apply changes to your project
+4. Use `extract-templates` to create reusable templates from existing code
+
+**Template Management:**
+
+1. Use `list-templates` to see existing templates
+2. Use `extract-templates` to create new templates from project code
+3. Use `generate-templates` to create typed template files
+4. Use `delete-template` with file paths to remove templates that are no longer needed
+
+## Baseplate Development Workflow
+
+This section documents the complete workflow for developing new generated code changes in Baseplate, incorporating MCP commands and modern snapshot-based approaches.
+
+### Prerequisites
+
+- Baseplate repository checked out locally with example projects in the `examples/` directory:
+  - `examples/blog-with-auth` - Blog application with authentication
+  - `examples/todo-with-auth0` - Todo application with Auth0 integration
+- MCP server configured and running
+
+### Development Workflow Overview
+
+The Baseplate development process follows a "code-first" approach where you:
+
+1. Make changes directly in working codebases
+2. Extract those changes into reusable templates
+3. Update generators to use the new templates
+4. Validate and sync the generated code
+
+### Step-by-Step Development Process
+
+#### 1. Setup
+
+```bash
+# Create feature branch for your work
+git checkout -b feature/your-feature-name
+```
+
+#### 2. Code Development
+
+Make your changes in the appropriate example project (e.g., `examples/blog-with-auth`):
+
+```bash
+cd examples/blog-with-auth
+
+# Make your code changes (e.g., update local auth, add features)
+# Edit files as needed...
+
+# Validate changes work
+pnpm build && pnpm lint
+```
+
+#### 3. Template Metadata Management (Optional)
+
+**For most cases: Skip this step!** Template metadata is automatically preserved when you modify existing template files.
+
+Only manage template metadata when:
+
+- **Creating brand new template files** (not modifying existing ones)
+- **Changing fundamental template properties** (name, generator, type, variables for text templates only)
+- **Removing template files completely**
+
+**Check existing metadata first:**
+
+```javascript
+// See what template metadata exists for a file
+mcp__baseplate_dev_server__show_template_metadata({
+  filePath: 'src/components/my-component.tsx',
+  project: 'blog-with-auth',
+});
+```
+
+**Only configure metadata when needed:**
+
+```javascript
+// For NEW TypeScript templates
+mcp__baseplate_dev_server__configure_ts_template({
+  filePath: 'src/components/brand-new-component.tsx',
+  generator: '@baseplate-dev/react-generators#core/react',
+  templateName: 'brand-new-component',
+  project: 'blog-with-auth',
+});
+
+// For NEW text templates with variables
+mcp__baseplate_dev_server__configure_text_template({
+  filePath: 'src/config/new-config.json',
+  generator: '@baseplate-dev/core-generators',
+  templateName: 'new-config',
+  variables: { appName: { value: 'MyApp' } },
+  project: 'blog-with-auth',
+});
+
+// For NEW raw/binary templates
+mcp__baseplate_dev_server__configure_raw_template({
+  filePath: 'public/new-icon.ico',
+  generator: '@baseplate-dev/core-generators',
+  templateName: 'new-icon',
+  project: 'blog-with-auth',
+});
+```
+
+**Delete template completely:**
+
+```javascript
+mcp__baseplate_dev_server__delete_template({
+  filePath: 'src/components/old-component.tsx',
+  project: 'blog-with-auth',
+});
+```
+
+**Remember:** If you're just adding JSDoc, fixing bugs, or making improvements to existing template files, you can skip this entire step!
+
+#### 4. Template Extraction
+
+Extract templates from your working codebase using MCP commands:
+
+```javascript
+// Extract templates for the modified app
+mcp__baseplate_dev_server__extract_templates({
+  project: 'blog-with-auth',
+  app: 'backend',
+});
+```
+
+This updates the local generator templates based on your code changes.
+
+#### 5. Generator Updates
+
+Back in the root of the repository:
+
+```bash
+cd ../../  # Return to repository root
+
+# Fix any type errors from added/removed variables and templates
+pnpm typecheck
+
+# Update generator configurations, schemas, and UI as needed
+# - Wire up new variables in compilers
+# - Update schemas in project-builder-web or plugins
+# - Add/remove generator logic as needed
+
+# Validate changes
+pnpm build && pnpm lint
+```
+
+#### 6. Diff Validation
+
+Check for differences between written and generated code:
+
+```javascript
+// Check what changes would be made
+mcp__baseplate_dev_server__diff_project({
+  project: 'blog-with-auth',
+  packages: ['backend'],
+});
+```
+
+#### 7. Handle Differences
+
+Analyze the diff results:
+
+- **Acceptable differences** (import aliases, minor formatting): Can be ignored
+- **Significant differences**: Update generators to match written code
+- **Mixed scenarios**: Use snapshot system for intentional differences
+
+For files with intentional differences that should be preserved:
+
+```javascript
+// Save snapshot of intentional differences
+mcp__baseplate_dev_server__snapshot_add({
+  project: 'blog-with-auth',
+  app: 'backend',
+  files: ['src/specific-file.ts'],
+});
+
+// For removed files that should stay removed
+mcp__baseplate_dev_server__snapshot_add({
+  project: 'blog-with-auth',
+  app: 'backend',
+  files: ['src/removed-file.ts'],
+  deleted: true,
+});
+```
+
+#### 8. Code Synchronization
+
+Once diffs are acceptable, synchronize the working codebase:
+
+```javascript
+// Overwrite working code with generated code
+mcp__baseplate_dev_server__sync_project({
+  project: 'blog-with-auth',
+  overwrite: true,
+});
+```
+
+For more targeted updates:
+
+```bash
+# Sync only specific files
+baseplate sync blog-with-auth --overwrite --only-files "src/file1.ts,src/file2.ts"
+```
+
+#### 9. Final Validation
+
+```javascript
+// Run final diff to ensure no unexpected changes
+mcp__baseplate_dev_server__diff_project({
+  project: 'blog-with-auth',
+  packages: ['backend'],
+});
+```
+
+The diff should show no changes or only expected/snapshotted differences.
+
+#### 10. Commit Changes
+
+```bash
+# Commit all changes (generators, examples, and templates)
+git add .
+git commit -m "feat: implement [feature description]"
+```
+
+### Advanced Workflows
+
+#### Snapshot Management
+
+For complex scenarios with intentional differences:
+
+```javascript
+// View current snapshot status
+mcp__baseplate_dev_server__snapshot_show({
+  project: 'blog-with-auth',
+  app: 'backend',
+});
+
+// Remove files from snapshot (let them be generated normally)
+mcp__baseplate_dev_server__snapshot_remove({
+  project: 'blog-with-auth',
+  app: 'backend',
+  files: ['src/file.ts'],
+});
+
+// Save complete snapshot (overwrites existing)
+mcp__baseplate_dev_server__snapshot_save({
+  project: 'blog-with-auth',
+  app: 'backend',
+  force: true,
+});
+```
+
+#### Template Management During Development
+
+```javascript
+// List current templates to understand what's available
+mcp__baseplate_dev_server__list_templates({
+  project: 'blog-with-auth',
+});
+
+// Generate template files after manual extractor.json changes
+mcp__baseplate_dev_server__generate_templates({
+  project: 'blog-with-auth',
+});
+
+// Remove outdated templates
+mcp__baseplate_dev_server__delete_template({
+  filePath: 'src/outdated-file.ts',
+  project: 'blog-with-auth',
+});
+```
+
+### Troubleshooting Common Issues
+
+#### Type Errors After Template Extraction
+
+- Check that all template variables are properly defined in generators
+- Ensure import providers are correctly configured
+- Run `pnpm typecheck` to identify specific issues
+
+#### Diff Conflicts
+
+- Use `mcp__baseplate_dev_server__snapshot_add` to add resolved files to snapshot
+- For manual conflicts, edit files and re-add to snapshot using the MCP action
+- Consider if differences indicate generator bugs vs. intentional customizations
+
+#### Import Alias Differences
+
+- Often acceptable (e.g., `../components/button.ts` vs `@src/components/button.ts`)
+- Use snapshots if these differences are intentional and should be preserved
+- Update generators if aliases should be standardized
+
+### Best Practices
+
+1. **Start with working code**: Always develop features in a concrete codebase first
+2. **Use snapshots judiciously**: Only for intentional differences, not generator bugs
+3. **Validate frequently**: Run diff commands often during development
+4. **Test generated code**: Ensure `pnpm build && pnpm lint` passes on synced code
+5. **Keep commits focused**: Separate generator changes from template changes when possible
+6. **Document template variables**: Use clear, descriptive names for template variables

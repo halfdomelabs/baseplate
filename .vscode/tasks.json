@@ -40,6 +40,7 @@
       "problemMatcher": {
         "base": "$tsc-watch",
         "owner": "typescript",
+        "applyTo": "closedDocuments",
         "pattern": {
           "regexp": "^//:watch:tsc:root: (.+):(\\d+):(\\d+) - (error|warning|info) TS(\\d+): (.*)$",
           "file": 1,
@@ -48,6 +49,11 @@
           "severity": 4,
           "code": 5,
           "message": 6
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\/\\/:watch:tsc:root:\\s+\\[[0-9a-zA-Z :]+\\]\\s+(Starting compilation in watch mode|File change detected\\. Starting incremental compilation)\\.\\.\\.",
+          "endsPattern": "^\\/\\/:watch:tsc:root:\\s+\\[[0-9a-zA-Z :]+\\]\\s+(?:Compilation complete\\.|Found \\d+ errors?\\.) Watching for file changes\\."
         }
       }
     },

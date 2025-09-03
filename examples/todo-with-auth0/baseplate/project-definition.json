@@ -1456,7 +1456,7 @@
   "schemaVersion": 19,
   "settings": {
     "general": {
-      "name": "todoer",
+      "name": "todo-with-auth0",
       "packageScope": "prisma-crud",
       "portOffset": 6000
     },

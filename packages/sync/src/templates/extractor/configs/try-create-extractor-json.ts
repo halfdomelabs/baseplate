@@ -4,6 +4,7 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path/posix';
 
 import { parseGeneratorName } from '../../../utils/parse-generator-name.js';
+import { EXTRACTOR_CONFIG_FILENAME } from '../../constants.js';
 
 export interface TryCreateExtractorJsonOptions {
   packageMap: Map<string, string>;
@@ -64,7 +65,10 @@ export async function tryCreateExtractorJson(
 
   const generatorFile = matchingFiles[0];
   const generatorDirectory = path.dirname(generatorFile);
-  const extractorJsonPath = path.join(generatorDirectory, 'extractor.json');
+  const extractorJsonPath = path.join(
+    generatorDirectory,
+    EXTRACTOR_CONFIG_FILENAME,
+  );
 
   // Create the extractor.json content
   const extractorConfig = {

@@ -11,18 +11,38 @@ export function createTestLogger(): TestLogger {
   let [errorOutput, warnOutput, infoOutput, debugOutput] = Array.from({
     length: 4,
   }).fill('') as string[];
+
+  const formatMessage = (messageOrObj: unknown, message?: string): string => {
+    if (typeof messageOrObj === 'string') {
+      return messageOrObj;
+    } else if (typeof messageOrObj === 'object' && messageOrObj !== null) {
+      const obj = messageOrObj as Record<string, unknown>;
+      const msg =
+        message ??
+        (typeof obj.message === 'string'
+          ? obj.message
+          : typeof obj.msg === 'string'
+            ? obj.msg
+            : '');
+      const metadata = JSON.stringify(messageOrObj);
+      return msg ? `${msg} ${metadata}` : metadata;
+    } else {
+      return String(messageOrObj);
+    }
+  };
+
   return {
-    error: (message) => {
-      errorOutput += `${String(message)}\n`;
+    error: (messageOrObj: unknown, message?: string) => {
+      errorOutput += `${formatMessage(messageOrObj, message)}\n`;
     },
-    warn: (message) => {
-      warnOutput += `${String(message)}\n`;
+    warn: (messageOrObj: string | object, message?: string) => {
+      warnOutput += `${formatMessage(messageOrObj, message)}\n`;
     },
-    info: (message) => {
-      infoOutput += `${String(message)}\n`;
+    info: (messageOrObj: string | object, message?: string) => {
+      infoOutput += `${formatMessage(messageOrObj, message)}\n`;
     },
-    debug: (message) => {
-      debugOutput += `${String(message)}\n`;
+    debug: (messageOrObj: string | object, message?: string) => {
+      debugOutput += `${formatMessage(messageOrObj, message)}\n`;
     },
     getErrorOutput: () => errorOutput,
     getWarnOutput: () => warnOutput,

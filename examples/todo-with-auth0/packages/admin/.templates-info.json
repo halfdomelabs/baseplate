@@ -1,7 +1,9 @@
 {
   "README.md": {
     "generator": "@baseplate-dev/react-generators#core/react",
-    "instanceData": { "variables": { "TPL_PROJECT_NAME": "todoer-admin" } },
+    "instanceData": {
+      "variables": { "TPL_PROJECT_NAME": "todo-with-auth0-admin" }
+    },
     "template": "readme"
   },
   "codegen.ts": {

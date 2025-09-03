@@ -1,4 +1,4 @@
-# todoer-admin
+# todo-with-auth0-admin
 
 This project was bootstrapped with Baseplate.
 

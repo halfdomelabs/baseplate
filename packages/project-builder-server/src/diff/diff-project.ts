@@ -1,88 +1,25 @@
-import type {
-  ProjectDefinition,
-  SchemaParserContext,
-} from '@baseplate-dev/project-builder-lib';
-import type { Logger } from '@baseplate-dev/sync';
-
-import {
-  createPluginImplementationStore,
-  runPluginMigrations,
-  runSchemaMigrations,
-} from '@baseplate-dev/project-builder-lib';
 import {
   buildGeneratorEntry,
   executeGeneratorEntry,
   formatGeneratorOutput,
   loadIgnorePatterns,
 } from '@baseplate-dev/sync';
-import { enhanceErrorWithContext, hashWithSHA256 } from '@baseplate-dev/utils';
-import { fileExists } from '@baseplate-dev/utils/node';
-import ignore from 'ignore';
-import { readFile } from 'node:fs/promises';
+import { enhanceErrorWithContext } from '@baseplate-dev/utils';
 import path from 'node:path';
 
-import type { BaseplateUserConfig } from '#src/user-config/user-config-schema.js';
+import type { ServiceActionContext } from '#src/actions/types.js';
 
 import { compileApplications } from '#src/compiler/index.js';
+import { createNodeSchemaParserContext } from '#src/plugins/node-plugin-store.js';
+import { loadProjectDefinition } from '#src/project-definition/load-project-definition.js';
+
+import type { DiffSummary } from './types.js';
 
 import { createTemplateMetadataOptions } from '../sync/template-metadata-utils.js';
 import { compareFiles } from './diff-utils.js';
-import { formatCompactDiff, formatUnifiedDiff } from './formatters.js';
 import { applySnapshotToGeneratorOutput } from './snapshot/apply-diff-to-generator-output.js';
 import { loadSnapshotManifest } from './snapshot/snapshot-manifest.js';
 import { resolveSnapshotDirectory } from './snapshot/snapshot-utils.js';
-
-/**
- * Load and parse project definition (extracted from build-project.ts)
- */
-async function loadProjectJson(
-  directory: string,
-  context: SchemaParserContext,
-): Promise<{ definition: ProjectDefinition; hash: string }> {
-  const projectJsonPath = path.join(
-    directory,
-    'baseplate/project-definition.json',
-  );
-
-  const projectJsonExists = await fileExists(projectJsonPath);
-
-  if (!projectJsonExists) {
-    throw new Error(`Could not find definition file at ${projectJsonPath}`);
-  }
-
-  try {
-    const projectJsonContents = await readFile(projectJsonPath, 'utf8');
-    const hash = await hashWithSHA256(projectJsonContents);
-
-    const projectJson: unknown = JSON.parse(projectJsonContents);
-
-    const { migratedDefinition, appliedMigrations } = runSchemaMigrations(
-      projectJson as ProjectDefinition,
-    );
-    if (appliedMigrations.length > 0) {
-      console.warn(
-        `Note: ${appliedMigrations.length} migrations would be applied to project definition`,
-      );
-    }
-
-    const pluginImplementationStore = createPluginImplementationStore(
-      context.pluginStore,
-      migratedDefinition,
-    );
-
-    const definitionWithPluginMigrations = runPluginMigrations(
-      migratedDefinition,
-      pluginImplementationStore,
-    );
-
-    return { definition: definitionWithPluginMigrations, hash };
-  } catch (err) {
-    throw enhanceErrorWithContext(
-      err,
-      `Error parsing project definition at ${projectJsonPath}`,
-    );
-  }
-}
 
 /**
  * Options for diffing the project.
@@ -91,85 +28,107 @@ export interface DiffProjectOptions {
   /**
    * The directory to diff the project in.
    */
-  directory: string;
+  projectDirectory: string;
   /**
-   * The logger to use for logging.
+   * Filter by specific package names.
    */
-  logger: Logger;
-  /**
-   * The context to use for parsing the project.
-   */
-  context: SchemaParserContext;
-  /**
-   * The user config to use for building the project.
-   */
-  userConfig: BaseplateUserConfig;
-  /**
-   * Whether to show compact diff format.
-   */
-  compact?: boolean;
-  /**
-   * Filter by specific app names.
-   */
-  appFilter?: string[];
+  packageFilter?: string[];
   /**
    * Filter files by glob patterns.
    */
-  globPatterns?: string[];
+  include?: string[];
+}
+
+/**
+ * Result of diffing a single package.
+ */
+export interface PackageDiffResult {
   /**
-   * Whether to use .baseplateignore file for filtering.
+   * The name of the package.
    */
-  useIgnoreFile?: boolean;
+  name: string;
+  /**
+   * The directory of the package.
+   */
+  packageDirectory: string;
+  /**
+   * The diff summary for this package.
+   */
+  diffSummary: DiffSummary;
+  /**
+   * Whether differences were found.
+   */
+  hasDifferences: boolean;
+}
+
+/**
+ * Result of diffing the entire project.
+ */
+export interface DiffProjectResult {
+  /**
+   * Results for each package.
+   */
+  packageResults: PackageDiffResult[];
+  /**
+   * Total number of files with differences.
+   */
+  totalDiffs: number;
+  /**
+   * Whether any differences were found across all applications.
+   */
+  hasDifferences: boolean;
 }
 
 /**
  * Generates a diff between what would be generated and what currently exists
- * in the working directory.
+ * in the working directory, returning structured data.
  */
-export async function diffProject(options: DiffProjectOptions): Promise<void> {
-  const {
-    directory,
+export async function diffProject(
+  options: DiffProjectOptions,
+  context: ServiceActionContext,
+): Promise<DiffProjectResult> {
+  const { projectDirectory, packageFilter, include } = options;
+  const { logger, plugins } = context;
+
+  const parserContext = await createNodeSchemaParserContext(
+    projectDirectory,
     logger,
-    context,
-    compact = false,
-    appFilter,
-    globPatterns,
-    useIgnoreFile = true,
-  } = options;
+    plugins,
+  );
 
-  try {
-    logger.info('Loading project definition...');
-    const { definition: projectJson } = await loadProjectJson(
-      directory,
-      context,
-    );
+  const { definition: projectJson } = await loadProjectDefinition(
+    projectDirectory,
+    parserContext,
+  );
 
-    // Note: ignore patterns will be loaded per app directory
+  const apps = compileApplications(projectJson, parserContext);
 
-    logger.info('Compiling applications...');
-    const apps = compileApplications(projectJson, context);
+  // Filter apps if specified
+  const filteredApps = packageFilter?.length
+    ? apps.filter((app) => packageFilter.includes(app.name))
+    : apps;
 
-    // Filter apps if specified
-    const filteredApps = appFilter
-      ? apps.filter((app) => appFilter.includes(app.name))
-      : apps;
+  if (filteredApps.length === 0) {
+    return {
+      packageResults: [],
+      totalDiffs: 0,
+      hasDifferences: false,
+    };
+  }
 
-    if (filteredApps.length === 0) {
-      logger.warn('No applications found matching the filter criteria');
-      return;
-    }
+  logger.info(
+    `Building packages for ${filteredApps.map((app) => app.name).join(', ')}...`,
+  );
 
-    logger.info(
-      `Generating output for ${filteredApps.length} application(s)...`,
-    );
+  // Generate output for each app and collect diffs
+  const appResults: PackageDiffResult[] = [];
+  let totalDiffs = 0;
 
-    // Generate output for each app and collect diffs
-    let totalDiffs = 0;
+  for (const app of filteredApps) {
+    try {
+      const appDirectory = path.join(projectDirectory, app.appDirectory);
 
-    for (const app of filteredApps) {
-      const appDirectory = path.join(directory, app.appDirectory);
-
-      logger.info(`Generating for app: ${app.name} (${app.appDirectory})`);
+      logger.info(`Building package: ${app.name} (${app.appDirectory})...`);
 
       // Generate the output without writing files
       const generatorEntry = await buildGeneratorEntry(app.generatorBundle);
@@ -187,10 +146,6 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
       const snapshotDirectory = resolveSnapshotDirectory(appDirectory);
       const snapshot = await loadSnapshotManifest(snapshotDirectory);
 
-      if (snapshot) {
-        logger.info(`Applying snapshot to generator output for ${app.name}...`);
-      }
-
       const diffedGeneratorOutput = snapshot
         ? await applySnapshotToGeneratorOutput(
             formattedGeneratorOutput,
@@ -200,9 +155,7 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
         : formattedGeneratorOutput;
 
       // Load ignore patterns for this app directory
-      const ignorePatterns = useIgnoreFile
-        ? await loadIgnorePatterns(appDirectory)
-        : ignore();
+      const ignorePatterns = await loadIgnorePatterns(appDirectory);
 
       // Add added files to ignore pattern
       if (snapshot) {
@@ -213,33 +166,82 @@ export async function diffProject(options: DiffProjectOptions): Promise<void> {
       const diffSummary = await compareFiles(
         appDirectory,
         diffedGeneratorOutput,
-        globPatterns,
+        include,
         ignorePatterns,
       );
 
-      if (diffSummary.totalFiles > 0) {
-        logger.info(`\n=== Diff for ${app.name} ===`);
-
-        const output = compact
-          ? formatCompactDiff(diffSummary)
-          : formatUnifiedDiff(diffSummary);
-
-        console.info(output);
+      const hasDifferences = diffSummary.totalFiles > 0;
+      if (hasDifferences) {
         totalDiffs += diffSummary.totalFiles;
-      } else {
-        logger.info(`No differences found for ${app.name}`);
       }
-    }
 
-    if (totalDiffs === 0) {
-      logger.info('✓ No differences found across all applications');
-    } else {
-      logger.info(
-        `Found differences in ${totalDiffs} file(s) across all applications`,
-      );
+      appResults.push({
+        name: app.name,
+        packageDirectory: app.appDirectory,
+        diffSummary,
+        hasDifferences,
+      });
+    } catch (err) {
+      throw enhanceErrorWithContext(err, `Error building package: ${app.name}`);
     }
-  } catch (error) {
-    logger.error(`Error during diff generation: ${String(error)}`);
-    throw error;
   }
+
+  return {
+    packageResults: appResults,
+    totalDiffs,
+    hasDifferences: totalDiffs > 0,
+  };
 }
+
+// /**
+//  * Generates a diff between what would be generated and what currently exists
+//  * in the working directory, with console output.
+//  */
+// export async function diffProject(options: DiffProjectOptions): Promise<void> {
+//   const { logger, compact = false } = options;
+
+//   try {
+//     logger.info('Loading project definition...');
+
+//     const result = await diffProjectData(options);
+
+//     if (result.appResults.length === 0) {
+//       logger.warn('No applications found matching the filter criteria');
+//       return;
+//     }
+
+//     logger.info(
+//       `Generating output for ${result.appResults.length} application(s)...`,
+//     );
+
+//     // Process each app result and output to console
+//     for (const appResult of result.appResults) {
+//       logger.info(
+//         `Generating for app: ${appResult.name} (${appResult.appDirectory})`,
+//       );
+
+//       if (appResult.hasDifferences) {
+//         logger.info(`\n=== Diff for ${appResult.name} ===`);
+
+//         const output = compact
+//           ? formatCompactDiff(appResult.diffSummary)
+//           : formatUnifiedDiff(appResult.diffSummary);
+
+//         logger.info(output);
+//       } else {
+//         logger.info(`No differences found for ${appResult.name}`);
+//       }
+//     }
+
+//     if (result.hasDifferences) {
+//       logger.info(
+//         `Found differences in ${result.totalDiffs} file(s) across all applications`,
+//       );
+//     } else {
+//       logger.info('✓ No differences found across all applications');
+//     }
+//   } catch (error) {
+//     logger.error(`Error during diff generation: ${String(error)}`);
+//     throw error;
+//   }
+// }

@@ -5,7 +5,7 @@ import path from 'node:path';
 import { parse } from 'pg-connection-string';
 
 const TEST_DATABASE_NAME =
-  /* TPL_TEST_DB:START */ 'todoer_backend_test'; /* TPL_TEST_DB:END */
+  /* TPL_TEST_DB:START */ 'todo_with_auth0_backend_test'; /* TPL_TEST_DB:END */
 
 export function replaceDatabase(
   connectionString: string,

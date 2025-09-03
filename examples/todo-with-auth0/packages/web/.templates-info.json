@@ -1,7 +1,9 @@
 {
   "README.md": {
     "generator": "@baseplate-dev/react-generators#core/react",
-    "instanceData": { "variables": { "TPL_PROJECT_NAME": "todoer-web" } },
+    "instanceData": {
+      "variables": { "TPL_PROJECT_NAME": "todo-with-auth0-web" }
+    },
     "template": "readme"
   },
   "codegen.ts": {

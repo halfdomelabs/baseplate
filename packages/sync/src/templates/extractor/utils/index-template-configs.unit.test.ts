@@ -18,20 +18,20 @@ describe('indexTemplateConfigs', () => {
   it('should index both extractor and provider configs from multiple packages', async () => {
     // Setup mock file system with both types of configs
     vol.fromJSON({
-      '/packages/pkg1/generator1/extractor.json': JSON.stringify({
+      '/packages/pkg1/src/generator1/extractor.json': JSON.stringify({
         name: 'test-generator-1',
         templates: {
           template1: { sourceFile: 'template1.ts', type: 'ts' },
           template2: { sourceFile: 'template2.ts', type: 'ts' },
         },
       }),
-      '/packages/pkg1/generator2/extractor.json': JSON.stringify({
+      '/packages/pkg1/src/generator2/extractor.json': JSON.stringify({
         name: 'test-generator-2',
         templates: {
           template3: { sourceFile: 'template3.ts', type: 'ts' },
         },
       }),
-      '/packages/pkg1/providers/providers.json': JSON.stringify({
+      '/packages/pkg1/src/providers/providers.json': JSON.stringify({
         'feature.ts': {
           featuresProvider: {
             type: 'path',
@@ -39,7 +39,7 @@ describe('indexTemplateConfigs', () => {
           },
         },
       }),
-      '/packages/pkg2/generator3/extractor.json': JSON.stringify({
+      '/packages/pkg2/src/generator3/extractor.json': JSON.stringify({
         name: 'test-generator-3',
         templates: {
           template4: { sourceFile: 'template4.ts', type: 'ts' },
@@ -47,7 +47,7 @@ describe('indexTemplateConfigs', () => {
           template6: { sourceFile: 'template6.ts', type: 'ts' },
         },
       }),
-      '/packages/pkg2/providers/providers.json': JSON.stringify({
+      '/packages/pkg2/src/providers/providers.json': JSON.stringify({
         'utils.ts': {
           utilsProvider: { type: 'utility' },
           configProvider: { type: 'config', source: 'env' },
@@ -77,7 +77,7 @@ describe('indexTemplateConfigs', () => {
           template2: { sourceFile: 'template2.ts', type: 'ts' },
         },
       },
-      generatorDirectory: '/packages/pkg1/generator1',
+      generatorDirectory: '/packages/pkg1/src/generator1',
       packageName: 'pkg1',
       packagePath: '/packages/pkg1',
       generatorName: 'pkg1#test-generator-1',
@@ -90,7 +90,7 @@ describe('indexTemplateConfigs', () => {
           template3: { sourceFile: 'template3.ts', type: 'ts' },
         },
       },
-      generatorDirectory: '/packages/pkg1/generator2',
+      generatorDirectory: '/packages/pkg1/src/generator2',
       packageName: 'pkg1',
       packagePath: '/packages/pkg1',
       generatorName: 'pkg1#test-generator-2',
@@ -105,7 +105,7 @@ describe('indexTemplateConfigs', () => {
           template6: { sourceFile: 'template6.ts', type: 'ts' },
         },
       },
-      generatorDirectory: '/packages/pkg2/generator3',
+      generatorDirectory: '/packages/pkg2/src/generator3',
       packageName: 'pkg2',
       packagePath: '/packages/pkg2',
       generatorName: 'pkg2#test-generator-3',
@@ -123,7 +123,7 @@ describe('indexTemplateConfigs', () => {
         type: 'path',
         pathRoots: [{ name: 'feature-root', method: 'featureRoot' }],
       },
-      packagePathSpecifier: 'pkg1:providers/feature.ts',
+      packagePathSpecifier: 'pkg1:src/providers/feature.ts',
       providerName: 'featuresProvider',
       packageName: 'pkg1',
       packagePath: '/packages/pkg1',
@@ -131,7 +131,7 @@ describe('indexTemplateConfigs', () => {
 
     expect(providerEntries[1]).toEqual({
       config: { type: 'utility' },
-      packagePathSpecifier: 'pkg2:providers/utils.ts',
+      packagePathSpecifier: 'pkg2:src/providers/utils.ts',
       providerName: 'utilsProvider',
       packageName: 'pkg2',
       packagePath: '/packages/pkg2',
@@ -139,7 +139,7 @@ describe('indexTemplateConfigs', () => {
 
     expect(providerEntries[2]).toEqual({
       config: { type: 'config', source: 'env' },
-      packagePathSpecifier: 'pkg2:providers/utils.ts',
+      packagePathSpecifier: 'pkg2:src/providers/utils.ts',
       providerName: 'configProvider',
       packageName: 'pkg2',
       packagePath: '/packages/pkg2',
@@ -148,7 +148,7 @@ describe('indexTemplateConfigs', () => {
 
   it('should handle packages with only extractor configs', async () => {
     vol.fromJSON({
-      '/packages/pkg1/generator1/extractor.json': JSON.stringify({
+      '/packages/pkg1/src/generator1/extractor.json': JSON.stringify({
         name: 'test-generator-1',
         templates: {
           template1: { sourceFile: 'template1.ts', type: 'ts' },
@@ -166,7 +166,7 @@ describe('indexTemplateConfigs', () => {
 
   it('should handle packages with only provider configs', async () => {
     vol.fromJSON({
-      '/packages/pkg1/providers/providers.json': JSON.stringify({
+      '/packages/pkg1/src/providers/providers.json': JSON.stringify({
         'feature.ts': {
           featuresProvider: { type: 'path' },
         },
@@ -196,7 +196,7 @@ describe('indexTemplateConfigs', () => {
 
   it('should throw error for invalid extractor.json', async () => {
     vol.fromJSON({
-      '/packages/invalid-pkg/generator/extractor.json': JSON.stringify({
+      '/packages/invalid-pkg/src/generator/extractor.json': JSON.stringify({
         // Missing required 'name' field
         templates: {},
       }),
@@ -209,7 +209,7 @@ describe('indexTemplateConfigs', () => {
 
   it('should throw error for invalid providers.json', async () => {
     vol.fromJSON({
-      '/packages/invalid-pkg/providers.json': JSON.stringify({
+      '/packages/invalid-pkg/src/providers.json': JSON.stringify({
         'feature.ts': {
           featuresProvider: {
             // Missing required 'type' field
@@ -226,18 +226,19 @@ describe('indexTemplateConfigs', () => {
 
   it('should handle nested generator directories', async () => {
     vol.fromJSON({
-      '/packages/nested/generators/auth/auth-module/extractor.json':
+      '/packages/nested/src/generators/auth/auth-module/extractor.json':
         JSON.stringify({
           name: 'auth/auth-module',
           templates: {
             'auth-service': { sourceFile: 'auth.service.ts', type: 'ts' },
           },
         }),
-      '/packages/nested/providers/deep/nested/providers.json': JSON.stringify({
-        'config.ts': {
-          configProvider: { type: 'config' },
-        },
-      }),
+      '/packages/nested/src/providers/deep/nested/providers.json':
+        JSON.stringify({
+          'config.ts': {
+            configProvider: { type: 'config' },
+          },
+        }),
     });
 
     const packageMap = new Map([['nested-pkg', '/packages/nested']]);
@@ -249,18 +250,18 @@ describe('indexTemplateConfigs', () => {
       'nested-pkg#auth/auth-module',
     );
     expect(result.extractorEntries[0].generatorDirectory).toBe(
-      '/packages/nested/generators/auth/auth-module',
+      '/packages/nested/src/generators/auth/auth-module',
     );
 
     expect(result.providerEntries).toHaveLength(1);
     expect(result.providerEntries[0].packagePathSpecifier).toBe(
-      'nested-pkg:providers/deep/nested/config.ts',
+      'nested-pkg:src/providers/deep/nested/config.ts',
     );
   });
 
   it('should handle multiple providers in single file', async () => {
     vol.fromJSON({
-      '/packages/pkg/providers.json': JSON.stringify({
+      '/packages/pkg/src/providers.json': JSON.stringify({
         'multi.ts': {
           provider1: { type: 'type1' },
           provider2: { type: 'type2' },
@@ -281,18 +282,18 @@ describe('indexTemplateConfigs', () => {
     ]);
     expect(
       result.providerEntries.every(
-        (e) => e.packagePathSpecifier === 'pkg:multi.ts',
+        (e) => e.packagePathSpecifier === 'pkg:src/multi.ts',
       ),
     ).toBe(true);
   });
 
   it('should accumulate errors and throw if any package fails', async () => {
     vol.fromJSON({
-      '/packages/good/extractor.json': JSON.stringify({
+      '/packages/good/src/extractor.json': JSON.stringify({
         name: 'good-generator',
         templates: {},
       }),
-      '/packages/bad/extractor.json': JSON.stringify({
+      '/packages/bad/src/extractor.json': JSON.stringify({
         // Invalid config
       }),
     });

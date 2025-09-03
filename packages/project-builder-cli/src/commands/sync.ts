@@ -1,10 +1,11 @@
 import type { Command } from 'commander';
 
-import { createSchemaParserContext } from '#src/services/schema-parser-context.js';
-import { getUserConfig } from '#src/services/user-config.js';
-import { expandPathWithTilde } from '#src/utils/path.js';
+import {
+  invokeServiceActionAsCli,
+  syncProjectAction,
+} from '@baseplate-dev/project-builder-server/actions';
 
-import { logger } from '../services/logger.js';
+import { createServiceActionContext } from '#src/utils/create-service-action-context.js';
 
 /**
  * Adds a sync command to the program.
@@ -12,7 +13,7 @@ import { logger } from '../services/logger.js';
  */
 export function addSyncCommand(program: Command): void {
   program
-    .command('sync [directory]')
+    .command('sync [project]')
     .description(
       'Syncs project from project-definition.json in baseplate/ directory',
     )
@@ -26,48 +27,30 @@ export function addSyncCommand(program: Command): void {
     )
     .action(
       async (
-        directory: string | undefined,
+        project: string | undefined,
         options: {
           overwrite?: boolean;
           snapshot?: string;
         },
       ) => {
-        const { syncProject, SyncMetadataController } = await import(
-          '@baseplate-dev/project-builder-server'
-        );
-        const resolvedDirectory = directory
-          ? expandPathWithTilde(directory)
-          : '.';
-        // Validate that --snapshot requires --overwrite
-        if (options.snapshot && !options.overwrite) {
-          logger.error('Error: --snapshot option requires --overwrite flag');
-          logger.error(
-            'Snapshots are only applied when overwriting files, not during normal merging.',
-          );
-          throw new Error('--snapshot option requires --overwrite flag');
+        const context = await createServiceActionContext();
+        const projectWithDefault =
+          project ??
+          (context.projects.length > 0 ? context.projects[0].name : undefined);
+
+        if (!projectWithDefault) {
+          throw new Error('No project specified');
         }
 
-        const context = await createSchemaParserContext(resolvedDirectory);
-        const userConfig = await getUserConfig();
-        const syncMetadataController = new SyncMetadataController(
-          resolvedDirectory,
-          logger,
+        await invokeServiceActionAsCli(
+          syncProjectAction,
+          {
+            project: projectWithDefault,
+            overwrite: options.overwrite,
+            snapshotDirectory: options.snapshot,
+          },
+          context,
         );
-        try {
-          await syncProject({
-            directory: resolvedDirectory,
-            logger,
-            context,
-            userConfig,
-            cliFilePath: process.argv[1],
-            syncMetadataController,
-            overwrite: options.overwrite ?? false,
-            snapshotDirectory: options.overwrite ? options.snapshot : undefined,
-          });
-        } catch (error) {
-          logger.error('Sync failed:', error);
-          throw error;
-        }
       },
     );
 }

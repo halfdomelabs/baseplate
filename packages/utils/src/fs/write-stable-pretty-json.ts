@@ -12,7 +12,7 @@ import { stringifyPrettyStable } from '#src/json/stringify-pretty-stable.js';
  */
 export async function writeStablePrettyJson(
   filePath: string,
-  data: Record<string, unknown>,
+  data: object,
 ): Promise<void> {
   const json = stringifyPrettyStable(data);
   await writeFile(filePath, json, { encoding: 'utf8' });

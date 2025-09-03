@@ -10,7 +10,7 @@
     "build:affected": "turbo run build --affected",
     "changesets:check": "node --experimental-strip-types ./scripts/check-changesets.ts",
     "clean": "turbo run clean",
-    "dev:serve": "pnpm --color --reporter-hide-prefix --filter @baseplate-dev/project-builder-cli --filter @baseplate-dev/project-builder-web --parallel dev:serve",
+    "dev:serve": "pnpm --color --reporter-hide-prefix --filter @baseplate-dev/project-builder-cli --filter @baseplate-dev/project-builder-web --parallel \"/dev:(serve|dev-server)/\"",
     "preinstall": "npx only-allow pnpm",
     "knip": "knip",
     "lint": "turbo run lint --continue",
