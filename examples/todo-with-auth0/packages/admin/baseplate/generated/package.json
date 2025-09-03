@@ -2,7 +2,7 @@
   "name": "@prisma-crud/admin",
   "version": "1.0.0",
   "private": true,
-  "description": "Web app for todoer",
+  "description": "Web app for todo-with-auth0",
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {
