@@ -81,7 +81,11 @@ export function createMcpServer({
         contents: [
           {
             uri: uri.href,
-            text: JSON.stringify(project),
+            text: JSON.stringify({
+              id: project.id,
+              directory: project.directory,
+              name: project.name,
+            }),
             mimeType: 'application/json',
           },
         ],

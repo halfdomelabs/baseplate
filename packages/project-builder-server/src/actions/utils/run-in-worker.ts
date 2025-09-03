@@ -10,7 +10,7 @@ import type { WorkerData, WorkerMessage } from './worker-script.js';
  * Executes an action in a new worker thread.
  * Each execution gets a fresh worker thread that loads the latest version of the action file.
  *
- * @param actionPath - Path to the action file (relative to project root or absolute)
+ * @param serviceAction - The service action to execute.
  * @param input - Input data for the action
  * @param context - Service action context (must be serializable)
  * @returns Promise that resolves with the action result

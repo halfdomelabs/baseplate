@@ -4,6 +4,7 @@ import {
   discoverProjects,
   loadProjectFromDirectory,
 } from '@baseplate-dev/project-builder-server/actions';
+import path from 'node:path';
 
 import { logger } from '#src/services/logger.js';
 
@@ -124,7 +125,7 @@ export async function resolveProject(
 ): Promise<ServiceActionProject> {
   if (
     projectNameOrDirectory.startsWith('.') ||
-    projectNameOrDirectory.startsWith('/') ||
+    path.isAbsolute(projectNameOrDirectory) ||
     projectNameOrDirectory.startsWith('~')
   ) {
     const resolvedPath = expandPathWithTilde(projectNameOrDirectory);
