@@ -26,7 +26,7 @@ export async function resolveGenerator(
     const generator = generators.find((gen) => gen.name === generatorName);
 
     if (!generator) {
-      const availableGenerators = generators.map((g) => g.packageName);
+      const availableGenerators = generators.map((g) => g.name);
       const closestGenerators = findClosestMatch(
         generatorName,
         availableGenerators,
