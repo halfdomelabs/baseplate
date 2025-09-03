@@ -36,7 +36,7 @@ export async function configureTextTemplate(
     project: projectNameOrId,
     generator,
     templateName,
-    variables = {},
+    variables,
     group,
   } = input;
 
@@ -57,7 +57,7 @@ export async function configureTextTemplate(
 
   // Simple validation to make sure the variables exist inside the file
   const templateContents = await readFile(absolutePath, 'utf8');
-  for (const [variable, { value }] of Object.entries(variables)) {
+  for (const [variable, { value }] of Object.entries(variables ?? {})) {
     if (value === '') {
       throw new Error(`Variable ${variable} must have a value`);
     }
@@ -69,18 +69,26 @@ export async function configureTextTemplate(
   }
 
   // Update template metadata
-  await updateTemplateMetadata(absolutePath, generator, templateName, {
-    variables: mapValues(variables, (v) => v.value),
-  } satisfies TextTemplateInstanceData);
+  await updateTemplateMetadata(
+    absolutePath,
+    generator,
+    templateName,
+    variables &&
+      ({
+        variables: mapValues(variables, (v) => v.value),
+      } satisfies TextTemplateInstanceData),
+  );
 
   // Configure the template
   const templateConfig: Partial<TextTemplateMetadata> = {
-    variables:
-      Object.keys(variables).length > 0
-        ? mapValues(variables, (v) => ({ description: v.description }))
-        : {},
     group: group ?? undefined,
   };
+
+  if (variables) {
+    templateConfig.variables = mapValues(variables, (v) => ({
+      description: v.description,
+    }));
+  }
 
   await updateExtractorTemplate(
     generatorDirectory,

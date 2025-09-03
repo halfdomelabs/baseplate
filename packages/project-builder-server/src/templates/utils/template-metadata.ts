@@ -18,7 +18,7 @@ export async function updateTemplateMetadata(
   filePath: string,
   generator: string,
   templateName: string,
-  instanceData: Record<string, unknown> = {},
+  instanceData?: Record<string, unknown>,
 ): Promise<void> {
   const dirPath = path.dirname(filePath);
   const metadataPath = path.join(dirPath, TEMPLATES_INFO_FILENAME);
@@ -34,7 +34,7 @@ export async function updateTemplateMetadata(
   metadata[fileName] = {
     template: templateName,
     generator,
-    instanceData,
+    instanceData: instanceData ?? existingMetadata?.[fileName]?.instanceData,
   };
 
   // Write the metadata back to the file

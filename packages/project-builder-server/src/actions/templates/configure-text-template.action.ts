@@ -48,14 +48,8 @@ export const configureTextTemplateAction = createServiceAction({
   inputSchema: configureTextTemplateInputSchema,
   outputSchema: configureTextTemplateOutputSchema,
   handler: async (input, context) => {
-    const {
-      filePath,
-      project,
-      generator,
-      templateName,
-      variables = {},
-      group,
-    } = input;
+    const { filePath, project, generator, templateName, variables, group } =
+      input;
 
     const { configureTextTemplate } = await import(
       '#src/templates/configure/configure-text-template.js'
