@@ -343,51 +343,33 @@ export function rewriteDistToSrc(directory: string): string {
 
 interface GetModuleFederationTargetsOptions {
   /**
-   * Rewrites the plugin directory to a different path. Useful when
-   * the source plugin directory is different than the compiled code.
+   * Overrides the default plugin globs.
    */
-  rewritePluginDirectory?: (directory: string) => string;
+  overridePluginGlobs?: string[];
 }
 
 export async function getModuleFederationTargets(
   pluginPackageDirectory: string,
-  options: GetModuleFederationTargetsOptions = {},
+  { overridePluginGlobs }: GetModuleFederationTargetsOptions = {},
 ): Promise<Record<string, string>> {
-  const { rewritePluginDirectory } = options;
-
   // Read package.json configuration for plugin globs
   const packageConfig = await readBaseplatePackageConfig(
     pluginPackageDirectory,
   );
-  const pluginGlobs = packageConfig?.baseplate?.pluginGlobs ?? [
-    'dist/*/plugin.json',
-  ];
+  const pluginGlobs = overridePluginGlobs ??
+    packageConfig?.baseplate?.pluginGlobs ?? ['dist/*/plugin.json'];
 
   // Discover plugin directories using configured globs
-  const discoveredDirectories = await discoverPluginDirectories(
+  const pluginDirectories = await discoverPluginDirectories(
     pluginPackageDirectory,
     pluginGlobs,
   );
 
-  if (discoveredDirectories.length === 0) {
+  if (pluginDirectories.length === 0) {
     throw new Error(
       `No plugins found in ${pluginPackageDirectory}. Looked for plugin.json files.`,
     );
   }
-
-  // Apply rewrite if needed
-  const pluginDirectories = rewritePluginDirectory
-    ? discoveredDirectories.map((directory) => {
-        const relativeDirectory = path.relative(
-          pluginPackageDirectory,
-          directory,
-        );
-        return path.join(
-          pluginPackageDirectory,
-          rewritePluginDirectory(relativeDirectory),
-        );
-      })
-    : discoveredDirectories;
 
   const targets = await Promise.all(
     pluginDirectories.map(async (directory) => {

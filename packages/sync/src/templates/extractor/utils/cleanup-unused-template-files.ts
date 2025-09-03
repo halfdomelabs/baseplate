@@ -6,6 +6,7 @@ import path from 'node:path';
 
 import type { TemplateExtractorContext } from '../runner/template-extractor-context.js';
 
+import { EXTRACTOR_CONFIG_FILENAME } from '../../constants.js';
 import {
   TEMPLATE_EXTRACTOR_GENERATED_DIRECTORY,
   TEMPLATE_EXTRACTOR_TEMPLATES_DIRECTORY,
@@ -28,7 +29,7 @@ export async function cleanupUnusedTemplateFiles(
       context.configLookup.getExtractorConfig(generatorName);
     if (!generatorConfig) {
       throw new Error(
-        `No 'extractor.json' found for generator: ${generatorName}`,
+        `No '${EXTRACTOR_CONFIG_FILENAME}' found for generator: ${generatorName}`,
       );
     }
 

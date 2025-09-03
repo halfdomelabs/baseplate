@@ -99,3 +99,6 @@ playground
 .turbo
 
 .claude/settings.local.json
+
+# Baseplate settings
+/.baseplate

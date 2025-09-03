@@ -5,6 +5,10 @@ import path from 'node:path/posix';
 
 import type { ExtractorConfig } from '../configs/extractor-config.schema.js';
 
+import {
+  EXTRACTOR_CONFIG_FILENAME,
+  PROVIDERS_CONFIG_FILENAME,
+} from '../../constants.js';
 import { extractorConfigSchema } from '../configs/extractor-config.schema.js';
 import { extractorProvidersConfigSchema } from '../configs/providers-config.schema.js';
 
@@ -38,8 +42,8 @@ async function indexTemplateConfigsInPackage(
 ): Promise<TemplateConfigIndexResult> {
   const configFiles = await globby(
     [
-      path.join(packagePath, '**/extractor.json'),
-      path.join(packagePath, '**/providers.json'),
+      path.join(packagePath, `src/**/${EXTRACTOR_CONFIG_FILENAME}`),
+      path.join(packagePath, `src/**/${PROVIDERS_CONFIG_FILENAME}`),
     ],
     {
       cwd: packagePath,
@@ -54,7 +58,7 @@ async function indexTemplateConfigsInPackage(
   const providerEntries: ProviderConfigEntry[] = [];
 
   for (const configFile of configFiles) {
-    if (configFile.endsWith('extractor.json')) {
+    if (configFile.endsWith(EXTRACTOR_CONFIG_FILENAME)) {
       const config = await readJsonWithSchema(
         configFile,
         extractorConfigSchema,
@@ -69,7 +73,7 @@ async function indexTemplateConfigsInPackage(
         packagePath,
         generatorName,
       });
-    } else if (configFile.endsWith('providers.json')) {
+    } else if (configFile.endsWith(PROVIDERS_CONFIG_FILENAME)) {
       const config = await readJsonWithSchema(
         configFile,
         extractorProvidersConfigSchema,

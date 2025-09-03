@@ -3,7 +3,7 @@ import type { Command } from 'commander';
 import type { FastifyInstance } from 'fastify';
 import type { Logger } from 'pino';
 
-import { getDefaultPlugins } from '@baseplate-dev/project-builder-common';
+import { discoverProjects } from '@baseplate-dev/project-builder-server/actions';
 import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
 
@@ -11,12 +11,8 @@ import { getUserConfig } from '#src/services/user-config.js';
 
 import { getEnabledFeatureFlags } from '../services/feature-flags.js';
 import { logger } from '../services/logger.js';
+import { createServiceActionContext } from '../utils/create-service-action-context.js';
 import { expandPathWithTilde } from '../utils/path.js';
-import {
-  getProjectDirectories,
-  getProjectNames,
-  resolveProjects,
-} from '../utils/project-resolver.js';
 import { resolveModule } from '../utils/resolve.js';
 import { getPackageVersion } from '../utils/version.js';
 
@@ -40,10 +36,6 @@ export async function serveWebServer(
   const projectBuilderWebDir = await packageDirectory({
     cwd: resolveModule('@baseplate-dev/project-builder-web/package.json'),
   });
-  const resolvedDirectories = directories.map((dir) =>
-    expandPathWithTilde(dir),
-  );
-  const builtInPlugins = await getDefaultPlugins(logger);
   const version = await getPackageVersion();
 
   if (!projectBuilderWebDir) {
@@ -54,13 +46,13 @@ export async function serveWebServer(
 
   const userConfig = await getUserConfig();
 
+  const context = await createServiceActionContext();
+
   const serviceManager = new BuilderServiceManager({
-    initialDirectories: resolvedDirectories,
     cliVersion: version,
-    builtInPlugins,
-    userConfig,
     skipCommands,
     cliFilePath: process.argv[1],
+    serviceActionContext: context,
   });
 
   const fastifyInstance = await startWebServer({
@@ -104,14 +96,18 @@ export function addServeCommand(program: Command): void {
     .action(
       async (projects: string[], { browser, port }: ServeCommandOptions) => {
         try {
-          const projectMap = await resolveProjects({
-            includeExamples: process.env.INCLUDE_EXAMPLES === 'true',
-            directories: projects,
-            defaultToCwd: true,
-          });
+          // Resolve directories and discover projects
+          const resolvedDirectories =
+            projects.length > 0
+              ? projects.map((dir) => expandPathWithTilde(dir))
+              : [process.cwd()];
 
-          const finalDirectories = getProjectDirectories(projectMap);
-          const projectNames = getProjectNames(projectMap);
+          const discoveredProjects = await discoverProjects(
+            resolvedDirectories,
+            logger,
+          );
+          const projectDirectories = discoveredProjects.map((p) => p.directory);
+          const projectNames = discoveredProjects.map((p) => p.name);
 
           if (projectNames.length > 0) {
             logger.info(
@@ -119,7 +115,7 @@ export function addServeCommand(program: Command): void {
             );
           }
 
-          await serveWebServer(finalDirectories, { browser, port });
+          await serveWebServer(projectDirectories, { browser, port });
         } catch (error) {
           logger.error(
             `Failed to resolve projects: ${error instanceof Error ? error.message : String(error)}`,

@@ -20,6 +20,7 @@ import { execa, parseCommandString } from 'execa';
 import { readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import type { ServiceActionContext } from '#src/actions/types.js';
 import type { PackageSyncInfo, SyncMetadata } from '#src/sync/index.js';
 
 import {
@@ -74,11 +75,10 @@ export interface CommandConsoleEmittedPayload {
 interface ProjectBuilderServiceOptions {
   directory: string;
   id: string;
-  builtInPlugins: PluginMetadataWithPaths[];
   cliVersion: string;
-  userConfig: BaseplateUserConfig;
   skipCommands?: boolean;
   cliFilePath?: string;
+  serviceActionContext: ServiceActionContext;
 }
 
 export interface SyncMetadataChangedPayload {
@@ -144,8 +144,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     directory,
     id,
     cliVersion,
-    builtInPlugins,
-    userConfig,
+    serviceActionContext,
     skipCommands,
     cliFilePath,
   }: ProjectBuilderServiceOptions) {
@@ -158,9 +157,16 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     );
     this.id = id;
     this.cliVersion = cliVersion;
-    this.userConfig = userConfig;
+    this.userConfig = serviceActionContext.userConfig;
     this.logger = createEventedLogger();
-    this.builtInPlugins = builtInPlugins;
+    // forward all messages to the service action context logger
+    this.logger.onMessage((message) => {
+      serviceActionContext.logger[message.level](
+        message.metadata ?? {},
+        message.message,
+      );
+    });
+    this.builtInPlugins = serviceActionContext.plugins;
     this.syncMetadataController = new SyncMetadataController(
       this.directory,
       this.logger,

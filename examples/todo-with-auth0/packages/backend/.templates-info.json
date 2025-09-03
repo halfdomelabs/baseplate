@@ -1,7 +1,9 @@
 {
   "README.md": {
     "generator": "@baseplate-dev/fastify-generators#core/readme",
-    "instanceData": { "variables": { "TPL_PROJECT": "todoer backend" } },
+    "instanceData": {
+      "variables": { "TPL_PROJECT": "todo-with-auth0 backend" }
+    },
     "template": "readme"
   },
   "eslint.config.mjs": {

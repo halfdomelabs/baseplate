@@ -1,4 +1,4 @@
-# todoer-web
+# todo-with-auth0-web
 
 This project was bootstrapped with Baseplate.
 

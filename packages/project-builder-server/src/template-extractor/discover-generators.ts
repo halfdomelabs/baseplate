@@ -64,7 +64,7 @@ export async function buildGeneratorPackageMap(
  * Discover all available generators with extractor.json files
  */
 export async function discoverGenerators(
-  directory = '.',
+  directory = process.cwd(),
   defaultPlugins: PluginMetadataWithPaths[],
   logger: Logger,
 ): Promise<GeneratorInfo[]> {
