@@ -17,6 +17,7 @@ import {
   configureTsTemplateAction,
   deleteTemplateAction,
   listTemplatesAction,
+  showTemplateMetadataAction,
 } from './templates/index.js';
 
 export const ALL_SERVICE_ACTIONS = [
@@ -30,6 +31,7 @@ export const ALL_SERVICE_ACTIONS = [
   configureRawTemplateAction,
   deleteTemplateAction,
   listTemplatesAction,
+  showTemplateMetadataAction,
   snapshotAddAction,
   snapshotRemoveAction,
   snapshotSaveAction,

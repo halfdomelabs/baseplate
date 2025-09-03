@@ -456,6 +456,30 @@ mcp__baseplate_dev_server__list_templates({
 });
 ```
 
+#### `show-template-metadata`
+
+Show template metadata for a file by looking up information from .templates-info.json.
+
+**Parameters:**
+
+- `filePath` (required): Path to file to show metadata for (absolute or relative)
+- `project` (optional): Project name or ID (required for relative paths, optional for absolute)
+
+**Usage:**
+
+```javascript
+// Show metadata using absolute path
+mcp__baseplate_dev_server__show_template_metadata({
+  filePath: '/path/to/project/src/components/my-component.tsx',
+});
+
+// Show metadata using relative path (requires project)
+mcp__baseplate_dev_server__show_template_metadata({
+  filePath: 'src/components/my-component.tsx',
+  project: 'my-project',
+});
+```
+
 #### `snapshot-add`
 
 Add files to snapshot for persistent differences tracking.
@@ -599,49 +623,65 @@ cd examples/blog-with-auth
 pnpm build && pnpm lint
 ```
 
-#### 3. Template Metadata Management
+#### 3. Template Metadata Management (Optional)
 
-For any new files created or removed, update template metadata using MCP commands:
+**For most cases: Skip this step!** Template metadata is automatically preserved when you modify existing template files.
 
-- **New files**: Configure template metadata using the appropriate MCP command:
+Only manage template metadata when:
 
-  ```javascript
-  // For TypeScript templates
-  mcp__baseplate_dev_server__configure_ts_template({
-    filePath: 'src/components/new-component.tsx',
-    generator: '@baseplate-dev/react-generators',
-    templateName: 'new-component',
-    project: 'blog-with-auth',
-  });
+- **Creating brand new template files** (not modifying existing ones)
+- **Changing fundamental template properties** (name, generator, type, variables for text templates only)
+- **Removing template files completely**
 
-  // For text templates
-  mcp__baseplate_dev_server__configure_text_template({
-    filePath: 'src/config/config.json',
-    generator: '@baseplate-dev/core-generators',
-    templateName: 'app-config',
-    variables: { appName: { value: 'MyApp' } },
-    project: 'blog-with-auth',
-  });
+**Check existing metadata first:**
 
-  // For raw/binary templates
-  mcp__baseplate_dev_server__configure_raw_template({
-    filePath: 'public/favicon.ico',
-    generator: '@baseplate-dev/core-generators',
-    templateName: 'favicon',
-    project: 'blog-with-auth',
-  });
-  ```
+```javascript
+// See what template metadata exists for a file
+mcp__baseplate_dev_server__show_template_metadata({
+  filePath: 'src/components/my-component.tsx',
+  project: 'blog-with-auth',
+});
+```
 
-- **Removed files**: Delete template metadata using the delete command:
+**Only configure metadata when needed:**
 
-  ```javascript
-  mcp__baseplate_dev_server__delete_template({
-    filePath: 'src/components/old-component.tsx',
-    project: 'blog-with-auth',
-  });
-  ```
+```javascript
+// For NEW TypeScript templates
+mcp__baseplate_dev_server__configure_ts_template({
+  filePath: 'src/components/brand-new-component.tsx',
+  generator: '@baseplate-dev/react-generators#core/react',
+  templateName: 'brand-new-component',
+  project: 'blog-with-auth',
+});
 
-- **Modified files**: Template metadata is automatically preserved during extraction
+// For NEW text templates with variables
+mcp__baseplate_dev_server__configure_text_template({
+  filePath: 'src/config/new-config.json',
+  generator: '@baseplate-dev/core-generators',
+  templateName: 'new-config',
+  variables: { appName: { value: 'MyApp' } },
+  project: 'blog-with-auth',
+});
+
+// For NEW raw/binary templates
+mcp__baseplate_dev_server__configure_raw_template({
+  filePath: 'public/new-icon.ico',
+  generator: '@baseplate-dev/core-generators',
+  templateName: 'new-icon',
+  project: 'blog-with-auth',
+});
+```
+
+**Delete template completely:**
+
+```javascript
+mcp__baseplate_dev_server__delete_template({
+  filePath: 'src/components/old-component.tsx',
+  project: 'blog-with-auth',
+});
+```
+
+**Remember:** If you're just adding JSDoc, fixing bugs, or making improvements to existing template files, you can skip this entire step!
 
 #### 4. Template Extraction
 
@@ -821,21 +861,6 @@ mcp__baseplate_dev_server__delete_template({
 - Often acceptable (e.g., `../components/button.ts` vs `@src/components/button.ts`)
 - Use snapshots if these differences are intentional and should be preserved
 - Update generators if aliases should be standardized
-
-### Command Quick Reference
-
-| Task                 | MCP Command                                     | Legacy CLI                      |
-| -------------------- | ----------------------------------------------- | ------------------------------- |
-| Extract templates    | `mcp__baseplate-dev-server__extract-templates`  | `pnpm start templates extract`  |
-| Show differences     | `mcp__baseplate-dev-server__diff-project`       | `pnpm start diff`               |
-| Sync codebase        | `mcp__baseplate-dev-server__sync-project`       | `pnpm start sync`               |
-| List templates       | `mcp__baseplate-dev-server__list-templates`     | `pnpm start templates list`     |
-| Generate templates   | `mcp__baseplate-dev-server__generate-templates` | `pnpm start templates generate` |
-| Delete template      | `mcp__baseplate-dev-server__delete-template`    | `pnpm start templates delete`   |
-| Add to snapshot      | `mcp__baseplate-dev-server__snapshot-add`       | `baseplate snapshot add`        |
-| Remove from snapshot | `mcp__baseplate-dev-server__snapshot-remove`    | `baseplate snapshot remove`     |
-| Save snapshot        | `mcp__baseplate-dev-server__snapshot-save`      | `baseplate snapshot save`       |
-| Show snapshot        | `mcp__baseplate-dev-server__snapshot-show`      | `baseplate snapshot show`       |
 
 ### Best Practices
 
