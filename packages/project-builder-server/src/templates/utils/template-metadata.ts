@@ -1,3 +1,5 @@
+import type { TemplateInfo } from '@baseplate-dev/sync';
+
 import {
   TEMPLATES_INFO_FILENAME,
   templatesInfoFileSchema,
@@ -39,6 +41,30 @@ export async function updateTemplateMetadata(
 
   // Write the metadata back to the file
   await writeStablePrettyJson(metadataPath, metadata);
+}
+
+/**
+ * Reads template metadata for a specific file
+ */
+export async function readTemplateMetadataForFile(
+  filePath: string,
+): Promise<TemplateInfo> {
+  const dirPath = path.dirname(filePath);
+  const metadataPath = path.join(dirPath, TEMPLATES_INFO_FILENAME);
+  const fileName = path.basename(filePath);
+
+  const existingMetadata = await readJsonWithSchema(
+    metadataPath,
+    templatesInfoFileSchema,
+  ).catch(handleFileNotFoundError);
+
+  if (!existingMetadata?.[fileName]) {
+    throw new Error(
+      `No template metadata found for file '${fileName}' in ${metadataPath}`,
+    );
+  }
+
+  return existingMetadata[fileName];
 }
 
 /**

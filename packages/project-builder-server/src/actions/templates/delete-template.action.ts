@@ -3,50 +3,59 @@ import { z } from 'zod';
 import { createServiceAction } from '#src/actions/types.js';
 
 const deleteTemplateInputSchema = {
-  generatorDirectory: z
+  filePath: z
     .string()
-    .describe('The directory path containing the generator'),
-  templateName: z.string().describe('The name of the template to delete'),
+    .describe('Path to file to delete (absolute or relative)'),
+  project: z
+    .string()
+    .optional()
+    .describe(
+      'Project name or ID (required for relative paths, optional for absolute)',
+    ),
 };
 
 const deleteTemplateOutputSchema = {
   success: z.boolean().describe('Whether the operation was successful'),
-  message: z.string().describe('Success or error message'),
+  message: z.string().describe('Success message'),
+  templateName: z.string().describe('The template name that was deleted'),
+  absolutePath: z.string().describe('The absolute path of the deleted file'),
   generatorDirectory: z.string().describe('The generator directory used'),
-  templateName: z.string().describe('The template name deleted'),
 };
 
 /**
- * Service action to delete a template from a generator
+ * Service action to delete a template by file path
  */
 export const deleteTemplateAction = createServiceAction({
   name: 'delete-template',
   title: 'Delete Template',
   description:
-    'Delete a template from a generator by removing it from extractor.json and deleting the template file',
+    'Delete a template by looking up its metadata from the file path and removing all associated files',
   inputSchema: deleteTemplateInputSchema,
   outputSchema: deleteTemplateOutputSchema,
   handler: async (input, context) => {
-    const { generatorDirectory, templateName } = input;
+    const { filePath, project } = input;
     const { logger } = context;
 
     const { deleteTemplate } = await import(
       '../../templates/delete/delete-template.js'
     );
 
-    await deleteTemplate({
-      generatorDirectory,
-      templateName,
-    });
+    const result = await deleteTemplate(
+      {
+        filePath,
+        project,
+      },
+      context,
+    );
 
-    const message = `Successfully deleted template '${templateName}' from generator at ${generatorDirectory}`;
-    logger.info(message);
+    logger.info(result.message);
 
     return {
       success: true,
-      message,
-      generatorDirectory,
-      templateName,
+      message: result.message,
+      templateName: result.templateName,
+      absolutePath: result.absolutePath,
+      generatorDirectory: result.generatorDirectory,
     };
   },
   writeCliOutput: (output) => {
