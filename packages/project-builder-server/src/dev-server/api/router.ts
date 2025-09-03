@@ -1,13 +1,14 @@
 import { diffProjectAction } from '#src/actions/diff/diff-project.action.js';
-import {
-  extractTemplatesAction,
-  generateTemplatesAction,
-} from '#src/actions/index.js';
 import { snapshotAddAction } from '#src/actions/snapshot/snapshot-add.action.js';
 import { snapshotRemoveAction } from '#src/actions/snapshot/snapshot-remove.action.js';
 import { snapshotSaveAction } from '#src/actions/snapshot/snapshot-save.action.js';
 import { snapshotShowAction } from '#src/actions/snapshot/snapshot-show.action.js';
 import { syncProjectAction } from '#src/actions/sync/sync-project.action.js';
+import {
+  discoverGeneratorsAction,
+  extractTemplatesAction,
+  generateTemplatesAction,
+} from '#src/actions/template-extractor/index.js';
 import { configureRawTemplateAction } from '#src/actions/templates/configure-raw-template.action.js';
 import { configureTextTemplateAction } from '#src/actions/templates/configure-text-template.action.js';
 import { configureTsTemplateAction } from '#src/actions/templates/configure-ts-template.action.js';
@@ -23,6 +24,7 @@ export const devServerRouter = devRouter({
   templateExtractor: devRouter({
     extract: devTrpcActionBuilder.mutation(extractTemplatesAction),
     generate: devTrpcActionBuilder.mutation(generateTemplatesAction),
+    discoverGenerators: devTrpcActionBuilder.query(discoverGeneratorsAction),
   }),
   templates: devRouter({
     list: devTrpcActionBuilder.query(listTemplatesAction),

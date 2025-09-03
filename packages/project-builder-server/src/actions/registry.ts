@@ -7,6 +7,7 @@ import {
 } from './snapshot/index.js';
 import { syncProjectAction } from './sync/index.js';
 import {
+  discoverGeneratorsAction,
   extractTemplatesAction,
   generateTemplatesAction,
 } from './template-extractor/index.js';
@@ -21,7 +22,7 @@ import {
 export const ALL_SERVICE_ACTIONS = [
   diffProjectAction,
   syncProjectAction,
-  deleteTemplateAction,
+  discoverGeneratorsAction,
   extractTemplatesAction,
   generateTemplatesAction,
   configureTsTemplateAction,

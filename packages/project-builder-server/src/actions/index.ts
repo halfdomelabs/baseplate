@@ -1,4 +1,3 @@
-export * from './diff/index.js';
-export * from './template-extractor/index.js';
+export type { GeneratorInfo } from './template-extractor/discover-generators.action.js';
 export * from './types.js';
 export * from './utils/index.js';
