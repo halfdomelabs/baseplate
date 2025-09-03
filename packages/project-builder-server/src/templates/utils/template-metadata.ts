@@ -36,7 +36,8 @@ export async function updateTemplateMetadata(
   metadata[fileName] = {
     template: templateName,
     generator,
-    instanceData: instanceData ?? existingMetadata?.[fileName]?.instanceData,
+    instanceData:
+      instanceData ?? existingMetadata?.[fileName]?.instanceData ?? {},
   };
 
   // Write the metadata back to the file

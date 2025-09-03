@@ -53,7 +53,7 @@ describe('mergeExtractorTemplateEntries', () => {
     };
 
     vol.fromJSON({
-      '/packages/package1/generators/test/extractor.json':
+      '/packages/package1/src/generators/test/extractor.json':
         JSON.stringify(originalConfig),
     });
 
@@ -65,7 +65,7 @@ describe('mergeExtractorTemplateEntries', () => {
         generator: '@test/package1#test-generator',
         templateName: 'new-template',
         sourceAbsolutePath:
-          '/packages/package1/generators/test/templates/new-template.ts',
+          '/packages/package1/src/generators/test/templates/new-template.ts',
         metadata: {
           sourceFile: 'new-template.ts',
           type: 'ts',
@@ -108,9 +108,9 @@ describe('mergeExtractorTemplateEntries', () => {
     };
 
     vol.fromJSON({
-      '/packages/package1/generators/gen1/extractor.json':
+      '/packages/package1/src/generators/gen1/extractor.json':
         JSON.stringify(config1),
-      '/packages/package2/generators/gen2/extractor.json':
+      '/packages/package2/src/generators/gen2/extractor.json':
         JSON.stringify(config2),
     });
 
@@ -122,7 +122,7 @@ describe('mergeExtractorTemplateEntries', () => {
         generator: '@test/package1#generator-1',
         templateName: 'new-ts-template',
         sourceAbsolutePath:
-          '/packages/package1/generators/gen1/templates/new-ts-template.ts',
+          '/packages/package1/src/generators/gen1/templates/new-ts-template.ts',
         metadata: {
           sourceFile: 'new-ts-template.ts',
           type: 'ts',
@@ -133,7 +133,7 @@ describe('mergeExtractorTemplateEntries', () => {
         generator: '@test/package2#generator-2',
         templateName: 'new-js-template',
         sourceAbsolutePath:
-          '/packages/package2/generators/gen2/templates/new-js-template.ts',
+          '/packages/package2/src/generators/gen2/templates/new-js-template.ts',
         metadata: {
           sourceFile: 'new-js-template.js',
           type: 'js',
@@ -172,7 +172,7 @@ describe('mergeExtractorTemplateEntries', () => {
     };
 
     vol.fromJSON({
-      '/packages/package1/generators/test/extractor.json':
+      '/packages/package1/src/generators/test/extractor.json':
         JSON.stringify(originalConfig),
     });
 
@@ -184,7 +184,7 @@ describe('mergeExtractorTemplateEntries', () => {
         generator: '@test/package1#test-generator',
         templateName: 'existing-template',
         sourceAbsolutePath:
-          '/packages/package1/generators/test/templates/existing-template.ts',
+          '/packages/package1/src/generators/test/templates/existing-template.ts',
         metadata: {
           sourceFile: 'existing-template.ts',
           type: 'ts',
@@ -221,7 +221,7 @@ describe('mergeExtractorTemplateEntries', () => {
     };
 
     vol.fromJSON({
-      '/packages/package1/generators/test/extractor.json':
+      '/packages/package1/src/generators/test/extractor.json':
         JSON.stringify(originalConfig),
     });
 
@@ -233,7 +233,7 @@ describe('mergeExtractorTemplateEntries', () => {
         generator: '@test/package1#test-generator',
         templateName: 'new-template',
         sourceAbsolutePath:
-          '/packages/package1/generators/test/templates/new-template.ts',
+          '/packages/package1/src/generators/test/templates/new-template.ts',
         metadata: {
           sourceFile: 'new-template.ts',
           type: 'ts',
