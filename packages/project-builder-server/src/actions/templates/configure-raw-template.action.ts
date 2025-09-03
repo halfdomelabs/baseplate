@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
-import { configureRawTemplate } from '#src/templates/configure/configure-raw-template.js';
 
 const configureRawTemplateInputSchema = {
   filePath: z.string().describe('File path (absolute or relative)'),
@@ -37,6 +36,10 @@ export const configureRawTemplateAction = createServiceAction({
   outputSchema: configureRawTemplateOutputSchema,
   handler: async (input, context) => {
     const { filePath, project, generator, templateName } = input;
+
+    const { configureRawTemplate } = await import(
+      '#src/templates/configure/configure-raw-template.js'
+    );
 
     // Configure the template using the dedicated function
     const result = await configureRawTemplate(

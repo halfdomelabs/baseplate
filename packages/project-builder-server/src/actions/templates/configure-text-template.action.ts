@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
-import { configureTextTemplate } from '#src/templates/configure/configure-text-template.js';
 
 const variableSchema = z.object({
   description: z
@@ -57,6 +56,10 @@ export const configureTextTemplateAction = createServiceAction({
       variables = {},
       group,
     } = input;
+
+    const { configureTextTemplate } = await import(
+      '#src/templates/configure/configure-text-template.js'
+    );
 
     // Configure the template using the dedicated function
     const result = await configureTextTemplate(

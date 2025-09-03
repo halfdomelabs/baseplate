@@ -42,8 +42,8 @@ async function indexTemplateConfigsInPackage(
 ): Promise<TemplateConfigIndexResult> {
   const configFiles = await globby(
     [
-      path.join(packagePath, `**/${EXTRACTOR_CONFIG_FILENAME}`),
-      path.join(packagePath, `**/${PROVIDERS_CONFIG_FILENAME}`),
+      path.join(packagePath, `src/**/${EXTRACTOR_CONFIG_FILENAME}`),
+      path.join(packagePath, `src/**/${PROVIDERS_CONFIG_FILENAME}`),
     ],
     {
       cwd: packagePath,

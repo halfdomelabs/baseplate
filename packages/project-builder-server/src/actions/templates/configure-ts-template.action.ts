@@ -2,7 +2,6 @@ import { CASE_VALIDATORS } from '@baseplate-dev/utils';
 import { z } from 'zod';
 
 import { createServiceAction } from '#src/actions/types.js';
-import { configureTsTemplate } from '#src/templates/configure/configure-ts-template.js';
 
 const configureTsTemplateInputSchema = {
   filePath: z.string().describe('File path (absolute or relative)'),
@@ -55,6 +54,10 @@ export const configureTsTemplateAction = createServiceAction({
       projectExports = [],
       group,
     } = input;
+
+    const { configureTsTemplate } = await import(
+      '#src/templates/configure/configure-ts-template.js'
+    );
 
     // Configure the template using the dedicated function
     const result = await configureTsTemplate(
