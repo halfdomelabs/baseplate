@@ -1,19 +1,26 @@
-import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
-import type { Logger } from '@baseplate-dev/sync';
+import type {
+  TextTemplateInstanceData,
+  TextTemplateMetadata,
+} from '@baseplate-dev/core-generators';
 
-import type { ProjectInfo } from '../../api/projects.js';
+import { mapValues } from 'es-toolkit';
+import { readFile } from 'node:fs/promises';
+
+import type { ServiceActionContext } from '#src/actions/types.js';
+
 import type { ConfigureTemplateResult } from './types.js';
 
 import { updateExtractorTemplate } from '../utils/extractor-config.js';
+import { resolveFilePath } from '../utils/resolve-file-path.js';
 import { resolveGenerator } from '../utils/resolve-generator.js';
+import { updateTemplateMetadata } from '../utils/template-metadata.js';
 
 export interface ConfigureTextTemplateInput {
-  project: ProjectInfo;
-  package: string;
-  generator: string;
   filePath: string;
+  project?: string;
+  generator: string;
   templateName: string;
-  variables?: Record<string, { description?: string }>;
+  variables?: Record<string, { description?: string; value: string }>;
   group?: string;
 }
 
@@ -22,18 +29,23 @@ export interface ConfigureTextTemplateInput {
  */
 export async function configureTextTemplate(
   input: ConfigureTextTemplateInput,
-  plugins: PluginMetadataWithPaths[],
-  logger: Logger,
+  { logger, plugins, projects }: ServiceActionContext,
 ): Promise<ConfigureTemplateResult> {
   const {
-    project,
-    package: packageName,
-    generator,
     filePath,
+    project: projectNameOrId,
+    generator,
     templateName,
     variables = {},
     group,
   } = input;
+
+  // Resolve file path to project and package info
+  const { absolutePath, project, projectRelativePath } = resolveFilePath(
+    filePath,
+    projects,
+    projectNameOrId,
+  );
 
   // Resolve generator directory
   const generatorDirectory = await resolveGenerator(
@@ -43,10 +55,30 @@ export async function configureTextTemplate(
     logger,
   );
 
+  // Simple validation to make sure the variables exist inside the file
+  const templateContents = await readFile(absolutePath, 'utf8');
+  for (const [variable, { value }] of Object.entries(variables)) {
+    if (value === '') {
+      throw new Error(`Variable ${variable} must have a value`);
+    }
+    if (!templateContents.includes(value)) {
+      throw new Error(
+        `Variable ${variable} with value ${value} not found in template ${absolutePath}`,
+      );
+    }
+  }
+
+  // Update template metadata
+  await updateTemplateMetadata(absolutePath, generator, templateName, {
+    variables: mapValues(variables, (v) => v.value),
+  } satisfies TextTemplateInstanceData);
+
   // Configure the template
-  const templateConfig: Record<string, unknown> = {
-    sourceFile: filePath,
-    variables: Object.keys(variables).length > 0 ? variables : {},
+  const templateConfig: Partial<TextTemplateMetadata> = {
+    variables:
+      Object.keys(variables).length > 0
+        ? mapValues(variables, (v) => ({ description: v.description }))
+        : {},
     group: group ?? undefined,
   };
 
@@ -58,9 +90,9 @@ export async function configureTextTemplate(
   );
 
   return {
-    message: `Successfully configured text template '${templateName}' for file '${filePath}' in package '${packageName}'`,
+    message: `Successfully configured text template '${templateName}' for file '${projectRelativePath}' in project '${project.name}'`,
     templateName,
-    filePath,
+    absolutePath,
     generatorDirectory,
   };
 }

@@ -3,22 +3,23 @@ import { z } from 'zod';
 import { createServiceAction } from '#src/actions/types.js';
 import { configureTextTemplate } from '#src/templates/configure/configure-text-template.js';
 
-import { getProjectByNameOrId } from '../utils/projects.js';
-
 const variableSchema = z.object({
   description: z
     .string()
     .optional()
     .describe('Optional description for the variable'),
+  value: z.string().min(1).describe('The value of the variable'),
 });
 
 const configureTextTemplateInputSchema = {
-  project: z.string().describe('The name or ID of the project'),
-  package: z.string().describe('The package name within the project'),
+  filePath: z.string().describe('File path (absolute or relative)'),
+  project: z
+    .string()
+    .optional()
+    .describe('Project name or ID (required for relative paths)'),
   generator: z
     .string()
     .describe('The generator name (e.g., @baseplate-dev/react-generators)'),
-  file: z.string().describe('File path relative to the package directory'),
   templateName: z.string().describe('Template name in kebab-case format'),
   variables: z
     .record(variableSchema)
@@ -30,7 +31,12 @@ const configureTextTemplateInputSchema = {
 const configureTextTemplateOutputSchema = {
   message: z.string().describe('Success message'),
   templateName: z.string().describe('The configured template name'),
-  filePath: z.string().describe('The file path that was configured'),
+  absolutePath: z
+    .string()
+    .describe('The absolute file path that was configured'),
+  generatorDirectory: z
+    .string()
+    .describe('The generator directory that was configured'),
 };
 
 /**
@@ -44,35 +50,28 @@ export const configureTextTemplateAction = createServiceAction({
   outputSchema: configureTextTemplateOutputSchema,
   handler: async (input, context) => {
     const {
-      project: projectId,
-      package: packageName,
+      filePath,
+      project,
       generator,
-      file: filePath,
       templateName,
       variables = {},
       group,
     } = input;
-    const { projects, plugins, logger } = context;
-
-    // Find the project
-    const project = getProjectByNameOrId(projects, projectId);
 
     // Configure the template using the dedicated function
     const result = await configureTextTemplate(
       {
-        project,
-        package: packageName,
-        generator,
         filePath,
+        project,
+        generator,
         templateName,
         variables,
         group,
       },
-      plugins,
-      logger,
+      context,
     );
 
-    logger.info(result.message);
+    context.logger.info(result.message);
     return result;
   },
   writeCliOutput: (output) => {

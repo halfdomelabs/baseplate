@@ -1,6 +1,6 @@
 export interface ConfigureTemplateResult {
   message: string;
   templateName: string;
-  filePath: string;
+  absolutePath: string;
   generatorDirectory: string;
 }

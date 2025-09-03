@@ -3,23 +3,27 @@ import { z } from 'zod';
 import { createServiceAction } from '#src/actions/types.js';
 import { configureRawTemplate } from '#src/templates/configure/configure-raw-template.js';
 
-import { getProjectByNameOrId } from '../utils/projects.js';
-
 const configureRawTemplateInputSchema = {
-  project: z.string().describe('The name or ID of the project'),
-  package: z.string().describe('The package name within the project'),
+  filePath: z.string().describe('File path (absolute or relative)'),
+  project: z
+    .string()
+    .optional()
+    .describe('Project name or ID (required for relative paths)'),
   generator: z
     .string()
     .describe('The generator name (e.g., @baseplate-dev/react-generators)'),
-  file: z.string().describe('File path relative to the package directory'),
   templateName: z.string().describe('Template name in kebab-case format'),
-  group: z.string().optional().describe('Optional template group'),
 };
 
 const configureRawTemplateOutputSchema = {
   message: z.string().describe('Success message'),
   templateName: z.string().describe('The configured template name'),
-  filePath: z.string().describe('The file path that was configured'),
+  absolutePath: z
+    .string()
+    .describe('The absolute file path that was configured'),
+  generatorDirectory: z
+    .string()
+    .describe('The generator directory that was configured'),
 };
 
 /**
@@ -32,34 +36,20 @@ export const configureRawTemplateAction = createServiceAction({
   inputSchema: configureRawTemplateInputSchema,
   outputSchema: configureRawTemplateOutputSchema,
   handler: async (input, context) => {
-    const {
-      project: projectId,
-      package: packageName,
-      generator,
-      file: filePath,
-      templateName,
-      group,
-    } = input;
-    const { projects, plugins, logger } = context;
-
-    // Find the project
-    const project = getProjectByNameOrId(projects, projectId);
+    const { filePath, project, generator, templateName } = input;
 
     // Configure the template using the dedicated function
     const result = await configureRawTemplate(
       {
-        project,
-        package: packageName,
-        generator,
         filePath,
+        project,
+        generator,
         templateName,
-        group,
       },
-      plugins,
-      logger,
+      context,
     );
 
-    logger.info(result.message);
+    context.logger.info(result.message);
     return result;
   },
   writeCliOutput: (output) => {

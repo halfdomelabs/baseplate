@@ -1,21 +1,20 @@
-import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
-import type { Logger } from '@baseplate-dev/sync';
+import type { TsTemplateMetadata } from '@baseplate-dev/core-generators';
 
-import path from 'node:path';
+import type { ServiceActionContext } from '#src/actions/types.js';
 
-import type { ProjectInfo } from '../../api/projects.js';
 import type { TsFileExportInfo } from '../utils/infer-exports-from-ts-file.js';
 import type { ConfigureTemplateResult } from './types.js';
 
 import { updateExtractorTemplate } from '../utils/extractor-config.js';
 import { inferExportsFromTsFile } from '../utils/infer-exports-from-ts-file.js';
+import { resolveFilePath } from '../utils/resolve-file-path.js';
 import { resolveGenerator } from '../utils/resolve-generator.js';
+import { updateTemplateMetadata } from '../utils/template-metadata.js';
 
 export interface ConfigureTsTemplateInput {
-  project: ProjectInfo;
-  package: string;
-  generator: string;
   filePath: string;
+  project?: string;
+  generator: string;
   templateName: string;
   projectExports?: string[];
   group?: string;
@@ -26,43 +25,37 @@ export interface ConfigureTsTemplateInput {
  */
 export async function configureTsTemplate(
   input: ConfigureTsTemplateInput,
-  plugins: PluginMetadataWithPaths[],
-  logger: Logger,
+  { logger, plugins, projects }: ServiceActionContext,
 ): Promise<ConfigureTemplateResult> {
   const {
-    project,
-    package: packageName,
-    generator,
     filePath,
+    project: projectNameOrId,
+    generator,
     templateName,
     projectExports: projectExportsList = [],
     group,
   } = input;
 
-  // Get full file path (packages/[packageName]/[filePath])
-  const absoluteFilePath = path.resolve(
-    project.directory,
-    'packages',
-    packageName,
+  // Resolve file path to project and package info
+  const { absolutePath, project, projectRelativePath } = resolveFilePath(
     filePath,
+    projects,
+    projectNameOrId,
   );
 
   // Validate exports if provided
   const projectExports: Record<string, TsFileExportInfo> = {};
   if (projectExportsList.length > 0) {
-    const availableExports = inferExportsFromTsFile(absoluteFilePath);
+    const availableExports = inferExportsFromTsFile(absolutePath);
     for (const exportName of projectExportsList) {
       const exportInfo = availableExports.get(exportName);
       if (exportInfo) {
         projectExports[exportName] = exportInfo;
       } else {
-        throw new Error(
-          `Export ${exportName} not found in ${absoluteFilePath}`,
-        );
+        throw new Error(`Export ${exportName} not found in ${absolutePath}`);
       }
     }
   }
-
   // Resolve generator directory
   const generatorDirectory = await resolveGenerator(
     project.directory,
@@ -71,9 +64,11 @@ export async function configureTsTemplate(
     logger,
   );
 
+  // Update template metadata
+  await updateTemplateMetadata(absolutePath, generator, templateName);
+
   // Configure the template
-  const templateConfig: Record<string, unknown> = {
-    sourceFile: filePath,
+  const templateConfig: Partial<TsTemplateMetadata> = {
     projectExports:
       Object.keys(projectExports).length > 0 ? projectExports : undefined,
     group: group ?? undefined,
@@ -87,9 +82,9 @@ export async function configureTsTemplate(
   );
 
   return {
-    message: `Successfully configured TypeScript template '${templateName}' for file '${filePath}' in package '${packageName}'`,
+    message: `Successfully configured TypeScript template '${templateName}' for file '${projectRelativePath}' in project '${project.name}'`,
     templateName,
-    filePath,
+    absolutePath,
     generatorDirectory,
   };
 }

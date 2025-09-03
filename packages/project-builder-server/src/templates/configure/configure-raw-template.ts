@@ -1,19 +1,19 @@
-import type { PluginMetadataWithPaths } from '@baseplate-dev/project-builder-lib';
-import type { Logger } from '@baseplate-dev/sync';
+import type { RawTemplateMetadata } from '@baseplate-dev/core-generators';
 
-import type { ProjectInfo } from '../../api/projects.js';
+import type { ServiceActionContext } from '#src/actions/types.js';
+
 import type { ConfigureTemplateResult } from './types.js';
 
 import { updateExtractorTemplate } from '../utils/extractor-config.js';
+import { resolveFilePath } from '../utils/resolve-file-path.js';
 import { resolveGenerator } from '../utils/resolve-generator.js';
+import { updateTemplateMetadata } from '../utils/template-metadata.js';
 
 export interface ConfigureRawTemplateInput {
-  project: ProjectInfo;
-  package: string;
-  generator: string;
   filePath: string;
+  project?: string;
+  generator: string;
   templateName: string;
-  group?: string;
 }
 
 /**
@@ -21,17 +21,16 @@ export interface ConfigureRawTemplateInput {
  */
 export async function configureRawTemplate(
   input: ConfigureRawTemplateInput,
-  plugins: PluginMetadataWithPaths[],
-  logger: Logger,
+  { logger, plugins, projects }: ServiceActionContext,
 ): Promise<ConfigureTemplateResult> {
-  const {
-    project,
-    package: packageName,
-    generator,
+  const { filePath, project: projectNameOrId, generator, templateName } = input;
+
+  // Resolve file path to project and package info
+  const { absolutePath, project, projectRelativePath } = resolveFilePath(
     filePath,
-    templateName,
-    group,
-  } = input;
+    projects,
+    projectNameOrId,
+  );
 
   // Resolve generator directory
   const generatorDirectory = await resolveGenerator(
@@ -41,11 +40,11 @@ export async function configureRawTemplate(
     logger,
   );
 
+  // Update template metadata
+  await updateTemplateMetadata(absolutePath, generator, templateName);
+
   // Configure the template
-  const templateConfig: Record<string, unknown> = {
-    sourceFile: filePath,
-    group: group ?? undefined,
-  };
+  const templateConfig: Partial<RawTemplateMetadata> = {};
 
   await updateExtractorTemplate(
     generatorDirectory,
@@ -55,9 +54,9 @@ export async function configureRawTemplate(
   );
 
   return {
-    message: `Successfully configured raw template '${templateName}' for file '${filePath}' in package '${packageName}'`,
+    message: `Successfully configured raw template '${templateName}' for file '${projectRelativePath}' in project '${project.name}'`,
     templateName,
-    filePath,
+    absolutePath,
     generatorDirectory,
   };
 }
