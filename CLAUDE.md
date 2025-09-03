@@ -352,14 +352,11 @@ Generate a diff between what would be generated and what currently exists in the
 
 **Usage:**
 
-```typescript
-mcp__baseplate -
-  dev -
-  server__diff -
-  project({
-    project: 'my-project',
-    compact: true,
-  });
+```javascript
+mcp__baseplate_dev_server__diff_project({
+  project: 'my-project',
+  compact: true,
+});
 ```
 
 #### `sync-project`
@@ -375,36 +372,35 @@ Sync the specified project using the baseplate sync engine.
 
 **Usage:**
 
-```typescript
-mcp__baseplate -
-  dev -
-  server__sync -
-  project({
-    project: 'my-project',
-    overwrite: false,
-  });
+```javascript
+mcp__baseplate_dev_server__sync_project({
+  project: 'my-project',
+  overwrite: false,
+});
 ```
 
 #### `delete-template`
 
-Delete a specific template from a generator.
+Delete a template by looking up its metadata from the file path and removing all associated files (template file, metadata, and generated file).
 
 **Parameters:**
 
-- `generatorName` (required): The name of the generator containing the template
-- `templateName` (required): The name of the template to delete
-- `project` (optional): Specify the project to source the generators from
+- `filePath` (required): Path to file to delete (absolute or relative)
+- `project` (optional): Project name or ID (required for relative paths, optional for absolute)
 
 **Usage:**
 
-```typescript
-mcp__baseplate -
-  dev -
-  server__delete -
-  template({
-    generatorName: 'my-generator',
-    templateName: 'my-template',
-  });
+```javascript
+// Delete template using absolute path
+mcp__baseplate_dev_server__delete_template({
+  filePath: '/path/to/project/src/components/my-component.tsx',
+});
+
+// Delete template using relative path (requires project)
+mcp__baseplate_dev_server__delete_template({
+  filePath: 'src/components/my-component.tsx',
+  project: 'my-project',
+});
 ```
 
 #### `extract-templates`
@@ -420,14 +416,11 @@ Extract templates from the specified project and app.
 
 **Usage:**
 
-```typescript
-mcp__baseplate -
-  dev -
-  server__extract -
-  templates({
-    project: 'my-project',
-    app: 'my-app',
-  });
+```javascript
+mcp__baseplate_dev_server__extract_templates({
+  project: 'my-project',
+  app: 'my-app',
+});
 ```
 
 #### `generate-templates`
@@ -441,13 +434,10 @@ Generate typed template files from existing extractor.json configurations.
 
 **Usage:**
 
-```typescript
-mcp__baseplate -
-  dev -
-  server__generate -
-  templates({
-    project: 'my-project',
-  });
+```javascript
+mcp__baseplate_dev_server__generate_templates({
+  project: 'my-project',
+});
 ```
 
 #### `list-templates`
@@ -460,13 +450,10 @@ List all available generators with their templates.
 
 **Usage:**
 
-```typescript
-mcp__baseplate -
-  dev -
-  server__list -
-  templates({
-    project: 'my-project',
-  });
+```javascript
+mcp__baseplate_dev_server__list_templates({
+  project: 'my-project',
+});
 ```
 
 #### `snapshot-add`
@@ -483,16 +470,13 @@ Add files to snapshot for persistent differences tracking.
 
 **Usage:**
 
-```typescript
-mcp__baseplate -
-  dev -
-  server__snapshot -
-  add({
-    project: 'blog-with-auth',
-    app: 'backend',
-    files: ['src/custom-file.ts'],
-    deleted: false,
-  });
+```javascript
+mcp__baseplate_dev_server__snapshot_add({
+  project: 'blog-with-auth',
+  app: 'backend',
+  files: ['src/custom-file.ts'],
+  deleted: false,
+});
 ```
 
 #### `snapshot-remove`
@@ -508,15 +492,12 @@ Remove files from snapshot tracking.
 
 **Usage:**
 
-```typescript
-mcp__baseplate -
-  dev -
-  server__snapshot -
-  remove({
-    project: 'blog-with-auth',
-    app: 'backend',
-    files: ['src/file-to-untrack.ts'],
-  });
+```javascript
+mcp__baseplate_dev_server__snapshot_remove({
+  project: 'blog-with-auth',
+  app: 'backend',
+  files: ['src/file-to-untrack.ts'],
+});
 ```
 
 #### `snapshot-save`
@@ -532,15 +513,12 @@ Save snapshot of current differences (overwrites existing snapshot).
 
 **Usage:**
 
-```typescript
-mcp__baseplate -
-  dev -
-  server__snapshot -
-  save({
-    project: 'blog-with-auth',
-    app: 'backend',
-    force: true,
-  });
+```javascript
+mcp__baseplate_dev_server__snapshot_save({
+  project: 'blog-with-auth',
+  app: 'backend',
+  force: true,
+});
 ```
 
 #### `snapshot-show`
@@ -555,14 +533,11 @@ Display current snapshot contents and tracked files.
 
 **Usage:**
 
-```typescript
-mcp__baseplate -
-  dev -
-  server__snapshot -
-  show({
-    project: 'blog-with-auth',
-    app: 'backend',
-  });
+```javascript
+mcp__baseplate_dev_server__snapshot_show({
+  project: 'blog-with-auth',
+  app: 'backend',
+});
 ```
 
 ### Common Usage Patterns
@@ -579,7 +554,7 @@ mcp__baseplate -
 1. Use `list-templates` to see existing templates
 2. Use `extract-templates` to create new templates from project code
 3. Use `generate-templates` to create typed template files
-4. Use `delete-template` to remove templates that are no longer needed
+4. Use `delete-template` with file paths to remove templates that are no longer needed
 
 ## Baseplate Development Workflow
 
@@ -590,7 +565,6 @@ This section documents the complete workflow for developing new generated code c
 - Baseplate repository checked out locally with example projects in the `examples/` directory:
   - `examples/blog-with-auth` - Blog application with authentication
   - `examples/todo-with-auth0` - Todo application with Auth0 integration
-- VSCode with Baseplate template extension installed
 - MCP server configured and running
 
 ### Development Workflow Overview
@@ -627,25 +601,58 @@ pnpm build && pnpm lint
 
 #### 3. Template Metadata Management
 
-For any new files created or removed, update template metadata using the VSCode extension:
+For any new files created or removed, update template metadata using MCP commands:
 
-- **New files**: Add template metadata using the VSCode Baseplate extension
-- **Removed files**: Remove template metadata for deleted templates
-- **Modified files**: Ensure existing template metadata is correct
+- **New files**: Configure template metadata using the appropriate MCP command:
+
+  ```javascript
+  // For TypeScript templates
+  mcp__baseplate_dev_server__configure_ts_template({
+    filePath: 'src/components/new-component.tsx',
+    generator: '@baseplate-dev/react-generators',
+    templateName: 'new-component',
+    project: 'blog-with-auth',
+  });
+
+  // For text templates
+  mcp__baseplate_dev_server__configure_text_template({
+    filePath: 'src/config/config.json',
+    generator: '@baseplate-dev/core-generators',
+    templateName: 'app-config',
+    variables: { appName: { value: 'MyApp' } },
+    project: 'blog-with-auth',
+  });
+
+  // For raw/binary templates
+  mcp__baseplate_dev_server__configure_raw_template({
+    filePath: 'public/favicon.ico',
+    generator: '@baseplate-dev/core-generators',
+    templateName: 'favicon',
+    project: 'blog-with-auth',
+  });
+  ```
+
+- **Removed files**: Delete template metadata using the delete command:
+
+  ```javascript
+  mcp__baseplate_dev_server__delete_template({
+    filePath: 'src/components/old-component.tsx',
+    project: 'blog-with-auth',
+  });
+  ```
+
+- **Modified files**: Template metadata is automatically preserved during extraction
 
 #### 4. Template Extraction
 
 Extract templates from your working codebase using MCP commands:
 
-```typescript
+```javascript
 // Extract templates for the modified app
-mcp__baseplate -
-  dev -
-  server__extract -
-  templates({
-    project: 'blog-with-auth',
-    app: 'backend',
-  });
+mcp__baseplate_dev_server__extract_templates({
+  project: 'blog-with-auth',
+  app: 'backend',
+});
 ```
 
 This updates the local generator templates based on your code changes.
@@ -673,15 +680,12 @@ pnpm build && pnpm lint
 
 Check for differences between written and generated code:
 
-```typescript
+```javascript
 // Check what changes would be made
-mcp__baseplate -
-  dev -
-  server__diff -
-  project({
-    project: 'blog-with-auth',
-    packages: ['backend'],
-  });
+mcp__baseplate_dev_server__diff_project({
+  project: 'blog-with-auth',
+  packages: ['backend'],
+});
 ```
 
 #### 7. Handle Differences
@@ -694,42 +698,33 @@ Analyze the diff results:
 
 For files with intentional differences that should be preserved:
 
-```typescript
+```javascript
 // Save snapshot of intentional differences
-mcp__baseplate -
-  dev -
-  server__snapshot -
-  add({
-    project: 'blog-with-auth',
-    app: 'backend',
-    files: ['src/specific-file.ts'],
-  });
+mcp__baseplate_dev_server__snapshot_add({
+  project: 'blog-with-auth',
+  app: 'backend',
+  files: ['src/specific-file.ts'],
+});
 
 // For removed files that should stay removed
-mcp__baseplate -
-  dev -
-  server__snapshot -
-  add({
-    project: 'blog-with-auth',
-    app: 'backend',
-    files: ['src/removed-file.ts'],
-    deleted: true,
-  });
+mcp__baseplate_dev_server__snapshot_add({
+  project: 'blog-with-auth',
+  app: 'backend',
+  files: ['src/removed-file.ts'],
+  deleted: true,
+});
 ```
 
 #### 8. Code Synchronization
 
 Once diffs are acceptable, synchronize the working codebase:
 
-```typescript
+```javascript
 // Overwrite working code with generated code
-mcp__baseplate -
-  dev -
-  server__sync -
-  project({
-    project: 'blog-with-auth',
-    overwrite: true,
-  });
+mcp__baseplate_dev_server__sync_project({
+  project: 'blog-with-auth',
+  overwrite: true,
+});
 ```
 
 For more targeted updates:
@@ -741,15 +736,12 @@ baseplate sync blog-with-auth --overwrite --only-files "src/file1.ts,src/file2.t
 
 #### 9. Final Validation
 
-```typescript
+```javascript
 // Run final diff to ensure no unexpected changes
-mcp__baseplate -
-  dev -
-  server__diff -
-  project({
-    project: 'blog-with-auth',
-    packages: ['backend'],
-  });
+mcp__baseplate_dev_server__diff_project({
+  project: 'blog-with-auth',
+  packages: ['backend'],
+});
 ```
 
 The diff should show no changes or only expected/snapshotted differences.
@@ -768,64 +760,46 @@ git commit -m "feat: implement [feature description]"
 
 For complex scenarios with intentional differences:
 
-```typescript
+```javascript
 // View current snapshot status
-mcp__baseplate -
-  dev -
-  server__snapshot -
-  show({
-    project: 'blog-with-auth',
-    app: 'backend',
-  });
+mcp__baseplate_dev_server__snapshot_show({
+  project: 'blog-with-auth',
+  app: 'backend',
+});
 
 // Remove files from snapshot (let them be generated normally)
-mcp__baseplate -
-  dev -
-  server__snapshot -
-  remove({
-    project: 'blog-with-auth',
-    app: 'backend',
-    files: ['src/file.ts'],
-  });
+mcp__baseplate_dev_server__snapshot_remove({
+  project: 'blog-with-auth',
+  app: 'backend',
+  files: ['src/file.ts'],
+});
 
 // Save complete snapshot (overwrites existing)
-mcp__baseplate -
-  dev -
-  server__snapshot -
-  save({
-    project: 'blog-with-auth',
-    app: 'backend',
-    force: true,
-  });
+mcp__baseplate_dev_server__snapshot_save({
+  project: 'blog-with-auth',
+  app: 'backend',
+  force: true,
+});
 ```
 
 #### Template Management During Development
 
-```typescript
+```javascript
 // List current templates to understand what's available
-mcp__baseplate -
-  dev -
-  server__list -
-  templates({
-    project: 'blog-with-auth',
-  });
+mcp__baseplate_dev_server__list_templates({
+  project: 'blog-with-auth',
+});
 
 // Generate template files after manual extractor.json changes
-mcp__baseplate -
-  dev -
-  server__generate -
-  templates({
-    project: 'blog-with-auth',
-  });
+mcp__baseplate_dev_server__generate_templates({
+  project: 'blog-with-auth',
+});
 
 // Remove outdated templates
-mcp__baseplate -
-  dev -
-  server__delete -
-  template({
-    generatorName: 'my-generator',
-    templateName: 'outdated-template',
-  });
+mcp__baseplate_dev_server__delete_template({
+  filePath: 'src/outdated-file.ts',
+  project: 'blog-with-auth',
+});
 ```
 
 ### Troubleshooting Common Issues
@@ -838,7 +812,7 @@ mcp__baseplate -
 
 #### Diff Conflicts
 
-- Use `mcp__baseplate-dev-server__snapshot-add` to add resolved files to snapshot
+- Use `mcp__baseplate_dev_server__snapshot_add` to add resolved files to snapshot
 - For manual conflicts, edit files and re-add to snapshot using the MCP action
 - Consider if differences indicate generator bugs vs. intentional customizations
 
