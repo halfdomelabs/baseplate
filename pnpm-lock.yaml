@@ -596,8 +596,8 @@ importers:
         specifier: 9.5.0
         version: 9.5.0
       ts-morph:
-        specifier: ^25.0.0
-        version: 25.0.1
+        specifier: 26.0.0
+        version: 26.0.0
       zod:
         specifier: 'catalog:'
         version: 3.25.76
@@ -3658,9 +3658,6 @@ packages:
     resolution: {integrity: sha512-Oi9zWHG0ZDkbDo4sYkduoV7q4sIe6UwjrRLC91vNMYQK+PVgpbTCmK1laRwewAGu0zaayqcGDosANjceOIC3GA==}
     peerDependencies:
       typescript: '>=5.7.2'
-
-  '@ts-morph/common@0.26.1':
-    resolution: {integrity: sha512-Sn28TGl/4cFpcM+jwsH1wLncYq3FtN/BIpem+HOygfBWPT5pAeS5dB4VFVzV8FbnOKHpDLZmvAl4AjPEev5idA==}
 
   '@ts-morph/common@0.27.0':
     resolution: {integrity: sha512-Wf29UqxWDpc+i61k3oIOzcUfQt79PIT9y/MWfAGlrkjg6lBC1hwDECLXPVJAhWjiGbfBCxZd65F/LIZF3+jeJQ==}
@@ -7298,9 +7295,6 @@ packages:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
     engines: {node: '>=6.10'}
 
-  ts-morph@25.0.1:
-    resolution: {integrity: sha512-QJEiTdnz1YjrB3JFhd626gX4rKHDLSjSVMvGGG4v7ONc3RBwa0Eei98G9AT9uNFDMtV54JyuXsFeC+OH0n6bXQ==}
-
   ts-morph@26.0.0:
     resolution: {integrity: sha512-ztMO++owQnz8c/gIENcM9XfCEzgoGphTv+nKpYNM1bgsdOVC/jRZuEBf6N+mLLDNg68Kl+GgUZfOySaRiG1/Ug==}
 
@@ -10052,12 +10046,6 @@ snapshots:
   '@trpc/server@11.1.2(typescript@5.8.3)':
     dependencies:
       typescript: 5.8.3
-
-  '@ts-morph/common@0.26.1':
-    dependencies:
-      fast-glob: 3.3.3
-      minimatch: 9.0.5
-      path-browserify: 1.0.1
 
   '@ts-morph/common@0.27.0':
     dependencies:
@@ -14039,11 +14027,6 @@ snapshots:
       typescript: 5.8.3
 
   ts-dedent@2.2.0: {}
-
-  ts-morph@25.0.1:
-    dependencies:
-      '@ts-morph/common': 0.26.1
-      code-block-writer: 13.0.3
 
   ts-morph@26.0.0:
     dependencies:
