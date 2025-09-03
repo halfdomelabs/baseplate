@@ -12,7 +12,9 @@ export function getProjectByNameOrId(
 ): ServiceActionProject {
   const project = projects.find(
     (project) =>
-      project.name === projectNameOrId || project.id === projectNameOrId,
+      project.name === projectNameOrId ||
+      project.id === projectNameOrId ||
+      project.directory === projectNameOrId,
   );
 
   if (!project) {
