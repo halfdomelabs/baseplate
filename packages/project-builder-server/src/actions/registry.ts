@@ -7,11 +7,16 @@ import {
 } from './snapshot/index.js';
 import { syncProjectAction } from './sync/index.js';
 import {
-  deleteTemplateAction,
   extractTemplatesAction,
   generateTemplatesAction,
-  listTemplatesAction,
 } from './template-extractor/index.js';
+import {
+  configureRawTemplateAction,
+  configureTextTemplateAction,
+  configureTsTemplateAction,
+  deleteTemplateAction,
+  listTemplatesAction,
+} from './templates/index.js';
 
 export const ALL_SERVICE_ACTIONS = [
   diffProjectAction,
@@ -19,6 +24,10 @@ export const ALL_SERVICE_ACTIONS = [
   deleteTemplateAction,
   extractTemplatesAction,
   generateTemplatesAction,
+  configureTsTemplateAction,
+  configureTextTemplateAction,
+  configureRawTemplateAction,
+  deleteTemplateAction,
   listTemplatesAction,
   snapshotAddAction,
   snapshotRemoveAction,

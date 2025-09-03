@@ -12,7 +12,7 @@ See @.cursor/rules/code-style.mdc for code style guidelines.
 
 ## UI Development Guidelines
 
-See @.cursor/rules/ui-development.mdc for UI development guidelines.
+See @.cursor/rules/ui-rules.mdc for UI development guidelines.
 
 ### UI Components Quick Reference
 
