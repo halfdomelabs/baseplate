@@ -103,3 +103,5 @@ playground
 
 # Baseplate settings
 /.baseplate
+
+.pnpm-store
