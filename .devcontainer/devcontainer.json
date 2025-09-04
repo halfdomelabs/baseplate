@@ -20,7 +20,9 @@
         "anthropic.claude-code",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
-        "eamodio.gitlens"
+        "eamodio.gitlens",
+        "Prisma.prisma",
+        "/home/vscode/baseplate-extension/baseplate-vscode-0.0.1.vsix"
       ],
       "settings": {
         "editor.formatOnSave": true,
@@ -46,12 +48,12 @@
 
   "mounts": [
     "source=${localWorkspaceFolderBasename}-bashhistory,target=/commandhistory,type=volume",
-    "source=${localWorkspaceFolderBasename}-claude,target=/home/vscode/.claude,type=volume"
+    "source=${localWorkspaceFolderBasename}-claude,target=/home/vscode/.claude,type=volume",
+    "source=${localWorkspaceFolder}/../baseplate-vscode,target=/home/vscode/baseplate-extension,type=bind,readonly"
   ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
 
-  // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "./.devcontainer/post-create.sh"
 }
