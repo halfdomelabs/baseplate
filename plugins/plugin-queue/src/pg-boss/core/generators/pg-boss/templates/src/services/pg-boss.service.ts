@@ -163,7 +163,7 @@ async function setupRepeatableJobs(
 /**
  * Implementation of Queue interface backed by pg-boss.
  */
-class PgBossQueue<T> implements Queue<T> {
+export class PgBossQueue<T> implements Queue<T> {
   private isWorkerStarted = false;
   private hasCreatedQueue = false;
 
