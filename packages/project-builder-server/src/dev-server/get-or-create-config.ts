@@ -17,8 +17,7 @@ const devServerConfigSchema = z.object({
 
 export type DevServerConfig = z.infer<typeof devServerConfigSchema>;
 
-const PORT_RANGE_START = 41_000;
-const PORT_RANGE_END = 49_999;
+const DEFAULT_DEV_SERVER_PORT = 4500;
 
 const ROOT_PACKAGE_NAME = '@baseplate-dev/root';
 
@@ -91,14 +90,11 @@ export async function getOrCreateDevServerConfig(
     return existingConfig;
   }
 
-  // Generate deterministic port based on root directory path
-  const hash = crypto
-    .createHash('md5')
-    .update(path.resolve(rootDirectory))
-    .digest();
-
-  const offset = hash.readUInt16BE(0) % (PORT_RANGE_END - PORT_RANGE_START);
-  const port = PORT_RANGE_START + offset;
+  // Simple port calculation: 4500 + PORT_OFFSET
+  const portOffset = process.env.PORT_OFFSET
+    ? Number.parseInt(process.env.PORT_OFFSET, 10)
+    : 0;
+  const port = DEFAULT_DEV_SERVER_PORT + portOffset;
 
   // Generate secure token
   const token = crypto.randomBytes(32).toString('hex');

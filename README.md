@@ -44,7 +44,7 @@ Follow these steps to create and run a new Baseplate project:
    pnpm baseplate serve
    ```
 
-   The builder’s web UI and backend server will start (default port: `3230`). You can now open the web interface in your browser to configure and synchronize your project.
+   The builder's web UI and backend server will start (default port: `4400`). You can now open the web interface in your browser to configure and synchronize your project.
 
 ## Development
 
@@ -63,7 +63,30 @@ Once installed, you can start the builder locally:
 pnpm dev:serve
 ```
 
-The server will run on `localhost:3230` (or the port you specify).
+The server will run on `localhost:4400` (or the port you specify).
+
+### Parallel Development Environments
+
+You can run multiple Baseplate instances simultaneously using the PORT_OFFSET environment variable:
+
+```bash
+# Set up instance 1 (ports: 4301, 4401, 4501)
+./scripts/setup-parallel.sh 1
+
+# Set up instance 2 (ports: 4302, 4402, 4502)
+./scripts/setup-parallel.sh 2
+```
+
+Or manually create a `.env` file in the repository root:
+
+```env
+PORT_OFFSET=1  # Adds offset to all ports
+```
+
+This is useful for:
+
+- Testing different features in parallel
+- Running multiple versions for comparison
 
 ## Support
 

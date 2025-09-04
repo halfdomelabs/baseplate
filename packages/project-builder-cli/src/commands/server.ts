@@ -55,10 +55,16 @@ export async function serveWebServer(
     serviceActionContext: context,
   });
 
+  // Apply PORT_OFFSET if set
+  const portOffset = process.env.PORT_OFFSET
+    ? Number.parseInt(process.env.PORT_OFFSET, 10)
+    : 0;
+  const effectivePort = port ?? DEFAULT_SERVER_PORT + portOffset;
+
   const fastifyInstance = await startWebServer({
     serviceManager,
     browser,
-    port: port ?? DEFAULT_SERVER_PORT,
+    port: effectivePort,
     cliVersion: version,
     projectBuilderStaticDir: path.join(projectBuilderWebDir, 'dist'),
     logger: overrideLogger ?? logger,

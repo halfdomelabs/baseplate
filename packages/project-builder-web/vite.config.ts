@@ -12,8 +12,32 @@ import { pluginDevServerPlugin } from './plugins/plugin-dev-server.js';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const envVars = { ...process.env, ...loadEnv(mode, process.cwd(), '') };
-  const PORT = envVars.PORT ? Number.parseInt(envVars.PORT, 10) : 3000;
+  // Load env from current directory and parent directories
+  const localEnv = loadEnv(mode, process.cwd(), '');
+  const rootEnv = loadEnv(mode, '../../', '');
+  const envVars = { ...process.env, ...rootEnv, ...localEnv };
+
+  // Apply PORT_OFFSET if set
+  const portOffset = envVars.PORT_OFFSET
+    ? Number.parseInt(envVars.PORT_OFFSET, 10)
+    : 0;
+  const basePort = envVars.PORT ? Number.parseInt(envVars.PORT, 10) : 4300;
+  const PORT = basePort + portOffset;
+
+  // Apply offset to backend host if it's a localhost URL
+  let backendHost = envVars.DEV_BACKEND_HOST;
+  if (backendHost && portOffset !== 0) {
+    // Parse and update the port in the backend host URL
+    const backendUrl = new URL(backendHost);
+    if (
+      backendUrl.hostname === 'localhost' ||
+      backendUrl.hostname === '127.0.0.1'
+    ) {
+      const baseBackendPort = Number.parseInt(backendUrl.port, 10);
+      backendUrl.port = String(baseBackendPort + portOffset);
+      backendHost = backendUrl.toString().replace(/\/$/, ''); // Remove trailing slash
+    }
+  }
 
   return {
     plugins: [
@@ -49,15 +73,15 @@ export default defineConfig(({ mode }) => {
     ],
     server: {
       port: PORT,
-      proxy: envVars.DEV_BACKEND_HOST
+      proxy: backendHost
         ? {
             '/api': {
-              target: envVars.DEV_BACKEND_HOST,
+              target: backendHost,
               changeOrigin: true,
               ws: true,
             },
             '/trpc': {
-              target: envVars.DEV_BACKEND_HOST,
+              target: backendHost,
               changeOrigin: true,
               ws: true,
               configure: (proxy) => {
@@ -74,10 +98,10 @@ export default defineConfig(({ mode }) => {
                   // Rewrite localhost origin to match backend host only if it comes from the Vite dev server
                   if (
                     typeof origin === 'string' &&
-                    envVars.DEV_BACKEND_HOST &&
+                    backendHost &&
                     devServerRegex.test(origin)
                   ) {
-                    proxyReq.setHeader('origin', envVars.DEV_BACKEND_HOST);
+                    proxyReq.setHeader('origin', backendHost);
                   }
                 };
 
