@@ -47,6 +47,7 @@
 
   "mounts": [
     "source=${localWorkspaceFolderBasename}-pnpm,target=/home/vscode/.local/share/pnpm,type=volume",
+    "source=${localWorkspaceFolderBasename}-node_modules,target=${localWorkspaceFolder}/node_modules,type=volume",
     "source=${localWorkspaceFolderBasename}-bashhistory,target=/commandhistory,type=volume",
     "source=${localWorkspaceFolderBasename}-claude,target=/home/vscode/.claude,type=volume"
   ],
