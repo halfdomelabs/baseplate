@@ -92,10 +92,6 @@ COPY --chown=$USERNAME:$USERNAME mise.toml .config/mise/config.toml
 
 # Install all tools defined in the config file using mise
 RUN mise install
-
-# Configure pnpm to use a specific store directory within the user's home
-ENV npm_config_store_dir="$HOME/.local/share/pnpm/store"
-
 # Set the default shell to zsh rather than sh
 ENV SHELL=/bin/zsh
 

@@ -1,5 +1,11 @@
 packages:
   - packages/*
+
+ignoredBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - msgpackr-extract
+  - unrs-resolver
+
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@prisma/client'

@@ -11,8 +11,7 @@
   "runArgs": ["--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
   "containerEnv": {
     "NODE_OPTIONS": "--max-old-space-size=4096",
-    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
-    "npm_config_package_import_method": "copy"
+    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
   },
 
   "customizations": {
@@ -46,8 +45,6 @@
   "containerUser": "vscode",
 
   "mounts": [
-    "source=${localWorkspaceFolderBasename}-pnpm,target=/home/vscode/.local/share/pnpm,type=volume",
-    "source=${localWorkspaceFolderBasename}-node_modules,target=${localWorkspaceFolder}/node_modules,type=volume",
     "source=${localWorkspaceFolderBasename}-bashhistory,target=/commandhistory,type=volume",
     "source=${localWorkspaceFolderBasename}-claude,target=/home/vscode/.claude,type=volume"
   ],

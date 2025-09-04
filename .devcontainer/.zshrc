@@ -16,7 +16,7 @@ if [ -f ~/.zplug/init.zsh ]; then
     zplug load
 fi
 
-bindkey '^S' autosuggest-accept
+bindkey '^E' autosuggest-accept
 
 # History settings
 
