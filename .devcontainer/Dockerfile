@@ -53,9 +53,12 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
   && echo "$SNIPPET" >> "/home/$USERNAME/.bashrc" \
   && chown $USERNAME /home/$USERNAME/.bashrc
 
-# Set up zshrc
+# Set up zshrc and inputrc
 COPY .devcontainer/.zshrc /home/$USERNAME/.zshrc
 RUN chown $USERNAME /home/$USERNAME/.zshrc
+
+COPY .devcontainer/.inputrc /home/$USERNAME/.inputrc
+RUN chown $USERNAME /home/$USERNAME/.inputrc
 
 USER $USERNAME
 
@@ -102,6 +105,10 @@ ENV VISUAL=vim
 
 # Install Claude
 RUN zsh -c "source ${ZDOTDIR-$HOME}/.zshrc && npm install -g @anthropic-ai/claude-code@latest"
+
+# Install zplug
+ENV ZPLUG_HOME="$HOME/.zplug"
+RUN git clone https://github.com/zplug/zplug.git $ZPLUG_HOME
 
 # Add firewall script
 USER root

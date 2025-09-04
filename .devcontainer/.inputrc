@@ -1,0 +1,21 @@
+# Ignore case when completing commands or file names with the tab key.
+set completion-ignore-case on
+
+# Display a minimum of 2 characters of the common prefix in tab-completion suggestions.
+set completion-prefix-display-length 2
+
+# Bind 'Control + j' to complete the next possible option in the list during tab-completion.
+Control-j: menu-complete
+
+# Bind 'Control + k' to complete the previous option in the list during tab-completion.
+Control-k: menu-complete-backward
+
+# Automatically show all available completions when multiple matches are possible, without requiring an extra tab.
+set show-all-if-ambiguous on
+
+# Show all completions even if the user hasn't modified the current line (useful for reviewing all possible completions without typing further).
+set show-all-if-unmodified on
+
+# Enable Ctrl-Left Arrow and Ctrl-Right Arrow to navigate by word
+"\e[1;5D": backward-word
+"\e[1;5C": forward-word
