@@ -4979,6 +4979,12 @@ packages:
         integrity: sha512-m5ObIqwsUp6BZzyiy4RdZpzWGub9bqLJMvZDD0QMXhxjqMHMENlj+SqF5QxoUwaQNFe+8kz8XM8ZQhqkQPTgMQ==,
       }
 
+  '@types/node@22.18.1':
+    resolution:
+      {
+        integrity: sha512-rzSDyhn4cYznVG+PCzGe1lwuMYJrcBS1fc3JqSa2PvtABwWo+dZ1ij5OVok3tqfpEBCBoaR4d7upFJk73HRJDw==,
+      }
+
   '@types/pg-pool@2.0.6':
     resolution:
       {
@@ -15300,7 +15306,7 @@ snapshots:
 
   '@types/ioredis-mock@8.2.5':
     dependencies:
-      '@types/node': 22.18.0
+      '@types/node': 22.18.1
       ioredis: 5.3.2
     transitivePeerDependencies:
       - supports-color
@@ -15318,6 +15324,10 @@ snapshots:
       '@types/node': 22.18.0
 
   '@types/node@22.18.0':
+    dependencies:
+      undici-types: 6.21.0
+
+  '@types/node@22.18.1':
     dependencies:
       undici-types: 6.21.0
 
