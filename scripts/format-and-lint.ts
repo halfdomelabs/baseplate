@@ -4,13 +4,14 @@
 /**
  * A resilient, monorepo-aware code formatting hook script in TypeScript.
  *
- * This script is designed for hooks that require prettifying and linting a particular file e.g. for Claude code.
- * It finds the nearest `package.json` to determine the project root for a given file.
+ * This script is designed for hooks that require prettifying and linting multiple files at once.
+ * It groups files by their nearest `package.json` to determine the project root for each file group.
  *
- * For Prettier: It uses the Prettier Node API to format files. It first checks
+ * For Prettier: It uses the Prettier Node API to format files concurrently. It first checks
  * if a file is supported by Prettier using `getFileInfo` to avoid unnecessary work.
  *
- * For ESLint: It shells out to run `eslint --fix` because its Node API is more complex.
+ * For ESLint: It shells out to run `eslint --fix` on all files for a given project in a single,
+ * batched command for better performance.
  *
  * The script runs a tool only if it's found as a dependency in the relevant `package.json`.
  * It's resilient and will report errors from formatters without crashing the hook.
@@ -41,7 +42,7 @@ const execPromise = promisify(exec);
 
 const VALID_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
 
-// A cache for Prettier configurations to avoid repeated lookups for multiple files.
+// A cache for Prettier configurations to avoid repeated lookups.
 const prettierConfigCache = new Map<string, Options | null>();
 
 /**
@@ -89,7 +90,7 @@ async function getPrettierConfig(filePath: string): Promise<Options | null> {
 }
 
 /**
- * Formats a file using the Prettier Node API.
+ * Formats a single file using the Prettier Node API.
  * @param filePath The absolute path to the file to format.
  */
 async function runPrettier(filePath: string): Promise<void> {
@@ -97,7 +98,6 @@ async function runPrettier(filePath: string): Promise<void> {
   try {
     const fileInfo = await getFileInfo(filePath);
 
-    // Skip if file is ignored by .prettierignore or has no known parser
     if (fileInfo.ignored || !fileInfo.inferredParser) {
       console.info(
         `Prettier is skipping ${path.basename(filePath)} (ignored or unsupported).`,
@@ -119,9 +119,7 @@ async function runPrettier(filePath: string): Promise<void> {
       filepath: filePath,
     });
 
-    if (content === formattedContent) {
-      console.info(`✅ Prettier check passed (already formatted).`);
-    } else {
+    if (content !== formattedContent) {
       fs.writeFileSync(filePath, formattedContent);
       console.info(`✅ Prettier formatted ${path.basename(filePath)}.`);
     }
@@ -134,69 +132,90 @@ async function runPrettier(filePath: string): Promise<void> {
 }
 
 /**
- * Runs ESLint as a shell command to autofix a file.
- * @param filePath The full path to the file to process.
+ * Runs ESLint as a shell command to autofix a batch of files.
+ * @param filePaths An array of full paths to the files to process.
  * @param cwd The current working directory to run the command in.
  */
-async function runEslint(filePath: string, cwd: string): Promise<void> {
+async function runEslint(filePaths: string[], cwd: string): Promise<void> {
   console.info(
-    `Running ESLint on ${path.basename(filePath)} (in ${path.basename(cwd)})...`,
+    `Running ESLint on ${filePaths.length} file(s) in ${path.basename(cwd)}...`,
   );
   try {
-    await execPromise(`npx eslint --fix "${filePath}"`, { cwd });
-    console.info(`✅ ESLint completed successfully.`);
+    const filesToLint = filePaths.map((f) => `"${f}"`).join(' ');
+    await execPromise(`npx eslint --fix ${filesToLint}`, { cwd });
+    console.info(
+      `✅ ESLint completed successfully for ${filePaths.length} file(s).`,
+    );
   } catch (error) {
-    console.error(`❌ ESLint failed for ${filePath}.`);
-    // ESLint outputs errors to stdout/stderr, which execPromise includes in the error message.
+    console.error(`❌ ESLint failed for files in ${cwd}.`);
     console.error(error instanceof Error ? error.message : String(error));
   }
 }
 
-const filePath = process.argv[2];
+const filePaths = process.argv.slice(2);
 
-if (!filePath) {
-  console.error('Error: Please provide a file path as an argument.');
+if (filePaths.length === 0) {
+  console.error('Error: Please provide at least one file path as an argument.');
   process.exit(1);
 }
 
-const absoluteFilePath = path.resolve(filePath);
-const extension = path.extname(absoluteFilePath);
+// Group files by their project directory (pkgDir) to process them in batches.
+const filesByProject = new Map<string, { pkgPath: string; files: string[] }>();
 
-if (!VALID_EXTENSIONS.has(extension)) {
-  console.info(
-    `Skipping file (unsupported extension): ${path.basename(absoluteFilePath)}`,
-  );
-  process.exit(0);
+for (const filePath of filePaths) {
+  const absoluteFilePath = path.resolve(filePath);
+  const extension = path.extname(absoluteFilePath);
+
+  if (!VALID_EXTENSIONS.has(extension)) {
+    console.info(
+      `Skipping file (unsupported extension): ${path.basename(absoluteFilePath)}`,
+    );
+    continue;
+  }
+
+  const packageInfo = findNearestPackageJson(path.dirname(absoluteFilePath));
+  if (!packageInfo) {
+    console.info(
+      `No package.json found for ${absoluteFilePath}. Skipping formatters.`,
+    );
+    continue;
+  }
+
+  const { pkgDir, pkgPath } = packageInfo;
+  if (!filesByProject.has(pkgDir)) {
+    filesByProject.set(pkgDir, { pkgPath, files: [] });
+  }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  filesByProject.get(pkgDir)!.files.push(absoluteFilePath);
 }
 
-const fileDir = path.dirname(absoluteFilePath);
-const packageInfo = findNearestPackageJson(fileDir);
+// Process each project's files.
+for (const [pkgDir, { pkgPath, files }] of filesByProject.entries()) {
+  console.info(`\nProcessing ${files.length} file(s) in project: ${pkgDir}`);
 
-if (!packageInfo) {
-  console.info(
-    `No package.json found for ${absoluteFilePath}. Skipping formatters.`,
-  );
-  process.exit(0);
+  const pkgContent = fs.readFileSync(pkgPath, 'utf8');
+  const pkg = JSON.parse(pkgContent) as {
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
+  };
+  const dependencies = { ...pkg.dependencies, ...pkg.devDependencies };
+
+  const tasks: Promise<void>[] = [];
+
+  // Run ESLint in one batch command for all files in this project.
+  if (dependencies.eslint) {
+    await runEslint(files, pkgDir);
+  }
+
+  // Run Prettier concurrently on each file.
+  if (dependencies.prettier) {
+    for (const file of files) {
+      // eslint-disable-next-line unicorn/prefer-top-level-await
+      tasks.push(runPrettier(file));
+    }
+  }
+
+  await Promise.all(tasks);
 }
 
-const { pkgPath, pkgDir } = packageInfo;
-console.info(
-  `Found package context for ${path.basename(absoluteFilePath)} at: ${pkgDir}`,
-);
-
-const pkgContent = fs.readFileSync(pkgPath, 'utf8');
-const pkg = JSON.parse(pkgContent) as {
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-};
-const dependencies = { ...pkg.dependencies, ...pkg.devDependencies };
-
-// Conditionally run formatters based on project dependencies
-if (dependencies.eslint) {
-  await runEslint(absoluteFilePath, pkgDir);
-}
-if (dependencies.prettier) {
-  await runPrettier(absoluteFilePath);
-}
-
-console.info(`\nFormatting hook finished for ${absoluteFilePath}.`);
+console.info(`\nFormatting hook finished for all provided files.`);
