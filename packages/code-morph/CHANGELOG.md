@@ -1,5 +1,20 @@
 # @baseplate-dev/code-morph
 
+## 0.3.4
+
+### Patch Changes
+
+- [#643](https://github.com/halfdomelabs/baseplate/pull/643) [`7d9e6d0`](https://github.com/halfdomelabs/baseplate/commit/7d9e6d01e0a9920cee4c4d499beeffc1c663494a) Thanks [@kingston](https://github.com/kingston)! - Upgrade to TypeScript 5.8 with erasable syntax only mode
+
+  This upgrade modernizes the codebase with TypeScript 5.8, enables erasable syntax only mode for better performance, and updates runtime dependencies.
+
+  **Key Changes:**
+  - Upgraded TypeScript to version 5.8
+  - Enabled `erasableSyntaxOnly` compiler option for improved build performance
+  - Updated Node.js requirement to 22.18
+  - Updated PNPM requirement to 10.15
+  - Fixed parameter property syntax to be compatible with erasable syntax only mode
+
 ## 0.3.3
 
 ## 0.3.2

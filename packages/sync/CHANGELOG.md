@@ -1,5 +1,30 @@
 # @baseplate-dev/sync
 
+## 0.3.4
+
+### Patch Changes
+
+- [#646](https://github.com/halfdomelabs/baseplate/pull/646) [`67dba69`](https://github.com/halfdomelabs/baseplate/commit/67dba697439e6bc76b81522c133d920af4dbdbb1) Thanks [@kingston](https://github.com/kingston)! - Enhance evented logger with Pino-style error handling and flexible message patterns
+  - Add error serialization following Pino patterns (type, message, stack, cause, custom properties)
+  - Support flexible message patterns: `logger.error(error)`, `logger.info({ message: 'text', userId: 123 })`, `logger.info({ msg: 'text' })`
+  - Support message priority: string arg > obj.message > obj.msg > error.message > ''
+  - Remove console logging from logger core (now pure event emitter)
+  - Maintain full backward compatibility with existing string-based logging
+
+- [#643](https://github.com/halfdomelabs/baseplate/pull/643) [`7d9e6d0`](https://github.com/halfdomelabs/baseplate/commit/7d9e6d01e0a9920cee4c4d499beeffc1c663494a) Thanks [@kingston](https://github.com/kingston)! - Upgrade to TypeScript 5.8 with erasable syntax only mode
+
+  This upgrade modernizes the codebase with TypeScript 5.8, enables erasable syntax only mode for better performance, and updates runtime dependencies.
+
+  **Key Changes:**
+  - Upgraded TypeScript to version 5.8
+  - Enabled `erasableSyntaxOnly` compiler option for improved build performance
+  - Updated Node.js requirement to 22.18
+  - Updated PNPM requirement to 10.15
+  - Fixed parameter property syntax to be compatible with erasable syntax only mode
+
+- Updated dependencies [[`7d9e6d0`](https://github.com/halfdomelabs/baseplate/commit/7d9e6d01e0a9920cee4c4d499beeffc1c663494a)]:
+  - @baseplate-dev/utils@0.3.4
+
 ## 0.3.3
 
 ### Patch Changes
