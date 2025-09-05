@@ -22,7 +22,7 @@
         "esbenp.prettier-vscode",
         "eamodio.gitlens",
         "Prisma.prisma",
-        "/home/vscode/baseplate-extension/baseplate-vscode-0.0.1.vsix"
+        "/home/vscode/baseplate-extension/extension.vsix"
       ],
       "settings": {
         "editor.formatOnSave": true,
@@ -49,11 +49,14 @@
   "mounts": [
     "source=${localWorkspaceFolderBasename}-bashhistory,target=/commandhistory,type=volume",
     "source=${localWorkspaceFolderBasename}-claude,target=/home/vscode/.claude,type=volume",
-    "source=${localWorkspaceFolder}/../baseplate-vscode,target=/home/vscode/baseplate-extension,type=bind,readonly"
+    "source=${localWorkspaceFolder}/.devcontainer/mounts/extension.vsix,target=/home/vscode/baseplate-extension/extension.vsix,type=bind",
+    "source=${localWorkspaceFolder}/.devcontainer/mounts/docs,target=/home/vscode/baseplate-docs,type=bind"
   ],
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
+
+  "initializeCommand": "./.devcontainer/setup-mounts.sh",
 
   "postCreateCommand": "./.devcontainer/post-create.sh"
 }

@@ -74,6 +74,7 @@ The container uses named volumes for persistence:
 - `NODE_OPTIONS="--max-old-space-size=4096"` - Increased Node.js memory limit
 - `CLAUDE_CONFIG_DIR="/home/vscode/.claude"` - Claude Code configuration location
 - `TZ` - Timezone (defaults to America/Los_Angeles, configurable via local environment)
+- `BASEPLATE_DEV_EXTENSION_PATH` - Optional path to the local Baseplate VS Code extension for development (mounted at `/baseplate-extension` in the container)
 
 ## Development Workflow
 
@@ -131,6 +132,19 @@ To force a complete rebuild:
 2. Or manually: Delete the container and volumes, then restart
 
 ## Customization
+
+### Local Extension Development
+
+To develop the Baseplate VS Code extension alongside the main project:
+
+1. Set the `BASEPLATE_DEV_EXTENSION_PATH` environment variable in your `.env` file at the repository root:
+
+   ```bash
+   BASEPLATE_DEV_EXTENSION_PATH=/path/to/your/local/baseplate-extension
+   ```
+
+2. The extension directory will be mounted at `/baseplate-extension` in the container
+3. The dev container will automatically detect and use the local extension if present
 
 ### Adding New Allowed Domains
 
