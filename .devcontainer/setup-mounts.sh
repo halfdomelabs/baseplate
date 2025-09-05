@@ -36,7 +36,7 @@ if [ -n "$BASEPLATE_DEV_DOCS_PATH" ] && [ -d "$BASEPLATE_DEV_DOCS_PATH" ]; then
     if [ -e "$MOUNTS_DIR/docs" ] || [ -L "$MOUNTS_DIR/docs" ]; then
         rm -rf "$MOUNTS_DIR/docs"
     fi
-    ln -s "$BASEPLATE_DEV_DOCS_PATH" "$MOUNTS_DIR/docs"
+    ln -s "$BASEPLATE_DEV_DOCS_PATH/docs" "$MOUNTS_DIR/docs"
     echo "Docs linked to: $MOUNTS_DIR/docs"
 else
     echo "BASEPLATE_DEV_DOCS_PATH not set or directory doesn't exist, creating empty docs directory"
