@@ -271,57 +271,65 @@ Baseplate consists of two main tiers:
 
 - IMPORTANT: If you have to go through more than two cycles of edits to fix linting, type, or test errors, please stop and ask for help. Often fixing errors will cause worse changes so it's better to ask for help than to continue. Feel free to ask for help at any time for any issues.
 
-## Baseplate Docs MCP
+## Baseplate Documentation
 
-Please interact with the baseplate-docs MCP to get the most up to date information on the project. Here are the following tips:
+The Baseplate documentation is available in the local filesystem at `~/baseplate-docs` (when accessible) or via the baseplate-docs MCP server.
 
-Docs specific:
+### Local Documentation Structure (Preferred when available)
 
-- Creating Design Docs: Search for the document by id "e84a9e72-9980-41f6-bdda-296736c5ff69" for the design doc template
-- Please add a description when creating documents to describe the document and its purpose.
-- Please use Mermaid documents instead of ASCII art diagrams.
+When `~/baseplate-docs` is accessible (check via `.claude/settings.json` permissions), use direct file access:
 
-Collection keys:
+**Directory Structure:**
+
+- `~/baseplate-docs/baseplate-docs/` - Main Baseplate documentation
+  - `baseplate-architecture/` - Architecture documentation
+  - `components/` - UI components documentation
+  - `developer-guide/` - Developer guides
+  - `internal-tooling/` - Internal tooling documentation
+  - `project-builder/` - Project builder documentation
+- `~/baseplate-docs/design-docs/` - Design documents
+  - `completed/` - Completed design documents
+  - `design-document-template.md` - Template for new design docs
+
+**Tips for local access:**
+
+- Read files directly with the Read tool for better performance
+- Create new design docs by copying `~/baseplate-docs/design-docs/design-document-template.md`
+- Use Grep/Glob tools for searching across documentation
+- Write new documents directly with Write/Edit tools
+- Please use Mermaid diagrams instead of ASCII art diagrams
+
+### Baseplate Docs MCP (Fallback)
+
+If `~/baseplate-docs` is not accessible, use the baseplate-docs MCP server:
+
+**Collection keys:**
 
 - **baseplate-docs**: Baseplate documentation
 - **design-docs**: Design documentation
 
-Document Retrieval
+**Document Retrieval:**
 
-- get-document - Retrieve full document content by URI (format:
-  documents://collection-name/path/to/doc.md)
+- get-document - Retrieve full document content by URI (format: documents://collection-name/path/to/doc.md)
 - get-document-by-id - Retrieve document by its Outline ID
-- list-documents - List documents with optional filters:
-  - collectionKey - Filter by specific collection
-  - prefix - Filter by subdirectory path
-  - keywords - Space-separated keywords (ALL must match)
+- list-documents - List documents with optional filters
 
-Search Tools
+**Search Tools:**
 
-- search-documents - Semantic search returning full documents with
-  similarity scores
-- search-rag-documents - RAG search returning specific document
-  chunks/passages with location info
+- search-documents - Semantic search returning full documents
+- search-rag-documents - RAG search returning specific document chunks
 
-Collection Management
-
-- list-collections - List all available collections
-
-Document Editing (if enabled)
+**Document Editing (if enabled):**
 
 - edit-document - Replace entire document content
 - inline-edit - Make specific edits within a document
 - create-document - Create new document in a collection
 
-Usage Examples:
+**Usage Examples:**
 
-- Find specific info: search-rag-documents with query "how to configure
-  authentication"
-- Browse content: List-documents with collection filter if needed
-- Read document: get-document with URI like
-  "documents://engineering/api/auth.md"
-- Quick edits: inline-edit to update specific sections
-- Major updates: edit-document to rewrite entire document
+- Find specific info: search-rag-documents with query "how to configure authentication"
+- Browse content: list-documents with collection filter
+- Read document: get-document with URI like "documents://design-docs/completed/auth-plugin-refactor.md"
 
 ## Baseplate Development Server MCP
 
