@@ -65,7 +65,6 @@ docker run --user vscode -it --rm --cap-add=NET_ADMIN --cap-add=NET_RAW dev /bin
 The container uses named volumes for persistence:
 
 - `pnpm` - pnpm global store cache
-- `node_modules` - Project node_modules (improves performance)
 - `bashhistory` - Command history persistence
 - `claude` - Claude Code configuration
 
@@ -122,7 +121,6 @@ The post-create script handles most permission issues automatically. If problems
 
 ```bash
 sudo chown -R vscode:vscode /home/vscode/.local/share/pnpm
-sudo chown -R vscode:vscode node_modules
 ```
 
 ### Rebuilding the Container
