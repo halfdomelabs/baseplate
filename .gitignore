@@ -104,4 +104,6 @@ playground
 # Baseplate settings
 /.baseplate
 
+# Dev Container files
 .pnpm-store
+/.devcontainer/mounts

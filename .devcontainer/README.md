@@ -65,7 +65,6 @@ docker run --user vscode -it --rm --cap-add=NET_ADMIN --cap-add=NET_RAW dev /bin
 The container uses named volumes for persistence:
 
 - `pnpm` - pnpm global store cache
-- `node_modules` - Project node_modules (improves performance)
 - `bashhistory` - Command history persistence
 - `claude` - Claude Code configuration
 
@@ -74,6 +73,8 @@ The container uses named volumes for persistence:
 - `NODE_OPTIONS="--max-old-space-size=4096"` - Increased Node.js memory limit
 - `CLAUDE_CONFIG_DIR="/home/vscode/.claude"` - Claude Code configuration location
 - `TZ` - Timezone (defaults to America/Los_Angeles, configurable via local environment)
+- `BASEPLATE_DEV_EXTENSION_PATH` - Optional path to the local Baseplate VS Code extension for development (mounted at `/baseplate-extension` in the container)
+- `BASEPLATE_DEV_DOCS_PATH` - Optional path to the local Baseplate documentation repository for development (mounted at `/baseplate-docs` in the container)
 
 ## Development Workflow
 
@@ -120,7 +121,6 @@ The post-create script handles most permission issues automatically. If problems
 
 ```bash
 sudo chown -R vscode:vscode /home/vscode/.local/share/pnpm
-sudo chown -R vscode:vscode node_modules
 ```
 
 ### Rebuilding the Container
@@ -131,6 +131,33 @@ To force a complete rebuild:
 2. Or manually: Delete the container and volumes, then restart
 
 ## Customization
+
+### Local Extension Development
+
+To develop the Baseplate VS Code extension alongside the main project:
+
+1. Set the `BASEPLATE_DEV_EXTENSION_PATH` environment variable in your `.env` file at the repository root:
+
+   ```bash
+   BASEPLATE_DEV_EXTENSION_PATH=/path/to/your/local/baseplate-extension
+   ```
+
+2. The extension directory will be mounted at `/baseplate-extension` in the container
+3. The dev container will automatically detect and use the local extension if present
+
+### Local Documentation Development
+
+To work with the Baseplate documentation repository alongside the main project:
+
+1. Set the `BASEPLATE_DEV_DOCS_PATH` environment variable in your `.env` file at the repository root:
+
+   ```bash
+   BASEPLATE_DEV_DOCS_PATH=/path/to/your/local/baseplate-docs
+   ```
+
+2. The documentation directory will be mounted at `/baseplate-docs` in the container
+3. You can directly edit and access documentation files during development
+4. This provides better performance than using the MCP server for documentation access
 
 ### Adding New Allowed Domains
 
