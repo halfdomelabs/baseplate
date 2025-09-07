@@ -10,7 +10,7 @@ import {
 /**
  * Fastify plugin for pg-boss queue system initialization.
  */
-const pgBossPlugin: FastifyPluginAsync = async (fastify) => {
+const pgBossPluginCallback: FastifyPluginAsync = async (fastify) => {
   // Initialize pg-boss in API mode (maintenance disabled)
   await initializePgBoss({ disableMaintenance: true });
 
@@ -20,6 +20,6 @@ const pgBossPlugin: FastifyPluginAsync = async (fastify) => {
   });
 };
 
-export default fastifyPlugin(pgBossPlugin, {
+export const pgBossPlugin = fastifyPlugin(pgBossPluginCallback, {
   name: 'pg-boss',
 });
