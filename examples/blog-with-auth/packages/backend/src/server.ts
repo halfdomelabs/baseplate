@@ -11,6 +11,7 @@ import { errorHandlerPlugin } from './plugins/error-handler.js';
 import { gracefulShutdownPlugin } from './plugins/graceful-shutdown.js';
 import { graphqlPlugin } from './plugins/graphql/index.js';
 import { healthCheckPlugin } from './plugins/health-check.js';
+import { pgBossPlugin } from './plugins/pg-boss.plugin.js';
 import { requestContextPlugin } from './plugins/request-context.js';
 import { registerSentryEventProcessor } from './services/sentry.js';
 
@@ -38,6 +39,7 @@ export async function buildServer(
   await fastify.register(gracefulShutdownPlugin);
   await fastify.register(graphqlPlugin);
   await fastify.register(healthCheckPlugin);
+  await fastify.register(pgBossPlugin);
   await fastify.register(requestContextPlugin);
   /* TPL_PLUGINS:END */
 

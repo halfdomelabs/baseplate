@@ -1,7 +1,12 @@
-import { nodeProvider } from '@baseplate-dev/core-generators';
+import {
+  nodeProvider,
+  tsCodeFragment,
+  tsImportBuilder,
+} from '@baseplate-dev/core-generators';
 import {
   fastifyOutputProvider,
   fastifyProvider,
+  fastifyServerConfigProvider,
 } from '@baseplate-dev/fastify-generators';
 import { createGenerator, createGeneratorTask } from '@baseplate-dev/sync';
 import { z } from 'zod';
@@ -23,6 +28,20 @@ export const pgBossGenerator = createGenerator({
     paths: GENERATED_TEMPLATES.paths.task,
     renderers: GENERATED_TEMPLATES.renderers.task,
     imports: GENERATED_TEMPLATES.imports.task,
+    fastifyServerConfig: createGeneratorTask({
+      dependencies: {
+        fastifyServerConfig: fastifyServerConfigProvider,
+        paths: GENERATED_TEMPLATES.paths.provider,
+      },
+      run({ fastifyServerConfig, paths }) {
+        fastifyServerConfig.plugins.set('pgBossPlugin', {
+          plugin: tsCodeFragment(
+            'pgBossPlugin',
+            tsImportBuilder(['pgBossPlugin']).from(paths.pgBossPlugin),
+          ),
+        });
+      },
+    }),
     fastify: createGeneratorTask({
       dependencies: {
         fastify: fastifyProvider,

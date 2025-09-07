@@ -302,9 +302,6 @@ export function createQueue<T>(
   name: string,
   definition: QueueDefinition<T>,
 ): PgBossQueue<T> {
-  // Just ensure pg-boss is initialized
-  getPgBoss();
-
   return new PgBossQueue(name, definition);
 }
 

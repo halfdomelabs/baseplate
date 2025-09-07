@@ -16,5 +16,6 @@
   },
   "permissions": {
     "additionalDirectories": ["~/baseplate-docs"]
-  }
+  },
+  "model": "opusplan"
 }
