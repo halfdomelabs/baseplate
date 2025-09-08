@@ -30,7 +30,8 @@ export function FileTransformerForm({
   const controlTyped = control as Control<{
     prefix: FileTransformerDefinition;
   }>;
-  const { definition, pluginContainer } = useProjectDefinition();
+  const { definition, pluginContainer, definitionContainer } =
+    useProjectDefinition();
 
   const storageConfig = PluginUtils.configByKeyOrThrow(
     definition,
@@ -39,7 +40,9 @@ export function FileTransformerForm({
 
   const fileRelations =
     originalModel.model.relations?.filter(
-      (relation) => relation.modelRef === STORAGE_MODELS.file,
+      (relation) =>
+        definitionContainer.nameFromId(relation.modelRef) ===
+        STORAGE_MODELS.file,
     ) ?? [];
 
   const relationOptions = fileRelations.map((relation) => ({
