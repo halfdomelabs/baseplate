@@ -1,5 +1,29 @@
 # @baseplate-dev/plugin-queue
 
+## 0.1.4
+
+### Patch Changes
+
+- [#647](https://github.com/halfdomelabs/baseplate/pull/647) [`18bea49`](https://github.com/halfdomelabs/baseplate/commit/18bea49f918d5c22aeea5c2e2dd7dab2e7d1b6fc) Thanks [@kingston](https://github.com/kingston)! - Small tweaks to fix pg boss impelementation
+
+- [#643](https://github.com/halfdomelabs/baseplate/pull/643) [`7d9e6d0`](https://github.com/halfdomelabs/baseplate/commit/7d9e6d01e0a9920cee4c4d499beeffc1c663494a) Thanks [@kingston](https://github.com/kingston)! - Upgrade to TypeScript 5.8 with erasable syntax only mode
+
+  This upgrade modernizes the codebase with TypeScript 5.8, enables erasable syntax only mode for better performance, and updates runtime dependencies.
+
+  **Key Changes:**
+  - Upgraded TypeScript to version 5.8
+  - Enabled `erasableSyntaxOnly` compiler option for improved build performance
+  - Updated Node.js requirement to 22.18
+  - Updated PNPM requirement to 10.15
+  - Fixed parameter property syntax to be compatible with erasable syntax only mode
+
+- Updated dependencies [[`67dba69`](https://github.com/halfdomelabs/baseplate/commit/67dba697439e6bc76b81522c133d920af4dbdbb1), [`217de38`](https://github.com/halfdomelabs/baseplate/commit/217de385f3ac869c5ef740af32634db9bcab6b0c), [`67dba69`](https://github.com/halfdomelabs/baseplate/commit/67dba697439e6bc76b81522c133d920af4dbdbb1), [`f450b7f`](https://github.com/halfdomelabs/baseplate/commit/f450b7f75cf5ad71c2bdb1c077526251aa240dd0), [`7d9e6d0`](https://github.com/halfdomelabs/baseplate/commit/7d9e6d01e0a9920cee4c4d499beeffc1c663494a)]:
+  - @baseplate-dev/sync@0.3.4
+  - @baseplate-dev/fastify-generators@0.3.4
+  - @baseplate-dev/project-builder-lib@0.3.4
+  - @baseplate-dev/core-generators@0.3.4
+  - @baseplate-dev/ui-components@0.3.4
+
 ## 0.1.3
 
 ### Patch Changes
