@@ -73,7 +73,7 @@ export const adminCrudForeignColumnGenerator = createGenerator({
               return tsCodeFragment(`{
             ${optionalClause}
             ${propName}.find(option => option.${valueExpression} === ${itemName}.${localField})?.${labelExpression}
-            || "Unknown Item"}`);
+            ?? "Unknown Item"}`);
             },
             graphQLFields: [{ name: localField }],
             dataDependencies: [dataDependency],

@@ -58,7 +58,9 @@ export function ColumnDialog({
 
   const columnTypeOptions = columnWeb
     .getColumnWebConfigs(BUILT_IN_ADMIN_CRUD_COLUMN_WEB_CONFIGS)
-    .filter((config) => config.isAvailableForModel(definition, modelRef))
+    .filter(
+      (config) => modelRef && config.isAvailableForModel(definition, modelRef),
+    )
     .map((config) => ({
       label: config.label,
       value: config.name,

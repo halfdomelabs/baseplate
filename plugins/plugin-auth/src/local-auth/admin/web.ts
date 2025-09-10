@@ -1,4 +1,7 @@
-import { createPlatformPluginExport } from '@baseplate-dev/project-builder-lib';
+import {
+  createPlatformPluginExport,
+  ModelUtils,
+} from '@baseplate-dev/project-builder-lib';
 import {
   adminCrudActionWebSpec,
   adminCrudColumnWebSpec,
@@ -17,7 +20,9 @@ export default createPlatformPluginExport({
       pluginKey,
       name: 'manage-roles',
       label: 'Manage Roles',
-      isAvailableForModel: (_, modelId) => modelId === LOCAL_AUTH_MODELS.user,
+      isAvailableForModel: (definition, modelId) =>
+        ModelUtils.byIdOrThrow(definition, modelId).name ===
+        LOCAL_AUTH_MODELS.user,
       getNewAction: () => ({ type: 'manage-roles', position: 'dropdown' }),
     });
 
@@ -25,7 +30,9 @@ export default createPlatformPluginExport({
       pluginKey,
       name: 'reset-password',
       label: 'Reset Password',
-      isAvailableForModel: (_, modelId) => modelId === LOCAL_AUTH_MODELS.user,
+      isAvailableForModel: (definition, modelId) =>
+        ModelUtils.byIdOrThrow(definition, modelId).name ===
+        LOCAL_AUTH_MODELS.user,
       getNewAction: () => ({ type: 'reset-password', position: 'dropdown' }),
     });
 
@@ -33,7 +40,9 @@ export default createPlatformPluginExport({
       pluginKey,
       name: 'roles',
       label: 'Roles',
-      isAvailableForModel: (_, modelId) => modelId === LOCAL_AUTH_MODELS.user,
+      isAvailableForModel: (definition, modelId) =>
+        ModelUtils.byIdOrThrow(definition, modelId).name ===
+        LOCAL_AUTH_MODELS.user,
       getNewColumn: () => ({ type: 'roles', label: 'Roles' }),
     });
     return {};
