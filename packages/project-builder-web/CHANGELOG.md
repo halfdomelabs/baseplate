@@ -1,5 +1,16 @@
 # @baseplate-dev/project-builder-web
 
+## 0.3.5
+
+### Patch Changes
+
+- [#658](https://github.com/halfdomelabs/baseplate/pull/658) [`fe86213`](https://github.com/halfdomelabs/baseplate/commit/fe86213911e935f2f34ffd9b2b3a39b1b3194aad) Thanks [@kingston](https://github.com/kingston)! - Update admin dialogs to reset when a new field is added
+
+- Updated dependencies []:
+  - @baseplate-dev/project-builder-lib@0.3.5
+  - @baseplate-dev/ui-components@0.3.5
+  - @baseplate-dev/utils@0.3.5
+
 ## 0.3.4
 
 ### Patch Changes
