@@ -19,6 +19,8 @@ import { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
+import { SortableList } from '#src/components/index.js';
+
 import { FieldDialog } from './field-dialog.js';
 
 export type AdminCrudFormConfigInput = Pick<
@@ -40,7 +42,7 @@ function CrudFormFieldsForm({
   const { control } = formProps;
   const { requestConfirm } = useConfirmDialog();
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove, update, move } = useFieldArray({
     control,
     name: 'form.fields',
   });
@@ -86,42 +88,55 @@ function CrudFormFieldsForm({
     }
   }
 
+  const fieldListItems = fields.map((field, idx) => ({
+    id: field.id,
+    element: (
+      <RecordView key={field.id}>
+        <RecordViewItemList>
+          <RecordViewItem title="Label">
+            <div className="flex items-center gap-2">{field.label}</div>
+          </RecordViewItem>
+          <RecordViewItem title="Type">{field.type}</RecordViewItem>
+        </RecordViewItemList>
+        <RecordViewActions>
+          <Button
+            variant="ghost"
+            size="icon"
+            title="Edit"
+            aria-label="Edit field"
+            onClick={() => {
+              handleEditField(idx);
+            }}
+          >
+            <MdEdit />
+          </Button>
+          <Button
+            variant="ghostDestructive"
+            size="icon"
+            title="Delete"
+            aria-label="Delete field"
+            onClick={() => {
+              handleDeleteField(idx);
+            }}
+          >
+            <MdDeleteOutline />
+          </Button>
+        </RecordViewActions>
+      </RecordView>
+    ),
+  }));
+
   return (
     <div className={clsx('space-y-4', className)}>
-      {fields.map((field, idx) => (
-        <RecordView key={field.id}>
-          <RecordViewItemList>
-            <RecordViewItem title="Label">
-              <div className="flex items-center gap-2">{field.label}</div>
-            </RecordViewItem>
-            <RecordViewItem title="Type">{field.type}</RecordViewItem>
-          </RecordViewItemList>
-          <RecordViewActions>
-            <Button
-              variant="ghost"
-              size="icon"
-              title="Edit"
-              aria-label="Edit field"
-              onClick={() => {
-                handleEditField(idx);
-              }}
-            >
-              <MdEdit />
-            </Button>
-            <Button
-              variant="ghostDestructive"
-              size="icon"
-              title="Delete"
-              aria-label="Delete field"
-              onClick={() => {
-                handleDeleteField(idx);
-              }}
-            >
-              <MdDeleteOutline />
-            </Button>
-          </RecordViewActions>
-        </RecordView>
-      ))}
+      {fields.length === 0 ? (
+        <p className="pt-4 text-style-muted">
+          No fields configured. Add fields to create your form.
+        </p>
+      ) : (
+        <div className="flex w-full flex-col gap-2">
+          <SortableList listItems={fieldListItems} sortItems={move} />
+        </div>
+      )}
       <FieldDialog
         open={isEditing || isCreating}
         onOpenChange={(open) => {
