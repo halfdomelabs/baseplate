@@ -25,7 +25,7 @@ import {
   SelectFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useId } from 'react';
+import { useEffect, useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { BUILT_IN_ADMIN_CRUD_COLUMN_WEB_CONFIGS } from './columns/index.js';
@@ -76,7 +76,17 @@ export function ColumnDialog({
     control,
     handleSubmit,
     formState: { isDirty },
+    reset,
   } = form;
+
+  useEffect(() => {
+    if (open && !column) {
+      reset({
+        type: 'text',
+        label: '',
+      });
+    }
+  }, [open, column, reset]);
 
   const columnType = useWatch({ control, name: 'type' });
 
