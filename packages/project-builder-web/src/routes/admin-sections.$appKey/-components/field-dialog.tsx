@@ -25,7 +25,7 @@ import {
   SelectFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useId } from 'react';
+import { useEffect, useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs/index.js';
@@ -77,7 +77,17 @@ export function FieldDialog({
     control,
     handleSubmit,
     formState: { isDirty },
+    reset,
   } = form;
+
+  useEffect(() => {
+    if (open && !field) {
+      reset({
+        type: 'text',
+        label: '',
+      });
+    }
+  }, [open, field, reset]);
 
   const fieldType = useWatch({ control, name: 'type' });
 

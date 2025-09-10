@@ -29,8 +29,9 @@ import {
   reactTailwindGenerator,
 } from '@baseplate-dev/react-generators';
 import { safeMerge } from '@baseplate-dev/utils';
+import { kebabCase } from 'es-toolkit';
 
-import { dasherizeCamel, titleizeCamel } from '#src/utils/case.js';
+import { titleizeCamel } from '#src/utils/case.js';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
 import { compileAdminSections } from './admin/index.js';
@@ -53,7 +54,7 @@ function buildAdminNavigationLinks(
     path: `${adminApp.pathPrefix}/${
       FeatureUtils.getFeatureByIdOrThrow(projectDefinition, section.featureRef)
         .name
-    }/${dasherizeCamel(section.name)}`,
+    }/${kebabCase(section.name.toLocaleLowerCase())}`,
   }));
 }
 

@@ -24,7 +24,7 @@ import {
   SelectFieldController,
 } from '@baseplate-dev/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useId } from 'react';
+import { useEffect, useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { BUILT_IN_ADMIN_CRUD_ACTION_WEB_CONFIGS } from './actions/index.js';
@@ -77,7 +77,17 @@ export function ActionDialog({
     control,
     handleSubmit,
     formState: { isDirty },
+    reset,
   } = form;
+
+  useEffect(() => {
+    if (open && !action) {
+      reset({
+        type: 'edit',
+        position: 'inline' as const,
+      });
+    }
+  }, [open, action, reset]);
 
   const actionType = useWatch({ control, name: 'type' });
 
