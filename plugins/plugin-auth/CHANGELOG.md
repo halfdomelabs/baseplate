@@ -1,5 +1,20 @@
 # @baseplate-dev/plugin-auth
 
+## 2.0.5
+
+### Patch Changes
+
+- [#656](https://github.com/halfdomelabs/baseplate/pull/656) [`6d0be95`](https://github.com/halfdomelabs/baseplate/commit/6d0be954ba866414fb673694a72e73ab433c7b12) Thanks [@kingston](https://github.com/kingston)! - Fix filtering of transformers for web UI
+
+- Updated dependencies [[`6d0be95`](https://github.com/halfdomelabs/baseplate/commit/6d0be954ba866414fb673694a72e73ab433c7b12)]:
+  - @baseplate-dev/react-generators@0.3.5
+  - @baseplate-dev/core-generators@0.3.5
+  - @baseplate-dev/fastify-generators@0.3.5
+  - @baseplate-dev/project-builder-lib@0.3.5
+  - @baseplate-dev/sync@0.3.5
+  - @baseplate-dev/ui-components@0.3.5
+  - @baseplate-dev/utils@0.3.5
+
 ## 2.0.4
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @baseplate-dev/project-builder-test
 
+## 0.3.5
+
+### Patch Changes
+
+- Updated dependencies [[`fe86213`](https://github.com/halfdomelabs/baseplate/commit/fe86213911e935f2f34ffd9b2b3a39b1b3194aad), [`fe86213`](https://github.com/halfdomelabs/baseplate/commit/fe86213911e935f2f34ffd9b2b3a39b1b3194aad)]:
+  - @baseplate-dev/project-builder-web@0.3.5
+  - @baseplate-dev/project-builder-server@0.3.5
+  - @baseplate-dev/project-builder-common@0.3.5
+  - @baseplate-dev/project-builder-lib@0.3.5
+  - @baseplate-dev/sync@0.3.5
+  - @baseplate-dev/utils@0.3.5
+
 ## 0.3.4
 
 ### Patch Changes

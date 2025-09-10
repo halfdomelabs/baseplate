@@ -1,5 +1,19 @@
 # @baseplate-dev/project-builder-server
 
+## 0.3.5
+
+### Patch Changes
+
+- [#658](https://github.com/halfdomelabs/baseplate/pull/658) [`fe86213`](https://github.com/halfdomelabs/baseplate/commit/fe86213911e935f2f34ffd9b2b3a39b1b3194aad) Thanks [@kingston](https://github.com/kingston)! - Fix admin section paths with spaces in them
+
+- Updated dependencies [[`6d0be95`](https://github.com/halfdomelabs/baseplate/commit/6d0be954ba866414fb673694a72e73ab433c7b12)]:
+  - @baseplate-dev/react-generators@0.3.5
+  - @baseplate-dev/core-generators@0.3.5
+  - @baseplate-dev/fastify-generators@0.3.5
+  - @baseplate-dev/project-builder-lib@0.3.5
+  - @baseplate-dev/sync@0.3.5
+  - @baseplate-dev/utils@0.3.5
+
 ## 0.3.4
 
 ### Patch Changes
