@@ -1,8 +1,12 @@
-import type { ModelConfigInput } from '@baseplate-dev/project-builder-lib';
+import type {
+  ModelConfigInput,
+  ProjectDefinitionContainer,
+} from '@baseplate-dev/project-builder-lib';
 
 import {
   createPlatformPluginExport,
   modelTransformerEntityType,
+  ModelUtils,
   PluginUtils,
 } from '@baseplate-dev/project-builder-lib';
 import { modelTransformerWebSpec } from '@baseplate-dev/project-builder-lib/web';
@@ -18,6 +22,7 @@ import { FileTransformerForm } from './components/file-transformer-form.js';
 import '../../styles.css';
 
 function findNonTransformedFileRelations(
+  projectContainer: ProjectDefinitionContainer,
   modelConfig: ModelConfigInput,
 ): string[] {
   const { transformers } = modelConfig.service ?? {};
@@ -29,7 +34,8 @@ function findNonTransformedFileRelations(
     modelConfig.model.relations
       ?.filter(
         (relation) =>
-          relation.modelRef === STORAGE_MODELS.file &&
+          ModelUtils.byIdOrThrow(projectContainer.definition, relation.modelRef)
+            .name === STORAGE_MODELS.file &&
           !fileTransformers?.some(
             (transformer) => transformer.fileRelationRef === relation.id,
           ),
@@ -51,12 +57,18 @@ export default createPlatformPluginExport({
       instructions: 'Select a file relation to transform',
       pluginKey,
       Form: FileTransformerForm,
-      allowNewTransformer(_, modelConfig) {
-        return findNonTransformedFileRelations(modelConfig).length > 0;
+      allowNewTransformer(projectContainer, modelConfig) {
+        return (
+          findNonTransformedFileRelations(projectContainer, modelConfig)
+            .length > 0
+        );
       },
       getNewTransformer: (projectContainer, modelConfig) => {
         const { definition } = projectContainer;
-        const fileRelationIds = findNonTransformedFileRelations(modelConfig);
+        const fileRelationIds = findNonTransformedFileRelations(
+          projectContainer,
+          modelConfig,
+        );
         const fileRelationId = fileRelationIds[0];
         const relation = modelConfig.model.relations?.find(
           (r) => r.id === fileRelationId,

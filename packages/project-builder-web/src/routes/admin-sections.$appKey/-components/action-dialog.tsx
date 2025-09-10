@@ -57,7 +57,9 @@ export function ActionDialog({
 
   const actionTypeOptions = actionWeb
     .getActionWebConfigs(BUILT_IN_ADMIN_CRUD_ACTION_WEB_CONFIGS)
-    .filter((config) => config.isAvailableForModel(definition, modelRef))
+    .filter(
+      (config) => modelRef && config.isAvailableForModel(definition, modelRef),
+    )
     .map((config) => ({
       label: config.label,
       value: config.name,
