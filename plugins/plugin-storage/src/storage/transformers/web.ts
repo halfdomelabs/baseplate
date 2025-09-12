@@ -30,6 +30,7 @@ function findNonTransformedFileRelations(
     (transformer): transformer is FileTransformerDefinition =>
       transformer.type === 'file',
   );
+
   return (
     modelConfig.model.relations
       ?.filter(
