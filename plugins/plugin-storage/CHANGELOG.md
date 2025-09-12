@@ -1,5 +1,20 @@
 # @baseplate-dev/plugin-storage
 
+## 2.0.6
+
+### Patch Changes
+
+- [#659](https://github.com/halfdomelabs/baseplate/pull/659) [`2bb3f43`](https://github.com/halfdomelabs/baseplate/commit/2bb3f43051a96ded9ff4918e16e48eb434f48d75) Thanks [@kingston](https://github.com/kingston)! - Fix setting of max file size MB in web editor
+
+- Updated dependencies [[`1186a21`](https://github.com/halfdomelabs/baseplate/commit/1186a21df267d112a84a42ff1d3c87b495452ce0), [`354b975`](https://github.com/halfdomelabs/baseplate/commit/354b9754e126f4e9f6f4cda0ac4e5f7ca15c0160)]:
+  - @baseplate-dev/core-generators@0.3.6
+  - @baseplate-dev/react-generators@0.3.6
+  - @baseplate-dev/fastify-generators@0.3.6
+  - @baseplate-dev/project-builder-lib@0.3.6
+  - @baseplate-dev/sync@0.3.6
+  - @baseplate-dev/ui-components@0.3.6
+  - @baseplate-dev/utils@0.3.6
+
 ## 2.0.5
 
 ### Patch Changes

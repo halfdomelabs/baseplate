@@ -1,5 +1,25 @@
 # @baseplate-dev/react-generators
 
+## 0.3.6
+
+### Patch Changes
+
+- [#661](https://github.com/halfdomelabs/baseplate/pull/661) [`354b975`](https://github.com/halfdomelabs/baseplate/commit/354b9754e126f4e9f6f4cda0ac4e5f7ca15c0160) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vite to 7.1.5 and related packages
+  - vite: 6.3.5 → 7.1.5
+  - @vitejs/plugin-react: 4.4.1 → 5.0.2
+  - @tailwindcss/vite: 4.1.6 → 4.1.13
+  - tailwindcss: 4.1.6 → 4.1.13
+  - vite-plugin-svgr: 4.3.0 → 4.5.0
+
+  This upgrade brings the latest Vite 7 features and ensures compatibility with all related build tooling. No breaking changes for generated projects.
+
+  See https://vite.dev/guide/migration.html
+
+- Updated dependencies [[`1186a21`](https://github.com/halfdomelabs/baseplate/commit/1186a21df267d112a84a42ff1d3c87b495452ce0)]:
+  - @baseplate-dev/core-generators@0.3.6
+  - @baseplate-dev/sync@0.3.6
+  - @baseplate-dev/utils@0.3.6
+
 ## 0.3.5
 
 ### Patch Changes
