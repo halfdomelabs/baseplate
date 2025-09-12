@@ -878,3 +878,4 @@ mcp__baseplate_dev_server__delete_template({
 4. **Test generated code**: Ensure `pnpm build && pnpm lint` passes on synced code
 5. **Keep commits focused**: Separate generator changes from template changes when possible
 6. **Document template variables**: Use clear, descriptive names for template variables
+7. **Sync all projects after generation changes**: When wrapping up changes to the generation flow, always run `mcp__baseplate_dev_server__sync_all_projects` or `baseplate sync-examples` to ensure all projects are updated with your changes
