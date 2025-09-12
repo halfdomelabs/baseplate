@@ -24,7 +24,7 @@ export const createFileTransformerSchema = definitionSchema((ctx) =>
       }),
       category: z.object({
         name: CASE_VALIDATORS.CONSTANT_CASE,
-        maxFileSizeMb: z.number().int().positive(),
+        maxFileSizeMb: z.coerce.number().int().positive(),
         authorize: z.object({
           uploadRoles: z.array(
             ctx.withRef({

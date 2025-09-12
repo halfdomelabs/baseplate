@@ -79,7 +79,6 @@ function EditAdminSectionPage(): React.JSX.Element {
   const formProps = useResettableForm({
     resolver: zodResolver(adminSectionSchema),
     values: section,
-    defaultValues: { type: 'crud' },
   });
 
   const { control, handleSubmit, reset } = formProps;

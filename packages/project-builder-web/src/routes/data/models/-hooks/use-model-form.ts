@@ -149,7 +149,8 @@ export function useModelForm({
         if (
           !service.create.enabled &&
           !service.update.enabled &&
-          !service.delete.enabled
+          !service.delete.enabled &&
+          service.transformers.length === 0
         ) {
           updatedModel.service = {
             create: { enabled: false },

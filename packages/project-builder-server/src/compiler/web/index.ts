@@ -54,7 +54,7 @@ function buildAdminNavigationLinks(
     path: `${adminApp.pathPrefix}/${
       FeatureUtils.getFeatureByIdOrThrow(projectDefinition, section.featureRef)
         .name
-    }/${kebabCase(section.name.toLocaleLowerCase())}`,
+    }/${kebabCase(section.name)}`,
   }));
 }
 
