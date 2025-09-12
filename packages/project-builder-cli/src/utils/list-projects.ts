@@ -143,3 +143,22 @@ export async function resolveProject(
   }
   return project;
 }
+
+/**
+ * Lists all example projects by searching through example directories only.
+ *
+ * This function searches for projects specifically in the examples/ directory
+ * of the Baseplate repository.
+ *
+ * @returns Promise that resolves to an array of example projects
+ *
+ * @example
+ * ```typescript
+ * // List all example projects
+ * const exampleProjects = await getExampleProjects();
+ * ```
+ */
+export async function getExampleProjects(): Promise<ServiceActionProject[]> {
+  const exampleDirs = await findExamplesDirectories();
+  return discoverProjects(exampleDirs, logger);
+}
