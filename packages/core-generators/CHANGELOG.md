@@ -1,5 +1,18 @@
 # @baseplate-dev/core-generators
 
+## 0.3.6
+
+### Patch Changes
+
+- [#663](https://github.com/halfdomelabs/baseplate/pull/663) [`1186a21`](https://github.com/halfdomelabs/baseplate/commit/1186a21df267d112a84a42ff1d3c87b495452ce0) Thanks [@kingston](https://github.com/kingston)! - Upgrade axios to 1.12.0
+  - axios: 1.8.3 → 1.12.0
+
+  This upgrade brings the latest axios features and security improvements for generated projects that use axios functionality.
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.3.6
+  - @baseplate-dev/utils@0.3.6
+
 ## 0.3.5
 
 ### Patch Changes
