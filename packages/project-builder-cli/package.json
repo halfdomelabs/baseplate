@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/project-builder-cli",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Full-stack CLI builder using Baseplate generators",
   "keywords": [
     "cli",

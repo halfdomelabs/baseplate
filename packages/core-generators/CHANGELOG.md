@@ -1,5 +1,15 @@
 # @baseplate-dev/core-generators
 
+## 0.3.7
+
+### Patch Changes
+
+- [#666](https://github.com/halfdomelabs/baseplate/pull/666) [`9508a8e`](https://github.com/halfdomelabs/baseplate/commit/9508a8ee75e33ea0c0632f3f5ef5621b020f530d) Thanks [@kingston](https://github.com/kingston)! - Add node/browser globals to the eslint configuration with 'globals' package dependency
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.3.7
+  - @baseplate-dev/utils@0.3.7
+
 ## 0.3.6
 
 ### Patch Changes

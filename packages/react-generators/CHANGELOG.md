@@ -1,5 +1,16 @@
 # @baseplate-dev/react-generators
 
+## 0.3.7
+
+### Patch Changes
+
+- [#666](https://github.com/halfdomelabs/baseplate/pull/666) [`9508a8e`](https://github.com/halfdomelabs/baseplate/commit/9508a8ee75e33ea0c0632f3f5ef5621b020f530d) Thanks [@kingston](https://github.com/kingston)! - Add eslint-disable comment for document.cookie usage in sidebar component to ensure browser compatibility
+
+- Updated dependencies [[`9508a8e`](https://github.com/halfdomelabs/baseplate/commit/9508a8ee75e33ea0c0632f3f5ef5621b020f530d)]:
+  - @baseplate-dev/core-generators@0.3.7
+  - @baseplate-dev/sync@0.3.7
+  - @baseplate-dev/utils@0.3.7
+
 ## 0.3.6
 
 ### Patch Changes
