@@ -49,7 +49,7 @@ export const fastifyCookieContextGenerator = createGenerator({
 interface CookieStore {
   get(name: string): string | undefined;
   set(name: string, value: string, options?: CookieSerializeOptions): void;
-  clear(name: string): void;
+  clear(name: string, options?: CookieSerializeOptions): void;
                 }`,
                 tsTypeImportBuilder(['CookieSerializeOptions']).from(
                   '@fastify/cookie',
@@ -75,7 +75,7 @@ interface CookieStore {
 {
   get: (name) => ${req}.cookies[name],
   set: (name, value, options) => void getReply().setCookie(name, value, options),
-  clear: (name) => void getReply().clearCookie(name),
+  clear: (name, options) => void getReply().clearCookie(name, options),
 }
 `,
             ),

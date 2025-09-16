@@ -11,7 +11,7 @@ import { createServiceContext } from './service-context.js';
 interface CookieStore {
   get(name: string): string | undefined;
   set(name: string, value: string, options?: CookieSerializeOptions): void;
-  clear(name: string): void;
+  clear(name: string, options?: CookieSerializeOptions): void;
 }
 /* HOISTED:cookie-store-interface:END */
 
@@ -44,7 +44,7 @@ export function createContextFromRequest(
       get: (name) => request.cookies[name],
       set: (name, value, options) =>
         void getReply().setCookie(name, value, options),
-      clear: (name) => void getReply().clearCookie(name),
+      clear: (name, options) => void getReply().clearCookie(name, options),
     },
     reqInfo: request.reqInfo,
   } /* TPL_CONTEXT_CREATOR:END */;

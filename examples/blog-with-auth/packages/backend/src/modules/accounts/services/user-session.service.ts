@@ -155,7 +155,7 @@ export class CookieUserSessionService implements UserSessionService {
       });
 
     const cookieName = getUserSessionCookieName(context.reqInfo.headers);
-    context.cookieStore.clear(cookieName);
+    context.cookieStore.clear(cookieName, COOKIE_OPTIONS);
   }
 
   /**
