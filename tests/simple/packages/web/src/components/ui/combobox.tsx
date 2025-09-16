@@ -267,7 +267,7 @@ function ComboboxInput({
           </div>
         </div>
         <Button
-          className="absolute right-2 top-1/2 -translate-y-1/2 opacity-50"
+          className="absolute top-1/2 right-2 -translate-y-1/2 opacity-50"
           type="button"
           variant="ghost"
           size="icon"
@@ -339,7 +339,7 @@ function ComboboxContent({
           <ScrollAreaPrimitive.Viewport
             className={cn(
               'h-full w-full rounded-[inherit] p-1',
-              'min-w-(--radix-popover-trigger-width) max-h-[min(var(--max-popover-height),var(--radix-popover-content-available-height))] w-full',
+              'max-h-[min(var(--max-popover-height),var(--radix-popover-content-available-height))] w-full min-w-(--radix-popover-trigger-width)',
             )}
             style={
               {
