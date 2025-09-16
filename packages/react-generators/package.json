@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/react-generators",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "React Generators for Baseplate",
   "keywords": [
     "react",

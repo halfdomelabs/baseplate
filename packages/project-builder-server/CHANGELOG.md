@@ -1,5 +1,19 @@
 # @baseplate-dev/project-builder-server
 
+## 0.3.7
+
+### Patch Changes
+
+- [#667](https://github.com/halfdomelabs/baseplate/pull/667) [`e4ed458`](https://github.com/halfdomelabs/baseplate/commit/e4ed458682ae533cdd98e290049027f79519a8b9) Thanks [@kingston](https://github.com/kingston)! - Enable throttling on sync metadata writes
+
+- Updated dependencies [[`9508a8e`](https://github.com/halfdomelabs/baseplate/commit/9508a8ee75e33ea0c0632f3f5ef5621b020f530d), [`d6f70e0`](https://github.com/halfdomelabs/baseplate/commit/d6f70e03f539bd8687d9e9abfc0e7cef5c9e6e29), [`9508a8e`](https://github.com/halfdomelabs/baseplate/commit/9508a8ee75e33ea0c0632f3f5ef5621b020f530d)]:
+  - @baseplate-dev/core-generators@0.3.7
+  - @baseplate-dev/fastify-generators@0.3.7
+  - @baseplate-dev/react-generators@0.3.7
+  - @baseplate-dev/project-builder-lib@0.3.7
+  - @baseplate-dev/sync@0.3.7
+  - @baseplate-dev/utils@0.3.7
+
 ## 0.3.6
 
 ### Patch Changes
