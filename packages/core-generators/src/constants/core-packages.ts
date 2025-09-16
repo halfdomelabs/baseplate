@@ -15,6 +15,7 @@ export const CORE_PACKAGES = {
   'eslint-plugin-react-hooks': '5.2.0',
   'eslint-plugin-unicorn': '60.0.0',
   'typescript-eslint': '8.38.0',
+  globals: '16.4.0',
 
   // Formatting
   prettier: '3.6.2',

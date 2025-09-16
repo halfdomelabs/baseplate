@@ -92,6 +92,7 @@ export const eslintGenerator = createGenerator({
             'eslint-plugin-perfectionist',
             'eslint-plugin-unicorn',
             'typescript-eslint',
+            'globals',
           ]),
           ...(react
             ? extractPackageVersions(CORE_PACKAGES, [
@@ -156,6 +157,7 @@ export const eslintGenerator = createGenerator({
                     },
                     '\n\n',
                   ),
+                  TPL_GLOBALS: react ? 'browser' : 'node',
                 },
               }),
             );

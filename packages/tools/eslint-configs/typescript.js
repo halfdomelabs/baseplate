@@ -6,6 +6,7 @@ import { importX } from 'eslint-plugin-import-x';
 import perfectionist from 'eslint-plugin-perfectionist';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import unusedImports from 'eslint-plugin-unused-imports';
+import globals from 'globals';
 import tsEslint from 'typescript-eslint';
 
 import noUnusedGeneratorDependencies from './rules/no-unused-generator-dependencies.js';
@@ -47,6 +48,9 @@ export function generateTypescriptEslintConfig(options = []) {
     // ESLint Configs for all files
     eslint.configs.recommended,
     {
+      languageOptions: {
+        globals: { ...globals.node },
+      },
       rules: {
         // disallow console.log since that is typically used for debugging
         'no-console': ['error', { allow: ['warn', 'error', 'debug', 'info'] }],
