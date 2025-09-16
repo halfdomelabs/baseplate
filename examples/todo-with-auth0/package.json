@@ -32,7 +32,7 @@
   },
   "engines": {
     "node": "^22.18.0",
-    "pnpm": "^10.15.0"
+    "pnpm": "^10.16.1"
   },
   "volta": {
     "node": "22.18.0"
@@ -40,5 +40,5 @@
   "lint-staged": {
     "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|html|yml|yaml|json)": "prettier --write"
   },
-  "packageManager": "pnpm@10.15.0"
+  "packageManager": "pnpm@10.16.1"
 }

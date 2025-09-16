@@ -62,10 +62,10 @@ export async function generateBaseplateProject({
           devDependencies: {
             '@baseplate-dev/project-builder-cli': cliVersion,
           },
-          packageManager: 'pnpm@10.15.0',
+          packageManager: 'pnpm@10.16.1',
           engines: {
             node: '^22.0.0',
-            pnpm: '^10.15.0',
+            pnpm: '^10.16.1',
           },
           volta: {
             node: '22.18.0',

@@ -7,6 +7,7 @@ import perfectionist from 'eslint-plugin-perfectionist';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+import globals from 'globals';
 import tsEslint from 'typescript-eslint';
 
 const tsFileGlobs = ['**/*.{mts,cts,ts,tsx}'];
@@ -42,6 +43,11 @@ export default tsEslint.config(
   // ESLint Configs for all files
   eslint.configs.recommended,
   {
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
     rules: {
       // disallow console.log since that is typically used for debugging
       'no-console': ['error', { allow: ['warn', 'error', 'debug', 'info'] }],
