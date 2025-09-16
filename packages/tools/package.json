@@ -70,6 +70,7 @@
     "eslint-plugin-storybook": "9.0.18",
     "eslint-plugin-unicorn": "60.0.0",
     "eslint-plugin-unused-imports": "4.1.4",
+    "globals": "16.4.0",
     "prettier-plugin-packagejson": "2.5.19",
     "prettier-plugin-tailwindcss": "0.6.14",
     "typescript-eslint": "8.38.0"

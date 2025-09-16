@@ -17,6 +17,7 @@ const eslintConfig = createTsTemplateFile({
     TPL_DEFAULT_PROJECT_FILES: {},
     TPL_DEV_DEPENDENCIES: {},
     TPL_EXTRA_CONFIGS: {},
+    TPL_GLOBALS: {},
     TPL_IGNORE_FILES: {},
   },
 });

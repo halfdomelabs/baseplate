@@ -8,6 +8,7 @@ import eslintPluginImportX from 'eslint-plugin-import-x';
 import reactJsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import globals from 'globals';
 import tsEslint from 'typescript-eslint';
 
 /** @type {GenerateTypescriptEslintConfigOptions} */
@@ -19,6 +20,9 @@ export const reactEslintConfig = tsEslint.config(
   // React & A11y
   {
     files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
+    languageOptions: {
+      globals: { ...globals.browser },
+    },
     extends: [
       reactPlugin.configs.flat?.recommended,
       reactPlugin.configs.flat?.['jsx-runtime'],

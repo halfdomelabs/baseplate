@@ -5,6 +5,7 @@ import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescrip
 import { importX } from 'eslint-plugin-import-x';
 import perfectionist from 'eslint-plugin-perfectionist';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+import globals from 'globals';
 import tsEslint from 'typescript-eslint';
 
 const tsFileGlobs = ['**/*.{mts,cts,ts,tsx}'];
@@ -41,6 +42,11 @@ export default tsEslint.config(
   // ESLint Configs for all files
   eslint.configs.recommended,
   {
+    languageOptions: {
+      globals: {
+        ...globals./* TPL_GLOBALS:START */ node /* TPL_GLOBALS:END */,
+      },
+    },
     rules: {
       // disallow console.log since that is typically used for debugging
       'no-console': ['error', { allow: ['warn', 'error', 'debug', 'info'] }],
