@@ -74,7 +74,6 @@ export const syncAllProjectsAction = createServiceAction({
         const syncMetadataController = new SyncMetadataController(
           project.directory,
           logger,
-          { disableThrottling: true },
         );
 
         const { syncProject } = await import('../../sync/sync-project.js');
