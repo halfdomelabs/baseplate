@@ -1,6 +1,14 @@
 {
   "name": "prisma/prisma",
   "templates": {
+    "prisma-config": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {},
+      "pathRootRelativePath": "{package-root}/prisma.config.mts",
+      "sourceFile": "package/prisma.config.mts",
+      "variables": { "TPL_SEED_COMMAND": {} }
+    },
     "seed": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },

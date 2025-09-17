@@ -245,7 +245,7 @@ export class CookieUserSessionService implements UserSessionService {
     } catch (err) {
       // clear the cookie if it's invalid
       if (err instanceof InvalidSessionError && reply) {
-        reply.clearCookie(cookieName);
+        reply.clearCookie(cookieName, COOKIE_OPTIONS);
       }
       throw err;
     }

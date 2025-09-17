@@ -8,6 +8,16 @@ import { PRISMA_PRISMA_PATHS } from './template-paths.js';
 import { PRISMA_PRISMA_TEMPLATES } from './typed-templates.js';
 
 export interface PrismaPrismaRenderers {
+  prismaConfig: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof PRISMA_PRISMA_TEMPLATES.prismaConfig
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   seed: {
     render: (
       options: Omit<
@@ -40,6 +50,14 @@ const prismaPrismaRenderersTask = createGeneratorTask({
     return {
       providers: {
         prismaPrismaRenderers: {
+          prismaConfig: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: PRISMA_PRISMA_TEMPLATES.prismaConfig,
+                destination: paths.prismaConfig,
+                ...options,
+              }),
+          },
           seed: {
             render: (options) =>
               typescriptFile.renderTemplateFile({
