@@ -2,6 +2,7 @@ import type { TsCodeFragment } from '@baseplate-dev/core-generators';
 import type { formatSchema } from '@prisma/internals';
 
 import {
+  eslintConfigProvider,
   extractPackageVersions,
   nodeProvider,
   normalizeTsPathToJsPath,
@@ -18,6 +19,7 @@ import {
   createReadOnlyProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@baseplate-dev/sync';
+import { quot } from '@baseplate-dev/utils';
 import { sortBy } from 'es-toolkit';
 import { createRequire } from 'node:module';
 import { z } from 'zod';
@@ -107,22 +109,23 @@ export const prismaGenerator = createGenerator({
         });
       },
     }),
+    eslint: createGeneratorTask({
+      dependencies: {
+        eslintConfig: eslintConfigProvider,
+      },
+      run({ eslintConfig }) {
+        eslintConfig.tsDefaultProjectFiles.push('prisma.config.mts');
+      },
+    }),
     seed: createGeneratorTask({
       dependencies: {
-        node: nodeProvider,
         fastifyOutput: fastifyOutputProvider,
         renderers: PRISMA_PRISMA_GENERATED.renderers.provider,
       },
       exports: {
         prismaSeed: prismaSeedProvider.export(packageScope),
       },
-      run({ node, fastifyOutput, renderers }) {
-        node.extraProperties.merge({
-          prisma: {
-            seed: `tsx ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} --env-file-if-exists=.seed.env src/prisma/seed.ts`,
-          },
-        });
-
+      run({ fastifyOutput, renderers }) {
         const seedEnvFields = new Map<string, PrismaSeedEnvField>();
         const seedFragments = new Map<string, TsCodeFragment>();
 
@@ -173,6 +176,16 @@ export const prismaGenerator = createGenerator({
               renderers.seed.render({
                 variables: {
                   TPL_SEED_BODY: TsCodeUtils.mergeFragments(seedFragments),
+                },
+              }),
+            );
+
+            await builder.apply(
+              renderers.prismaConfig.render({
+                variables: {
+                  TPL_SEED_COMMAND: quot(
+                    `tsx ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} --env-file-if-exists=.seed.env src/prisma/seed.ts`,
+                  ),
                 },
               }),
             );

@@ -11,6 +11,11 @@
     "instanceData": {},
     "template": "eslint-config"
   },
+  "prisma.config.mts": {
+    "generator": "@baseplate-dev/fastify-generators#prisma/prisma",
+    "instanceData": {},
+    "template": "prisma-config"
+  },
   "vitest.config.mts": {
     "generator": "@baseplate-dev/core-generators#node/vitest",
     "instanceData": {},

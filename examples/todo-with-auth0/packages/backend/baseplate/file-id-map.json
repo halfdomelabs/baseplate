@@ -109,6 +109,7 @@
   "@baseplate-dev/fastify-generators#prisma/prisma-utils:embedded-one-to-one": "src/utils/embedded-pipes/embedded-one-to-one.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma-utils:embedded-types": "src/utils/embedded-pipes/embedded-types.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma-utils:prisma-relations": "src/utils/prisma-relations.ts",
+  "@baseplate-dev/fastify-generators#prisma/prisma:prisma-config": "prisma.config.mts",
   "@baseplate-dev/fastify-generators#prisma/prisma:prisma-schema": "prisma/schema.prisma",
   "@baseplate-dev/fastify-generators#prisma/prisma:seed": "src/prisma/seed.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma:service": "src/services/prisma.ts",

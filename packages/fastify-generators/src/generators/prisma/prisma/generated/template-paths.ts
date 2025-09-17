@@ -2,6 +2,7 @@ import { packageInfoProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
 export interface PrismaPrismaPaths {
+  prismaConfig: string;
   seed: string;
   service: string;
 }
@@ -14,11 +15,13 @@ const prismaPrismaPathsTask = createGeneratorTask({
   dependencies: { packageInfo: packageInfoProvider },
   exports: { prismaPrismaPaths: prismaPrismaPaths.export() },
   run({ packageInfo }) {
+    const packageRoot = packageInfo.getPackageRoot();
     const srcRoot = packageInfo.getPackageSrcPath();
 
     return {
       providers: {
         prismaPrismaPaths: {
+          prismaConfig: `${packageRoot}/prisma.config.mts`,
           seed: `${srcRoot}/prisma/seed.ts`,
           service: `${srcRoot}/services/prisma.ts`,
         },
