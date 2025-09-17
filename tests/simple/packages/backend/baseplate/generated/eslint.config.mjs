@@ -33,7 +33,11 @@ const IGNORE_FILES = [
 
 // Specifies which files should use the default tsconfig.json project
 // This is useful for certain files outside the src directory, e.g. config files
-const TS_DEFAULT_PROJECT_FILES = ['vitest.config.mts', 'vitest.config.ts'];
+const TS_DEFAULT_PROJECT_FILES = [
+  'prisma.config.mts',
+  'vitest.config.mts',
+  'vitest.config.ts',
+];
 
 export default tsEslint.config(
   // ESLint Configs for all files
