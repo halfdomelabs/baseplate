@@ -1,5 +1,13 @@
 # @baseplate-dev/core-generators
 
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @baseplate-dev/sync@0.3.8
+  - @baseplate-dev/utils@0.3.8
+
 ## 0.3.7
 
 ### Patch Changes

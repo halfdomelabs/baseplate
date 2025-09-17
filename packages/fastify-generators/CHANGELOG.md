@@ -1,5 +1,16 @@
 # @baseplate-dev/fastify-generators
 
+## 0.3.8
+
+### Patch Changes
+
+- [#671](https://github.com/halfdomelabs/baseplate/pull/671) [`fc93dd7`](https://github.com/halfdomelabs/baseplate/commit/fc93dd70c182ac99d1f025745d88a32d6de733f5) Thanks [@kingston](https://github.com/kingston)! - Upgrade Prisma to 6.16.2
+
+- Updated dependencies []:
+  - @baseplate-dev/core-generators@0.3.8
+  - @baseplate-dev/sync@0.3.8
+  - @baseplate-dev/utils@0.3.8
+
 ## 0.3.7
 
 ### Patch Changes

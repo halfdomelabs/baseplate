@@ -1,5 +1,18 @@
 # @baseplate-dev/plugin-storage
 
+## 2.0.8
+
+### Patch Changes
+
+- Updated dependencies [[`fc93dd7`](https://github.com/halfdomelabs/baseplate/commit/fc93dd70c182ac99d1f025745d88a32d6de733f5)]:
+  - @baseplate-dev/fastify-generators@0.3.8
+  - @baseplate-dev/core-generators@0.3.8
+  - @baseplate-dev/project-builder-lib@0.3.8
+  - @baseplate-dev/react-generators@0.3.8
+  - @baseplate-dev/sync@0.3.8
+  - @baseplate-dev/ui-components@0.3.8
+  - @baseplate-dev/utils@0.3.8
+
 ## 2.0.7
 
 ### Patch Changes

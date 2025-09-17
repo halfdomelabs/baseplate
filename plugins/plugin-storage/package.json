@@ -1,6 +1,6 @@
 {
   "name": "@baseplate-dev/plugin-storage",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Contains the storage plugin for Baseplate",
   "keywords": [
     "storage",
