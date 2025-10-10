@@ -75,6 +75,8 @@
   "@baseplate-dev/fastify-generators#pothos/pothos-enums-file:feature:5yQn3gjSzKEB-enums": "src/modules/todos/schema/enums.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-scalar:date": "src/modules/graphql/scalars/date.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-scalar:date-time": "src/modules/graphql/scalars/date-time.ts",
+  "@baseplate-dev/fastify-generators#pothos/pothos-scalar:json": "src/modules/graphql/scalars/json.ts",
+  "@baseplate-dev/fastify-generators#pothos/pothos-scalar:json-object": "src/modules/graphql/scalars/json-object.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-scalar:uuid": "src/modules/graphql/scalars/uuid.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-sentry:use-sentry": "src/plugins/graphql/use-sentry.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos-types-file:model:1sOpF6IeE-5r-object-type": "src/modules/accounts/users/schema/customer.object-type.ts",

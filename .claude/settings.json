@@ -14,8 +14,8 @@
       }
     ]
   },
-  "permissions": {
-    "additionalDirectories": ["~/baseplate-docs"]
+  "env": {
+    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "true"
   },
   "model": "opusplan"
 }

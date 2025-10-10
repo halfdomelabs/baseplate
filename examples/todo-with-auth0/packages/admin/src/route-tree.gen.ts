@@ -8,126 +8,126 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root';
-import { Route as AdminRouteRouteImport } from './routes/admin/route';
-import { Route as IndexRouteImport } from './routes/index';
-import { Route as AdminIndexRouteImport } from './routes/admin/index';
-import { Route as AuthLoginRouteImport } from './routes/auth/login';
-import { Route as AdminBullBoardIndexRouteImport } from './routes/admin/bull-board/index';
-import { Route as AdminTodosTodoListRouteRouteImport } from './routes/admin/todos/todo-list/route';
-import { Route as AdminTodosTodoListIndexRouteImport } from './routes/admin/todos/todo-list/index';
-import { Route as AdminTodosTodoListNewRouteImport } from './routes/admin/todos/todo-list/new';
-import { Route as AdminTodosTodoListIdRouteImport } from './routes/admin/todos/todo-list/$id';
-import { Route as AdminAccountsUsersUserRouteRouteImport } from './routes/admin/accounts/users/user/route';
-import { Route as AdminAccountsUsersUserIndexRouteImport } from './routes/admin/accounts/users/user/index';
-import { Route as AdminAccountsUsersUserIdRouteImport } from './routes/admin/accounts/users/user/$id';
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AdminBullBoardIndexRouteImport } from './routes/admin/bull-board/index'
+import { Route as AdminTodosTodoListRouteRouteImport } from './routes/admin/todos/todo-list/route'
+import { Route as AdminTodosTodoListIndexRouteImport } from './routes/admin/todos/todo-list/index'
+import { Route as AdminTodosTodoListNewRouteImport } from './routes/admin/todos/todo-list/new'
+import { Route as AdminTodosTodoListIdRouteImport } from './routes/admin/todos/todo-list/$id'
+import { Route as AdminAccountsUsersUserRouteRouteImport } from './routes/admin/accounts/users/user/route'
+import { Route as AdminAccountsUsersUserIndexRouteImport } from './routes/admin/accounts/users/user/index'
+import { Route as AdminAccountsUsersUserIdRouteImport } from './routes/admin/accounts/users/user/$id'
 
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRouteRoute,
-} as any);
+} as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AdminBullBoardIndexRoute = AdminBullBoardIndexRouteImport.update({
   id: '/bull-board/',
   path: '/bull-board/',
   getParentRoute: () => AdminRouteRoute,
-} as any);
+} as any)
 const AdminTodosTodoListRouteRoute = AdminTodosTodoListRouteRouteImport.update({
   id: '/todos/todo-list',
   path: '/todos/todo-list',
   getParentRoute: () => AdminRouteRoute,
-} as any);
+} as any)
 const AdminTodosTodoListIndexRoute = AdminTodosTodoListIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminTodosTodoListRouteRoute,
-} as any);
+} as any)
 const AdminTodosTodoListNewRoute = AdminTodosTodoListNewRouteImport.update({
   id: '/new',
   path: '/new',
   getParentRoute: () => AdminTodosTodoListRouteRoute,
-} as any);
+} as any)
 const AdminTodosTodoListIdRoute = AdminTodosTodoListIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AdminTodosTodoListRouteRoute,
-} as any);
+} as any)
 const AdminAccountsUsersUserRouteRoute =
   AdminAccountsUsersUserRouteRouteImport.update({
     id: '/accounts/users/user',
     path: '/accounts/users/user',
     getParentRoute: () => AdminRouteRoute,
-  } as any);
+  } as any)
 const AdminAccountsUsersUserIndexRoute =
   AdminAccountsUsersUserIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => AdminAccountsUsersUserRouteRoute,
-  } as any);
+  } as any)
 const AdminAccountsUsersUserIdRoute =
   AdminAccountsUsersUserIdRouteImport.update({
     id: '/$id',
     path: '/$id',
     getParentRoute: () => AdminAccountsUsersUserRouteRoute,
-  } as any);
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute;
-  '/admin': typeof AdminRouteRouteWithChildren;
-  '/auth/login': typeof AuthLoginRoute;
-  '/admin/': typeof AdminIndexRoute;
-  '/admin/todos/todo-list': typeof AdminTodosTodoListRouteRouteWithChildren;
-  '/admin/bull-board': typeof AdminBullBoardIndexRoute;
-  '/admin/accounts/users/user': typeof AdminAccountsUsersUserRouteRouteWithChildren;
-  '/admin/todos/todo-list/$id': typeof AdminTodosTodoListIdRoute;
-  '/admin/todos/todo-list/new': typeof AdminTodosTodoListNewRoute;
-  '/admin/todos/todo-list/': typeof AdminTodosTodoListIndexRoute;
-  '/admin/accounts/users/user/$id': typeof AdminAccountsUsersUserIdRoute;
-  '/admin/accounts/users/user/': typeof AdminAccountsUsersUserIndexRoute;
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/auth/login': typeof AuthLoginRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/todos/todo-list': typeof AdminTodosTodoListRouteRouteWithChildren
+  '/admin/bull-board': typeof AdminBullBoardIndexRoute
+  '/admin/accounts/users/user': typeof AdminAccountsUsersUserRouteRouteWithChildren
+  '/admin/todos/todo-list/$id': typeof AdminTodosTodoListIdRoute
+  '/admin/todos/todo-list/new': typeof AdminTodosTodoListNewRoute
+  '/admin/todos/todo-list/': typeof AdminTodosTodoListIndexRoute
+  '/admin/accounts/users/user/$id': typeof AdminAccountsUsersUserIdRoute
+  '/admin/accounts/users/user/': typeof AdminAccountsUsersUserIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute;
-  '/auth/login': typeof AuthLoginRoute;
-  '/admin': typeof AdminIndexRoute;
-  '/admin/bull-board': typeof AdminBullBoardIndexRoute;
-  '/admin/todos/todo-list/$id': typeof AdminTodosTodoListIdRoute;
-  '/admin/todos/todo-list/new': typeof AdminTodosTodoListNewRoute;
-  '/admin/todos/todo-list': typeof AdminTodosTodoListIndexRoute;
-  '/admin/accounts/users/user/$id': typeof AdminAccountsUsersUserIdRoute;
-  '/admin/accounts/users/user': typeof AdminAccountsUsersUserIndexRoute;
+  '/': typeof IndexRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/bull-board': typeof AdminBullBoardIndexRoute
+  '/admin/todos/todo-list/$id': typeof AdminTodosTodoListIdRoute
+  '/admin/todos/todo-list/new': typeof AdminTodosTodoListNewRoute
+  '/admin/todos/todo-list': typeof AdminTodosTodoListIndexRoute
+  '/admin/accounts/users/user/$id': typeof AdminAccountsUsersUserIdRoute
+  '/admin/accounts/users/user': typeof AdminAccountsUsersUserIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  '/': typeof IndexRoute;
-  '/admin': typeof AdminRouteRouteWithChildren;
-  '/auth/login': typeof AuthLoginRoute;
-  '/admin/': typeof AdminIndexRoute;
-  '/admin/todos/todo-list': typeof AdminTodosTodoListRouteRouteWithChildren;
-  '/admin/bull-board/': typeof AdminBullBoardIndexRoute;
-  '/admin/accounts/users/user': typeof AdminAccountsUsersUserRouteRouteWithChildren;
-  '/admin/todos/todo-list/$id': typeof AdminTodosTodoListIdRoute;
-  '/admin/todos/todo-list/new': typeof AdminTodosTodoListNewRoute;
-  '/admin/todos/todo-list/': typeof AdminTodosTodoListIndexRoute;
-  '/admin/accounts/users/user/$id': typeof AdminAccountsUsersUserIdRoute;
-  '/admin/accounts/users/user/': typeof AdminAccountsUsersUserIndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/auth/login': typeof AuthLoginRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/todos/todo-list': typeof AdminTodosTodoListRouteRouteWithChildren
+  '/admin/bull-board/': typeof AdminBullBoardIndexRoute
+  '/admin/accounts/users/user': typeof AdminAccountsUsersUserRouteRouteWithChildren
+  '/admin/todos/todo-list/$id': typeof AdminTodosTodoListIdRoute
+  '/admin/todos/todo-list/new': typeof AdminTodosTodoListNewRoute
+  '/admin/todos/todo-list/': typeof AdminTodosTodoListIndexRoute
+  '/admin/accounts/users/user/$id': typeof AdminAccountsUsersUserIdRoute
+  '/admin/accounts/users/user/': typeof AdminAccountsUsersUserIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
@@ -140,8 +140,8 @@ export interface FileRouteTypes {
     | '/admin/todos/todo-list/new'
     | '/admin/todos/todo-list/'
     | '/admin/accounts/users/user/$id'
-    | '/admin/accounts/users/user/';
-  fileRoutesByTo: FileRoutesByTo;
+    | '/admin/accounts/users/user/'
+  fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth/login'
@@ -151,7 +151,7 @@ export interface FileRouteTypes {
     | '/admin/todos/todo-list/new'
     | '/admin/todos/todo-list'
     | '/admin/accounts/users/user/$id'
-    | '/admin/accounts/users/user';
+    | '/admin/accounts/users/user'
   id:
     | '__root__'
     | '/'
@@ -165,108 +165,108 @@ export interface FileRouteTypes {
     | '/admin/todos/todo-list/new'
     | '/admin/todos/todo-list/'
     | '/admin/accounts/users/user/$id'
-    | '/admin/accounts/users/user/';
-  fileRoutesById: FileRoutesById;
+    | '/admin/accounts/users/user/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  AdminRouteRoute: typeof AdminRouteRouteWithChildren;
-  AuthLoginRoute: typeof AuthLoginRoute;
+  IndexRoute: typeof IndexRoute
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  AuthLoginRoute: typeof AuthLoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/admin': {
-      id: '/admin';
-      path: '/admin';
-      fullPath: '/admin';
-      preLoaderRoute: typeof AdminRouteRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
-      id: '/';
-      path: '/';
-      fullPath: '/';
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
-      id: '/admin/';
-      path: '/';
-      fullPath: '/admin/';
-      preLoaderRoute: typeof AdminIndexRouteImport;
-      parentRoute: typeof AdminRouteRoute;
-    };
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/auth/login': {
-      id: '/auth/login';
-      path: '/auth/login';
-      fullPath: '/auth/login';
-      preLoaderRoute: typeof AuthLoginRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/bull-board/': {
-      id: '/admin/bull-board/';
-      path: '/bull-board';
-      fullPath: '/admin/bull-board';
-      preLoaderRoute: typeof AdminBullBoardIndexRouteImport;
-      parentRoute: typeof AdminRouteRoute;
-    };
+      id: '/admin/bull-board/'
+      path: '/bull-board'
+      fullPath: '/admin/bull-board'
+      preLoaderRoute: typeof AdminBullBoardIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/todos/todo-list': {
-      id: '/admin/todos/todo-list';
-      path: '/todos/todo-list';
-      fullPath: '/admin/todos/todo-list';
-      preLoaderRoute: typeof AdminTodosTodoListRouteRouteImport;
-      parentRoute: typeof AdminRouteRoute;
-    };
+      id: '/admin/todos/todo-list'
+      path: '/todos/todo-list'
+      fullPath: '/admin/todos/todo-list'
+      preLoaderRoute: typeof AdminTodosTodoListRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/todos/todo-list/': {
-      id: '/admin/todos/todo-list/';
-      path: '/';
-      fullPath: '/admin/todos/todo-list/';
-      preLoaderRoute: typeof AdminTodosTodoListIndexRouteImport;
-      parentRoute: typeof AdminTodosTodoListRouteRoute;
-    };
+      id: '/admin/todos/todo-list/'
+      path: '/'
+      fullPath: '/admin/todos/todo-list/'
+      preLoaderRoute: typeof AdminTodosTodoListIndexRouteImport
+      parentRoute: typeof AdminTodosTodoListRouteRoute
+    }
     '/admin/todos/todo-list/new': {
-      id: '/admin/todos/todo-list/new';
-      path: '/new';
-      fullPath: '/admin/todos/todo-list/new';
-      preLoaderRoute: typeof AdminTodosTodoListNewRouteImport;
-      parentRoute: typeof AdminTodosTodoListRouteRoute;
-    };
+      id: '/admin/todos/todo-list/new'
+      path: '/new'
+      fullPath: '/admin/todos/todo-list/new'
+      preLoaderRoute: typeof AdminTodosTodoListNewRouteImport
+      parentRoute: typeof AdminTodosTodoListRouteRoute
+    }
     '/admin/todos/todo-list/$id': {
-      id: '/admin/todos/todo-list/$id';
-      path: '/$id';
-      fullPath: '/admin/todos/todo-list/$id';
-      preLoaderRoute: typeof AdminTodosTodoListIdRouteImport;
-      parentRoute: typeof AdminTodosTodoListRouteRoute;
-    };
+      id: '/admin/todos/todo-list/$id'
+      path: '/$id'
+      fullPath: '/admin/todos/todo-list/$id'
+      preLoaderRoute: typeof AdminTodosTodoListIdRouteImport
+      parentRoute: typeof AdminTodosTodoListRouteRoute
+    }
     '/admin/accounts/users/user': {
-      id: '/admin/accounts/users/user';
-      path: '/accounts/users/user';
-      fullPath: '/admin/accounts/users/user';
-      preLoaderRoute: typeof AdminAccountsUsersUserRouteRouteImport;
-      parentRoute: typeof AdminRouteRoute;
-    };
+      id: '/admin/accounts/users/user'
+      path: '/accounts/users/user'
+      fullPath: '/admin/accounts/users/user'
+      preLoaderRoute: typeof AdminAccountsUsersUserRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/accounts/users/user/': {
-      id: '/admin/accounts/users/user/';
-      path: '/';
-      fullPath: '/admin/accounts/users/user/';
-      preLoaderRoute: typeof AdminAccountsUsersUserIndexRouteImport;
-      parentRoute: typeof AdminAccountsUsersUserRouteRoute;
-    };
+      id: '/admin/accounts/users/user/'
+      path: '/'
+      fullPath: '/admin/accounts/users/user/'
+      preLoaderRoute: typeof AdminAccountsUsersUserIndexRouteImport
+      parentRoute: typeof AdminAccountsUsersUserRouteRoute
+    }
     '/admin/accounts/users/user/$id': {
-      id: '/admin/accounts/users/user/$id';
-      path: '/$id';
-      fullPath: '/admin/accounts/users/user/$id';
-      preLoaderRoute: typeof AdminAccountsUsersUserIdRouteImport;
-      parentRoute: typeof AdminAccountsUsersUserRouteRoute;
-    };
+      id: '/admin/accounts/users/user/$id'
+      path: '/$id'
+      fullPath: '/admin/accounts/users/user/$id'
+      preLoaderRoute: typeof AdminAccountsUsersUserIdRouteImport
+      parentRoute: typeof AdminAccountsUsersUserRouteRoute
+    }
   }
 }
 
 interface AdminTodosTodoListRouteRouteChildren {
-  AdminTodosTodoListIdRoute: typeof AdminTodosTodoListIdRoute;
-  AdminTodosTodoListNewRoute: typeof AdminTodosTodoListNewRoute;
-  AdminTodosTodoListIndexRoute: typeof AdminTodosTodoListIndexRoute;
+  AdminTodosTodoListIdRoute: typeof AdminTodosTodoListIdRoute
+  AdminTodosTodoListNewRoute: typeof AdminTodosTodoListNewRoute
+  AdminTodosTodoListIndexRoute: typeof AdminTodosTodoListIndexRoute
 }
 
 const AdminTodosTodoListRouteRouteChildren: AdminTodosTodoListRouteRouteChildren =
@@ -274,34 +274,34 @@ const AdminTodosTodoListRouteRouteChildren: AdminTodosTodoListRouteRouteChildren
     AdminTodosTodoListIdRoute: AdminTodosTodoListIdRoute,
     AdminTodosTodoListNewRoute: AdminTodosTodoListNewRoute,
     AdminTodosTodoListIndexRoute: AdminTodosTodoListIndexRoute,
-  };
+  }
 
 const AdminTodosTodoListRouteRouteWithChildren =
   AdminTodosTodoListRouteRoute._addFileChildren(
     AdminTodosTodoListRouteRouteChildren,
-  );
+  )
 
 interface AdminAccountsUsersUserRouteRouteChildren {
-  AdminAccountsUsersUserIdRoute: typeof AdminAccountsUsersUserIdRoute;
-  AdminAccountsUsersUserIndexRoute: typeof AdminAccountsUsersUserIndexRoute;
+  AdminAccountsUsersUserIdRoute: typeof AdminAccountsUsersUserIdRoute
+  AdminAccountsUsersUserIndexRoute: typeof AdminAccountsUsersUserIndexRoute
 }
 
 const AdminAccountsUsersUserRouteRouteChildren: AdminAccountsUsersUserRouteRouteChildren =
   {
     AdminAccountsUsersUserIdRoute: AdminAccountsUsersUserIdRoute,
     AdminAccountsUsersUserIndexRoute: AdminAccountsUsersUserIndexRoute,
-  };
+  }
 
 const AdminAccountsUsersUserRouteRouteWithChildren =
   AdminAccountsUsersUserRouteRoute._addFileChildren(
     AdminAccountsUsersUserRouteRouteChildren,
-  );
+  )
 
 interface AdminRouteRouteChildren {
-  AdminIndexRoute: typeof AdminIndexRoute;
-  AdminTodosTodoListRouteRoute: typeof AdminTodosTodoListRouteRouteWithChildren;
-  AdminBullBoardIndexRoute: typeof AdminBullBoardIndexRoute;
-  AdminAccountsUsersUserRouteRoute: typeof AdminAccountsUsersUserRouteRouteWithChildren;
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminTodosTodoListRouteRoute: typeof AdminTodosTodoListRouteRouteWithChildren
+  AdminBullBoardIndexRoute: typeof AdminBullBoardIndexRoute
+  AdminAccountsUsersUserRouteRoute: typeof AdminAccountsUsersUserRouteRouteWithChildren
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
@@ -310,17 +310,17 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminBullBoardIndexRoute: AdminBullBoardIndexRoute,
   AdminAccountsUsersUserRouteRoute:
     AdminAccountsUsersUserRouteRouteWithChildren,
-};
+}
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
   AdminRouteRouteChildren,
-);
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   AuthLoginRoute: AuthLoginRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()

@@ -88,6 +88,7 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
     },
   },
   json: { prismaType: 'Json' },
+  jsonObject: { prismaType: 'Json' },
   uuid: createConfig({
     prismaType: 'String',
     optionsSchema: z.object({

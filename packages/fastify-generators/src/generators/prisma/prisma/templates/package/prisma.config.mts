@@ -1,7 +1,8 @@
 // @ts-nocheck
 
-import { loadEnvFile } from 'node:process';
 import type { PrismaConfig } from 'prisma';
+
+import { loadEnvFile } from 'node:process';
 
 loadEnvFile();
 

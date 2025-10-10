@@ -9,6 +9,16 @@
     "instanceData": {},
     "template": "date"
   },
+  "json-object.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
+    "instanceData": {},
+    "template": "json-object"
+  },
+  "json.ts": {
+    "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
+    "instanceData": {},
+    "template": "json"
+  },
   "uuid.ts": {
     "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
     "instanceData": {},

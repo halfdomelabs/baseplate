@@ -27,7 +27,6 @@
     "check-dependency-version-consistency": "5.0.0",
     "prettier-plugin-packagejson": "2.5.19",
     "prettier-plugin-tailwindcss": "0.6.14",
-    "lint-staged": "16.1.0",
     "turbo": "2.5.0"
   },
   "engines": {
@@ -36,9 +35,6 @@
   },
   "volta": {
     "node": "22.18.0"
-  },
-  "lint-staged": {
-    "*.(js|ts|tsx|jsx|json|md|mdx|css|scss|yaml|yml|html|yml|yaml|json)": "prettier --write"
   },
   "packageManager": "pnpm@10.16.1"
 }

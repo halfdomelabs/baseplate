@@ -5,6 +5,8 @@ import { appModuleProvider } from '#src/generators/core/app-module/app-module.ge
 export interface PothosPothosScalarPaths {
   date: string;
   dateTime: string;
+  json: string;
+  jsonObject: string;
   uuid: string;
 }
 
@@ -23,6 +25,8 @@ const pothosPothosScalarPathsTask = createGeneratorTask({
         pothosPothosScalarPaths: {
           date: `${moduleRoot}/scalars/date.ts`,
           dateTime: `${moduleRoot}/scalars/date-time.ts`,
+          json: `${moduleRoot}/scalars/json.ts`,
+          jsonObject: `${moduleRoot}/scalars/json-object.ts`,
           uuid: `${moduleRoot}/scalars/uuid.ts`,
         },
       },

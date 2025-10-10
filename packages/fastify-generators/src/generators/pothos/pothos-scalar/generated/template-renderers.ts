@@ -4,7 +4,6 @@ import type { BuilderAction } from '@baseplate-dev/sync';
 import { typescriptFileProvider } from '@baseplate-dev/core-generators';
 import { createGeneratorTask, createProviderType } from '@baseplate-dev/sync';
 
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/generated/ts-import-providers.js';
 import { pothosImportsProvider } from '#src/generators/pothos/pothos/generated/ts-import-providers.js';
 
 import { POTHOS_POTHOS_SCALAR_PATHS } from './template-paths.js';
@@ -31,6 +30,26 @@ export interface PothosPothosScalarRenderers {
       >,
     ) => BuilderAction;
   };
+  json: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof POTHOS_POTHOS_SCALAR_TEMPLATES.json
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
+  jsonObject: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof POTHOS_POTHOS_SCALAR_TEMPLATES.jsonObject
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
   uuid: {
     render: (
       options: Omit<
@@ -50,7 +69,6 @@ const pothosPothosScalarRenderers =
 
 const pothosPothosScalarRenderersTask = createGeneratorTask({
   dependencies: {
-    errorHandlerServiceImports: errorHandlerServiceImportsProvider,
     paths: POTHOS_POTHOS_SCALAR_PATHS.provider,
     pothosImports: pothosImportsProvider,
     typescriptFile: typescriptFileProvider,
@@ -58,7 +76,7 @@ const pothosPothosScalarRenderersTask = createGeneratorTask({
   exports: {
     pothosPothosScalarRenderers: pothosPothosScalarRenderers.export(),
   },
-  run({ errorHandlerServiceImports, paths, pothosImports, typescriptFile }) {
+  run({ paths, pothosImports, typescriptFile }) {
     return {
       providers: {
         pothosPothosScalarRenderers: {
@@ -68,7 +86,6 @@ const pothosPothosScalarRenderersTask = createGeneratorTask({
                 template: POTHOS_POTHOS_SCALAR_TEMPLATES.date,
                 destination: paths.date,
                 importMapProviders: {
-                  errorHandlerServiceImports,
                   pothosImports,
                 },
                 ...options,
@@ -80,7 +97,28 @@ const pothosPothosScalarRenderersTask = createGeneratorTask({
                 template: POTHOS_POTHOS_SCALAR_TEMPLATES.dateTime,
                 destination: paths.dateTime,
                 importMapProviders: {
-                  errorHandlerServiceImports,
+                  pothosImports,
+                },
+                ...options,
+              }),
+          },
+          json: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: POTHOS_POTHOS_SCALAR_TEMPLATES.json,
+                destination: paths.json,
+                importMapProviders: {
+                  pothosImports,
+                },
+                ...options,
+              }),
+          },
+          jsonObject: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: POTHOS_POTHOS_SCALAR_TEMPLATES.jsonObject,
+                destination: paths.jsonObject,
+                importMapProviders: {
                   pothosImports,
                 },
                 ...options,
@@ -92,7 +130,6 @@ const pothosPothosScalarRenderersTask = createGeneratorTask({
                 template: POTHOS_POTHOS_SCALAR_TEMPLATES.uuid,
                 destination: paths.uuid,
                 importMapProviders: {
-                  errorHandlerServiceImports,
                   pothosImports,
                 },
                 ...options,

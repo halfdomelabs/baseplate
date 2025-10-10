@@ -13,7 +13,6 @@ import type { ScalarFieldType } from '#src/types/field-types.js';
 
 import { FASTIFY_PACKAGES } from '#src/constants/fastify-packages.js';
 import { appModuleProvider } from '#src/generators/core/app-module/index.js';
-import { errorHandlerServiceImportsProvider } from '#src/generators/core/error-handler-service/index.js';
 
 import {
   pothosConfigProvider,
@@ -47,7 +46,9 @@ const scalarConfigMap = createPothosScalarMap({
     export: 'DateTimeScalar',
     inputType: 'Date',
     outputType: 'Date | string',
-    dependencies: {},
+    dependencies: {
+      'graphql-scalars': FASTIFY_PACKAGES['graphql-scalars'],
+    },
     devDependencies: {},
     path: 'date-time.ts',
   },
@@ -58,7 +59,9 @@ const scalarConfigMap = createPothosScalarMap({
     export: 'DateScalar',
     inputType: 'Date',
     outputType: 'Date | string',
-    dependencies: {},
+    dependencies: {
+      'graphql-scalars': FASTIFY_PACKAGES['graphql-scalars'],
+    },
     devDependencies: {},
     path: 'date.ts',
   },
@@ -69,14 +72,37 @@ const scalarConfigMap = createPothosScalarMap({
     export: 'UuidScalar',
     inputType: 'string',
     outputType: 'string',
-    sourceType: 'string',
     dependencies: {
-      uuid: FASTIFY_PACKAGES.uuid,
+      'graphql-scalars': FASTIFY_PACKAGES['graphql-scalars'],
     },
-    devDependencies: {
-      '@types/uuid': FASTIFY_PACKAGES['@types/uuid'],
-    },
+    devDependencies: {},
     path: 'uuid.ts',
+  },
+  json: {
+    name: 'JSON',
+    scalar: 'json',
+    templatePath: 'json',
+    export: 'JSONScalar',
+    inputType: 'unknown',
+    outputType: 'unknown',
+    dependencies: {
+      'graphql-scalars': FASTIFY_PACKAGES['graphql-scalars'],
+    },
+    devDependencies: {},
+    path: 'json.ts',
+  },
+  jsonObject: {
+    name: 'JSONObject',
+    scalar: 'jsonObject',
+    templatePath: 'jsonObject',
+    export: 'JSONObjectScalar',
+    inputType: 'Record<string, unknown>',
+    outputType: 'Record<string, unknown>',
+    dependencies: {
+      'graphql-scalars': FASTIFY_PACKAGES['graphql-scalars'],
+    },
+    devDependencies: {},
+    path: 'json-object.ts',
   },
 });
 
@@ -108,17 +134,9 @@ export const pothosScalarGenerator = createGenerator({
         paths: POTHOS_POTHOS_SCALAR_GENERATED.paths.provider,
         pothosConfig: pothosConfigProvider,
         pothosImports: pothosImportsProvider,
-        errorHandlerServiceImports: errorHandlerServiceImportsProvider,
         typescriptFile: typescriptFileProvider,
       },
-      run({
-        appModule,
-        paths,
-        pothosConfig,
-        pothosImports,
-        errorHandlerServiceImports,
-        typescriptFile,
-      }) {
+      run({ appModule, paths, pothosConfig, pothosImports, typescriptFile }) {
         const scalarConfig = scalarConfigMap[type];
         const scalarPath = paths[scalarConfig.templatePath];
 
@@ -146,7 +164,6 @@ export const pothosScalarGenerator = createGenerator({
                 destination: scalarPath,
                 importMapProviders: {
                   pothosImports,
-                  errorHandlerServiceImports,
                 },
               }),
             );
