@@ -33,6 +33,11 @@ export const builder = new SchemaBuilder<{
   Scalars: {
     Date: { Input: Date; Output: Date | string };
     DateTime: { Input: Date; Output: Date | string };
+    JSON: { Input: unknown; Output: unknown };
+    JSONObject: {
+      Input: Record<string, unknown>;
+      Output: Record<string, unknown>;
+    };
     Uuid: { Input: string; Output: string };
   };
   /* TPL_SCHEMA_TYPE_OPTIONS:END */

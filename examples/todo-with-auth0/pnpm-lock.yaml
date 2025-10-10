@@ -300,6 +300,9 @@ importers:
       graphql:
         specifier: 16.11.0
         version: 16.11.0
+      graphql-scalars:
+        specifier: 1.23.0
+        version: 1.23.0(graphql@16.11.0)
       graphql-yoga:
         specifier: 5.15.1
         version: 5.15.1(graphql@16.11.0)
@@ -324,9 +327,6 @@ importers:
       stripe:
         specifier: 14.5.0
         version: 14.5.0
-      uuid:
-        specifier: 9.0.0
-        version: 9.0.0
       zod:
         specifier: 3.25.76
         version: 3.25.76
@@ -349,9 +349,6 @@ importers:
       '@types/redis-info':
         specifier: 3.0.3
         version: 3.0.3
-      '@types/uuid':
-        specifier: 9.0.1
-        version: 9.0.1
       '@types/ws':
         specifier: 8.5.13
         version: 8.5.13
@@ -3564,9 +3561,6 @@ packages:
   '@types/tedious@4.0.14':
     resolution: {integrity: sha512-KHPsfX/FoVbUGbyYvk1q9MMQHLPeRZhRJZdO45Q4YjvFkv4hMNghCWTvy7rdKessBsmtz4euWCWAB6/tVpI1Iw==}
 
-  '@types/uuid@9.0.1':
-    resolution: {integrity: sha512-rFT3ak0/2trgvp4yYZo5iKFEPsET7vKydKF+VRCxlQ9bpheehyAJH89dAkaLEq/j/RZXJIqcgsmPJKUP1Z28HA==}
-
   '@types/ws@8.5.13':
     resolution: {integrity: sha512-osM/gWBTPKgHV8XkTunnegTRIsvF6owmf5w+JtAfOw472dptdm0dlGv4xCt6GwQRcC2XVOvvRE/0bAoQcL2QkA==}
 
@@ -5123,6 +5117,12 @@ packages:
     resolution: {integrity: sha512-p+XPfS4q7aIpKVcgmnZKhMNqhltk20hfXtkaIkTfjjmiKMJ5xrt5c743cL03y/K7y1rg3WrIC49xGiEQ4mxdNw==}
     peerDependencies:
       graphql: 14 - 16
+
+  graphql-scalars@1.23.0:
+    resolution: {integrity: sha512-YTRNcwitkn8CqYcleKOx9IvedA8JIERn8BRq21nlKgOr4NEcTaWEG0sT+H92eF3ALTFbPgsqfft4cw+MGgv0Gg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
 
   graphql-tag@2.12.6:
     resolution: {integrity: sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==}
@@ -11240,8 +11240,6 @@ snapshots:
     dependencies:
       '@types/node': 22.18.0
 
-  '@types/uuid@9.0.1': {}
-
   '@types/ws@8.5.13':
     dependencies:
       '@types/node': 22.18.0
@@ -13124,6 +13122,11 @@ snapshots:
       graphql: 16.11.0
     transitivePeerDependencies:
       - encoding
+
+  graphql-scalars@1.23.0(graphql@16.11.0):
+    dependencies:
+      graphql: 16.11.0
+      tslib: 2.8.1
 
   graphql-tag@2.12.6(graphql@16.11.0):
     dependencies:

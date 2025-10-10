@@ -6,10 +6,6 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
       "importMapProviders": {
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
-        },
         "pothosImportsProvider": {
           "importName": "pothosImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
@@ -24,10 +20,6 @@
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
       "importMapProviders": {
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
-        },
         "pothosImportsProvider": {
           "importName": "pothosImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
@@ -37,15 +29,37 @@
       "sourceFile": "module/scalars/date-time.ts",
       "variables": {}
     },
+    "json": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/scalars/json.ts",
+      "sourceFile": "module/scalars/json.ts",
+      "variables": {}
+    },
+    "json-object": {
+      "type": "ts",
+      "fileOptions": { "kind": "singleton" },
+      "importMapProviders": {
+        "pothosImportsProvider": {
+          "importName": "pothosImportsProvider",
+          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"
+        }
+      },
+      "pathRootRelativePath": "{module-root}/scalars/json-object.ts",
+      "sourceFile": "module/scalars/json-object.ts",
+      "variables": {}
+    },
     "uuid": {
       "type": "ts",
       "fileOptions": { "kind": "singleton" },
       "generator": "@baseplate-dev/fastify-generators#pothos/pothos-scalar",
       "importMapProviders": {
-        "errorHandlerServiceImportsProvider": {
-          "importName": "errorHandlerServiceImportsProvider",
-          "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/core/error-handler-service/generated/ts-import-providers.ts"
-        },
         "pothosImportsProvider": {
           "importName": "pothosImportsProvider",
           "packagePathSpecifier": "@baseplate-dev/fastify-generators:src/generators/pothos/pothos/generated/ts-import-providers.ts"

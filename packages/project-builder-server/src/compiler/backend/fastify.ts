@@ -46,6 +46,8 @@ export function buildFastify(
         pothosScalarGenerator({ type: 'uuid' }),
         pothosScalarGenerator({ type: 'dateTime' }),
         pothosScalarGenerator({ type: 'date' }),
+        pothosScalarGenerator({ type: 'json' }),
+        pothosScalarGenerator({ type: 'jsonObject' }),
       ],
     },
   });

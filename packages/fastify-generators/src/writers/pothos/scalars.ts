@@ -56,6 +56,11 @@ export const INBUILT_POTHOS_SCALARS: Record<
     scalar: 'json',
     pothosMethod: 'string',
   },
+  jsonObject: {
+    name: 'String',
+    scalar: 'jsonObject',
+    pothosMethod: 'string',
+  },
   uuid: {
     name: 'String',
     scalar: 'uuid',

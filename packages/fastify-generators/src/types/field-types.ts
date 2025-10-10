@@ -7,6 +7,7 @@ export const SCALAR_FIELD_TYPES = [
   'float',
   'decimal',
   'json',
+  'jsonObject',
   'date',
   'enum',
 ] as const;
@@ -24,6 +25,7 @@ const scalarFieldTypeInfoMap: Record<ScalarFieldType, ScalarFieldTypeInfo> = {
   decimal: { typescriptType: 'number' },
   boolean: { typescriptType: 'boolean' },
   json: { typescriptType: 'unknown' },
+  jsonObject: { typescriptType: 'Record<string, unknown>' },
   uuid: { typescriptType: 'string' },
   dateTime: { typescriptType: 'Date' },
   date: { typescriptType: 'Date' },
