@@ -1,6 +1,15 @@
 {
   "enabledMcpjsonServers": ["baseplate-dev-server"],
   "enableAllProjectMcpServers": false,
+  "permissions": {
+    "allow": [
+      "Bash(pnpm build:*)",
+      "Bash(pnpm generate:templates:*)",
+      "mcp__baseplate-dev-server__extract-templates",
+      "mcp__baseplate-dev-server__generate-templates",
+      "mcp__baseplate-dev-server__configure-ts-template"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {

@@ -1,31 +1,24 @@
-import { Kind } from 'graphql';
+import { DateTimeResolver } from 'graphql-scalars';
 
 import { builder } from '@src/plugins/graphql/builder.js';
-import { BadRequestError } from '@src/utils/http-errors.js';
 
-export const DateTimeScalar = builder.scalarType('DateTime', {
-  description: 'Scalar with date and time information',
-  parseValue(value) {
-    if (typeof value === 'string') {
-      return new Date(value);
-    }
-    throw new BadRequestError('DateTime field must be provided as a string');
-  },
-  serialize(value) {
-    if (value instanceof Date) {
-      return value.toISOString();
-    }
-    if (typeof value === 'string') {
-      return new Date(value).toISOString();
-    }
-    throw new BadRequestError(
-      'DateTime field must be provided as a Date object or string',
-    );
-  },
-  parseLiteral(ast) {
-    if (ast.kind === Kind.STRING) {
-      return new Date(ast.value);
-    }
-    throw new BadRequestError('DateTime field must be provided as a string');
-  },
-});
+/**
+ * DateTime scalar type using graphql-scalars DateTimeResolver.
+ *
+ * Represents an exact instant on the timeline in RFC 3339 format.
+ * Accepts and serializes date-time strings with timezone information.
+ * Non-UTC timezones are automatically shifted to UTC.
+ *
+ * @example
+ * // Input: "2023-12-25T10:15:30Z"
+ * // Output: Date object representing that exact instant
+ *
+ * @example
+ * // Input: "2023-12-25T10:15:30+01:00"
+ * // Output: "2023-12-25T09:15:30Z" (shifted to UTC)
+ */
+export const DateTimeScalar = builder.addScalarType(
+  'DateTime',
+  DateTimeResolver,
+  {},
+);
