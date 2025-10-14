@@ -1,34 +1,16 @@
-import { Kind } from 'graphql';
-import { validate } from 'uuid';
+import { UUIDResolver } from 'graphql-scalars';
 
 import { builder } from '@src/plugins/graphql/builder.js';
-import { BadRequestError } from '@src/utils/http-errors.js';
 
-function parseUuid(value: string): string {
-  if (!validate(value)) {
-    throw new Error(`"${value}" is not a valid UUID`);
-  }
-  return value;
-}
-
-export const UuidScalar = builder.scalarType('Uuid', {
-  description: 'Scalar representing a UUID',
-  parseValue(value) {
-    if (typeof value === 'string') {
-      return parseUuid(value);
-    }
-    throw new BadRequestError('Uuid field must be provided as a string');
-  },
-  serialize(value: unknown) {
-    if (typeof value === 'string') {
-      return parseUuid(value);
-    }
-    throw new BadRequestError('Uuid field must be provided as a string');
-  },
-  parseLiteral(ast) {
-    if (ast.kind === Kind.STRING) {
-      return parseUuid(ast.value);
-    }
-    throw new BadRequestError('Uuid field must be provided as a string');
-  },
-});
+/**
+ * UUID scalar type using graphql-scalars UUIDResolver.
+ *
+ * Represents a Universally Unique Identifier (UUID) string.
+ * Validates input strings to ensure they conform to UUID format.
+ * Supports all UUID versions (v1, v3, v4, v5).
+ *
+ * @example
+ * // Input: "123e4567-e89b-12d3-a456-426614174000"
+ * // Output: "123e4567-e89b-12d3-a456-426614174000"
+ */
+export const UuidScalar = builder.addScalarType('Uuid', UUIDResolver, {});
