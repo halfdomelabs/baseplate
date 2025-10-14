@@ -9,6 +9,7 @@ import {
   normalizeTsPathToJsPath,
   packageInfoProvider,
   packageScope,
+  prettierProvider,
   tsCodeFragment,
   TsCodeUtils,
   tsTemplate,
@@ -114,9 +115,12 @@ export const prismaGenerator = createGenerator({
     eslint: createGeneratorTask({
       dependencies: {
         eslintConfig: eslintConfigProvider,
+        prettier: prettierProvider,
       },
-      run({ eslintConfig }) {
+      run({ eslintConfig, prettier }) {
         eslintConfig.tsDefaultProjectFiles.push('prisma.config.mts');
+        eslintConfig.eslintIgnore.push('src/generated/prisma/**/*.ts');
+        prettier.addPrettierIgnore('src/generated/prisma/**/*.ts');
       },
     }),
     seed: createGeneratorTask({
