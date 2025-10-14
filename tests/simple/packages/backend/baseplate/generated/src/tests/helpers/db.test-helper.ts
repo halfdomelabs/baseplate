@@ -1,8 +1,9 @@
-import { Prisma, PrismaClient } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { execSync } from 'node:child_process';
 import path from 'node:path';
 import { parse } from 'pg-connection-string';
+
+import { Prisma, PrismaClient } from '@src/generated/prisma/client.js';
 
 const TEST_DATABASE_NAME = 'simple_backend_test';
 

@@ -49,6 +49,7 @@
   "@baseplate-dev/fastify-generators#pothos/pothos:field-with-input-schema-builder": "src/plugins/graphql/FieldWithInputPayloadPlugin/schema-builder.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos:field-with-input-types": "src/plugins/graphql/FieldWithInputPayloadPlugin/types.ts",
   "@baseplate-dev/fastify-generators#pothos/pothos:strip-query-mutation-plugin": "src/plugins/graphql/strip-query-mutation-plugin.ts",
+  "@baseplate-dev/fastify-generators#prisma/prisma:client": "src/generated/prisma/client.ts",
   "@baseplate-dev/fastify-generators#prisma/prisma:prisma-config": "prisma.config.mts",
   "@baseplate-dev/fastify-generators#prisma/prisma:prisma-schema": "prisma/schema.prisma",
   "@baseplate-dev/fastify-generators#prisma/prisma:seed": "src/prisma/seed.ts",
