@@ -109,6 +109,10 @@ export const prismaGenerator = createGenerator({
           ]),
           dev: extractPackageVersions(FASTIFY_PACKAGES, ['prisma']),
         });
+        // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)
+        node.scripts.mergeObj({
+          postinstall: 'prisma generate',
+        });
       },
     }),
     eslint: createGeneratorTask({

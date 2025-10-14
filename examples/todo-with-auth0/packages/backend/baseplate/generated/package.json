@@ -17,6 +17,7 @@
     "dev:workers": "tsx watch --clear-screen=false --env-file-if-exists=.env ./scripts/run-workers.ts | pino-pretty -t",
     "generate:schema": "tsx --env-file-if-exists=.env src/index.ts --exit-after-generate-schema",
     "preinstall": "npx only-allow pnpm",
+    "postinstall": "prisma generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier:check": "prettier --check .",
