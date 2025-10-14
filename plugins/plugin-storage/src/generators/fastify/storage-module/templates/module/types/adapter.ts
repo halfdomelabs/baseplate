@@ -45,6 +45,14 @@ export interface PresignedUploadUrl {
 }
 
 /**
+ * Options for uploading a file
+ */
+export interface UploadFileOptions {
+  /** MIME type of the file (e.g., 'image/jpeg', 'application/pdf') */
+  contentType?: string;
+}
+
+/**
  * Storage adapter interface for file operations.
  * Implementations may use S3, local filesystem, GCS, etc.
  */
@@ -54,16 +62,22 @@ export interface StorageAdapter {
    *
    * @param path - Storage path (e.g., 'uploads/avatars/user123.jpg')
    * @param contents - File contents as Buffer or Readable stream
+   * @param options - Optional upload options (e.g., contentType)
    * @returns Metadata about the uploaded file
    * @throws {Error} If upload fails
    *
    * @example
    * const metadata = await adapter.uploadFile(
    *   'uploads/avatar.jpg',
-   *   Buffer.from(imageData)
+   *   Buffer.from(imageData),
+   *   { contentType: 'image/jpeg' }
    * );
    */
-  uploadFile(path: string, contents: Buffer | Readable): Promise<FileMetadata>;
+  uploadFile(
+    path: string,
+    contents: Buffer | Readable,
+    options?: UploadFileOptions,
+  ): Promise<FileMetadata>;
 
   /**
    * Download a file from storage
@@ -157,11 +171,11 @@ export interface StorageAdapter {
    * Only implement if adapter supports public URLs (e.g., CDN).
    *
    * @param path - Storage path of the file
-   * @returns Public URL or null if not publicly accessible
+   * @returns Public URL or undefined if not publicly accessible
    *
    * @example
    * const publicUrl = adapter.getPublicUrl('assets/logo.png');
    * // Returns: 'https://cdn.example.com/assets/logo.png'
    */
-  getPublicUrl?(path: string): string | null;
+  getPublicUrl?(path: string): string | undefined;
 }

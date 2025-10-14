@@ -24,7 +24,9 @@ export async function uploadFile(
 
   const file = await TPL_FILE_MODEL.create({ data: fileCreateInput });
 
-  await adapter.uploadFile(file.storagePath, contents);
+  await adapter.uploadFile(file.storagePath, contents, {
+    contentType: options.contentType,
+  });
 
   return file;
 }

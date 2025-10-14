@@ -136,6 +136,7 @@
   "@baseplate-dev/plugin-storage#fastify/storage-module:services-create-presigned-download-url": "src/modules/storage/services/create-presigned-download-url.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:services-create-presigned-upload-url": "src/modules/storage/services/create-presigned-upload-url.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:services-download-file": "src/modules/storage/services/download-file.ts",
+  "@baseplate-dev/plugin-storage#fastify/storage-module:services-get-public-url": "src/modules/storage/services/get-public-url.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:services-upload-file": "src/modules/storage/services/upload-file.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:services-validate-file-input": "src/modules/storage/services/validate-file-input.ts",
   "@baseplate-dev/plugin-storage#fastify/storage-module:types-adapter": "src/modules/storage/types/adapter.ts",

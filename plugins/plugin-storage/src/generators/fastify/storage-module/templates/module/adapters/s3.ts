@@ -5,6 +5,7 @@ import type {
   FileMetadata,
   PresignedUploadUrl,
   StorageAdapter,
+  UploadFileOptions,
 } from '$typesAdapter';
 import type { Readable } from 'node:stream';
 
@@ -89,9 +90,9 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
     });
   }
 
-  function getPublicUrl(path: string): string | null {
+  function getPublicUrl(path: string): string | undefined {
     if (!publicUrl) {
-      return null;
+      return undefined;
     }
     return `${publicUrl.replace(/\/$/, '')}/${path}`;
   }
@@ -191,11 +192,13 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
   async function uploadFile(
     path: string,
     contents: Buffer | Readable,
+    options?: UploadFileOptions,
   ): Promise<FileMetadata> {
     const command = new PutObjectCommand({
       Bucket: bucket,
       Key: path,
       Body: contents,
+      ContentType: options?.contentType,
       ServerSideEncryption: 'AES256',
     });
 

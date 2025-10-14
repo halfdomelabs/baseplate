@@ -127,6 +127,22 @@ const servicesDownloadFile = createTsTemplateFile({
   variables: { TPL_FILE_MODEL: {} },
 });
 
+const servicesGetPublicUrl = createTsTemplateFile({
+  fileOptions: { kind: 'singleton' },
+  group: 'main',
+  importMapProviders: {},
+  name: 'services-get-public-url',
+  projectExports: { getPublicUrl: {} },
+  referencedGeneratorTemplates: { configAdapters: {} },
+  source: {
+    path: path.join(
+      import.meta.dirname,
+      '../templates/module/services/get-public-url.ts',
+    ),
+  },
+  variables: { TPL_FILE_MODEL: {} },
+});
+
 const servicesUploadFile = createTsTemplateFile({
   fileOptions: { kind: 'singleton' },
   group: 'main',
@@ -269,6 +285,7 @@ export const mainGroup = {
   servicesCreatePresignedDownloadUrl,
   servicesCreatePresignedUploadUrl,
   servicesDownloadFile,
+  servicesGetPublicUrl,
   servicesUploadFile,
   servicesValidateFileInput,
   typesAdapter,
@@ -335,7 +352,7 @@ const schemaPublicUrl = createTsTemplateFile({
   importMapProviders: { pothosImports: pothosImportsProvider },
   name: 'schema-public-url',
   projectExports: {},
-  referencedGeneratorTemplates: { configAdapters: {} },
+  referencedGeneratorTemplates: { servicesGetPublicUrl: {} },
   source: {
     path: path.join(
       import.meta.dirname,

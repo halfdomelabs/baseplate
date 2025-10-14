@@ -219,6 +219,9 @@ export const storageModuleGenerator = createGenerator({
                   servicesDownloadFile: {
                     TPL_FILE_MODEL: model,
                   },
+                  servicesGetPublicUrl: {
+                    TPL_FILE_MODEL: model,
+                  },
                   servicesUploadFile: {
                     TPL_FILE_MODEL: model,
                     TPL_FILE_MODEL_TYPE: modelType,
