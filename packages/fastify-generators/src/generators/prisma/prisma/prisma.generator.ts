@@ -103,7 +103,6 @@ export const prismaGenerator = createGenerator({
       },
       run({ node }) {
         node.packages.addPackages({
-          prod: extractPackageVersions(FASTIFY_PACKAGES, ['@prisma/client']),
           dev: extractPackageVersions(FASTIFY_PACKAGES, ['prisma']),
         });
         // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)

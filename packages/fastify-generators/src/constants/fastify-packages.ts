@@ -38,7 +38,6 @@ export const FASTIFY_PACKAGES = {
   '@bull-board/fastify': '6.5.3',
 
   // Prisma
-  '@prisma/client': '6.17.1',
   prisma: '6.17.1',
 
   // Utils

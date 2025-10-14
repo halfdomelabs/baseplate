@@ -13,11 +13,7 @@
       "fileOptions": { "kind": "singleton" },
       "group": "generated",
       "pathRootRelativePath": "{src-root}/generated/prisma/client.ts",
-      "projectExports": {
-        "*": {},
-        "Prisma": {},
-        "PrismaClient": {}
-      },
+      "projectExports": { "*": {}, "Prisma": {}, "PrismaClient": {} },
       "projectExportsOnly": true,
       "sourceFile": "src/generated/prisma/client.ts"
     },

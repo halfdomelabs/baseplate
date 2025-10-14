@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '%prismaGeneratedImports';
 
 import { prisma } from '%prismaImports';
 import { notEmpty } from '%tsUtilsImports';

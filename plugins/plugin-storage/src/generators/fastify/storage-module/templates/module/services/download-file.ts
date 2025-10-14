@@ -1,7 +1,7 @@
 // @ts-nocheck
 
+import type { File } from '%prismaGeneratedImports';
 import type { ServiceContext } from '%serviceContextImports';
-import type { File } from '@prisma/client';
 import type { Readable } from 'node:stream';
 
 import { STORAGE_ADAPTERS } from '$configAdapters';
