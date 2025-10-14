@@ -619,17 +619,16 @@ git checkout -b feature/your-feature-name
 
 #### 2. Code Development
 
-Make your changes in the appropriate example project (e.g., `examples/blog-with-auth`):
+Make your changes in the appropriate example project (e.g., `examples/blog-with-auth`) - do not modify the generator files directly:
 
 ```bash
-cd examples/blog-with-auth
-
-# Make your code changes (e.g., update local auth, add features)
-# Edit files as needed...
+# Make your code changes directly in the example project (e.g., update local auth, add features)
 
 # Validate changes work
 pnpm build && pnpm lint
 ```
+
+Note: You only need to modify one project at a time and don't need to modify all the examples.
 
 #### 3. Template Metadata Management (Optional)
 

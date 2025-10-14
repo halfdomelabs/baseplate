@@ -2,9 +2,13 @@
 
 import type { PrismaConfig } from 'prisma';
 
+import { existsSync } from 'node:fs';
 import { loadEnvFile } from 'node:process';
 
-loadEnvFile();
+// Only load .env file if it exists
+if (existsSync('.env')) {
+  loadEnvFile();
+}
 
 export default {
   migrations: {
