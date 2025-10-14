@@ -83,6 +83,7 @@ export const storageModuleGenerator = createGenerator({
         ...extractPackageVersions(CORE_PACKAGES, ['axios']),
         ...extractPackageVersions(STORAGE_PACKAGES, [
           '@aws-sdk/client-s3',
+          '@aws-sdk/lib-storage',
           '@aws-sdk/s3-presigned-post',
           '@aws-sdk/s3-request-presigner',
           'mime-types',
@@ -219,9 +220,6 @@ export const storageModuleGenerator = createGenerator({
                   servicesDownloadFile: {
                     TPL_FILE_MODEL: model,
                   },
-                  servicesGetPublicUrl: {
-                    TPL_FILE_MODEL: model,
-                  },
                   servicesUploadFile: {
                     TPL_FILE_MODEL: model,
                     TPL_FILE_MODEL_TYPE: modelType,
@@ -241,6 +239,15 @@ export const storageModuleGenerator = createGenerator({
                       tsTypeImportBuilder(['Prisma']).from('@prisma/client'),
                     ),
                   },
+                },
+              }),
+            );
+
+            // Render servicesGetPublicUrl template
+            await builder.apply(
+              renderers.servicesGetPublicUrl.render({
+                variables: {
+                  TPL_FILE_MODEL: model,
                 },
               }),
             );

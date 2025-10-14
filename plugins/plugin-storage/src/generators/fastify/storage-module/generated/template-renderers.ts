@@ -57,6 +57,16 @@ export interface FastifyStorageModuleRenderers {
       >,
     ) => BuilderAction;
   };
+  servicesGetPublicUrl: {
+    render: (
+      options: Omit<
+        RenderTsTemplateFileActionInput<
+          typeof FASTIFY_STORAGE_MODULE_TEMPLATES.servicesGetPublicUrl
+        >,
+        'destination' | 'importMapProviders' | 'template' | 'generatorPaths'
+      >,
+    ) => BuilderAction;
+  };
 }
 
 const fastifyStorageModuleRenderers =
@@ -126,6 +136,15 @@ const fastifyStorageModuleRenderersTask = createGeneratorTask({
                 importMapProviders: {
                   pothosImports,
                 },
+                generatorPaths: paths,
+                ...options,
+              }),
+          },
+          servicesGetPublicUrl: {
+            render: (options) =>
+              typescriptFile.renderTemplateFile({
+                template: FASTIFY_STORAGE_MODULE_TEMPLATES.servicesGetPublicUrl,
+                destination: paths.servicesGetPublicUrl,
                 generatorPaths: paths,
                 ...options,
               }),

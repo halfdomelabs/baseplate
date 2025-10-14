@@ -14,9 +14,9 @@ import {
   DeleteObjectsCommand,
   GetObjectCommand,
   HeadObjectCommand,
-  PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -194,15 +194,30 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
     contents: Buffer | Readable,
     options?: UploadFileOptions,
   ): Promise<FileMetadata> {
-    const command = new PutObjectCommand({
-      Bucket: bucket,
-      Key: path,
-      Body: contents,
-      ContentType: options?.contentType,
-      ServerSideEncryption: 'AES256',
+    const upload = new Upload({
+      client,
+      params: {
+        Bucket: bucket,
+        Key: path,
+        Body: contents,
+        ContentType: options?.contentType,
+        ServerSideEncryption: 'AES256',
+      },
+      partSize: options?.partSize,
+      queueSize: options?.queueSize,
     });
 
-    await client.send(command);
+    // Track progress if callback provided
+    if (options?.onProgress) {
+      upload.on('httpUploadProgress', (progress) => {
+        const { loaded, total } = progress;
+        const percentage =
+          loaded && total ? Math.round((loaded / total) * 100) : undefined;
+        options.onProgress?.({ loaded: loaded ?? 0, total, percentage });
+      });
+    }
+
+    await upload.done();
 
     // Get metadata after upload to return accurate information
     const metadata = await getFileMetadata(path);
