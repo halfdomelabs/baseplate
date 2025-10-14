@@ -228,6 +228,9 @@ importers:
       '@pothos/tracing-sentry':
         specifier: 1.1.1
         version: 1.1.1(@pothos/core@4.8.1(graphql@16.11.0))(@pothos/plugin-tracing@1.1.0(@pothos/core@4.8.1(graphql@16.11.0))(graphql@16.11.0))(@sentry/node@9.17.0)(graphql@16.11.0)
+      '@prisma/adapter-pg':
+        specifier: 6.17.1
+        version: 6.17.1
       '@prisma/client':
         specifier: 6.17.1
         version: 6.17.1(prisma@6.17.1(typescript@5.8.3))(typescript@5.8.3)
@@ -1736,6 +1739,9 @@ packages:
       '@sentry/node': '*'
       graphql: '>=16.6.0'
 
+  '@prisma/adapter-pg@6.17.1':
+    resolution: {integrity: sha512-iy5aL2HHzW2sAGspgeUGXgM+JDiXm31R4iONSnAWdpFSc/SWgsR+z8muS0HAZnzclAUwqXrWFJh4RbneCM2ktA==}
+
   '@prisma/client@6.17.1':
     resolution: {integrity: sha512-zL58jbLzYamjnNnmNA51IOZdbk5ci03KviXCuB0Tydc9btH2kDWsi1pQm2VecviRTM7jGia0OPPkgpGnT3nKvw==}
     engines: {node: '>=18.18'}
@@ -1759,6 +1765,9 @@ packages:
 
   '@prisma/dmmf@6.14.0':
     resolution: {integrity: sha512-YOoRDb8A8fj0Pp0q0UjKAsuBVpzb2z+rnDaMBZgSkczqRhubBQ1USgTEMM7jYaAN7ym7iK4K5V8mtREcpX/p9Q==}
+
+  '@prisma/driver-adapter-utils@6.17.1':
+    resolution: {integrity: sha512-GT4QbVUyJa5sXj5vjrBPnZ68v1P/FoKBCSIkrFrCPrOi6OSzk+567XDZyBtWIECKxruuMTa7fU4wwNmtMQylrg==}
 
   '@prisma/engines-version@6.17.1-1.272a37d34178c2894197e17273bf937f25acdeac':
     resolution: {integrity: sha512-17140E3huOuD9lMdJ9+SF/juOf3WR3sTJMVyyenzqUPbuH+89nPhSWcrY+Mf7tmSs6HvaO+7S+HkELinn6bhdg==}
@@ -5225,6 +5234,10 @@ packages:
     resolution: {integrity: sha512-VpZrUqU5A69eQyW2c5CA1jtLecCsN2U/bD6VilrFDWq5+5UIEVO7nazS3TEcHf1zuPYO/sqGvUvW62g86RXZuA==}
     engines: {node: '>=4'}
 
+  postgres-array@3.0.4:
+    resolution: {integrity: sha512-nAUSGfSDGOaOAEGwqsRY27GPOea7CNipJPOA7lPbdEpx5Kg3qzdP0AaWC5MlhTWV9s4hFX39nomVZ+C4tnGOJQ==}
+    engines: {node: '>=12'}
+
   postgres-bytea@1.0.0:
     resolution: {integrity: sha512-xy3pmLuQqRBZBXDULy7KbaitYqLcmxigw14Q5sj8QBVLqEwXfeybIKVWiqAXTlcvdvb0+xkOtDbfQMOf4lST1w==}
     engines: {node: '>=0.10.0'}
@@ -8041,6 +8054,14 @@ snapshots:
       '@sentry/node': 9.17.0
       graphql: 16.11.0
 
+  '@prisma/adapter-pg@6.17.1':
+    dependencies:
+      '@prisma/driver-adapter-utils': 6.17.1
+      pg: 8.16.3
+      postgres-array: 3.0.4
+    transitivePeerDependencies:
+      - pg-native
+
   '@prisma/client@6.17.1(prisma@6.17.1(typescript@5.8.3))(typescript@5.8.3)':
     optionalDependencies:
       prisma: 6.17.1(typescript@5.8.3)
@@ -8060,6 +8081,10 @@ snapshots:
   '@prisma/debug@6.17.1': {}
 
   '@prisma/dmmf@6.14.0': {}
+
+  '@prisma/driver-adapter-utils@6.17.1':
+    dependencies:
+      '@prisma/debug': 6.17.1
 
   '@prisma/engines-version@6.17.1-1.272a37d34178c2894197e17273bf937f25acdeac': {}
 
@@ -11806,6 +11831,8 @@ snapshots:
       source-map-js: 1.2.1
 
   postgres-array@2.0.0: {}
+
+  postgres-array@3.0.4: {}
 
   postgres-bytea@1.0.0: {}
 

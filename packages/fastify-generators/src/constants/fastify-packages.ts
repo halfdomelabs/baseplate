@@ -40,6 +40,7 @@ export const FASTIFY_PACKAGES = {
   // Prisma
   '@prisma/client': '6.17.1',
   prisma: '6.17.1',
+  '@prisma/adapter-pg': '6.17.1',
 
   // Utils
   ms: '2.1.3',

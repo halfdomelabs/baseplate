@@ -103,12 +103,11 @@ export const prismaGenerator = createGenerator({
       },
       run({ node }) {
         node.packages.addPackages({
-          prod: extractPackageVersions(FASTIFY_PACKAGES, ['@prisma/client']),
+          prod: extractPackageVersions(FASTIFY_PACKAGES, [
+            '@prisma/client',
+            '@prisma/adapter-pg',
+          ]),
           dev: extractPackageVersions(FASTIFY_PACKAGES, ['prisma']),
-        });
-        // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)
-        node.scripts.mergeObj({
-          postinstall: 'prisma generate',
         });
       },
     }),
@@ -206,16 +205,16 @@ export const prismaGenerator = createGenerator({
       run({ nodeGitIgnore }) {
         return {
           build: (builder) => {
-            nodeGitIgnore.exclusions.set(
-              'prisma',
-              [
-                '# Prisma generated files',
-                'src/generated/prisma/*',
-                builder.metadataOptions.includeTemplateMetadata
-                  ? '!src/generated/prisma/.templates-info.json'
-                  : '',
-              ].filter(Boolean),
-            );
+            nodeGitIgnore.exclusions.set('prisma', [
+              '# Prisma generated files',
+              'src/generated/prisma/*',
+              ...(builder.metadataOptions.includeTemplateMetadata
+                ? [
+                    '!src/generated/prisma/client.ts',
+                    '!src/generated/prisma/.templates-info.json',
+                  ]
+                : []),
+            ]);
           },
         };
       },
@@ -284,6 +283,7 @@ export const prismaGenerator = createGenerator({
             provider: 'prisma-client',
             additionalOptions: {
               output: doubleQuot('../src/generated/prisma'),
+              engineType: doubleQuot('client'),
             },
           }),
         );
