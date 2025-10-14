@@ -1,41 +1,28 @@
 import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
-export type MakeEmpty<
-  T extends { [key: string]: unknown },
-  K extends keyof T,
-> = { [_ in K]?: never };
-export type Incremental<T> =
-  | T
-  | {
-      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
-    };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  Date: { input: string; output: string };
+  Date: { input: string; output: string; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  DateTime: { input: string; output: string };
+  DateTime: { input: string; output: string; }
   /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSON: { input: any; output: any };
+  JSON: { input: any; output: any; }
   /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSONObject: { input: any; output: any };
+  JSONObject: { input: any; output: any; }
   /** A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier. */
-  Uuid: { input: string; output: string };
+  Uuid: { input: string; output: string; }
 };
 
 /** Payload type for createBullBoardAuthCode mutation */
@@ -211,57 +198,71 @@ export type Mutation = {
   updateUser: UpdateUserPayload;
 };
 
+
 export type MutationCreatePresignedDownloadUrlArgs = {
   input: CreatePresignedDownloadUrlInput;
 };
+
 
 export type MutationCreatePresignedUploadUrlArgs = {
   input: CreatePresignedUploadUrlInput;
 };
 
+
 export type MutationCreateTodoItemArgs = {
   input: CreateTodoItemInput;
 };
+
 
 export type MutationCreateTodoListArgs = {
   input: CreateTodoListInput;
 };
 
+
 export type MutationCreateTodoListShareArgs = {
   input: CreateTodoListShareInput;
 };
+
 
 export type MutationCreateUserArgs = {
   input: CreateUserInput;
 };
 
+
 export type MutationDeleteTodoItemArgs = {
   input: DeleteTodoItemInput;
 };
+
 
 export type MutationDeleteTodoListArgs = {
   input: DeleteTodoListInput;
 };
 
+
 export type MutationDeleteTodoListShareArgs = {
   input: DeleteTodoListShareInput;
 };
+
 
 export type MutationDeleteUserArgs = {
   input: DeleteUserInput;
 };
 
+
 export type MutationUpdateTodoItemArgs = {
   input: UpdateTodoItemInput;
 };
+
 
 export type MutationUpdateTodoListArgs = {
   input: UpdateTodoListInput;
 };
 
+
 export type MutationUpdateTodoListShareArgs = {
   input: UpdateTodoListShareInput;
 };
+
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInput;
@@ -287,21 +288,26 @@ export type Query = {
   users: Array<User>;
 };
 
+
 export type QueryFileArgs = {
   id: Scalars['Uuid']['input'];
 };
+
 
 export type QueryTodoItemArgs = {
   id: Scalars['Uuid']['input'];
 };
 
+
 export type QueryTodoListArgs = {
   id: Scalars['Uuid']['input'];
 };
 
+
 export type QueryTodoListShareArgs = {
   id: TodoListSharePrimaryKey;
 };
+
 
 export type QueryUserArgs = {
   id: Scalars['Uuid']['input'];
@@ -419,7 +425,9 @@ export type TodoListShareUpdateData = {
   userId?: InputMaybe<Scalars['Uuid']['input']>;
 };
 
-export type TodoListStatus = 'ACTIVE' | 'INACTIVE';
+export type TodoListStatus =
+  | 'ACTIVE'
+  | 'INACTIVE';
 
 export type TodoListUpdateData = {
   coverPhoto?: InputMaybe<FileInput>;
@@ -559,101 +567,14 @@ export type UserUpdateData = {
   userProfile?: InputMaybe<UserEmbeddedUserProfileData>;
 };
 
-export type CurrentUserFragment = {
-  __typename?: 'User';
-  id: string;
-  email: string;
-};
+export type CurrentUserFragment = { __typename?: 'User', id: string, email: string };
 
 export type GetUserByIdQueryVariables = Exact<{
   id: Scalars['Uuid']['input'];
 }>;
 
-export type GetUserByIdQuery = {
-  __typename?: 'Query';
-  user: { __typename?: 'User'; id: string; email: string };
-};
 
-export const CurrentUserFragmentDoc = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'CurrentUser' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'User' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'email' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<CurrentUserFragment, unknown>;
-export const GetUserByIdDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getUserById' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Uuid' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'user' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'id' },
-                value: {
-                  kind: 'Variable',
-                  name: { kind: 'Name', value: 'id' },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'FragmentSpread',
-                  name: { kind: 'Name', value: 'CurrentUser' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-    {
-      kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'CurrentUser' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'User' },
-      },
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-          { kind: 'Field', name: { kind: 'Name', value: 'email' } },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<GetUserByIdQuery, GetUserByIdQueryVariables>;
+export type GetUserByIdQuery = { __typename?: 'Query', user: { __typename?: 'User', id: string, email: string } };
+
+export const CurrentUserFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CurrentUser"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<CurrentUserFragment, unknown>;
+export const GetUserByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getUserById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Uuid"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CurrentUser"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CurrentUser"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}}]} as unknown as DocumentNode<GetUserByIdQuery, GetUserByIdQueryVariables>;
